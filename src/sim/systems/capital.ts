@@ -1,5 +1,6 @@
-// Capital: the funding ladder (capital.json). A raise is a fixed offer for now (no
-// negotiation): money in, founder stake down, once per game, inside its window.
+// Capital: the funding ladder (capital.json). A raise is money in, founder stake down, once
+// per game, inside its window. The rounds in capital.json › pitch can also be negotiated
+// (systems/pitch.ts); taking the offer takes the investor's opening valuation.
 import { BALANCE, CONTENT, type LadderStep } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type GameState } from '../state.ts'
@@ -54,6 +55,14 @@ export function raiseBlocker(
   }
   if (state.raisesDone.includes(id))
     return { key: 'error.raise_done', params: { round: id } }
+  if (state.pitch) return { key: 'error.pitch_open' }
+  const walked = state.pitchWalkaways[id]
+  if (walked && state.quarter < walked.reopensQuarter) {
+    const reopens = CONTENT.quarters[walked.reopensQuarter]
+    return reopens && reopens <= step.window[1]
+      ? { key: 'error.pitch_locked', params: { round: id, reopens } }
+      : { key: 'error.pitch_lost', params: { round: id } }
+  }
   const q = CONTENT.quarters[state.quarter]
   const [from, to] = step.window
   if (q < from || q > to) {
@@ -69,17 +78,35 @@ export function raiseBlocker(
     }
 }
 
-/** Takes the round: cash in, stake diluted, Bandwidth spent. Call raiseBlocker first. */
+/** Takes the round at the investor's opening terms. Call raiseBlocker first. */
 export function takeRaise(state: GameState, id: string): void {
   const step = getStep(id)!
-  state.bandwidth -= raiseBandwidth(step)
+  // A pitched round after a walk-away: the opening valuation is lower, so the share is bigger.
+  const penalty = state.pitchWalkaways[id]?.penalty ?? 0
+  const dilution =
+    penalty > 0 && step.pre_money_usd !== undefined
+      ? step.amount_usd / (step.pre_money_usd * (1 - penalty) + step.amount_usd)
+      : step.dilution
+  delete state.pitchWalkaways[id]
+  completeRaise(state, id, dilution, raiseBandwidth(step))
+}
+
+/** Money in, stake diluted by `dilution`, Bandwidth spent, round marked as raised. */
+export function completeRaise(
+  state: GameState,
+  id: string,
+  dilution: number,
+  bandwidth: number,
+): void {
+  const step = getStep(id)!
+  state.bandwidth -= bandwidth
   state.cash += step.amount_usd
-  state.founderStake *= 1 - step.dilution
+  state.founderStake *= 1 - dilution
   state.raisesDone.push(id)
   logEntry(state, 'log.raised', {
     round: id,
     amountUsd: step.amount_usd,
-    dilutionPct: step.dilution,
+    dilutionPct: dilution,
     stakePct: state.founderStake,
   })
 }

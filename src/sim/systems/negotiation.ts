@@ -64,6 +64,7 @@ export function startBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (state.negotiation) return { key: 'error.negotiation_open' }
+  if (state.pitch) return { key: 'error.pitch_open' }
   if (!renewalDue(state, site))
     return { key: 'error.no_renewal', params: { tier: site.tier } }
   if (!contractTypes(site).includes(type)) return { key: 'error.bad_choice' }

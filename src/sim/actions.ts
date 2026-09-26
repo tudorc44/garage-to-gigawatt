@@ -39,6 +39,13 @@ import {
   startNegotiation,
   walkOut,
 } from './systems/negotiation.ts'
+import {
+  pitchAccept,
+  pitchBlocker,
+  pitchCounter,
+  pitchWalk,
+  startPitch,
+} from './systems/pitch.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
   borrowBlocker,
@@ -109,8 +116,16 @@ export type Action =
   | { type: 'REPAY_CRYPTO_LOAN' }
   /** Sealed bid for the whole distressed lot this Plan phase; the machines go to `siteId` if you win. */
   | { type: 'BID_AUCTION'; bidUsd: number; siteId: string }
-  /** Take a funding round from capital.json (fixed offer). */
+  /** Take a funding round from capital.json at the investor's opening terms. */
   | { type: 'RAISE'; round: string }
+  /** Pitch a round instead (capital.json › pitch): haggle over the pre-money valuation. */
+  | { type: 'PITCH_START'; round: string }
+  /** Counter the investor's offer with a pre-money valuation in dollars. */
+  | { type: 'PITCH_COUNTER'; preMoneyUsd: number }
+  /** Take the investor's current offer. */
+  | { type: 'PITCH_ACCEPT' }
+  /** Walk out: the round closes for a quarter and reopens lower. */
+  | { type: 'PITCH_WALK' }
   /** Plan phase done: start the live quarter. */
   | { type: 'END_PLAN' }
   /** Answer the alert that paused the live quarter. */
@@ -138,6 +153,7 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
       if (s.negotiation) return fail('error.negotiation_open')
+      if (s.pitch) return fail('error.pitch_open')
       closeAuction(s)
       autoRenew(s)
       s.phase = 'live'
@@ -249,6 +265,22 @@ function run(s: GameState, a: Action): Message | undefined {
       takeRaise(s, a.round)
       return
     }
+
+    case 'PITCH_START': {
+      const blocked = pitchBlocker(s, a.round)
+      if (blocked) return blocked
+      startPitch(s, a.round)
+      return
+    }
+
+    case 'PITCH_COUNTER':
+      return pitchCounter(s, a.preMoneyUsd)
+
+    case 'PITCH_ACCEPT':
+      return pitchAccept(s)
+
+    case 'PITCH_WALK':
+      return pitchWalk(s)
 
     case 'SET_HODL': {
       if (!(a.pct >= 0 && a.pct <= 1)) return fail('error.bad_pct')

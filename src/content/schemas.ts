@@ -261,6 +261,8 @@ export const ladderStepSchema = z.object({
   amount_usd: num,
   /** Share of the company given up, 0–1. */
   dilution: z.number().min(0).max(1),
+  /** Valuation before the money comes in; pitched rounds negotiate it (capital.json › pitch). */
+  pre_money_usd: nonNeg.optional(),
   window: z.tuple([quarterId, quarterId]),
   requires: z
     .object({
@@ -273,6 +275,41 @@ export const ladderStepSchema = z.object({
   /** Bandwidth cost; if missing, BALANCE.capital.raiseBandwidth. */
   bandwidth: z.number().int().min(0).optional(),
 })
+
+/** Investor pitches: capital.json › pitch (design thread, 26 Sep 2026). */
+export const pitchRulesSchema = z
+  .object({
+    applies_to: z.array(z.string()),
+    bw_cost: z.number().int().min(0),
+    rounds: z.number().int().min(1),
+    limit_range: z.tuple([nonNeg, nonNeg]),
+    below_opening_behavior: z.literal('hold_at_opening'),
+    lowball_margin: z.number().min(0).max(1),
+    walkaway_chance_per_lowball: z.number().min(0).max(1),
+    walkaway_penalty: z.number().min(0).max(1),
+    walkaway_penalty_max: z.number().min(0).max(1),
+    lockout_quarters: z.number().int().min(0),
+    player_walkout_penalized: z.boolean(),
+    warn_if_lockout_exceeds_window: z.boolean(),
+    hire_shift: z.number().min(0).max(1),
+  })
+  .transform((p) => ({
+    rounds: p.rounds,
+    /** Ladder ids you can pitch; the other rounds stay fixed offers. */
+    appliesTo: p.applies_to,
+    bandwidth: p.bw_cost,
+    limitRange: p.limit_range,
+    lowballMargin: p.lowball_margin,
+    walkawayChance: p.walkaway_chance_per_lowball,
+    walkawayPenalty: p.walkaway_penalty,
+    walkawayPenaltyMax: p.walkaway_penalty_max,
+    lockoutQuarters: p.lockout_quarters,
+    playerWalkoutPenalized: p.player_walkout_penalized,
+    warnIfLockoutExceedsWindow: p.warn_if_lockout_exceeds_window,
+    hireShift: p.hire_shift,
+  }))
+
+export type PitchRules = z.output<typeof pitchRulesSchema>
 
 /** Equipment loan terms for an era ("2017-2019" or "2022"), secured on machines. */
 export const equipmentLoanSchema = z
@@ -317,6 +354,7 @@ export const cryptoLoanSchema = z
 
 export const capitalFileSchema = z.object({
   ladder: z.array(ladderStepSchema).min(1),
+  pitch: pitchRulesSchema,
   loans: z.object({
     equipment: z.array(equipmentLoanSchema).min(1),
     game_crypto_loan: cryptoLoanSchema,

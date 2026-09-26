@@ -129,6 +129,8 @@
   "curtailment": null,
   "complaint": null,
   "negotiation": null,
+  "pitch": null,
+  "pitchWalkaways": {},
   "siteHeat": {
     "site-1": {
       "value": 5,

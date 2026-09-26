@@ -33,6 +33,7 @@ import {
   type Machine,
   type MarketWeek,
   type NegotiationRules,
+  type PitchRules,
   type Rival,
   type SiteTier,
 } from './schemas.ts'
@@ -40,6 +41,7 @@ import {
 export { BALANCE }
 export type {
   NegotiationRules,
+  PitchRules,
   HeatRules,
   AuctionRules,
   CryptoLoanTerms,
@@ -67,6 +69,8 @@ export interface Content {
   eraMultiple: Record<string, number>
   /** Funding ladder rungs, by id. */
   ladder: Record<string, LadderStep>
+  /** Investor pitch rules (capital.json › pitch). */
+  pitch: PitchRules
   /** Equipment loan terms by era (fromYear–toYear). */
   equipmentLoans: EquipmentLoanTerms[]
   /** The crypto-backed loan's terms. */
@@ -265,6 +269,22 @@ export function parseContent(raw: RawContent): Content {
     }
   }
 
+  for (const id of capitalFile.pitch.appliesTo) {
+    const step = capitalFile.ladder.find((s) => s.id === id)
+    if (!step) {
+      problems.push(`capital.json › pitch: unknown funding round "${id}"`)
+    } else if (step.pre_money_usd === undefined) {
+      problems.push(`capital.json › pitch: "${id}" has no pre_money_usd`)
+    } else {
+      const implied = step.amount_usd / (step.pre_money_usd + step.amount_usd)
+      if (Math.abs(implied - step.dilution) > 1e-9) {
+        problems.push(
+          `capital.json › ${id}: dilution ${step.dilution} doesn't match amount / (pre-money + amount) = ${implied}`,
+        )
+      }
+    }
+  }
+
   for (const id of BALANCE.capital.openRounds) {
     if (!capitalFile.ladder.some((s) => s.id === id)) {
       problems.push(`balance.ts: unknown funding round "${id}"`)
@@ -371,6 +391,7 @@ export function parseContent(raw: RawContent): Content {
     interrupts: { maxPerQuarter: interruptsFile.max_per_quarter, byId },
     eraMultiple: capitalFile.era_multiple_ev_ebitda,
     ladder: Object.fromEntries(capitalFile.ladder.map((s) => [s.id, s])),
+    pitch: capitalFile.pitch,
     equipmentLoans: capitalFile.loans.equipment,
     cryptoLoan: capitalFile.loans.game_crypto_loan,
     rivals: rivalsFile.rivals,

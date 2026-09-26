@@ -77,6 +77,28 @@
    "bandwidth": 3
   }
  ],
+ "pitch": {
+  "notes": "Investor pitches (design thread, 26 Sep 2026): negotiate the pre-money valuation for the round's fixed amount_usd. The investor opens at pre_money_usd (x (1 - penalty) after walk-aways); the player counters higher. Hidden limit = opening x U(limit_range) x (1 + hire_shift); below the opening they hold at the opening. Counter at or under the limit = deal at your valuation; within lowball_margin above it = they come back halfway; further above = walkaway_chance_per_lowball they walk, else halfway. After 'rounds' counters their offer is final. A walk-away by either side closes the round for lockout_quarters and reopens it at the opening -walkaway_penalty, stacking to walkaway_penalty_max; a deal resets it. bw_cost is paid at the start and lost if there's no deal.",
+  "applies_to": [
+   "seed",
+   "series_a"
+  ],
+  "bw_cost": 2,
+  "rounds": 3,
+  "limit_range": [
+   0.95,
+   1.25
+  ],
+  "below_opening_behavior": "hold_at_opening",
+  "lowball_margin": 0.1,
+  "walkaway_chance_per_lowball": 0.25,
+  "walkaway_penalty": 0.1,
+  "walkaway_penalty_max": 0.2,
+  "lockout_quarters": 1,
+  "player_walkout_penalized": true,
+  "warn_if_lockout_exceeds_window": true,
+  "hire_shift": 0.0
+ },
  "loans": {
   "equipment": [
    {
