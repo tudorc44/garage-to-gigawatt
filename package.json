@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
-    "staging:build": "tsc -b && vite build --outDir staging --emptyOutDir",
+    "staging:build": "tsc -b && vite build --mode staging --outDir staging --emptyOutDir",
     "staging": "vite preview --outDir staging --port 4173 --strictPort",
     "test": "vitest run",
     "lint": "eslint .",

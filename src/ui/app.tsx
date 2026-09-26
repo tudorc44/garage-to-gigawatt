@@ -32,9 +32,10 @@ export function App() {
     setGame(s)
   }
 
-  // Dev-only console helpers for testing (left out of `npm run build`):
+  // Testing helpers for the browser console, in `npm run dev` and the staging build only
+  // (Vite's mode is 'production' for `npm run build`, which leaves this out):
   //   g2g.setCash(500000)   g2g.state()
-  if (import.meta.env.DEV) {
+  if (import.meta.env.MODE !== 'production') {
     window.g2g = {
       state: () => ref.current,
       setCash: (usd: number) => {

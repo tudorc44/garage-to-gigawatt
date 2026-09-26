@@ -30,8 +30,9 @@ Line endings are pinned to LF by `.gitattributes`, so the golden files match on 
 
 See `CLAUDE.md` for the full list. The main ones:
 
-- `npm run dev`: play in the browser at http://localhost:5173 (includes the dev-only console helper
-  `g2g.setCash(500000)` and `g2g.state()`, not in production builds).
+- `npm run dev`: play in the browser at http://localhost:5173. It includes the console testing helpers
+  `g2g.setCash(500000)` and `g2g.state()`. So does the staging build (built with Vite's `staging` mode);
+  `npm run build` (production mode) leaves them out.
 - `npm run staging:build` then `npm run staging`: the owner's frozen snapshot at http://localhost:4173.
   Claude never runs `staging:build` unless asked; verify with `npm run build` (into `dist/`).
 - `npm test`, `npm run lint`, `npm run build`: run all three before calling anything done.
@@ -57,7 +58,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser) and unit tests: 135 passing + 1 to-do.
-8. **Local staging** (`staging/`) and the dev-only `g2g` console helper.
+8. **Local staging** (`staging/`) and the `g2g` console testing helper (dev and staging, not production).
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 

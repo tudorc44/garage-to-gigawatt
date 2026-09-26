@@ -17,7 +17,7 @@ question: *is Act I a fun 40-minute run where decisions, not luck, decide whethe
 npm run dev       # play in the browser: start the dev server and open the printed localhost URL
 npm run build     # type-check (tsc -b) and build to dist/
 npm run preview   # serve the built dist/ locally
-npm run staging:build  # the owner's snapshot: build the game into staging/ (only the owner runs this)
+npm run staging:build  # the owner's snapshot: build the game into staging/ (only the owner runs this); keeps g2g
 npm run staging   # play the staging snapshot at http://localhost:4173 (unaffected by later edits)
 npm test          # Vitest: unit tests per system + golden-replay test
 npm run lint      # ESLint (also enforces the pure-sim rules below)
