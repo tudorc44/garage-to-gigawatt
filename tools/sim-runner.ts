@@ -348,12 +348,14 @@ console.table(
     if (!taker) break
     const gain =
       pitcher.runs.reduce(
-        (a, r, i) => a + r.state.founderStake - taker.runs[i].state.founderStake,
+        (a, r, i) =>
+          a + r.state.founderStake - taker.runs[i].state.founderStake,
         0,
       ) / pitcher.runs.length
     const seedQ = (r: Run) =>
-      r.state.log.find((e) => e.key === 'log.raised' && e.params?.round === 'seed')
-        ?.quarter
+      r.state.log.find(
+        (e) => e.key === 'log.raised' && e.params?.round === 'seed',
+      )?.quarter
     const later = pitcher.runs.map((r, i) => {
       const a = seedQ(r)
       const b = seedQ(taker.runs[i])

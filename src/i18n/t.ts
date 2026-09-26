@@ -28,6 +28,7 @@ const ID_PARAMS: Record<string, string> = {
   round: 'round.',
   rival: 'rival.',
   contract: 'contract.',
+  hire: 'hire.',
 }
 
 function fill(text: string, params: MessageParams): string {

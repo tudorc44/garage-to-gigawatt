@@ -5,7 +5,11 @@ import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type Coin, type GameState } from '../state.ts'
 import { coinPrice, marketWeek, previousMarketWeek } from './market.ts'
-import { marginCallChoices, resolveMarginCall } from './cryptoLoan.ts'
+import {
+  marginCallChoices,
+  repayCryptoLoan,
+  resolveMarginCall,
+} from './cryptoLoan.ts'
 import { resolveCurtailment } from './curtailment.ts'
 import { sellTreasury } from './treasury.ts'
 
@@ -48,6 +52,8 @@ export function resolveInterrupt(
     return resolveCurtailment(state, choiceId)
   if (active.id === 'neighbour_complaint')
     return resolveComplaint(state, choiceId)
+  if (active.id === 'margin_warning')
+    return resolveMarginWarning(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )
@@ -85,6 +91,20 @@ export function resolveInterrupt(
     }
   }
   if (!sold) logEntry(state, 'log.alert_held', alert, active.week + 1)
+  state.interrupt = null
+}
+
+/** The Trader's LTV warning: repay the crypto loan now (if cash covers it) or carry on. */
+function resolveMarginWarning(
+  state: GameState,
+  choiceId: string,
+): Message | undefined {
+  if (!availableChoices(state).includes(choiceId))
+    return { key: 'error.bad_choice' }
+  if (choiceId === 'repay') {
+    const failed = repayCryptoLoan(state)
+    if (failed) return failed
+  }
   state.interrupt = null
 }
 
@@ -127,6 +147,10 @@ export function availableChoices(state: GameState): string[] {
   if (!active) return []
   if (active.id === 'margin_call') return marginCallChoices(state)
   if (active.id === 'neighbour_complaint') return complaintChoices(state)
+  if (active.id === 'margin_warning') {
+    const loan = state.cryptoLoan
+    return loan && loan.balanceUsd <= state.cash ? ['repay', 'ok'] : ['ok']
+  }
   return (CONTENT.interrupts.byId[active.id].choices ?? [])
     .filter((c) => {
       const coin = choiceCoin(c.effects)

@@ -16,6 +16,7 @@ import {
   stormChargeUsd,
 } from './systems/curtailment.ts'
 import { checkComplaint, rateHikeUsd, updateHeatWeek } from './systems/heat.ts'
+import { paySalariesWeek } from './systems/hires.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 
@@ -42,6 +43,7 @@ export function advance(state: GameState): GameState {
     logEntry(s, 'log.storm_charge', { chargeUsd: stormUsd }, weekNo)
   }
   updateHeatWeek(s, lots)
+  const salariesUsd = paySalariesWeek(s)
   const loan = payLoanWeek(s)
   const cryptoInterestUsd = payCryptoInterestWeek(s)
   s.cash = roundCents(s.cash)
@@ -54,6 +56,7 @@ export function advance(state: GameState): GameState {
   st.gridCreditsUsd += curtailed.creditUsd
   st.rateHikeUsd += rateHikeUsd(s, lots)
   st.stormChargeUsd += stormUsd
+  st.salariesUsd += salariesUsd
   st.interestUsd += loan.interestUsd + cryptoInterestUsd
   st.principalUsd += loan.principalUsd
   st.failures += failures

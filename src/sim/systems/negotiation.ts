@@ -24,6 +24,7 @@ import {
   renewalDue,
   signContract,
 } from './contracts.ts'
+import { powerNegotiationShift } from './hires.ts'
 import { normalPriceUsdKwh } from './sites.ts'
 
 export interface PowerNegotiation {
@@ -44,14 +45,8 @@ export interface PowerNegotiation {
   history: { counterUsdKwh: number; reply: 'counter' | 'deal' | 'walked' }[]
   /** Position of this negotiation's own random stream. */
   rng: number
-}
-
-/**
- * Hook for hires (not built yet): the Ex-Utility Exec shifts the limit hire_shift in the
- * player's favour. Returns 0 until hires exist.
- */
-export function hireShift(): number {
-  return 0
+  /** The Ex-Utility Exec's shift of the limit, fixed when bargaining started (0 without). */
+  shift: number
 }
 
 /** Why a negotiation can't start now, or undefined. Checks only. */
@@ -90,8 +85,8 @@ export function startNegotiation(
   const r = substream(state.seed, `negotiation:${state.quarter}:${siteId}`)
   const normal = normalPriceUsdKwh(site, state.quarter, type)
   const long = term === rules.terms[1] ? rules.longTermLimitMult : 1
-  const limit =
-    normal * uniform(r, ...rules.limitRange) * long * (1 - hireShift())
+  const shift = powerNegotiationShift(state)
+  const limit = normal * uniform(r, ...rules.limitRange) * long * (1 - shift)
   const opening = openingOfferUsdKwh(site, state.quarter, type)
   state.bandwidth -= rules.bandwidth
   state.negotiation = {
@@ -105,6 +100,7 @@ export function startNegotiation(
     final: false,
     history: [],
     rng: r.rng,
+    shift,
   }
   logEntry(state, 'log.negotiation_started', {
     tier: site.tier,
@@ -215,7 +211,7 @@ export function counterRisk(
   const site = siteOf(state)
   const normal = normalPriceUsdKwh(site, state.quarter, n.contractType)
   const long = n.term === rules.terms[1] ? rules.longTermLimitMult : 1
-  const shift = 1 - hireShift()
+  const shift = 1 - n.shift
   const edge = (m: number) =>
     normal * m * long * shift * (1 - rules.lowballMargin)
   if (priceUsdKwh >= edge(rules.limitRange[1])) return 'none'

@@ -142,6 +142,10 @@ export interface GameState {
   pitch: InvestorPitch | null
   /** Funding rounds an investor walked away from (or you did): opening discount and lockout. */
   pitchWalkaways: Record<string, PitchWalkaway>
+  /** People on staff: hires.json id → quarter index they were hired. */
+  staff: Record<string, number>
+  /** When each person was last let go (quarter index): no rehiring in that quarter. */
+  firedQuarter: Record<string, number>
   /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
   complaint: { siteId: string; week: number } | null
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
@@ -218,6 +222,8 @@ export interface QuarterStats {
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
   stormChargeUsd: number
+  /** Staff salaries paid this quarter (counted in EBITDA). */
+  salariesUsd: number
   /** Loan interest and principal paid this quarter. */
   interestUsd: number
   principalUsd: number
@@ -278,6 +284,8 @@ export interface QuarterReport {
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
   stormChargeUsd: number
+  /** Staff salaries paid this quarter. */
+  salariesUsd: number
   interestUsd: number
   principalUsd: number
   /** Loans still owed at quarter end (subtracted from the valuation). */
@@ -304,6 +312,7 @@ export function emptyQuarterStats(): QuarterStats {
     gridCreditsUsd: 0,
     rateHikeUsd: 0,
     stormChargeUsd: 0,
+    salariesUsd: 0,
     interestUsd: 0,
     principalUsd: 0,
     startCash: 0,
@@ -362,6 +371,8 @@ export function newGame(seed: number): GameState {
     negotiation: null,
     pitch: null,
     pitchWalkaways: {},
+    staff: {},
+    firedQuarter: {},
     siteHeat: {
       'site-1': {
         value: start.heat_base,

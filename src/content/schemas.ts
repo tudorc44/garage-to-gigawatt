@@ -292,6 +292,8 @@ export const pitchRulesSchema = z
     player_walkout_penalized: z.boolean(),
     warn_if_lockout_exceeds_window: z.boolean(),
     hire_shift: z.number().min(0).max(1),
+    /** The hire (hires.json id) whose presence applies hire_shift. */
+    hire_shift_source: z.string(),
   })
   .transform((p) => ({
     rounds: p.rounds,
@@ -307,6 +309,7 @@ export const pitchRulesSchema = z
     playerWalkoutPenalized: p.player_walkout_penalized,
     warnIfLockoutExceedsWindow: p.warn_if_lockout_exceeds_window,
     hireShift: p.hire_shift,
+    hireShiftSource: p.hire_shift_source,
   }))
 
 export type PitchRules = z.output<typeof pitchRulesSchema>
@@ -477,6 +480,64 @@ export const heatFileSchema = z
   }))
 
 export type HeatRules = z.output<typeof heatFileSchema>
+
+// ---------- hires.json ----------
+
+/** One hire: a named person, a yearly salary (2017 and 2021 anchors) and effects by key. */
+export const hireSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  bio: z.string(),
+  salary_usd_year: z.object({ '2017': nonNeg, '2021': nonNeg }),
+  effect: z.record(z.string(), z.union([z.number(), z.boolean()])),
+})
+
+export const hiresFileSchema = z
+  .object({
+    hires: z.array(hireSchema).min(1),
+    /** Salaries in 2022 = the 2021 value × this (wage inflation). */
+    salary_2022_mult: z.number().min(1),
+    global: z.object({
+      bw_cost: z.number().int().min(0),
+      rehire_same_quarter: z.boolean(),
+      severance_quarters: nonNeg,
+      hire_cash_quarters: nonNeg,
+    }),
+  })
+  .transform((f) => ({
+    list: f.hires,
+    salary2022Mult: f.salary_2022_mult,
+    bandwidth: f.global.bw_cost,
+    rehireSameQuarter: f.global.rehire_same_quarter,
+    severanceQuarters: f.global.severance_quarters,
+    hireCashQuarters: f.global.hire_cash_quarters,
+  }))
+
+export type Hire = z.output<typeof hireSchema>
+export type HiresRules = z.output<typeof hiresFileSchema>
+
+/** Read the market: interrupts.json › read_market (design thread). */
+export const readMarketSchema = z
+  .object({
+    bw_cost: z.number().int().min(0),
+    bw_cost_with_trader: z.number().int().min(0),
+    accuracy: z.number().min(0).max(1),
+    up_threshold: z.number().min(0),
+    down_threshold: z.number().max(0),
+    error_mode: z.literal('adjacent_only'),
+    assets: z.array(z.enum(['BTC', 'ETH'])).min(1),
+    once_per_quarter: z.literal(true),
+  })
+  .transform((r) => ({
+    bandwidth: r.bw_cost,
+    bandwidthWithTrader: r.bw_cost_with_trader,
+    accuracy: r.accuracy,
+    upThreshold: r.up_threshold,
+    downThreshold: r.down_threshold,
+    assets: r.assets,
+  }))
+
+export type ReadMarketRules = z.output<typeof readMarketSchema>
 
 // ---------- shocks.json ----------
 

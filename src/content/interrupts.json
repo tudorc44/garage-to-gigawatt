@@ -277,6 +277,32 @@
    "long_term_limit_mult": 1.03,
    "hire_shift": 0.05,
    "bw_cost": 2
+  },
+  {
+   "id": "margin_warning",
+   "trigger": "Trader on staff && crypto loan LTV first reaches 0.65 (balance.ts cryptoLoan.warningLtv)",
+   "choices": [
+    { "id": "repay", "label": "Repay the loan now", "effects": { "repay_crypto_loan": true } },
+    { "id": "ok", "label": "Noted, carry on" }
+   ],
+   "default": "ok",
+   "interrupt_cap_exempt": true,
+   "source": "design",
+   "game_note": "Design thread, 26 Sep 2026 (hires B7): with the Trader on staff the LTV 65% warning is an alert that pauses the live quarter, a week before a margin call could come. Not counted toward the 3 interrupts; 0 Bandwidth."
+  },
+  {
+   "id": "read_market",
+   "trigger": "Plan-phase action (scope 2.6), once per quarter",
+   "default": "none",
+   "bw_cost": 1,
+   "bw_cost_with_trader": 0,
+   "accuracy": 0.75,
+   "up_threshold": 0.15,
+   "down_threshold": -0.15,
+   "error_mode": "adjacent_only",
+   "assets": ["BTC", "ETH"],
+   "once_per_quarter": true,
+   "game_note": "Design thread, 26 Sep 2026: a hint of the coming live quarter's direction per coin: up (> +15%), down (< -15%) or flat, measured from the Plan-phase price to the quarter's last week. Each read is right with probability 'accuracy' (seeded, own stream); a wrong read is one step off (up <-> flat or flat <-> down), never up <-> down. The Trader makes it cost bw_cost_with_trader."
   }
  ]
 }

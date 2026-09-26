@@ -9,12 +9,15 @@ import capitalRaw from './capital.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
+import hiresRaw from './hires.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
   auctionRulesSchema,
   capitalFileSchema,
   curtailmentRulesSchema,
   heatFileSchema,
+  hiresFileSchema,
+  readMarketSchema,
   interruptsFileSchema,
   machinesFileSchema,
   marketSchema,
@@ -28,6 +31,9 @@ import {
   type EquipmentLoanTerms,
   type Flaw,
   type HeatRules,
+  type Hire,
+  type HiresRules,
+  type ReadMarketRules,
   type Interrupt,
   type LadderStep,
   type Machine,
@@ -43,6 +49,9 @@ export type {
   NegotiationRules,
   PitchRules,
   HeatRules,
+  Hire,
+  HiresRules,
+  ReadMarketRules,
   AuctionRules,
   CryptoLoanTerms,
   CurtailmentRules,
@@ -83,6 +92,10 @@ export interface Content {
   rivals: Rival[]
   /** Community Heat rules (heat.json). */
   heat: HeatRules
+  /** The 5 hires and the hiring rules (hires.json). */
+  hires: HiresRules
+  /** Read the market (interrupts.json › read_market). */
+  readMarket: ReadMarketRules
   /** Power contract renewals (interrupts.json › negotiation). */
   negotiation: NegotiationRules
   /** Market shocks on fixed dates (shocks.json), with the week resolved to a week index. */
@@ -110,6 +123,7 @@ export interface RawContent {
   rivals: unknown
   heat: unknown
   shocks: unknown
+  hires: unknown
 }
 
 export class ContentError extends Error {
@@ -149,6 +163,7 @@ export function parseContent(raw: RawContent): Content {
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
+  const hires = check('hires.json', hiresFileSchema, raw.hires)
   const shocksFile = check('shocks.json', shocksFileSchema, raw.shocks)
   const rawInterrupt = (id: string) =>
     (
@@ -163,6 +178,11 @@ export function parseContent(raw: RawContent): Content {
     'interrupts.json › curtailment',
     curtailmentRulesSchema,
     rawInterrupt('curtailment'),
+  )
+  const readMarket = check(
+    'interrupts.json › read_market',
+    readMarketSchema,
+    rawInterrupt('read_market'),
   )
   const negotiation = check(
     'interrupts.json › negotiation',
@@ -180,6 +200,8 @@ export function parseContent(raw: RawContent): Content {
     !auction ||
     !curtailment ||
     !heat ||
+    !hires ||
+    !readMarket ||
     !negotiation ||
     !shocksFile
   ) {
@@ -265,6 +287,20 @@ export function parseContent(raw: RawContent): Content {
     if (capitalFile.era_multiple_ev_ebitda[q] === undefined) {
       problems.push(
         `capital.json › era_multiple_ev_ebitda: no multiple for ${q}`,
+      )
+    }
+  }
+
+  if (!hires.list.some((h) => h.id === capitalFile.pitch.hireShiftSource)) {
+    problems.push(
+      `capital.json › pitch: unknown hire_shift_source "${capitalFile.pitch.hireShiftSource}"`,
+    )
+  }
+  for (const h of hires.list) {
+    const bonus = h.effect.power_negotiation_bonus
+    if (bonus !== undefined && bonus !== negotiation.hireShift) {
+      problems.push(
+        `hires.json › ${h.id}: power_negotiation_bonus ${String(bonus)} doesn't match interrupts.json negotiation hire_shift ${negotiation.hireShift}`,
       )
     }
   }
@@ -398,6 +434,8 @@ export function parseContent(raw: RawContent): Content {
     auction,
     curtailment,
     heat,
+    hires,
+    readMarket,
     negotiation,
     shocks,
   }
@@ -425,5 +463,6 @@ export const CONTENT: Content = parseContent({
   capital: capitalRaw,
   rivals: rivalsRaw,
   heat: heatRaw,
+  hires: hiresRaw,
   shocks: shocksRaw,
 })

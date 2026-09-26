@@ -16,6 +16,7 @@ import type { Message } from '../../i18n/t.ts'
 import { substream, uniform } from '../rng.ts'
 import { logEntry, type GameState } from '../state.ts'
 import { completeRaise, getStep, raiseBlocker } from './capital.ts'
+import { pitchShift } from './hires.ts'
 
 export interface InvestorPitch {
   /** The funding round (capital.json ladder id). */
@@ -35,20 +36,14 @@ export interface InvestorPitch {
   history: { counterUsd: number; reply: 'counter' | 'deal' | 'walked' }[]
   /** Position of this pitch's own random stream. */
   rng: number
+  /** The BD Lead's raise of the limit, fixed when the pitch started (0 without). */
+  shift: number
 }
 
 /** A round's walk-away record: the opening discount and the first quarter it reopens. */
 export interface PitchWalkaway {
   penalty: number
   reopensQuarter: number
-}
-
-/**
- * Hook for hires (not built yet): the BD Lead raises the investor's limit by hire_shift.
- * Returns 0 until hires exist.
- */
-export function pitchHireShift(): number {
-  return 0
 }
 
 export function canPitch(id: string): boolean {
@@ -83,8 +78,7 @@ export function pitchBlocker(
   state: GameState,
   id: string,
 ): Message | undefined {
-  if (!canPitch(id))
-    return { key: 'error.cant_pitch', params: { round: id } }
+  if (!canPitch(id)) return { key: 'error.cant_pitch', params: { round: id } }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (state.negotiation) return { key: 'error.negotiation_open' }
   const blocked = raiseBlocker(state, id)
@@ -103,7 +97,8 @@ export function startPitch(state: GameState, id: string): void {
   const step = getStep(id)!
   const r = substream(state.seed, `pitch:${state.quarter}:${id}`)
   const opening = openingPreMoneyUsd(state, id)
-  const limit = opening * uniform(r, ...rules.limitRange) * (1 + pitchHireShift())
+  const shift = pitchShift(state)
+  const limit = opening * uniform(r, ...rules.limitRange) * (1 + shift)
   state.bandwidth -= rules.bandwidth
   state.pitch = {
     id,
@@ -115,6 +110,7 @@ export function startPitch(state: GameState, id: string): void {
     final: false,
     history: [],
     rng: r.rng,
+    shift,
   }
   logEntry(state, 'log.pitch_started', {
     round: id,
@@ -234,7 +230,7 @@ export function pitchCounterRisk(
   if (!p) return 'none'
   const rules = CONTENT.pitch
   const edge = (m: number) =>
-    p.openingUsd * m * (1 + pitchHireShift()) * (1 + rules.lowballMargin)
+    p.openingUsd * m * (1 + p.shift) * (1 + rules.lowballMargin)
   if (preMoneyUsd <= edge(rules.limitRange[0])) return 'none'
   if (preMoneyUsd > edge(rules.limitRange[1])) return 'high'
   return 'possible'

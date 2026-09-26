@@ -12,6 +12,7 @@ import {
   cryptoLoanView,
   equipmentLoanView,
   fundingRound,
+  hireViews,
   heatBand,
   lotViews,
   machineMarket,
@@ -48,6 +49,7 @@ import {
   LeaveDialog,
   LoanDialog,
   OffersDialog,
+  HiresDialog,
   PitchDialog,
   RenewalDialog,
   SellCoinsDialog,
@@ -71,6 +73,7 @@ type Open =
   | `leave:${string}`
   | `renew:${string}`
   | `pitch:${string}`
+  | 'hires'
   | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
@@ -141,6 +144,9 @@ export function PlanScreen({ state, act }: ScreenProps) {
           siteId={open.slice('renew:'.length)}
           onClose={() => setOpen(null)}
         />
+      )}
+      {open === 'hires' && (
+        <HiresDialog state={state} act={act} onClose={() => setOpen(null)} />
       )}
       {open?.startsWith('pitch:') && (
         <PitchDialog
@@ -680,7 +686,23 @@ function TodoPanel({
       <RaiseRow state={state} act={act} open={open} round="ipo_spac" />
 
       <div class="label group">{t('ui.plan.group.people')}</div>
-      <ActionRow icon="hire" name={t('ui.plan.hire')} locked={notBuilt} />
+      <ActionRow
+        icon="hire"
+        name={t('ui.plan.hire_staff', {
+          n: hireViews(state).filter((h) => h.hired).length,
+          total: hireViews(state).length,
+        })}
+        bandwidth={hireViews(state)[0].bandwidth}
+        bandwidthLeft={left}
+        price={t('ui.plan.salaries', {
+          value: fmt.money(
+            hireViews(state)
+              .filter((h) => h.hired)
+              .reduce((sum, h) => sum + h.salaryUsdQ, 0),
+          ),
+        })}
+        onClick={() => open('hires')}
+      />
       <ActionRow
         icon="outreach"
         name={t('ui.plan.neighbours')}

@@ -46,6 +46,13 @@ import {
   pitchWalk,
   startPitch,
 } from './systems/pitch.ts'
+import {
+  buildQuartersFor,
+  fire,
+  fireBlocker,
+  hire,
+  hireBlocker,
+} from './systems/hires.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
   borrowBlocker,
@@ -116,6 +123,10 @@ export type Action =
   | { type: 'REPAY_CRYPTO_LOAN' }
   /** Sealed bid for the whole distressed lot this Plan phase; the machines go to `siteId` if you win. */
   | { type: 'BID_AUCTION'; bidUsd: number; siteId: string }
+  /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
+  | { type: 'HIRE'; hire: string }
+  /** Let a person go (0 Bandwidth, severance). */
+  | { type: 'FIRE'; hire: string }
   /** Take a funding round from capital.json at the investor's opening terms. */
   | { type: 'RAISE'; round: string }
   /** Pitch a round instead (capital.json › pitch): haggle over the pre-money valuation. */
@@ -266,6 +277,20 @@ function run(s: GameState, a: Action): Message | undefined {
       return
     }
 
+    case 'HIRE': {
+      const blocked = hireBlocker(s, a.hire)
+      if (blocked) return blocked
+      hire(s, a.hire)
+      return
+    }
+
+    case 'FIRE': {
+      const blocked = fireBlocker(s, a.hire)
+      if (blocked) return blocked
+      fire(s, a.hire)
+      return
+    }
+
     case 'PITCH_START': {
       const blocked = pitchBlocker(s, a.round)
       if (blocked) return blocked
@@ -374,7 +399,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const site = {
         id: `site-${s.nextId++}`,
         tier: terms.tier,
-        readyQuarter: s.quarter + getTier(terms.tier)!.build_quarters,
+        readyQuarter: s.quarter + buildQuartersFor(s, getTier(terms.tier)!),
         rentUsdQ: terms.rentUsdQ,
         powerPriceMult: terms.powerPriceMult,
         flaw: terms.flaw,

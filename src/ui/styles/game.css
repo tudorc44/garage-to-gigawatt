@@ -998,3 +998,9 @@ tr.locked td {
 .heat-meter {
   margin: 6px 0 4px;
 }
+/* Table cells with sentences (the People dialog): wrap instead of widening the table. */
+td.wrap {
+  white-space: normal;
+  min-width: 180px;
+  vertical-align: top;
+}

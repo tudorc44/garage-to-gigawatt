@@ -3,6 +3,7 @@
 // itself is repaid whenever you like (no fixed term). One at a time.
 // LTV (loan-to-value) = what you owe ÷ what the pledged coins are worth now.
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
+import { marginWarningAlert } from './hires.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines, saleValueUsd } from './machines.ts'
@@ -236,6 +237,18 @@ export function checkMarginCall(
     before < BALANCE.cryptoLoan.warningLtv
   ) {
     logEntry(state, 'log.ltv_warning', { coin: loan.coin, ltvPct: now }, weekNo)
+    if (marginWarningAlert(state)) {
+      // Trader on staff: pause the quarter (not counted toward the 3 interrupts).
+      state.interrupt = {
+        id: 'margin_warning',
+        week: state.week,
+        coin: loan.coin,
+        changePct: prev
+          ? coinPrice(w, loan.coin) / coinPrice(prev, loan.coin) - 1
+          : 0,
+        ltv: now,
+      }
+    }
   }
 }
 

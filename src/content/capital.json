@@ -97,7 +97,8 @@
   "lockout_quarters": 1,
   "player_walkout_penalized": true,
   "warn_if_lockout_exceeds_window": true,
-  "hire_shift": 0.0
+  "hire_shift": 0.05,
+  "hire_shift_source": "bd_lead"
  },
  "loans": {
   "equipment": [

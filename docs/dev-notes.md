@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with investor pitches (rules, screen, terminal, bots and sim checks).
+Last updated: 26 Sep 2026, with hires (the five people and their effects).
 
 ## How the owner works
 
@@ -53,7 +53,9 @@ See `CLAUDE.md` for the full list. The main ones:
 4. **Capital:** the equipment loan and the crypto-backed loan with margin calls (see Decisions), every funding round: friends & family, seed, Series A and IPO / SPAC (fixed offers from `capital.json`; the
    seed and Series A rows open a pitch dialog: take the offer, or pitch for a higher valuation, see
    Decisions; terminal: `pitch seed|a`, then `counter <$M>`, `accept`, `walk`), founder stake (dilutions multiply: F&F then seed leaves 72%, then Series A 57.6%).
-5. **Leaving a site** (lease break) with a penalty.
+5. **Hires** (`hires.json`, `src/sim/systems/hires.ts`): the five people on the People dialog (Plan ›
+   "Hire staff"), terminal `hire <1-5>` / `fire <1-5>`. See Decisions.
+   **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
    and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
 6. **Terminal game** (`npm run play`) and **browser UI**: title screen, Plan, Live quarter (1.5 s per week,
@@ -61,7 +63,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 281 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 290 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -90,7 +92,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Hires, Read the market, the 20 event cards (Heat's event-card
+Read the market, the 20 event cards (Heat's event-card
 effects wait for them), the failure-wave interrupt, the Merge decision screen, saves, sound, settings, the
 left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
 eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
@@ -144,6 +146,22 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Hires** (design thread, 26 Sep 2026; `hires.json`):
+  - Hire any quarter: 1 Bandwidth and a quarter's salary in cash (no signing cost). Salary = yearly ÷ 4,
+    straight line from the 2017 to the 2021 value by year, 2021 × 1.08 in 2022; paid weekly, counted in
+    EBITDA (the report has a "Salaries" line). Let go: 0 Bandwidth, a quarter's salary as severance, and
+    no rehiring the same person in that quarter. Unpaid salaries just drain cash (the normal bust rules).
+  - Effects start at once, except the Chief of Staff's +1 Bandwidth (from the next quarter; cap 6).
+    Ops Manager: failure chance × 0.5 everywhere. Trader: Read the market free; the LTV 65% warning
+    becomes an alert that pauses the live quarter (`margin_warning`: repay now or carry on; not counted
+    toward the 3 interrupts). BD Lead: +1 scouting offer, offers show their flaw, and the investor
+    pitch limit × 1.05 (`capital.json` pitch hire_shift 0.05, hire_shift_source bd_lead). Ex-Utility
+    Exec: build time −1 quarter but never below 1 (small unit and warehouse stay 1, own site 2 → 1,
+    Texas 3 → 2), and the utility's limit × 0.95 in power negotiations.
+  - Chosen by Claude Code: the negotiation and pitch store the hire shift when they start (hiring
+    mid-negotiation doesn't move a limit already drawn); role names and effect text are in `en.json`,
+    the people's names and bios come from `hires.json`; the loader checks the Ex-Utility bonus equals
+    `interrupts.json` negotiation hire_shift.
 - **Investor pitches** (design thread, 26 Sep 2026; `capital.json` › pitch, `src/sim/systems/pitch.ts`):
   - Only the seed and Series A can be pitched; friends & family and the IPO / SPAC stay fixed offers.
     "Take the offer" stays as the one-click option.
@@ -167,6 +185,11 @@ ask first).
     this round for good." warning when it applies; then a result view. While a pitch is open the row
     reads "Pitching the seed round · their offer …" and End plan is refused. A walked-away round's row
     shows "investors walked away · reopens <quarter>" (or just "investors walked away" if gone).
+  - Sim targets (design thread, re-judged after the first check; its first target was a math error):
+    pitcher 1.10 / 1.05 → stake +0.8 to +1.5 points vs the terms, walk-aways ≤ 10%; bold 1.20 / 1.10 →
+    at least +0.2 points above the pitcher, walk-aways 12–25%. Both pass with the numbers as they are
+    (pitcher +1.0 / 5%, bold +1.3 / 17%). If bold ever beats the pitcher by more than 1 point with
+    walk-aways under 12%, raise walkaway_chance to 0.30.
   - Chosen by Claude Code: the limit is drawn from the opening in effect (after any penalty); the
     rolls use their own stream (`pitch:<quarter>:<round>`), so each quarter's pitch has a fresh limit;
     a pitch and a power negotiation can't be open at the same time; a pitch can only start in the
@@ -372,25 +395,6 @@ ask first).
   weekly prices are reconstructed from monthly data. Real CoinMetrics data should fix it.
 
 ## Open questions for the design thread
-
-- **Investor pitch targets vs the pitcher bot** (sim, 50 seeds; stake measured as the points gained on
-  the rounds raised vs taking them at the capital.json terms, because comparing final stakes mixes in
-  runs where one bot reached an extra round, e.g. the IPO, which costs 8–14 points):
-
-  | Bot | Walk-aways | Valuation vs terms | Stake vs terms | Seed close | Busts |
-  |---|---|---|---|---|---|
-  | raise-pitch (1.10 / 1.05 / accept), limit 0.95–1.25 | 5% of pitches | 105.2% | +1.0 pts | same quarter, 50/50 | 0 |
-  | raise-pitch-bold (1.20 / 1.10 / accept), 0.95–1.25 | 17% | 106.5% | +1.3 pts | later in 6/50 runs (median 0) | 0 |
-  | raise-pitch, trial limit 0.95–1.30 (the maximum allowed) | 4% | 105.9% | +1.2 pts | same | 0 |
-  | raise-pitch-bold, trial 0.95–1.30 | 17% | 107.9% | +1.5 pts | later in 6/50 | 0 |
-
-  Bankruptcy and seed timing pass. **The 1.10 / 1.05 pitcher can't reach the stake (+1.5 to +4) or
-  walk-away (10–20%) targets inside the allowed tuning ranges**: it only overreaches when the limit is
-  below 1.0× the opening (about 1 pitch in 6), so walk-aways stay near 5% whatever walkaway_chance is
-  (0.35 gives about 5–6%), and its average valuation is about 1.06×, not the 1.10× the target's math
-  assumed. The content numbers are unchanged (limit 0.95–1.25, walk chance 0.25). Options: judge the
-  targets on the bolder bot (walk-aways pass; stake passes at limit 0.95–1.30); lower the stake target
-  to about +1; or widen the limit range further.
 
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.

@@ -54,6 +54,14 @@ import {
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
 import {
+  buildQuartersFor,
+  isHired,
+  readMarketBandwidth,
+  revealsFlaws,
+  salaryUsdQ,
+  severanceUsd,
+} from './systems/hires.ts'
+import {
   canPitch,
   dilutionAt,
   openingPreMoneyUsd,
@@ -298,7 +306,7 @@ export function siteLadder(state: GameState): LadderRung[] {
       tier: tier.id,
       capacityKw: tier.capacity_kw,
       capexUsd: baseCapexUsd(tier),
-      buildQuarters: tier.build_quarters,
+      buildQuarters: buildQuartersFor(state, tier),
     }
     if (owned.some((s) => isReady(s, state.quarter))) {
       return { ...base, status: 'owned' }
@@ -366,7 +374,8 @@ export function interruptChoices(
   }))
 }
 
-export type RoundStatus = 'open' | 'done' | 'closed' | 'not_yet' | 'locked' | 'lost'
+export type RoundStatus =
+  'open' | 'done' | 'closed' | 'not_yet' | 'locked' | 'lost'
 
 /** A funding round's offer and whether it can be taken this quarter (window and once-only). */
 export function fundingRound(state: GameState, id: string) {
@@ -464,7 +473,11 @@ export function pitchResult(state: GameState, id: string) {
   for (let i = state.log.length - 1; i >= 0; i--) {
     const e = state.log[i]
     if (e.quarter !== state.quarter) return null
-    if (e.key.startsWith('log.pitch_') && e.key !== 'log.pitch_started' && e.params?.round === id)
+    if (
+      e.key.startsWith('log.pitch_') &&
+      e.key !== 'log.pitch_started' &&
+      e.params?.round === id
+    )
       return e
   }
   return null
@@ -746,3 +759,26 @@ export function negotiationResult(state: GameState, tier: string) {
 /** Uri: the storm price per kWh index contracts pay on their firm load (shocks.json). */
 export const URI_STORM_PRICE =
   CONTENT.shocks.find((sh) => sh.id === 'uri')?.stormPriceUsdKwh ?? 0
+
+/** The five hires as the People dialog shows them: on staff or not, pay, and what's blocking. */
+export function hireViews(state: GameState) {
+  return CONTENT.hires.list.map((h) => ({
+    id: h.id,
+    name: h.name,
+    bio: h.bio,
+    hired: isHired(state, h.id),
+    salaryUsdQ: salaryUsdQ(h, state.quarter),
+    severanceUsd: severanceUsd(h, state.quarter),
+    bandwidth: CONTENT.hires.bandwidth,
+  }))
+}
+
+/** Scouted offers show their hidden flaw (BD Lead on staff). */
+export function offerFlawsVisible(state: GameState): boolean {
+  return revealsFlaws(state)
+}
+
+/** Read the market's Bandwidth cost now (0 with the Trader). */
+export function readMarketCost(state: GameState): number {
+  return readMarketBandwidth(state)
+}

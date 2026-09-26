@@ -9,6 +9,7 @@ import {
   type Site,
   type SiteOffer,
 } from '../state.ts'
+import { extraScoutOffers } from './hires.ts'
 import { saleValueUsd } from './machines.ts'
 import { getModel } from './market.ts'
 
@@ -96,12 +97,12 @@ export function topTierIndex(state: GameState): number {
   return Math.max(...state.sites.map((s) => tierIndex(s.tier)))
 }
 
-/** Rolls 2–3 offers for a tier. Terms vary ±offerSpread; each hides one flaw. */
+/** Rolls 2–3 offers for a tier (+1 with the BD Lead). Terms vary ±offerSpread; each hides one flaw. */
 export function rollOffers(state: GameState, tier: SiteTier): SiteOffer[] {
   const { min, max } = BALANCE.sites.scoutOffers
   const spread = BALANCE.sites.offerSpread
   const vary = () => 1 + spread * (2 * random(state) - 1)
-  const count = randomInt(state, min, max)
+  const count = randomInt(state, min, max) + extraScoutOffers(state)
   return Array.from({ length: count }, () => ({
     id: `offer-${state.nextId++}`,
     tier: tier.id,

@@ -1,0 +1,88 @@
+{
+ "schema_version": 1,
+ "hires": [
+  {
+   "id": "ops_manager",
+   "name": "Dana Kowalczyk",
+   "bio": "Ran a colo data centre for a decade; can hear a failing fan from the parking lot.",
+   "salary_usd_year": {
+    "2017": 90000,
+    "2021": 130000
+   },
+   "effect": {
+    "failure_mult": 0.5
+   },
+   "real_role": "Site ops/ facility manager: uptime, repairs, techs. ≈ Glassdoor data-centre ops managers $90–140k",
+   "estimate": true
+  },
+  {
+   "id": "trader",
+   "name": "Marco Ferrante",
+   "bio": "Ex-commodities desk; thinks in basis points and speaks in shrugs.",
+   "salary_usd_year": {
+    "2017": 120000,
+    "2021": 180000
+   },
+   "effect": {
+    "read_market_bw": 0,
+    "margin_warning_weeks": 1
+   },
+   "real_role": "Treasury/ trading lead: coin sales, hedges, lender relations. ≈ $120–200k + bonus",
+   "estimate": true
+  },
+  {
+   "id": "bd_lead",
+   "name": "Priya Anand",
+   "bio": "Has visited every empty warehouse within 300 miles and knows which ones flood.",
+   "salary_usd_year": {
+    "2017": 100000,
+    "2021": 150000
+   },
+   "effect": {
+    "scout_extra_offers": 1,
+    "reveal_flaws": true
+   },
+   "real_role": "Site acquisition/ BD: land, power, hosting deals. ≈ $100–160k + commission",
+   "estimate": true
+  },
+  {
+   "id": "ex_utility",
+   "name": "Walt Bremmer",
+   "bio": "Thirty years at a regional utility. Still gets invited to their Christmas party.",
+   "salary_usd_year": {
+    "2017": 150000,
+    "2021": 220000
+   },
+   "effect": {
+    "build_quarters": -1,
+    "power_negotiation_bonus": 0.05,
+    "build_quarters_min": 1
+   },
+   "real_role": "VP Energy: interconnects, PPAs, demand response. ≈ $150–250k",
+   "estimate": true
+  },
+  {
+   "id": "chief_of_staff",
+   "name": "Lena Ortiz",
+   "bio": "Turns your 2 a.m. voice notes into board-ready memos by breakfast.",
+   "salary_usd_year": {
+    "2017": 95000,
+    "2021": 140000
+   },
+   "effect": {
+    "bandwidth": 1
+   },
+   "real_role": "CoS: runs the founder's calendar, reporting, hiring. ≈ $90–150k",
+   "estimate": true
+  }
+ ],
+ "salary_note": "Game quarterly salary = year value/4, linearly interpolated 2017→2021, +8% in 2022 (≈ wage inflation)",
+ "salary_2022_mult": 1.08,
+ "global": {
+  "bw_cost": 1,
+  "rehire_same_quarter": false,
+  "severance_quarters": 1,
+  "hire_cash_quarters": 1
+ },
+ "game_note": "Design thread, 26 Sep 2026: hire any quarter (needs 1 quarter's salary in cash, bw_cost Bandwidth); salary paid weekly, counted in EBITDA; fire for 0 BW and severance_quarters of salary; no rehiring the same person in the quarter you fired them. Effects start at once, except the Chief of Staff's +1 Bandwidth (from next quarter; max 6). Ex-Utility: build time -1 quarter, never below build_quarters_min (builds already that short are unchanged); its negotiation bonus = interrupts.json negotiation hire_shift. BD Lead: +1 scouting offer, flaws shown, and the investor pitch limit shift (capital.json pitch hire_shift). Trader: Read the market is free; a margin-call warning alert at LTV 65% (not a counted interrupt)."
+}

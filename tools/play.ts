@@ -368,6 +368,14 @@ function parse(
               : (site.contract?.type ?? 'fixed'),
       }
     }
+    case 'hire':
+    case 'fire': {
+      const ids = CONTENT.hires.list.map((h) => h.id)
+      const id = ids[num(0) - 1] ?? rest[0] ?? ''
+      return cmd === 'hire'
+        ? { type: 'HIRE', hire: id }
+        : { type: 'FIRE', hire: id }
+    }
     case 'talk':
     case 'mitigate': {
       const site = item(s.sites, 0)
@@ -516,6 +524,12 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
     say('play.complaint', {
       tier: name('site', site.tier),
       heat: Math.round(siteHeatValue(s, site.id)),
+    })
+  } else if (alert.id === 'margin_warning') {
+    say('play.margin_warning', {
+      coin: alert.coin,
+      balanceUsd: s.cryptoLoan!.balanceUsd,
+      ltvPct: alert.ltv ?? 0,
     })
   } else if (alert.id === 'margin_call') {
     say('play.margin_call', {

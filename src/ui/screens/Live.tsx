@@ -134,6 +134,9 @@ export function LiveScreen(
         state.interrupt?.id === 'uri') && (
         <CurtailmentCard state={state} act={act} />
       )}
+      {state.interrupt?.id === 'margin_warning' && (
+        <MarginWarningCard state={state} act={act} />
+      )}
       {state.interrupt?.id === 'neighbour_complaint' && (
         <ComplaintCard state={state} act={act} />
       )}
@@ -670,6 +673,72 @@ function ComplaintCard({ state, act }: ScreenProps) {
         <span class="num-s muted" style={{ fontStyle: 'italic' }}>
           {t('ui.complaint.source', { at: v.complaintAt })}
         </span>
+      </article>
+    </div>
+  )
+}
+
+/** The Trader's early warning: the crypto loan's LTV reached the warning level (not counted). */
+function MarginWarningCard({ state, act }: ScreenProps) {
+  const alert = state.interrupt!
+  const loan = state.cryptoLoan
+  if (!loan) return null
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mw-title"
+      >
+        <span class="label">
+          {t('ui.margin.eyebrow', {
+            quarter: fmt.quarter(quarterName(state.quarter)),
+            week: alert.week + 1,
+          })}
+        </span>
+        <div class="event-art">
+          <Icon name="warning" />
+          <span class="num-xl warn">
+            {t('ui.margin.ltv', { ltv: fmt.pct(alert.ltv ?? 0) })}
+          </span>
+        </div>
+        <h2 class="event-title" id="mw-title">
+          {t('ui.margin_warning.title')}
+        </h2>
+        <p class="event-body">
+          {t('ui.margin_warning.body', {
+            coin: loan.coin,
+            balance: fmt.money(loan.balanceUsd),
+            ltv: fmt.pct(alert.ltv ?? 0),
+          })}
+        </p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.margin_warning.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            {c.id === 'repay' && (
+              <span class="num-s">
+                {t('ui.margin_warning.effect_repay', {
+                  cash: fmt.signed(-loan.balanceUsd),
+                  coins: fmt.crypto(loan.collateral, loan.coin),
+                })}
+              </span>
+            )}
+          </button>
+        ))}
       </article>
     </div>
   )
