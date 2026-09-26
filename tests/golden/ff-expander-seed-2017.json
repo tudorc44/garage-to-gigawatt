@@ -13,7 +13,9 @@
     "ETH": 0
   },
   "founderStake": 0.9,
-  "raisesDone": ["friends_family"],
+  "raisesDone": [
+    "friends_family"
+  ],
   "sites": [
     {
       "id": "site-1",
