@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with hires, Read the market, and the Merge decision + chapter report.
+Last updated: 26 Sep 2026, with hires, Read the market, the Merge decision + chapter report, and save/load.
 
 ## How the owner works
 
@@ -57,7 +57,9 @@ See `CLAUDE.md` for the full list. The main ones:
    "Hire staff"), terminal `hire <1-5>` / `fire <1-5>`. **Read the market** (Plan › Intel row, the
    Signals card, a line on the Live screen; terminal `read`). **The Merge decision and the chapter
    report** (`merge.json`, `src/ui/screens/End.tsx`, `src/ui/chapter.ts`): after the 2022Q3 report, and
-   the chapter report on a bust too. See Decisions.
+   the chapter report on a bust too. **Save / load** (`src/sim/save.ts`, `src/platform/saves.ts`,
+   `src/ui/components/saves.tsx`): autosave, one slot, export/import text, from the title screen and the
+   left nav's "Save / load". See Decisions.
    **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
    and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
@@ -66,7 +68,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 296 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 300 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -96,7 +98,7 @@ See `CLAUDE.md` for the full list. The main ones:
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
 The 20 event cards (Heat's event-card
-effects wait for them), the failure-wave interrupt, saves, sound, settings, the
+effects wait for them), the failure-wave interrupt, sound, settings, the
 left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
 eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -149,6 +151,17 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Save / load** (scope §2.13, built by Claude Code to the scope's spec):
+  - Autosave at the start of every quarter's Plan phase; one manual slot; export/import as a text
+    string (`G2G1.` + base64 of the GameState JSON). Stored in the browser's localStorage; every read
+    and write is wrapped, so a private window or blocked storage just says "use Export instead".
+  - The title screen offers Continue (the autosave), Load saved game (the slot) and Import a save; the
+    left nav's "Save / load" opens the dialog any time, including mid-live-quarter (a loaded
+    mid-quarter game carries on from that week, exactly as it would have: tested).
+  - Loading checks the data (version 1, the basic fields) and fills in any field added to the game
+    since the save was made with its new-game value (`restoreSave`), so older saves keep loading.
+    A save from a future format version is refused with a message.
+  - `src/platform/` now exists (storage only); the sim never imports it.
 - **The Merge and the chapter report** (design thread, 26 Sep 2026; `merge.json`):
   - After the 2022Q3 report, Next opens the Merge screen (new phase `merge`): the 4 choices, all
     always available, with a note when one doesn't fit ("You own no GPUs." for the GPU choices, "You
@@ -446,11 +459,11 @@ ask first).
 
 ## Next
 
-Week 3, the Heat system and the power side of week 4 (contracts, negotiation, Uri as firm load) are
-done, and so are investor pitches (rules, screen, terminal, bots, sim table, pitcher golden). The pitch
-sim targets are only partly met: see the open question above, for the design thread (tuning order it
-gave: limit_range upper bound 1.20–1.30, then walkaway_chance 0.15–0.35, then walkaway_penalty
-0.05–0.10, never lowball_margin). Next: hires (the negotiation and pitch hooks, hire_shift, wait for
-them), or the Merge screen + chapter report. Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing EBITDA, clamped to
-±30% of the capital.json terms). Also open: the LTV gauge on a Capital screen, and the League
-left-nav section (the table is only on the report now).
+Built this session (26 Sep 2026): investor pitches, hires, Read the market, the Merge decision and
+chapter report, and save/load. Still to build in scope: the 20 event cards (Heat's event-card effects
+and the landlord/transformer flaws wait for them), the failure-wave interrupt (the Ops Manager's ×0.5
+will apply to it), the left-nav sections other than Dashboard (Capital with the LTV gauge, League),
+settings (sound on/off, speed default) and sound. Suggested next: the 20 event cards (they need a
+design-thread pass: the content pack has them in `docs/act1-content/events.json`), then the
+failure-wave interrupt. Backlog (design thread): the pitch opening reacts to company performance (era
+EV/EBITDA × trailing EBITDA, clamped to ±30% of the capital.json terms).

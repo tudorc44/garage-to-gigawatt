@@ -1,5 +1,7 @@
 // The persistent frame of every in-game screen: top bar and left navigation.
 import type { ComponentChildren } from 'preact'
+import { useState } from 'preact/hooks'
+import { SaveDialog } from './saves.tsx'
 import { t } from '../../i18n/t.ts'
 import {
   bandwidthTotal,
@@ -132,8 +134,9 @@ const NAV: { icon: IconName; key: Parameters<typeof t>[0] }[] = [
   { icon: 'log', key: 'ui.nav.log' },
 ]
 
-/** Left navigation. Only the dashboard exists so far; the rest say so. */
+/** Left navigation. Only the dashboard exists so far; the rest say so. Save / load sits at the foot. */
 export function Nav(props: { seed: number }) {
+  const [saving, setSaving] = useState(false)
   return (
     <nav class="nav" aria-label={t('ui.nav.label')}>
       {NAV.map((item, i) => (
@@ -149,9 +152,19 @@ export function Nav(props: { seed: number }) {
           {t(item.key)}
         </button>
       ))}
+      <button
+        type="button"
+        class="nav-item"
+        style={{ marginTop: 'auto' }}
+        onClick={() => setSaving(true)}
+      >
+        <Icon name="log" />
+        {t('ui.nav.save')}
+      </button>
       <div class="nav-foot num-s muted">
         {t('ui.nav.seed', { seed: String(props.seed) })}
       </div>
+      {saving && <SaveDialog onClose={() => setSaving(false)} />}
     </nav>
   )
 }

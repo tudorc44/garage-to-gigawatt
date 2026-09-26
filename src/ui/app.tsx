@@ -12,6 +12,8 @@ import { PlanScreen } from './screens/Plan.tsx'
 import { ReportScreen } from './screens/Report.tsx'
 import { ChapterScreen, MergeScreen } from './screens/End.tsx'
 import { TitleScreen } from './screens/Start.tsx'
+import { readSlot, writeSlot } from '../platform/saves.ts'
+import { SaveContext, type SaveApi } from './components/saves.tsx'
 
 /** Numbers are used as-is; any other text is hashed; empty picks a random seed. */
 function toSeed(text: string): number {
@@ -29,8 +31,22 @@ export function App() {
   // The latest state, so actions and timer ticks never work on a stale copy.
   const ref = useRef<GameState | null>(null)
   const commit = (s: GameState | null) => {
+    const before = ref.current
     ref.current = s
     setGame(s)
+    // Autosave at the start of every quarter's Plan phase (scope §2.13).
+    if (
+      s?.phase === 'plan' &&
+      (before?.phase !== 'plan' || before.quarter !== s.quarter)
+    )
+      writeSlot('autosave', s)
+  }
+  const saves: SaveApi = {
+    current: () => ref.current,
+    load: (s) => {
+      setShowEnd(false)
+      commit(structuredClone(s))
+    },
   }
 
   // Testing helpers for the browser console, in `npm run dev` and the staging build only
@@ -75,7 +91,16 @@ export function App() {
 
   let screen
   if (!game) {
-    screen = <TitleScreen onStart={(text) => start(toSeed(text))} />
+    screen = (
+      <TitleScreen
+        onStart={(text) => start(toSeed(text))}
+        saves={{
+          autosave: readSlot('autosave'),
+          manual: readSlot('manual'),
+        }}
+        onLoad={saves.load}
+      />
+    )
   } else if (game.phase === 'ended' || (game.phase === 'gameover' && showEnd)) {
     screen = (
       <ChapterScreen
@@ -103,5 +128,9 @@ export function App() {
     )
   }
 
-  return <div data-theme={themeOf(game)}>{screen}</div>
+  return (
+    <SaveContext.Provider value={saves}>
+      <div data-theme={themeOf(game)}>{screen}</div>
+    </SaveContext.Provider>
+  )
 }
