@@ -629,10 +629,18 @@ function TodoPanel({
         <ActionRow
           key={`renew-${r.site.id}`}
           icon="negotiate"
-          name={t('ui.plan.renewal', { tier: tierName(r.site.tier) })}
+          name={t(
+            state.negotiation?.siteId === r.site.id
+              ? 'ui.plan.negotiating'
+              : 'ui.plan.renewal',
+            { tier: tierName(r.site.tier) },
+          )}
           price={t('ui.plan.renewal_price', {
             price: fmt.cents(
-              r.options.find((o) => o.type === r.current.type)!.openingUsdKwh,
+              state.negotiation?.siteId === r.site.id
+                ? state.negotiation.offerUsdKwh
+                : r.options.find((o) => o.type === r.current.type)!
+                    .openingUsdKwh,
             ),
           })}
           onClick={() => open(`renew:${r.site.id}`)}

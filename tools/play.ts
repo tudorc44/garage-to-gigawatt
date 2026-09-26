@@ -327,6 +327,27 @@ function parse(
     }
     case 'crepay':
       return { type: 'REPAY_CRYPTO_LOAN' }
+    case 'negotiate': {
+      const site = item(s.sites, 0)
+      if (!site) return 'play.bad_number'
+      const term = rest.includes('8') ? 8 : 4
+      return {
+        type: 'NEGOTIATE_START',
+        siteId: site.id,
+        contractType: rest.includes('index')
+          ? 'index'
+          : rest.includes('fixed')
+            ? 'fixed'
+            : (site.contract?.type ?? 'fixed'),
+        term,
+      }
+    }
+    case 'counter':
+      return { type: 'NEGOTIATE_COUNTER', priceUsdKwh: num(0) / 100 }
+    case 'accept':
+      return { type: 'NEGOTIATE_ACCEPT' }
+    case 'walk':
+      return { type: 'NEGOTIATE_WALK' }
     case 'renew': {
       const site = item(s.sites, 0)
       if (!site) return 'play.bad_number'
@@ -415,11 +436,22 @@ async function planPhase(s: GameState): Promise<GameState> {
     }
     s = r.state
     if (parsed.type === 'END_PLAN') return s
-    // An auction bid is settled at once: say who won.
+    // An auction bid is settled at once: say who won. Negotiation moves say what happened.
     if (parsed.type === 'BID_AUCTION') {
       const e = s.log.at(-1)!
       console.log(t(e.key, e.params))
+    } else if (parsed.type.startsWith('NEGOTIATE_') && !s.negotiation) {
+      const e = s.log.findLast((x) => x.key.startsWith('log.negotiation_'))!
+      console.log(t(e.key, e.params))
     } else say('play.ok')
+    if (s.negotiation) {
+      const n = s.negotiation
+      say(n.final ? 'play.negotiation_final' : 'play.negotiation', {
+        offer: `${(n.offerUsdKwh * 100).toFixed(2)}¢`,
+        round: n.round + 1,
+        rounds: CONTENT.negotiation.rounds,
+      })
+    }
     showStatus(s)
   }
 }

@@ -3,6 +3,7 @@
 import { BALANCE, CONTENT } from '../content/index.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
+import type { PowerNegotiation } from './systems/negotiation.ts'
 
 export type Phase = 'plan' | 'live' | 'report' | 'gameover' | 'ended'
 export type Coin = 'BTC' | 'ETH'
@@ -134,6 +135,8 @@ export interface GameState {
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
   siteHeat: Record<string, SiteHeat>
+  /** A power contract negotiation in progress (Plan phase only), or null. */
+  negotiation: PowerNegotiation | null
   /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
   complaint: { siteId: string; week: number } | null
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
@@ -344,6 +347,7 @@ export function newGame(seed: number): GameState {
     auction: null,
     curtailment: null,
     complaint: null,
+    negotiation: null,
     siteHeat: {
       'site-1': {
         value: start.heat_base,

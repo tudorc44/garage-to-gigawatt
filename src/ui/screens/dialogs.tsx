@@ -11,6 +11,8 @@ import {
   communityView,
   cryptoLoanView,
   equipmentLoanView,
+  negotiationResult,
+  negotiationView,
   renewalViews,
   treasuryHoldings,
   lotViews,
@@ -1005,7 +1007,7 @@ export function CommunityDialog({ state, act, onClose }: DialogProps) {
   )
 }
 
-/** A due power contract: pick the type (Texas), then accept the opening (negotiating comes next). */
+/** A due power contract renewal: accept the opening, or negotiate (then the bargaining panel). */
 export function RenewalDialog({
   state,
   act,
@@ -1014,11 +1016,49 @@ export function RenewalDialog({
 }: DialogProps & { siteId: string }) {
   const r = renewalViews(state).find((x) => x.site.id === siteId)
   const [type, setType] = useState<ContractType>(r?.current.type ?? 'fixed')
-  if (!r) return null
-  const option = r.options.find((o) => o.type === type)!
+  const [term, setTerm] = useState<number>(r?.terms[0] ?? 4)
+  if (!r) {
+    // The renewal was just settled (a deal, or someone walked away): say how it ended.
+    const site = state.sites.find((x) => x.id === siteId)
+    const result = site && negotiationResult(state, site.tier)
+    if (!site || !result) return null
+    return (
+      <Dialog
+        title={t('ui.renewal.title', { tier: tierName(site.tier) })}
+        onClose={onClose}
+      >
+        <p style={{ margin: 0 }}>{t(result.key, result.params)}</p>
+        <div class="row-between">
+          <span />
+          <button type="button" class="btn btn-primary" onClick={onClose}>
+            {t('ui.community.close')}
+          </button>
+        </div>
+      </Dialog>
+    )
+  }
   const tier = tierName(r.site.tier)
-  const a: Action = { type: 'ACCEPT_RENEWAL', siteId, contractType: type }
-  const why = whyNot(state, a)
+  if (state.negotiation?.siteId === siteId) {
+    return (
+      <Dialog title={t('ui.renewal.title', { tier })} onClose={onClose}>
+        <NegotiationPanel state={state} act={act} />
+      </Dialog>
+    )
+  }
+  const option = r.options.find((o) => o.type === type)!
+  const accept: Action = {
+    type: 'ACCEPT_RENEWAL',
+    siteId,
+    contractType: type,
+  }
+  const negotiate: Action = {
+    type: 'NEGOTIATE_START',
+    siteId,
+    contractType: type,
+    term,
+  }
+  const whyAccept = whyNot(state, accept)
+  const whyNegotiate = whyNot(state, negotiate)
   return (
     <Dialog title={t('ui.renewal.title', { tier })} onClose={onClose}>
       <p class="num-s muted" style={{ margin: 0 }}>
@@ -1032,46 +1072,209 @@ export function RenewalDialog({
           bw: r.bandwidth,
         })}
       </p>
-      {r.options.length > 1 && (
+      <div class="form-row">
+        {r.options.length > 1 && (
+          <div class="field">
+            <span class="label">{t('ui.renewal.type')}</span>
+            <div class="seg" role="group" aria-label={t('ui.renewal.type')}>
+              {r.options.map((o) => (
+                <button
+                  key={o.type}
+                  type="button"
+                  aria-pressed={type === o.type}
+                  onClick={() => setType(o.type)}
+                >
+                  {tDynamic(`contract.${o.type}`, o.type)}{' '}
+                  {t('ui.renewal.normal', {
+                    price: centsExact(o.normalUsdKwh),
+                  })}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
         <div class="field">
-          <span class="label">{t('ui.renewal.type')}</span>
-          <div class="seg" role="group" aria-label={t('ui.renewal.type')}>
-            {r.options.map((o) => (
+          <span class="label">{t('ui.renewal.term')}</span>
+          <div class="seg" role="group" aria-label={t('ui.renewal.term')}>
+            {r.terms.map((n) => (
               <button
-                key={o.type}
+                key={n}
                 type="button"
-                aria-pressed={type === o.type}
-                onClick={() => setType(o.type)}
+                aria-pressed={term === n}
+                onClick={() => setTerm(n)}
               >
-                {tDynamic(`contract.${o.type}`, o.type)}{' '}
-                {t('ui.renewal.normal', { price: fmt.cents(o.normalUsdKwh) })}
+                {t('ui.renewal.quarters', { n })}
               </button>
             ))}
           </div>
-          {type === 'index' && (
-            <span class="num-s muted">{t('ui.renewal.index_note')}</span>
-          )}
         </div>
+      </div>
+      {type === 'index' && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.renewal.index_note')}
+        </p>
       )}
-      {why && <p class="num-s loss">{say(why)}</p>}
+      {term === r.terms[1] && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.renewal.long_note', { pct: fmt.pct(r.longTermMult - 1) })}
+        </p>
+      )}
+      {whyNegotiate && <p class="num-s loss">{say(whyNegotiate)}</p>}
       <div class="row-between">
         <button type="button" class="btn" onClick={onClose}>
           {t('ui.renewal.cancel')}
         </button>
+        <span style={{ display: 'inline-flex', gap: '8px' }}>
+          <button
+            type="button"
+            class="btn"
+            disabled={!!whyAccept}
+            title={whyAccept ? say(whyAccept) : undefined}
+            onClick={() => {
+              if (!act(accept)) onClose()
+            }}
+          >
+            {t('ui.renewal.accept', {
+              price: centsExact(option.openingUsdKwh),
+              term: r.terms[0],
+            })}
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            disabled={!!whyNegotiate}
+            onClick={() => act(negotiate)}
+          >
+            {t('ui.renewal.negotiate')}
+            <Pips
+              total={r.bandwidth}
+              filled={r.bandwidth}
+              label={t('ui.plan.costs_bandwidth', { n: r.bandwidth })}
+            />
+          </button>
+        </span>
+      </div>
+    </Dialog>
+  )
+}
+
+/** Power prices to the hundredth of a cent, for bargaining: "5.23¢/kWh". */
+function centsExact(usdPerKwh: number): string {
+  return t('ui.negotiation.cents', { value: (usdPerKwh * 100).toFixed(2) })
+}
+
+/** The bargaining panel (wireframe 7): the utility's offer, your counter, rounds and risk. */
+function NegotiationPanel({ state, act }: ScreenProps) {
+  const v = negotiationView(state)
+  const [price, setPrice] = useState<number>(
+    v ? Math.min(v.offerUsdKwh, v.normalUsdKwh * 0.95) : 0,
+  )
+  if (!v) return null
+  const counter: Action = { type: 'NEGOTIATE_COUNTER', priceUsdKwh: price }
+  const risk = v.risk(price)
+  const min = v.normalUsdKwh * 0.7
+  return (
+    <>
+      <div class="row-between">
+        <span class="label">
+          {t('ui.negotiation.round', {
+            n: Math.min(v.round + 1, v.rounds),
+            rounds: v.rounds,
+          })}
+        </span>
+        <span class="num-s muted">
+          {t('ui.negotiation.terms', {
+            contract: tDynamic(`contract.${v.contractType}`, ''),
+            term: v.term,
+          })}
+        </span>
+      </div>
+      <div class="event-art">
+        <span class="num-xl">{centsExact(v.offerUsdKwh)}</span>
+        <span class="num-s">
+          {t('ui.negotiation.their_offer', {
+            opening: centsExact(v.openingUsdKwh),
+            normal: centsExact(v.normalUsdKwh),
+          })}
+        </span>
+      </div>
+      {v.history.length > 0 && (
+        <ol class="num-s muted" style={{ margin: 0, paddingLeft: '18px' }}>
+          {v.history.map((h, i) => (
+            <li key={i}>
+              {t('ui.negotiation.history', {
+                counter: centsExact(h.counterUsdKwh),
+              })}
+            </li>
+          ))}
+        </ol>
+      )}
+      {v.final ? (
+        <p class="num-s warn" style={{ margin: 0 }}>
+          {t('ui.negotiation.final')}
+        </p>
+      ) : (
+        <div class="field">
+          <label class="label" for="counter">
+            {t('ui.negotiation.your_counter', { price: centsExact(price) })}
+          </label>
+          <input
+            class="slider"
+            id="counter"
+            type="range"
+            min={min}
+            max={v.offerUsdKwh}
+            step={0.0001}
+            value={price}
+            onInput={(e) =>
+              setPrice(Number((e.target as HTMLInputElement).value))
+            }
+          />
+          <span
+            class={`num-s ${risk === 'high' ? 'loss' : risk === 'possible' ? 'warn' : 'muted'}`}
+          >
+            {tDynamic(`ui.negotiation.risk.${risk}`, '', {
+              chance: fmt.pct(v.walkawayChance),
+            })}
+          </span>
+        </div>
+      )}
+      <div class="row-between">
         <button
           type="button"
           class="btn"
-          disabled={!!why}
           onClick={() => {
-            if (!act(a)) onClose()
+            act({ type: 'NEGOTIATE_WALK' })
           }}
         >
-          {t('ui.renewal.accept', {
-            price: fmt.cents(option.openingUsdKwh),
-            term: r.terms[0],
-          })}
+          {t('ui.negotiation.walk', { opening: centsExact(v.openingUsdKwh) })}
         </button>
+        <span style={{ display: 'inline-flex', gap: '8px' }}>
+          <button
+            type="button"
+            class="btn"
+            onClick={() => {
+              act({ type: 'NEGOTIATE_ACCEPT' })
+            }}
+          >
+            {t('ui.negotiation.accept', { price: centsExact(v.offerUsdKwh) })}
+          </button>
+          {!v.final && (
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={() => {
+                act(counter)
+              }}
+            >
+              {t('ui.negotiation.counter')}
+            </button>
+          )}
+        </span>
       </div>
-    </Dialog>
+      <span class="num-s muted" style={{ fontStyle: 'italic' }}>
+        {t('ui.negotiation.hint')}
+      </span>
+    </>
   )
 }

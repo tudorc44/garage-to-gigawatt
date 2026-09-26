@@ -52,6 +52,7 @@ import {
   renewalDue,
 } from './systems/contracts.ts'
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
+import { counterRisk } from './systems/negotiation.ts'
 import { isEarning } from './systems/mining.ts'
 import {
   normalPriceUsdKwh,
@@ -599,6 +600,7 @@ export function renewalViews(state: GameState) {
       })),
       openingMult: CONTENT.negotiation.openingMult,
       terms: CONTENT.negotiation.terms,
+      longTermMult: CONTENT.negotiation.longTermLimitMult,
       bandwidth: CONTENT.negotiation.bandwidth,
     }))
 }
@@ -616,4 +618,41 @@ export function nextRenewal(
         quarter: CONTENT.quarters[next.contract!.endQuarter] ?? '',
       }
     : null
+}
+
+/** The negotiation in progress, as the bargaining panel shows it (never the hidden limit). */
+export function negotiationView(state: GameState) {
+  const n = state.negotiation
+  if (!n) return null
+  const site = state.sites.find((x) => x.id === n.siteId)!
+  return {
+    tier: site.tier,
+    contractType: n.contractType,
+    term: n.term,
+    round: n.round,
+    rounds: CONTENT.negotiation.rounds,
+    final: n.final,
+    openingUsdKwh: n.openingUsdKwh,
+    offerUsdKwh: n.offerUsdKwh,
+    normalUsdKwh: normalPriceUsdKwh(site, state.quarter, n.contractType),
+    history: n.history.map((h) => ({ counterUsdKwh: h.counterUsdKwh })),
+    walkawayChance: CONTENT.negotiation.walkawayChance,
+    risk: (priceUsdKwh: number) => counterRisk(state, priceUsdKwh),
+  }
+}
+
+/** How this quarter's negotiation at a site ended (the log line), if it ended this quarter. */
+export function negotiationResult(state: GameState, tier: string) {
+  for (let i = state.log.length - 1; i >= 0; i--) {
+    const e = state.log[i]
+    if (e.quarter !== state.quarter) return null
+    if (
+      (e.key === 'log.negotiation_deal' ||
+        e.key === 'log.negotiation_they_walked' ||
+        e.key === 'log.negotiation_you_walked') &&
+      e.params?.tier === tier
+    )
+      return e
+  }
+  return null
 }

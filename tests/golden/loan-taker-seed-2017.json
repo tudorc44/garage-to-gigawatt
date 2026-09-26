@@ -44,6 +44,7 @@
   "auction": null,
   "curtailment": null,
   "complaint": null,
+  "negotiation": null,
   "siteHeat": {
     "site-1": {
       "value": 5,

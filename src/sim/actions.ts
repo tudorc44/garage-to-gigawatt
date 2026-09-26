@@ -32,6 +32,13 @@ import {
   underMoratorium,
 } from './systems/heat.ts'
 import { acceptBlocker, acceptOpening, autoRenew } from './systems/contracts.ts'
+import {
+  acceptOffer,
+  counter,
+  startBlocker,
+  startNegotiation,
+  walkOut,
+} from './systems/negotiation.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
   borrowBlocker,
@@ -77,6 +84,19 @@ export type Action =
   | { type: 'OUTREACH'; siteId: string }
   /** Noise mitigation at a site: capex, lowers its base Heat for good, once per site. */
   | { type: 'MITIGATE_NOISE'; siteId: string }
+  /** Start negotiating a due renewal: contract type, 4 or 8 quarters (heat.json bw_cost Bandwidth). */
+  | {
+      type: 'NEGOTIATE_START'
+      siteId: string
+      contractType: ContractType
+      term: number
+    }
+  /** Counter the utility's offer with a price per kWh. */
+  | { type: 'NEGOTIATE_COUNTER'; priceUsdKwh: number }
+  /** Take the utility's current offer. */
+  | { type: 'NEGOTIATE_ACCEPT' }
+  /** Walk away: the opening offer applies for the short term. */
+  | { type: 'NEGOTIATE_WALK' }
   /** Accept the utility's opening offer for a due renewal (0 Bandwidth; Texas: choose the type). */
   | { type: 'ACCEPT_RENEWAL'; siteId: string; contractType: ContractType }
   /** Borrow against your machines (equipment loan). */
@@ -117,6 +137,7 @@ function run(s: GameState, a: Action): Message | undefined {
   switch (a.type) {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
+      if (s.negotiation) return fail('error.negotiation_open')
       closeAuction(s)
       autoRenew(s)
       s.phase = 'live'
@@ -363,7 +384,24 @@ function run(s: GameState, a: Action): Message | undefined {
       return
     }
 
+    case 'NEGOTIATE_START': {
+      const blocked = startBlocker(s, a.siteId, a.contractType, a.term)
+      if (blocked) return blocked
+      startNegotiation(s, a.siteId, a.contractType, a.term)
+      return
+    }
+
+    case 'NEGOTIATE_COUNTER':
+      return counter(s, a.priceUsdKwh)
+
+    case 'NEGOTIATE_ACCEPT':
+      return acceptOffer(s)
+
+    case 'NEGOTIATE_WALK':
+      return walkOut(s)
+
     case 'ACCEPT_RENEWAL': {
+      if (s.negotiation) return fail('error.negotiation_open')
       const blocked = acceptBlocker(s, a.siteId, a.contractType)
       if (blocked) return blocked
       acceptOpening(
