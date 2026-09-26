@@ -281,14 +281,31 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
         </span>
       </div>
       <p class="num-s muted" style={{ margin: 0 }}>
-        {t('ui.report.cash_line', {
-          start: fmt.money(st.startCash),
-          sales: fmt.money(st.soldUsd + st.treasurySoldUsd),
-          power: fmt.money(st.powerCostUsd),
-          rent: fmt.money(st.rentUsd),
-          end: fmt.money(r.cash),
-        })}
+        {st.interestUsd + st.principalUsd > 0
+          ? t('ui.report.cash_line_loan', {
+              start: fmt.money(st.startCash),
+              sales: fmt.money(st.soldUsd + st.treasurySoldUsd),
+              power: fmt.money(st.powerCostUsd),
+              rent: fmt.money(st.rentUsd),
+              loan: fmt.money(st.interestUsd + st.principalUsd),
+              end: fmt.money(r.cash),
+            })
+          : t('ui.report.cash_line', {
+              start: fmt.money(st.startCash),
+              sales: fmt.money(st.soldUsd + st.treasurySoldUsd),
+              power: fmt.money(st.powerCostUsd),
+              rent: fmt.money(st.rentUsd),
+              end: fmt.money(r.cash),
+            })}
       </p>
+      {r.debtUsd > 0 && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.report.debt_line', {
+            debt: fmt.money(r.debtUsd),
+            interest: fmt.money(r.interestUsd),
+          })}
+        </p>
+      )}
     </div>
   )
 }

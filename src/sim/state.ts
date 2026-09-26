@@ -33,6 +33,22 @@ export interface MachineLot {
   earnsFromQuarter: number
 }
 
+/** An equipment loan, secured on machines, repaid in equal weekly slices plus interest. */
+export interface EquipmentLoan {
+  /** Amount borrowed. */
+  amountUsd: number
+  /** Still owed. */
+  balanceUsd: number
+  /** Yearly interest rate, fixed when the loan was taken. */
+  apr: number
+  /** Principal repaid each week (amount ÷ weeks in the loan's term, in cents). */
+  weeklyPrincipalUsd: number
+  /** Weekly payments still to make; the last one clears whatever is left. */
+  weeksLeft: number
+  /** Quarter index when it was taken. */
+  takenQuarter: number
+}
+
 /** A site offer revealed by scouting. Its flaw stays hidden until the player builds it. */
 export interface SiteOffer {
   id: string
@@ -67,6 +83,8 @@ export interface GameState {
   sites: Site[]
   machines: MachineLot[]
   siteOffers: SiteOffer[]
+  /** The one equipment loan you can have at a time, or null. */
+  equipmentLoan: EquipmentLoan | null
   /** Counter for making unique ids ("site-3", "lot-7"). */
   nextId: number
   /** An alert waiting for the player's answer; the live quarter is paused while it's set. */
@@ -110,6 +128,9 @@ export interface QuarterStats {
   priceAlerts: number
   /** Dollars received for mined coins sold as they were mined. */
   soldUsd: number
+  /** Loan interest and principal paid this quarter. */
+  interestUsd: number
+  principalUsd: number
   /** Cash and treasury value when the live quarter started (after Plan-phase spending). */
   startCash: number
   startTreasuryUsd: number
@@ -160,6 +181,10 @@ export interface QuarterReport {
   startTreasuryUsd: number
   soldUsd: number
   treasurySoldUsd: number
+  interestUsd: number
+  principalUsd: number
+  /** Loans still owed at quarter end (subtracted from the valuation). */
+  debtUsd: number
   /** Filled when cash went below zero and assets had to be sold. */
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
 }
@@ -175,6 +200,8 @@ export function emptyQuarterStats(): QuarterStats {
     treasurySoldUsd: 0,
     priceAlerts: 0,
     soldUsd: 0,
+    interestUsd: 0,
+    principalUsd: 0,
     startCash: 0,
     startTreasuryUsd: 0,
     weeks: [],
@@ -223,6 +250,7 @@ export function newGame(seed: number): GameState {
     ],
     machines: [],
     siteOffers: [],
+    equipmentLoan: null,
     nextId: 2,
     interrupt: null,
     interruptsThisQuarter: 0,

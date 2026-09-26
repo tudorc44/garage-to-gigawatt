@@ -164,6 +164,20 @@ const bots = {
     ],
     '2018Q2': [{ type: 'LEAVE_SITE', siteId: 'site-2' }],
   }),
+  // Fills the garage, borrows against the rigs in 2017Q2, pays the loan off early in 2018Q1.
+  'loan-taker': scripted({
+    '2017Q1': [
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'used',
+        count: 5,
+        siteId: 'site-1',
+      },
+    ],
+    '2017Q2': [{ type: 'TAKE_LOAN', amountUsd: 3_000 }],
+    '2018Q1': [{ type: 'REPAY_LOAN' }],
+  }),
   // F&F and a small unit, then the seed round in 2017Q4 to fill the small unit with rigs.
   'seed-raiser': scripted({
     '2017Q1': [

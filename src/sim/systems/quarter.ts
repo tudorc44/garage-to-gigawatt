@@ -12,6 +12,7 @@ import {
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
+import { debtUsd } from './loans.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { ebitdaUsd, valuationUsd } from './valuation.ts'
@@ -79,13 +80,22 @@ function buildReport(
     treasuryValueUsd: treasuryUsd,
     cash: state.cash,
     ebitdaUsd: ebitda,
-    valuationUsd: valuationUsd(state.quarter, ebitda, state.cash, treasuryUsd),
+    valuationUsd: valuationUsd(
+      state.quarter,
+      ebitda,
+      state.cash,
+      treasuryUsd,
+      debtUsd(state),
+    ),
     priceAlerts: st.priceAlerts,
     founderStake: state.founderStake,
     startCash: st.startCash,
     startTreasuryUsd: st.startTreasuryUsd,
     soldUsd: st.soldUsd,
     treasurySoldUsd: st.treasurySoldUsd,
+    interestUsd: st.interestUsd,
+    principalUsd: st.principalUsd,
+    debtUsd: debtUsd(state),
     forcedSale,
   }
 }

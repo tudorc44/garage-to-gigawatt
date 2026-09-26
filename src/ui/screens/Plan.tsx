@@ -5,6 +5,7 @@ import { hasText, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
+  equipmentLoanView,
   fundingRound,
   lotViews,
   machineMarket,
@@ -32,6 +33,7 @@ import {
   BuyDialog,
   FleetDialog,
   LeaveDialog,
+  LoanDialog,
   OffersDialog,
 } from './dialogs.tsx'
 
@@ -41,7 +43,7 @@ export interface ScreenProps {
 }
 
 /** Which dialog is open; `leave:<siteId>` confirms leaving that site. */
-type Open = 'buy' | 'fleet' | 'offers' | `leave:${string}` | null
+type Open = 'buy' | 'fleet' | 'offers' | 'loan' | `leave:${string}` | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
   const [open, setOpen] = useState<Open>(null)
@@ -86,6 +88,9 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'offers' && (
         <OffersDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
+      {open === 'loan' && (
+        <LoanDialog state={state} act={act} onClose={() => setOpen(null)} />
       )}
       {open?.startsWith('leave:') && (
         <LeaveDialog
@@ -449,11 +454,7 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.capital')}</div>
       <RaiseRow state={state} act={act} round="friends_family" />
-      <ActionRow
-        icon="loan"
-        name={t('ui.plan.equipment_loan')}
-        locked={notBuilt}
-      />
+      <EquipmentLoanRow state={state} act={act} open={open} />
       <ActionRow
         icon="loan"
         name={t('ui.plan.crypto_loan')}
@@ -478,6 +479,57 @@ function TodoPanel({
       />
       <ActionRow icon="bid" name={t('ui.plan.auction')} locked={notBuilt} />
     </div>
+  )
+}
+
+/** Equipment loan: borrow (opens a dialog), or repay the one you have. */
+function EquipmentLoanRow({
+  state,
+  act,
+  open,
+}: ScreenProps & { open: (o: Open) => void }) {
+  const v = equipmentLoanView(state)
+  if (v.loan) {
+    const a: Action = { type: 'REPAY_LOAN' }
+    const why = whyNot(state, a)
+    return (
+      <ActionRow
+        icon="loan"
+        name={t('ui.plan.repay_loan', { left: fmt.money(v.loan.balanceUsd) })}
+        price={t('ui.plan.minus', { value: fmt.money(v.loan.balanceUsd) })}
+        disabledReason={why ? say(why) : undefined}
+        onClick={() => act(a)}
+      />
+    )
+  }
+  if (!v.terms) {
+    return (
+      <ActionRow
+        icon="loan"
+        name={t('ui.plan.equipment_loan')}
+        locked={t('ui.locked.no_lenders', {
+          quarter: fmt.quarter(v.offeredUntil),
+        })}
+      />
+    )
+  }
+  const why = whyNot(state, {
+    type: 'TAKE_LOAN',
+    amountUsd: Math.max(1, v.maxUsd),
+  })
+  return (
+    <ActionRow
+      icon="loan"
+      name={t('ui.plan.equipment_loan_offer', {
+        ltv: fmt.pct(v.terms.ltv),
+        apr: fmt.pct(v.terms.apr),
+      })}
+      bandwidth={v.bandwidth}
+      bandwidthLeft={state.bandwidth}
+      price={t('ui.plan.up_to', { value: fmt.money(v.maxUsd) })}
+      disabledReason={why ? say(why) : undefined}
+      onClick={() => open('loan')}
+    />
   )
 }
 

@@ -45,6 +45,7 @@
     }
   ],
   "siteOffers": [],
+  "equipmentLoan": null,
   "nextId": 4,
   "interrupt": null,
   "interruptsThisQuarter": 0,
@@ -64,6 +65,8 @@
     "treasurySoldUsd": 0,
     "priceAlerts": 0,
     "soldUsd": 144.97433999999998,
+    "interestUsd": 0,
+    "principalUsd": 0,
     "startCash": 32848.53,
     "startTreasuryUsd": 10094.173894902917,
     "weeks": [
@@ -324,6 +327,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -359,6 +365,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 2269.35513,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -394,6 +403,9 @@
       "startTreasuryUsd": 1406.4924778423879,
       "soldUsd": 2834.73918,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -429,6 +441,9 @@
       "startTreasuryUsd": 4030.3784031490804,
       "soldUsd": 4959.940229999999,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -464,6 +479,9 @@
       "startTreasuryUsd": 15616.906348309461,
       "soldUsd": 2952.0032850000002,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -499,6 +517,9 @@
       "startTreasuryUsd": 8949.807370831675,
       "soldUsd": 1291.056165,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -534,6 +555,9 @@
       "startTreasuryUsd": 8620.919980174373,
       "soldUsd": 593.663175,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -569,6 +593,9 @@
       "startTreasuryUsd": 9043.407960193545,
       "soldUsd": 70.80696,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -604,6 +631,9 @@
       "startTreasuryUsd": 5038.161002185045,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -639,6 +669,9 @@
       "startTreasuryUsd": 5669.910660886929,
       "soldUsd": 475.52148,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -674,6 +707,9 @@
       "startTreasuryUsd": 15013.204312175103,
       "soldUsd": 296.09181,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -709,6 +745,9 @@
       "startTreasuryUsd": 11884.707212838342,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -744,6 +783,9 @@
       "startTreasuryUsd": 10591.605266260538,
       "soldUsd": 28.135800000000003,
       "treasurySoldUsd": 1999.0961733349982,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -779,6 +821,9 @@
       "startTreasuryUsd": 7182.5636215435425,
       "soldUsd": 157.03127999999998,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -814,6 +859,9 @@
       "startTreasuryUsd": 10114.414421920646,
       "soldUsd": 345.73517999999996,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -849,6 +897,9 @@
       "startTreasuryUsd": 12114.324892134744,
       "soldUsd": 353.60262,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -884,6 +935,9 @@
       "startTreasuryUsd": 31896.224090598538,
       "soldUsd": 977.549265,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -919,6 +973,9 @@
       "startTreasuryUsd": 66639.19326387676,
       "soldUsd": 1313.0091450000002,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -954,6 +1011,9 @@
       "startTreasuryUsd": 39506.1737759383,
       "soldUsd": 1321.1257500000002,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -989,6 +1049,9 @@
       "startTreasuryUsd": 54354.23830922076,
       "soldUsd": 1380.363075,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -1024,6 +1087,9 @@
       "startTreasuryUsd": 55425.886515864,
       "soldUsd": 474.04853999999995,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -1059,6 +1125,9 @@
       "startTreasuryUsd": 53702.03873222302,
       "soldUsd": 277.12440000000004,
       "treasurySoldUsd": 15900.348530118446,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -1094,6 +1163,9 @@
       "startTreasuryUsd": 10094.173894902917,
       "soldUsd": 144.97433999999998,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     }
   ],

@@ -11,6 +11,11 @@ import {
 } from './systems/machines.ts'
 import { raiseBlocker, takeRaise } from './systems/capital.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
+import {
+  borrowBlocker,
+  repayEquipmentLoan,
+  takeEquipmentLoan,
+} from './systems/loans.ts'
 import { getModel, marketWeek } from './systems/market.ts'
 import { treasuryValueUsd } from './systems/treasury.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
@@ -43,6 +48,10 @@ export type Action =
   | { type: 'BUILD_SITE'; tier: string }
   /** Break the site's lease: its machines are sold, a penalty is paid, rent stops. */
   | { type: 'LEAVE_SITE'; siteId: string }
+  /** Borrow against your machines (equipment loan). */
+  | { type: 'TAKE_LOAN'; amountUsd: number }
+  /** Pay the equipment loan off early. */
+  | { type: 'REPAY_LOAN' }
   /** Take a funding round from capital.json (fixed offer). */
   | { type: 'RAISE'; round: string }
   /** Plan phase done: start the live quarter. */
@@ -275,6 +284,16 @@ function run(s: GameState, a: Action): Message | undefined {
         s.siteOffers = s.siteOffers.filter((o) => o.id !== a.offerId)
       return
     }
+
+    case 'TAKE_LOAN': {
+      const blocked = borrowBlocker(s, a.amountUsd)
+      if (blocked) return blocked
+      takeEquipmentLoan(s, a.amountUsd)
+      return
+    }
+
+    case 'REPAY_LOAN':
+      return repayEquipmentLoan(s)
 
     case 'LEAVE_SITE': {
       const site = s.sites.find((x) => x.id === a.siteId)

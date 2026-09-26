@@ -79,6 +79,12 @@ function showStatus(s: GameState) {
     eth: coins(s.treasury.ETH),
     treasuryUsd: treasuryValueUsd(s, w),
   })
+  if (s.equipmentLoan) {
+    say('play.loan_status', {
+      balanceUsd: s.equipmentLoan.balanceUsd,
+      aprPct: s.equipmentLoan.apr,
+    })
+  }
 }
 
 function showPlan(s: GameState) {
@@ -245,6 +251,10 @@ function parse(
       }
       return { type: 'BUILD_SITE', tier: rest[0] ?? '' }
     }
+    case 'loan':
+      return { type: 'TAKE_LOAN', amountUsd: num(0) }
+    case 'repay':
+      return { type: 'REPAY_LOAN' }
     case 'leave': {
       const site = item(s.sites, 0)
       return site ? { type: 'LEAVE_SITE', siteId: site.id } : 'play.bad_number'

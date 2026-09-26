@@ -15,6 +15,11 @@ import {
   previousMarketWeek,
   revenuePerUnitDay,
 } from './systems/market.ts'
+import {
+  collateralUsd,
+  equipmentTerms,
+  maxEquipmentLoanUsd,
+} from './systems/loans.ts'
 import { isEarning } from './systems/mining.ts'
 import {
   baseCapexUsd,
@@ -325,5 +330,23 @@ export function fundingRound(state: GameState, id: string) {
     from,
     to,
     status,
+  }
+}
+
+/** The equipment loan as the Plan screen shows it: this quarter's terms, how much you could borrow, the loan you have. */
+export function equipmentLoanView(state: GameState) {
+  const terms = equipmentTerms(state.quarter)
+  return {
+    /** undefined once lenders stop offering (after 2022Q2). */
+    terms,
+    collateralUsd: collateralUsd(state),
+    maxUsd: maxEquipmentLoanUsd(state),
+    loan: state.equipmentLoan,
+    bandwidth: BALANCE.bandwidth.loan,
+    /** Last quarter any lender offers one (capital.json), e.g. "2022Q2". */
+    offeredUntil: CONTENT.equipmentLoans.at(-1)?.availableUntil ?? '',
+    /** First quarter's payment for a loan of `amountUsd`: 1/term of the principal plus a quarter's interest. */
+    quarterlyPaymentUsd: (amountUsd: number) =>
+      terms ? amountUsd / terms.tenorQuarters + (amountUsd * terms.apr) / 4 : 0,
   }
 }

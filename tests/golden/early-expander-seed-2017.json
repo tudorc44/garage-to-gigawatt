@@ -51,6 +51,7 @@
       "flaw": "rate_class"
     }
   ],
+  "equipmentLoan": null,
   "nextId": 6,
   "interrupt": null,
   "interruptsThisQuarter": 0,
@@ -70,6 +71,8 @@
     "treasurySoldUsd": 0,
     "priceAlerts": 0,
     "soldUsd": 1577.9735999999998,
+    "interestUsd": 0,
+    "principalUsd": 0,
     "startCash": 292.67,
     "startTreasuryUsd": 0,
     "weeks": [
@@ -330,6 +333,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -365,6 +371,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 22332.618,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -400,6 +409,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 8317.953000000001,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -435,6 +447,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 4809.294,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -470,6 +485,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 7274.421,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -505,6 +523,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 3282.7409999999995,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 1500,
@@ -544,6 +565,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 1577.9735999999998,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 4000,

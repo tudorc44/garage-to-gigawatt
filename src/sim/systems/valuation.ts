@@ -1,8 +1,8 @@
 // Company valuation (content review A5): run-rate EBITDA (this quarter × 4) × the
-// era's EV/EBITDA multiple, plus cash and treasury, minus debt. There's no debt yet.
+// era's EV/EBITDA multiple, plus cash and treasury, minus debt (loans still owed).
 import { CONTENT } from '../../content/index.ts'
 
-/** EBITDA for a quarter: mining revenue minus power and rent (no salaries yet). */
+/** EBITDA for a quarter: mining revenue minus power and rent (no salaries yet; loan interest isn't in it). */
 export function ebitdaUsd(q: {
   revenueUsd: number
   powerCostUsd: number

@@ -13,6 +13,8 @@ export const BALANCE = {
     bonusSiteTier: 'own_site',
     scout: 1,
     build: 1,
+    /** Taking an equipment loan (scope §2.6). Repaying costs none. */
+    loan: 1,
   },
 
   failures: {

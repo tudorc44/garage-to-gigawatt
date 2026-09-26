@@ -169,8 +169,31 @@ export const ladderStepSchema = z.object({
   bandwidth: z.number().int().min(0).optional(),
 })
 
+/** Equipment loan terms for an era ("2017-2019" or "2022"), secured on machines. */
+export const equipmentLoanSchema = z
+  .object({
+    era: z.string().regex(/^\d{4}(-\d{4})?$/, 'expected "2017-2019" or "2022"'),
+    /** Loan-to-value: the most you can borrow, as a share of your machines' value. */
+    ltv: num.pipe(z.number().max(1)),
+    /** Yearly interest rate, e.g. 0.15. */
+    apr: num,
+    tenor_quarters: z.number().int().min(1),
+    available_until: quarterId.optional(),
+  })
+  .transform(({ era, tenor_quarters, available_until, ...rest }) => {
+    const [from, to = from] = era.split('-').map(Number)
+    return {
+      ...rest,
+      fromYear: from,
+      toYear: to,
+      tenorQuarters: tenor_quarters,
+      availableUntil: available_until,
+    }
+  })
+
 export const capitalFileSchema = z.object({
   ladder: z.array(ladderStepSchema).min(1),
+  loans: z.object({ equipment: z.array(equipmentLoanSchema).min(1) }),
   /** EV / EBITDA multiple per quarter, for the company valuation (review A5). */
   era_multiple_ev_ebitda: z
     .record(z.string(), z.union([nonNeg, z.string(), z.boolean()]))
@@ -185,6 +208,7 @@ export const capitalFileSchema = z.object({
 })
 
 export type LadderStep = z.output<typeof ladderStepSchema>
+export type EquipmentLoanTerms = z.output<typeof equipmentLoanSchema>
 export type MarketWeek = z.output<typeof marketWeekSchema>
 export type Machine = z.output<typeof machineSchema>
 export type SiteTier = z.output<typeof siteTierSchema>

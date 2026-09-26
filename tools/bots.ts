@@ -4,6 +4,7 @@ import { BALANCE, CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import type { Strategy } from '../src/sim/replay.ts'
 import type { Condition, GameState } from '../src/sim/state.ts'
+import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
   buyPrice,
@@ -30,6 +31,8 @@ interface BotSettings {
   sellOnDrops: boolean
   /** Funding rounds to take as soon as each is allowed, in this order. */
   raises?: string[]
+  /** Borrow the maximum equipment loan whenever it has none. */
+  borrow?: boolean
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -48,6 +51,17 @@ function makeBot(settings: BotSettings): Strategy {
           cash += r.state.cash - s.cash
           reserveBase += r.state.cash - s.cash
           bandwidth -= s.bandwidth - r.state.bandwidth
+        }
+      }
+      // 0b. Borrow the most lenders allow against the machines it owns.
+      if (settings.borrow && !s.equipmentLoan && bandwidth >= 1) {
+        const amountUsd = maxEquipmentLoanUsd(s)
+        const a: Action = { type: 'TAKE_LOAN', amountUsd }
+        if (amountUsd >= 1 && applyAction(s, a).ok) {
+          actions.push(a)
+          cash += amountUsd
+          reserveBase += amountUsd
+          bandwidth -= 1
         }
       }
       const spendable = () => cash - settings.reserveUsd(reserveBase)
@@ -175,6 +189,15 @@ export const BOTS: Record<string, Strategy> = {
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
     raises: ['friends_family', 'seed'],
+  }),
+  /** raise-climb that also borrows the maximum equipment loan whenever it has none. */
+  'raise-borrow': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: ['friends_family', 'seed'],
+    borrow: true,
   }),
   /** Keeps every coin it mines; spends only its cash; never sells in alerts. */
   hodl: makeBot({

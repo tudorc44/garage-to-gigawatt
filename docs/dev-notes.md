@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the seed round.
+Last updated: 26 Sep 2026, with the equipment loan.
 
 ## How the owner works
 
@@ -50,19 +50,19 @@ See `CLAUDE.md` for the full list. The main ones:
    Market, sites (ladder, scouting, hidden flaws), machines (new/used, delivery, weekly failure roll,
    repair), Bandwidth, mining (auto switch-off), treasury (HODL/sell %), price-alert interrupt (max 3
    per quarter), quarter report, forced sales and bankruptcy, valuation, game log.
-4. **Capital:** friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
+4. **Capital:** the equipment loan (see Decisions), friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
    founder stake (dilutions multiply: F&F then seed leaves 72%).
 5. **Leaving a site** (lease break) with a penalty.
 6. **Terminal game** (`npm run play`) and **browser UI**: title screen, Plan, Live quarter (1.5 s per week,
    pause, 1×/2×/4×, skip, alerts as modals), Quarter report, end screen. Design-system tokens and
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
-   early-expander, ff-expander, ff-leaver, seed-raiser) and unit tests: 135 passing + 1 to-do.
+   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker) and unit tests: 149 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helper (dev and staging, not production).
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Series A and the IPO/SPAC round, equipment and crypto-backed loans (and margin calls), IPO, negotiation, hires,
+Series A and the IPO/SPAC round, the crypto-backed loan (and margin calls), negotiation, hires,
 Heat and talking to the neighbours, Read the market, auctions, rivals and the league table, the 20 event
 cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
@@ -109,6 +109,17 @@ ask first).
 - "Cost per coin" counts power only. Cash is rounded to cents weekly.
 - Raises cost 2 Bandwidth unless `capital.json` says otherwise; open rounds are listed in `balance.ts`.
 - The raise log line reads: Raised $1.5M in the seed round for 20% of the company. Your stake: 72%.
+- **Equipment loan** (terms by era from `capital.json`: 2017–19 50% LTV at 15%, 2020–21 70% at 11%,
+  2022 50% at 14% until 2022Q2; 8 quarters). **Not yet confirmed by the owner:**
+  - One equipment loan at a time; 1 Bandwidth to take (scope §2.6); repaying early is free (no penalty, no
+    Bandwidth). You pick the amount, up to LTV × what your machines would sell for today (used price,
+    broken units less repair cost).
+  - Repaid weekly like rent: an equal slice of principal (1/104 of the loan over 8 quarters) plus interest
+    on what's still owed; the last week clears any rounding leftover.
+  - No covenant: machines can still be sold while a loan is out, and the debt stays. Missing payments just
+    lower cash; if cash is below zero at quarter end, the normal forced sale and game-over rules apply.
+  - Debt is subtracted from the valuation; interest is not part of EBITDA. The report's cash line shows
+    loan payments, plus a line with the debt still owed.
 
 ## Balance findings (from `npm run sim`, 50 seeds per bot)
 
@@ -117,6 +128,7 @@ ask first).
 | cautious | garage only, keeps half its cash | 0% | $39.9K |
 | reinvest | garage only, spends everything | 0% | $28.8K |
 | raise-climb | reinvest + F&F (2017Q1) + seed (2017Q4), climbs the ladder | 0% | $974K (peak $9.2M, 2021Q1) |
+| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $947K (peak $9.2M, 2021Q1) |
 | hodl | garage only, keeps every coin | 0% | $104K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
 | careful-ff | like ff-climb, keeps 4 quarters of rent, stops buying in 2018 | 100% (2019Q3) | −$1.6K |
@@ -135,6 +147,12 @@ ask first).
   reinvesting doesn't over-extend. It probably needs loans (borrowed money that must be repaid).
 - A cautious bot (keeps half its cash) with raises builds the small unit only at the very end and never
   takes the seed round.
+- **Equipment loans barely matter so far.** Half the value of a garage of used rigs is only $2–4K, and
+  even raise-borrow's loans (up to about $90K on the warehouse fleet) change little next to $1.5M of
+  seed money.
+- **Reinvest + F&F (no seed, with or without loans) goes bust in all 50 runs, in 2018Q3.** That is the
+  scope's "reinvesting 100% goes bust 2018Q2–2019Q2" anchor; the to-do test could now be written with
+  that bot, if the owner agrees that "reinvest" includes taking the F&F money.
 - Price alerts cluster (2 per quarter in 2017Q2–2018Q1 and 2022Q2, almost none 2018–2020) because the
   weekly prices are reconstructed from monthly data. Real CoinMetrics data should fix it.
 
@@ -143,9 +161,10 @@ ask first).
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
+- Confirm the equipment loan rules above (one at a time, weekly payments, no covenant).
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
 The owner will give the go-ahead. Candidates from the build order (`docs/player-actions-and-pacing.md`
-§7): Series A, equipment and crypto-backed loans (with margin calls), then negotiation.
+§7): the crypto-backed loan with margin calls (the next half of "build the loans"), Series A, negotiation.

@@ -36,6 +36,7 @@
   ],
   "machines": [],
   "siteOffers": [],
+  "equipmentLoan": null,
   "nextId": 5,
   "interrupt": null,
   "interruptsThisQuarter": 0,
@@ -55,6 +56,8 @@
     "treasurySoldUsd": 0,
     "priceAlerts": 0,
     "soldUsd": 631.1466,
+    "interestUsd": 0,
+    "principalUsd": 0,
     "startCash": 727.7,
     "startTreasuryUsd": 0,
     "weeks": [
@@ -315,6 +318,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -350,6 +356,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 17866.094399999998,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -385,6 +394,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 6654.362400000001,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -420,6 +432,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 6733.0116,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -455,6 +470,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 10184.189400000001,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -490,6 +508,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 4595.8374,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": null
     },
     {
@@ -525,6 +546,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 2761.4538000000002,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 3000,
@@ -564,6 +588,9 @@
       "startTreasuryUsd": 0,
       "soldUsd": 631.1466,
       "treasurySoldUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 2600,

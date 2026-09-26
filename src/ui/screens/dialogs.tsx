@@ -6,6 +6,7 @@ import { applyAction, type Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
   bestSite,
+  equipmentLoanView,
   lotViews,
   machineMarket,
   siteViews,
@@ -498,6 +499,86 @@ export function LeaveDialog({
           }}
         >
           {t('ui.leave.confirm')}
+        </button>
+      </div>
+    </Dialog>
+  )
+}
+
+/** Borrow against your machines: pick an amount up to the lenders' limit. */
+export function LoanDialog({ state, act, onClose }: DialogProps) {
+  const v = equipmentLoanView(state)
+  const [amount, setAmount] = useState(v.maxUsd)
+  if (!v.terms) return null
+  const a: Action = { type: 'TAKE_LOAN', amountUsd: amount }
+  const why = whyNot(state, a)
+  const quarters = v.terms.tenorQuarters
+  return (
+    <Dialog title={t('ui.loan.title')} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.loan.note', { quarters, apr: fmt.pct(v.terms.apr) })}
+      </p>
+      <table>
+        <tbody>
+          <tr>
+            <td>{t('ui.loan.collateral')}</td>
+            <td class="num r">{fmt.money(v.collateralUsd)}</td>
+          </tr>
+          <tr>
+            <td>{t('ui.loan.max', { ltv: fmt.pct(v.terms.ltv) })}</td>
+            <td class="num r">{fmt.money(v.maxUsd)}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row-between">
+        <label class="field">
+          <span class="label">{t('ui.loan.amount')}</span>
+          <input
+            type="number"
+            min={1}
+            max={v.maxUsd}
+            step={100}
+            value={amount}
+            style={{ width: '140px' }}
+            onInput={(e) =>
+              setAmount(
+                Math.max(
+                  0,
+                  Math.floor(Number((e.target as HTMLInputElement).value)),
+                ),
+              )
+            }
+          />
+        </label>
+        <button type="button" class="btn" onClick={() => setAmount(v.maxUsd)}>
+          {t('ui.buy.max', { n: fmt.money(v.maxUsd) })}
+        </button>
+      </div>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.loan.payment', {
+          value: fmt.money(v.quarterlyPaymentUsd(amount)),
+          quarters,
+        })}
+      </p>
+      {why && <p class="num-s loss">{say(why)}</p>}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.loan.cancel')}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          disabled={!!why}
+          onClick={() => {
+            if (!act(a)) onClose()
+          }}
+        >
+          {t('ui.loan.borrow', { value: fmt.money(amount) })}
+          <Pips
+            total={v.bandwidth}
+            filled={v.bandwidth}
+            label={t('ui.plan.costs_bandwidth', { n: v.bandwidth })}
+          />
         </button>
       </div>
     </Dialog>

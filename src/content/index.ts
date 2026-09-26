@@ -13,6 +13,7 @@ import {
   machinesFileSchema,
   marketSchema,
   sitesFileSchema,
+  type EquipmentLoanTerms,
   type Flaw,
   type Interrupt,
   type LadderStep,
@@ -22,7 +23,15 @@ import {
 } from './schemas.ts'
 
 export { BALANCE }
-export type { Flaw, Interrupt, LadderStep, Machine, MarketWeek, SiteTier }
+export type {
+  EquipmentLoanTerms,
+  Flaw,
+  Interrupt,
+  LadderStep,
+  Machine,
+  MarketWeek,
+  SiteTier,
+}
 
 export interface Content {
   /** Every quarter of Act I in order: "2017Q1" … "2022Q3". */
@@ -37,6 +46,8 @@ export interface Content {
   eraMultiple: Record<string, number>
   /** Funding ladder rungs, by id. */
   ladder: Record<string, LadderStep>
+  /** Equipment loan terms by era (fromYear–toYear). */
+  equipmentLoans: EquipmentLoanTerms[]
 }
 
 export interface RawContent {
@@ -193,6 +204,16 @@ export function parseContent(raw: RawContent): Content {
       )
     }
   }
+  for (const year of new Set(quarters.map((q) => Number(q.slice(0, 4))))) {
+    const eras = capitalFile.loans.equipment.filter(
+      (e) => e.fromYear <= year && year <= e.toYear,
+    )
+    if (eras.length !== 1) {
+      problems.push(
+        `capital.json › loans.equipment: ${year} is covered by ${eras.length} eras (needs exactly 1)`,
+      )
+    }
+  }
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
@@ -207,6 +228,7 @@ export function parseContent(raw: RawContent): Content {
     interrupts: { maxPerQuarter: interruptsFile.max_per_quarter, byId },
     eraMultiple: capitalFile.era_multiple_ev_ebitda,
     ladder: Object.fromEntries(capitalFile.ladder.map((s) => [s.id, s])),
+    equipmentLoans: capitalFile.loans.equipment,
   }
 }
 
