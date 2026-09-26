@@ -1530,65 +1530,7 @@ export function HiresDialog({ state, act, onClose }: DialogProps) {
       <p class="num-s muted" style={{ margin: 0 }}>
         {t('ui.hires.note', { bw: hires[0]?.bandwidth ?? 1 })}
       </p>
-      <table>
-        <thead>
-          <tr>
-            <th>{t('ui.hires.col.person')}</th>
-            <th>{t('ui.hires.col.effect')}</th>
-            <th class="r">{t('ui.hires.col.salary')}</th>
-            <th class="r" />
-          </tr>
-        </thead>
-        <tbody>
-          {hires.map((h) => {
-            const a: Action = h.hired
-              ? { type: 'FIRE', hire: h.id }
-              : { type: 'HIRE', hire: h.id }
-            const why = whyNot(state, a)
-            return (
-              <tr key={h.id}>
-                <td class="wrap">
-                  <strong>{tDynamic(`hire.${h.id}`, h.id)}</strong>
-                  <br />
-                  <span class="num-s">{h.name}</span>
-                  <br />
-                  <span class="num-s muted" style={{ fontStyle: 'italic' }}>
-                    {h.bio}
-                  </span>
-                </td>
-                <td class="num-s wrap">
-                  {tDynamic(`hire_effect.${h.id}`, '')}
-                </td>
-                <td class="num r">
-                  {t('ui.offers.per_quarter', {
-                    value: fmt.money(h.salaryUsdQ),
-                  })}
-                </td>
-                <td class="r">
-                  <button
-                    type="button"
-                    class={h.hired ? 'btn' : 'btn btn-primary'}
-                    disabled={!!why}
-                    title={why ? say(why) : undefined}
-                    onClick={() => act(a)}
-                  >
-                    {h.hired
-                      ? t('ui.hires.fire', { value: fmt.money(h.severanceUsd) })
-                      : t('ui.hires.hire')}
-                    {!h.hired && (
-                      <Pips
-                        total={h.bandwidth}
-                        filled={h.bandwidth}
-                        label={t('ui.plan.costs_bandwidth', { n: h.bandwidth })}
-                      />
-                    )}
-                  </button>
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+      <HiresTable state={state} act={act} />
       <div class="row-between">
         <span />
         <button type="button" class="btn btn-primary" onClick={onClose}>
@@ -1596,5 +1538,69 @@ export function HiresDialog({ state, act, onClose }: DialogProps) {
         </button>
       </div>
     </Dialog>
+  )
+}
+
+/** The hires table (the People dialog and the People section). */
+export function HiresTable({ state, act }: ScreenProps) {
+  const hires = hireViews(state)
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>{t('ui.hires.col.person')}</th>
+          <th>{t('ui.hires.col.effect')}</th>
+          <th class="r">{t('ui.hires.col.salary')}</th>
+          <th class="r" />
+        </tr>
+      </thead>
+      <tbody>
+        {hires.map((h) => {
+          const a: Action = h.hired
+            ? { type: 'FIRE', hire: h.id }
+            : { type: 'HIRE', hire: h.id }
+          const why = whyNot(state, a)
+          return (
+            <tr key={h.id}>
+              <td class="wrap">
+                <strong>{tDynamic(`hire.${h.id}`, h.id)}</strong>
+                <br />
+                <span class="num-s">{h.name}</span>
+                <br />
+                <span class="num-s muted" style={{ fontStyle: 'italic' }}>
+                  {h.bio}
+                </span>
+              </td>
+              <td class="num-s wrap">{tDynamic(`hire_effect.${h.id}`, '')}</td>
+              <td class="num r">
+                {t('ui.offers.per_quarter', {
+                  value: fmt.money(h.salaryUsdQ),
+                })}
+              </td>
+              <td class="r">
+                <button
+                  type="button"
+                  class={h.hired ? 'btn' : 'btn btn-primary'}
+                  disabled={!!why}
+                  title={why ? say(why) : undefined}
+                  onClick={() => act(a)}
+                >
+                  {h.hired
+                    ? t('ui.hires.fire', { value: fmt.money(h.severanceUsd) })
+                    : t('ui.hires.hire')}
+                  {!h.hired && (
+                    <Pips
+                      total={h.bandwidth}
+                      filled={h.bandwidth}
+                      label={t('ui.plan.costs_bandwidth', { n: h.bandwidth })}
+                    />
+                  )}
+                </button>
+              </td>
+            </tr>
+          )
+        })}
+      </tbody>
+    </table>
   )
 }

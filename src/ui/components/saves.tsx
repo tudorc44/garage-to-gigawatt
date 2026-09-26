@@ -2,7 +2,7 @@
 // shares. The app provides the current game and a way to switch to another through SaveContext.
 import { createContext } from 'preact'
 import { useContext, useState } from 'preact/hooks'
-import { t } from '../../i18n/t.ts'
+import { glossaryTerms, t, tDynamic } from '../../i18n/t.ts'
 import {
   decodeSave,
   encodeSave,
@@ -10,6 +10,11 @@ import {
   writeSlot,
   type Slot,
 } from '../../platform/saves.ts'
+import {
+  readSettings,
+  writeSettings,
+  type Settings,
+} from '../../platform/settings.ts'
 import { quarterName } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
@@ -69,6 +74,15 @@ export function ImportBox(props: { onLoad: (s: GameState) => void }) {
 
 /** The Save / load dialog: manual slot, autosave, export and import. */
 export function SaveDialog({ onClose }: { onClose: () => void }) {
+  return (
+    <Dialog title={t('ui.save.title')} onClose={onClose}>
+      <SavePanel onLoaded={onClose} />
+    </Dialog>
+  )
+}
+
+/** Save to the slot, load a slot, export and import (the Save dialog and Settings). */
+export function SavePanel({ onLoaded }: { onLoaded: () => void }) {
   const api = useContext(SaveContext)
   const [message, setMessage] = useState<string | null>(null)
   const [exported, setExported] = useState<string | null>(null)
@@ -78,10 +92,10 @@ export function SaveDialog({ onClose }: { onClose: () => void }) {
   const slots: Slot[] = ['manual', 'autosave']
   const load = (s: GameState) => {
     api.load(s)
-    onClose()
+    onLoaded()
   }
   return (
-    <Dialog title={t('ui.save.title')} onClose={onClose}>
+    <>
       <p class="num-s muted" style={{ margin: 0 }}>
         {t('ui.save.note')}
       </p>
@@ -160,6 +174,74 @@ export function SaveDialog({ onClose }: { onClose: () => void }) {
         />
       )}
       <ImportBox onLoad={load} />
+    </>
+  )
+}
+
+/** Settings (wireframes §12): sound, the live quarter's starting speed, saves, the glossary. */
+export function SettingsDialog({ onClose }: { onClose: () => void }) {
+  const [settings, setSettings] = useState<Settings>(readSettings)
+  const [glossary, setGlossary] = useState(false)
+  const update = (next: Settings) => {
+    setSettings(next)
+    writeSettings(next)
+  }
+  return (
+    <Dialog title={t('ui.settings.title')} onClose={onClose}>
+      <div class="row-between">
+        <span>{t('ui.settings.sound')}</span>
+        <div class="seg" role="group" aria-label={t('ui.settings.sound')}>
+          {[true, false].map((on) => (
+            <button
+              key={String(on)}
+              type="button"
+              aria-pressed={settings.sound === on}
+              onClick={() => update({ ...settings, sound: on })}
+            >
+              {t(on ? 'ui.settings.on' : 'ui.settings.off')}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div class="row-between">
+        <span>{t('ui.settings.speed')}</span>
+        <div class="seg" role="group" aria-label={t('ui.settings.speed')}>
+          {([1, 2, 4] as const).map((x) => (
+            <button
+              key={x}
+              type="button"
+              aria-pressed={settings.speed === x}
+              onClick={() => update({ ...settings, speed: x })}
+            >
+              {`${x}×`}
+            </button>
+          ))}
+        </div>
+      </div>
+      <span class="label">{t('ui.save.title')}</span>
+      <SavePanel onLoaded={onClose} />
+      <div>
+        <button
+          type="button"
+          class="btn"
+          aria-expanded={glossary}
+          onClick={() => setGlossary(!glossary)}
+        >
+          {t('ui.settings.glossary')}
+        </button>
+      </div>
+      {glossary && (
+        <dl class="glossary">
+          {glossaryTerms().map(([term, text]) => (
+            <div key={term}>
+              <dt>
+                {tDynamic(`glossary_term.${term}`, term.replace(/_/g, ' '))}
+              </dt>
+              <dd>{text}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
     </Dialog>
   )
 }

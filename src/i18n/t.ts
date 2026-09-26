@@ -70,3 +70,10 @@ export function tDynamic(
 export function hasText(key: string): boolean {
   return key in table
 }
+
+/** The content pack's glossary, as [term id, explanation] pairs (glossary.<term> keys). */
+export function glossaryTerms(): [string, string][] {
+  return Object.entries(table)
+    .filter(([k]) => k.startsWith('glossary.'))
+    .map(([k, v]) => [k.slice('glossary.'.length), v])
+}

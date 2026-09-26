@@ -56,7 +56,12 @@ import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
 import { rushRepairUsd } from './systems/failureWave.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
-import { activeRivals, rivalSnapshot, yourRank } from './systems/rivals.ts'
+import {
+  activeRivals,
+  rivalSnapshot,
+  upcomingRivals,
+  yourRank,
+} from './systems/rivals.ts'
 import {
   buildQuartersFor,
   isHired,
@@ -992,4 +997,30 @@ export function failureWaveView(state: GameState) {
     rushUsd: rushRepairUsd(state),
     rushMult: CONTENT.failureWave.rushCostMult,
   }
+}
+
+/**
+ * The last report's valuation, piece by piece (review A5): run-rate EBITDA × the era multiple,
+ * plus cash and treasury (pledged coins included), minus debt. null before the first report.
+ */
+export function valuationBreakdown(state: GameState) {
+  const r = state.reports.at(-1)
+  if (!r) return null
+  const multiple = CONTENT.eraMultiple[r.quarter]
+  const enterpriseUsd = Math.max(0, r.ebitdaUsd * 4) * multiple
+  return {
+    quarter: r.quarter,
+    ebitdaUsd: r.ebitdaUsd,
+    multiple,
+    enterpriseUsd,
+    cashUsd: r.cash,
+    treasuryUsd: r.valuationUsd - enterpriseUsd - r.cash + r.debtUsd,
+    debtUsd: r.debtUsd,
+    valuationUsd: r.valuationUsd,
+  }
+}
+
+/** Rivals not in the game yet, and when each one arrives. */
+export function upcomingRivalsView(state: GameState) {
+  return upcomingRivals(state.quarter)
 }

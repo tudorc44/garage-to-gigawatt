@@ -1,7 +1,19 @@
 // The persistent frame of every in-game screen: top bar and left navigation.
 import type { ComponentChildren } from 'preact'
 import { useState } from 'preact/hooks'
-import { SaveDialog } from './saves.tsx'
+import { SaveDialog, SettingsDialog } from './saves.tsx'
+import { createContext } from 'preact'
+import { useContext } from 'preact/hooks'
+import type { Action } from '../../sim/actions.ts'
+import type { Message } from '../../i18n/t.ts'
+import { SectionView, type Section } from '../screens/Sections.tsx'
+
+/** The left-nav section on show (Plan phase only) and the app's action function. */
+export const NavContext = createContext<{
+  section: Section
+  setSection: (s: Section) => void
+  act: (a: Action) => Message | null
+} | null>(null)
 import { t } from '../../i18n/t.ts'
 import {
   bandwidthTotal,
@@ -113,6 +125,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
         </span>
         <span class="stat-note">{since}</span>
       </div>
+      <SettingsButton />
       {props.paused && (
         <div class="stat">
           <span class="paused">
@@ -125,28 +138,38 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
   )
 }
 
-const NAV: { icon: IconName; key: Parameters<typeof t>[0] }[] = [
-  { icon: 'dashboard', key: 'ui.nav.dashboard' },
-  { icon: 'fleet', key: 'ui.nav.fleet' },
-  { icon: 'capital', key: 'ui.nav.capital' },
-  { icon: 'people', key: 'ui.nav.people' },
-  { icon: 'league', key: 'ui.nav.league' },
-  { icon: 'log', key: 'ui.nav.log' },
+const NAV: { id: Section; icon: IconName; key: Parameters<typeof t>[0] }[] = [
+  { id: 'dashboard', icon: 'dashboard', key: 'ui.nav.dashboard' },
+  { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
+  { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
+  { id: 'people', icon: 'people', key: 'ui.nav.people' },
+  { id: 'league', icon: 'league', key: 'ui.nav.league' },
+  { id: 'log', icon: 'log', key: 'ui.nav.log' },
 ]
 
-/** Left navigation. Only the dashboard exists so far; the rest say so. Save / load sits at the foot. */
-export function Nav(props: { seed: number }) {
+/**
+ * Left navigation. The sections open in the Plan phase; during the live quarter and the report
+ * only the dashboard shows. Save / load sits at the foot.
+ */
+export function Nav(props: { seed: number; plan: boolean }) {
   const [saving, setSaving] = useState(false)
+  const nav = useContext(NavContext)
+  const current = props.plan ? (nav?.section ?? 'dashboard') : 'dashboard'
   return (
     <nav class="nav" aria-label={t('ui.nav.label')}>
-      {NAV.map((item, i) => (
+      {NAV.map((item) => (
         <button
           key={item.key}
           type="button"
           class="nav-item"
-          aria-current={i === 0 ? 'page' : undefined}
-          disabled={i !== 0}
-          title={i !== 0 ? t('ui.locked.not_built') : undefined}
+          aria-current={current === item.id ? 'page' : undefined}
+          disabled={!props.plan && item.id !== 'dashboard'}
+          title={
+            !props.plan && item.id !== 'dashboard'
+              ? t('ui.nav.plan_only')
+              : undefined
+          }
+          onClick={() => nav?.setSection(item.id)}
         >
           <Icon name={item.icon} />
           {t(item.key)}
@@ -174,15 +197,43 @@ export function Shell(props: {
   paused?: boolean
   children: ComponentChildren
 }) {
+  const nav = useContext(NavContext)
+  const plan = props.state.phase === 'plan'
+  const section = plan ? (nav?.section ?? 'dashboard') : 'dashboard'
   return (
     <>
       <TopBar state={props.state} paused={props.paused} />
       <div class="body">
-        <Nav seed={props.state.seed} />
-        {props.children}
+        <Nav seed={props.state.seed} plan={plan} />
+        {section === 'dashboard' || !nav ? (
+          props.children
+        ) : (
+          <main class="main">
+            <SectionView state={props.state} act={nav.act} section={section} />
+          </main>
+        )}
       </div>
     </>
   )
 }
 
 export { Delta }
+
+/** The top bar's Settings button (wireframes: persistent layout). */
+function SettingsButton() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div class="stat settings-stat">
+      <button
+        type="button"
+        class="btn"
+        aria-label={t('ui.settings.title')}
+        title={t('ui.settings.title')}
+        onClick={() => setOpen(true)}
+      >
+        <Icon name="settings" size={16} />
+      </button>
+      {open && <SettingsDialog onClose={() => setOpen(false)} />}
+    </div>
+  )
+}

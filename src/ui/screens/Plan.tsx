@@ -253,7 +253,7 @@ function lotStatus(v: LotView) {
   )
 }
 
-function FleetPanel({ state }: { state: GameState }) {
+export function FleetPanel({ state }: { state: GameState }) {
   const sites = siteViews(state)
   const lots = lotViews(state)
   const readySites = sites.filter((s) => s.ready)

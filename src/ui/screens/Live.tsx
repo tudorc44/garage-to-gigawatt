@@ -24,6 +24,7 @@ import { fmt } from '../format.ts'
 import { machineName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { MarketReadText } from './Plan.tsx'
+import { readSettings } from '../../platform/settings.ts'
 
 const WEEK_MS = 1500
 const SPEEDS = [1, 2, 4] as const
@@ -58,7 +59,9 @@ export function LiveScreen(
 ) {
   const { state, act, tick, skip } = props
   const [paused, setPaused] = useState(false)
-  const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(1)
+  const [speed, setSpeed] = useState<(typeof SPEEDS)[number]>(
+    () => readSettings().speed,
+  )
   const waiting = !!state.interrupt
 
   useEffect(() => {

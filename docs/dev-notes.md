@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the 20 event cards and the failure wave.
+Last updated: 26 Sep 2026, with the event cards, the failure wave, and the left-nav screens + Settings.
 
 ## How the owner works
 
@@ -97,7 +97,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Sound, settings, the left-nav sections other than Dashboard. The
+Sound. The
 undersized-transformer flaw's upgrade has no effect yet (landlord_sale works through its event card;
 noise ordinance and hostile council through Heat). The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -150,6 +150,18 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Left-nav screens and Settings** (wireframes §3, §4, §12; built by Claude Code):
+  - Fleet & Sites (the fleet panel, the site ladder, a machines table, the machine market, and
+    buttons for the Buy / Repair-sell / Site-offers dialogs), Capital (funding ladder, cap table bar,
+    the valuation broken down from the last report, both loans with the LTV gauge marked at 50/70/80%),
+    People (the hires table), League (the last report's table and rivals still to come), Log (every
+    log line, newest quarter first).
+  - The sections open in the Plan phase only; during the live quarter and the report the nav shows
+    them greyed ("Open it in the Plan phase"), so alerts and the timeline can't be missed. Ending the
+    Plan phase goes back to the Dashboard.
+  - Settings (the top bar's gear): sound on/off, the live quarter's starting speed (1×/2×/4×), the
+    save panel, and the glossary (the content pack's 29 terms). Stored in the browser
+    (`src/platform/settings.ts`), failing softly like saves.
 - **Failure wave** (design thread F1–F4, 26 Sep 2026; `interrupts.json` › failure_wave,
   `src/sim/systems/failureWave.ts`): one roll per site per quarter (weeks 2–12, own stream), only for
   sites with 10+ working units (so never the garage). Chance = 6% × (1 + 0.5 × the site's used share)
@@ -519,8 +531,7 @@ ask first).
 ## Next
 
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
-save/load, the 20 event cards and the failure wave. In progress (same run): the left-nav screens +
-Settings, and sound (the owner approved installing `zzfx`). After that: a balance pass against the
+save/load, the 20 event cards and the failure wave. In progress (same run): sound (the owner approved installing `zzfx`). After that: a balance pass against the
 exit checklist (scope §5), which needs the design thread (peak valuation ~$310M vs the $1.5–2.5B
 target; the all-in reinvest bust). Backlog (design thread): the pitch opening reacts to company
 performance (era EV/EBITDA × trailing EBITDA, clamped to ±30% of the capital.json terms). The build's

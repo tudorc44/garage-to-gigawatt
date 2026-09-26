@@ -14,6 +14,8 @@ import { ChapterScreen, MergeScreen } from './screens/End.tsx'
 import { TitleScreen } from './screens/Start.tsx'
 import { readSlot, writeSlot } from '../platform/saves.ts'
 import { SaveContext, type SaveApi } from './components/saves.tsx'
+import { NavContext } from './components/frame.tsx'
+import type { Section } from './screens/Sections.tsx'
 
 /** Numbers are used as-is; any other text is hashed; empty picks a random seed. */
 function toSeed(text: string): number {
@@ -28,10 +30,12 @@ const themeOf = (s: GameState | null) =>
 export function App() {
   const [game, setGame] = useState<GameState | null>(null)
   const [showEnd, setShowEnd] = useState(false)
+  const [section, setSection] = useState<Section>('dashboard')
   // The latest state, so actions and timer ticks never work on a stale copy.
   const ref = useRef<GameState | null>(null)
   const commit = (s: GameState | null) => {
     const before = ref.current
+    if (before?.phase !== s?.phase) setSection('dashboard')
     ref.current = s
     setGame(s)
     // Autosave at the start of every quarter's Plan phase (scope §2.13).
@@ -130,7 +134,9 @@ export function App() {
 
   return (
     <SaveContext.Provider value={saves}>
-      <div data-theme={themeOf(game)}>{screen}</div>
+      <NavContext.Provider value={{ section, setSection, act }}>
+        <div data-theme={themeOf(game)}>{screen}</div>
+      </NavContext.Provider>
     </SaveContext.Provider>
   )
 }
