@@ -521,7 +521,8 @@ function TodoPanel({
       <EquipmentLoanRow state={state} act={act} open={open} />
       <CryptoLoanRow state={state} act={act} open={open} />
       <RaiseRow state={state} act={act} round="seed" />
-      <ActionRow icon="ipo" name={t('ui.plan.ipo')} locked={notBuilt} />
+      <RaiseRow state={state} act={act} round="series_a" />
+      <RaiseRow state={state} act={act} round="ipo_spac" />
 
       <div class="label group">{t('ui.plan.group.people')}</div>
       <ActionRow icon="hire" name={t('ui.plan.hire')} locked={notBuilt} />
@@ -662,6 +663,15 @@ function CryptoLoanRow({
 const RAISE_LABEL = {
   friends_family: 'ui.plan.raise_ff_offer',
   seed: 'ui.plan.raise_seed_offer',
+  series_a: 'ui.plan.raise_series_a_offer',
+  ipo_spac: 'ui.plan.raise_ipo_offer',
+} as const
+
+const RAISE_ICON = {
+  friends_family: 'pitch',
+  seed: 'pitch',
+  series_a: 'pitch',
+  ipo_spac: 'ipo',
 } as const
 
 /** A funding round: a fixed offer (no negotiation yet), once, inside its window. */
@@ -676,20 +686,26 @@ function RaiseRow({
     share: fmt.pct(round.dilution),
   })
   if (round.status === 'done') {
-    return <ActionRow icon="pitch" name={name} locked={t('ui.locked.raised')} />
+    return (
+      <ActionRow
+        icon={RAISE_ICON[id]}
+        name={name}
+        locked={t('ui.locked.raised')}
+      />
+    )
   }
   if (round.status !== 'open') {
     const when =
       round.status === 'closed'
         ? t('ui.locked.closed', { quarter: fmt.quarter(round.to) })
         : t('ui.locked.opens', { quarter: fmt.quarter(round.from) })
-    return <ActionRow icon="pitch" name={name} locked={when} />
+    return <ActionRow icon={RAISE_ICON[id]} name={name} locked={when} />
   }
   const a: Action = { type: 'RAISE', round: round.id }
   const why = whyNot(state, a)
   return (
     <ActionRow
-      icon="pitch"
+      icon={RAISE_ICON[id]}
       name={name}
       bandwidth={round.bandwidth}
       bandwidthLeft={state.bandwidth}

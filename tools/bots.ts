@@ -212,13 +212,13 @@ export const BOTS: Record<string, Strategy> = {
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
   }),
-  /** reinvest, plus friends & family and the seed round as soon as each is allowed; climbs the ladder. */
+  /** reinvest, plus every funding round (F&F, seed, Series A, IPO) as soon as each is allowed; climbs the ladder. */
   'raise-climb': makeBot({
     hodlPct: 0,
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed'],
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
   }),
   /** raise-climb that also borrows the maximum equipment loan whenever it has none. */
   'raise-borrow': makeBot({
@@ -226,7 +226,7 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed'],
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
     borrow: true,
   }),
   /** Keeps every coin it mines; spends only its cash; never sells in alerts. */

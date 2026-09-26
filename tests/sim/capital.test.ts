@@ -60,8 +60,8 @@ describe('friends & family raise', () => {
     )
   })
 
-  it('later rounds (Series A and up) are not in the game yet', () => {
-    expect(err(newGame(1), { type: 'RAISE', round: 'series_a' })).toBe(
+  it("savings isn't a round you can raise", () => {
+    expect(err(newGame(1), { type: 'RAISE', round: 'savings' })).toBe(
       'error.round_not_available',
     )
   })
@@ -131,6 +131,56 @@ describe('seed round', () => {
       siteId: 'site-2',
     })
     expect(err(s, raiseSeed)).toBe('error.raise_needs_site')
+  })
+})
+
+describe('Series A and IPO / SPAC', () => {
+  /** A game in `label` with a powered site of `tier`, and the last report's EBITDA. */
+  function withSite(label: string, tier: string, ebitdaUsd = 0): GameState {
+    const s = { ...newGame(1), quarter: q(label), bandwidth: 3 }
+    s.sites.push({
+      id: 'site-9',
+      tier,
+      readyQuarter: 0,
+      rentUsdQ: 0,
+      powerPriceMult: 1,
+      flaw: null,
+    })
+    s.reports.push({ ebitdaUsd } as GameState['reports'][number])
+    return s
+  }
+
+  it('Series A: $8M for 20%, 2019Q1–2021Q2, needs a powered 1 MW site', () => {
+    const a: Action = { type: 'RAISE', round: 'series_a' }
+    const s = ok(withSite('2019Q1', 'warehouse'), a)
+    expect(s.cash).toBe(8_010_000)
+    expect(s.founderStake).toBeCloseTo(0.8)
+    expect(s.bandwidth).toBe(1)
+    expect(err(withSite('2019Q1', 'small_unit'), a)).toBe(
+      'error.raise_needs_site',
+    )
+    expect(err(withSite('2018Q4', 'warehouse'), a)).toBe('error.raise_window')
+    expect(err(withSite('2021Q3', 'warehouse'), a)).toBe('error.raise_window')
+  })
+
+  it('IPO / SPAC: $150M for 15%, only in 2021, needs 20 MW and $5M quarterly EBITDA, 3 Bandwidth', () => {
+    const ipo: Action = { type: 'RAISE', round: 'ipo_spac' }
+    const s = ok(withSite('2021Q2', 'own_site', 5_000_000), ipo)
+    expect(s.cash).toBe(150_010_000)
+    expect(s.founderStake).toBeCloseTo(0.85)
+    expect(s.bandwidth).toBe(0)
+    expect(err(withSite('2021Q2', 'own_site', 4_999_999), ipo)).toBe(
+      'error.raise_needs_ebitda',
+    )
+    expect(err(withSite('2021Q2', 'warehouse', 5_000_000), ipo)).toBe(
+      'error.raise_needs_site',
+    )
+    expect(err(withSite('2022Q1', 'own_site', 5_000_000), ipo)).toBe(
+      'error.raise_window',
+    )
+    expect(
+      err({ ...withSite('2021Q2', 'own_site', 5_000_000), bandwidth: 2 }, ipo),
+    ).toBe('error.no_bandwidth')
   })
 })
 

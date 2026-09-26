@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the crypto-backed loan and margin calls.
+Last updated: 26 Sep 2026, with Series A and the IPO / SPAC round.
 
 ## How the owner works
 
@@ -50,8 +50,8 @@ See `CLAUDE.md` for the full list. The main ones:
    Market, sites (ladder, scouting, hidden flaws), machines (new/used, delivery, weekly failure roll,
    repair), Bandwidth, mining (auto switch-off), treasury (HODL/sell %), price-alert interrupt (max 3
    per quarter), quarter report, forced sales and bankruptcy, valuation, game log.
-4. **Capital:** the equipment loan and the crypto-backed loan with margin calls (see Decisions), friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
-   founder stake (dilutions multiply: F&F then seed leaves 72%).
+4. **Capital:** the equipment loan and the crypto-backed loan with margin calls (see Decisions), every funding round: friends & family, seed, Series A and IPO / SPAC (fixed offers from `capital.json`, no
+   negotiation yet), founder stake (dilutions multiply: F&F then seed leaves 72%, then Series A 57.6%).
 5. **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
    and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
@@ -64,7 +64,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Series A and the IPO/SPAC round, negotiation, hires,
+Negotiation, hires,
 Heat and talking to the neighbours, Read the market, auctions, rivals and the league table, the 20 event
 cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
@@ -92,6 +92,10 @@ ask first).
 - Seed: 2 Bandwidth, +$1.5M for 20% ($6M pre-money), open 2017Q4–2019Q4, once, needs a powered site of
   at least 100 kW usable capacity (from `capital.json`). Taken as a fixed offer: the scope's fallback
   while the negotiation mini-game isn't built.
+- Series A: 2 Bandwidth, +$8M for 20% ($32M pre-money), open 2019Q1–2021Q2, once, needs a powered site of
+  at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
+  a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
+  as fixed offers like the seed round. **Not yet confirmed by the owner.**
 - **Leaving a site:** penalty = 1 month of that site's own rent (⅓ of quarterly rent), no Bandwidth.
   Machines on the site are sold automatically at the used price. Allowed while the site is still being
   built (build money is lost). The garage can't be left. The tier can be built again later at full cost.
@@ -151,8 +155,8 @@ ask first).
 |---|---|---|---|
 | cautious | garage only, keeps half its cash | 0% | $41.5K |
 | reinvest | garage only, spends everything | 0% | $28.8K |
-| raise-climb | reinvest + F&F (2017Q1) + seed (2017Q4), climbs the ladder | 0% | $974K (peak $9.2M, 2021Q1) |
-| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $947K (peak $9.2M, 2021Q1) |
+| raise-climb | reinvest + every round as soon as allowed, climbs the ladder | 0% | $17.9M (peak $334M, 2021Q1) |
+| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $17.6M (peak $337M, 2021Q1) |
 | hodl | garage only, keeps every coin | 0% | $104K |
 | hodl-borrow | hodl + the biggest crypto-backed loan whenever it has none | 0% | $65.9K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
@@ -167,7 +171,12 @@ ask first).
 - **With the seed round, the reinvesting bot climbs to the 1 MW warehouse (powered 2018Q3) and never
   goes bust.** Its cash bottoms out around $600K in 2018: $1.5M of seed money is far more than a
   warehouse (about $400K) plus rent can burn. It can't climb further yet (the 20 MW own site needs
-  Series A or loans), so it peaks at about $9M, far below the scope's ~$2B target (which needs ~35–40 MW).
+  Series A or loans).
+- **With Series A (2019Q1, $8M) the raising bot reaches the 20 MW own site (powered about 2020Q3)** and
+  peaks at about $335M in 2021Q1, still far below the scope's ~$2B target (which needs ~35–40 MW). It
+  never takes the IPO: its best quarterly EBITDA is about $4.4M (2021Q4), just under the $5M the IPO
+  needs, and it stops adding machines once the 20 MW site is full, piling up ~$20M of cash by the end.
+  Founder stake ends at 57.6%.
 - The scope's anchor "reinvesting 100% goes bust 2018Q2–2019Q2" is still a to-do test: even with raises,
   reinvesting doesn't over-extend. It probably needs loans (borrowed money that must be repaid).
 - A cautious bot (keeps half its cash) with raises builds the small unit only at the very end and never
@@ -192,9 +201,12 @@ ask first).
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
 - Confirm the equipment loan rules above (one at a time, weekly payments, no covenant).
 - Confirm the crypto loan rules above, especially the extra "pay down with cash" margin-call answer.
+- Series A and the IPO taken as fixed offers from `capital.json`: fine until negotiation exists? The IPO's
+  $5M EBITDA bar is just out of reach for a bot that fills one 20 MW site. Intended, or lower it?
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
 The owner will give the go-ahead. Candidates from the build order (`docs/player-actions-and-pacing.md`
-§7): Series A, negotiation (power contracts, then investors), the LTV gauge on a Capital screen.
+§7): week 3 (distressed auctions + light rivals + league table, then grid curtailment), negotiation
+(power contracts, then investors), the LTV gauge on a Capital screen.
