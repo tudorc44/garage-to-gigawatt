@@ -28,8 +28,8 @@ export const BALANCE = {
   capital: {
     /** Bandwidth a raise costs when capital.json doesn't say (scope §2.6: pitch investors = 2). */
     raiseBandwidth: 2,
-    /** Rounds the game can play so far (fixed offers, no negotiation). Seed and later: not built yet. */
-    openRounds: ['friends_family'] as readonly string[],
+    /** Rounds the game can play so far (fixed offers, no negotiation). Series A and later: not built yet. */
+    openRounds: ['friends_family', 'seed'] as readonly string[],
   },
 
   sites: {

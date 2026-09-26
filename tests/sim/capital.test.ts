@@ -36,7 +36,7 @@ describe('friends & family raise', () => {
     expect(s.raisesDone).toEqual(['friends_family'])
     const entry = s.log.at(-1)!
     expect(t(entry.key, entry.params)).toBe(
-      'Raised $40.0K from friends & family for 10% of the company. Your stake: 90%.',
+      'Raised $40.0K in the friends & family round for 10% of the company. Your stake: 90%.',
     )
   })
 
@@ -60,8 +60,8 @@ describe('friends & family raise', () => {
     )
   })
 
-  it('later rounds are not in the game yet', () => {
-    expect(err(newGame(1), { type: 'RAISE', round: 'seed' })).toBe(
+  it('later rounds (Series A and up) are not in the game yet', () => {
+    expect(err(newGame(1), { type: 'RAISE', round: 'series_a' })).toBe(
       'error.round_not_available',
     )
   })
@@ -71,6 +71,66 @@ describe('friends & family raise', () => {
     while (s.phase === 'live') s = advance(s)
     expect(s.reports[0].founderStake).toBeCloseTo(0.9)
     expect(newGame(1).founderStake).toBe(1)
+  })
+})
+
+describe('seed round', () => {
+  const raiseSeed: Action = { type: 'RAISE', round: 'seed' }
+  /** A game in `label` with a powered 100 kW small unit and 3 Bandwidth. */
+  function withSmallUnit(label: string): GameState {
+    const s = { ...newGame(1), quarter: q(label), bandwidth: 3 }
+    s.sites.push({
+      id: 'site-2',
+      tier: 'small_unit',
+      readyQuarter: 0,
+      rentUsdQ: 6000,
+      powerPriceMult: 1,
+      flaw: null,
+    })
+    return s
+  }
+
+  it('reads its terms from capital.json', () => {
+    expect(getStep('seed')).toMatchObject({
+      amount_usd: 1_500_000,
+      dilution: 0.2,
+      window: ['2017Q4', '2019Q4'],
+      requires: { min_mw: 0.1 },
+    })
+  })
+
+  it('adds $1.5M for 20%, costs 2 Bandwidth, and stacks on F&F dilution', () => {
+    let s = withSmallUnit('2017Q4')
+    s.raisesDone.push('friends_family')
+    s.founderStake = 0.9
+    s = ok(s, raiseSeed)
+    expect(s.cash).toBe(1_510_000)
+    expect(s.bandwidth).toBe(1)
+    expect(s.founderStake).toBeCloseTo(0.72)
+    const entry = s.log.at(-1)!
+    expect(t(entry.key, entry.params)).toBe(
+      'Raised $1.5M in the seed round for 20% of the company. Your stake: 72%.',
+    )
+    expect(err({ ...s, bandwidth: 3 }, raiseSeed)).toBe('error.raise_done')
+  })
+
+  it('is only open 2017Q4–2019Q4', () => {
+    expect(err(withSmallUnit('2017Q3'), raiseSeed)).toBe('error.raise_window')
+    expect(ok(withSmallUnit('2019Q4'), raiseSeed).cash).toBe(1_510_000)
+    expect(err(withSmallUnit('2020Q1'), raiseSeed)).toBe('error.raise_window')
+  })
+
+  it('needs a powered 100 kW site: not the garage alone', () => {
+    const garageOnly = { ...newGame(1), quarter: q('2017Q4') }
+    expect(err(garageOnly, raiseSeed)).toBe('error.raise_needs_site')
+  })
+
+  it('is lost if you leave the small unit first', () => {
+    const s = ok(withSmallUnit('2018Q1'), {
+      type: 'LEAVE_SITE',
+      siteId: 'site-2',
+    })
+    expect(err(s, raiseSeed)).toBe('error.raise_needs_site')
   })
 })
 

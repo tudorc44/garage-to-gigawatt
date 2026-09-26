@@ -164,6 +164,30 @@ const bots = {
     ],
     '2018Q2': [{ type: 'LEAVE_SITE', siteId: 'site-2' }],
   }),
+  // F&F and a small unit, then the seed round in 2017Q4 to fill the small unit with rigs.
+  'seed-raiser': scripted({
+    '2017Q1': [
+      { type: 'RAISE', round: 'friends_family' },
+      { type: 'BUILD_SITE', tier: 'small_unit' },
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'new',
+        count: 4,
+        siteId: 'site-1',
+      },
+    ],
+    '2017Q4': [
+      { type: 'RAISE', round: 'seed' },
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'used',
+        count: 100,
+        siteId: 'site-2',
+      },
+    ],
+  }),
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {

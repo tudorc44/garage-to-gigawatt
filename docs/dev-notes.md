@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, after commit `09bfa54`.
+Last updated: 26 Sep 2026, with the seed round.
 
 ## How the owner works
 
@@ -49,18 +49,19 @@ See `CLAUDE.md` for the full list. The main ones:
    Market, sites (ladder, scouting, hidden flaws), machines (new/used, delivery, weekly failure roll,
    repair), Bandwidth, mining (auto switch-off), treasury (HODL/sell %), price-alert interrupt (max 3
    per quarter), quarter report, forced sales and bankruptcy, valuation, game log.
-4. **Capital:** friends & family raise (fixed offer from `capital.json`), founder stake.
+4. **Capital:** friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
+   founder stake (dilutions multiply: F&F then seed leaves 72%).
 5. **Leaving a site** (lease break) with a penalty.
 6. **Terminal game** (`npm run play`) and **browser UI**: title screen, Plan, Live quarter (1.5 s per week,
    pause, 1×/2×/4×, skip, alerts as modals), Quarter report, end screen. Design-system tokens and
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
-   early-expander, ff-expander, ff-leaver) and unit tests: 124 passing + 1 to-do.
+   early-expander, ff-expander, ff-leaver, seed-raiser) and unit tests: 135 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the dev-only `g2g` console helper.
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Seed and later rounds, equipment and crypto-backed loans (and margin calls), IPO, negotiation, hires,
+Series A and the IPO/SPAC round, equipment and crypto-backed loans (and margin calls), IPO, negotiation, hires,
 Heat and talking to the neighbours, Read the market, auctions, rivals and the league table, the 20 event
 cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
@@ -81,6 +82,9 @@ ask first).
 - Coins are sold **weekly** at that week's price (not at quarter end).
 - Fonts self-hosted with Fontsource (no Google Fonts CDN).
 - Friends & family: 2 Bandwidth, +$40K for 10%, open 2017Q1–2018Q2, once per game (from `capital.json`).
+- Seed: 2 Bandwidth, +$1.5M for 20% ($6M pre-money), open 2017Q4–2019Q4, once, needs a powered site of
+  at least 100 kW usable capacity (from `capital.json`). Taken as a fixed offer: the scope's fallback
+  while the negotiation mini-game isn't built.
 - **Leaving a site:** penalty = 1 month of that site's own rent (⅓ of quarterly rent), no Bandwidth.
   Machines on the site are sold automatically at the used price. Allowed while the site is still being
   built (build money is lost). The garage can't be left. The tier can be built again later at full cost.
@@ -103,6 +107,7 @@ ask first).
 - Valuation (amendment A5): max(0, quarterly EBITDA × 4) × era multiple + cash + treasury − debt.
 - "Cost per coin" counts power only. Cash is rounded to cents weekly.
 - Raises cost 2 Bandwidth unless `capital.json` says otherwise; open rounds are listed in `balance.ts`.
+- The raise log line reads: Raised $1.5M in the seed round for 20% of the company. Your stake: 72%.
 
 ## Balance findings (from `npm run sim`, 50 seeds per bot)
 
@@ -110,6 +115,7 @@ ask first).
 |---|---|---|---|
 | cautious | garage only, keeps half its cash | 0% | $39.9K |
 | reinvest | garage only, spends everything | 0% | $28.8K |
+| raise-climb | reinvest + F&F (2017Q1) + seed (2017Q4), climbs the ladder | 0% | $974K (peak $9.2M, 2021Q1) |
 | hodl | garage only, keeps every coin | 0% | $104K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
 | careful-ff | like ff-climb, keeps 4 quarters of rent, stops buying in 2018 | 100% (2019Q3) | −$1.6K |
@@ -120,8 +126,14 @@ ask first).
 - **The 100 kW small unit loses money from 2018Q2 to about 2020** ($6K/quarter rent, GPU rigs switched
   off). Before the lease exit, building it in 2017 meant bankruptcy however carefully you played. With
   the exit, leaving in time is the decision that decides survival, which is what the alpha wants.
-- The scope's anchor "reinvesting 100% goes bust 2018Q2–2019Q2" is still a to-do test: garage-only
-  reinvest can't over-extend without loans or investors.
+- **With the seed round, the reinvesting bot climbs to the 1 MW warehouse (powered 2018Q3) and never
+  goes bust.** Its cash bottoms out around $600K in 2018: $1.5M of seed money is far more than a
+  warehouse (about $400K) plus rent can burn. It can't climb further yet (the 20 MW own site needs
+  Series A or loans), so it peaks at about $9M, far below the scope's ~$2B target (which needs ~35–40 MW).
+- The scope's anchor "reinvesting 100% goes bust 2018Q2–2019Q2" is still a to-do test: even with raises,
+  reinvesting doesn't over-extend. It probably needs loans (borrowed money that must be repaid).
+- A cautious bot (keeps half its cash) with raises builds the small unit only at the very end and never
+  takes the seed round.
 - Price alerts cluster (2 per quarter in 2017Q2–2018Q1 and 2022Q2, almost none 2018–2020) because the
   weekly prices are reconstructed from monthly data. Real CoinMetrics data should fix it.
 
@@ -129,9 +141,10 @@ ask first).
 
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
+- Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
 The owner will give the go-ahead. Candidates from the build order (`docs/player-actions-and-pacing.md`
-§7): the seed round, then equipment and crypto-backed loans (with margin calls), then negotiation.
+§7): Series A, equipment and crypto-backed loans (with margin calls), then negotiation.

@@ -448,7 +448,7 @@ function TodoPanel({
       />
 
       <div class="label group">{t('ui.plan.group.capital')}</div>
-      <FriendsFamilyRow state={state} act={act} />
+      <RaiseRow state={state} act={act} round="friends_family" />
       <ActionRow
         icon="loan"
         name={t('ui.plan.equipment_loan')}
@@ -459,11 +459,7 @@ function TodoPanel({
         name={t('ui.plan.crypto_loan')}
         locked={notBuilt}
       />
-      <ActionRow
-        icon="pitch"
-        name={t('ui.plan.pitch_seed')}
-        locked={notBuilt}
-      />
+      <RaiseRow state={state} act={act} round="seed" />
       <ActionRow icon="ipo" name={t('ui.plan.ipo')} locked={notBuilt} />
 
       <div class="label group">{t('ui.plan.group.people')}</div>
@@ -485,10 +481,19 @@ function TodoPanel({
   )
 }
 
-/** Friends & family: a fixed offer (no negotiation yet), once, inside its window. */
-function FriendsFamilyRow({ state, act }: ScreenProps) {
-  const round = fundingRound(state, 'friends_family')
-  const name = t('ui.plan.raise_ff_offer', {
+const RAISE_LABEL = {
+  friends_family: 'ui.plan.raise_ff_offer',
+  seed: 'ui.plan.raise_seed_offer',
+} as const
+
+/** A funding round: a fixed offer (no negotiation yet), once, inside its window. */
+function RaiseRow({
+  state,
+  act,
+  round: id,
+}: ScreenProps & { round: keyof typeof RAISE_LABEL }) {
+  const round = fundingRound(state, id)
+  const name = t(RAISE_LABEL[id], {
     amount: fmt.money(round.amountUsd),
     share: fmt.pct(round.dilution),
   })

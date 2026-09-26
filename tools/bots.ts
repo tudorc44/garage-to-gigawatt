@@ -28,6 +28,8 @@ interface BotSettings {
   maxPaybackQuarters: number
   /** Price-alert answer: sell on drops, or always hold. */
   sellOnDrops: boolean
+  /** Funding rounds to take as soon as each is allowed, in this order. */
+  raises?: string[]
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -35,8 +37,20 @@ function makeBot(settings: BotSettings): Strategy {
     plan(s: GameState): Action[] {
       const actions: Action[] = []
       let cash = s.cash
-      const bandwidth = s.bandwidth
-      const spendable = () => cash - settings.reserveUsd(s.cash)
+      let bandwidth = s.bandwidth
+      // 0. Take funding rounds when allowed (checked by dry-running the action).
+      let reserveBase = s.cash
+      for (const round of settings.raises ?? []) {
+        const a: Action = { type: 'RAISE', round }
+        const r = applyAction(s, a)
+        if (r.ok && bandwidth >= s.bandwidth - r.state.bandwidth) {
+          actions.push(a)
+          cash += r.state.cash - s.cash
+          reserveBase += r.state.cash - s.cash
+          bandwidth -= s.bandwidth - r.state.bandwidth
+        }
+      }
+      const spendable = () => cash - settings.reserveUsd(reserveBase)
 
       if (s.quarter === 0) {
         actions.push({ type: 'SET_HODL', pct: settings.hodlPct })
@@ -153,6 +167,14 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
+  }),
+  /** reinvest, plus friends & family and the seed round as soon as each is allowed; climbs the ladder. */
+  'raise-climb': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: ['friends_family', 'seed'],
   }),
   /** Keeps every coin it mines; spends only its cash; never sells in alerts. */
   hodl: makeBot({
