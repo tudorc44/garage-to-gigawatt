@@ -5,6 +5,7 @@ import { hasText, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
+  fundingRound,
   lotViews,
   machineMarket,
   quarterName,
@@ -415,7 +416,7 @@ function TodoPanel({
       />
 
       <div class="label group">{t('ui.plan.group.capital')}</div>
-      <ActionRow icon="pitch" name={t('ui.plan.raise_ff')} locked={notBuilt} />
+      <FriendsFamilyRow state={state} act={act} />
       <ActionRow
         icon="loan"
         name={t('ui.plan.equipment_loan')}
@@ -449,6 +450,38 @@ function TodoPanel({
       />
       <ActionRow icon="bid" name={t('ui.plan.auction')} locked={notBuilt} />
     </div>
+  )
+}
+
+/** Friends & family: a fixed offer (no negotiation yet), once, inside its window. */
+function FriendsFamilyRow({ state, act }: ScreenProps) {
+  const round = fundingRound(state, 'friends_family')
+  const name = t('ui.plan.raise_ff_offer', {
+    amount: fmt.money(round.amountUsd),
+    share: fmt.pct(round.dilution),
+  })
+  if (round.status === 'done') {
+    return <ActionRow icon="pitch" name={name} locked={t('ui.locked.raised')} />
+  }
+  if (round.status !== 'open') {
+    const when =
+      round.status === 'closed'
+        ? t('ui.locked.closed', { quarter: fmt.quarter(round.to) })
+        : t('ui.locked.opens', { quarter: fmt.quarter(round.from) })
+    return <ActionRow icon="pitch" name={name} locked={when} />
+  }
+  const a: Action = { type: 'RAISE', round: round.id }
+  const why = whyNot(state, a)
+  return (
+    <ActionRow
+      icon="pitch"
+      name={name}
+      bandwidth={round.bandwidth}
+      bandwidthLeft={state.bandwidth}
+      price={t('ui.plan.plus', { value: fmt.money(round.amountUsd) })}
+      disabledReason={why ? say(why) : undefined}
+      onClick={() => act(a)}
+    />
   )
 }
 

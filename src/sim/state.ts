@@ -60,6 +60,10 @@ export interface GameState {
   /** Share of each week's mined coins kept in the treasury (0–1). The rest is sold. */
   hodlPct: number
   treasury: Record<Coin, number>
+  /** Founder's share of the company (1 = 100%); each raise dilutes it. */
+  founderStake: number
+  /** Funding rounds already taken (capital.json ladder ids). */
+  raisesDone: string[]
   sites: Site[]
   machines: MachineLot[]
   siteOffers: SiteOffer[]
@@ -148,6 +152,7 @@ export interface QuarterReport {
   cash: number
   /** Revenue − power − rent for the quarter. */
   ebitdaUsd: number
+  founderStake: number
   /** Company valuation (review A5), after any forced sales. */
   valuationUsd: number
   priceAlerts: number
@@ -204,6 +209,8 @@ export function newGame(seed: number): GameState {
     bandwidth: BALANCE.bandwidth.perQuarter,
     hodlPct: 0,
     treasury: { BTC: 0, ETH: 0 },
+    founderStake: 1,
+    raisesDone: [],
     sites: [
       {
         id: 'site-1',

@@ -227,6 +227,11 @@ function parse(
       return cmd
     case 'end':
       return { type: 'END_PLAN' }
+    case 'raise':
+      return {
+        type: 'RAISE',
+        round: rest[0] === 'ff' ? 'friends_family' : (rest[0] ?? ''),
+      }
     case 'hodl':
       return { type: 'SET_HODL', pct: num(0) / 100 }
     case 'scout':

@@ -25,6 +25,13 @@ export const BALANCE = {
     threshold: 0.15,
   },
 
+  capital: {
+    /** Bandwidth a raise costs when capital.json doesn't say (scope §2.6: pitch investors = 2). */
+    raiseBandwidth: 2,
+    /** Rounds the game can play so far (fixed offers, no negotiation). Seed and later: not built yet. */
+    openRounds: ['friends_family'] as readonly string[],
+  },
+
   sites: {
     /** Tiers you can build straight away, without scouting first (scope §2.5: "Cash"). */
     noScoutingNeeded: ['small_unit'],

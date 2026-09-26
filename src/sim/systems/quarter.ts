@@ -81,6 +81,7 @@ function buildReport(
     ebitdaUsd: ebitda,
     valuationUsd: valuationUsd(state.quarter, ebitda, state.cash, treasuryUsd),
     priceAlerts: st.priceAlerts,
+    founderStake: state.founderStake,
     startCash: st.startCash,
     startTreasuryUsd: st.startTreasuryUsd,
     soldUsd: st.soldUsd,

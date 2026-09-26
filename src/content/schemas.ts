@@ -150,7 +150,27 @@ export const interruptsFileSchema = z.object({
 
 // ---------- capital.json (only what the sim uses so far) ----------
 
+/** One rung of the funding ladder (savings → F&F → seed → Series A → IPO). */
+export const ladderStepSchema = z.object({
+  id: z.string(),
+  amount_usd: num,
+  /** Share of the company given up, 0–1. */
+  dilution: z.number().min(0).max(1),
+  window: z.tuple([quarterId, quarterId]),
+  requires: z
+    .object({
+      /** A built, powered site of at least this many MW (not machines running). */
+      min_mw: nonNeg.optional(),
+      min_ebitda_usd_q: nonNeg.optional(),
+    })
+    .strict()
+    .optional(),
+  /** Bandwidth cost; if missing, BALANCE.capital.raiseBandwidth. */
+  bandwidth: z.number().int().min(0).optional(),
+})
+
 export const capitalFileSchema = z.object({
+  ladder: z.array(ladderStepSchema).min(1),
   /** EV / EBITDA multiple per quarter, for the company valuation (review A5). */
   era_multiple_ev_ebitda: z
     .record(z.string(), z.union([nonNeg, z.string(), z.boolean()]))
@@ -164,6 +184,7 @@ export const capitalFileSchema = z.object({
     ),
 })
 
+export type LadderStep = z.output<typeof ladderStepSchema>
 export type MarketWeek = z.output<typeof marketWeekSchema>
 export type Machine = z.output<typeof machineSchema>
 export type SiteTier = z.output<typeof siteTierSchema>

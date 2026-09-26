@@ -117,6 +117,29 @@ const bots = {
       { type: 'SCOUT_SITES', tier: 'warehouse' },
     ],
   }),
+  // Raises friends & family on day one, builds the small unit, and fills it with rigs.
+  'ff-expander': scripted({
+    '2017Q1': [
+      { type: 'RAISE', round: 'friends_family' },
+      { type: 'BUILD_SITE', tier: 'small_unit' },
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'new',
+        count: 4,
+        siteId: 'site-1',
+      },
+    ],
+    '2017Q3': [
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'used',
+        count: 3,
+        siteId: 'site-2',
+      },
+    ],
+  }),
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {

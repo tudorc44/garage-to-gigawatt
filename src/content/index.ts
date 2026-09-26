@@ -15,13 +15,14 @@ import {
   sitesFileSchema,
   type Flaw,
   type Interrupt,
+  type LadderStep,
   type Machine,
   type MarketWeek,
   type SiteTier,
 } from './schemas.ts'
 
 export { BALANCE }
-export type { Flaw, Interrupt, Machine, MarketWeek, SiteTier }
+export type { Flaw, Interrupt, LadderStep, Machine, MarketWeek, SiteTier }
 
 export interface Content {
   /** Every quarter of Act I in order: "2017Q1" … "2022Q3". */
@@ -34,6 +35,8 @@ export interface Content {
   interrupts: { maxPerQuarter: number; byId: Record<string, Interrupt> }
   /** EV / EBITDA multiple by quarter label. */
   eraMultiple: Record<string, number>
+  /** Funding ladder rungs, by id. */
+  ladder: Record<string, LadderStep>
 }
 
 export interface RawContent {
@@ -173,6 +176,12 @@ export function parseContent(raw: RawContent): Content {
     }
   }
 
+  for (const id of BALANCE.capital.openRounds) {
+    if (!capitalFile.ladder.some((s) => s.id === id)) {
+      problems.push(`balance.ts: unknown funding round "${id}"`)
+    }
+  }
+
   const byId = Object.fromEntries(
     interruptsFile.interrupts.map((i) => [i.id, i]),
   )
@@ -197,6 +206,7 @@ export function parseContent(raw: RawContent): Content {
     flaws: sitesFile.flaws,
     interrupts: { maxPerQuarter: interruptsFile.max_per_quarter, byId },
     eraMultiple: capitalFile.era_multiple_ev_ebitda,
+    ladder: Object.fromEntries(capitalFile.ladder.map((s) => [s.id, s])),
   }
 }
 

@@ -159,4 +159,120 @@ export const BOTS: Record<string, Strategy> = {
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
   }),
+  /** Raises friends & family in 2017Q1, builds the small unit, fills every site with GPU Gen 1 rigs. */
+  'ff-climb': ffClimb(),
+}
+
+/**
+ * Probes: not strategies, just measurements. garage-max buys 5 GPU Gen 1 rigs on day one
+ * (a full garage), sells every coin and never spends again: the best case for garage-only cash.
+ */
+export const PROBES: Record<string, Strategy> = {
+  'garage-max': {
+    plan: (s) =>
+      s.quarter === 0
+        ? [
+            {
+              type: 'BUY_MACHINES',
+              model: 'gpu_gen1',
+              condition: 'new',
+              count: 5,
+              siteId: 'site-1',
+            },
+          ]
+        : s.machines
+            .filter(
+              (l) =>
+                l.failed > 0 && l.failed * repairCostPerUnit(l.model) <= s.cash,
+            )
+            .map((l) => ({ type: 'REPAIR_MACHINES', lotId: l.id }) as Action),
+  },
+}
+
+/**
+ * ff-climb (design brief): raise F&F in 2017Q1, build the small unit as soon as it can
+ * pay for it, fill free capacity with GPU Gen 1 rigs, sell 100% of mined coins.
+ * It keeps one quarter's rent in reserve: rent starts when a site is signed, but
+ * machines only earn from the next quarter, so spending every dollar means a forced sale.
+ */
+function ffClimb(): Strategy {
+  const rig = 'gpu_gen1'
+  const smallUnit = CONTENT.siteTiers.find((t) => t.id === 'small_unit')!
+  return {
+    plan(s: GameState): Action[] {
+      const actions: Action[] = []
+      let cash = s.cash
+      let bandwidth = s.bandwidth
+      const ff = CONTENT.ladder.friends_family
+      const q = CONTENT.quarters[s.quarter]
+      if (
+        !s.raisesDone.includes(ff.id) &&
+        q >= ff.window[0] &&
+        q <= ff.window[1] &&
+        bandwidth >= 2
+      ) {
+        actions.push({ type: 'RAISE', round: ff.id })
+        cash += ff.amount_usd
+        bandwidth -= 2
+      }
+      // One quarter of rent, plus a $1,000 cushion for power and cent rounding.
+      let rentReserve = 1_000 + s.sites.reduce((sum, x) => sum + x.rentUsdQ, 0)
+
+      for (const lot of s.machines) {
+        const cost = lot.failed * repairCostPerUnit(lot.model)
+        if (lot.failed > 0 && cash - cost >= rentReserve) {
+          actions.push({ type: 'REPAIR_MACHINES', lotId: lot.id })
+          cash -= cost
+        }
+      }
+
+      // The small unit needs no scouting (BALANCE.sites.noScoutingNeeded): build it directly.
+      const capex = baseCapexUsd(smallUnit)
+      const sites = [...s.sites]
+      if (
+        !s.sites.some((x) => x.tier === smallUnit.id) &&
+        bandwidth >= 1 &&
+        cash - capex >= rentReserve + smallUnit.rent_usd_q
+      ) {
+        actions.push({ type: 'BUILD_SITE', tier: smallUnit.id })
+        cash -= capex
+        rentReserve += smallUnit.rent_usd_q
+        // BUILD_SITE takes the next id; RAISE and REPAIR don't use ids.
+        sites.push({
+          id: `site-${s.nextId}`,
+          tier: smallUnit.id,
+          readyQuarter: s.quarter + smallUnit.build_quarters,
+          rentUsdQ: smallUnit.rent_usd_q,
+          powerPriceMult: 1,
+          flaw: null,
+        })
+      }
+
+      // Fill every site (built or still being built) with the cheaper of new/used GPU Gen 1.
+      const model = CONTENT.machines.find((m) => m.id === rig)!
+      const prices = (['used', 'new'] as Condition[])
+        .map((c) => ({ c, p: buyPrice(model, s.quarter, c) }))
+        .filter((x): x is { c: Condition; p: number } => x.p !== undefined)
+        .sort((a, b) => a.p - b.p)
+      const cheapest = prices[0]
+      if (!cheapest) return actions
+      for (const site of sites) {
+        const free = capacityKw(site) - usedKw(s, site.id)
+        const count = Math.min(
+          Math.floor(free / model.power_kw + 1e-9),
+          Math.floor((cash - rentReserve) / cheapest.p),
+        )
+        if (count < 1) continue
+        actions.push({
+          type: 'BUY_MACHINES',
+          model: rig,
+          condition: cheapest.c,
+          count,
+          siteId: site.id,
+        })
+        cash -= cheapest.p * count
+      }
+      return actions
+    },
+  }
 }

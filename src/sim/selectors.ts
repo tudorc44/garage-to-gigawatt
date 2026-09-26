@@ -28,6 +28,7 @@ import {
 } from './systems/sites.ts'
 import { treasuryValueUsd } from './systems/treasury.ts'
 import { bandwidthForQuarter } from './systems/bandwidth.ts'
+import { getStep, raiseBandwidth } from './systems/capital.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {
@@ -296,4 +297,29 @@ export function interruptChoices(
     id: c.id,
     isDefault: c.id === def.default,
   }))
+}
+
+export type RoundStatus = 'open' | 'done' | 'closed' | 'not_yet'
+
+/** A funding round's offer and whether it can be taken this quarter (window and once-only). */
+export function fundingRound(state: GameState, id: string) {
+  const step = getStep(id)!
+  const q = CONTENT.quarters[state.quarter]
+  const [from, to] = step.window
+  const status: RoundStatus = state.raisesDone.includes(id)
+    ? 'done'
+    : q > to
+      ? 'closed'
+      : q < from
+        ? 'not_yet'
+        : 'open'
+  return {
+    id,
+    amountUsd: step.amount_usd,
+    dilution: step.dilution,
+    bandwidth: raiseBandwidth(step),
+    from,
+    to,
+    status,
+  }
 }

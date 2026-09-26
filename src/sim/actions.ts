@@ -9,6 +9,7 @@ import {
   removeMachines,
   repairCostPerUnit,
 } from './systems/machines.ts'
+import { raiseBlocker, takeRaise } from './systems/capital.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import { getModel, marketWeek } from './systems/market.ts'
 import { treasuryValueUsd } from './systems/treasury.ts'
@@ -39,6 +40,8 @@ export type Action =
   /** Build from a scouted offer, or (tiers that need no scouting) straight from the tier. */
   | { type: 'BUILD_SITE'; offerId: string }
   | { type: 'BUILD_SITE'; tier: string }
+  /** Take a funding round from capital.json (fixed offer). */
+  | { type: 'RAISE'; round: string }
   /** Plan phase done: start the live quarter. */
   | { type: 'END_PLAN' }
   /** Answer the alert that paused the live quarter. */
@@ -150,6 +153,13 @@ function run(s: GameState, a: Action): Message | undefined {
         costUsd: cost,
       })
       lot.failed = 0
+      return
+    }
+
+    case 'RAISE': {
+      const blocked = raiseBlocker(s, a.round)
+      if (blocked) return blocked
+      takeRaise(s, a.round)
       return
     }
 

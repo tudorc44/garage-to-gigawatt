@@ -25,6 +25,7 @@ const ID_PARAMS: Record<string, string> = {
   tier: 'site.',
   condition: 'condition.',
   flaw: 'flaw.',
+  round: 'round.',
 }
 
 function fill(text: string, params: MessageParams): string {

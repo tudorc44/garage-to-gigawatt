@@ -6,8 +6,8 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONTENT } from '../src/content/index.ts'
 import { playGame } from '../src/sim/replay.ts'
-import type { QuarterReport } from '../src/sim/state.ts'
-import { BOTS } from './bots.ts'
+import type { GameState, QuarterReport } from '../src/sim/state.ts'
+import { BOTS, PROBES } from './bots.ts'
 
 const args = process.argv.slice(2)
 const argValue = (flag: string, fallback: string) => {
@@ -16,6 +16,8 @@ const argValue = (flag: string, fallback: string) => {
 }
 const SEEDS = Number(argValue('--seeds', '50'))
 const OUT = argValue('--out', 'sim-output')
+/** Target B1: the cash a small unit needs. */
+const B1_CASH = 35_000
 
 const RUN_COLUMNS = [
   'quarter',
@@ -26,6 +28,7 @@ const RUN_COLUMNS = [
   'revenue',
   'ebitda',
   'valuation',
+  'founder_stake',
   'price_alerts',
   'forced_sale',
 ] as const
@@ -41,6 +44,7 @@ function runCsv(reports: QuarterReport[]): string {
       r.revenueUsd.toFixed(2),
       r.ebitdaUsd.toFixed(2),
       r.valuationUsd.toFixed(2),
+      r.founderStake.toFixed(4),
       r.priceAlerts,
       r.forcedSale ? 1 : 0,
     ].join(','),
@@ -54,6 +58,9 @@ const median = (xs: number[]) => {
   const mid = Math.floor(s.length / 2)
   return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2
 }
+/** Median of quarter labels ("2018Q3"), which sort correctly as text. */
+const medianLabel = (xs: string[]) =>
+  xs.length ? [...xs].sort()[Math.floor(xs.length / 2)] : ''
 const usd = (n: number) =>
   Number.isNaN(n)
     ? '—'
@@ -63,78 +70,89 @@ const usd = (n: number) =>
         notation: 'compact',
         maximumFractionDigits: 1,
       }).format(n)
+const counts = (xs: string[]) => {
+  const m = new Map<string, number>()
+  for (const x of [...xs].sort()) m.set(x, (m.get(x) ?? 0) + 1)
+  return [...m].map(([k, n]) => `${k} ×${n}`).join(', ')
+}
+
+interface Run {
+  seed: number
+  state: GameState
+}
 
 interface StrategySummary {
   strategy: string
-  runs: number
-  busts: number
-  bustQuarters: string[]
-  endValuations: number[]
-  peakValuations: number[]
-  peakQuarters: string[]
-  /** alertsByQuarter[q] = total price alerts in that quarter across all runs */
-  alertsByQuarter: number[]
-  quartersPlayed: number
+  runs: Run[]
+}
+
+/** First quarter a run's cash reached `usd`, or null. */
+const firstCashAt = (r: Run, amount: number) =>
+  r.state.reports.find((x) => x.cash >= amount)?.quarter ?? null
+
+/** Quarter the run's first small unit was powered (and it was reached in the act), or null. */
+function smallUnitPowered(r: Run): string | null {
+  const s = r.state.sites.find((x) => x.tier === 'small_unit')
+  const q = s ? CONTENT.quarters[s.readyQuarter] : undefined
+  return q && r.state.reports.some((x) => x.quarter === q) ? q : null
 }
 
 const started = performance.now()
 mkdirSync(OUT, { recursive: true })
-const summaries: StrategySummary[] = []
 
-for (const [name, bot] of Object.entries(BOTS)) {
-  const sum: StrategySummary = {
-    strategy: name,
-    runs: 0,
-    busts: 0,
-    bustQuarters: [],
-    endValuations: [],
-    peakValuations: [],
-    peakQuarters: [],
-    alertsByQuarter: CONTENT.quarters.map(() => 0),
-    quartersPlayed: 0,
-  }
-  for (let seed = 1; seed <= SEEDS; seed++) {
-    const { state } = playGame(seed, bot)
-    const reports = state.reports
-    writeFileSync(join(OUT, `${name}-seed${seed}.csv`), runCsv(reports))
-
-    sum.runs++
-    sum.quartersPlayed += reports.length
-    if (state.phase === 'gameover') {
-      sum.busts++
-      sum.bustQuarters.push(reports.at(-1)!.quarter)
+function runAll(
+  strategies: Record<string, (typeof BOTS)[string]>,
+  csv: boolean,
+) {
+  return Object.entries(strategies).map(([name, bot]): StrategySummary => {
+    const runs: Run[] = []
+    for (let seed = 1; seed <= SEEDS; seed++) {
+      const { state } = playGame(seed, bot)
+      if (csv)
+        writeFileSync(
+          join(OUT, `${name}-seed${seed}.csv`),
+          runCsv(state.reports),
+        )
+      runs.push({ seed, state })
     }
-    sum.endValuations.push(reports.at(-1)!.valuationUsd)
-    const peak = reports.reduce((a, b) =>
-      b.valuationUsd > a.valuationUsd ? b : a,
-    )
-    sum.peakValuations.push(peak.valuationUsd)
-    sum.peakQuarters.push(peak.quarter)
-    reports.forEach((r, i) => (sum.alertsByQuarter[i] += r.priceAlerts))
-  }
-  summaries.push(sum)
+    return { strategy: name, runs }
+  })
 }
 
-// ---------- summary ----------
+const summaries = runAll(BOTS, true)
+const probes = runAll(PROBES, false)
 
-const mostCommon = (xs: string[]) => {
-  const counts = new Map<string, number>()
-  for (const x of xs) counts.set(x, (counts.get(x) ?? 0) + 1)
-  return [...counts.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? '—'
-}
-const summaryRows = summaries.map((s) => {
-  const busts = [...s.bustQuarters].sort()
-  const alertsTotal = s.alertsByQuarter.reduce((a, b) => a + b, 0)
+// ---------- per-strategy summary ----------
+
+const summaryRows = summaries.map(({ strategy, runs }) => {
+  const busts = runs.filter((r) => r.state.phase === 'gameover')
+  const bustQuarters = busts.map((r) => r.state.reports.at(-1)!.quarter)
+  const endValuations = runs.map((r) => r.state.reports.at(-1)!.valuationUsd)
+  const peaks = runs.map((r) =>
+    r.state.reports.reduce((a, b) => (b.valuationUsd > a.valuationUsd ? b : a)),
+  )
+  const powered = runs
+    .map(smallUnitPowered)
+    .filter((q): q is string => q !== null)
+  const quartersPlayed = runs.reduce((a, r) => a + r.state.reports.length, 0)
+  const alerts = runs.reduce(
+    (a, r) => a + r.state.reports.reduce((b, x) => b + x.priceAlerts, 0),
+    0,
+  )
   return {
-    strategy: s.strategy,
-    runs: s.runs,
-    bust_rate: s.busts / s.runs,
-    first_bust: busts[0] ?? '',
-    median_bust: busts.length ? busts[Math.floor(busts.length / 2)] : '',
-    median_end_valuation: median(s.endValuations),
-    median_peak_valuation: median(s.peakValuations),
-    usual_peak_quarter: mostCommon(s.peakQuarters),
-    alerts_per_quarter: alertsTotal / s.quartersPlayed,
+    strategy,
+    runs: runs.length,
+    bust_rate: busts.length / runs.length,
+    bust_quarters: counts(bustQuarters),
+    median_bust: medianLabel(bustQuarters),
+    median_end_valuation: median(endValuations),
+    median_peak_valuation: median(peaks.map((p) => p.valuationUsd)),
+    usual_peak_quarter: medianLabel(peaks.map((p) => p.quarter)),
+    median_founder_stake: median(runs.map((r) => r.state.founderStake)),
+    small_unit_powered: powered.length
+      ? `${medianLabel(powered)} (${powered.length}/${runs.length} runs)`
+      : '',
+    alerts_per_quarter: alerts / quartersPlayed,
   }
 })
 const header = Object.keys(summaryRows[0]).join(',')
@@ -145,26 +163,65 @@ writeFileSync(
 )
 
 console.log(
-  `\nSim-runner: ${SEEDS} seeds × ${summaries.length} strategies (${((performance.now() - started) / 1000).toFixed(1)} s). CSVs in ${OUT}/\n`,
+  `\nSim-runner: ${SEEDS} seeds × ${summaries.length} strategies + ${probes.length} probe (${((performance.now() - started) / 1000).toFixed(1)} s). CSVs in ${OUT}/\n`,
 )
 console.table(
   summaryRows.map((r) => ({
     strategy: r.strategy,
     'bust rate': `${(r.bust_rate * 100).toFixed(0)}%`,
-    'busts (first / median)': r.first_bust
-      ? `${r.first_bust} / ${r.median_bust}`
-      : '—',
-    'median end valuation': usd(r.median_end_valuation),
-    'median peak (usual quarter)': `${usd(r.median_peak_valuation)} (${r.usual_peak_quarter})`,
-    'alerts / quarter': r.alerts_per_quarter.toFixed(2),
+    'median bust': r.median_bust || '—',
+    'median end value': usd(r.median_end_valuation),
+    'median peak (quarter)': `${usd(r.median_peak_valuation)} (${r.usual_peak_quarter})`,
+    'founder stake': `${(r.median_founder_stake * 100).toFixed(0)}%`,
+    'small unit powered': r.small_unit_powered || '—',
+    'alerts / q': r.alerts_per_quarter.toFixed(2),
   })),
 )
+for (const r of summaryRows) {
+  if (r.bust_quarters)
+    console.log(`  ${r.strategy} busts by quarter: ${r.bust_quarters}`)
+}
 
-console.log('Price alerts per quarter (average per run, all strategies):')
-const runsTotal = summaries.reduce((a, s) => a + s.runs, 0)
-const line = CONTENT.quarters.map((q, i) => {
-  const total = summaries.reduce((a, s) => a + s.alertsByQuarter[i], 0)
-  return `${q} ${(total / runsTotal).toFixed(2)}`
+// ---------- target B1: when can a garage-only player first afford a small unit? ----------
+
+const garageOnly = summaries.filter(({ runs }) =>
+  runs.every(
+    (r) =>
+      !smallUnitPowered(r) && !r.state.sites.some((s) => s.tier !== 'garage'),
+  ),
+)
+const b1 = (list: StrategySummary[]) => {
+  const hits = list.flatMap(({ strategy, runs }) =>
+    runs
+      .map((r) => ({ strategy, q: firstCashAt(r, B1_CASH) }))
+      .filter((x) => x.q),
+  )
+  if (hits.length === 0) return 'never'
+  const first = hits.reduce((a, b) => (b.q! < a.q! ? b : a))
+  const runsTotal = list.reduce((a, s) => a + s.runs.length, 0)
+  return `${first.q} (${first.strategy}); ${hits.length}/${runsTotal} runs ever reach it, median ${medianLabel(hits.map((h) => h.q!))}`
+}
+console.log(
+  `\nTarget B1 — first quarter with ≥ ${usd(B1_CASH)} cash, garage only:`,
+)
+console.log(
+  `  garage-only bots (${garageOnly.map((s) => s.strategy).join(', ')}): ${b1(garageOnly)}`,
+)
+console.log(
+  `  best case (probe garage-max: 5 rigs day one, sell everything): ${b1(probes)}`,
+)
+
+// ---------- price alerts per quarter ----------
+
+console.log('\nPrice alerts per quarter (average per run, all strategies):')
+const allRuns = summaries.flatMap((s) => s.runs)
+const line = CONTENT.quarters.map((q) => {
+  const total = allRuns.reduce(
+    (a, r) =>
+      a + (r.state.reports.find((x) => x.quarter === q)?.priceAlerts ?? 0),
+    0,
+  )
+  return `${q} ${(total / allRuns.length).toFixed(2)}`
 })
 for (let i = 0; i < line.length; i += 6)
   console.log('  ' + line.slice(i, i + 6).join('  '))

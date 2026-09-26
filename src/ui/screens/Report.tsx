@@ -73,9 +73,20 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
               </div>
             )}
           </div>
-          {r.forcedSale && (
-            <span class="tape">{t('ui.report.tape_forced')}</span>
-          )}
+          <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-end' }}>
+            {r.forcedSale && (
+              <span class="tape">{t('ui.report.tape_forced')}</span>
+            )}
+            <div class="stat">
+              <span class="label">{t('ui.report.stake')}</span>
+              <span class="num-kpi">
+                {t('ui.report.stake_value', {
+                  stake: fmt.pct(r.founderStake),
+                  value: fmt.money(r.valuationUsd * r.founderStake),
+                })}
+              </span>
+            </div>
+          </div>
         </div>
 
         <div class="tiles">
