@@ -59,7 +59,8 @@
       "ETH": 167.57999999999996
     },
     "failures": 0,
-    "treasurySoldUsd": 0
+    "treasurySoldUsd": 0,
+    "priceAlerts": 0
   },
   "lastWeek": {
     "week": 13,
@@ -99,6 +100,9 @@
       },
       "treasuryValueUsd": 0,
       "cash": 6100,
+      "ebitdaUsd": 0,
+      "valuationUsd": 6100,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -126,6 +130,9 @@
       },
       "treasuryValueUsd": 1372.657000760578,
       "cash": 7331.54,
+      "ebitdaUsd": 2204.0991000000004,
+      "valuationUsd": 61602.57540076059,
+      "priceAlerts": 3,
       "forcedSale": null
     },
     {
@@ -153,6 +160,9 @@
       },
       "treasuryValueUsd": 3980.3930442870496,
       "cash": 9128.43,
+      "ebitdaUsd": 3011.790600000001,
+      "valuationUsd": 85391.79744428708,
+      "priceAlerts": 3,
       "forcedSale": null
     },
     {
@@ -180,6 +190,9 @@
       },
       "treasuryValueUsd": 18094.660544174785,
       "cash": 13050.53,
+      "ebitdaUsd": 6047.792100000001,
+      "valuationUsd": 176292.2009441748,
+      "priceAlerts": 3,
       "forcedSale": null
     },
     {
@@ -207,6 +220,9 @@
       },
       "treasuryValueUsd": 9368.790882051773,
       "cash": 14964.69,
+      "ebitdaUsd": 3179.31075,
+      "valuationUsd": 100636.93888205178,
+      "priceAlerts": 3,
       "forcedSale": null
     },
     {
@@ -234,6 +250,9 @@
       },
       "treasuryValueUsd": 8744.662632565445,
       "cash": 15217.91,
+      "ebitdaUsd": 806.5291500000003,
+      "valuationUsd": 43319.272232565454,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -261,6 +280,9 @@
       },
       "treasuryValueUsd": 9164.132088288978,
       "cash": 13193.08,
+      "ebitdaUsd": 129.58785000000012,
+      "valuationUsd": 25467.32048828898,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -288,6 +310,9 @@
       },
       "treasuryValueUsd": 4813.96186855137,
       "cash": 13168.12,
+      "ebitdaUsd": 5.392800000000037,
+      "valuationUsd": 18111.50906855137,
+      "priceAlerts": 1,
       "forcedSale": null
     },
     {
@@ -315,6 +340,9 @@
       },
       "treasuryValueUsd": 5553.055039063773,
       "cash": 13168.12,
+      "ebitdaUsd": 0,
+      "valuationUsd": 18721.175039063775,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -342,6 +370,9 @@
       },
       "treasuryValueUsd": 17366.203617428902,
       "cash": 13091.24,
+      "ebitdaUsd": 126.93240000000014,
+      "valuationUsd": 34011.550817428906,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -369,6 +400,9 @@
       },
       "treasuryValueUsd": 12018.821712818575,
       "cash": 13013.75,
+      "ebitdaUsd": 49.42350000000016,
+      "valuationUsd": 26416.42971281858,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -396,6 +430,9 @@
       },
       "treasuryValueUsd": 10084.864009123714,
       "cash": 13013.75,
+      "ebitdaUsd": 0,
+      "valuationUsd": 23098.614009123714,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -423,6 +460,9 @@
       },
       "treasuryValueUsd": 6654.779792503813,
       "cash": 15002.68,
+      "ebitdaUsd": 1.8900000000000148,
+      "valuationUsd": 21695.259792503814,
+      "priceAlerts": 1,
       "forcedSale": null
     },
     {
@@ -450,6 +490,9 @@
       },
       "treasuryValueUsd": 9702.935761195178,
       "cash": 14968.18,
+      "ebitdaUsd": 32.81040000000013,
+      "valuationUsd": 25589.80696119518,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -477,6 +520,9 @@
       },
       "treasuryValueUsd": 11717.217368690417,
       "cash": 15064.95,
+      "ebitdaUsd": 244.9314000000002,
+      "valuationUsd": 36579.423368690426,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -504,6 +550,9 @@
       },
       "treasuryValueUsd": 30163.0212361542,
       "cash": 15169.57,
+      "ebitdaUsd": 256.17060000000015,
+      "valuationUsd": 63776.87443615421,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -531,6 +580,9 @@
       },
       "treasuryValueUsd": 63642.91976946551,
       "cash": 15531.45,
+      "ebitdaUsd": 780.8293500000002,
+      "valuationUsd": 157257.30476946553,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -558,6 +610,9 @@
       },
       "treasuryValueUsd": 41078.80029971409,
       "cash": 16142.3,
+      "ebitdaUsd": 1173.5713499999995,
+      "valuationUsd": 132329.66669971406,
+      "priceAlerts": 2,
       "forcedSale": null
     },
     {
@@ -585,6 +640,9 @@
       },
       "treasuryValueUsd": 52447.63779095997,
       "cash": 16415.34,
+      "ebitdaUsd": 839.2208999999998,
+      "valuationUsd": 119216.23179095995,
+      "priceAlerts": 2,
       "forcedSale": null
     },
     {
@@ -612,6 +670,9 @@
       },
       "treasuryValueUsd": 58077.087209360514,
       "cash": 16747.61,
+      "ebitdaUsd": 923.8456499999998,
+      "valuationUsd": 126560.0536093605,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -639,6 +700,9 @@
       },
       "treasuryValueUsd": 54742.40828739013,
       "cash": 16910.45,
+      "ebitdaUsd": 365.99220000000014,
+      "valuationUsd": 84828.57748739014,
+      "priceAlerts": 0,
       "forcedSale": null
     },
     {
@@ -666,6 +730,9 @@
       },
       "treasuryValueUsd": 9731.88928678133,
       "cash": 32848.53,
+      "ebitdaUsd": 156.492,
+      "valuationUsd": 45710.25928678132,
+      "priceAlerts": 3,
       "forcedSale": null
     },
     {
@@ -693,6 +760,9 @@
       },
       "treasuryValueUsd": 9987.389971694056,
       "cash": 32825.92,
+      "ebitdaUsd": 39.52620000000002,
+      "valuationUsd": 43445.72917169406,
+      "priceAlerts": 0,
       "forcedSale": null
     }
   ]

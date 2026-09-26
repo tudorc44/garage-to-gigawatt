@@ -30,6 +30,7 @@ export function checkPriceAlert(state: GameState, w: MarketWeek): void {
   if (!biggest) return
   state.interrupt = { id: 'price_alert', week: state.week, ...biggest }
   state.interruptsThisQuarter++
+  state.quarterStats.priceAlerts++
 }
 
 /** Applies the chosen option's effects (from interrupts.json) and clears the interrupt. */

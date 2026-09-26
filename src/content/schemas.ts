@@ -148,6 +148,22 @@ export const interruptsFileSchema = z.object({
   interrupts: z.array(interruptSchema),
 })
 
+// ---------- capital.json (only what the sim uses so far) ----------
+
+export const capitalFileSchema = z.object({
+  /** EV / EBITDA multiple per quarter, for the company valuation (review A5). */
+  era_multiple_ev_ebitda: z
+    .record(z.string(), z.union([nonNeg, z.string(), z.boolean()]))
+    .transform((r) =>
+      Object.fromEntries(
+        Object.entries(r).filter(
+          (e): e is [string, number] =>
+            quarterId.safeParse(e[0]).success && typeof e[1] === 'number',
+        ),
+      ),
+    ),
+})
+
 export type MarketWeek = z.output<typeof marketWeekSchema>
 export type Machine = z.output<typeof machineSchema>
 export type SiteTier = z.output<typeof siteTierSchema>

@@ -20,6 +20,7 @@ npm run preview   # serve the built dist/ locally
 npm test          # Vitest: unit tests per system + golden-replay test
 npm run lint      # ESLint (also enforces the pure-sim rules below)
 npm run play      # the terminal version of Act I (options: -- --seed 42 --fast)
+npm run sim       # sim-runner: 3 bot strategies × 50 seeds → CSVs + summary in sim-output/
 npm run content:market  # regenerate src/content/market_weekly.json after editing the CSV
 ```
 

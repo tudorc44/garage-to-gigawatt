@@ -94,6 +94,7 @@ export interface QuarterStats {
   failures: number
   /** Dollars raised by selling treasury coins in alerts. */
   treasurySoldUsd: number
+  priceAlerts: number
 }
 
 export interface WeekSummary {
@@ -126,6 +127,11 @@ export interface QuarterReport {
   treasury: Record<Coin, number>
   treasuryValueUsd: number
   cash: number
+  /** Revenue − power − rent for the quarter. */
+  ebitdaUsd: number
+  /** Company valuation (review A5), after any forced sales. */
+  valuationUsd: number
+  priceAlerts: number
   /** Filled when cash went below zero and assets had to be sold. */
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
 }
@@ -139,6 +145,7 @@ export function emptyQuarterStats(): QuarterStats {
     powerByCoin: { BTC: 0, ETH: 0 },
     failures: 0,
     treasurySoldUsd: 0,
+    priceAlerts: 0,
   }
 }
 

@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "play": "node tools/play.ts",
-    "content:market": "node tools/market-csv-to-json.ts"
+    "content:market": "node tools/market-csv-to-json.ts",
+    "sim": "node tools/sim-runner.ts"
   },
   "dependencies": {
     "preact": "^10.29.8",

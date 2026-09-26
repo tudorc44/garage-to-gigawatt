@@ -13,6 +13,7 @@ import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
+import { ebitdaUsd, valuationUsd } from './valuation.ts'
 
 /**
  * Runs after week 13. If cash is below zero: sell treasury coins, then machines
@@ -59,6 +60,8 @@ function buildReport(
   const st = state.quarterStats
   const perCoin = (c: Coin) =>
     st.coinsMined[c] > 0 ? st.powerByCoin[c] / st.coinsMined[c] : null
+  const ebitda = ebitdaUsd(st)
+  const treasuryUsd = treasuryValueUsd(state, w)
   return {
     quarter: CONTENT.quarters[state.quarter],
     hashrate: hashrate(state),
@@ -70,8 +73,11 @@ function buildReport(
     failures: st.failures,
     brokenUnits: state.machines.reduce((n, l) => n + l.failed, 0),
     treasury: { ...state.treasury },
-    treasuryValueUsd: treasuryValueUsd(state, w),
+    treasuryValueUsd: treasuryUsd,
     cash: state.cash,
+    ebitdaUsd: ebitda,
+    valuationUsd: valuationUsd(state.quarter, ebitda, state.cash, treasuryUsd),
+    priceAlerts: st.priceAlerts,
     forcedSale,
   }
 }

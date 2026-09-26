@@ -5,8 +5,10 @@ import machinesRaw from './machines.json' with { type: 'json' }
 import sitesRaw from './sites.json' with { type: 'json' }
 import interruptsRaw from './interrupts.json' with { type: 'json' }
 import marketRaw from './market_weekly.json' with { type: 'json' }
+import capitalRaw from './capital.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
+  capitalFileSchema,
   interruptsFileSchema,
   machinesFileSchema,
   marketSchema,
@@ -30,6 +32,8 @@ export interface Content {
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
   interrupts: { maxPerQuarter: number; byId: Record<string, Interrupt> }
+  /** EV / EBITDA multiple by quarter label. */
+  eraMultiple: Record<string, number>
 }
 
 export interface RawContent {
@@ -37,6 +41,7 @@ export interface RawContent {
   sites: unknown
   interrupts: unknown
   market: unknown
+  capital: unknown
 }
 
 export class ContentError extends Error {
@@ -73,8 +78,15 @@ export function parseContent(raw: RawContent): Content {
     raw.interrupts,
   )
   const marketRows = check('market_weekly', marketSchema, raw.market)
+  const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
 
-  if (!machinesFile || !sitesFile || !interruptsFile || !marketRows) {
+  if (
+    !machinesFile ||
+    !sitesFile ||
+    !interruptsFile ||
+    !marketRows ||
+    !capitalFile
+  ) {
     throw new ContentError(problems)
   }
 
@@ -153,6 +165,14 @@ export function parseContent(raw: RawContent): Content {
       problems.push(`balance.ts: unknown site tier "${id}"`)
   }
 
+  for (const q of quarters) {
+    if (capitalFile.era_multiple_ev_ebitda[q] === undefined) {
+      problems.push(
+        `capital.json › era_multiple_ev_ebitda: no multiple for ${q}`,
+      )
+    }
+  }
+
   const byId = Object.fromEntries(
     interruptsFile.interrupts.map((i) => [i.id, i]),
   )
@@ -176,6 +196,7 @@ export function parseContent(raw: RawContent): Content {
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
     interrupts: { maxPerQuarter: interruptsFile.max_per_quarter, byId },
+    eraMultiple: capitalFile.era_multiple_ev_ebitda,
   }
 }
 
@@ -198,4 +219,5 @@ export const CONTENT: Content = parseContent({
   sites: sitesRaw,
   interrupts: interruptsRaw,
   market: marketRaw,
+  capital: capitalRaw,
 })

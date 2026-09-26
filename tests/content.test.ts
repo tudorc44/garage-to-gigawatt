@@ -10,10 +10,11 @@ import machines from '../src/content/machines.json' with { type: 'json' }
 import sites from '../src/content/sites.json' with { type: 'json' }
 import interrupts from '../src/content/interrupts.json' with { type: 'json' }
 import market from '../src/content/market_weekly.json' with { type: 'json' }
+import capital from '../src/content/capital.json' with { type: 'json' }
 import { csvToRows } from '../tools/market-csv-to-json.ts'
 
 const raw = (): RawContent =>
-  structuredClone({ machines, sites, interrupts, market })
+  structuredClone({ machines, sites, interrupts, market, capital })
 
 describe('content loads', () => {
   it('covers Act I: 23 quarters of 13 weeks, 2017Q1 → 2022Q3', () => {
