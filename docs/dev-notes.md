@@ -69,18 +69,23 @@ See `CLAUDE.md` for the full list. The main ones:
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
    heat-climber, negotiator, pitcher) and unit tests: 323 passing + 1 to-do.
-8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
+8. **GitHub Pages** (https://tudorc44.github.io/garage-to-gigawatt/): `.github/workflows/deploy-pages.yml`
+   runs the tests, builds, and publishes `dist/` on every push to `main` (or by hand from the Actions
+   tab). Needs the repository's Settings → Pages → Source set to "GitHub Actions" (once). Vite's
+   `base: './'` makes the build work from that sub-folder. Before this, Pages served the raw source
+   `index.html` (which points at `src/main.tsx`), so the page stayed blank.
+9. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
-9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
+10. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
    end-of-quarter numbers from `rivals.json`. The quarter report (browser and terminal) ranks you against
    them by value, with your rank change and who joins later.
-10. **Distressed auctions:** in the crypto-winter windows a lot of used machines may come up at the
+11. **Distressed auctions:** in the crypto-winter windows a lot of used machines may come up at the
    start of a Plan phase. One sealed bid (2 Bandwidth) against 2–3 rivals, settled at once; the Plan
    screen has the row and a bidding dialog, the terminal has `bid <amount> [site#]`.
-11. **Grid curtailment:** in summer (Q3) the Texas grid may ask you to take the Texas site offline for
+12. **Grid curtailment:** in summer (Q3) the Texas grid may ask you to take the Texas site offline for
    a week, for credits (review A8). An interrupt card in the live quarter (and in the terminal); the
    credits count toward EBITDA and show on the quarter report.
-12. **Community Heat** (design thread decisions, 26 Sep 2026; rules in `src/content/heat.json` and
+13. **Community Heat** (design thread decisions, 26 Sep 2026; rules in `src/content/heat.json` and
    `sites.json` heat_load_max): Heat per site = base + load + grievance + era, recalculated weekly. A
    Heat meter per site (marks at 30/50/70/90), Heat of the hottest site in the top bar and as the 6th
    report tile (replacing the stand-in Valuation tile, as in the mockup). Neighbour complaints (a
@@ -88,7 +93,7 @@ See `CLAUDE.md` for the full list. The main ones:
    terminal), the rate hike at 50, moratorium at 70, shutdown at 90, and curtailment's "keep mining"
    (+5 grievance at the Texas site).
 
-13. **Power contracts and negotiation** (design thread decisions, 26 Sep 2026; rules in
+14. **Power contracts and negotiation** (design thread decisions, 26 Sep 2026; rules in
    `interrupts.json` › negotiation, `sites.json` Texas power_options, `shocks.json`): every non-garage
    site has a contract from when it's powered; renewals in the Plan phase (a to-do row and a dialog:
    accept the opening, or negotiate over 3 rounds with a walk-away warning); Texas fixed or index;
