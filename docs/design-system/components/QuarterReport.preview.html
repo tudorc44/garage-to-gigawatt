@@ -1,0 +1,55 @@
+<!-- @dsCard group="Screens" height=720 width=1280 page=true subtitle="Proof screen: Q3 2018 report" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Quarter report</title></head>
+<body>
+<div id="root"></div>
+<script>
+var G = window.G2G, f = G.fmt, h = React.createElement;
+function Tile(label, value, sub, tone) {
+  return h('div', { className: 'g-panel', style: { padding: '10px 12px' } }, h('div', { className: 'g-label' }, label), h('div', { className: 'g-num-xl' }, value), h('div', { className: 'g-num-s g-' + (tone || 'muted') }, sub));
+}
+function Chart() {
+  var bars = [62, 76, 94, 100], line = [20, 80, 94, 98];
+  return h('svg', { width: '100%', height: 210, viewBox: '0 0 320 210', role: 'img', 'aria-label': 'Cost per BTC against BTC price, Q4 2017 to Q3 2018' },
+    h('line', { x1: 0, y1: 190, x2: 320, y2: 190, stroke: 'var(--ink)', strokeWidth: 1.5 }),
+    bars.map(function (b, i) { return h('rect', { key: 'b' + i, x: 20 + i * 80, y: 190 - b, width: 40, height: b, fill: i === 3 ? 'var(--ink)' : 'var(--panel-sunk)', stroke: 'var(--ink)' }); }),
+    h('polyline', { points: line.map(function (y, i) { return (40 + i * 80) + ',' + y; }).join(' '), fill: 'none', stroke: 'var(--series-hashprice)', strokeWidth: 2.2 }),
+    line.map(function (y, i) { return h('circle', { key: 'c' + i, cx: 40 + i * 80, cy: y, r: 4, fill: 'var(--series-hashprice)' }); }));
+}
+function App() {
+  return h('div', { className: 'g-paper', style: { width: 1280, height: 720, boxSizing: 'border-box', padding: '22px 28px', display: 'flex', flexDirection: 'column', gap: 14, overflow: 'hidden' } },
+    h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', borderBottom: '2px solid var(--ink)', paddingBottom: 8 } },
+      h('div', null, h('div', { className: 'g-label' }, 'Quarter report'), h('h1', { className: 'screen-title', style: { margin: 0, fontFamily: 'var(--font-display)' } }, 'Q3 2018')),
+      h(G.Tag, { tone: 'tape' }, 'stay alive till spring')),
+    h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(5, minmax(0, 1fr))', gap: 10 } },
+      Tile('Revenue', f.money(16800), '▼38% vs Q2', 'loss'),
+      Tile('Profit', f.signed(600), '▼$10.4K vs Q2', 'loss'),
+      Tile('Cash', f.money(94700), '▲$10.7K', 'gain'),
+      Tile('Hashrate', '540 TH · 720 MH', '= flat'),
+      Tile('Heat · small unit', '44', '▲10', 'loss')),
+    h('div', { style: { flexGrow: 1, display: 'grid', gridTemplateColumns: 'repeat(12, minmax(0, 1fr))', gap: 12, minHeight: 0 } },
+      h('div', { className: 'g-panel', style: { gridColumn: 'span 4', padding: '11px 13px', display: 'flex', flexDirection: 'column', gap: 8 } },
+        h('div', { style: { fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16 } }, 'Cost per BTC vs price'),
+        h(Chart),
+        h('div', { className: 'g-row-between g-num-s g-muted' }, h('span', null, 'Q4 17'), h('span', null, 'Q1 18'), h('span', null, 'Q2 18'), h('span', null, 'Q3 18')),
+        h('div', { style: { fontSize: 13 } }, 'The gap is closing: ', h('span', { className: 'g-num' }, '$4,300'), ' to mine, ', h('span', { className: 'g-num' }, '$6,700'), ' to sell.')),
+      h('div', { className: 'g-panel', style: { gridColumn: 'span 5', padding: '11px 13px' } },
+        h('div', { style: { fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16, marginBottom: 6 } }, 'League table'),
+        h(G.LeagueTable, { rows: [
+          { rank: 1, code: 'BF', name: 'Bitfarms', hashrate: '0.19 EH/s', value: 'private' },
+          { rank: 2, code: 'CS', name: 'Core Scientific', hashrate: '0.14 EH/s', value: '$370M', delta: 1 },
+          { rank: 3, code: 'RI', name: 'Riot', hashrate: '0.12 EH/s', value: '$30M', delta: -1 },
+          { rank: 4, code: 'MA', name: 'Marathon', hashrate: '0.04 EH/s', value: '$20M' },
+          { rank: 5, code: 'YOU', name: 'You', hashrate: '0.0005 EH/s', value: '$119K', you: true }] })),
+      h('div', { className: 'g-panel', style: { gridColumn: 'span 3', padding: '11px 13px', display: 'flex', flexDirection: 'column', gap: 8 } },
+        h('div', { style: { fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16 } }, 'Notes from the quarter'),
+        [['wk 5', 'BTC reached $7,683 (+19%). You held.'], ['wk 7', 'Neighbour complained; ignored. Heat +10.'], ['wk 11', 'Two S9 hashboards failed; running degraded.'], ['end', 'Sold 60% of mined coins, +$10.1K.']].map(function (r) {
+          return h('div', { key: r[0], style: { fontSize: 13, lineHeight: '19px' } }, h('span', { className: 'g-num g-muted' }, r[0] + ' '), r[1]);
+        }))),
+    h('div', { style: { display: 'flex', justifyContent: 'flex-end', gap: 10 } }, h(G.Button, { variant: 'ghost' }, 'Full log'), h(G.Button, { variant: 'primary', size: 'l' }, 'Continue to Q4 2018 →')));
+}
+ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
