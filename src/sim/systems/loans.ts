@@ -125,7 +125,9 @@ export function payLoanWeek(state: GameState): {
   return { interestUsd, principalUsd }
 }
 
-/** Everything still owed on loans. */
+/** Everything still owed on loans (equipment and crypto-backed). */
 export function debtUsd(state: GameState): number {
-  return state.equipmentLoan?.balanceUsd ?? 0
+  return (
+    (state.equipmentLoan?.balanceUsd ?? 0) + (state.cryptoLoan?.balanceUsd ?? 0)
+  )
 }

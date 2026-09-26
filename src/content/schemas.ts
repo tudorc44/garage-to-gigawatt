@@ -191,9 +191,31 @@ export const equipmentLoanSchema = z
     }
   })
 
+/** The game's crypto-backed loan: pledge coins, borrow up to ltv_max; margin call and liquidation levels. */
+export const cryptoLoanSchema = z
+  .object({
+    ltv_max: z.number().min(0).max(1),
+    apr: z.number().min(0),
+    margin_call_ltv: z.number().min(0).max(1),
+    liquidation_ltv: z.number().min(0).max(1),
+    cure_weeks: z.number().int().min(0),
+    available: z.tuple([quarterId, quarterId]),
+  })
+  .transform((c) => ({
+    ltvMax: c.ltv_max,
+    apr: c.apr,
+    marginCallLtv: c.margin_call_ltv,
+    liquidationLtv: c.liquidation_ltv,
+    cureWeeks: c.cure_weeks,
+    available: c.available,
+  }))
+
 export const capitalFileSchema = z.object({
   ladder: z.array(ladderStepSchema).min(1),
-  loans: z.object({ equipment: z.array(equipmentLoanSchema).min(1) }),
+  loans: z.object({
+    equipment: z.array(equipmentLoanSchema).min(1),
+    game_crypto_loan: cryptoLoanSchema,
+  }),
   /** EV / EBITDA multiple per quarter, for the company valuation (review A5). */
   era_multiple_ev_ebitda: z
     .record(z.string(), z.union([nonNeg, z.string(), z.boolean()]))
@@ -209,6 +231,7 @@ export const capitalFileSchema = z.object({
 
 export type LadderStep = z.output<typeof ladderStepSchema>
 export type EquipmentLoanTerms = z.output<typeof equipmentLoanSchema>
+export type CryptoLoanTerms = z.output<typeof cryptoLoanSchema>
 export type MarketWeek = z.output<typeof marketWeekSchema>
 export type Machine = z.output<typeof machineSchema>
 export type SiteTier = z.output<typeof siteTierSchema>

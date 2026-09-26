@@ -9,6 +9,7 @@ import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
 import { interruptChoices } from '../src/sim/selectors.ts'
+import { ltv } from '../src/sim/systems/cryptoLoan.ts'
 import { defaultChoice } from '../src/sim/systems/interrupts.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
@@ -81,6 +82,13 @@ function showStatus(s: GameState) {
     eth: coins(s.treasury.ETH),
     treasuryUsd: treasuryValueUsd(s, w),
   })
+  if (s.cryptoLoan) {
+    say('play.crypto_loan_status', {
+      balanceUsd: s.cryptoLoan.balanceUsd,
+      pledged: `${s.cryptoLoan.collateral.toFixed(4)} ${s.cryptoLoan.coin}`,
+      ltvPct: ltv(s, marketWeek(s.quarter, 0)),
+    })
+  }
   if (s.equipmentLoan) {
     say('play.loan_status', {
       balanceUsd: s.equipmentLoan.balanceUsd,
@@ -263,6 +271,14 @@ function parse(
       if (!coin) return 'play.bad_number'
       return { type: 'SELL_TREASURY', coin, pct: num(1) / 100 }
     }
+    case 'cloan': {
+      const coin =
+        rest[0] === 'btc' ? 'BTC' : rest[0] === 'eth' ? 'ETH' : undefined
+      if (!coin) return 'play.bad_number'
+      return { type: 'TAKE_CRYPTO_LOAN', coin, amountUsd: num(1) }
+    }
+    case 'crepay':
+      return { type: 'REPAY_CRYPTO_LOAN' }
     case 'loan':
       return { type: 'TAKE_LOAN', amountUsd: num(0) }
     case 'repay':

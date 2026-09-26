@@ -10,6 +10,11 @@ import {
   repairCostPerUnit,
 } from './systems/machines.ts'
 import { raiseBlocker, takeRaise } from './systems/capital.ts'
+import {
+  cryptoBorrowBlocker,
+  repayCryptoLoan,
+  takeCryptoLoan,
+} from './systems/cryptoLoan.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
   borrowBlocker,
@@ -55,6 +60,10 @@ export type Action =
   | { type: 'TAKE_LOAN'; amountUsd: number }
   /** Pay the equipment loan off early. */
   | { type: 'REPAY_LOAN' }
+  /** Pledge treasury coins and borrow against them (crypto-backed loan). */
+  | { type: 'TAKE_CRYPTO_LOAN'; coin: Coin; amountUsd: number }
+  /** Repay the crypto-backed loan and get the pledged coins back. */
+  | { type: 'REPAY_CRYPTO_LOAN' }
   /** Take a funding round from capital.json (fixed offer). */
   | { type: 'RAISE'; round: string }
   /** Plan phase done: start the live quarter. */
@@ -322,6 +331,16 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'REPAY_LOAN':
       return repayEquipmentLoan(s)
+
+    case 'TAKE_CRYPTO_LOAN': {
+      const blocked = cryptoBorrowBlocker(s, a.coin, a.amountUsd)
+      if (blocked) return blocked
+      takeCryptoLoan(s, a.coin, a.amountUsd)
+      return
+    }
+
+    case 'REPAY_CRYPTO_LOAN':
+      return repayCryptoLoan(s)
 
     case 'LEAVE_SITE': {
       const site = s.sites.find((x) => x.id === a.siteId)

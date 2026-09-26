@@ -7,6 +7,7 @@ import { checkPriceAlert } from './systems/interrupts.ts'
 import { marketWeek, previousMarketWeek } from './systems/market.ts'
 import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
+import { payCryptoInterestWeek } from './systems/cryptoLoan.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 
@@ -25,6 +26,7 @@ export function advance(state: GameState): GameState {
   const lots = mineWeek(s, w)
   const money = settleWeek(s, lots, w)
   const loan = payLoanWeek(s)
+  const cryptoInterestUsd = payCryptoInterestWeek(s)
   s.cash = roundCents(s.cash)
 
   const st = s.quarterStats
@@ -32,7 +34,7 @@ export function advance(state: GameState): GameState {
   st.powerCostUsd += money.powerCostUsd
   st.rentUsd += money.rentUsd
   st.soldUsd += money.soldUsd
-  st.interestUsd += loan.interestUsd
+  st.interestUsd += loan.interestUsd + cryptoInterestUsd
   st.principalUsd += loan.principalUsd
   st.failures += failures
   for (const coin of ['BTC', 'ETH'] as const) {

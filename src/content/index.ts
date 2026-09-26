@@ -13,6 +13,7 @@ import {
   machinesFileSchema,
   marketSchema,
   sitesFileSchema,
+  type CryptoLoanTerms,
   type EquipmentLoanTerms,
   type Flaw,
   type Interrupt,
@@ -24,6 +25,7 @@ import {
 
 export { BALANCE }
 export type {
+  CryptoLoanTerms,
   EquipmentLoanTerms,
   Flaw,
   Interrupt,
@@ -48,6 +50,8 @@ export interface Content {
   ladder: Record<string, LadderStep>
   /** Equipment loan terms by era (fromYear–toYear). */
   equipmentLoans: EquipmentLoanTerms[]
+  /** The crypto-backed loan's terms. */
+  cryptoLoan: CryptoLoanTerms
 }
 
 export interface RawContent {
@@ -229,6 +233,7 @@ export function parseContent(raw: RawContent): Content {
     eraMultiple: capitalFile.era_multiple_ev_ebitda,
     ladder: Object.fromEntries(capitalFile.ladder.map((s) => [s.id, s])),
     equipmentLoans: capitalFile.loans.equipment,
+    cryptoLoan: capitalFile.loans.game_crypto_loan,
   }
 }
 

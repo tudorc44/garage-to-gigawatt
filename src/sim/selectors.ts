@@ -20,6 +20,13 @@ import {
   equipmentTerms,
   maxEquipmentLoanUsd,
 } from './systems/loans.ts'
+import {
+  collateralNeeded,
+  collateralValueUsd,
+  cryptoLoanOffered,
+  ltv,
+  maxCryptoLoanUsd,
+} from './systems/cryptoLoan.ts'
 import { availableChoices } from './systems/interrupts.ts'
 import { isEarning } from './systems/mining.ts'
 import {
@@ -363,3 +370,38 @@ export function treasuryHoldings(state: GameState) {
 }
 
 export const SELL_TREASURY_BANDWIDTH = BALANCE.bandwidth.sellTreasury
+
+/** The crypto-backed loan as the Plan screen shows it. */
+export function cryptoLoanView(state: GameState) {
+  const terms = CONTENT.cryptoLoan
+  const w = currentMarket(state)
+  const loan = state.cryptoLoan
+  /** Coin price at which a loan of `balanceUsd` on `collateral` coins reaches `level` LTV. */
+  const priceAt = (balanceUsd: number, collateral: number, level: number) =>
+    collateral > 0 ? balanceUsd / (level * collateral) : 0
+  return {
+    terms,
+    offered: cryptoLoanOffered(state.quarter),
+    bandwidth: BALANCE.bandwidth.loan,
+    loan,
+    ltvNow: ltv(state, w),
+    collateralUsd: collateralValueUsd(state, w),
+    marginCallPrice: loan
+      ? priceAt(loan.balanceUsd, loan.collateral, terms.marginCallLtv)
+      : 0,
+    liquidationPrice: loan
+      ? priceAt(loan.balanceUsd, loan.collateral, terms.liquidationLtv)
+      : 0,
+    maxUsd: (coin: Coin) => maxCryptoLoanUsd(state, coin),
+    /** For a new loan: coins pledged, and the prices where it gets a margin call / is liquidated. */
+    preview: (coin: Coin, amountUsd: number) => {
+      const collateral = collateralNeeded(state, coin, amountUsd)
+      return {
+        collateral,
+        marginCallPrice: priceAt(amountUsd, collateral, terms.marginCallLtv),
+        liquidationPrice: priceAt(amountUsd, collateral, terms.liquidationLtv),
+        price: coinPrice(w, coin),
+      }
+    },
+  }
+}

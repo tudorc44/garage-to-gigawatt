@@ -7,6 +7,7 @@ import {
   BANDWIDTH_COST,
   SELL_TREASURY_BANDWIDTH,
   bestSite,
+  cryptoLoanView,
   equipmentLoanView,
   treasuryHoldings,
   lotViews,
@@ -664,6 +665,117 @@ export function SellCoinsDialog({ state, act, onClose }: DialogProps) {
             total={SELL_TREASURY_BANDWIDTH}
             filled={SELL_TREASURY_BANDWIDTH}
             label={t('ui.plan.costs_bandwidth', { n: SELL_TREASURY_BANDWIDTH })}
+          />
+        </button>
+      </div>
+    </Dialog>
+  )
+}
+
+/** Borrow against treasury coins: pick the coin and the amount; shows the prices where it goes wrong. */
+export function CryptoLoanDialog({ state, act, onClose }: DialogProps) {
+  const v = cryptoLoanView(state)
+  const holdings = treasuryHoldings(state)
+  const [coin, setCoin] = useState<Coin>(
+    v.maxUsd('BTC') >= v.maxUsd('ETH') ? 'BTC' : 'ETH',
+  )
+  const [amount, setAmount] = useState(v.maxUsd(coin))
+  const a: Action = { type: 'TAKE_CRYPTO_LOAN', coin, amountUsd: amount }
+  const why = whyNot(state, a)
+  const p = v.preview(coin, amount)
+  const held = holdings.find((h) => h.coin === coin)!
+  const pick = (c: Coin) => {
+    setCoin(c)
+    setAmount(v.maxUsd(c))
+  }
+  return (
+    <Dialog title={t('ui.cloan.title')} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.cloan.note', {
+          ltv: fmt.pct(v.terms.ltvMax),
+          apr: fmt.pct(v.terms.apr),
+          call: fmt.pct(v.terms.marginCallLtv),
+          liquidation: fmt.pct(v.terms.liquidationLtv),
+        })}
+      </p>
+      <div class="form-row">
+        <div class="field">
+          <span class="label">{t('ui.sell_coins.coin')}</span>
+          <div class="seg" role="group" aria-label={t('ui.sell_coins.coin')}>
+            {holdings.map((h) => (
+              <button
+                key={h.coin}
+                type="button"
+                aria-pressed={coin === h.coin}
+                disabled={v.maxUsd(h.coin) < 1}
+                onClick={() => pick(h.coin)}
+              >
+                {h.coin}{' '}
+                {t('ui.sell_coins.holding', {
+                  amount: fmt.crypto(h.amount, h.coin),
+                  value: fmt.money(h.valueUsd),
+                })}
+              </button>
+            ))}
+          </div>
+        </div>
+        <label class="field">
+          <span class="label">{t('ui.loan.amount')}</span>
+          <input
+            type="number"
+            min={1}
+            max={v.maxUsd(coin)}
+            step={100}
+            value={amount}
+            style={{ width: '140px' }}
+            onInput={(e) =>
+              setAmount(
+                Math.max(
+                  0,
+                  Math.floor(Number((e.target as HTMLInputElement).value)),
+                ),
+              )
+            }
+          />
+        </label>
+        <button
+          type="button"
+          class="btn"
+          onClick={() => setAmount(v.maxUsd(coin))}
+        >
+          {t('ui.buy.max', { n: fmt.money(v.maxUsd(coin)) })}
+        </button>
+      </div>
+      <p class="num-s" style={{ margin: 0 }}>
+        {t('ui.cloan.pledge', {
+          amount: fmt.crypto(p.collateral, coin),
+          held: fmt.crypto(held.amount, coin),
+        })}{' '}
+        {t('ui.cloan.danger', {
+          coin,
+          call: fmt.money(p.marginCallPrice),
+          price: fmt.money(p.price),
+          liquidation: fmt.money(p.liquidationPrice),
+        })}
+      </p>
+      {why && <p class="num-s loss">{say(why)}</p>}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.loan.cancel')}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          disabled={!!why}
+          onClick={() => {
+            if (!act(a)) onClose()
+          }}
+        >
+          {t('ui.cloan.borrow', { value: fmt.money(amount) })}
+          <Pips
+            total={v.bandwidth}
+            filled={v.bandwidth}
+            label={t('ui.plan.costs_bandwidth', { n: v.bandwidth })}
           />
         </button>
       </div>

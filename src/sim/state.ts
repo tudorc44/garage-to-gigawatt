@@ -49,6 +49,19 @@ export interface EquipmentLoan {
   takenQuarter: number
 }
 
+/** A crypto-backed loan: coins pledged from the treasury, interest paid weekly, no fixed term. */
+export interface CryptoLoan {
+  /** The pledged coin. */
+  coin: Coin
+  /** Coins held by the lender until the loan is repaid. */
+  collateral: number
+  /** Still owed. */
+  balanceUsd: number
+  /** Yearly interest rate. */
+  apr: number
+  takenQuarter: number
+}
+
 /** A site offer revealed by scouting. Its flaw stays hidden until the player builds it. */
 export interface SiteOffer {
   id: string
@@ -85,6 +98,8 @@ export interface GameState {
   siteOffers: SiteOffer[]
   /** The one equipment loan you can have at a time, or null. */
   equipmentLoan: EquipmentLoan | null
+  /** The one crypto-backed loan you can have at a time, or null. */
+  cryptoLoan: CryptoLoan | null
   /** Counter for making unique ids ("site-3", "lot-7"). */
   nextId: number
   /** An alert waiting for the player's answer; the live quarter is paused while it's set. */
@@ -251,6 +266,7 @@ export function newGame(seed: number): GameState {
     machines: [],
     siteOffers: [],
     equipmentLoan: null,
+    cryptoLoan: null,
     nextId: 2,
     interrupt: null,
     interruptsThisQuarter: 0,

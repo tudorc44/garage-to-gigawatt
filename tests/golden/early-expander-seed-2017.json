@@ -55,6 +55,7 @@
     }
   ],
   "equipmentLoan": null,
+  "cryptoLoan": null,
   "nextId": 6,
   "interrupt": null,
   "interruptsThisQuarter": 0,

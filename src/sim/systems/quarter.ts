@@ -12,6 +12,7 @@ import {
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
+import { collateralValueUsd } from './cryptoLoan.ts'
 import { debtUsd } from './loans.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
@@ -84,7 +85,8 @@ function buildReport(
       state.quarter,
       ebitda,
       state.cash,
-      treasuryUsd,
+      // Pledged coins are still yours: they count, and the loan counts as debt.
+      treasuryUsd + collateralValueUsd(state, w),
       debtUsd(state),
     ),
     priceAlerts: st.priceAlerts,

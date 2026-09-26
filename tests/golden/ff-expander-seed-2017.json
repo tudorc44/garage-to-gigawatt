@@ -40,6 +40,7 @@
   "machines": [],
   "siteOffers": [],
   "equipmentLoan": null,
+  "cryptoLoan": null,
   "nextId": 5,
   "interrupt": null,
   "interruptsThisQuarter": 0,

@@ -49,6 +49,7 @@
   ],
   "siteOffers": [],
   "equipmentLoan": null,
+  "cryptoLoan": null,
   "nextId": 4,
   "interrupt": null,
   "interruptsThisQuarter": 0,

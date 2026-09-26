@@ -6,6 +6,7 @@ import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
   SELL_TREASURY_BANDWIDTH,
+  cryptoLoanView,
   equipmentLoanView,
   fundingRound,
   lotViews,
@@ -33,6 +34,7 @@ import {
 } from '../names.ts'
 import {
   BuyDialog,
+  CryptoLoanDialog,
   FleetDialog,
   LeaveDialog,
   LoanDialog,
@@ -47,7 +49,14 @@ export interface ScreenProps {
 
 /** Which dialog is open; `leave:<siteId>` confirms leaving that site. */
 type Open =
-  'buy' | 'fleet' | 'offers' | 'loan' | 'sell_coins' | `leave:${string}` | null
+  | 'buy'
+  | 'fleet'
+  | 'offers'
+  | 'loan'
+  | 'cloan'
+  | 'sell_coins'
+  | `leave:${string}`
+  | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
   const [open, setOpen] = useState<Open>(null)
@@ -95,6 +104,13 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'sell_coins' && (
         <SellCoinsDialog
+          state={state}
+          act={act}
+          onClose={() => setOpen(null)}
+        />
+      )}
+      {open === 'cloan' && (
+        <CryptoLoanDialog
           state={state}
           act={act}
           onClose={() => setOpen(null)}
@@ -503,11 +519,7 @@ function TodoPanel({
       <div class="label group">{t('ui.plan.group.capital')}</div>
       <RaiseRow state={state} act={act} round="friends_family" />
       <EquipmentLoanRow state={state} act={act} open={open} />
-      <ActionRow
-        icon="loan"
-        name={t('ui.plan.crypto_loan')}
-        locked={notBuilt}
-      />
+      <CryptoLoanRow state={state} act={act} open={open} />
       <RaiseRow state={state} act={act} round="seed" />
       <ActionRow icon="ipo" name={t('ui.plan.ipo')} locked={notBuilt} />
 
@@ -577,6 +589,72 @@ function EquipmentLoanRow({
       price={t('ui.plan.up_to', { value: fmt.money(v.maxUsd) })}
       disabledReason={why ? say(why) : undefined}
       onClick={() => open('loan')}
+    />
+  )
+}
+
+/** Crypto-backed loan: borrow against treasury coins (opens a dialog), or repay the one you have. */
+function CryptoLoanRow({
+  state,
+  act,
+  open,
+}: ScreenProps & { open: (o: Open) => void }) {
+  const v = cryptoLoanView(state)
+  if (v.loan) {
+    const a: Action = { type: 'REPAY_CRYPTO_LOAN' }
+    const why = whyNot(state, a)
+    return (
+      <ActionRow
+        icon="loan"
+        name={t('ui.plan.repay_crypto_loan', {
+          left: fmt.money(v.loan.balanceUsd),
+          ltv: fmt.pct(v.ltvNow),
+        })}
+        price={t('ui.plan.minus', { value: fmt.money(v.loan.balanceUsd) })}
+        disabledReason={why ? say(why) : undefined}
+        onClick={() => act(a)}
+      />
+    )
+  }
+  const name = t('ui.plan.crypto_loan_offer', {
+    ltv: fmt.pct(v.terms.ltvMax),
+    apr: fmt.pct(v.terms.apr),
+  })
+  if (!v.offered) {
+    const [from, to] = v.terms.available
+    return (
+      <ActionRow
+        icon="loan"
+        name={name}
+        locked={t('ui.locked.crypto_window', {
+          from: fmt.quarter(from),
+          to: fmt.quarter(to),
+        })}
+      />
+    )
+  }
+  const best = Math.max(v.maxUsd('BTC'), v.maxUsd('ETH'))
+  if (best < 1) {
+    return (
+      <ActionRow icon="loan" name={name} locked={t('ui.locked.no_coins')} />
+    )
+  }
+  return (
+    <ActionRow
+      icon="loan"
+      name={name}
+      bandwidth={v.bandwidth}
+      bandwidthLeft={state.bandwidth}
+      price={t('ui.plan.up_to', { value: fmt.money(best) })}
+      disabledReason={
+        state.bandwidth < v.bandwidth
+          ? say({
+              key: 'error.no_bandwidth',
+              params: { needed: v.bandwidth, have: state.bandwidth },
+            })
+          : undefined
+      }
+      onClick={() => open('cloan')}
     />
   )
 }
