@@ -28,6 +28,8 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 
 ## Key docs (read before bigger tasks)
 
+- `docs/dev-notes.md`: **read this first in a new session.** Where the build stands, every decision made so
+  far (confirmed or not), balance findings, open questions and what's next.
 - `docs/alpha-0.1-scope.md`: **source of truth for scope.** What's in, what's out, cut order, exit checklist.
 - `docs/content-pack-review.md`: its §4 amendments (A1–A9) **override** the scope doc where they differ.
 - `docs/player-actions-and-pacing.md` (build order in §7) and `docs/act-i-content-pack.md` (content and data notes).
@@ -98,6 +100,9 @@ needs them.
 6. **Verify before saying done.** At minimum run `npm run build` (and tests, once they exist) and report the
    result honestly, including failures.
 7. **Commits:** only commit when asked. One small working step = one commit.
-8. Don't edit the files in `docs/` unless asked.
+8. Don't edit the files in `docs/` unless asked. Exception: `docs/dev-notes.md`, which rule 10 keeps current.
 9. **Never touch `staging/`.** It is the owner's stable snapshot for playtesting. Don't run `npm run staging:build`
    unless the owner asks; verify work with `npm run build` (which builds into `dist/`) instead.
+10. **Keep `docs/dev-notes.md` current.** At the end of each finished task, update its status, decisions and next
+    step in the same commit. The project is worked on from more than one Claude account and machine, and chat
+    history doesn't carry over: anything not written in the repo is lost.
