@@ -246,7 +246,12 @@ function parse(
     case 'raise':
       return {
         type: 'RAISE',
-        round: rest[0] === 'ff' ? 'friends_family' : (rest[0] ?? ''),
+        round:
+          { ff: 'friends_family', a: 'series_a', ipo: 'ipo_spac' }[
+            rest[0] ?? ''
+          ] ??
+          rest[0] ??
+          '',
       }
     case 'hodl':
       return {
