@@ -73,10 +73,17 @@ describe('the quarter loop', () => {
     expect(Math.round(s.cash * 100) / 100).toBe(s.cash)
   })
 
-  it('after the last quarter (2022Q3) the act ends', () => {
+  it('after the last quarter (2022Q3) comes the Merge decision, and the choice ends the act', () => {
     let s: GameState = { ...newGame(1), quarter: CONTENT.quarters.length - 1 }
     s = act(playQuarter(s), { type: 'NEXT_QUARTER' })
+    expect(s.phase).toBe('merge')
+    expect(applyAction(s, { type: 'MERGE_CHOOSE', choice: 'nope' }).ok).toBe(
+      false,
+    )
+    s = act(s, { type: 'MERGE_CHOOSE', choice: 'gpu_cloud' })
     expect(s.phase).toBe('ended')
+    expect(s.mergeChoice).toBe('gpu_cloud')
+    expect(s.log.at(-1)!.key).toBe('log.merge_choice')
   })
 })
 

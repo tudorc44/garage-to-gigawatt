@@ -7,7 +7,7 @@ import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { InvestorPitch, PitchWalkaway } from './systems/pitch.ts'
 import type { MarketRead } from './systems/readMarket.ts'
 
-export type Phase = 'plan' | 'live' | 'report' | 'gameover' | 'ended'
+export type Phase = 'plan' | 'live' | 'report' | 'merge' | 'gameover' | 'ended'
 export type Coin = 'BTC' | 'ETH'
 export type Condition = 'new' | 'used'
 
@@ -149,6 +149,8 @@ export interface GameState {
   firedQuarter: Record<string, number>
   /** The last Read the market (its quarter and the hint per coin), or null. */
   marketRead: MarketRead | null
+  /** The Merge decision (merge.json choice id) once made, or null. */
+  mergeChoice: string | null
   /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
   complaint: { siteId: string; week: number } | null
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
@@ -377,6 +379,7 @@ export function newGame(seed: number): GameState {
     staff: {},
     firedQuarter: {},
     marketRead: null,
+    mergeChoice: null,
     siteHeat: {
       'site-1': {
         value: start.heat_base,

@@ -5,6 +5,7 @@ import { BALANCE, CONTENT, type MarketWeek } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import type {
+  QuarterReport,
   Coin,
   GameState,
   MachineLot,
@@ -54,6 +55,7 @@ import {
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
+import { activeRivals, rivalSnapshot, yourRank } from './systems/rivals.ts'
 import {
   buildQuartersFor,
   isHired,
@@ -796,5 +798,148 @@ export function marketReadView(state: GameState) {
     accuracy: CONTENT.readMarket.accuracy,
     upThreshold: CONTENT.readMarket.upThreshold,
     downThreshold: CONTENT.readMarket.downThreshold,
+  }
+}
+
+/** Energized capacity and what the machines there draw, in kW (sites that are built and powered). */
+function energizedKw(state: GameState): { totalKw: number; usedKw: number } {
+  let totalKw = 0
+  let used = 0
+  for (const site of state.sites) {
+    if (!isReady(site, state.quarter)) continue
+    totalKw += capacityKw(site)
+    used += usedKw(state, site.id)
+  }
+  return { totalKw, usedKw: Math.min(used, totalKw) }
+}
+
+/**
+ * The Merge screen: the four choices (with a note when one doesn't fit your company) and what
+ * you're holding: GPUs and their resale value at the game's 2022Q3 used prices, BTC hashrate,
+ * energized MW used vs idle.
+ */
+export function mergeView(state: GameState) {
+  const gpuLots = state.machines.filter(
+    (l) => getModel(l.model)!.coin === 'ETH',
+  )
+  const gpus = gpuLots.reduce((n, l) => n + l.count, 0)
+  const last = CONTENT.quarters.length - 1
+  const gpuResaleUsd = gpuLots.reduce(
+    (sum, l) => sum + saleValueUsd(l, l.count, last),
+    0,
+  )
+  const sites = state.sites.some((s) => s.tier !== BALANCE.startSite)
+  const { totalKw, usedKw: used } = energizedKw(state)
+  return {
+    gpus,
+    gpuResaleUsd,
+    btcThs: state.reports.at(-1)?.hashrate.BTC ?? 0,
+    energizedKw: totalKw,
+    usedKw: used,
+    idleKw: totalKw - used,
+    choices: CONTENT.merge.choices.map((c) => ({
+      id: c.id,
+      text: c.text,
+      act2Preview: c.act2Preview,
+      /** Set when the choice is about something you don't have. */
+      note:
+        c.appliesIf === 'gpus' && gpus === 0
+          ? ('ui.merge.no_gpus' as const)
+          : c.appliesIf === 'sites' && !sites
+            ? ('ui.merge.no_sites' as const)
+            : null,
+    })),
+  }
+}
+
+/**
+ * The chapter report (end of Act I, or a bust): the score (founder net worth = stake × the last
+ * valuation, the peak, the league rank) with its title, the career curve, and the raw facts for
+ * the key moments. The UI turns the facts into text.
+ */
+export function chapterReport(state: GameState) {
+  const bust = state.phase === 'gameover'
+  const reports = state.reports
+  const last = reports.at(-1)
+  const finalValuationUsd = last?.valuationUsd ?? state.cash
+  const netWorthUsd = Math.max(0, state.founderStake * finalValuationUsd)
+  const title = bust
+    ? CONTENT.merge.bustTitle
+    : (CONTENT.merge.titleBands.find((b) => netWorthUsd >= b.min)?.title ??
+      CONTENT.merge.titleBands.at(-1)!.title)
+  const peak = reports.reduce<QuarterReport | undefined>(
+    (a, b) => (!a || b.valuationUsd > a.valuationUsd ? b : a),
+    undefined,
+  )
+  const byEbitda = [...reports].sort((a, b) => b.ebitdaUsd - a.ebitdaUsd)
+  const logOf = (key: string) => state.log.filter((e) => e.key === key)
+  const uri = CONTENT.shocks.find((sh) => sh.id === 'uri')
+  const uriEntry = uri
+    ? state.log.find(
+        (e) =>
+          e.quarter === uri.quarter &&
+          e.week === uri.week &&
+          (e.key === 'log.curtail_agreed' || e.key === 'log.curtail_declined'),
+      )
+    : undefined
+  // Rivals: everyone with numbers at the end of Act I reached the Merge; anyone in the game
+  // earlier who has none by then dropped out.
+  const endQuarter = CONTENT.quarters.length - 1
+  const reached = activeRivals(endQuarter).map((r) => r.id)
+  const dropped = CONTENT.rivals
+    .filter(
+      (r) =>
+        !reached.includes(r.id) &&
+        CONTENT.quarters.some((_, q) => rivalSnapshot(r, q) !== null),
+    )
+    .map((r) => r.id)
+  return {
+    bust,
+    title,
+    netWorthUsd,
+    finalValuationUsd,
+    founderStake: state.founderStake,
+    peak: peak
+      ? { valuationUsd: peak.valuationUsd, quarter: peak.quarter }
+      : null,
+    rank: reports.length > 0 ? yourRank(state, reports.length - 1) : null,
+    curve: reports.map((r) => ({
+      quarter: r.quarter,
+      valuationUsd: r.valuationUsd,
+    })),
+    quartersPlayed: reports.length,
+    mergeChoice: state.mergeChoice
+      ? (CONTENT.merge.choices.find((c) => c.id === state.mergeChoice) ?? null)
+      : null,
+    moments: {
+      raised: logOf('log.raised').map((e) => ({
+        round: String(e.params?.round),
+        quarter: CONTENT.quarters[e.quarter],
+        amountUsd: Number(e.params?.amountUsd),
+      })),
+      sites: logOf('log.site_ready').map((e) => ({
+        tier: String(e.params?.tier),
+        quarter: CONTENT.quarters[e.quarter],
+      })),
+      best: byEbitda[0]
+        ? { quarter: byEbitda[0].quarter, ebitdaUsd: byEbitda[0].ebitdaUsd }
+        : null,
+      worst: byEbitda.at(-1)
+        ? {
+            quarter: byEbitda.at(-1)!.quarter,
+            ebitdaUsd: byEbitda.at(-1)!.ebitdaUsd,
+          }
+        : null,
+      forcedSales: reports.filter((r) => r.forcedSale).map((r) => r.quarter),
+      marginCalls: reports.reduce((n, r) => n + r.marginCalls, 0),
+      marginDefaults: logOf('log.margin_default').length,
+      uri: uriEntry
+        ? uriEntry.key === 'log.curtail_agreed'
+          ? ('curtailed' as const)
+          : ('mined' as const)
+        : null,
+      rivalsReached: reached,
+      rivalsDropped: dropped,
+    },
   }
 }

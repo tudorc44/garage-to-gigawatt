@@ -1,5 +1,5 @@
 // The game shell: holds the GameState, sends actions to the sim, and picks the screen
-// from the phase (plan → live → report → next plan … → end). No game rules here.
+// from the phase (plan → live → report → next plan … → Merge → chapter report). No game rules here.
 import { useCallback, useRef, useState } from 'preact/hooks'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from '../sim/actions.ts'
@@ -10,7 +10,8 @@ import { newGame, type GameState } from '../sim/state.ts'
 import { LiveScreen } from './screens/Live.tsx'
 import { PlanScreen } from './screens/Plan.tsx'
 import { ReportScreen } from './screens/Report.tsx'
-import { EndScreen, TitleScreen } from './screens/Start.tsx'
+import { ChapterScreen, MergeScreen } from './screens/End.tsx'
+import { TitleScreen } from './screens/Start.tsx'
 
 /** Numbers are used as-is; any other text is hashed; empty picks a random seed. */
 function toSeed(text: string): number {
@@ -77,7 +78,7 @@ export function App() {
     screen = <TitleScreen onStart={(text) => start(toSeed(text))} />
   } else if (game.phase === 'ended' || (game.phase === 'gameover' && showEnd)) {
     screen = (
-      <EndScreen
+      <ChapterScreen
         state={game}
         onReplay={() => start(game.seed)}
         onNew={() => {
@@ -86,6 +87,8 @@ export function App() {
         }}
       />
     )
+  } else if (game.phase === 'merge') {
+    screen = <MergeScreen state={game} act={act} />
   } else if (game.phase === 'plan') {
     screen = <PlanScreen state={game} act={act} />
   } else if (game.phase === 'live') {

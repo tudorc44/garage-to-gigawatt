@@ -71,6 +71,7 @@
   "staff": {},
   "firedQuarter": {},
   "marketRead": null,
+  "mergeChoice": null,
   "siteHeat": {
     "site-1": {
       "value": 9,

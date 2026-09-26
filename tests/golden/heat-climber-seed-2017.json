@@ -134,6 +134,7 @@
   "staff": {},
   "firedQuarter": {},
   "marketRead": null,
+  "mergeChoice": "hold_and_wait",
   "siteHeat": {
     "site-1": {
       "value": 5,
@@ -3564,6 +3565,14 @@
       "key": "log.failures",
       "params": {
         "count": 3
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.merge_choice",
+      "params": {
+        "mergeChoice": "hold_and_wait"
       }
     }
   ]

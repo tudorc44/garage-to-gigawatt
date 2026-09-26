@@ -146,6 +146,8 @@ export type Action =
   | { type: 'RESOLVE_INTERRUPT'; choice: string }
   /** Close the quarter report and go to the next Plan phase. */
   | { type: 'NEXT_QUARTER' }
+  /** The Merge decision (merge.json choice id): ends Act I. */
+  | { type: 'MERGE_CHOOSE'; choice: string }
 
 export type ActionResult =
   { ok: true; state: GameState } | { ok: false; error: Message }
@@ -192,6 +194,15 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'NEXT_QUARTER':
       if (s.phase !== 'report') return fail('error.wrong_phase')
       startNextQuarter(s)
+      return
+
+    case 'MERGE_CHOOSE':
+      if (s.phase !== 'merge') return fail('error.wrong_phase')
+      if (!CONTENT.merge.choices.some((c) => c.id === a.choice))
+        return fail('error.bad_choice')
+      s.mergeChoice = a.choice
+      s.phase = 'ended'
+      logEntry(s, 'log.merge_choice', { mergeChoice: a.choice })
       return
   }
 

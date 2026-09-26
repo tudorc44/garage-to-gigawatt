@@ -2,6 +2,7 @@
 // (player actions and weekly ADVANCE ticks). Replaying the same log from the same
 // seed must always give the same state: that's what makes bug reports reproducible
 // and powers the golden-replay test and, later, the sim-runner bots.
+import { CONTENT } from '../content/index.ts'
 import { applyAction, type Action } from './actions.ts'
 import { advance } from './advance.ts'
 import { newGame, type GameState } from './state.ts'
@@ -28,6 +29,8 @@ export interface Strategy {
   plan(state: GameState): Action[]
   /** Answer to an interrupt; undefined (or no answer function) = the default choice. */
   answer?(state: GameState): string | undefined
+  /** The Merge decision; undefined (or no function) = merge.json bot_default. */
+  merge?(state: GameState): string | undefined
 }
 
 /** Plays a whole game with a strategy, recording every step. Stops at the end or game over. */
@@ -45,6 +48,9 @@ export function playGame(
     if (state.phase === 'plan') {
       for (const a of strategy.plan(state)) step(a)
       step({ type: 'END_PLAN' })
+    } else if (state.phase === 'merge') {
+      const choice = strategy.merge?.(state) ?? CONTENT.merge.botDefault
+      step({ type: 'MERGE_CHOOSE', choice })
     } else if (state.phase === 'live') {
       if (state.interrupt) {
         const choice = strategy.answer?.(state) ?? defaultChoice(state)

@@ -516,6 +516,47 @@ export const hiresFileSchema = z
 export type Hire = z.output<typeof hireSchema>
 export type HiresRules = z.output<typeof hiresFileSchema>
 
+// ---------- merge.json ----------
+
+/** The Merge decision (end of Act I) and the chapter score. */
+export const mergeFileSchema = z
+  .object({
+    choices: z
+      .array(
+        z.object({
+          id: z.string(),
+          text: z.string(),
+          act2_preview: z.string(),
+          /** What the choice is about: a note shows when you have none ("gpus" or "sites"). */
+          applies_if: z.enum(['gpus', 'sites']),
+        }),
+      )
+      .length(4),
+    /** The choice sim bots make. */
+    bot_default: z.string(),
+    score: z.object({
+      title_bands: z.array(z.object({ min: nonNeg, title: z.string() })).min(1),
+      bust_title: z.string(),
+    }),
+  })
+  .refine((m) => m.choices.some((c) => c.id === m.bot_default), {
+    message: 'bot_default must be one of the choice ids',
+  })
+  .transform((m) => ({
+    choices: m.choices.map((c) => ({
+      id: c.id,
+      text: c.text,
+      act2Preview: c.act2_preview,
+      appliesIf: c.applies_if,
+    })),
+    botDefault: m.bot_default,
+    /** Highest min first, so the first band at or under your net worth is your title. */
+    titleBands: [...m.score.title_bands].sort((a, b) => b.min - a.min),
+    bustTitle: m.score.bust_title,
+  }))
+
+export type MergeRules = z.output<typeof mergeFileSchema>
+
 /** Read the market: interrupts.json › read_market (design thread). */
 export const readMarketSchema = z
   .object({

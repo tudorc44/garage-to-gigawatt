@@ -112,10 +112,10 @@ function buildReport(
   }
 }
 
-/** From the report to the next Plan phase, or to the end of Act I after 2022Q3. */
+/** From the report to the next Plan phase, or to the Merge decision after 2022Q3. */
 export function startNextQuarter(state: GameState): void {
   if (state.quarter === CONTENT.quarters.length - 1) {
-    state.phase = 'ended'
+    state.phase = 'merge'
     return
   }
   state.quarter++

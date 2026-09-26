@@ -1004,3 +1004,30 @@ td.wrap {
   min-width: 180px;
   vertical-align: top;
 }
+/* The Merge decision and the chapter report: long cards scroll inside, never the page. */
+.chapter-card {
+  width: min(860px, 100%);
+  max-height: calc(100vh - 2 * var(--space-8));
+  overflow-y: auto;
+}
+.merge-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.merge-choices .choice {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: left;
+}
+.career-chart {
+  width: 100%;
+  height: 140px;
+  display: block;
+}
+.export-box {
+  width: 100%;
+  font: 12px/18px var(--font-mono);
+  resize: vertical;
+}

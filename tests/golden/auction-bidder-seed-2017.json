@@ -108,6 +108,7 @@
   "staff": {},
   "firedQuarter": {},
   "marketRead": null,
+  "mergeChoice": "hold_and_wait",
   "siteHeat": {
     "site-1": {
       "value": 5,
@@ -2712,6 +2713,14 @@
       "week": 12,
       "key": "log.eth_mining_ends",
       "params": {}
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.merge_choice",
+      "params": {
+        "mergeChoice": "hold_and_wait"
+      }
     }
   ]
 }

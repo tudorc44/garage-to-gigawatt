@@ -358,7 +358,7 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
   )
 }
 
-function League({ state, r }: { state: GameState; r: QuarterReport }) {
+export function League({ state, r }: { state: GameState; r: QuarterReport }) {
   const kw = siteViews(state).reduce((a, s) => a + (s.ready ? s.usedKw : 0), 0)
   const hash = [
     r.hashrate.ETH > 0 ? fmt.hash(r.hashrate.ETH, 'MH') : null,

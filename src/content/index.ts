@@ -10,6 +10,7 @@ import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
 import hiresRaw from './hires.json' with { type: 'json' }
+import mergeRaw from './merge.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
   auctionRulesSchema,
@@ -17,6 +18,7 @@ import {
   curtailmentRulesSchema,
   heatFileSchema,
   hiresFileSchema,
+  mergeFileSchema,
   readMarketSchema,
   interruptsFileSchema,
   machinesFileSchema,
@@ -33,6 +35,7 @@ import {
   type HeatRules,
   type Hire,
   type HiresRules,
+  type MergeRules,
   type ReadMarketRules,
   type Interrupt,
   type LadderStep,
@@ -51,6 +54,7 @@ export type {
   HeatRules,
   Hire,
   HiresRules,
+  MergeRules,
   ReadMarketRules,
   AuctionRules,
   CryptoLoanTerms,
@@ -96,6 +100,8 @@ export interface Content {
   hires: HiresRules
   /** Read the market (interrupts.json › read_market). */
   readMarket: ReadMarketRules
+  /** The Merge decision and the chapter score (merge.json). */
+  merge: MergeRules
   /** Power contract renewals (interrupts.json › negotiation). */
   negotiation: NegotiationRules
   /** Market shocks on fixed dates (shocks.json), with the week resolved to a week index. */
@@ -124,6 +130,7 @@ export interface RawContent {
   heat: unknown
   shocks: unknown
   hires: unknown
+  merge: unknown
 }
 
 export class ContentError extends Error {
@@ -164,6 +171,7 @@ export function parseContent(raw: RawContent): Content {
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
+  const merge = check('merge.json', mergeFileSchema, raw.merge)
   const shocksFile = check('shocks.json', shocksFileSchema, raw.shocks)
   const rawInterrupt = (id: string) =>
     (
@@ -201,6 +209,7 @@ export function parseContent(raw: RawContent): Content {
     !curtailment ||
     !heat ||
     !hires ||
+    !merge ||
     !readMarket ||
     !negotiation ||
     !shocksFile
@@ -436,6 +445,7 @@ export function parseContent(raw: RawContent): Content {
     heat,
     hires,
     readMarket,
+    merge,
     negotiation,
     shocks,
   }
@@ -464,5 +474,6 @@ export const CONTENT: Content = parseContent({
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,
+  merge: mergeRaw,
   shocks: shocksRaw,
 })

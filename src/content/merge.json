@@ -1,0 +1,88 @@
+{
+ "schema_version": 1,
+ "date": "2022-09-15",
+ "week": "2022-09-12",
+ "data": {
+  "eth_rev_usd_mh_day_before": {
+   "value": 0.021,
+   "source": "derived weekly series; whattomine ~$0.02 early Sep 2022",
+   "estimate": true
+  },
+  "eth_rev_usd_mh_day_after": {
+   "value": 0.0,
+   "source": "PoS: no mining reward after block 15,537,393",
+   "estimate": false
+  },
+  "best_alt_coin_usd_mh_day_after": {
+   "value": 0.006,
+   "source": "ETC/RVN/ERGO profitability late Sep 2022 ≈ $0.004–0.008 per ETH-MH equivalent; ~ $0.35/day for a 3060 Ti vs ~$0.36 power at 12¢",
+   "estimate": true
+  },
+  "eth_network_hashrate_moved": {
+   "value": "~900 TH/s ETH → ETC hash rose ~5x, then fell",
+   "estimate": true
+  },
+  "gpu_resale_3060ti_usd": {
+   "2022-01": 800,
+   "2022-08": 400,
+   "2022-10": 300,
+   "source": "Tom's Hardware eBay index",
+   "estimate": true
+  },
+  "gpu_resale_rx580_usd": {
+   "2022-01": 250,
+   "2022-10": 80,
+   "estimate": true
+  }
+ },
+ "choices": [
+  {
+   "id": "sell_gpus_keep_btc",
+   "text": "Sell every GPU into a flooded market and go all-in on bitcoin. Lean, focused, and exposed to one number: hashprice.",
+   "act2_preview": "Act II opens in the 2022–23 winter as a pure BTC miner. Low cost per coin decides whether you survive to the 2024 halving.",
+   "applies_if": "gpus"
+  },
+  {
+   "id": "gpu_cloud",
+   "text": "Keep the cards, buy some better ones, and rent compute to researchers and render studios. Mining revenue: zero. Optionality: large.",
+   "act2_preview": "You start Act II as a tiny GPU cloud. Customers are few until late 2022, when a chatbot changes everything.",
+   "applies_if": "gpus"
+  },
+  {
+   "id": "hosting",
+   "text": "Turn your GPU halls into hosting space for other people's ASICs. Steady fees, no coin risk, landlord headaches.",
+   "act2_preview": "Act II starts with contracted revenue and powered shells, the thing everyone will want once AI needs megawatts.",
+   "applies_if": "sites"
+  },
+  {
+   "id": "hold_and_wait",
+   "text": "Switch the GPUs off, keep the sites energized, and wait for clarity. Cheap today, possibly expensive tomorrow.",
+   "act2_preview": "Act II starts with idle MW and a cash burn. Power contracts you keep could be gold, or dead weight.",
+   "applies_if": "sites"
+  }
+ ],
+ "bot_default": "hold_and_wait",
+ "score": {
+  "net_worth": "founder_stake × valuation_at_merge",
+  "title_bands": [
+   {
+    "min": 0,
+    "title": "Hobbyist"
+   },
+   {
+    "min": 1000000,
+    "title": "Operator"
+   },
+   {
+    "min": 10000000,
+    "title": "Contender"
+   },
+   {
+    "min": 100000000,
+    "title": "Titan"
+   }
+  ],
+  "bust_title": "Bust"
+ },
+ "game_note": "Design thread, 26 Sep 2026: after the 2022Q3 report the Merge screen shows the 4 choices (all always available; applies_if adds a note when you have no GPUs / no site beyond the garage) with what they'd mean for you (GPUs and their resale value at the game's 2022Q3 used prices, BTC hashrate, energized MW used vs idle). The choice has no mechanical effect in Act I: it is recorded and shown in the chapter report with its act2_preview. bot_default is the choice sim bots make."
+}

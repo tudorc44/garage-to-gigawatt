@@ -15,6 +15,7 @@ import rivals from '../src/content/rivals.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
 import hires from '../src/content/hires.json' with { type: 'json' }
+import merge from '../src/content/merge.json' with { type: 'json' }
 import { csvToRows } from '../tools/market-csv-to-json.ts'
 
 const raw = (): RawContent =>
@@ -28,6 +29,7 @@ const raw = (): RawContent =>
     heat,
     shocks,
     hires,
+    merge,
   })
 
 describe('content loads', () => {

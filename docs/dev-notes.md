@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with hires and Read the market.
+Last updated: 26 Sep 2026, with hires, Read the market, and the Merge decision + chapter report.
 
 ## How the owner works
 
@@ -55,7 +55,9 @@ See `CLAUDE.md` for the full list. The main ones:
    Decisions; terminal: `pitch seed|a`, then `counter <$M>`, `accept`, `walk`), founder stake (dilutions multiply: F&F then seed leaves 72%, then Series A 57.6%).
 5. **Hires** (`hires.json`, `src/sim/systems/hires.ts`): the five people on the People dialog (Plan ›
    "Hire staff"), terminal `hire <1-5>` / `fire <1-5>`. **Read the market** (Plan › Intel row, the
-   Signals card, a line on the Live screen; terminal `read`). See Decisions.
+   Signals card, a line on the Live screen; terminal `read`). **The Merge decision and the chapter
+   report** (`merge.json`, `src/ui/screens/End.tsx`, `src/ui/chapter.ts`): after the 2022Q3 report, and
+   the chapter report on a bust too. See Decisions.
    **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
    and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
@@ -64,7 +66,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 293 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 296 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -94,7 +96,7 @@ See `CLAUDE.md` for the full list. The main ones:
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
 The 20 event cards (Heat's event-card
-effects wait for them), the failure-wave interrupt, the Merge decision screen, saves, sound, settings, the
+effects wait for them), the failure-wave interrupt, saves, sound, settings, the
 left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
 eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -147,6 +149,26 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **The Merge and the chapter report** (design thread, 26 Sep 2026; `merge.json`):
+  - After the 2022Q3 report, Next opens the Merge screen (new phase `merge`): the 4 choices, all
+    always available, with a note when one doesn't fit ("You own no GPUs." for the GPU choices, "You
+    have no site beyond the garage." for hosting and hold-and-wait: `applies_if` in merge.json), and
+    your position: GPUs and their resale value at the game's 2022Q3 used prices (which match the
+    Oct-2022 resale data: RX 580 ×6 ≈ $480–550, 3060 Ti ×6 = $1,800), BTC hashrate, energized kW
+    used vs idle. Picking one (`MERGE_CHOOSE`) ends Act I (`ended`); it has no mechanical effect and
+    is shown in the chapter report with its Act II preview.
+  - Chapter report: net worth = founder stake × the last valuation (never below 0), a title from the
+    bands (under $1M Hobbyist, $1M Operator, $10M Contender, $100M+ Titan; a bust is "Bust"), the peak
+    valuation and its quarter, the league rank, the valuation curve with the peak marked, the Merge
+    choice, key moments (rounds raised, sites powered, best and worst EBITDA quarter, forced sales,
+    margin calls and defaults, the Uri choice, and "Rivals: who went bust and who reached the Merge"),
+    the league table, and New career / Try again / Export run (the run as text, copied to the
+    clipboard when allowed and shown in a box). A bust shows the same report, "Chapter ends early",
+    without the Merge.
+  - Chosen by Claude Code: sim bots pick `bot_default` (hold_and_wait) at the Merge; the choice names
+    are short labels in `en.json`, the long texts come from merge.json; all 4 rivals reach the Merge
+    in the data (Core Scientific's bankruptcy is Dec 2022, after Act I); the terminal game asks the
+    Merge question and prints the same text summary.
 - **Read the market** (design thread, 26 Sep 2026; `interrupts.json` › read_market,
   `src/sim/systems/readMarket.ts`): once per quarter in the Plan phase, 1 Bandwidth (0 with the
   Trader). For BTC and ETH: ▲ up (more than +15%), ▼ down (more than −15%) or ≈ flat, from the Plan-phase

@@ -8,7 +8,8 @@ import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
-import { interruptChoices } from '../src/sim/selectors.ts'
+import { interruptChoices, mergeView } from '../src/sim/selectors.ts'
+import { runSummaryText } from '../src/ui/chapter.ts'
 import { openingOfferUsdKwh, renewalDue } from '../src/sim/systems/contracts.ts'
 import { ltv } from '../src/sim/systems/cryptoLoan.ts'
 import {
@@ -656,14 +657,30 @@ for (;;) {
     if ((await ask(t('play.continue'))) === 'quit') bye()
     const r = applyAction(state, { type: 'NEXT_QUARTER' })
     if (r.ok) state = r.state
+  } else if (state.phase === 'merge') {
+    console.log()
+    say('play.ended')
+    const v = mergeView(state)
+    v.choices.forEach((c, i) =>
+      say('play.merge_line', {
+        n: i + 1,
+        label: tDynamic(`merge_choice.${c.id}`, c.id),
+        text: c.text,
+        note: c.note ? ` (${t(c.note)})` : '',
+      }),
+    )
+    const answer = await ask(t('play.merge_prompt'))
+    if (answer === 'quit') bye()
+    const picked = v.choices[Number(answer) - 1]
+    if (picked) {
+      const r = applyAction(state, { type: 'MERGE_CHOOSE', choice: picked.id })
+      if (r.ok) state = r.state
+    }
   } else {
     if (state.phase === 'gameover') {
       showReport(state)
       console.log()
       say('play.gameover', { cashUsd: state.cash })
-    } else {
-      console.log()
-      say('play.ended')
     }
     const w = marketWeek(state.quarter, BALANCE.weeksPerQuarter - 1)
     say('play.final', {
@@ -671,6 +688,8 @@ for (;;) {
       treasuryUsd: treasuryValueUsd(state, w),
       machines: state.machines.reduce((n, l) => n + l.count, 0),
     })
+    console.log()
+    console.log(runSummaryText(state))
     bye()
   }
 }

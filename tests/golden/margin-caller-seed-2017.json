@@ -56,6 +56,7 @@
   "staff": {},
   "firedQuarter": {},
   "marketRead": null,
+  "mergeChoice": "hold_and_wait",
   "siteHeat": {
     "site-1": {
       "value": 5,
@@ -1983,6 +1984,14 @@
         "treasuryUsd": 1095.04,
         "machinesUsd": 0,
         "units": 0
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.merge_choice",
+      "params": {
+        "mergeChoice": "hold_and_wait"
       }
     }
   ]
