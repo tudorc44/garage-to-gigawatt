@@ -156,6 +156,14 @@ export function parseContent(raw: RawContent): Content {
   const byId = Object.fromEntries(
     interruptsFile.interrupts.map((i) => [i.id, i]),
   )
+  const repairCosts = byId.failure_wave?.repair_cost_usd ?? {}
+  for (const m of machinesFile.models) {
+    if (repairCosts[m.id] === undefined) {
+      problems.push(
+        `interrupts.json › failure_wave: no repair_cost_usd for ${m.id}`,
+      )
+    }
+  }
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
