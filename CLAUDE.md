@@ -31,7 +31,10 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 - `docs/act1-content/`: the original content pack. The game's live copies are in `src/content/`.
 - `docs/tech-stack.md`: architecture, repo layout, libraries.
 - `docs/design-brief.md`: game vision and the 4-act campaign (background only; Acts II–IV are out of scope).
-- `docs/design-system.md`: UI direction, era themes, fonts, colours, icons.
+- `docs/design-system/README.md` and `docs/design-system/tokens.css`: **source of truth for UI style**
+  (tokens, era themes, fonts, colours, components). `docs/design-system.md` records how those decisions were made.
+- `docs/wireframes-spec.md`: **source of truth for screen layout and flow.**
+- `docs/audio/`: **source of truth for sound.** Move it to `src/ui/audio/` when sound is built.
 
 ## Architecture rules (non-negotiable)
 
