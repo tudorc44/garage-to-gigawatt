@@ -133,6 +133,7 @@
   "pitchWalkaways": {},
   "staff": {},
   "firedQuarter": {},
+  "marketRead": null,
   "siteHeat": {
     "site-1": {
       "value": 5,

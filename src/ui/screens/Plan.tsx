@@ -13,6 +13,7 @@ import {
   equipmentLoanView,
   fundingRound,
   hireViews,
+  marketReadView,
   heatBand,
   lotViews,
   machineMarket,
@@ -490,7 +491,6 @@ function TodoPanel({
     const why = whyNot(state, a)
     return why ? say(why) : undefined
   }
-  const notBuilt = t('ui.locked.not_built')
   const renewals = renewalViews(state)
   const next = nextRenewal(state)
 
@@ -726,13 +726,67 @@ function TodoPanel({
       />
 
       <div class="label group">{t('ui.plan.group.intel')}</div>
+      <ReadMarketRow state={state} act={act} />
+      {!state.auction && <AuctionRow state={state} act={act} open={open} />}
+    </div>
+  )
+}
+
+/** Read the market: 1 Bandwidth (0 with the Trader), once per quarter. */
+function ReadMarketRow({ state, act }: ScreenProps) {
+  const v = marketReadView(state)
+  if (v.read) {
+    return (
       <ActionRow
         icon="read-market"
         name={t('ui.plan.read_market')}
-        locked={notBuilt}
+        locked={t('ui.locked.read_done')}
       />
-      {!state.auction && <AuctionRow state={state} act={act} open={open} />}
-    </div>
+    )
+  }
+  return (
+    <ActionRow
+      icon="read-market"
+      name={t('ui.plan.read_market')}
+      bandwidth={v.bandwidth}
+      bandwidthLeft={state.bandwidth}
+      price={t('ui.plan.read_market_price')}
+      disabledReason={v.blocked ? say(v.blocked) : undefined}
+      onClick={() => act({ type: 'READ_MARKET' })}
+    />
+  )
+}
+
+/** This quarter's read, or what reading the market would give. Shared with the Live screen. */
+export function MarketReadText({ state }: { state: GameState }) {
+  const v = marketReadView(state)
+  if (!v.read) {
+    return (
+      <span class="muted">
+        {t('ui.signals.read_market', {
+          bw: v.bandwidth,
+          up: fmt.pct(v.upThreshold),
+        })}
+      </span>
+    )
+  }
+  const dir = (coin: 'BTC' | 'ETH') =>
+    t('ui.read.coin', {
+      coin,
+      dir: tDynamic(`read.${v.read![coin]}`, v.read![coin]),
+    })
+  return (
+    <span>
+      {t('ui.read.result', {
+        btc: dir('BTC'),
+        eth: dir('ETH'),
+        pct: fmt.pct(v.upThreshold),
+      })}{' '}
+      <span class="muted">
+        {tDynamic(`read_flavour.${v.read.BTC}`, '')}{' '}
+        {t('ui.read.accuracy', { pct: fmt.pct(v.accuracy) })}
+      </span>
+    </span>
   )
 }
 
@@ -1019,7 +1073,7 @@ function SignalsPanel({ state, news }: { state: GameState; news: string[] }) {
         <Icon name="read-market" />
         <div>
           <span class="label">{t('ui.signals.more')}</span>
-          <span class="muted">{t('ui.signals.read_market')}</span>
+          <MarketReadText state={state} />
         </div>
       </div>
     </div>

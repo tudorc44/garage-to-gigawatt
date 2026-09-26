@@ -368,6 +368,8 @@ function parse(
               : (site.contract?.type ?? 'fixed'),
       }
     }
+    case 'read':
+      return { type: 'READ_MARKET' }
     case 'hire':
     case 'fire': {
       const ids = CONTENT.hires.list.map((h) => h.id)
@@ -456,6 +458,9 @@ async function planPhase(s: GameState): Promise<GameState> {
       console.log(t(e.key, e.params))
     } else if (parsed.type.startsWith('NEGOTIATE_') && !s.negotiation) {
       const e = s.log.findLast((x) => x.key.startsWith('log.negotiation_'))!
+      console.log(t(e.key, e.params))
+    } else if (parsed.type === 'READ_MARKET') {
+      const e = s.log.at(-1)!
       console.log(t(e.key, e.params))
     } else if (parsed.type.startsWith('PITCH_') && !s.pitch) {
       const e = s.log.findLast((x) => x.key.startsWith('log.pitch_'))!

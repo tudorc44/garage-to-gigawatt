@@ -5,6 +5,7 @@ import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { InvestorPitch, PitchWalkaway } from './systems/pitch.ts'
+import type { MarketRead } from './systems/readMarket.ts'
 
 export type Phase = 'plan' | 'live' | 'report' | 'gameover' | 'ended'
 export type Coin = 'BTC' | 'ETH'
@@ -146,6 +147,8 @@ export interface GameState {
   staff: Record<string, number>
   /** When each person was last let go (quarter index): no rehiring in that quarter. */
   firedQuarter: Record<string, number>
+  /** The last Read the market (its quarter and the hint per coin), or null. */
+  marketRead: MarketRead | null
   /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
   complaint: { siteId: string; week: number } | null
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
@@ -373,6 +376,7 @@ export function newGame(seed: number): GameState {
     pitchWalkaways: {},
     staff: {},
     firedQuarter: {},
+    marketRead: null,
     siteHeat: {
       'site-1': {
         value: start.heat_base,

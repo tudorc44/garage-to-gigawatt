@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with hires (the five people and their effects).
+Last updated: 26 Sep 2026, with hires and Read the market.
 
 ## How the owner works
 
@@ -54,7 +54,8 @@ See `CLAUDE.md` for the full list. The main ones:
    seed and Series A rows open a pitch dialog: take the offer, or pitch for a higher valuation, see
    Decisions; terminal: `pitch seed|a`, then `counter <$M>`, `accept`, `walk`), founder stake (dilutions multiply: F&F then seed leaves 72%, then Series A 57.6%).
 5. **Hires** (`hires.json`, `src/sim/systems/hires.ts`): the five people on the People dialog (Plan ›
-   "Hire staff"), terminal `hire <1-5>` / `fire <1-5>`. See Decisions.
+   "Hire staff"), terminal `hire <1-5>` / `fire <1-5>`. **Read the market** (Plan › Intel row, the
+   Signals card, a line on the Live screen; terminal `read`). See Decisions.
    **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
    and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
@@ -63,7 +64,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 290 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 293 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -92,7 +93,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Read the market, the 20 event cards (Heat's event-card
+The 20 event cards (Heat's event-card
 effects wait for them), the failure-wave interrupt, the Merge decision screen, saves, sound, settings, the
 left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
 eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
@@ -146,6 +147,13 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Read the market** (design thread, 26 Sep 2026; `interrupts.json` › read_market,
+  `src/sim/systems/readMarket.ts`): once per quarter in the Plan phase, 1 Bandwidth (0 with the
+  Trader). For BTC and ETH: ▲ up (more than +15%), ▼ down (more than −15%) or ≈ flat, from the Plan-phase
+  price (the quarter's first week) to its last week. Each read is right 75% of the time (seeded, own
+  stream `read_market:<quarter>:<coin>`); a wrong read is one step off, never up ↔ down (a wrong "flat"
+  truth becomes up or down 50/50). Chosen by Claude Code: the flavour line follows the BTC read (3
+  lines in `en.json`); the read stays on the Signals card and on the Live screen for that quarter.
 - **Hires** (design thread, 26 Sep 2026; `hires.json`):
   - Hire any quarter: 1 Bandwidth and a quarter's salary in cash (no signing cost). Salary = yearly ÷ 4,
     straight line from the 2017 to the 2021 value by year, 2021 × 1.08 in 2022; paid weekly, counted in

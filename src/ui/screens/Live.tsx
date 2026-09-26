@@ -21,6 +21,7 @@ import { Shell } from '../components/frame.tsx'
 import { fmt } from '../format.ts'
 import { machineName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
+import { MarketReadText } from './Plan.tsx'
 
 const WEEK_MS = 1500
 const SPEEDS = [1, 2, 4] as const
@@ -79,6 +80,12 @@ export function LiveScreen(
             <Totals state={state} />
             <PriceChart weeks={weeks} current={current} />
           </div>
+          {state.marketRead?.quarter === state.quarter && (
+            <p class="num-s" style={{ margin: 0 }}>
+              <Icon name="read-market" size={16} />{' '}
+              <MarketReadText state={state} />
+            </p>
+          )}
           <div class="controls">
             <div class="seg" role="group" aria-label={t('ui.live.play_pause')}>
               <button

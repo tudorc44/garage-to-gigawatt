@@ -53,6 +53,7 @@ import {
 } from './systems/contracts.ts'
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
+import { readMarketBlocker } from './systems/readMarket.ts'
 import {
   buildQuartersFor,
   isHired,
@@ -781,4 +782,19 @@ export function offerFlawsVisible(state: GameState): boolean {
 /** Read the market's Bandwidth cost now (0 with the Trader). */
 export function readMarketCost(state: GameState): number {
   return readMarketBandwidth(state)
+}
+
+/** Read the market as the Plan and Live screens show it: its cost, and this quarter's read. */
+export function marketReadView(state: GameState) {
+  const read =
+    state.marketRead?.quarter === state.quarter ? state.marketRead.reads : null
+  return {
+    bandwidth: readMarketBandwidth(state),
+    read,
+    /** Why it can't be read now (null when it can, or when it's already read). */
+    blocked: read ? null : (readMarketBlocker(state) ?? null),
+    accuracy: CONTENT.readMarket.accuracy,
+    upThreshold: CONTENT.readMarket.upThreshold,
+    downThreshold: CONTENT.readMarket.downThreshold,
+  }
 }

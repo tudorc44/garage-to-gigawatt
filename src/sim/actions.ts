@@ -54,6 +54,7 @@ import {
   hireBlocker,
 } from './systems/hires.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
+import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import {
   borrowBlocker,
   repayEquipmentLoan,
@@ -123,6 +124,8 @@ export type Action =
   | { type: 'REPAY_CRYPTO_LOAN' }
   /** Sealed bid for the whole distressed lot this Plan phase; the machines go to `siteId` if you win. */
   | { type: 'BID_AUCTION'; bidUsd: number; siteId: string }
+  /** Read the market: a hint of this quarter's BTC and ETH direction (1 Bandwidth; 0 with the Trader). */
+  | { type: 'READ_MARKET' }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -274,6 +277,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = raiseBlocker(s, a.round)
       if (blocked) return blocked
       takeRaise(s, a.round)
+      return
+    }
+
+    case 'READ_MARKET': {
+      const blocked = readMarketBlocker(s)
+      if (blocked) return blocked
+      readMarket(s)
       return
     }
 

@@ -29,6 +29,8 @@ const ID_PARAMS: Record<string, string> = {
   rival: 'rival.',
   contract: 'contract.',
   hire: 'hire.',
+  btcRead: 'read.',
+  ethRead: 'read.',
 }
 
 function fill(text: string, params: MessageParams): string {
