@@ -41,6 +41,7 @@
   "siteOffers": [],
   "equipmentLoan": null,
   "cryptoLoan": null,
+  "auction": null,
   "loansLockedUntil": null,
   "nextId": 5,
   "interrupt": null,
@@ -672,6 +673,28 @@
         "treasuryUsd": 0,
         "machinesUsd": 3000,
         "units": 3
+      }
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 150,
+        "model": "gpu_gen1",
+        "listUsd": 650,
+        "reserveUsd": 53900
+      }
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "core",
+        "count": 150,
+        "model": "gpu_gen1",
+        "rivalUsd": 85800
       }
     },
     {

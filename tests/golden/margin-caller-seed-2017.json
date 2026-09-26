@@ -47,6 +47,7 @@
     "apr": 0.09,
     "takenQuarter": 4
   },
+  "auction": null,
   "loansLockedUntil": null,
   "nextId": 3,
   "interrupt": null,
@@ -1450,6 +1451,28 @@
     },
     {
       "quarter": 7,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 150,
+        "model": "gpu_gen1",
+        "listUsd": 650,
+        "reserveUsd": 53900
+      }
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "core",
+        "count": 150,
+        "model": "gpu_gen1",
+        "rivalUsd": 85800
+      }
+    },
+    {
+      "quarter": 7,
       "week": 6,
       "key": "log.switched_off",
       "params": {}
@@ -1490,6 +1513,28 @@
     },
     {
       "quarter": 8,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 60,
+        "model": "gpu_gen1",
+        "listUsd": 600,
+        "reserveUsd": 20200
+      }
+    },
+    {
+      "quarter": 8,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "marathon",
+        "count": 60,
+        "model": "gpu_gen1",
+        "rivalUsd": 26900
+      }
+    },
+    {
+      "quarter": 8,
       "week": 1,
       "key": "log.switched_off",
       "params": {}
@@ -1525,6 +1570,28 @@
       "params": {
         "coin": "ETH",
         "changeDelta": -0.3219374679651461
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 330,
+        "model": "s9",
+        "listUsd": 50,
+        "reserveUsd": 7300
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "core",
+        "count": 330,
+        "model": "s9",
+        "rivalUsd": 14500
       }
     },
     {
@@ -1651,6 +1718,28 @@
     },
     {
       "quarter": 21,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 50,
+        "model": "s19pro",
+        "listUsd": 4400,
+        "reserveUsd": 88500
+      }
+    },
+    {
+      "quarter": 21,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "marathon",
+        "count": 50,
+        "model": "s19pro",
+        "rivalUsd": 170200
+      }
+    },
+    {
+      "quarter": 21,
       "week": 10,
       "key": "log.alert_held",
       "params": {
@@ -1690,6 +1779,28 @@
         "treasuryUsd": 1454.14,
         "machinesUsd": 0,
         "units": 0
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 310,
+        "model": "s19pro",
+        "listUsd": 2900,
+        "reserveUsd": 523400
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "riot",
+        "count": 310,
+        "model": "s19pro",
+        "rivalUsd": 669300
       }
     },
     {

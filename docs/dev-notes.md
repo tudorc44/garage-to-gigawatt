@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the rivals and the league table (week 3 in progress).
+Last updated: 26 Sep 2026, with rivals, the league table and distressed auctions (week 3 in progress).
 
 ## How the owner works
 
@@ -59,17 +59,21 @@ See `CLAUDE.md` for the full list. The main ones:
    pause, 1×/2×/4×, skip, alerts as modals), Quarter report, end screen. Design-system tokens and
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
-   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller) and unit tests: 171 passing + 1 to-do.
+   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder) and unit
+   tests: 190 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
    end-of-quarter numbers from `rivals.json`. The quarter report (browser and terminal) ranks you against
    them by value, with your rank change and who joins later.
+10. **Distressed auctions:** in the crypto-winter windows a lot of used machines may come up at the
+   start of a Plan phase. One sealed bid (2 Bandwidth) against 2–3 rivals, settled at once; the Plan
+   screen has the row and a bidding dialog, the terminal has `bid <amount> [site#]`.
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
 Negotiation, hires,
-Heat and talking to the neighbours, Read the market, auctions, grid curtailment, the 20 event
+Heat and talking to the neighbours, Read the market, grid curtailment, the 20 event
 cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
 council, landlord eviction, transformer upgrade). The UI has no automated tests (would need e.g. jsdom:
@@ -106,6 +110,22 @@ ask first).
   Rent stops for the whole quarter you leave in.
 
 ### Chosen by Claude Code, reported, not objected to (change freely if the owner asks)
+
+- **Distressed auctions** (interrupts.json › distressed_auction, with structured fields added to the live
+  copy: windows, models, ranges, Bandwidth). **Not yet confirmed by the owner:**
+  - It's a **Plan-phase action, not a mid-quarter interrupt**: the lot is announced at the start of the
+    Plan phase and you bid there. Reasons: bidding costs 2 Bandwidth (scope §2.6), which is spent in the
+    Plan phase, and you need a chance to make room (sell machines) for the lot. It doesn't count toward
+    the 3 interrupts per quarter.
+  - Windows 2018Q4–2019Q2 (S9s or GPU Gen 1 rigs), 2020Q2 (S9s), 2022Q2–Q3 (S19 Pros); 50% chance per
+    window quarter. Lots of 50–500 units in tens, list = that quarter's used price. Minimum bid 40–60% of
+    list; 2–3 rivals (in the game that quarter) bid 50–90% of list each.
+  - One sealed bid, for the whole lot, settled at once. The highest bid wins and pays what it bid (a tie
+    goes to the rival). Win or lose, the 2 Bandwidth is spent; losing costs no money and shows who won
+    with what. The lot must fit at one site. The machines arrive used, at once, and earn next quarter.
+  - No bid: when the quarter starts, the best rival takes the lot (a log line says who and for how much).
+  - Its rolls use a separate random stream per quarter (`substream` in `rng.ts`), so adding auctions
+    didn't change the failures or site offers of any existing game (the golden files only gained lines).
 
 - **League table:** ranked by value: the rival's market cap (`mcap_musd`) against your company valuation.
   A rival joins the table in the first quarter it has any number (Bitfarms 2017Q3, Riot and Marathon
@@ -166,6 +186,7 @@ ask first).
 | reinvest | garage only, spends everything | 0% | $28.8K |
 | raise-climb | reinvest + every round as soon as allowed, climbs the ladder | 0% | $17.9M (peak $334M, 2021Q1) |
 | raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $17.6M (peak $337M, 2021Q1) |
+| raise-auction | raise-climb + bids 85% of list on every lot it has room and cash for | 0% | $17.9M (wins 0.3 lots per game) |
 | hodl | garage only, keeps every coin | 0% | $104K |
 | hodl-borrow | hodl + the biggest crypto-backed loan whenever it has none | 0% | $65.9K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
@@ -200,6 +221,9 @@ ask first).
 - **Reinvest + F&F (no seed, with or without loans) goes bust in all 50 runs, in 2018Q3.** That is the
   scope's "reinvesting 100% goes bust 2018Q2–2019Q2" anchor; the to-do test could now be written with
   that bot, if the owner agrees that "reinvest" includes taking the F&F money.
+- **Auctions barely matter for the bots so far:** the raise-auction bot wins only 0.3 lots per game,
+  because it fills every site with new machines each quarter, so there's rarely room for a lot. A player
+  who keeps space free (or sells old rigs) can buy 2019 S9s at a deep discount before the 2019 rally.
 - Price alerts cluster (2 per quarter in 2017Q2–2018Q1 and 2022Q2, almost none 2018–2020) because the
   weekly prices are reconstructed from monthly data. Real CoinMetrics data should fix it.
 
@@ -212,6 +236,8 @@ ask first).
 - Confirm the crypto loan rules above, especially the extra "pay down with cash" margin-call answer.
 - Series A and the IPO taken as fixed offers from `capital.json`: fine until negotiation exists? The IPO's
   $5M EBITDA bar is just out of reach for a bot that fills one 20 MW site. Intended, or lower it?
+- Auctions as a Plan-phase action (not a mid-quarter interrupt): OK? And the lot sizes (50–500 units)
+  mostly need a warehouse, so small-unit players rarely have room.
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next

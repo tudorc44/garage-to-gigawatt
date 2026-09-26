@@ -72,6 +72,19 @@ export interface SiteOffer {
   flaw: string | null
 }
 
+/** A distressed lot up for a sealed-bid auction this Plan phase (interrupts.json › distressed_auction). */
+export interface Auction {
+  model: string
+  /** Used units in the lot. */
+  count: number
+  /** The used price per unit this quarter ("list"). */
+  unitListUsd: number
+  /** Lowest bid accepted, for the whole lot. */
+  reserveUsd: number
+  /** The rivals' sealed bids for the whole lot. Hidden from the player until the auction closes. */
+  bids: { rival: string; bidUsd: number }[]
+}
+
 export interface GameState {
   /** Save-format version, for future migrations. */
   version: 1
@@ -100,6 +113,8 @@ export interface GameState {
   equipmentLoan: EquipmentLoan | null
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
+  /** A distressed auction open this Plan phase, or null. */
+  auction: Auction | null
   /** After a margin-call default: no loans until this quarter index. null = not locked. */
   loansLockedUntil: number | null
   /** Counter for making unique ids ("site-3", "lot-7"). */
@@ -274,6 +289,7 @@ export function newGame(seed: number): GameState {
     siteOffers: [],
     equipmentLoan: null,
     cryptoLoan: null,
+    auction: null,
     loansLockedUntil: null,
     nextId: 2,
     interrupt: null,

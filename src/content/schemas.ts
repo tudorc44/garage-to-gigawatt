@@ -150,6 +150,45 @@ export const interruptsFileSchema = z.object({
   interrupts: z.array(interruptSchema),
 })
 
+const range = (min: number, max = Infinity) =>
+  z
+    .tuple([z.number().min(min).max(max), z.number().min(min).max(max)])
+    .refine(([a, b]) => a <= b, 'expected [low, high]')
+
+/** The distressed auction's structured rules (extra fields on its interrupts.json entry). */
+export const auctionRulesSchema = z
+  .object({
+    windows: z
+      .array(
+        z.object({
+          from: quarterId,
+          to: quarterId,
+          models: z.array(z.string()).min(1),
+        }),
+      )
+      .min(1),
+    chance_per_quarter: z.number().min(0).max(1),
+    lot_units: range(1).refine(
+      ([a, b]) => Number.isInteger(a) && Number.isInteger(b),
+      'expected whole units',
+    ),
+    /** Lowest bid accepted, as a share of the lot's value at the used price. */
+    reserve_share: range(0, 1),
+    /** Each rival's sealed bid, as a share of the lot's value. */
+    rival_bid_share: range(0, 2),
+    rival_bidders: range(1),
+    bandwidth: z.number().int().min(0),
+  })
+  .transform((a) => ({
+    windows: a.windows,
+    chancePerQuarter: a.chance_per_quarter,
+    lotUnits: a.lot_units,
+    reserveShare: a.reserve_share,
+    rivalBidShare: a.rival_bid_share,
+    rivalBidders: a.rival_bidders,
+    bandwidth: a.bandwidth,
+  }))
+
 // ---------- capital.json (only what the sim uses so far) ----------
 
 /** One rung of the funding ladder (savings → F&F → seed → Series A → IPO). */
@@ -262,3 +301,4 @@ export type SiteTier = z.output<typeof siteTierSchema>
 export type Flaw = z.output<typeof flawSchema>
 export type Interrupt = z.output<typeof interruptSchema>
 export type Rival = z.output<typeof rivalSchema>
+export type AuctionRules = z.output<typeof auctionRulesSchema>

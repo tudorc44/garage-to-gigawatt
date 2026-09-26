@@ -9,6 +9,7 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
+import { rollAuction } from './auctions.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
@@ -120,4 +121,5 @@ export function startNextQuarter(state: GameState): void {
       logEntry(state, 'log.site_ready', { tier: site.tier })
     }
   }
+  rollAuction(state)
 }

@@ -14,6 +14,7 @@ import { defaultChoice } from '../src/sim/systems/interrupts.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
   buyPrice,
+  getModel,
   leadTimeQuarters,
   marketWeek,
   previousMarketWeek,
@@ -61,8 +62,10 @@ const coins = (n: number) =>
 const hashOf = (coin: 'BTC' | 'ETH', v: number) =>
   fmt.hash(v, coin === 'ETH' ? 'MH' : 'TH')
 const change = (x: number) => fmt.delta(x, 'pct', { dp: 1 })
-const name = (kind: 'machine' | 'site' | 'flaw' | 'condition', id: string) =>
-  tDynamic(`${kind}.${id}`, id)
+const name = (
+  kind: 'machine' | 'site' | 'flaw' | 'condition' | 'rival',
+  id: string,
+) => tDynamic(`${kind}.${id}`, id)
 
 function bye(): never {
   say('play.bye')
@@ -214,6 +217,20 @@ function showPlan(s: GameState) {
     }
   }
 
+  if (s.auction) {
+    const a = s.auction
+    console.log()
+    say('play.auction', {
+      count: a.count,
+      model: a.model,
+      listUsd: a.unitListUsd,
+      valueUsd: a.count * a.unitListUsd,
+      reserveUsd: a.reserveUsd,
+      kw: fmt.power(getModel(a.model)!.power_kw * a.count),
+      rivals: a.bids.map((b) => name('rival', b.rival)).join(', '),
+    })
+  }
+
   if (s.siteOffers.length > 0) {
     console.log()
     say('play.offers')
@@ -289,6 +306,11 @@ function parse(
       return { type: 'TAKE_LOAN', amountUsd: num(0) }
     case 'repay':
       return { type: 'REPAY_LOAN' }
+    case 'bid': {
+      const site = s.sites[(rest[1] ? num(1) : 1) - 1]
+      if (!site) return 'play.bad_number'
+      return { type: 'BID_AUCTION', bidUsd: num(0), siteId: site.id }
+    }
     case 'leave': {
       const site = item(s.sites, 0)
       return site ? { type: 'LEAVE_SITE', siteId: site.id } : 'play.bad_number'
@@ -346,7 +368,11 @@ async function planPhase(s: GameState): Promise<GameState> {
     }
     s = r.state
     if (parsed.type === 'END_PLAN') return s
-    say('play.ok')
+    // An auction bid is settled at once: say who won.
+    if (parsed.type === 'BID_AUCTION') {
+      const e = s.log.at(-1)!
+      console.log(t(e.key, e.params))
+    } else say('play.ok')
     showStatus(s)
   }
 }

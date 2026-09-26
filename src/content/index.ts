@@ -9,12 +9,14 @@ import capitalRaw from './capital.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
+  auctionRulesSchema,
   capitalFileSchema,
   interruptsFileSchema,
   machinesFileSchema,
   marketSchema,
   rivalsFileSchema,
   sitesFileSchema,
+  type AuctionRules,
   type CryptoLoanTerms,
   type EquipmentLoanTerms,
   type Flaw,
@@ -28,6 +30,7 @@ import {
 
 export { BALANCE }
 export type {
+  AuctionRules,
   CryptoLoanTerms,
   EquipmentLoanTerms,
   Flaw,
@@ -56,6 +59,8 @@ export interface Content {
   equipmentLoans: EquipmentLoanTerms[]
   /** The crypto-backed loan's terms. */
   cryptoLoan: CryptoLoanTerms
+  /** Distressed auction rules (interrupts.json › distressed_auction). */
+  auction: AuctionRules
   /** The 4 scripted rivals, in file order. */
   rivals: Rival[]
 }
@@ -105,6 +110,14 @@ export function parseContent(raw: RawContent): Content {
   const marketRows = check('market_weekly', marketSchema, raw.market)
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
+  const auctionRaw = (
+    raw.interrupts as { interrupts?: { id?: string }[] } | undefined
+  )?.interrupts?.find((i) => i.id === 'distressed_auction')
+  const auction = check(
+    'interrupts.json › distressed_auction',
+    auctionRulesSchema,
+    auctionRaw,
+  )
 
   if (
     !machinesFile ||
@@ -112,7 +125,8 @@ export function parseContent(raw: RawContent): Content {
     !interruptsFile ||
     !marketRows ||
     !capitalFile ||
-    !rivalsFile
+    !rivalsFile ||
+    !auction
   ) {
     throw new ContentError(problems)
   }
@@ -239,6 +253,34 @@ export function parseContent(raw: RawContent): Content {
       }
     }
   }
+  for (const win of auction.windows) {
+    if (!quarters.includes(win.from) || !quarters.includes(win.to)) {
+      problems.push(
+        `interrupts.json › distressed_auction: window ${win.from}–${win.to} is outside Act I`,
+      )
+      continue
+    }
+    for (const id of win.models) {
+      const m = machinesFile.models.find((x) => x.id === id)
+      if (!m) {
+        problems.push(
+          `interrupts.json › distressed_auction: unknown machine "${id}"`,
+        )
+        continue
+      }
+      for (const q of quarterRange(win.from, win.to)) {
+        if (m.price_used[q] === undefined)
+          problems.push(
+            `interrupts.json › distressed_auction: ${id} has no used price in ${q}`,
+          )
+      }
+    }
+  }
+  if (auction.rivalBidders[1] > rivalsFile.rivals.length) {
+    problems.push(
+      'interrupts.json › distressed_auction: more rival bidders than rivals',
+    )
+  }
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
@@ -256,6 +298,7 @@ export function parseContent(raw: RawContent): Content {
     equipmentLoans: capitalFile.loans.equipment,
     cryptoLoan: capitalFile.loans.game_crypto_loan,
     rivals: rivalsFile.rivals,
+    auction,
   }
 }
 

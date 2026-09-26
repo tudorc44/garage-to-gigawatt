@@ -141,7 +141,50 @@
    ],
    "default": "pass",
    "source": "2018–19 S9 fire sales; 2020 post-halving S9 dumps; 2022 lender repossessions (Stronghold / NYDIG)",
-   "estimate": true
+   "estimate": true,
+   "windows": [
+    {
+     "from": "2018Q4",
+     "to": "2019Q2",
+     "models": [
+      "s9",
+      "gpu_gen1"
+     ]
+    },
+    {
+     "from": "2020Q2",
+     "to": "2020Q2",
+     "models": [
+      "s9"
+     ]
+    },
+    {
+     "from": "2022Q2",
+     "to": "2022Q3",
+     "models": [
+      "s19pro"
+     ]
+    }
+   ],
+   "chance_per_quarter": 0.5,
+   "lot_units": [
+    50,
+    500
+   ],
+   "reserve_share": [
+    0.4,
+    0.6
+   ],
+   "rival_bid_share": [
+    0.5,
+    0.9
+   ],
+   "rival_bidders": [
+    2,
+    3
+   ],
+   "bandwidth": 2,
+   "game_note": "Structured fields added for the sim (same rules as 'trigger', 'lot' and 'rivals_bid'). Models per window follow capital.json 'distressed' (2018–19 S9s and GPU rigs, 2020 post-halving S9s, 2022 S19-class repossessions). Bandwidth from scope §2.6."
   },
   {
    "id": "margin_call",
