@@ -66,19 +66,233 @@
     },
     "failures": 0,
     "treasurySoldUsd": 0,
-    "priceAlerts": 0
-  },
-  "lastWeek": {
-    "week": 13,
-    "date": "2018-09-24",
-    "btcUsd": 6708.14,
-    "ethUsd": 242.24,
-    "revenueUsd": 84.5712,
-    "powerCostUsd": 76.60799999999998,
-    "rentUsd": 461.53846153846155,
-    "failures": 0,
-    "batchesOff": 0,
-    "cash": -5125.26
+    "priceAlerts": 0,
+    "soldUsd": 1577.9735999999998,
+    "startCash": 292.67,
+    "startTreasuryUsd": 0,
+    "weeks": [
+      {
+        "week": 1,
+        "date": "2018-07-02",
+        "btcUsd": 6478.44,
+        "ethUsd": 453.68,
+        "revenueUsd": 155.7864,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.34338388291306643
+        },
+        "priceAlert": false,
+        "cash": -89.69
+      },
+      {
+        "week": 2,
+        "date": "2018-07-09",
+        "btcUsd": 6760.62,
+        "ethUsd": 449.1,
+        "revenueUsd": 153.61919999999998,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3420601202404809
+        },
+        "priceAlert": false,
+        "cash": -474.22
+      },
+      {
+        "week": 3,
+        "date": "2018-07-16",
+        "btcUsd": 7055.09,
+        "ethUsd": 444.57,
+        "revenueUsd": 151.452,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3406707605101559
+        },
+        "priceAlert": false,
+        "cash": -860.91
+      },
+      {
+        "week": 4,
+        "date": "2018-07-23",
+        "btcUsd": 7362.38,
+        "ethUsd": 440.08,
+        "revenueUsd": 149.33520000000001,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3393364842755863
+        },
+        "priceAlert": false,
+        "cash": -1249.72
+      },
+      {
+        "week": 5,
+        "date": "2018-07-30",
+        "btcUsd": 7683.06,
+        "ethUsd": 435.63,
+        "revenueUsd": 147.21839999999997,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.33794366779147433
+        },
+        "priceAlert": false,
+        "cash": -1640.65
+      },
+      {
+        "week": 6,
+        "date": "2018-08-06",
+        "btcUsd": 7589.28,
+        "ethUsd": 400.27,
+        "revenueUsd": 134.7192,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3365708147000775
+        },
+        "priceAlert": false,
+        "cash": -2044.08
+      },
+      {
+        "week": 7,
+        "date": "2018-08-13",
+        "btcUsd": 7428.34,
+        "ethUsd": 363.24,
+        "revenueUsd": 121.8168,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3353617443012884
+        },
+        "priceAlert": false,
+        "cash": -2460.41
+      },
+      {
+        "week": 8,
+        "date": "2018-08-20",
+        "btcUsd": 7270.82,
+        "ethUsd": 329.64,
+        "revenueUsd": 110.07359999999998,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3339206406989443
+        },
+        "priceAlert": false,
+        "cash": -2888.48
+      },
+      {
+        "week": 9,
+        "date": "2018-08-27",
+        "btcUsd": 7116.63,
+        "ethUsd": 299.14,
+        "revenueUsd": 99.54,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3327538944975597
+        },
+        "priceAlert": false,
+        "cash": -3327.09
+      },
+      {
+        "week": 10,
+        "date": "2018-09-03",
+        "btcUsd": 6988.94,
+        "ethUsd": 277.55,
+        "revenueUsd": 92.73599999999999,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.33412358133669606
+        },
+        "priceAlert": false,
+        "cash": -3772.5
+      },
+      {
+        "week": 11,
+        "date": "2018-09-10",
+        "btcUsd": 6894.05,
+        "ethUsd": 265.24,
+        "revenueUsd": 89.9136,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3389895943296637
+        },
+        "priceAlert": false,
+        "cash": -4220.73
+      },
+      {
+        "week": 12,
+        "date": "2018-09-17",
+        "btcUsd": 6800.46,
+        "ethUsd": 253.48,
+        "revenueUsd": 87.192,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.34397980116774496
+        },
+        "priceAlert": false,
+        "cash": -4671.68
+      },
+      {
+        "week": 13,
+        "date": "2018-09-24",
+        "btcUsd": 6708.14,
+        "ethUsd": 242.24,
+        "revenueUsd": 84.5712,
+        "powerCostUsd": 76.60799999999998,
+        "rentUsd": 461.53846153846155,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.3491215323645971
+        },
+        "priceAlert": false,
+        "cash": -5125.26
+      }
+    ]
   },
   "reports": [
     {
@@ -109,6 +323,10 @@
       "ebitdaUsd": 0,
       "valuationUsd": 0,
       "priceAlerts": 0,
+      "startCash": 0,
+      "startTreasuryUsd": 0,
+      "soldUsd": 0,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -139,6 +357,10 @@
       "ebitdaUsd": 21087.737999999998,
       "valuationUsd": 527193.4619999999,
       "priceAlerts": 0,
+      "startCash": 0,
+      "startTreasuryUsd": 0,
+      "soldUsd": 22332.618,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -169,6 +391,10 @@
       "ebitdaUsd": 7073.073000000001,
       "valuationUsd": 197914.58200000005,
       "priceAlerts": 0,
+      "startCash": 21087.75,
+      "startTreasuryUsd": 0,
+      "soldUsd": 8317.953000000001,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -199,6 +425,10 @@
       "ebitdaUsd": 3564.4139999999998,
       "valuationUsd": 117271.19599999998,
       "priceAlerts": 0,
+      "startCash": 28160.83,
+      "startTreasuryUsd": 0,
+      "soldUsd": 4809.294,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -229,6 +459,10 @@
       "ebitdaUsd": 6029.541,
       "valuationUsd": 182463.78399999999,
       "priceAlerts": 0,
+      "startCash": 31725.26,
+      "startTreasuryUsd": 0,
+      "soldUsd": 7274.421,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -259,6 +493,10 @@
       "ebitdaUsd": -3962.139000000001,
       "valuationUsd": 292.67,
       "priceAlerts": 0,
+      "startCash": 2754.800000000003,
+      "startTreasuryUsd": 0,
+      "soldUsd": 3282.7409999999995,
+      "treasurySoldUsd": 0,
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 1500,
@@ -293,11 +531,80 @@
       "ebitdaUsd": -5417.9304,
       "valuationUsd": -1125.26,
       "priceAlerts": 0,
+      "startCash": 292.67,
+      "startTreasuryUsd": 0,
+      "soldUsd": 1577.9735999999998,
+      "treasurySoldUsd": 0,
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 4000,
         "units": 4
       }
+    }
+  ],
+  "log": [
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 5,
+        "model": "gpu_gen1",
+        "condition": "new",
+        "costUsd": 10000
+      }
+    },
+    {
+      "quarter": 5,
+      "week": null,
+      "key": "log.site_built",
+      "params": {
+        "tier": "small_unit",
+        "costUsd": 35000,
+        "quarter": "2018Q3"
+      }
+    },
+    {
+      "quarter": 5,
+      "week": null,
+      "key": "log.scouted",
+      "params": {
+        "count": 2,
+        "tier": "warehouse"
+      }
+    },
+    {
+      "quarter": 5,
+      "week": null,
+      "key": "log.forced_sale",
+      "params": {
+        "treasuryUsd": 0,
+        "machinesUsd": 1500,
+        "units": 1
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.site_ready",
+      "params": {
+        "tier": "small_unit"
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.forced_sale",
+      "params": {
+        "treasuryUsd": 0,
+        "machinesUsd": 4000,
+        "units": 4
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.game_over"
     }
   ]
 }

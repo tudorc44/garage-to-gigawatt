@@ -60,19 +60,233 @@
     },
     "failures": 0,
     "treasurySoldUsd": 0,
-    "priceAlerts": 0
-  },
-  "lastWeek": {
-    "week": 13,
-    "date": "2022-09-26",
-    "btcUsd": 19479.55,
-    "ethUsd": 1365.97,
-    "revenueUsd": 0,
-    "powerCostUsd": 0,
-    "rentUsd": 0,
-    "failures": 0,
-    "batchesOff": 2,
-    "cash": 32825.92
+    "priceAlerts": 0,
+    "soldUsd": 144.97433999999998,
+    "startCash": 32848.53,
+    "startTreasuryUsd": 10094.173894902917,
+    "weeks": [
+      {
+        "week": 1,
+        "date": "2022-07-04",
+        "btcUsd": 20309.17,
+        "ethUsd": 1134.13,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 2,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 32848.53
+      },
+      {
+        "week": 2,
+        "date": "2022-07-11",
+        "btcUsd": 21045.56,
+        "ethUsd": 1255.76,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 2,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 32848.53
+      },
+      {
+        "week": 3,
+        "date": "2022-07-18",
+        "btcUsd": 21808.66,
+        "ethUsd": 1390.42,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 2,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 32848.53
+      },
+      {
+        "week": 4,
+        "date": "2022-07-25",
+        "btcUsd": 22599.42,
+        "ethUsd": 1539.53,
+        "revenueUsd": 25.7418,
+        "powerCostUsd": 23.939999999999994,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.016720557572765714
+        },
+        "priceAlert": false,
+        "cash": 32842.61
+      },
+      {
+        "week": 5,
+        "date": "2022-08-01",
+        "btcUsd": 23187.36,
+        "ethUsd": 1700.44,
+        "revenueUsd": 28.841400000000004,
+        "powerCostUsd": 23.939999999999994,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.01696113946978429
+        },
+        "priceAlert": false,
+        "cash": 32838.86
+      },
+      {
+        "week": 6,
+        "date": "2022-08-08",
+        "btcUsd": 22414,
+        "ethUsd": 1850.69,
+        "revenueUsd": 31.751999999999995,
+        "powerCostUsd": 23.939999999999994,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.01715684420405362
+        },
+        "priceAlert": false,
+        "cash": 32837.15
+      },
+      {
+        "week": 7,
+        "date": "2022-08-15",
+        "btcUsd": 21666.43,
+        "ethUsd": 1960.96,
+        "revenueUsd": 34.0452,
+        "powerCostUsd": 23.939999999999994,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.01736149640992167
+        },
+        "priceAlert": false,
+        "cash": 32837.04
+      },
+      {
+        "week": 8,
+        "date": "2022-08-22",
+        "btcUsd": 20943.8,
+        "ethUsd": 1769.23,
+        "revenueUsd": 31.071600000000004,
+        "powerCostUsd": 23.939999999999994,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.017562216331398407
+        },
+        "priceAlert": false,
+        "cash": 32834.85
+      },
+      {
+        "week": 9,
+        "date": "2022-08-29",
+        "btcUsd": 20245.27,
+        "ethUsd": 1596.24,
+        "revenueUsd": 28.3626,
+        "powerCostUsd": 23.939999999999994,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.017768380694632387
+        },
+        "priceAlert": false,
+        "cash": 32830.76
+      },
+      {
+        "week": 10,
+        "date": "2022-09-05",
+        "btcUsd": 19932.65,
+        "ethUsd": 1522.86,
+        "revenueUsd": 27.291599999999995,
+        "powerCostUsd": 23.939999999999994,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.017921279697411446
+        },
+        "priceAlert": false,
+        "cash": 32825.92
+      },
+      {
+        "week": 11,
+        "date": "2022-09-12",
+        "btcUsd": 19769.51,
+        "ethUsd": 1485.66,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 2,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 32825.92
+      },
+      {
+        "week": 12,
+        "date": "2022-09-19",
+        "btcUsd": 19619.55,
+        "ethUsd": 1431.29,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 2,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 32825.92
+      },
+      {
+        "week": 13,
+        "date": "2022-09-26",
+        "btcUsd": 19479.55,
+        "ethUsd": 1365.97,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 2,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 32825.92
+      }
+    ]
   },
   "reports": [
     {
@@ -103,6 +317,10 @@
       "ebitdaUsd": 0,
       "valuationUsd": 6100,
       "priceAlerts": 0,
+      "startCash": 6100,
+      "startTreasuryUsd": 0,
+      "soldUsd": 0,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -133,6 +351,10 @@
       "ebitdaUsd": 2204.0991000000004,
       "valuationUsd": 61602.57540076059,
       "priceAlerts": 3,
+      "startCash": 6100,
+      "startTreasuryUsd": 0,
+      "soldUsd": 2269.35513,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -163,6 +385,10 @@
       "ebitdaUsd": 3011.790600000001,
       "valuationUsd": 85391.79744428708,
       "priceAlerts": 3,
+      "startCash": 7331.54,
+      "startTreasuryUsd": 1406.4924778423879,
+      "soldUsd": 2834.73918,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -193,6 +419,10 @@
       "ebitdaUsd": 6047.792100000001,
       "valuationUsd": 176292.2009441748,
       "priceAlerts": 3,
+      "startCash": 9128.43,
+      "startTreasuryUsd": 4030.3784031490804,
+      "soldUsd": 4959.940229999999,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -223,6 +453,10 @@
       "ebitdaUsd": 3179.31075,
       "valuationUsd": 100636.93888205178,
       "priceAlerts": 3,
+      "startCash": 13050.53,
+      "startTreasuryUsd": 15616.906348309461,
+      "soldUsd": 2952.0032850000002,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -253,6 +487,10 @@
       "ebitdaUsd": 806.5291500000003,
       "valuationUsd": 43319.272232565454,
       "priceAlerts": 0,
+      "startCash": 14964.69,
+      "startTreasuryUsd": 8949.807370831675,
+      "soldUsd": 1291.056165,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -283,6 +521,10 @@
       "ebitdaUsd": 129.58785000000012,
       "valuationUsd": 25467.32048828898,
       "priceAlerts": 0,
+      "startCash": 13317.91,
+      "startTreasuryUsd": 8620.919980174373,
+      "soldUsd": 593.663175,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -313,6 +555,10 @@
       "ebitdaUsd": 5.392800000000037,
       "valuationUsd": 18111.50906855137,
       "priceAlerts": 1,
+      "startCash": 13193.08,
+      "startTreasuryUsd": 9043.407960193545,
+      "soldUsd": 70.80696,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -343,6 +589,10 @@
       "ebitdaUsd": 0,
       "valuationUsd": 18721.175039063775,
       "priceAlerts": 0,
+      "startCash": 13168.12,
+      "startTreasuryUsd": 5038.161002185045,
+      "soldUsd": 0,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -373,6 +623,10 @@
       "ebitdaUsd": 126.93240000000014,
       "valuationUsd": 34011.550817428906,
       "priceAlerts": 0,
+      "startCash": 13168.12,
+      "startTreasuryUsd": 5669.910660886929,
+      "soldUsd": 475.52148,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -403,6 +657,10 @@
       "ebitdaUsd": 49.42350000000016,
       "valuationUsd": 26416.42971281858,
       "priceAlerts": 0,
+      "startCash": 13091.24,
+      "startTreasuryUsd": 15013.204312175103,
+      "soldUsd": 296.09181,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -433,6 +691,10 @@
       "ebitdaUsd": 0,
       "valuationUsd": 23098.614009123714,
       "priceAlerts": 0,
+      "startCash": 13013.75,
+      "startTreasuryUsd": 11884.707212838342,
+      "soldUsd": 0,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -463,6 +725,10 @@
       "ebitdaUsd": 1.8900000000000148,
       "valuationUsd": 21695.259792503814,
       "priceAlerts": 1,
+      "startCash": 13013.75,
+      "startTreasuryUsd": 10591.605266260538,
+      "soldUsd": 28.135800000000003,
+      "treasurySoldUsd": 1999.0961733349982,
       "forcedSale": null
     },
     {
@@ -493,6 +759,10 @@
       "ebitdaUsd": 32.81040000000013,
       "valuationUsd": 25589.80696119518,
       "priceAlerts": 0,
+      "startCash": 15002.68,
+      "startTreasuryUsd": 7182.5636215435425,
+      "soldUsd": 157.03127999999998,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -523,6 +793,10 @@
       "ebitdaUsd": 244.9314000000002,
       "valuationUsd": 36579.423368690426,
       "priceAlerts": 0,
+      "startCash": 14968.18,
+      "startTreasuryUsd": 10114.414421920646,
+      "soldUsd": 345.73517999999996,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -553,6 +827,10 @@
       "ebitdaUsd": 256.17060000000015,
       "valuationUsd": 63776.87443615421,
       "priceAlerts": 0,
+      "startCash": 15064.95,
+      "startTreasuryUsd": 12114.324892134744,
+      "soldUsd": 353.60262,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -583,6 +861,10 @@
       "ebitdaUsd": 780.8293500000002,
       "valuationUsd": 157257.30476946553,
       "priceAlerts": 0,
+      "startCash": 15169.57,
+      "startTreasuryUsd": 31896.224090598538,
+      "soldUsd": 977.549265,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -613,6 +895,10 @@
       "ebitdaUsd": 1173.5713499999995,
       "valuationUsd": 132329.66669971406,
       "priceAlerts": 2,
+      "startCash": 15531.45,
+      "startTreasuryUsd": 66639.19326387676,
+      "soldUsd": 1313.0091450000002,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -643,6 +929,10 @@
       "ebitdaUsd": 839.2208999999998,
       "valuationUsd": 119216.23179095995,
       "priceAlerts": 2,
+      "startCash": 16142.3,
+      "startTreasuryUsd": 39506.1737759383,
+      "soldUsd": 1321.1257500000002,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -673,6 +963,10 @@
       "ebitdaUsd": 923.8456499999998,
       "valuationUsd": 126560.0536093605,
       "priceAlerts": 0,
+      "startCash": 16415.34,
+      "startTreasuryUsd": 54354.23830922076,
+      "soldUsd": 1380.363075,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -703,6 +997,10 @@
       "ebitdaUsd": 365.99220000000014,
       "valuationUsd": 84828.57748739014,
       "priceAlerts": 0,
+      "startCash": 16747.61,
+      "startTreasuryUsd": 55425.886515864,
+      "soldUsd": 474.04853999999995,
+      "treasurySoldUsd": 0,
       "forcedSale": null
     },
     {
@@ -733,6 +1031,10 @@
       "ebitdaUsd": 156.492,
       "valuationUsd": 45710.25928678132,
       "priceAlerts": 3,
+      "startCash": 16910.45,
+      "startTreasuryUsd": 53702.03873222302,
+      "soldUsd": 277.12440000000004,
+      "treasurySoldUsd": 15900.348530118446,
       "forcedSale": null
     },
     {
@@ -763,7 +1065,348 @@
       "ebitdaUsd": 39.52620000000002,
       "valuationUsd": 43445.72917169406,
       "priceAlerts": 0,
+      "startCash": 32848.53,
+      "startTreasuryUsd": 10094.173894902917,
+      "soldUsd": 144.97433999999998,
+      "treasurySoldUsd": 0,
       "forcedSale": null
+    }
+  ],
+  "log": [
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.hodl",
+      "params": {
+        "sellPct": 0.7
+      }
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 3,
+        "model": "s9",
+        "condition": "new",
+        "costUsd": 3900
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 1,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.21431881371640404
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 6,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.26930047118521205
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 7,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.26936988387588046
+      }
+    },
+    {
+      "quarter": 2,
+      "week": 6,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.1594
+      }
+    },
+    {
+      "quarter": 2,
+      "week": 7,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.15934966361911318
+      }
+    },
+    {
+      "quarter": 2,
+      "week": 8,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.15939441282594968
+      }
+    },
+    {
+      "quarter": 3,
+      "week": 10,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.21303004589532826
+      }
+    },
+    {
+      "quarter": 3,
+      "week": 11,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.2947277602496976
+      }
+    },
+    {
+      "quarter": 3,
+      "week": 12,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.21956520886986453
+      }
+    },
+    {
+      "quarter": 4,
+      "week": 1,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.16162683216690876
+      }
+    },
+    {
+      "quarter": 4,
+      "week": 2,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.3944526543139706
+      }
+    },
+    {
+      "quarter": 4,
+      "week": 3,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.23703160240210863
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 1,
+        "model": "gpu_gen1",
+        "condition": "new",
+        "costUsd": 1900
+      }
+    },
+    {
+      "quarter": 6,
+      "week": 10,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 7,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 7,
+      "week": 13,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.2024133057941082
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 9,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 10,
+      "week": 4,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 11,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 12,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 12,
+      "week": 10,
+      "key": "log.alert_sold",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": -0.3219374679651461,
+        "sharePct": 0.25,
+        "valueUsd": 1999.0961733349982
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 14,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 15,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 16,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 17,
+      "week": 5,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.1631710726176996
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 6,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 17,
+      "week": 6,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.26870221052768684
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 2,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 18,
+      "week": 4,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.18839591193523986
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 5,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.1719919944313959
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 20,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 21,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 21,
+      "week": 10,
+      "key": "log.alert_sold",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": -0.20964058118786644,
+        "sharePct": 0.25,
+        "valueUsd": 7918.431122753744
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 11,
+      "key": "log.alert_sold",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": -0.2301956408155893,
+        "sharePct": 0.25,
+        "valueUsd": 4830.0458878597265
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 12,
+      "key": "log.alert_sold",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": -0.15963365789076778,
+        "sharePct": 0.25,
+        "valueUsd": 3151.871519504975
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 22,
+      "week": 12,
+      "key": "log.eth_mining_ends",
+      "params": {}
     }
   ]
 }

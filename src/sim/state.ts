@@ -1,6 +1,7 @@
 // The whole game lives in one plain GameState object: no classes, no functions, so it
 // can be copied, compared, saved as JSON and replayed. Systems read and update it.
 import { BALANCE, CONTENT } from '../content/index.ts'
+import type { MessageKey, MessageParams } from '../i18n/t.ts'
 
 export type Phase = 'plan' | 'live' | 'report' | 'gameover' | 'ended'
 export type Coin = 'BTC' | 'ETH'
@@ -69,10 +70,18 @@ export interface GameState {
   interruptsThisQuarter: number
   /** Running totals for the quarter being played. */
   quarterStats: QuarterStats
-  /** What happened in the most recent week (for the live-quarter ticker). */
-  lastWeek: WeekSummary | null
   /** One report per finished quarter. */
   reports: QuarterReport[]
+  /** What happened, as message keys for the UI: purchases, alerts, failures, forced sales… */
+  log: LogEntry[]
+}
+
+export interface LogEntry {
+  quarter: number
+  /** 1–13 during the live quarter; null for Plan-phase and quarter-end entries. */
+  week: number | null
+  key: MessageKey
+  params?: MessageParams
 }
 
 export interface ActiveInterrupt {
@@ -95,6 +104,13 @@ export interface QuarterStats {
   /** Dollars raised by selling treasury coins in alerts. */
   treasurySoldUsd: number
   priceAlerts: number
+  /** Dollars received for mined coins sold as they were mined. */
+  soldUsd: number
+  /** Cash and treasury value when the live quarter started (after Plan-phase spending). */
+  startCash: number
+  startTreasuryUsd: number
+  /** One summary per week played so far this quarter. */
+  weeks: WeekSummary[]
 }
 
 export interface WeekSummary {
@@ -109,6 +125,9 @@ export interface WeekSummary {
   failures: number
   /** Batches that switched themselves off this week (revenue below power cost). */
   batchesOff: number
+  coinsMined: Record<Coin, number>
+  /** A price alert fired this week. */
+  priceAlert: boolean
   cash: number
 }
 
@@ -132,6 +151,10 @@ export interface QuarterReport {
   /** Company valuation (review A5), after any forced sales. */
   valuationUsd: number
   priceAlerts: number
+  startCash: number
+  startTreasuryUsd: number
+  soldUsd: number
+  treasurySoldUsd: number
   /** Filled when cash went below zero and assets had to be sold. */
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
 }
@@ -146,7 +169,21 @@ export function emptyQuarterStats(): QuarterStats {
     failures: 0,
     treasurySoldUsd: 0,
     priceAlerts: 0,
+    soldUsd: 0,
+    startCash: 0,
+    startTreasuryUsd: 0,
+    weeks: [],
   }
+}
+
+/** Adds a line to the game log. */
+export function logEntry(
+  state: GameState,
+  key: MessageKey,
+  params?: MessageParams,
+  week: number | null = null,
+): void {
+  state.log.push({ quarter: state.quarter, week, key, params })
 }
 
 /** Money is kept in plain dollars and rounded to cents once per week. */
@@ -183,8 +220,8 @@ export function newGame(seed: number): GameState {
     interrupt: null,
     interruptsThisQuarter: 0,
     quarterStats: emptyQuarterStats(),
-    lastWeek: null,
     reports: [],
+    log: [],
   }
 }
 

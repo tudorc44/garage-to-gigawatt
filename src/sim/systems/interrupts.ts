@@ -2,7 +2,7 @@
 // This week only the price alert exists. At most max_per_quarter fire per quarter.
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import type { Coin, GameState } from '../state.ts'
+import { logEntry, type Coin, type GameState } from '../state.ts'
 import { coinPrice, marketWeek, previousMarketWeek } from './market.ts'
 import { sellTreasury } from './treasury.ts'
 
@@ -46,20 +46,52 @@ export function resolveInterrupt(
   if (!choice) return { key: 'error.bad_choice' }
 
   const w = marketWeek(state.quarter, active.week)
+  const alert = { coin: active.coin, changeDelta: active.changePct }
+  let sold = false
   for (const [effect, value] of Object.entries(choice.effects ?? {})) {
     switch (effect) {
-      case 'sell_treasury_pct':
-        state.quarterStats.treasurySoldUsd += sellTreasury(
+      case 'sell_treasury_pct': {
+        const valueUsd = sellTreasury(state, Number(value), w)
+        state.quarterStats.treasurySoldUsd += valueUsd
+        logEntry(
           state,
-          Number(value),
-          w,
+          'log.alert_sold',
+          { ...alert, sharePct: Number(value), valueUsd },
+          active.week + 1,
         )
+        sold = true
         break
+      }
       default:
         throw new Error(`Interrupt effect "${effect}" is not implemented yet`)
     }
   }
+  if (!sold) logEntry(state, 'log.alert_held', alert, active.week + 1)
   state.interrupt = null
+}
+
+/** What a choice would do, for the event card's one-line preview. Reads state only. */
+export function choicePreview(
+  state: GameState,
+  choiceId: string,
+): { cashUsd: number; coins: Record<Coin, number> } {
+  const none = { cashUsd: 0, coins: { BTC: 0, ETH: 0 } }
+  const active = state.interrupt
+  if (!active) return none
+  const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
+    (c) => c.id === choiceId,
+  )
+  const share = Number(choice?.effects?.sell_treasury_pct ?? 0)
+  if (share === 0) return none
+  const w = marketWeek(state.quarter, active.week)
+  const coins = {
+    BTC: state.treasury.BTC * share,
+    ETH: state.treasury.ETH * share,
+  }
+  return {
+    cashUsd: coins.BTC * coinPrice(w, 'BTC') + coins.ETH * coinPrice(w, 'ETH'),
+    coins,
+  }
 }
 
 /** The choice that applies when the player skips the alert. */

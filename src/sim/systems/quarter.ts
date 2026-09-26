@@ -3,6 +3,7 @@
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import {
   emptyQuarterStats,
+  logEntry,
   roundCents,
   type Coin,
   type GameState,
@@ -25,7 +26,9 @@ export function endQuarter(state: GameState): void {
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   state.cash = roundCents(state.cash)
   state.reports.push(buildReport(state, w, forcedSale))
+  if (forcedSale) logEntry(state, 'log.forced_sale', { ...forcedSale })
   state.phase = state.cash < 0 ? 'gameover' : 'report'
+  if (state.phase === 'gameover') logEntry(state, 'log.game_over')
 }
 
 function forceSales(
@@ -78,6 +81,10 @@ function buildReport(
     ebitdaUsd: ebitda,
     valuationUsd: valuationUsd(state.quarter, ebitda, state.cash, treasuryUsd),
     priceAlerts: st.priceAlerts,
+    startCash: st.startCash,
+    startTreasuryUsd: st.startTreasuryUsd,
+    soldUsd: st.soldUsd,
+    treasurySoldUsd: st.treasurySoldUsd,
     forcedSale,
   }
 }
@@ -94,5 +101,9 @@ export function startNextQuarter(state: GameState): void {
   state.bandwidth = bandwidthForQuarter(state) // unused Bandwidth is lost
   state.interruptsThisQuarter = 0
   state.quarterStats = emptyQuarterStats()
-  state.lastWeek = null
+  for (const site of state.sites) {
+    if (site.readyQuarter === state.quarter && state.quarter > 0) {
+      logEntry(state, 'log.site_ready', { tier: site.tier })
+    }
+  }
 }

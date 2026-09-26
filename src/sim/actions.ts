@@ -2,7 +2,7 @@
 // rules and returns either the new state or an error message (the old state is untouched).
 import { BALANCE, CONTENT } from '../content/index.ts'
 import type { Message, MessageKey, MessageParams } from '../i18n/t.ts'
-import type { Condition, GameState } from './state.ts'
+import { logEntry, type Condition, type GameState } from './state.ts'
 import {
   addMachines,
   purchaseCostUsd,
@@ -10,7 +10,8 @@ import {
   repairCostPerUnit,
 } from './systems/machines.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
-import { getModel } from './systems/market.ts'
+import { getModel, marketWeek } from './systems/market.ts'
+import { treasuryValueUsd } from './systems/treasury.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
   baseCapexUsd,
@@ -64,6 +65,11 @@ function run(s: GameState, a: Action): Message | undefined {
       if (s.phase !== 'plan') return fail('error.wrong_phase')
       s.phase = 'live'
       s.week = 0
+      s.quarterStats.startCash = s.cash
+      s.quarterStats.startTreasuryUsd = treasuryValueUsd(
+        s,
+        marketWeek(s.quarter, 0),
+      )
       return
 
     case 'RESOLVE_INTERRUPT': {
@@ -108,6 +114,12 @@ function run(s: GameState, a: Action): Message | undefined {
         return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
       s.cash -= cost
       addMachines(s, a.model, a.condition, a.count, site.id)
+      logEntry(s, 'log.bought', {
+        count: a.count,
+        model: a.model,
+        condition: a.condition,
+        costUsd: cost,
+      })
       return
     }
 
@@ -118,7 +130,9 @@ function run(s: GameState, a: Action): Message | undefined {
         return fail('error.bad_count')
       if (a.count > lot.count)
         return fail('error.too_many_units', { have: lot.count })
-      s.cash += removeMachines(s, lot, a.count)
+      const valueUsd = removeMachines(s, lot, a.count)
+      s.cash += valueUsd
+      logEntry(s, 'log.sold', { count: a.count, model: lot.model, valueUsd })
       return
     }
 
@@ -130,12 +144,18 @@ function run(s: GameState, a: Action): Message | undefined {
       if (cost > s.cash)
         return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
       s.cash -= cost
+      logEntry(s, 'log.repaired', {
+        count: lot.failed,
+        model: lot.model,
+        costUsd: cost,
+      })
       lot.failed = 0
       return
     }
 
     case 'SET_HODL': {
       if (!(a.pct >= 0 && a.pct <= 1)) return fail('error.bad_pct')
+      if (s.hodlPct !== a.pct) logEntry(s, 'log.hodl', { sellPct: 1 - a.pct })
       s.hodlPct = a.pct
       return
     }
@@ -161,10 +181,12 @@ function run(s: GameState, a: Action): Message | undefined {
         return fail('error.no_bandwidth', { needed: cost, have: s.bandwidth })
       s.bandwidth -= cost
       // New offers for a tier replace any old ones for that tier.
+      const offers = rollOffers(s, tier)
       s.siteOffers = [
         ...s.siteOffers.filter((o) => o.tier !== tier.id),
-        ...rollOffers(s, tier),
+        ...offers,
       ]
+      logEntry(s, 'log.scouted', { count: offers.length, tier: tier.id })
       return
     }
 
@@ -229,6 +251,13 @@ function run(s: GameState, a: Action): Message | undefined {
       site.readyQuarter += flawEffect(site, 'delay_quarters') ?? 0
       s.cash += flawEffect(site, 'cash') ?? 0
       s.sites.push(site)
+      logEntry(s, 'log.site_built', {
+        tier: site.tier,
+        costUsd: terms.capexUsd,
+        quarter: CONTENT.quarters[site.readyQuarter] ?? '—',
+      })
+      if (site.flaw)
+        logEntry(s, 'log.site_flaw', { tier: site.tier, flaw: site.flaw })
       if ('offerId' in a)
         s.siteOffers = s.siteOffers.filter((o) => o.id !== a.offerId)
       return

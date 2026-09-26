@@ -3,13 +3,7 @@
 // This file is a UI: it reads the game state, sends actions, and prints text via t().
 import { createInterface } from 'node:readline'
 import { BALANCE, CONTENT } from '../src/content/index.ts'
-import {
-  formatChange,
-  formatHashrate,
-  formatNumber,
-  formatUsd,
-  formatUsdSmall,
-} from '../src/i18n/format.ts'
+import { fmt } from '../src/ui/format.ts'
 import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
@@ -59,7 +53,11 @@ const say = (key: MessageKey, params?: Record<string, string | number>) =>
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 const header = (text: string) =>
   console.log(`\n══ ${text} ${'═'.repeat(Math.max(0, 60 - text.length))}`)
-const coins = (n: number) => formatNumber(n, 4)
+const coins = (n: number) =>
+  n.toLocaleString('en-US', { maximumFractionDigits: 4 })
+const hashOf = (coin: 'BTC' | 'ETH', v: number) =>
+  fmt.hash(v, coin === 'ETH' ? 'MH' : 'TH')
+const change = (x: number) => fmt.delta(x, 'pct', { dp: 1 })
 const name = (kind: 'machine' | 'site' | 'flaw' | 'condition', id: string) =>
   tDynamic(`${kind}.${id}`, id)
 
@@ -90,8 +88,8 @@ function showPlan(s: GameState) {
   say('play.prices', {
     btcUsd: w.btc_usd,
     ethUsd: w.eth_usd,
-    hashprice: formatUsd(w.btc_hashprice_usd_ph_day),
-    ethRev: formatUsdSmall(w.eth_rev_usd_mh_day),
+    hashprice: fmt.money(w.btc_hashprice_usd_ph_day),
+    ethRev: fmt.money(w.eth_rev_usd_mh_day, { exact: true, dp: 4 }),
   })
 
   console.log()
@@ -100,9 +98,9 @@ function showPlan(s: GameState) {
     let line = t('play.site_line', {
       n: i + 1,
       tier: name('site', site.tier),
-      usedKw: formatNumber(usedKw(s, site.id), 1),
-      capKw: formatNumber(capacityKw(site), 1),
-      power: formatUsdSmall(powerPriceUsdKwh(site, s.quarter)),
+      usedKw: usedKw(s, site.id),
+      capKw: capacityKw(site),
+      power: fmt.cents(powerPriceUsdKwh(site, s.quarter)),
       rentUsd: site.rentUsdQ,
     })
     if (!isReady(site, s.quarter)) {
@@ -159,18 +157,18 @@ function showPlan(s: GameState) {
       const p = buyPrice(m, s.quarter, c)
       if (p === undefined) return t('play.market_na')
       const lead = leadTimeQuarters(m, s.quarter, c)
-      return formatUsd(p) + (lead > 0 ? t('play.market_lead', { n: lead }) : '')
+      return fmt.money(p) + (lead > 0 ? t('play.market_lead', { n: lead }) : '')
     }
     const profit = revenuePerUnitDay(m, w) - m.power_kw * 24 * cheapestPower
     say('play.market_line', {
       n: i + 1,
       model: m.id,
       coin: m.coin,
-      hashrate: formatHashrate(m.coin, m.hashrate),
+      hashrate: hashOf(m.coin, m.hashrate),
       kw: m.power_kw,
       newPrice: price('new'),
       usedPrice: price('used'),
-      profit: (profit >= 0 ? '+' : '') + formatUsd(profit),
+      profit: fmt.signed(profit),
     })
   })
 
@@ -308,15 +306,15 @@ async function livePhase(s: GameState): Promise<GameState> {
       continue
     }
     s = advance(s)
-    const wk = s.lastWeek!
+    const wk = s.quarterStats.weeks.at(-1)!
     const prev = previousMarketWeek(s.quarter, wk.week - 1)
     let line = t('play.week_line', {
       week: String(wk.week).padStart(2),
       date: wk.date,
       btcUsd: wk.btcUsd,
-      btcChange: prev ? formatChange(wk.btcUsd / prev.btc_usd - 1) : '',
+      btcChange: prev ? change(wk.btcUsd / prev.btc_usd - 1) : '',
       ethUsd: wk.ethUsd,
-      ethChange: prev ? formatChange(wk.ethUsd / prev.eth_usd - 1) : '',
+      ethChange: prev ? change(wk.ethUsd / prev.eth_usd - 1) : '',
       revenueUsd: wk.revenueUsd,
       powerUsd: wk.powerCostUsd,
       cashUsd: wk.cash,
@@ -338,7 +336,7 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
   console.log()
   say('play.alert', {
     coin: alert.coin,
-    change: formatChange(alert.changePct),
+    change: change(alert.changePct),
     btc: coins(s.treasury.BTC),
     eth: coins(s.treasury.ETH),
     treasuryUsd: treasuryValueUsd(s, marketWeek(s.quarter, alert.week)),
@@ -356,11 +354,11 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
 
 function showReport(s: GameState) {
   const r = s.reports.at(-1)!
-  const perCoin = (v: number | null) => (v === null ? '—' : formatUsd(v))
+  const perCoin = (v: number | null) => (v === null ? '—' : fmt.money(v))
   header(t('play.report_header', { quarter: r.quarter }))
   say('play.report_hashrate', {
-    eth: formatHashrate('ETH', r.hashrate.ETH),
-    btc: formatHashrate('BTC', r.hashrate.BTC),
+    eth: hashOf('ETH', r.hashrate.ETH),
+    btc: hashOf('BTC', r.hashrate.BTC),
   })
   say('play.report_money', {
     revenueUsd: r.revenueUsd,

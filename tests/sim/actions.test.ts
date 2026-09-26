@@ -242,7 +242,7 @@ describe('error messages', () => {
     expect(r.ok).toBe(false)
     if (!r.ok) {
       expect(t(r.error.key, r.error.params)).toBe(
-        'Not enough cash: this costs $10,000, you have $9,000.',
+        'Not enough cash: this costs $10.0K, you have $9,000.',
       )
     }
     expect(t('error.not_for_sale', { model: 's19pro', condition: 'new' })).toBe(

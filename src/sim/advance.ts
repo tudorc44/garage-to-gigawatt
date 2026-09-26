@@ -2,9 +2,9 @@
 // Systems run in a fixed order: failures → mining → treasury → price alert.
 // After week 13 the quarter ends (report, or game over).
 import { BALANCE } from '../content/index.ts'
-import { roundCents, type GameState } from './state.ts'
+import { logEntry, roundCents, type GameState } from './state.ts'
 import { checkPriceAlert } from './systems/interrupts.ts'
-import { marketWeek } from './systems/market.ts'
+import { marketWeek, previousMarketWeek } from './systems/market.ts'
 import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
 import { settleWeek } from './systems/treasury.ts'
@@ -18,6 +18,7 @@ export function advance(state: GameState): GameState {
   }
   const s = structuredClone(state)
   const w = marketWeek(s.quarter, s.week)
+  const weekNo = s.week + 1
 
   const failures = rollFailures(s)
   const lots = mineWeek(s, w)
@@ -28,13 +29,27 @@ export function advance(state: GameState): GameState {
   st.revenueUsd += money.revenueUsd
   st.powerCostUsd += money.powerCostUsd
   st.rentUsd += money.rentUsd
+  st.soldUsd += money.soldUsd
   st.failures += failures
   for (const coin of ['BTC', 'ETH'] as const) {
     st.coinsMined[coin] += money.coinsMined[coin]
     st.powerByCoin[coin] += money.powerByCoin[coin]
   }
-  s.lastWeek = {
-    week: s.week + 1,
+  const batchesOff = lots.filter((l) => !l.running).length
+
+  // Log lines for the quarter's notes.
+  if (failures > 0) logEntry(s, 'log.failures', { count: failures }, weekNo)
+  if (batchesOff > 0 && !st.weeks.some((x) => x.batchesOff > 0)) {
+    logEntry(s, 'log.switched_off', {}, weekNo)
+  }
+  const prev = previousMarketWeek(s.quarter, s.week)
+  if (w.eth_rev_usd_mh_day === 0 && prev && prev.eth_rev_usd_mh_day > 0) {
+    logEntry(s, 'log.eth_mining_ends', {}, weekNo)
+  }
+
+  checkPriceAlert(s, w)
+  st.weeks.push({
+    week: weekNo,
     date: w.week,
     btcUsd: w.btc_usd,
     ethUsd: w.eth_usd,
@@ -42,11 +57,12 @@ export function advance(state: GameState): GameState {
     powerCostUsd: money.powerCostUsd,
     rentUsd: money.rentUsd,
     failures,
-    batchesOff: lots.filter((l) => !l.running).length,
+    batchesOff,
+    coinsMined: money.coinsMined,
+    priceAlert: s.interrupt !== null,
     cash: s.cash,
-  }
+  })
 
-  checkPriceAlert(s, w)
   s.week++
   if (s.week === BALANCE.weeksPerQuarter && !s.interrupt) endQuarter(s)
   return s
