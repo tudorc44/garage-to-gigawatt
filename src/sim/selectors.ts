@@ -657,6 +657,6 @@ export function negotiationResult(state: GameState, tier: string) {
   return null
 }
 
-/** Uri: how many times index-contract power costs during the storm (shocks.json). */
-export const URI_POWER_MULT =
-  CONTENT.shocks.find((sh) => sh.id === 'uri')?.indexPriceMult ?? 1
+/** Uri: the storm price per kWh index contracts pay on their firm load (shocks.json). */
+export const URI_STORM_PRICE =
+  CONTENT.shocks.find((sh) => sh.id === 'uri')?.stormPriceUsdKwh ?? 0

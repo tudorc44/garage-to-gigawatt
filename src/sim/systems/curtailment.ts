@@ -51,7 +51,8 @@ export function curtailCreditMult(site: Site): number {
  */
 export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
   const rules = CONTENT.curtailment
-  const lots = mineWeek(state, w).filter(
+  // What the machines would earn at normal prices (the storm doesn't shrink the credit).
+  const lots = mineWeek(state, w, { ignoreStorm: true }).filter(
     (l) => l.running && onGridSite(state, l.lotId),
   )
   let mw = 0
@@ -181,7 +182,8 @@ export function checkUri(state: GameState): void {
   const shock = shockAt(state, next)
   if (!shock || shock.week !== next) return
   const offer = curtailOffer(state, marketWeek(state.quarter, next))
-  if (offer.mw <= 0) return
+  offer.stormUsd = stormChargeUsd(state, next)
+  if (offer.mw <= 0 && offer.stormUsd <= 0) return
   state.interrupt = {
     id: 'uri',
     week: state.week,
@@ -189,4 +191,31 @@ export function checkUri(state: GameState): void {
     changePct: 0,
     curtail: offer,
   }
+}
+
+/**
+ * Uri's storm charge for market week `weekIndex`: every index-contract site pays the storm
+ * price on its firm load (the full power draw of its delivered machines, broken ones
+ * included) for the whole week. 0 outside the storm.
+ */
+export function stormChargeUsd(state: GameState, weekIndex: number): number {
+  const shock = shockAt(state, weekIndex)
+  if (!shock) return 0
+  let usd = 0
+  for (const site of state.sites) {
+    if (site.contract?.type !== 'index') continue
+    const kw = state.machines
+      .filter(
+        (lot) =>
+          lot.siteId === site.id && state.quarter >= lot.earnsFromQuarter - 1,
+      )
+      .reduce((sum, lot) => {
+        const units = shock.firmLoadIncludesBroken
+          ? lot.count
+          : lot.count - lot.failed
+        return sum + units * getModel(lot.model)!.power_kw
+      }, 0)
+    usd += kw * 24 * 7 * shock.stormPriceUsdKwh
+  }
+  return usd
 }

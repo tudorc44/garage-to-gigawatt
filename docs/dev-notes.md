@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with power contracts, negotiation and Winter Storm Uri (week 4, power side).
+Last updated: 26 Sep 2026, with Winter Storm Uri as firm-load billing (after power contracts and negotiation).
 
 ## How the owner works
 
@@ -60,7 +60,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator) and unit tests: 258 passing + 1 to-do.
+   heat-climber, negotiator) and unit tests: 260 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -119,9 +119,16 @@ ask first).
   - The price is locked for the term (it ignores the price path); the next renewal opens at the then-normal
     price × 1.10. The contract replaces the scouting multiplier; rate_class ×1.4 and the Heat 50 ×1.2
     apply on top.
-  - Texas: pick fixed (3.5¢) or index (2.8¢, the paid price = base × U(0.75, 1.25) each quarter). Uri,
-    2021Q1, one week: index power ×10 unless you curtail (credits as built). Curtailment credits × 1.5 on
-    index, × 1 on fixed.
+  - Texas: pick fixed (3.5¢) or index (2.8¢, the paid price = base × U(0.75, 1.25) each quarter).
+    Curtailment credits × 1.5 on index, × 1 on fixed.
+  - **Winter Storm Uri** (design thread, option A "firm load", `shocks.json` v2): 2021Q1, the week of
+    15 Feb 2021. The grid asks the week before; always asked, exempt from the 3-interrupt cap, default
+    curtail. Index + keep mining: the site pays $3.00/kWh ($3,000/MWh) on its contracted load (the full
+    power draw of every delivered machine there, broken ones included, undelivered ones not) for 168 hours,
+    whether or not the machines switch themselves off; machines that switch off earn nothing (at the storm
+    price they do). Index + curtail: no storm charge, credits × 1.5. Fixed: unaffected either way. Keep
+    mining adds grievance +5 at Texas. The quarter report has its own "storm power charge" line (the charge
+    is also counted in power).
 - Coins are sold **weekly** at that week's price (not at quarter end).
 - **Per coin:** the keep/sell % is set separately for BTC and ETH (two sliders). The price alert offers
   "Sell 25% of your BTC", "Sell 25% of your ETH" or "Hold".
@@ -194,10 +201,10 @@ ask first).
     public rules (the lowest and highest the limit could be), never the hidden limit.
   - The first Texas contract is fixed (index only from its first renewal). Index moves are rolled at each
     quarter start (and when a contract is signed), on their own random stream.
-  - Uri: the grid asks after the week before the storm (week of 2021-02-15, week 7 of 2021Q1), like a
-    summer curtailment, only if Texas machines would mine. It is always asked and doesn't count toward the
-    3 interrupts. "Keep mining" also adds the usual grievance +5 at Texas. The ×10 raises the power cost,
-    so a batch still switches itself off if the power costs more than it earns (it doesn't at ×10).
+  - Uri: the grid asks after the week before the storm (week 7 of 2021Q1) when Texas machines would mine
+    or an index contract has a storm charge at stake (e.g. every machine broken). The curtailment credit is
+    priced at normal power, not the storm price. The storm charge is paid in the storm week and counts as
+    power (so in EBITDA and the report's cash line).
   - Curtailment credits are now worked out per Texas site (then × its contract's multiplier) and added up.
 - **Heat details chosen by Claude Code** (within the design thread's rules). **Not yet confirmed:**
   - Heat is worked out after each week's mining and stored per site; the Plan screen shows the value from
@@ -314,13 +321,13 @@ ask first).
     normal price; the negotiating bot averages 97.9% (92–110%, the utility walked away 15 times in 473
     renewals). The passive player pays about 12% more (target: about 10%). Negotiating is worth about
     +$1.8M of median end value ($18.2M vs $16.4M).
-  - Texas index vs fixed (no bot reaches Texas, so a controlled test: 3,000 S19 Pros on a Texas site from
-    2020Q1, 20 seeds, renewals take the opening): Texas margin 2020–22 = fixed $54.7M, index + curtail at
-    Uri $56.8M (ahead of fixed: check passes), index + keep mining $55.8M. **Not mining through Uri costs an
-    index player only about $1.0M, about 16% of a typical quarter's Texas margin ($6.4M), not the target
-    "about one quarter".** At ×10, 2.8¢ becomes 28¢, which S19 Pros still out-earn, so the bill is modest;
-    a much larger multiplier would switch the machines off by the normal rule, which caps the loss at the
-    missed credits. Reaching "one quarter" would need a design change (see open questions).
+  - Texas index vs fixed, with Uri as firm load (no bot reaches Texas, so a controlled test: 3,000 S19
+    Pros ≈ 9.75 MW on a Texas site from 2020Q1, 20 seeds, renewals take the opening). Texas margin 2020–22:
+    fixed + curtail $54.7M, fixed + keep mining $54.5M, **index + curtail $56.9M** (ahead of fixed ✓),
+    **index + keep mining $50.8M** (≈ $50M ✓, below fixed either way ✓; its 2021Q1 margin is $2.2M). Keeping
+    on mining costs an index player 0.95 of a typical quarter ($6.4M), inside the 0.7–1.3 band, so the
+    storm price stays at $3,000/MWh. (With the first version, index power ×10, it cost only ~16% of a
+    quarter.)
   - Adding contracts made every renewal +10% for players who don't negotiate: the fundraising bots' median
     end value fell about $0.5M (from $16.9M to $16.4M).
 - **Heat (sim check asked for by the design thread):** the fundraising bot that never talks to the
@@ -351,18 +358,14 @@ ask first).
   2021. Which reading was meant, and is that enough pressure?
 - Should the outreach bot's threshold (or the player's hint) be lower than 50, since the rate hike is
   decided at the quarter end before the next Plan phase's outreach?
-- **Uri is too mild for index players who keep mining:** they lose about 16% of a quarter's Texas margin,
-  not about one quarter. Options: charge index contracts the storm price on their contracted load even if
-  machines would switch off (firm load), with a larger multiplier (the real ERCOT cap was about 320× 2.8¢;
-  roughly 100–120× on the contracted load would cost one quarter); or make the storm last more weeks; or
-  accept the milder version.
 - Confirm the power contract details above (auto-renew keeps the type; Uri doesn't count as an interrupt).
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
-Week 3, the Heat system and the power side of week 4 (contracts, negotiation, Uri) are done. Next:
+Week 3, the Heat system and the power side of week 4 (contracts, negotiation, Uri as firm load) are
+done. Next:
 investor pitches with the same negotiation engine (design thread answer 8 is in: negotiate the pre-money
 valuation; a walk-away closes the round until next quarter and reopens it 10% lower, stacking to 20%;
-the numbers go in capital.json › pitch). Also open: the Uri question above, the LTV gauge on a Capital
-screen, and the League left-nav section (the table is only on the report now).
+the numbers go in capital.json › pitch). Also open: the LTV gauge on a Capital screen, and the League
+left-nav section (the table is only on the report now).

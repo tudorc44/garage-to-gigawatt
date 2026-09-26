@@ -190,6 +190,8 @@ export interface CurtailOffer {
   forgoneUsd: number
   /** max(credit per MW × MW, multiple × forgone revenue). */
   creditUsd: number
+  /** Uri only: the storm charge an index contract pays if you keep mining (firm load). */
+  stormUsd?: number
 }
 
 export interface QuarterStats {
@@ -209,6 +211,8 @@ export interface QuarterStats {
   gridCreditsUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
+  /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
+  stormChargeUsd: number
   /** Loan interest and principal paid this quarter. */
   interestUsd: number
   principalUsd: number
@@ -267,6 +271,8 @@ export interface QuarterReport {
   gridCreditsUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
+  /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
+  stormChargeUsd: number
   interestUsd: number
   principalUsd: number
   /** Loans still owed at quarter end (subtracted from the valuation). */
@@ -292,6 +298,7 @@ export function emptyQuarterStats(): QuarterStats {
     soldUsd: 0,
     gridCreditsUsd: 0,
     rateHikeUsd: 0,
+    stormChargeUsd: 0,
     interestUsd: 0,
     principalUsd: 0,
     startCash: 0,

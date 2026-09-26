@@ -101,6 +101,7 @@ function buildReport(
     treasurySoldUsd: st.treasurySoldUsd,
     gridCreditsUsd: st.gridCreditsUsd,
     rateHikeUsd: st.rateHikeUsd,
+    stormChargeUsd: st.stormChargeUsd,
     interestUsd: st.interestUsd,
     principalUsd: st.principalUsd,
     debtUsd: debtUsd(state),

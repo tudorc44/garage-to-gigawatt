@@ -55,7 +55,12 @@ export function rollFailures(state: GameState): number {
 }
 
 /** What each earning batch mines this week and what its power costs. Reads state only. */
-export function mineWeek(state: GameState, w: MarketWeek): LotWeek[] {
+export function mineWeek(
+  state: GameState,
+  w: MarketWeek,
+  /** Price the week at normal power prices even during Uri (for the curtailment offer). */
+  opts: { ignoreStorm?: boolean } = {},
+): LotWeek[] {
   return state.machines
     .filter((lot) => isEarning(state, lot))
     .map((lot) => {
@@ -75,8 +80,8 @@ export function mineWeek(state: GameState, w: MarketWeek): LotWeek[] {
         24 *
         7 *
         up *
-        powerPriceUsdKwh(site, state.quarter) *
-        shockMult(state, site, w)
+        ((opts.ignoreStorm ? undefined : stormPrice(state, site, w)) ??
+          powerPriceUsdKwh(site, state.quarter))
       const running =
         working > 0 && revenueUsd >= powerCostUsd && !isShutDown(state, site.id)
       return {
@@ -102,9 +107,17 @@ export function hashrate(state: GameState): Record<Coin, number> {
   return out
 }
 
-/** Uri (shocks.json): index-contract power costs index_price_mult times as much that week. */
-function shockMult(state: GameState, site: Site, w: MarketWeek): number {
-  if (site.contract?.type !== 'index') return 1
+/**
+ * Uri (shocks.json): during the storm, index-contract sites face the storm price per kWh, so
+ * their machines switch themselves off (and earn nothing). The storm bill itself is charged on
+ * the firm load in advance(), not here. undefined outside the storm or for fixed contracts.
+ */
+function stormPrice(
+  state: GameState,
+  site: Site,
+  w: MarketWeek,
+): number | undefined {
+  if (site.contract?.type !== 'index') return
   const weekIndex = CONTENT.market[state.quarter].indexOf(w)
   const shock = CONTENT.shocks.find(
     (sh) =>
@@ -112,5 +125,5 @@ function shockMult(state: GameState, site: Site, w: MarketWeek): number {
       weekIndex >= sh.week &&
       weekIndex < sh.week + sh.weeks,
   )
-  return shock ? shock.indexPriceMult : 1
+  return shock?.stormPriceUsdKwh
 }

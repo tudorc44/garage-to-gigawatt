@@ -8,7 +8,7 @@ import {
   PRICE_ALERT_THRESHOLD,
   complaintView,
   KEEP_MINING_GRIEVANCE,
-  URI_POWER_MULT,
+  URI_STORM_PRICE,
   interruptChoices,
   lotViews,
   marginCallView,
@@ -515,8 +515,8 @@ function CurtailmentCard({ state, act }: ScreenProps) {
         })
       : uri
         ? t('ui.uri.effect_mine', {
+            charge: fmt.signed(-(offer.stormUsd ?? 0)),
             forgone: fmt.money(offer.forgoneUsd),
-            mult: URI_POWER_MULT,
             grievance: fmt.signedInt(KEEP_MINING_GRIEVANCE),
           })
         : t('ui.grid.effect_mine', {
@@ -559,7 +559,7 @@ function CurtailmentCard({ state, act }: ScreenProps) {
         </h2>
         <p class="event-body">
           {t(uri ? 'ui.uri.body' : 'ui.grid.body', {
-            mult: URI_POWER_MULT,
+            price: fmt.money(URI_STORM_PRICE * 1000),
             week: alert.week + 2,
             mw: fmt.power(offer.mw * 1000),
             credit: fmt.money(offer.creditUsd),

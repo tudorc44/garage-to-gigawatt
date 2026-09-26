@@ -11,11 +11,13 @@ import {
   checkUri,
   curtailCreditMult,
   curtailOffer,
+  stormChargeUsd,
 } from '../../src/sim/systems/curtailment.ts'
 import { mineWeek } from '../../src/sim/systems/mining.ts'
 
 const Q = CONTENT.quarters.indexOf('2021Q1')
 const URI_WEEK = 6 // the week of 2021-02-15
+const S19_KW = CONTENT.machines.find((m) => m.id === 's19pro')!.power_kw
 function ok(s: GameState, a: Action): GameState {
   const r = applyAction(s, a)
   if (!r.ok) throw new Error(r.error.key)
@@ -86,12 +88,30 @@ describe('Winter Storm Uri (shocks.json)', () => {
     expect(early.interrupt).toBeNull()
   })
 
-  it('keep mining: index power costs 10× that week; fixed contracts are unaffected', () => {
-    const idx = texas('index')
-    expect(powerCost(idx, URI_WEEK)).toBeCloseTo(
-      powerCost(idx, URI_WEEK - 1) * 10,
-    )
+  it('firm load: $3.00/kWh for 168 h on every delivered machine, broken included, undelivered not', () => {
+    const s = texas('index')
+    s.machines[0].failed = 10 // broken: still contracted load
+    s.machines.push({
+      id: 'lot-10',
+      model: 's19pro',
+      siteId: 'site-2',
+      condition: 'new',
+      count: 50,
+      failed: 0,
+      earnsFromQuarter: Q + 2, // arrives next quarter: not contracted yet
+    })
+    const kw = 100 * S19_KW
+    expect(stormChargeUsd(s, URI_WEEK)).toBeCloseTo(kw * 168 * 3.0)
+    expect(stormChargeUsd(s, URI_WEEK - 1)).toBe(0)
+    expect(stormChargeUsd(texas('fixed'), URI_WEEK)).toBe(0)
+  })
+
+  it('in the storm, index machines switch themselves off (they earn nothing); fixed ones mine as usual', () => {
+    const idx = mineWeek(texas('index'), CONTENT.market[Q][URI_WEEK])[0]
+    expect(idx.running).toBe(false)
+    expect(idx.revenueUsd).toBe(0)
     const fix = texas('fixed')
+    expect(powerCost(fix, URI_WEEK)).toBeGreaterThan(0)
     expect(powerCost(fix, URI_WEEK)).toBeCloseTo(powerCost(fix, URI_WEEK - 1))
   })
 
@@ -99,6 +119,7 @@ describe('Winter Storm Uri (shocks.json)', () => {
     let s = advance(texas('index')) // plays the week before the storm; the grid asks
     expect(s.interrupt?.id).toBe('uri')
     const credit = s.interrupt!.curtail!.creditUsd
+    expect(credit).toBeGreaterThan(0) // priced at normal power, not at the storm price
     s = ok(s, { type: 'RESOLVE_INTERRUPT', choice: 'curtail' })
     const cash = s.cash
     s = advance(s) // the storm week
@@ -108,15 +129,28 @@ describe('Winter Storm Uri (shocks.json)', () => {
     expect(s.cash).toBeCloseTo(cash + credit, 0)
   })
 
-  it('keep mining through it: grievance +5 at Texas, and the index bill is 10×', () => {
+  it('keep mining on index: grievance +5, no revenue, and the storm charge (its own report number)', () => {
     let s = advance(texas('index'))
+    const charge = s.interrupt!.curtail!.stormUsd!
+    expect(charge).toBeCloseTo(100 * S19_KW * 168 * 3.0)
     s = ok(s, { type: 'RESOLVE_INTERRUPT', choice: 'mine' })
     expect(s.siteHeat['site-2'].grievance).toBe(5)
-    const before = s.quarterStats.weeks.at(-1)!.powerCostUsd
+    const cash = s.cash
     s = advance(s)
-    expect(s.quarterStats.weeks.at(-1)!.powerCostUsd).toBeCloseTo(
-      before * 10,
-      0,
-    )
+    const week = s.quarterStats.weeks.at(-1)!
+    expect(week.revenueUsd).toBe(0)
+    expect(week.powerCostUsd).toBeCloseTo(charge, 0)
+    expect(cash - s.cash).toBeCloseTo(charge, 0)
+    expect(s.quarterStats.stormChargeUsd).toBeCloseTo(charge, 0)
+    expect(s.log.some((e) => e.key === 'log.storm_charge')).toBe(true)
+  })
+
+  it('the grid still asks when only the storm charge is at stake (every machine broken)', () => {
+    const s = texas('index')
+    s.machines[0].failed = 100
+    checkUri(s)
+    expect(s.interrupt?.id).toBe('uri')
+    expect(s.interrupt!.curtail!.mw).toBe(0)
+    expect(s.interrupt!.curtail!.stormUsd).toBeGreaterThan(0)
   })
 })

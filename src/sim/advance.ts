@@ -13,6 +13,7 @@ import {
   applyCurtailment,
   checkCurtailment,
   checkUri,
+  stormChargeUsd,
 } from './systems/curtailment.ts'
 import { checkComplaint, rateHikeUsd, updateHeatWeek } from './systems/heat.ts'
 import { payLoanWeek } from './systems/loans.ts'
@@ -33,6 +34,13 @@ export function advance(state: GameState): GameState {
   const curtailed = applyCurtailment(s, mineWeek(s, w))
   const lots = curtailed.lots
   const money = settleWeek(s, lots, w)
+  // Winter Storm Uri: index contracts that didn't curtail pay the storm price on their firm load.
+  const stormUsd = curtailed.creditUsd > 0 ? 0 : stormChargeUsd(s, s.week)
+  if (stormUsd > 0) {
+    s.cash -= stormUsd
+    money.powerCostUsd += stormUsd
+    logEntry(s, 'log.storm_charge', { chargeUsd: stormUsd }, weekNo)
+  }
   updateHeatWeek(s, lots)
   const loan = payLoanWeek(s)
   const cryptoInterestUsd = payCryptoInterestWeek(s)
@@ -45,6 +53,7 @@ export function advance(state: GameState): GameState {
   st.soldUsd += money.soldUsd
   st.gridCreditsUsd += curtailed.creditUsd
   st.rateHikeUsd += rateHikeUsd(s, lots)
+  st.stormChargeUsd += stormUsd
   st.interestUsd += loan.interestUsd + cryptoInterestUsd
   st.principalUsd += loan.principalUsd
   st.failures += failures

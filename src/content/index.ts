@@ -91,8 +91,10 @@ export interface Shock {
   quarter: number
   week: number
   weeks: number
-  /** Index-contract power costs this many times as much during the shock. */
-  indexPriceMult: number
+  /** Index contracts that keep mining pay this per kWh on their firm load during the shock. */
+  stormPriceUsdKwh: number
+  /** Whether broken machines count in the firm load (undelivered ones never do). */
+  firmLoadIncludesBroken: boolean
 }
 
 export interface RawContent {
@@ -341,10 +343,10 @@ export function parseContent(raw: RawContent): Content {
   const shocks: Shock[] = []
   for (const sh of shocksFile.shocks) {
     const qi = quarters.indexOf(sh.quarter)
-    const wi = qi < 0 ? -1 : market[qi].findIndex((w) => w.week === sh.week)
+    const wi = qi < 0 ? -1 : market[qi].findIndex((w) => w.week === sh.week_of)
     if (wi < 0) {
       problems.push(
-        `shocks.json › ${sh.id}: week ${sh.week} isn't a week of ${sh.quarter}`,
+        `shocks.json › ${sh.id}: week ${sh.week_of} isn't a week of ${sh.quarter}`,
       )
       continue
     }
@@ -353,7 +355,8 @@ export function parseContent(raw: RawContent): Content {
       quarter: qi,
       week: wi,
       weeks: sh.weeks,
-      indexPriceMult: sh.index_price_mult,
+      stormPriceUsdKwh: sh.storm_price_per_kwh,
+      firmLoadIncludesBroken: sh.firm_load_includes.includes('broken'),
     })
   }
 

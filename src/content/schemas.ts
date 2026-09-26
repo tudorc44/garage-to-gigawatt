@@ -442,16 +442,26 @@ export type HeatRules = z.output<typeof heatFileSchema>
 
 // ---------- shocks.json ----------
 
-/** Market shocks on fixed dates (Uri): index power costs index_price_mult for `weeks` weeks. */
+/**
+ * Market shocks on fixed dates (Uri): index contracts that keep mining pay storm_price_per_kwh on
+ * their contracted (firm) load for `weeks` weeks; curtailing protects them.
+ */
 export const shocksFileSchema = z.object({
   shocks: z.array(
     z.object({
       id: z.string(),
       quarter: quarterId,
-      week: isoDate,
+      week_of: isoDate,
       weeks: z.number().int().min(1),
-      index_price_mult: z.number().min(1),
       affects: z.literal('index'),
+      storm_price_per_kwh: nonNeg,
+      billing: z.literal('firm_load'),
+      firm_load_includes: z.array(z.enum(['working', 'broken'])),
+      firm_load_excludes: z.array(z.literal('undelivered')),
+      curtail_protects: z.literal(true),
+      keep_mining_grievance: nonNeg,
+      interrupt_cap_exempt: z.literal(true),
+      default_choice: z.literal('curtail'),
     }),
   ),
 })

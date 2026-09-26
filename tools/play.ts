@@ -8,7 +8,7 @@ import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
-import { URI_POWER_MULT, interruptChoices } from '../src/sim/selectors.ts'
+import { interruptChoices } from '../src/sim/selectors.ts'
 import { openingOfferUsdKwh, renewalDue } from '../src/sim/systems/contracts.ts'
 import { ltv } from '../src/sim/systems/cryptoLoan.ts'
 import {
@@ -508,7 +508,7 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
       week: alert.week + 2,
       mw: fmt.power(alert.curtail!.mw * 1000),
       creditUsd: alert.curtail!.creditUsd,
-      mult: URI_POWER_MULT,
+      stormUsd: alert.curtail!.stormUsd ?? 0,
     })
   } else if (alert.id === 'curtailment') {
     say('play.grid', {
@@ -567,6 +567,7 @@ function showReport(s: GameState) {
   say('play.report_cash', { cashUsd: r.cash })
   if (r.gridCreditsUsd > 0)
     say('play.report_grid', { creditsUsd: r.gridCreditsUsd })
+  if (r.stormChargeUsd > 0) say('play.report_storm', { usd: r.stormChargeUsd })
   if (r.rateHikeUsd > 0) say('play.report_rate_hike', { usd: r.rateHikeUsd })
   if (r.forcedSale) say('play.report_forced', r.forcedSale)
   showLeague(s)

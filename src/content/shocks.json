@@ -1,15 +1,22 @@
 {
-  "schema_version": 1,
-  "notes": "Market shocks the sim applies on fixed dates (design thread, 26 Sep 2026). Uri is hard-coded here rather than waiting for its event card: for one week, power on INDEX contracts costs index_price_mult times as much, unless the player curtails (the grid asks the week before, like a curtailment alert; credits as built, x the contract's curtail_credit_mult). Fixed contracts are unaffected.",
+  "schema_version": 2,
+  "notes": "Market shocks the sim applies on fixed dates (design thread, 26 Sep 2026). Uri is hard-coded here rather than waiting for its event card. The grid asks the week before (always, exempt from the 3-interrupt cap; default: curtail). Index contract + keep mining: the site pays storm_price_per_kwh on its contracted load (the full power draw of every delivered machine there, broken ones included, undelivered ones not) for the whole week (168 h), whether or not the machines switch themselves off; machines that switch off earn nothing. Index + curtail: no storm charge, credits as built x the contract's curtail_credit_mult. Fixed contracts are unaffected. v2: firm-load billing replaced index_price_mult 10.",
   "shocks": [
     {
       "id": "uri",
       "quarter": "2021Q1",
-      "week": "2021-02-15",
+      "week_of": "2021-02-15",
       "weeks": 1,
-      "index_price_mult": 10,
       "affects": "index",
-      "source": "Winter Storm Uri, 13-17 Feb 2021: ERCOT real-time prices at the $9,000/MWh cap for days"
+      "storm_price_per_kwh": 3.0,
+      "billing": "firm_load",
+      "firm_load_includes": ["working", "broken"],
+      "firm_load_excludes": ["undelivered"],
+      "curtail_protects": true,
+      "keep_mining_grievance": 5,
+      "interrupt_cap_exempt": true,
+      "default_choice": "curtail",
+      "source": "Winter Storm Uri, 13-17 Feb 2021: ERCOT real-time prices at the $9,000/MWh cap for days; $3,000/MWh is about a third of it"
     }
   ]
 }

@@ -250,7 +250,7 @@
     {
      "id": "mine",
      "label": "Keep mining through the storm",
-     "effects": { "index_power_mult": 10, "grievance": 5 }
+     "effects": { "storm_charge": "shocks.json uri: storm_price_per_kwh on the firm load", "grievance": 5 }
     }
    ],
    "default": "curtail",
