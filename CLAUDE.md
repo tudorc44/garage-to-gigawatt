@@ -17,7 +17,10 @@ question: *is Act I a fun 40-minute run where decisions, not luck, decide whethe
 npm run dev       # start the Vite dev server (open the printed localhost URL)
 npm run build     # type-check (tsc -b) and build to dist/
 npm run preview   # serve the built dist/ locally
-npm test          # TODO: not set up yet (planned: Vitest unit + golden-replay tests)
+npm test          # Vitest: unit tests per system + golden-replay test
+npm run lint      # ESLint (also enforces the pure-sim rules below)
+npm run play      # the terminal version of Act I (options: -- --seed 42 --fast)
+npm run content:market  # regenerate src/content/market_weekly.json after editing the CSV
 ```
 
 ## Key docs (read before bigger tasks)

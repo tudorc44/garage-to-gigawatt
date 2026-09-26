@@ -1,2 +1,421 @@
-// Terminal version of Act I. Placeholder until the sim core exists (build step 8).
-console.log('Garage to Gigawatt: the terminal game is not built yet.')
+// Terminal version of Act I: Plan phase → live quarter (13 weeks) → quarter report,
+// until the Merge, bankruptcy, or "quit".  Run: npm run play  (options: --seed N, --fast)
+// This file is a UI: it reads the game state, sends actions, and prints text via t().
+import { createInterface } from 'node:readline'
+import { BALANCE, CONTENT } from '../src/content/index.ts'
+import {
+  formatChange,
+  formatHashrate,
+  formatNumber,
+  formatUsd,
+  formatUsdSmall,
+} from '../src/i18n/format.ts'
+import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
+import { applyAction, type Action } from '../src/sim/actions.ts'
+import { advance } from '../src/sim/advance.ts'
+import { newGame, type GameState } from '../src/sim/state.ts'
+import { defaultChoice } from '../src/sim/systems/interrupts.ts'
+import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
+import {
+  buyPrice,
+  leadTimeQuarters,
+  marketWeek,
+  previousMarketWeek,
+  revenuePerUnitDay,
+} from '../src/sim/systems/market.ts'
+import {
+  baseCapexUsd,
+  capacityKw,
+  isReady,
+  powerPriceUsdKwh,
+  tierIndex,
+  topTierIndex,
+  usedKw,
+} from '../src/sim/systems/sites.ts'
+import { treasuryValueUsd } from '../src/sim/systems/treasury.ts'
+
+// ---------- input / output ----------
+
+const args = process.argv.slice(2)
+const seedArg = args.indexOf('--seed')
+const seed =
+  seedArg >= 0 ? Number(args[seedArg + 1]) : Math.floor(Math.random() * 1e9)
+const fast = args.includes('--fast') || !process.stdout.isTTY
+
+const rl = createInterface({ input: process.stdin })
+const lines = rl[Symbol.asyncIterator]()
+
+/** Asks for a line of input. End of input (e.g. a piped script) counts as "quit". */
+async function ask(prompt: string): Promise<string> {
+  process.stdout.write(prompt)
+  const next = await lines.next()
+  const answer = next.done ? 'quit' : String(next.value).trim()
+  if (!process.stdin.isTTY) console.log(answer) // echo, so piped transcripts read well
+  return answer
+}
+
+const say = (key: MessageKey, params?: Record<string, string | number>) =>
+  console.log(t(key, params))
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+const header = (text: string) =>
+  console.log(`\n══ ${text} ${'═'.repeat(Math.max(0, 60 - text.length))}`)
+const coins = (n: number) => formatNumber(n, 4)
+const name = (kind: 'machine' | 'site' | 'flaw' | 'condition', id: string) =>
+  tDynamic(`${kind}.${id}`, id)
+
+function bye(): never {
+  say('play.bye')
+  rl.close()
+  process.exit(0)
+}
+
+// ---------- screens ----------
+
+function showStatus(s: GameState) {
+  const w = marketWeek(s.quarter, 0)
+  say('play.status', {
+    cashUsd: s.cash,
+    bandwidth: s.bandwidth,
+    hodlPct: s.hodlPct,
+    btc: coins(s.treasury.BTC),
+    eth: coins(s.treasury.ETH),
+    treasuryUsd: treasuryValueUsd(s, w),
+  })
+}
+
+function showPlan(s: GameState) {
+  const w = marketWeek(s.quarter, 0)
+  header(t('play.plan_header', { quarter: CONTENT.quarters[s.quarter] }))
+  showStatus(s)
+  say('play.prices', {
+    btcUsd: w.btc_usd,
+    ethUsd: w.eth_usd,
+    hashprice: formatUsd(w.btc_hashprice_usd_ph_day),
+    ethRev: formatUsdSmall(w.eth_rev_usd_mh_day),
+  })
+
+  console.log()
+  say('play.sites')
+  s.sites.forEach((site, i) => {
+    let line = t('play.site_line', {
+      n: i + 1,
+      tier: name('site', site.tier),
+      usedKw: formatNumber(usedKw(s, site.id), 1),
+      capKw: formatNumber(capacityKw(site), 1),
+      power: formatUsdSmall(powerPriceUsdKwh(site, s.quarter)),
+      rentUsd: site.rentUsdQ,
+    })
+    if (!isReady(site, s.quarter)) {
+      line += t('play.site_building', {
+        quarter: CONTENT.quarters[site.readyQuarter] ?? '—',
+      })
+    }
+    if (site.flaw)
+      line += t('play.site_flaw', { flaw: name('flaw', site.flaw) })
+    console.log(line)
+  })
+
+  console.log()
+  say('play.machines')
+  if (s.machines.length === 0) say('play.none')
+  s.machines.forEach((lot, i) => {
+    let line = t('play.batch_line', {
+      n: i + 1,
+      count: lot.count,
+      model: lot.model,
+      condition: lot.condition,
+      site: String(s.sites.findIndex((x) => x.id === lot.siteId) + 1),
+    })
+    if (lot.earnsFromQuarter > s.quarter) {
+      line += t('play.batch_waiting', {
+        quarter: CONTENT.quarters[lot.earnsFromQuarter] ?? '—',
+      })
+    }
+    if (lot.failed > 0) {
+      line += t('play.batch_broken', {
+        failed: lot.failed,
+        repairUsd: lot.failed * repairCostPerUnit(lot.model),
+      })
+    }
+    console.log(line)
+  })
+
+  console.log()
+  say('play.market')
+  const ready = s.sites.filter((x) => isReady(x, s.quarter))
+  const cheapestPower = Math.min(
+    ...ready.map((x) => powerPriceUsdKwh(x, s.quarter)),
+  )
+  CONTENT.machines.forEach((m, i) => {
+    if (CONTENT.quarters[s.quarter] < m.available_from) {
+      say('play.market_soon', {
+        n: i + 1,
+        model: m.id,
+        quarter: m.available_from,
+      })
+      return
+    }
+    const price = (c: 'new' | 'used') => {
+      const p = buyPrice(m, s.quarter, c)
+      if (p === undefined) return t('play.market_na')
+      const lead = leadTimeQuarters(m, s.quarter, c)
+      return formatUsd(p) + (lead > 0 ? t('play.market_lead', { n: lead }) : '')
+    }
+    const profit = revenuePerUnitDay(m, w) - m.power_kw * 24 * cheapestPower
+    say('play.market_line', {
+      n: i + 1,
+      model: m.id,
+      coin: m.coin,
+      hashrate: formatHashrate(m.coin, m.hashrate),
+      kw: m.power_kw,
+      newPrice: price('new'),
+      usedPrice: price('used'),
+      profit: (profit >= 0 ? '+' : '') + formatUsd(profit),
+    })
+  })
+
+  console.log()
+  say('play.ladder')
+  const top = topTierIndex(s)
+  for (const tier of CONTENT.siteTiers.slice(1, top + 2)) {
+    const params = {
+      id: tier.id,
+      tier: name('site', tier.id),
+      capKw: tier.capacity_kw,
+      capexUsd: baseCapexUsd(tier),
+      quarters: tier.build_quarters,
+    }
+    if (
+      tier.available_from &&
+      CONTENT.quarters[s.quarter] < tier.available_from
+    ) {
+      say('play.ladder_locked', { ...params, quarter: tier.available_from })
+    } else if (
+      (BALANCE.sites.noScoutingNeeded as readonly string[]).includes(tier.id)
+    ) {
+      say('play.ladder_direct', params)
+    } else if (tierIndex(tier.id) <= top + 1) {
+      say('play.ladder_scout', params)
+    }
+  }
+
+  if (s.siteOffers.length > 0) {
+    console.log()
+    say('play.offers')
+    s.siteOffers.forEach((o, i) =>
+      say('play.offer_line', {
+        n: i + 1,
+        tier: name('site', o.tier),
+        capexUsd: o.capexUsd,
+        rentUsd: o.rentUsdQ,
+        powerPct: o.powerPriceMult,
+      }),
+    )
+  }
+}
+
+/** Turns a typed command into an action. Returns a message key on bad input. */
+function parse(
+  s: GameState,
+  input: string,
+): Action | 'help' | 'look' | 'quit' | MessageKey {
+  const [cmd, ...rest] = input.toLowerCase().split(/\s+/)
+  const num = (i: number) => Number(rest[i])
+  const item = <T>(list: T[], i: number): T | undefined => list[num(i) - 1]
+  switch (cmd) {
+    case 'help':
+    case 'look':
+    case 'quit':
+      return cmd
+    case 'end':
+      return { type: 'END_PLAN' }
+    case 'hodl':
+      return { type: 'SET_HODL', pct: num(0) / 100 }
+    case 'scout':
+      return { type: 'SCOUT_SITES', tier: rest[0] ?? '' }
+    case 'build': {
+      if (/^\d+$/.test(rest[0] ?? '')) {
+        const offer = item(s.siteOffers, 0)
+        return offer
+          ? { type: 'BUILD_SITE', offerId: offer.id }
+          : 'play.bad_number'
+      }
+      return { type: 'BUILD_SITE', tier: rest[0] ?? '' }
+    }
+    case 'buy': {
+      const model = item(CONTENT.machines, 0)
+      const used = rest.includes('used')
+      const siteArg = rest.slice(2).find((x) => /^\d+$/.test(x))
+      const site = s.sites[(siteArg ? Number(siteArg) : 1) - 1]
+      if (!model || !site) return 'play.bad_number'
+      return {
+        type: 'BUY_MACHINES',
+        model: model.id,
+        condition: used ? 'used' : 'new',
+        count: num(1),
+        siteId: site.id,
+      }
+    }
+    case 'sell':
+    case 'repair': {
+      const lot = item(s.machines, 0)
+      if (!lot) return 'play.bad_number'
+      return cmd === 'sell'
+        ? { type: 'SELL_MACHINES', lotId: lot.id, count: num(1) }
+        : { type: 'REPAIR_MACHINES', lotId: lot.id }
+    }
+    default:
+      return 'play.unknown_command'
+  }
+}
+
+async function planPhase(s: GameState): Promise<GameState> {
+  showPlan(s)
+  console.log()
+  say('play.help')
+  for (;;) {
+    const parsed = parse(s, await ask(t('play.prompt')))
+    if (parsed === 'quit') bye()
+    if (parsed === 'help') {
+      say('play.help')
+      continue
+    }
+    if (parsed === 'look') {
+      showPlan(s)
+      continue
+    }
+    if (typeof parsed === 'string') {
+      say(parsed)
+      continue
+    }
+    const r = applyAction(s, parsed)
+    if (!r.ok) {
+      console.log(t(r.error.key, r.error.params))
+      continue
+    }
+    s = r.state
+    if (parsed.type === 'END_PLAN') return s
+    say('play.ok')
+    showStatus(s)
+  }
+}
+
+async function livePhase(s: GameState): Promise<GameState> {
+  header(t('play.live_header', { quarter: CONTENT.quarters[s.quarter] }))
+  while (s.phase === 'live') {
+    if (s.interrupt) {
+      s = await answerInterrupt(s)
+      continue
+    }
+    s = advance(s)
+    const wk = s.lastWeek!
+    const prev = previousMarketWeek(s.quarter, wk.week - 1)
+    let line = t('play.week_line', {
+      week: String(wk.week).padStart(2),
+      date: wk.date,
+      btcUsd: wk.btcUsd,
+      btcChange: prev ? formatChange(wk.btcUsd / prev.btc_usd - 1) : '',
+      ethUsd: wk.ethUsd,
+      ethChange: prev ? formatChange(wk.ethUsd / prev.eth_usd - 1) : '',
+      revenueUsd: wk.revenueUsd,
+      powerUsd: wk.powerCostUsd,
+      cashUsd: wk.cash,
+    })
+    if (wk.batchesOff > 0) line += t('play.week_off', { n: wk.batchesOff })
+    if (wk.failures > 0) line += t('play.week_failures', { n: wk.failures })
+    console.log(line)
+    if (!fast) await sleep(250)
+  }
+  return s
+}
+
+async function answerInterrupt(s: GameState): Promise<GameState> {
+  const alert = s.interrupt!
+  const def = CONTENT.interrupts.byId[alert.id]
+  const choices = def.choices ?? []
+  const label = (id: string) => tDynamic(`interrupt.${alert.id}.${id}`, id)
+  const fallback = defaultChoice(alert.id)
+  console.log()
+  say('play.alert', {
+    coin: alert.coin,
+    change: formatChange(alert.changePct),
+    btc: coins(s.treasury.BTC),
+    eth: coins(s.treasury.ETH),
+    treasuryUsd: treasuryValueUsd(s, marketWeek(s.quarter, alert.week)),
+  })
+  choices.forEach((c, i) =>
+    say('play.choice_line', { n: i + 1, label: label(c.id) }),
+  )
+  const answer = await ask(t('play.choose', { label: label(fallback) }))
+  if (answer === 'quit') bye()
+  const picked = choices[Number(answer) - 1]?.id ?? fallback
+  const r = applyAction(s, { type: 'RESOLVE_INTERRUPT', choice: picked })
+  console.log()
+  return r.ok ? r.state : s
+}
+
+function showReport(s: GameState) {
+  const r = s.reports.at(-1)!
+  const perCoin = (v: number | null) => (v === null ? '—' : formatUsd(v))
+  header(t('play.report_header', { quarter: r.quarter }))
+  say('play.report_hashrate', {
+    eth: formatHashrate('ETH', r.hashrate.ETH),
+    btc: formatHashrate('BTC', r.hashrate.BTC),
+  })
+  say('play.report_money', {
+    revenueUsd: r.revenueUsd,
+    powerUsd: r.powerCostUsd,
+    rentUsd: r.rentUsd,
+  })
+  say('play.report_mined', {
+    btc: coins(r.coinsMined.BTC),
+    eth: coins(r.coinsMined.ETH),
+  })
+  say('play.report_cost', {
+    btc: perCoin(r.costPerCoinUsd.BTC),
+    eth: perCoin(r.costPerCoinUsd.ETH),
+  })
+  say('play.report_failures', { failures: r.failures, broken: r.brokenUnits })
+  say('play.report_treasury', {
+    btc: coins(r.treasury.BTC),
+    eth: coins(r.treasury.ETH),
+    treasuryUsd: r.treasuryValueUsd,
+  })
+  say('play.report_cash', { cashUsd: r.cash })
+  if (r.forcedSale) say('play.report_forced', r.forcedSale)
+}
+
+// ---------- main loop ----------
+
+console.log()
+say('play.title')
+say('play.seed', { seed: String(seed) })
+say('play.intro')
+
+let state = newGame(seed)
+for (;;) {
+  if (state.phase === 'plan') state = await planPhase(state)
+  else if (state.phase === 'live') state = await livePhase(state)
+  else if (state.phase === 'report') {
+    showReport(state)
+    if ((await ask(t('play.continue'))) === 'quit') bye()
+    const r = applyAction(state, { type: 'NEXT_QUARTER' })
+    if (r.ok) state = r.state
+  } else {
+    if (state.phase === 'gameover') {
+      showReport(state)
+      console.log()
+      say('play.gameover', { cashUsd: state.cash })
+    } else {
+      console.log()
+      say('play.ended')
+    }
+    const w = marketWeek(state.quarter, BALANCE.weeksPerQuarter - 1)
+    say('play.final', {
+      cashUsd: state.cash,
+      treasuryUsd: treasuryValueUsd(state, w),
+      machines: state.machines.reduce((n, l) => n + l.count, 0),
+    })
+    bye()
+  }
+}
