@@ -4,7 +4,7 @@
 
 Garage to Gigawatt is a turn-based, finance-first business sim played in a desktop browser. We are building
 **Alpha 0.1: Act I, "Garage to Hashrate"**: 23 quarterly turns (Q1 2017 → Q3 2022, about 40 minutes).
-The player starts with $10k and a few GPU rigs in a garage, then buys machines, climbs a site ladder
+The player starts with $10k and an empty garage (no rigs), then buys machines, climbs a site ladder
 (garage → 100 kW → 1 MW → 20 MW → Texas 100 MW), picks a HODL/sell %, takes loans (crypto-backed ones can
 margin-call), hires staff, manages community Heat and raises money, all against scripted BTC/ETH prices and
 4 scripted rivals. Each turn is Plan phase → Live quarter (13 weekly ticks, pausable, up to 3 interrupts)

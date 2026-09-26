@@ -15,11 +15,6 @@ export const BALANCE = {
     build: 1,
   },
 
-  market: {
-    /** Seeded weekly wobble on top of the scripted series (±3%), so live quarters don't feel canned. */
-    weeklyNoise: 0.03,
-  },
-
   priceAlert: {
     /** interrupts.json price_alert trigger: a weekly BTC or ETH move of at least this size. */
     threshold: 0.15,
