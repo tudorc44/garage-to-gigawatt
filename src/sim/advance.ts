@@ -10,6 +10,7 @@ import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
 import { checkMarginCall, payCryptoInterestWeek } from './systems/cryptoLoan.ts'
 import { applyCurtailment, checkCurtailment } from './systems/curtailment.ts'
+import { updateHeatWeek } from './systems/heat.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 
@@ -28,6 +29,7 @@ export function advance(state: GameState): GameState {
   const curtailed = applyCurtailment(s, mineWeek(s, w))
   const lots = curtailed.lots
   const money = settleWeek(s, lots, w)
+  updateHeatWeek(s, lots)
   const loan = payLoanWeek(s)
   const cryptoInterestUsd = payCryptoInterestWeek(s)
   s.cash = roundCents(s.cash)

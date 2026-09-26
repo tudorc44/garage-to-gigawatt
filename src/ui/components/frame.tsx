@@ -8,9 +8,11 @@ import {
   priceChanges,
   quarterName,
   treasuryValue,
+  topHeat,
 } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
+import { tierName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
 import type { IconName } from '../icons.ts'
 
@@ -38,6 +40,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
     s.treasury.ETH > 0 ? fmt.crypto(s.treasury.ETH, 'ETH') : null,
   ].filter(Boolean)
   const valuation = lastReport(s)?.valuationUsd
+  const heat = topHeat(s)
   const total = bandwidthTotal(s)
   return (
     <div class="topbar">
@@ -77,6 +80,15 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
             filled={s.bandwidth}
             label={t('ui.top.bandwidth_left', { n: s.bandwidth, total })}
           />
+        </span>
+      </div>
+      <div class="stat">
+        <span class="label">
+          {t('ui.top.heat', { tier: tierName(heat.tier).toLowerCase() })}
+        </span>
+        <span class="num">
+          <Icon name="heat" size={16} />
+          {Math.round(heat.heat)}
         </span>
       </div>
       <div class="stat">

@@ -15,6 +15,7 @@ import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
 import { collateralValueUsd } from './cryptoLoan.ts'
 import { debtUsd } from './loans.ts'
+import { hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { ebitdaUsd, valuationUsd } from './valuation.ts'
@@ -101,6 +102,8 @@ function buildReport(
     interestUsd: st.interestUsd,
     principalUsd: st.principalUsd,
     debtUsd: debtUsd(state),
+    heat: hottestSite(state).value,
+    heatTier: hottestSite(state).site.tier,
     forcedSale,
   }
 }
@@ -118,6 +121,7 @@ export function startNextQuarter(state: GameState): void {
   state.interruptsThisQuarter = 0
   state.curtailment = null
   state.quarterStats = emptyQuarterStats()
+  startQuarterHeat(state)
   for (const site of state.sites) {
     if (site.readyQuarter === state.quarter && state.quarter > 0) {
       logEntry(state, 'log.site_ready', { tier: site.tier })

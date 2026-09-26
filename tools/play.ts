@@ -10,6 +10,7 @@ import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
 import { interruptChoices } from '../src/sim/selectors.ts'
 import { ltv } from '../src/sim/systems/cryptoLoan.ts'
+import { siteHeatValue } from '../src/sim/systems/heat.ts'
 import { defaultChoice } from '../src/sim/systems/interrupts.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
@@ -130,6 +131,9 @@ function showPlan(s: GameState) {
     }
     if (site.flaw)
       line += t('play.site_flaw', { flaw: name('flaw', site.flaw) })
+    line += t('play.site_heat', {
+      heat: Math.round(siteHeatValue(s, site.id)),
+    })
     console.log(line)
   })
 

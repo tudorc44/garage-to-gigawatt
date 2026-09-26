@@ -58,6 +58,20 @@
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
+  "siteHeat": {
+    "site-1": {
+      "value": 9,
+      "load": 4,
+      "grievance": 0,
+      "mitigated": false
+    },
+    "site-3": {
+      "value": 10,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false
+    }
+  },
   "loansLockedUntil": null,
   "nextId": 6,
   "interrupt": null,
@@ -347,6 +361,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -387,6 +403,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -427,6 +445,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -467,6 +487,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -507,6 +529,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -547,6 +571,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "garage",
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 1500,
@@ -591,6 +617,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": {
         "treasuryUsd": 0,
         "machinesUsd": 4000,

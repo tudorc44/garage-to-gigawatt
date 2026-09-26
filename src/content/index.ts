@@ -7,11 +7,13 @@ import interruptsRaw from './interrupts.json' with { type: 'json' }
 import marketRaw from './market_weekly.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
+import heatRaw from './heat.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
   auctionRulesSchema,
   capitalFileSchema,
   curtailmentRulesSchema,
+  heatFileSchema,
   interruptsFileSchema,
   machinesFileSchema,
   marketSchema,
@@ -22,6 +24,7 @@ import {
   type CurtailmentRules,
   type EquipmentLoanTerms,
   type Flaw,
+  type HeatRules,
   type Interrupt,
   type LadderStep,
   type Machine,
@@ -32,6 +35,7 @@ import {
 
 export { BALANCE }
 export type {
+  HeatRules,
   AuctionRules,
   CryptoLoanTerms,
   CurtailmentRules,
@@ -68,6 +72,8 @@ export interface Content {
   curtailment: CurtailmentRules
   /** The 4 scripted rivals, in file order. */
   rivals: Rival[]
+  /** Community Heat rules (heat.json). */
+  heat: HeatRules
 }
 
 export interface RawContent {
@@ -77,6 +83,7 @@ export interface RawContent {
   market: unknown
   capital: unknown
   rivals: unknown
+  heat: unknown
 }
 
 export class ContentError extends Error {
@@ -115,6 +122,7 @@ export function parseContent(raw: RawContent): Content {
   const marketRows = check('market_weekly', marketSchema, raw.market)
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
+  const heat = check('heat.json', heatFileSchema, raw.heat)
   const rawInterrupt = (id: string) =>
     (
       raw.interrupts as { interrupts?: { id?: string }[] } | undefined
@@ -138,7 +146,8 @@ export function parseContent(raw: RawContent): Content {
     !capitalFile ||
     !rivalsFile ||
     !auction ||
-    !curtailment
+    !curtailment ||
+    !heat
   ) {
     throw new ContentError(problems)
   }
@@ -317,6 +326,7 @@ export function parseContent(raw: RawContent): Content {
     rivals: rivalsFile.rivals,
     auction,
     curtailment,
+    heat,
   }
 }
 
@@ -341,4 +351,5 @@ export const CONTENT: Content = parseContent({
   market: marketRaw,
   capital: capitalRaw,
   rivals: rivalsRaw,
+  heat: heatRaw,
 })

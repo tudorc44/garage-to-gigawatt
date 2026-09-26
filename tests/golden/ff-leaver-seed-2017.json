@@ -45,6 +45,14 @@
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
+  "siteHeat": {
+    "site-1": {
+      "value": 5,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false
+    }
+  },
   "loansLockedUntil": null,
   "nextId": 5,
   "interrupt": null,
@@ -334,6 +342,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -374,6 +384,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -414,6 +426,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -454,6 +468,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10.4275,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -494,6 +510,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10.4275,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -534,6 +552,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -574,6 +594,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -614,6 +636,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -654,6 +678,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -694,6 +720,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -734,6 +762,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -774,6 +804,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -814,6 +846,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -854,6 +888,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -894,6 +930,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -934,6 +972,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -974,6 +1014,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -1014,6 +1056,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -1054,6 +1098,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -1094,6 +1140,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -1134,6 +1182,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 9,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -1174,6 +1224,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     },
     {
@@ -1214,6 +1266,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 5,
+      "heatTier": "garage",
       "forcedSale": null
     }
   ],

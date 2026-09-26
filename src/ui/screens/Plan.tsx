@@ -5,11 +5,13 @@ import { hasText, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
+  HEAT_MARKS,
   SELL_TREASURY_BANDWIDTH,
   auctionView,
   cryptoLoanView,
   equipmentLoanView,
   fundingRound,
+  heatBand,
   lotViews,
   machineMarket,
   quarterName,
@@ -262,6 +264,7 @@ function FleetPanel({ state }: { state: GameState }) {
                 }}
               />
             </div>
+            <HeatMeter tier={sv.site.tier} heat={sv.heat} />
             {siteLots.map((v) => (
               <div class="fleet-row" key={v.lot.id}>
                 <Icon name={machineIcon(v.coin)} />
@@ -296,7 +299,46 @@ function FleetPanel({ state }: { state: GameState }) {
       {lots.length === 0 && (
         <div class="num-s muted">{t('ui.fleet.empty')}</div>
       )}
-      <div class="num-s muted">{t('ui.fleet.heat_locked')}</div>
+    </div>
+  )
+}
+
+/** A site's Heat, 0–100, with marks at the thresholds (danger from the moratorium up). */
+function HeatMeter({ tier, heat }: { tier: string; heat: number }) {
+  const band = heatBand(heat)
+  const next = HEAT_MARKS[band - 1]
+  const shown = Math.round(heat)
+  return (
+    <div class="heat-meter">
+      <div class="row-between" style={{ marginBottom: '4px' }}>
+        <span class="label">{t('ui.fleet.heat', { heat: shown })}</span>
+        <span class={`num-s ${band >= 4 ? 'loss' : 'muted'}`}>
+          {tDynamic(`ui.fleet.heat_next.${band}`, '', { at: next ?? '' })}
+        </span>
+      </div>
+      <div
+        class="meter"
+        role="meter"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={shown}
+        aria-label={t('ui.fleet.heat_label', {
+          tier: tierName(tier),
+          heat: shown,
+        })}
+      >
+        <div
+          class={`meter-fill g-heat-${band}`}
+          style={{ width: `${Math.min(100, heat)}%` }}
+        />
+        {HEAT_MARKS.map((m, i) => (
+          <span
+            key={m}
+            class={`meter-mark${i >= 2 ? ' danger' : ''}`}
+            style={{ left: `${m}%` }}
+          />
+        ))}
+      </div>
     </div>
   )
 }

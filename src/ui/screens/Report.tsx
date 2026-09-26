@@ -14,7 +14,7 @@ import {
 import type { Coin, GameState, QuarterReport } from '../../sim/state.ts'
 import { CONTENT } from '../../content/index.ts'
 import { fmt } from '../format.ts'
-import { rivalCode, rivalName, say } from '../names.ts'
+import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 const TURNS = 23
@@ -25,6 +25,18 @@ function mainCoin(r: QuarterReport): Coin | null {
   const value = (c: Coin) => r.coinsMined[c] * averagePrice(qi, c)
   if (value('BTC') === 0 && value('ETH') === 0) return null
   return value('ETH') >= value('BTC') ? 'ETH' : 'BTC'
+}
+
+/** "= flat vs 9" or "▲6 vs 9" (Heat is a plain number, not money). */
+function heatChange(now: number, before: number): string {
+  const d = Math.round(now) - Math.round(before)
+  const start = String(Math.round(before))
+  return d === 0
+    ? t('ui.report.heat_flat', { start })
+    : t('ui.report.heat_change', {
+        delta: `${d > 0 ? '▲' : '▼'}${Math.abs(d)}`,
+        start,
+      })
 }
 
 function Tile(props: {
@@ -149,14 +161,16 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
             tone={toneOf(r.treasuryValueUsd - r.startTreasuryUsd)}
           />
           <Tile
-            label={t('ui.report.valuation')}
-            value={fmt.money(r.valuationUsd)}
-            sub={
-              prev && prev.valuationUsd > 0
-                ? `${fmt.delta(r.valuationUsd / prev.valuationUsd - 1, 'pct')} ${t('ui.report.vs_prev', { quarter: fmt.quarter(prev.quarter).slice(0, 2), value: fmt.money(prev.valuationUsd) })}`
-                : t('ui.report.valuation_sub')
+            label={t('ui.report.heat', {
+              tier: tierName(r.heatTier).toLowerCase(),
+            })}
+            value={String(Math.round(r.heat))}
+            sub={heatChange(r.heat, prev?.heat ?? r.heat)}
+            tone={
+              prev
+                ? toneOf(Math.round(r.heat) - Math.round(prev.heat), true)
+                : 'muted'
             }
-            tone={prev ? toneOf(r.valuationUsd - prev.valuationUsd) : 'muted'}
           />
         </div>
 

@@ -102,6 +102,8 @@ export const siteTierSchema = z
     land_usd: num.optional(),
     build_quarters: z.number().int().min(0),
     heat_base: nonNeg,
+    /** Heat added by a full site of running machines (0 for the garage, which counts units instead). */
+    heat_load_max: nonNeg,
     possible_flaws: z.array(z.string()),
   })
   .refine((t) => t.power_path !== undefined || t.power_options !== undefined, {
@@ -325,3 +327,73 @@ export type Interrupt = z.output<typeof interruptSchema>
 export type Rival = z.output<typeof rivalSchema>
 export type AuctionRules = z.output<typeof auctionRulesSchema>
 export type CurtailmentRules = z.output<typeof curtailmentRulesSchema>
+
+// ---------- heat.json ----------
+
+const moneyRule = z.object({
+  bw: z.number().int().min(0),
+  per_mw: nonNeg,
+  min: nonNeg,
+  max: nonNeg,
+})
+
+/** Community Heat rules: growth, decay, outreach, mitigation and the threshold effects. */
+export const heatFileSchema = z
+  .object({
+    grievance_decay: nonNeg,
+    grievance_min: z.number().max(0),
+    ignore_complaint: nonNeg,
+    keep_mining: nonNeg,
+    era_pressure: z.object({ from: quarterId, min_mw: nonNeg, value: nonNeg }),
+    outreach: moneyRule.extend({ grievance: z.number().max(0) }),
+    mitigation: moneyRule.extend({
+      heat_base: z.number().max(0),
+      once: z.boolean(),
+    }),
+    rate_hike: z.object({ at: nonNeg, power_mult: z.number().min(1) }),
+    moratorium_at: nonNeg,
+    shutdown: z.object({
+      at: nonNeg,
+      until_below: nonNeg,
+      min_quarters: z.number().int().min(0),
+    }),
+    complaint_at: nonNeg,
+    complaints_per_quarter: z.number().int().min(0),
+  })
+  .transform((h) => ({
+    grievanceDecay: h.grievance_decay,
+    grievanceMin: h.grievance_min,
+    ignoreComplaint: h.ignore_complaint,
+    keepMining: h.keep_mining,
+    era: {
+      from: h.era_pressure.from,
+      minMw: h.era_pressure.min_mw,
+      value: h.era_pressure.value,
+    },
+    outreach: {
+      bandwidth: h.outreach.bw,
+      perMwUsd: h.outreach.per_mw,
+      minUsd: h.outreach.min,
+      maxUsd: h.outreach.max,
+      grievance: h.outreach.grievance,
+    },
+    mitigation: {
+      bandwidth: h.mitigation.bw,
+      perMwUsd: h.mitigation.per_mw,
+      minUsd: h.mitigation.min,
+      maxUsd: h.mitigation.max,
+      heatBase: h.mitigation.heat_base,
+      once: h.mitigation.once,
+    },
+    rateHike: { at: h.rate_hike.at, powerMult: h.rate_hike.power_mult },
+    moratoriumAt: h.moratorium_at,
+    shutdown: {
+      at: h.shutdown.at,
+      untilBelow: h.shutdown.until_below,
+      minQuarters: h.shutdown.min_quarters,
+    },
+    complaintAt: h.complaint_at,
+    complaintsPerQuarter: h.complaints_per_quarter,
+  }))
+
+export type HeatRules = z.output<typeof heatFileSchema>

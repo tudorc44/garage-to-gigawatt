@@ -16,6 +16,7 @@ import {
   repayCryptoLoan,
   takeCryptoLoan,
 } from './systems/cryptoLoan.ts'
+import { recalcHeat } from './systems/heat.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
   borrowBlocker,
@@ -301,6 +302,7 @@ function run(s: GameState, a: Action): Message | undefined {
       site.readyQuarter += flawEffect(site, 'delay_quarters') ?? 0
       s.cash += flawEffect(site, 'cash') ?? 0
       s.sites.push(site)
+      recalcHeat(s, site)
       logEntry(s, 'log.site_built', {
         tier: site.tier,
         costUsd: terms.capexUsd,
@@ -372,6 +374,7 @@ function run(s: GameState, a: Action): Message | undefined {
       }
       s.cash -= penaltyUsd
       s.sites = s.sites.filter((x) => x !== site)
+      delete s.siteHeat[site.id]
       logEntry(s, 'log.site_left', { tier: site.tier, penaltyUsd })
       return
     }

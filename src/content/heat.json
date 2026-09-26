@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "notes": "Community Heat rules (design thread, 26 Sep 2026). Heat = heat_base + load + grievance + era, clamped to 0-100. Load = sites.json heat_load_max x running MW / site capacity MW (garage: machines.json heat_per_unit_garage per running unit). hostile_council multiplies every increase (load, grievance, era) by its heat_growth_mult.",
+  "grievance_decay": 5,
+  "grievance_min": -10,
+  "ignore_complaint": 10,
+  "keep_mining": 5,
+  "era_pressure": { "from": "2021Q3", "min_mw": 1, "value": 5 },
+  "outreach": { "bw": 1, "per_mw": 10000, "min": 10000, "max": 250000, "grievance": -15 },
+  "mitigation": { "bw": 0, "per_mw": 30000, "min": 30000, "max": 1000000, "heat_base": -10, "once": true },
+  "rate_hike": { "at": 50, "power_mult": 1.2 },
+  "moratorium_at": 70,
+  "shutdown": { "at": 90, "until_below": 60, "min_quarters": 1 },
+  "complaint_at": 30,
+  "complaints_per_quarter": 1
+}

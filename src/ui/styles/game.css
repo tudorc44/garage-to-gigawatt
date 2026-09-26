@@ -973,3 +973,28 @@ tr.locked td {
   background: var(--ink-disabled);
   border-color: var(--ink-disabled);
 }
+
+/* Heat meter (mockup q4-2017: site card). Fill colour comes from bundle.css g-heat-1 … 5. */
+.meter {
+  position: relative;
+  height: 8px;
+  background: var(--panel-sunk);
+  border-radius: var(--radius-pill);
+}
+.meter-fill {
+  height: 8px;
+  border-radius: var(--radius-pill);
+}
+.meter-mark {
+  position: absolute;
+  top: -3px;
+  width: 1.5px;
+  height: 14px;
+  background: var(--ink-muted);
+}
+.meter-mark.danger {
+  background: var(--loss);
+}
+.heat-meter {
+  margin: 6px 0 4px;
+}

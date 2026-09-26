@@ -21,6 +21,7 @@
    "capex_usd": 0,
    "build_quarters": 0,
    "heat_base": 5,
+   "heat_load_max": 0,
    "possible_flaws": []
   },
   {
@@ -51,6 +52,7 @@
    },
    "build_quarters": 1,
    "heat_base": 10,
+   "heat_load_max": 15,
    "possible_flaws": [
     "landlord_sale",
     "noise_ordinance",
@@ -86,6 +88,7 @@
    },
    "build_quarters": 1,
    "heat_base": 15,
+   "heat_load_max": 25,
    "possible_flaws": [
     "landlord_sale",
     "zoning",
@@ -124,6 +127,7 @@
    },
    "build_quarters": 2,
    "heat_base": 20,
+   "heat_load_max": 25,
    "possible_flaws": [
     "grid_delay",
     "zoning",
@@ -165,6 +169,7 @@
    },
    "build_quarters": 3,
    "heat_base": 15,
+   "heat_load_max": 20,
    "possible_flaws": [
     "grid_delay",
     "flood_heat",

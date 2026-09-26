@@ -2,6 +2,7 @@
 // can be copied, compared, saved as JSON and replayed. Systems read and update it.
 import { BALANCE, CONTENT } from '../content/index.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
+import type { SiteHeat } from './systems/heat.ts'
 
 export type Phase = 'plan' | 'live' | 'report' | 'gameover' | 'ended'
 export type Coin = 'BTC' | 'ETH'
@@ -113,6 +114,8 @@ export interface GameState {
   equipmentLoan: EquipmentLoan | null
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
+  /** Community Heat per site id (see systems/heat.ts). */
+  siteHeat: Record<string, SiteHeat>
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
   curtailment: { week: number; creditUsd: number } | null
   /** A distressed auction open this Plan phase, or null. */
@@ -239,6 +242,9 @@ export interface QuarterReport {
   principalUsd: number
   /** Loans still owed at quarter end (subtracted from the valuation). */
   debtUsd: number
+  /** The hottest site's Heat at quarter end, and its tier. */
+  heat: number
+  heatTier: string
   /** Filled when cash went below zero and assets had to be sold. */
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
 }
@@ -310,6 +316,14 @@ export function newGame(seed: number): GameState {
     cryptoLoan: null,
     auction: null,
     curtailment: null,
+    siteHeat: {
+      'site-1': {
+        value: start.heat_base,
+        load: 0,
+        grievance: 0,
+        mitigated: false,
+      },
+    },
     loansLockedUntil: null,
     nextId: 2,
     interrupt: null,

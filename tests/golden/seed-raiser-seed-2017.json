@@ -63,6 +63,20 @@
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
+  "siteHeat": {
+    "site-1": {
+      "value": 5,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false
+    },
+    "site-2": {
+      "value": 10,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false
+    }
+  },
   "loansLockedUntil": null,
   "nextId": 5,
   "interrupt": null,
@@ -352,6 +366,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -392,6 +408,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -432,6 +450,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -472,6 +492,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -512,6 +534,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 24.25,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -552,6 +576,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 23.965,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -592,6 +618,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 23.395,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -632,6 +660,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 22.825,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -672,6 +702,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 22.3975,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -712,6 +744,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 22.255000000000003,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -752,6 +786,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 21.97,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -792,6 +828,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -832,6 +870,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 21.2575,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -872,6 +912,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 20.972499999999997,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -912,6 +954,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 20.545,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -952,6 +996,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 20.402499999999996,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -992,6 +1038,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 19.975,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -1032,6 +1080,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 19.8325,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -1072,6 +1122,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 19.262500000000003,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -1112,6 +1164,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 18.9775,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -1152,6 +1206,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 18.6925,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -1192,6 +1248,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 18.4075,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -1232,6 +1290,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     }
   ],

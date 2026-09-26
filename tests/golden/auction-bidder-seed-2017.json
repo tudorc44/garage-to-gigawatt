@@ -89,6 +89,26 @@
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
+  "siteHeat": {
+    "site-1": {
+      "value": 5,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false
+    },
+    "site-2": {
+      "value": 10,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false
+    },
+    "site-7": {
+      "value": 20,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false
+    }
+  },
   "loansLockedUntil": null,
   "nextId": 9,
   "interrupt": null,
@@ -378,6 +398,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -418,6 +440,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -458,6 +482,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -498,6 +524,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 10,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -538,6 +566,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 24.25,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -578,6 +608,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 23.965,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -618,6 +650,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 23.395,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -658,6 +692,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 22.825,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -698,6 +734,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 22.3975,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -738,6 +776,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 22.3975,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -778,6 +818,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 22.1125,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -818,6 +860,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 15,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -858,6 +902,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 21.4,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -898,6 +944,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 21.115000000000002,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -938,6 +986,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 20.83,
+      "heatTier": "small_unit",
       "forcedSale": null
     },
     {
@@ -978,6 +1028,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 24.966,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -1018,6 +1070,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 24.57,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -1058,6 +1112,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 24.141,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -1098,6 +1154,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 28.712,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -1138,6 +1196,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 28.481,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -1178,6 +1238,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 20,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -1218,6 +1280,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 20,
+      "heatTier": "warehouse",
       "forcedSale": null
     },
     {
@@ -1258,6 +1322,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
+      "heat": 20,
+      "heatTier": "warehouse",
       "forcedSale": null
     }
   ],

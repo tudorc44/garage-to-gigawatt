@@ -29,6 +29,7 @@ import {
   marginCallOptions,
   maxCryptoLoanUsd,
 } from './systems/cryptoLoan.ts'
+import { hottestSite, siteHeatValue } from './systems/heat.ts'
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { isEarning } from './systems/mining.ts'
 import {
@@ -169,6 +170,8 @@ export interface SiteView {
   readyQuarter: string
   /** What leaving costs (undefined for the garage, which can't be left). */
   leaving?: { penaltyUsd: number; units: number; machinesUsd: number }
+  /** Community Heat now (0–100). */
+  heat: number
 }
 
 export function siteViews(state: GameState): SiteView[] {
@@ -181,6 +184,7 @@ export function siteViews(state: GameState): SiteView[] {
     ready: isReady(site, state.quarter),
     readyQuarter: quarterName(site.readyQuarter) || 'after Act I',
     leaving: tierIndex(site.tier) > 0 ? leavingTerms(state, site) : undefined,
+    heat: siteHeatValue(state, site.id),
   }))
 }
 
@@ -481,4 +485,23 @@ export function auctionView(state: GameState): AuctionView {
     inWindow: auctionWindow(state.quarter) !== undefined,
     nextWindow: next?.from ?? null,
   }
+}
+
+/** Heat thresholds from heat.json, low to high: complaints, rate hike, moratorium, shutdown. */
+export const HEAT_MARKS = [
+  CONTENT.heat.complaintAt,
+  CONTENT.heat.rateHike.at,
+  CONTENT.heat.moratoriumAt,
+  CONTENT.heat.shutdown.at,
+] as const
+
+/** Colour band 1–5 for a Heat value (design system: heat-1 … heat-5 by threshold). */
+export function heatBand(heat: number): 1 | 2 | 3 | 4 | 5 {
+  return (1 + HEAT_MARKS.filter((m) => heat >= m).length) as 1 | 2 | 3 | 4 | 5
+}
+
+/** The hottest site, for the top bar: its tier and Heat. */
+export function topHeat(state: GameState): { tier: string; heat: number } {
+  const h = hottestSite(state)
+  return { tier: h.site.tier, heat: h.value }
 }
