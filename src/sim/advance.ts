@@ -7,7 +7,7 @@ import { checkPriceAlert } from './systems/interrupts.ts'
 import { marketWeek, previousMarketWeek } from './systems/market.ts'
 import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
-import { payCryptoInterestWeek } from './systems/cryptoLoan.ts'
+import { checkMarginCall, payCryptoInterestWeek } from './systems/cryptoLoan.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 
@@ -53,6 +53,7 @@ export function advance(state: GameState): GameState {
     logEntry(s, 'log.eth_mining_ends', {}, weekNo)
   }
 
+  checkMarginCall(s, w, prev)
   checkPriceAlert(s, w)
   st.weeks.push({
     week: weekNo,

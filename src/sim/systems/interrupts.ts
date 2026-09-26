@@ -4,6 +4,7 @@ import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type Coin, type GameState } from '../state.ts'
 import { coinPrice, marketWeek, previousMarketWeek } from './market.ts'
+import { marginCallChoices, resolveMarginCall } from './cryptoLoan.ts'
 import { sellTreasury } from './treasury.ts'
 
 /**
@@ -40,6 +41,7 @@ export function resolveInterrupt(
 ): Message | undefined {
   const active = state.interrupt
   if (!active) return { key: 'error.no_interrupt' }
+  if (active.id === 'margin_call') return resolveMarginCall(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )
@@ -117,6 +119,7 @@ export function choiceCoin(
 export function availableChoices(state: GameState): string[] {
   const active = state.interrupt
   if (!active) return []
+  if (active.id === 'margin_call') return marginCallChoices(state)
   return (CONTENT.interrupts.byId[active.id].choices ?? [])
     .filter((c) => {
       const coin = choiceCoin(c.effects)
@@ -125,7 +128,18 @@ export function availableChoices(state: GameState): string[] {
     .map((c) => c.id)
 }
 
-/** The choice that applies when the player skips the alert. */
-export function defaultChoice(interruptId: string): string {
-  return CONTENT.interrupts.byId[interruptId].default
+/**
+ * The choice that applies when the player doesn't pick: the interrupt's default, or,
+ * if that isn't possible now, the fallbacks in default_if_unaffordable ("a, then b").
+ */
+export function defaultChoice(state: GameState): string {
+  const def = CONTENT.interrupts.byId[state.interrupt!.id]
+  const open = availableChoices(state)
+  const fallbacks = (def.default_if_unaffordable ?? '')
+    .split(/,\s*then\s*|,\s*/)
+    .map((x) => x.trim())
+    .filter(Boolean)
+  return (
+    [def.default, ...fallbacks].find((c) => open.includes(c)) ?? def.default
+  )
 }

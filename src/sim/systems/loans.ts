@@ -8,6 +8,7 @@ import {
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState } from '../state.ts'
+import { loansLocked } from './cryptoLoan.ts'
 import { saleValueUsd } from './machines.ts'
 
 /** This quarter's equipment loan terms, or undefined if lenders aren't offering any. */
@@ -43,6 +44,8 @@ export function borrowBlocker(
   amountUsd: number,
 ): Message | undefined {
   if (state.equipmentLoan) return { key: 'error.loan_exists' }
+  const locked = loansLocked(state)
+  if (locked) return locked
   const terms = equipmentTerms(state.quarter)
   if (!terms) return { key: 'error.loan_not_offered' }
   if (!Number.isInteger(amountUsd) || amountUsd < 1)

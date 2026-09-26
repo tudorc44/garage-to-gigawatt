@@ -4,6 +4,7 @@ import { BALANCE, CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import type { Strategy } from '../src/sim/replay.ts'
 import type { Condition, GameState } from '../src/sim/state.ts'
+import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
 import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
@@ -39,6 +40,8 @@ interface BotSettings {
   raises?: string[]
   /** Borrow the maximum equipment loan whenever it has none. */
   borrow?: boolean
+  /** Borrow the maximum crypto-backed loan (against its bigger coin holding) whenever it has none. */
+  cryptoBorrow?: boolean
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -63,6 +66,21 @@ function makeBot(settings: BotSettings): Strategy {
       if (settings.borrow && !s.equipmentLoan && bandwidth >= 1) {
         const amountUsd = maxEquipmentLoanUsd(s)
         const a: Action = { type: 'TAKE_LOAN', amountUsd }
+        if (amountUsd >= 1 && applyAction(s, a).ok) {
+          actions.push(a)
+          cash += amountUsd
+          reserveBase += amountUsd
+          bandwidth -= 1
+        }
+      }
+      // 0c. Borrow against the treasury: the coin that supports the bigger loan.
+      if (settings.cryptoBorrow && !s.cryptoLoan && bandwidth >= 1) {
+        const coin =
+          maxCryptoLoanUsd(s, 'BTC') >= maxCryptoLoanUsd(s, 'ETH')
+            ? 'BTC'
+            : 'ETH'
+        const amountUsd = maxCryptoLoanUsd(s, coin)
+        const a: Action = { type: 'TAKE_CRYPTO_LOAN', coin, amountUsd }
         if (amountUsd >= 1 && applyAction(s, a).ok) {
           actions.push(a)
           cash += amountUsd
@@ -167,8 +185,14 @@ function makeBot(settings: BotSettings): Strategy {
       return actions
     },
     // Without sellOnDrops, alerts get the game's default answer (as ff-climb always has).
+    // Margin calls always get the default (post collateral, or its fallbacks).
     answer: settings.sellOnDrops
-      ? (s) => (s.interrupt!.changePct < 0 ? sellDropped(s) : 'hold')
+      ? (s) =>
+          s.interrupt!.id !== 'price_alert'
+            ? undefined
+            : s.interrupt!.changePct < 0
+              ? sellDropped(s)
+              : 'hold'
       : undefined,
   }
 }
@@ -211,6 +235,14 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 1_000,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
+  }),
+  /** hodl, plus the biggest crypto-backed loan against its coins whenever it has none (2018Q1–2022Q2). */
+  'hodl-borrow': makeBot({
+    hodlPct: 1,
+    reserveUsd: () => 1_000,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    cryptoBorrow: true,
   }),
   /** Raises friends & family in 2017Q1, builds the small unit, fills every site with GPU Gen 1 rigs. */
   'ff-climb': ffClimb({ reserveQuarters: 1 }),
@@ -374,8 +406,14 @@ function ffClimb(settings: FfSettings): Strategy {
       return actions
     },
     // Without sellOnDrops, alerts get the game's default answer (as ff-climb always has).
+    // Margin calls always get the default (post collateral, or its fallbacks).
     answer: settings.sellOnDrops
-      ? (s) => (s.interrupt!.changePct < 0 ? sellDropped(s) : 'hold')
+      ? (s) =>
+          s.interrupt!.id !== 'price_alert'
+            ? undefined
+            : s.interrupt!.changePct < 0
+              ? sellDropped(s)
+              : 'hold'
       : undefined,
   }
 }

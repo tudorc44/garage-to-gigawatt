@@ -26,8 +26,8 @@ export function replay(seed: number, log: Step[]): GameState {
 export interface Strategy {
   /** Actions to take in a Plan phase (END_PLAN is added automatically). */
   plan(state: GameState): Action[]
-  /** Answer to an interrupt; defaults to the interrupt's default choice. */
-  answer?(state: GameState): string
+  /** Answer to an interrupt; undefined (or no answer function) = the default choice. */
+  answer?(state: GameState): string | undefined
 }
 
 /** Plays a whole game with a strategy, recording every step. Stops at the end or game over. */
@@ -47,8 +47,7 @@ export function playGame(
       step({ type: 'END_PLAN' })
     } else if (state.phase === 'live') {
       if (state.interrupt) {
-        const choice =
-          strategy.answer?.(state) ?? defaultChoice(state.interrupt.id)
+        const choice = strategy.answer?.(state) ?? defaultChoice(state)
         step({ type: 'RESOLVE_INTERRUPT', choice })
       } else step({ type: 'ADVANCE' })
     } else {

@@ -155,6 +155,13 @@
      }
     },
     {
+     "id": "pay_cash",
+     "label": "Pay the loan down with cash",
+     "effects": {
+      "cash": "-loan_gap"
+     }
+    },
+    {
      "id": "sell_machines",
      "label": "Sell machines to repay",
      "effects": {
@@ -171,7 +178,7 @@
     }
    ],
    "default": "post",
-   "default_if_unaffordable": "sell_machines, then default",
+   "default_if_unaffordable": "pay_cash, then sell_machines, then default",
    "liquidation_ltv": 0.8,
    "cure_weeks": 1,
    "source": "BlockFi / Nexo published loan terms",

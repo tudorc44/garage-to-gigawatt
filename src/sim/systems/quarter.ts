@@ -90,6 +90,7 @@ function buildReport(
       debtUsd(state),
     ),
     priceAlerts: st.priceAlerts,
+    marginCalls: st.marginCalls,
     founderStake: state.founderStake,
     startCash: st.startCash,
     startTreasuryUsd: st.startTreasuryUsd,

@@ -24,10 +24,12 @@ import {
   collateralNeeded,
   collateralValueUsd,
   cryptoLoanOffered,
+  defaultLockQuarters,
   ltv,
+  marginCallOptions,
   maxCryptoLoanUsd,
 } from './systems/cryptoLoan.ts'
-import { availableChoices } from './systems/interrupts.ts'
+import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { isEarning } from './systems/mining.ts'
 import {
   baseCapexUsd,
@@ -309,10 +311,10 @@ export function interruptChoices(
 ): { id: string; isDefault: boolean }[] {
   const active = state.interrupt
   if (!active) return []
-  const def = CONTENT.interrupts.byId[active.id]
+  const fallback = defaultChoice(state)
   return availableChoices(state).map((id) => ({
     id,
-    isDefault: id === def.default,
+    isDefault: id === fallback,
   }))
 }
 
@@ -403,5 +405,21 @@ export function cryptoLoanView(state: GameState) {
         price: coinPrice(w, coin),
       }
     },
+  }
+}
+
+/** The margin call card: the loan, its LTV, and what each answer would cost. null if none is pending. */
+export function marginCallView(state: GameState) {
+  const options = marginCallOptions(state)
+  const loan = state.cryptoLoan
+  if (!options || !loan || !state.interrupt) return null
+  return {
+    coin: loan.coin,
+    ltv: state.interrupt.ltv ?? 0,
+    target: CONTENT.cryptoLoan.ltvMax,
+    liquidationLtv: CONTENT.cryptoLoan.liquidationLtv,
+    balanceUsd: loan.balanceUsd,
+    options,
+    lockQuarters: defaultLockQuarters(),
   }
 }

@@ -136,6 +136,8 @@ export const interruptSchema = z
       .min(1)
       .optional(), // mini-games like negotiation have no choice list
     default: z.string(),
+    /** Fallback choices when the default can't be paid for, e.g. "sell_machines, then default". */
+    default_if_unaffordable: z.string().optional(),
     /** failure_wave: repair cost per broken unit, by machine id. */
     repair_cost_usd: z.record(z.string(), nonNeg).optional(),
   })

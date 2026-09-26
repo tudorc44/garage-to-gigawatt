@@ -84,14 +84,15 @@ describe('crypto-backed loan (capital.json game_crypto_loan)', () => {
       }
       return s
     }
-    const s = play(ok(holdingEth(), borrow(10_000)))
+    // 2020Q4: ETH rose all quarter, so no margin call gets in the way.
+    const s = play(ok(holdingEth('2020Q4'), borrow(10_000)))
     const r = s.reports.at(-1)!
     expect(r.interestUsd).toBeCloseTo((10_000 * 0.09) / 4, 0)
     expect(r.principalUsd).toBe(0)
     expect(r.debtUsd).toBe(10_000)
     expect(s.cryptoLoan!.balanceUsd).toBe(10_000)
     // Same quarter without the loan: the only difference is the interest paid.
-    const noLoan = play(holdingEth()).reports.at(-1)!
+    const noLoan = play(holdingEth('2020Q4')).reports.at(-1)!
     expect(r.valuationUsd - noLoan.valuationUsd).toBeCloseTo(-r.interestUsd, 0)
   })
 

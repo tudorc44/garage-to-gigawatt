@@ -24,6 +24,11 @@ export const BALANCE = {
     usedMult: 1.5,
   },
 
+  cryptoLoan: {
+    /** Log a warning the week LTV first reaches this (interrupts.json margin_call trigger: "warning at 0.65"). */
+    warningLtv: 0.65,
+  },
+
   priceAlert: {
     /** interrupts.json price_alert trigger: a weekly BTC or ETH move of at least this size. */
     threshold: 0.15,

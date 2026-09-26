@@ -8,6 +8,7 @@ import {
   PRICE_ALERT_THRESHOLD,
   interruptChoices,
   lotViews,
+  marginCallView,
   quarterName,
   treasuryValue,
 } from '../../sim/selectors.ts'
@@ -28,6 +29,11 @@ const NOTE_KEYS: Partial<Record<MessageKey, MessageKey>> = {
   'log.failures': 'ui.live.note.failure',
   'log.switched_off': 'ui.live.note.switch_off',
   'log.eth_mining_ends': 'ui.live.note.merge',
+  'log.margin_posted': 'ui.live.note.margin',
+  'log.margin_paid': 'ui.live.note.margin',
+  'log.margin_sold_machines': 'ui.live.note.margin',
+  'log.margin_default': 'ui.live.note.margin',
+  'log.liquidated': 'ui.live.note.margin',
 }
 
 export function LiveScreen(
@@ -109,7 +115,12 @@ export function LiveScreen(
           </div>
         </div>
       </Shell>
-      {state.interrupt && <PriceAlertCard state={state} act={act} />}
+      {state.interrupt?.id === 'price_alert' && (
+        <PriceAlertCard state={state} act={act} />
+      )}
+      {state.interrupt?.id === 'margin_call' && (
+        <MarginCallCard state={state} act={act} />
+      )}
     </div>
   )
 }
@@ -385,6 +396,90 @@ function PriceAlertCard({ state, act }: ScreenProps) {
             max: MAX_INTERRUPTS,
           })}
         </span>
+      </article>
+    </div>
+  )
+}
+
+/** The margin call card: a modal that pauses time until you post, pay, sell or default. */
+function MarginCallCard({ state, act }: ScreenProps) {
+  const alert = state.interrupt!
+  const v = marginCallView(state)
+  if (!v) return null
+  const o = v.options
+  const effect = (id: string) => {
+    switch (id) {
+      case 'post':
+        return t('ui.margin.effect_post', {
+          coins: fmt.crypto(o.post!.coins, v.coin),
+        })
+      case 'pay_cash':
+        return t('ui.margin.effect_pay', {
+          cash: fmt.signed(-o.gapUsd),
+          left: fmt.money(v.balanceUsd - o.gapUsd),
+        })
+      case 'sell_machines':
+        return t('ui.margin.effect_sell', { value: fmt.money(o.gapUsd) })
+      default:
+        return t('ui.margin.effect_default', {
+          coins: fmt.crypto(o.default.coins, v.coin),
+          value: fmt.money(o.default.valueUsd),
+          balance: fmt.money(o.default.balanceUsd),
+          quarters: v.lockQuarters,
+        })
+    }
+  }
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="mc-title"
+      >
+        <span class="label">
+          {t('ui.margin.eyebrow', {
+            quarter: fmt.quarter(quarterName(state.quarter)),
+            week: alert.week + 1,
+          })}
+        </span>
+        <div class="event-art">
+          <Icon name="warning" />
+          <span class="num-xl loss">
+            {t('ui.margin.ltv', { ltv: fmt.pct(v.ltv) })}
+          </span>
+        </div>
+        <h2 class="event-title" id="mc-title">
+          {t('ui.margin.title')}
+        </h2>
+        <p class="event-body">
+          {t('ui.margin.body', {
+            coin: v.coin,
+            balance: fmt.money(v.balanceUsd),
+            ltv: fmt.pct(v.ltv),
+            target: fmt.pct(v.target),
+            liquidation: fmt.pct(v.liquidationLtv),
+          })}
+        </p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.margin_call.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">{effect(c.id)}</span>
+          </button>
+        ))}
       </article>
     </div>
   )

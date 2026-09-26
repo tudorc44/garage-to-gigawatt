@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with per-coin selling and the Plan-screen treasury sale.
+Last updated: 26 Sep 2026, with the crypto-backed loan and margin calls.
 
 ## How the owner works
 
@@ -50,7 +50,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Market, sites (ladder, scouting, hidden flaws), machines (new/used, delivery, weekly failure roll,
    repair), Bandwidth, mining (auto switch-off), treasury (HODL/sell %), price-alert interrupt (max 3
    per quarter), quarter report, forced sales and bankruptcy, valuation, game log.
-4. **Capital:** the equipment loan (see Decisions), friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
+4. **Capital:** the equipment loan and the crypto-backed loan with margin calls (see Decisions), friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
    founder stake (dilutions multiply: F&F then seed leaves 72%).
 5. **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
@@ -59,12 +59,12 @@ See `CLAUDE.md` for the full list. The main ones:
    pause, 1×/2×/4×, skip, alerts as modals), Quarter report, end screen. Design-system tokens and
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
-   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker) and unit tests: 152 passing + 1 to-do.
+   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller) and unit tests: 171 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helper (dev and staging, not production).
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Series A and the IPO/SPAC round, the crypto-backed loan (and margin calls), negotiation, hires,
+Series A and the IPO/SPAC round, negotiation, hires,
 Heat and talking to the neighbours, Read the market, auctions, rivals and the league table, the 20 event
 cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
@@ -128,6 +128,22 @@ ask first).
     lower cash; if cash is below zero at quarter end, the normal forced sale and game-over rules apply.
   - Debt is subtracted from the valuation; interest is not part of EBITDA. The report's cash line shows
     loan payments, plus a line with the debt still owed.
+- **Crypto-backed loan** (`capital.json` game_crypto_loan: up to 50% LTV at 9% a year, margin call at 70%,
+  liquidation at 80%, open 2018Q1–2022Q2). **Not yet confirmed by the owner:**
+  - One at a time, 1 Bandwidth. You pick BTC or ETH and an amount; exactly enough coins to make LTV 50%
+    move from the treasury to the lender (at the Plan-screen price). Interest is paid weekly in cash;
+    there's no fixed term, you repay the whole loan whenever you like and get the coins back.
+  - Pledged coins still count in the valuation (and the loan counts as debt); they can't be sold.
+  - Checked every week after money moves, before the price alert: LTV ≥ 80% → the lender sells enough
+    pledged coins to repay the loan and returns the rest (a shortfall comes out of cash). LTV ≥ 70% →
+    a margin call pauses the quarter. A warning is logged the week LTV first reaches 65%.
+  - Margin calls don't count toward the 3-alerts-per-quarter cap (they can't be skipped).
+  - Answers, each offered only if affordable: post more of the same coin from the treasury, **pay the
+    loan down with cash (an addition to the content pack's three choices)**, sell machines (oldest
+    first, used price), or default. Each brings LTV back to 50%. Default: the lender keeps the pledged
+    coins, the debt is written off, and no loan of either kind for 4 quarters.
+  - The pre-selected answer is the first one possible of: post → pay cash → sell machines → default.
+  - Loans taken before 2022Q2 carry on after the window closes; only new ones stop.
 
 ## Balance findings (from `npm run sim`, 50 seeds per bot)
 
@@ -138,6 +154,7 @@ ask first).
 | raise-climb | reinvest + F&F (2017Q1) + seed (2017Q4), climbs the ladder | 0% | $974K (peak $9.2M, 2021Q1) |
 | raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $947K (peak $9.2M, 2021Q1) |
 | hodl | garage only, keeps every coin | 0% | $104K |
+| hodl-borrow | hodl + the biggest crypto-backed loan whenever it has none | 0% | $65.9K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
 | careful-ff | like ff-climb, keeps 4 quarters of rent, stops buying in 2018 | 100% (2019Q3) | −$1.6K |
 | ff-exit | ff-climb, but leaves the small unit after its first losing quarter | 0% | $48.9K |
@@ -155,6 +172,10 @@ ask first).
   reinvesting doesn't over-extend. It probably needs loans (borrowed money that must be repaid).
 - A cautious bot (keeps half its cash) with raises builds the small unit only at the very end and never
   takes the seed round.
+- **Crypto loans hurt a HODLer in the 2018 crash:** hodl-borrow averages 2 loans, about 2 margin calls and
+  1 liquidation per game, and ends at $65.9K against plain hodl's $104K. Nobody goes bust from it alone.
+  With F&F (and no seed) the HODLer goes bust in all runs either way; the loan moves the bust from
+  2018Q4–2019Q1 to 2018Q3–Q4.
 - **Equipment loans barely matter so far.** Half the value of a garage of used rigs is only $2–4K, and
   even raise-borrow's loans (up to about $90K on the warehouse fleet) change little next to $1.5M of
   seed money.
@@ -170,9 +191,10 @@ ask first).
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
 - Confirm the equipment loan rules above (one at a time, weekly payments, no covenant).
+- Confirm the crypto loan rules above, especially the extra "pay down with cash" margin-call answer.
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
 The owner will give the go-ahead. Candidates from the build order (`docs/player-actions-and-pacing.md`
-§7): the crypto-backed loan with margin calls (the next half of "build the loans"), Series A, negotiation.
+§7): Series A, negotiation (power contracts, then investors), the LTV gauge on a Capital screen.

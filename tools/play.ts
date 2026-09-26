@@ -378,15 +378,23 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
   const alert = s.interrupt!
   const choices = interruptChoices(s)
   const label = (id: string) => tDynamic(`interrupt.${alert.id}.${id}`, id)
-  const fallback = defaultChoice(alert.id)
+  const fallback = defaultChoice(s)
   console.log()
-  say('play.alert', {
-    coin: alert.coin,
-    change: change(alert.changePct),
-    btc: coins(s.treasury.BTC),
-    eth: coins(s.treasury.ETH),
-    treasuryUsd: treasuryValueUsd(s, marketWeek(s.quarter, alert.week)),
-  })
+  if (alert.id === 'margin_call') {
+    say('play.margin_call', {
+      coin: alert.coin,
+      balanceUsd: s.cryptoLoan!.balanceUsd,
+      ltvPct: alert.ltv ?? 0,
+    })
+  } else {
+    say('play.alert', {
+      coin: alert.coin,
+      change: change(alert.changePct),
+      btc: coins(s.treasury.BTC),
+      eth: coins(s.treasury.ETH),
+      treasuryUsd: treasuryValueUsd(s, marketWeek(s.quarter, alert.week)),
+    })
+  }
   choices.forEach((c, i) =>
     say('play.choice_line', { n: i + 1, label: label(c.id) }),
   )

@@ -100,6 +100,8 @@ export interface GameState {
   equipmentLoan: EquipmentLoan | null
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
+  /** After a margin-call default: no loans until this quarter index. null = not locked. */
+  loansLockedUntil: number | null
   /** Counter for making unique ids ("site-3", "lot-7"). */
   nextId: number
   /** An alert waiting for the player's answer; the live quarter is paused while it's set. */
@@ -129,6 +131,8 @@ export interface ActiveInterrupt {
   coin: Coin
   /** The weekly price move that set it off, e.g. -0.27. */
   changePct: number
+  /** Margin call only: the loan-to-value that triggered it. */
+  ltv?: number
 }
 
 export interface QuarterStats {
@@ -141,6 +145,7 @@ export interface QuarterStats {
   /** Dollars raised by selling treasury coins in alerts. */
   treasurySoldUsd: number
   priceAlerts: number
+  marginCalls: number
   /** Dollars received for mined coins sold as they were mined. */
   soldUsd: number
   /** Loan interest and principal paid this quarter. */
@@ -192,6 +197,7 @@ export interface QuarterReport {
   /** Company valuation (review A5), after any forced sales. */
   valuationUsd: number
   priceAlerts: number
+  marginCalls: number
   startCash: number
   startTreasuryUsd: number
   soldUsd: number
@@ -214,6 +220,7 @@ export function emptyQuarterStats(): QuarterStats {
     failures: 0,
     treasurySoldUsd: 0,
     priceAlerts: 0,
+    marginCalls: 0,
     soldUsd: 0,
     interestUsd: 0,
     principalUsd: 0,
@@ -267,6 +274,7 @@ export function newGame(seed: number): GameState {
     siteOffers: [],
     equipmentLoan: null,
     cryptoLoan: null,
+    loansLockedUntil: null,
     nextId: 2,
     interrupt: null,
     interruptsThisQuarter: 0,

@@ -92,6 +92,7 @@ function grower({ reserveUsd, hodlPct }: GrowerSettings): Strategy {
     },
     // On a drop, sell 25% of the coin that fell (if held); otherwise hold.
     answer: (s) => {
+      if (s.interrupt!.id !== 'price_alert') return undefined // margin call: default
       const coin = s.interrupt!.coin
       return s.interrupt!.changePct < 0 && s.treasury[coin] > 0
         ? `sell_${coin.toLowerCase()}`
@@ -183,6 +184,20 @@ const bots = {
     ],
     '2017Q2': [{ type: 'TAKE_LOAN', amountUsd: 3_000 }],
     '2018Q1': [{ type: 'REPAY_LOAN' }],
+  }),
+  // Keeps every ETH it mines, borrows against it in 2018Q1, and meets the crash's margin calls.
+  'margin-caller': scripted({
+    '2017Q1': [
+      { type: 'SET_HODL', pct: 1 },
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'used',
+        count: 5,
+        siteId: 'site-1',
+      },
+    ],
+    '2018Q1': [{ type: 'TAKE_CRYPTO_LOAN', coin: 'ETH', amountUsd: 50_000 }],
   }),
   // F&F and a small unit, then the seed round in 2017Q4 to fill the small unit with rigs.
   'seed-raiser': scripted({
