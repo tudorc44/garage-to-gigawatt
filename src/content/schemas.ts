@@ -439,3 +439,19 @@ export const heatFileSchema = z
   }))
 
 export type HeatRules = z.output<typeof heatFileSchema>
+
+// ---------- shocks.json ----------
+
+/** Market shocks on fixed dates (Uri): index power costs index_price_mult for `weeks` weeks. */
+export const shocksFileSchema = z.object({
+  shocks: z.array(
+    z.object({
+      id: z.string(),
+      quarter: quarterId,
+      week: isoDate,
+      weeks: z.number().int().min(1),
+      index_price_mult: z.number().min(1),
+      affects: z.literal('index'),
+    }),
+  ),
+})

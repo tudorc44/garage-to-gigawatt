@@ -239,6 +239,26 @@
    "estimate": false
   },
   {
+   "id": "uri",
+   "trigger": "shocks.json uri: the week before it, if Texas machines would mine that week",
+   "choices": [
+    {
+     "id": "curtail",
+     "label": "Curtail during the storm and collect credits",
+     "effects": { "hashrate_mult": 0, "duration_weeks": 1, "cash": "+curtail_credit" }
+    },
+    {
+     "id": "mine",
+     "label": "Keep mining through the storm",
+     "effects": { "index_power_mult": 10, "grievance": 5 }
+    }
+   ],
+   "default": "curtail",
+   "source": "Winter Storm Uri, Feb 2021",
+   "estimate": true,
+   "game_note": "Design thread, 26 Sep 2026: hard-coded (not the uri_2021 event card). Always asked, doesn't count toward the 3 interrupts. Credits as built for curtailment (x curtail_credit_mult: index 1.5). Keep mining: index-contract power x10 that week; fixed contracts unaffected; grievance +5 at Texas as for any 'keep mining'."
+  },
+  {
    "id": "negotiation",
    "trigger": "action in(negotiate_power, pitch_investors)",
    "rounds": 3,

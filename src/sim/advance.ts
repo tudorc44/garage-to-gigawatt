@@ -9,7 +9,11 @@ import { marketWeek, previousMarketWeek } from './systems/market.ts'
 import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
 import { checkMarginCall, payCryptoInterestWeek } from './systems/cryptoLoan.ts'
-import { applyCurtailment, checkCurtailment } from './systems/curtailment.ts'
+import {
+  applyCurtailment,
+  checkCurtailment,
+  checkUri,
+} from './systems/curtailment.ts'
 import { checkComplaint, rateHikeUsd, updateHeatWeek } from './systems/heat.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
@@ -66,6 +70,7 @@ export function advance(state: GameState): GameState {
 
   checkMarginCall(s, w, prev)
   checkCurtailment(s)
+  checkUri(s)
   checkComplaint(s)
   checkPriceAlert(s, w)
   st.weeks.push({

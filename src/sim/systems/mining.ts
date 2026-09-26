@@ -1,9 +1,9 @@
 // Mining: each week, roll machine failures, then work out what every batch of
 // machines mines and what its power costs. A batch whose revenue is below its power
 // cost switches itself off for the week (scope §2.4).
-import { BALANCE, type MarketWeek } from '../../content/index.ts'
+import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import { binomial } from '../rng.ts'
-import type { Coin, GameState, MachineLot } from '../state.ts'
+import type { Coin, GameState, MachineLot, Site } from '../state.ts'
 import { isShutDown } from './heat.ts'
 import { coinPrice, getModel, revenuePerUnitDay } from './market.ts'
 import {
@@ -75,7 +75,8 @@ export function mineWeek(state: GameState, w: MarketWeek): LotWeek[] {
         24 *
         7 *
         up *
-        powerPriceUsdKwh(site, state.quarter)
+        powerPriceUsdKwh(site, state.quarter) *
+        shockMult(state, site, w)
       const running =
         working > 0 && revenueUsd >= powerCostUsd && !isShutDown(state, site.id)
       return {
@@ -99,4 +100,17 @@ export function hashrate(state: GameState): Record<Coin, number> {
     out[model.coin] += (lot.count - lot.failed) * model.hashrate
   }
   return out
+}
+
+/** Uri (shocks.json): index-contract power costs index_price_mult times as much that week. */
+function shockMult(state: GameState, site: Site, w: MarketWeek): number {
+  if (site.contract?.type !== 'index') return 1
+  const weekIndex = CONTENT.market[state.quarter].indexOf(w)
+  const shock = CONTENT.shocks.find(
+    (sh) =>
+      sh.quarter === state.quarter &&
+      weekIndex >= sh.week &&
+      weekIndex < sh.week + sh.weeks,
+  )
+  return shock ? shock.indexPriceMult : 1
 }

@@ -8,6 +8,7 @@ import marketRaw from './market_weekly.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
+import shocksRaw from './shocks.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
   auctionRulesSchema,
@@ -19,6 +20,7 @@ import {
   marketSchema,
   negotiationRulesSchema,
   rivalsFileSchema,
+  shocksFileSchema,
   sitesFileSchema,
   type AuctionRules,
   type CryptoLoanTerms,
@@ -79,6 +81,18 @@ export interface Content {
   heat: HeatRules
   /** Power contract renewals (interrupts.json › negotiation). */
   negotiation: NegotiationRules
+  /** Market shocks on fixed dates (shocks.json), with the week resolved to a week index. */
+  shocks: Shock[]
+}
+
+export interface Shock {
+  id: string
+  /** Quarter index and first week index (0–12) of the shock. */
+  quarter: number
+  week: number
+  weeks: number
+  /** Index-contract power costs this many times as much during the shock. */
+  indexPriceMult: number
 }
 
 export interface RawContent {
@@ -89,6 +103,7 @@ export interface RawContent {
   capital: unknown
   rivals: unknown
   heat: unknown
+  shocks: unknown
 }
 
 export class ContentError extends Error {
@@ -128,6 +143,7 @@ export function parseContent(raw: RawContent): Content {
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
+  const shocksFile = check('shocks.json', shocksFileSchema, raw.shocks)
   const rawInterrupt = (id: string) =>
     (
       raw.interrupts as { interrupts?: { id?: string }[] } | undefined
@@ -158,7 +174,8 @@ export function parseContent(raw: RawContent): Content {
     !auction ||
     !curtailment ||
     !heat ||
-    !negotiation
+    !negotiation ||
+    !shocksFile
   ) {
     throw new ContentError(problems)
   }
@@ -321,6 +338,25 @@ export function parseContent(raw: RawContent): Content {
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
+  const shocks: Shock[] = []
+  for (const sh of shocksFile.shocks) {
+    const qi = quarters.indexOf(sh.quarter)
+    const wi = qi < 0 ? -1 : market[qi].findIndex((w) => w.week === sh.week)
+    if (wi < 0) {
+      problems.push(
+        `shocks.json › ${sh.id}: week ${sh.week} isn't a week of ${sh.quarter}`,
+      )
+      continue
+    }
+    shocks.push({
+      id: sh.id,
+      quarter: qi,
+      week: wi,
+      weeks: sh.weeks,
+      indexPriceMult: sh.index_price_mult,
+    })
+  }
+
   if (problems.length > 0) throw new ContentError(problems)
 
   return {
@@ -339,6 +375,7 @@ export function parseContent(raw: RawContent): Content {
     curtailment,
     heat,
     negotiation,
+    shocks,
   }
 }
 
@@ -364,4 +401,5 @@ export const CONTENT: Content = parseContent({
   capital: capitalRaw,
   rivals: rivalsRaw,
   heat: heatRaw,
+  shocks: shocksRaw,
 })

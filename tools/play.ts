@@ -8,7 +8,7 @@ import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
-import { interruptChoices } from '../src/sim/selectors.ts'
+import { URI_POWER_MULT, interruptChoices } from '../src/sim/selectors.ts'
 import { openingOfferUsdKwh, renewalDue } from '../src/sim/systems/contracts.ts'
 import { ltv } from '../src/sim/systems/cryptoLoan.ts'
 import {
@@ -502,6 +502,13 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
       coin: alert.coin,
       balanceUsd: s.cryptoLoan!.balanceUsd,
       ltvPct: alert.ltv ?? 0,
+    })
+  } else if (alert.id === 'uri') {
+    say('play.uri', {
+      week: alert.week + 2,
+      mw: fmt.power(alert.curtail!.mw * 1000),
+      creditUsd: alert.curtail!.creditUsd,
+      mult: URI_POWER_MULT,
     })
   } else if (alert.id === 'curtailment') {
     say('play.grid', {

@@ -44,7 +44,8 @@ export function resolveInterrupt(
   const active = state.interrupt
   if (!active) return { key: 'error.no_interrupt' }
   if (active.id === 'margin_call') return resolveMarginCall(state, choiceId)
-  if (active.id === 'curtailment') return resolveCurtailment(state, choiceId)
+  if (active.id === 'curtailment' || active.id === 'uri')
+    return resolveCurtailment(state, choiceId)
   if (active.id === 'neighbour_complaint')
     return resolveComplaint(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(

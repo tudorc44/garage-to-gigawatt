@@ -8,6 +8,7 @@ import {
   PRICE_ALERT_THRESHOLD,
   complaintView,
   KEEP_MINING_GRIEVANCE,
+  URI_POWER_MULT,
   interruptChoices,
   lotViews,
   marginCallView,
@@ -129,7 +130,8 @@ export function LiveScreen(
       {state.interrupt?.id === 'margin_call' && (
         <MarginCallCard state={state} act={act} />
       )}
-      {state.interrupt?.id === 'curtailment' && (
+      {(state.interrupt?.id === 'curtailment' ||
+        state.interrupt?.id === 'uri') && (
         <CurtailmentCard state={state} act={act} />
       )}
       {state.interrupt?.id === 'neighbour_complaint' && (
@@ -500,19 +502,27 @@ function MarginCallCard({ state, act }: ScreenProps) {
 }
 
 /** The grid emergency card: curtail the Texas site next week for credits, or keep mining. */
+/** The grid's ask: a summer curtailment, or Winter Storm Uri (same choices, storm wording). */
 function CurtailmentCard({ state, act }: ScreenProps) {
   const alert = state.interrupt!
   const offer = alert.curtail!
+  const uri = alert.id === 'uri'
   const effect = (id: string) =>
     id === 'curtail'
       ? t('ui.grid.effect_curtail', {
           credit: fmt.signed(offer.creditUsd),
           forgone: fmt.money(offer.forgoneUsd),
         })
-      : t('ui.grid.effect_mine', {
-          forgone: fmt.money(offer.forgoneUsd),
-          grievance: fmt.signedInt(KEEP_MINING_GRIEVANCE),
-        })
+      : uri
+        ? t('ui.uri.effect_mine', {
+            forgone: fmt.money(offer.forgoneUsd),
+            mult: URI_POWER_MULT,
+            grievance: fmt.signedInt(KEEP_MINING_GRIEVANCE),
+          })
+        : t('ui.grid.effect_mine', {
+            forgone: fmt.money(offer.forgoneUsd),
+            grievance: fmt.signedInt(KEEP_MINING_GRIEVANCE),
+          })
   return (
     <div class="scrim">
       <article
@@ -523,17 +533,19 @@ function CurtailmentCard({ state, act }: ScreenProps) {
       >
         <div class="row-between">
           <span class="label">
-            {t('ui.grid.eyebrow', {
+            {t(uri ? 'ui.uri.eyebrow' : 'ui.grid.eyebrow', {
               quarter: fmt.quarter(quarterName(state.quarter)),
               week: alert.week + 1,
             })}
           </span>
-          <span class="label">
-            {t('ui.alert.count', {
-              n: state.interruptsThisQuarter,
-              max: MAX_INTERRUPTS,
-            })}
-          </span>
+          {!uri && (
+            <span class="label">
+              {t('ui.alert.count', {
+                n: state.interruptsThisQuarter,
+                max: MAX_INTERRUPTS,
+              })}
+            </span>
+          )}
         </div>
         <div class="event-art">
           <Icon name="texas-site" />
@@ -543,10 +555,11 @@ function CurtailmentCard({ state, act }: ScreenProps) {
           </span>
         </div>
         <h2 class="event-title" id="grid-title">
-          {t('ui.grid.title')}
+          {t(uri ? 'ui.uri.title' : 'ui.grid.title')}
         </h2>
         <p class="event-body">
-          {t('ui.grid.body', {
+          {t(uri ? 'ui.uri.body' : 'ui.grid.body', {
+            mult: URI_POWER_MULT,
             week: alert.week + 2,
             mw: fmt.power(offer.mw * 1000),
             credit: fmt.money(offer.creditUsd),
@@ -563,7 +576,7 @@ function CurtailmentCard({ state, act }: ScreenProps) {
           >
             <span class="row-between">
               <span class="choice-label">
-                {tDynamic(`interrupt.curtailment.${c.id}`, c.id)}
+                {tDynamic(`interrupt.${alert.id}.${c.id}`, c.id)}
               </span>
               {c.isDefault && (
                 <span class="default-tag">{t('ui.alert.default')}</span>
@@ -573,7 +586,7 @@ function CurtailmentCard({ state, act }: ScreenProps) {
           </button>
         ))}
         <span class="num-s muted" style={{ fontStyle: 'italic' }}>
-          {t('ui.grid.source')}
+          {t(uri ? 'ui.uri.source' : 'ui.grid.source')}
         </span>
       </article>
     </div>

@@ -5,11 +5,17 @@
 import { CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
-import { logEntry, type CurtailOffer, type GameState } from '../state.ts'
+import {
+  logEntry,
+  type CurtailOffer,
+  type GameState,
+  type Site,
+} from '../state.ts'
 import { addGrievance } from './heat.ts'
 import { getModel, marketWeek } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { mineWeek } from './mining.ts'
+import { getTier } from './sites.ts'
 
 /** The 1-based week after which the grid asks this quarter, or null if it doesn't. */
 export function curtailmentAlertWeek(state: GameState): number | null {
@@ -28,26 +34,48 @@ function onGridSite(state: GameState, lotId: string): boolean {
   return site?.tier === CONTENT.curtailment.siteTier
 }
 
-/** What curtailing the Texas machines in market week `w` would forgo and pay. */
+/**
+ * "Curtailment rights": the contract type's curtail_credit_mult (sites.json power_options;
+ * index 1.5, fixed 1). A site without a contract gets 1.
+ */
+export function curtailCreditMult(site: Site): number {
+  const type = site.contract?.type
+  return type
+    ? (getTier(site.tier)!.power_options?.[type].curtail_credit_mult ?? 1)
+    : 1
+}
+
+/**
+ * What curtailing the Texas machines in market week `w` would forgo and pay: per site,
+ * max(credit per MW × MW, forgone_revenue_mult × forgone revenue) × curtailment rights.
+ */
 export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
   const rules = CONTENT.curtailment
   const lots = mineWeek(state, w).filter(
     (l) => l.running && onGridSite(state, l.lotId),
   )
-  const kw = lots.reduce((sum, l) => {
-    const lot = state.machines.find((x) => x.id === l.lotId)!
-    return sum + l.working * getModel(lot.model)!.power_kw
-  }, 0)
-  const mw = kw / 1000
-  const forgoneUsd = lots.reduce((sum, l) => sum + l.revenueUsd, 0)
-  return {
-    mw,
-    forgoneUsd,
-    creditUsd: Math.max(
-      rules.creditUsdPerMw * mw,
-      rules.forgoneRevenueMult * forgoneUsd,
-    ),
+  let mw = 0
+  let forgoneUsd = 0
+  let creditUsd = 0
+  for (const site of state.sites) {
+    if (site.tier !== rules.siteTier) continue
+    let siteKw = 0
+    let siteForgone = 0
+    for (const l of lots) {
+      const lot = state.machines.find((x) => x.id === l.lotId)!
+      if (lot.siteId !== site.id) continue
+      siteKw += l.working * getModel(lot.model)!.power_kw
+      siteForgone += l.revenueUsd
+    }
+    mw += siteKw / 1000
+    forgoneUsd += siteForgone
+    creditUsd +=
+      Math.max(
+        rules.creditUsdPerMw * (siteKw / 1000),
+        rules.forgoneRevenueMult * siteForgone,
+      ) * curtailCreditMult(site)
   }
+  return { mw, forgoneUsd, creditUsd }
 }
 
 /**
@@ -127,5 +155,38 @@ export function applyCurtailment(
         : l,
     ),
     creditUsd: c.creditUsd,
+  }
+}
+
+// ---------- Winter Storm Uri (shocks.json) ----------
+
+/** The market shock (Uri) in force for market week `weekIndex` of this quarter, if any. */
+export function shockAt(state: GameState, weekIndex: number) {
+  return CONTENT.shocks.find(
+    (sh) =>
+      sh.quarter === state.quarter &&
+      weekIndex >= sh.week &&
+      weekIndex < sh.week + sh.weeks,
+  )
+}
+
+/**
+ * The week before a shock: if Texas machines would mine during it, the grid asks you to
+ * curtail (same offer and credits as a curtailment). It is always asked and doesn't count
+ * toward the 3 interrupts per quarter.
+ */
+export function checkUri(state: GameState): void {
+  if (state.interrupt) return
+  const next = state.week + 1
+  const shock = shockAt(state, next)
+  if (!shock || shock.week !== next) return
+  const offer = curtailOffer(state, marketWeek(state.quarter, next))
+  if (offer.mw <= 0) return
+  state.interrupt = {
+    id: 'uri',
+    week: state.week,
+    coin: 'BTC',
+    changePct: 0,
+    curtail: offer,
   }
 }
