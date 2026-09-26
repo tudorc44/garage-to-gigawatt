@@ -1,4 +1,4 @@
-// Console testing helpers (see app.tsx). Only in `npm run dev` and the staging build, never in `npm run build`.
+// Console testing helpers (see app.tsx), in every build: dev, staging and production (GitHub Pages).
 import type { GameState } from '../sim/state.ts'
 
 declare global {

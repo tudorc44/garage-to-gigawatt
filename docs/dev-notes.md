@@ -31,8 +31,8 @@ Line endings are pinned to LF by `.gitattributes`, so the golden files match on 
 See `CLAUDE.md` for the full list. The main ones:
 
 - `npm run dev`: play in the browser at http://localhost:5173. It includes the console testing helpers
-  `g2g.setCash(500000)` and `g2g.state()`. So does the staging build (built with Vite's `staging` mode);
-  `npm run build` (production mode) leaves them out.
+  `g2g.setCash(500000)` and `g2g.state()`. So do the staging build and, at the owner's request, the
+  production build (`npm run build`, which GitHub Pages publishes).
 - `npm run staging:build` then `npm run staging`: the owner's frozen snapshot at http://localhost:4173.
   Claude never runs `staging:build` unless asked; verify with `npm run build` (into `dist/`).
 - `npm test`, `npm run lint`, `npm run build`: run all three before calling anything done.
@@ -74,7 +74,7 @@ See `CLAUDE.md` for the full list. The main ones:
    tab). Needs the repository's Settings → Pages → Source set to "GitHub Actions" (once). Vite's
    `base: './'` makes the build work from that sub-folder. Before this, Pages served the raw source
    `index.html` (which points at `src/main.tsx`), so the page stayed blank.
-9. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
+9. **Local staging** (`staging/`) and the `g2g` console testing helpers (every build, GitHub Pages included):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 10. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
    end-of-quarter numbers from `rivals.json`. The quarter report (browser and terminal) ranks you against

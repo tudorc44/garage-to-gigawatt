@@ -61,10 +61,10 @@ export function App() {
     },
   }
 
-  // Testing helpers for the browser console, in `npm run dev` and the staging build only
-  // (Vite's mode is 'production' for `npm run build`, which leaves this out):
+  // Testing helpers for the browser console, in every build (dev, staging and the GitHub Pages
+  // production build, at the owner's request):
   //   g2g.setCash(500000)   g2g.state()   g2g.load(savedState)
-  if (import.meta.env.MODE !== 'production') {
+  {
     window.g2g = {
       state: () => ref.current,
       setCash: (usd: number) => {
