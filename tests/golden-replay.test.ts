@@ -140,6 +140,30 @@ const bots = {
       },
     ],
   }),
+  // The same game, but it breaks the small unit's lease in the 2018 winter (sells its rigs).
+  'ff-leaver': scripted({
+    '2017Q1': [
+      { type: 'RAISE', round: 'friends_family' },
+      { type: 'BUILD_SITE', tier: 'small_unit' },
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'new',
+        count: 4,
+        siteId: 'site-1',
+      },
+    ],
+    '2017Q3': [
+      {
+        type: 'BUY_MACHINES',
+        model: 'gpu_gen1',
+        condition: 'used',
+        count: 3,
+        siteId: 'site-2',
+      },
+    ],
+    '2018Q2': [{ type: 'LEAVE_SITE', siteId: 'site-2' }],
+  }),
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
@@ -171,6 +195,11 @@ describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
 describe('balance anchors (scope §5)', () => {
   it('the steady grower survives to the Merge', () => {
     expect(playGame(SEED, bots['steady-grower']).state.phase).toBe('ended')
+  })
+
+  it('the F&F expander goes bust, but survives if it breaks the lease in 2018', () => {
+    expect(playGame(SEED, bots['ff-expander']).state.phase).toBe('gameover')
+    expect(playGame(SEED, bots['ff-leaver']).state.phase).toBe('ended')
   })
 
   it('over-expanding into a small unit in the 2018 winter goes bust in 2018', () => {

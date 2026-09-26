@@ -90,11 +90,12 @@ interface StrategySummary {
 const firstCashAt = (r: Run, amount: number) =>
   r.state.reports.find((x) => x.cash >= amount)?.quarter ?? null
 
-/** Quarter the run's first small unit was powered (and it was reached in the act), or null. */
+/** Quarter the run's first small unit was powered, from the game log (it may have been left since), or null. */
 function smallUnitPowered(r: Run): string | null {
-  const s = r.state.sites.find((x) => x.tier === 'small_unit')
-  const q = s ? CONTENT.quarters[s.readyQuarter] : undefined
-  return q && r.state.reports.some((x) => x.quarter === q) ? q : null
+  const e = r.state.log.find(
+    (x) => x.key === 'log.site_ready' && x.params?.tier === 'small_unit',
+  )
+  return e ? CONTENT.quarters[e.quarter] : null
 }
 
 const started = performance.now()

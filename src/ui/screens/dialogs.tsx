@@ -432,3 +432,74 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
     </Dialog>
   )
 }
+
+/** Confirm leaving a site: shows the penalty, the machines sold there and the rent saved. */
+export function LeaveDialog({
+  state,
+  act,
+  onClose,
+  siteId,
+}: DialogProps & { siteId: string }) {
+  const sv = siteViews(state).find((x) => x.site.id === siteId)
+  if (!sv?.leaving) return null
+  const { penaltyUsd, units, machinesUsd } = sv.leaving
+  const a: Action = { type: 'LEAVE_SITE', siteId }
+  const why = whyNot(state, a)
+  const tier = tierName(sv.site.tier)
+  const change = cashChange(state, a)
+  return (
+    <Dialog title={t('ui.leave.title', { tier })} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.leave.note')}
+      </p>
+      <table>
+        <tbody>
+          <tr>
+            <td>{t('ui.leave.penalty')}</td>
+            <td class="num r loss">{fmt.signed(-penaltyUsd)}</td>
+          </tr>
+          <tr>
+            <td>
+              {units > 0
+                ? t('ui.leave.machines', { n: units })
+                : t('ui.leave.no_machines')}
+            </td>
+            <td class="num r">{units > 0 ? fmt.signed(machinesUsd) : ''}</td>
+          </tr>
+          <tr>
+            <td>{t('ui.leave.rent_saved')}</td>
+            <td class="num r">
+              {t('ui.offers.per_quarter', {
+                value: fmt.money(sv.site.rentUsdQ),
+              })}
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <strong>{t('ui.leave.cash_change')}</strong>
+            </td>
+            <td class="num r">
+              <strong>{change === null ? '—' : fmt.signed(change)}</strong>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      {why && <p class="num-s loss">{say(why)}</p>}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.leave.cancel')}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          disabled={!!why}
+          onClick={() => {
+            if (!act(a)) onClose()
+          }}
+        >
+          {t('ui.leave.confirm')}
+        </button>
+      </div>
+    </Dialog>
+  )
+}

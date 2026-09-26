@@ -245,6 +245,10 @@ function parse(
       }
       return { type: 'BUILD_SITE', tier: rest[0] ?? '' }
     }
+    case 'leave': {
+      const site = item(s.sites, 0)
+      return site ? { type: 'LEAVE_SITE', siteId: site.id } : 'play.bad_number'
+    }
     case 'buy': {
       const model = item(CONTENT.machines, 0)
       const used = rest.includes('used')

@@ -21,6 +21,7 @@ import {
   capacityKw,
   getTier,
   isReady,
+  leavingTerms,
   powerPriceUsdKwh,
   tierIndex,
   topTierIndex,
@@ -149,6 +150,8 @@ export interface SiteView {
   powerUsdKwh: number
   ready: boolean
   readyQuarter: string
+  /** What leaving costs (undefined for the garage, which can't be left). */
+  leaving?: { penaltyUsd: number; units: number; machinesUsd: number }
 }
 
 export function siteViews(state: GameState): SiteView[] {
@@ -160,6 +163,7 @@ export function siteViews(state: GameState): SiteView[] {
     powerUsdKwh: powerPriceUsdKwh(site, state.quarter),
     ready: isReady(site, state.quarter),
     readyQuarter: quarterName(site.readyQuarter) || 'after Act I',
+    leaving: tierIndex(site.tier) > 0 ? leavingTerms(state, site) : undefined,
   }))
 }
 

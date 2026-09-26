@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CONTENT } from '../../src/content/index.ts'
 import { t } from '../../src/i18n/t.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
+import { advance as advanceWeek } from '../../src/sim/advance.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 import { bandwidthForQuarter } from '../../src/sim/systems/bandwidth.ts'
 import { powerPriceUsdKwh } from '../../src/sim/systems/sites.ts'
@@ -193,6 +194,65 @@ describe('site ladder', () => {
         { type: 'SCOUT_SITES', tier: 'texas_site' },
       ).siteOffers.length,
     ).toBeGreaterThan(0)
+  })
+})
+
+describe('leaving a site (breaking the lease)', () => {
+  // A small unit (rent $6,000/quarter) with 3 used rigs on it, and $10,000 cash.
+  function withSmallUnit(): GameState {
+    let s = ok(rich(), { type: 'BUILD_SITE', tier: 'small_unit' })
+    s = ok(s, {
+      type: 'BUY_MACHINES',
+      model: 'gpu_gen1',
+      condition: 'used',
+      count: 3,
+      siteId: 'site-2',
+    })
+    return { ...s, cash: 10_000, bandwidth: 0 }
+  }
+
+  it('costs one month of rent and no Bandwidth; machines there are sold', () => {
+    const s = ok(withSmallUnit(), { type: 'LEAVE_SITE', siteId: 'site-2' })
+    expect(s.sites.map((x) => x.tier)).toEqual(['garage'])
+    expect(s.machines).toEqual([])
+    expect(s.bandwidth).toBe(0)
+    const sold = s.log.find((e) => e.key === 'log.sold')!
+    expect(s.cash).toBeCloseTo(10_000 + Number(sold.params!.valueUsd) - 2_000)
+    const entry = s.log.at(-1)!
+    expect(t(entry.key, entry.params)).toBe(
+      'Left the Small unit and paid $2,000 to break the lease. No more rent there.',
+    )
+  })
+
+  it('stops the rent: a quarter without the site costs nothing', () => {
+    let s = ok(withSmallUnit(), { type: 'LEAVE_SITE', siteId: 'site-2' })
+    const cash = s.cash
+    s = ok(s, { type: 'END_PLAN' })
+    while (s.phase === 'live') {
+      const r = applyAction(s, { type: 'RESOLVE_INTERRUPT', choice: 'hold' })
+      s = r.ok ? r.state : advanceWeek(s)
+    }
+    expect(s.cash).toBe(cash)
+  })
+
+  it('works on a site still being built (the build money is lost)', () => {
+    const s = ok(rich(), { type: 'BUILD_SITE', tier: 'small_unit' })
+    expect(s.sites[1].readyQuarter).toBe(1)
+    const left = ok(s, { type: 'LEAVE_SITE', siteId: 'site-2' })
+    expect(left.cash).toBe(5_000_000 - 35_000 - 2_000)
+  })
+
+  it("can't leave the garage, and needs cash for the penalty", () => {
+    expect(err(rich(), { type: 'LEAVE_SITE', siteId: 'site-1' })).toBe(
+      'error.cannot_leave_garage',
+    )
+    const broke = {
+      ...ok(rich(), { type: 'BUILD_SITE', tier: 'small_unit' }),
+      cash: 100,
+    }
+    expect(err(broke, { type: 'LEAVE_SITE', siteId: 'site-2' })).toBe(
+      'error.no_cash',
+    )
   })
 })
 

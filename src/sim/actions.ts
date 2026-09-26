@@ -19,6 +19,7 @@ import {
   capacityKw,
   flawEffect,
   getTier,
+  leavingTerms,
   rollOffers,
   tierIndex,
   topTierIndex,
@@ -40,6 +41,8 @@ export type Action =
   /** Build from a scouted offer, or (tiers that need no scouting) straight from the tier. */
   | { type: 'BUILD_SITE'; offerId: string }
   | { type: 'BUILD_SITE'; tier: string }
+  /** Break the site's lease: its machines are sold, a penalty is paid, rent stops. */
+  | { type: 'LEAVE_SITE'; siteId: string }
   /** Take a funding round from capital.json (fixed offer). */
   | { type: 'RAISE'; round: string }
   /** Plan phase done: start the live quarter. */
@@ -270,6 +273,29 @@ function run(s: GameState, a: Action): Message | undefined {
         logEntry(s, 'log.site_flaw', { tier: site.tier, flaw: site.flaw })
       if ('offerId' in a)
         s.siteOffers = s.siteOffers.filter((o) => o.id !== a.offerId)
+      return
+    }
+
+    case 'LEAVE_SITE': {
+      const site = s.sites.find((x) => x.id === a.siteId)
+      if (!site) return fail('error.unknown_site')
+      if (tierIndex(site.tier) === 0) return fail('error.cannot_leave_garage')
+      const { penaltyUsd, machinesUsd } = leavingTerms(s, site)
+      if (penaltyUsd > s.cash + machinesUsd) {
+        return fail('error.no_cash', {
+          costUsd: penaltyUsd,
+          cashUsd: s.cash + machinesUsd,
+        })
+      }
+      for (const lot of s.machines.filter((l) => l.siteId === site.id)) {
+        const count = lot.count
+        const valueUsd = removeMachines(s, lot, count)
+        s.cash += valueUsd
+        logEntry(s, 'log.sold', { count, model: lot.model, valueUsd })
+      }
+      s.cash -= penaltyUsd
+      s.sites = s.sites.filter((x) => x !== site)
+      logEntry(s, 'log.site_left', { tier: site.tier, penaltyUsd })
       return
     }
   }

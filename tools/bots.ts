@@ -1,7 +1,7 @@
 // Scripted strategies for the sim-runner. A bot looks at the Plan-phase state and
 // returns actions, exactly like a player would, so it can't break any game rule.
 import { BALANCE, CONTENT } from '../src/content/index.ts'
-import type { Action } from '../src/sim/actions.ts'
+import { applyAction, type Action } from '../src/sim/actions.ts'
 import type { Strategy } from '../src/sim/replay.ts'
 import type { Condition, GameState } from '../src/sim/state.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
@@ -173,6 +173,8 @@ export const BOTS: Record<string, Strategy> = {
     stopBuyingFrom: '2018Q1',
     sellOnDrops: true,
   }),
+  /** ff-climb that breaks the small unit's lease after its first losing quarter, and stays in the garage. */
+  'ff-exit': ffClimb({ reserveQuarters: 1, leaveAfterLosingQuarters: 1 }),
 }
 
 /**
@@ -208,6 +210,8 @@ interface FfSettings {
   stopBuyingFrom?: string
   /** Price-alert answer: sell on drops, or always hold. */
   sellOnDrops?: boolean
+  /** Leave the small unit after this many losing quarters in a row (EBITDA below 0); never rebuild. */
+  leaveAfterLosingQuarters?: number
 }
 
 /**
@@ -236,6 +240,24 @@ function ffClimb(settings: FfSettings): Strategy {
         cash += ff.amount_usd
         bandwidth -= 2
       }
+      // Leave the small unit once it has lost money for long enough (the lease exit).
+      const losing = settings.leaveAfterLosingQuarters
+      const left = s.log.some((e) => e.key === 'log.site_left')
+      if (losing && s.reports.length >= losing) {
+        const recent = s.reports.slice(-losing)
+        const unit = s.sites.find((x) => x.tier === smallUnit.id)
+        const leave: Action = { type: 'LEAVE_SITE', siteId: unit?.id ?? '' }
+        // Only if it can pay the penalty (checked by dry-running the action).
+        if (
+          unit &&
+          recent.every((r) => r.ebitdaUsd < 0) &&
+          applyAction(s, leave).ok
+        ) {
+          actions.push(leave)
+          return actions
+        }
+      }
+
       // Some quarters of rent, plus a $1,000 cushion for power and cent rounding.
       const rentQ = s.sites.reduce((sum, x) => sum + x.rentUsdQ, 0)
       let rentReserve = 1_000 + rentQ * settings.reserveQuarters
@@ -253,6 +275,7 @@ function ffClimb(settings: FfSettings): Strategy {
       const sites = [...s.sites]
       if (
         !s.sites.some((x) => x.tier === smallUnit.id) &&
+        !left &&
         bandwidth >= 1 &&
         cash - capex >=
           rentReserve + smallUnit.rent_usd_q * settings.reserveQuarters

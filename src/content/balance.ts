@@ -40,5 +40,7 @@ export const BALANCE = {
     offerSpread: 0.15,
     /** Which power option a tier with power_options uses until negotiation exists. */
     defaultPowerOption: 'fixed' as 'fixed' | 'index',
+    /** Leaving a site early (breaking the lease) costs this many months of its rent. No Bandwidth. */
+    leaseBreakMonths: 1,
   },
 } as const

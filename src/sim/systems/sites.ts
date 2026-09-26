@@ -2,7 +2,13 @@
 // power prices, scouting offers and hidden flaws.
 import { BALANCE, CONTENT, type SiteTier } from '../../content/index.ts'
 import { pick, randomInt, random } from '../rng.ts'
-import type { GameState, Site, SiteOffer } from '../state.ts'
+import {
+  roundCents,
+  type GameState,
+  type Site,
+  type SiteOffer,
+} from '../state.ts'
+import { saleValueUsd } from './machines.ts'
 import { getModel } from './market.ts'
 
 export function getTier(id: string): SiteTier | undefined {
@@ -86,4 +92,22 @@ export function rollOffers(state: GameState, tier: SiteTier): SiteOffer[] {
     flaw:
       tier.possible_flaws.length > 0 ? pick(state, tier.possible_flaws) : null,
   }))
+}
+
+/** Penalty for breaking the site's lease: leaseBreakMonths of its rent (a quarter is 3 months). */
+export function leaseBreakUsd(site: Site): number {
+  return roundCents((site.rentUsdQ * BALANCE.sites.leaseBreakMonths) / 3)
+}
+
+/** What leaving a site means: machines there are sold at the used price, then the penalty is paid. */
+export function leavingTerms(state: GameState, site: Site) {
+  const lots = state.machines.filter((l) => l.siteId === site.id)
+  return {
+    penaltyUsd: leaseBreakUsd(site),
+    units: lots.reduce((n, l) => n + l.count, 0),
+    machinesUsd: lots.reduce(
+      (sum, l) => sum + saleValueUsd(l, l.count, state.quarter),
+      0,
+    ),
+  }
 }

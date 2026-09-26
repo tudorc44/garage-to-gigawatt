@@ -1,0 +1,1225 @@
+{
+  "version": 1,
+  "seed": 2017,
+  "rng": 495464287,
+  "phase": "ended",
+  "quarter": 22,
+  "week": 13,
+  "cash": 28183.29,
+  "bandwidth": 3,
+  "hodlPct": 0,
+  "treasury": {
+    "BTC": 0,
+    "ETH": 0
+  },
+  "founderStake": 0.9,
+  "raisesDone": [
+    "friends_family"
+  ],
+  "sites": [
+    {
+      "id": "site-1",
+      "tier": "garage",
+      "readyQuarter": 0,
+      "rentUsdQ": 0,
+      "powerPriceMult": 1,
+      "flaw": null
+    }
+  ],
+  "machines": [
+    {
+      "id": "lot-3",
+      "model": "gpu_gen1",
+      "siteId": "site-1",
+      "condition": "new",
+      "count": 4,
+      "failed": 0,
+      "earnsFromQuarter": 1
+    }
+  ],
+  "siteOffers": [],
+  "nextId": 5,
+  "interrupt": null,
+  "interruptsThisQuarter": 0,
+  "quarterStats": {
+    "revenueUsd": 828.4247999999999,
+    "powerCostUsd": 670.3199999999998,
+    "rentUsd": 0,
+    "coinsMined": {
+      "BTC": 0,
+      "ETH": 0.4858076575198701
+    },
+    "powerByCoin": {
+      "BTC": 0,
+      "ETH": 670.3199999999998
+    },
+    "failures": 0,
+    "treasurySoldUsd": 0,
+    "priceAlerts": 0,
+    "soldUsd": 828.4247999999999,
+    "startCash": 28025.17,
+    "startTreasuryUsd": 0,
+    "weeks": [
+      {
+        "week": 1,
+        "date": "2022-07-04",
+        "btcUsd": 20309.17,
+        "ethUsd": 1134.13,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 28025.17
+      },
+      {
+        "week": 2,
+        "date": "2022-07-11",
+        "btcUsd": 21045.56,
+        "ethUsd": 1255.76,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 28025.17
+      },
+      {
+        "week": 3,
+        "date": "2022-07-18",
+        "btcUsd": 21808.66,
+        "ethUsd": 1390.42,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 28025.17
+      },
+      {
+        "week": 4,
+        "date": "2022-07-25",
+        "btcUsd": 22599.42,
+        "ethUsd": 1539.53,
+        "revenueUsd": 102.9672,
+        "powerCostUsd": 95.75999999999998,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.06688223029106286
+        },
+        "priceAlert": false,
+        "cash": 28032.38
+      },
+      {
+        "week": 5,
+        "date": "2022-08-01",
+        "btcUsd": 23187.36,
+        "ethUsd": 1700.44,
+        "revenueUsd": 115.36560000000001,
+        "powerCostUsd": 95.75999999999998,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.06784455787913717
+        },
+        "priceAlert": false,
+        "cash": 28051.99
+      },
+      {
+        "week": 6,
+        "date": "2022-08-08",
+        "btcUsd": 22414,
+        "ethUsd": 1850.69,
+        "revenueUsd": 127.00799999999998,
+        "powerCostUsd": 95.75999999999998,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.06862737681621447
+        },
+        "priceAlert": false,
+        "cash": 28083.24
+      },
+      {
+        "week": 7,
+        "date": "2022-08-15",
+        "btcUsd": 21666.43,
+        "ethUsd": 1960.96,
+        "revenueUsd": 136.1808,
+        "powerCostUsd": 95.75999999999998,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.06944598563968668
+        },
+        "priceAlert": false,
+        "cash": 28123.66
+      },
+      {
+        "week": 8,
+        "date": "2022-08-22",
+        "btcUsd": 20943.8,
+        "ethUsd": 1769.23,
+        "revenueUsd": 124.28640000000001,
+        "powerCostUsd": 95.75999999999998,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.07024886532559363
+        },
+        "priceAlert": false,
+        "cash": 28152.19
+      },
+      {
+        "week": 9,
+        "date": "2022-08-29",
+        "btcUsd": 20245.27,
+        "ethUsd": 1596.24,
+        "revenueUsd": 113.4504,
+        "powerCostUsd": 95.75999999999998,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.07107352277852955
+        },
+        "priceAlert": false,
+        "cash": 28169.88
+      },
+      {
+        "week": 10,
+        "date": "2022-09-05",
+        "btcUsd": 19932.65,
+        "ethUsd": 1522.86,
+        "revenueUsd": 109.16639999999998,
+        "powerCostUsd": 95.75999999999998,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 0,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.07168511878964579
+        },
+        "priceAlert": false,
+        "cash": 28183.29
+      },
+      {
+        "week": 11,
+        "date": "2022-09-12",
+        "btcUsd": 19769.51,
+        "ethUsd": 1485.66,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 28183.29
+      },
+      {
+        "week": 12,
+        "date": "2022-09-19",
+        "btcUsd": 19619.55,
+        "ethUsd": 1431.29,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 28183.29
+      },
+      {
+        "week": 13,
+        "date": "2022-09-26",
+        "btcUsd": 19479.55,
+        "ethUsd": 1365.97,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 0,
+        "failures": 0,
+        "batchesOff": 1,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 28183.29
+      }
+    ]
+  },
+  "reports": [
+    {
+      "quarter": "2017Q1",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "revenueUsd": 0,
+      "powerCostUsd": 0,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": null
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 999.98,
+      "ebitdaUsd": -6000.000000000001,
+      "valuationUsd": 999.98,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 7000,
+      "startTreasuryUsd": 0,
+      "soldUsd": 0,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2017Q2",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 17866.094399999998,
+      "powerCostUsd": 995.9039999999994,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 138.9243758425839
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 7.168677159496218
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 11870.18,
+      "ebitdaUsd": 10870.1904,
+      "valuationUsd": 272754.7496,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 999.98,
+      "startTreasuryUsd": 0,
+      "soldUsd": 17866.094399999998,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2017Q3",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 6654.362400000001,
+      "powerCostUsd": 995.9039999999994,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 24.04950906518652
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 41.410575047523345
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 3428.62,
+      "ebitdaUsd": -341.54159999999956,
+      "valuationUsd": 3428.62,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 3770.1800000000003,
+      "startTreasuryUsd": 0,
+      "soldUsd": 6654.362400000001,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2017Q4",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 1260
+      },
+      "revenueUsd": 6733.0116,
+      "powerCostUsd": 1493.8560000000002,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 17.041489938035504
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 87.65994085210885
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 2667.77,
+      "ebitdaUsd": -760.8444000000009,
+      "valuationUsd": 2667.77,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 3428.62,
+      "startTreasuryUsd": 0,
+      "soldUsd": 6733.0116,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q1",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 1260
+      },
+      "revenueUsd": 10184.189400000001,
+      "powerCostUsd": 1493.8560000000002,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 10.830494797589724
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 137.93054037867697
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 5358.12,
+      "ebitdaUsd": 2690.3334000000004,
+      "valuationUsd": 69926.12160000001,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 2667.77,
+      "startTreasuryUsd": 0,
+      "soldUsd": 10184.189400000001,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q2",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 2626.1928,
+      "powerCostUsd": 995.9039999999994,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 4.7463755973235005
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 209.82410253448833
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 9488.41,
+      "ebitdaUsd": 1630.2888000000003,
+      "valuationUsd": 48615.34120000001,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 7858.119999999999,
+      "startTreasuryUsd": 0,
+      "soldUsd": 2626.1928,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q3",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 1577.9735999999998,
+      "powerCostUsd": 995.9039999999994,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 4.408216519127335
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 225.91993738936213
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10070.48,
+      "ebitdaUsd": 582.0696000000004,
+      "valuationUsd": 24040.15040000001,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 9488.41,
+      "startTreasuryUsd": 0,
+      "soldUsd": 1577.9735999999998,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q4",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 404.6112,
+      "powerCostUsd": 383.03999999999985,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 1.8802228874714424
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 203.7205283226389
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10092.04,
+      "ebitdaUsd": 21.571200000000147,
+      "valuationUsd": 10609.748800000005,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10070.48,
+      "startTreasuryUsd": 0,
+      "soldUsd": 404.6112,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q1",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 0,
+      "powerCostUsd": 0,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": null
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10092.04,
+      "ebitdaUsd": 0,
+      "valuationUsd": 10092.04,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10092.04,
+      "startTreasuryUsd": 0,
+      "soldUsd": 0,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q2",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 813.0528,
+      "powerCostUsd": 612.8639999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 3.3244369871593955
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 184.35121566965498
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10292.22,
+      "ebitdaUsd": 200.18880000000036,
+      "valuationUsd": 15897.50640000001,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10092.04,
+      "startTreasuryUsd": 0,
+      "soldUsd": 813.0528,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q3",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 667.4975999999999,
+      "powerCostUsd": 536.2559999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 2.7847799678011134
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 192.56673999397955
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10423.46,
+      "ebitdaUsd": 131.24160000000018,
+      "valuationUsd": 14098.224800000004,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10292.22,
+      "startTreasuryUsd": 0,
+      "soldUsd": 667.4975999999999,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q4",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 0,
+      "powerCostUsd": 0,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": null
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10423.46,
+      "ebitdaUsd": 0,
+      "valuationUsd": 10423.46,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10423.46,
+      "startTreasuryUsd": 0,
+      "soldUsd": 0,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q1",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 160.776,
+      "powerCostUsd": 153.21599999999995,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0.7799455506211728
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 196.44448241030926
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10431.02,
+      "ebitdaUsd": 7.560000000000059,
+      "valuationUsd": 10582.220000000001,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10423.46,
+      "startTreasuryUsd": 0,
+      "soldUsd": 160.776,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q2",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 897.3216000000001,
+      "powerCostUsd": 766.0799999999996,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 4.05376371035825
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 188.97993438603692
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 10562.27,
+      "ebitdaUsd": 131.24160000000052,
+      "valuationUsd": 14237.034800000016,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10431.02,
+      "startTreasuryUsd": 0,
+      "soldUsd": 897.3216000000001,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q3",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 1975.6296000000002,
+      "powerCostUsd": 995.9039999999994,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 5.48423064672832
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 181.5941130401066
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 11542.01,
+      "ebitdaUsd": 979.7256000000008,
+      "valuationUsd": 50731.034000000036,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 10562.27,
+      "startTreasuryUsd": 0,
+      "soldUsd": 1975.6296000000002,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q4",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 2020.5864,
+      "powerCostUsd": 995.9039999999994,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 3.9919299789127405
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 249.47932585512137
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 12566.69,
+      "ebitdaUsd": 1024.6824000000006,
+      "valuationUsd": 86343.82280000005,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 11542.01,
+      "startTreasuryUsd": 0,
+      "soldUsd": 2020.5864,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q1",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 3981.4992,
+      "powerCostUsd": 1078.8959999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 3.022805171982339
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 356.9188017805546
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 15469.3,
+      "ebitdaUsd": 2902.6032000000005,
+      "valuationUsd": 305729.62000000005,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 12566.69,
+      "startTreasuryUsd": 0,
+      "soldUsd": 3981.4992,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q2",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 5187.167999999999,
+      "powerCostUsd": 1078.8959999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 1.890938028287709
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 570.5612684604829
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 19577.55,
+      "ebitdaUsd": 4108.271999999999,
+      "valuationUsd": 282506.9579999999,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 15469.3,
+      "startTreasuryUsd": 0,
+      "soldUsd": 5187.167999999999,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q3",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 4150.2384,
+      "powerCostUsd": 1078.8959999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 1.459919434032361
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 739.0106432243607
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 22648.89,
+      "ebitdaUsd": 3071.3424000000005,
+      "valuationUsd": 206929.434,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 19577.55,
+      "startTreasuryUsd": 0,
+      "soldUsd": 4150.2384,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q4",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 4365.2447999999995,
+      "powerCostUsd": 1078.8959999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 1.059180184813923
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 1018.6142220830352
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 25935.23,
+      "ebitdaUsd": 3286.3487999999998,
+      "valuationUsd": 209970.7628,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 22648.89,
+      "startTreasuryUsd": 0,
+      "soldUsd": 4365.2448,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2022Q1",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 2708.8488,
+      "powerCostUsd": 1244.8799999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0.8929941793985904
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 1394.0516396628652
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 27399.2,
+      "ebitdaUsd": 1463.9688000000006,
+      "valuationUsd": 80102.07680000002,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 25935.23,
+      "startTreasuryUsd": 0,
+      "soldUsd": 2708.8488,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2022Q2",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 1583.5679999999998,
+      "powerCostUsd": 957.5999999999998,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0.629339434441647
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 1521.5954182969438
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 28025.17,
+      "ebitdaUsd": 625.968,
+      "valuationUsd": 40544.53,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 27399.2,
+      "startTreasuryUsd": 0,
+      "soldUsd": 1583.5679999999998,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    },
+    {
+      "quarter": "2022Q3",
+      "hashrate": {
+        "BTC": 0,
+        "ETH": 720
+      },
+      "revenueUsd": 828.4247999999999,
+      "powerCostUsd": 670.3199999999998,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0.4858076575198701
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 1379.8053398789477
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 0,
+      "cash": 28183.29,
+      "ebitdaUsd": 158.10480000000007,
+      "valuationUsd": 30712.966800000002,
+      "priceAlerts": 0,
+      "founderStake": 0.9,
+      "startCash": 28025.17,
+      "startTreasuryUsd": 0,
+      "soldUsd": 828.4247999999999,
+      "treasurySoldUsd": 0,
+      "forcedSale": null
+    }
+  ],
+  "log": [
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.raised",
+      "params": {
+        "round": "friends_family",
+        "amountUsd": 40000,
+        "dilutionPct": 0.1,
+        "stakePct": 0.9
+      }
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.site_built",
+      "params": {
+        "tier": "small_unit",
+        "costUsd": 35000,
+        "quarter": "2017Q2"
+      }
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gen1",
+        "condition": "new",
+        "costUsd": 8000
+      }
+    },
+    {
+      "quarter": 1,
+      "week": null,
+      "key": "log.site_ready",
+      "params": {
+        "tier": "small_unit"
+      }
+    },
+    {
+      "quarter": 2,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 3,
+        "model": "gpu_gen1",
+        "condition": "used",
+        "costUsd": 8100
+      }
+    },
+    {
+      "quarter": 5,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 3,
+        "model": "gpu_gen1",
+        "valueUsd": 4500
+      }
+    },
+    {
+      "quarter": 5,
+      "week": null,
+      "key": "log.site_left",
+      "params": {
+        "tier": "small_unit",
+        "penaltyUsd": 2000
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 6,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 8,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 9,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 10,
+      "week": 8,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 11,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 12,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 13,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 21,
+      "week": 11,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 22,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 22,
+      "week": 12,
+      "key": "log.eth_mining_ends",
+      "params": {}
+    }
+  ]
+}

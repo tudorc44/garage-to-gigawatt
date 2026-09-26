@@ -28,14 +28,20 @@ import {
   tierIcon,
   tierName,
 } from '../names.ts'
-import { BuyDialog, FleetDialog, OffersDialog } from './dialogs.tsx'
+import {
+  BuyDialog,
+  FleetDialog,
+  LeaveDialog,
+  OffersDialog,
+} from './dialogs.tsx'
 
 export interface ScreenProps {
   state: GameState
   act: (a: Action) => Message | null
 }
 
-type Open = 'buy' | 'fleet' | 'offers' | null
+/** Which dialog is open; `leave:<siteId>` confirms leaving that site. */
+type Open = 'buy' | 'fleet' | 'offers' | `leave:${string}` | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
   const [open, setOpen] = useState<Open>(null)
@@ -80,6 +86,14 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'offers' && (
         <OffersDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
+      {open?.startsWith('leave:') && (
+        <LeaveDialog
+          state={state}
+          act={act}
+          siteId={open.slice('leave:'.length)}
+          onClose={() => setOpen(null)}
+        />
       )}
     </div>
   )
@@ -409,6 +423,24 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.sites')}</div>
       {ladderRows}
+      {siteViews(state).map(
+        (sv) =>
+          sv.leaving && (
+            <ActionRow
+              key={`leave-${sv.site.id}`}
+              icon="close"
+              name={t('ui.plan.leave', { tier: tierName(sv.site.tier) })}
+              price={t('ui.plan.leave_price', {
+                value: fmt.money(sv.leaving.penaltyUsd),
+              })}
+              disabledReason={reason({
+                type: 'LEAVE_SITE',
+                siteId: sv.site.id,
+              })}
+              onClick={() => open(`leave:${sv.site.id}`)}
+            />
+          ),
+      )}
       <ActionRow
         icon="negotiate"
         name={t('ui.plan.negotiate')}
