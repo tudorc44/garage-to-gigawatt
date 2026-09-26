@@ -27,6 +27,7 @@ import {
   usedKw,
 } from './systems/sites.ts'
 import { treasuryValueUsd } from './systems/treasury.ts'
+import { bandwidthForQuarter } from './systems/bandwidth.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {
@@ -166,6 +167,9 @@ export type LotStatus = 'running' | 'switched_off' | 'arriving' | 'broken'
 export interface LotView {
   lot: MachineLot
   coin: Coin
+  /** Per unit: MH/s for ETH machines, TH/s for BTC machines. */
+  hashrateEach: number
+  powerKwEach: number
   working: number
   status: LotStatus
   earnsFrom: string
@@ -190,6 +194,8 @@ export function lotViews(state: GameState): LotView[] {
     return {
       lot,
       coin: model.coin,
+      hashrateEach: model.hashrate,
+      powerKwEach: model.power_kw,
       working,
       status,
       earnsFrom:
@@ -264,4 +270,30 @@ export const MAX_INTERRUPTS = CONTENT.interrupts.maxPerQuarter
 
 export function getTierInfo(id: string) {
   return getTier(id)
+}
+
+/** Bandwidth this quarter started with (for "2 of 3 left" pips). */
+export function bandwidthTotal(state: GameState): number {
+  return Math.max(state.bandwidth, bandwidthForQuarter(state))
+}
+
+/** The most recent quarter report, if any. */
+export function lastReport(state: GameState) {
+  return state.reports.at(-1)
+}
+
+/** Weekly move that sets off a price alert (content value, for the event card's footnote). */
+export const PRICE_ALERT_THRESHOLD = BALANCE.priceAlert.threshold
+
+/** Choice ids of the active interrupt, with the default marked. */
+export function interruptChoices(
+  state: GameState,
+): { id: string; isDefault: boolean }[] {
+  const active = state.interrupt
+  if (!active) return []
+  const def = CONTENT.interrupts.byId[active.id]
+  return (def.choices ?? []).map((c) => ({
+    id: c.id,
+    isDefault: c.id === def.default,
+  }))
 }

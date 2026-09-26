@@ -1,0 +1,98 @@
+/* Generated from tokens.json (Design System artifact). Garage is the default era; others override via data-theme on the game root. */
+:root,
+[data-theme='garage'] {
+  --paper: #f2ecdd;
+  --paper-grid: #e2e6ec;
+  --panel: #fbf8ef;
+  --panel-sunk: #ede5cf;
+  --line: #cfc6ae;
+  --line-soft: #d6cdb5;
+  --ink: #1e2a44;
+  --ink-muted: #4f5870;
+  --ink-disabled: #7c7f87;
+  --on-action: #fbf8ef;
+  --accent: #a94a28;
+  --tape: #f3d98b;
+  --gain: #15646f;
+  --loss: #a8361a;
+  --warn: #7d5700;
+  --focus: #1f5fbf;
+  --series-btc: var(--ink);
+  --series-eth: #5f6e92;
+  --series-hashprice: var(--accent);
+  --series-you: var(--accent);
+  --series-rival-1: #3d5a80;
+  --series-rival-2: #6e5a3a;
+  --series-rival-3: #4f6b2e;
+  --series-rival-4: #6a4868;
+  --series-benchmark: #7f848d;
+  --heat-1: #6f7a90;
+  --heat-2: #9a7a1f;
+  --heat-3: var(--accent);
+  --heat-4: #a8361a;
+  --heat-5: #6e1f1a;
+  --scrim: rgba(30, 42, 68, 0.38);
+  --brand-yellow: #ffc400;
+  --brand-black: #121212;
+  --brand-concrete: #e4e2dc;
+  --shadow-card: 0 2px 0 #cfc6ae, 0 18px 40px rgba(30, 42, 68, 0.25);
+  --font-display: 'Fraunces', 'Iowan Old Style', Georgia, serif;
+  --font-ui: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+  --font-num: 'DM Mono', 'SFMono-Regular', Menlo, Consolas, monospace;
+  --font-note: 'Caveat', 'Bradley Hand', cursive;
+  --font-brand: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-1: 3px;
+  --radius-2: 4px;
+  --radius-3: 6px;
+  --radius-pill: 999px;
+  --border-hair: 1px;
+  --border-strong: 1.5px;
+  --border-rule: 2px;
+  --screen-min-w: 1280px;
+  --screen-min-h: 720px;
+  --topbar-h: 56px;
+  --nav-w: 164px;
+  --grid-pitch: 24px;
+  --hit-min: 44px;
+}
+[data-theme='industrial'] {
+  --paper: #edeff1;
+  --paper-grid: #dce2e9;
+  --panel: #ffffff;
+  --panel-sunk: #e3e8ee;
+  --line: #c2cad4;
+  --line-soft: #dae0e7;
+  --ink: #172033;
+  --ink-muted: #4b5466;
+  --ink-disabled: #767d89;
+  --on-action: #ffffff;
+  --accent: #b04e0f;
+  --tape: #f2e2a6;
+  --gain: #12606b;
+  --series-eth: #5a6a8c;
+  --shadow-card: 0 2px 0 #c2cad4, 0 18px 40px rgba(23, 32, 51, 0.22);
+}
+[data-theme='campus'] {
+  --paper: #f3f4ef;
+  --paper-grid: #e9ece6;
+  --panel: #ffffff;
+  --panel-sunk: #e8ece6;
+  --line: #d1d7cf;
+  --line-soft: #e0e5de;
+  --ink: #15302a;
+  --ink-muted: #46574f;
+  --ink-disabled: #737c76;
+  --on-action: #ffffff;
+  --accent: #7a5a12;
+  --tape: #e6dfc4;
+  --series-eth: #5b6b66;
+  --shadow-card: 0 1px 0 #d1d7cf, 0 16px 36px rgba(21, 48, 42, 0.18);
+}

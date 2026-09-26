@@ -14,7 +14,7 @@ question: *is Act I a fun 40-minute run where decisions, not luck, decide whethe
 ## Commands
 
 ```bash
-npm run dev       # start the Vite dev server (open the printed localhost URL)
+npm run dev       # play in the browser: start the dev server and open the printed localhost URL
 npm run build     # type-check (tsc -b) and build to dist/
 npm run preview   # serve the built dist/ locally
 npm test          # Vitest: unit tests per system + golden-replay test
@@ -76,8 +76,9 @@ src/i18n/       en.json, t.ts
 tools/          sim-runner.ts, validate-content.ts
 tests/          unit, golden-replay, smoke
 ```
-The repo is currently the fresh Vite + Preact scaffold; these folders don't exist yet. Create them only as a
-task needs them.
+`src/sim`, `src/content`, `src/i18n`, `src/ui` and `tools/` exist. `src/sim/selectors.ts` holds read-only views
+the UI uses instead of computing rules itself. `src/platform/` doesn't exist yet; create folders only as a task
+needs them.
 
 ## Working rules for Claude
 
