@@ -11,7 +11,10 @@ import {
   communityView,
   cryptoLoanView,
   equipmentLoanView,
+  fundingRound,
   negotiationResult,
+  pitchResult,
+  pitchView,
   negotiationView,
   renewalViews,
   treasuryHoldings,
@@ -1274,6 +1277,237 @@ function NegotiationPanel({ state, act }: ScreenProps) {
       </div>
       <span class="num-s muted" style={{ fontStyle: 'italic' }}>
         {t('ui.negotiation.hint')}
+      </span>
+    </>
+  )
+}
+
+/**
+ * A funding round that can be pitched (capital.json › pitch): take the investor's opening,
+ * or pitch for a higher pre-money valuation (then the pitch panel, then how it ended).
+ */
+export function PitchDialog({
+  state,
+  act,
+  onClose,
+  round: id,
+}: DialogProps & { round: string }) {
+  const r = fundingRound(state, id)
+  const title = t('ui.pitch.title', { round: id })
+  if (r.pitching) {
+    return (
+      <Dialog title={title} onClose={onClose}>
+        <PitchPanel state={state} act={act} />
+      </Dialog>
+    )
+  }
+  if (r.status !== 'open') {
+    // Settled (a deal, someone walked away, or the offer taken): say how it ended.
+    const result = pitchResult(state, id)
+    const raised = state.log.findLast(
+      (e) =>
+        e.key === 'log.raised' &&
+        e.params?.round === id &&
+        e.quarter === state.quarter,
+    )
+    if (!result && !raised) return null
+    return (
+      <Dialog title={title} onClose={onClose}>
+        {result && <p style={{ margin: 0 }}>{t(result.key, result.params)}</p>}
+        {raised && (
+          <p class={result ? 'num-s muted' : ''} style={{ margin: 0 }}>
+            {t(raised.key, raised.params)}
+          </p>
+        )}
+        <div class="row-between">
+          <span />
+          <button type="button" class="btn btn-primary" onClick={onClose}>
+            {t('ui.community.close')}
+          </button>
+        </div>
+      </Dialog>
+    )
+  }
+  const take: Action = { type: 'RAISE', round: id }
+  const pitch: Action = { type: 'PITCH_START', round: id }
+  const whyTake = whyNot(state, take)
+  const whyPitch = whyNot(state, pitch)
+  return (
+    <Dialog title={title} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.pitch.note', {
+          amount: fmt.money(r.amountUsd),
+          valuation: fmt.money(r.preMoneyUsd ?? 0),
+          share: fmt.pct(r.dilution, 1),
+          stakeBefore: fmt.pct(state.founderStake, 1),
+          stakeAfter: fmt.pct(state.founderStake * (1 - r.dilution), 1),
+          bw: r.pitchBandwidth,
+          lockout: r.lockoutQuarters,
+          penalty: fmt.pct(r.walkawayPenalty),
+        })}
+      </p>
+      {r.penalty > 0 && (
+        <p class="num-s warn" style={{ margin: 0 }}>
+          {t('ui.pitch.penalty_note', { penalty: fmt.pct(r.penalty) })}
+        </p>
+      )}
+      {r.lastChance && (
+        <p class="num-s warn" style={{ margin: 0 }}>
+          {t('ui.pitch.last_chance')}
+        </p>
+      )}
+      {whyPitch && <p class="num-s loss">{say(whyPitch)}</p>}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.pitch.cancel')}
+        </button>
+        <span style={{ display: 'inline-flex', gap: '8px' }}>
+          <button
+            type="button"
+            class="btn"
+            disabled={!!whyTake}
+            title={whyTake ? say(whyTake) : undefined}
+            onClick={() => act(take)}
+          >
+            {t('ui.pitch.take', {
+              amount: fmt.money(r.amountUsd),
+              share: fmt.pct(r.dilution, 1),
+            })}
+          </button>
+          <button
+            type="button"
+            class="btn btn-primary"
+            disabled={!!whyPitch}
+            onClick={() => act(pitch)}
+          >
+            {t('ui.pitch.pitch')}
+            <Pips
+              total={r.pitchBandwidth}
+              filled={r.pitchBandwidth}
+              label={t('ui.plan.costs_bandwidth', { n: r.pitchBandwidth })}
+            />
+          </button>
+        </span>
+      </div>
+    </Dialog>
+  )
+}
+
+/** The pitch panel: the investor's valuation, your counter, dilution and stake, rounds and risk. */
+function PitchPanel({ state, act }: ScreenProps) {
+  const v = pitchView(state)
+  const [valuation, setValuation] = useState<number>(
+    v ? v.defaultCounterUsd : 0,
+  )
+  if (!v) return null
+  const counter: Action = { type: 'PITCH_COUNTER', preMoneyUsd: valuation }
+  const risk = v.risk(valuation)
+  const offer = v.terms(v.offerUsd)
+  const mine = v.terms(valuation)
+  return (
+    <>
+      <div class="row-between">
+        <span class="label">
+          {t('ui.negotiation.round', {
+            n: Math.min(v.round + 1, v.rounds),
+            rounds: v.rounds,
+          })}
+        </span>
+        <span class="num-s muted">{fmt.money(v.amountUsd)}</span>
+      </div>
+      <div class="event-art">
+        <span class="num-xl">{fmt.money(v.offerUsd)}</span>
+        <span class="num-s">
+          {t('ui.pitch.their_offer', {
+            opening: fmt.money(v.openingUsd),
+            share: fmt.pct(offer.dilution, 1),
+            stake: fmt.pct(offer.stakeAfter, 1),
+          })}
+        </span>
+      </div>
+      {v.history.length > 0 && (
+        <ol class="num-s muted" style={{ margin: 0, paddingLeft: '18px' }}>
+          {v.history.map((h, i) => (
+            <li key={i}>
+              {t('ui.pitch.history', { counter: fmt.money(h.counterUsd) })}
+            </li>
+          ))}
+        </ol>
+      )}
+      {v.final ? (
+        <p class="num-s warn" style={{ margin: 0 }}>
+          {t('ui.pitch.final')}
+        </p>
+      ) : (
+        <div class="field">
+          <label class="label" for="pitch-counter">
+            {t('ui.pitch.your_counter', {
+              valuation: fmt.money(valuation),
+              share: fmt.pct(mine.dilution, 1),
+              stake: fmt.pct(mine.stakeAfter, 1),
+            })}
+          </label>
+          <input
+            class="slider"
+            id="pitch-counter"
+            type="range"
+            min={v.sliderMinUsd}
+            max={v.sliderMaxUsd}
+            step={v.sliderStepUsd}
+            value={valuation}
+            onInput={(e) =>
+              setValuation(Number((e.target as HTMLInputElement).value))
+            }
+          />
+          <span
+            class={`num-s ${risk === 'high' ? 'loss' : risk === 'possible' ? 'warn' : 'muted'}`}
+          >
+            {tDynamic(`ui.pitch.risk.${risk}`, '', {
+              chance: fmt.pct(v.walkawayChance),
+            })}
+          </span>
+        </div>
+      )}
+      {v.lastChance && (
+        <p class="num-s warn" style={{ margin: 0 }}>
+          {t('ui.pitch.last_chance')}
+        </p>
+      )}
+      <div class="row-between">
+        <button
+          type="button"
+          class="btn"
+          onClick={() => {
+            act({ type: 'PITCH_WALK' })
+          }}
+        >
+          {t('ui.pitch.walk')}
+        </button>
+        <span style={{ display: 'inline-flex', gap: '8px' }}>
+          <button
+            type="button"
+            class="btn"
+            onClick={() => {
+              act({ type: 'PITCH_ACCEPT' })
+            }}
+          >
+            {t('ui.pitch.accept', { valuation: fmt.money(v.offerUsd) })}
+          </button>
+          {!v.final && (
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={() => {
+                act(counter)
+              }}
+            >
+              {t('ui.pitch.counter')}
+            </button>
+          )}
+        </span>
+      </div>
+      <span class="num-s muted" style={{ fontStyle: 'italic' }}>
+        {t('ui.pitch.hint')}
       </span>
     </>
   )

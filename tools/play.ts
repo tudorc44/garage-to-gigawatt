@@ -17,6 +17,7 @@ import {
   underMoratorium,
 } from '../src/sim/systems/heat.ts'
 import { defaultChoice } from '../src/sim/systems/interrupts.ts'
+import { walkawayEndsRound } from '../src/sim/systems/pitch.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
   buyPrice,
@@ -287,15 +288,17 @@ function parse(
     case 'end':
       return { type: 'END_PLAN' }
     case 'raise':
-      return {
-        type: 'RAISE',
-        round:
-          { ff: 'friends_family', a: 'series_a', ipo: 'ipo_spac' }[
-            rest[0] ?? ''
-          ] ??
-          rest[0] ??
-          '',
-      }
+    case 'pitch': {
+      const round =
+        { ff: 'friends_family', a: 'series_a', ipo: 'ipo_spac' }[
+          rest[0] ?? ''
+        ] ??
+        rest[0] ??
+        ''
+      return cmd === 'pitch'
+        ? { type: 'PITCH_START', round }
+        : { type: 'RAISE', round }
+    }
     case 'hodl':
       return {
         type: 'SET_HODL',
@@ -342,12 +345,15 @@ function parse(
         term,
       }
     }
+    // During a pitch, counter/accept/walk talk to the investor (counter in $M pre-money).
     case 'counter':
-      return { type: 'NEGOTIATE_COUNTER', priceUsdKwh: num(0) / 100 }
+      return s.pitch
+        ? { type: 'PITCH_COUNTER', preMoneyUsd: num(0) * 1_000_000 }
+        : { type: 'NEGOTIATE_COUNTER', priceUsdKwh: num(0) / 100 }
     case 'accept':
-      return { type: 'NEGOTIATE_ACCEPT' }
+      return s.pitch ? { type: 'PITCH_ACCEPT' } : { type: 'NEGOTIATE_ACCEPT' }
     case 'walk':
-      return { type: 'NEGOTIATE_WALK' }
+      return s.pitch ? { type: 'PITCH_WALK' } : { type: 'NEGOTIATE_WALK' }
     case 'renew': {
       const site = item(s.sites, 0)
       if (!site) return 'play.bad_number'
@@ -443,6 +449,11 @@ async function planPhase(s: GameState): Promise<GameState> {
     } else if (parsed.type.startsWith('NEGOTIATE_') && !s.negotiation) {
       const e = s.log.findLast((x) => x.key.startsWith('log.negotiation_'))!
       console.log(t(e.key, e.params))
+    } else if (parsed.type.startsWith('PITCH_') && !s.pitch) {
+      const e = s.log.findLast((x) => x.key.startsWith('log.pitch_'))!
+      console.log(t(e.key, e.params))
+      const raised = s.log.at(-1)!
+      if (raised.key === 'log.raised') console.log(t(raised.key, raised.params))
     } else say('play.ok')
     if (s.negotiation) {
       const n = s.negotiation
@@ -451,6 +462,15 @@ async function planPhase(s: GameState): Promise<GameState> {
         round: n.round + 1,
         rounds: CONTENT.negotiation.rounds,
       })
+    }
+    if (s.pitch) {
+      const p = s.pitch
+      say(p.final ? 'play.pitch_final' : 'play.pitch', {
+        offerUsd: p.offerUsd,
+        round: p.round + 1,
+        rounds: CONTENT.pitch.rounds,
+      })
+      if (walkawayEndsRound(s, p.id)) say('ui.pitch.last_chance')
     }
     showStatus(s)
   }

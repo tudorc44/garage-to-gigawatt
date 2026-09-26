@@ -48,6 +48,7 @@ import {
   LeaveDialog,
   LoanDialog,
   OffersDialog,
+  PitchDialog,
   RenewalDialog,
   SellCoinsDialog,
 } from './dialogs.tsx'
@@ -69,6 +70,7 @@ type Open =
   | 'community'
   | `leave:${string}`
   | `renew:${string}`
+  | `pitch:${string}`
   | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
@@ -137,6 +139,14 @@ export function PlanScreen({ state, act }: ScreenProps) {
           state={state}
           act={act}
           siteId={open.slice('renew:'.length)}
+          onClose={() => setOpen(null)}
+        />
+      )}
+      {open?.startsWith('pitch:') && (
+        <PitchDialog
+          state={state}
+          act={act}
+          round={open.slice('pitch:'.length)}
           onClose={() => setOpen(null)}
         />
       )}
@@ -662,12 +672,12 @@ function TodoPanel({
       )}
 
       <div class="label group">{t('ui.plan.group.capital')}</div>
-      <RaiseRow state={state} act={act} round="friends_family" />
+      <RaiseRow state={state} act={act} open={open} round="friends_family" />
       <EquipmentLoanRow state={state} act={act} open={open} />
       <CryptoLoanRow state={state} act={act} open={open} />
-      <RaiseRow state={state} act={act} round="seed" />
-      <RaiseRow state={state} act={act} round="series_a" />
-      <RaiseRow state={state} act={act} round="ipo_spac" />
+      <RaiseRow state={state} act={act} open={open} round="seed" />
+      <RaiseRow state={state} act={act} open={open} round="series_a" />
+      <RaiseRow state={state} act={act} open={open} round="ipo_spac" />
 
       <div class="label group">{t('ui.plan.group.people')}</div>
       <ActionRow icon="hire" name={t('ui.plan.hire')} locked={notBuilt} />
@@ -882,17 +892,37 @@ const RAISE_ICON = {
   ipo_spac: 'ipo',
 } as const
 
-/** A funding round: a fixed offer (no negotiation yet), once, inside its window. */
+/**
+ * A funding round, once, inside its window. Seed and Series A open the pitch dialog (take the
+ * offer or pitch for a higher valuation); the others are one-click fixed offers.
+ */
 function RaiseRow({
   state,
   act,
+  open,
   round: id,
-}: ScreenProps & { round: keyof typeof RAISE_LABEL }) {
+}: ScreenProps & {
+  open: (o: Open) => void
+  round: keyof typeof RAISE_LABEL
+}) {
   const round = fundingRound(state, id)
   const name = t(RAISE_LABEL[id], {
     amount: fmt.money(round.amountUsd),
     share: fmt.pct(round.dilution),
   })
+  if (round.pitching && state.pitch) {
+    return (
+      <ActionRow
+        icon={RAISE_ICON[id]}
+        name={t('ui.plan.pitching', {
+          round: id,
+          value: fmt.money(state.pitch.offerUsd),
+        })}
+        price={t('ui.plan.plus', { value: fmt.money(round.amountUsd) })}
+        onClick={() => open(`pitch:${id}`)}
+      />
+    )
+  }
   if (round.status === 'done') {
     return (
       <ActionRow
@@ -906,11 +936,22 @@ function RaiseRow({
     const when =
       round.status === 'closed'
         ? t('ui.locked.closed', { quarter: fmt.quarter(round.to) })
-        : t('ui.locked.opens', { quarter: fmt.quarter(round.from) })
+        : round.status === 'locked'
+          ? t('ui.locked.pitch_reopens', {
+              quarter: fmt.quarter(round.reopens),
+            })
+          : round.status === 'lost'
+            ? t('ui.locked.pitch_lost')
+            : t('ui.locked.opens', { quarter: fmt.quarter(round.from) })
     return <ActionRow icon={RAISE_ICON[id]} name={name} locked={when} />
   }
   const a: Action = { type: 'RAISE', round: round.id }
   const why = whyNot(state, a)
+  const whyPitch = round.pitchable
+    ? whyNot(state, { type: 'PITCH_START', round: round.id })
+    : why
+  // Pitchable rounds open the dialog if either choice is possible.
+  const blocked = round.pitchable ? why && whyPitch : why
   return (
     <ActionRow
       icon={RAISE_ICON[id]}
@@ -918,8 +959,8 @@ function RaiseRow({
       bandwidth={round.bandwidth}
       bandwidthLeft={state.bandwidth}
       price={t('ui.plan.plus', { value: fmt.money(round.amountUsd) })}
-      disabledReason={why ? say(why) : undefined}
-      onClick={() => act(a)}
+      disabledReason={blocked ? say(blocked) : undefined}
+      onClick={() => (round.pitchable ? open(`pitch:${id}`) : act(a))}
     />
   )
 }

@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with investor pitches (step 1 of 3: the sim rules; no screen yet).
+Last updated: 26 Sep 2026, with investor pitches (step 2 of 3: the screen and terminal commands).
 
 ## How the owner works
 
@@ -51,8 +51,8 @@ See `CLAUDE.md` for the full list. The main ones:
    repair), Bandwidth, mining (auto switch-off), treasury (HODL/sell %), price-alert interrupt (max 3
    per quarter), quarter report, forced sales and bankruptcy, valuation, game log.
 4. **Capital:** the equipment loan and the crypto-backed loan with margin calls (see Decisions), every funding round: friends & family, seed, Series A and IPO / SPAC (fixed offers from `capital.json`; the
-   seed and Series A can also be pitched, see Decisions: sim rules and tests only so far, no screen
-   or terminal command yet), founder stake (dilutions multiply: F&F then seed leaves 72%, then Series A 57.6%).
+   seed and Series A rows open a pitch dialog: take the offer, or pitch for a higher valuation, see
+   Decisions; terminal: `pitch seed|a`, then `counter <$M>`, `accept`, `walk`), founder stake (dilutions multiply: F&F then seed leaves 72%, then Series A 57.6%).
 5. **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
    and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
@@ -90,7 +90,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-The investor pitch screen (the sim rules are in), hires, Read the market, the 20 event cards (Heat's event-card
+Hires, Read the market, the 20 event cards (Heat's event-card
 effects wait for them), the failure-wave interrupt, the Merge decision screen, saves, sound, settings, the
 left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
 eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
@@ -160,6 +160,13 @@ ask first).
     first: "Walking away ends this round for good.").
   - The numbers mirror the power negotiation's but live in `capital.json` › pitch so they can be
     tuned separately. The loader checks each pitched round's dilution = amount ÷ (pre-money + amount).
+  - Screen (chosen by Claude Code): the seed / Series A row opens a dialog (the offer explained, Take
+    the offer, Pitch); the pitch panel shows their valuation, your counter on a slider (their offer up to
+    1.5× the opening, $10K steps for the seed, $50K for Series A, starting 10% above their offer), the
+    share you'd give up and your stake after (1 decimal), the walk-away risk, and the "Walking away ends
+    this round for good." warning when it applies; then a result view. While a pitch is open the row
+    reads "Pitching the seed round · their offer …" and End plan is refused. A walked-away round's row
+    shows "investors walked away · reopens <quarter>" (or just "investors walked away" if gone).
   - Chosen by Claude Code: the limit is drawn from the opening in effect (after any penalty); the
     rolls use their own stream (`pitch:<quarter>:<round>`), so each quarter's pitch has a fresh limit;
     a pitch and a power negotiation can't be open at the same time; a pitch can only start in the
@@ -385,10 +392,8 @@ ask first).
 ## Next
 
 Week 3, the Heat system and the power side of week 4 (contracts, negotiation, Uri as firm load) are
-done. Investor pitches, step 1 of 3 (sim rules + tests) is done. Next: step 2, the screen (the Raise
-row gets Take offer / Pitch; a panel showing dilution and stake per counter, the walk-away risk, the
-"ends this round for good" warning, a result view) and the terminal commands; then step 3, a pitching
-bot, a sim table and golden replay, checked against the design thread's targets (pitcher 1.10 / 1.05 /
+done. Investor pitches, steps 1–2 of 3 (sim rules + tests, the screen + terminal commands) are done.
+Next: step 3, a pitching bot, a sim table and golden replay, checked against the design thread's targets (pitcher 1.10 / 1.05 /
 accept vs taker, 50 seeds: +1.5 to +4 points of founder stake; walk-aways 10–20% of pitches;
 bankruptcy within ±2 runs; median seed close no more than 1 quarter later; tuning order: limit_range
 upper bound, then walkaway_chance, then walkaway_penalty, never lowball_margin). Backlog (design

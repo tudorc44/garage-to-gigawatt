@@ -53,6 +53,13 @@ import {
 } from './systems/contracts.ts'
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
+import {
+  canPitch,
+  dilutionAt,
+  openingPreMoneyUsd,
+  pitchCounterRisk,
+  walkawayEndsRound,
+} from './systems/pitch.ts'
 import { isEarning } from './systems/mining.ts'
 import {
   normalPriceUsdKwh,
@@ -359,29 +366,108 @@ export function interruptChoices(
   }))
 }
 
-export type RoundStatus = 'open' | 'done' | 'closed' | 'not_yet'
+export type RoundStatus = 'open' | 'done' | 'closed' | 'not_yet' | 'locked' | 'lost'
 
 /** A funding round's offer and whether it can be taken this quarter (window and once-only). */
 export function fundingRound(state: GameState, id: string) {
   const step = getStep(id)!
   const q = CONTENT.quarters[state.quarter]
   const [from, to] = step.window
+  const walked = state.pitchWalkaways[id]
+  // After a walk-away: shut this quarter; gone for good if it reopens after the window.
+  const reopens = walked ? (CONTENT.quarters[walked.reopensQuarter] ?? '') : ''
+  const lockedNow = !!walked && state.quarter < walked.reopensQuarter
   const status: RoundStatus = state.raisesDone.includes(id)
     ? 'done'
     : q > to
       ? 'closed'
       : q < from
         ? 'not_yet'
-        : 'open'
+        : lockedNow
+          ? !reopens || reopens > to
+            ? 'lost'
+            : 'locked'
+          : 'open'
+  const pitchable = canPitch(id)
+  const preMoneyUsd = pitchable ? openingPreMoneyUsd(state, id) : undefined
   return {
     id,
     amountUsd: step.amount_usd,
-    dilution: step.dilution,
+    /** At the investor's opening terms now (a walk-away lowers the valuation). */
+    dilution:
+      preMoneyUsd !== undefined && walked
+        ? dilutionAt(step, preMoneyUsd)
+        : step.dilution,
+    preMoneyUsd,
+    /** How much a walk-away took off the opening valuation (0–0.2). */
+    penalty: walked?.penalty ?? 0,
+    reopens,
+    pitchable,
+    /** A pitch for this round is in progress. */
+    pitching: state.pitch?.id === id,
     bandwidth: raiseBandwidth(step),
+    pitchBandwidth: CONTENT.pitch.bandwidth,
+    lockoutQuarters: CONTENT.pitch.lockoutQuarters,
+    walkawayPenalty: CONTENT.pitch.walkawayPenalty,
+    /** Walking away from a pitch now would end the round for good. */
+    lastChance: canPitch(id) && walkawayEndsRound(state, id),
     from,
     to,
     status,
   }
+}
+
+/** The investor pitch in progress, as the pitch panel shows it (never the hidden limit). */
+export function pitchView(state: GameState) {
+  const p = state.pitch
+  if (!p) return null
+  const step = getStep(p.id)!
+  return {
+    id: p.id,
+    amountUsd: p.amountUsd,
+    round: p.round,
+    rounds: CONTENT.pitch.rounds,
+    final: p.final,
+    openingUsd: p.openingUsd,
+    offerUsd: p.offerUsd,
+    history: p.history.map((h) => ({ counterUsd: h.counterUsd })),
+    walkawayChance: CONTENT.pitch.walkawayChance,
+    ...pitchSlider(p.openingUsd, p.offerUsd),
+    /** Walking away (or being walked out on) ends the round for good. */
+    lastChance: walkawayEndsRound(state, p.id),
+    /** Share given up and founder stake after, at a pre-money valuation. */
+    terms: (preMoneyUsd: number) => {
+      const dilution = dilutionAt(step, preMoneyUsd)
+      return { dilution, stakeAfter: state.founderStake * (1 - dilution) }
+    },
+    risk: (preMoneyUsd: number) => pitchCounterRisk(state, preMoneyUsd),
+  }
+}
+
+/** The counter slider: from the current offer up to 1.5× the opening, in round steps. */
+function pitchSlider(openingUsd: number, offerUsd: number) {
+  const step = 10_000 * Math.max(1, Math.round(openingUsd / 6_000_000))
+  const snap = (v: number) => Math.round(v / step) * step
+  const min = Math.ceil(offerUsd / step) * step
+  const max = snap(openingUsd * 1.5)
+  return {
+    sliderStepUsd: step,
+    sliderMinUsd: min,
+    sliderMaxUsd: max,
+    /** Where the slider starts: 10% above their offer. */
+    defaultCounterUsd: Math.min(max, Math.max(min, snap(offerUsd * 1.1))),
+  }
+}
+
+/** How this quarter's pitch for a round ended (the log line), if it ended this quarter. */
+export function pitchResult(state: GameState, id: string) {
+  for (let i = state.log.length - 1; i >= 0; i--) {
+    const e = state.log[i]
+    if (e.quarter !== state.quarter) return null
+    if (e.key.startsWith('log.pitch_') && e.key !== 'log.pitch_started' && e.params?.round === id)
+      return e
+  }
+  return null
 }
 
 /** The equipment loan as the Plan screen shows it: this quarter's terms, how much you could borrow, the loan you have. */
