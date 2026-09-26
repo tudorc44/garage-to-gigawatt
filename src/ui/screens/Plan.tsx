@@ -8,6 +8,7 @@ import {
   HEAT_MARKS,
   SELL_TREASURY_BANDWIDTH,
   auctionView,
+  communityView,
   cryptoLoanView,
   equipmentLoanView,
   fundingRound,
@@ -18,6 +19,7 @@ import {
   recentMarket,
   siteLadder,
   siteViews,
+  topHeat,
   treasuryValue,
   whyNot,
   type LotView,
@@ -38,6 +40,7 @@ import {
 import {
   AuctionDialog,
   BuyDialog,
+  CommunityDialog,
   CryptoLoanDialog,
   FleetDialog,
   LeaveDialog,
@@ -60,6 +63,7 @@ type Open =
   | 'cloan'
   | 'sell_coins'
   | 'auction'
+  | 'community'
   | `leave:${string}`
   | null
 
@@ -123,6 +127,13 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'auction' && (
         <AuctionDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
+      {open === 'community' && (
+        <CommunityDialog
+          state={state}
+          act={act}
+          onClose={() => setOpen(null)}
+        />
       )}
       {open === 'loan' && (
         <LoanDialog state={state} act={act} onClose={() => setOpen(null)} />
@@ -578,7 +589,23 @@ function TodoPanel({
       <ActionRow
         icon="outreach"
         name={t('ui.plan.neighbours')}
-        locked={notBuilt}
+        bandwidth={communityView(state).outreachBandwidth}
+        bandwidthLeft={left}
+        price={t('ui.plan.hottest', {
+          tier: tierName(topHeat(state).tier),
+          heat: Math.round(topHeat(state).heat),
+        })}
+        onClick={() => open('community')}
+      />
+      <ActionRow
+        icon="outreach"
+        name={t('ui.plan.mitigation')}
+        price={t('ui.plan.from', {
+          value: fmt.money(
+            Math.min(...communityView(state).sites.map((x) => x.mitigationUsd)),
+          ),
+        })}
+        onClick={() => open('community')}
       />
 
       <div class="label group">{t('ui.plan.group.intel')}</div>

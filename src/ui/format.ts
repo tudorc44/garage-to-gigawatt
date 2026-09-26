@@ -100,6 +100,12 @@ function signed(v: number, opts?: MoneyOpts): string {
   return (v > 0 ? '+' : v < 0 ? MINUS : '') + money(Math.abs(v), opts)
 }
 
+/** A plain signed number with a true minus: +15 · −10 (Heat, grievance). */
+function signedInt(v: number): string {
+  const n = Math.round(v)
+  return (n > 0 ? '+' : n < 0 ? MINUS : '') + String(Math.abs(n))
+}
+
 /** "2017Q4" → "Q4 2017"; with a week: "Q4 2017 · week 6" */
 function quarter(q: string, week?: number): string {
   const m = /^(\d{4})Q(\d)$/.exec(q)
@@ -127,6 +133,7 @@ export const fmt = {
   pct,
   delta,
   signed,
+  signedInt,
   quarter,
   date,
 }

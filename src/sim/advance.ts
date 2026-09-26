@@ -1,6 +1,6 @@
 // advance(state) plays one week of the live quarter and returns the new state.
 // Systems run in a fixed order: failures → mining (a curtailed week idles Texas) →
-// treasury → loans → margin call → curtailment alert → price alert.
+// treasury → Heat → loans → margin call → curtailment alert → neighbour complaint → price alert.
 // After week 13 the quarter ends (report, or game over).
 import { BALANCE } from '../content/index.ts'
 import { logEntry, roundCents, type GameState } from './state.ts'
@@ -10,7 +10,7 @@ import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
 import { checkMarginCall, payCryptoInterestWeek } from './systems/cryptoLoan.ts'
 import { applyCurtailment, checkCurtailment } from './systems/curtailment.ts'
-import { updateHeatWeek } from './systems/heat.ts'
+import { checkComplaint, updateHeatWeek } from './systems/heat.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 
@@ -65,6 +65,7 @@ export function advance(state: GameState): GameState {
 
   checkMarginCall(s, w, prev)
   checkCurtailment(s)
+  checkComplaint(s)
   checkPriceAlert(s, w)
   st.weeks.push({
     week: weekNo,

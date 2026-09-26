@@ -111,14 +111,14 @@
      "label": "Pay for goodwill",
      "effects": {
       "cash": -5000,
-      "heat": -10
+      "grievance": -10
      }
     },
     {
      "id": "mitigate",
      "label": "Build sound walls",
      "effects": {
-      "cash": "-30000*max(1,site.mw)",
+      "cash": "heat.json mitigation cost",
       "heat_base": -10
      }
     },
@@ -126,12 +126,13 @@
      "id": "ignore",
      "label": "Ignore it",
      "effects": {
-      "heat": 10
+      "grievance": 10
      }
     }
    ],
    "default": "ignore",
    "source": "Hood County TX and upstate NY noise disputes",
+   "game_note": "Heat design (26 Sep 2026): pay and ignore change the site's grievance, not Heat directly; sound walls share noise mitigation's cost and once-per-site flag (heat.json). One complaint per quarter at most, for the hottest site: rolled once per quarter at a random week, chance (Heat - complaint_chance_offset)%. If the 3-interrupt cap is reached it waits for next quarter.",
    "estimate": true
   },
   {

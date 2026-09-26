@@ -89,24 +89,28 @@
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
+  "complaint": null,
   "siteHeat": {
     "site-1": {
       "value": 5,
       "load": 0,
       "grievance": 0,
-      "mitigated": false
+      "mitigated": false,
+      "outreachQuarter": null
     },
     "site-2": {
       "value": 10,
       "load": 0,
       "grievance": 0,
-      "mitigated": false
+      "mitigated": false,
+      "outreachQuarter": null
     },
     "site-7": {
       "value": 20,
       "load": 0,
       "grievance": 0,
-      "mitigated": false
+      "mitigated": false,
+      "outreachQuarter": null
     }
   },
   "loansLockedUntil": null,

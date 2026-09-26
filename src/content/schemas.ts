@@ -358,6 +358,7 @@ export const heatFileSchema = z
       min_quarters: z.number().int().min(0),
     }),
     complaint_at: nonNeg,
+    complaint_chance_offset: nonNeg,
     complaints_per_quarter: z.number().int().min(0),
   })
   .transform((h) => ({
@@ -393,6 +394,7 @@ export const heatFileSchema = z
       minQuarters: h.shutdown.min_quarters,
     },
     complaintAt: h.complaint_at,
+    complaintChanceOffset: h.complaint_chance_offset,
     complaintsPerQuarter: h.complaints_per_quarter,
   }))
 

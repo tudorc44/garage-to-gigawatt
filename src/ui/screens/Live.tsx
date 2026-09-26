@@ -6,6 +6,7 @@ import { choicePreview } from '../../sim/systems/interrupts.ts'
 import {
   MAX_INTERRUPTS,
   PRICE_ALERT_THRESHOLD,
+  complaintView,
   interruptChoices,
   lotViews,
   marginCallView,
@@ -16,7 +17,7 @@ import type { GameState, WeekSummary } from '../../sim/state.ts'
 import { Icon, WeekStrip } from '../components/basics.tsx'
 import { Shell } from '../components/frame.tsx'
 import { fmt } from '../format.ts'
-import { machineName } from '../names.ts'
+import { machineName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 const WEEK_MS = 1500
@@ -30,6 +31,9 @@ const NOTE_KEYS: Partial<Record<MessageKey, MessageKey>> = {
   'log.switched_off': 'ui.live.note.switch_off',
   'log.eth_mining_ends': 'ui.live.note.merge',
   'log.margin_posted': 'ui.live.note.margin',
+  'log.complaint_paid': 'ui.live.note.complaint',
+  'log.complaint_ignored': 'ui.live.note.complaint',
+  'log.mitigated': 'ui.live.note.complaint',
   'log.margin_paid': 'ui.live.note.margin',
   'log.margin_sold_machines': 'ui.live.note.margin',
   'log.margin_default': 'ui.live.note.margin',
@@ -126,6 +130,9 @@ export function LiveScreen(
       )}
       {state.interrupt?.id === 'curtailment' && (
         <CurtailmentCard state={state} act={act} />
+      )}
+      {state.interrupt?.id === 'neighbour_complaint' && (
+        <ComplaintCard state={state} act={act} />
       )}
     </div>
   )
@@ -563,6 +570,88 @@ function CurtailmentCard({ state, act }: ScreenProps) {
         ))}
         <span class="num-s muted" style={{ fontStyle: 'italic' }}>
           {t('ui.grid.source')}
+        </span>
+      </article>
+    </div>
+  )
+}
+
+/** The neighbour complaint card: pay, build sound walls, or ignore it (the default). */
+function ComplaintCard({ state, act }: ScreenProps) {
+  const alert = state.interrupt!
+  const v = complaintView(state)
+  if (!v) return null
+  const tier = tierName(v.tier)
+  const effect = (id: string) =>
+    id === 'pay'
+      ? t('ui.complaint.effect_pay', {
+          cash: fmt.signed(-v.payUsd),
+          grievance: fmt.signedInt(v.payGrievance),
+        })
+      : id === 'mitigate'
+        ? t('ui.complaint.effect_walls', {
+            cash: fmt.signed(-v.wallsUsd),
+            base: fmt.signedInt(v.wallsBase),
+          })
+        : t('ui.complaint.effect_ignore', {
+            grievance: fmt.signedInt(v.ignoreGrievance),
+            heat: Math.round(v.heatAfterIgnore),
+          })
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="complaint-title"
+      >
+        <div class="row-between">
+          <span class="label">
+            {t('ui.complaint.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: alert.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', {
+              n: state.interruptsThisQuarter,
+              max: MAX_INTERRUPTS,
+            })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="outreach" />
+          <span class="num-xl warn">
+            {t('ui.fleet.heat', { heat: Math.round(v.heat) })}
+          </span>
+        </div>
+        <h2 class="event-title" id="complaint-title">
+          {t('ui.complaint.title', { tier })}
+        </h2>
+        <p class="event-body">
+          {t('ui.complaint.body', { tier, heat: Math.round(v.heat) })}
+        </p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.neighbour_complaint.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">{effect(c.id)}</span>
+          </button>
+        ))}
+        <span class="num-s muted" style={{ fontStyle: 'italic' }}>
+          {t('ui.complaint.source', { at: v.complaintAt })}
         </span>
       </article>
     </div>

@@ -12,5 +12,6 @@
   "moratorium_at": 70,
   "shutdown": { "at": 90, "until_below": 60, "min_quarters": 1 },
   "complaint_at": 30,
+  "complaint_chance_offset": 20,
   "complaints_per_quarter": 1
 }

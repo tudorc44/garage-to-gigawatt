@@ -116,6 +116,8 @@ export interface GameState {
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
   siteHeat: Record<string, SiteHeat>
+  /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
+  complaint: { siteId: string; week: number } | null
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
   curtailment: { week: number; creditUsd: number } | null
   /** A distressed auction open this Plan phase, or null. */
@@ -155,6 +157,8 @@ export interface ActiveInterrupt {
   ltv?: number
   /** Curtailment only: the grid's offer for taking the Texas machines offline next week. */
   curtail?: CurtailOffer
+  /** Neighbour complaint only: the site the neighbours are complaining about. */
+  siteId?: string
 }
 
 /** What curtailing the Texas site for one week pays (review A8), fixed when the grid asks. */
@@ -316,12 +320,14 @@ export function newGame(seed: number): GameState {
     cryptoLoan: null,
     auction: null,
     curtailment: null,
+    complaint: null,
     siteHeat: {
       'site-1': {
         value: start.heat_base,
         load: 0,
         grievance: 0,
         mitigated: false,
+        outreachQuarter: null,
       },
     },
     loansLockedUntil: null,

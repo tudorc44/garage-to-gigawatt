@@ -29,7 +29,15 @@ import {
   marginCallOptions,
   maxCryptoLoanUsd,
 } from './systems/cryptoLoan.ts'
-import { hottestSite, siteHeatValue } from './systems/heat.ts'
+import {
+  complaintPayGrievance,
+  complaintPayUsd,
+  growthMult,
+  hottestSite,
+  mitigationCostUsd,
+  outreachCostUsd,
+  siteHeatValue,
+} from './systems/heat.ts'
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { isEarning } from './systems/mining.ts'
 import {
@@ -504,4 +512,46 @@ export function heatBand(heat: number): 1 | 2 | 3 | 4 | 5 {
 export function topHeat(state: GameState): { tier: string; heat: number } {
   const h = hottestSite(state)
   return { tier: h.site.tier, heat: h.value }
+}
+
+/** Every site's Heat and what outreach / noise mitigation would cost there (Community dialog). */
+export function communityView(state: GameState) {
+  const rules = CONTENT.heat
+  return {
+    outreachBandwidth: rules.outreach.bandwidth,
+    outreachGrievance: rules.outreach.grievance,
+    mitigationBandwidth: rules.mitigation.bandwidth,
+    mitigationBase: rules.mitigation.heatBase,
+    sites: state.sites.map((site) => {
+      const h = state.siteHeat[site.id]
+      return {
+        site,
+        heat: h?.value ?? 0,
+        outreachUsd: outreachCostUsd(site),
+        outreachDone: h?.outreachQuarter === state.quarter,
+        mitigationUsd: mitigationCostUsd(site),
+        mitigated: h?.mitigated ?? false,
+      }
+    }),
+  }
+}
+
+/** The neighbour complaint card: the site, its Heat, and what each answer does. */
+export function complaintView(state: GameState) {
+  const siteId = state.interrupt?.siteId
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return null
+  const heat = siteHeatValue(state, site.id)
+  const ignore = CONTENT.heat.ignoreComplaint * growthMult(site)
+  return {
+    tier: site.tier,
+    heat,
+    payUsd: complaintPayUsd(),
+    payGrievance: complaintPayGrievance(),
+    wallsUsd: mitigationCostUsd(site),
+    wallsBase: CONTENT.heat.mitigation.heatBase,
+    ignoreGrievance: ignore,
+    heatAfterIgnore: Math.min(100, heat + ignore),
+    complaintAt: CONTENT.heat.complaintAt,
+  }
 }

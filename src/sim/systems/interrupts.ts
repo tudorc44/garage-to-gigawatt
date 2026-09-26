@@ -1,5 +1,6 @@
 // Interrupts: alerts that pause the live quarter until the player picks a choice.
 // This week only the price alert exists. At most max_per_quarter fire per quarter.
+import { complaintChoices, resolveComplaint } from './heat.ts'
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type Coin, type GameState } from '../state.ts'
@@ -44,6 +45,8 @@ export function resolveInterrupt(
   if (!active) return { key: 'error.no_interrupt' }
   if (active.id === 'margin_call') return resolveMarginCall(state, choiceId)
   if (active.id === 'curtailment') return resolveCurtailment(state, choiceId)
+  if (active.id === 'neighbour_complaint')
+    return resolveComplaint(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )
@@ -122,6 +125,7 @@ export function availableChoices(state: GameState): string[] {
   const active = state.interrupt
   if (!active) return []
   if (active.id === 'margin_call') return marginCallChoices(state)
+  if (active.id === 'neighbour_complaint') return complaintChoices(state)
   return (CONTENT.interrupts.byId[active.id].choices ?? [])
     .filter((c) => {
       const coin = choiceCoin(c.effects)

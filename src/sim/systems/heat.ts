@@ -8,8 +8,10 @@
 //   takes it down (to at most grievance_min, i.e. goodwill); it fades toward 0 each quarter.
 // era: extra pressure on big sites from era_pressure.from.
 // A hostile_council flaw multiplies every increase (load, grievance, era).
-import { CONTENT } from '../../content/index.ts'
-import type { GameState, Site } from '../state.ts'
+import { BALANCE, CONTENT } from '../../content/index.ts'
+import type { Message } from '../../i18n/t.ts'
+import { randomInt, substream, uniform } from '../rng.ts'
+import { logEntry, type GameState, type Site } from '../state.ts'
 import { getModel } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { capacityKw, flawEffect, getTier } from './sites.ts'
@@ -23,10 +25,18 @@ export interface SiteHeat {
   grievance: number
   /** Noise mitigation (or the complaint's sound walls) done: base Heat lowered for good. */
   mitigated: boolean
+  /** Quarter of the last "talk to the neighbours" here (once per site per quarter), or null. */
+  outreachQuarter: number | null
 }
 
 export function newSiteHeat(): SiteHeat {
-  return { value: 0, load: 0, grievance: 0, mitigated: false }
+  return {
+    value: 0,
+    load: 0,
+    grievance: 0,
+    mitigated: false,
+    outreachQuarter: null,
+  }
 }
 
 /** The site's Heat record, created on first use. */
@@ -140,4 +150,212 @@ export function hottestSite(state: GameState): { site: Site; value: number } {
     if (value > best.value) best = { site, value }
   }
   return best
+}
+
+// ---------- outreach and noise mitigation (Plan phase) ----------
+
+/** A money rule from heat.json for a site: per_mw × usable MW, kept between min and max. */
+function costFor(
+  site: Site,
+  rule: { perMwUsd: number; minUsd: number; maxUsd: number },
+): number {
+  const mw = capacityKw(site) / 1000
+  return Math.min(rule.maxUsd, Math.max(rule.minUsd, rule.perMwUsd * mw))
+}
+
+export function outreachCostUsd(site: Site): number {
+  return costFor(site, CONTENT.heat.outreach)
+}
+
+export function mitigationCostUsd(site: Site): number {
+  return costFor(site, CONTENT.heat.mitigation)
+}
+
+/** Why outreach at this site can't happen now, or undefined. Checks only. */
+export function outreachBlocker(
+  state: GameState,
+  siteId: string,
+): Message | undefined {
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return { key: 'error.unknown_site' }
+  if (heatOf(state, siteId).outreachQuarter === state.quarter)
+    return { key: 'error.outreach_done', params: { tier: site.tier } }
+  const bw = CONTENT.heat.outreach.bandwidth
+  if (state.bandwidth < bw)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: bw, have: state.bandwidth },
+    }
+  const costUsd = outreachCostUsd(site)
+  if (costUsd > state.cash)
+    return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
+}
+
+/** Talk to the neighbours: pay, spend Bandwidth, grievance down (goodwill at most −10). */
+export function doOutreach(state: GameState, siteId: string): void {
+  const site = state.sites.find((s) => s.id === siteId)!
+  const costUsd = outreachCostUsd(site)
+  state.bandwidth -= CONTENT.heat.outreach.bandwidth
+  state.cash -= costUsd
+  heatOf(state, siteId).outreachQuarter = state.quarter
+  addGrievance(state, siteId, CONTENT.heat.outreach.grievance)
+  logEntry(state, 'log.outreach', {
+    tier: site.tier,
+    costUsd,
+    heat: Math.round(siteHeatValue(state, siteId)),
+  })
+}
+
+/** Why noise mitigation can't be built here now, or undefined. Checks only. */
+export function mitigationBlocker(
+  state: GameState,
+  siteId: string,
+): Message | undefined {
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return { key: 'error.unknown_site' }
+  if (CONTENT.heat.mitigation.once && heatOf(state, siteId).mitigated)
+    return { key: 'error.mitigation_done', params: { tier: site.tier } }
+  const bw = CONTENT.heat.mitigation.bandwidth
+  if (state.bandwidth < bw)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: bw, have: state.bandwidth },
+    }
+  const costUsd = mitigationCostUsd(site)
+  if (costUsd > state.cash)
+    return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
+}
+
+/** Noise mitigation (or the complaint's sound walls): base Heat down for good, once per site. */
+export function doMitigation(
+  state: GameState,
+  siteId: string,
+  week: number | null = null,
+): void {
+  const site = state.sites.find((s) => s.id === siteId)!
+  const costUsd = mitigationCostUsd(site)
+  state.bandwidth -= CONTENT.heat.mitigation.bandwidth
+  state.cash -= costUsd
+  heatOf(state, siteId).mitigated = true
+  recalcHeat(state, site)
+  logEntry(
+    state,
+    'log.mitigated',
+    {
+      tier: site.tier,
+      costUsd,
+      heat: Math.round(siteHeatValue(state, siteId)),
+    },
+    week,
+  )
+}
+
+// ---------- neighbour complaints (interrupts.json neighbour_complaint) ----------
+
+/**
+ * At the start of the live quarter: a complaint carried over from last quarter keeps its
+ * site; otherwise roll once for the hottest site at or above complaint_at, with chance
+ * (Heat − complaint_chance_offset)%. Either way it comes after a random week. At most one
+ * per quarter. The rolls use their own stream, so they don't change the rest of the game.
+ */
+export function scheduleComplaint(state: GameState): void {
+  const r = substream(state.seed, `complaint:${state.quarter}`)
+  const week = randomInt(r, 1, BALANCE.weeksPerQuarter)
+  const carried = state.complaint
+  if (carried && state.sites.some((s) => s.id === carried.siteId)) {
+    state.complaint = { siteId: carried.siteId, week }
+    return
+  }
+  state.complaint = null
+  const { site, value } = hottestSite(state)
+  const rules = CONTENT.heat
+  if (value < rules.complaintAt) return
+  if (uniform(r, 0, 1) >= (value - rules.complaintChanceOffset) / 100) return
+  state.complaint = { siteId: site.id, week }
+}
+
+/**
+ * After a week is played: if the scheduled complaint is due, pause for it. If another
+ * interrupt is showing, it tries again next week; if this quarter's interrupts are used
+ * up, it waits for next quarter (it is never answered for you).
+ */
+export function checkComplaint(state: GameState): void {
+  const c = state.complaint
+  if (!c || state.interrupt || state.week + 1 < c.week) return
+  if (state.interruptsThisQuarter >= CONTENT.interrupts.maxPerQuarter) return
+  const site = state.sites.find((s) => s.id === c.siteId)
+  state.complaint = null
+  if (!site) return
+  state.interrupt = {
+    id: 'neighbour_complaint',
+    week: state.week,
+    coin: 'BTC',
+    changePct: 0,
+    siteId: site.id,
+  }
+  state.interruptsThisQuarter++
+}
+
+function complaintEffect(choiceId: string, key: string): number {
+  const choice = CONTENT.interrupts.byId.neighbour_complaint?.choices?.find(
+    (c) => c.id === choiceId,
+  )
+  return Number(choice?.effects?.[key] ?? 0)
+}
+
+/** What paying the neighbours costs (interrupts.json: pay › cash). */
+export function complaintPayUsd(): number {
+  return -complaintEffect('pay', 'cash')
+}
+
+/** Grievance change from paying (interrupts.json: pay › grievance). */
+export function complaintPayGrievance(): number {
+  return complaintEffect('pay', 'grievance')
+}
+
+/** Answers a complaint can take now: pay and sound walls only if affordable (walls once per site). */
+export function complaintChoices(state: GameState): string[] {
+  const siteId = state.interrupt?.siteId
+  if (!siteId) return []
+  const site = state.sites.find((s) => s.id === siteId)
+  const out: string[] = []
+  if (state.cash >= complaintPayUsd()) out.push('pay')
+  if (
+    site &&
+    !heatOf(state, siteId).mitigated &&
+    state.cash >= mitigationCostUsd(site)
+  )
+    out.push('mitigate')
+  out.push('ignore')
+  return out
+}
+
+/** Pay (grievance −10), build sound walls (= noise mitigation) or ignore (grievance +10). */
+export function resolveComplaint(
+  state: GameState,
+  choiceId: string,
+): Message | undefined {
+  const active = state.interrupt!
+  if (!complaintChoices(state).includes(choiceId))
+    return { key: 'error.bad_choice' }
+  const siteId = active.siteId!
+  const site = state.sites.find((s) => s.id === siteId)!
+  const week = active.week + 1
+  if (choiceId === 'pay') {
+    const costUsd = complaintPayUsd()
+    state.cash -= costUsd
+    addGrievance(state, siteId, complaintPayGrievance())
+    logEntry(state, 'log.complaint_paid', { tier: site.tier, costUsd }, week)
+  } else if (choiceId === 'mitigate') {
+    doMitigation(state, siteId, week)
+  } else {
+    addGrievance(state, siteId, CONTENT.heat.ignoreComplaint)
+    logEntry(
+      state,
+      'log.complaint_ignored',
+      { tier: site.tier, heat: Math.round(siteHeatValue(state, siteId)) },
+      week,
+    )
+  }
+  state.interrupt = null
 }

@@ -8,6 +8,7 @@ import {
   SELL_TREASURY_BANDWIDTH,
   auctionView,
   bestSite,
+  communityView,
   cryptoLoanView,
   equipmentLoanView,
   treasuryHoldings,
@@ -901,6 +902,97 @@ export function AuctionDialog({ state, act, onClose }: DialogProps) {
             filled={v.bandwidth}
             label={t('ui.plan.costs_bandwidth', { n: v.bandwidth })}
           />
+        </button>
+      </div>
+    </Dialog>
+  )
+}
+
+/** Every site's Heat, with "talk to the neighbours" and noise mitigation for each. */
+export function CommunityDialog({ state, act, onClose }: DialogProps) {
+  const v = communityView(state)
+  const button = (a: Action, label: string, bw: number) => {
+    const why = whyNot(state, a)
+    return (
+      <button
+        type="button"
+        class="btn"
+        disabled={!!why}
+        title={why ? say(why) : undefined}
+        onClick={() => act(a)}
+      >
+        {label}
+        {bw > 0 && (
+          <Pips
+            total={bw}
+            filled={bw}
+            label={t('ui.plan.costs_bandwidth', { n: bw })}
+          />
+        )}
+      </button>
+    )
+  }
+  return (
+    <Dialog title={t('ui.community.title')} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.community.note', {
+          bw: v.outreachBandwidth,
+          grievance: fmt.signedInt(v.outreachGrievance),
+          mbw: v.mitigationBandwidth,
+          base: -v.mitigationBase,
+        })}
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>{t('ui.community.col.site')}</th>
+            <th class="r">{t('ui.community.col.heat')}</th>
+            <th class="r">{t('ui.community.col.talk')}</th>
+            <th class="r">{t('ui.community.col.walls')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {v.sites.map((x) => (
+            <tr key={x.site.id}>
+              <td>
+                <span
+                  style={{
+                    display: 'inline-flex',
+                    gap: '8px',
+                    alignItems: 'center',
+                  }}
+                >
+                  <Icon name={tierIcon(x.site.tier)} size={16} />
+                  {tierName(x.site.tier)}
+                </span>
+              </td>
+              <td class="num r">{Math.round(x.heat)}</td>
+              <td class="r">
+                {x.outreachDone
+                  ? t('ui.community.done')
+                  : button(
+                      { type: 'OUTREACH', siteId: x.site.id },
+                      fmt.money(x.outreachUsd),
+                      v.outreachBandwidth,
+                    )}
+              </td>
+              <td class="r">
+                {x.mitigated
+                  ? t('ui.community.done')
+                  : button(
+                      { type: 'MITIGATE_NOISE', siteId: x.site.id },
+                      fmt.money(x.mitigationUsd),
+                      v.mitigationBandwidth,
+                    )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div class="row-between">
+        <span />
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.community.close')}
         </button>
       </div>
     </Dialog>

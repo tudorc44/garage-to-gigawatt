@@ -16,7 +16,14 @@ import {
   repayCryptoLoan,
   takeCryptoLoan,
 } from './systems/cryptoLoan.ts'
-import { recalcHeat } from './systems/heat.ts'
+import {
+  doMitigation,
+  doOutreach,
+  mitigationBlocker,
+  outreachBlocker,
+  recalcHeat,
+  scheduleComplaint,
+} from './systems/heat.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
   borrowBlocker,
@@ -58,6 +65,10 @@ export type Action =
   | { type: 'LEAVE_SITE'; siteId: string }
   /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
   | { type: 'SELL_TREASURY'; coin: Coin; pct: number }
+  /** Talk to the neighbours at a site: cash + 1 Bandwidth for goodwill (heat.json outreach). */
+  | { type: 'OUTREACH'; siteId: string }
+  /** Noise mitigation at a site: capex, lowers its base Heat for good, once per site. */
+  | { type: 'MITIGATE_NOISE'; siteId: string }
   /** Borrow against your machines (equipment loan). */
   | { type: 'TAKE_LOAN'; amountUsd: number }
   /** Pay the equipment loan off early. */
@@ -99,6 +110,7 @@ function run(s: GameState, a: Action): Message | undefined {
       closeAuction(s)
       s.phase = 'live'
       s.week = 0
+      scheduleComplaint(s)
       s.quarterStats.startCash = s.cash
       s.quarterStats.startTreasuryUsd = treasuryValueUsd(
         s,
@@ -332,6 +344,20 @@ function run(s: GameState, a: Action): Message | undefined {
         soldCoin: a.coin,
         valueUsd,
       })
+      return
+    }
+
+    case 'OUTREACH': {
+      const blocked = outreachBlocker(s, a.siteId)
+      if (blocked) return blocked
+      doOutreach(s, a.siteId)
+      return
+    }
+
+    case 'MITIGATE_NOISE': {
+      const blocked = mitigationBlocker(s, a.siteId)
+      if (blocked) return blocked
+      doMitigation(s, a.siteId)
       return
     }
 

@@ -306,6 +306,14 @@ function parse(
     }
     case 'crepay':
       return { type: 'REPAY_CRYPTO_LOAN' }
+    case 'talk':
+    case 'mitigate': {
+      const site = item(s.sites, 0)
+      if (!site) return 'play.bad_number'
+      return cmd === 'talk'
+        ? { type: 'OUTREACH', siteId: site.id }
+        : { type: 'MITIGATE_NOISE', siteId: site.id }
+    }
     case 'loan':
       return { type: 'TAKE_LOAN', amountUsd: num(0) }
     case 'repay':
@@ -416,7 +424,13 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
   const label = (id: string) => tDynamic(`interrupt.${alert.id}.${id}`, id)
   const fallback = defaultChoice(s)
   console.log()
-  if (alert.id === 'margin_call') {
+  if (alert.id === 'neighbour_complaint') {
+    const site = s.sites.find((x) => x.id === alert.siteId)!
+    say('play.complaint', {
+      tier: name('site', site.tier),
+      heat: Math.round(siteHeatValue(s, site.id)),
+    })
+  } else if (alert.id === 'margin_call') {
     say('play.margin_call', {
       coin: alert.coin,
       balanceUsd: s.cryptoLoan!.balanceUsd,
