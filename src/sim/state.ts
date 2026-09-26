@@ -7,6 +7,7 @@ import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { InvestorPitch, PitchWalkaway } from './systems/pitch.ts'
 import type { MarketRead } from './systems/readMarket.ts'
 import { emptyEventState, type EventState } from './systems/eventEffects.ts'
+import type { PlannedWave, WaveDamage } from './systems/failureWave.ts'
 
 export type Phase = 'plan' | 'live' | 'report' | 'merge' | 'gameover' | 'ended'
 export type Coin = 'BTC' | 'ETH'
@@ -156,6 +157,8 @@ export interface GameState {
   mergeChoice: string | null
   /** Event cards: what's due, what's been played, and their lasting effects. */
   events: EventState
+  /** This quarter's failure-wave rolls, one per site (drawn when the Plan phase ends). */
+  failureWaves: PlannedWave[]
   /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
   complaint: { siteId: string; week: number } | null
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
@@ -201,6 +204,8 @@ export interface ActiveInterrupt {
   siteId?: string
   /** Event cards only: the events.json card id. */
   event?: string
+  /** Failure wave only: the units it broke, per batch. */
+  wave?: WaveDamage
 }
 
 /** What curtailing the Texas site for one week pays (review A8), fixed when the grid asks. */
@@ -388,6 +393,7 @@ export function newGame(seed: number): GameState {
     marketRead: null,
     mergeChoice: null,
     events: emptyEventState(),
+    failureWaves: [],
     siteHeat: {
       'site-1': {
         value: start.heat_base,

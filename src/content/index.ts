@@ -19,6 +19,7 @@ import {
   curtailmentRulesSchema,
   heatFileSchema,
   hiresFileSchema,
+  failureWaveRulesSchema,
   mergeFileSchema,
   eventsFileSchema,
   readMarketSchema,
@@ -39,6 +40,7 @@ import {
   type HiresRules,
   type MergeRules,
   type ReadMarketRules,
+  type FailureWaveRules,
   type EventCardRaw,
   type EventChoice,
   type Interrupt,
@@ -105,6 +107,8 @@ export interface Content {
   hires: HiresRules
   /** Read the market (interrupts.json › read_market). */
   readMarket: ReadMarketRules
+  /** The failure wave (interrupts.json › failure_wave). */
+  failureWave: FailureWaveRules
   /** The Merge decision and the chapter score (merge.json). */
   merge: MergeRules
   /** Event cards (events.json), with scripted weeks resolved to week indexes. */
@@ -213,6 +217,11 @@ export function parseContent(raw: RawContent): Content {
     curtailmentRulesSchema,
     rawInterrupt('curtailment'),
   )
+  const failureWave = check(
+    'interrupts.json › failure_wave',
+    failureWaveRulesSchema,
+    rawInterrupt('failure_wave'),
+  )
   const readMarket = check(
     'interrupts.json › read_market',
     readMarketSchema,
@@ -238,6 +247,7 @@ export function parseContent(raw: RawContent): Content {
     !merge ||
     !eventsFile ||
     !readMarket ||
+    !failureWave ||
     !negotiation ||
     !shocksFile
   ) {
@@ -491,6 +501,7 @@ export function parseContent(raw: RawContent): Content {
     heat,
     hires,
     readMarket,
+    failureWave,
     merge,
     events,
     negotiation,

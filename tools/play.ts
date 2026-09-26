@@ -8,7 +8,11 @@ import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
-import { interruptChoices, mergeView } from '../src/sim/selectors.ts'
+import {
+  failureWaveView,
+  interruptChoices,
+  mergeView,
+} from '../src/sim/selectors.ts'
 import { runSummaryText } from '../src/ui/chapter.ts'
 import { openingOfferUsdKwh, renewalDue } from '../src/sim/systems/contracts.ts'
 import { ltv } from '../src/sim/systems/cryptoLoan.ts'
@@ -534,6 +538,13 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
     say('play.complaint', {
       tier: name('site', site.tier),
       heat: Math.round(siteHeatValue(s, site.id)),
+    })
+  } else if (alert.id === 'failure_wave') {
+    const v = failureWaveView(s)!
+    say('play.failure_wave', {
+      tier: name('site', v.tier),
+      units: v.units,
+      rushUsd: v.rushUsd,
     })
   } else if (alert.id === 'event') {
     say('play.event', {

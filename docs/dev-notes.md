@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the 20 event cards.
+Last updated: 26 Sep 2026, with the 20 event cards and the failure wave.
 
 ## How the owner works
 
@@ -68,7 +68,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 316 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 321 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -97,7 +97,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-The failure-wave interrupt, sound, settings, the left-nav sections other than Dashboard. The
+Sound, settings, the left-nav sections other than Dashboard. The
 undersized-transformer flaw's upgrade has no effect yet (landlord_sale works through its event card;
 noise ordinance and hostile council through Heat). The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -150,6 +150,17 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Failure wave** (design thread F1–F4, 26 Sep 2026; `interrupts.json` › failure_wave,
+  `src/sim/systems/failureWave.ts`): one roll per site per quarter (weeks 2–12, own stream), only for
+  sites with 10+ working units (so never the garage). Chance = 6% × (1 + 0.5 × the site's used share)
+  × 2 if "Run hot" (heat_wave card) was chosen that quarter × 0.5 with the Ops Manager; the chance is
+  worked out in the wave's week, from what's there then. It breaks 5–10% of the site's working units
+  at once (used first), on top of weekly failures, and counts toward the 3-interrupt cap: Rush repair
+  (1.5× the repair price, back next week) or Run degraded (default: off until a Plan-phase repair).
+  With the cap full, or another alert on screen that week, the units break silently (a log line).
+  Sim: a warehouse of 90% used machines gets 1.51 waves per game (2018Q3–2022Q3, median 1); a
+  new-only fleet with the Ops Manager 0.53; no bust in a wave quarter; the raise bots (3–4 sites)
+  see ~3.3 per game. No tuning needed.
 - **Event cards** (scope §2.10; design thread 26 Sep 2026; `src/content/events.json`,
   `src/sim/systems/events.ts` + `eventEffects.ts`, card text in `src/i18n/content.en.json`):
   - 9 scripted + 10 random cards, plus Uri (the existing Uri alert now shows the card's title and
@@ -508,7 +519,7 @@ ask first).
 ## Next
 
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
-save/load, and the 20 event cards. In progress (same run): the failure wave, the left-nav screens +
+save/load, the 20 event cards and the failure wave. In progress (same run): the left-nav screens +
 Settings, and sound (the owner approved installing `zzfx`). After that: a balance pass against the
 exit checklist (scope §5), which needs the design thread (peak valuation ~$310M vs the $1.5–2.5B
 target; the all-in reinvest bust). Backlog (design thread): the pitch opening reacts to company

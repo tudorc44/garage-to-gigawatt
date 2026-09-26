@@ -54,6 +54,7 @@ import {
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
+import { rushRepairUsd } from './systems/failureWave.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { activeRivals, rivalSnapshot, yourRank } from './systems/rivals.ts'
 import {
@@ -977,4 +978,18 @@ export function eventCardView(state: GameState) {
 export function planOpensOnBuy(state: GameState): boolean {
   const p = state.events.plan
   return state.phase === 'plan' && p?.quarter === state.quarter && p.openBuy
+}
+
+/** The failure-wave alert: where, how many units broke, and the rush repair's price. */
+export function failureWaveView(state: GameState) {
+  const a = state.interrupt
+  if (a?.id !== 'failure_wave') return null
+  const site = state.sites.find((x) => x.id === a.siteId)
+  return {
+    tier: site?.tier ?? '',
+    week: a.week,
+    units: (a.wave ?? []).reduce((n, d) => n + d.units, 0),
+    rushUsd: rushRepairUsd(state),
+    rushMult: CONTENT.failureWave.rushCostMult,
+  }
 }

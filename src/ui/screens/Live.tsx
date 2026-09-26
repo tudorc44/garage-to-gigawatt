@@ -10,6 +10,7 @@ import {
   KEEP_MINING_GRIEVANCE,
   URI_STORM_PRICE,
   eventCardView,
+  failureWaveView,
   interruptChoices,
   lotViews,
   marginCallView,
@@ -46,6 +47,9 @@ const NOTE_KEYS: Partial<Record<MessageKey, MessageKey>> = {
   'log.curtail_declined': 'ui.live.note.grid',
   'log.curtailed': 'ui.live.note.curtailed',
   'log.event_choice': 'ui.live.note.event',
+  'log.failure_wave_repaired': 'ui.live.note.failure',
+  'log.failure_wave_degraded': 'ui.live.note.failure',
+  'log.failure_wave_silent': 'ui.live.note.failure',
   'log.event_choice_cash': 'ui.live.note.event',
 }
 
@@ -143,6 +147,9 @@ export function LiveScreen(
       {(state.interrupt?.id === 'curtailment' ||
         state.interrupt?.id === 'uri') && (
         <CurtailmentCard state={state} act={act} />
+      )}
+      {state.interrupt?.id === 'failure_wave' && (
+        <FailureWaveCard state={state} act={act} />
       )}
       {state.interrupt?.id === 'event' && <EventCard state={state} act={act} />}
       {state.interrupt?.id === 'margin_warning' && (
@@ -812,6 +819,73 @@ function EventCard({ state, act }: ScreenProps) {
                 ` ${t('ui.event.cash', { cash: fmt.signed(c.cashDeltaUsd) })}`}
               {c.unitsDelta !== 0 &&
                 ` ${t('ui.event.units', { units: fmt.signedInt(c.unitsDelta) })}`}
+            </span>
+          </button>
+        ))}
+      </article>
+    </div>
+  )
+}
+
+/** The failure wave: a batch of machines broke at once; rush repair now, or run degraded. */
+function FailureWaveCard({ state, act }: ScreenProps) {
+  const v = failureWaveView(state)
+  if (!v) return null
+  const tier = tierName(v.tier)
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="wave-title"
+      >
+        <div class="row-between">
+          <span class="label">
+            {t('ui.event.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: v.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', {
+              n: state.interruptsThisQuarter,
+              max: MAX_INTERRUPTS,
+            })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="warning" />
+          <span class="num-xl loss">{v.units}</span>
+          <span class="num-s">{t('ui.wave.units')}</span>
+        </div>
+        <h2 class="event-title" id="wave-title">
+          {t('ui.wave.title', { tier })}
+        </h2>
+        <p class="event-body">{t('ui.wave.body', { tier, units: v.units })}</p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.failure_wave.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">
+              {c.id === 'repair_now'
+                ? t('ui.wave.effect_rush', {
+                    cash: fmt.signed(-v.rushUsd),
+                    mult: `${v.rushMult}×`,
+                  })
+                : t('ui.wave.effect_degraded')}
             </span>
           </button>
         ))}

@@ -694,6 +694,40 @@ export const mergeFileSchema = z
 
 export type MergeRules = z.output<typeof mergeFileSchema>
 
+/** The failure wave: interrupts.json › failure_wave (design thread F1–F4). */
+export const failureWaveRulesSchema = z
+  .object({
+    week_range: z.tuple([z.number().int().min(1), z.number().int().max(13)]),
+    min_working_units: z.number().int().min(1),
+    base_chance: z.number().min(0).max(1),
+    used_share_bonus: nonNeg,
+    heat_wave_run_hot_mult: nonNeg,
+    ops_manager_mult: nonNeg,
+    wave_size_range: z.tuple([
+      z.number().min(0).max(1),
+      z.number().min(0).max(1),
+    ]),
+    choices: z.array(
+      z.object({
+        id: z.enum(['repair_now', 'run_degraded']),
+        effects: z.object({ cost_mult: nonNeg.optional() }).passthrough(),
+      }),
+    ),
+  })
+  .transform((f) => ({
+    weekRange: f.week_range,
+    minWorkingUnits: f.min_working_units,
+    baseChance: f.base_chance,
+    usedShareBonus: f.used_share_bonus,
+    runHotMult: f.heat_wave_run_hot_mult,
+    opsManagerMult: f.ops_manager_mult,
+    sizeRange: f.wave_size_range,
+    rushCostMult:
+      f.choices.find((c) => c.id === 'repair_now')?.effects.cost_mult ?? 1,
+  }))
+
+export type FailureWaveRules = z.output<typeof failureWaveRulesSchema>
+
 /** Read the market: interrupts.json › read_market (design thread). */
 export const readMarketSchema = z
   .object({

@@ -54,6 +54,7 @@ import {
 } from './systems/hires.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import { checkEvents, scheduleEvents } from './systems/events.ts'
+import { planFailureWaves } from './systems/failureWave.ts'
 import { buyPriceNow, newGpusLocked } from './systems/eventEffects.ts'
 import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import {
@@ -177,6 +178,7 @@ function run(s: GameState, a: Action): Message | undefined {
       s.week = 0
       scheduleComplaint(s)
       scheduleEvents(s)
+      planFailureWaves(s)
       s.quarterStats.startCash = s.cash
       s.quarterStats.startTreasuryUsd = treasuryValueUsd(
         s,

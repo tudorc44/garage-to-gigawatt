@@ -12,6 +12,7 @@ import {
 } from './cryptoLoan.ts'
 import { resolveCurtailment } from './curtailment.ts'
 import { defaultEventChoice, eventChoices, resolveEvent } from './events.ts'
+import { failureWaveChoices, resolveFailureWave } from './failureWave.ts'
 import { sellTreasury } from './treasury.ts'
 
 /**
@@ -56,6 +57,7 @@ export function resolveInterrupt(
   if (active.id === 'margin_warning')
     return resolveMarginWarning(state, choiceId)
   if (active.id === 'event') return resolveEvent(state, choiceId)
+  if (active.id === 'failure_wave') return resolveFailureWave(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )
@@ -150,6 +152,7 @@ export function availableChoices(state: GameState): string[] {
   if (active.id === 'margin_call') return marginCallChoices(state)
   if (active.id === 'neighbour_complaint') return complaintChoices(state)
   if (active.id === 'event') return eventChoices(state)
+  if (active.id === 'failure_wave') return failureWaveChoices(state)
   if (active.id === 'margin_warning') {
     const loan = state.cryptoLoan
     return loan && loan.balanceUsd <= state.cash ? ['repay', 'ok'] : ['ok']

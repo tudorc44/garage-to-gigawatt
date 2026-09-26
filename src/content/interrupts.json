@@ -73,26 +73,32 @@
   },
   {
    "id": "failure_wave",
-   "trigger": "weekly rng < base_fail * (used ? 1.5 : 1) * (heat_wave ? 2 : 1) * (ops_manager ? 0.5 : 1)",
-   "base_fail_note": "base_fail = model annual_failure_rate / 52, applied per site; fires when at least 5% of a site's units fail in one week",
+   "trigger": "rolled: one roll per site per quarter at a random week, for sites with >= min_working_units working units",
+   "game_note": "Design thread, 26 Sep 2026 (F1-F4): a rolled shock instead of the old 5%-in-a-week rule. chance = base_chance x (1 + used_share_bonus x the site's used share) x heat_wave_run_hot_mult (if 'Run hot' was chosen this quarter) x ops_manager_mult (with the Ops Manager). When it fires, U(wave_size_range) of the site's working units break at once (used first), on top of weekly failures. Counts toward the 3-interrupt cap; with the cap full they break silently. Repair now = repair_cost_usd x units x cost_mult (rush), back next week; run degraded (default) = they stay off until a normal Plan-phase repair.",
+   "week_range": [2, 12],
+   "min_working_units": 10,
+   "base_chance": 0.06,
+   "used_share_bonus": 0.5,
+   "heat_wave_run_hot_mult": 2,
+   "ops_manager_mult": 0.5,
+   "wave_size_range": [0.05, 0.10],
+   "prefer_used": true,
+   "counts_toward_cap": true,
+   "if_cap_full": "silent_failures",
+   "max_per_site_per_quarter": 1,
    "choices": [
     {
-     "id": "repair",
-     "label": "Repair now",
-     "effects": {
-      "cash": "-units*repair_cost"
-     }
+     "id": "repair_now",
+     "label": "Rush repair",
+     "effects": { "cost_mult": 1.5, "back_online": "next_week" }
     },
     {
-     "id": "degraded",
+     "id": "run_degraded",
      "label": "Run degraded",
-     "effects": {
-      "hashrate_mult": 0.9,
-      "duration_quarters": 1
-     }
+     "effects": { "back_online": "plan_phase_repair" }
     }
    ],
-   "default": "degraded",
+   "default": "run_degraded",
    "repair_cost_usd": {
     "gpu_gen1": 150,
     "gpu_gen2": 200,

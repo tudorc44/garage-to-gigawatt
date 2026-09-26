@@ -76,6 +76,14 @@
     "runHotQuarter": null,
     "moratoriumWaiver": {}
   },
+  "failureWaves": [
+    {
+      "siteId": "site-1",
+      "week": 10,
+      "roll": 0.755040087737143,
+      "size": 0.05094722665380687
+    }
+  ],
   "siteHeat": {
     "site-1": {
       "value": 5,

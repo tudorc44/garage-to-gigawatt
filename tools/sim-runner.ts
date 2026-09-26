@@ -239,6 +239,24 @@ function eventStats(runs: Run[]) {
   }
 }
 
+/** Failure waves across the runs: per game, and busts in a quarter that had a wave. */
+function waveStats(runs: Run[]) {
+  const isWave = (k: string) => k.startsWith('log.failure_wave_')
+  const perRun = runs.map(
+    (r) => r.state.log.filter((e) => isWave(e.key)).length,
+  )
+  const bustWithWave = runs.filter((r) => {
+    if (r.state.phase !== 'gameover') return false
+    const last = r.state.quarter
+    return r.state.log.some((e) => e.quarter === last && isWave(e.key))
+  }).length
+  return {
+    waves_per_run: perRun.reduce((a, b) => a + b, 0) / runs.length,
+    median_waves: median(perRun),
+    busts_in_wave_quarter: bustWithWave,
+  }
+}
+
 const summaries = runAll(BOTS, true)
 const probes = runAll(PROBES, false)
 
@@ -297,6 +315,7 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
     ...renewalStats(runs),
     ...pitchStats(runs),
     ...eventStats(runs),
+    ...waveStats(runs),
   }
 })
 const csvRows = summaryRows.map((r) => {
@@ -407,6 +426,16 @@ console.table(
     )
   }
 }
+
+console.log('\nFailure waves (bots run degraded):')
+console.table(
+  summaryRows.map((r) => ({
+    strategy: r.strategy,
+    'waves / run': r.waves_per_run.toFixed(2),
+    'median waves': r.median_waves,
+    'busts in a wave quarter': r.busts_in_wave_quarter,
+  })),
+)
 
 console.log('\nEvent cards (default answers):')
 console.table(
