@@ -9,6 +9,7 @@ import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
 import { outreachCostUsd, siteHeatValue } from '../src/sim/systems/heat.ts'
 import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
+import { canPitch } from '../src/sim/systems/pitch.ts'
 import {
   buyPrice,
   getModel,
@@ -55,6 +56,12 @@ interface BotSettings {
    * counter at these shares of the normal price, round by round, then take the last offer.
    */
   negotiateAt?: number[]
+  /**
+   * Pitch the rounds that can be pitched (2 Bandwidth) instead of taking the offer: counter at
+   * these multiples of the investor's opening valuation, round by round, then take its last offer.
+   * After a walk-away it pitches again when the round reopens.
+   */
+  pitchAt?: number[]
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -66,6 +73,32 @@ function makeBot(settings: BotSettings): Strategy {
       // 0. Take funding rounds when allowed (checked by dry-running the action).
       let reserveBase = s.cash
       for (const round of settings.raises ?? []) {
+        if (settings.pitchAt && canPitch(round)) {
+          // The pitch is deterministic: play it out on a copy, then commit the same moves.
+          const start: Action = { type: 'PITCH_START', round }
+          const r0 = applyAction(s, start)
+          if (!r0.ok || bandwidth < CONTENT.pitch.bandwidth) continue
+          let sim = r0.state
+          actions.push(start)
+          bandwidth -= CONTENT.pitch.bandwidth
+          const opening = sim.pitch!.openingUsd
+          const moves: Action[] = settings.pitchAt.map((m) => ({
+            type: 'PITCH_COUNTER',
+            preMoneyUsd: opening * m,
+          }))
+          moves.push({ type: 'PITCH_ACCEPT' })
+          for (const a of moves) {
+            if (!sim.pitch) break
+            if (a.type === 'PITCH_COUNTER' && sim.pitch.final) continue
+            const r = applyAction(sim, a)
+            if (!r.ok) break
+            sim = r.state
+            actions.push(a)
+          }
+          cash += sim.cash - s.cash
+          reserveBase += sim.cash - s.cash
+          continue
+        }
         const a: Action = { type: 'RAISE', round }
         const r = applyAction(s, a)
         if (r.ok && bandwidth >= s.bandwidth - r.state.bandwidth) {
@@ -332,6 +365,24 @@ export const BOTS: Record<string, Strategy> = {
     sellOnDrops: false,
     raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
     negotiateAt: [0.92, 0.97, 1.02],
+  }),
+  /** raise-climb that pitches the seed and Series A: asks 1.10× then 1.05× the opening, then accepts. */
+  'raise-pitch': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    pitchAt: [1.1, 1.05],
+  }),
+  /** raise-pitch, bolder: asks 1.20× then 1.10× the opening (design-thread target check). */
+  'raise-pitch-bold': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    pitchAt: [1.2, 1.1],
   }),
   /** raise-climb that also borrows the maximum equipment loan whenever it has none. */
   'raise-borrow': makeBot({

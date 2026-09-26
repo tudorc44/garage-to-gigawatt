@@ -157,6 +157,53 @@ function renewalStats(runs: Run[]) {
   }
 }
 
+/**
+ * Investor pitches across the runs (read from the log): pitches started, deals, walk-aways
+ * (either side), the valuation signed vs capital.json's pre-money, and when the seed closed.
+ */
+function pitchStats(runs: Run[]) {
+  let pitches = 0
+  let deals = 0
+  let walkaways = 0
+  const vsTerms: number[] = []
+  const seedClosed: string[] = []
+  // Stake gained on the rounds it raised vs taking them at capital.json's terms, in points
+  // (leaves out path effects like raising an extra round the taker never reached).
+  let gainPoints = 0
+  for (const r of runs) {
+    let keptVsTerms = 1
+    for (const e of r.state.log) {
+      if (e.key === 'log.raised') {
+        const step = CONTENT.ladder[String(e.params!.round)]
+        keptVsTerms *= (1 - Number(e.params!.dilutionPct)) / (1 - step.dilution)
+      }
+      if (e.key === 'log.pitch_started') pitches++
+      if (e.key.startsWith('log.pitch_') && e.key.includes('walked'))
+        walkaways++
+      if (e.key === 'log.pitch_deal') {
+        deals++
+        const pre = CONTENT.ladder[String(e.params!.round)].pre_money_usd!
+        vsTerms.push(Number(e.params!.preMoneyUsd) / pre)
+      }
+      if (e.key === 'log.raised' && e.params?.round === 'seed')
+        seedClosed.push(CONTENT.quarters[e.quarter])
+    }
+    gainPoints += r.state.founderStake * (1 - 1 / keptVsTerms) * 100
+  }
+  return {
+    pitches,
+    pitch_deals: deals,
+    pitch_walkaways: walkaways,
+    pitch_valuation_vs_terms: vsTerms.length
+      ? vsTerms.reduce((a, b) => a + b, 0) / vsTerms.length
+      : 0,
+    pitch_stake_gain_points: gainPoints / runs.length,
+    seed_closed: seedClosed.length
+      ? `${medianLabel(seedClosed)} (${seedClosed.length}/${runs.length})`
+      : '',
+  }
+}
+
 const summaries = runAll(BOTS, true)
 const probes = runAll(PROBES, false)
 
@@ -213,6 +260,7 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
     rate_hikes_per_run: logCount('log.rate_hike') / runs.length,
     outreach_per_run: logCount('log.outreach') / runs.length,
     ...renewalStats(runs),
+    ...pitchStats(runs),
   }
 })
 const header = Object.keys(summaryRows[0]).join(',')
@@ -271,6 +319,52 @@ console.table(
       'utility walked': r.utility_walked,
     })),
 )
+
+console.log('\nInvestor pitches (seed and Series A):')
+console.table(
+  summaryRows
+    .filter((r) => r.seed_closed)
+    .map((r) => ({
+      strategy: r.strategy,
+      'pitches / run': (r.pitches / r.runs).toFixed(2),
+      'walk-aways': r.pitches
+        ? `${r.pitch_walkaways} (${((r.pitch_walkaways / r.pitches) * 100).toFixed(0)}% of pitches)`
+        : '—',
+      'valuation vs terms': r.pitch_deals
+        ? `${(r.pitch_valuation_vs_terms * 100).toFixed(1)}%`
+        : '—',
+      'seed closed (median)': r.seed_closed,
+      'founder stake': `${(r.median_founder_stake * 100).toFixed(1)}%`,
+      'stake vs terms': `${r.pitch_stake_gain_points >= 0 ? '+' : ''}${r.pitch_stake_gain_points.toFixed(1)} pts`,
+      'bust rate': `${(r.bust_rate * 100).toFixed(0)}%`,
+    })),
+)
+{
+  // Same seeds, pitching vs taking every opening: the design thread's targets.
+  const taker = summaries.find((x) => x.strategy === 'raise-climb')
+  for (const pitcher of summaries.filter((x) =>
+    x.strategy.startsWith('raise-pitch'),
+  )) {
+    if (!taker) break
+    const gain =
+      pitcher.runs.reduce(
+        (a, r, i) => a + r.state.founderStake - taker.runs[i].state.founderStake,
+        0,
+      ) / pitcher.runs.length
+    const seedQ = (r: Run) =>
+      r.state.log.find((e) => e.key === 'log.raised' && e.params?.round === 'seed')
+        ?.quarter
+    const later = pitcher.runs.map((r, i) => {
+      const a = seedQ(r)
+      const b = seedQ(taker.runs[i])
+      return a !== undefined && b !== undefined ? a - b : null
+    })
+    const delays = later.filter((d): d is number => d !== null)
+    console.log(
+      `  ${pitcher.strategy} vs raise-climb (same seeds): final founder stake ${gain >= 0 ? '+' : ''}${(gain * 100).toFixed(1)} points on average (includes extra rounds one of them took); seed closed later in ${delays.filter((d) => d > 0).length}/${delays.length} runs (median delay ${median(delays)} quarters)`,
+    )
+  }
+}
 
 // ---------- target B1: when can a garage-only player first afford a small unit? ----------
 

@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with investor pitches (step 2 of 3: the screen and terminal commands).
+Last updated: 26 Sep 2026, with investor pitches (rules, screen, terminal, bots and sim checks).
 
 ## How the owner works
 
@@ -61,7 +61,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator) and unit tests: 274 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 281 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -304,6 +304,8 @@ ask first).
 | reinvest | garage only, spends everything | 0% | $28.8K |
 | raise-climb | reinvest + every round as soon as allowed, climbs the ladder; takes every renewal's opening | 0% | $16.4M (peak $310M, 2021Q1) |
 | raise-negotiate | raise-climb + negotiates every renewal (counters at 92%, 97%, 102% of normal) | 0% | $18.2M (peak $334M, 2021Q1) |
+| raise-pitch | raise-climb + pitches the seed and Series A (asks 1.10×, then 1.05× the opening, then accepts) | 0% | $16.7M (peak $318M, 2021Q1) |
+| raise-pitch-bold | raise-pitch, asking 1.20× then 1.10× | 0% | $16.3M (peak $318M, 2021Q1) |
 | raise-outreach | raise-climb + talks to the neighbours at any site with Heat 50+ | 0% | $16.6M (peak $305M, 2021Q1) |
 | raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $16.5M (peak $313M, 2021Q1) |
 | raise-auction | raise-climb + bids 85% of list on every lot it has room and cash for | 0% | $16.4M (wins 0.3 lots per game) |
@@ -371,6 +373,25 @@ ask first).
 
 ## Open questions for the design thread
 
+- **Investor pitch targets vs the pitcher bot** (sim, 50 seeds; stake measured as the points gained on
+  the rounds raised vs taking them at the capital.json terms, because comparing final stakes mixes in
+  runs where one bot reached an extra round, e.g. the IPO, which costs 8–14 points):
+
+  | Bot | Walk-aways | Valuation vs terms | Stake vs terms | Seed close | Busts |
+  |---|---|---|---|---|---|
+  | raise-pitch (1.10 / 1.05 / accept), limit 0.95–1.25 | 5% of pitches | 105.2% | +1.0 pts | same quarter, 50/50 | 0 |
+  | raise-pitch-bold (1.20 / 1.10 / accept), 0.95–1.25 | 17% | 106.5% | +1.3 pts | later in 6/50 runs (median 0) | 0 |
+  | raise-pitch, trial limit 0.95–1.30 (the maximum allowed) | 4% | 105.9% | +1.2 pts | same | 0 |
+  | raise-pitch-bold, trial 0.95–1.30 | 17% | 107.9% | +1.5 pts | later in 6/50 | 0 |
+
+  Bankruptcy and seed timing pass. **The 1.10 / 1.05 pitcher can't reach the stake (+1.5 to +4) or
+  walk-away (10–20%) targets inside the allowed tuning ranges**: it only overreaches when the limit is
+  below 1.0× the opening (about 1 pitch in 6), so walk-aways stay near 5% whatever walkaway_chance is
+  (0.35 gives about 5–6%), and its average valuation is about 1.06×, not the 1.10× the target's math
+  assumed. The content numbers are unchanged (limit 0.95–1.25, walk chance 0.25). Options: judge the
+  targets on the bolder bot (walk-aways pass; stake passes at limit 0.95–1.30); lower the stake target
+  to about +1; or widen the limit range further.
+
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
@@ -392,11 +413,10 @@ ask first).
 ## Next
 
 Week 3, the Heat system and the power side of week 4 (contracts, negotiation, Uri as firm load) are
-done. Investor pitches, steps 1–2 of 3 (sim rules + tests, the screen + terminal commands) are done.
-Next: step 3, a pitching bot, a sim table and golden replay, checked against the design thread's targets (pitcher 1.10 / 1.05 /
-accept vs taker, 50 seeds: +1.5 to +4 points of founder stake; walk-aways 10–20% of pitches;
-bankruptcy within ±2 runs; median seed close no more than 1 quarter later; tuning order: limit_range
-upper bound, then walkaway_chance, then walkaway_penalty, never lowball_margin). Backlog (design
-thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing EBITDA, clamped to
+done, and so are investor pitches (rules, screen, terminal, bots, sim table, pitcher golden). The pitch
+sim targets are only partly met: see the open question above, for the design thread (tuning order it
+gave: limit_range upper bound 1.20–1.30, then walkaway_chance 0.15–0.35, then walkaway_penalty
+0.05–0.10, never lowball_margin). Next: hires (the negotiation and pitch hooks, hire_shift, wait for
+them), or the Merge screen + chapter report. Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing EBITDA, clamped to
 ±30% of the capital.json terms). Also open: the LTV gauge on a Capital screen, and the League
 left-nav section (the table is only on the report now).

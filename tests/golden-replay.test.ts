@@ -269,6 +269,8 @@ const bots = {
   'heat-climber': BOTS['raise-climb'],
   // The sim-runner's raise-negotiate bot: negotiates every power contract renewal.
   negotiator: BOTS['raise-negotiate'],
+  /** Pitches the seed and Series A (1.10×, 1.05×, accept): pitch moves replay exactly. */
+  pitcher: BOTS['raise-pitch'],
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
