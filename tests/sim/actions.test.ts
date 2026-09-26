@@ -203,6 +203,41 @@ describe('site ladder', () => {
   })
 })
 
+describe('selling treasury coins from the Plan screen', () => {
+  const holding = (): GameState => ({
+    ...newGame(1),
+    treasury: { BTC: 2, ETH: 100 },
+  })
+
+  it('sells a share of one coin at the Plan-screen price, for 1 Bandwidth', () => {
+    const w = CONTENT.market[0][0]
+    const s = ok(holding(), { type: 'SELL_TREASURY', coin: 'ETH', pct: 0.5 })
+    expect(s.treasury).toEqual({ BTC: 2, ETH: 50 })
+    expect(s.cash).toBeCloseTo(10_000 + 50 * w.eth_usd)
+    expect(s.bandwidth).toBe(2)
+    const entry = s.log.at(-1)!
+    expect(entry.key).toBe('log.treasury_sold')
+    expect(t(entry.key, entry.params)).toMatch(
+      /^Sold 50% of your ETH \(50\.0000 ETH\) for \$/,
+    )
+  })
+
+  it('refuses: a coin you do not hold, a bad share, no Bandwidth, outside the Plan phase', () => {
+    const noBtc = { ...holding(), treasury: { BTC: 0, ETH: 100 } }
+    const sellBtc: Action = { type: 'SELL_TREASURY', coin: 'BTC', pct: 1 }
+    expect(err(noBtc, sellBtc)).toBe('error.nothing_to_sell')
+    expect(err(holding(), { type: 'SELL_TREASURY', coin: 'ETH', pct: 0 })).toBe(
+      'error.bad_pct',
+    )
+    expect(err({ ...holding(), bandwidth: 0 }, sellBtc)).toBe(
+      'error.no_bandwidth',
+    )
+    expect(err({ ...holding(), phase: 'live' }, sellBtc)).toBe(
+      'error.wrong_phase',
+    )
+  })
+})
+
 describe('leaving a site (breaking the lease)', () => {
   // A small unit (rent $6,000/quarter) with 3 used rigs on it, and $10,000 cash.
   function withSmallUnit(): GameState {

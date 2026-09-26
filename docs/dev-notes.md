@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the equipment loan.
+Last updated: 26 Sep 2026, with per-coin selling and the Plan-screen treasury sale.
 
 ## How the owner works
 
@@ -53,11 +53,13 @@ See `CLAUDE.md` for the full list. The main ones:
 4. **Capital:** the equipment loan (see Decisions), friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
    founder stake (dilutions multiply: F&F then seed leaves 72%).
 5. **Leaving a site** (lease break) with a penalty.
+   **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
+   and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
 6. **Terminal game** (`npm run play`) and **browser UI**: title screen, Plan, Live quarter (1.5 s per week,
    pause, 1×/2×/4×, skip, alerts as modals), Quarter report, end screen. Design-system tokens and
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
-   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker) and unit tests: 149 passing + 1 to-do.
+   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker) and unit tests: 152 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helper (dev and staging, not production).
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
@@ -81,6 +83,10 @@ ask first).
 - The small unit can be built without scouting; warehouse and up need scouting first.
 - Texas uses its fixed power price until negotiation exists.
 - Coins are sold **weekly** at that week's price (not at quarter end).
+- **Per coin:** the keep/sell % is set separately for BTC and ETH (two sliders). The price alert offers
+  "Sell 25% of your BTC", "Sell 25% of your ETH" or "Hold".
+- **Sell treasury coins from the Plan screen**, 1 Bandwidth per sale, choosing the coin and the share.
+  This goes **beyond the scope doc's action list (§2.6)**: the owner chose to add it without a swap.
 - Fonts self-hosted with Fontsource (no Google Fonts CDN).
 - Friends & family: 2 Bandwidth, +$40K for 10%, open 2017Q1–2018Q2, once per game (from `capital.json`).
 - Seed: 2 Bandwidth, +$1.5M for 20% ($6M pre-money), open 2017Q4–2019Q4, once, needs a powered site of
@@ -103,8 +109,10 @@ ask first).
 - Several sites allowed, even of the same tier. Scout/build at most one tier above your biggest site.
   Scouting gives 2–3 offers (±15% on build cost, rent and power price), each hiding one flaw; offers never
   expire; re-scouting replaces them. Build cost is paid up front; rent is paid weekly from signing.
-- Price alert: bigger of the BTC/ETH weekly move, threshold 15%; only fires if you hold coins; "sell"
-  sells 25% of both. HODL starts at 0% (sell everything).
+- Price alert: bigger of the BTC/ETH weekly move, threshold 15%; only fires if you hold coins. A "sell"
+  choice is only offered for a coin the treasury holds. HODL starts at 0% for both coins (sell everything).
+- Plan-screen treasury sale: shares of 25/50/75/100%, at the quarter's first-week price (the price the
+  Plan screen shows). Bots answer alerts on a drop by selling the coin that fell.
 - Valuation (amendment A5): max(0, quarterly EBITDA × 4) × era multiple + cash + treasury − debt.
 - "Cost per coin" counts power only. Cash is rounded to cents weekly.
 - Raises cost 2 Bandwidth unless `capital.json` says otherwise; open rounds are listed in `balance.ts`.
@@ -125,7 +133,7 @@ ask first).
 
 | Bot | What it does | Bust rate | Median end value |
 |---|---|---|---|
-| cautious | garage only, keeps half its cash | 0% | $39.9K |
+| cautious | garage only, keeps half its cash | 0% | $41.5K |
 | reinvest | garage only, spends everything | 0% | $28.8K |
 | raise-climb | reinvest + F&F (2017Q1) + seed (2017Q4), climbs the ladder | 0% | $974K (peak $9.2M, 2021Q1) |
 | raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $947K (peak $9.2M, 2021Q1) |

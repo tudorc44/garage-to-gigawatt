@@ -5,6 +5,7 @@ import { hasText, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
+  SELL_TREASURY_BANDWIDTH,
   equipmentLoanView,
   fundingRound,
   lotViews,
@@ -13,6 +14,7 @@ import {
   recentMarket,
   siteLadder,
   siteViews,
+  treasuryValue,
   whyNot,
   type LotView,
 } from '../../sim/selectors.ts'
@@ -35,6 +37,7 @@ import {
   LeaveDialog,
   LoanDialog,
   OffersDialog,
+  SellCoinsDialog,
 } from './dialogs.tsx'
 
 export interface ScreenProps {
@@ -43,7 +46,8 @@ export interface ScreenProps {
 }
 
 /** Which dialog is open; `leave:<siteId>` confirms leaving that site. */
-type Open = 'buy' | 'fleet' | 'offers' | 'loan' | `leave:${string}` | null
+type Open =
+  'buy' | 'fleet' | 'offers' | 'loan' | 'sell_coins' | `leave:${string}` | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
   const [open, setOpen] = useState<Open>(null)
@@ -88,6 +92,13 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'offers' && (
         <OffersDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
+      {open === 'sell_coins' && (
+        <SellCoinsDialog
+          state={state}
+          act={act}
+          onClose={() => setOpen(null)}
+        />
       )}
       {open === 'loan' && (
         <LoanDialog state={state} act={act} onClose={() => setOpen(null)} />
@@ -435,6 +446,31 @@ function TodoPanel({
           icon="sell"
           name={t('ui.plan.fleet')}
           locked={t('ui.locked.no_machines')}
+        />
+      )}
+
+      {treasuryValue(state) > 0 ? (
+        <ActionRow
+          icon="treasury"
+          name={t('ui.plan.sell_treasury')}
+          bandwidth={SELL_TREASURY_BANDWIDTH}
+          bandwidthLeft={left}
+          price={t('ui.plan.worth', { value: fmt.money(treasuryValue(state)) })}
+          disabledReason={
+            left < SELL_TREASURY_BANDWIDTH
+              ? say({
+                  key: 'error.no_bandwidth',
+                  params: { needed: SELL_TREASURY_BANDWIDTH, have: left },
+                })
+              : undefined
+          }
+          onClick={() => open('sell_coins')}
+        />
+      ) : (
+        <ActionRow
+          icon="treasury"
+          name={t('ui.plan.sell_treasury')}
+          locked={t('ui.locked.treasury_empty')}
         />
       )}
 

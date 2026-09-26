@@ -257,6 +257,12 @@ function parse(
       }
       return { type: 'BUILD_SITE', tier: rest[0] ?? '' }
     }
+    case 'sellcoins': {
+      const coin =
+        rest[0] === 'btc' ? 'BTC' : rest[0] === 'eth' ? 'ETH' : undefined
+      if (!coin) return 'play.bad_number'
+      return { type: 'SELL_TREASURY', coin, pct: num(1) / 100 }
+    }
     case 'loan':
       return { type: 'TAKE_LOAN', amountUsd: num(0) }
     case 'repay':

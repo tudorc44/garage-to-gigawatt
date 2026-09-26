@@ -15,6 +15,8 @@ export const BALANCE = {
     build: 1,
     /** Taking an equipment loan (scope §2.6). Repaying costs none. */
     loan: 1,
+    /** Selling treasury coins from the Plan screen (owner's addition, beyond scope §2.6). */
+    sellTreasury: 1,
   },
 
   failures: {

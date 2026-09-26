@@ -17,7 +17,7 @@ import {
   takeEquipmentLoan,
 } from './systems/loans.ts'
 import { getModel, marketWeek } from './systems/market.ts'
-import { treasuryValueUsd } from './systems/treasury.ts'
+import { sellTreasury, treasuryValueUsd } from './systems/treasury.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
   baseCapexUsd,
@@ -49,6 +49,8 @@ export type Action =
   | { type: 'BUILD_SITE'; tier: string }
   /** Break the site's lease: its machines are sold, a penalty is paid, rent stops. */
   | { type: 'LEAVE_SITE'; siteId: string }
+  /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
+  | { type: 'SELL_TREASURY'; coin: Coin; pct: number }
   /** Borrow against your machines (equipment loan). */
   | { type: 'TAKE_LOAN'; amountUsd: number }
   /** Pay the equipment loan off early. */
@@ -288,6 +290,26 @@ function run(s: GameState, a: Action): Message | undefined {
         logEntry(s, 'log.site_flaw', { tier: site.tier, flaw: site.flaw })
       if ('offerId' in a)
         s.siteOffers = s.siteOffers.filter((o) => o.id !== a.offerId)
+      return
+    }
+
+    case 'SELL_TREASURY': {
+      if (a.coin !== 'BTC' && a.coin !== 'ETH') return fail('error.bad_choice')
+      if (!(a.pct > 0 && a.pct <= 1)) return fail('error.bad_pct')
+      if (s.treasury[a.coin] <= 0)
+        return fail('error.nothing_to_sell', { coin: a.coin })
+      const bw = BALANCE.bandwidth.sellTreasury
+      if (s.bandwidth < bw)
+        return fail('error.no_bandwidth', { needed: bw, have: s.bandwidth })
+      s.bandwidth -= bw
+      const coins = s.treasury[a.coin] * a.pct
+      const valueUsd = sellTreasury(s, a.pct, marketWeek(s.quarter, 0), a.coin)
+      logEntry(s, 'log.treasury_sold', {
+        amount: `${coins.toFixed(4)} ${a.coin}`,
+        sharePct: a.pct,
+        soldCoin: a.coin,
+        valueUsd,
+      })
       return
     }
 

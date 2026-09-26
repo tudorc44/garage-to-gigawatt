@@ -351,3 +351,15 @@ export function equipmentLoanView(state: GameState) {
       terms ? amountUsd / terms.tenorQuarters + (amountUsd * terms.apr) / 4 : 0,
   }
 }
+
+/** The treasury as the sell dialog shows it: coins held and their value at this week's price. */
+export function treasuryHoldings(state: GameState) {
+  const w = currentMarket(state)
+  return (['BTC', 'ETH'] as const).map((coin) => ({
+    coin,
+    amount: state.treasury[coin],
+    valueUsd: state.treasury[coin] * coinPrice(w, coin),
+  }))
+}
+
+export const SELL_TREASURY_BANDWIDTH = BALANCE.bandwidth.sellTreasury

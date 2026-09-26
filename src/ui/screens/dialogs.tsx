@@ -5,15 +5,17 @@ import { t, tDynamic } from '../../i18n/t.ts'
 import { applyAction, type Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
+  SELL_TREASURY_BANDWIDTH,
   bestSite,
   equipmentLoanView,
+  treasuryHoldings,
   lotViews,
   machineMarket,
   siteViews,
   whyNot,
   type LotView,
 } from '../../sim/selectors.ts'
-import type { Condition, GameState } from '../../sim/state.ts'
+import type { Coin, Condition, GameState } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import { machineIcon, machineName, say, tierIcon, tierName } from '../names.ts'
@@ -578,6 +580,90 @@ export function LoanDialog({ state, act, onClose }: DialogProps) {
             total={v.bandwidth}
             filled={v.bandwidth}
             label={t('ui.plan.costs_bandwidth', { n: v.bandwidth })}
+          />
+        </button>
+      </div>
+    </Dialog>
+  )
+}
+
+const SELL_SHARES = [0.25, 0.5, 0.75, 1] as const
+
+/** Sell part of one coin in the treasury: pick the coin and a share. 1 Bandwidth. */
+export function SellCoinsDialog({ state, act, onClose }: DialogProps) {
+  const holdings = treasuryHoldings(state)
+  const [coin, setCoin] = useState<Coin>(
+    holdings.find((h) => h.amount > 0)?.coin ?? 'BTC',
+  )
+  const [pct, setPct] = useState<number>(0.25)
+  const held = holdings.find((h) => h.coin === coin)!
+  const a: Action = { type: 'SELL_TREASURY', coin, pct }
+  const why = whyNot(state, a)
+  const valueUsd = held.valueUsd * pct
+  const amount = fmt.crypto(held.amount * pct, coin)
+  return (
+    <Dialog title={t('ui.sell_coins.title')} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.sell_coins.note')}
+      </p>
+      <div class="form-row">
+        <div class="field">
+          <span class="label">{t('ui.sell_coins.coin')}</span>
+          <div class="seg" role="group" aria-label={t('ui.sell_coins.coin')}>
+            {holdings.map((h) => (
+              <button
+                key={h.coin}
+                type="button"
+                aria-pressed={coin === h.coin}
+                disabled={h.amount <= 0}
+                onClick={() => setCoin(h.coin)}
+              >
+                {h.coin}{' '}
+                {t('ui.sell_coins.holding', {
+                  amount: fmt.crypto(h.amount, h.coin),
+                  value: fmt.money(h.valueUsd),
+                })}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div class="field">
+          <span class="label">{t('ui.sell_coins.share')}</span>
+          <div class="seg" role="group" aria-label={t('ui.sell_coins.share')}>
+            {SELL_SHARES.map((p) => (
+              <button
+                key={p}
+                type="button"
+                aria-pressed={pct === p}
+                onClick={() => setPct(p)}
+              >
+                {fmt.pct(p)}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+      <p class="num-s" style={{ margin: 0 }}>
+        {t('ui.sell_coins.preview', { amount, value: fmt.money(valueUsd) })}
+      </p>
+      {why && <p class="num-s loss">{say(why)}</p>}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.loan.cancel')}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          disabled={!!why}
+          onClick={() => {
+            if (!act(a)) onClose()
+          }}
+        >
+          {t('ui.sell_coins.confirm', { value: fmt.money(valueUsd) })}
+          <Pips
+            total={SELL_TREASURY_BANDWIDTH}
+            filled={SELL_TREASURY_BANDWIDTH}
+            label={t('ui.plan.costs_bandwidth', { n: SELL_TREASURY_BANDWIDTH })}
           />
         </button>
       </div>
