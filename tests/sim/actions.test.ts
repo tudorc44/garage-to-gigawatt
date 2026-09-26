@@ -313,7 +313,7 @@ describe('Bandwidth and power prices', () => {
     expect(bandwidthForQuarter({ ...s, quarter: 2 })).toBe(4)
   })
 
-  it('reads power prices by year; Texas uses its fixed option; rate-class flaw hikes after 4 quarters', () => {
+  it('reads power prices by year; Texas uses its fixed option; a rate-class hike (set by its card) applies', () => {
     const garage = newGame(1).sites[0]
     expect(powerPriceUsdKwh(garage, 0)).toBe(0.12)
     expect(powerPriceUsdKwh(garage, q('2022Q1'))).toBe(0.15)
@@ -332,8 +332,11 @@ describe('Bandwidth and power prices', () => {
       readyQuarter: 1,
       flaw: 'rate_class',
     }
-    expect(powerPriceUsdKwh(hiked, 4)).toBe(0.06)
-    expect(powerPriceUsdKwh(hiked, 5)).toBeCloseTo(0.06 * 1.4)
+    // No silent hike any more: the utility_rate_hike card sets it (events.json).
+    expect(powerPriceUsdKwh(hiked, 5)).toBe(0.06)
+    expect(powerPriceUsdKwh({ ...hiked, rateMult: 1.3 }, 5)).toBeCloseTo(
+      0.06 * 1.3,
+    )
   })
 })
 

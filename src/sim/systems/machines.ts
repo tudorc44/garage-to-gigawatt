@@ -1,22 +1,10 @@
 // Machines: buying, selling and repairing batches ("lots") of identical units.
 import { CONTENT } from '../../content/index.ts'
 import type { Condition, GameState, MachineLot } from '../state.ts'
-import { buyPrice, getModel, leadTimeQuarters, sellPrice } from './market.ts'
+import { getModel, leadTimeQuarters, sellPrice } from './market.ts'
 
 export function repairCostPerUnit(modelId: string): number {
   return CONTENT.interrupts.byId.failure_wave?.repair_cost_usd?.[modelId] ?? 0
-}
-
-/** Price to buy `count` units now, or undefined if not for sale. */
-export function purchaseCostUsd(
-  modelId: string,
-  condition: Condition,
-  count: number,
-  quarter: number,
-): number | undefined {
-  const model = getModel(modelId)
-  const price = model && buyPrice(model, quarter, condition)
-  return price === undefined ? undefined : price * count
 }
 
 /** Adds bought units, merging into an identical lot if there is one. */

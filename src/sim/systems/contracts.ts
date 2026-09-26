@@ -56,6 +56,7 @@ export function signContract(
   price: number,
   term: number,
 ): void {
+  delete site.rateMult // a renewal ends the rate_class hike
   site.contract = {
     type,
     price,

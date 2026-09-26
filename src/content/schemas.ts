@@ -516,6 +516,143 @@ export const hiresFileSchema = z
 export type Hire = z.output<typeof hireSchema>
 export type HiresRules = z.output<typeof hiresFileSchema>
 
+// ---------- events.json ----------
+
+/** Effect keys the event engine implements (src/sim/systems/events.ts). */
+export const EVENT_EFFECTS = [
+  'cash',
+  'buy_machine',
+  'lock_new_gpus_quarters',
+  'sell_treasury_pct',
+  'plan_new_price_mult',
+  'plan_used_discount',
+  'open_buy',
+  'guarantee_auction',
+  'mothball',
+  'sell_machines_pct',
+  'flag',
+  'sell_model',
+  'ipo_bandwidth',
+  'rent_racks',
+  'repay_crypto_from_collateral',
+  'margin_stress',
+  'grievance',
+  'hashrate_mult',
+  'failure_mult',
+  'fire_rebuild',
+  'cash_rent_quarters',
+  'rent_zero',
+  'tariff_pay_pct',
+  'tariff_delay_quarters',
+  'lawyer',
+  'lose_machines',
+  'scam',
+  'rate_class',
+  'bandwidth_next',
+  'run_hot',
+  'chillers',
+  'stake_points',
+  'tax',
+  'tax_plan',
+] as const
+/** Named conditions (events.ts): a card's requires/trigger, a choice's requires, the card's site. */
+export const EVENT_CONDITIONS = [
+  'owns_s9',
+  'ipo_eligible',
+  'spare_mw',
+  'has_crypto_loan',
+  'machines_30',
+  'landlord_site',
+  'pending_asics',
+  'heat_70',
+  'theft_site',
+  'bought_used',
+  'rate_class_due',
+  'q3_big_site',
+  'ff_winter',
+  'tax_quarter',
+] as const
+export const EVENT_SITES = [
+  'most_machines',
+  'landlord_site',
+  'moratorium_site',
+  'theft_site',
+  'rate_class_site',
+] as const
+
+const eventChoiceSchema = z.object({
+  id: z.string(),
+  requires: z.enum(EVENT_CONDITIONS).optional(),
+  effects: z
+    .record(z.string(), z.unknown())
+    .refine(
+      (e) =>
+        Object.keys(e).every((k) =>
+          (EVENT_EFFECTS as readonly string[]).includes(k),
+        ),
+      {
+        message: `effects must use the known keys: ${EVENT_EFFECTS.join(', ')}`,
+      },
+    ),
+})
+
+const eventBase = {
+  id: z.string(),
+  requires: z.enum(EVENT_CONDITIONS).optional(),
+  site: z.enum(EVENT_SITES).optional(),
+  default: z.string(),
+  choices: z.array(eventChoiceSchema).min(2),
+}
+
+export const eventSchema = z
+  .discriminatedUnion('type', [
+    z.object({
+      ...eventBase,
+      type: z.literal('scripted'),
+      quarter: quarterId,
+      week_of: z.string(),
+    }),
+    z.object({
+      ...eventBase,
+      type: z.literal('random'),
+      trigger: z.enum(EVENT_CONDITIONS),
+      weight: nonNeg,
+      /** Fires when its condition is first met, taking that quarter's random slot. */
+      bypass_random_roll: z.boolean().optional(),
+      /** If the 3 interrupts are used up, it comes in week 1 of next quarter instead. */
+      defer_if_cap_full: z.boolean().optional(),
+      /** Only in these quarters (the tax_quarter trigger). */
+      quarters: z.array(quarterId).optional(),
+    }),
+  ])
+  .refine((e) => e.choices.some((c) => c.id === e.default), {
+    message: 'default must be one of the choice ids',
+  })
+
+export const eventsFileSchema = z.object({
+  engine: z.object({
+    random_chance_per_quarter: z.number().min(0).max(1),
+    random_start: quarterId,
+    random_week_range: z.tuple([
+      z.number().int().min(1),
+      z.number().int().max(13),
+    ]),
+    random_max_per_quarter: z.literal(1),
+    random_once_per_game: z.literal(true),
+    random_counts_toward_cap: z.literal(true),
+    scripted_counts_toward_cap: z.literal(false),
+    rng_stream: z.string(),
+  }),
+  market_phases: z.object({
+    boom: z.array(quarterId),
+    winter: z.array(quarterId),
+  }),
+  events: z.array(eventSchema).min(1),
+})
+
+export type EventCardRaw = z.output<typeof eventSchema>
+export type EventChoice = z.output<typeof eventChoiceSchema>
+
 // ---------- merge.json ----------
 
 /** The Merge decision (end of Act I) and the chapter score. */

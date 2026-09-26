@@ -139,9 +139,7 @@ describe('power contracts', () => {
     const s = powered('warehouse', '2018Q2')
     site2(s).surcharge = 1.2
     expect(powerPriceUsdKwh(site2(s), s.quarter)).toBeCloseTo(0.06 * 1.2)
-    site2(s).flaw = 'rate_class'
-    expect(powerPriceUsdKwh(site2(s), s.quarter + 4)).toBeCloseTo(
-      0.06 * 1.4 * 1.2,
-    )
+    site2(s).rateMult = 1.3 // the rate_class card's "accept"
+    expect(powerPriceUsdKwh(site2(s), s.quarter)).toBeCloseTo(0.06 * 1.3 * 1.2)
   })
 })

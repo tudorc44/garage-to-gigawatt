@@ -241,8 +241,9 @@
   },
   "rate_class": {
    "label": "Utility plans crypto-specific rate class",
+   "announced_by": "utility_rate_hike",
    "effect": {
-    "power_price_mult_after_4q": 1.4
+    "power_price_mult_after_4q": 1.3
    },
    "basis": "Plattsburgh 2018 surcharge; Chelan PUD 2018 high-density load rate; Hydro-Québec 2018 crypto tariff"
   },

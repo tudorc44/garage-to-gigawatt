@@ -4,6 +4,7 @@ import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { interruptChoices } from '../../src/sim/selectors.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
+import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 
 function act(state: GameState, action: Action): GameState {
   const r = applyAction(state, action)
@@ -15,7 +16,12 @@ function act(state: GameState, action: Action): GameState {
 function playQuarter(state: GameState, choice = 'hold'): GameState {
   let s = act(state, { type: 'END_PLAN' })
   while (s.phase === 'live') {
-    s = s.interrupt ? act(s, { type: 'RESOLVE_INTERRUPT', choice }) : advance(s)
+    s = s.interrupt
+      ? act(s, {
+          type: 'RESOLVE_INTERRUPT',
+          choice: s.interrupt.id === 'event' ? defaultChoice(s) : choice,
+        })
+      : advance(s)
   }
   return s
 }

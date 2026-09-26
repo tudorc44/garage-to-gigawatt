@@ -1,6 +1,7 @@
 // Treasury: mined coins are split by the HODL %: the held share goes into the
 // treasury, the rest is sold at this week's price. Power and rent are paid weekly.
 import { BALANCE, type MarketWeek } from '../../content/index.ts'
+import { modifierMult } from './eventEffects.ts'
 import type { Coin, GameState } from '../state.ts'
 import { coinPrice } from './market.ts'
 import type { LotWeek } from './mining.ts'
@@ -21,7 +22,10 @@ export interface WeekMoney {
 /** Rent for every site you hold (including ones still being built), spread over 13 weeks. */
 export function weeklyRentUsd(state: GameState): number {
   return state.sites.reduce(
-    (sum, s) => sum + s.rentUsdQ / BALANCE.weeksPerQuarter,
+    (sum, s) =>
+      sum +
+      (s.rentUsdQ / BALANCE.weeksPerQuarter) *
+        modifierMult(state, 'rent', s.id),
     0,
   )
 }

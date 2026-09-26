@@ -208,7 +208,7 @@ export function checkMarginCall(
 ): void {
   const loan = state.cryptoLoan
   if (!loan || state.interrupt) return
-  const terms = CONTENT.cryptoLoan
+  const terms = marginLevels(state)
   const now = ltv(state, w)
   const weekNo = state.week + 1
   if (now >= terms.liquidationLtv) {
@@ -250,6 +250,23 @@ export function checkMarginCall(
       }
     }
   }
+}
+
+/**
+ * Margin-call and liquidation LTVs now: the loan's terms, or tighter ones for the rest of a
+ * quarter after an event card (luna "ride it out").
+ */
+export function marginLevels(state: GameState): {
+  marginCallLtv: number
+  liquidationLtv: number
+} {
+  const stress = state.events.marginStress
+  if (stress && stress.quarter === state.quarter)
+    return {
+      marginCallLtv: stress.callLtv,
+      liquidationLtv: stress.liquidationLtv,
+    }
+  return CONTENT.cryptoLoan
 }
 
 /** The lender sells enough pledged coins to repay the loan; the rest come back. A shortfall comes out of cash. */

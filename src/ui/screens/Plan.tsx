@@ -13,6 +13,7 @@ import {
   equipmentLoanView,
   fundingRound,
   hireViews,
+  planOpensOnBuy,
   marketReadView,
   heatBand,
   lotViews,
@@ -78,7 +79,8 @@ type Open =
   | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
-  const [open, setOpen] = useState<Open>(null)
+  // An event card last quarter may ask to start this Plan phase on the Buy dialog.
+  const [open, setOpen] = useState<Open>(planOpensOnBuy(state) ? 'buy' : null)
   const q = quarterName(state.quarter)
   const news = headlines(q)
   return (

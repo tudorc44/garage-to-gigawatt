@@ -6,6 +6,7 @@ import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { InvestorPitch, PitchWalkaway } from './systems/pitch.ts'
 import type { MarketRead } from './systems/readMarket.ts'
+import { emptyEventState, type EventState } from './systems/eventEffects.ts'
 
 export type Phase = 'plan' | 'live' | 'report' | 'merge' | 'gameover' | 'ended'
 export type Coin = 'BTC' | 'ETH'
@@ -26,6 +27,8 @@ export interface Site {
   surcharge?: number
   /** The site's power contract (every tier but the garage, from when it's powered). */
   contract?: PowerContract
+  /** rate_class flaw, set by its event card: power × this until the next contract renewal. */
+  rateMult?: number
 }
 
 export type ContractType = 'fixed' | 'index'
@@ -151,6 +154,8 @@ export interface GameState {
   marketRead: MarketRead | null
   /** The Merge decision (merge.json choice id) once made, or null. */
   mergeChoice: string | null
+  /** Event cards: what's due, what's been played, and their lasting effects. */
+  events: EventState
   /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
   complaint: { siteId: string; week: number } | null
   /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
@@ -192,8 +197,10 @@ export interface ActiveInterrupt {
   ltv?: number
   /** Curtailment only: the grid's offer for taking the Texas machines offline next week. */
   curtail?: CurtailOffer
-  /** Neighbour complaint only: the site the neighbours are complaining about. */
+  /** Neighbour complaint (and site-bound event cards): the site it's about. */
   siteId?: string
+  /** Event cards only: the events.json card id. */
+  event?: string
 }
 
 /** What curtailing the Texas site for one week pays (review A8), fixed when the grid asks. */
@@ -380,6 +387,7 @@ export function newGame(seed: number): GameState {
     firedQuarter: {},
     marketRead: null,
     mergeChoice: null,
+    events: emptyEventState(),
     siteHeat: {
       'site-1': {
         value: start.heat_base,

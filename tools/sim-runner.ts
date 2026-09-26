@@ -204,6 +204,41 @@ function pitchStats(runs: Run[]) {
   }
 }
 
+/**
+ * Event cards across the runs (from the log): random cards per eligible quarter, how many runs
+ * saw each card, and whether scripted cards fired whenever they could.
+ */
+function eventStats(runs: Run[]) {
+  const perCard: Record<string, number> = {}
+  let randomCards = 0
+  let eligibleQuarters = 0
+  let doubleQuarters = 0
+  for (const r of runs) {
+    const seen = new Set<string>()
+    const perQuarter: Record<number, number> = {}
+    for (const e of r.state.log) {
+      if (e.key !== 'log.event_choice' && e.key !== 'log.event_choice_cash')
+        continue
+      const id = String(e.params!.eventTitle).replace(/\.title$/, '')
+      seen.add(id)
+      if (CONTENT.events.byId[id]?.type === 'random') {
+        randomCards++
+        perQuarter[e.quarter] = (perQuarter[e.quarter] ?? 0) + 1
+      }
+    }
+    for (const id of seen) perCard[id] = (perCard[id] ?? 0) + 1
+    doubleQuarters += Object.values(perQuarter).filter((n) => n > 1).length
+    eligibleQuarters += r.state.events.eligibleQuarters
+  }
+  return {
+    random_cards_per_quarter: eligibleQuarters
+      ? randomCards / eligibleQuarters
+      : 0,
+    double_random_quarters: doubleQuarters,
+    cards_seen: perCard,
+  }
+}
+
 const summaries = runAll(BOTS, true)
 const probes = runAll(PROBES, false)
 
@@ -261,13 +296,18 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
     outreach_per_run: logCount('log.outreach') / runs.length,
     ...renewalStats(runs),
     ...pitchStats(runs),
+    ...eventStats(runs),
   }
 })
-const header = Object.keys(summaryRows[0]).join(',')
+const csvRows = summaryRows.map((r) => {
+  const row: Partial<typeof r> = { ...r }
+  delete row.cards_seen // a table, printed below; not a CSV column
+  return row
+})
+const header = Object.keys(csvRows[0]).join(',')
 writeFileSync(
   join(OUT, 'summary.csv'),
-  [header, ...summaryRows.map((r) => Object.values(r).join(','))].join('\n') +
-    '\n',
+  [header, ...csvRows.map((r) => Object.values(r).join(','))].join('\n') + '\n',
 )
 
 console.log(
@@ -366,6 +406,28 @@ console.table(
       `  ${pitcher.strategy} vs raise-climb (same seeds): final founder stake ${gain >= 0 ? '+' : ''}${(gain * 100).toFixed(1)} points on average (includes extra rounds one of them took); seed closed later in ${delays.filter((d) => d > 0).length}/${delays.length} runs (median delay ${median(delays)} quarters)`,
     )
   }
+}
+
+console.log('\nEvent cards (default answers):')
+console.table(
+  summaryRows.map((r) => ({
+    strategy: r.strategy,
+    'random cards / eligible quarter': r.random_cards_per_quarter.toFixed(2),
+    'quarters with 2+ random': r.double_random_quarters,
+  })),
+)
+{
+  // Share of runs that saw each card, over all strategies.
+  const runsTotal = summaryRows.reduce((n, r) => n + r.runs, 0)
+  const seen: Record<string, number> = {}
+  for (const r of summaryRows)
+    for (const [id, n] of Object.entries(r.cards_seen))
+      seen[id] = (seen[id] ?? 0) + n
+  console.log('  Runs that saw each card (all strategies):')
+  for (const c of CONTENT.events.cards)
+    console.log(
+      `    ${c.type.padEnd(8)} ${c.id.padEnd(22)} ${(((seen[c.id] ?? 0) / runsTotal) * 100).toFixed(0)}%`,
+    )
 }
 
 // ---------- target B1: when can a garage-only player first afford a small unit? ----------

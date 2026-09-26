@@ -14,7 +14,6 @@ import type {
 } from './state.ts'
 import { repairCostPerUnit, saleValueUsd } from './systems/machines.ts'
 import {
-  buyPrice,
   coinPrice,
   getModel,
   leadTimeQuarters,
@@ -55,6 +54,7 @@ import {
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
+import { buyPriceNow } from './systems/eventEffects.ts'
 import { activeRivals, rivalSnapshot, yourRank } from './systems/rivals.ts'
 import {
   buildQuartersFor,
@@ -182,8 +182,8 @@ export function machineMarket(state: GameState): MachineOffer[] {
     const earns = (c: 'new' | 'used') =>
       quarterName(state.quarter + leadTimeQuarters(m, state.quarter, c) + 1) ||
       'after Act I'
-    const newPriceUsd = buyPrice(m, state.quarter, 'new')
-    const usedPriceUsd = buyPrice(m, state.quarter, 'used')
+    const newPriceUsd = buyPriceNow(state, m, 'new')
+    const usedPriceUsd = buyPriceNow(state, m, 'used')
     return {
       id: m.id,
       coin: m.coin,
@@ -417,7 +417,7 @@ export function fundingRound(state: GameState, id: string) {
     pitchable,
     /** A pitch for this round is in progress. */
     pitching: state.pitch?.id === id,
-    bandwidth: raiseBandwidth(step),
+    bandwidth: raiseBandwidth(step, state),
     pitchBandwidth: CONTENT.pitch.bandwidth,
     lockoutQuarters: CONTENT.pitch.lockoutQuarters,
     walkawayPenalty: CONTENT.pitch.walkawayPenalty,
@@ -841,6 +841,9 @@ export function mergeView(state: GameState) {
       id: c.id,
       text: c.text,
       act2Preview: c.act2Preview,
+      /** The 2019 GPU-cloud rumour, if you made a note of it (gpu_cloud only). */
+      insight:
+        c.id === 'gpu_cloud' && state.events.flags.includes('cloud_insight'),
       /** Set when the choice is about something you don't have. */
       note:
         c.appliesIf === 'gpus' && gpus === 0
@@ -942,4 +945,36 @@ export function chapterReport(state: GameState) {
       rivalsDropped: dropped,
     },
   }
+}
+
+/**
+ * The event card on screen: its id, site, and per choice what it would do to cash and machine
+ * count right now (a dry run of the answer; lasting effects are described by the card's hints).
+ */
+export function eventCardView(state: GameState) {
+  const alert = state.interrupt
+  if (alert?.id !== 'event' || !alert.event) return null
+  const units = (s: GameState) => s.machines.reduce((n, l) => n + l.count, 0)
+  const def = defaultChoice(state)
+  return {
+    id: alert.event,
+    type: CONTENT.events.byId[alert.event]?.type ?? 'random',
+    week: alert.week,
+    siteTier: state.sites.find((x) => x.id === alert.siteId)?.tier ?? null,
+    choices: availableChoices(state).map((id) => {
+      const r = applyAction(state, { type: 'RESOLVE_INTERRUPT', choice: id })
+      return {
+        id,
+        isDefault: id === def,
+        cashDeltaUsd: r.ok ? r.state.cash - state.cash : 0,
+        unitsDelta: r.ok ? units(r.state) - units(state) : 0,
+      }
+    }),
+  }
+}
+
+/** An event card last quarter asked for this Plan phase to open on the Buy dialog. */
+export function planOpensOnBuy(state: GameState): boolean {
+  const p = state.events.plan
+  return state.phase === 'plan' && p?.quarter === state.quarter && p.openBuy
 }

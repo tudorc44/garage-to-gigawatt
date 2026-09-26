@@ -10,6 +10,7 @@ import {
   type QuarterReport,
 } from '../state.ts'
 import { rollAuction } from './auctions.ts'
+import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
@@ -133,5 +134,6 @@ export function startNextQuarter(state: GameState): void {
     }
   }
   startQuarterContracts(state)
+  startQuarterEvents(state)
   rollAuction(state)
 }

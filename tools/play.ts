@@ -522,7 +522,11 @@ async function livePhase(s: GameState): Promise<GameState> {
 async function answerInterrupt(s: GameState): Promise<GameState> {
   const alert = s.interrupt!
   const choices = interruptChoices(s)
-  const label = (id: string) => tDynamic(`interrupt.${alert.id}.${id}`, id)
+  const label = (id: string) =>
+    alert.id === 'event'
+      ? tDynamic(`event.${alert.event}.choice.${id}`, id) +
+        ` (${tDynamic(`event.${alert.event}.hint.${id}`, '')})`
+      : tDynamic(`interrupt.${alert.id}.${id}`, id)
   const fallback = defaultChoice(s)
   console.log()
   if (alert.id === 'neighbour_complaint') {
@@ -530,6 +534,11 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
     say('play.complaint', {
       tier: name('site', site.tier),
       heat: Math.round(siteHeatValue(s, site.id)),
+    })
+  } else if (alert.id === 'event') {
+    say('play.event', {
+      title: tDynamic(`event.${alert.event}.title`, ''),
+      body: tDynamic(`event.${alert.event}.body`, ''),
     })
   } else if (alert.id === 'margin_warning') {
     say('play.margin_warning', {

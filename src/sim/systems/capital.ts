@@ -10,7 +10,10 @@ export function getStep(id: string): LadderStep | undefined {
   return CONTENT.ladder[id]
 }
 
-export function raiseBandwidth(step: LadderStep): number {
+export function raiseBandwidth(step: LadderStep, state?: GameState): number {
+  const card = state?.events.ipoBandwidth
+  if (card && step.id === 'ipo_spac' && state!.quarter <= card.until)
+    return card.bw
   return step.bandwidth ?? BALANCE.capital.raiseBandwidth
 }
 
@@ -70,7 +73,7 @@ export function raiseBlocker(
   }
   const unmet = unmetRequirement(state, step)
   if (unmet) return unmet
-  const bw = raiseBandwidth(step)
+  const bw = raiseBandwidth(step, state)
   if (state.bandwidth < bw)
     return {
       key: 'error.no_bandwidth',
@@ -88,7 +91,7 @@ export function takeRaise(state: GameState, id: string): void {
       ? step.amount_usd / (step.pre_money_usd * (1 - penalty) + step.amount_usd)
       : step.dilution
   delete state.pitchWalkaways[id]
-  completeRaise(state, id, dilution, raiseBandwidth(step))
+  completeRaise(state, id, dilution, raiseBandwidth(step, state))
 }
 
 /** Money in, stake diluted by `dilution`, Bandwidth spent, round marked as raised. */

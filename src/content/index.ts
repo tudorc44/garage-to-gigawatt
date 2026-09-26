@@ -11,6 +11,7 @@ import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
 import hiresRaw from './hires.json' with { type: 'json' }
 import mergeRaw from './merge.json' with { type: 'json' }
+import eventsRaw from './events.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
   auctionRulesSchema,
@@ -19,6 +20,7 @@ import {
   heatFileSchema,
   hiresFileSchema,
   mergeFileSchema,
+  eventsFileSchema,
   readMarketSchema,
   interruptsFileSchema,
   machinesFileSchema,
@@ -37,6 +39,8 @@ import {
   type HiresRules,
   type MergeRules,
   type ReadMarketRules,
+  type EventCardRaw,
+  type EventChoice,
   type Interrupt,
   type LadderStep,
   type Machine,
@@ -56,6 +60,7 @@ export type {
   HiresRules,
   MergeRules,
   ReadMarketRules,
+  EventChoice,
   AuctionRules,
   CryptoLoanTerms,
   CurtailmentRules,
@@ -102,10 +107,29 @@ export interface Content {
   readMarket: ReadMarketRules
   /** The Merge decision and the chapter score (merge.json). */
   merge: MergeRules
+  /** Event cards (events.json), with scripted weeks resolved to week indexes. */
+  events: EventRules
   /** Power contract renewals (interrupts.json › negotiation). */
   negotiation: NegotiationRules
   /** Market shocks on fixed dates (shocks.json), with the week resolved to a week index. */
   shocks: Shock[]
+}
+
+export type EventCard = EventCardRaw & {
+  /** Scripted cards: quarter index and week index (0–12) of the card. */
+  quarterIndex?: number
+  weekIndex?: number
+}
+
+export interface EventRules {
+  randomChance: number
+  /** First quarter index with random cards. */
+  randomStart: number
+  /** Week numbers (1–13) a random card can come after. */
+  randomWeeks: [number, number]
+  winterQuarters: string[]
+  cards: EventCard[]
+  byId: Record<string, EventCard>
 }
 
 export interface Shock {
@@ -131,6 +155,7 @@ export interface RawContent {
   shocks: unknown
   hires: unknown
   merge: unknown
+  events: unknown
 }
 
 export class ContentError extends Error {
@@ -172,6 +197,7 @@ export function parseContent(raw: RawContent): Content {
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
   const merge = check('merge.json', mergeFileSchema, raw.merge)
+  const eventsFile = check('events.json', eventsFileSchema, raw.events)
   const shocksFile = check('shocks.json', shocksFileSchema, raw.shocks)
   const rawInterrupt = (id: string) =>
     (
@@ -210,6 +236,7 @@ export function parseContent(raw: RawContent): Content {
     !heat ||
     !hires ||
     !merge ||
+    !eventsFile ||
     !readMarket ||
     !negotiation ||
     !shocksFile
@@ -405,6 +432,25 @@ export function parseContent(raw: RawContent): Content {
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
+  const cards: EventCard[] = eventsFile.events.map((e) => {
+    if (e.type !== 'scripted') return e
+    const qi = quarters.indexOf(e.quarter)
+    const wi = qi < 0 ? -1 : market[qi].findIndex((w) => w.week === e.week_of)
+    if (wi < 0)
+      problems.push(
+        `events.json › ${e.id}: week ${e.week_of} isn't a week of ${e.quarter}`,
+      )
+    return { ...e, quarterIndex: qi, weekIndex: wi }
+  })
+  const events: EventRules = {
+    randomChance: eventsFile.engine.random_chance_per_quarter,
+    randomStart: quarters.indexOf(eventsFile.engine.random_start),
+    randomWeeks: eventsFile.engine.random_week_range,
+    winterQuarters: eventsFile.market_phases.winter,
+    cards,
+    byId: Object.fromEntries(cards.map((c) => [c.id, c])),
+  }
+
   const shocks: Shock[] = []
   for (const sh of shocksFile.shocks) {
     const qi = quarters.indexOf(sh.quarter)
@@ -446,6 +492,7 @@ export function parseContent(raw: RawContent): Content {
     hires,
     readMarket,
     merge,
+    events,
     negotiation,
     shocks,
   }
@@ -475,5 +522,6 @@ export const CONTENT: Content = parseContent({
   heat: heatRaw,
   hires: hiresRaw,
   merge: mergeRaw,
+  events: eventsRaw,
   shocks: shocksRaw,
 })

@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with hires, Read the market, the Merge decision + chapter report, and save/load.
+Last updated: 26 Sep 2026, with the 20 event cards.
 
 ## How the owner works
 
@@ -68,7 +68,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 300 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 316 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -97,10 +97,9 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-The 20 event cards (Heat's event-card
-effects wait for them), the failure-wave interrupt, sound, settings, the
-left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
-eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
+The failure-wave interrupt, sound, settings, the left-nav sections other than Dashboard. The
+undersized-transformer flaw's upgrade has no effect yet (landlord_sale works through its event card;
+noise ordinance and hostile council through Heat). The UI has no automated tests (would need e.g. jsdom:
 ask first).
 
 ## Decisions
@@ -151,6 +150,40 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Event cards** (scope §2.10; design thread 26 Sep 2026; `src/content/events.json`,
+  `src/sim/systems/events.ts` + `eventEffects.ts`, card text in `src/i18n/content.en.json`):
+  - 9 scripted + 10 random cards, plus Uri (the existing Uri alert now shows the card's title and
+    story above its rules). Effects are structured keys implemented in events.ts (no string
+    expressions); the loader rejects unknown keys and conditions.
+  - Scripted: pause the live quarter in their historical week when `requires` holds (halving needs S9s;
+    SPAC mania needs IPO eligibility, otherwise it's just the news line); not counted toward the 3
+    interrupts.
+  - Random: from 2017Q3, one roll per quarter (35%), a random week 2–12, picked by weight among the
+    cards whose trigger holds, each at most once per game, counted toward the cap (a full cap means no
+    random card that quarter). The Heat 70 moratorium and the rate_class rate hike skip the roll when
+    their condition is first met and take the quarter's slot; the rate hike, if the cap is full, comes
+    in week 1 of next quarter. Own random streams (`events:<q>`, `event_roll:<q>:<card>`).
+  - Defaults = the passive option (A4), with winter_bottom → keep running and farm_fire → patch.
+  - Overlaps (B): Uri keeps the built firm-load rules; SPAC mania makes the IPO cost 2 Bandwidth for
+    the rest of 2021; "go shopping" (2018 winter) guarantees an auction lot in 2019Q1; the rate_class
+    flaw's silent hike is gone — its card fires in the quarter the flaw kicks in (accept ×1.3, or fight
+    ×1.1 and −2 Bandwidth next quarter, both until the site's next contract renewal; `rate_class` is
+    1.3 in sites.json now); the moratorium card announces Heat 70 (lawyer up $80K: 40% it lifts for 4
+    quarters); landlord_eviction fires only at landlord_sale sites from their 3rd quarter; "heat ±x" =
+    grievance ±x at the card's site.
+  - Live cards with Plan-phase effects (C): price changes (btc_peak +10%, covid −30% used, China −25%
+    used, scam −50% used) apply in the next Plan phase, which also opens on the Buy dialog when the
+    card says so. The markup rig and S9 sales happen at once.
+  - Rules (D): mothball = machines off and rent ×0.3 until the end of next quarter ("until spring");
+    luna "ride it out" = margin call 60% / liquidation 70% for the rest of 2022Q2; spare MW = energized
+    capacity not used by machines; rebuild = max($20K, 5% of the fleet's used value) and the site at
+    85% for 13 weeks; tax = 20% of the last 4 quarters' EBITDA (min 0), or 6% now + 6% for 3 quarters;
+    the gpu_cloud note adds a line on the Merge screen; event multipliers stack with hires and flaws.
+  - Chosen by Claude Code: "for a quarter" = the next 13 weeks, "for the quarter" = to the quarter's end;
+    choice previews on the card are a dry run (cash and machine count now) plus a one-line hint;
+    `buyPriceNow` is the one price function for buying (the Buy action, the market view and the bots),
+    so card price changes and the GPU lock apply everywhere; hand-written golden bots skip actions the
+    game refuses (a card may have changed their cash); the rig-theft cost was changed (see below).
 - **Save / load** (scope §2.13, built by Claude Code to the scope's spec):
   - Autosave at the start of every quarter's Plan phase; one manual slot; export/import as a text
     string (`G2G1.` + base64 of the GameState JSON). Stored in the browser's localStorage; every read
@@ -439,6 +472,21 @@ ask first).
 
 ## Open questions for the design thread
 
+- **Event-card sim checks** (50 seeds, default answers; targets from the design thread E2):
+  - Random card in 30–40% of eligible quarters: 34–37% for most bots, 28–29% for the garage-only ones ✓
+    (roughly). Never 2 in a quarter ✓. Scripted cards fire in every run where they can ✓.
+  - Bankruptcy within ±3 runs: ✓ after one change. With rig_theft as written (4 units), the garage-only
+    reinvest bot went bust in 16/50 runs (was 0). Weights didn't help (theft is often the only eligible
+    card for a garage player), so, following the tuning order, the card's cost changed: thieves take a
+    quarter of that site's units (1 to 4). Busts are then back to the old numbers exactly.
+  - Median end value within ±15%: ✓ for every bot except "cautious" (−20%, $41.5K → $33.4K).
+  - Each random card in 15–70% of runs: ✗ for five cards, none of it fixable by chance or weights —
+    rig_theft 97% (nearly every garage has 4+ units, and it's often the only card a garage player can
+    get); section301_tariff 0% (needs new ASICs still in delivery; the bots buy used); landlord_eviction
+    8%, utility_rate_hike 16%, moratorium 10% (need a landlord_sale / rate_class flaw, or Heat 70).
+    Options: narrow theft (e.g. only 2018+, or only small units), accept flaw-bound cards as rare, and
+    judge the tariff card in a controlled test. Needs a design-thread decision.
+
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
@@ -459,11 +507,10 @@ ask first).
 
 ## Next
 
-Built this session (26 Sep 2026): investor pitches, hires, Read the market, the Merge decision and
-chapter report, and save/load. Still to build in scope: the 20 event cards (Heat's event-card effects
-and the landlord/transformer flaws wait for them), the failure-wave interrupt (the Ops Manager's ×0.5
-will apply to it), the left-nav sections other than Dashboard (Capital with the LTV gauge, League),
-settings (sound on/off, speed default) and sound. Suggested next: the 20 event cards (they need a
-design-thread pass: the content pack has them in `docs/act1-content/events.json`), then the
-failure-wave interrupt. Backlog (design thread): the pitch opening reacts to company performance (era
-EV/EBITDA × trailing EBITDA, clamped to ±30% of the capital.json terms).
+Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
+save/load, and the 20 event cards. In progress (same run): the failure wave, the left-nav screens +
+Settings, and sound (the owner approved installing `zzfx`). After that: a balance pass against the
+exit checklist (scope §5), which needs the design thread (peak valuation ~$310M vs the $1.5–2.5B
+target; the all-in reinvest bust). Backlog (design thread): the pitch opening reacts to company
+performance (era EV/EBITDA × trailing EBITDA, clamped to ±30% of the capital.json terms). The build's
+main JS chunk is now just over Vite's 500 KB warning (card text); splitting it is a later tidy-up.

@@ -3,6 +3,7 @@ import { CONTENT } from '../../src/content/index.ts'
 import { t } from '../../src/i18n/t.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
+import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 import {
   collateralUsd,
@@ -26,7 +27,10 @@ function playQuarter(s: GameState): GameState {
   s = ok(s, { type: 'END_PLAN' })
   while (s.phase === 'live') {
     s = s.interrupt
-      ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: 'hold' })
+      ? ok(s, {
+          type: 'RESOLVE_INTERRUPT',
+          choice: s.interrupt.id === 'event' ? defaultChoice(s) : 'hold',
+        })
       : advance(s)
   }
   return s

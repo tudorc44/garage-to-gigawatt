@@ -61,17 +61,15 @@ export function normalPriceUsdKwh(
 
 /**
  * $/kWh at this site in this quarter: the contract's price if it has one (index: × this
- * quarter's move), otherwise the normal price; then the rate_class flaw and the Heat 50 rate
- * hike on top.
+ * quarter's move), otherwise the normal price; then the rate_class flaw's hike (set by its
+ * event card, until the next renewal) and the Heat 50 rate hike on top.
  */
 export function powerPriceUsdKwh(site: Site, quarter: number): number {
   const c = site.contract
   const base = c
     ? c.price * (c.indexMult ?? 1)
     : normalPriceUsdKwh(site, quarter)
-  const rateHike = flawEffect(site, 'power_price_mult_after_4q')
-  const hiked = rateHike !== undefined && quarter >= site.readyQuarter + 4
-  return base * (hiked ? rateHike : 1) * (site.surcharge ?? 1)
+  return base * (site.rateMult ?? 1) * (site.surcharge ?? 1)
 }
 
 /** Share of the week the site actually has power (outage flaw). */

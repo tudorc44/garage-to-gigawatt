@@ -9,9 +9,9 @@ import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
 import { outreachCostUsd, siteHeatValue } from '../src/sim/systems/heat.ts'
 import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
+import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { canPitch } from '../src/sim/systems/pitch.ts'
 import {
-  buyPrice,
   getModel,
   marketWeek,
   revenuePerUnitDay,
@@ -278,7 +278,7 @@ function makeBot(settings: BotSettings): Strategy {
         const power = powerPriceUsdKwh(site, s.quarter)
         const options = CONTENT.machines.flatMap((m) =>
           (['new', 'used'] as Condition[]).map((condition) => {
-            const price = buyPrice(m, s.quarter, condition)
+            const price = buyPriceNow(s, m, condition)
             const dailyProfit =
               revenuePerUnitDay(m, w) - m.power_kw * 24 * power
             const payback = price ? price / (dailyProfit * 91) : Infinity
@@ -553,7 +553,7 @@ function ffClimb(settings: FfSettings): Strategy {
       // Fill every site (built or still being built) with the cheaper of new/used GPU Gen 1.
       const model = CONTENT.machines.find((m) => m.id === rig)!
       const prices = (['used', 'new'] as Condition[])
-        .map((c) => ({ c, p: buyPrice(model, s.quarter, c) }))
+        .map((c) => ({ c, p: buyPriceNow(s, model, c) }))
         .filter((x): x is { c: Condition; p: number } => x.p !== undefined)
         .sort((a, b) => a.p - b.p)
       const cheapest = prices[0]

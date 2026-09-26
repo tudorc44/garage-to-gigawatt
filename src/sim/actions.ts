@@ -11,7 +11,6 @@ import {
 } from './state.ts'
 import {
   addMachines,
-  purchaseCostUsd,
   removeMachines,
   repairCostPerUnit,
 } from './systems/machines.ts'
@@ -54,6 +53,8 @@ import {
   hireBlocker,
 } from './systems/hires.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
+import { checkEvents, scheduleEvents } from './systems/events.ts'
+import { buyPriceNow, newGpusLocked } from './systems/eventEffects.ts'
 import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import {
   borrowBlocker,
@@ -175,6 +176,7 @@ function run(s: GameState, a: Action): Message | undefined {
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
+      scheduleEvents(s)
       s.quarterStats.startCash = s.cash
       s.quarterStats.startTreasuryUsd = treasuryValueUsd(
         s,
@@ -186,8 +188,14 @@ function run(s: GameState, a: Action): Message | undefined {
       if (s.phase !== 'live') return fail('error.wrong_phase')
       const error = resolveInterrupt(s, a.choice)
       if (error) return error
-      // An alert in the last week holds the quarter open until it's answered.
-      if (s.week === BALANCE.weeksPerQuarter) endQuarter(s)
+      // An alert in the last week holds the quarter open until it's answered (and any card
+      // still due that week comes first).
+      if (s.week === BALANCE.weeksPerQuarter) {
+        s.week--
+        checkEvents(s)
+        s.week++
+        if (!s.interrupt) endQuarter(s)
+      }
       return
     }
 
@@ -215,7 +223,10 @@ function run(s: GameState, a: Action): Message | undefined {
       if (!model) return fail('error.unknown_model', { model: a.model })
       if (!Number.isInteger(a.count) || a.count < 1)
         return fail('error.bad_count')
-      const cost = purchaseCostUsd(a.model, a.condition, a.count, s.quarter)
+      if (model.coin === 'ETH' && a.condition === 'new' && newGpusLocked(s))
+        return fail('error.gpus_sold_out')
+      const unit = buyPriceNow(s, model, a.condition)
+      const cost = unit === undefined ? undefined : unit * a.count
       if (cost === undefined) {
         return fail('error.not_for_sale', {
           model: a.model,

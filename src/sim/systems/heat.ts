@@ -9,6 +9,7 @@
 // era: extra pressure on big sites from era_pressure.from.
 // A hostile_council flaw multiplies every increase (load, grievance, era).
 import { BALANCE, CONTENT } from '../../content/index.ts'
+import { moratoriumWaived } from './eventEffects.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type GameState, type Site } from '../state.ts'
@@ -136,7 +137,10 @@ export function isShutDown(state: GameState, siteId: string): boolean {
 
 /** Heat 70: no new machines can be placed at this site. */
 export function underMoratorium(state: GameState, siteId: string): boolean {
-  return siteHeatValue(state, siteId) >= CONTENT.heat.moratoriumAt
+  return (
+    siteHeatValue(state, siteId) >= CONTENT.heat.moratoriumAt &&
+    !moratoriumWaived(state, siteId)
+  )
 }
 
 /**

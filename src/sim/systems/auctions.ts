@@ -32,7 +32,10 @@ export function rollAuction(state: GameState): void {
   if (!win) return
   const rules = CONTENT.auction
   const r = substream(state.seed, `auction:${state.quarter}`)
-  if (uniform(r, 0, 1) >= rules.chancePerQuarter) return
+  // winter_bottom "go shopping": a lot is guaranteed this quarter.
+  const plan = state.events.plan
+  const guaranteed = plan?.quarter === state.quarter && plan.guaranteedAuction
+  if (uniform(r, 0, 1) >= rules.chancePerQuarter && !guaranteed) return
   const model = getModel(pick(r, win.models))!
   // Lots come in tens: "240 used Antminer S9".
   const count =

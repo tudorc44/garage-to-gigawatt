@@ -9,6 +9,7 @@ import {
   complaintView,
   KEEP_MINING_GRIEVANCE,
   URI_STORM_PRICE,
+  eventCardView,
   interruptChoices,
   lotViews,
   marginCallView,
@@ -44,6 +45,8 @@ const NOTE_KEYS: Partial<Record<MessageKey, MessageKey>> = {
   'log.curtail_agreed': 'ui.live.note.grid',
   'log.curtail_declined': 'ui.live.note.grid',
   'log.curtailed': 'ui.live.note.curtailed',
+  'log.event_choice': 'ui.live.note.event',
+  'log.event_choice_cash': 'ui.live.note.event',
 }
 
 export function LiveScreen(
@@ -141,6 +144,7 @@ export function LiveScreen(
         state.interrupt?.id === 'uri') && (
         <CurtailmentCard state={state} act={act} />
       )}
+      {state.interrupt?.id === 'event' && <EventCard state={state} act={act} />}
       {state.interrupt?.id === 'margin_warning' && (
         <MarginWarningCard state={state} act={act} />
       )}
@@ -565,9 +569,12 @@ function CurtailmentCard({ state, act }: ScreenProps) {
           </span>
         </div>
         <h2 class="event-title" id="grid-title">
-          {t(uri ? 'ui.uri.title' : 'ui.grid.title')}
+          {uri
+            ? tDynamic('event.uri_2021.title', t('ui.uri.title'))
+            : t('ui.grid.title')}
         </h2>
-        <p class="event-body">
+        {uri && <p class="event-body">{tDynamic('event.uri_2021.body', '')}</p>}
+        <p class={uri ? 'num-s' : 'event-body'}>
           {t(uri ? 'ui.uri.body' : 'ui.grid.body', {
             price: fmt.money(URI_STORM_PRICE * 1000),
             week: alert.week + 2,
@@ -744,6 +751,68 @@ function MarginWarningCard({ state, act }: ScreenProps) {
                 })}
               </span>
             )}
+          </button>
+        ))}
+      </article>
+    </div>
+  )
+}
+
+/** An event card (events.json): a Reigns-style card with the story and 2–4 answers. */
+function EventCard({ state, act }: ScreenProps) {
+  const v = eventCardView(state)
+  if (!v) return null
+  const text = (key: string) => tDynamic(`event.${v.id}.${key}`, '')
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="card-title"
+      >
+        <div class="row-between">
+          <span class="label">
+            {t('ui.event.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: v.week + 1,
+            })}
+            {v.siteTier ? ` · ${tierName(v.siteTier)}` : ''}
+          </span>
+          {v.type === 'random' && (
+            <span class="label">
+              {t('ui.alert.count', {
+                n: state.interruptsThisQuarter,
+                max: MAX_INTERRUPTS,
+              })}
+            </span>
+          )}
+        </div>
+        <h2 class="event-title" id="card-title">
+          {text('title')}
+        </h2>
+        <p class="event-body">{text('body')}</p>
+        {v.choices.map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">{text(`choice.${c.id}`)}</span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">
+              {text(`hint.${c.id}`)}
+              {c.cashDeltaUsd !== 0 &&
+                ` ${t('ui.event.cash', { cash: fmt.signed(c.cashDeltaUsd) })}`}
+              {c.unitsDelta !== 0 &&
+                ` ${t('ui.event.units', { units: fmt.signedInt(c.unitsDelta) })}`}
+            </span>
           </button>
         ))}
       </article>

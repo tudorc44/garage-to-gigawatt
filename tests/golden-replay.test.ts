@@ -4,19 +4,13 @@
 //   npx vitest run -u
 import { describe, expect, it } from 'vitest'
 import { CONTENT } from '../src/content/index.ts'
-import type { Action } from '../src/sim/actions.ts'
+import { applyAction, type Action } from '../src/sim/actions.ts'
 import { playGame, replay, type Strategy } from '../src/sim/replay.ts'
 import { BOTS } from '../tools/bots.ts'
 import type { GameState } from '../src/sim/state.ts'
-import {
-  purchaseCostUsd,
-  repairCostPerUnit,
-} from '../src/sim/systems/machines.ts'
-import {
-  buyPrice,
-  marketWeek,
-  revenuePerUnitDay,
-} from '../src/sim/systems/market.ts'
+import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
+import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
+import { marketWeek, revenuePerUnitDay } from '../src/sim/systems/market.ts'
 import {
   baseCapexUsd,
   capacityKw,
@@ -68,7 +62,7 @@ function grower({ reserveUsd, hodlPct }: GrowerSettings): Strategy {
         const power = powerPriceUsdKwh(site, s.quarter)
         const best = CONTENT.machines
           .map((m) => {
-            const price = buyPrice(m, s.quarter, 'new')
+            const price = buyPriceNow(s, m, 'new')
             const profit = revenuePerUnitDay(m, w) - m.power_kw * 24 * power
             return { m, price, score: price ? profit / price : -1 }
           })
@@ -87,7 +81,7 @@ function grower({ reserveUsd, hodlPct }: GrowerSettings): Strategy {
           count,
           siteId: site.id,
         })
-        cash -= purchaseCostUsd(best.m.id, 'new', count, s.quarter)!
+        cash -= buyPriceNow(s, best.m, 'new')! * count
       }
       return actions
     },
@@ -107,7 +101,28 @@ function scripted(plan: Record<string, Action[]>): Strategy {
   return { plan: (s) => plan[CONTENT.quarters[s.quarter]] ?? [] }
 }
 
-const bots = {
+/**
+ * Like a player, a hand-written bot skips any planned action the game refuses (an event card
+ * may have changed its cash or prices since the script was written).
+ */
+function skipRefused(bot: Strategy): Strategy {
+  return {
+    ...bot,
+    plan(s: GameState): Action[] {
+      const kept: Action[] = []
+      let sim = s
+      for (const a of bot.plan(s)) {
+        const r = applyAction(sim, a)
+        if (!r.ok) continue
+        sim = r.state
+        kept.push(a)
+      }
+      return kept
+    },
+  }
+}
+
+const handWritten = {
   'steady-grower': grower({ reserveUsd: 5_000, hodlPct: 0.3 }),
   // Fills the garage, then over-expands into a small unit in the 2018 winter and goes bust.
   'early-expander': scripted({
@@ -263,6 +278,15 @@ const bots = {
       return script[q] ?? []
     },
   },
+}
+
+const bots: Record<string, Strategy> = {
+  ...Object.fromEntries(
+    Object.entries(handWritten).map(([k, b]) => [
+      k,
+      skipRefused(b as Strategy),
+    ]),
+  ),
   // The sim-runner's raise-climb bot: every funding round, climbs to big sites, never talks to
   // the neighbours. Covers Heat growing with load and neighbour complaints (ignored) over a
   // whole game. If the bot is retuned on purpose, update this file with the others.

@@ -6,6 +6,7 @@ import { binomial } from '../rng.ts'
 import type { Coin, GameState, MachineLot, Site } from '../state.ts'
 import { isShutDown } from './heat.ts'
 import { failureMult } from './hires.ts'
+import { modifierMult } from './eventEffects.ts'
 import { coinPrice, getModel, revenuePerUnitDay } from './market.ts'
 import {
   flawEffect,
@@ -48,7 +49,8 @@ export function rollFailures(state: GameState): number {
       (model.annual_failure_rate / 52) *
       (lot.condition === 'used' ? BALANCE.failures.usedMult : 1) *
       (flawEffect(site, 'failure_mult') ?? 1) *
-      failureMult(state)
+      failureMult(state) *
+      modifierMult(state, 'failure', site.id)
     const failures = binomial(state, lot.count - lot.failed, p)
     lot.failed += failures
     total += failures
@@ -75,7 +77,8 @@ export function mineWeek(
         revenuePerUnitDay(model, w) *
         7 *
         up *
-        hashrateMult(site, state.quarter)
+        hashrateMult(site, state.quarter) *
+        modifierMult(state, 'hashrate', site.id)
       const powerCostUsd =
         working *
         model.power_kw *

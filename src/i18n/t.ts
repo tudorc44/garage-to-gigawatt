@@ -30,6 +30,8 @@ const ID_PARAMS: Record<string, string> = {
   contract: 'contract.',
   hire: 'hire.',
   mergeChoice: 'merge_choice.',
+  eventTitle: 'event.',
+  eventChoice: 'event.',
   btcRead: 'read.',
   ethRead: 'read.',
 }

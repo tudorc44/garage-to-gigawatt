@@ -57,6 +57,9 @@ export function MergeScreen({ state, act }: ScreenProps) {
                   {tDynamic(`merge_choice.${c.id}`, c.id)}
                 </span>
                 <span class="num-s">{c.text}</span>
+                {c.insight && (
+                  <span class="num-s gain">{t('ui.merge.cloud_insight')}</span>
+                )}
                 {c.note && <span class="num-s warn">{t(c.note)}</span>}
                 {picked === c.id && (
                   <span class="num-s muted" style={{ fontStyle: 'italic' }}>
