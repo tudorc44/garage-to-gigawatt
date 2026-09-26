@@ -4,7 +4,7 @@
 
 Garage to Gigawatt is a turn-based, finance-first business sim played in a desktop browser. We are building
 **Alpha 0.1: Act I, "Garage to Hashrate"**: 23 quarterly turns (Q1 2017 → Q3 2022, about 40 minutes).
-The player starts with $10k and a few GPU rigs in a garage, then buys machines, climbs a site ladder
+The player starts with $10k and an empty garage (no rigs), then buys machines, climbs a site ladder
 (garage → 100 kW → 1 MW → 20 MW → Texas 100 MW), picks a HODL/sell %, takes loans (crypto-backed ones can
 margin-call), hires staff, manages community Heat and raises money, all against scripted BTC/ETH prices and
 4 scripted rivals. Each turn is Plan phase → Live quarter (13 weekly ticks, pausable, up to 3 interrupts)
@@ -17,12 +17,18 @@ question: *is Act I a fun 40-minute run where decisions, not luck, decide whethe
 npm run dev       # start the Vite dev server (open the printed localhost URL)
 npm run build     # type-check (tsc -b) and build to dist/
 npm run preview   # serve the built dist/ locally
-npm test          # TODO: not set up yet (planned: Vitest unit + golden-replay tests)
+npm test          # Vitest: unit tests per system + golden-replay test
+npm run lint      # ESLint (also enforces the pure-sim rules below)
+npm run play      # the terminal version of Act I (options: -- --seed 42 --fast)
+npm run content:market  # regenerate src/content/market_weekly.json after editing the CSV
 ```
 
 ## Key docs (read before bigger tasks)
 
 - `docs/alpha-0.1-scope.md`: **source of truth for scope.** What's in, what's out, cut order, exit checklist.
+- `docs/content-pack-review.md`: its §4 amendments (A1–A9) **override** the scope doc where they differ.
+- `docs/player-actions-and-pacing.md` (build order in §7) and `docs/act-i-content-pack.md` (content and data notes).
+- `docs/act1-content/`: the original content pack. The game's live copies are in `src/content/`.
 - `docs/tech-stack.md`: architecture, repo layout, libraries.
 - `docs/design-brief.md`: game vision and the 4-act campaign (background only; Acts II–IV are out of scope).
 - `docs/design-system.md`: UI direction, era themes, fonts, colours, icons.

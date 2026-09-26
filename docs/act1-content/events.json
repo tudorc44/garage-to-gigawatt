@@ -1,0 +1,632 @@
+{
+ "schema_version": 2,
+ "notes": "v2 (26 Sep 2026 review): removed 'reputation' (not a resource in scope doc 10); every effect now uses a scope resource or a named modifier. 'requires' hides a choice or card when the condition is false. String effects are resolver expressions: whitelist them or convert to {op,var,mult} objects in the Zod schema.",
+ "effect_vocabulary": {
+  "cash": "number or expression; negative = spend",
+  "heat": "change to Community Heat at the affected site (all sites if no site context)",
+  "heat_base": "permanent change to a site's base Heat",
+  "bandwidth_next": "change to next quarter's Bandwidth",
+  "machines / machines_used": "add units {model_id: count} at current new/used price, unless cash effect says otherwise",
+  "machines_lost": "units removed without payment",
+  "sell_machines / sell_machines_pct": "sell at current used price",
+  "sell_treasury_pct": "sell share of treasury at this week's price",
+  "hashrate_mult": "multiplier on affected fleet for duration_weeks or duration_quarters",
+  "failure_mult": "multiplier on failure chance for the rest of the quarter unless a duration is given",
+  "power_price_mult": "multiplier on the site's power price from next quarter",
+  "machines_used_discount": "used machines cost (1 - x) for the rest of the quarter",
+  "gpu_purchase_lock_quarters": "no new GPU purchases for N quarters",
+  "site_expansion_lock_quarters": "no capacity added at this site for N quarters",
+  "loans_locked_quarters": "no new loans of any kind for N quarters",
+  "unlock / flag": "turns on an action, interrupt or story flag",
+  "success_p / on_success / on_failure": "resolves a gamble with the seeded RNG"
+ },
+ "events": [
+  {
+   "id": "gpu_shortage_2017",
+   "type": "scripted",
+   "title": "Graphics Cards: Sold Out",
+   "trigger": "fixed:2017Q2",
+   "week": "2017-06-12",
+   "weight": null,
+   "body": "Every shop has the same sign: no RX 580s, no ETA. A forum seller will ship six cards at 60% over list. Gamers are furious. Your spreadsheet is delighted.",
+   "choices": [
+    {
+     "label": "Pay the markup for one rig",
+     "effects": {
+      "cash": "-price_new(gpu_gen1)*1.6",
+      "machines": {
+       "gpu_gen1": 1
+      }
+     }
+    },
+    {
+     "label": "Wait for restock",
+     "effects": {
+      "gpu_purchase_lock_quarters": 1
+     }
+    },
+    {
+     "label": "Buy a used rig instead",
+     "effects": {
+      "cash": "-price_used(gpu_gen1)",
+      "machines_used": {
+       "gpu_gen1": 1
+      }
+     }
+    }
+   ],
+   "real_basis": "May–Aug 2017: RX 470/480/580 and GTX 1060/1070 sold out; ETH rose from ~$8 to ~$400 in H1 2017",
+   "source": "Tom's Hardware / PC Gamer, Jun–Jul 2017"
+  },
+  {
+   "id": "btc_peak_2017",
+   "type": "scripted",
+   "title": "Nineteen Thousand",
+   "trigger": "fixed:2017Q4",
+   "week": "2017-12-18",
+   "weight": null,
+   "body": "Bitcoin touches $19,000. Your barber asks about wallets. Your cousin wants to quit his job to mine. Everyone agrees it can only go up.",
+   "choices": [
+    {
+     "label": "Sell half the treasury",
+     "effects": {
+      "sell_treasury_pct": 0.5
+     }
+    },
+    {
+     "label": "HODL everything",
+     "effects": {}
+    },
+    {
+     "label": "Buy more machines at today's prices",
+     "effects": {
+      "flag": "open_buy_menu",
+      "machine_price_mult": 1.1,
+      "duration_quarters": 1
+     }
+    }
+   ],
+   "real_basis": "BTC ~$19.5k on 17 Dec 2017, then ~$6.9k on 6 Feb 2018 (−65%). The crash itself is a market shock and a price-alert interrupt, not a second card",
+   "source": "Exchange data (CoinMetrics / Bitstamp)"
+  },
+  {
+   "id": "winter_bottom_2018",
+   "type": "scripted",
+   "title": "Capitulation",
+   "trigger": "fixed:2018Q4",
+   "week": "2018-12-10",
+   "weight": null,
+   "body": "Network hashrate is falling for the first time in years. Farms are dumping S9s by the container. With ETH at $85, most garage rigs now lose money every night.",
+   "choices": [
+    {
+     "label": "Go shopping in the fire sale",
+     "effects": {
+      "unlock": "distressed_auction"
+     }
+    },
+    {
+     "label": "Mothball the fleet until spring",
+     "effects": {
+      "hashrate_mult": 0,
+      "opex_mult": 0.3,
+      "duration_quarters": 1
+     }
+    },
+    {
+     "label": "Sell half the rigs while anyone still buys",
+     "effects": {
+      "sell_machines_pct": 0.5
+     }
+    }
+   ],
+   "real_basis": "BTC low ~$3,200 (15 Dec 2018); difficulty fell ~15% on 3 Dec 2018; ETH ~$84",
+   "source": "Difficulty history; CoinMetrics"
+  },
+  {
+   "id": "gpu_cloud_rumour_2019",
+   "type": "scripted",
+   "title": "The Other Use for GPUs",
+   "trigger": "fixed:2019Q3",
+   "week": "2019-08-05",
+   "weight": null,
+   "body": "An old contact says a small ETH farm in New Jersey is quietly renting its cards to render studios and AI researchers. 'Better margin than mining,' he claims. Nobody else seems interested.",
+   "choices": [
+    {
+     "label": "Make a note of it",
+     "effects": {
+      "flag": "cloud_insight"
+     }
+    },
+    {
+     "label": "Laugh it off",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Atlantic Crypto (founded 2017) began offering GPU compute in 2019 and renamed itself CoreWeave",
+   "source": "CoreWeave company history",
+   "design_note": "cloud_insight adds a one-line hint to the gpu_cloud option on the Merge screen"
+  },
+  {
+   "id": "covid_crash_2020",
+   "type": "scripted",
+   "title": "Black Thursday",
+   "trigger": "fixed:2020Q1",
+   "week": "2020-03-09",
+   "weight": null,
+   "body": "Markets everywhere are selling everything. Bitcoin drops 40% in a day. The next difficulty adjustment is two weeks away, and every S9 on the network is suddenly underwater.",
+   "choices": [
+    {
+     "label": "Sell half the treasury to protect cash",
+     "effects": {
+      "sell_treasury_pct": 0.5
+     }
+    },
+    {
+     "label": "Hold",
+     "effects": {}
+    },
+    {
+     "label": "Buy panicked sellers' machines",
+     "effects": {
+      "machines_used_discount": 0.3
+     }
+    }
+   ],
+   "real_basis": "12–13 Mar 2020: BTC ~$7.9k → ~$4.9k; difficulty −16% on 26 Mar 2020",
+   "source": "CoinMetrics; BTC.com difficulty log"
+  },
+  {
+   "id": "halving_2020",
+   "type": "scripted",
+   "title": "The Third Halving",
+   "trigger": "fixed:2020Q2",
+   "week": "2020-05-11",
+   "weight": null,
+   "requires": "owns(s9)",
+   "body": "Block 630,000. The reward drops from 12.5 to 6.25 BTC overnight. Anything less efficient than the new S19 is now a space heater with opinions.",
+   "choices": [
+    {
+     "label": "Sell every S9 and move to S19 Pros",
+     "effects": {
+      "sell_machines": {
+       "s9": "all"
+      },
+      "flag": "open_buy_menu:s19pro"
+     }
+    },
+    {
+     "label": "Keep the S9s where power is cheapest",
+     "effects": {}
+    },
+    {
+     "label": "Retire the S9s",
+     "effects": {
+      "sell_machines": {
+       "s9": "all"
+      }
+     }
+    }
+   ],
+   "real_basis": "11 May 2020; hashprice fell ~45–50%",
+   "source": "Block 630,000; Hashrate Index"
+  },
+  {
+   "id": "uri_2021",
+   "type": "scripted",
+   "title": "Winter Storm Uri",
+   "trigger": "fixed:2021Q1",
+   "week": "2021-02-15",
+   "weight": null,
+   "requires": "owns_site(texas_site)",
+   "fallback": "news only (news.2021Q1.0)",
+   "body": "Texas freezes. Grid prices hit the $9,000/MWh cap. The grid operator asks large loads to shut down. At your contract price, the power you are not using is worth more than the bitcoin you would mine.",
+   "choices": [
+    {
+     "label": "Curtail and sell the power back",
+     "effects": {
+      "hashrate_mult": 0,
+      "duration_weeks": 1,
+      "cash": "+2.5*forgone_mining_revenue_week",
+      "heat": -5
+     }
+    },
+    {
+     "label": "Keep mining",
+     "effects": {
+      "heat": 15
+     }
+    }
+   ],
+   "real_basis": "15–19 Feb 2021 ERCOT load shed; price at the $9,000/MWh cap for ~4 days",
+   "source": "ERCOT; Texas PUC",
+   "design_note": "Payout = 2.5× the week's forgone mining revenue (real Uri resale value was ~14×; capped so it isn't a lottery win, flag F9). Example: 40 MW of S19s in Feb 2021 forgo ~$2.5M, so curtailing pays ~$6.3M."
+  },
+  {
+   "id": "spac_mania_2021",
+   "type": "scripted",
+   "title": "Everyone Wants a Miner",
+   "trigger": "fixed:2021Q1",
+   "week": "2021-03-08",
+   "weight": null,
+   "requires": "ipo_eligible",
+   "fallback": "news only (news.2021Q1.2)",
+   "body": "Bankers call daily. Two blank-check companies want to merge with you at 'thirty times forward EBITDA'. Bitcoin makes a new all-time high. The window is open. Nobody knows for how long.",
+   "choices": [
+    {
+     "label": "Start the roadshow",
+     "effects": {
+      "unlock": "ipo_spac",
+      "ipo_bandwidth_cost": 2
+     }
+    },
+    {
+     "label": "Stay private for now",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Record SPAC issuance in Q1 2021; BTC passed $60k on 13 Mar 2021; miner listings followed through 2021 (Cipher, Greenidge, Stronghold, IREN, TeraWulf; Core Scientific in Jan 2022)",
+   "source": "SEC filings; Nasdaq",
+   "design_note": "Moved from 2021Q4 to 2021Q1 so it opens the IPO window instead of arriving at its end. The Nov 2021 ATH stays as a market shock + news item."
+  },
+  {
+   "id": "china_ban_2021",
+   "type": "scripted",
+   "title": "The Great Migration",
+   "trigger": "fixed:2021Q2",
+   "week": "2021-06-21",
+   "weight": null,
+   "body": "China orders miners to shut down. Half the world's hashrate goes dark within weeks. Container ships full of S19s head for Texas and Kazakhstan. Every machine still running just got a much bigger slice of the rewards.",
+   "choices": [
+    {
+     "label": "Buy exiled machines at a discount",
+     "effects": {
+      "machines_used_discount": 0.25
+     }
+    },
+    {
+     "label": "Rent spare racks to an exiled miner",
+     "requires": "spare_capacity_mw>=1",
+     "effects": {
+      "cash": "+50000*min(spare_capacity_mw,10)"
+     }
+    },
+    {
+     "label": "Do nothing",
+     "effects": {}
+    }
+   ],
+   "real_basis": "State Council statement 21 May 2021; Sichuan shutdowns Jun 2021; hashrate ~180 → ~85 EH/s; difficulty −28% on 3 Jul 2021 (hashprice up ~35% the following week)",
+   "source": "Cambridge CBECI; difficulty history"
+  },
+  {
+   "id": "luna_celsius_2022",
+   "type": "scripted",
+   "title": "Contagion",
+   "trigger": "fixed:2022Q2",
+   "week": "2022-06-13",
+   "weight": null,
+   "body": "A $40B stablecoin melted in three days. Now a big crypto lender has 'paused withdrawals'. Every lender in the space wants its collateral back, today.",
+   "choices": [
+    {
+     "label": "Repay crypto loans from the treasury",
+     "requires": "has_crypto_loan",
+     "effects": {
+      "repay_crypto_loans": true
+     }
+    },
+    {
+     "label": "Sell half the treasury before it falls further",
+     "effects": {
+      "sell_treasury_pct": 0.5
+     }
+    },
+    {
+     "label": "Ride it out",
+     "effects": {
+      "margin_call_risk_mult": 2
+     }
+    }
+   ],
+   "real_basis": "Terra/LUNA collapse 9–13 May 2022; Celsius froze withdrawals 12 Jun 2022; BTC low ~$17.6k on 18 Jun",
+   "source": "CoinDesk; Celsius bankruptcy filings",
+   "design_note": "Moved to the Celsius week (was the Luna week). Crypto-backed loans close after this quarter."
+  },
+  {
+   "id": "farm_fire",
+   "type": "random",
+   "title": "Smoke in the Rack",
+   "trigger": "random:machines>=30",
+   "week": null,
+   "weight": 1.0,
+   "body": "A PDU overheats at 3 a.m. The sprinklers work. So does the insurance, eventually.",
+   "choices": [
+    {
+     "label": "Rebuild properly",
+     "effects": {
+      "cash": -60000,
+      "hashrate_mult": 0.85,
+      "duration_quarters": 1
+     }
+    },
+    {
+     "label": "Patch it and keep running",
+     "effects": {
+      "failure_mult": 1.5,
+      "heat": 5
+     }
+    }
+   ],
+   "real_basis": "Mining farm fires, e.g. Bitmain Mianning (Oct 2018) and hosted US sites",
+   "source": "Local news / Bitmain statement (≈)"
+  },
+  {
+   "id": "landlord_eviction",
+   "type": "random",
+   "title": "The Building Is Sold",
+   "trigger": "random:site in(small_unit,warehouse)",
+   "week": null,
+   "weight": 1.0,
+   "body": "Your landlord has sold the building to a self-storage chain. You have one quarter to move, or to make the buyer an offer.",
+   "choices": [
+    {
+     "label": "Move everything",
+     "effects": {
+      "hashrate_mult": 0.5,
+      "duration_quarters": 1,
+      "cash": "-rent_usd_q*2"
+     }
+    },
+    {
+     "label": "Buy the building",
+     "effects": {
+      "cash": "-rent_usd_q*12",
+      "rent_usd_q": 0
+     }
+    }
+   ],
+   "real_basis": "Short-lease miners displaced by building sales and rezoning, upstate NY and Quebec 2018 (≈)",
+   "source": "≈"
+  },
+  {
+   "id": "section301_tariff",
+   "type": "random",
+   "title": "Customs Hold",
+   "trigger": "random:quarter>=2018Q3 && pending_asic_orders",
+   "week": null,
+   "weight": 1.0,
+   "body": "Your ASICs are sitting at Long Beach. Customs has reclassified them under the new China tariffs. Pay the duty or wait for a ruling.",
+   "choices": [
+    {
+     "label": "Pay the duty",
+     "effects": {
+      "cash": "-order_value*0.25"
+     }
+    },
+    {
+     "label": "Wait for the ruling",
+     "effects": {
+      "delivery_delay_quarters": 1
+     }
+    }
+   ],
+   "real_basis": "USTR Section 301 List 3 tariffs on Chinese goods (Sep 2018, 10% → 25% in 2019); CBP classification disputes over ASICs 2021",
+   "source": "USTR; CBP rulings"
+  },
+  {
+   "id": "moratorium",
+   "type": "random",
+   "title": "Moratorium Vote",
+   "trigger": "random:heat>=70",
+   "week": null,
+   "weight": 1.0,
+   "body": "The council votes 4–1 for an 18-month pause on new mining load. Existing machines may keep running. Your expansion may not.",
+   "choices": [
+    {
+     "label": "Lawyer up",
+     "effects": {
+      "cash": -80000,
+      "success_p": 0.4,
+      "on_failure": {
+       "site_expansion_lock_quarters": 6
+      }
+     }
+    },
+    {
+     "label": "Accept it and grow elsewhere",
+     "effects": {
+      "site_expansion_lock_quarters": 6
+     }
+    }
+   ],
+   "real_basis": "Plattsburgh NY moratorium, 15 Mar 2018",
+   "source": "City of Plattsburgh"
+  },
+  {
+   "id": "rig_theft",
+   "type": "random",
+   "title": "Missing Inventory",
+   "trigger": "random:site in(garage,small_unit) && !flag(security)",
+   "week": null,
+   "weight": 1.0,
+   "body": "The side door was open. Four rigs are gone. The police officer asks what a hashrate is.",
+   "choices": [
+    {
+     "label": "Take the loss and install security",
+     "effects": {
+      "machines_lost": 4,
+      "cash": -8000,
+      "flag": "security"
+     }
+    },
+    {
+     "label": "Take the loss",
+     "effects": {
+      "machines_lost": 4
+     }
+    }
+   ],
+   "real_basis": "Mining rig thefts, e.g. ~600 machines stolen in Iceland (Dec 2017–Jan 2018)",
+   "source": "AP, Mar 2018"
+  },
+  {
+   "id": "used_rig_scam",
+   "type": "random",
+   "title": "Too Good to Be True",
+   "trigger": "random:buying_used",
+   "week": null,
+   "weight": 1.0,
+   "body": "A seller offers S19s at half the market price. Bank transfer only, 'shipping from Shenzhen'.",
+   "choices": [
+    {
+     "label": "Walk away",
+     "effects": {}
+    },
+    {
+     "label": "Send the 30% deposit",
+     "effects": {
+      "cash": "-order_value*0.3",
+      "success_p": 0.2,
+      "on_success": {
+       "machines_used_discount": 0.5
+      }
+     }
+    }
+   ],
+   "real_basis": "Fake ASIC reseller sites and deposit scams, 2021",
+   "source": "Bitmain scam warnings, 2021"
+  },
+  {
+   "id": "utility_rate_hike",
+   "type": "random",
+   "title": "New Rate Class",
+   "trigger": "random:heat>=50 || site_flaw==rate_class",
+   "week": null,
+   "weight": 1.0,
+   "body": "The utility creates a 'high-density load' tariff. It applies to exactly one kind of customer.",
+   "choices": [
+    {
+     "label": "Accept it",
+     "effects": {
+      "power_price_mult": 1.3
+     }
+    },
+    {
+     "label": "Negotiate (costs 2 Bandwidth next quarter)",
+     "effects": {
+      "bandwidth_next": -2,
+      "power_price_mult": 1.1
+     }
+    }
+   ],
+   "real_basis": "Chelan County PUD 2018–19; Hydro-Québec crypto tariff 2019",
+   "source": "Chelan PUD; Régie de l'énergie"
+  },
+  {
+   "id": "heat_wave",
+   "type": "random",
+   "title": "Heat Dome",
+   "trigger": "random:quarter_of_year==3 && site_tier>=warehouse",
+   "week": null,
+   "weight": 1.0,
+   "body": "Forty-two degrees outside, forty-eight inside. Hashboards are dropping one after another.",
+   "choices": [
+    {
+     "label": "Underclock",
+     "effects": {
+      "hashrate_mult": 0.85,
+      "duration_quarters": 1
+     }
+    },
+    {
+     "label": "Run hot",
+     "effects": {
+      "failure_mult": 2.0
+     }
+    },
+    {
+     "label": "Rent chillers",
+     "effects": {
+      "cash": "-40000*max(1,mw/5)"
+     }
+    }
+   ],
+   "real_basis": "Texas summer 2022 heat reduced miner uptime; ERCOT conservation calls Jul 2022",
+   "source": "ERCOT; Riot/Marathon monthly updates"
+  },
+  {
+   "id": "friend_wants_money",
+   "type": "random",
+   "title": "A Friend Calls",
+   "trigger": "random:has_ff_money && market_phase==winter",
+   "week": null,
+   "weight": 1.0,
+   "body": "One of your early backers is buying a flat. They'd like their $15,000 back. They're sure you understand.",
+   "choices": [
+    {
+     "label": "Buy back their stake",
+     "effects": {
+      "cash": -15000,
+      "founder_equity": 0.02
+     }
+    },
+    {
+     "label": "Ask them to wait",
+     "effects": {
+      "bandwidth_next": -1
+     }
+    }
+   ],
+   "real_basis": "Anecdotal: friends-and-family redemptions in crypto winters",
+   "source": "≈"
+  },
+  {
+   "id": "tax_surprise",
+   "type": "random",
+   "title": "Mined Coins Are Income",
+   "trigger": "random:quarter in(2018Q2,2019Q2,2021Q2,2022Q2)",
+   "week": null,
+   "weight": 1.0,
+   "body": "Your accountant explains that every coin you mined was taxable income on the day you mined it. Including the ones now worth half that.",
+   "choices": [
+    {
+     "label": "Pay it",
+     "effects": {
+      "cash": "-mined_value_last_year*0.2"
+     }
+    },
+    {
+     "label": "Payment plan",
+     "effects": {
+      "cash": "-mined_value_last_year*0.06",
+      "duration_quarters": 4
+     }
+    }
+   ],
+   "real_basis": "IRS Notice 2014-21: mined crypto is ordinary income at fair market value on receipt",
+   "source": "IRS"
+  }
+ ],
+ "market_phases": {
+  "boom": [
+   "2017Q2",
+   "2017Q3",
+   "2017Q4",
+   "2019Q2",
+   "2020Q4",
+   "2021Q1",
+   "2021Q2",
+   "2021Q4"
+  ],
+  "winter": [
+   "2018Q1",
+   "2018Q2",
+   "2018Q3",
+   "2018Q4",
+   "2019Q1",
+   "2020Q1",
+   "2022Q2",
+   "2022Q3"
+  ],
+  "note": "Used by 'market_phase==winter' triggers; all other quarters are 'normal'"
+ }
+}

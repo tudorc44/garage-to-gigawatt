@@ -1,0 +1,184 @@
+{
+ "schema_version": 2,
+ "notes": "v2 (26 Sep 2026 review): removed 'reputation'; added a fallback when the default choice is unaffordable; added the 2020Q2 halving to the auction windows; made the negotiation limit direction explicit.",
+ "max_per_quarter": 3,
+ "interrupts": [
+  {
+   "id": "price_alert",
+   "trigger": "abs(weekly change in BTC or ETH price) >= 15%",
+   "choices": [
+    {
+     "id": "sell",
+     "label": "Sell 25% of the treasury now",
+     "effects": {
+      "sell_treasury_pct": 0.25
+     }
+    },
+    {
+     "id": "hold",
+     "label": "Hold",
+     "effects": {}
+    }
+   ],
+   "default": "hold",
+   "source": "BTC and ETH had many weeks with moves of 15% or more in 2017–22",
+   "estimate": true,
+   "design_note": "The weekly series is smoothed (see pack §0), so check with the sim-runner that this fires 1–2 times per volatile quarter. If not, lower to 10%."
+  },
+  {
+   "id": "curtailment",
+   "trigger": "owns_site(texas_site) && quarter_of_year==3 && rng<0.35",
+   "choices": [
+    {
+     "id": "curtail",
+     "label": "Curtail for a week and collect credits",
+     "effects": {
+      "hashrate_mult": 0,
+      "duration_weeks": 1,
+      "cash": "+curtail_credit"
+     }
+    },
+    {
+     "id": "mine",
+     "label": "Keep mining",
+     "effects": {
+      "heat": 5
+     }
+    }
+   ],
+   "default": "curtail",
+   "source": "Riot 2022 power credits ≈ $10–30k/MW/month in peak months",
+   "estimate": true,
+   "design_note": "Credit must beat forgone revenue or nobody curtails: at 2021 hashprice one MW of S19s earns ~$60k/week, far above the flat $15k/MW. Uri is handled by the uri_2021 card (2.5× forgone revenue).",
+   "curtail_credit": "max(15000*mw, 1.25*forgone_mining_revenue_week)"
+  },
+  {
+   "id": "failure_wave",
+   "trigger": "weekly rng < base_fail * (used ? 1.5 : 1) * (heat_wave ? 2 : 1) * (ops_manager ? 0.5 : 1)",
+   "base_fail_note": "base_fail = model annual_failure_rate / 52, applied per site; fires when at least 5% of a site's units fail in one week",
+   "choices": [
+    {
+     "id": "repair",
+     "label": "Repair now",
+     "effects": {
+      "cash": "-units*repair_cost"
+     }
+    },
+    {
+     "id": "degraded",
+     "label": "Run degraded",
+     "effects": {
+      "hashrate_mult": 0.9,
+      "duration_quarters": 1
+     }
+    }
+   ],
+   "default": "degraded",
+   "repair_cost_usd": {
+    "gpu_gen1": 150,
+    "gpu_gen2": 200,
+    "s9": 120,
+    "s19pro": 350
+   },
+   "source": "Hashboard repair $100–400; fans and PSUs $30–150 (repair-shop price lists, ≈)",
+   "estimate": true
+  },
+  {
+   "id": "neighbour_complaint",
+   "trigger": "site.heat>=30 && rng<(site.heat-20)/100",
+   "choices": [
+    {
+     "id": "pay",
+     "label": "Pay for goodwill",
+     "effects": {
+      "cash": -5000,
+      "heat": -10
+     }
+    },
+    {
+     "id": "mitigate",
+     "label": "Build sound walls",
+     "effects": {
+      "cash": "-30000*max(1,site.mw)",
+      "heat_base": -10
+     }
+    },
+    {
+     "id": "ignore",
+     "label": "Ignore it",
+     "effects": {
+      "heat": 10
+     }
+    }
+   ],
+   "default": "ignore",
+   "source": "Hood County TX and upstate NY noise disputes",
+   "estimate": true
+  },
+  {
+   "id": "distressed_auction",
+   "trigger": "quarter in(2018Q4..2019Q2, 2020Q2, 2022Q2..2022Q3) && rng<0.5, or flag(unlock:distressed_auction)",
+   "lot": "50–500 used machines of one model at 40–60% of the used price",
+   "rivals_bid": "each of 2–3 rivals bids lot_value * U(0.5, 0.9)",
+   "choices": [
+    {
+     "id": "bid",
+     "label": "Place a sealed bid"
+    },
+    {
+     "id": "pass",
+     "label": "Pass"
+    }
+   ],
+   "default": "pass",
+   "source": "2018–19 S9 fire sales; 2020 post-halving S9 dumps; 2022 lender repossessions (Stronghold / NYDIG)",
+   "estimate": true
+  },
+  {
+   "id": "margin_call",
+   "trigger": "crypto_loan.ltv >= 0.70 (warning at 0.65; one week earlier with the Trader hire)",
+   "choices": [
+    {
+     "id": "post",
+     "label": "Post more collateral",
+     "effects": {
+      "treasury": "-amount_to_restore_ltv_0.5"
+     }
+    },
+    {
+     "id": "sell_machines",
+     "label": "Sell machines to repay",
+     "effects": {
+      "sell_machines_value": "loan_gap"
+     }
+    },
+    {
+     "id": "default",
+     "label": "Default",
+     "effects": {
+      "collateral_seized": true,
+      "loans_locked_quarters": 4
+     }
+    }
+   ],
+   "default": "post",
+   "default_if_unaffordable": "sell_machines, then default",
+   "liquidation_ltv": 0.8,
+   "cure_weeks": 1,
+   "source": "BlockFi / Nexo published loan terms",
+   "estimate": false
+  },
+  {
+   "id": "negotiation",
+   "trigger": "action in(negotiate_power, pitch_investors)",
+   "rounds": 3,
+   "hidden_limit": "opening_offer * U(0.85, 1.15), shifted 5% in the player's favour by the BD Lead (sites) or the Ex-Utility Exec (power)",
+   "walkaway_chance_per_lowball": 0.25,
+   "lowball_definition": "a counter-offer more than 10% past the hidden limit",
+   "fallback": "accept_offer (used while the mini-game is cut, see scope doc §4)",
+   "default": "accept_offer",
+   "source": "design",
+   "estimate": true
+  }
+ ]
+}

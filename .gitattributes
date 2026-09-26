@@ -1,0 +1,2 @@
+# Keep LF line endings everywhere, so golden-replay files compare byte for byte on any machine.
+* text=auto eol=lf

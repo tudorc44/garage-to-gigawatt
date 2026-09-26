@@ -1,0 +1,335 @@
+{
+ "schema_version": 1,
+ "tiers": [
+  {
+   "id": "garage",
+   "capacity_kw": 5,
+   "power_usd_kwh": {
+    "value": 0.12,
+    "source": "EIA Electric Power Monthly Table 5.3 / 5.6.A (annual avg retail price): US residential avg 12.9¢ (2017) → 15.0¢ (2022)",
+    "estimate": false
+   },
+   "power_path": {
+    "2017": 0.12,
+    "2018": 0.12,
+    "2019": 0.12,
+    "2020": 0.12,
+    "2021": 0.13,
+    "2022": 0.15
+   },
+   "rent_usd_q": 0,
+   "capex_usd": 0,
+   "build_quarters": 0,
+   "heat_base": 5,
+   "possible_flaws": []
+  },
+  {
+   "id": "small_unit",
+   "capacity_kw": 100,
+   "power_usd_kwh": {
+    "value": 0.08,
+    "source": "EIA Electric Power Monthly Table 5.3 / 5.6.A (annual avg retail price): commercial 10.7¢ (2017–20), cheaper in low-cost states",
+    "estimate": true
+   },
+   "power_path": {
+    "2017": 0.08,
+    "2018": 0.08,
+    "2019": 0.08,
+    "2020": 0.08,
+    "2021": 0.085,
+    "2022": 0.1
+   },
+   "rent_usd_q": {
+    "value": 6000,
+    "source": "≈ 2,000 sq ft light-industrial at $10–14/sq ft/yr",
+    "estimate": true
+   },
+   "capex_usd": {
+    "value": 35000,
+    "source": "≈ 200A→800A service upgrade + fans",
+    "estimate": true
+   },
+   "build_quarters": 1,
+   "heat_base": 10,
+   "possible_flaws": [
+    "landlord_sale",
+    "noise_ordinance",
+    "undersized_transformer",
+    "rate_class"
+   ]
+  },
+  {
+   "id": "warehouse",
+   "capacity_kw": 1000,
+   "power_usd_kwh": {
+    "value": 0.06,
+    "source": "EIA Electric Power Monthly Table 5.3 / 5.6.A (annual avg retail price): industrial 6.9¢ avg; hosted rates $0.05–0.07 (≈)",
+    "estimate": true
+   },
+   "power_path": {
+    "2017": 0.06,
+    "2018": 0.06,
+    "2019": 0.055,
+    "2020": 0.055,
+    "2021": 0.06,
+    "2022": 0.075
+   },
+   "rent_usd_q": {
+    "value": 30000,
+    "source": "≈ 20k sq ft at $5–7/sq ft/yr",
+    "estimate": true
+   },
+   "capex_usd": {
+    "value": 400000,
+    "source": "≈ $300–500k/MW (transformer, switchgear, exhaust)",
+    "estimate": true
+   },
+   "build_quarters": 1,
+   "heat_base": 15,
+   "possible_flaws": [
+    "landlord_sale",
+    "zoning",
+    "noise_ordinance",
+    "undersized_transformer",
+    "rate_class",
+    "unreliable_power"
+   ]
+  },
+  {
+   "id": "own_site",
+   "capacity_kw": 20000,
+   "power_usd_kwh": {
+    "value": 0.04,
+    "source": "Chelan PUD/Massena/Plattsburgh-class contracts 2.5–4.5¢; Bitfarms Quebec ~3¢",
+    "estimate": true
+   },
+   "power_path": {
+    "2017": 0.04,
+    "2018": 0.04,
+    "2019": 0.038,
+    "2020": 0.038,
+    "2021": 0.04,
+    "2022": 0.05
+   },
+   "rent_usd_q": 0,
+   "capex_per_mw_usd": {
+    "value": 350000,
+    "source": "Riot/Core/Cipher disclosures: $250–500k/MW infrastructure 2019–22",
+    "estimate": true
+   },
+   "land_usd": {
+    "value": 500000,
+    "source": "≈",
+    "estimate": true
+   },
+   "build_quarters": 2,
+   "heat_base": 20,
+   "possible_flaws": [
+    "grid_delay",
+    "zoning",
+    "noise_ordinance",
+    "water",
+    "hostile_council",
+    "rate_class"
+   ]
+  },
+  {
+   "id": "texas_site",
+   "available_from": "2020Q1",
+   "capacity_kw": 100000,
+   "power_options": {
+    "fixed": {
+     "value": 0.035,
+     "source": "≈ Whinstone/Riot Rockdale PPA ~2.5¢ energy + TDSP; 3–3.5¢ all-in",
+     "estimate": true
+    },
+    "index": {
+     "value": 0.028,
+     "source": "≈ ERCOT West/Houston hub avg 2020–21 ex-Uri; with ~3–5% curtailment spikes",
+     "estimate": true
+    }
+   },
+   "curtailment": {
+    "program": "ERCOT 4CP avoidance + Responsive Reserve (ERS) + selling back fixed PPA power",
+    "credit_usd_per_mw_event": {
+     "value": 15000,
+     "source": "≈ derived: Riot power credits ~$9.5M (Jul 2022) & $13M? (Aug 2022) at ~350–450 MW ≈ $25–30k/MW/month in extreme months; a 1-week event ≈ $10–20k/MW",
+     "estimate": true
+    },
+    "uri_2021": "ERCOT energy price at $9,000/MWh cap 15–19 Feb 2021; a fixed-price miner could resell at ~$9/kWh vs ~$0.03 cost"
+   },
+   "capex_per_mw_usd": {
+    "value": 400000,
+    "source": "≈",
+    "estimate": true
+   },
+   "build_quarters": 3,
+   "heat_base": 15,
+   "possible_flaws": [
+    "grid_delay",
+    "flood_heat",
+    "noise_ordinance",
+    "water",
+    "unreliable_power"
+   ]
+  }
+ ],
+ "flaws": {
+  "grid_delay": {
+   "label": "Utility interconnect delay",
+   "effect": {
+    "delay_quarters": 2
+   },
+   "basis": "Utilities in NY, WA, TX queued miner interconnects 6–18 months in 2018 and 2021–22 (Chelan PUD 2018; ERCOT large-load queue 2022)"
+  },
+  "landlord_sale": {
+   "label": "Landlord selling the building",
+   "effect": {
+    "evict_after_quarters": 4,
+    "cash": -20000
+   },
+   "basis": "Short-lease miners evicted when buildings sold/rezoned, e.g. mining shops in Plattsburgh & Quebec 2018 (≈)"
+  },
+  "zoning": {
+   "label": "Zoning not approved for 'data processing'",
+   "effect": {
+    "delay_quarters": 1,
+    "cash": -50000
+   },
+   "basis": "Plattsburgh NY moratorium Mar 2018; Massena NY 2019 moratorium; county rezonings in TX 2022"
+  },
+  "noise_ordinance": {
+   "label": "Strict night-time noise ordinance",
+   "effect": {
+    "heat_base": 15
+   },
+   "basis": "Granbury TX (Hood County) residents' noise complaints 2022; Murray Falls/Upstate NY complaints"
+  },
+  "undersized_transformer": {
+   "label": "Undersized transformer",
+   "effect": {
+    "capacity_mult": 0.6,
+    "upgrade_cost_usd": 250000
+   },
+   "basis": "Common in re-used industrial buildings; pad-mount transformer lead times 12–18 mo by 2022 (≈)"
+  },
+  "water": {
+   "label": "Water permit / cooling issue",
+   "effect": {
+    "summer_hashrate_mult": 0.85
+   },
+   "basis": "Greenidge (Seneca Lake) thermal-discharge fight 2021–22"
+  },
+  "flood_heat": {
+   "label": "Flood plain / heat exposure",
+   "effect": {
+    "failure_mult": 1.5
+   },
+   "basis": "Texas summer 2022 ambient >40°C reduced ASIC uptime; flood-plain sites (≈)"
+  },
+  "rate_class": {
+   "label": "Utility plans crypto-specific rate class",
+   "effect": {
+    "power_price_mult_after_4q": 1.4
+   },
+   "basis": "Plattsburgh 2018 surcharge; Chelan PUD 2018 high-density load rate; Hydro-Québec 2018 crypto tariff"
+  },
+  "unreliable_power": {
+   "label": "Frequent outages",
+   "effect": {
+    "uptime": 0.9
+   },
+   "basis": "Rural co-op lines; ERCOT events (≈)"
+  },
+  "hostile_council": {
+   "label": "Hostile local council",
+   "effect": {
+    "heat_growth_mult": 1.5
+   },
+   "basis": "Local politics in upstate NY and Arkansas 2021–22"
+  }
+ },
+ "power_upgrade": {
+  "transformer_2_5mva_usd": {
+   "value": 120000,
+   "source": "≈ pre-2021; 2x price and 12–18 mo lead time by 2022",
+   "estimate": true
+  },
+  "substation_20mw_usd": {
+   "value": 4000000,
+   "source": "≈ $3–6M; 12–24 months",
+   "estimate": true
+  }
+ },
+ "community_disputes": [
+  {
+   "id": "plattsburgh",
+   "place": "Plattsburgh, NY",
+   "date": "2018-03-15",
+   "trigger": "Cheap municipal hydro allocation exceeded; residents' winter bills spiked $100–300 as the city bought expensive extra power",
+   "outcome": "18-month moratorium on new mining; later zoning rules + noise limits",
+   "source": "City of Plattsburgh Common Council, Mar 2018; NYT/Reuters coverage",
+   "heat_mapping": "Heat 70 → moratorium (no expansion at that site)"
+  },
+  {
+   "id": "chelan",
+   "place": "Chelan County, WA",
+   "date": "2018-03-..",
+   "trigger": "Hundreds of unauthorised residential miners, fire risk, >200 MW of requests",
+   "outcome": "Chelan PUD moratorium on new crypto loads (2018), then high-density-load rate class 2019",
+   "source": "Chelan County PUD board minutes 2018–19",
+   "heat_mapping": "Heat 50 → rate hike event"
+  },
+  {
+   "id": "hydroquebec",
+   "place": "Québec",
+   "date": "2018-06-07",
+   "trigger": "Flood of requests (>10 GW) for cheap hydro",
+   "outcome": "Provincial suspension, then 300 MW block by tender and a higher crypto tariff (2019)",
+   "source": "Régie de l'énergie decision D-2019-052 (≈ cite)",
+   "heat_mapping": "Region-wide rate_class flaw"
+  },
+  {
+   "id": "greenidge",
+   "place": "Dresden, NY (Seneca Lake)",
+   "date": "2021–2022",
+   "trigger": "Gas plant repurposed for mining; water discharge + emissions + noise",
+   "outcome": "NY DEC denied Title V air permit renewal 30 Jun 2022; state PoW moratorium Nov 2022",
+   "source": "NY DEC decision 30 Jun 2022",
+   "heat_mapping": "Heat 90 → site shutdown order"
+  },
+  {
+   "id": "iceland",
+   "place": "Iceland",
+   "date": "2018-02",
+   "trigger": "Mining projected to use more power than households",
+   "outcome": "Public debate on taxing miners; no ban",
+   "source": "HS Orka statements Feb 2018 (AP)",
+   "heat_mapping": "Flavour"
+  },
+  {
+   "id": "norway",
+   "place": "Norway",
+   "date": "2018-12",
+   "trigger": "Political backlash over reduced electricity tax for mining data centres",
+   "outcome": "Parliament voted to remove reduced rate (effective 2019), later partly reversed",
+   "source": "Storting budget 2019 (≈)",
+   "heat_mapping": "rate_class event"
+  },
+  {
+   "id": "hood_county",
+   "place": "Granbury, Hood County, TX",
+   "date": "2022",
+   "trigger": "Constant fan noise from ~300 MW Marathon-hosted site (operated by US Bitcoin)",
+   "outcome": "Residents' complaints/lawsuits; later mitigation walls & immersion (2023–24)",
+   "source": "Local news (≈)",
+   "heat_mapping": "Heat 30–50 noise complaints"
+  }
+ ],
+ "heat_thresholds": {
+  "30": "neighbour complaint interrupt can fire",
+  "50": "local media + utility scrutiny: rate-hike event eligible",
+  "70": "moratorium: no new capacity at this site",
+  "90": "shutdown order: site offline until Heat < 60"
+ }
+}
