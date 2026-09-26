@@ -1,9 +1,5 @@
-/* Copied from docs/design-system/components/bundle.css.
-   The Google Fonts @import below is switched off until the owner approves loading fonts from a CDN
-   (CLAUDE.md: ask before adding a CDN). Until then the font stacks in tokens.css fall back to
-   Georgia / Segoe UI / Consolas, exactly like the approved mockup renders. */
-/* @import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Caveat:wght@600&family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Public+Sans:wght@400;500;600&display=swap");
- */
+/* Copied from docs/design-system/components/bundle.css. Its Google Fonts @import is removed:
+   the fonts are self-hosted through Fontsource instead (see src/main.tsx). */
 
 /* Garage to Gigawatt: component styles. Every value comes from tokens.css. */
 body {
