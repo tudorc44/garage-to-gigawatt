@@ -8,6 +8,7 @@ import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
+import { interruptChoices } from '../src/sim/selectors.ts'
 import { defaultChoice } from '../src/sim/systems/interrupts.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
@@ -353,8 +354,7 @@ async function livePhase(s: GameState): Promise<GameState> {
 
 async function answerInterrupt(s: GameState): Promise<GameState> {
   const alert = s.interrupt!
-  const def = CONTENT.interrupts.byId[alert.id]
-  const choices = def.choices ?? []
+  const choices = interruptChoices(s)
   const label = (id: string) => tDynamic(`interrupt.${alert.id}.${id}`, id)
   const fallback = defaultChoice(alert.id)
   console.log()

@@ -44,19 +44,29 @@ export function resolveInterrupt(
     (c) => c.id === choiceId,
   )
   if (!choice) return { key: 'error.bad_choice' }
+  const coin = choiceCoin(choice.effects)
+  if (coin && state.treasury[coin] <= 0)
+    return { key: 'error.nothing_to_sell', params: { coin } }
 
   const w = marketWeek(state.quarter, active.week)
   const alert = { coin: active.coin, changeDelta: active.changePct }
   let sold = false
   for (const [effect, value] of Object.entries(choice.effects ?? {})) {
     switch (effect) {
+      case 'coin':
+        break // which coin the sale applies to (read above)
       case 'sell_treasury_pct': {
-        const valueUsd = sellTreasury(state, Number(value), w)
+        const valueUsd = sellTreasury(state, Number(value), w, coin)
         state.quarterStats.treasurySoldUsd += valueUsd
         logEntry(
           state,
           'log.alert_sold',
-          { ...alert, sharePct: Number(value), valueUsd },
+          {
+            ...alert,
+            sharePct: Number(value),
+            soldCoin: coin ?? 'BTC + ETH',
+            valueUsd,
+          },
           active.week + 1,
         )
         sold = true
@@ -84,14 +94,35 @@ export function choicePreview(
   const share = Number(choice?.effects?.sell_treasury_pct ?? 0)
   if (share === 0) return none
   const w = marketWeek(state.quarter, active.week)
+  const only = choiceCoin(choice?.effects)
   const coins = {
-    BTC: state.treasury.BTC * share,
-    ETH: state.treasury.ETH * share,
+    BTC: !only || only === 'BTC' ? state.treasury.BTC * share : 0,
+    ETH: !only || only === 'ETH' ? state.treasury.ETH * share : 0,
   }
   return {
     cashUsd: coins.BTC * coinPrice(w, 'BTC') + coins.ETH * coinPrice(w, 'ETH'),
     coins,
   }
+}
+
+/** The coin a choice sells (effects.coin), or undefined if it sells both or nothing. */
+export function choiceCoin(
+  effects: Record<string, unknown> | undefined,
+): Coin | undefined {
+  const c = effects?.coin
+  return c === 'BTC' || c === 'ETH' ? c : undefined
+}
+
+/** Choices that make sense now: no "sell BTC" when there's no BTC in the treasury. */
+export function availableChoices(state: GameState): string[] {
+  const active = state.interrupt
+  if (!active) return []
+  return (CONTENT.interrupts.byId[active.id].choices ?? [])
+    .filter((c) => {
+      const coin = choiceCoin(c.effects)
+      return !coin || state.treasury[coin] > 0
+    })
+    .map((c) => c.id)
 }
 
 /** The choice that applies when the player skips the alert. */

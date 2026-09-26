@@ -52,14 +52,18 @@ export function settleWeek(
   return { revenueUsd, soldUsd, powerCostUsd, rentUsd, coinsMined, powerByCoin }
 }
 
-/** Sells a share (0–1) of every coin in the treasury at this week's price. Returns dollars raised. */
+/**
+ * Sells a share (0–1) of one coin in the treasury, or of both if `only` is left out,
+ * at this week's price. Returns dollars raised.
+ */
 export function sellTreasury(
   state: GameState,
   share: number,
   w: MarketWeek,
+  only?: Coin,
 ): number {
   let usd = 0
-  for (const coin of COINS) {
+  for (const coin of only ? [only] : COINS) {
     const coins = state.treasury[coin] * share
     state.treasury[coin] -= coins
     usd += coins * coinPrice(w, coin)

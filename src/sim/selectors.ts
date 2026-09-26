@@ -20,6 +20,7 @@ import {
   equipmentTerms,
   maxEquipmentLoanUsd,
 } from './systems/loans.ts'
+import { availableChoices } from './systems/interrupts.ts'
 import { isEarning } from './systems/mining.ts'
 import {
   baseCapexUsd,
@@ -302,9 +303,9 @@ export function interruptChoices(
   const active = state.interrupt
   if (!active) return []
   const def = CONTENT.interrupts.byId[active.id]
-  return (def.choices ?? []).map((c) => ({
-    id: c.id,
-    isDefault: c.id === def.default,
+  return availableChoices(state).map((id) => ({
+    id,
+    isDefault: id === def.default,
   }))
 }
 

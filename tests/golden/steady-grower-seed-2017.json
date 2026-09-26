@@ -5,14 +5,14 @@
   "phase": "ended",
   "quarter": 22,
   "week": 13,
-  "cash": 32825.92,
+  "cash": 16588.14,
   "bandwidth": 3,
   "hodlPct": {
     "BTC": 0.3,
     "ETH": 0.3
   },
   "treasury": {
-    "BTC": 0.44567508936864,
+    "BTC": 1.4033041398707504,
     "ETH": 0.9559798418582885
   },
   "founderStake": 1,
@@ -70,8 +70,8 @@
     "soldUsd": 144.97433999999998,
     "interestUsd": 0,
     "principalUsd": 0,
-    "startCash": 32848.53,
-    "startTreasuryUsd": 10094.173894902917,
+    "startCash": 16610.75,
+    "startTreasuryUsd": 29542.825078488862,
     "weeks": [
       {
         "week": 1,
@@ -88,7 +88,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 32848.53
+        "cash": 16610.75
       },
       {
         "week": 2,
@@ -105,7 +105,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 32848.53
+        "cash": 16610.75
       },
       {
         "week": 3,
@@ -122,7 +122,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 32848.53
+        "cash": 16610.75
       },
       {
         "week": 4,
@@ -139,7 +139,7 @@
           "ETH": 0.016720557572765714
         },
         "priceAlert": false,
-        "cash": 32842.61
+        "cash": 16604.83
       },
       {
         "week": 5,
@@ -156,7 +156,7 @@
           "ETH": 0.01696113946978429
         },
         "priceAlert": false,
-        "cash": 32838.86
+        "cash": 16601.08
       },
       {
         "week": 6,
@@ -173,7 +173,7 @@
           "ETH": 0.01715684420405362
         },
         "priceAlert": false,
-        "cash": 32837.15
+        "cash": 16599.37
       },
       {
         "week": 7,
@@ -190,7 +190,7 @@
           "ETH": 0.01736149640992167
         },
         "priceAlert": false,
-        "cash": 32837.04
+        "cash": 16599.26
       },
       {
         "week": 8,
@@ -207,7 +207,7 @@
           "ETH": 0.017562216331398407
         },
         "priceAlert": false,
-        "cash": 32834.85
+        "cash": 16597.07
       },
       {
         "week": 9,
@@ -224,7 +224,7 @@
           "ETH": 0.017768380694632387
         },
         "priceAlert": false,
-        "cash": 32830.76
+        "cash": 16592.98
       },
       {
         "week": 10,
@@ -241,7 +241,7 @@
           "ETH": 0.017921279697411446
         },
         "priceAlert": false,
-        "cash": 32825.92
+        "cash": 16588.14
       },
       {
         "week": 11,
@@ -258,7 +258,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 32825.92
+        "cash": 16588.14
       },
       {
         "week": 12,
@@ -275,7 +275,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 32825.92
+        "cash": 16588.14
       },
       {
         "week": 13,
@@ -292,7 +292,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 32825.92
+        "cash": 16588.14
       }
     ]
   },
@@ -773,19 +773,19 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.0406673396574782,
+        "BTC": 1.3875564528766375,
         "ETH": 0.4932779283592382
       },
-      "treasuryValueUsd": 6654.779792503813,
-      "cash": 15002.68,
+      "treasuryValueUsd": 8851.368379685835,
+      "cash": 13025.33,
       "ebitdaUsd": 1.8900000000000148,
-      "valuationUsd": 21695.259792503814,
+      "valuationUsd": 21914.498379685836,
       "priceAlerts": 1,
       "founderStake": 1,
       "startCash": 13013.75,
       "startTreasuryUsd": 10591.605266260538,
       "soldUsd": 28.135800000000003,
-      "treasurySoldUsd": 1999.0961733349982,
+      "treasurySoldUsd": 21.75191238088121,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
@@ -811,17 +811,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.0406673396574782,
+        "BTC": 1.3875564528766375,
         "ETH": 0.797310206636107
       },
-      "treasuryValueUsd": 9702.935761195178,
-      "cash": 14968.18,
+      "treasuryValueUsd": 12877.141122815965,
+      "cash": 12990.83,
       "ebitdaUsd": 32.81040000000013,
-      "valuationUsd": 25589.80696119518,
+      "valuationUsd": 26786.662322815966,
       "priceAlerts": 0,
       "founderStake": 1,
-      "startCash": 15002.68,
-      "startTreasuryUsd": 7182.5636215435425,
+      "startCash": 13025.33,
+      "startTreasuryUsd": 9552.86040106119,
       "soldUsd": 157.03127999999998,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -849,17 +849,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.0406673396574782,
+        "BTC": 1.3875564528766375,
         "ETH": 1.208627505140731
       },
-      "treasuryValueUsd": 11717.217368690417,
-      "cash": 15064.95,
+      "treasuryValueUsd": 15476.08004840417,
+      "cash": 13087.6,
       "ebitdaUsd": 244.9314000000002,
-      "valuationUsd": 36579.423368690426,
+      "valuationUsd": 38360.936048404175,
       "priceAlerts": 0,
       "founderStake": 1,
-      "startCash": 14968.18,
-      "startTreasuryUsd": 10114.414421920646,
+      "startCash": 12990.83,
+      "startTreasuryUsd": 13420.697813399627,
       "soldUsd": 345.73517999999996,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -887,17 +887,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.0406673396574782,
+        "BTC": 1.3875564528766375,
         "ETH": 1.5080222535591867
       },
-      "treasuryValueUsd": 30163.0212361542,
-      "cash": 15169.57,
+      "treasuryValueUsd": 39853.32004945557,
+      "cash": 13192.22,
       "ebitdaUsd": 256.17060000000015,
-      "valuationUsd": 63776.87443615421,
+      "valuationUsd": 71489.82324945559,
       "priceAlerts": 0,
       "founderStake": 1,
-      "startCash": 15064.95,
-      "startTreasuryUsd": 12114.324892134744,
+      "startCash": 13087.6,
+      "startTreasuryUsd": 16005.758184247465,
       "soldUsd": 353.60262,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -925,17 +925,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.04293727915156,
+        "BTC": 1.3898263923707195,
         "ETH": 1.734732641457862
       },
-      "treasuryValueUsd": 63642.91976946551,
-      "cash": 15531.45,
+      "treasuryValueUsd": 83725.80134356269,
+      "cash": 13554.1,
       "ebitdaUsd": 780.8293500000002,
-      "valuationUsd": 157257.30476946553,
+      "valuationUsd": 175362.83634356273,
       "priceAlerts": 0,
       "founderStake": 1,
-      "startCash": 15169.57,
-      "startTreasuryUsd": 31896.224090598538,
+      "startCash": 13192.22,
+      "startTreasuryUsd": 42129.13032368845,
       "soldUsd": 977.549265,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -963,17 +963,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.0458352813531473,
+        "BTC": 1.3927243945723067,
         "ETH": 1.8765529935794405
       },
-      "treasuryValueUsd": 41078.80029971409,
-      "cash": 16142.3,
+      "treasuryValueUsd": 53271.54330021394,
+      "cash": 14164.95,
       "ebitdaUsd": 1173.5713499999995,
-      "valuationUsd": 132329.66669971406,
+      "valuationUsd": 142545.0597002139,
       "priceAlerts": 2,
       "founderStake": 1,
-      "startCash": 15531.45,
-      "startTreasuryUsd": 66639.19326387676,
+      "startCash": 13554.1,
+      "startTreasuryUsd": 87627.12587881839,
       "soldUsd": 1313.0091450000002,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -1001,17 +1001,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.0518889481006115,
+        "BTC": 1.398778061319771,
         "ETH": 1.9860469511318677
       },
-      "treasuryValueUsd": 52447.63779095997,
-      "cash": 16415.34,
+      "treasuryValueUsd": 67752.14958159228,
+      "cash": 14437.99,
       "ebitdaUsd": 839.2208999999998,
-      "valuationUsd": 119216.23179095995,
+      "valuationUsd": 132543.39358159227,
       "priceAlerts": 2,
       "founderStake": 1,
-      "startCash": 16142.3,
-      "startTreasuryUsd": 39506.1737759383,
+      "startCash": 14164.95,
+      "startTreasuryUsd": 51168.783489160975,
       "soldUsd": 1321.1257500000002,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -1039,17 +1039,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.056415026651591,
+        "BTC": 1.4033041398707504,
         "ETH": 2.065485464992912
       },
-      "treasuryValueUsd": 58077.087209360514,
-      "cash": 16747.61,
+      "treasuryValueUsd": 74574.75185603919,
+      "cash": 14770.26,
       "ebitdaUsd": 923.8456499999998,
-      "valuationUsd": 126560.0536093605,
+      "valuationUsd": 141080.36825603916,
       "priceAlerts": 0,
       "founderStake": 1,
-      "startCash": 16415.34,
-      "startTreasuryUsd": 54354.23830922076,
+      "startCash": 14437.99,
+      "startTreasuryUsd": 70221.49096377287,
       "soldUsd": 1380.363075,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -1077,17 +1077,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 1.056415026651591,
+        "BTC": 1.4033041398707504,
         "ETH": 2.132460028447806
       },
-      "treasuryValueUsd": 54742.40828739013,
-      "cash": 16910.45,
+      "treasuryValueUsd": 70446.83119219716,
+      "cash": 14933.1,
       "ebitdaUsd": 365.99220000000014,
-      "valuationUsd": 84828.57748739014,
+      "valuationUsd": 98555.65039219716,
       "priceAlerts": 0,
       "founderStake": 1,
-      "startCash": 16747.61,
-      "startTreasuryUsd": 55425.886515864,
+      "startCash": 14770.26,
+      "startTreasuryUsd": 71202.65661412402,
       "soldUsd": 474.04853999999995,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -1115,19 +1115,19 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 0.44567508936864,
+        "BTC": 1.4033041398707504,
         "ETH": 0.9195442675442982
       },
-      "treasuryValueUsd": 9731.88928678133,
-      "cash": 32848.53,
+      "treasuryValueUsd": 28569.486949532387,
+      "cash": 16610.75,
       "ebitdaUsd": 156.492,
-      "valuationUsd": 45710.25928678132,
+      "valuationUsd": 48310.07694953239,
       "priceAlerts": 3,
       "founderStake": 1,
-      "startCash": 16910.45,
-      "startTreasuryUsd": 53702.03873222302,
+      "startCash": 14933.1,
+      "startTreasuryUsd": 69094.66382650414,
       "soldUsd": 277.12440000000004,
-      "treasurySoldUsd": 15900.348530118446,
+      "treasurySoldUsd": 1639.917630742158,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
@@ -1153,17 +1153,17 @@
       "failures": 0,
       "brokenUnits": 0,
       "treasury": {
-        "BTC": 0.44567508936864,
+        "BTC": 1.4033041398707504,
         "ETH": 0.9559798418582885
       },
-      "treasuryValueUsd": 9987.389971694056,
-      "cash": 32825.92,
+      "treasuryValueUsd": 28641.572942402443,
+      "cash": 16588.14,
       "ebitdaUsd": 39.52620000000002,
-      "valuationUsd": 43445.72917169406,
+      "valuationUsd": 45862.13214240244,
       "priceAlerts": 0,
       "founderStake": 1,
-      "startCash": 32848.53,
-      "startTreasuryUsd": 10094.173894902917,
+      "startCash": 16610.75,
+      "startTreasuryUsd": 29542.825078488862,
       "soldUsd": 144.97433999999998,
       "treasurySoldUsd": 0,
       "interestUsd": 0,
@@ -1380,7 +1380,8 @@
         "coin": "ETH",
         "changeDelta": -0.3219374679651461,
         "sharePct": 0.25,
-        "valueUsd": 1999.0961733349982
+        "soldCoin": "ETH",
+        "valueUsd": 21.75191238088121
       }
     },
     {
@@ -1481,7 +1482,8 @@
         "coin": "ETH",
         "changeDelta": -0.20964058118786644,
         "sharePct": 0.25,
-        "valueUsd": 7918.431122753744
+        "soldCoin": "ETH",
+        "valueUsd": 844.7764637222222
       }
     },
     {
@@ -1492,7 +1494,8 @@
         "coin": "ETH",
         "changeDelta": -0.2301956408155893,
         "sharePct": 0.25,
-        "valueUsd": 4830.0458878597265
+        "soldCoin": "ETH",
+        "valueUsd": 487.73445323231834
       }
     },
     {
@@ -1503,7 +1506,8 @@
         "coin": "ETH",
         "changeDelta": -0.15963365789076778,
         "sharePct": 0.25,
-        "valueUsd": 3151.871519504975
+        "soldCoin": "ETH",
+        "valueUsd": 307.4067137876174
       }
     },
     {

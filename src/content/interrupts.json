@@ -8,10 +8,19 @@
    "trigger": "abs(weekly change in BTC or ETH price) >= 15%",
    "choices": [
     {
-     "id": "sell",
-     "label": "Sell 25% of the treasury now",
+     "id": "sell_btc",
+     "label": "Sell 25% of your BTC now",
      "effects": {
-      "sell_treasury_pct": 0.25
+      "sell_treasury_pct": 0.25,
+      "coin": "BTC"
+     }
+    },
+    {
+     "id": "sell_eth",
+     "label": "Sell 25% of your ETH now",
+     "effects": {
+      "sell_treasury_pct": 0.25,
+      "coin": "ETH"
      }
     },
     {

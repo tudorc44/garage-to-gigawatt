@@ -20,6 +20,12 @@ import {
   usedKw,
 } from '../src/sim/systems/sites.ts'
 
+/** Price-alert answer on a drop: sell 25% of the coin that fell, if the treasury holds any. */
+function sellDropped(s: GameState): string {
+  const coin = s.interrupt!.coin
+  return s.treasury[coin] > 0 ? `sell_${coin.toLowerCase()}` : 'hold'
+}
+
 interface BotSettings {
   /** Share of mined coins to keep (0–1), set in the first quarter. */
   hodlPct: number
@@ -162,7 +168,7 @@ function makeBot(settings: BotSettings): Strategy {
     },
     // Without sellOnDrops, alerts get the game's default answer (as ff-climb always has).
     answer: settings.sellOnDrops
-      ? (s) => (s.interrupt!.changePct < 0 ? 'sell' : 'hold')
+      ? (s) => (s.interrupt!.changePct < 0 ? sellDropped(s) : 'hold')
       : undefined,
   }
 }
@@ -369,7 +375,7 @@ function ffClimb(settings: FfSettings): Strategy {
     },
     // Without sellOnDrops, alerts get the game's default answer (as ff-climb always has).
     answer: settings.sellOnDrops
-      ? (s) => (s.interrupt!.changePct < 0 ? 'sell' : 'hold')
+      ? (s) => (s.interrupt!.changePct < 0 ? sellDropped(s) : 'hold')
       : undefined,
   }
 }

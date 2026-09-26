@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { CONTENT } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
+import { interruptChoices } from '../../src/sim/selectors.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 
 function act(state: GameState, action: Action): GameState {
@@ -100,10 +101,10 @@ describe('price alerts', () => {
     expect(() => advance(s)).toThrow(/interrupt/)
   })
 
-  it('"sell" sells 25% of the treasury at that week’s price; "hold" does nothing', () => {
+  it('"sell ETH" sells 25% of the ETH at that week’s price; "hold" does nothing', () => {
     const s = advance(holding())
     const price = CONTENT.market[0][9].eth_usd
-    const sold = act(s, { type: 'RESOLVE_INTERRUPT', choice: 'sell' })
+    const sold = act(s, { type: 'RESOLVE_INTERRUPT', choice: 'sell_eth' })
     expect(sold.treasury.ETH).toBeCloseTo(75)
     expect(sold.cash).toBeCloseTo(s.cash + 25 * price)
     expect(sold.interrupt).toBeNull()
@@ -111,6 +112,28 @@ describe('price alerts', () => {
     expect(held.treasury.ETH).toBe(100)
     const bad = applyAction(s, { type: 'RESOLVE_INTERRUPT', choice: 'panic' })
     expect(bad.ok ? '' : bad.error.key).toBe('error.bad_choice')
+  })
+
+  it('offer "sell BTC" only when the treasury holds BTC, and sell only that coin', () => {
+    const ethOnly = advance(holding())
+    expect(interruptChoices(ethOnly).map((c) => c.id)).toEqual([
+      'sell_eth',
+      'hold',
+    ])
+    const noBtc = applyAction(ethOnly, {
+      type: 'RESOLVE_INTERRUPT',
+      choice: 'sell_btc',
+    })
+    expect(noBtc.ok ? '' : noBtc.error.key).toBe('error.nothing_to_sell')
+
+    const both = advance({ ...holding(), treasury: { BTC: 2, ETH: 100 } })
+    expect(interruptChoices(both).map((c) => c.id)).toEqual([
+      'sell_btc',
+      'sell_eth',
+      'hold',
+    ])
+    const sold = act(both, { type: 'RESOLVE_INTERRUPT', choice: 'sell_btc' })
+    expect(sold.treasury).toEqual({ BTC: 1.5, ETH: 100 })
   })
 
   it('fire at most 3 times a quarter (2017Q1 has 4 big ETH weeks)', () => {

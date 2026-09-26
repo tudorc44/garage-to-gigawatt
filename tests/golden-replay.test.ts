@@ -90,7 +90,13 @@ function grower({ reserveUsd, hodlPct }: GrowerSettings): Strategy {
       }
       return actions
     },
-    answer: (s) => (s.interrupt!.changePct < 0 ? 'sell' : 'hold'),
+    // On a drop, sell 25% of the coin that fell (if held); otherwise hold.
+    answer: (s) => {
+      const coin = s.interrupt!.coin
+      return s.interrupt!.changePct < 0 && s.treasury[coin] > 0
+        ? `sell_${coin.toLowerCase()}`
+        : 'hold'
+    },
   }
 }
 

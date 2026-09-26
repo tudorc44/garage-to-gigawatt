@@ -155,5 +155,8 @@ describe('treasury', () => {
     const usd = sellTreasury(s, 0.25, w)
     expect(usd).toBeCloseTo(0.5 * w.btc_usd + 25 * w.eth_usd)
     expect(s.treasury).toEqual({ BTC: 1.5, ETH: 75 })
+    const eth = sellTreasury(s, 1, w, 'ETH')
+    expect(eth).toBeCloseTo(75 * w.eth_usd)
+    expect(s.treasury).toEqual({ BTC: 1.5, ETH: 0 })
   })
 })
