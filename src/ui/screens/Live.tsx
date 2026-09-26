@@ -7,6 +7,7 @@ import {
   MAX_INTERRUPTS,
   PRICE_ALERT_THRESHOLD,
   complaintView,
+  KEEP_MINING_GRIEVANCE,
   interruptChoices,
   lotViews,
   marginCallView,
@@ -508,7 +509,10 @@ function CurtailmentCard({ state, act }: ScreenProps) {
           credit: fmt.signed(offer.creditUsd),
           forgone: fmt.money(offer.forgoneUsd),
         })
-      : t('ui.grid.effect_mine', { forgone: fmt.money(offer.forgoneUsd) })
+      : t('ui.grid.effect_mine', {
+          forgone: fmt.money(offer.forgoneUsd),
+          grievance: fmt.signedInt(KEEP_MINING_GRIEVANCE),
+        })
   return (
     <div class="scrim">
       <article

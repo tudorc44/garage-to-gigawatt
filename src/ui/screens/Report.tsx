@@ -331,6 +331,11 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
           {t('ui.report.grid_line', { credits: fmt.money(r.gridCreditsUsd) })}
         </p>
       )}
+      {r.rateHikeUsd > 0 && (
+        <p class="num-s warn" style={{ margin: 0 }}>
+          {t('ui.report.rate_hike_line', { usd: fmt.money(r.rateHikeUsd) })}
+        </p>
+      )}
       {r.debtUsd > 0 && (
         <p class="num-s muted" style={{ margin: 0 }}>
           {t('ui.report.debt_line', {

@@ -23,6 +23,7 @@ import {
   outreachBlocker,
   recalcHeat,
   scheduleComplaint,
+  underMoratorium,
 } from './systems/heat.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
@@ -151,6 +152,11 @@ function run(s: GameState, a: Action): Message | undefined {
       }
       const site = s.sites.find((x) => x.id === a.siteId)
       if (!site) return fail('error.unknown_site')
+      if (underMoratorium(s, site.id))
+        return fail('error.moratorium', {
+          tier: site.tier,
+          at: CONTENT.heat.moratoriumAt,
+        })
       const freeKw = capacityKw(site) - usedKw(s, site.id)
       const neededKw = model.power_kw * a.count
       if (neededKw > freeKw + 1e-9) {

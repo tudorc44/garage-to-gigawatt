@@ -9,6 +9,7 @@ import { logEntry, type Auction, type GameState } from '../state.ts'
 import { addMachines } from './machines.ts'
 import { getModel, sellPrice } from './market.ts'
 import { activeRivals } from './rivals.ts'
+import { underMoratorium } from './heat.ts'
 import { capacityKw, usedKw } from './sites.ts'
 
 /** The auction window covering this quarter, if any. */
@@ -89,6 +90,11 @@ export function bidBlocker(
     }
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
+  if (underMoratorium(state, site.id))
+    return {
+      key: 'error.moratorium',
+      params: { tier: site.tier, at: CONTENT.heat.moratoriumAt },
+    }
   const freeKw = capacityKw(site) - usedKw(state, site.id)
   const neededKw = getModel(a.model)!.power_kw * a.count
   if (neededKw > freeKw + 1e-9)

@@ -19,6 +19,8 @@ export interface Site {
   powerPriceMult: number
   /** Hidden flaw id (sites.json flaws), revealed once built. null = no flaw. */
   flaw: string | null
+  /** Heat 50 rate hike: power price multiplier for this quarter (heat.json rate_hike), if any. */
+  surcharge?: number
 }
 
 /** A batch of identical machines bought together and placed at one site. */
@@ -186,6 +188,8 @@ export interface QuarterStats {
   soldUsd: number
   /** Paid by the grid for curtailing (counts toward EBITDA). */
   gridCreditsUsd: number
+  /** Extra power paid this quarter because of Heat rate hikes. */
+  rateHikeUsd: number
   /** Loan interest and principal paid this quarter. */
   interestUsd: number
   principalUsd: number
@@ -242,6 +246,8 @@ export interface QuarterReport {
   treasurySoldUsd: number
   /** Paid by the grid for curtailing. */
   gridCreditsUsd: number
+  /** Extra power paid this quarter because of Heat rate hikes. */
+  rateHikeUsd: number
   interestUsd: number
   principalUsd: number
   /** Loans still owed at quarter end (subtracted from the valuation). */
@@ -266,6 +272,7 @@ export function emptyQuarterStats(): QuarterStats {
     marginCalls: 0,
     soldUsd: 0,
     gridCreditsUsd: 0,
+    rateHikeUsd: 0,
     interestUsd: 0,
     principalUsd: 0,
     startCash: 0,
@@ -328,6 +335,7 @@ export function newGame(seed: number): GameState {
         grievance: 0,
         mitigated: false,
         outreachQuarter: null,
+        shutdownSince: null,
       },
     },
     loansLockedUntil: null,

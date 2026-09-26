@@ -27,6 +27,8 @@ export interface SiteHeat {
   mitigated: boolean
   /** Quarter of the last "talk to the neighbours" here (once per site per quarter), or null. */
   outreachQuarter: number | null
+  /** Heat 90 shutdown order: the quarter it started, or null. Machines here don't mine. */
+  shutdownSince: number | null
 }
 
 export function newSiteHeat(): SiteHeat {
@@ -36,6 +38,7 @@ export function newSiteHeat(): SiteHeat {
     grievance: 0,
     mitigated: false,
     outreachQuarter: null,
+    shutdownSince: null,
   }
 }
 
@@ -104,11 +107,70 @@ export function recalcHeat(state: GameState, site: Site): void {
   h.value = Math.min(100, Math.max(0, total))
 }
 
-/** After a week is mined: new load from what actually ran, then Heat. */
+/** After a week is mined: new load from what actually ran, then Heat. At 90: shutdown order. */
 export function updateHeatWeek(state: GameState, lots: LotWeek[]): void {
   for (const site of state.sites) {
-    heatOf(state, site.id).load = loadHeat(state, site, lots)
+    const h = heatOf(state, site.id)
+    h.load = loadHeat(state, site, lots)
     recalcHeat(state, site)
+    if (h.value >= CONTENT.heat.shutdown.at && h.shutdownSince === null) {
+      h.shutdownSince = state.quarter
+      logEntry(
+        state,
+        'log.heat_shutdown',
+        {
+          tier: site.tier,
+          heat: Math.round(h.value),
+          below: CONTENT.heat.shutdown.untilBelow,
+        },
+        state.week + 1,
+      )
+    }
+  }
+}
+
+/** True while a site is under a Heat shutdown order (its machines don't mine). */
+export function isShutDown(state: GameState, siteId: string): boolean {
+  return (state.siteHeat[siteId]?.shutdownSince ?? null) !== null
+}
+
+/** Heat 70: no new machines can be placed at this site. */
+export function underMoratorium(state: GameState, siteId: string): boolean {
+  return siteHeatValue(state, siteId) >= CONTENT.heat.moratoriumAt
+}
+
+/**
+ * Between quarters (before grievances fade), from each site's Heat at quarter end:
+ * - Heat ≥ 50 → next quarter's power costs rate_hike.power_mult more; below 50 → it ends.
+ * - A shutdown lifts once it has lasted min_quarters full quarters and Heat < until_below.
+ */
+export function endQuarterHeat(state: GameState): void {
+  const { rateHike, shutdown } = CONTENT.heat
+  for (const site of state.sites) {
+    const h = heatOf(state, site.id)
+    const hot = h.value >= rateHike.at
+    if (hot && !site.surcharge) {
+      site.surcharge = rateHike.powerMult
+      logEntry(state, 'log.rate_hike', {
+        tier: site.tier,
+        heat: Math.round(h.value),
+        surchargePct: rateHike.powerMult - 1,
+      })
+    } else if (!hot && site.surcharge) {
+      delete site.surcharge
+      logEntry(state, 'log.rate_hike_ends', { tier: site.tier })
+    }
+    if (
+      h.shutdownSince !== null &&
+      state.quarter >= h.shutdownSince + shutdown.minQuarters &&
+      h.value < shutdown.untilBelow
+    ) {
+      h.shutdownSince = null
+      logEntry(state, 'log.heat_shutdown_lifted', {
+        tier: site.tier,
+        heat: Math.round(h.value),
+      })
+    }
   }
 }
 
@@ -358,4 +420,15 @@ export function resolveComplaint(
     )
   }
   state.interrupt = null
+}
+
+/** This week's extra power cost from rate hikes (the surcharge share of the power bill). */
+export function rateHikeUsd(state: GameState, lots: LotWeek[]): number {
+  let usd = 0
+  for (const l of lots) {
+    const lot = state.machines.find((x) => x.id === l.lotId)
+    const site = lot && state.sites.find((s) => s.id === lot.siteId)
+    if (site?.surcharge) usd += l.powerCostUsd * (1 - 1 / site.surcharge)
+  }
+  return usd
 }

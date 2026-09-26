@@ -7,6 +7,7 @@ import { interruptChoices } from '../../src/sim/selectors.ts'
 import {
   addGrievance,
   checkComplaint,
+  endQuarterHeat,
   heatOf,
   mitigationCostUsd,
   outreachCostUsd,
@@ -16,7 +17,8 @@ import {
   updateHeatWeek,
 } from '../../src/sim/systems/heat.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
-import type { LotWeek } from '../../src/sim/systems/mining.ts'
+import { mineWeek, type LotWeek } from '../../src/sim/systems/mining.ts'
+import { powerPriceUsdKwh } from '../../src/sim/systems/sites.ts'
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
 const S9_KW = CONTENT.machines.find((m) => m.id === 's9')!.power_kw
@@ -311,5 +313,104 @@ describe('talking to the neighbours and noise mitigation (Plan phase)', () => {
     expect(err(s, walls)).toBe('error.mitigation_done')
     const texas = { ...s.sites[1], tier: 'texas_site' }
     expect(mitigationCostUsd(texas)).toBe(1_000_000)
+  })
+})
+
+describe('Heat thresholds: 50 rate hike, 70 moratorium, 90 shutdown', () => {
+  /** A Plan-phase game with a warehouse at Heat `heat` and 100 S9s on it (not yet earning). */
+  function at(heat: number): GameState {
+    const s = { ...withSite('warehouse', '2019Q2'), cash: 1_000_000 }
+    s.machines.push({
+      id: 'lot-9',
+      model: 's9',
+      siteId: 'site-2',
+      condition: 'used',
+      count: 100,
+      failed: 0,
+      earnsFromQuarter: 0,
+    })
+    updateHeatWeek(s, [])
+    heatOf(s, 'site-2').grievance = heat - heatOf(s, 'site-2').value
+    recalcHeat(s, s.sites[1])
+    return s
+  }
+  const buy: Action = {
+    type: 'BUY_MACHINES',
+    model: 's9',
+    condition: 'used',
+    count: 1,
+    siteId: 'site-2',
+  }
+
+  it('50: next quarter power costs 20% more at that site; it ends once Heat is back under 50', () => {
+    const s = at(50)
+    const before = powerPriceUsdKwh(s.sites[1], s.quarter)
+    endQuarterHeat(s)
+    expect(s.sites[1].surcharge).toBe(1.2)
+    expect(powerPriceUsdKwh(s.sites[1], s.quarter)).toBeCloseTo(before * 1.2)
+    expect(s.log.at(-1)!.key).toBe('log.rate_hike')
+    heatOf(s, 'site-2').grievance = 0
+    recalcHeat(s, s.sites[1])
+    endQuarterHeat(s)
+    expect(s.sites[1].surcharge).toBeUndefined()
+    expect(s.log.at(-1)!.key).toBe('log.rate_hike_ends')
+  })
+
+  it('50: the surcharge shows as its own number in the quarter report', () => {
+    const s = at(55)
+    endQuarterHeat(s)
+    let g = ok(s, { type: 'END_PLAN' })
+    while (g.phase === 'live') {
+      g = g.interrupt
+        ? ok(g, { type: 'RESOLVE_INTERRUPT', choice: defaultChoice(g) })
+        : advance(g)
+    }
+    const r = g.reports.at(-1)!
+    expect(r.rateHikeUsd).toBeGreaterThan(0)
+    expect(r.rateHikeUsd).toBeCloseTo(r.powerCostUsd * (1 - 1 / 1.2), 0)
+  })
+
+  it('70: no new machines can be bought for that site; 69 is fine', () => {
+    expect(err(at(70), buy)).toBe('error.moratorium')
+    expect(ok(at(69), buy).machines.at(-1)!.siteId).toBe('site-2')
+  })
+
+  it('90: shutdown order; the site stops mining, and lifts after a full quarter once Heat < 60', () => {
+    const s = { ...at(95), phase: 'live' as const }
+    updateHeatWeek(s, []) // no load: Heat stays at base 15 + grievance 80
+    expect(heatOf(s, 'site-2').shutdownSince).toBe(s.quarter)
+    expect(s.log.at(-1)!.key).toBe('log.heat_shutdown')
+    expect(
+      mineWeek(s, CONTENT.market[s.quarter][0]).every((l) => !l.running),
+    ).toBe(true)
+
+    // Heat below 60 at the end of the same quarter: still shut (at least one full quarter).
+    heatOf(s, 'site-2').grievance = 0
+    recalcHeat(s, s.sites[1])
+    endQuarterHeat(s)
+    expect(heatOf(s, 'site-2').shutdownSince).toBe(s.quarter)
+    // End of the next quarter: lifted.
+    const next = { ...s, quarter: s.quarter + 1 }
+    endQuarterHeat(next)
+    expect(heatOf(next, 'site-2').shutdownSince).toBeNull()
+    expect(next.log.at(-1)!.key).toBe('log.heat_shutdown_lifted')
+  })
+})
+
+describe('curtailment "keep mining"', () => {
+  it('adds grievance +5 at the Texas site', () => {
+    const s = { ...withSite('texas_site', '2021Q3'), phase: 'live' as const }
+    updateHeatWeek(s, [])
+    const before = heat(s)
+    s.interrupt = {
+      id: 'curtailment',
+      week: 3,
+      coin: 'BTC',
+      changePct: 0,
+      curtail: { mw: 10, forgoneUsd: 100_000, creditUsd: 150_000 },
+    }
+    const kept = answer(s, 'mine')
+    expect(heatOf(kept, 'site-2').grievance).toBe(5)
+    expect(heat(kept)).toBe(before + 5)
   })
 })

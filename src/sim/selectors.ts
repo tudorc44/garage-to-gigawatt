@@ -34,9 +34,11 @@ import {
   complaintPayUsd,
   growthMult,
   hottestSite,
+  isShutDown,
   mitigationCostUsd,
   outreachCostUsd,
   siteHeatValue,
+  underMoratorium,
 } from './systems/heat.ts'
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { isEarning } from './systems/mining.ts'
@@ -180,6 +182,10 @@ export interface SiteView {
   leaving?: { penaltyUsd: number; units: number; machinesUsd: number }
   /** Community Heat now (0–100). */
   heat: number
+  /** Heat effects in force: the rate-hike multiplier (or null), moratorium, shutdown. */
+  rateHike: number | null
+  moratorium: boolean
+  shutDown: boolean
 }
 
 export function siteViews(state: GameState): SiteView[] {
@@ -193,6 +199,9 @@ export function siteViews(state: GameState): SiteView[] {
     readyQuarter: quarterName(site.readyQuarter) || 'after Act I',
     leaving: tierIndex(site.tier) > 0 ? leavingTerms(state, site) : undefined,
     heat: siteHeatValue(state, site.id),
+    rateHike: site.surcharge ?? null,
+    moratorium: underMoratorium(state, site.id),
+    shutDown: isShutDown(state, site.id),
   }))
 }
 
@@ -555,3 +564,6 @@ export function complaintView(state: GameState) {
     complaintAt: CONTENT.heat.complaintAt,
   }
 }
+
+/** Grievance added at the Texas site by "keep mining" in a curtailment (heat.json). */
+export const KEEP_MINING_GRIEVANCE = CONTENT.heat.keepMining

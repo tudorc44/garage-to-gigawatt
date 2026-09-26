@@ -15,7 +15,7 @@ import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
 import { collateralValueUsd } from './cryptoLoan.ts'
 import { debtUsd } from './loans.ts'
-import { hottestSite, startQuarterHeat } from './heat.ts'
+import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { ebitdaUsd, valuationUsd } from './valuation.ts'
@@ -99,6 +99,7 @@ function buildReport(
     soldUsd: st.soldUsd,
     treasurySoldUsd: st.treasurySoldUsd,
     gridCreditsUsd: st.gridCreditsUsd,
+    rateHikeUsd: st.rateHikeUsd,
     interestUsd: st.interestUsd,
     principalUsd: st.principalUsd,
     debtUsd: debtUsd(state),
@@ -120,6 +121,7 @@ export function startNextQuarter(state: GameState): void {
   state.bandwidth = bandwidthForQuarter(state) // unused Bandwidth is lost
   state.interruptsThisQuarter = 0
   state.curtailment = null
+  endQuarterHeat(state)
   state.quarterStats = emptyQuarterStats()
   startQuarterHeat(state)
   for (const site of state.sites) {

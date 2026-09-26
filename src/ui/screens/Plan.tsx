@@ -276,6 +276,26 @@ function FleetPanel({ state }: { state: GameState }) {
               />
             </div>
             <HeatMeter tier={sv.site.tier} heat={sv.heat} />
+            {(sv.rateHike || sv.moratorium || sv.shutDown) && (
+              <div
+                class="row-between"
+                style={{ justifyContent: 'flex-start', gap: '6px' }}
+              >
+                {sv.shutDown && (
+                  <span class="tag danger">{t('ui.fleet.shut_down')}</span>
+                )}
+                {sv.moratorium && !sv.shutDown && (
+                  <span class="tag danger">{t('ui.fleet.moratorium')}</span>
+                )}
+                {sv.rateHike && (
+                  <span class="tag warn">
+                    {t('ui.fleet.rate_hike', {
+                      pct: `+${fmt.pct(sv.rateHike - 1)}`,
+                    })}
+                  </span>
+                )}
+              </div>
+            )}
             {siteLots.map((v) => (
               <div class="fleet-row" key={v.lot.id}>
                 <Icon name={machineIcon(v.coin)} />

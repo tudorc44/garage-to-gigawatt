@@ -10,7 +10,7 @@ import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
 import { checkMarginCall, payCryptoInterestWeek } from './systems/cryptoLoan.ts'
 import { applyCurtailment, checkCurtailment } from './systems/curtailment.ts'
-import { checkComplaint, updateHeatWeek } from './systems/heat.ts'
+import { checkComplaint, rateHikeUsd, updateHeatWeek } from './systems/heat.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 
@@ -40,6 +40,7 @@ export function advance(state: GameState): GameState {
   st.rentUsd += money.rentUsd
   st.soldUsd += money.soldUsd
   st.gridCreditsUsd += curtailed.creditUsd
+  st.rateHikeUsd += rateHikeUsd(s, lots)
   st.interestUsd += loan.interestUsd + cryptoInterestUsd
   st.principalUsd += loan.principalUsd
   st.failures += failures

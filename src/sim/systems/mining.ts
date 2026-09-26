@@ -4,6 +4,7 @@
 import { BALANCE, type MarketWeek } from '../../content/index.ts'
 import { binomial } from '../rng.ts'
 import type { Coin, GameState, MachineLot } from '../state.ts'
+import { isShutDown } from './heat.ts'
 import { coinPrice, getModel, revenuePerUnitDay } from './market.ts'
 import {
   flawEffect,
@@ -75,7 +76,8 @@ export function mineWeek(state: GameState, w: MarketWeek): LotWeek[] {
         7 *
         up *
         powerPriceUsdKwh(site, state.quarter)
-      const running = working > 0 && revenueUsd >= powerCostUsd
+      const running =
+        working > 0 && revenueUsd >= powerCostUsd && !isShutDown(state, site.id)
       return {
         lotId: lot.id,
         coin: model.coin,

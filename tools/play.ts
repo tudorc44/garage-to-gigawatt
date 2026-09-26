@@ -10,7 +10,11 @@ import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
 import { interruptChoices } from '../src/sim/selectors.ts'
 import { ltv } from '../src/sim/systems/cryptoLoan.ts'
-import { siteHeatValue } from '../src/sim/systems/heat.ts'
+import {
+  isShutDown,
+  siteHeatValue,
+  underMoratorium,
+} from '../src/sim/systems/heat.ts'
 import { defaultChoice } from '../src/sim/systems/interrupts.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
@@ -134,6 +138,9 @@ function showPlan(s: GameState) {
     line += t('play.site_heat', {
       heat: Math.round(siteHeatValue(s, site.id)),
     })
+    if (site.surcharge) line += t('play.site_rate_hike')
+    if (isShutDown(s, site.id)) line += t('play.site_shut_down')
+    else if (underMoratorium(s, site.id)) line += t('play.site_moratorium')
     console.log(line)
   })
 
@@ -493,6 +500,7 @@ function showReport(s: GameState) {
   say('play.report_cash', { cashUsd: r.cash })
   if (r.gridCreditsUsd > 0)
     say('play.report_grid', { creditsUsd: r.gridCreditsUsd })
+  if (r.rateHikeUsd > 0) say('play.report_rate_hike', { usd: r.rateHikeUsd })
   if (r.forcedSale) say('play.report_forced', r.forcedSale)
   showLeague(s)
 }

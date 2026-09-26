@@ -6,6 +6,7 @@ import { CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type CurtailOffer, type GameState } from '../state.ts'
+import { addGrievance } from './heat.ts'
 import { getModel, marketWeek } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { mineWeek } from './mining.ts'
@@ -87,6 +88,10 @@ export function resolveCurtailment(
       active.week + 1,
     )
   } else if (choiceId === 'mine') {
+    for (const site of state.sites) {
+      if (site.tier === CONTENT.curtailment.siteTier)
+        addGrievance(state, site.id, CONTENT.heat.keepMining)
+    }
     logEntry(
       state,
       'log.curtail_declined',

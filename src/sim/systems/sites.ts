@@ -51,7 +51,9 @@ export function powerPriceUsdKwh(site: Site, quarter: number): number {
     tier.power_options![BALANCE.sites.defaultPowerOption]
   const rateHike = flawEffect(site, 'power_price_mult_after_4q')
   const hiked = rateHike !== undefined && quarter >= site.readyQuarter + 4
-  return base * site.powerPriceMult * (hiked ? rateHike : 1)
+  return (
+    base * site.powerPriceMult * (hiked ? rateHike : 1) * (site.surcharge ?? 1)
+  )
 }
 
 /** Share of the week the site actually has power (outage flaw). */
