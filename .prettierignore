@@ -7,3 +7,4 @@ src/content/*.json
 src/content/*.csv
 tests/golden
 sim-output
+staging

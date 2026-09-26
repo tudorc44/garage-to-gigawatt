@@ -25,3 +25,6 @@ dist-ssr
 
 # sim-runner output
 sim-output
+
+# local staging build (npm run staging:build)
+staging

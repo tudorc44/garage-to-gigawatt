@@ -17,6 +17,8 @@ question: *is Act I a fun 40-minute run where decisions, not luck, decide whethe
 npm run dev       # play in the browser: start the dev server and open the printed localhost URL
 npm run build     # type-check (tsc -b) and build to dist/
 npm run preview   # serve the built dist/ locally
+npm run staging:build  # the owner's snapshot: build the game into staging/ (only the owner runs this)
+npm run staging   # play the staging snapshot at http://localhost:4173 (unaffected by later edits)
 npm test          # Vitest: unit tests per system + golden-replay test
 npm run lint      # ESLint (also enforces the pure-sim rules below)
 npm run play      # the terminal version of Act I (options: -- --seed 42 --fast)
@@ -97,3 +99,5 @@ needs them.
    result honestly, including failures.
 7. **Commits:** only commit when asked. One small working step = one commit.
 8. Don't edit the files in `docs/` unless asked.
+9. **Never touch `staging/`.** It is the owner's stable snapshot for playtesting. Don't run `npm run staging:build`
+   unless the owner asks; verify work with `npm run build` (which builds into `dist/`) instead.
