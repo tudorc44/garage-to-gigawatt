@@ -123,7 +123,7 @@
   "play.continue": "Press Enter for the next quarter (or type quit): ",
   "play.gameover": "GAME OVER. Even after selling everything, cash is {cashUsd}.",
   "play.ended": "END OF ACT I. The Merge: on 15 September 2022 Ethereum stops paying miners.",
-  "play.merge_prompt": "What does your company become? Pick 1–4",
+  "play.merge_prompt": "What does your company become? Pick 1–4: ",
   "play.merge_line": "  {n}. {label}: {text}{note}",
   "play.final": "Final position: cash {cashUsd}, treasury worth {treasuryUsd}, {machines} machine(s).",
   "play.bye": "Bye.",

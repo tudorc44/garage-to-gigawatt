@@ -689,12 +689,15 @@ for (;;) {
         note: c.note ? ` (${t(c.note)})` : '',
       }),
     )
-    const answer = await ask(t('play.merge_prompt'))
-    if (answer === 'quit') bye()
-    const picked = v.choices[Number(answer) - 1]
-    if (picked) {
+    // Ask until the answer is one of the four choices.
+    for (;;) {
+      const answer = await ask(t('play.merge_prompt'))
+      if (answer === 'quit') bye()
+      const picked = v.choices[Number(answer) - 1]
+      if (!picked) continue
       const r = applyAction(state, { type: 'MERGE_CHOOSE', choice: picked.id })
       if (r.ok) state = r.state
+      break
     }
   } else {
     if (state.phase === 'gameover') {
