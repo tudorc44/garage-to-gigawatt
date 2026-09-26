@@ -32,6 +32,18 @@ export function App() {
     setGame(s)
   }
 
+  // Dev-only console helpers for testing (left out of `npm run build`):
+  //   g2g.setCash(500000)   g2g.state()
+  if (import.meta.env.DEV) {
+    window.g2g = {
+      state: () => ref.current,
+      setCash: (usd: number) => {
+        if (ref.current) commit({ ...ref.current, cash: usd })
+        return ref.current?.cash
+      },
+    }
+  }
+
   const act = useCallback((a: Action): Message | null => {
     if (!ref.current) return null
     const r = applyAction(ref.current, a)
