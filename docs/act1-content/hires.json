@@ -1,0 +1,79 @@
+{
+ "schema_version": 1,
+ "hires": [
+  {
+   "id": "ops_manager",
+   "name": "Dana Kowalczyk",
+   "bio": "Ran a colo data centre for a decade; can hear a failing fan from the parking lot.",
+   "salary_usd_year": {
+    "2017": 90000,
+    "2021": 130000
+   },
+   "effect": {
+    "failure_mult": 0.5
+   },
+   "real_role": "Site ops/ facility manager: uptime, repairs, techs. ≈ Glassdoor data-centre ops managers $90–140k",
+   "estimate": true
+  },
+  {
+   "id": "trader",
+   "name": "Marco Ferrante",
+   "bio": "Ex-commodities desk; thinks in basis points and speaks in shrugs.",
+   "salary_usd_year": {
+    "2017": 120000,
+    "2021": 180000
+   },
+   "effect": {
+    "read_market_bw": 0,
+    "margin_warning_weeks": 1
+   },
+   "real_role": "Treasury/ trading lead: coin sales, hedges, lender relations. ≈ $120–200k + bonus",
+   "estimate": true
+  },
+  {
+   "id": "bd_lead",
+   "name": "Priya Anand",
+   "bio": "Has visited every empty warehouse within 300 miles and knows which ones flood.",
+   "salary_usd_year": {
+    "2017": 100000,
+    "2021": 150000
+   },
+   "effect": {
+    "scout_extra_offers": 1,
+    "reveal_flaws": true
+   },
+   "real_role": "Site acquisition/ BD: land, power, hosting deals. ≈ $100–160k + commission",
+   "estimate": true
+  },
+  {
+   "id": "ex_utility",
+   "name": "Walt Bremmer",
+   "bio": "Thirty years at a regional utility. Still gets invited to their Christmas party.",
+   "salary_usd_year": {
+    "2017": 150000,
+    "2021": 220000
+   },
+   "effect": {
+    "build_quarters": -1,
+    "power_negotiation_bonus": 0.05
+   },
+   "real_role": "VP Energy: interconnects, PPAs, demand response. ≈ $150–250k",
+   "estimate": true
+  },
+  {
+   "id": "chief_of_staff",
+   "name": "Lena Ortiz",
+   "bio": "Turns your 2 a.m. voice notes into board-ready memos by breakfast.",
+   "salary_usd_year": {
+    "2017": 95000,
+    "2021": 140000
+   },
+   "effect": {
+    "bandwidth": 1
+   },
+   "real_role": "CoS: runs the founder's calendar, reporting, hiring. ≈ $90–150k",
+   "estimate": true
+  }
+ ],
+ "salary_note": "Game quarterly salary = year value/4, linearly interpolated 2017→2021, +8% in 2022 (≈ wage inflation)"
+}
