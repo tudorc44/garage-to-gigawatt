@@ -5,6 +5,7 @@ import { applyAction, type Action } from '../src/sim/actions.ts'
 import type { Strategy } from '../src/sim/replay.ts'
 import type { Condition, GameState } from '../src/sim/state.ts'
 import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
+import { outreachCostUsd, siteHeatValue } from '../src/sim/systems/heat.ts'
 import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
@@ -45,6 +46,8 @@ interface BotSettings {
   cryptoBorrow?: boolean
   /** Bid this share of the lot's list value in distressed auctions (at least the minimum bid). */
   auctionBidShare?: number
+  /** Talk to the neighbours at every site at or above this Heat (1 Bandwidth each, if it can). */
+  outreachAt?: number
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -88,6 +91,18 @@ function makeBot(settings: BotSettings): Strategy {
           actions.push(a)
           cash += amountUsd
           reserveBase += amountUsd
+          bandwidth -= 1
+        }
+      }
+      // 0d. Talk to the neighbours where Heat is high (dry-run checks cash, Bandwidth, once a quarter).
+      if (settings.outreachAt !== undefined) {
+        for (const site of s.sites) {
+          if (bandwidth < 1) break
+          if (siteHeatValue(s, site.id) < settings.outreachAt) continue
+          const a: Action = { type: 'OUTREACH', siteId: site.id }
+          if (!applyAction(s, a).ok) continue
+          actions.push(a)
+          cash -= outreachCostUsd(site)
           bandwidth -= 1
         }
       }
@@ -257,6 +272,15 @@ export const BOTS: Record<string, Strategy> = {
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
     raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+  }),
+  /** raise-climb that talks to the neighbours at any site with Heat 50 or more. */
+  'raise-outreach': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    outreachAt: 50,
   }),
   /** raise-climb that also borrows the maximum equipment loan whenever it has none. */
   'raise-borrow': makeBot({

@@ -79,6 +79,8 @@ Anything that doesn't help answer that question is out of scope.
 | Noise mitigation (capex) | 0 | Lowers Heat permanently on that site |
 | Read the market | 1 | Hints at next quarter's trend or a rumour |
 
+Heat = base + load + grievance + era. Grievance decays 5 per quarter. Outreach and mitigation values live in heat.json. The Heat 50 effect is a temporary power surcharge until event cards are built.
+
 ### 2.7 Interrupts and mini-games (all four groups from the 09 §7 decision)
 | Interrupt | Trigger | Choices |
 |---|---|---|

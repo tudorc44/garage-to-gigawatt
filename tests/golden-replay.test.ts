@@ -6,6 +6,7 @@ import { describe, expect, it } from 'vitest'
 import { CONTENT } from '../src/content/index.ts'
 import type { Action } from '../src/sim/actions.ts'
 import { playGame, replay, type Strategy } from '../src/sim/replay.ts'
+import { BOTS } from '../tools/bots.ts'
 import type { GameState } from '../src/sim/state.ts'
 import {
   purchaseCostUsd,
@@ -262,6 +263,10 @@ const bots = {
       return script[q] ?? []
     },
   },
+  // The sim-runner's raise-climb bot: every funding round, climbs to big sites, never talks to
+  // the neighbours. Covers Heat growing with load and neighbour complaints (ignored) over a
+  // whole game. If the bot is retuned on purpose, update this file with the others.
+  'heat-climber': BOTS['raise-climb'],
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {

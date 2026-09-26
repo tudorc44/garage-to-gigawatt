@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with week 3 done: rivals, the league table, distressed auctions and grid curtailment.
+Last updated: 26 Sep 2026, with the Community Heat system (after week 3: rivals, league table, auctions, curtailment).
 
 ## How the owner works
 
@@ -44,7 +44,7 @@ See `CLAUDE.md` for the full list. The main ones:
    pure-sim rules (no `Math.random`, `Date.now`, timers, DOM or UI imports in `src/sim`).
 2. **Content:** machines, sites, interrupts, capital ladder and weekly market prices in `src/content/`,
    validated by Zod schemas plus a loader that lists every problem and refuses to start on bad data.
-   Rivals are in too (`rivals.json`). Other content (events, hires, Merge) is still only in `docs/act1-content/`; copy it
+   Rivals are in too (`rivals.json`), and Heat's rules (`heat.json`). Other content (events, hires, Merge) is still only in `docs/act1-content/`; copy it
    over, with a schema, when its system gets built. Market CSV → JSON via `npm run content:market`.
 3. **Sim core (`src/sim/`):** seeded RNG in the state; actions via `applyAction`; one week per `advance`.
    Market, sites (ladder, scouting, hidden flaws), machines (new/used, delivery, weekly failure roll,
@@ -59,8 +59,8 @@ See `CLAUDE.md` for the full list. The main ones:
    pause, 1×/2×/4×, skip, alerts as modals), Quarter report, end screen. Design-system tokens and
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
-   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder) and unit
-   tests: 202 passing + 1 to-do.
+   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
+   heat-climber) and unit tests: 229 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -72,14 +72,20 @@ See `CLAUDE.md` for the full list. The main ones:
 11. **Grid curtailment:** in summer (Q3) the Texas grid may ask you to take the Texas site offline for
    a week, for credits (review A8). An interrupt card in the live quarter (and in the terminal); the
    credits count toward EBITDA and show on the quarter report.
+12. **Community Heat** (design thread decisions, 26 Sep 2026; rules in `src/content/heat.json` and
+   `sites.json` heat_load_max): Heat per site = base + load + grievance + era, recalculated weekly. A
+   Heat meter per site (marks at 30/50/70/90), Heat of the hottest site in the top bar and as the 6th
+   report tile (replacing the stand-in Valuation tile, as in the mockup). Neighbour complaints (a
+   card), "Talk to the neighbours" and noise mitigation (a Plan dialog, and `talk` / `mitigate` in the
+   terminal), the rate hike at 50, moratorium at 70, shutdown at 90, and curtailment's "keep mining"
+   (+5 grievance at the Texas site).
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Negotiation, hires,
-Heat and talking to the neighbours, Read the market, the 20 event
-cards (including Winter Storm Uri), the failure-wave and neighbour-complaint interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
-other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
-council, landlord eviction, transformer upgrade). The UI has no automated tests (would need e.g. jsdom:
+Negotiation, hires, Read the market, the 20 event cards (including Winter Storm Uri; Heat's event-card
+effects wait for them), the failure-wave interrupt, the Merge decision screen, saves, sound, settings, the
+left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
+eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
 ask first).
 
 ## Decisions
@@ -107,6 +113,22 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Community Heat** (the design thread's answers, 26 Sep 2026):
+  - Heat = heat_base + load + grievance + era, clamped to 0–100. load = heat_load_max × running MW ÷ site
+    capacity (garage: heat_per_unit_garage per running unit); only machines that mined count. Grievance:
+    ignored complaint +10, curtailment "keep mining" +5, pay −10, outreach −15; fades 5 per quarter
+    toward 0; goodwill floor −10. Era: +5 from 2021Q3 at sites of 1 MW or more. hostile_council × 1.5 on
+    every increase. noise_ordinance +15 base.
+  - Complaints: one per quarter at most, for the hottest site at Heat ≥ 30, rolled once at a random week
+    with chance (Heat − 20)%, counting toward the 3 interrupts; if the cap is used up it waits for next
+    quarter (never auto-answered). Answers: pay $5K (grievance −10) · sound walls (= noise mitigation)
+    · ignore (grievance +10, the default).
+  - Outreach: 1 Bandwidth, $10K × MW (min $10K, max $250K), grievance −15, once per site per quarter.
+    Noise mitigation: 0 Bandwidth, $30K × MW (min $30K, max $1M), base −10 for good, once per site,
+    shared with the complaint's sound walls.
+  - 50: +20% power price the quarter after, until a quarter ends below 50; its own report line.
+    70: moratorium (no new machines there). 90: shutdown (machines stop mining) for at least one full
+    quarter, then lifted at a quarter's end once Heat < 60.
 - **Leaving a site:** penalty = 1 month of that site's own rent (⅓ of quarterly rent), no Bandwidth.
   Machines on the site are sold automatically at the used price. Allowed while the site is still being
   built (build money is lost). The garage can't be left. The tier can be built again later at full cost.
@@ -137,10 +159,21 @@ ask first).
   - Curtail (default): the Texas machines mine nothing and use no power that week; the credit is
     max($15K × MW, 1.25 × that week's forgone revenue), worked out when the grid asks and paid in the
     curtailed week. MW = working Texas machines that would be running. In 2021 the 1.25× rule always wins.
-  - Keep mining: nothing happens yet. Its Heat +5 waits for the Heat system (noted in the content).
+  - Keep mining: grievance +5 at the Texas site (Heat system, 26 Sep 2026).
   - Credits count toward EBITDA (so valuation), are included in the report's cash line, and get their own
     report line. Uri (2021Q1) is left to its event card, as the content review says.
 
+- **Heat details chosen by Claude Code** (within the design thread's rules). **Not yet confirmed:**
+  - Heat is worked out after each week's mining and stored per site; the Plan screen shows the value from
+    the last week played. "Site MW" for costs = the site's usable capacity (a 5 kW garage pays the minimum).
+  - Rate hike: decided from Heat at each quarter's end (≥ 50 → next quarter hiked; < 50 → the hike ends).
+    The shutdown starts the week Heat reaches 90. The moratorium uses Heat at the moment you buy.
+  - The complaint check comes after margin calls and curtailment in a week, before price alerts. A
+    complaint that can't show because another card is up tries again the following week.
+  - Complaint chance offset (20) and threshold (30) moved into `heat.json` (complaint_at,
+    complaint_chance_offset). In interrupts.json the complaint's pay/ignore effects now change grievance.
+  - The report's 6th tile shows the hottest site's Heat and its change vs the previous report; valuation
+    stays in the top bar and the league table.
 - **League table:** ranked by value: the rival's market cap (`mcap_musd`) against your company valuation.
   A rival joins the table in the first quarter it has any number (Bitfarms 2017Q3, Riot and Marathon
   2017Q4, Core Scientific 2018Q2). A rival with no market cap yet shows "private" and sits at the bottom,
@@ -198,9 +231,10 @@ ask first).
 |---|---|---|---|
 | cautious | garage only, keeps half its cash | 0% | $41.5K |
 | reinvest | garage only, spends everything | 0% | $28.8K |
-| raise-climb | reinvest + every round as soon as allowed, climbs the ladder | 0% | $17.9M (peak $334M, 2021Q1) |
-| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $17.6M (peak $337M, 2021Q1) |
-| raise-auction | raise-climb + bids 85% of list on every lot it has room and cash for | 0% | $17.9M (wins 0.3 lots per game) |
+| raise-climb | reinvest + every round as soon as allowed, climbs the ladder | 0% | $16.9M (peak $328M, 2021Q1) |
+| raise-outreach | raise-climb + talks to the neighbours at any site with Heat 50+ | 0% | $16.8M (peak $319M, 2021Q1) |
+| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $16.9M (peak $326M, 2021Q1) |
+| raise-auction | raise-climb + bids 85% of list on every lot it has room and cash for | 0% | $16.9M (wins 0.3 lots per game) |
 | hodl | garage only, keeps every coin | 0% | $104K |
 | hodl-borrow | hodl + the biggest crypto-backed loan whenever it has none | 0% | $65.9K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
@@ -238,6 +272,14 @@ ask first).
 - **Auctions barely matter for the bots so far:** the raise-auction bot wins only 0.3 lots per game,
   because it fills every site with new machines each quarter, so there's rarely room for a lot. A player
   who keeps space free (or sells old rigs) can buy 2019 S9s at a deep discount before the 2019 rally.
+- **Heat (sim check asked for by the design thread):** the fundraising bot that never talks to the
+  neighbours (raise-climb) reaches Heat 50 at a quarter end in 40/50 runs: 19/50 before 2021, 37/50 by
+  the end of 2021 (median first time 2021Q1). It gets about 3.3 complaints per game (all ignored), 1.3
+  rate hikes, and a shutdown in 3/50 runs. The same bot talking to the neighbours whenever Heat ≥ 50
+  (raise-outreach) never reaches 90 (0/50) and gets fewer complaints (2.7), but slightly more rate hikes
+  (1.7): outreach at 50 comes after the quarter-end check that starts the hike. Heat costs the
+  fundraising bots about $1M of end value. Garage-only bots get 0.4 complaints per game (e.g. 3 S9s and
+  a GPU rig in the garage = Heat 30).
 - Price alerts cluster (2 per quarter in 2017Q2–2018Q1 and 2022Q2, almost none 2018–2020) because the
   weekly prices are reconstructed from monthly data. Real CoinMetrics data should fix it.
 
@@ -252,14 +294,17 @@ ask first).
   $5M EBITDA bar is just out of reach for a bot that fills one 20 MW site. Intended, or lower it?
 - Auctions as a Plan-phase action (not a mid-quarter interrupt): OK? And the lot sizes (50–500 units)
   mostly need a warehouse, so small-unit players rarely have room.
-- Curtailment: with Heat not built, "keep mining" has no downside and curtailing always pays more than
-  it gives up, so it's not yet a real choice. Fine until Heat exists, or should keeping mining carry
-  another cost?
+- Curtailment: "keep mining" now costs grievance +5 at Texas (Heat). Curtailing still always pays more
+  than it gives up (1.25×), so the choice is Heat vs a small extra profit. Enough?
+- Heat check 1 ("reaches Heat 50 at least once by 2021"): 19/50 runs before 2021, 37/50 by the end of
+  2021. Which reading was meant, and is that enough pressure?
+- Should the outreach bot's threshold (or the player's hint) be lower than 50, since the rate hike is
+  decided at the quarter end before the next Plan phase's outreach?
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
-Week 3 of the build order is done. Next from `docs/player-actions-and-pacing.md` §7, week 4: negotiation
-(power contracts first, then investors); crypto loans and margin calls are already built. Also open: the
-Heat system (needed for curtailment's "keep mining" cost and the neighbour-complaint interrupt), the
-LTV gauge on a Capital screen, and the League left-nav section (the table is only on the report now).
+Week 3 of the build order and the Heat system are done. Next from `docs/player-actions-and-pacing.md`
+§7, week 4: negotiation (power contracts first, then investors; show a plan and design questions before
+coding); crypto loans and margin calls are already built. Also open: the LTV gauge on a Capital screen,
+and the League left-nav section (the table is only on the report now).

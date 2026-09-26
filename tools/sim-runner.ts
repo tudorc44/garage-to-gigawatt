@@ -31,6 +31,7 @@ const RUN_COLUMNS = [
   'founder_stake',
   'price_alerts',
   'forced_sale',
+  'heat',
 ] as const
 
 function runCsv(reports: QuarterReport[]): string {
@@ -47,6 +48,7 @@ function runCsv(reports: QuarterReport[]): string {
       r.founderStake.toFixed(4),
       r.priceAlerts,
       r.forcedSale ? 1 : 0,
+      r.heat.toFixed(1),
     ].join(','),
   )
   return [RUN_COLUMNS.join(','), ...rows].join('\n') + '\n'
@@ -145,6 +147,10 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
       (a, r) => a + r.state.log.filter((e) => e.key === key).length,
       0,
     )
+  // First quarter-end report with the hottest site at Heat 50 or more (rate-hike level).
+  const heat50 = runs
+    .map((r) => r.state.reports.find((x) => x.heat >= 50)?.quarter)
+    .filter((q): q is string => q !== undefined)
   return {
     strategy,
     runs: runs.length,
@@ -161,6 +167,16 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
     alerts_per_quarter: alerts / quartersPlayed,
     auctions_won_per_run: logCount('log.auction_won') / runs.length,
     auctions_lost_per_run: logCount('log.auction_lost') / runs.length,
+    heat50_runs: heat50.length,
+    heat50_first: medianLabel(heat50),
+    shutdown_runs: runs.filter((r) =>
+      r.state.log.some((e) => e.key === 'log.heat_shutdown'),
+    ).length,
+    complaints_per_run:
+      (logCount('log.complaint_paid') + logCount('log.complaint_ignored')) /
+      runs.length,
+    rate_hikes_per_run: logCount('log.rate_hike') / runs.length,
+    outreach_per_run: logCount('log.outreach') / runs.length,
   }
 })
 const header = Object.keys(summaryRows[0]).join(',')
@@ -190,6 +206,20 @@ for (const r of summaryRows) {
   if (r.bust_quarters)
     console.log(`  ${r.strategy} busts by quarter: ${r.bust_quarters}`)
 }
+
+console.log('\nCommunity Heat (hottest site at each quarter end):')
+console.table(
+  summaryRows
+    .filter((r) => r.heat50_runs > 0 || r.complaints_per_run > 0)
+    .map((r) => ({
+      strategy: r.strategy,
+      'reached Heat 50': `${r.heat50_runs}/${r.runs} runs${r.heat50_first ? ` (median first ${r.heat50_first})` : ''}`,
+      'shutdown (90)': `${r.shutdown_runs}/${r.runs} runs`,
+      'complaints / run': r.complaints_per_run.toFixed(1),
+      'rate hikes / run': r.rate_hikes_per_run.toFixed(1),
+      'outreach / run': r.outreach_per_run.toFixed(1),
+    })),
+)
 
 // ---------- target B1: when can a garage-only player first afford a small unit? ----------
 
