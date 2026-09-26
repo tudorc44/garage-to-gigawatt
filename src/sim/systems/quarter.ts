@@ -14,6 +14,7 @@ import { bandwidthForQuarter } from './bandwidth.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
 import { collateralValueUsd } from './cryptoLoan.ts'
+import { startQuarterContracts } from './contracts.ts'
 import { debtUsd } from './loans.ts'
 import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
@@ -129,5 +130,6 @@ export function startNextQuarter(state: GameState): void {
       logEntry(state, 'log.site_ready', { tier: site.tier })
     }
   }
+  startQuarterContracts(state)
   rollAuction(state)
 }

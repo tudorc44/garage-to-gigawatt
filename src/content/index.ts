@@ -17,6 +17,7 @@ import {
   interruptsFileSchema,
   machinesFileSchema,
   marketSchema,
+  negotiationRulesSchema,
   rivalsFileSchema,
   sitesFileSchema,
   type AuctionRules,
@@ -29,12 +30,14 @@ import {
   type LadderStep,
   type Machine,
   type MarketWeek,
+  type NegotiationRules,
   type Rival,
   type SiteTier,
 } from './schemas.ts'
 
 export { BALANCE }
 export type {
+  NegotiationRules,
   HeatRules,
   AuctionRules,
   CryptoLoanTerms,
@@ -74,6 +77,8 @@ export interface Content {
   rivals: Rival[]
   /** Community Heat rules (heat.json). */
   heat: HeatRules
+  /** Power contract renewals (interrupts.json › negotiation). */
+  negotiation: NegotiationRules
 }
 
 export interface RawContent {
@@ -137,6 +142,11 @@ export function parseContent(raw: RawContent): Content {
     curtailmentRulesSchema,
     rawInterrupt('curtailment'),
   )
+  const negotiation = check(
+    'interrupts.json › negotiation',
+    negotiationRulesSchema,
+    rawInterrupt('negotiation'),
+  )
 
   if (
     !machinesFile ||
@@ -147,7 +157,8 @@ export function parseContent(raw: RawContent): Content {
     !rivalsFile ||
     !auction ||
     !curtailment ||
-    !heat
+    !heat ||
+    !negotiation
   ) {
     throw new ContentError(problems)
   }
@@ -327,6 +338,7 @@ export function parseContent(raw: RawContent): Content {
     auction,
     curtailment,
     heat,
+    negotiation,
   }
 }
 

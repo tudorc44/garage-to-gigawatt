@@ -143,14 +143,21 @@
    "capacity_kw": 100000,
    "power_options": {
     "fixed": {
-     "value": 0.035,
-     "source": "≈ Whinstone/Riot Rockdale PPA ~2.5¢ energy + TDSP; 3–3.5¢ all-in",
-     "estimate": true
+     "price": {
+      "value": 0.035,
+      "source": "≈ Whinstone/Riot Rockdale PPA ~2.5¢ energy + TDSP; 3–3.5¢ all-in",
+      "estimate": true
+     },
+     "curtail_credit_mult": 1.0
     },
     "index": {
-     "value": 0.028,
-     "source": "≈ ERCOT West/Houston hub avg 2020–21 ex-Uri; with ~3–5% curtailment spikes",
-     "estimate": true
+     "price": {
+      "value": 0.028,
+      "source": "≈ ERCOT West/Houston hub avg 2020–21 ex-Uri; with ~3–5% curtailment spikes",
+      "estimate": true
+     },
+     "quarterly_range": [0.75, 1.25],
+     "curtail_credit_mult": 1.5
     }
    },
    "curtailment": {

@@ -11,6 +11,7 @@ import {
   communityView,
   cryptoLoanView,
   equipmentLoanView,
+  renewalViews,
   treasuryHoldings,
   lotViews,
   machineMarket,
@@ -18,7 +19,12 @@ import {
   whyNot,
   type LotView,
 } from '../../sim/selectors.ts'
-import type { Coin, Condition, GameState } from '../../sim/state.ts'
+import type {
+  Coin,
+  Condition,
+  GameState,
+  ContractType,
+} from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import {
@@ -993,6 +999,77 @@ export function CommunityDialog({ state, act, onClose }: DialogProps) {
         <span />
         <button type="button" class="btn" onClick={onClose}>
           {t('ui.community.close')}
+        </button>
+      </div>
+    </Dialog>
+  )
+}
+
+/** A due power contract: pick the type (Texas), then accept the opening (negotiating comes next). */
+export function RenewalDialog({
+  state,
+  act,
+  onClose,
+  siteId,
+}: DialogProps & { siteId: string }) {
+  const r = renewalViews(state).find((x) => x.site.id === siteId)
+  const [type, setType] = useState<ContractType>(r?.current.type ?? 'fixed')
+  if (!r) return null
+  const option = r.options.find((o) => o.type === type)!
+  const tier = tierName(r.site.tier)
+  const a: Action = { type: 'ACCEPT_RENEWAL', siteId, contractType: type }
+  const why = whyNot(state, a)
+  return (
+    <Dialog title={t('ui.renewal.title', { tier })} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.renewal.note', {
+          tier,
+          contract: tDynamic(`contract.${r.current.type}`, ''),
+          price: fmt.cents(r.current.price),
+          markup: fmt.pct(r.openingMult - 1),
+          term: r.terms[0],
+          long: r.terms[1],
+          bw: r.bandwidth,
+        })}
+      </p>
+      {r.options.length > 1 && (
+        <div class="field">
+          <span class="label">{t('ui.renewal.type')}</span>
+          <div class="seg" role="group" aria-label={t('ui.renewal.type')}>
+            {r.options.map((o) => (
+              <button
+                key={o.type}
+                type="button"
+                aria-pressed={type === o.type}
+                onClick={() => setType(o.type)}
+              >
+                {tDynamic(`contract.${o.type}`, o.type)}{' '}
+                {t('ui.renewal.normal', { price: fmt.cents(o.normalUsdKwh) })}
+              </button>
+            ))}
+          </div>
+          {type === 'index' && (
+            <span class="num-s muted">{t('ui.renewal.index_note')}</span>
+          )}
+        </div>
+      )}
+      {why && <p class="num-s loss">{say(why)}</p>}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.renewal.cancel')}
+        </button>
+        <button
+          type="button"
+          class="btn"
+          disabled={!!why}
+          onClick={() => {
+            if (!act(a)) onClose()
+          }}
+        >
+          {t('ui.renewal.accept', {
+            price: fmt.cents(option.openingUsdKwh),
+            term: r.terms[0],
+          })}
         </button>
       </div>
     </Dialog>

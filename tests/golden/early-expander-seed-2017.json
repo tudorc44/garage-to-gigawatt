@@ -32,7 +32,13 @@
       "readyQuarter": 6,
       "rentUsdQ": 6000,
       "powerPriceMult": 1,
-      "flaw": null
+      "flaw": null,
+      "contract": {
+        "type": "fixed",
+        "price": 0.08,
+        "startQuarter": 6,
+        "endQuarter": 10
+      }
     }
   ],
   "machines": [],
@@ -686,6 +692,17 @@
       "key": "log.site_ready",
       "params": {
         "tier": "small_unit"
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "small_unit",
+        "contract": "fixed",
+        "price": "8.00¢",
+        "quarter": "2019Q3"
       }
     },
     {

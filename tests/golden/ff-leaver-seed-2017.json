@@ -1340,6 +1340,17 @@
       }
     },
     {
+      "quarter": 1,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "small_unit",
+        "contract": "fixed",
+        "price": "8.00¢",
+        "quarter": "2018Q2"
+      }
+    },
+    {
       "quarter": 2,
       "week": null,
       "key": "log.bought",

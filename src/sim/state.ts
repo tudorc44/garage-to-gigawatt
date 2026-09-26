@@ -21,6 +21,22 @@ export interface Site {
   flaw: string | null
   /** Heat 50 rate hike: power price multiplier for this quarter (heat.json rate_hike), if any. */
   surcharge?: number
+  /** The site's power contract (every tier but the garage, from when it's powered). */
+  contract?: PowerContract
+}
+
+export type ContractType = 'fixed' | 'index'
+
+/** A power contract: a locked price per kWh for a term (it replaces the normal price path). */
+export interface PowerContract {
+  type: ContractType
+  /** $/kWh, locked for the term. For index contracts this is the base price. */
+  price: number
+  startQuarter: number
+  /** The quarter the term runs out: a renewal is due in that quarter's Plan phase. */
+  endQuarter: number
+  /** Index contracts: this quarter's random move (the paid price = price × indexMult). */
+  indexMult?: number
 }
 
 /** A batch of identical machines bought together and placed at one site. */

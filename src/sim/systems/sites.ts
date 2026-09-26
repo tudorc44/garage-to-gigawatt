@@ -4,6 +4,7 @@ import { BALANCE, CONTENT, type SiteTier } from '../../content/index.ts'
 import { pick, randomInt, random } from '../rng.ts'
 import {
   roundCents,
+  type ContractType,
   type GameState,
   type Site,
   type SiteOffer,
@@ -42,18 +43,34 @@ export function usedKw(state: GameState, siteId: string): number {
     .reduce((kw, lot) => kw + lot.count * getModel(lot.model)!.power_kw, 0)
 }
 
-/** $/kWh at this site in this quarter. */
-export function powerPriceUsdKwh(site: Site, quarter: number): number {
+/**
+ * The site's normal price per kWh this quarter, before contracts and surcharges: the tier's
+ * price path for the year (or, for Texas, the contract type's price) × the scouting multiplier.
+ */
+export function normalPriceUsdKwh(
+  site: Site,
+  quarter: number,
+  type: ContractType = BALANCE.sites.defaultPowerOption,
+): number {
   const tier = getTier(site.tier)!
   const year = CONTENT.quarters[quarter].slice(0, 4)
-  const base =
-    tier.power_path?.[year] ??
-    tier.power_options![BALANCE.sites.defaultPowerOption]
+  const base = tier.power_path?.[year] ?? tier.power_options![type].price
+  return base * site.powerPriceMult
+}
+
+/**
+ * $/kWh at this site in this quarter: the contract's price if it has one (index: × this
+ * quarter's move), otherwise the normal price; then the rate_class flaw and the Heat 50 rate
+ * hike on top.
+ */
+export function powerPriceUsdKwh(site: Site, quarter: number): number {
+  const c = site.contract
+  const base = c
+    ? c.price * (c.indexMult ?? 1)
+    : normalPriceUsdKwh(site, quarter)
   const rateHike = flawEffect(site, 'power_price_mult_after_4q')
   const hiked = rateHike !== undefined && quarter >= site.readyQuarter + 4
-  return (
-    base * site.powerPriceMult * (hiked ? rateHike : 1) * (site.surcharge ?? 1)
-  )
+  return base * (hiked ? rateHike : 1) * (site.surcharge ?? 1)
 }
 
 /** Share of the week the site actually has power (outage flaw). */

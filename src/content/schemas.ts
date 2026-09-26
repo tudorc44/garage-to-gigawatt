@@ -87,6 +87,15 @@ export const machinesFileSchema = z.object({
 
 // ---------- sites.json ----------
 
+/** One power contract type at a tier (Texas: fixed or index). */
+const powerOptionSchema = z.object({
+  price: num,
+  /** Index contracts: each quarter the paid price is the base × U(range). */
+  quarterly_range: z.tuple([nonNeg, nonNeg]).optional(),
+  /** Multiplier on grid curtailment credits ("curtailment rights"). */
+  curtail_credit_mult: nonNeg,
+})
+
 export const siteTierSchema = z
   .object({
     id: z.string(),
@@ -94,7 +103,10 @@ export const siteTierSchema = z
     available_from: quarterId.optional(),
     power_usd_kwh: num.optional(),
     power_path: z.record(yearId, nonNeg).optional(),
-    power_options: z.object({ fixed: num, index: num }).optional(),
+    /** Texas: a fixed or an index power contract (the price is the normal price for that type). */
+    power_options: z
+      .object({ fixed: powerOptionSchema, index: powerOptionSchema })
+      .optional(),
     /** Owned sites (Texas) have no rent. */
     rent_usd_q: num.default(0),
     capex_usd: num.optional(),
@@ -212,6 +224,34 @@ export const curtailmentRulesSchema = z
     forgoneRevenueMult: c.forgone_revenue_mult,
     alertAfterWeek: c.alert_after_week,
   }))
+
+/** Power contract renewals: interrupts.json › negotiation's structured fields (design thread). */
+export const negotiationRulesSchema = z
+  .object({
+    rounds: z.number().int().min(1),
+    walkaway_chance_per_lowball: z.number().min(0).max(1),
+    opening_mult: z.number().min(1),
+    limit_range: z.tuple([nonNeg, nonNeg]),
+    lowball_margin: z.number().min(0).max(1),
+    terms: z.tuple([z.number().int().min(1), z.number().int().min(1)]),
+    long_term_limit_mult: z.number().min(1),
+    hire_shift: z.number().min(0).max(1),
+    bw_cost: z.number().int().min(0),
+  })
+  .transform((n) => ({
+    rounds: n.rounds,
+    walkawayChance: n.walkaway_chance_per_lowball,
+    openingMult: n.opening_mult,
+    limitRange: n.limit_range,
+    lowballMargin: n.lowball_margin,
+    /** [short, long]; the short term is also the first contract's and a walk-away's. */
+    terms: n.terms,
+    longTermLimitMult: n.long_term_limit_mult,
+    hireShift: n.hire_shift,
+    bandwidth: n.bw_cost,
+  }))
+
+export type NegotiationRules = z.output<typeof negotiationRulesSchema>
 
 // ---------- capital.json (only what the sim uses so far) ----------
 

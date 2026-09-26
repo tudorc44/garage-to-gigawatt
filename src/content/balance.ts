@@ -52,7 +52,7 @@ export const BALANCE = {
     scoutOffers: { min: 2, max: 3 },
     /** Each scouted offer's rent, capex and power price vary by up to ±15% around the tier's value. */
     offerSpread: 0.15,
-    /** Which power option a tier with power_options uses until negotiation exists. */
+    /** The power contract type a tier with power_options starts on (Texas: fixed). */
     defaultPowerOption: 'fixed' as 'fixed' | 'index',
     /** Leaving a site early (breaking the lease) costs this many months of its rent. No Bandwidth. */
     leaseBreakMonths: 1,

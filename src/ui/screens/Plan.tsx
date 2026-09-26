@@ -15,8 +15,10 @@ import {
   heatBand,
   lotViews,
   machineMarket,
+  nextRenewal,
   quarterName,
   recentMarket,
+  renewalViews,
   siteLadder,
   siteViews,
   topHeat,
@@ -46,6 +48,7 @@ import {
   LeaveDialog,
   LoanDialog,
   OffersDialog,
+  RenewalDialog,
   SellCoinsDialog,
 } from './dialogs.tsx'
 
@@ -65,6 +68,7 @@ type Open =
   | 'auction'
   | 'community'
   | `leave:${string}`
+  | `renew:${string}`
   | null
 
 export function PlanScreen({ state, act }: ScreenProps) {
@@ -127,6 +131,14 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'auction' && (
         <AuctionDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
+      {open?.startsWith('renew:') && (
+        <RenewalDialog
+          state={state}
+          act={act}
+          siteId={open.slice('renew:'.length)}
+          onClose={() => setOpen(null)}
+        />
       )}
       {open === 'community' && (
         <CommunityDialog
@@ -250,6 +262,27 @@ function FleetPanel({ state }: { state: GameState }) {
                     cap: fmt.power(sv.capacityKw),
                   })}
                 </div>
+                {sv.contract && (
+                  <div class={`num-s ${sv.renewalDue ? 'warn' : 'muted'}`}>
+                    {sv.renewalDue
+                      ? t('ui.fleet.contract_due', {
+                          contract: tDynamic(
+                            `contract.${sv.contract.type}`,
+                            '',
+                          ),
+                        })
+                      : t('ui.fleet.contract', {
+                          contract: tDynamic(
+                            `contract.${sv.contract.type}`,
+                            '',
+                          ),
+                          price: fmt.cents(sv.contract.price),
+                          quarter: fmt.quarter(
+                            quarterName(sv.contract.endQuarter) || '—',
+                          ),
+                        })}
+                  </div>
+                )}
                 {sv.site.flaw && (
                   <div class="num-s warn">
                     {t('ui.fleet.flaw', { flaw: flawName(sv.site.flaw) })}
@@ -442,6 +475,8 @@ function TodoPanel({
     return why ? say(why) : undefined
   }
   const notBuilt = t('ui.locked.not_built')
+  const renewals = renewalViews(state)
+  const next = nextRenewal(state)
 
   const ladderRows = []
   for (const r of siteLadder(state).slice(1)) {
@@ -590,11 +625,33 @@ function TodoPanel({
             />
           ),
       )}
-      <ActionRow
-        icon="negotiate"
-        name={t('ui.plan.negotiate')}
-        locked={notBuilt}
-      />
+      {renewals.map((r) => (
+        <ActionRow
+          key={`renew-${r.site.id}`}
+          icon="negotiate"
+          name={t('ui.plan.renewal', { tier: tierName(r.site.tier) })}
+          price={t('ui.plan.renewal_price', {
+            price: fmt.cents(
+              r.options.find((o) => o.type === r.current.type)!.openingUsdKwh,
+            ),
+          })}
+          onClick={() => open(`renew:${r.site.id}`)}
+        />
+      ))}
+      {renewals.length === 0 && (
+        <ActionRow
+          icon="negotiate"
+          name={t('ui.plan.negotiate')}
+          locked={
+            next
+              ? t('ui.locked.next_renewal', {
+                  tier: tierName(next.tier),
+                  quarter: fmt.quarter(next.quarter),
+                })
+              : t('ui.locked.no_contracts')
+          }
+        />
+      )}
 
       <div class="label group">{t('ui.plan.group.capital')}</div>
       <RaiseRow state={state} act={act} round="friends_family" />

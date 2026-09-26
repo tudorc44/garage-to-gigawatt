@@ -4,7 +4,13 @@
 import { BALANCE, CONTENT, type MarketWeek } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
-import type { Coin, GameState, MachineLot, Site } from './state.ts'
+import type {
+  Coin,
+  GameState,
+  MachineLot,
+  Site,
+  PowerContract,
+} from './state.ts'
 import { repairCostPerUnit, saleValueUsd } from './systems/machines.ts'
 import {
   buyPrice,
@@ -40,9 +46,15 @@ import {
   siteHeatValue,
   underMoratorium,
 } from './systems/heat.ts'
+import {
+  contractTypes,
+  openingOfferUsdKwh,
+  renewalDue,
+} from './systems/contracts.ts'
 import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { isEarning } from './systems/mining.ts'
 import {
+  normalPriceUsdKwh,
   baseCapexUsd,
   capacityKw,
   getTier,
@@ -186,6 +198,9 @@ export interface SiteView {
   rateHike: number | null
   moratorium: boolean
   shutDown: boolean
+  /** The site's power contract, if it has one, and whether its renewal is due now. */
+  contract: PowerContract | null
+  renewalDue: boolean
 }
 
 export function siteViews(state: GameState): SiteView[] {
@@ -202,6 +217,8 @@ export function siteViews(state: GameState): SiteView[] {
     rateHike: site.surcharge ?? null,
     moratorium: underMoratorium(state, site.id),
     shutDown: isShutDown(state, site.id),
+    contract: site.contract ?? null,
+    renewalDue: renewalDue(state, site),
   }))
 }
 
@@ -567,3 +584,36 @@ export function complaintView(state: GameState) {
 
 /** Grievance added at the Texas site by "keep mining" in a curtailment (heat.json). */
 export const KEEP_MINING_GRIEVANCE = CONTENT.heat.keepMining
+
+/** Power contract renewals due this Plan phase, with the utility's opening offer per contract type. */
+export function renewalViews(state: GameState) {
+  return state.sites
+    .filter((site) => renewalDue(state, site))
+    .map((site) => ({
+      site,
+      current: site.contract!,
+      options: contractTypes(site).map((type) => ({
+        type,
+        normalUsdKwh: normalPriceUsdKwh(site, state.quarter, type),
+        openingUsdKwh: openingOfferUsdKwh(site, state.quarter, type),
+      })),
+      openingMult: CONTENT.negotiation.openingMult,
+      terms: CONTENT.negotiation.terms,
+      bandwidth: CONTENT.negotiation.bandwidth,
+    }))
+}
+
+/** The next power contract to come up for renewal (for the locked row), or null. */
+export function nextRenewal(
+  state: GameState,
+): { tier: string; quarter: string } | null {
+  const next = state.sites
+    .filter((s) => s.contract)
+    .sort((a, b) => a.contract!.endQuarter - b.contract!.endQuarter)[0]
+  return next
+    ? {
+        tier: next.tier,
+        quarter: CONTENT.quarters[next.contract!.endQuarter] ?? '',
+      }
+    : null
+}

@@ -9,6 +9,7 @@ import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
 import { interruptChoices } from '../src/sim/selectors.ts'
+import { openingOfferUsdKwh, renewalDue } from '../src/sim/systems/contracts.ts'
 import { ltv } from '../src/sim/systems/cryptoLoan.ts'
 import {
   isShutDown,
@@ -138,6 +139,19 @@ function showPlan(s: GameState) {
     line += t('play.site_heat', {
       heat: Math.round(siteHeatValue(s, site.id)),
     })
+    if (site.contract) {
+      line += renewalDue(s, site)
+        ? t('play.site_renewal_due', {
+            contract: site.contract.type,
+            opening: fmt.cents(
+              openingOfferUsdKwh(site, s.quarter, site.contract.type),
+            ),
+          })
+        : t('play.site_contract', {
+            contract: site.contract.type,
+            quarter: CONTENT.quarters[site.contract.endQuarter] ?? '—',
+          })
+    }
     if (site.surcharge) line += t('play.site_rate_hike')
     if (isShutDown(s, site.id)) line += t('play.site_shut_down')
     else if (underMoratorium(s, site.id)) line += t('play.site_moratorium')
@@ -313,6 +327,20 @@ function parse(
     }
     case 'crepay':
       return { type: 'REPAY_CRYPTO_LOAN' }
+    case 'renew': {
+      const site = item(s.sites, 0)
+      if (!site) return 'play.bad_number'
+      return {
+        type: 'ACCEPT_RENEWAL',
+        siteId: site.id,
+        contractType:
+          rest[1] === 'index'
+            ? 'index'
+            : rest[1] === 'fixed'
+              ? 'fixed'
+              : (site.contract?.type ?? 'fixed'),
+      }
+    }
     case 'talk':
     case 'mitigate': {
       const site = item(s.sites, 0)

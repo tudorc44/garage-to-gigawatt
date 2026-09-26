@@ -2,7 +2,13 @@
 // rules and returns either the new state or an error message (the old state is untouched).
 import { BALANCE, CONTENT } from '../content/index.ts'
 import type { Message, MessageKey, MessageParams } from '../i18n/t.ts'
-import { logEntry, type Coin, type Condition, type GameState } from './state.ts'
+import {
+  logEntry,
+  type Coin,
+  type ContractType,
+  type Condition,
+  type GameState,
+} from './state.ts'
 import {
   addMachines,
   purchaseCostUsd,
@@ -25,6 +31,7 @@ import {
   scheduleComplaint,
   underMoratorium,
 } from './systems/heat.ts'
+import { acceptBlocker, acceptOpening, autoRenew } from './systems/contracts.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import {
   borrowBlocker,
@@ -70,6 +77,8 @@ export type Action =
   | { type: 'OUTREACH'; siteId: string }
   /** Noise mitigation at a site: capex, lowers its base Heat for good, once per site. */
   | { type: 'MITIGATE_NOISE'; siteId: string }
+  /** Accept the utility's opening offer for a due renewal (0 Bandwidth; Texas: choose the type). */
+  | { type: 'ACCEPT_RENEWAL'; siteId: string; contractType: ContractType }
   /** Borrow against your machines (equipment loan). */
   | { type: 'TAKE_LOAN'; amountUsd: number }
   /** Pay the equipment loan off early. */
@@ -109,6 +118,7 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
       closeAuction(s)
+      autoRenew(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -350,6 +360,17 @@ function run(s: GameState, a: Action): Message | undefined {
         soldCoin: a.coin,
         valueUsd,
       })
+      return
+    }
+
+    case 'ACCEPT_RENEWAL': {
+      const blocked = acceptBlocker(s, a.siteId, a.contractType)
+      if (blocked) return blocked
+      acceptOpening(
+        s,
+        s.sites.find((x) => x.id === a.siteId)!,
+        a.contractType,
+      )
       return
     }
 

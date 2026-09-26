@@ -248,7 +248,15 @@
    "fallback": "accept_offer (used while the mini-game is cut, see scope doc §4)",
    "default": "accept_offer",
    "source": "design",
-   "estimate": true
+   "estimate": true,
+   "game_note": "Design thread, 26 Sep 2026: a power negotiation is a contract RENEWAL. Every non-garage site has a contract; at the end of its term the Plan phase offers a renewal at the site's normal price x opening_mult. Skip = the opening is accepted (terms[0] quarters, 0 BW); negotiate = bw_cost, pick 4 or 8 quarters (8: limit x long_term_limit_mult), then up to 'rounds' counters. The utility's hidden limit = normal price x U(limit_range), NOT the opening. Walking away (either side) = the opening for terms[0] quarters. The fields below replace hidden_limit / lowball_definition above.",
+   "opening_mult": 1.10,
+   "limit_range": [0.85, 1.05],
+   "lowball_margin": 0.10,
+   "terms": [4, 8],
+   "long_term_limit_mult": 1.03,
+   "hire_shift": 0.05,
+   "bw_cost": 2
   }
  ]
 }
