@@ -34,6 +34,8 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 - `docs/design-system/README.md` and `docs/design-system/tokens.css`: **source of truth for UI style**
   (tokens, era themes, fonts, colours, components). `docs/design-system.md` records how those decisions were made.
 - `docs/wireframes-spec.md`: **source of truth for screen layout and flow.**
+- `docs/mockups/q4-2017.html`: the approved **visual target** for the Plan, Live quarter and Quarter report
+  screens (open it in a browser). Match its layout and style.
 - `docs/audio/`: **source of truth for sound.** Move it to `src/ui/audio/` when sound is built.
 
 ## Architecture rules (non-negotiable)
