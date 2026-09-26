@@ -7,6 +7,7 @@ import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
 import { quarterName } from '../sim/selectors.ts'
 import { newGame, type GameState } from '../sim/state.ts'
+import { restoreSave } from '../sim/save.ts'
 import { LiveScreen } from './screens/Live.tsx'
 import { PlanScreen } from './screens/Plan.tsx'
 import { ReportScreen } from './screens/Report.tsx'
@@ -16,6 +17,12 @@ import { readSlot, writeSlot } from '../platform/saves.ts'
 import { SaveContext, type SaveApi } from './components/saves.tsx'
 import { NavContext } from './components/frame.tsx'
 import type { Section } from './screens/Sections.tsx'
+import { readSettings } from '../platform/settings.ts'
+import { play, setSfxSettings } from './audio/sfx.ts'
+import { soundsFor } from './audio/director.ts'
+
+// Sound follows the player's setting from the start (Settings changes it live).
+setSfxSettings({ enabled: readSettings().sound })
 
 /** Numbers are used as-is; any other text is hashed; empty picks a random seed. */
 function toSeed(text: string): number {
@@ -38,6 +45,7 @@ export function App() {
     if (before?.phase !== s?.phase) setSection('dashboard')
     ref.current = s
     setGame(s)
+    for (const name of soundsFor(before, s)) play(name)
     // Autosave at the start of every quarter's Plan phase (scope §2.13).
     if (
       s?.phase === 'plan' &&
@@ -63,7 +71,12 @@ export function App() {
         if (ref.current) commit({ ...ref.current, cash: usd })
         return ref.current?.cash
       },
-      load: (state: GameState) => commit(structuredClone(state)),
+      load: (state: GameState) => {
+        // Through the save loader, so older or hand-edited states get any missing fields.
+        const r = restoreSave(state)
+        if (!r.ok) throw new Error(r.error.key)
+        commit(r.state)
+      },
     }
   }
 

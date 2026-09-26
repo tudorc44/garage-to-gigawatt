@@ -50,6 +50,7 @@ describe('saves (scope §2.13)', () => {
     delete old.marketRead
     delete old.mergeChoice
     delete old.quarterStats.salariesUsd
+    delete old.events.eligibleQuarters
     const r = restoreSave(old)
     expect(r.ok).toBe(true)
     if (!r.ok) return
@@ -57,6 +58,7 @@ describe('saves (scope §2.13)', () => {
     expect(r.state.marketRead).toBeNull()
     expect(r.state.mergeChoice).toBeNull()
     expect(r.state.quarterStats.salariesUsd).toBe(0)
+    expect(r.state.events.eligibleQuarters).toBe(0)
   })
 
   it('refuses things that are not saves, with a reason', () => {

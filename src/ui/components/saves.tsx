@@ -16,6 +16,7 @@ import {
   type Settings,
 } from '../../platform/settings.ts'
 import { quarterName } from '../../sim/selectors.ts'
+import { setSfxSettings } from '../audio/sfx.ts'
 import type { GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
@@ -185,6 +186,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const update = (next: Settings) => {
     setSettings(next)
     writeSettings(next)
+    setSfxSettings({ enabled: next.sound })
   }
   return (
     <Dialog title={t('ui.settings.title')} onClose={onClose}>

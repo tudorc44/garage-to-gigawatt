@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the event cards, the failure wave, and the left-nav screens + Settings.
+Last updated: 26 Sep 2026, with the event cards, the failure wave, the left-nav screens + Settings, and sound.
 
 ## How the owner works
 
@@ -68,7 +68,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 321 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 323 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -97,7 +97,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Sound. The
+Nothing in the scope's build list; what's left is the balance pass and playtesting (see Next). The
 undersized-transformer flaw's upgrade has no effect yet (landlord_sale works through its event card;
 noise ordinance and hostile council through Heat). The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -150,6 +150,17 @@ ask first).
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
+- **Sound** (scope §2.13, docs/audio; the owner approved installing `zzfx`, MIT, 1.3.2):
+  `docs/audio/sounds.ts` and `sfx.ts` moved to `src/ui/audio/` (as CLAUDE.md said; `audio-notes.md`
+  stays in docs). `src/ui/audio/director.ts` picks sounds by comparing the game state before and after
+  each action or week, so the sim knows nothing about sound: End plan, the report, alerts (price up /
+  down, margin call, failure wave, complaint, other cards: a bell), buying, selling, hiring, deals and
+  walk-aways, auctions won/lost, a site powering up, curtailing, liquidation, the IPO bell, the Merge,
+  the chapter report, game over — at most 3 at once. Audio starts after the first click (browser rule);
+  the Settings sound switch mutes everything. The week tick stays off (as the audio notes say).
+  Not done: the 4 sample fallbacks the audio notes suggest (paper, stamp, coins, door) if the synth
+  versions sound wrong — needs an ear test; the separate UI / alerts volume sliders.
+  `g2g.load` and saves now go through `restoreSave`, which fills any missing fields (event state too).
 - **Left-nav screens and Settings** (wireframes §3, §4, §12; built by Claude Code):
   - Fleet & Sites (the fleet panel, the site ladder, a machines table, the machine market, and
     buttons for the Buy / Repair-sell / Site-offers dialogs), Capital (funding ladder, cap table bar,
@@ -531,8 +542,11 @@ ask first).
 ## Next
 
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
-save/load, the 20 event cards and the failure wave. In progress (same run): sound (the owner approved installing `zzfx`). After that: a balance pass against the
-exit checklist (scope §5), which needs the design thread (peak valuation ~$310M vs the $1.5–2.5B
-target; the all-in reinvest bust). Backlog (design thread): the pitch opening reacts to company
-performance (era EV/EBITDA × trailing EBITDA, clamped to ±30% of the capital.json terms). The build's
-main JS chunk is now just over Vite's 500 KB warning (card text); splitting it is a later tidy-up.
+save/load, the 20 event cards, the failure wave, the left-nav screens + Settings, and sound. Every item
+in the scope's build list now exists. Next: a balance pass against the exit checklist (scope §5), which
+needs the design thread (the best bot peaks at ~$310M vs the $1.5–2.5B target; the all-in reinvest
+bust; the event-card questions above), then playtests. Small follow-ups: an ear test of the sounds;
+the build's main JS chunk is just over Vite's 500 KB warning (card text; split it later); CLAUDE.md
+still says `src/platform/` doesn't exist and that sound lives in `docs/audio/` (owner's file: flag, don't
+edit). Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA ×
+trailing EBITDA, clamped to ±30% of the capital.json terms).

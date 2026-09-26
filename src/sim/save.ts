@@ -2,6 +2,7 @@
 // here; loading checks the data and fills in fields added to the game after the save was made
 // (their starting values, as in a new game), so older saves keep loading.
 import type { Message } from '../i18n/t.ts'
+import { emptyEventState } from './systems/eventEffects.ts'
 import {
   emptyQuarterStats,
   newGame,
@@ -40,6 +41,10 @@ export function restoreSave(data: unknown): Loaded {
   state.quarterStats = {
     ...emptyQuarterStats(),
     ...(isObject(data.quarterStats) ? structuredClone(data.quarterStats) : {}),
+  }
+  state.events = {
+    ...emptyEventState(),
+    ...(isObject(data.events) ? structuredClone(data.events) : {}),
   }
   state.reports = state.reports.map((r) => ({
     ...r,
