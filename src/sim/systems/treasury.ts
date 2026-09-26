@@ -42,7 +42,7 @@ export function settleWeek(
   }
   let soldUsd = 0
   for (const coin of COINS) {
-    const held = coinsMined[coin] * state.hodlPct
+    const held = coinsMined[coin] * state.hodlPct[coin]
     state.treasury[coin] += held
     soldUsd += (coinsMined[coin] - held) * coinPrice(w, coin)
   }

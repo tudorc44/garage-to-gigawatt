@@ -74,7 +74,8 @@ function showStatus(s: GameState) {
   say('play.status', {
     cashUsd: s.cash,
     bandwidth: s.bandwidth,
-    hodlPct: s.hodlPct,
+    btcHodlPct: s.hodlPct.BTC,
+    ethHodlPct: s.hodlPct.ETH,
     btc: coins(s.treasury.BTC),
     eth: coins(s.treasury.ETH),
     treasuryUsd: treasuryValueUsd(s, w),
@@ -239,7 +240,11 @@ function parse(
         round: rest[0] === 'ff' ? 'friends_family' : (rest[0] ?? ''),
       }
     case 'hodl':
-      return { type: 'SET_HODL', pct: num(0) / 100 }
+      return {
+        type: 'SET_HODL',
+        pct: num(0) / 100,
+        coin: rest[1] === 'btc' ? 'BTC' : rest[1] === 'eth' ? 'ETH' : undefined,
+      }
     case 'scout':
       return { type: 'SCOUT_SITES', tier: rest[0] ?? '' }
     case 'build': {

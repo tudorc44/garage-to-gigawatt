@@ -73,8 +73,8 @@ export interface GameState {
   /** Dollars. Rounded to cents once per week. */
   cash: number
   bandwidth: number
-  /** Share of each week's mined coins kept in the treasury (0–1). The rest is sold. */
-  hodlPct: number
+  /** Share of each week's mined coins kept in the treasury (0–1), per coin. The rest is sold. */
+  hodlPct: Record<Coin, number>
   treasury: Record<Coin, number>
   /** Founder's share of the company (1 = 100%); each raise dilutes it. */
   founderStake: number
@@ -234,7 +234,7 @@ export function newGame(seed: number): GameState {
     week: 0,
     cash: BALANCE.startCash,
     bandwidth: BALANCE.bandwidth.perQuarter,
-    hodlPct: 0,
+    hodlPct: { BTC: 0, ETH: 0 },
     treasury: { BTC: 0, ETH: 0 },
     founderStake: 1,
     raisesDone: [],

@@ -99,7 +99,13 @@ describe('buying and selling machines', () => {
 
 describe('HODL', () => {
   it('accepts 0–100% only', () => {
-    expect(ok(newGame(1), { type: 'SET_HODL', pct: 0.6 }).hodlPct).toBe(0.6)
+    expect(ok(newGame(1), { type: 'SET_HODL', pct: 0.6 }).hodlPct).toEqual({
+      BTC: 0.6,
+      ETH: 0.6,
+    })
+    expect(
+      ok(newGame(1), { type: 'SET_HODL', pct: 0.6, coin: 'ETH' }).hodlPct,
+    ).toEqual({ BTC: 0, ETH: 0.6 })
     expect(err(newGame(1), { type: 'SET_HODL', pct: 1.2 })).toBe(
       'error.bad_pct',
     )

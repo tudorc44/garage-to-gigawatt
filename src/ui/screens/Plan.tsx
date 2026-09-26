@@ -16,7 +16,7 @@ import {
   whyNot,
   type LotView,
 } from '../../sim/selectors.ts'
-import type { GameState } from '../../sim/state.ts'
+import type { Coin, GameState } from '../../sim/state.ts'
 import { ActionRow, Icon, Sparkline } from '../components/basics.tsx'
 import { Delta, Shell } from '../components/frame.tsx'
 import { fmt } from '../format.ts'
@@ -273,19 +273,35 @@ function hashOf(v: LotView, units: number) {
 }
 
 function SellPanel({ state, act }: ScreenProps) {
-  const committed = Math.round((1 - state.hodlPct) * 100)
-  const [value, setValue] = useState(committed)
   return (
     <div class="panel p">
+      <SellSlider state={state} act={act} coin="BTC" />
+      <SellSlider state={state} act={act} coin="ETH" />
+      <div class="row-between num-s muted">
+        <span>{t('ui.sell.hodl_all')}</span>
+        <span>{t('ui.sell.sell_all')}</span>
+      </div>
+      <span class="num-s muted">{t('ui.sell.note')}</span>
+    </div>
+  )
+}
+
+/** How much of one coin's mining to sell as it comes in (the rest goes to the treasury). */
+function SellSlider({ state, act, coin }: ScreenProps & { coin: Coin }) {
+  const committed = Math.round((1 - state.hodlPct[coin]) * 100)
+  const [value, setValue] = useState(committed)
+  const id = `sell-${coin}`
+  return (
+    <div>
       <div class="row-between">
-        <label class="label" for="sell">
-          {t('ui.sell.title')}
+        <label class="label" for={id}>
+          {t('ui.sell.coin', { coin })}
         </label>
         <span class="num-kpi">{fmt.pct(value / 100)}</span>
       </div>
       <input
         class="slider"
-        id="sell"
+        id={id}
         type="range"
         min={0}
         max={100}
@@ -294,14 +310,10 @@ function SellPanel({ state, act }: ScreenProps) {
         onInput={(e) => setValue(Number((e.target as HTMLInputElement).value))}
         onChange={(e) => {
           const v = Number((e.target as HTMLInputElement).value)
-          if (act({ type: 'SET_HODL', pct: 1 - v / 100 })) setValue(committed)
+          if (act({ type: 'SET_HODL', coin, pct: 1 - v / 100 }))
+            setValue(committed)
         }}
       />
-      <div class="row-between num-s muted">
-        <span>{t('ui.sell.hodl_all')}</span>
-        <span>{t('ui.sell.sell_all')}</span>
-      </div>
-      <span class="num-s muted">{t('ui.sell.note')}</span>
     </div>
   )
 }

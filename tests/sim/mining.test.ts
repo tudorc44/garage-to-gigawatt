@@ -125,7 +125,7 @@ describe('treasury', () => {
 
   it('HODL 60% keeps 60% of mined coins in the treasury', () => {
     const s = withLot('2017Q4')
-    s.hodlPct = 0.6
+    s.hodlPct = { BTC: 0, ETH: 0.6 }
     const w = marketWeek(q('2017Q4'), 0)
     const lots = mineWeek(s, w)
     settleWeek(s, lots, w)

@@ -2,7 +2,7 @@
 // rules and returns either the new state or an error message (the old state is untouched).
 import { BALANCE, CONTENT } from '../content/index.ts'
 import type { Message, MessageKey, MessageParams } from '../i18n/t.ts'
-import { logEntry, type Condition, type GameState } from './state.ts'
+import { logEntry, type Coin, type Condition, type GameState } from './state.ts'
 import {
   addMachines,
   purchaseCostUsd,
@@ -41,7 +41,8 @@ export type Action =
     }
   | { type: 'SELL_MACHINES'; lotId: string; count: number }
   | { type: 'REPAIR_MACHINES'; lotId: string }
-  | { type: 'SET_HODL'; pct: number }
+  /** Share of mined coins to keep (0–1), for one coin, or for both if `coin` is left out. */
+  | { type: 'SET_HODL'; pct: number; coin?: Coin }
   | { type: 'SCOUT_SITES'; tier: string }
   /** Build from a scouted offer, or (tiers that need no scouting) straight from the tier. */
   | { type: 'BUILD_SITE'; offerId: string }
@@ -69,6 +70,8 @@ export function applyAction(state: GameState, action: Action): ActionResult {
   const error = run(next, action)
   return error ? { ok: false, error } : { ok: true, state: next }
 }
+
+const COINS: Coin[] = ['BTC', 'ETH']
 
 function fail(key: MessageKey, params?: MessageParams): Message {
   return { key, params }
@@ -177,8 +180,11 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'SET_HODL': {
       if (!(a.pct >= 0 && a.pct <= 1)) return fail('error.bad_pct')
-      if (s.hodlPct !== a.pct) logEntry(s, 'log.hodl', { sellPct: 1 - a.pct })
-      s.hodlPct = a.pct
+      for (const coin of a.coin ? [a.coin] : COINS) {
+        if (s.hodlPct[coin] === a.pct) continue
+        s.hodlPct[coin] = a.pct
+        logEntry(s, 'log.hodl', { sellPct: 1 - a.pct, coin })
+      }
       return
     }
 

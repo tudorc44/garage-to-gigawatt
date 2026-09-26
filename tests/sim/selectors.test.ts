@@ -87,7 +87,7 @@ describe('selectors (read-only views for the UI)', () => {
 describe('game log', () => {
   it('records Plan decisions and live-quarter events as message keys', () => {
     let s = act(newGame(1), buyRig)
-    s = act(s, { type: 'SET_HODL', pct: 0.4 })
+    s = act(s, { type: 'SET_HODL', pct: 0.4, coin: 'ETH' })
     s = act(s, { type: 'END_PLAN' })
     expect(s.quarterStats.startCash).toBe(8000)
     expect(s.log.map((l) => l.key)).toEqual(['log.bought', 'log.hodl'])

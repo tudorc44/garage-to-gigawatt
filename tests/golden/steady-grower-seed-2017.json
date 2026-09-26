@@ -7,7 +7,10 @@
   "week": 13,
   "cash": 32825.92,
   "bandwidth": 3,
-  "hodlPct": 0.3,
+  "hodlPct": {
+    "BTC": 0.3,
+    "ETH": 0.3
+  },
   "treasury": {
     "BTC": 0.44567508936864,
     "ETH": 0.9559798418582885
@@ -1175,7 +1178,17 @@
       "week": null,
       "key": "log.hodl",
       "params": {
-        "sellPct": 0.7
+        "sellPct": 0.7,
+        "coin": "BTC"
+      }
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.hodl",
+      "params": {
+        "sellPct": 0.7,
+        "coin": "ETH"
       }
     },
     {

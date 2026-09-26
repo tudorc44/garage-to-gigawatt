@@ -171,7 +171,10 @@ function Totals({ state }: { state: GameState }) {
           </div>
         ))}
         <span class="num-s muted">
-          {t('ui.live.hodl_note', { sell: fmt.pct(1 - state.hodlPct) })}
+          {t('ui.live.hodl_note', {
+            btc: fmt.pct(1 - state.hodlPct.BTC),
+            eth: fmt.pct(1 - state.hodlPct.ETH),
+          })}
         </span>
       </div>
     </div>
