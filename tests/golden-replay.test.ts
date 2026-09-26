@@ -267,6 +267,8 @@ const bots = {
   // the neighbours. Covers Heat growing with load and neighbour complaints (ignored) over a
   // whole game. If the bot is retuned on purpose, update this file with the others.
   'heat-climber': BOTS['raise-climb'],
+  // The sim-runner's raise-negotiate bot: negotiates every power contract renewal.
+  negotiator: BOTS['raise-negotiate'],
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {

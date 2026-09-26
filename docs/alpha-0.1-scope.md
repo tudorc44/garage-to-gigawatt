@@ -70,7 +70,7 @@ Anything that doesn't help answer that question is out of scope.
 | Equipment loan | 1 | Secured on machines |
 | Scout the next site tier | 1 | |
 | Build or upgrade a site | 1 | |
-| Negotiate a power contract | 2 | Negotiation mini-game (**first to cut**, falls back to "accept offer") |
+| Power contract renewal | 2 (0 to accept) | At the end of each term (4 or 8 quarters), every non-garage site renews. Pay 2 BW to negotiate, or auto-accept the opening offer (+10%). Texas: choose fixed or index first. Index moves ±25% per quarter and is exposed to Uri (2021Q1). |
 | Pitch investors (F&F → seed → Series A) | 2 | Negotiation mini-game, same fallback |
 | IPO / SPAC roadshow | 3 | Only in the 2021 window (Q1–Q4 2021) |
 | Bid on distressed assets | 2 | Auction mini-game |

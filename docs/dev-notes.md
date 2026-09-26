@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the Community Heat system (after week 3: rivals, league table, auctions, curtailment).
+Last updated: 26 Sep 2026, with power contracts, negotiation and Winter Storm Uri (week 4, power side).
 
 ## How the owner works
 
@@ -60,7 +60,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber) and unit tests: 229 passing + 1 to-do.
+   heat-climber, negotiator) and unit tests: 258 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -80,9 +80,16 @@ See `CLAUDE.md` for the full list. The main ones:
    terminal), the rate hike at 50, moratorium at 70, shutdown at 90, and curtailment's "keep mining"
    (+5 grievance at the Texas site).
 
+13. **Power contracts and negotiation** (design thread decisions, 26 Sep 2026; rules in
+   `interrupts.json` › negotiation, `sites.json` Texas power_options, `shocks.json`): every non-garage
+   site has a contract from when it's powered; renewals in the Plan phase (a to-do row and a dialog:
+   accept the opening, or negotiate over 3 rounds with a walk-away warning); Texas fixed or index;
+   Winter Storm Uri in 2021Q1; index contracts earn 1.5× curtailment credits. Terminal: `renew`,
+   `negotiate`, `counter`, `accept`, `walk`.
+
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Negotiation, hires, Read the market, the 20 event cards (including Winter Storm Uri; Heat's event-card
+Investor pitches (negotiating funding rounds), hires, Read the market, the 20 event cards (Heat's event-card
 effects wait for them), the failure-wave interrupt, the Merge decision screen, saves, sound, settings, the
 left-nav sections other than Dashboard. Site flaws that need missing systems have no effect yet (landlord
 eviction, transformer upgrade); noise ordinance and hostile council now work through Heat. The UI has no automated tests (would need e.g. jsdom:
@@ -98,7 +105,23 @@ ask first).
 - Prices exactly as in the market CSV (no random wobble).
 - Weekly failure roll; used machines fail 1.5× as often; repairs happen in the Plan phase.
 - The small unit can be built without scouting; warehouse and up need scouting first.
-- Texas uses its fixed power price until negotiation exists.
+- **Power contracts** (the design thread's answers, 26 Sep 2026):
+  - A negotiation is a contract renewal. Every non-garage site has a contract; the first starts when it's
+    powered, at the normal price (tier path × scouting multiplier), for 4 quarters. The garage stays on
+    household prices. At the end of a term the renewal comes up in that Plan phase: negotiate (2 BW) or do
+    nothing, and the opening applies (0 BW).
+  - Opening = normal price × 1.10. Hidden limit = normal × U(0.85, 1.05) (from the normal price, not the
+    opening); × 1.03 for an 8-quarter term; a hires hook (−5%) waits for hires.
+  - Rounds: counter ≥ limit → signed at your price; within 10% below → the utility comes back halfway
+    between its last offer and its limit; lowball → 25% walk-away, else it comes back halfway. After round
+    3: take its last offer or walk away. A walk-away (either side) = the opening for 4 quarters. BW is
+    spent either way.
+  - The price is locked for the term (it ignores the price path); the next renewal opens at the then-normal
+    price × 1.10. The contract replaces the scouting multiplier; rate_class ×1.4 and the Heat 50 ×1.2
+    apply on top.
+  - Texas: pick fixed (3.5¢) or index (2.8¢, the paid price = base × U(0.75, 1.25) each quarter). Uri,
+    2021Q1, one week: index power ×10 unless you curtail (credits as built). Curtailment credits × 1.5 on
+    index, × 1 on fixed.
 - Coins are sold **weekly** at that week's price (not at quarter end).
 - **Per coin:** the keep/sell % is set separately for BTC and ETH (two sliders). The price alert offers
   "Sell 25% of your BTC", "Sell 25% of your ETH" or "Hold".
@@ -163,6 +186,19 @@ ask first).
   - Credits count toward EBITDA (so valuation), are included in the report's cash line, and get their own
     report line. Uri (2021Q1) is left to its event card, as the content review says.
 
+- **Power contract details chosen by Claude Code** (within the design thread's rules). **Not yet confirmed:**
+  - Doing nothing on a due renewal keeps the same contract type and takes the opening for 4 quarters.
+    Accepting the opening from the dialog costs no Bandwidth and lets Texas switch type.
+  - A negotiation must be finished (deal or walk away) before the quarter can start; only one at a time.
+    Countering above the utility's current offer just takes that offer. The walk-away warning uses only the
+    public rules (the lowest and highest the limit could be), never the hidden limit.
+  - The first Texas contract is fixed (index only from its first renewal). Index moves are rolled at each
+    quarter start (and when a contract is signed), on their own random stream.
+  - Uri: the grid asks after the week before the storm (week of 2021-02-15, week 7 of 2021Q1), like a
+    summer curtailment, only if Texas machines would mine. It is always asked and doesn't count toward the
+    3 interrupts. "Keep mining" also adds the usual grievance +5 at Texas. The ×10 raises the power cost,
+    so a batch still switches itself off if the power costs more than it earns (it doesn't at ×10).
+  - Curtailment credits are now worked out per Texas site (then × its contract's multiplier) and added up.
 - **Heat details chosen by Claude Code** (within the design thread's rules). **Not yet confirmed:**
   - Heat is worked out after each week's mining and stored per site; the Plan screen shows the value from
     the last week played. "Site MW" for costs = the site's usable capacity (a 5 kW garage pays the minimum).
@@ -231,10 +267,11 @@ ask first).
 |---|---|---|---|
 | cautious | garage only, keeps half its cash | 0% | $41.5K |
 | reinvest | garage only, spends everything | 0% | $28.8K |
-| raise-climb | reinvest + every round as soon as allowed, climbs the ladder | 0% | $16.9M (peak $328M, 2021Q1) |
-| raise-outreach | raise-climb + talks to the neighbours at any site with Heat 50+ | 0% | $16.8M (peak $319M, 2021Q1) |
-| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $16.9M (peak $326M, 2021Q1) |
-| raise-auction | raise-climb + bids 85% of list on every lot it has room and cash for | 0% | $16.9M (wins 0.3 lots per game) |
+| raise-climb | reinvest + every round as soon as allowed, climbs the ladder; takes every renewal's opening | 0% | $16.4M (peak $310M, 2021Q1) |
+| raise-negotiate | raise-climb + negotiates every renewal (counters at 92%, 97%, 102% of normal) | 0% | $18.2M (peak $334M, 2021Q1) |
+| raise-outreach | raise-climb + talks to the neighbours at any site with Heat 50+ | 0% | $16.6M (peak $305M, 2021Q1) |
+| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $16.5M (peak $313M, 2021Q1) |
+| raise-auction | raise-climb + bids 85% of list on every lot it has room and cash for | 0% | $16.4M (wins 0.3 lots per game) |
 | hodl | garage only, keeps every coin | 0% | $104K |
 | hodl-borrow | hodl + the biggest crypto-backed loan whenever it has none | 0% | $65.9K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
@@ -272,6 +309,20 @@ ask first).
 - **Auctions barely matter for the bots so far:** the raise-auction bot wins only 0.3 lots per game,
   because it fills every site with new machines each quarter, so there's rarely room for a lot. A player
   who keeps space free (or sells old rigs) can buy 2019 S9s at a deep discount before the 2019 rally.
+- **Power contracts (sim checks asked for by the design thread):**
+  - Passive vs negotiator: over 50 runs (about 9.6 renewals each), the passive bot signs at 110% of the
+    normal price; the negotiating bot averages 97.9% (92–110%, the utility walked away 15 times in 473
+    renewals). The passive player pays about 12% more (target: about 10%). Negotiating is worth about
+    +$1.8M of median end value ($18.2M vs $16.4M).
+  - Texas index vs fixed (no bot reaches Texas, so a controlled test: 3,000 S19 Pros on a Texas site from
+    2020Q1, 20 seeds, renewals take the opening): Texas margin 2020–22 = fixed $54.7M, index + curtail at
+    Uri $56.8M (ahead of fixed: check passes), index + keep mining $55.8M. **Not mining through Uri costs an
+    index player only about $1.0M, about 16% of a typical quarter's Texas margin ($6.4M), not the target
+    "about one quarter".** At ×10, 2.8¢ becomes 28¢, which S19 Pros still out-earn, so the bill is modest;
+    a much larger multiplier would switch the machines off by the normal rule, which caps the loss at the
+    missed credits. Reaching "one quarter" would need a design change (see open questions).
+  - Adding contracts made every renewal +10% for players who don't negotiate: the fundraising bots' median
+    end value fell about $0.5M (from $16.9M to $16.4M).
 - **Heat (sim check asked for by the design thread):** the fundraising bot that never talks to the
   neighbours (raise-climb) reaches Heat 50 at a quarter end in 40/50 runs: 19/50 before 2021, 37/50 by
   the end of 2021 (median first time 2021Q1). It gets about 3.3 complaints per game (all ignored), 1.3
@@ -300,11 +351,18 @@ ask first).
   2021. Which reading was meant, and is that enough pressure?
 - Should the outreach bot's threshold (or the player's hint) be lower than 50, since the rate hike is
   decided at the quarter end before the next Plan phase's outreach?
+- **Uri is too mild for index players who keep mining:** they lose about 16% of a quarter's Texas margin,
+  not about one quarter. Options: charge index contracts the storm price on their contracted load even if
+  machines would switch off (firm load), with a larger multiplier (the real ERCOT cap was about 320× 2.8¢;
+  roughly 100–120× on the contracted load would cost one quarter); or make the storm last more weeks; or
+  accept the milder version.
+- Confirm the power contract details above (auto-renew keeps the type; Uri doesn't count as an interrupt).
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
-Week 3 of the build order and the Heat system are done. Next from `docs/player-actions-and-pacing.md`
-§7, week 4: negotiation (power contracts first, then investors; show a plan and design questions before
-coding); crypto loans and margin calls are already built. Also open: the LTV gauge on a Capital screen,
-and the League left-nav section (the table is only on the report now).
+Week 3, the Heat system and the power side of week 4 (contracts, negotiation, Uri) are done. Next:
+investor pitches with the same negotiation engine (design thread answer 8 is in: negotiate the pre-money
+valuation; a walk-away closes the round until next quarter and reopens it 10% lower, stacking to 20%;
+the numbers go in capital.json › pitch). Also open: the Uri question above, the LTV gauge on a Capital
+screen, and the League left-nav section (the table is only on the report now).

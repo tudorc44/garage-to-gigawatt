@@ -6,7 +6,12 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONTENT } from '../src/content/index.ts'
 import { playGame } from '../src/sim/replay.ts'
-import type { GameState, QuarterReport } from '../src/sim/state.ts'
+import type {
+  ContractType,
+  GameState,
+  QuarterReport,
+} from '../src/sim/state.ts'
+import { normalPriceUsdKwh } from '../src/sim/systems/sites.ts'
 import { BOTS, PROBES } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -122,6 +127,36 @@ function runAll(
   })
 }
 
+/**
+ * Power contract renewals across the runs: how many, and the price signed vs the site's
+ * normal price that quarter (read from the log; first contracts at power-on are left out).
+ */
+function renewalStats(runs: Run[]) {
+  const ratios: number[] = []
+  let deals = 0
+  let walked = 0
+  for (const r of runs) {
+    for (const e of r.state.log) {
+      if (e.key === 'log.negotiation_deal') deals++
+      if (e.key === 'log.negotiation_they_walked') walked++
+      if (e.key !== 'log.contract_signed') continue
+      const site = r.state.sites.find((x) => x.tier === e.params!.tier)
+      if (!site || site.readyQuarter === e.quarter) continue
+      const price = Number(String(e.params!.price).replace('¢', '')) / 100
+      const type = e.params!.contract as ContractType
+      ratios.push(price / normalPriceUsdKwh(site, e.quarter, type))
+    }
+  }
+  return {
+    renewals: ratios.length,
+    renewal_price_vs_normal: ratios.length
+      ? ratios.reduce((a, b) => a + b, 0) / ratios.length
+      : 0,
+    negotiated_deals: deals,
+    utility_walked: walked,
+  }
+}
+
 const summaries = runAll(BOTS, true)
 const probes = runAll(PROBES, false)
 
@@ -177,6 +212,7 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
       runs.length,
     rate_hikes_per_run: logCount('log.rate_hike') / runs.length,
     outreach_per_run: logCount('log.outreach') / runs.length,
+    ...renewalStats(runs),
   }
 })
 const header = Object.keys(summaryRows[0]).join(',')
@@ -218,6 +254,21 @@ console.table(
       'complaints / run': r.complaints_per_run.toFixed(1),
       'rate hikes / run': r.rate_hikes_per_run.toFixed(1),
       'outreach / run': r.outreach_per_run.toFixed(1),
+    })),
+)
+
+console.log(
+  '\nPower contract renewals (price signed vs the normal price at the time):',
+)
+console.table(
+  summaryRows
+    .filter((r) => r.renewals > 0)
+    .map((r) => ({
+      strategy: r.strategy,
+      'renewals / run': (r.renewals / r.runs).toFixed(1),
+      'price vs normal': `${(r.renewal_price_vs_normal * 100).toFixed(1)}%`,
+      'negotiated deals': r.negotiated_deals,
+      'utility walked': r.utility_walked,
     })),
 )
 

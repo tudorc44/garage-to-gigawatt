@@ -4,6 +4,7 @@ import { BALANCE, CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import type { Strategy } from '../src/sim/replay.ts'
 import type { Condition, GameState } from '../src/sim/state.ts'
+import { renewalDue } from '../src/sim/systems/contracts.ts'
 import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
 import { outreachCostUsd, siteHeatValue } from '../src/sim/systems/heat.ts'
 import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
@@ -15,6 +16,7 @@ import {
   revenuePerUnitDay,
 } from '../src/sim/systems/market.ts'
 import {
+  normalPriceUsdKwh,
   baseCapexUsd,
   capacityKw,
   isReady,
@@ -48,6 +50,11 @@ interface BotSettings {
   auctionBidShare?: number
   /** Talk to the neighbours at every site at or above this Heat (1 Bandwidth each, if it can). */
   outreachAt?: number
+  /**
+   * Negotiate every power contract renewal (2 Bandwidth) instead of taking the opening:
+   * counter at these shares of the normal price, round by round, then take the last offer.
+   */
+  negotiateAt?: number[]
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -92,6 +99,41 @@ function makeBot(settings: BotSettings): Strategy {
           cash += amountUsd
           reserveBase += amountUsd
           bandwidth -= 1
+        }
+      }
+      // 0c2. Negotiate due power contract renewals. The negotiation is deterministic, so the
+      // bot plays it out on a copy to see the utility's answers before committing the moves.
+      if (settings.negotiateAt) {
+        let sim = s
+        for (const site of s.sites) {
+          if (bandwidth < CONTENT.negotiation.bandwidth) break
+          if (!renewalDue(sim, site)) continue
+          const type = site.contract!.type
+          const moves: Action[] = [
+            {
+              type: 'NEGOTIATE_START',
+              siteId: site.id,
+              contractType: type,
+              term: CONTENT.negotiation.terms[0],
+            },
+          ]
+          const normal = normalPriceUsdKwh(site, s.quarter, type)
+          for (const share of settings.negotiateAt)
+            moves.push({
+              type: 'NEGOTIATE_COUNTER',
+              priceUsdKwh: normal * share,
+            })
+          moves.push({ type: 'NEGOTIATE_ACCEPT' })
+          for (const a of moves) {
+            if (a.type !== 'NEGOTIATE_START' && !sim.negotiation) break
+            if (a.type === 'NEGOTIATE_COUNTER' && sim.negotiation?.final)
+              continue
+            const r = applyAction(sim, a)
+            if (!r.ok) break
+            sim = r.state
+            actions.push(a)
+          }
+          bandwidth -= CONTENT.negotiation.bandwidth
         }
       }
       // 0d. Talk to the neighbours where Heat is high (dry-run checks cash, Bandwidth, once a quarter).
@@ -281,6 +323,15 @@ export const BOTS: Record<string, Strategy> = {
     sellOnDrops: false,
     raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
     outreachAt: 50,
+  }),
+  /** raise-climb that negotiates every power renewal: counters at 92%, 97%, 102% of normal. */
+  'raise-negotiate': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    negotiateAt: [0.92, 0.97, 1.02],
   }),
   /** raise-climb that also borrows the maximum equipment loan whenever it has none. */
   'raise-borrow': makeBot({
