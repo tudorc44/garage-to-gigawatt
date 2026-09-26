@@ -23,6 +23,9 @@ npm test          # TODO: not set up yet (planned: Vitest unit + golden-replay t
 ## Key docs (read before bigger tasks)
 
 - `docs/alpha-0.1-scope.md`: **source of truth for scope.** What's in, what's out, cut order, exit checklist.
+- `docs/content-pack-review.md`: its §4 amendments (A1–A9) **override** the scope doc where they differ.
+- `docs/player-actions-and-pacing.md` (build order in §7) and `docs/act-i-content-pack.md` (content and data notes).
+- `docs/act1-content/`: the original content pack. The game's live copies are in `src/content/`.
 - `docs/tech-stack.md`: architecture, repo layout, libraries.
 - `docs/design-brief.md`: game vision and the 4-act campaign (background only; Acts II–IV are out of scope).
 - `docs/design-system.md`: UI direction, era themes, fonts, colours, icons.
