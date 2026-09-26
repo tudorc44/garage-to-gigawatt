@@ -15,6 +15,11 @@ export const BALANCE = {
     build: 1,
   },
 
+  failures: {
+    /** Used machines fail this much more often than new ones (weekly roll in mining.ts). */
+    usedMult: 1.5,
+  },
+
   priceAlert: {
     /** interrupts.json price_alert trigger: a weekly BTC or ETH move of at least this size. */
     threshold: 0.15,

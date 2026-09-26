@@ -38,3 +38,23 @@ export function seedFromString(text: string): number {
   }
   return h >>> 0
 }
+
+/**
+ * How many of n units, each with chance p, "hit" (e.g. fail) this roll.
+ * Exact for up to 100 units; above that a bell-curve approximation built only from
+ * + − × and √ (no Math.log/cos, which can differ between browsers and break replays).
+ */
+export function binomial(holder: RngHolder, n: number, p: number): number {
+  if (n <= 0 || p <= 0) return 0
+  if (p >= 1) return n
+  if (n <= 100) {
+    let hits = 0
+    for (let i = 0; i < n; i++) if (random(holder) < p) hits++
+    return hits
+  }
+  // Sum of 12 uniform rolls minus 6 ≈ a standard normal value.
+  let z = -6
+  for (let i = 0; i < 12; i++) z += random(holder)
+  const k = Math.round(n * p + Math.sqrt(n * p * (1 - p)) * z)
+  return Math.min(n, Math.max(0, k))
+}
