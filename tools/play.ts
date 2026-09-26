@@ -418,6 +418,13 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
       balanceUsd: s.cryptoLoan!.balanceUsd,
       ltvPct: alert.ltv ?? 0,
     })
+  } else if (alert.id === 'curtailment') {
+    say('play.grid', {
+      week: alert.week + 2,
+      mw: fmt.power(alert.curtail!.mw * 1000),
+      creditUsd: alert.curtail!.creditUsd,
+      forgoneUsd: alert.curtail!.forgoneUsd,
+    })
   } else {
     say('play.alert', {
       coin: alert.coin,
@@ -466,6 +473,8 @@ function showReport(s: GameState) {
     treasuryUsd: r.treasuryValueUsd,
   })
   say('play.report_cash', { cashUsd: r.cash })
+  if (r.gridCreditsUsd > 0)
+    say('play.report_grid', { creditsUsd: r.gridCreditsUsd })
   if (r.forcedSale) say('play.report_forced', r.forcedSale)
   showLeague(s)
 }

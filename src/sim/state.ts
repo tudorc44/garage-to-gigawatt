@@ -113,6 +113,8 @@ export interface GameState {
   equipmentLoan: EquipmentLoan | null
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
+  /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
+  curtailment: { week: number; creditUsd: number } | null
   /** A distressed auction open this Plan phase, or null. */
   auction: Auction | null
   /** After a margin-call default: no loans until this quarter index. null = not locked. */
@@ -148,6 +150,18 @@ export interface ActiveInterrupt {
   changePct: number
   /** Margin call only: the loan-to-value that triggered it. */
   ltv?: number
+  /** Curtailment only: the grid's offer for taking the Texas machines offline next week. */
+  curtail?: CurtailOffer
+}
+
+/** What curtailing the Texas site for one week pays (review A8), fixed when the grid asks. */
+export interface CurtailOffer {
+  /** Power of the Texas machines that would be mining, in MW. */
+  mw: number
+  /** What they would earn that week. */
+  forgoneUsd: number
+  /** max(credit per MW × MW, multiple × forgone revenue). */
+  creditUsd: number
 }
 
 export interface QuarterStats {
@@ -163,6 +177,8 @@ export interface QuarterStats {
   marginCalls: number
   /** Dollars received for mined coins sold as they were mined. */
   soldUsd: number
+  /** Paid by the grid for curtailing (counts toward EBITDA). */
+  gridCreditsUsd: number
   /** Loan interest and principal paid this quarter. */
   interestUsd: number
   principalUsd: number
@@ -217,6 +233,8 @@ export interface QuarterReport {
   startTreasuryUsd: number
   soldUsd: number
   treasurySoldUsd: number
+  /** Paid by the grid for curtailing. */
+  gridCreditsUsd: number
   interestUsd: number
   principalUsd: number
   /** Loans still owed at quarter end (subtracted from the valuation). */
@@ -237,6 +255,7 @@ export function emptyQuarterStats(): QuarterStats {
     priceAlerts: 0,
     marginCalls: 0,
     soldUsd: 0,
+    gridCreditsUsd: 0,
     interestUsd: 0,
     principalUsd: 0,
     startCash: 0,
@@ -290,6 +309,7 @@ export function newGame(seed: number): GameState {
     equipmentLoan: null,
     cryptoLoan: null,
     auction: null,
+    curtailment: null,
     loansLockedUntil: null,
     nextId: 2,
     interrupt: null,

@@ -34,6 +34,9 @@ const NOTE_KEYS: Partial<Record<MessageKey, MessageKey>> = {
   'log.margin_sold_machines': 'ui.live.note.margin',
   'log.margin_default': 'ui.live.note.margin',
   'log.liquidated': 'ui.live.note.margin',
+  'log.curtail_agreed': 'ui.live.note.grid',
+  'log.curtail_declined': 'ui.live.note.grid',
+  'log.curtailed': 'ui.live.note.curtailed',
 }
 
 export function LiveScreen(
@@ -120,6 +123,9 @@ export function LiveScreen(
       )}
       {state.interrupt?.id === 'margin_call' && (
         <MarginCallCard state={state} act={act} />
+      )}
+      {state.interrupt?.id === 'curtailment' && (
+        <CurtailmentCard state={state} act={act} />
       )}
     </div>
   )
@@ -480,6 +486,84 @@ function MarginCallCard({ state, act }: ScreenProps) {
             <span class="num-s">{effect(c.id)}</span>
           </button>
         ))}
+      </article>
+    </div>
+  )
+}
+
+/** The grid emergency card: curtail the Texas site next week for credits, or keep mining. */
+function CurtailmentCard({ state, act }: ScreenProps) {
+  const alert = state.interrupt!
+  const offer = alert.curtail!
+  const effect = (id: string) =>
+    id === 'curtail'
+      ? t('ui.grid.effect_curtail', {
+          credit: fmt.signed(offer.creditUsd),
+          forgone: fmt.money(offer.forgoneUsd),
+        })
+      : t('ui.grid.effect_mine', { forgone: fmt.money(offer.forgoneUsd) })
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="grid-title"
+      >
+        <div class="row-between">
+          <span class="label">
+            {t('ui.grid.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: alert.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', {
+              n: state.interruptsThisQuarter,
+              max: MAX_INTERRUPTS,
+            })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="texas-site" />
+          <span class="num-xl gain">{fmt.signed(offer.creditUsd)}</span>
+          <span class="num-s">
+            {t('ui.grid.mw', { mw: fmt.power(offer.mw * 1000) })}
+          </span>
+        </div>
+        <h2 class="event-title" id="grid-title">
+          {t('ui.grid.title')}
+        </h2>
+        <p class="event-body">
+          {t('ui.grid.body', {
+            week: alert.week + 2,
+            mw: fmt.power(offer.mw * 1000),
+            credit: fmt.money(offer.creditUsd),
+            forgone: fmt.money(offer.forgoneUsd),
+          })}
+        </p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.curtailment.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">{effect(c.id)}</span>
+          </button>
+        ))}
+        <span class="num-s muted" style={{ fontStyle: 'italic' }}>
+          {t('ui.grid.source')}
+        </span>
       </article>
     </div>
   )

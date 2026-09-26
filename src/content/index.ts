@@ -11,6 +11,7 @@ import { BALANCE } from './balance.ts'
 import {
   auctionRulesSchema,
   capitalFileSchema,
+  curtailmentRulesSchema,
   interruptsFileSchema,
   machinesFileSchema,
   marketSchema,
@@ -18,6 +19,7 @@ import {
   sitesFileSchema,
   type AuctionRules,
   type CryptoLoanTerms,
+  type CurtailmentRules,
   type EquipmentLoanTerms,
   type Flaw,
   type Interrupt,
@@ -32,6 +34,7 @@ export { BALANCE }
 export type {
   AuctionRules,
   CryptoLoanTerms,
+  CurtailmentRules,
   EquipmentLoanTerms,
   Flaw,
   Interrupt,
@@ -61,6 +64,8 @@ export interface Content {
   cryptoLoan: CryptoLoanTerms
   /** Distressed auction rules (interrupts.json › distressed_auction). */
   auction: AuctionRules
+  /** Grid curtailment rules (interrupts.json › curtailment). */
+  curtailment: CurtailmentRules
   /** The 4 scripted rivals, in file order. */
   rivals: Rival[]
 }
@@ -110,13 +115,19 @@ export function parseContent(raw: RawContent): Content {
   const marketRows = check('market_weekly', marketSchema, raw.market)
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
-  const auctionRaw = (
-    raw.interrupts as { interrupts?: { id?: string }[] } | undefined
-  )?.interrupts?.find((i) => i.id === 'distressed_auction')
+  const rawInterrupt = (id: string) =>
+    (
+      raw.interrupts as { interrupts?: { id?: string }[] } | undefined
+    )?.interrupts?.find((i) => i.id === id)
   const auction = check(
     'interrupts.json › distressed_auction',
     auctionRulesSchema,
-    auctionRaw,
+    rawInterrupt('distressed_auction'),
+  )
+  const curtailment = check(
+    'interrupts.json › curtailment',
+    curtailmentRulesSchema,
+    rawInterrupt('curtailment'),
   )
 
   if (
@@ -126,7 +137,8 @@ export function parseContent(raw: RawContent): Content {
     !marketRows ||
     !capitalFile ||
     !rivalsFile ||
-    !auction
+    !auction ||
+    !curtailment
   ) {
     throw new ContentError(problems)
   }
@@ -281,6 +293,11 @@ export function parseContent(raw: RawContent): Content {
       'interrupts.json › distressed_auction: more rival bidders than rivals',
     )
   }
+  if (!sitesFile.tiers.some((t) => t.id === curtailment.siteTier)) {
+    problems.push(
+      `interrupts.json › curtailment: unknown site tier "${curtailment.siteTier}"`,
+    )
+  }
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
@@ -299,6 +316,7 @@ export function parseContent(raw: RawContent): Content {
     cryptoLoan: capitalFile.loans.game_crypto_loan,
     rivals: rivalsFile.rivals,
     auction,
+    curtailment,
   }
 }
 

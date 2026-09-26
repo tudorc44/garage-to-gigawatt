@@ -59,7 +59,17 @@
    "source": "Riot 2022 power credits ≈ $10–30k/MW/month in peak months",
    "estimate": true,
    "design_note": "Credit must beat forgone revenue or nobody curtails: at 2021 hashprice one MW of S19s earns ~$60k/week, far above the flat $15k/MW. Uri is handled by the uri_2021 card (2.5× forgone revenue).",
-   "curtail_credit": "max(15000*mw, 1.25*forgone_mining_revenue_week)"
+   "curtail_credit": "max(15000*mw, 1.25*forgone_mining_revenue_week)",
+   "site_tier": "texas_site",
+   "quarter_of_year": 3,
+   "chance_per_quarter": 0.35,
+   "credit_usd_per_mw": 15000,
+   "forgone_revenue_mult": 1.25,
+   "alert_after_week": [
+    2,
+    12
+   ],
+   "game_note": "Structured fields added for the sim (same rules as 'trigger' and 'curtail_credit', review A8). The alert comes at the end of a week in alert_after_week (1-based) and the curtailment is the following week. MW = the Texas machines that would be mining that week. The 'mine' choice's Heat +5 waits for the Heat system."
   },
   {
    "id": "failure_wave",

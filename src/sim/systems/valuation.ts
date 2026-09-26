@@ -2,13 +2,14 @@
 // era's EV/EBITDA multiple, plus cash and treasury, minus debt (loans still owed).
 import { CONTENT } from '../../content/index.ts'
 
-/** EBITDA for a quarter: mining revenue minus power and rent (no salaries yet; loan interest isn't in it). */
+/** EBITDA for a quarter: mining revenue plus grid credits, minus power and rent (no salaries yet; loan interest isn't in it). */
 export function ebitdaUsd(q: {
   revenueUsd: number
   powerCostUsd: number
   rentUsd: number
+  gridCreditsUsd?: number
 }): number {
-  return q.revenueUsd - q.powerCostUsd - q.rentUsd
+  return q.revenueUsd + (q.gridCreditsUsd ?? 0) - q.powerCostUsd - q.rentUsd
 }
 
 /**

@@ -97,6 +97,7 @@ function buildReport(
     startTreasuryUsd: st.startTreasuryUsd,
     soldUsd: st.soldUsd,
     treasurySoldUsd: st.treasurySoldUsd,
+    gridCreditsUsd: st.gridCreditsUsd,
     interestUsd: st.interestUsd,
     principalUsd: st.principalUsd,
     debtUsd: debtUsd(state),
@@ -115,6 +116,7 @@ export function startNextQuarter(state: GameState): void {
   state.phase = 'plan'
   state.bandwidth = bandwidthForQuarter(state) // unused Bandwidth is lost
   state.interruptsThisQuarter = 0
+  state.curtailment = null
   state.quarterStats = emptyQuarterStats()
   for (const site of state.sites) {
     if (site.readyQuarter === state.quarter && state.quarter > 0) {

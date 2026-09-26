@@ -189,6 +189,28 @@ export const auctionRulesSchema = z
     bandwidth: a.bandwidth,
   }))
 
+/** Grid curtailment's structured rules (extra fields on its interrupts.json entry, review A8). */
+export const curtailmentRulesSchema = z
+  .object({
+    site_tier: z.string(),
+    quarter_of_year: z.number().int().min(1).max(4),
+    chance_per_quarter: z.number().min(0).max(1),
+    credit_usd_per_mw: nonNeg,
+    forgone_revenue_mult: nonNeg,
+    alert_after_week: range(1, 12).refine(
+      ([a, b]) => Number.isInteger(a) && Number.isInteger(b),
+      'expected whole weeks',
+    ),
+  })
+  .transform((c) => ({
+    siteTier: c.site_tier,
+    quarterOfYear: c.quarter_of_year,
+    chancePerQuarter: c.chance_per_quarter,
+    creditUsdPerMw: c.credit_usd_per_mw,
+    forgoneRevenueMult: c.forgone_revenue_mult,
+    alertAfterWeek: c.alert_after_week,
+  }))
+
 // ---------- capital.json (only what the sim uses so far) ----------
 
 /** One rung of the funding ladder (savings → F&F → seed → Series A → IPO). */
@@ -302,3 +324,4 @@ export type Flaw = z.output<typeof flawSchema>
 export type Interrupt = z.output<typeof interruptSchema>
 export type Rival = z.output<typeof rivalSchema>
 export type AuctionRules = z.output<typeof auctionRulesSchema>
+export type CurtailmentRules = z.output<typeof curtailmentRulesSchema>

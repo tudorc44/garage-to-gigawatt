@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with rivals, the league table and distressed auctions (week 3 in progress).
+Last updated: 26 Sep 2026, with week 3 done: rivals, the league table, distressed auctions and grid curtailment.
 
 ## How the owner works
 
@@ -60,7 +60,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder) and unit
-   tests: 190 passing + 1 to-do.
+   tests: 202 passing + 1 to-do.
 8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
    `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
 9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
@@ -69,12 +69,15 @@ See `CLAUDE.md` for the full list. The main ones:
 10. **Distressed auctions:** in the crypto-winter windows a lot of used machines may come up at the
    start of a Plan phase. One sealed bid (2 Bandwidth) against 2–3 rivals, settled at once; the Plan
    screen has the row and a bidding dialog, the terminal has `bid <amount> [site#]`.
+11. **Grid curtailment:** in summer (Q3) the Texas grid may ask you to take the Texas site offline for
+   a week, for credits (review A8). An interrupt card in the live quarter (and in the terminal); the
+   credits count toward EBITDA and show on the quarter report.
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
 Negotiation, hires,
-Heat and talking to the neighbours, Read the market, grid curtailment, the 20 event
-cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
+Heat and talking to the neighbours, Read the market, the 20 event
+cards (including Winter Storm Uri), the failure-wave and neighbour-complaint interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
 council, landlord eviction, transformer upgrade). The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -126,6 +129,17 @@ ask first).
   - No bid: when the quarter starts, the best rival takes the lot (a log line says who and for how much).
   - Its rolls use a separate random stream per quarter (`substream` in `rng.ts`), so adding auctions
     didn't change the failures or site offers of any existing game (the golden files only gained lines).
+- **Grid curtailment** (interrupts.json › curtailment, with structured fields added: tier, Q3, 35%,
+  $15K/MW, 1.25×, alert weeks). **Not yet confirmed by the owner:**
+  - Once per Q3 at most, 35% chance (own random stream), only if machines on a Texas site would be
+    mining. The alert comes at the end of a week (2–12) and is about the **next** week, so the game can
+    pause and you choose before it happens. It counts toward the 3 interrupts per quarter.
+  - Curtail (default): the Texas machines mine nothing and use no power that week; the credit is
+    max($15K × MW, 1.25 × that week's forgone revenue), worked out when the grid asks and paid in the
+    curtailed week. MW = working Texas machines that would be running. In 2021 the 1.25× rule always wins.
+  - Keep mining: nothing happens yet. Its Heat +5 waits for the Heat system (noted in the content).
+  - Credits count toward EBITDA (so valuation), are included in the report's cash line, and get their own
+    report line. Uri (2021Q1) is left to its event card, as the content review says.
 
 - **League table:** ranked by value: the rival's market cap (`mcap_musd`) against your company valuation.
   A rival joins the table in the first quarter it has any number (Bitfarms 2017Q3, Riot and Marathon
@@ -238,10 +252,14 @@ ask first).
   $5M EBITDA bar is just out of reach for a bot that fills one 20 MW site. Intended, or lower it?
 - Auctions as a Plan-phase action (not a mid-quarter interrupt): OK? And the lot sizes (50–500 units)
   mostly need a warehouse, so small-unit players rarely have room.
+- Curtailment: with Heat not built, "keep mining" has no downside and curtailing always pays more than
+  it gives up, so it's not yet a real choice. Fine until Heat exists, or should keeping mining carry
+  another cost?
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
-The owner will give the go-ahead. Candidates from the build order (`docs/player-actions-and-pacing.md`
-§7): week 3 (distressed auctions + light rivals + league table, then grid curtailment), negotiation
-(power contracts, then investors), the LTV gauge on a Capital screen.
+Week 3 of the build order is done. Next from `docs/player-actions-and-pacing.md` §7, week 4: negotiation
+(power contracts first, then investors); crypto loans and margin calls are already built. Also open: the
+Heat system (needed for curtailment's "keep mining" cost and the neighbour-complaint interrupt), the
+LTV gauge on a Capital screen, and the League left-nav section (the table is only on the report now).

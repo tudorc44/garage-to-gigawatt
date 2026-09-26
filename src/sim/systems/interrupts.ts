@@ -5,6 +5,7 @@ import type { Message } from '../../i18n/t.ts'
 import { logEntry, type Coin, type GameState } from '../state.ts'
 import { coinPrice, marketWeek, previousMarketWeek } from './market.ts'
 import { marginCallChoices, resolveMarginCall } from './cryptoLoan.ts'
+import { resolveCurtailment } from './curtailment.ts'
 import { sellTreasury } from './treasury.ts'
 
 /**
@@ -42,6 +43,7 @@ export function resolveInterrupt(
   const active = state.interrupt
   if (!active) return { key: 'error.no_interrupt' }
   if (active.id === 'margin_call') return resolveMarginCall(state, choiceId)
+  if (active.id === 'curtailment') return resolveCurtailment(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )

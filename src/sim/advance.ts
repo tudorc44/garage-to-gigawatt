@@ -1,5 +1,6 @@
 // advance(state) plays one week of the live quarter and returns the new state.
-// Systems run in a fixed order: failures → mining → treasury → price alert.
+// Systems run in a fixed order: failures → mining (a curtailed week idles Texas) →
+// treasury → loans → margin call → curtailment alert → price alert.
 // After week 13 the quarter ends (report, or game over).
 import { BALANCE } from '../content/index.ts'
 import { logEntry, roundCents, type GameState } from './state.ts'
@@ -8,6 +9,7 @@ import { marketWeek, previousMarketWeek } from './systems/market.ts'
 import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
 import { checkMarginCall, payCryptoInterestWeek } from './systems/cryptoLoan.ts'
+import { applyCurtailment, checkCurtailment } from './systems/curtailment.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 
@@ -23,7 +25,8 @@ export function advance(state: GameState): GameState {
   const weekNo = s.week + 1
 
   const failures = rollFailures(s)
-  const lots = mineWeek(s, w)
+  const curtailed = applyCurtailment(s, mineWeek(s, w))
+  const lots = curtailed.lots
   const money = settleWeek(s, lots, w)
   const loan = payLoanWeek(s)
   const cryptoInterestUsd = payCryptoInterestWeek(s)
@@ -34,6 +37,7 @@ export function advance(state: GameState): GameState {
   st.powerCostUsd += money.powerCostUsd
   st.rentUsd += money.rentUsd
   st.soldUsd += money.soldUsd
+  st.gridCreditsUsd += curtailed.creditUsd
   st.interestUsd += loan.interestUsd + cryptoInterestUsd
   st.principalUsd += loan.principalUsd
   st.failures += failures
@@ -41,10 +45,14 @@ export function advance(state: GameState): GameState {
     st.coinsMined[coin] += money.coinsMined[coin]
     st.powerByCoin[coin] += money.powerByCoin[coin]
   }
-  const batchesOff = lots.filter((l) => !l.running).length
+  const batchesOff =
+    curtailed.creditUsd > 0 ? 0 : lots.filter((l) => !l.running).length
 
   // Log lines for the quarter's notes.
   if (failures > 0) logEntry(s, 'log.failures', { count: failures }, weekNo)
+  if (curtailed.creditUsd > 0) {
+    logEntry(s, 'log.curtailed', { creditUsd: curtailed.creditUsd }, weekNo)
+  }
   if (batchesOff > 0 && !st.weeks.some((x) => x.batchesOff > 0)) {
     logEntry(s, 'log.switched_off', {}, weekNo)
   }
@@ -54,6 +62,7 @@ export function advance(state: GameState): GameState {
   }
 
   checkMarginCall(s, w, prev)
+  checkCurtailment(s)
   checkPriceAlert(s, w)
   st.weeks.push({
     week: weekNo,
