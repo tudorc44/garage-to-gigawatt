@@ -132,8 +132,10 @@ function makeBot(settings: BotSettings): Strategy {
       }
       return actions
     },
-    answer: (s) =>
-      settings.sellOnDrops && s.interrupt!.changePct < 0 ? 'sell' : 'hold',
+    // Without sellOnDrops, alerts get the game's default answer (as ff-climb always has).
+    answer: settings.sellOnDrops
+      ? (s) => (s.interrupt!.changePct < 0 ? 'sell' : 'hold')
+      : undefined,
   }
 }
 
@@ -160,7 +162,17 @@ export const BOTS: Record<string, Strategy> = {
     sellOnDrops: false,
   }),
   /** Raises friends & family in 2017Q1, builds the small unit, fills every site with GPU Gen 1 rigs. */
-  'ff-climb': ffClimb(),
+  'ff-climb': ffClimb({ reserveQuarters: 1 }),
+  /**
+   * Same start as ff-climb (F&F + small unit, sells every coin), but plays it safe: keeps
+   * 4 quarters of rent in the bank, stops buying rigs from 2018Q1, sells on price drops.
+   * Asks: can a sensible F&F player survive the 2018 crash?
+   */
+  'careful-ff': ffClimb({
+    reserveQuarters: 4,
+    stopBuyingFrom: '2018Q1',
+    sellOnDrops: true,
+  }),
 }
 
 /**
@@ -189,13 +201,22 @@ export const PROBES: Record<string, Strategy> = {
   },
 }
 
+interface FfSettings {
+  /** Quarters of rent (for every site, including one being built) kept in the bank. */
+  reserveQuarters: number
+  /** From this quarter on, buy no more rigs (repairs still happen). */
+  stopBuyingFrom?: string
+  /** Price-alert answer: sell on drops, or always hold. */
+  sellOnDrops?: boolean
+}
+
 /**
  * ff-climb (design brief): raise F&F in 2017Q1, build the small unit as soon as it can
  * pay for it, fill free capacity with GPU Gen 1 rigs, sell 100% of mined coins.
  * It keeps one quarter's rent in reserve: rent starts when a site is signed, but
  * machines only earn from the next quarter, so spending every dollar means a forced sale.
  */
-function ffClimb(): Strategy {
+function ffClimb(settings: FfSettings): Strategy {
   const rig = 'gpu_gen1'
   const smallUnit = CONTENT.siteTiers.find((t) => t.id === 'small_unit')!
   return {
@@ -215,8 +236,9 @@ function ffClimb(): Strategy {
         cash += ff.amount_usd
         bandwidth -= 2
       }
-      // One quarter of rent, plus a $1,000 cushion for power and cent rounding.
-      let rentReserve = 1_000 + s.sites.reduce((sum, x) => sum + x.rentUsdQ, 0)
+      // Some quarters of rent, plus a $1,000 cushion for power and cent rounding.
+      const rentQ = s.sites.reduce((sum, x) => sum + x.rentUsdQ, 0)
+      let rentReserve = 1_000 + rentQ * settings.reserveQuarters
 
       for (const lot of s.machines) {
         const cost = lot.failed * repairCostPerUnit(lot.model)
@@ -232,11 +254,12 @@ function ffClimb(): Strategy {
       if (
         !s.sites.some((x) => x.tier === smallUnit.id) &&
         bandwidth >= 1 &&
-        cash - capex >= rentReserve + smallUnit.rent_usd_q
+        cash - capex >=
+          rentReserve + smallUnit.rent_usd_q * settings.reserveQuarters
       ) {
         actions.push({ type: 'BUILD_SITE', tier: smallUnit.id })
         cash -= capex
-        rentReserve += smallUnit.rent_usd_q
+        rentReserve += smallUnit.rent_usd_q * settings.reserveQuarters
         // BUILD_SITE takes the next id; RAISE and REPAIR don't use ids.
         sites.push({
           id: `site-${s.nextId}`,
@@ -256,6 +279,8 @@ function ffClimb(): Strategy {
         .sort((a, b) => a.p - b.p)
       const cheapest = prices[0]
       if (!cheapest) return actions
+      if (settings.stopBuyingFrom && q >= settings.stopBuyingFrom)
+        return actions
       for (const site of sites) {
         const free = capacityKw(site) - usedKw(s, site.id)
         const count = Math.min(
@@ -274,5 +299,9 @@ function ffClimb(): Strategy {
       }
       return actions
     },
+    // Without sellOnDrops, alerts get the game's default answer (as ff-climb always has).
+    answer: settings.sellOnDrops
+      ? (s) => (s.interrupt!.changePct < 0 ? 'sell' : 'hold')
+      : undefined,
   }
 }
