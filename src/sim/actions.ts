@@ -9,7 +9,9 @@ import {
   removeMachines,
   repairCostPerUnit,
 } from './systems/machines.ts'
+import { resolveInterrupt } from './systems/interrupts.ts'
 import { getModel } from './systems/market.ts'
+import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
   baseCapexUsd,
   capacityKw,
@@ -36,6 +38,12 @@ export type Action =
   /** Build from a scouted offer, or (tiers that need no scouting) straight from the tier. */
   | { type: 'BUILD_SITE'; offerId: string }
   | { type: 'BUILD_SITE'; tier: string }
+  /** Plan phase done: start the live quarter. */
+  | { type: 'END_PLAN' }
+  /** Answer the alert that paused the live quarter. */
+  | { type: 'RESOLVE_INTERRUPT'; choice: string }
+  /** Close the quarter report and go to the next Plan phase. */
+  | { type: 'NEXT_QUARTER' }
 
 export type ActionResult =
   { ok: true; state: GameState } | { ok: false; error: Message }
@@ -51,6 +59,28 @@ function fail(key: MessageKey, params?: MessageParams): Message {
 }
 
 function run(s: GameState, a: Action): Message | undefined {
+  switch (a.type) {
+    case 'END_PLAN':
+      if (s.phase !== 'plan') return fail('error.wrong_phase')
+      s.phase = 'live'
+      s.week = 0
+      return
+
+    case 'RESOLVE_INTERRUPT': {
+      if (s.phase !== 'live') return fail('error.wrong_phase')
+      const error = resolveInterrupt(s, a.choice)
+      if (error) return error
+      // An alert in the last week holds the quarter open until it's answered.
+      if (s.week === BALANCE.weeksPerQuarter) endQuarter(s)
+      return
+    }
+
+    case 'NEXT_QUARTER':
+      if (s.phase !== 'report') return fail('error.wrong_phase')
+      startNextQuarter(s)
+      return
+  }
+
   // Everything below is a Plan-phase decision.
   if (s.phase !== 'plan') return fail('error.wrong_phase')
 

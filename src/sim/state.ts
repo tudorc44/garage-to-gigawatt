@@ -64,6 +64,87 @@ export interface GameState {
   siteOffers: SiteOffer[]
   /** Counter for making unique ids ("site-3", "lot-7"). */
   nextId: number
+  /** An alert waiting for the player's answer; the live quarter is paused while it's set. */
+  interrupt: ActiveInterrupt | null
+  interruptsThisQuarter: number
+  /** Running totals for the quarter being played. */
+  quarterStats: QuarterStats
+  /** What happened in the most recent week (for the live-quarter ticker). */
+  lastWeek: WeekSummary | null
+  /** One report per finished quarter. */
+  reports: QuarterReport[]
+}
+
+export interface ActiveInterrupt {
+  /** Interrupt id from interrupts.json, e.g. "price_alert". */
+  id: string
+  /** Index of the week (0–12) the alert fired in. */
+  week: number
+  coin: Coin
+  /** The weekly price move that set it off, e.g. -0.27. */
+  changePct: number
+}
+
+export interface QuarterStats {
+  revenueUsd: number
+  powerCostUsd: number
+  rentUsd: number
+  coinsMined: Record<Coin, number>
+  powerByCoin: Record<Coin, number>
+  failures: number
+  /** Dollars raised by selling treasury coins in alerts. */
+  treasurySoldUsd: number
+}
+
+export interface WeekSummary {
+  /** 1–13 */
+  week: number
+  date: string
+  btcUsd: number
+  ethUsd: number
+  revenueUsd: number
+  powerCostUsd: number
+  rentUsd: number
+  failures: number
+  /** Batches that switched themselves off this week (revenue below power cost). */
+  batchesOff: number
+  cash: number
+}
+
+export interface QuarterReport {
+  quarter: string
+  /** Healthy, earning hashrate at quarter end: BTC in TH/s, ETH in MH/s. */
+  hashrate: Record<Coin, number>
+  revenueUsd: number
+  powerCostUsd: number
+  rentUsd: number
+  coinsMined: Record<Coin, number>
+  /** Power cost per coin mined, or null if none was mined. */
+  costPerCoinUsd: Record<Coin, number | null>
+  failures: number
+  brokenUnits: number
+  treasury: Record<Coin, number>
+  treasuryValueUsd: number
+  cash: number
+  /** Filled when cash went below zero and assets had to be sold. */
+  forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
+}
+
+export function emptyQuarterStats(): QuarterStats {
+  return {
+    revenueUsd: 0,
+    powerCostUsd: 0,
+    rentUsd: 0,
+    coinsMined: { BTC: 0, ETH: 0 },
+    powerByCoin: { BTC: 0, ETH: 0 },
+    failures: 0,
+    treasurySoldUsd: 0,
+  }
+}
+
+/** Money is kept in plain dollars and rounded to cents once per week. */
+export function roundCents(usd: number): number {
+  return Math.round(usd * 100) / 100
 }
 
 export function newGame(seed: number): GameState {
@@ -92,6 +173,11 @@ export function newGame(seed: number): GameState {
     machines: [],
     siteOffers: [],
     nextId: 2,
+    interrupt: null,
+    interruptsThisQuarter: 0,
+    quarterStats: emptyQuarterStats(),
+    lastWeek: null,
+    reports: [],
   }
 }
 
