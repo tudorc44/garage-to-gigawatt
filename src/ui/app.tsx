@@ -34,7 +34,7 @@ export function App() {
 
   // Testing helpers for the browser console, in `npm run dev` and the staging build only
   // (Vite's mode is 'production' for `npm run build`, which leaves this out):
-  //   g2g.setCash(500000)   g2g.state()
+  //   g2g.setCash(500000)   g2g.state()   g2g.load(savedState)
   if (import.meta.env.MODE !== 'production') {
     window.g2g = {
       state: () => ref.current,
@@ -42,6 +42,7 @@ export function App() {
         if (ref.current) commit({ ...ref.current, cash: usd })
         return ref.current?.cash
       },
+      load: (state: GameState) => commit(structuredClone(state)),
     }
   }
 

@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with Series A and the IPO / SPAC round.
+Last updated: 26 Sep 2026, with the rivals and the league table (week 3 in progress).
 
 ## How the owner works
 
@@ -44,7 +44,7 @@ See `CLAUDE.md` for the full list. The main ones:
    pure-sim rules (no `Math.random`, `Date.now`, timers, DOM or UI imports in `src/sim`).
 2. **Content:** machines, sites, interrupts, capital ladder and weekly market prices in `src/content/`,
    validated by Zod schemas plus a loader that lists every problem and refuses to start on bad data.
-   Other content (events, rivals, loans, hires, Merge) is still only in `docs/act1-content/`; copy it
+   Rivals are in too (`rivals.json`). Other content (events, hires, Merge) is still only in `docs/act1-content/`; copy it
    over, with a schema, when its system gets built. Market CSV → JSON via `npm run content:market`.
 3. **Sim core (`src/sim/`):** seeded RNG in the state; actions via `applyAction`; one week per `advance`.
    Market, sites (ladder, scouting, hidden flaws), machines (new/used, delivery, weekly failure roll,
@@ -60,12 +60,16 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller) and unit tests: 171 passing + 1 to-do.
-8. **Local staging** (`staging/`) and the `g2g` console testing helper (dev and staging, not production).
+8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
+   `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
+9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
+   end-of-quarter numbers from `rivals.json`. The quarter report (browser and terminal) ranks you against
+   them by value, with your rank change and who joins later.
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
 Negotiation, hires,
-Heat and talking to the neighbours, Read the market, auctions, rivals and the league table, the 20 event
+Heat and talking to the neighbours, Read the market, auctions, grid curtailment, the 20 event
 cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
 council, landlord eviction, transformer upgrade). The UI has no automated tests (would need e.g. jsdom:
@@ -102,6 +106,11 @@ ask first).
   Rent stops for the whole quarter you leave in.
 
 ### Chosen by Claude Code, reported, not objected to (change freely if the owner asks)
+
+- **League table:** ranked by value: the rival's market cap (`mcap_musd`) against your company valuation.
+  A rival joins the table in the first quarter it has any number (Bitfarms 2017Q3, Riot and Marathon
+  2017Q4, Core Scientific 2018Q2). A rival with no market cap yet shows "private" and sits at the bottom,
+  unranked (Bitfarms until 2019Q3). Scale shows the rival's MW and hashrate. **Not yet confirmed.**
 
 - Forced sale at quarter end when cash < 0: treasury coins first, then machines one at a time, oldest
   batch first. Game over only if still negative.

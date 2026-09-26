@@ -11,10 +11,11 @@ import sites from '../src/content/sites.json' with { type: 'json' }
 import interrupts from '../src/content/interrupts.json' with { type: 'json' }
 import market from '../src/content/market_weekly.json' with { type: 'json' }
 import capital from '../src/content/capital.json' with { type: 'json' }
+import rivals from '../src/content/rivals.json' with { type: 'json' }
 import { csvToRows } from '../tools/market-csv-to-json.ts'
 
 const raw = (): RawContent =>
-  structuredClone({ machines, sites, interrupts, market, capital })
+  structuredClone({ machines, sites, interrupts, market, capital, rivals })
 
 describe('content loads', () => {
   it('covers Act I: 23 quarters of 13 weeks, 2017Q1 → 2022Q3', () => {
@@ -58,6 +59,15 @@ describe('content loads', () => {
     expect(dailyProfit('2017Q4')).toBeGreaterThan(7)
     expect(dailyProfit('2017Q4')).toBeLessThan(8.5)
     expect(dailyProfit('2018Q4')).toBeLessThan(0)
+  })
+
+  it('has the 4 scripted rivals of scope §2.9', () => {
+    expect(CONTENT.rivals.map((r) => r.id)).toEqual([
+      'riot',
+      'marathon',
+      'core',
+      'bitfarms',
+    ])
   })
 
   it('market_weekly.json is up to date with market_weekly.csv', () => {
@@ -105,6 +115,16 @@ describe('bad content fails loudly', () => {
     )
     expect(problemsFor(data)).toContain(
       'sites.json › small_unit: unknown flaw "ghosts"',
+    )
+  })
+
+  it('catches a rival value for a quarter outside Act I', () => {
+    const data = raw()
+    ;(data.rivals as { rivals: { mw: Record<string, number> }[] }).rivals[0].mw[
+      '2023Q1'
+    ] = 500
+    expect(problemsFor(data)).toContain(
+      'rivals.json › riot.mw: 2023Q1 is outside Act I',
     )
   })
 

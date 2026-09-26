@@ -26,6 +26,7 @@ const ID_PARAMS: Record<string, string> = {
   condition: 'condition.',
   flaw: 'flaw.',
   round: 'round.',
+  rival: 'rival.',
 }
 
 function fill(text: string, params: MessageParams): string {

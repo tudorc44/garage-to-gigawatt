@@ -45,6 +45,7 @@ import {
 import { treasuryValueUsd } from './systems/treasury.ts'
 import { bandwidthForQuarter } from './systems/bandwidth.ts'
 import { getStep, raiseBandwidth } from './systems/capital.ts'
+export { upcomingRivals } from './systems/rivals.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {

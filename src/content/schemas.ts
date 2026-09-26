@@ -231,6 +231,28 @@ export const capitalFileSchema = z.object({
     ),
 })
 
+// ---------- rivals.json ----------
+
+const quarterSeries = z.record(quarterId, nonNeg)
+
+/** A scripted rival (review: real companies, end-of-quarter values, ≈ between verified anchors). */
+export const rivalSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  style: z.string(),
+  hashrate_ehs: quarterSeries,
+  mw: quarterSeries,
+  btc_mined_q: quarterSeries,
+  btc_held: quarterSeries,
+  /** Market capitalisation in millions of dollars: the rival's value on the league table. */
+  mcap_musd: quarterSeries,
+  key_moves: z.record(quarterId, z.string()).default({}),
+})
+
+export const rivalsFileSchema = z.object({
+  rivals: z.array(rivalSchema).min(1),
+})
+
 export type LadderStep = z.output<typeof ladderStepSchema>
 export type EquipmentLoanTerms = z.output<typeof equipmentLoanSchema>
 export type CryptoLoanTerms = z.output<typeof cryptoLoanSchema>
@@ -239,3 +261,4 @@ export type Machine = z.output<typeof machineSchema>
 export type SiteTier = z.output<typeof siteTierSchema>
 export type Flaw = z.output<typeof flawSchema>
 export type Interrupt = z.output<typeof interruptSchema>
+export type Rival = z.output<typeof rivalSchema>

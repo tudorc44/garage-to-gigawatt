@@ -6,12 +6,14 @@ import sitesRaw from './sites.json' with { type: 'json' }
 import interruptsRaw from './interrupts.json' with { type: 'json' }
 import marketRaw from './market_weekly.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
+import rivalsRaw from './rivals.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
   capitalFileSchema,
   interruptsFileSchema,
   machinesFileSchema,
   marketSchema,
+  rivalsFileSchema,
   sitesFileSchema,
   type CryptoLoanTerms,
   type EquipmentLoanTerms,
@@ -20,6 +22,7 @@ import {
   type LadderStep,
   type Machine,
   type MarketWeek,
+  type Rival,
   type SiteTier,
 } from './schemas.ts'
 
@@ -32,6 +35,7 @@ export type {
   LadderStep,
   Machine,
   MarketWeek,
+  Rival,
   SiteTier,
 }
 
@@ -52,6 +56,8 @@ export interface Content {
   equipmentLoans: EquipmentLoanTerms[]
   /** The crypto-backed loan's terms. */
   cryptoLoan: CryptoLoanTerms
+  /** The 4 scripted rivals, in file order. */
+  rivals: Rival[]
 }
 
 export interface RawContent {
@@ -60,6 +66,7 @@ export interface RawContent {
   interrupts: unknown
   market: unknown
   capital: unknown
+  rivals: unknown
 }
 
 export class ContentError extends Error {
@@ -97,13 +104,15 @@ export function parseContent(raw: RawContent): Content {
   )
   const marketRows = check('market_weekly', marketSchema, raw.market)
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
+  const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
 
   if (
     !machinesFile ||
     !sitesFile ||
     !interruptsFile ||
     !marketRows ||
-    !capitalFile
+    !capitalFile ||
+    !rivalsFile
   ) {
     throw new ContentError(problems)
   }
@@ -218,6 +227,18 @@ export function parseContent(raw: RawContent): Content {
       )
     }
   }
+  for (const r of rivalsFile.rivals) {
+    for (const [field, series] of Object.entries({
+      hashrate_ehs: r.hashrate_ehs,
+      mw: r.mw,
+      mcap_musd: r.mcap_musd,
+    })) {
+      for (const q of Object.keys(series)) {
+        if (!quarters.includes(q))
+          problems.push(`rivals.json › ${r.id}.${field}: ${q} is outside Act I`)
+      }
+    }
+  }
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
@@ -234,6 +255,7 @@ export function parseContent(raw: RawContent): Content {
     ladder: Object.fromEntries(capitalFile.ladder.map((s) => [s.id, s])),
     equipmentLoans: capitalFile.loans.equipment,
     cryptoLoan: capitalFile.loans.game_crypto_loan,
+    rivals: rivalsFile.rivals,
   }
 }
 
@@ -257,4 +279,5 @@ export const CONTENT: Content = parseContent({
   interrupts: interruptsRaw,
   market: marketRaw,
   capital: capitalRaw,
+  rivals: rivalsRaw,
 })

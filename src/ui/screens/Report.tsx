@@ -1,10 +1,20 @@
 // Quarter report: headline tiles, cost per coin vs price, league table, notes.
 import { t, type MessageKey } from '../../i18n/t.ts'
-import { averagePrice, quarterName, siteViews } from '../../sim/selectors.ts'
+import {
+  averagePrice,
+  quarterName,
+  siteViews,
+  upcomingRivals,
+} from '../../sim/selectors.ts'
+import {
+  leagueTable,
+  yourRank,
+  type RivalSnapshot,
+} from '../../sim/systems/rivals.ts'
 import type { Coin, GameState, QuarterReport } from '../../sim/state.ts'
 import { CONTENT } from '../../content/index.ts'
 import { fmt } from '../format.ts'
-import { say } from '../names.ts'
+import { rivalCode, rivalName, say } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 const TURNS = 23
@@ -318,11 +328,27 @@ function League({ state, r }: { state: GameState; r: QuarterReport }) {
   ]
     .filter(Boolean)
     .join(' + ')
+  const i = state.reports.length - 1
+  const rows = leagueTable(state, i)
+  const now = yourRank(state, i)
+  const before = i > 0 ? yourRank(state, i - 1) : null
+  const moved = before ? before.rank - now.rank : 0
+  const coming = upcomingRivals(state.quarter)
   return (
     <div class="panel p">
-      <h2 class="panel-title">
-        {t('ui.report.league_title', { quarter: fmt.quarter(r.quarter) })}
-      </h2>
+      <div class="row-between">
+        <h2 class="panel-title">
+          {t('ui.report.league_title', { quarter: fmt.quarter(r.quarter) })}
+        </h2>
+        <span class="num-s muted">
+          {t('ui.report.rank', { rank: now.rank, of: now.of })}{' '}
+          {moved !== 0 && (
+            <span class={moved > 0 ? 'gain' : 'loss'}>
+              {moved > 0 ? `▲${moved}` : `▼${-moved}`}
+            </span>
+          )}
+        </span>
+      </div>
       <table>
         <thead>
           <tr>
@@ -332,25 +358,64 @@ function League({ state, r }: { state: GameState; r: QuarterReport }) {
           </tr>
         </thead>
         <tbody>
-          <tr class="you">
-            <td>
-              <span class="mono you" aria-hidden="true">
-                {t('ui.report.you_code')}
-              </span>
-              {t('ui.report.you')}
-            </td>
-            <td class="num">
-              {hash ? `${fmt.power(kw)} · ${hash}` : fmt.power(kw)}
-            </td>
-            <td class="num r">{fmt.money(r.valuationUsd)}</td>
-          </tr>
-          <tr class="locked">
-            <td colSpan={3}>{t('ui.report.rivals_locked')}</td>
-          </tr>
+          {rows.map((row) =>
+            row.rival === null ? (
+              <tr class="you" key="you">
+                <td>
+                  <span class="mono you" aria-hidden="true">
+                    {t('ui.report.you_code')}
+                  </span>
+                  {t('ui.report.you')}
+                </td>
+                <td class="num">
+                  {hash ? `${fmt.power(kw)} · ${hash}` : fmt.power(kw)}
+                </td>
+                <td class="num r">{fmt.money(r.valuationUsd)}</td>
+              </tr>
+            ) : (
+              <tr key={row.id}>
+                <td>
+                  <span class="mono" aria-hidden="true">
+                    {rivalCode(row.id)}
+                  </span>
+                  {rivalName(row.id)}
+                </td>
+                <td class={rivalScale(row.rival) ? 'num' : 'muted'}>
+                  {rivalScale(row.rival) ?? t('ui.report.not_mining')}
+                </td>
+                <td class={row.valueUsd === null ? 'num r muted' : 'num r'}>
+                  {row.valueUsd === null
+                    ? t('ui.report.private')
+                    : fmt.money(row.valueUsd)}
+                </td>
+              </tr>
+            ),
+          )}
         </tbody>
       </table>
+      {coming.length > 0 && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {coming
+            .map((c) =>
+              t('ui.report.rival_joins', {
+                rival: c.id,
+                quarter: fmt.quarter(c.quarter),
+              }),
+            )
+            .join(' ')}
+        </p>
+      )}
     </div>
   )
+}
+
+/** "16 MW · 0.07 EH/s", or null before the rival mines. */
+function rivalScale(r: RivalSnapshot): string | null {
+  const parts = [
+    r.mw !== null ? fmt.power(r.mw * 1000) : null,
+    r.hashrateEhs !== null ? fmt.hash(r.hashrateEhs * 1e6, 'TH') : null,
+  ].filter(Boolean)
+  return parts.length ? parts.join(' · ') : null
 }
 
 const END_KEYS: MessageKey[] = ['log.forced_sale', 'log.game_over']

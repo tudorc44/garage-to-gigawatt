@@ -29,6 +29,7 @@ import {
   usedKw,
 } from '../src/sim/systems/sites.ts'
 import { treasuryValueUsd } from '../src/sim/systems/treasury.ts'
+import { leagueTable, yourRank } from '../src/sim/systems/rivals.ts'
 
 // ---------- input / output ----------
 
@@ -440,6 +441,35 @@ function showReport(s: GameState) {
   })
   say('play.report_cash', { cashUsd: r.cash })
   if (r.forcedSale) say('play.report_forced', r.forcedSale)
+  showLeague(s)
+}
+
+/** The league table: you and the rivals, by value (market cap for rivals). */
+function showLeague(s: GameState) {
+  const i = s.reports.length - 1
+  const { rank, of } = yourRank(s, i)
+  console.log()
+  say('play.league_header', { rank, of })
+  for (const row of leagueTable(s, i)) {
+    const r = row.rival
+    say('play.league_line', {
+      rank: row.rank === null ? ' -' : String(row.rank).padStart(2),
+      name: (row.id === 'you'
+        ? t('ui.report.you')
+        : tDynamic(`rival.${row.id}`, row.id)
+      ).padEnd(16),
+      value: (row.valueUsd === null
+        ? t('ui.report.private')
+        : fmt.money(row.valueUsd)
+      ).padStart(8),
+      scale:
+        row.id === 'you'
+          ? `${hashOf('ETH', s.reports[i].hashrate.ETH)} · ${hashOf('BTC', s.reports[i].hashrate.BTC)}`
+          : r && r.hashrateEhs !== null
+            ? `${fmt.power((r.mw ?? 0) * 1000)} · ${fmt.hash(r.hashrateEhs * 1e6, 'TH')}`
+            : t('ui.report.not_mining'),
+    })
+  }
 }
 
 // ---------- main loop ----------
