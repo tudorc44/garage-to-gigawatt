@@ -140,6 +140,11 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
     (a, r) => a + r.state.reports.reduce((b, x) => b + x.priceAlerts, 0),
     0,
   )
+  const logCount = (key: string) =>
+    runs.reduce(
+      (a, r) => a + r.state.log.filter((e) => e.key === key).length,
+      0,
+    )
   return {
     strategy,
     runs: runs.length,
@@ -154,6 +159,8 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
       ? `${medianLabel(powered)} (${powered.length}/${runs.length} runs)`
       : '',
     alerts_per_quarter: alerts / quartersPlayed,
+    auctions_won_per_run: logCount('log.auction_won') / runs.length,
+    auctions_lost_per_run: logCount('log.auction_lost') / runs.length,
   }
 })
 const header = Object.keys(summaryRows[0]).join(',')
@@ -176,6 +183,7 @@ console.table(
     'founder stake': `${(r.median_founder_stake * 100).toFixed(0)}%`,
     'small unit powered': r.small_unit_powered || '—',
     'alerts / q': r.alerts_per_quarter.toFixed(2),
+    'auctions won/lost': `${r.auctions_won_per_run.toFixed(1)} / ${r.auctions_lost_per_run.toFixed(1)}`,
   })),
 )
 for (const r of summaryRows) {

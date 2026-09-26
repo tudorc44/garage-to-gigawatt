@@ -223,6 +223,45 @@ const bots = {
       },
     ],
   }),
+  // Seed round, then a warehouse from scouting; loses the 2019Q1 auction and wins 2020Q2's.
+  'auction-bidder': {
+    plan(s: GameState): Action[] {
+      const q = CONTENT.quarters[s.quarter]
+      const warehouse = s.sites.find((x) => x.tier === 'warehouse')
+      const script: Record<string, Action[]> = {
+        '2017Q1': [
+          { type: 'RAISE', round: 'friends_family' },
+          { type: 'BUILD_SITE', tier: 'small_unit' },
+          {
+            type: 'BUY_MACHINES',
+            model: 'gpu_gen1',
+            condition: 'new',
+            count: 4,
+            siteId: 'site-1',
+          },
+        ],
+        '2017Q4': [
+          { type: 'RAISE', round: 'seed' },
+          {
+            type: 'BUY_MACHINES',
+            model: 'gpu_gen1',
+            condition: 'used',
+            count: 100,
+            siteId: 'site-2',
+          },
+        ],
+        '2018Q1': [{ type: 'SCOUT_SITES', tier: 'warehouse' }],
+        '2018Q2': s.siteOffers[0]
+          ? [{ type: 'BUILD_SITE', offerId: s.siteOffers[0].id }]
+          : [],
+      }
+      if (warehouse && s.auction && (q === '2019Q1' || q === '2020Q2')) {
+        const bidUsd = q === '2019Q1' ? 25_000 : 15_000
+        return [{ type: 'BID_AUCTION', bidUsd, siteId: warehouse.id }]
+      }
+      return script[q] ?? []
+    },
+  },
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
@@ -269,5 +308,15 @@ describe('balance anchors (scope §5)', () => {
 
   // Can't be tested yet: with only savings to spend, the 5 kW garage caps growth, so an
   // all-in bot never over-extends. Needs loans/investors (week 4) and the sim-runner.
+  it('the auction bidder loses its 2019Q1 bid and wins the 2020Q2 lot', () => {
+    const { state } = playGame(SEED, bots['auction-bidder'])
+    const keys = state.log.map((e) => e.key)
+    expect(keys).toContain('log.auction_lost')
+    expect(keys).toContain('log.auction_won')
+    expect(state.machines.some((l) => l.model === 's9' && l.count >= 330)).toBe(
+      true,
+    )
+  })
+
   it.todo('reinvesting 100% every quarter goes bust between 2018Q2 and 2019Q2')
 })

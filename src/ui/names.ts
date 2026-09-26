@@ -6,6 +6,10 @@ import type { IconName } from './icons.ts'
 export const machineName = (id: string) => tDynamic(`machine.${id}`, id)
 export const tierName = (id: string) => tDynamic(`site.${id}`, id)
 export const flawName = (id: string) => tDynamic(`flaw.${id}`, id)
+export const rivalName = (id: string) => tDynamic(`rival.${id}`, id)
+/** The two-letter monogram on the league table and auction tiles, e.g. "RI". */
+export const rivalCode = (id: string) =>
+  tDynamic(`rival_code.${id}`, id.slice(0, 2).toUpperCase())
 
 export const machineIcon = (coin: Coin): IconName =>
   coin === 'ETH' ? 'gpu-rig' : 'asic'

@@ -47,6 +47,8 @@
     "apr": 0.09,
     "takenQuarter": 4
   },
+  "auction": null,
+  "curtailment": null,
   "loansLockedUntil": null,
   "nextId": 3,
   "interrupt": null,
@@ -68,6 +70,7 @@
     "priceAlerts": 0,
     "marginCalls": 0,
     "soldUsd": 0,
+    "gridCreditsUsd": 0,
     "interestUsd": 257.14,
     "principalUsd": 0,
     "startCash": 0,
@@ -331,6 +334,7 @@
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
@@ -370,6 +374,7 @@
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
@@ -409,6 +414,7 @@
       "startTreasuryUsd": 48581.85423215159,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
@@ -448,6 +454,7 @@
       "startTreasuryUsd": 61180.396394377036,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
@@ -491,6 +498,7 @@
       "startTreasuryUsd": 69492.27915521334,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 1125.0199999999998,
       "principalUsd": 0,
       "debtUsd": 50000,
@@ -530,6 +538,7 @@
       "startTreasuryUsd": 13937.354080894816,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 1125.0199999999998,
       "principalUsd": 0,
       "debtUsd": 50000,
@@ -569,6 +578,7 @@
       "startTreasuryUsd": 18145.523348970088,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 942.0599999999998,
       "principalUsd": 0,
       "debtUsd": 23795.58,
@@ -608,6 +618,7 @@
       "startTreasuryUsd": 10547.51394888524,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 414.0999999999999,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -647,6 +658,7 @@
       "startTreasuryUsd": 6060.113370029422,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -686,6 +698,7 @@
       "startTreasuryUsd": 6778.92331094265,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -725,6 +738,7 @@
       "startTreasuryUsd": 14945.242965249567,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -764,6 +778,7 @@
       "startTreasuryUsd": 10013.779479615781,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -803,6 +818,7 @@
       "startTreasuryUsd": 7683.0577387243275,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -842,6 +858,7 @@
       "startTreasuryUsd": 8204.844966620338,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -885,6 +902,7 @@
       "startTreasuryUsd": 14532.971499657117,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -928,6 +946,7 @@
       "startTreasuryUsd": 22567.18748834397,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -971,6 +990,7 @@
       "startTreasuryUsd": 51537.82927720045,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -1014,6 +1034,7 @@
       "startTreasuryUsd": 138334.93274892043,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -1057,6 +1078,7 @@
       "startTreasuryUsd": 160889.06577749306,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -1100,6 +1122,7 @@
       "startTreasuryUsd": 222385.37772393078,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -1143,6 +1166,7 @@
       "startTreasuryUsd": 256126.84496326928,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -1186,6 +1210,7 @@
       "startTreasuryUsd": 231242.2238910706,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -1229,6 +1254,7 @@
       "startTreasuryUsd": 81258.33401157173,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
       "interestUsd": 257.14,
       "principalUsd": 0,
       "debtUsd": 11431.23,
@@ -1450,6 +1476,28 @@
     },
     {
       "quarter": 7,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 150,
+        "model": "gpu_gen1",
+        "listUsd": 650,
+        "reserveUsd": 53900
+      }
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "core",
+        "count": 150,
+        "model": "gpu_gen1",
+        "rivalUsd": 85800
+      }
+    },
+    {
+      "quarter": 7,
       "week": 6,
       "key": "log.switched_off",
       "params": {}
@@ -1490,6 +1538,28 @@
     },
     {
       "quarter": 8,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 60,
+        "model": "gpu_gen1",
+        "listUsd": 600,
+        "reserveUsd": 20200
+      }
+    },
+    {
+      "quarter": 8,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "marathon",
+        "count": 60,
+        "model": "gpu_gen1",
+        "rivalUsd": 26900
+      }
+    },
+    {
+      "quarter": 8,
       "week": 1,
       "key": "log.switched_off",
       "params": {}
@@ -1525,6 +1595,28 @@
       "params": {
         "coin": "ETH",
         "changeDelta": -0.3219374679651461
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 330,
+        "model": "s9",
+        "listUsd": 50,
+        "reserveUsd": 7300
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "core",
+        "count": 330,
+        "model": "s9",
+        "rivalUsd": 14500
       }
     },
     {
@@ -1651,6 +1743,28 @@
     },
     {
       "quarter": 21,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 50,
+        "model": "s19pro",
+        "listUsd": 4400,
+        "reserveUsd": 88500
+      }
+    },
+    {
+      "quarter": 21,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "marathon",
+        "count": 50,
+        "model": "s19pro",
+        "rivalUsd": 170200
+      }
+    },
+    {
+      "quarter": 21,
       "week": 10,
       "key": "log.alert_held",
       "params": {
@@ -1690,6 +1804,28 @@
         "treasuryUsd": 1454.14,
         "machinesUsd": 0,
         "units": 0
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 310,
+        "model": "s19pro",
+        "listUsd": 2900,
+        "reserveUsd": 523400
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "riot",
+        "count": 310,
+        "model": "s19pro",
+        "rivalUsd": 669300
       }
     },
     {

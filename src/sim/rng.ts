@@ -40,6 +40,20 @@ export function seedFromString(text: string): number {
 }
 
 /**
+ * A separate, repeatable stream of rolls for one purpose (e.g. "auction:8"), made from the
+ * game's seed. Systems added later use these so their rolls don't shift the main stream,
+ * which keeps the machine failures and site offers of existing games exactly as before.
+ */
+export function substream(seed: number, label: string): RngHolder {
+  return { rng: seedFromString(`${seed}:${label}`) | 0 }
+}
+
+/** A float from min to max (max not included). */
+export function uniform(holder: RngHolder, min: number, max: number): number {
+  return min + random(holder) * (max - min)
+}
+
+/**
  * How many of n units, each with chance p, "hit" (e.g. fail) this roll.
  * Exact for up to 100 units; above that a bell-curve approximation built only from
  * + − × and √ (no Math.log/cos, which can differ between browsers and break replays).

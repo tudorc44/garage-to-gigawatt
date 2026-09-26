@@ -6,6 +6,7 @@ import { applyAction, type Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
   SELL_TREASURY_BANDWIDTH,
+  auctionView,
   bestSite,
   cryptoLoanView,
   equipmentLoanView,
@@ -19,7 +20,15 @@ import {
 import type { Coin, Condition, GameState } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
-import { machineIcon, machineName, say, tierIcon, tierName } from '../names.ts'
+import {
+  machineIcon,
+  machineName,
+  rivalCode,
+  rivalName,
+  say,
+  tierIcon,
+  tierName,
+} from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 type DialogProps = ScreenProps & { onClose: () => void }
@@ -772,6 +781,121 @@ export function CryptoLoanDialog({ state, act, onClose }: DialogProps) {
           }}
         >
           {t('ui.cloan.borrow', { value: fmt.money(amount) })}
+          <Pips
+            total={v.bandwidth}
+            filled={v.bandwidth}
+            label={t('ui.plan.costs_bandwidth', { n: v.bandwidth })}
+          />
+        </button>
+      </div>
+    </Dialog>
+  )
+}
+
+/** Distressed auction: one sealed bid for the whole lot, settled at once against the rivals. */
+export function AuctionDialog({ state, act, onClose }: DialogProps) {
+  const v = auctionView(state)
+  const lot = v.lot!
+  const [bid, setBid] = useState(lot.reserveUsd)
+  const [siteId, setSiteId] = useState(
+    (v.sitesWithRoom[0] ?? state.sites[0]).id,
+  )
+  const site = state.sites.find((s) => s.id === siteId)!
+  const a: Action = { type: 'BID_AUCTION', bidUsd: bid, siteId }
+  const why = whyNot(state, a)
+  const profit = v.dailyProfitUsd(site)
+  return (
+    <Dialog title={t('ui.auction.title')} onClose={onClose}>
+      <p style={{ margin: 0, fontWeight: 600 }}>
+        {t('ui.auction.lot', {
+          count: lot.count,
+          model: machineName(lot.model),
+          list: fmt.money(lot.unitListUsd),
+        })}
+      </p>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.auction.note', {
+          value: fmt.money(lot.valueUsd),
+          reserve: fmt.money(lot.reserveUsd),
+          power: fmt.power(lot.neededKw),
+        })}
+      </p>
+      <div class="bidders" aria-label={t('ui.auction.bidders')}>
+        <span class="label">{t('ui.auction.bidders')}</span>
+        {lot.bidders.map((id) => (
+          <span class="bidder" key={id}>
+            <span class="mono" aria-hidden="true">
+              {rivalCode(id)}
+            </span>
+            {rivalName(id)}
+          </span>
+        ))}
+      </div>
+      <div class="form-row">
+        <label class="field">
+          <span class="label">{t('ui.auction.your_bid')}</span>
+          <input
+            type="number"
+            min={lot.reserveUsd}
+            step={100}
+            value={bid}
+            style={{ width: '140px' }}
+            onInput={(e) =>
+              setBid(
+                Math.max(
+                  0,
+                  Math.floor(Number((e.target as HTMLInputElement).value)),
+                ),
+              )
+            }
+          />
+        </label>
+        <label class="field">
+          <span class="label">{t('ui.auction.site')}</span>
+          <select
+            value={siteId}
+            onChange={(e) => setSiteId((e.target as HTMLSelectElement).value)}
+          >
+            {state.sites.map((s) => (
+              <option key={s.id} value={s.id}>
+                {tierName(s.tier)}
+              </option>
+            ))}
+          </select>
+        </label>
+        <span class="num-s muted">
+          {t('ui.auction.cash', { value: fmt.money(state.cash) })}
+        </span>
+      </div>
+      <p class="num-s" style={{ margin: 0 }}>
+        {t('ui.auction.preview', {
+          share: fmt.pct(lot.valueUsd > 0 ? bid / lot.valueUsd : 0),
+          each: fmt.money(bid / lot.count),
+        })}{' '}
+        <span class={profit >= 0 ? 'gain' : 'loss'}>
+          {t('ui.auction.profit', {
+            value: fmt.delta(profit, 'money'),
+            tier: tierName(site.tier),
+          })}
+        </span>
+      </p>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.auction.rules')}
+      </p>
+      {why && <p class="num-s loss">{say(why)}</p>}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={onClose}>
+          {t('ui.auction.pass')}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          disabled={!!why}
+          onClick={() => {
+            if (!act(a)) onClose()
+          }}
+        >
+          {t('ui.auction.bid', { value: fmt.money(bid) })}
           <Pips
             total={v.bandwidth}
             filled={v.bandwidth}

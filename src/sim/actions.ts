@@ -9,6 +9,7 @@ import {
   removeMachines,
   repairCostPerUnit,
 } from './systems/machines.ts'
+import { bidBlocker, closeAuction, placeBid } from './systems/auctions.ts'
 import { raiseBlocker, takeRaise } from './systems/capital.ts'
 import {
   cryptoBorrowBlocker,
@@ -64,6 +65,8 @@ export type Action =
   | { type: 'TAKE_CRYPTO_LOAN'; coin: Coin; amountUsd: number }
   /** Repay the crypto-backed loan and get the pledged coins back. */
   | { type: 'REPAY_CRYPTO_LOAN' }
+  /** Sealed bid for the whole distressed lot this Plan phase; the machines go to `siteId` if you win. */
+  | { type: 'BID_AUCTION'; bidUsd: number; siteId: string }
   /** Take a funding round from capital.json (fixed offer). */
   | { type: 'RAISE'; round: string }
   /** Plan phase done: start the live quarter. */
@@ -92,6 +95,7 @@ function run(s: GameState, a: Action): Message | undefined {
   switch (a.type) {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
+      closeAuction(s)
       s.phase = 'live'
       s.week = 0
       s.quarterStats.startCash = s.cash
@@ -179,6 +183,13 @@ function run(s: GameState, a: Action): Message | undefined {
         costUsd: cost,
       })
       lot.failed = 0
+      return
+    }
+
+    case 'BID_AUCTION': {
+      const blocked = bidBlocker(s, a.bidUsd, a.siteId)
+      if (blocked) return blocked
+      placeBid(s, a.bidUsd, a.siteId)
       return
     }
 

@@ -838,6 +838,17 @@ tr.locked td {
   margin-right: 8px;
   vertical-align: middle;
 }
+.bidders {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.bidder {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
 .mono.you {
   background: var(--ink);
   color: var(--on-action);

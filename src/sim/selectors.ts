@@ -45,6 +45,8 @@ import {
 import { treasuryValueUsd } from './systems/treasury.ts'
 import { bandwidthForQuarter } from './systems/bandwidth.ts'
 import { getStep, raiseBandwidth } from './systems/capital.ts'
+export { upcomingRivals } from './systems/rivals.ts'
+import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {
@@ -421,5 +423,62 @@ export function marginCallView(state: GameState) {
     balanceUsd: loan.balanceUsd,
     options,
     lockQuarters: defaultLockQuarters(),
+  }
+}
+
+export interface AuctionView {
+  /** The lot on offer this Plan phase, or null. */
+  lot: {
+    model: string
+    count: number
+    unitListUsd: number
+    valueUsd: number
+    reserveUsd: number
+    neededKw: number
+    /** Rivals bidding (their bids stay sealed). */
+    bidders: string[]
+  } | null
+  bandwidth: number
+  /** Sites with room for the whole lot, cheapest power first. */
+  sitesWithRoom: Site[]
+  /** Profit per unit per day at the given site at today's prices. */
+  dailyProfitUsd: (site: Site) => number
+  /** No lot: is this quarter in an auction window? If not, when does the next one open? */
+  inWindow: boolean
+  nextWindow: string | null
+}
+
+export function auctionView(state: GameState): AuctionView {
+  const a = state.auction
+  const model = a ? getModel(a.model)! : undefined
+  const neededKw = a && model ? model.power_kw * a.count : 0
+  const next = CONTENT.auction.windows.find(
+    (w) => w.from > CONTENT.quarters[state.quarter],
+  )
+  return {
+    lot:
+      a && model
+        ? {
+            model: a.model,
+            count: a.count,
+            unitListUsd: a.unitListUsd,
+            valueUsd: lotValueUsd(a),
+            reserveUsd: a.reserveUsd,
+            neededKw,
+            bidders: a.bids.map((b) => b.rival),
+          }
+        : null,
+    bandwidth: CONTENT.auction.bandwidth,
+    sitesWithRoom: state.sites
+      .filter((s) => capacityKw(s) - usedKw(state, s.id) + 1e-9 >= neededKw)
+      .sort(
+        (x, y) =>
+          powerPriceUsdKwh(x, state.quarter) -
+          powerPriceUsdKwh(y, state.quarter),
+      ),
+    dailyProfitUsd: (site) =>
+      a ? dailyProfitPerUnit(state, a.model, site) : 0,
+    inWindow: auctionWindow(state.quarter) !== undefined,
+    nextWindow: next?.from ?? null,
   }
 }

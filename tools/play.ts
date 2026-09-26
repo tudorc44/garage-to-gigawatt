@@ -14,6 +14,7 @@ import { defaultChoice } from '../src/sim/systems/interrupts.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
   buyPrice,
+  getModel,
   leadTimeQuarters,
   marketWeek,
   previousMarketWeek,
@@ -29,6 +30,7 @@ import {
   usedKw,
 } from '../src/sim/systems/sites.ts'
 import { treasuryValueUsd } from '../src/sim/systems/treasury.ts'
+import { leagueTable, yourRank } from '../src/sim/systems/rivals.ts'
 
 // ---------- input / output ----------
 
@@ -60,8 +62,10 @@ const coins = (n: number) =>
 const hashOf = (coin: 'BTC' | 'ETH', v: number) =>
   fmt.hash(v, coin === 'ETH' ? 'MH' : 'TH')
 const change = (x: number) => fmt.delta(x, 'pct', { dp: 1 })
-const name = (kind: 'machine' | 'site' | 'flaw' | 'condition', id: string) =>
-  tDynamic(`${kind}.${id}`, id)
+const name = (
+  kind: 'machine' | 'site' | 'flaw' | 'condition' | 'rival',
+  id: string,
+) => tDynamic(`${kind}.${id}`, id)
 
 function bye(): never {
   say('play.bye')
@@ -213,6 +217,20 @@ function showPlan(s: GameState) {
     }
   }
 
+  if (s.auction) {
+    const a = s.auction
+    console.log()
+    say('play.auction', {
+      count: a.count,
+      model: a.model,
+      listUsd: a.unitListUsd,
+      valueUsd: a.count * a.unitListUsd,
+      reserveUsd: a.reserveUsd,
+      kw: fmt.power(getModel(a.model)!.power_kw * a.count),
+      rivals: a.bids.map((b) => name('rival', b.rival)).join(', '),
+    })
+  }
+
   if (s.siteOffers.length > 0) {
     console.log()
     say('play.offers')
@@ -246,7 +264,12 @@ function parse(
     case 'raise':
       return {
         type: 'RAISE',
-        round: rest[0] === 'ff' ? 'friends_family' : (rest[0] ?? ''),
+        round:
+          { ff: 'friends_family', a: 'series_a', ipo: 'ipo_spac' }[
+            rest[0] ?? ''
+          ] ??
+          rest[0] ??
+          '',
       }
     case 'hodl':
       return {
@@ -283,6 +306,11 @@ function parse(
       return { type: 'TAKE_LOAN', amountUsd: num(0) }
     case 'repay':
       return { type: 'REPAY_LOAN' }
+    case 'bid': {
+      const site = s.sites[(rest[1] ? num(1) : 1) - 1]
+      if (!site) return 'play.bad_number'
+      return { type: 'BID_AUCTION', bidUsd: num(0), siteId: site.id }
+    }
     case 'leave': {
       const site = item(s.sites, 0)
       return site ? { type: 'LEAVE_SITE', siteId: site.id } : 'play.bad_number'
@@ -340,7 +368,11 @@ async function planPhase(s: GameState): Promise<GameState> {
     }
     s = r.state
     if (parsed.type === 'END_PLAN') return s
-    say('play.ok')
+    // An auction bid is settled at once: say who won.
+    if (parsed.type === 'BID_AUCTION') {
+      const e = s.log.at(-1)!
+      console.log(t(e.key, e.params))
+    } else say('play.ok')
     showStatus(s)
   }
 }
@@ -385,6 +417,13 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
       coin: alert.coin,
       balanceUsd: s.cryptoLoan!.balanceUsd,
       ltvPct: alert.ltv ?? 0,
+    })
+  } else if (alert.id === 'curtailment') {
+    say('play.grid', {
+      week: alert.week + 2,
+      mw: fmt.power(alert.curtail!.mw * 1000),
+      creditUsd: alert.curtail!.creditUsd,
+      forgoneUsd: alert.curtail!.forgoneUsd,
     })
   } else {
     say('play.alert', {
@@ -434,7 +473,38 @@ function showReport(s: GameState) {
     treasuryUsd: r.treasuryValueUsd,
   })
   say('play.report_cash', { cashUsd: r.cash })
+  if (r.gridCreditsUsd > 0)
+    say('play.report_grid', { creditsUsd: r.gridCreditsUsd })
   if (r.forcedSale) say('play.report_forced', r.forcedSale)
+  showLeague(s)
+}
+
+/** The league table: you and the rivals, by value (market cap for rivals). */
+function showLeague(s: GameState) {
+  const i = s.reports.length - 1
+  const { rank, of } = yourRank(s, i)
+  console.log()
+  say('play.league_header', { rank, of })
+  for (const row of leagueTable(s, i)) {
+    const r = row.rival
+    say('play.league_line', {
+      rank: row.rank === null ? ' -' : String(row.rank).padStart(2),
+      name: (row.id === 'you'
+        ? t('ui.report.you')
+        : tDynamic(`rival.${row.id}`, row.id)
+      ).padEnd(16),
+      value: (row.valueUsd === null
+        ? t('ui.report.private')
+        : fmt.money(row.valueUsd)
+      ).padStart(8),
+      scale:
+        row.id === 'you'
+          ? `${hashOf('ETH', s.reports[i].hashrate.ETH)} · ${hashOf('BTC', s.reports[i].hashrate.BTC)}`
+          : r && r.hashrateEhs !== null
+            ? `${fmt.power((r.mw ?? 0) * 1000)} · ${fmt.hash(r.hashrateEhs * 1e6, 'TH')}`
+            : t('ui.report.not_mining'),
+    })
+  }
 }
 
 // ---------- main loop ----------

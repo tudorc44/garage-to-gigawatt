@@ -6,6 +6,7 @@ import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
   SELL_TREASURY_BANDWIDTH,
+  auctionView,
   cryptoLoanView,
   equipmentLoanView,
   fundingRound,
@@ -33,6 +34,7 @@ import {
   tierName,
 } from '../names.ts'
 import {
+  AuctionDialog,
   BuyDialog,
   CryptoLoanDialog,
   FleetDialog,
@@ -55,6 +57,7 @@ type Open =
   | 'loan'
   | 'cloan'
   | 'sell_coins'
+  | 'auction'
   | `leave:${string}`
   | null
 
@@ -115,6 +118,9 @@ export function PlanScreen({ state, act }: ScreenProps) {
           act={act}
           onClose={() => setOpen(null)}
         />
+      )}
+      {open === 'auction' && (
+        <AuctionDialog state={state} act={act} onClose={() => setOpen(null)} />
       )}
       {open === 'loan' && (
         <LoanDialog state={state} act={act} onClose={() => setOpen(null)} />
@@ -437,6 +443,7 @@ function TodoPanel({
       </div>
 
       <div class="label group">{t('ui.plan.group.operations')}</div>
+      {state.auction && <AuctionRow state={state} act={act} open={open} />}
       <ActionRow
         icon="buy"
         name={t('ui.plan.buy_machines')}
@@ -521,7 +528,8 @@ function TodoPanel({
       <EquipmentLoanRow state={state} act={act} open={open} />
       <CryptoLoanRow state={state} act={act} open={open} />
       <RaiseRow state={state} act={act} round="seed" />
-      <ActionRow icon="ipo" name={t('ui.plan.ipo')} locked={notBuilt} />
+      <RaiseRow state={state} act={act} round="series_a" />
+      <RaiseRow state={state} act={act} round="ipo_spac" />
 
       <div class="label group">{t('ui.plan.group.people')}</div>
       <ActionRow icon="hire" name={t('ui.plan.hire')} locked={notBuilt} />
@@ -537,8 +545,55 @@ function TodoPanel({
         name={t('ui.plan.read_market')}
         locked={notBuilt}
       />
-      <ActionRow icon="bid" name={t('ui.plan.auction')} locked={notBuilt} />
+      {!state.auction && <AuctionRow state={state} act={act} open={open} />}
     </div>
+  )
+}
+
+/** Distressed auction: a lot to bid on this quarter (opens a dialog), or when the next one can come. */
+function AuctionRow({
+  state,
+  open,
+}: ScreenProps & { open: (o: Open) => void }) {
+  const v = auctionView(state)
+  if (!v.lot) {
+    return (
+      <ActionRow
+        icon="bid"
+        name={t('ui.plan.auction')}
+        locked={
+          v.inWindow
+            ? t('ui.locked.no_lot')
+            : v.nextWindow
+              ? t('ui.locked.next_auctions', {
+                  quarter: fmt.quarter(v.nextWindow),
+                })
+              : t('ui.locked.no_more_auctions')
+        }
+      />
+    )
+  }
+  // Open unless Bandwidth is short: the dialog explains space and cash problems.
+  const why =
+    state.bandwidth < v.bandwidth
+      ? say({
+          key: 'error.no_bandwidth',
+          params: { needed: v.bandwidth, have: state.bandwidth },
+        })
+      : undefined
+  return (
+    <ActionRow
+      icon="bid"
+      name={t('ui.plan.auction_lot', {
+        count: v.lot.count,
+        model: machineName(v.lot.model),
+      })}
+      bandwidth={v.bandwidth}
+      bandwidthLeft={state.bandwidth}
+      price={t('ui.plan.min_bid', { value: fmt.money(v.lot.reserveUsd) })}
+      disabledReason={why}
+      onClick={() => open('auction')}
+    />
   )
 }
 
@@ -662,6 +717,15 @@ function CryptoLoanRow({
 const RAISE_LABEL = {
   friends_family: 'ui.plan.raise_ff_offer',
   seed: 'ui.plan.raise_seed_offer',
+  series_a: 'ui.plan.raise_series_a_offer',
+  ipo_spac: 'ui.plan.raise_ipo_offer',
+} as const
+
+const RAISE_ICON = {
+  friends_family: 'pitch',
+  seed: 'pitch',
+  series_a: 'pitch',
+  ipo_spac: 'ipo',
 } as const
 
 /** A funding round: a fixed offer (no negotiation yet), once, inside its window. */
@@ -676,20 +740,26 @@ function RaiseRow({
     share: fmt.pct(round.dilution),
   })
   if (round.status === 'done') {
-    return <ActionRow icon="pitch" name={name} locked={t('ui.locked.raised')} />
+    return (
+      <ActionRow
+        icon={RAISE_ICON[id]}
+        name={name}
+        locked={t('ui.locked.raised')}
+      />
+    )
   }
   if (round.status !== 'open') {
     const when =
       round.status === 'closed'
         ? t('ui.locked.closed', { quarter: fmt.quarter(round.to) })
         : t('ui.locked.opens', { quarter: fmt.quarter(round.from) })
-    return <ActionRow icon="pitch" name={name} locked={when} />
+    return <ActionRow icon={RAISE_ICON[id]} name={name} locked={when} />
   }
   const a: Action = { type: 'RAISE', round: round.id }
   const why = whyNot(state, a)
   return (
     <ActionRow
-      icon="pitch"
+      icon={RAISE_ICON[id]}
       name={name}
       bandwidth={round.bandwidth}
       bandwidthLeft={state.bandwidth}

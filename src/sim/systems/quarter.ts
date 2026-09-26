@@ -9,6 +9,7 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
+import { rollAuction } from './auctions.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
@@ -96,6 +97,7 @@ function buildReport(
     startTreasuryUsd: st.startTreasuryUsd,
     soldUsd: st.soldUsd,
     treasurySoldUsd: st.treasurySoldUsd,
+    gridCreditsUsd: st.gridCreditsUsd,
     interestUsd: st.interestUsd,
     principalUsd: st.principalUsd,
     debtUsd: debtUsd(state),
@@ -114,10 +116,12 @@ export function startNextQuarter(state: GameState): void {
   state.phase = 'plan'
   state.bandwidth = bandwidthForQuarter(state) // unused Bandwidth is lost
   state.interruptsThisQuarter = 0
+  state.curtailment = null
   state.quarterStats = emptyQuarterStats()
   for (const site of state.sites) {
     if (site.readyQuarter === state.quarter && state.quarter > 0) {
       logEntry(state, 'log.site_ready', { tier: site.tier })
     }
   }
+  rollAuction(state)
 }

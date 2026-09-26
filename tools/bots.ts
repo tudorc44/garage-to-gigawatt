@@ -9,6 +9,7 @@ import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
   buyPrice,
+  getModel,
   marketWeek,
   revenuePerUnitDay,
 } from '../src/sim/systems/market.ts'
@@ -42,6 +43,8 @@ interface BotSettings {
   borrow?: boolean
   /** Borrow the maximum crypto-backed loan (against its bigger coin holding) whenever it has none. */
   cryptoBorrow?: boolean
+  /** Bid this share of the lot's list value in distressed auctions (at least the minimum bid). */
+  auctionBidShare?: number
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -128,15 +131,48 @@ function makeBot(settings: BotSettings): Strategy {
         if (direct && baseCapexUsd(next) <= spendable()) {
           actions.push({ type: 'BUILD_SITE', tier: next.id })
           cash -= baseCapexUsd(next)
+          bandwidth -= 1
         } else if (!direct && offers[0] && offers[0].capexUsd <= spendable()) {
           actions.push({ type: 'BUILD_SITE', offerId: offers[0].id })
           cash -= offers[0].capexUsd
+          bandwidth -= 1
         } else if (
           !direct &&
           offers.length === 0 &&
           baseCapexUsd(next) * 0.85 <= spendable()
         ) {
           actions.push({ type: 'SCOUT_SITES', tier: next.id })
+          bandwidth -= 1
+        }
+      }
+
+      // 1b. Bid on a distressed lot: at the cheapest-power site with room, if cash allows.
+      // `after` is the state once the bid is settled, so the buying below sees the space it took.
+      let after = s
+      if (settings.auctionBidShare && s.auction && bandwidth >= 2) {
+        const a = s.auction
+        const bidUsd = Math.max(
+          a.reserveUsd,
+          Math.round(a.count * a.unitListUsd * settings.auctionBidShare),
+        )
+        const site = s.sites
+          .filter(
+            (x) =>
+              capacityKw(x) - usedKw(s, x.id) >=
+              getModel(a.model)!.power_kw * a.count,
+          )
+          .sort(
+            (x, y) =>
+              powerPriceUsdKwh(x, s.quarter) - powerPriceUsdKwh(y, s.quarter),
+          )[0]
+        if (site && bidUsd <= spendable()) {
+          const bid: Action = { type: 'BID_AUCTION', bidUsd, siteId: site.id }
+          const r = applyAction(s, bid)
+          if (r.ok) {
+            actions.push(bid)
+            cash += r.state.cash - s.cash
+            after = r.state
+          }
         }
       }
 
@@ -169,7 +205,9 @@ function makeBot(settings: BotSettings): Strategy {
           .sort((a, b) => a.payback - b.payback)[0]
         if (!best) continue
         const count = Math.min(
-          Math.floor((capacityKw(site) - usedKw(s, site.id)) / best.m.power_kw),
+          Math.floor(
+            (capacityKw(site) - usedKw(after, site.id)) / best.m.power_kw,
+          ),
           Math.floor(spendable() / best.price!),
         )
         if (count < 1) continue
@@ -212,13 +250,13 @@ export const BOTS: Record<string, Strategy> = {
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
   }),
-  /** reinvest, plus friends & family and the seed round as soon as each is allowed; climbs the ladder. */
+  /** reinvest, plus every funding round (F&F, seed, Series A, IPO) as soon as each is allowed; climbs the ladder. */
   'raise-climb': makeBot({
     hodlPct: 0,
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed'],
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
   }),
   /** raise-climb that also borrows the maximum equipment loan whenever it has none. */
   'raise-borrow': makeBot({
@@ -226,8 +264,17 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed'],
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
     borrow: true,
+  }),
+  /** raise-climb that also bids 85% of list on every distressed auction lot it has room and cash for. */
+  'raise-auction': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    auctionBidShare: 0.85,
   }),
   /** Keeps every coin it mines; spends only its cash; never sells in alerts. */
   hodl: makeBot({

@@ -150,6 +150,67 @@ export const interruptsFileSchema = z.object({
   interrupts: z.array(interruptSchema),
 })
 
+const range = (min: number, max = Infinity) =>
+  z
+    .tuple([z.number().min(min).max(max), z.number().min(min).max(max)])
+    .refine(([a, b]) => a <= b, 'expected [low, high]')
+
+/** The distressed auction's structured rules (extra fields on its interrupts.json entry). */
+export const auctionRulesSchema = z
+  .object({
+    windows: z
+      .array(
+        z.object({
+          from: quarterId,
+          to: quarterId,
+          models: z.array(z.string()).min(1),
+        }),
+      )
+      .min(1),
+    chance_per_quarter: z.number().min(0).max(1),
+    lot_units: range(1).refine(
+      ([a, b]) => Number.isInteger(a) && Number.isInteger(b),
+      'expected whole units',
+    ),
+    /** Lowest bid accepted, as a share of the lot's value at the used price. */
+    reserve_share: range(0, 1),
+    /** Each rival's sealed bid, as a share of the lot's value. */
+    rival_bid_share: range(0, 2),
+    rival_bidders: range(1),
+    bandwidth: z.number().int().min(0),
+  })
+  .transform((a) => ({
+    windows: a.windows,
+    chancePerQuarter: a.chance_per_quarter,
+    lotUnits: a.lot_units,
+    reserveShare: a.reserve_share,
+    rivalBidShare: a.rival_bid_share,
+    rivalBidders: a.rival_bidders,
+    bandwidth: a.bandwidth,
+  }))
+
+/** Grid curtailment's structured rules (extra fields on its interrupts.json entry, review A8). */
+export const curtailmentRulesSchema = z
+  .object({
+    site_tier: z.string(),
+    quarter_of_year: z.number().int().min(1).max(4),
+    chance_per_quarter: z.number().min(0).max(1),
+    credit_usd_per_mw: nonNeg,
+    forgone_revenue_mult: nonNeg,
+    alert_after_week: range(1, 12).refine(
+      ([a, b]) => Number.isInteger(a) && Number.isInteger(b),
+      'expected whole weeks',
+    ),
+  })
+  .transform((c) => ({
+    siteTier: c.site_tier,
+    quarterOfYear: c.quarter_of_year,
+    chancePerQuarter: c.chance_per_quarter,
+    creditUsdPerMw: c.credit_usd_per_mw,
+    forgoneRevenueMult: c.forgone_revenue_mult,
+    alertAfterWeek: c.alert_after_week,
+  }))
+
 // ---------- capital.json (only what the sim uses so far) ----------
 
 /** One rung of the funding ladder (savings → F&F → seed → Series A → IPO). */
@@ -231,6 +292,28 @@ export const capitalFileSchema = z.object({
     ),
 })
 
+// ---------- rivals.json ----------
+
+const quarterSeries = z.record(quarterId, nonNeg)
+
+/** A scripted rival (review: real companies, end-of-quarter values, ≈ between verified anchors). */
+export const rivalSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  style: z.string(),
+  hashrate_ehs: quarterSeries,
+  mw: quarterSeries,
+  btc_mined_q: quarterSeries,
+  btc_held: quarterSeries,
+  /** Market capitalisation in millions of dollars: the rival's value on the league table. */
+  mcap_musd: quarterSeries,
+  key_moves: z.record(quarterId, z.string()).default({}),
+})
+
+export const rivalsFileSchema = z.object({
+  rivals: z.array(rivalSchema).min(1),
+})
+
 export type LadderStep = z.output<typeof ladderStepSchema>
 export type EquipmentLoanTerms = z.output<typeof equipmentLoanSchema>
 export type CryptoLoanTerms = z.output<typeof cryptoLoanSchema>
@@ -239,3 +322,6 @@ export type Machine = z.output<typeof machineSchema>
 export type SiteTier = z.output<typeof siteTierSchema>
 export type Flaw = z.output<typeof flawSchema>
 export type Interrupt = z.output<typeof interruptSchema>
+export type Rival = z.output<typeof rivalSchema>
+export type AuctionRules = z.output<typeof auctionRulesSchema>
+export type CurtailmentRules = z.output<typeof curtailmentRulesSchema>

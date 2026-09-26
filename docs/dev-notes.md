@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the crypto-backed loan and margin calls.
+Last updated: 26 Sep 2026, with week 3 done: rivals, the league table, distressed auctions and grid curtailment.
 
 ## How the owner works
 
@@ -44,14 +44,14 @@ See `CLAUDE.md` for the full list. The main ones:
    pure-sim rules (no `Math.random`, `Date.now`, timers, DOM or UI imports in `src/sim`).
 2. **Content:** machines, sites, interrupts, capital ladder and weekly market prices in `src/content/`,
    validated by Zod schemas plus a loader that lists every problem and refuses to start on bad data.
-   Other content (events, rivals, loans, hires, Merge) is still only in `docs/act1-content/`; copy it
+   Rivals are in too (`rivals.json`). Other content (events, hires, Merge) is still only in `docs/act1-content/`; copy it
    over, with a schema, when its system gets built. Market CSV → JSON via `npm run content:market`.
 3. **Sim core (`src/sim/`):** seeded RNG in the state; actions via `applyAction`; one week per `advance`.
    Market, sites (ladder, scouting, hidden flaws), machines (new/used, delivery, weekly failure roll,
    repair), Bandwidth, mining (auto switch-off), treasury (HODL/sell %), price-alert interrupt (max 3
    per quarter), quarter report, forced sales and bankruptcy, valuation, game log.
-4. **Capital:** the equipment loan and the crypto-backed loan with margin calls (see Decisions), friends & family and seed rounds (fixed offers from `capital.json`, no negotiation yet),
-   founder stake (dilutions multiply: F&F then seed leaves 72%).
+4. **Capital:** the equipment loan and the crypto-backed loan with margin calls (see Decisions), every funding round: friends & family, seed, Series A and IPO / SPAC (fixed offers from `capital.json`, no
+   negotiation yet), founder stake (dilutions multiply: F&F then seed leaves 72%, then Series A 57.6%).
 5. **Leaving a site** (lease break) with a penalty.
    **Treasury per coin:** separate keep/sell % for BTC and ETH, the price alert sells 25% of BTC or of ETH,
    and a Plan-screen "Sell treasury coins" action (1 Bandwidth).
@@ -59,14 +59,25 @@ See `CLAUDE.md` for the full list. The main ones:
    pause, 1×/2×/4×, skip, alerts as modals), Quarter report, end screen. Design-system tokens and
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
-   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller) and unit tests: 171 passing + 1 to-do.
-8. **Local staging** (`staging/`) and the `g2g` console testing helper (dev and staging, not production).
+   early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder) and unit
+   tests: 202 passing + 1 to-do.
+8. **Local staging** (`staging/`) and the `g2g` console testing helpers (dev and staging, not production):
+   `g2g.setCash(n)`, `g2g.state()`, and `g2g.load(state)` to jump to any saved or bot-built state.
+9. **Rivals and the league table:** Riot, Marathon, Core Scientific and Bitfarms follow their scripted
+   end-of-quarter numbers from `rivals.json`. The quarter report (browser and terminal) ranks you against
+   them by value, with your rank change and who joins later.
+10. **Distressed auctions:** in the crypto-winter windows a lot of used machines may come up at the
+   start of a Plan phase. One sealed bid (2 Bandwidth) against 2–3 rivals, settled at once; the Plan
+   screen has the row and a bidding dialog, the terminal has `bid <amount> [site#]`.
+11. **Grid curtailment:** in summer (Q3) the Texas grid may ask you to take the Texas site offline for
+   a week, for credits (review A8). An interrupt card in the live quarter (and in the terminal); the
+   credits count toward EBITDA and show on the quarter report.
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Series A and the IPO/SPAC round, negotiation, hires,
-Heat and talking to the neighbours, Read the market, auctions, rivals and the league table, the 20 event
-cards, the other 6 interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
+Negotiation, hires,
+Heat and talking to the neighbours, Read the market, the 20 event
+cards (including Winter Storm Uri), the failure-wave and neighbour-complaint interrupts, the Merge decision screen, saves, sound, settings, the left-nav sections
 other than Dashboard. Site flaws that need missing systems have no effect yet (noise ordinance, hostile
 council, landlord eviction, transformer upgrade). The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -92,12 +103,48 @@ ask first).
 - Seed: 2 Bandwidth, +$1.5M for 20% ($6M pre-money), open 2017Q4–2019Q4, once, needs a powered site of
   at least 100 kW usable capacity (from `capital.json`). Taken as a fixed offer: the scope's fallback
   while the negotiation mini-game isn't built.
+- Series A: 2 Bandwidth, +$8M for 20% ($32M pre-money), open 2019Q1–2021Q2, once, needs a powered site of
+  at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
+  a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
+  as fixed offers like the seed round. **Not yet confirmed by the owner.**
 - **Leaving a site:** penalty = 1 month of that site's own rent (⅓ of quarterly rent), no Bandwidth.
   Machines on the site are sold automatically at the used price. Allowed while the site is still being
   built (build money is lost). The garage can't be left. The tier can be built again later at full cost.
   Rent stops for the whole quarter you leave in.
 
 ### Chosen by Claude Code, reported, not objected to (change freely if the owner asks)
+
+- **Distressed auctions** (interrupts.json › distressed_auction, with structured fields added to the live
+  copy: windows, models, ranges, Bandwidth). **Not yet confirmed by the owner:**
+  - It's a **Plan-phase action, not a mid-quarter interrupt**: the lot is announced at the start of the
+    Plan phase and you bid there. Reasons: bidding costs 2 Bandwidth (scope §2.6), which is spent in the
+    Plan phase, and you need a chance to make room (sell machines) for the lot. It doesn't count toward
+    the 3 interrupts per quarter.
+  - Windows 2018Q4–2019Q2 (S9s or GPU Gen 1 rigs), 2020Q2 (S9s), 2022Q2–Q3 (S19 Pros); 50% chance per
+    window quarter. Lots of 50–500 units in tens, list = that quarter's used price. Minimum bid 40–60% of
+    list; 2–3 rivals (in the game that quarter) bid 50–90% of list each.
+  - One sealed bid, for the whole lot, settled at once. The highest bid wins and pays what it bid (a tie
+    goes to the rival). Win or lose, the 2 Bandwidth is spent; losing costs no money and shows who won
+    with what. The lot must fit at one site. The machines arrive used, at once, and earn next quarter.
+  - No bid: when the quarter starts, the best rival takes the lot (a log line says who and for how much).
+  - Its rolls use a separate random stream per quarter (`substream` in `rng.ts`), so adding auctions
+    didn't change the failures or site offers of any existing game (the golden files only gained lines).
+- **Grid curtailment** (interrupts.json › curtailment, with structured fields added: tier, Q3, 35%,
+  $15K/MW, 1.25×, alert weeks). **Not yet confirmed by the owner:**
+  - Once per Q3 at most, 35% chance (own random stream), only if machines on a Texas site would be
+    mining. The alert comes at the end of a week (2–12) and is about the **next** week, so the game can
+    pause and you choose before it happens. It counts toward the 3 interrupts per quarter.
+  - Curtail (default): the Texas machines mine nothing and use no power that week; the credit is
+    max($15K × MW, 1.25 × that week's forgone revenue), worked out when the grid asks and paid in the
+    curtailed week. MW = working Texas machines that would be running. In 2021 the 1.25× rule always wins.
+  - Keep mining: nothing happens yet. Its Heat +5 waits for the Heat system (noted in the content).
+  - Credits count toward EBITDA (so valuation), are included in the report's cash line, and get their own
+    report line. Uri (2021Q1) is left to its event card, as the content review says.
+
+- **League table:** ranked by value: the rival's market cap (`mcap_musd`) against your company valuation.
+  A rival joins the table in the first quarter it has any number (Bitfarms 2017Q3, Riot and Marathon
+  2017Q4, Core Scientific 2018Q2). A rival with no market cap yet shows "private" and sits at the bottom,
+  unranked (Bitfarms until 2019Q3). Scale shows the rival's MW and hashrate. **Not yet confirmed.**
 
 - Forced sale at quarter end when cash < 0: treasury coins first, then machines one at a time, oldest
   batch first. Game over only if still negative.
@@ -151,8 +198,9 @@ ask first).
 |---|---|---|---|
 | cautious | garage only, keeps half its cash | 0% | $41.5K |
 | reinvest | garage only, spends everything | 0% | $28.8K |
-| raise-climb | reinvest + F&F (2017Q1) + seed (2017Q4), climbs the ladder | 0% | $974K (peak $9.2M, 2021Q1) |
-| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $947K (peak $9.2M, 2021Q1) |
+| raise-climb | reinvest + every round as soon as allowed, climbs the ladder | 0% | $17.9M (peak $334M, 2021Q1) |
+| raise-borrow | raise-climb + the biggest equipment loan whenever it has none | 0% | $17.6M (peak $337M, 2021Q1) |
+| raise-auction | raise-climb + bids 85% of list on every lot it has room and cash for | 0% | $17.9M (wins 0.3 lots per game) |
 | hodl | garage only, keeps every coin | 0% | $104K |
 | hodl-borrow | hodl + the biggest crypto-backed loan whenever it has none | 0% | $65.9K |
 | ff-climb | F&F, builds the small unit, fills it, keeps 1 quarter of rent | 100% (2019Q1) | −$2.6K |
@@ -167,7 +215,12 @@ ask first).
 - **With the seed round, the reinvesting bot climbs to the 1 MW warehouse (powered 2018Q3) and never
   goes bust.** Its cash bottoms out around $600K in 2018: $1.5M of seed money is far more than a
   warehouse (about $400K) plus rent can burn. It can't climb further yet (the 20 MW own site needs
-  Series A or loans), so it peaks at about $9M, far below the scope's ~$2B target (which needs ~35–40 MW).
+  Series A or loans).
+- **With Series A (2019Q1, $8M) the raising bot reaches the 20 MW own site (powered about 2020Q3)** and
+  peaks at about $335M in 2021Q1, still far below the scope's ~$2B target (which needs ~35–40 MW). It
+  never takes the IPO: its best quarterly EBITDA is about $4.4M (2021Q4), just under the $5M the IPO
+  needs, and it stops adding machines once the 20 MW site is full, piling up ~$20M of cash by the end.
+  Founder stake ends at 57.6%.
 - The scope's anchor "reinvesting 100% goes bust 2018Q2–2019Q2" is still a to-do test: even with raises,
   reinvesting doesn't over-extend. It probably needs loans (borrowed money that must be repaid).
 - A cautious bot (keeps half its cash) with raises builds the small unit only at the very end and never
@@ -182,6 +235,9 @@ ask first).
 - **Reinvest + F&F (no seed, with or without loans) goes bust in all 50 runs, in 2018Q3.** That is the
   scope's "reinvesting 100% goes bust 2018Q2–2019Q2" anchor; the to-do test could now be written with
   that bot, if the owner agrees that "reinvest" includes taking the F&F money.
+- **Auctions barely matter for the bots so far:** the raise-auction bot wins only 0.3 lots per game,
+  because it fills every site with new machines each quarter, so there's rarely room for a lot. A player
+  who keeps space free (or sells old rigs) can buy 2019 S9s at a deep discount before the 2019 rally.
 - Price alerts cluster (2 per quarter in 2017Q2–2018Q1 and 2022Q2, almost none 2018–2020) because the
   weekly prices are reconstructed from monthly data. Real CoinMetrics data should fix it.
 
@@ -192,9 +248,18 @@ ask first).
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
 - Confirm the equipment loan rules above (one at a time, weekly payments, no covenant).
 - Confirm the crypto loan rules above, especially the extra "pay down with cash" margin-call answer.
+- Series A and the IPO taken as fixed offers from `capital.json`: fine until negotiation exists? The IPO's
+  $5M EBITDA bar is just out of reach for a bot that fills one 20 MW site. Intended, or lower it?
+- Auctions as a Plan-phase action (not a mid-quarter interrupt): OK? And the lot sizes (50–500 units)
+  mostly need a warehouse, so small-unit players rarely have room.
+- Curtailment: with Heat not built, "keep mining" has no downside and curtailing always pays more than
+  it gives up, so it's not yet a real choice. Fine until Heat exists, or should keeping mining carry
+  another cost?
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
 ## Next
 
-The owner will give the go-ahead. Candidates from the build order (`docs/player-actions-and-pacing.md`
-§7): Series A, negotiation (power contracts, then investors), the LTV gauge on a Capital screen.
+Week 3 of the build order is done. Next from `docs/player-actions-and-pacing.md` §7, week 4: negotiation
+(power contracts first, then investors); crypto loans and margin calls are already built. Also open: the
+Heat system (needed for curtailment's "keep mining" cost and the neighbour-complaint interrupt), the
+LTV gauge on a Capital screen, and the League left-nav section (the table is only on the report now).
