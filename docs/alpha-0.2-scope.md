@@ -31,7 +31,7 @@
 | GPU know-how (new) | 0–3 (doc 18 §5.4) |
 | Community Heat | Carried over per site; grievance resets at the act boundary. AI-project thresholds from 05 §3 (delays, lawsuits, moratoriums) |
 | Ratepayer Anger (new, per region) | Rises with MW built in the region; feeds Heat and moratorium cards |
-| Valuation | Σ(unit EBITDA × 4 × unit multiple) + cash + treasury − debt + credit-weighted backlog (tenant A/AA 15%, BBB 10%, AI lab 5%, spot 0%). Era multiples: doc 18 §8 table (AI infra 2026: 24 → 20 → 18 → 15). Pivot premium: mining multiple +2 from the quarter the first AI deal is signed |
+| Valuation | Σ(unit EBITDA × 4 × unit multiple) + cash + treasury − debt + **projects under construction at capex spent so far** (owner decision 27 Sep 2026; they stop counting at cost once live and earning) + credit-weighted backlog (tenant A/AA 15%, BBB 10%, AI lab 5%, spot 0%). The backlog shown on the top bar and dashboard is the **remaining contracted revenue, unweighted**; only the valuation applies the weights. Era multiples: doc 18 §8 table (AI infra 2026: 24 → 20 → 18 → 15). Pivot premium: mining multiple +2 from the quarter the first AI deal is signed |
 
 ### 2.3 Market (scripted, from `docs/act2-content/` market files)
 - **BTC:** weekly price, difficulty, hashrate, fee share and hashprice. **Hashprice is derived** from price, subsidy, fees and hashrate, as in Act I. The halving is on **20 Apr 2024** (subsidy 3.125 from the week of 22 Apr).
@@ -203,9 +203,9 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
 ---
 
 ## 6. Dependencies and order
-1. **Act I playtests** (Alpha 0.1 exit checklist, "Playable" and "People") run before Act II code, since Act II inherits Act I's end states.
+1. **Act I playtests:** postponed by the owner until after Act II (27 Sep 2026). The Act II build does not wait for them.
 2. **Content fixes** before the Act II loaders (§7).
-3. **Wireframes:** `21-act-ii-wireframe-prompt.md` v1.0 → a Claude Design canvas, then (ideally) an Act II visual mockup like `docs/mockups/q4-2017.html`.
+3. **Wireframes:** done, on the Claude Design canvas https://claude.ai/artifact/LVnSiEH9RRHtU16Ld4C59S (example data from `21-act-ii-wireframe-prompt.md` v1.0). An Act II visual mockup like `docs/mockups/q4-2017.html` is optional.
 4. **Build order (proposal for Claude Code):** act boundary (act field, save v2 + migration test, market extended to 2026Q4 with ETH, preset start, intro screen) → Act II market engine (GPU prices, rates, multiples, demand) → MW by use + hosting → projects + Deal builder (shell lease first, then full stack + pilot) → capital instruments + credit rating → interrupts and cards → rivals + league → chapter report → bots and balance.
 
 ---
@@ -237,3 +237,4 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
    - §5.5 "a 1 MW pilot could gross ~$25–30M in its first year" → ≈ $19–22M at the neocloud price and 70–80% utilisation (spot fell from $5 to $3.50 within a quarter).
    - §12 pilot anchor "pays back within 6 quarters on spot; a 2025Q2 pilot doesn't pay back within Act II" → replaced by the return-multiple comparison in §5 (at the neocloud price, a 2025Q2 pilot still recovers its cost, thanks to the 2026 "Hopper isn't dead yet" rebound).
    - §2.1 "coin treasury as is": ETH now has a price all act.
+   - §8 valuation formula: adds projects under construction at capex spent, so a build doesn't erase its cost from the valuation until it goes live (owner decision, 27 Sep 2026).

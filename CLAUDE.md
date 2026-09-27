@@ -11,11 +11,11 @@ margin-call), hires staff, manages community Heat and raises money, all against 
 → Quarter report. The act ends at the Merge decision screen and a chapter report. The alpha must answer one
 question: *is Act I a fun 40-minute run where decisions, not luck, decide whether you survive?*
 
-**Act II is coming into scope (owner, 27 Sep 2026):** Alpha 0.2, "The Pivot and the Boom", 17 quarterly turns
+**Act II is in scope and being built (owner, 27 Sep 2026):** Alpha 0.2, "The Pivot and the Boom", 17 quarterly turns
 (2022Q4 → 2026Q4), continuing from an Act I save or a standalone preset. The miner turns its energized MW into
 AI data-center capacity through projects (power, tenant and capital slots), a credit rating and five MW uses.
-Its scope is **frozen (v1.0)** in `docs/alpha-0.2-scope.md`. Act II building can start once the Act I playtests
-are done (that scope's §6); until then, Act II work is limited to preparation.
+Its scope is **frozen (v1.0)** in `docs/alpha-0.2-scope.md`, and Act II building starts now (the Act I playtests
+are postponed until after Act II).
 
 ## Commands
 
@@ -52,9 +52,11 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 - **Act II** (reference copies in `docs/game-project-files/`, read-only; the game will read `src/content/`):
   `claude_18-act-ii-design.md` (the design and its decisions, incl. §16 "Decisions from the content pack"),
   `claude_20-alpha-0_2-scope.md` (the same scope text, kept in sync with the design project),
-  `claude_21-act-ii-wireframe-prompt.md` (the Claude Design prompt, v1.0; no Act II wireframes or mockup
-  exist yet), `claude_act2-content_*` (the Act II content pack: report plus data files). The `campus` era
-  theme for Act II already exists in `docs/design-system/tokens.css`.
+  `claude_21-act-ii-wireframe-prompt.md` (the Claude Design prompt, v1.0), `claude_act2-content_*` (the Act II
+  content pack: report plus data files). The `campus` era theme for Act II already exists in
+  `docs/design-system/tokens.css`.
+  Act II wireframes: https://claude.ai/artifact/LVnSiEH9RRHtU16Ld4C59S (the source of truth for Act II screen
+  layout; doc 21 v1.0 has their example data).
   Corrected Act II data lives in `docs/act2-content/`; where a file exists there, it replaces the
   `docs/game-project-files/` copy (see its README).
 
@@ -109,7 +111,7 @@ folders only as a task needs them.
 3. **Ask before adding any dependency** (npm package, CDN script, tool). Say what it's for and whether there's a
    no-dependency option.
 4. **Scope guard.** `docs/alpha-0.1-scope.md` decides what gets built for Act I, and `docs/alpha-0.2-scope.md`
-   (once frozen) for Act II. If a request falls outside it
+   (frozen v1.0) for Act II. If a request falls outside it
    (see its §3 "Not in the alpha"), say so and push back politely. Offer to add it to the backlog, or to swap
    it for something of similar size per the scope doc's change rule. Don't quietly build it.
 5. **Respect the architecture rules above.** If a task seems to need breaking one, stop and explain instead.

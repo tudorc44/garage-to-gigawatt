@@ -86,7 +86,7 @@ Career graph **2017 → 2026** with the Merge marked, peak valuation and quarter
 ## Example data (use it)
 
 Show the dashboard at the **start of Q3 2024** (plan phase, just after the halving):
-- Cash **$38M**. Debt **$214M**. Rating **BB ▲**. Backlog **$412M**. Bandwidth **5 of 6**. Runway **5 quarters**.
+- Cash **$38M**. Debt **$214M**. EBITDA last quarter **$11.0M** (mining $1.0M, AI $10.0M, after overhead). Rating **B ▲** (debt/EBITDA 4.9× with a strong backlog). Backlog **$485M** (remaining contracted revenue, unweighted). Valuation **≈ $910M**. Bandwidth **5 of 6**. Runway **5 quarters**. Treasury 120 BTC.
 - BTC **$62,700** ▼12%. Hashprice **$48/PH/day** ▼57% (the April halving). H100 1-year contract **$4.20/hr**, neocloud **$4.00/hr**, spot **$2.50/hr** ▼. AI demand index **32 ▲**.
 - MW by use (60 MW total): mining 21 · hosting 0 · AI shell 20 live + 18 building · AI cloud 1 (pilot, live) · idle 0.
 - Sites:
@@ -94,14 +94,16 @@ Show the dashboard at the **start of Q3 2024** (plan phase, just after the halvi
   - **Loudoun-adjacent, VA** (PJM), 20 MW: AI shell 20 live, Heat 41, Ratepayer Anger 58
 - Projects:
   - "Loudoun Hall A": 20 MW AI shell, **Live**, tenant: hyperscaler (AA), 10 years, $1.7M/MW/yr
-  - "Pecos AI Hall 1": 18 MW AI shell, **Building**, 1 quarter left, tenant: AI lab (BB), ready-by Q4 2024
+  - "Pecos AI Hall 1": 18 MW AI shell, **Building**, 1 quarter left, tenant: AI lab (BB), 5 years, $1.8M/MW/yr, ready-by Q4 2024
   - "Pecos Pilot": 1 MW full stack, **Live**, spot-only, 750 H100s, 70% utilised
   - "Pecos Cluster": 8 MW full stack H100 (converting 8 of Pecos's mining MW), **Slots filling**: Power ✓, Tenant ◐ (negotiating), Capital ○
 - News: "Halving: miners' revenue per hash cut in half overnight".
 
 League (Q3 2024, illustrative): CoreWeave (benchmark) · Core Scientific · IREN · Hut 8 · Cipher · You.
 
-Deal builder example: "Pecos Cluster", 8 MW, **6,000 H100s** (750 per MW), capex ≈ **$250M** (GPUs ≈ $190M + retrofit ≈ $60M). Tenant offer: "Enterprise AI (BBB), **$2.40/GPU-hr, 3 years**, no prepayment, walks at 2Q late: 10%". Capital: DDTL 65% at SOFR + 7%, equity 35%. Projected IRR **26%** (project, before debt), payback **2.3 years**, rating effect **BB → BB−**.
+Deal builder example: "Pecos Cluster", 8 MW, **6,000 H100s** (750 per MW), capex ≈ **$250M** (GPUs ≈ $190M + retrofit ≈ $60M), build **4 quarters** (mining → shell 3 + GPUs 1). Tenant offer: "Enterprise AI (BBB), **$2.40/GPU-hr, 3 years** (contract value $378M), no prepayment, ready-by Q4 2025, walks at 2Q late: 10%". Capital: **DDTL 65% ($162.5M) at SOFR + 7% + own cash $25M + equity raise $62.5M** (≈ 6% new shares at ≈ $910M; founder 61% → 57%). Projected IRR **26%** (project, before debt), payback **2.3 years**. Rating effect **B → CCC+ while building** (debt/EBITDA 4.9× → 8.6×), **back to BB+ once live**.
+
+Valuation breakdown (Capital screen), by the scope's formula: mining EBITDA $4M/yr × 10.75 (8.75 + 2 pivot premium) = $43M · AI EBITDA $40M/yr × 24.5 = $980M · + cash $38M · + treasury $7.5M · − debt $214M · + backlog value $57M (hyperscaler AA 15% × $323M + AI lab 5% × $162M) = **≈ $910M**. Signing Enterprise AI adds backlog $378M (top bar $485M → $863M) and valuation +$38M (BBB weight 10%).
 
 ## Deliverable
 - One board with the **10 artboards** in flow order, titled "A2-01 Title" … "A2-10 Game over (foreclosure)".

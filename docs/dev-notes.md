@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 27 Sep 2026: **Act II is coming into scope** (owner); readiness check below ("Act II
+Last updated: 27 Sep 2026: **the Act II build has started** (nothing blocking; see "Act II
 readiness"). The Act I balance pass is DONE (every scope §5 balance anchor passes in the sim).
 
 ## How the owner works
@@ -727,11 +727,14 @@ wireframe prompt (`claude_21`, v1.0) and the content pack (`claude_act2-content_
    on the GPUs. Revenue = the H100 **neocloud** price × utilisation, starting at **70%** and rising with GPU
    know-how (+5 points at know-how 2, +10 at 3; tune in the sim). Cost ≈ **$31–33M per MW** in 2023 (accepted).
 4. ETH gets a price series (done, below).
+5. **Valuation counts projects under construction at capex spent** (scope §2.2): they stop counting at cost once
+   live and earning. The backlog on the top bar and dashboard is the remaining contracted revenue, **unweighted**;
+   only the valuation applies the credit weights.
+6. **Wireframes done:** https://claude.ai/artifact/LVnSiEH9RRHtU16Ld4C59S (Claude Design canvas; the source of truth
+   for Act II screen layout; doc 21 v1.0 holds their example data). An Act II visual mockup is optional.
+7. **The Act I playtests are postponed until after Act II** (scope 0.2 §6); the Act II build doesn't wait for them.
 
-**Still blocking the Act II build:**
-1. **Wireframes:** run the doc 21 v1.0 prompt in Claude Design and bring the result (plus, ideally, an Act II
-   mockup like `docs/mockups/q4-2017.html`) into the repo. The `campus` era theme already exists in the tokens.
-2. **The Act I playtests** (Alpha 0.1 §5 "Playable" and "People"): scope 0.2 §6 puts them before Act II code.
+**Nothing is blocking the Act II build** (started 27 Sep 2026, in the scope §6.4 order).
 
 **Content gaps found by Claude Code (not in doc 18 §16.6's fix list):**
 - ~~No ETH price after 2022Q3~~ **fixed** (owner chose a price series): `eth_usd` added to `docs/act2-content/market_weekly.csv`
@@ -786,12 +789,12 @@ Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decisi
 save/load, the 20 event cards, the failure wave, the left-nav screens + Settings, and sound. Every item
 in the scope's build list now exists. 27 Sep 2026: the balance pass and three reviews (see "Balance pass"
 and "Balance review" 1–3 above): **the Act I balance pass is DONE**, every §5 balance anchor passes in the
-sim. Next: playtests (scope §5 "Playable" and "People": a first-time run in 35–50 minutes, 3+ real
+sim. Act I playtests: **postponed until after Act II** (owner) (scope §5 "Playable" and "People": a first-time run in 35–50 minutes, 3+ real
 decisions per quarter, 5 crash-free runs, 3 outside testers). Small follow-ups: an ear test of the sounds; the build's main
 JS chunk is just over Vite's 500 KB warning (card text; split it later).
 **Act II** (27 Sep 2026): scope frozen (v1.0, `docs/alpha-0.2-scope.md`); P1–P5, the pilot and the ETH series
-decided. Still blocking the build: the wireframes (doc 21 v1.0 → Claude Design) and the Act I playtests, which
-scope 0.2 §6 puts before Act II code. **The scope §7 content fixes are applied** (27 Sep 2026): corrected copies
+decided; wireframes done; the Act I playtests postponed until after Act II. **Nothing blocks the build; it has
+started** (Step 1: the act boundary). **The scope §7 content fixes are applied** (27 Sep 2026): corrected copies
 of 9 Act II JSON files in `docs/act2-content/` (capital_act2, gpus, tenants, conversions, lenders, interrupts_act2,
 events_act2, hires_act2, text_act2_en), each change listed in its README. Open points from that pass (in the README):
 the pilot comes to $30.25–30.75M/MW with the pack's prices (scope says $31–33M); no H100 price or neocloud rent
