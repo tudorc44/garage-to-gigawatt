@@ -28,6 +28,7 @@ import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
 import { paySwitchedOffReservation } from './mwUse.ts'
+import { serviceFacilities } from './facilities.ts'
 import {
   backlogUsd,
   constructionValueUsd,
@@ -49,6 +50,10 @@ export function endQuarter(state: GameState): void {
   const offUsd = paySwitchedOffReservation(state)
   state.quarterStats.reservationUsd += offUsd
   state.quarterStats.powerCostUsd += offUsd
+  // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
+  const service = serviceFacilities(state)
+  state.quarterStats.interestUsd += service.interestUsd
+  state.quarterStats.principalUsd += service.principalUsd
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   state.cash = roundCents(state.cash)
   state.reports.push(buildReport(state, w, forcedSale))

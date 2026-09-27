@@ -499,6 +499,8 @@ function missingSlots(p: Project): string[] {
 export function buildBlocker(
   state: GameState,
   projectId: string,
+  /** Debt the build will draw (facilities.ts › debtPlan): the cash only has to cover the rest. */
+  debtUsd = 0,
 ): Message | undefined {
   const p = getProject(state, projectId)
   if (!p) return { key: 'error.unknown_project' }
@@ -515,7 +517,7 @@ export function buildBlocker(
       key: 'error.no_bandwidth',
       params: { needed: need, have: state.bandwidth },
     }
-  const costUsd = Math.round(projectCapex(state, p).totalUsd)
+  const costUsd = Math.round(projectCapex(state, p).totalUsd - debtUsd)
   if (state.cash < costUsd)
     return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
   return undefined

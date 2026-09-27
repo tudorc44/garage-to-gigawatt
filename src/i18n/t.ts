@@ -38,6 +38,7 @@ const ID_PARAMS: Record<string, string> = {
   tenant: 'tenant.',
   kind: 'project_kind.',
   gpu: 'gpu.',
+  debt: 'debt_kind.',
 }
 
 function fill(text: string, params: MessageParams): string {

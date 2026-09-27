@@ -107,6 +107,13 @@ import {
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
+  debtPlan,
+  drawFacilities,
+  repayProjectFacilities,
+  setProjectDebt,
+  type DebtKind,
+} from './systems/facilities.ts'
+import {
   baseCapexUsd,
   capacityKw,
   flawEffect,
@@ -173,6 +180,8 @@ export type Action =
   | { type: 'PROJECT_START'; projectId: string }
   /** Act II: sell a live AI shell at its cap rate (2 Bandwidth); its MW go with it. */
   | { type: 'PROJECT_SELL'; projectId: string }
+  /** Act II: switch project debt or a GPU-backed DDTL on or off for a proposed project (0 BW). */
+  | { type: 'PROJECT_DEBT'; projectId: string; debt: DebtKind; on: boolean }
   /** Act II: sell a live cloud's or pilot's GPUs at their residual value (1 Bandwidth); it ends. */
   | { type: 'PROJECT_SELL_GPUS'; projectId: string }
   /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
@@ -737,10 +746,16 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'PROJECT_CANCEL':
       return cancelProject(s, a.projectId)
 
+    case 'PROJECT_DEBT':
+      return setProjectDebt(s, a.projectId, a.debt, a.on)
+
     case 'PROJECT_START': {
-      const blocker = buildBlocker(s, a.projectId)
+      const p = s.projects.find((x) => x.id === a.projectId)
+      const plan = p ? debtPlan(s, p) : null
+      const blocker = buildBlocker(s, a.projectId, plan?.totalUsd ?? 0)
       if (blocker) return blocker
       startBuild(s, a.projectId)
+      drawFacilities(s, a.projectId, plan!)
       return
     }
 
@@ -748,6 +763,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocker = sellGpusBlocker(s, a.projectId)
       if (blocker) return blocker
       sellGpus(s, a.projectId)
+      repayProjectFacilities(s, a.projectId)
       return
     }
 
@@ -755,6 +771,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocker = sellBlocker(s, a.projectId)
       if (blocker) return blocker
       sellProject(s, a.projectId)
+      repayProjectFacilities(s, a.projectId)
       return
     }
 

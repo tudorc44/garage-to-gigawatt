@@ -48,7 +48,7 @@ export const PROJECT_COLUMNS: ProjectColumn[] = [
 ]
 
 function columnOf(p: Project): ProjectColumn {
-  if (p.stage === 'ended') return 'sold'
+  if (p.stage === 'ended' || p.stage === 'foreclosed') return 'sold'
   if (p.stage !== 'proposed') return p.stage
   const s = slots(p)
   return s.tenant === true || s.capital ? 'filling' : 'proposed'

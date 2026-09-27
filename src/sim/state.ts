@@ -165,15 +165,20 @@ export interface Project {
   /** GPU generation (cloud and pilot), or null for a shell. */
   gpu: string | null
   openedQuarter: number
-  /** 'sold': sold with its MW (they leave the site); 'ended': its GPUs sold, its MW idle again. */
-  stage: 'proposed' | 'building' | 'live' | 'sold' | 'ended'
+  /**
+   * 'sold': sold with its MW (they leave the site); 'ended': its GPUs sold, its MW idle again;
+   * 'foreclosed': the lender took it and its MW (2 quarters of missed debt service).
+   */
+  stage: 'proposed' | 'building' | 'live' | 'sold' | 'ended' | 'foreclosed'
   /** Tenant offers (shell projects). */
   offers: TenantOffer[]
   tenant: ProjectTenant | null
   /** Cloud projects: sell capacity on the spot market (the only tenant option so far). */
   spot: boolean
-  /** The capital slot: own cash (the other sources come with the capital milestone). */
+  /** The capital slot: closed with own cash covering whatever the chosen debt doesn't. */
   capital: 'cash' | null
+  /** Debt chosen for the build (Act II capital, M4): drawn when it starts. Missing = none. */
+  debt?: { projectDebt: boolean; ddtl: boolean }
   /** Capex committed and paid at the start of the build (after any tenant capex credit). */
   capexUsd: number
   /** The GPUs' share of it (insured each year). */
@@ -185,9 +190,32 @@ export interface Project {
   soldQuarter: number | null
 }
 
+/**
+ * Act II debt secured on one project (scope 0.2 §2.7, doc 18 §7.1): project debt (a share of capex,
+ * needs a tenant rated ≥ BBB) or a GPU-backed DDTL (a share of GPU cost, needs a GPU contract).
+ * Drawn when the build starts; interest only while building, then equal principal each quarter
+ * over the tenor; serviced at quarter end. Two missed quarters in a row: the lender forecloses.
+ */
+export interface Facility {
+  id: string
+  kind: 'project_debt' | 'ddtl'
+  projectId: string
+  amountUsd: number
+  balanceUsd: number
+  /** Yearly rate, fixed when drawn. */
+  apr: number
+  /** Quarters of principal payments once the project is live (the contract's term). */
+  tenorQuarters: number
+  drawnQuarter: number
+  /** Quarters in a row whose debt service went unpaid. */
+  missedQuarters: number
+  /** The rating the debt carries at project level ("A" on a strong tenant, doc 18 §7.2). */
+  rating: string
+}
+
 /** A project that no longer holds its MW or earns: sold, or ended by selling its GPUs. */
 export const projectGone = (p: Project) =>
-  p.stage === 'sold' || p.stage === 'ended'
+  p.stage === 'sold' || p.stage === 'ended' || p.stage === 'foreclosed'
 
 /** A construction delay or GPU allocation alert planned for this quarter (like the failure wave). */
 export interface PlannedProjectEvent {
@@ -265,6 +293,8 @@ export interface GameState {
   projectEvents: PlannedProjectEvent[]
   /** The quarter the first AI deal was signed (the pivot premium), or null. */
   firstAiDealQuarter: number | null
+  /** Act II debt secured on a project: project debt and GPU-backed DDTLs. */
+  facilities: Facility[]
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
@@ -550,6 +580,7 @@ export function newGame(seed: number): GameState {
     projects: [],
     projectEvents: [],
     firstAiDealQuarter: null,
+    facilities: [],
     cryptoLoan: null,
     auction: null,
     curtailment: null,

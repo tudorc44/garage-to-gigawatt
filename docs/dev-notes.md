@@ -1348,6 +1348,22 @@ A2-05 / A2-07. Sub-steps:
   Tests 485 pass (new `tests/sim/finance.test.ts`). No golden change.
 - **M4.2** Project facilities: project debt and the GPU-backed DDTL on a project (sizing, DSCR ≥ 1.12×, interest while
   building, amortisation once live), debt service at quarter end, missed payments and foreclosure (2 quarters).
+  **Done.** New `src/sim/systems/facilities.ts` and `GameState.facilities` (`Facility`: kind, project, amount,
+  balance, fixed APR, tenor, missed quarters, project-level rating). `PROJECT_DEBT {projectId, debt, on}` (0 BW)
+  switches project debt or a DDTL on for a proposed project; each takes the most the lender allows (mine,
+  reversible: a toggle rather than an amount): **project debt** (from 2023Q3; tenant rated ≥ BBB; 75% of capex on
+  an A/AA tenant, 60% on BBB (mine: the ends of 60–75%); the quarter's rate; tenor = the lease or contract term),
+  **DDTL** (from 2023Q3; a GPU contract with a rated tenant; 70% / 50% of GPU cost for IG / other tenants; SOFR +
+  the spread; tenor = the contract's term (mine)). Project debt is sized first, then the DDTL, each trimmed so the
+  projected DSCR (the first year's EBITDA ÷ a year of interest + principal) stays ≥ 1.12×, and never more than the
+  capex (mine: DSCR is the sizing rule, no covenant-breach effect later). `PROJECT_START` draws the plan: the cash
+  only has to cover capex − debt. Interest only while building; once live, interest + amount ÷ tenor each quarter,
+  paid at quarter end before the cash check. **Missed payment** (mine, reversible): if the cash can't cover a
+  facility's service it isn't paid (no forced sale for it), its interest is added to the balance; **two in a row:
+  foreclosure** (scope §2.7): the project becomes `'foreclosed'`, its MW leave the site, its debt goes with it.
+  Selling a shell or a cloud's GPUs repays the project's debt from the cash. Debt counts in `debtUsd` (valuation,
+  rating). Project-level rating: "A" on an A/AA tenant, else the tenant's grade (doc 18 §7.2). Tests 493 pass
+  (new `tests/sim/facilities.test.ts`). **Golden change (explained):** 11 goldens gain `"facilities": []`.
 - **M4.3** The equipment loan extended to GPUs (collateral includes delivered GPUs).
 - **M4.4** The credit rating (matrix, backlog quality, runway notch, project-level A) each quarter.
 - **M4.5** Equity raise / ATM offering (2 BW, dilution shown first).

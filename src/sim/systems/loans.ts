@@ -168,11 +168,12 @@ function payOneWeek(
   return { interestUsd, principalUsd, paidOff: loan.balanceUsd <= 0 }
 }
 
-/** Everything still owed on loans (equipment and crypto-backed). */
+/** Everything still owed on loans (equipment, construction, crypto-backed and Act II project debt). */
 export function debtUsd(state: GameState): number {
   return (
     (state.equipmentLoan?.balanceUsd ?? 0) +
     state.constructionLoans.reduce((sum, l) => sum + l.balanceUsd, 0) +
-    (state.cryptoLoan?.balanceUsd ?? 0)
+    (state.cryptoLoan?.balanceUsd ?? 0) +
+    (state.facilities ?? []).reduce((sum, f) => sum + f.balanceUsd, 0)
   )
 }

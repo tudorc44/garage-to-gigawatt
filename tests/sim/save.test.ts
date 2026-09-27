@@ -120,6 +120,7 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   'reports.*.lateDamagesUsd': 0,
   projects: [],
   projectEvents: [],
+  facilities: [],
   firstAiDealQuarter: null,
 }
 
