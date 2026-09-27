@@ -118,13 +118,15 @@ export interface Auction {
 }
 
 export interface GameState {
-  /** Save-format version, for future migrations. */
-  version: 1
+  /** Save-format version (save.ts SAVE_VERSION). Older saves are migrated step by step when loaded. */
+  version: 2
+  /** The act being played: 1 = Act I (2017Q1–2022Q3), 2 = Act II (2022Q4–2026Q4). */
+  act: 1 | 2
   seed: number
   /** Current position of the seeded RNG (see rng.ts). */
   rng: number
   phase: Phase
-  /** 0 = 2017Q1 … 22 = 2022Q3; CONTENT.quarters[quarter] gives the label. */
+  /** 0 = 2017Q1 … 22 = 2022Q3 (end of Act I) … 39 = 2026Q4; CONTENT.quarters[quarter] gives the label. */
   quarter: number
   /** Weeks already played in this quarter's live phase (0–13). */
   week: number
@@ -369,7 +371,8 @@ export function roundCents(usd: number): number {
 export function newGame(seed: number): GameState {
   const start = CONTENT.siteTiers.find((t) => t.id === BALANCE.startSite)!
   return {
-    version: 1,
+    version: 2,
+    act: 1,
     seed,
     rng: seed | 0,
     phase: 'plan',

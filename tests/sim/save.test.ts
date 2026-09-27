@@ -1,9 +1,11 @@
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { applyAction } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { playGame, replay } from '../../src/sim/replay.ts'
-import { restoreSave } from '../../src/sim/save.ts'
+import { SAVE_VERSION, restoreSave } from '../../src/sim/save.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
+import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import {
   decodeSave,
   encodeSave,
@@ -66,9 +68,22 @@ describe('saves (scope §2.13)', () => {
     expect(decodeSave('G2G1.not-base64!').ok).toBe(false)
     const cut = encodeSave(newGame(1)).slice(0, 40)
     expect(decodeSave(cut).ok).toBe(false)
-    const future = restoreSave({ ...newGame(1), version: 2 })
+    const future = restoreSave({ ...newGame(1), version: SAVE_VERSION + 1 })
     expect(!future.ok && future.error.key).toBe('error.save_version')
     expect(restoreSave([1, 2]).ok).toBe(false)
+    for (const version of [0, 1.5, '2', undefined])
+      expect(restoreSave({ ...newGame(1), version }).ok).toBe(false)
+  })
+
+  it('refuses a save whose act does not fit its quarter', () => {
+    expect(restoreSave({ ...newGame(1), act: 3 }).ok).toBe(false)
+    expect(restoreSave({ ...newGame(1), act: undefined }).ok).toBe(false)
+    // Act II starts at the act boundary (2022Q3, after the Merge); an Act II save can't be earlier.
+    expect(restoreSave({ ...newGame(1), act: 2, quarter: 5 }).ok).toBe(false)
+    expect(restoreSave({ ...newGame(1), act: 2, quarter: 22 }).ok).toBe(true)
+    expect(restoreSave({ ...newGame(1), act: 2, quarter: 23 }).ok).toBe(true)
+    // Act I ends at 2022Q3.
+    expect(restoreSave({ ...newGame(1), act: 1, quarter: 23 }).ok).toBe(false)
   })
 
   it('slots fail softly where there is no browser storage', () => {
@@ -76,3 +91,98 @@ describe('saves (scope §2.13)', () => {
     expect(readSlot('manual')).toBeNull()
   })
 })
+
+// Real version-1 saves, made by the Act I build before the act field existed (27 Sep 2026,
+// seed 7, raise-climb bot): a Plan phase, a live quarter at week 5, and the Merge decision.
+// They must keep loading in every later build.
+const V1_SAVES = [
+  'v1-plan-2021Q2',
+  'v1-live-2020Q4',
+  'v1-merge-2022Q3',
+] as const
+const readV1 = (name: string): Record<string, unknown> =>
+  JSON.parse(
+    readFileSync(
+      new URL(`../fixtures/saves/${name}.json`, import.meta.url),
+      'utf8',
+    ),
+  )
+
+describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
+  it('a new game is version 2, in Act I', () => {
+    expect(newGame(1).version).toBe(SAVE_VERSION)
+    expect(SAVE_VERSION).toBe(2)
+    expect(newGame(1).act).toBe(1)
+  })
+
+  it.each(V1_SAVES)(
+    'migrates the version-1 save %s: version 2, Act I, nothing else changed',
+    (name) => {
+      const v1 = readV1(name)
+      expect(v1.version).toBe(1)
+      expect('act' in v1).toBe(false)
+      const r = restoreSave(v1)
+      expect(r.ok).toBe(true)
+      if (!r.ok) return
+      const { version, act, ...rest } = r.state
+      expect(version).toBe(2)
+      expect(act).toBe(1)
+      const v1Rest = Object.fromEntries(
+        Object.entries(v1).filter(([key]) => key !== 'version'),
+      )
+      expect(rest).toEqual(v1Rest)
+    },
+  )
+
+  it('migrates a version-1 save exported as text (the G2G1. string) too', () => {
+    const v1 = readV1('v1-plan-2021Q2')
+    const text = 'G2G1.' + Buffer.from(JSON.stringify(v1)).toString('base64')
+    const r = decodeSave(text)
+    expect(r.ok && r.state.version).toBe(2)
+    expect(r.ok && r.state.act).toBe(1)
+  })
+
+  it('a migrated version-1 save plays on to the Merge', () => {
+    const bot = BOTS['raise-climb']
+    for (const name of V1_SAVES) {
+      const r = restoreSave(readV1(name))
+      if (!r.ok) throw new Error(name)
+      let s = r.state
+      while (s.phase !== 'merge') {
+        expect(s.phase).not.toBe('gameover')
+        if (s.phase === 'plan') {
+          for (const a of bot.plan(s)) {
+            const next = applyAction(s, a)
+            if (next.ok) s = next.state
+          }
+          s = ok(applyAction(s, { type: 'END_PLAN' }))
+        } else if (s.phase === 'live') {
+          s = s.interrupt
+            ? ok(
+                applyAction(s, {
+                  type: 'RESOLVE_INTERRUPT',
+                  choice: defaultChoice(s),
+                }),
+              )
+            : advance(s)
+        } else s = ok(applyAction(s, { type: 'NEXT_QUARTER' }))
+      }
+      expect(s.quarter).toBe(22)
+      expect(s.act).toBe(1)
+      s = ok(applyAction(s, { type: 'MERGE_CHOOSE', choice: 'hold_and_wait' }))
+      expect(s.phase).toBe('ended')
+    }
+  })
+
+  it('a version-2 save round-trips unchanged', () => {
+    const s = restoreSave(readV1('v1-merge-2022Q3'))
+    if (!s.ok) throw new Error('load')
+    const again = decodeSave(encodeSave(s.state))
+    expect(again.ok && again.state).toEqual(s.state)
+  })
+})
+
+function ok(r: ReturnType<typeof applyAction>): GameState {
+  if (!r.ok) throw new Error(r.error.key)
+  return r.state
+}

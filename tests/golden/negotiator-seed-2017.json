@@ -1,5 +1,6 @@
 {
-  "version": 1,
+  "version": 2,
+  "act": 1,
   "seed": 2017,
   "rng": -765273658,
   "phase": "ended",

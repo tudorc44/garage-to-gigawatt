@@ -775,7 +775,7 @@ at a time (MW by use → projects → credit rating → tenants → capital → 
 ### Step 1: the act boundary (no new Act II gameplay), split into 5 parts
 - **1a. Market to 2026Q4 + act spans** — done (27 Sep 2026, not committed yet).
 - **1b. Held Act I values for 2022Q4+** — done (27 Sep 2026, not committed yet); the list is below.
-- 1c. `act` field + save version 2 (a real version step) + the Act I → II migration test.
+- **1c. `act` field + save version 2 + migration tests** — done (27 Sep 2026, not committed yet).
 - 1d. The phase flow Merge → Act I chapter report → Act II intro → 2022Q4 Plan (Act I systems keep running), the
   "Start of Act II" autosave slot; `replay.ts`, `tools/play.ts`, the sim-runner and the goldens stop at the act
   boundary instead of `ended`.
@@ -829,6 +829,29 @@ What the Act I systems do in Act II (probe, 3 seeds per bot, stepping over the M
 errors; no Act I event card fired after 2022Q3 in these runs. Fleets of S9s and GPU rigs (raise-climb, cautious,
 hodl) are switched off by 2026 at 2022 power prices (BTC hashprice ~$40/PH/day, no ETH mining). texas-ipo's S19
 fleet earns through Act II: revenue ~$21M (2022Q4) → ~$34–37M (2024Q1, before the halving) → ~$13M (2026Q4).
+
+**1c, the save format:**
+- `GameState.act` (1 = Act I, 2 = Act II; a new game is Act I) and `version: 2`.
+- `save.ts` now migrates **step by step**: `MIGRATIONS[n]` turns a version-n save into version n + 1, run in turn
+  up to `SAVE_VERSION` (2). The 1 → 2 step adds `act: 1` (version 1 had only Act I). The old "fill in fields added
+  since" rule still runs after it, for small additions within a version. A save from a newer build is refused
+  ("different version"); a non-integer or missing version is "not a save".
+- Loading checks the act fits the quarter: Act I up to 2022Q3; Act II from 2022Q3 on (the act boundary screens
+  come after the Merge, still at 2022Q3).
+- The export string keeps its `G2G1.` wrapper; the version inside the save is what migrates, so old exported
+  strings import fine.
+- **Tests with real old saves:** `tests/fixtures/saves/v1-*.json` are three version-1 saves captured from the Act I
+  build before this change (seed 7, raise-climb: 2021Q2 Plan, 2020Q4 live at week 5, the 2022Q3 Merge). They load
+  as version 2 / Act I with nothing else changed, also from an exported `G2G1.` string, and play on to the Merge.
+  Keep these files forever: every future build must load them. The "into Act II" half of the migration test
+  comes with 1d.
+- **Golden change (accepted):** all 11 goldens change by the same two lines: `"version": 1` → `2`, and `"act": 1`
+  added. Nothing else.
+- Found while testing: `tests/sim/save.test.ts`'s old `finishQuarter` helper answers every alert "hold" and
+  force-clears one it can't answer, which skips the end of the quarter if the alert came in week 13. The new
+  bounds check caught it (it used to read an undefined week). The game itself is fine (answering an alert in
+  week 13 ends the quarter, `actions.ts`); the new tests answer with `defaultChoice`.
+
 
 ## Next
 

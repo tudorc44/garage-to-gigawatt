@@ -11,7 +11,10 @@ const KEY: Record<Slot, string> = {
   autosave: 'g2g.save.autosave',
   manual: 'g2g.save.manual',
 }
-/** Marks an exported save string (and its format version). */
+/**
+ * Marks an exported save string. This wrapper hasn't changed since the first build; the save
+ * inside carries its own format version (GameState.version), which loading migrates.
+ */
 const PREFIX = 'G2G1.'
 
 /** The game as a text string: PREFIX + base64 of the JSON (UTF-8 safe). */

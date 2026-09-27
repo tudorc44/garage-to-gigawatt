@@ -1,6 +1,9 @@
-// Loading saves (scope §2.13). A save is the plain GameState as JSON, so saving needs nothing
-// here; loading checks the data and fills in fields added to the game after the save was made
-// (their starting values, as in a new game), so older saves keep loading.
+// Loading saves (scope §2.13, Alpha 0.2 §2.15). A save is the plain GameState as JSON, so saving
+// needs nothing here. Loading brings an older save up to the current format in two ways:
+//  1. Version steps: each change of format has a migration from version n to n + 1, run in turn.
+//  2. Small additions within a version: fields added since the save was made get their
+//     starting values, as in a new game.
+import { actLastQuarter } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
 import {
@@ -12,18 +15,47 @@ import {
 
 const PHASES: Phase[] = ['plan', 'live', 'report', 'merge', 'gameover', 'ended']
 
+/** The save format this build writes (GameState.version). */
+export const SAVE_VERSION = 2
+
+type SaveData = Record<string, unknown>
+
+/** One step per format change: MIGRATIONS[n] turns a version-n save into a version-(n + 1) save. */
+const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
+  // 1 → 2 (the Act II build): a save records the act being played. Version 1 had only
+  // Act I (the game ended at the Merge), so every version-1 save is an Act I save.
+  1: (data) => ({ ...data, version: 2, act: 1 }),
+}
+
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }
 
 function isObject(x: unknown): x is Record<string, unknown> {
   return typeof x === 'object' && x !== null && !Array.isArray(x)
 }
 
+/**
+ * Act I runs to 2022Q3 (the Merge); Act II starts at the act boundary. An Act II save can
+ * still be at 2022Q3 (the act boundary screens come after the Merge, before 2022Q4).
+ */
+function actFitsQuarter(act: unknown, quarter: number): boolean {
+  const boundary = actLastQuarter(1)
+  if (act === 1) return quarter <= boundary
+  if (act === 2) return quarter >= boundary
+  return false
+}
+
 /** Checks a parsed save and brings it up to the current format. Doesn't trust it blindly. */
-export function restoreSave(data: unknown): Loaded {
+export function restoreSave(raw: unknown): Loaded {
   const bad: Loaded = { ok: false, error: { key: 'error.save_invalid' } }
-  if (!isObject(data)) return bad
-  if (data.version !== 1)
+  if (!isObject(raw)) return bad
+  const from = raw.version
+  if (typeof from !== 'number' || !Number.isInteger(from) || from < 1)
+    return bad
+  // A save from a newer build than this one: we can't know its format.
+  if (from > SAVE_VERSION)
     return { ok: false, error: { key: 'error.save_version' } }
+  let data: SaveData = raw
+  for (let v = from; v < SAVE_VERSION; v++) data = MIGRATIONS[v](data)
   if (
     typeof data.seed !== 'number' ||
     typeof data.quarter !== 'number' ||
@@ -32,7 +64,8 @@ export function restoreSave(data: unknown): Loaded {
     !Array.isArray(data.sites) ||
     !Array.isArray(data.machines) ||
     !Array.isArray(data.reports) ||
-    !Array.isArray(data.log)
+    !Array.isArray(data.log) ||
+    !actFitsQuarter(data.act, data.quarter)
   )
     return bad
   const fresh = newGame(data.seed)
