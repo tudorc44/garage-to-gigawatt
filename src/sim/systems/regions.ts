@@ -88,6 +88,26 @@ export function extraQueueQuarters(
   ].reduce((sum, p) => sum + (p.effect.queue_quarters?.[region] ?? 0), 0)
 }
 
+/**
+ * What the region's policies in force in `quarter` do to a project started then (owner, 28 Sep 2026):
+ * the share of full power its MW pay while building (AEP Ohio: 85%; null = the normal reservation)
+ * and its capex multiplier (Arizona: 1.05).
+ */
+export function projectPolicy(
+  region: PowerRegion | undefined,
+  quarter: number,
+): { reservationShare: number | null; capexMult: number } {
+  if (!region || !act2Quarter(quarter))
+    return { reservationShare: null, capexMult: 1 }
+  const ps = activePolicies(region, quarter)
+  const share = ps.find((p) => p.effect.project_reservation_share !== undefined)
+    ?.effect.project_reservation_share
+  return {
+    reservationShare: share ?? null,
+    capexMult: ps.reduce((m, p) => m * (p.effect.project_capex_mult ?? 1), 1),
+  }
+}
+
 /** SB6: from its quarter, the grid can curtail sites of min_kw and up directly (null before). */
 export function directCurtailment(
   region: PowerRegion,

@@ -33,7 +33,7 @@
    "heat_modifier": 1.05,
    "anger_modifier": 1.1,
    "policies": [
-    {"id": "aep_ohio_tariff", "date": "2026-04", "quarter": "2026Q2", "effect": {}, "source": "powermag.com, electricityrates.com; doc 18 §6: cost allocation, not a moratorium (no number yet)"}
+    {"id": "aep_ohio_tariff", "date": "2026-04", "quarter": "2026Q2", "effect": {"power_adder_usd_kwh": 0.005, "project_reservation_share": 0.85}, "source": "powermag.com, electricityrates.com; doc 18 §6: cost allocation, not a moratorium. Numbers: owner, 28 Sep 2026 (+$0.005/kWh; projects started from 2026Q2 pay 85% of full power while building: the real tariff's 85% minimum-demand rule)"}
    ]
   },
   {
@@ -43,7 +43,7 @@
    "heat_modifier": 1.0,
    "anger_modifier": 1.05,
    "policies": [
-    {"id": "georgia_cost_shift", "date": "2026-03", "quarter": "2026Q1", "effect": {}, "source": "datacenterfrontier.com; psc.ga.gov fact sheet (no number yet)"}
+    {"id": "georgia_cost_shift", "date": "2026-03", "quarter": "2026Q1", "effect": {"power_adder_usd_kwh": 0.005}, "source": "datacenterfrontier.com; psc.ga.gov fact sheet. Number: owner, 28 Sep 2026 (+$0.005/kWh)"}
    ]
   },
   {
@@ -53,7 +53,7 @@
    "heat_modifier": 1.1,
    "anger_modifier": 1.15,
    "policies": [
-    {"id": "arizona_incentive_pause", "date": "2026-06-13", "quarter": "2026Q2", "effect": {}, "source": "electricchoice.com; doc 18 §6: incentive pauses raise opex (no number yet)"}
+    {"id": "arizona_incentive_pause", "date": "2026-06-13", "quarter": "2026Q2", "effect": {"project_capex_mult": 1.05}, "source": "electricchoice.com; doc 18 §6: incentive pauses raise costs. Number: owner, 28 Sep 2026 (+5% capex on projects started from 2026Q2; no power-price change)"}
    ]
   },
   {

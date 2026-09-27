@@ -315,6 +315,10 @@ const policyEffectSchema = z.object({
   heat_delta: z.number().optional(),
   /** Extra quarters on grid-upgrade queues, by region, from the policy's quarter on. */
   queue_quarters: z.record(z.string(), z.number().int().min(0)).optional(),
+  /** Projects started there from the policy's quarter pay this share of full power on their MW while building (AEP Ohio). */
+  project_reservation_share: z.number().min(0).max(1).optional(),
+  /** Projects started there from the policy's quarter cost this much more (Arizona's paused incentives). */
+  project_capex_mult: z.number().min(1).optional(),
 })
 
 const policySchema = z.object({

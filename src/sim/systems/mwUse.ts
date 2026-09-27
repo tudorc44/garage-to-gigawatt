@@ -11,6 +11,7 @@ import {
   powerPriceUsdKwh,
   regionOf,
 } from './sites.ts'
+import { projectPolicy } from './regions.ts'
 
 export const MW_USES = [
   'mining',
@@ -107,6 +108,19 @@ export function payReservationWeek(state: GameState): number {
       hours *
       powerPriceUsdKwh(site, state.quarter) *
       share
+    // AEP Ohio (owner, 28 Sep 2026): a project started there from 2026Q2 pays 85% of full power on
+    // its MW while building (the tariff's minimum demand), not the usual 25%.
+    for (const p of state.projects) {
+      if (p.siteId !== site.id || p.stage !== 'building' || p.power) continue
+      if (p.startQuarter === null) continue
+      const policy = projectPolicy(regionOf(site), p.startQuarter)
+      if (policy.reservationShare === null) continue
+      usd +=
+        p.kw *
+        hours *
+        powerPriceUsdKwh(site, state.quarter) *
+        Math.max(0, policy.reservationShare - share)
+    }
   }
   state.cash -= usd
   return usd

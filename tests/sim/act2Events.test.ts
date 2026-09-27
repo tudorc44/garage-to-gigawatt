@@ -1,7 +1,12 @@
 // The Act II event deck (M5.8; scope 0.2 §2.12; events_act2.json): its cards and texts, the
 // scripted timeline's market effects, and what the new card effects do.
 import { describe, expect, it } from 'vitest'
-import { CONTENT } from '../../src/content/index.ts'
+import { CONTENT, act2Quarter } from '../../src/content/index.ts'
+import { projectCapex } from '../../src/sim/systems/projects.ts'
+import {
+  projectPolicy,
+  regionPowerAdderUsdKwh,
+} from '../../src/sim/systems/regions.ts'
 import { hasText } from '../../src/i18n/t.ts'
 import { applyAction } from '../../src/sim/actions.ts'
 import type { GameState } from '../../src/sim/state.ts'
@@ -114,8 +119,9 @@ describe('card effects', () => {
     expect(s.events.creditNotch).toEqual({ notches: -1, until: q('2023Q2') })
   })
 
-  it('the PJM shock: power × 1.3 at your PJM/Ohio/Georgia sites for 4 quarters, from next quarter', () => {
+  it('the PJM shock: power × 1.3 at your Virginia and Ohio sites for 4 quarters, from next quarter; not Georgia (owner, 28 Sep 2026)', () => {
     const before = act2Company('2024Q4') // a Georgia own site
+    before.sites[1].region = 'ohio'
     const s = choose(showing(before, 'ec10_pjm_shock'), 'absorb')
     const site = s.sites[1]
     const p = (label: string) => powerPriceUsdKwh(site, q(label))
@@ -124,6 +130,36 @@ describe('card effects', () => {
     expect(p('2025Q1')).toBeCloseTo(plain('2025Q1') * 1.3, 9)
     expect(p('2025Q4')).toBeCloseTo(plain('2025Q4') * 1.3, 9)
     expect(p('2026Q1')).toBeCloseTo(plain('2026Q1'), 9)
+    const georgia = act2Company('2024Q4')
+    const g = choose(showing(georgia, 'ec10_pjm_shock'), 'absorb')
+    expect(powerPriceUsdKwh(g.sites[1], q('2025Q1'))).toBeCloseTo(
+      powerPriceUsdKwh(georgia.sites[1], q('2025Q1')),
+      9,
+    )
+  })
+
+  it('regional policies (owner, 28 Sep 2026): Georgia and Ohio +$0.005/kWh, Ohio builds pay 85%, Arizona builds +5%', () => {
+    expect(regionPowerAdderUsdKwh('georgia', q('2025Q4'))).toBe(0)
+    expect(regionPowerAdderUsdKwh('georgia', q('2026Q1'))).toBeCloseTo(0.005, 9)
+    expect(regionPowerAdderUsdKwh('ohio', q('2026Q1'))).toBe(0)
+    expect(regionPowerAdderUsdKwh('ohio', q('2026Q2'))).toBeCloseTo(0.005, 9)
+    expect(regionPowerAdderUsdKwh('arizona', q('2026Q3'))).toBe(0)
+    expect(projectPolicy('ohio', q('2026Q2')).reservationShare).toBe(0.85)
+    expect(projectPolicy('ohio', q('2026Q1')).reservationShare).toBeNull()
+    expect(projectPolicy('arizona', q('2026Q2')).capexMult).toBe(1.05)
+    expect(projectPolicy('arizona', q('2026Q1')).capexMult).toBe(1)
+    const az = act2Company('2026Q2')
+    az.sites[1].region = 'arizona'
+    const shell = { kw: 5000, kind: 'shell' as const, gpu: null, tenant: null }
+    const at = (s: typeof az) =>
+      projectCapex(s, { ...shell, siteId: 'site-2' }).totalUsd
+    expect(at(az)).toBeCloseTo(
+      at({ ...az, quarter: q('2026Q1') }) *
+        1.05 *
+        (act2Quarter(q('2026Q2'))!.capexUsdMw.retrofitShell /
+          act2Quarter(q('2026Q1'))!.capexUsdMw.retrofitShell),
+      2,
+    )
   })
 
   it('DDTL widening: new equipment loans and DDTLs +2 points (lock) or +3 (wait)', () => {

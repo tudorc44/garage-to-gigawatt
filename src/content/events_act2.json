@@ -46,10 +46,10 @@
     {"id": "pr_push", "effects": {"cash": -100000, "valuation_mult": {"mult": 1.05, "quarters": 4}}},
     {"id": "quiet", "effects": {}}
    ]},
-  {"id": "ec10_pjm_shock", "type": "scripted", "quarter": "2024Q4", "week_of": "2024-10-14", "requires": "site_pjm_ohio_georgia", "default": "absorb",
+  {"id": "ec10_pjm_shock", "type": "scripted", "quarter": "2024Q4", "week_of": "2024-10-14", "requires": "site_pjm_ohio", "default": "absorb",
    "choices": [
-    {"id": "absorb", "effects": {"region_power_mult": {"regions": ["pjm", "ohio", "georgia"], "mult": 1.3, "quarters": 4}}},
-    {"id": "lobby", "effects": {"bandwidth_next": -1, "region_grievance": {"regions": ["pjm", "ohio", "georgia"], "value": 10}}}
+    {"id": "absorb", "effects": {"region_power_mult": {"regions": ["pjm", "ohio"], "mult": 1.3, "quarters": 4}}},
+    {"id": "lobby", "effects": {"bandwidth_next": -1, "region_grievance": {"regions": ["pjm", "ohio"], "value": 10}}}
    ]},
   {"id": "ec11_warrenton_backlash", "type": "scripted", "quarter": "2024Q4", "week_of": "2024-11-04", "requires": "site_pjm", "site": "pjm_site", "default": "proceed",
    "choices": [

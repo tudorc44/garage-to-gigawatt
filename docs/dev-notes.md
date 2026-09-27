@@ -208,3 +208,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   Act II GPU rigs resell on the 15%/yr curve (mine). Bots `open-*` (tools/bots.ts); AI bots mine only until their AI phase (M6.0d fix).
 - M6.0g: Ratepayer Anger (`anger.ts`, balance.ts › act2Regions.anger): Heat + floor(Anger ÷ 5), region panel row; ec21 (bypass card from
   2026Q2, the angriest region ≥ 50): wait = 4-quarter regional moratorium on opening/starting projects, lobby = −2 BW next and 2 quarters (mine).
+- M6.0h: regions.json effects: Georgia +$0.005 (2026Q1); Ohio +$0.005 and `project_reservation_share` 0.85 (building MW of projects started
+  from 2026Q2; mine: not idle MW, not grid/gas-powered builds); Arizona `project_capex_mult` 1.05 (all of capex). ec10 hits Virginia + Ohio only.

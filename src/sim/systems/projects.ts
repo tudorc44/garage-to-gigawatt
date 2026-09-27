@@ -41,6 +41,7 @@ import {
 } from './power.ts'
 import { isHired } from './hires.ts'
 import { regionMoratoriumOn } from './anger.ts'
+import { projectPolicy } from './regions.ts'
 import { convertibleKw } from './hosting.ts'
 import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
 
@@ -235,14 +236,22 @@ export function projectCapex(
       mult *
       gpuPriceMultNow(state, quarter)
   }
+  // A region's policy can raise the cost of projects started now (Arizona's paused incentives, +5%).
+  const policyMult = projectPolicy(
+    site ? regionOf(site) : undefined,
+    quarter,
+  ).capexMult
   const card = p.tenant ? tenantCard(p.tenant.card) : undefined
-  const creditUsd = Math.min(retrofitUsd, (card?.capexCreditUsdMw ?? 0) * mw)
+  const creditUsd = Math.min(
+    retrofitUsd * policyMult,
+    (card?.capexCreditUsdMw ?? 0) * mw,
+  )
   return {
-    retrofitUsd,
-    gpuUsd,
-    powerUsd,
+    retrofitUsd: retrofitUsd * policyMult,
+    gpuUsd: gpuUsd * policyMult,
+    powerUsd: powerUsd * policyMult,
     creditUsd,
-    totalUsd: retrofitUsd + gpuUsd + powerUsd - creditUsd,
+    totalUsd: (retrofitUsd + gpuUsd + powerUsd) * policyMult - creditUsd,
     gpuCount,
   }
 }
