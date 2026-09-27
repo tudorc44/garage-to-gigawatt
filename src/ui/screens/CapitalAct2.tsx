@@ -351,6 +351,11 @@ function Equity({ state, act }: ScreenProps) {
       <p class="num-s muted" style={{ margin: 0 }}>
         {t('ui.cap2.raise_note', { pre: fmt.money(v.preMoneyUsd) })}
       </p>
+      {v.signedUsd > 0 && (
+        <p class="num-s gain" style={{ margin: 0 }}>
+          {t('ui.cap2.raise_signed', { usd: fmt.money(v.signedUsd) })}
+        </p>
+      )}
       <div class="raise-options">
         {v.options.map((o) => (
           <BwButton

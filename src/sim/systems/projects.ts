@@ -1050,17 +1050,18 @@ export function backlogUsd(state: GameState): number {
   return state.projects.reduce((sum, p) => sum + remainingContractUsd(p), 0)
 }
 
+/** A signed contract's backlog weight: its tenant's credit, or the backstop's (0 with no tenant). */
+export function contractWeight(p: Project): number {
+  if (!p.tenant) return 0
+  return p.backstop
+    ? BALANCE.finance.backstopBacklogWeight
+    : backlogWeight(tenantCard(p.tenant.card)!.rating)
+}
+
 /** The backlog as the valuation counts it: each contract × its tenant's weight (spot counts 0). */
 export function weightedBacklogUsd(state: GameState): number {
   return state.projects.reduce(
-    (sum, p) =>
-      p.tenant
-        ? sum +
-          remainingContractUsd(p) *
-            (p.backstop
-              ? BALANCE.finance.backstopBacklogWeight
-              : backlogWeight(tenantCard(p.tenant.card)!.rating))
-        : sum,
+    (sum, p) => sum + remainingContractUsd(p) * contractWeight(p),
     0,
   )
 }

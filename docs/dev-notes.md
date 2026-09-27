@@ -167,6 +167,8 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.0c: Act II equipment loan priced on the rating (balance.ts › finance.equipmentLoan; Capital screen lists the
   bands). Before the first Act II quarter end it uses the rating the last report gives (mine, reversible). The
   built Capital screen never had a "Raise debt" button, so nothing to remove.
+- M5.0d: equity pre-money = last report's valuation + this quarter's signed contracts × their backlog weight + the
+  pivot premium on last quarter's mining EBITDA if the first AI deal is this quarter's (`signedThisQuarterUsd`).
 
 ## Next
 

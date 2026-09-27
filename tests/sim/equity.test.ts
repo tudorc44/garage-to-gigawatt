@@ -1,8 +1,18 @@
 // Act II equity raise / at-the-market offering (M4.5; scope 0.2 §2.7, doc 18 §7.1): priced at the
-// last valuation, dilution 8–20%, 2 Bandwidth, once a quarter.
+// valuation now (the last report's plus this quarter's signings, M5.0d), dilution 8–20%, 2 Bandwidth,
+// once a quarter.
 import { describe, expect, it } from 'vitest'
 import type { GameState } from '../../src/sim/state.ts'
-import { equityRaiseUsd } from '../../src/sim/systems/equity.ts'
+import {
+  equityPreMoneyUsd,
+  equityRaiseUsd,
+  signedThisQuarterUsd,
+} from '../../src/sim/systems/equity.ts'
+import {
+  contractWeight,
+  remainingContractUsd,
+} from '../../src/sim/systems/projects.ts'
+import { aiEbitdaUsd } from '../../src/sim/systems/valuation.ts'
 import { act2Company, ok, playQuarter } from './act2Helpers.ts'
 
 /** An Act II company with a first quarter report (its valuation prices the raise). */
@@ -39,6 +49,46 @@ describe('the equity raise', () => {
       { type: 'RAISE_EQUITY', dilution: 0.2 },
     )
     expect(pub.log.at(-1)!.key).toBe('log.atm_raised')
+  })
+
+  it('is priced off the valuation with this quarter’s signed contracts in it (owner, M4 answers)', () => {
+    let s = valued()
+    const pre = s.reports.at(-1)!.valuationUsd
+    s = ok(s, {
+      type: 'PROJECT_OPEN',
+      siteId: 'site-2',
+      kw: 5000,
+      kind: 'shell',
+    })
+    const p = s.projects[0]
+    s = ok(s, {
+      type: 'PROJECT_SIGN_TENANT',
+      projectId: p.id,
+      offerId: p.offers[0].id,
+    })
+    const signed = s.projects[0]
+    const added = signedThisQuarterUsd(s)
+    expect(added.backlogUsd).toBeCloseTo(
+      remainingContractUsd(signed) * contractWeight(signed),
+      4,
+    )
+    expect(added.backlogUsd).toBeGreaterThan(0)
+    // The first AI deal: the pivot premium's +2 on last quarter's mining EBITDA, at once.
+    const r = s.reports.at(-1)!
+    expect(s.firstAiDealQuarter).toBe(s.quarter)
+    expect(added.pivotUsd).toBeCloseTo(
+      Math.max(0, (r.ebitdaUsd - aiEbitdaUsd(r)) * 4) * 2,
+      4,
+    )
+    expect(equityPreMoneyUsd(s)).toBeCloseTo(
+      pre + added.backlogUsd + added.pivotUsd,
+      4,
+    )
+    // Next quarter the report has them; nothing is counted twice.
+    expect(signedThisQuarterUsd(playQuarter(s))).toEqual({
+      backlogUsd: 0,
+      pivotUsd: 0,
+    })
   })
 
   it('needs a valuation (a report) and Act II', () => {

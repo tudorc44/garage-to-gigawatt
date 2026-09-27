@@ -16,6 +16,7 @@ import {
   equityPreMoneyUsd,
   equityRaiseUsd,
   isPublic,
+  signedThisQuarterUsd,
 } from './systems/equity.ts'
 import { equipmentTerms, ratingLoanBand } from './systems/loans.ts'
 import { backstopWarrants } from './systems/partners.ts'
@@ -223,10 +224,13 @@ export function equityView(state: GameState) {
     stakeAfter: state.founderStake * (1 - dilution),
     blocker: equityBlocker(state, dilution) ?? null,
   }))
+  const signed = signedThisQuarterUsd(state)
   return {
     founderStake: state.founderStake,
     founderValueUsd: pre * state.founderStake,
     preMoneyUsd: pre,
+    /** What this quarter's signings add to the last report's valuation (backlog + pivot premium). */
+    signedUsd: signed.backlogUsd + signed.pivotUsd,
     public: isPublic(state),
     bandwidth: BALANCE.finance.bandwidth.equity,
     options,

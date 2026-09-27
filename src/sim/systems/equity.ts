@@ -1,10 +1,13 @@
 // Act II equity (scope 0.2 §2.7; doc 18 §7.1): a private equity raise, or an at-the-market offering
-// once the company is public. Priced at the last quarter report's valuation (the pre-money); the
+// once the company is public. Priced at the valuation now (the pre-money): the last quarter report's,
+// plus what this quarter's signed contracts add at once (owner decision on the M4 questions). The
 // player picks the dilution within lenders.json's 8–20% and raises pre-money × d ÷ (1 − d), so the
 // new shares are exactly d of the company after the raise. 2 Bandwidth; once a quarter (mine).
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type GameState } from '../state.ts'
+import { contractWeight, remainingContractUsd } from './projects.ts'
+import { aiEbitdaUsd } from './valuation.ts'
 
 /** The raisesDone entry that marks this quarter's equity raise (one a quarter). */
 const marker = (quarter: number) => `equity-${CONTENT.quarters[quarter]}`
@@ -14,9 +17,33 @@ export function isPublic(state: GameState): boolean {
   return state.raisesDone.includes('ipo_spac')
 }
 
-/** The pre-money valuation an equity raise is priced at now: the last report's valuation. */
+/**
+ * What signing this quarter adds to the last report's valuation: each contract signed this quarter
+ * at its backlog weight, and the pivot premium on the last report's mining EBITDA if the first AI
+ * deal was signed this quarter (the report didn't have it yet).
+ */
+export function signedThisQuarterUsd(state: GameState): {
+  backlogUsd: number
+  pivotUsd: number
+} {
+  const backlogUsd = state.projects
+    .filter((p) => p.tenant?.signedQuarter === state.quarter)
+    .reduce((sum, p) => sum + remainingContractUsd(p) * contractWeight(p), 0)
+  const report = state.reports.at(-1)
+  const pivotUsd =
+    report && state.firstAiDealQuarter === state.quarter
+      ? Math.max(0, (report.ebitdaUsd - aiEbitdaUsd(report)) * 4) *
+        BALANCE.projects.pivotPremium
+      : 0
+  return { backlogUsd, pivotUsd }
+}
+
+/** The pre-money valuation an equity raise is priced at now: the last report's, plus this quarter's signings. */
 export function equityPreMoneyUsd(state: GameState): number {
-  return Math.max(0, state.reports.at(-1)?.valuationUsd ?? 0)
+  const report = state.reports.at(-1)
+  if (!report) return 0
+  const added = signedThisQuarterUsd(state)
+  return Math.max(0, report.valuationUsd + added.backlogUsd + added.pivotUsd)
 }
 
 /** What raising at `dilution` brings in now. */
