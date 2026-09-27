@@ -155,3 +155,23 @@ polyline.g-spark-line { fill: none; }
 .g-mark { display: block; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } .g-btn:active { transform: none; } }
+
+/* Bedroom era (Prologue, 2009–16): the only treatments colour tokens cannot express.
+   Graph paper at half pitch, pencil-dashed panel rules, display titles one weight lighter. */
+[data-theme="bedroom"] { --grid-pitch: 12px; }
+[data-theme="bedroom"] .g-panel,
+[data-theme="bedroom"] .g-mc,
+[data-theme="bedroom"] .g-mc-cap { border-style: dashed; }
+[data-theme="bedroom"] .screen-title,
+[data-theme="bedroom"] .card-title,
+[data-theme="bedroom"] .g-merge-title { font-weight: 600; }
+
+/* MachineCard: 240×160 line drawing of a machine class on the era's paper, caption strip below. */
+.g-mc { margin: 0; width: 240px; display: flex; flex-direction: column; background: var(--panel); border: var(--border-hair) solid var(--line); border-radius: var(--radius-2); color: var(--ink); overflow: hidden; }
+.g-mc-draw { display: block; width: 100%; height: auto; aspect-ratio: 3 / 2; background-color: var(--paper); background-image: linear-gradient(var(--paper-grid) 1px, transparent 1px), linear-gradient(90deg, var(--paper-grid) 1px, transparent 1px); background-size: var(--grid-pitch) var(--grid-pitch); }
+.g-mc-draw .t { fill: var(--panel-sunk); }
+.g-mc-cap { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-2); min-height: 36px; box-sizing: border-box; padding: var(--space-2) var(--space-3); border-top: var(--border-hair) solid var(--line); }
+.g-mc-name { font: var(--text-body-s); font-weight: 600; color: var(--ink); }
+.g-mc-era { font: var(--text-num-s); font-variant-numeric: tabular-nums; color: var(--ink-muted); white-space: nowrap; }
+.g-mc.is-compact { width: 120px; border: 0; background: transparent; }
+.g-mc.is-compact .g-mc-draw { background: none; }

@@ -22,8 +22,10 @@ export interface ToastProps { eyebrow: string; title: string; detail?: string; }
 export interface NewsTickerProps { text: string; masthead?: string; }
 export interface TagProps { tone?: "neutral" | "warn" | "danger" | "tape"; children: ReactNode; }
 export interface MergeOptionProps { letter: "A" | "B" | "C" | "D"; title: string; text: string; preview: string; hint?: string; selected?: boolean; }
-export type IconName = "cash" | "treasury" | "bandwidth" | "btc" | "eth" | "hashrate" | "power" | "heat" | "site" | "machine" | "loan" | "rival" | "news" | "settings" | "pause" | "speed" | "skip" | "warning" | "dashboard" | "fleet" | "capital" | "people" | "league" | "log" | "gpu-rig" | "asic" | "garage" | "small-unit" | "warehouse" | "own-site" | "texas-site" | "buy" | "sell" | "scout" | "negotiate" | "pitch" | "hire" | "outreach" | "read-market" | "bid" | "price-alert" | "curtail" | "failure" | "complaint" | "margin-call" | "locked" | "in-transit" | "degraded" | "seed" | "ipo" | "cap-table" | "close" | "info" | "check" | "chevron-right" | "save" | "export" | "import" | "sound-on" | "sound-off" | "glossary";
+export type IconName = "cash" | "treasury" | "bandwidth" | "btc" | "eth" | "hashrate" | "power" | "heat" | "site" | "machine" | "loan" | "rival" | "news" | "settings" | "pause" | "speed" | "skip" | "warning" | "dashboard" | "fleet" | "capital" | "people" | "league" | "log" | "gpu-rig" | "asic" | "garage" | "small-unit" | "warehouse" | "own-site" | "texas-site" | "buy" | "sell" | "scout" | "negotiate" | "pitch" | "hire" | "outreach" | "read-market" | "bid" | "price-alert" | "curtail" | "failure" | "complaint" | "margin-call" | "locked" | "in-transit" | "degraded" | "seed" | "ipo" | "cap-table" | "close" | "info" | "check" | "chevron-right" | "save" | "export" | "import" | "sound-on" | "sound-off" | "glossary" | "pc-tower" | "gpu-card" | "fpga-board" | "asic-early" | "solo" | "pool" | "wallet" | "exchange" | "backup" | "lost-key" | "pre-order" | "group-buy" | "move-out" | "conference" | "vanity" | "household" | "auto-play";
 export interface IconProps { name: IconName; size?: 16 | 20 | number; label?: string; className?: string; }
+export type MachineName = "pc-tower-2009" | "gpu-card-2010" | "fpga-board-2011" | "asic-preorder-2013" | "asic-box-2014" | "asic-box-2016" | "gpu-rig-open-frame" | "asic-box-2020" | "gpu-server-8x" | "gpu-rack-liquid";
+export interface MachineCardProps { name: MachineName; caption?: string; era?: string; compact?: boolean; className?: string; }
 export interface LogoProps { size?: number; layout?: "stacked" | "horizontal"; tone?: "black" | "reversed" | "mono"; }
 export interface MarkProps { size?: number; band?: boolean; label?: string; }
 
@@ -60,6 +62,8 @@ export declare const Tag: (p: TagProps) => JSX.Element;
 export declare const MergeOption: (p: MergeOptionProps) => JSX.Element;
 export declare const Icon: (p: IconProps) => JSX.Element;
 export declare const iconNames: IconName[];
+export declare const MachineCard: (p: MachineCardProps) => JSX.Element;
+export declare const machineNames: MachineName[];
 export declare const Logo: (p: LogoProps) => JSX.Element;
 export declare const Mark: (p: MarkProps) => JSX.Element;
 export declare const fmt: Fmt;

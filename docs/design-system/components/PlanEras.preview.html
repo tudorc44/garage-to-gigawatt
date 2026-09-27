@@ -1,0 +1,138 @@
+<!-- @dsCard group="Screens" height=432 width=1280 subtitle="Plan dashboard in bedroom (Prologue, Q3 2011) next to garage (Act I, Q3 2018): the same notebook a few years apart. Sample player state; market figures from the Prologue data." -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Plan dashboard, bedroom next to garage</title></head>
+<body>
+<div id="root"></div>
+<script>
+var G = window.G2G, f = G.fmt, h = React.createElement;
+
+function Frame(p) {
+  return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 6 } },
+    h('div', { className: 'g-label', style: { color: 'var(--ink-muted)' } }, p.label),
+    h('div', { 'data-theme': p.theme, style: { width: 624, height: 351, overflow: 'hidden', border: '1px solid var(--line)', borderRadius: 4 } },
+      h('div', { style: { width: 1280, height: 720, transform: 'scale(0.4875)', transformOrigin: 'top left' } }, p.children)));
+}
+
+function Top(p) {
+  return h('div', { style: { height: 56, display: 'flex', alignItems: 'center', gap: 22, padding: '0 18px', background: 'var(--panel)', borderBottom: '2px solid var(--ink)' } },
+    h('div', { style: { fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 18, width: 150 } }, 'Garage to Gigawatt'),
+    p.children,
+    h('div', { style: { flexGrow: 1 } }),
+    h(G.Button, null, 'Settings'));
+}
+
+function Nav(p) {
+  return h('nav', { style: { width: 164, flexShrink: 0, background: 'var(--panel)', borderRight: '1px solid var(--line)', paddingTop: 12 } },
+    p.items.map(function (t, i) { return h('a', { key: t, href: '#', style: { display: 'block', padding: '9px 16px', fontSize: 14, textDecoration: 'none', color: i === 0 ? 'var(--ink)' : 'var(--ink-muted)', fontWeight: i === 0 ? 600 : 400, background: i === 0 ? 'var(--panel-sunk)' : 'transparent' } }, t); }),
+    p.note ? h('div', { style: { margin: '22px 16px 0' } }, h(G.Tag, { tone: 'tape' }, p.note)) : null);
+}
+
+function Bedroom() {
+  return h('div', { className: 'g-paper', style: { width: 1280, height: 720, display: 'flex', flexDirection: 'column', overflow: 'hidden' } },
+    h(Top, null,
+      h(G.Stat, { label: 'Date', value: 'Q3 2011 · Prologue' }),
+      h(G.Stat, { label: 'Cash', value: f.money(2400), strong: true }),
+      h(G.Stat, { label: 'Coins', value: 'Wallet 70% · Exchange 30%' }),
+      h('div', { className: 'g-stat' }, h('div', { className: 'g-label' }, 'Bandwidth'), h('div', { style: { paddingTop: 3 } }, h(G.Pips, { total: 2, filled: 2 }))),
+      h(G.Stat, { label: 'BTC', value: '$5.28', delta: -0.62 }),
+      h(G.Stat, { label: 'Hashprice', value: '$2,813/TH/d', delta: -0.82 })),
+    h('div', { style: { flexGrow: 1, display: 'flex', minHeight: 0 } },
+      h(Nav, { items: ['Dashboard', 'Rig', 'Wallet', 'Life', 'Log'], note: 'exams in 3 weeks' }),
+      h('main', { style: { flexGrow: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 } },
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: 10 } },
+          h(G.KpiTile, { label: 'Hashrate', value: f.hash(394, 'MH'), sub: 'PC + 1 gaming GPU' }),
+          h(G.KpiTile, { label: 'Mining', value: 'Pool', sub: 'solo: ~1 block in 8 months' }),
+          h(G.KpiTile, { label: 'Income', value: f.money(1500), sub: 'part-time, per quarter' }),
+          h(G.KpiTile, { label: 'Power', value: '$0', sub: 'parents pay the bill' }),
+          h(G.KpiTile, { label: 'Keys backed up', value: '1 of 2', sub: 'one copy only', subTone: 'warn' }),
+          h(G.KpiTile, { label: 'On exchange', value: '30%', sub: 'exposed to hacks', subTone: 'warn' })),
+        h('div', { style: { flexGrow: 1, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, minHeight: 0 } },
+          h('div', { style: { display: 'flex', flexDirection: 'column', gap: 12 } },
+            h('div', { className: 'g-panel', style: { padding: '11px 13px', display: 'flex', flexDirection: 'column', gap: 8 } },
+              h('div', { className: 'g-row-between' }, h('span', { className: 'panel-title', style: { fontFamily: 'var(--font-display)' } }, 'Market, last 8 quarters'), h(G.Tag, { tone: 'tape' }, 'sell before it drops?')),
+              h('div', { style: { display: 'flex', gap: 14 } },
+                h(G.Sparkline, { series: 'btc', label: 'BTC', width: 220, points: [0, 0.0033, 0.019, 0.165, 0.3, 0.78, 14.73, 5.28] }),
+                h(G.Sparkline, { series: 'hashprice', label: 'Hashprice', width: 220, points: [1122733, 266513, 43964, 35542, 16904, 2813] }))),
+            h('div', { className: 'g-panel', style: { padding: '11px 13px', display: 'flex', flexDirection: 'column', gap: 6 } },
+              h('div', { className: 'g-row-between' }, h('label', { className: 'g-label', htmlFor: 'hodl-b' }, 'Sell mined coins this quarter'), h('span', { className: 'g-num-kpi' }, '20%')),
+              h('input', { id: 'hodl-b', type: 'range', min: 0, max: 100, defaultValue: 20, style: { width: '100%', accentColor: 'var(--ink)' } }),
+              h('div', { className: 'g-row-between g-num-s g-muted' }, h('span', null, 'HODL everything'), h('span', null, 'Sell all'))),
+            h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 } },
+              h(G.SiteCard, { name: 'Your PC (bedroom)', price: 'household', used: 0.29, capacity: 0.5, heat: 34, tag: 'parents noticed' }),
+              h('div', { className: 'g-panel', style: { padding: 8, display: 'flex', justifyContent: 'center' } }, h(G.MachineCard, { name: 'gpu-card-2010', compact: true, caption: 'Gaming GPU' })))),
+          h('div', { className: 'g-panel', style: { padding: '11px 14px', overflow: 'hidden' } },
+            h('div', { className: 'g-row-between' }, h('span', { style: { fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16 } }, 'This quarter’s to-do'), h('span', { className: 'g-num-s g-muted' }, '2 Bandwidth left')),
+            h('div', { className: 'g-label', style: { marginTop: 8 } }, 'Rig'),
+            h(G.ActionRow, { label: 'Buy a second gaming GPU', cost: 1, price: '$399' }),
+            h(G.ActionRow, { label: 'Pre-order an FPGA board', disabledReason: 'opens Q4 2011' }),
+            h('div', { className: 'g-label', style: { marginTop: 8 } }, 'Wallet'),
+            h(G.ActionRow, { label: 'Back up the wallet', cost: 1, price: '$0' }),
+            h(G.ActionRow, { label: 'Move coins off the exchange', cost: 1, price: '1 week' }),
+            h('div', { className: 'g-label', style: { marginTop: 8 } }, 'Life'),
+            h(G.ActionRow, { label: 'Read the forum', cost: 1, price: '$0' }),
+            h(G.ActionRow, { label: 'Move out', disabledReason: 'after exams' }))),
+        h('div', { style: { display: 'flex', gap: 12, alignItems: 'center' } },
+          h('div', { style: { flexGrow: 1 } }, h(G.NewsTicker, { text: 'June: an exchange hack briefly sends the price to cents; trading halted for a week' })),
+          h(G.Button, { variant: 'primary', size: 'l' }, 'End Quarter →')))));
+}
+
+function Garage() {
+  return h('div', { className: 'g-paper', style: { width: 1280, height: 720, display: 'flex', flexDirection: 'column', overflow: 'hidden' } },
+    h(Top, null,
+      h(G.Stat, { label: 'Date', value: 'Q3 2018 · Turn 7/23' }),
+      h(G.Stat, { label: 'Cash', value: f.money(84000), strong: true }),
+      h(G.Stat, { label: 'Treasury', value: '1.2 BTC + 40 ETH · $25.9K' }),
+      h('div', { className: 'g-stat' }, h('div', { className: 'g-label' }, 'Bandwidth'), h('div', { style: { paddingTop: 3 } }, h(G.Pips, { total: 3, filled: 3 }))),
+      h(G.Stat, { label: 'BTC', value: '$6,480', delta: -0.09 }),
+      h(G.Stat, { label: 'ETH', value: '$454', delta: 0.11 }),
+      h(G.Stat, { label: 'Hashprice', value: '$323/PH/d' })),
+    h('div', { style: { flexGrow: 1, display: 'flex', minHeight: 0 } },
+      h(Nav, { items: ['Dashboard', 'Fleet & Sites', 'Capital', 'People', 'League', 'Log'], note: 'planning Q3…' }),
+      h('main', { style: { flexGrow: 1, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 12, minWidth: 0 } },
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: 10 } },
+          h(G.KpiTile, { label: 'Hashrate', value: f.hash(720, 'MH'), sub: f.hash(540, 'TH') }),
+          h(G.KpiTile, { label: 'Revenue last Q', value: f.money(27200), sub: '▼55% vs Q1', subTone: 'loss' }),
+          h(G.KpiTile, { label: 'Power last Q', value: f.money(10200), sub: '+ $6K rent' }),
+          h(G.KpiTile, { label: 'Profit / day each', value: h('span', { className: 'g-num-s' }, 'Rig G1 ', h('span', { className: 'g-gain' }, '+$2.82')), sub: h('span', null, 'S9 ', h('span', { className: 'g-gain' }, '+$1.83')) }),
+          h(G.KpiTile, { label: 'Cost per coin', value: h('span', { className: 'g-num-s' }, 'BTC $4,300'), sub: h('span', { style: { color: 'var(--ink)' } }, 'ETH $223') }),
+          h(G.KpiTile, { label: 'Valuation', value: f.money(119000), sub: 'mostly cash' })),
+        h('div', { style: { flexGrow: 1, display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, minHeight: 0 } },
+          h('div', { style: { display: 'flex', flexDirection: 'column', gap: 12 } },
+            h('div', { className: 'g-panel', style: { padding: '11px 13px', display: 'flex', flexDirection: 'column', gap: 8 } },
+              h('div', { className: 'g-row-between' }, h('span', { className: 'panel-title', style: { fontFamily: 'var(--font-display)' } }, 'Market, last 8 quarters')),
+              h('div', { style: { display: 'flex', gap: 14 } },
+                h(G.Sparkline, { series: 'btc', label: 'BTC', width: 150, points: [964, 1786, 3604, 9389, 9862, 7799, 7087, 6480] }),
+                h(G.Sparkline, { series: 'eth', label: 'ETH', width: 150, points: [8, 177, 287, 409, 915, 554, 358, 454] }),
+                h(G.Sparkline, { series: 'hashprice', label: 'Hashprice', width: 150, points: [736, 880, 1099, 1923, 1144, 500, 310, 323] }))),
+            h('div', { className: 'g-panel', style: { padding: '11px 13px', display: 'flex', flexDirection: 'column', gap: 6 } },
+              h('div', { className: 'g-row-between' }, h('label', { className: 'g-label', htmlFor: 'hodl-g' }, 'Sell mined coins this quarter'), h('span', { className: 'g-num-kpi' }, '60%')),
+              h('input', { id: 'hodl-g', type: 'range', min: 0, max: 100, defaultValue: 60, style: { width: '100%', accentColor: 'var(--ink)' } }),
+              h('div', { className: 'g-row-between g-num-s g-muted' }, h('span', null, 'HODL everything'), h('span', null, '≈ $10.1K cash'), h('span', null, 'Sell all'))),
+            h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 10 } },
+              h(G.SiteCard, { name: 'Garage', price: f.cents(0.12), used: 3.8, capacity: 5, heat: 22 }),
+              h(G.SiteCard, { name: 'Small unit', price: f.cents(0.08), used: 53, capacity: 100, heat: 34, tag: 'neighbour moaning' }))),
+          h('div', { className: 'g-panel', style: { padding: '11px 14px', overflow: 'hidden' } },
+            h('div', { className: 'g-row-between' }, h('span', { style: { fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: 16 } }, 'This quarter’s to-do'), h('span', { className: 'g-num-s g-muted' }, '3 Bandwidth left')),
+            h('div', { className: 'g-label', style: { marginTop: 8 } }, 'Operations'),
+            h(G.ActionRow, { label: 'Buy / sell machines' }),
+            h('div', { className: 'g-label', style: { marginTop: 8 } }, 'Sites & power'),
+            h(G.ActionRow, { label: 'Scout a warehouse (1 MW)', cost: 1, price: '$0' }),
+            h(G.ActionRow, { label: 'Negotiate power contract', cost: 2, price: '$0' }),
+            h('div', { className: 'g-label', style: { marginTop: 8 } }, 'Capital'),
+            h(G.ActionRow, { label: 'Pitch seed investors', cost: 2, price: '$0' }),
+            h(G.ActionRow, { label: 'Crypto-backed loan', cost: 1, price: '50% LTV' }),
+            h('div', { className: 'g-label', style: { marginTop: 8 } }, 'People & community'),
+            h(G.ActionRow, { label: 'Hire Ops Manager', cost: 1, price: '$25K/q' }))),
+        h('div', { style: { display: 'flex', gap: 12, alignItems: 'center' } },
+          h('div', { style: { flexGrow: 1 } }, h(G.NewsTicker, { text: 'New US tariffs hit Chinese-made mining machines' })),
+          h(G.Button, { variant: 'primary', size: 'l' }, 'End Quarter →')))));
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(
+  h('div', { style: { padding: 16, display: 'flex', gap: 16, background: 'var(--panel)' } },
+    h(Frame, { theme: 'bedroom', label: 'bedroom · Prologue · Q3 2011' }, h(Bedroom)),
+    h(Frame, { theme: 'garage', label: 'garage · Act I · Q3 2018' }, h(Garage))));
+</script>
+</body>
+</html>

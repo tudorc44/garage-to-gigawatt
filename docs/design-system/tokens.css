@@ -95,3 +95,17 @@
   --series-eth: #5B6B66;
   --shadow-card: 0 1px 0 #D1D7CF, 0 16px 36px rgba(21,48,42,0.18);
 }
+[data-theme="bedroom"] {
+  --paper: #F0E8D2;
+  --paper-grid: #D9DDC0;
+  --panel: #FAF5E6;
+  --panel-sunk: #E9DFC3;
+  --line: #C9BD98;
+  --line-soft: #D5CAA8;
+  --ink-disabled: #74777F;
+  --on-action: #FAF5E6;
+  --accent: #46602A;
+  --tape: #EDD894;
+  --heat-3: #9A4E1C;
+  --shadow-card: 0 2px 0 #C9BD98, 0 18px 40px rgba(30,42,68,0.25);
+}

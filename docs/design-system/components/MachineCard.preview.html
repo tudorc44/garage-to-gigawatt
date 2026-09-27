@@ -1,0 +1,32 @@
+<!-- @dsCard group="Machines" height=1440 width=1328 subtitle="All ten machine drawings in bedroom, garage and campus: the ink, tint and paper follow each era" -->
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>MachineCard</title></head>
+<body>
+<div id="root"></div>
+<script>
+var G = window.G2G, h = React.createElement;
+var machines = [
+  ['pc-tower-2009', 'Gaming PC', '2009'],
+  ['gpu-card-2010', 'Gaming GPU', '2010'],
+  ['fpga-board-2011', 'FPGA board', '2011'],
+  ['asic-preorder-2013', 'Early ASIC', '2013'],
+  ['asic-box-2014', 'ASIC box', '2014'],
+  ['asic-box-2016', 'ASIC workhorse', '2016'],
+  ['gpu-rig-open-frame', 'GPU rig', 'Act I'],
+  ['asic-box-2020', 'Heavy ASIC', '2020'],
+  ['gpu-server-8x', '8-GPU server', 'Act II'],
+  ['gpu-rack-liquid', 'Liquid rack', 'Act II']
+];
+var eras = [['bedroom', 'bedroom · Prologue'], ['garage', 'garage · Act I'], ['campus', 'campus · Act II']];
+ReactDOM.createRoot(document.getElementById('root')).render(
+  h('div', { style: { display: 'flex', flexDirection: 'column', gap: 12 } },
+    eras.map(function (e) {
+      return h('section', { key: e[0], 'data-theme': e[0], className: 'g-paper', style: { padding: 16, display: 'flex', flexDirection: 'column', gap: 10 } },
+        h('div', { className: 'g-label' }, e[1]),
+        h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(5, 240px)', gap: 16 } },
+          machines.map(function (m) { return h(G.MachineCard, { key: m[0], name: m[0], caption: m[1], era: m[2] }); })));
+    })));
+</script>
+</body>
+</html>
