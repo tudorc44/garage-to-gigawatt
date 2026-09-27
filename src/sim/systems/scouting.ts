@@ -1,7 +1,7 @@
 // Act II scouting (scope 0.2 §2.6; doc 18 §6; sites_act2.json): 1 Bandwidth brings 2–3 site offers
 // (+1 with the BD Lead), each from a category open that quarter (distressed miner sites 2022Q4–2023,
-// greenfield from 2023, energized land from 2024) in a random region, with one hidden flaw that shows
-// once the site is bought (or at once, with the BD Lead). Buying one (BUILD_SITE with its offer)
+// greenfield from 2023, energized land from 2024) in a random region; 70% carry one hidden flaw that
+// shows once the site is bought (or at once, with the BD Lead). Energized land is priced as land. Buying one (BUILD_SITE with its offer)
 // makes it an owned site of that size in that region: distressed and energized sites have power
 // from next quarter; greenfield waits the region's grid queue. Rolls use their own streams.
 import {
@@ -68,14 +68,21 @@ export function scoutAct2(state: GameState): SiteOffer[] {
     const mw =
       S.mwStep *
       randomInt(r, Math.ceil(lo / S.mwStep), Math.floor(hi / S.mwStep))
-    const perMw = uniform(r, cat.price_usd_mw[0], cat.price_usd_mw[1])
+    const perMw =
+      cat.id === S.energizedLand.category
+        ? landUsdMw(state.quarter, region) *
+          uniform(r, 1 - S.energizedLand.spread, 1 + S.energizedLand.spread)
+        : uniform(r, cat.price_usd_mw[0], cat.price_usd_mw[1])
+    const flaw = chance(r, S.flawChance)
+      ? cat.hidden_flaws[randomInt(r, 0, cat.hidden_flaws.length - 1)]
+      : null
     offers.push({
       id: `offer-${state.nextId++}`,
       tier: S.siteTier,
       rentUsdQ: 0,
       capexUsd: Math.round(perMw * mw),
       powerPriceMult: 1,
-      flaw: cat.hidden_flaws[randomInt(r, 0, cat.hidden_flaws.length - 1)],
+      flaw,
       category: cat.id,
       kw: mw * 1000,
       region,
@@ -86,6 +93,19 @@ export function scoutAct2(state: GameState): SiteOffer[] {
   state.siteOffers = [...state.siteOffers.filter((o) => !o.category), ...offers]
   logEntry(state, 'log.scouted_act2', { count: offers.length })
   return offers
+}
+
+/** Energized land's price per MW in a quarter and region, before the offer's ±15% (owner, 28 Sep 2026). */
+export function landUsdMw(quarter: number, region: PowerRegion): number {
+  const L = S.energizedLand
+  const years = Object.keys(L.usdMwByYear).sort()
+  const year = label(quarter).slice(0, 4)
+  const key = years.includes(year)
+    ? year
+    : year < years[0]
+      ? years[0]
+      : years.at(-1)!
+  return L.usdMwByYear[key] * (L.regionMult[region] ?? 1)
 }
 
 /** A greenfield site's wait for power: the region's grid queue (months ÷ 3), plus policy delays. */

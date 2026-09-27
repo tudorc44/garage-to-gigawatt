@@ -1420,6 +1420,154 @@ Open questions for the design thread:
    adds its interest; the DDTL's tenor is the GPU contract's term; project debt 75% on A/AA, 60% on BBB; the JV
    shares earnings but not debt service; a backstopped tenant doesn't walk; equity once a quarter.
 
+### Milestone M5: owner answers, then entry and the world (batch mode, 28 Sep 2026) — DONE
+
+Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done on the Mac (`f1abef6`).
+- **M5.0a** owner decisions recorded; scope §5 / §8 edits. **M5.0b** revert the switched-off reservation.
+  **M5.0c** rating → equipment-loan terms. **M5.0d** equity priced off the current valuation. **M5.0e** bots
+  sign-then-raise and asic-retirer, sims.
+- **M5.1** Merge head starts (doc 18 §2.3). **M5.2** lifeline card + bridge loan. **M5.3** standalone preset and
+  "Start at Act II" (A2-01, A2-02). **M5.4** regions: region panel, Ratepayer Anger, regional policy events.
+  **M5.5** scouting with Act II site categories and flaws. **M5.6** grid upgrades and on-site gas (Power slot).
+  **M5.7** Act II hires and Bandwidth. **M5.8** the 24 event cards. **M5.9** Act II interrupts. **M5.10** bots,
+  sims and the M5 report.
+
+#### M5 progress
+- M5.0a: done.
+- M5.0b: the reservation on switched-off machines removed (and the batches' `lastRanQuarter` with it); idle and
+  building MW still pay 25%.
+- M5.0c: Act II equipment loan priced on the rating (balance.ts › finance.equipmentLoan; Capital screen lists the
+  bands). Before the first Act II quarter end it uses the rating the last report gives (mine, reversible). The
+  built Capital screen never had a "Raise debt" button, so nothing to remove.
+- M5.0d: equity pre-money = last report's valuation + this quarter's signed contracts × their backlog weight + the
+  pivot premium on last quarter's mining EBITDA if the first AI deal is this quarter's (`signedThisQuarterUsd`).
+- M5.0e: bots `sign-then-raise` (good) and `asic-retirer` (great): biggest shell that starts, keeping 20% of cash
+  + the build's interest (mine); `--act2-bots` filter. Sims (50 seeds, 2026Q4 medians of the alive runs):
+  sign-then-raise 5 busts, $381M (peak $739M, $1B+ in 0/50); asic-retirer 4 busts, $2.2B, 2025 peak $3.6B, 46/50
+  alive with ≥ 4 q runway; shell-capital 9 busts (was 22), $141M; texas-capital $370M, peak $874M; raise-climb 1
+  bust (was 14); pilot 1.89× vs 1.39× (gap 0.50: pass); hosting ahead at 2026Q4 in 19/47 (pass).
+- M5.1: head starts at the act boundary (`headStarts.ts`, balance.ts › headStarts). Mine, reversible: GPUs sell at
+  the game's used price; the legacy cloud counts as AI EBITDA; hosting's GPU halls convert at the 2022Q4 cost, live
+  in 2022Q4, as far as cash goes; shell-ready = any shell at that site; hold_and_wait has no mechanic (open question).
+- M5.2: lifeline (`lifeline.ts`): below 20 MW energized OR $5M cash at the boundary; the intro offers it (default
+  take). Mine, reversible: an owned 20 MW ERCOT site live 2022Q4; the bridge is interest-only with a bullet at the
+  end of 2024Q3; "Bridge" row + early repay on the Capital screen; terminal game asks too.
+- M5.3: "Start at Act II" (`preset.ts`): the preset plays 2022Q3 for a real report, then cash/debt are set to $12M
+  / $25M; Merge screen → intro (no Act I chapter). Mine: the garage stays; used S19 Pros; Act II save tag.
+- M5.4: `regions.json` (game copy: modifiers + policies with doc 18's effects), `regions.ts`, region panel on Fleet &
+  Sites. In force: Heat × region modifier (Act II), +10 Heat everywhere from 2026Q1, VA +$0.011/kWh from 2026Q3,
+  ERCOT upgrade halt 2026Q3–Q4 and PJM queue +4 (used by M5.6), SB6 (used by M5.9). Anger: STOPPED.
+- M5.5: `sites_act2.json` (game copy), `scouting.ts`: "Scout for sites" (1 BW) → 2–3 mixed offers. Mine: an owned
+  own_site of its size; random region; every offer has a flaw; energized land priced at the pack's "announced"
+  $3–12M/MW; greenfield waits the region's queue; a voided zoning doubles its delay; site names show type · region.
+- M5.6: Power slot (`power.ts`): existing MW / grid upgrade ($750K/MW, regional queue drawn at build start; Ex-Utility
+  −1; PJM +4 from 2026Q1; ERCOT halt) / on-site gas ($1.5M/MW, 2 q, +20 Heat). Mine: power cost in the capex; live when
+  build and power are both done; waiting MW pay no reservation; the air-permit lawsuit (40%) has no consequence yet.
+- M5.7: `hires_act2.json` (byte copy): Act II salaries for the 5, Head of Development (+1 BW from next quarter) and
+  Capital Markets Lead (−0.75 pt on equipment loan and DDTL spreads; mine: the middle). Act II Bandwidth per scope
+  §2.2 (3, +1 at 50 MW, +1 at 200 MW, CoS, HoD; max 8): the own site's Act I +1 no longer applies (a 20 MW company has 3).
+- M5.8: `src/content/events_act2.json`, the pack's cards in game format (21 played; ec03/ec05 by other systems, ec21
+  STOPPED) + timeline effects (FTX −1 notch 2 q, SVB no new debt 2023Q2, DeepSeek AI multiple −3 2 q); crypto loans back
+  from 2023Q3 (scope §2.7). Durations/targets the pack left open are mine (list in the M5 report).
+- M5.9: `spotMarket.ts`: random spot shock (15%/q from 2025Q3, ×0.7) and GPU spot alert (±15% weekly H100 spot), both
+  lock-4-quarters / stay; curtailment covers every ERCOT site in Act II, AI halls there go dark and pay 15% of a month's
+  charge (spot clusters none; mine); SB6 forces it at 75 MW+ from 2026Q1. Tenant/lender negotiation: STOPPED.
+- M5.10: bots hire the Head of Development; `lifeline-shell` bot; sim-runner checks for the lifeline, preset and head
+  starts × openings; play.ts commands for the lifeline, Act II scouting, grid/gas, Act II hires, bridge repay.
+  Numbers under "Where the build stands". The 19 design-thread questions (balance, missing numbers, mine) went to the owner.
+
+### Milestone M5 report (28 Sep 2026) — answered by the owner, applied in M6.0
+
+The report sent to the design thread on 28 Sep 2026, verbatim. M6.0 applies the answers by number.
+
+```text
+Garage to Gigawatt — Act II build report from the code thread, milestone M5 (branch act2). I need your decisions.
+
+CONTEXT
+Milestone M5 is built. Everything is in the game and tested (588 tests pass):
+- Your M4 answers:
+  - the rating sets the equipment loan's terms (BBB +2.5%/60% LTV, BB +4.0%/50%, B +6.0%/40%, CCC +9.0%/25%, 8-quarter tenor);
+  - equity is priced off the current valuation plus this quarter's signed contracts;
+  - the switched-off reservation charge was reverted.
+- Merge head starts, the lifeline card and bridge loan (floor: 20 MW energized / $5M cash), the standalone preset and "Start at Act II".
+- Act II scouting (sites_act2.json categories and flaws), the region panel and regional policies (ERCOT SB6, the 2026Q3 ERCOT upgrade halt, the Virginia large-load tax, the PJM queue).
+- Grid upgrades and on-site gas in a project's Power slot.
+- The Act II hires (Head of Development +1 Bandwidth; Capital Markets Lead −0.75 pt on loan spreads).
+- The Act II event deck (21 cards played), and the Act II interrupts (spot price shock, GPU spot alert, curtailment at AI sites with an SLA credit).
+
+SIM RESULTS (50 seeds per bot, played 2017 → 2026Q4)
+Targets from scope 0.2 §5:
+- Pilot pays back more if built early: 2023Q3 pilot 1.78×, 0.44× ahead of a 2025Q2 pilot → PASS
+- Hosting is not the obvious choice (ahead in ≤ ~60% of runs): ahead in 11/40 → PASS
+- Good path ~$1–3B at 2026Q4 → MISS.
+  - Bot "sign-then-raise" (20 MW company; signs a tenant, then raises equity): median $187M across all runs, $331M among the runs that survive; $1B+ in 0/50 runs; 13/50 go bust in Act II.
+  - Bot "shell-capital": median $112M; 15/50 bust.
+- Great path $10B+ peak in 2025 → MISS.
+  - Bot "asic-retirer" (Texas-scale company that retires its ASICs and goes all-in on AI from 2023Q3): 2025 peak median $3.7B, 2026Q4 $2.2B, 8/50 bust, 41/50 alive with ≥ 4 quarters of runway.
+  - Bot "texas-capital": 2025 peak $690M.
+- Lifeline runs have a live AI project by 2024Q4 (≥ 70%) → MISS: 57/117 (49%).
+  - Caveat: my test bot for the lifeline case (a garage company that takes the lifeline) went bust in 50/50 runs. That may be a bug in my bot, and I'm checking it, so treat this number as provisional.
+- Head starts: in the preset game all four Merge choices end 2026Q4 at about $18–22M, and the same bot is best under every one. The Merge choice doesn't matter at the moment.
+- Preset: runs end around $20M (peak ~$270M), 0/20 bust.
+
+QUESTIONS (please answer by number; I'll apply the answers as M6.0)
+
+A. Balance (I was told not to tune these myself)
+1. The good and great paths are 5–10× short. Which levers should move, and by how much? Candidates:
+   - capex credits;
+   - the LTV per rating band;
+   - the backlog weight in the valuation;
+   - the AI EV/EBITDA multiple;
+   - tenant prices.
+   Or should the targets come down?
+2. Head starts don't differ. What should each one give so the choice matters? In particular, "hold and wait" has no mechanic in doc 18: what does it do?
+3. Should the standalone preset start bigger (e.g. closer to a Texas-scale company), or stay a small "second chance" start?
+4. The lifeline floor is built as "under 20 MW energized OR under $5M cash", so a 20 MW+ company that is short of cash also qualifies. Keep OR, or change it to AND?
+5. Act II Bandwidth (scope §2.2: 3, +1 at 50 MW, +1 at 200 MW, Chief of Staff, Head of Development; max 8) drops a 20 MW company to 3 at the Merge. Intended, or should Act I's bonuses carry over?
+
+B. Missing numbers (built without them; my proposal in brackets: accept, change or reject)
+6. Ratepayer Anger has no numbers for its level, its rise, its link to Heat, or card ec21's threshold. [Anger 0–100 per region = MW run there ÷ 10 × the region's anger modifier, plus policy bumps (PJM +20 in 2024Q4, +10 everywhere in 2026Q1); adds Anger ÷ 5 to Heat at that region's sites; ec21 fires at Anger ≥ 50.]
+7. The AEP Ohio tariff (2026Q2), the Georgia cost shift (2026Q1) and the Arizona incentive pause (2026Q2) have no effect numbers. [+$0.005/kWh on that region's power from that quarter.]
+8. Tenant and lender negotiation ("Negotiate · 2 BW", 3 rounds): the pack says the hidden limits are set by tenants.json / lenders.json, but neither file has any. [Tenant's limit = its card price +8%; lender's limit = its spread −75 bps; the opening offer = the card terms.]
+9. The air-permit lawsuit (40% chance on the air_permit_for_gas flaw) has no consequence. [The gas plant shuts for 2 quarters; the project waits.]
+
+C. Smaller rules questions
+10. The PJM shock card also hits Georgia sites (as the pack is written). Intended?
+11. "Aggressive" depreciation has no audit risk, so it's a free choice. Should it have a downside (e.g. an audit chance → a rating notch)?
+
+D. Choices I made where the pack was silent (please confirm or change)
+12.
+  - An AI hall shut by ERCOT curtailment pays the tenant 15% of a month's charge as an SLA credit.
+  - Spot-market GPU clusters pay no SLA credit.
+  - SB6 forces curtailment at 75 MW+ from 2026Q1.
+13. The Capital Markets Lead cuts spreads by 0.75 pt (the middle of the 0.5–1.0 range).
+14. Head starts:
+  - the legacy GPU cloud counts as AI EBITDA;
+  - GPU halls from the hosting head start convert at the 2022Q4 cost;
+  - GPUs sold at the Merge fetch the game's used price.
+15. Event card durations and targets the pack left open:
+  - FTX: −1 rating notch for 2 quarters;
+  - SVB: no new debt in 2023Q2;
+  - DeepSeek: AI multiple −3 and AI demand −10 for 2 quarters from 2025Q1.
+16. Scouting:
+  - every Act II offer has a hidden flaw;
+  - energized land is priced at the pack's "announced" $3–12M/MW;
+  - a voided zoning doubles the delay.
+
+E. Still open from Act I (never answered)
+17. Leaving the 100 kW site also locks you out of the seed round. Intended?
+18. Please confirm:
+  - min_mw means usable capacity;
+  - the equipment and crypto loan rules;
+  - auctions as a Plan-phase action;
+  - the curtailment trade-off;
+  - how the Heat 50 check reads;
+  - the power contract details.
+19. Should the reconstructed Act I market data be replaced with real CoinMetrics weekly data before final balancing?
+
+Please reply with numbered answers. Where you pick numbers, give exact values so the code thread doesn't have to guess.
+```
+
 ## Earlier "Next" notes (history)
 
 Act II market data fixed (27 Sep 2026): corrected copies of the Act II market files are in `docs/act2-content/`

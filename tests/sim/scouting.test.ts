@@ -6,7 +6,7 @@ import type { GameState, Site } from '../../src/sim/state.ts'
 import { transformerUpgrade } from '../../src/sim/systems/construction.ts'
 import { projectCapex } from '../../src/sim/systems/projects.ts'
 import { getRegion } from '../../src/sim/systems/regions.ts'
-import { openCategories } from '../../src/sim/systems/scouting.ts'
+import { landUsdMw, openCategories } from '../../src/sim/systems/scouting.ts'
 import { capacityKw, poweredKw } from '../../src/sim/systems/sites.ts'
 import { act2Company, ok } from './act2Helpers.ts'
 
@@ -30,7 +30,7 @@ describe('the categories open by quarter', () => {
 })
 
 describe('scouting', () => {
-  it('1 Bandwidth: 2–3 offers from the open categories, sized and priced in their ranges, one hidden flaw each', () => {
+  it('1 Bandwidth: 2–3 offers from the open categories, sized and priced in their ranges, at most one hidden flaw each', () => {
     for (const seed of [1, 2, 3, 4, 5]) {
       const s = ok(act2Company('2023Q2', seed), { type: 'SCOUT_SITES_ACT2' })
       expect(s.bandwidth).toBe(5)
@@ -45,12 +45,40 @@ describe('scouting', () => {
         expect(mw).toBeLessThanOrEqual(c.mw_range[1])
         expect(o.capexUsd / mw).toBeGreaterThanOrEqual(c.price_usd_mw[0] - 1)
         expect(o.capexUsd / mw).toBeLessThanOrEqual(c.price_usd_mw[1] + 1)
-        expect(c.hidden_flaws).toContain(o.flaw)
+        if (o.flaw !== null) expect(c.hidden_flaws).toContain(o.flaw)
         if (o.category === 'greenfield_new_site') {
           const [lo, hi] = getRegion(o.region as never).queue_months
           expect(o.readyQuarters).toBeGreaterThanOrEqual(Math.ceil(lo / 3))
           expect(o.readyQuarters).toBeLessThanOrEqual(Math.ceil(hi / 3))
         } else expect(o.readyQuarters).toBe(1)
+      }
+    }
+  })
+
+  it('about 70% of Act II offers carry a hidden flaw; the rest are clean (owner, 28 Sep 2026)', () => {
+    const offers = [...Array(40).keys()].flatMap((seed) =>
+      ok(act2Company('2023Q2', seed + 1), {
+        type: 'SCOUT_SITES_ACT2',
+      }).siteOffers.filter((o) => o.category),
+    )
+    const flawed = offers.filter((o) => o.flaw !== null).length / offers.length
+    expect(flawed).toBeGreaterThan(0.55)
+    expect(flawed).toBeLessThan(0.85)
+  })
+
+  it('energized land is priced as land: $1.2M/MW in 2024 ×(VA 1.25, Nordics 0.75), ±15%', () => {
+    expect(landUsdMw(q('2024Q2'), 'ercot')).toBe(1_200_000)
+    expect(landUsdMw(q('2025Q1'), 'pjm')).toBe(2_000_000)
+    expect(landUsdMw(q('2026Q4'), 'nordics')).toBe(1_500_000)
+    for (const seed of [1, 2, 3, 4, 5, 6, 7, 8]) {
+      const s = ok(act2Company('2024Q2', seed), { type: 'SCOUT_SITES_ACT2' })
+      for (const o of s.siteOffers.filter(
+        (x) => x.category === 'energized_land_powered_shell',
+      )) {
+        const perMw = o.capexUsd / (o.kw! / 1000)
+        const base = landUsdMw(q('2024Q2'), o.region as never)
+        expect(perMw).toBeGreaterThanOrEqual(base * 0.85 - 1)
+        expect(perMw).toBeLessThanOrEqual(base * 1.15 + 1)
       }
     }
   })

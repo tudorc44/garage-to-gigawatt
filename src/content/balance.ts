@@ -371,6 +371,24 @@ export const BALANCE = {
     greenfield: 'greenfield_new_site',
     /** A zoning challenge that is voided (its chance_voided) waits its delay a second time (mine). */
     voidedDelayMult: 2,
+    /** The share of Act II offers with a hidden flaw; the rest are clean (owner, 28 Sep 2026). */
+    flawChance: 0.7,
+    /**
+     * Energized land is priced as land, not as an announced project (owner, 28 Sep 2026): $/MW by
+     * year, × the region's factor (Virginia +25%, Nordics −25%), ±15% per offer. It replaces the
+     * category's price_usd_mw (the pack's announced-project EV band).
+     */
+    energizedLand: {
+      category: 'energized_land_powered_shell',
+      usdMwByYear: {
+        '2023': 800_000,
+        '2024': 1_200_000,
+        '2025': 1_600_000,
+        '2026': 2_000_000,
+      } as Record<string, number>,
+      regionMult: { pjm: 1.25, nordics: 0.75 } as Record<string, number>,
+      spread: 0.15,
+    },
   },
 
   sites: {

@@ -25,7 +25,7 @@
 | Resource | Act II rule |
 |---|---|
 | Cash, debt, coin treasury (BTC and ETH) | Carried over from Act I as is. ETH keeps a market price all act (§2.3) |
-| Bandwidth | Base 3; +1 Chief of Staff; +1 at 50 MW energized; +1 at 200 MW; +1 Head of Development. **Max 8** |
+| Bandwidth | **Base 4** (owner, 28 Sep 2026; was 3); +1 Chief of Staff (one hired in Act I carries over; no other Act I bonus carries); +1 at 50 MW energized; +1 at 200 MW; +1 Head of Development. **Max 8** |
 | MW by use | Each site's MW split into mining / hosting / AI shell / AI cloud / idle |
 | **Credit rating (new)** | **Corporate ratings run CCC− to BBB** [P4], recalculated each quarter from debt/EBITDA × backlog quality (doc 18 §7.2 matrix). A cash runway under 4 quarters lowers it one notch. Sets the rate and max leverage of new corporate debt. **"A" exists only on secured project debt with a strong backlog** (the CoreWeave B+ / A3 pattern). A rating never forecloses by itself (§2.7) |
 | GPU know-how (new) | 0–3 (doc 18 §5.4) |
@@ -96,8 +96,13 @@
 
 ### 2.10 Entry into Act II
 - **Carry-over** per doc 18 §2.1 (cash, debt, BTC and ETH treasury, sites, MW, power contracts, Heat base + load, ASICs, founder stake, cap table, IPO status, hires at Act II salaries).
-- **Floor:** below 20 MW energized + $5M cash → the **distressed lifeline card** (`ec03`): a bankrupt miner's **20 MW site for $6.5M**, bought with a **bridge loan at 14% for 8 quarters**, sized so the player also reaches $5M cash.
-- **Merge head starts** per doc 18 §2.3 (gpu_cloud $0.15/GPU-hr at 40%, know-how 1; hosting $0.075/kWh, shell-ready −25% capex / −1 quarter; sell_gpus; hold_and_wait).
+- **Floor:** under 20 MW energized **and** under $5M cash (owner, 28 Sep 2026: both; a cash-short company at 20 MW+ uses the normal capital tools) → the **distressed lifeline card** (`ec03`): a bankrupt miner's **20 MW site for $6.5M**, bought with a **bridge loan at 14% for 8 quarters**, sized so the player also reaches $5M cash.
+- **Merge head starts** per doc 18 §2.3, each with its own intended opening (owner, 28 Sep 2026):
+  - **gpu_cloud:** $0.15/GPU-hr at 40%, know-how 1; plus a guaranteed neocloud offer in 2023Q2 scouting, and the first pilot skips the GPU allocation interrupt. Opening: an early pilot.
+  - **hosting:** $0.075/kWh, shell-ready −25% capex / −1 quarter; plus a guaranteed A/AA hyperscaler shell-lease offer in 2023Q3 scouting. Opening: a shell lease.
+  - **sell_gpus:** the GPUs' cash at the game's used price; plus a one-off distressed ASIC fleet offer in 2023Q1 (up to 10 MW of S19j Pro-class machines at 60% of that quarter's ASIC price). Opening: cheap mining expansion, pivot later.
+  - **hold_and_wait:** GPUs parked (no power cost, no revenue, resale value keeps decaying on the normal curve), sellable at any later Plan phase with a +25% scarcity premium in 2023Q2–2023Q4; +1 Bandwidth in 2022Q4 and 2023Q1. Opening: keep focus and optionality.
+  - Check: at least 3 of the 4 head starts have a different best bot, and the matching bots' 2026Q4 medians are within ±30% of each other.
 - **Standalone preset:** "Q4 2022: a mid-size miner": 40 MW across 2 sites (20 MW owned + 20 MW Texas lease on fixed power), S19-class fleet at 70% of capacity, $12M cash, $25M equipment debt, 45% stake, no IPO. The player picks a Merge choice on the first screen. A "New career → Start at Act II" option on the title screen.
 
 ### 2.11 Rivals
@@ -176,7 +181,7 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
 - [ ] Save, reload and export/import work in Act II, including mid-quarter and across the act boundary
 
 **Balance**
-- [ ] Good path (20–40 MW entry) ends Act II at **~$1–3B**; the top half of the band needs at least one sold or stabilized project
+- [ ] Good path (20–40 MW entry) ends Act II at **~$1–3B**, with **≤ 10% of runs going bust in Act II** (added 28 Sep 2026); the top half of the band needs at least one sold or stabilized project
 - [ ] Great path (100+ MW entry) peaks at **$10B+** in 2025 and survives 2026 with ≥ 12 months of runway
 - [ ] Pure miner ends at **~$100–400M**, alive
 - [ ] Overleveraged full stack (> 6× debt/EBITDA, AI-lab tenant, no backstop): **≥ 50% foreclosure** in 2026
@@ -240,3 +245,4 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
    - §8 valuation formula: adds projects under construction at capex spent, so a build doesn't erase its cost from the valuation until it goes live (owner decision, 27 Sep 2026).
 9. §2.2 credit rating: sets the spread over SOFR and the max LTV of the equipment loan (the only corporate debt); no general corporate term loan (owner decision 27 Sep 2026).
 10. §5 targets revised after the M3/M4 sims: hosting check judged at 2026Q4; pilot target as a margin over the 2025Q2 pilot. The switched-off-MW power reservation was tried and reverted (reservation applies to idle and under-construction MW only).
+11. Owner answers to the M5 questions (28 Sep 2026): Act II Bandwidth base 4, an Act I Chief of Staff carries (§2.2); the lifeline floor needs both conditions (§2.10); each Merge head start gets its own mechanic and intended opening, and hold_and_wait parks the GPUs (§2.10, replacing doc 18 §2.3's "switched off, full burn on idle MW"); the §5 targets stay, and the good path also needs ≤ 10% of runs going bust in Act II.

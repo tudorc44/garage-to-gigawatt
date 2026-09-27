@@ -21,6 +21,11 @@ import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
 import { BOTS, PROBES } from './bots.ts'
+import {
+  BREAKDOWN_COLUMNS,
+  breakdown,
+  type Breakdown,
+} from './valuation-breakdown.ts'
 
 const args = process.argv.slice(2)
 const argValue = (flag: string, fallback: string) => {
@@ -667,13 +672,77 @@ if (args.includes('--act2')) {
     return only === '' || only.split(',').includes(name)
   })
   const t0 = performance.now()
+  // Each run's valuation breakdown by quarter (answer 1, step 1): taken in the next Plan phase,
+  // when the quarter's report is the latest one, and at the end for 2026Q4.
+  const breakdowns = new Map<string, Map<string, Breakdown>>()
+  const recording = (key: string, bot: Strategy): Strategy => {
+    const seen = new Map<string, Breakdown>()
+    breakdowns.set(key, seen)
+    return {
+      ...bot,
+      plan(state) {
+        const r = state.reports.at(-1)
+        if (state.act === 2 && r && !seen.has(r.quarter))
+          seen.set(r.quarter, breakdown(state, r))
+        return bot.plan(state)
+      },
+    }
+  }
   const byBot = ACT2_BOTS.map((name) => ({
     name,
-    runs: Array.from({ length: SEEDS }, (_, i) => ({
-      seed: i + 1,
-      state: playGame(i + 1, BOTS[name] ?? PROBES[name], { through: 2 }).state,
-    })),
+    runs: Array.from({ length: SEEDS }, (_, i) => {
+      const key = `${name}:${i + 1}`
+      const state = playGame(
+        i + 1,
+        recording(key, BOTS[name] ?? PROBES[name]),
+        {
+          through: 2,
+        },
+      ).state
+      const last = state.reports.at(-1)
+      if (last && state.phase === 'chapter')
+        breakdowns.get(key)!.set(last.quarter, breakdown(state, last))
+      return { seed: i + 1, state }
+    }),
   }))
+  // The breakdown at 2026Q4 and at the run's 2025 peak, one row per run, in act2-valuation.csv.
+  const pointsOf = (name: string, r: Run) => {
+    const seen = breakdowns.get(`${name}:${r.seed}`)!
+    const peak2025 = [...seen.values()]
+      .filter((b) => b.quarter.startsWith('2025'))
+      .reduce<Breakdown | null>(
+        (a, b) => (a === null || b.valuation > a.valuation ? b : a),
+        null,
+      )
+    return { end: seen.get('2026Q4') ?? null, peak2025 }
+  }
+  writeFileSync(
+    join(OUT, 'act2-valuation.csv'),
+    [
+      ['bot', 'seed', 'point', 'quarter', ...BREAKDOWN_COLUMNS].join(','),
+      ...byBot.flatMap(({ name, runs }) =>
+        runs.flatMap((r) => {
+          const pts = pointsOf(name, r)
+          return (
+            [
+              ['2026Q4', pts.end],
+              ['peak2025', pts.peak2025],
+            ] as const
+          )
+            .filter(([, b]) => b !== null)
+            .map(([point, b]) =>
+              [
+                name,
+                r.seed,
+                point,
+                b!.quarter,
+                ...BREAKDOWN_COLUMNS.map((c) => (b![c] ?? '').toString()),
+              ].join(','),
+            )
+        }),
+      ),
+    ].join('\n') + '\n',
+  )
   const at = (r: Run, q: string) =>
     r.state.reports.find((x) => x.quarter === q)?.valuationUsd
   const act2First = CONTENT.quarters[actLastQuarter(1) + 1]
@@ -808,8 +877,11 @@ if (args.includes('--act2')) {
     if (!runs) continue
     const ends = runs.map((r) => at(r, '2026Q4') ?? 0)
     const inBand = ends.filter((v) => v >= 1e9).length
+    const busts = runs.filter(
+      (r) => at(r, '2022Q3') !== undefined && r.state.phase === 'gameover',
+    ).length
     console.log(
-      `  Good path (${name}): 2026Q4 median ${usd(median(ends))}; at $1B+ in ${inBand}/${ends.length} runs (target ~$1–3B)`,
+      `  Good path (${name}): 2026Q4 median ${usd(median(ends))}; at $1B+ in ${inBand}/${ends.length} runs (target ~$1–3B); bust in Act II ${busts}/${runs.length} (target ≤ 10%)`,
     )
   }
   for (const name of ['texas-capital', 'asic-retirer']) {
@@ -833,6 +905,46 @@ if (args.includes('--act2')) {
       `  Great path (${name}): 2025 peak median ${usd(median(peak2025))} (target $10B+); alive at 2026Q4 with ≥ 4 quarters of runway in ${survivors}/${runs.length} runs`,
     )
   }
+  // The valuation breakdown (medians of each part over the runs that have that point), for the
+  // good and great bots, and EV per MW against the §5 sanity bands.
+  console.log(
+    '\n  Valuation breakdown (medians; EV/MW bands: mining $0.4–1.2M, announced AI $3–12M, stabilized IG $18–27M):',
+  )
+  const medOrDash = (xs: (number | null)[]) => {
+    const v = xs.filter((x): x is number => x !== null)
+    return v.length ? usd(median(v)) : '—'
+  }
+  console.table(
+    ['sign-then-raise', 'shell-capital', 'asic-retirer', 'texas-capital']
+      .filter((n) => runsOf(n))
+      .flatMap((name) =>
+        (['end', 'peak2025'] as const).map((point) => {
+          const bs = runsOf(name)!
+            .map((r) => pointsOf(name, r)[point])
+            .filter((b): b is Breakdown => b !== null)
+          const col = (c: (typeof BREAKDOWN_COLUMNS)[number]) =>
+            medOrDash(bs.map((b) => b[c]))
+          return {
+            bot: name,
+            point:
+              point === 'end'
+                ? `2026Q4 (${bs.length})`
+                : `2025 peak (${bs.length})`,
+            value: col('valuation'),
+            'mining EV': col('miningEv'),
+            'AI EV': col('aiEv'),
+            backlog: col('backlog'),
+            construction: col('construction'),
+            cash: col('cash'),
+            treasury: col('treasury'),
+            debt: col('debt'),
+            'EV/MW mining': col('evMwMining'),
+            'EV/MW announced AI': col('evMwAnnouncedAi'),
+            'EV/MW stabilized IG': col('evMwStabilizedIg'),
+          }
+        }),
+      ),
+  )
   // Scope 0.2 §5 lifeline: runs that took the lifeline reach a live AI project by 2024Q4 in ≥ 70%.
   const byEnd2024 = CONTENT.quarters.indexOf('2024Q4')
   const lifelineRuns = byBot.flatMap(({ name, runs }) =>

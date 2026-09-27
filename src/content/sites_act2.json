@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "note": "The game's copy of the Act II site categories and flaws (scope 0.2 §2.6; doc 18 §6). From docs/game-project-files/claude_act2-content_sites_act2.json (the pack, used as it is; its real_examples are left there). Greenfield's price is text in the pack ('≈$0.5-2M/MW upfront'); its range is written out here. Energized land is priced at the pack's price_usd_mw_announced (what an energized site with an AI story sells for).",
+ "note": "The game's copy of the Act II site categories and flaws (scope 0.2 §2.6; doc 18 §6). From docs/game-project-files/claude_act2-content_sites_act2.json (the pack, used as it is; its real_examples are left there). Greenfield's price is text in the pack ('≈$0.5-2M/MW upfront'); its range is written out here. Energized land's price_usd_mw below is the pack's price_usd_mw_announced (an announced AI project's EV band); the game doesn't use it: it prices energized land as land (balance.ts › act2Scouting.energizedLand, owner 28 Sep 2026).",
  "site_categories": [
   {
    "id": "distressed_miner_site",
