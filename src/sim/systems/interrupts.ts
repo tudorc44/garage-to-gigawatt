@@ -13,7 +13,16 @@ import {
 import { resolveCurtailment } from './curtailment.ts'
 import { defaultEventChoice, eventChoices, resolveEvent } from './events.ts'
 import { failureWaveChoices, resolveFailureWave } from './failureWave.ts'
+import {
+  projectEventChoices,
+  projectEventDefault,
+  resolveProjectEvent,
+} from './projects.ts'
 import { sellTreasury } from './treasury.ts'
+
+/** Act II project alerts (interrupts_act2.json): a construction delay or the GPU queue. */
+const isProjectEvent = (id: string) =>
+  id === 'construction_delay' || id === 'gpu_allocation'
 
 /**
  * Price alert: fires when BTC or ETH moved by at least the threshold this week.
@@ -58,6 +67,7 @@ export function resolveInterrupt(
     return resolveMarginWarning(state, choiceId)
   if (active.id === 'event') return resolveEvent(state, choiceId)
   if (active.id === 'failure_wave') return resolveFailureWave(state, choiceId)
+  if (isProjectEvent(active.id)) return resolveProjectEvent(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )
@@ -153,6 +163,7 @@ export function availableChoices(state: GameState): string[] {
   if (active.id === 'neighbour_complaint') return complaintChoices(state)
   if (active.id === 'event') return eventChoices(state)
   if (active.id === 'failure_wave') return failureWaveChoices(state)
+  if (isProjectEvent(active.id)) return projectEventChoices(state)
   if (active.id === 'margin_warning') {
     const loan = state.cryptoLoan
     return loan && loan.balanceUsd <= state.cash ? ['repay', 'ok'] : ['ok']
@@ -171,6 +182,7 @@ export function availableChoices(state: GameState): string[] {
  */
 export function defaultChoice(state: GameState): string {
   if (state.interrupt!.id === 'event') return defaultEventChoice(state)
+  if (isProjectEvent(state.interrupt!.id)) return projectEventDefault(state)
   const def = CONTENT.interrupts.byId[state.interrupt!.id]
   const open = availableChoices(state)
   const fallbacks = (def.default_if_unaffordable ?? '')

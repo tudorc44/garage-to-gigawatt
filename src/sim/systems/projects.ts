@@ -2,7 +2,8 @@
 // at one of your sites into an AI shell lease (a tenant brings its GPUs), an AI cloud (your GPUs,
 // sold on the spot market) or a pilot cluster (0.5–2 MW of H100s on spot). A project has three
 // slots — Power (existing MW), Tenant (a card from tenants.json, or spot), Capital (own cash) —
-// then builds for a few quarters and goes live. This file: prices, know-how, offers, the slots.
+// then builds for a few quarters and goes live. This file: prices, know-how, offers, the slots,
+// the build (start, delays, GPU allocation, going live), take-or-pay, and a live project's week.
 import {
   BALANCE,
   CONTENT,
@@ -12,17 +13,17 @@ import {
   type TenantCard,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { randomInt, substream } from '../rng.ts'
+import { chance, randomInt, substream } from '../rng.ts'
 import {
   logEntry,
   type GameState,
   type Project,
   type ProjectKind,
 } from '../state.ts'
-import { underMoratorium } from './heat.ts'
+import { isShutDown, underMoratorium } from './heat.ts'
 import { isHired } from './hires.ts'
 import { convertibleKw } from './hosting.ts'
-import { regionOf } from './sites.ts'
+import { powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
 
 const P = () => CONTENT.projects
 
@@ -252,6 +253,7 @@ export function openProject(
     spot: false,
     capital: null,
     capexUsd: 0,
+    gpuCapexUsd: 0,
     gpuCount: 0,
     startQuarter: null,
     readyQuarter: null,
@@ -367,5 +369,366 @@ export function cancelProject(
   if (p.stage !== 'proposed') return { key: 'error.project_started' }
   state.projects = state.projects.filter((x) => x.id !== projectId)
   logEntry(state, 'log.project_cancelled', { n: p.n })
+  return undefined
+}
+
+// ---------- the build ----------
+
+/** The slots still empty, by name (for the "fill every slot first" message). */
+function missingSlots(p: Project): string[] {
+  const s = slots(p)
+  return [
+    ...(s.tenant === false ? ['tenant'] : []),
+    ...(s.capital ? [] : ['capital']),
+  ]
+}
+
+/** Why a project's build can't start now, or undefined if it can. */
+export function buildBlocker(
+  state: GameState,
+  projectId: string,
+): Message | undefined {
+  const p = getProject(state, projectId)
+  if (!p) return { key: 'error.unknown_project' }
+  if (p.stage !== 'proposed') return { key: 'error.project_started' }
+  const missing = missingSlots(p)
+  if (missing.length > 0)
+    return {
+      key: 'error.project_slots',
+      params: { missing: missing.join(', ') },
+    }
+  const need = BALANCE.projects.bandwidth.start
+  if (state.bandwidth < need)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: need, have: state.bandwidth },
+    }
+  const costUsd = Math.round(projectCapex(state, p).totalUsd)
+  if (state.cash < costUsd)
+    return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
+  return undefined
+}
+
+/**
+ * Starts the build (1 Bandwidth; assumes buildBlocker passed): the capex is paid now (doc 18
+ * §5.2: "capital is drawn at the start") and the project goes live after its build quarters.
+ */
+export function startBuild(state: GameState, projectId: string): void {
+  const p = getProject(state, projectId)!
+  const cost = projectCapex(state, p)
+  p.capexUsd = Math.round(cost.totalUsd)
+  p.gpuCapexUsd = Math.round(cost.gpuUsd)
+  p.gpuCount = cost.gpuCount
+  p.startQuarter = state.quarter
+  p.readyQuarter = state.quarter + buildQuarters(p.kind)
+  p.stage = 'building'
+  state.cash -= p.capexUsd
+  state.bandwidth -= BALANCE.projects.bandwidth.start
+  logEntry(state, 'log.project_started', {
+    n: p.n,
+    costUsd: p.capexUsd,
+    quarter: CONTENT.quarters[p.readyQuarter] ?? '—',
+  })
+}
+
+/** At the start of a quarter: finished builds go live; shells without a tenant get offers. */
+export function startQuarterProjects(state: GameState): void {
+  for (const p of state.projects) {
+    if (
+      p.stage === 'building' &&
+      p.readyQuarter !== null &&
+      p.readyQuarter <= state.quarter
+    ) {
+      p.stage = 'live'
+      logEntry(state, 'log.project_live', { n: p.n, kind: p.kind })
+    }
+    if (
+      p.kind === 'shell' &&
+      p.stage !== 'sold' &&
+      !p.tenant &&
+      p.offers.length === 0
+    )
+      drawOffers(state, p)
+  }
+}
+
+/**
+ * At the end of a quarter (scope §2.5 [P1], tenants.json take_or_pay_terms): a signed tenant whose
+ * project isn't live by its ready-by quarter gets liquidated damages (3% of the annual contract)
+ * for each late quarter; at 2 quarters late it may walk (its type's chance), and any prepayment
+ * not yet set off is repaid. Live shells count a quarter of their term served. Returns the damages.
+ */
+export function endQuarterProjects(state: GameState): number {
+  let damagesUsd = 0
+  const label = CONTENT.quarters[state.quarter]
+  for (const p of state.projects) {
+    const t = p.tenant
+    if (!t || p.stage === 'sold') continue
+    const card = tenantCard(t.card)!
+    if (p.stage === 'live') {
+      t.servedQuarters++
+      continue
+    }
+    if (state.quarter < t.readyByQuarter) continue
+    const usd = annualRentUsd(card, p.kw) * P().latePenaltyShareYr
+    damagesUsd += usd
+    t.lateQuarters++
+    logEntry(state, 'log.project_late', {
+      n: p.n,
+      tenant: card.id,
+      late: t.lateQuarters,
+      damagesUsd: usd,
+    })
+    if (t.lateQuarters >= 2 && !t.walkRolled) {
+      t.walkRolled = true
+      const walk = P().walkChanceLate2q[card.type]
+      if (chance(substream(state.seed, `tenant_walk:${label}:${p.id}`), walk)) {
+        state.cash -= t.prepaymentLeftUsd
+        logEntry(state, 'log.tenant_walked', {
+          n: p.n,
+          tenant: card.id,
+          refundUsd: t.prepaymentLeftUsd,
+        })
+        p.tenant = null
+      }
+    }
+  }
+  state.cash -= damagesUsd
+  return damagesUsd
+}
+
+/** A spot cluster's utilisation: the pilot's base plus its know-how bonus (conversions.json). */
+export function spotUtilisation(state: GameState): number {
+  const pilot = P().pilot
+  return (
+    pilot.utilisationBase +
+    (pilot.utilisationBonusByKnowHow[String(knowHow(state))] ?? 0)
+  )
+}
+
+/**
+ * One week of the live projects. A shell: its tenant's rent (a 52nd of a year), less the host's
+ * costs (a share of rent; the tenant pays its own power), with any prepayment set off against the
+ * cash. A cloud or pilot: GPUs × the neocloud price × utilisation × hours, less power at the AI
+ * hall's PUE and a week of insurance on the GPUs. Cash moves here; the totals are returned.
+ */
+export function settleProjectsWeek(state: GameState): {
+  revenueUsd: number
+  costUsd: number
+  marginByTier: Record<string, number>
+} {
+  let revenueUsd = 0
+  let costUsd = 0
+  const marginByTier: Record<string, number> = {}
+  const hours = 24 * 7
+  const b = BALANCE.projects
+  for (const p of state.projects) {
+    if (p.stage !== 'live') continue
+    const site = state.sites.find((s) => s.id === p.siteId)
+    if (!site || isShutDown(state, site.id)) continue
+    let rev: number
+    let cost: number
+    if (p.kind === 'shell') {
+      if (!p.tenant) continue
+      rev = annualRentUsd(tenantCard(p.tenant.card)!, p.kw) / 52
+      cost = rev * b.shellOpexShare
+      const setOff = Math.min(p.tenant.prepaymentLeftUsd, rev)
+      p.tenant.prepaymentLeftUsd -= setOff
+      state.cash -= setOff
+    } else {
+      const up = uptime(site)
+      rev =
+        p.gpuCount *
+        (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
+        spotUtilisation(state) *
+        hours *
+        up
+      cost =
+        p.kw * b.cloudPue * hours * up * powerPriceUsdKwh(site, state.quarter) +
+        (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
+    }
+    revenueUsd += rev
+    costUsd += cost
+    marginByTier[site.tier] = (marginByTier[site.tier] ?? 0) + rev - cost
+  }
+  state.cash += revenueUsd - costUsd
+  return { revenueUsd, costUsd, marginByTier }
+}
+
+// ---------- construction delays and GPU allocation (scope §2.9) ----------
+
+/** Whether a quarter is in the GPU allocation window (2023–24). */
+function inAllocationWindow(quarter: number): boolean {
+  const label = CONTENT.quarters[quarter]
+  const w = BALANCE.projects.gpuAllocation
+  return label >= w.from && label <= w.to
+}
+
+/**
+ * At END_PLAN: each building project rolls a construction delay (15% a quarter) at a random week;
+ * a cloud or pilot that ordered its GPUs this quarter in 2023–24 rolls the allocation queue (60%),
+ * checked after the first week. Each on its own random stream.
+ */
+export function planProjectEvents(state: GameState): void {
+  const label = CONTENT.quarters[state.quarter]
+  const [w0, w1] = BALANCE.projects.delayWeeks
+  state.projectEvents = []
+  for (const p of state.projects) {
+    if (p.stage !== 'building') continue
+    if (
+      p.kind !== 'shell' &&
+      p.startQuarter === state.quarter &&
+      inAllocationWindow(state.quarter) &&
+      chance(
+        substream(state.seed, `gpu_allocation:${label}:${p.id}`),
+        P().allocationChance,
+      )
+    )
+      state.projectEvents.push({
+        projectId: p.id,
+        kind: 'gpu_allocation',
+        week: BALANCE.projects.gpuAllocation.week,
+      })
+    const r = substream(state.seed, `construction_delay:${label}:${p.id}`)
+    if (chance(r, P().delay.chance))
+      state.projectEvents.push({
+        projectId: p.id,
+        kind: 'construction_delay',
+        week: randomInt(r, w0, w1),
+      })
+  }
+}
+
+/** How many quarters waiting for GPUs takes (one more at GPU know-how 0, doc 18 §5.4). */
+export function gpuWaitQuarters(state: GameState): number {
+  const g = BALANCE.projects.gpuAllocation
+  return (
+    g.waitQuarters +
+    (knowHow(state) === 0 ? BALANCE.projects.knowHowZero.extraWaitQuarters : 0)
+  )
+}
+
+/**
+ * After a week is played: a planned delay or allocation for this week becomes an alert (counted
+ * toward the 3 per quarter). With the cap full or another alert showing, it resolves silently
+ * with its default (accept the slip / wait for the GPUs), logged.
+ */
+export function checkProjectEvents(state: GameState): void {
+  const weekNo = state.week + 1
+  for (const e of state.projectEvents) {
+    if (e.week !== weekNo) continue
+    const p = getProject(state, e.projectId)
+    if (!p || p.stage !== 'building') continue
+    const capFull =
+      state.interruptsThisQuarter >= CONTENT.interrupts.maxPerQuarter
+    if (state.interrupt || capFull) {
+      if (e.kind === 'construction_delay') slip(state, p, 1, 'silent')
+      else slip(state, p, gpuWaitQuarters(state), 'silent_wait')
+      continue
+    }
+    state.interrupt = {
+      id: e.kind,
+      week: state.week,
+      coin: 'BTC',
+      changePct: 0,
+      projectId: p.id,
+    }
+    state.interruptsThisQuarter++
+  }
+}
+
+/** Pushes a project's ready quarter back and logs why. */
+function slip(
+  state: GameState,
+  p: Project,
+  quarters: number,
+  why: 'accepted' | 'silent' | 'contractor' | 'wait' | 'silent_wait',
+): void {
+  p.readyQuarter = (p.readyQuarter ?? state.quarter) + quarters
+  const key = (
+    {
+      accepted: 'log.project_slipped',
+      silent: 'log.project_slipped_silent',
+      contractor: 'log.project_slipped_contractor',
+      wait: 'log.project_gpu_wait',
+      silent_wait: 'log.project_gpu_wait_silent',
+    } as const
+  )[why]
+  logEntry(
+    state,
+    key,
+    { n: p.n, quarter: CONTENT.quarters[p.readyQuarter] ?? '—' },
+    state.week + 1,
+  )
+}
+
+/** What paying on the alert costs: 10% of the capex to accelerate, 8% to jump the GPU queue. */
+export function projectEventCostUsd(state: GameState): number {
+  const active = state.interrupt
+  const p = active?.projectId ? getProject(state, active.projectId) : undefined
+  if (!p) return 0
+  return Math.round(
+    p.capexUsd *
+      (active!.id === 'construction_delay'
+        ? P().delay.accelerateShareOfCapex
+        : BALANCE.projects.gpuAllocation.premiumShareOfCapex),
+  )
+}
+
+/** The alert's choices that are possible now (paying needs the cash). */
+export function projectEventChoices(state: GameState): string[] {
+  const active = state.interrupt!
+  const afford = projectEventCostUsd(state) <= state.cash
+  if (active.id === 'construction_delay')
+    return afford
+      ? ['accelerate', 'accept_slip', 'change_contractor']
+      : ['accept_slip', 'change_contractor']
+  return afford ? ['pay_premium', 'wait'] : ['wait']
+}
+
+/** The choice when the player doesn't pick: accept the slip / wait for the GPUs. */
+export function projectEventDefault(state: GameState): string {
+  return state.interrupt!.id === 'construction_delay'
+    ? P().delay.default
+    : 'wait'
+}
+
+export function resolveProjectEvent(
+  state: GameState,
+  choiceId: string,
+): Message | undefined {
+  const active = state.interrupt!
+  if (!projectEventChoices(state).includes(choiceId))
+    return { key: 'error.bad_choice' }
+  const p = getProject(state, active.projectId!)!
+  const costUsd = projectEventCostUsd(state)
+  const weekNo = active.week + 1
+  switch (choiceId) {
+    case 'accelerate':
+    case 'pay_premium':
+      state.cash -= costUsd
+      p.capexUsd += costUsd
+      logEntry(state, 'log.project_paid', { n: p.n, costUsd }, weekNo)
+      break
+    case 'accept_slip':
+      slip(state, p, 1, 'accepted')
+      break
+    case 'wait':
+      slip(state, p, gpuWaitQuarters(state), 'wait')
+      break
+    case 'change_contractor': {
+      state.events.bandwidthNext += P().delay.contractorBandwidthNext
+      const label = CONTENT.quarters[state.quarter]
+      const saved = chance(
+        substream(state.seed, `contractor:${label}:${p.id}`),
+        P().delay.contractorNoSlipChance,
+      )
+      if (saved)
+        logEntry(state, 'log.project_contractor_saved', { n: p.n }, weekNo)
+      else slip(state, p, 1, 'contractor')
+      break
+    }
+  }
+  state.interrupt = null
   return undefined
 }

@@ -27,6 +27,7 @@ import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
+import { endQuarterProjects, startQuarterProjects } from './projects.ts'
 import { ebitdaUsd, valuationUsd } from './valuation.ts'
 
 /**
@@ -36,6 +37,7 @@ import { ebitdaUsd, valuationUsd } from './valuation.ts'
  */
 export function endQuarter(state: GameState): void {
   const w = marketWeek(state.quarter, BALANCE.weeksPerQuarter - 1)
+  state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   state.cash = roundCents(state.cash)
   state.reports.push(buildReport(state, w, forcedSale))
@@ -111,6 +113,9 @@ function buildReport(
     gridCreditsUsd: st.gridCreditsUsd,
     hostingFeesUsd: st.hostingFeesUsd,
     reservationUsd: st.reservationUsd,
+    aiRevenueUsd: st.aiRevenueUsd,
+    aiCostUsd: st.aiCostUsd,
+    lateDamagesUsd: st.lateDamagesUsd,
     rateHikeUsd: st.rateHikeUsd,
     stormChargeUsd: st.stormChargeUsd,
     salariesUsd: st.salariesUsd,
@@ -150,6 +155,7 @@ export function startNextQuarter(state: GameState): void {
     }
   }
   startQuarterContracts(state)
+  startQuarterProjects(state)
   startQuarterEvents(state)
   rollAuction(state)
 }

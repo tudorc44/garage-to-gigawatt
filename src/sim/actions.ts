@@ -95,7 +95,10 @@ import {
   fundWithCash,
   openBlocker,
   openProject,
+  planProjectEvents,
   signTenant,
+  buildBlocker,
+  startBuild,
   useSpot,
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
@@ -162,6 +165,8 @@ export type Action =
   | { type: 'PROJECT_FUND_CASH'; projectId: string }
   /** Act II: drop a project that hasn't started building (0 Bandwidth). */
   | { type: 'PROJECT_CANCEL'; projectId: string }
+  /** Act II: every slot filled, start the build (1 Bandwidth, the capex paid now). */
+  | { type: 'PROJECT_START'; projectId: string }
   /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
   | { type: 'SELL_TREASURY'; coin: Coin; pct: number }
   /** Talk to the neighbours at a site: cash + 1 Bandwidth for goodwill (heat.json outreach). */
@@ -255,6 +260,7 @@ function run(s: GameState, a: Action): Message | undefined {
       scheduleEvents(s)
       planFailureWaves(s)
       rollHostingDefaults(s)
+      planProjectEvents(s)
       s.quarterStats.startCash = s.cash
       s.quarterStats.startTreasuryUsd = treasuryValueUsd(
         s,
@@ -722,6 +728,13 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'PROJECT_CANCEL':
       return cancelProject(s, a.projectId)
+
+    case 'PROJECT_START': {
+      const blocker = buildBlocker(s, a.projectId)
+      if (blocker) return blocker
+      startBuild(s, a.projectId)
+      return
+    }
 
     case 'LEAVE_SITE': {
       const site = s.sites.find((x) => x.id === a.siteId)

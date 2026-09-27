@@ -1128,6 +1128,26 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   **Golden change (explained):** 11 goldens gain `"projects": []`, `"projectEvents": []`, `"firstAiDealQuarter": null`.
 - **M3.6** The build lifecycle: start build, building quarters, live units (AI shell lease, AI cloud / pilot on spot),
   take-or-pay (P1), construction delays (P5), the GPU allocation interrupt.
+  **Done.** `PROJECT_START` (1 BW, every slot filled): the whole capex is paid now; ready quarter = now + build
+  quarters (shell 3, cloud 4, pilot 1). At the start of the ready quarter the project goes live (and a shell with no
+  tenant gets new offers). Each live week (`settleProjectsWeek`, skipped while the site is shut down): a shell earns
+  its tenant's rent / 52 less 17.5% opex, with any prepayment set off first; a cloud or pilot earns GPUs × neocloud
+  $/hr × utilisation (0.7 + the know-how bonus) × 168 h × uptime, less power at PUE 1.15 and GPU insurance
+  0.45%/yr. New stats and report lines `aiRevenueUsd`, `aiCostUsd`, `lateDamagesUsd`, all in EBITDA; project margins
+  go into the margin by site. Take-or-pay at quarter end: a signed tenant whose project isn't live by its ready-by
+  quarter costs 3% of the annual contract per late quarter; at 2 late quarters one walk roll (by tenant type); a walk
+  repays the prepayment not yet set off. Alerts (failure-wave pattern, planned at END_PLAN, counted in the 3 per
+  quarter): a construction delay (15% per building project per quarter, weeks 2–12: accelerate for 10% of capex /
+  accept the slip (default) / change contractor: −1 BW next quarter and 50% no slip); GPU allocation (60% for a cloud
+  or pilot started this quarter in 2023–24, week 1: pay 8% of capex / wait (default) 1 quarter, 2 at know-how 0).
+  With the cap full they resolve silently with the default, logged. Live AI kW add to the site's Heat load, like
+  hosting (B4). The Live screen shows both alerts (`ProjectAlertCard`).
+  Decisions (mine, reversible): capex paid in full at start (no draw schedule); damages also apply to a signed
+  shell that hasn't started building; accelerate / premium payments add to the project's capex (so they count in
+  the construction value in M3.7); the contractor's no-slip roll is its own seeded stream; the alert texts are mine.
+  **Golden change (explained):** 11 goldens gain `"aiRevenueUsd": 0`, `"aiCostUsd": 0`, `"lateDamagesUsd": 0` in
+  every report and the live stats (699 added lines, nothing else changed). Tests: 446 pass (new
+  `tests/sim/projectBuild.test.ts`; shared helpers moved to `tests/sim/act2Helpers.ts`).
 - **M3.7** Valuation: sum of the parts (mining multiple + pivot premium, AI multiple), projects under construction at
   capex spent, the credit-weighted backlog; the real backlog on the top bar; selling a live project at the cap rate.
 - **M3.8** UI: the Projects page (A2-04) and the Deal builder (A2-05); dashboard hooks.

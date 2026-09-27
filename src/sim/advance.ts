@@ -1,7 +1,7 @@
 // advance(state) plays one week of the live quarter and returns the new state.
 // Systems run in a fixed order: failures → mining (a curtailed week idles Texas) →
-// treasury → Heat → loans → margin call → curtailment alert → failure wave → neighbour complaint →
-// event card → price alert.
+// treasury → hosting, reservation and AI projects → Heat → loans → margin call → curtailment alert →
+// failure wave → project alerts → neighbour complaint → event card → price alert.
 // After week 13 the quarter ends (report, or game over).
 import { BALANCE } from '../content/index.ts'
 import { logEntry, roundCents, type GameState } from './state.ts'
@@ -24,6 +24,7 @@ import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 import { settleHostingWeek } from './systems/hosting.ts'
 import { payReservationWeek } from './systems/mwUse.ts'
+import { checkProjectEvents, settleProjectsWeek } from './systems/projects.ts'
 
 export function advance(state: GameState): GameState {
   if (state.phase !== 'live') {
@@ -42,6 +43,7 @@ export function advance(state: GameState): GameState {
   const money = settleWeek(s, lots, w)
   const hosting = settleHostingWeek(s)
   const reservationUsd = payReservationWeek(s)
+  const ai = settleProjectsWeek(s)
   // Winter Storm Uri: index contracts that didn't curtail pay the storm price on their firm load.
   const stormUsd = curtailed.creditUsd > 0 ? 0 : stormChargeUsd(s, s.week)
   if (stormUsd > 0) {
@@ -64,8 +66,11 @@ export function advance(state: GameState): GameState {
   st.hostingFeesUsd += hosting.feesUsd
   st.powerCostUsd += hosting.powerUsd + reservationUsd
   st.reservationUsd += reservationUsd
-  for (const [tier, usd] of Object.entries(hosting.marginByTier))
-    st.marginByTier[tier] = (st.marginByTier[tier] ?? 0) + usd
+  st.aiRevenueUsd += ai.revenueUsd
+  st.aiCostUsd += ai.costUsd
+  for (const byTier of [hosting.marginByTier, ai.marginByTier])
+    for (const [tier, usd] of Object.entries(byTier))
+      st.marginByTier[tier] = (st.marginByTier[tier] ?? 0) + usd
   st.rateHikeUsd += rateHikeUsd(s, lots)
   st.stormChargeUsd += stormUsd
   st.salariesUsd += salariesUsd
@@ -103,6 +108,7 @@ export function advance(state: GameState): GameState {
   checkCurtailment(s)
   checkUri(s)
   checkFailureWaves(s)
+  checkProjectEvents(s)
   checkComplaint(s)
   checkEvents(s)
   checkPriceAlert(s, w)

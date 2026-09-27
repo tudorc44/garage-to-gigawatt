@@ -93,11 +93,14 @@ export function loadHeat(
     perUnit += l.working * model.heat_per_unit_garage
     runningKw += l.working * model.power_kw
   }
-  // Hosted machines (Act II) run on the site's power like your own.
-  if (!isShutDown(state, site.id))
+  // Hosted machines and live AI halls (Act II) run on the site's power like your own.
+  if (!isShutDown(state, site.id)) {
     for (const h of state.hosting)
       if (h.siteId === site.id && h.readyQuarter <= state.quarter)
         runningKw += h.kw
+    for (const p of state.projects)
+      if (p.siteId === site.id && p.stage === 'live') runningKw += p.kw
+  }
   const raw =
     tier.id === 'garage'
       ? perUnit

@@ -165,6 +165,8 @@ export interface Project {
   capital: 'cash' | null
   /** Capex committed and paid at the start of the build (after any tenant capex credit). */
   capexUsd: number
+  /** The GPUs' share of it (insured each year). */
+  gpuCapexUsd: number
   gpuCount: number
   startQuarter: number | null
   /** The quarter it goes live (moves with delays and GPU waits). */
@@ -317,6 +319,8 @@ export interface ActiveInterrupt {
   event?: string
   /** Failure wave only: the units it broke, per batch. */
   wave?: WaveDamage
+  /** Construction delay and GPU allocation (Act II): the project it's about. */
+  projectId?: string
 }
 
 /** What curtailing the Texas site for one week pays (review A8), fixed when the grid asks. */
@@ -352,6 +356,12 @@ export interface QuarterStats {
   hostingFeesUsd: number
   /** Act II power reservation on idle and under-construction MW (also in the power cost). */
   reservationUsd: number
+  /** Act II live AI projects: tenant rent and GPU-hour sales (counts toward EBITDA). */
+  aiRevenueUsd: number
+  /** Their running costs: shell opex, cloud power and GPU insurance (counted in EBITDA). */
+  aiCostUsd: number
+  /** Take-or-pay damages paid for late projects (counted in EBITDA). */
+  lateDamagesUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
@@ -420,6 +430,10 @@ export interface QuarterReport {
   hostingFeesUsd: number
   /** Act II power reservation on idle and under-construction MW (included in the power cost). */
   reservationUsd: number
+  /** Act II AI projects: revenue, running costs and take-or-pay damages. */
+  aiRevenueUsd: number
+  aiCostUsd: number
+  lateDamagesUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
@@ -453,6 +467,9 @@ export function emptyQuarterStats(): QuarterStats {
     gridCreditsUsd: 0,
     hostingFeesUsd: 0,
     reservationUsd: 0,
+    aiRevenueUsd: 0,
+    aiCostUsd: 0,
+    lateDamagesUsd: 0,
     rateHikeUsd: 0,
     stormChargeUsd: 0,
     salariesUsd: 0,

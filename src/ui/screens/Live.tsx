@@ -11,6 +11,7 @@ import {
   URI_STORM_PRICE,
   eventCardView,
   failureWaveView,
+  projectAlertView,
   interruptChoices,
   lotViews,
   marginCallView,
@@ -153,6 +154,10 @@ export function LiveScreen(
       )}
       {state.interrupt?.id === 'failure_wave' && (
         <FailureWaveCard state={state} act={act} />
+      )}
+      {(state.interrupt?.id === 'construction_delay' ||
+        state.interrupt?.id === 'gpu_allocation') && (
+        <ProjectAlertCard state={state} act={act} />
       )}
       {state.interrupt?.id === 'event' && <EventCard state={state} act={act} />}
       {state.interrupt?.id === 'margin_warning' && (
@@ -890,6 +895,79 @@ function FailureWaveCard({ state, act }: ScreenProps) {
                   })
                 : t('ui.wave.effect_degraded')}
             </span>
+          </button>
+        ))}
+      </article>
+    </div>
+  )
+}
+
+/** Act II: a construction delay or the GPU allocation queue on a project being built. */
+function ProjectAlertCard({ state, act }: ScreenProps) {
+  const v = projectAlertView(state)
+  if (!v) return null
+  const params = {
+    n: v.n,
+    projectKw: fmt.power(v.kw),
+    tier: tierName(v.tier),
+  }
+  const effect = (id: string) => {
+    if (id === 'accelerate' || id === 'pay_premium')
+      return tDynamic(`ui.project_alert.effect.${id}`, id, {
+        cash: fmt.signed(-v.costUsd),
+      })
+    if (id === 'wait' && v.waitQuarters > 1)
+      return t('ui.project_alert.effect.wait_long')
+    return tDynamic(`ui.project_alert.effect.${id}`, id)
+  }
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="project-alert-title"
+      >
+        <div class="row-between">
+          <span class="label">
+            {t('ui.event.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: v.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', {
+              n: state.interruptsThisQuarter,
+              max: MAX_INTERRUPTS,
+            })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="warning" />
+        </div>
+        <h2 class="event-title" id="project-alert-title">
+          {tDynamic(`ui.project_alert.${v.kind}.title`, v.kind, params)}
+        </h2>
+        <p class="event-body">
+          {tDynamic(`ui.project_alert.${v.kind}.body`, v.kind, params)}
+        </p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.${v.kind}.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">{effect(c.id)}</span>
           </button>
         ))}
       </article>

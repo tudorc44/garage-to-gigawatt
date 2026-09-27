@@ -27,12 +27,18 @@ export function ebitdaUsd(q: {
   rentUsd: number
   gridCreditsUsd?: number
   hostingFeesUsd?: number
+  aiRevenueUsd?: number
+  aiCostUsd?: number
+  lateDamagesUsd?: number
   salariesUsd?: number
 }): number {
   return (
     q.revenueUsd +
     (q.gridCreditsUsd ?? 0) +
-    (q.hostingFeesUsd ?? 0) -
+    (q.hostingFeesUsd ?? 0) +
+    (q.aiRevenueUsd ?? 0) -
+    (q.aiCostUsd ?? 0) -
+    (q.lateDamagesUsd ?? 0) -
     q.powerCostUsd -
     q.rentUsd -
     (q.salariesUsd ?? 0)

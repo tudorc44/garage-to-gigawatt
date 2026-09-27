@@ -63,6 +63,7 @@ import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
 import { rushRepairUsd } from './systems/failureWave.ts'
+import { gpuWaitQuarters, projectEventCostUsd } from './systems/projects.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import {
@@ -1089,6 +1090,23 @@ export function failureWaveView(state: GameState) {
     units: (a.wave ?? []).reduce((n, d) => n + d.units, 0),
     rushUsd: rushRepairUsd(state),
     rushMult: CONTENT.failureWave.rushCostMult,
+  }
+}
+
+/** The Act II project alert (construction delay or GPU allocation): which project, what paying costs. */
+export function projectAlertView(state: GameState) {
+  const a = state.interrupt
+  if (a?.id !== 'construction_delay' && a?.id !== 'gpu_allocation') return null
+  const p = state.projects.find((x) => x.id === a.projectId)
+  if (!p) return null
+  return {
+    kind: a.id,
+    week: a.week,
+    n: p.n,
+    kw: p.kw,
+    tier: state.sites.find((x) => x.id === p.siteId)?.tier ?? '',
+    costUsd: projectEventCostUsd(state),
+    waitQuarters: gpuWaitQuarters(state),
   }
 }
 

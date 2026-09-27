@@ -3,7 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import { CONTENT, act2Quarter } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
-import { newGame, type GameState } from '../../src/sim/state.ts'
+import type { GameState } from '../../src/sim/state.ts'
 import { siteMwByUse } from '../../src/sim/systems/mwUse.ts'
 import {
   annualRentUsd,
@@ -16,34 +16,10 @@ import {
   slots,
   tenantCard,
 } from '../../src/sim/systems/projects.ts'
+import { act2Company, ok } from './act2Helpers.ts'
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
 
-/** An Act II company with an empty 20 MW own site, in the Plan phase of `label`. */
-export function act2Company(label: string, seed = 1): GameState {
-  const s: GameState = {
-    ...newGame(seed),
-    act: 2,
-    quarter: q(label),
-    cash: 500_000_000,
-    bandwidth: 6,
-  }
-  s.sites.push({
-    id: 'site-2',
-    tier: 'own_site',
-    readyQuarter: 0,
-    rentUsdQ: 0,
-    powerPriceMult: 1,
-    flaw: null,
-  })
-  return s
-}
-
-export function ok(s: GameState, a: Action): GameState {
-  const r = applyAction(s, a)
-  if (!r.ok) throw new Error(`${a.type}: ${r.error.key}`)
-  return r.state
-}
 const err = (s: GameState, a: Action) => {
   const r = applyAction(s, a)
   return r.ok ? null : r.error.key
