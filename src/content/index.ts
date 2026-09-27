@@ -14,6 +14,7 @@ import conversionsRaw from './conversions.json' with { type: 'json' }
 import tenantsRaw from './tenants.json' with { type: 'json' }
 import gpusRaw from './gpus.json' with { type: 'json' }
 import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
+import lendersRaw from './lenders.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -31,6 +32,7 @@ import {
   gpuAllocationSchema,
   gpusFileSchema,
   interruptsAct2FileSchema,
+  lendersFileSchema,
   pilotClusterSchema,
   tenantsFileSchema,
   curtailmentRulesSchema,
@@ -237,6 +239,32 @@ export interface Act2Quarter {
   estimate: boolean
 }
 
+export type BacklogQuality = 'weak' | 'mixed' | 'strong'
+export type LeverageBand = 'lt2' | 'from2to4' | 'from4to6' | 'gt6'
+
+/** lenders.json, turned into what the sim needs. Shares are fractions (0.6, not 60). */
+export interface FinanceRules {
+  projectDebt: {
+    from: string
+    /** Share of capex it can fund: [low, high] (doc 18 §7.1: 60–75%). */
+    ltv: [number, number]
+    /** Yearly rate (fraction) by Act II quarter index, from the anchors, held before and after. */
+    rateByQuarter: number[]
+  }
+  /** The spread comes from the market file's ddtl_spread_bps (doc 18's 2026 split is in balance.ts). */
+  ddtl: { from: string }
+  equity: { dilution: [number, number] }
+  jv: { from: string; funds: [number, number]; takes: [number, number] }
+  backstop: { equity: [number, number] }
+  rating: {
+    matrix: Record<LeverageBand, Record<BacklogQuality, string>>
+    min: string
+    max: string
+    runwayQuarters: number
+    runwayNotches: number
+  }
+}
+
 export interface Content {
   /** Every quarter of the game in order: Act I "2017Q1" … "2022Q3", then Act II "2022Q4" … "2026Q4". */
   quarters: string[]
@@ -257,6 +285,8 @@ export interface Content {
   }
   /** Projects (Act II, scope 0.2 §2.5): what the Act II content files say about them. */
   projects: ProjectRules
+  /** Act II capital (scope 0.2 §2.2, §2.7; doc 18 §7): lenders.json, per Act II quarter where it varies. */
+  finance: FinanceRules
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -345,6 +375,7 @@ export interface RawContent {
   tenants: unknown
   gpus: unknown
   interruptsAct2: unknown
+  lenders: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -410,6 +441,7 @@ export function parseContent(raw: RawContent): Content {
   )
   const tenantsFile = check('tenants.json', tenantsFileSchema, raw.tenants)
   const gpusFile = check('gpus.json', gpusFileSchema, raw.gpus)
+  const lendersFile = check('lenders.json', lendersFileSchema, raw.lenders)
   const interruptsAct2File = check(
     'interrupts_act2.json',
     interruptsAct2FileSchema,
@@ -475,6 +507,7 @@ export function parseContent(raw: RawContent): Content {
     !conversionsFile ||
     !tenantsFile ||
     !gpusFile ||
+    !lendersFile ||
     !delayRules ||
     !allocationRules ||
     !rivalsFile ||
@@ -606,6 +639,70 @@ export function parseContent(raw: RawContent): Content {
       return a.v + ((b.v - a.v) * (i - a.i)) / (b.i - a.i)
     })
   }
+  // Act II capital (lenders.json): rate and spread anchors held before the first and after the last.
+  const held = (anchors: Record<string, number>) => {
+    const at = Object.entries(anchors)
+      .map(([q, v]) => ({ i: act2Quarters.indexOf(q), v }))
+      .filter((a) => a.i >= 0)
+      .sort((a, b) => a.i - b.i)
+    return act2Quarters.map((_, i) => {
+      const next = at.findIndex((a) => a.i >= i)
+      if (next < 0) return at.at(-1)?.v ?? 0
+      const b = at[next]
+      if (b.i === i || next === 0) return b.v
+      const a = at[next - 1]
+      return a.v + ((b.v - a.v) * (i - a.i)) / (b.i - a.i)
+    })
+  }
+  const [projectDebt, ddtl, equityAtm, jv, backstop] = lendersFile.instruments
+  const pct = ([a, b]: [number, number]): [number, number] => [a / 100, b / 100]
+  const mapping = lendersFile.credit_rating_mapping
+  const cells = (c: {
+    weak_backlog: string
+    mixed_backlog: string
+    strong_backlog: string
+  }) => ({
+    weak: c.weak_backlog,
+    mixed: c.mixed_backlog,
+    strong: c.strong_backlog,
+  })
+  const finance: FinanceRules = {
+    projectDebt: {
+      from: projectDebt.available_from,
+      ltv: pct(projectDebt.ltv_max_pct.value),
+      rateByQuarter: held(projectDebt.rate_pct).map((r) => r / 100),
+    },
+    ddtl: { from: ddtl.available_from },
+    equity: { dilution: pct(equityAtm.dilution_pct.value) },
+    jv: {
+      from: jv.available_from,
+      funds: pct(jv.funds_pct_of_equity),
+      takes: pct(jv.takes_pct_of_project),
+    },
+    backstop: { equity: pct(backstop.takes_pct_equity) },
+    rating: {
+      matrix: {
+        lt2: cells(mapping.matrix.debt_to_ebitda_lt_2x),
+        from2to4: cells(mapping.matrix.debt_to_ebitda_2_4x),
+        from4to6: cells(mapping.matrix.debt_to_ebitda_4_6x),
+        gt6: cells(mapping.matrix.debt_to_ebitda_gt_6x),
+      },
+      min: mapping.corporate_rating_range.min,
+      max: mapping.corporate_rating_range.max,
+      runwayQuarters: mapping.runway_notch.cash_runway_quarters_below,
+      runwayNotches: mapping.runway_notch.notches,
+    },
+  }
+  const scale = BALANCE.finance.ratingScale as readonly string[]
+  for (const r of [
+    finance.rating.min,
+    finance.rating.max,
+    ...Object.values(finance.rating.matrix).flatMap((c) => Object.values(c)),
+  ])
+    if (!scale.includes(r))
+      problems.push(
+        `lenders.json › credit_rating_mapping: "${r}" isn't on the rating scale (balance.ts › finance.ratingScale)`,
+      )
   // Hosting: the same-site conversion's flat cost, and a rate for Act II's first year at least.
   const hostingConversion = conversionsFile.conversions.find(
     (c) => c.id === 'mining_to_hosting_same_site',
@@ -973,6 +1070,7 @@ export function parseContent(raw: RawContent): Content {
     act2Market,
     hosting,
     projects,
+    finance,
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
@@ -1146,6 +1244,7 @@ export const CONTENT: Content = parseContent({
   tenants: tenantsRaw,
   gpus: gpusRaw,
   interruptsAct2: interruptsAct2Raw,
+  lenders: lendersRaw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

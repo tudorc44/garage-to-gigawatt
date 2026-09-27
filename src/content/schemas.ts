@@ -242,6 +242,61 @@ export const capitalAct2FileSchema = z.looseObject({
   }),
 })
 
+// ---------- lenders.json (Act II capital, doc 18 §7) ----------
+
+const pctRange = z
+  .tuple([nonNeg, nonNeg])
+  .refine(([a, b]) => a <= b, 'expected [low, high]')
+const ratingCells = z.object({
+  weak_backlog: z.string(),
+  mixed_backlog: z.string(),
+  strong_backlog: z.string(),
+})
+const instrument = z.looseObject
+
+export const lendersFileSchema = z.looseObject({
+  instruments: z.tuple([
+    instrument({
+      id: z.literal('project_debt'),
+      available_from: quarterId,
+      ltv_max_pct: z.looseObject({ value: pctRange }),
+      rate_pct: quarterAnchors,
+    }),
+    instrument({
+      id: z.literal('gpu_backed_ddtl'),
+      available_from: quarterId,
+    }),
+    instrument({
+      id: z.literal('equity_atm'),
+      dilution_pct: z.looseObject({ value: pctRange }),
+    }),
+    instrument({
+      id: z.literal('jv_partner'),
+      available_from: quarterId,
+      funds_pct_of_equity: pctRange,
+      takes_pct_of_project: pctRange,
+    }),
+    instrument({
+      id: z.literal('backstop'),
+      available_from: quarterId,
+      takes_pct_equity: pctRange,
+    }),
+  ]),
+  credit_rating_mapping: z.looseObject({
+    matrix: z.object({
+      debt_to_ebitda_lt_2x: ratingCells,
+      debt_to_ebitda_2_4x: ratingCells,
+      debt_to_ebitda_4_6x: ratingCells,
+      debt_to_ebitda_gt_6x: ratingCells,
+    }),
+    corporate_rating_range: z.looseObject({ min: z.string(), max: z.string() }),
+    runway_notch: z.looseObject({
+      cash_runway_quarters_below: nonNeg,
+      notches: z.number().int(),
+    }),
+  }),
+})
+
 // ---------- gpus.json and interrupts_act2.json ----------
 
 export const gpusFileSchema = z.looseObject({

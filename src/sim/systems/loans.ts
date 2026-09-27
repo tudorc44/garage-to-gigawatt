@@ -4,6 +4,7 @@
 import {
   BALANCE,
   CONTENT,
+  act2Quarter,
   type EquipmentLoanTerms,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -16,10 +17,20 @@ import {
 import { loansLocked } from './cryptoLoan.ts'
 import { saleValueUsd } from './machines.ts'
 
-/** This quarter's equipment loan terms, or undefined if lenders aren't offering any. */
+/**
+ * This quarter's equipment loan terms, or undefined if lenders aren't offering any. In Act II the
+ * equipment loan is always offered (scope 0.2 §2.7), on the last Act I era's terms (mine,
+ * reversible: lenders.json has no Act II equipment terms).
+ */
 export function equipmentTerms(
   quarter: number,
 ): EquipmentLoanTerms | undefined {
+  if (act2Quarter(quarter)) {
+    const last = CONTENT.equipmentLoans.reduce((a, b) =>
+      b.toYear > a.toYear ? b : a,
+    )
+    return { ...last, availableUntil: undefined }
+  }
   const q = CONTENT.quarters[quarter]
   const year = Number(q.slice(0, 4))
   const terms = CONTENT.equipmentLoans.find(

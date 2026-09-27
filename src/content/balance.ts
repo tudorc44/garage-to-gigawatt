@@ -87,6 +87,58 @@ export const BALANCE = {
   },
 
   /**
+   * Act II capital (scope 0.2 §2.2, §2.7; doc 18 §7). lenders.json holds the ranges and paths; these
+   * are the rules the game adds to pick inside them. "(mine)" marks the M4 build's reversible choices.
+   */
+  finance: {
+    /** Lowest to highest. Corporate ratings run CCC− to BBB (lenders.json); "A" is project debt only. */
+    ratingScale: [
+      'CCC-',
+      'CCC',
+      'CCC+',
+      'B-',
+      'B',
+      'B+',
+      'BB-',
+      'BB',
+      'BB+',
+      'BBB-',
+      'BBB',
+      'A',
+    ] as const,
+    /** Project debt needs a signed tenant rated at least this (scope §2.7), and a DSCR ≥ 1.12× (lenders.json). */
+    projectDebtMinRating: 'BBB',
+    dscrMin: 1.12,
+    /**
+     * GPU-backed DDTL: 50–70% of GPU cost (doc 18 §7.1): an investment-grade tenant gets the top, any
+     * other the bottom (mine). Spread: lenders.json's trend to 2025Q4; from 2026Q1 doc 18 §7.1 splits
+     * it by tenant credit: IG SOFR+225; non-IG 450 (Q2–Q3) and 475 (Q4), 2026Q1 holding 2025Q4's 420 (mine).
+     */
+    ddtl: {
+      advance: { ig: 0.7, other: 0.5 },
+      spread2026Bps: {
+        ig: 225,
+        other: {
+          '2026Q1': 420,
+          '2026Q2': 450,
+          '2026Q3': 450,
+          '2026Q4': 475,
+        } as Record<string, number>,
+      },
+    },
+    /** Big-tech backstop from 2025Q3 (scope §2.7; lenders.json says 2025Q1, the scope wins). */
+    backstopFrom: '2025Q3',
+    /** It guarantees this share of the lease (tenants.json › Fluidline; doc 18 §7.1: ~47%). */
+    backstopLeaseShare: 0.47,
+    /** Warrants worth this × the guaranteed dollars (lenders.json: 0.3–0.5×; mine: the middle), within 3–6%. */
+    backstopWarrantValueShare: 0.4,
+    /** Bandwidth: an equity raise 2 (scope §2.7); a JV or backstop deal 2 (mine, like negotiating). */
+    bandwidth: { equity: 2, jv: 2, backstop: 2 },
+    /** Foreclosure: this many quarters in a row of missed debt service on a project (scope §2.7). */
+    foreclosureMissedQuarters: 2,
+  },
+
+  /**
    * Power reservation on idle and under-construction MW (Act II, owner decision A2): each quarter,
    * share × the full-load power cost at the site's current power price (MW × 2,190 h × $/kWh × 1,000).
    */

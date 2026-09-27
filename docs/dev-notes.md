@@ -1329,6 +1329,23 @@ A2-05 / A2-07. Sub-steps:
     re-checked in M4.8. Open question for the design thread if it persists.
 - **M4.1** Finance content: `lenders.json` game copy + schema; SOFR, project-debt rate path, DDTL spreads; Act II
   equipment-loan terms.
+  **Done.** `src/content/lenders.json` = the docs copy (copy test). Schema `lendersFileSchema`; the loader builds
+  `CONTENT.finance`: project debt (from 2023Q3, LTV 60–75%, rate per Act II quarter from the anchors 10.5% (2023Q3)
+  → 8.5% (2024Q4) → 7.0% (2025Q4) → 7.5% (2026Q3), held before and after), DDTL (from 2023Q3), equity dilution
+  8–20%, JV (2025Q1, funds 50–80%, takes 50–80%), backstop warrants 3–6%, the rating matrix, range (CCC− to BBB)
+  and runway notch (under 4 quarters: −1); the loader checks every rating is on the scale. `balance.ts` › `finance`:
+  the rating scale (CCC− … BBB, then A for project debt), project debt needs ≥ BBB and DSCR ≥ 1.12×, DDTL advance
+  70% for an investment-grade tenant and 50% otherwise (mine, reversible: doc 18's 50–70%), the 2026 DDTL spread
+  split (IG 225; non-IG 420 (Q1, mine: held from 2025Q4), 450, 450, 475), the backstop from 2025Q3 (scope; lenders.json
+  says 2025Q1), 47% of the lease guaranteed, warrants worth 0.4× the guarantee (mine: the middle of 0.3–0.5×) within
+  3–6%, Bandwidth (equity 2; JV and backstop 2, mine), foreclosure after 2 missed quarters. The DDTL spread before
+  2026 reads the market file's `ddtl_spread_bps` column (900, 800, 700 …, 420), not lenders.json's coarser trend
+  anchors, which interpolate to different values in between (mine, reversible: one source). New
+  `src/sim/systems/finance.ts`: `sofr`, `projectDebtRate`, `ddtlSpreadBps`, `ddtlRate`, `ratingRank` (reads the first
+  grade of a card's rating: "A/AA" → A, "BB (backstopped to A)" → BB), `isInvestmentGrade` (BBB− or better).
+  **Equipment loan in Act II:** always offered (scope §2.7), on the last Act I era's terms (50% LTV, 14%, 8 quarters)
+  (mine, reversible: no Act II terms in the content); the M1 test that said "closed in Act II" now says this.
+  Tests 485 pass (new `tests/sim/finance.test.ts`). No golden change.
 - **M4.2** Project facilities: project debt and the GPU-backed DDTL on a project (sizing, DSCR ≥ 1.12×, interest while
   building, amortisation once live), debt service at quarter end, missed payments and foreclosure (2 quarters).
 - **M4.3** The equipment loan extended to GPUs (collateral includes delivered GPUs).
