@@ -1306,6 +1306,27 @@ A2-05 / A2-07. Sub-steps:
   (2-year) and a projected payback of ~1 year at 2023 prices. Tests 480 pass (new `tests/sim/gpuContracts.test.ts`).
   No golden change.
 - **M4.0d** Sims re-run against §5 (hosting, pilot with resale).
+  **Done** (`npm run sim -- --act2`, 50 seeds; values are medians):
+
+  | bot | Act II busts (before M4.0) | value 2024Q1 | 2026Q4 | Act II peak | live AI MW 2026Q4 |
+  |---|---|---|---|---|---|
+  | raise-climb | **14** (1) | $12.8M | $4.0M | $15.8M | 0 |
+  | hosting-switcher | **10** (4) | $20.2M | $12.5M | $42.3M | 0 |
+  | texas-ipo | 0 (0) | $112M | $322M | $755M | 0 |
+  | shell-climb | **22** (1) | $18.0M | $38.6M | $75.6M | 1 |
+  | texas-shell | 0 (0) | $116M | $422M | $851M | 2 |
+
+  - **Hosting isn't a free win:** hosting ahead in **45/50** at 2024Q1 (was 40/50; target ≤ ~60%): still missed.
+    Rule (c) hurt staying in mining more than hosting: the good path's switched-off S9s now pay the reservation.
+    Recorded and left, as the owner said.
+  - **Pilot timing** (the game's own resale now): 2023Q3 pilot **1.43× from operations, 1.89× with resale** ✓
+    (≥ 1.7×); 2025Q2 pilot 0.82× / **1.39×** ✗ (target ≤ 1.3×): a pilot live from 2025Q3 still keeps ~80% of its
+    GPU value at 2026Q4 (1.25 years × 15%), which lifts it over the line.
+  - **New finding: the reservation on switched-off machines makes the good path fragile.** The good path enters Act
+    II with ~$15M and a 20 MW site of mostly S9s that no longer pay; the whole site is now reserved (~$0.46M a
+    quarter in Georgia) whether the S9s stay or are sold. raise-climb goes bust in 14/50 runs, shell-climb (1–2 MW
+    shell, the rest reserved) in 22/50. Capital (M4) may change this (a bigger shell on project debt uses the MW);
+    re-checked in M4.8. Open question for the design thread if it persists.
 - **M4.1** Finance content: `lenders.json` game copy + schema; SOFR, project-debt rate path, DDTL spreads; Act II
   equipment-loan terms.
 - **M4.2** Project facilities: project debt and the GPU-backed DDTL on a project (sizing, DSCR ≥ 1.12×, interest while
