@@ -23,6 +23,7 @@ import {
   type ProjectKind,
   type TenantOffer,
 } from '../state.ts'
+import { gpuPriceMultNow, modifierMult } from './eventEffects.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import {
   headStartBuildDelta,
@@ -225,7 +226,11 @@ export function projectCapex(
       p.kind === 'cloud' && knowHow(state) === 0
         ? BALANCE.projects.knowHowZero.costMult
         : 1
-    gpuUsd = gpuCount * (gpuPriceUsd(p.gpu, quarter) ?? 0) * mult
+    gpuUsd =
+      gpuCount *
+      (gpuPriceUsd(p.gpu, quarter) ?? 0) *
+      mult *
+      gpuPriceMultNow(state, quarter)
   }
   const card = p.tenant ? tenantCard(p.tenant.card) : undefined
   const creditUsd = Math.min(retrofitUsd, (card?.capexCreditUsdMw ?? 0) * mw)
@@ -265,9 +270,14 @@ export function drawOffers(state: GameState, p: Project): void {
   )
   const r = substream(state.seed, `project_offers:${state.quarter}:${p.id}`)
   const { min, max } = BALANCE.projects.offers
+  // A bid tenant RFP (cards ec12, ec24) brings more offers that quarter.
+  const rfp =
+    state.events.extraOffers?.quarter === state.quarter
+      ? state.events.extraOffers.n
+      : 0
   const n = Math.min(
     pool.length,
-    randomInt(r, min, max) + (isHired(state, 'bd_lead') ? 1 : 0),
+    randomInt(r, min, max) + (isHired(state, 'bd_lead') ? 1 : 0) + rfp,
   )
   const left = [...pool]
   p.offers = []
@@ -659,11 +669,13 @@ export function startQuarterProjects(state: GameState): void {
       p.stage = 'live'
       logEntry(state, 'log.project_live', { n: p.n, kind: p.kind })
     }
+    // A bid tenant RFP this quarter redraws unsigned projects' offers (with the extra ones).
+    const rfp = state.events.extraOffers?.quarter === state.quarter
     if (
       p.kind !== 'pilot' &&
       !projectGone(p) &&
       !p.tenant &&
-      p.offers.length === 0
+      (p.offers.length === 0 || (rfp && p.stage !== 'live'))
     )
       drawOffers(state, p)
   }
@@ -707,15 +719,8 @@ export function endQuarterProjects(state: GameState): number {
     if (t.lateQuarters >= 2 && !t.walkRolled && !p.backstop) {
       t.walkRolled = true
       const walk = P().walkChanceLate2q[card.type]
-      if (chance(substream(state.seed, `tenant_walk:${label}:${p.id}`), walk)) {
-        state.cash -= t.prepaymentLeftUsd
-        logEntry(state, 'log.tenant_walked', {
-          n: p.n,
-          tenant: card.id,
-          refundUsd: t.prepaymentLeftUsd,
-        })
-        p.tenant = null
-      }
+      if (chance(substream(state.seed, `tenant_walk:${label}:${p.id}`), walk))
+        tenantWalks(state, p)
     }
   }
   state.cash -= damagesUsd
@@ -755,9 +760,14 @@ export function settleProjectsWeek(state: GameState): {
     if (!site || isShutDown(state, site.id)) continue
     let rev: number
     let cost: number
+    // An AI-lab tenant that forced a renegotiation (card ec23) pays less.
+    const labMult =
+      p.tenant && tenantCard(p.tenant.card)?.type === 'ai_lab'
+        ? state.events.aiLabRevenueMult
+        : 1
     if (p.kind === 'shell') {
       if (!p.tenant) continue
-      rev = annualRentUsd(tenantCard(p.tenant.card)!, p.kw) / 52
+      rev = (annualRentUsd(tenantCard(p.tenant.card)!, p.kw) / 52) * labMult
       cost = rev * b.shellOpexShare
       const setOff = Math.min(p.tenant.prepaymentLeftUsd, rev)
       p.tenant.prepaymentLeftUsd -= setOff
@@ -765,13 +775,20 @@ export function settleProjectsWeek(state: GameState): {
     } else {
       const up = uptime(site)
       const contract = p.tenant?.gpu
+      const lock =
+        p.spotLock && state.quarter <= p.spotLock.until ? p.spotLock : null
       rev = contract
-        ? contract.gpus * contract.priceUsdHr * hours * up
-        : p.gpuCount *
-          (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
-          spotUtilisation(state) *
-          hours *
-          up
+        ? contract.gpus * contract.priceUsdHr * hours * up * labMult
+        : lock
+          ? p.gpuCount * lock.usdHr * hours * up
+          : p.gpuCount *
+            (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
+            modifierMult(state, 'spot', null) *
+            spotUtilisation(state) *
+            hours *
+            up
+      // A degraded cluster (card ec19) runs below its full rate.
+      rev *= modifierMult(state, 'utilisation', null)
       cost =
         p.kw * b.cloudPue * hours * up * powerPriceUsdKwh(site, state.quarter) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
@@ -874,12 +891,36 @@ export function checkProjectEvents(state: GameState): void {
   }
 }
 
+/** An event card slows a building project down by `quarters` (M5.8). */
+export function slipProject(
+  state: GameState,
+  p: Project,
+  quarters: number,
+): void {
+  slip(state, p, quarters, 'event')
+}
+
+/**
+ * A signed tenant walks away (take-or-pay at 2 quarters late, or an event card): any prepayment not
+ * yet set off is repaid, and the project has no tenant again.
+ */
+export function tenantWalks(state: GameState, p: Project): void {
+  const t = p.tenant!
+  state.cash -= t.prepaymentLeftUsd
+  logEntry(state, 'log.tenant_walked', {
+    n: p.n,
+    tenant: t.card,
+    refundUsd: t.prepaymentLeftUsd,
+  })
+  p.tenant = null
+}
+
 /** Pushes a project's ready quarter back and logs why. */
 function slip(
   state: GameState,
   p: Project,
   quarters: number,
-  why: 'accepted' | 'silent' | 'contractor' | 'wait' | 'silent_wait',
+  why: 'accepted' | 'silent' | 'contractor' | 'wait' | 'silent_wait' | 'event',
 ): void {
   p.readyQuarter = (p.readyQuarter ?? state.quarter) + quarters
   const key = (
@@ -889,6 +930,7 @@ function slip(
       contractor: 'log.project_slipped_contractor',
       wait: 'log.project_gpu_wait',
       silent_wait: 'log.project_gpu_wait_silent',
+      event: 'log.project_slipped_event',
     } as const
   )[why]
   logEntry(

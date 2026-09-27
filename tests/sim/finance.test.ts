@@ -104,7 +104,8 @@ describe('the equipment loan in Act II: priced on the credit rating (owner, M4 a
     const s = rated('2022Q4', null)
     expect(loanRating(s)).toBe('CCC-')
     s.reports.push({ ebitdaUsd: 1_000_000 } as QuarterReport) // no debt: < 2×, weak backlog
-    expect(loanRating(s)).toBe('B+')
+    expect(loanRating(s)).toBe('B') // B+, less the FTX notch (2022Q4–2023Q1, M5.8)
+    expect(loanRating({ ...s, quarter: q('2023Q2') })).toBe('B+')
   })
 
   it('the loan taken keeps the rate it was priced at', () => {

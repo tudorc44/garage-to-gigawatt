@@ -39,6 +39,7 @@ import {
   weightedBacklogUsd,
 } from './projects.ts'
 import { aiEbitdaUsd, ebitdaUsd, valuationUsd } from './valuation.ts'
+import { lasting } from './eventEffects.ts'
 
 /**
  * Runs after week 13. If cash is below zero: sell treasury coins, then machines
@@ -103,7 +104,10 @@ function buildReport(
   const st = state.quarterStats
   const perCoin = (c: Coin) =>
     st.coinsMined[c] > 0 ? st.powerByCoin[c] / st.coinsMined[c] : null
-  const ebitda = ebitdaUsd(st)
+  // Act II cards: a depreciation policy scales reported EBITDA; the pivot's PR push the operating value.
+  const ebitda =
+    ebitdaUsd(st) * (lasting(state, state.events.ebitdaMult)?.mult ?? 1)
+  const evMult = lasting(state, state.events.valuationMult)?.mult
   const treasuryUsd = treasuryValueUsd(state, w)
   const constructionUsd = constructionValueUsd(state)
   const weightedBacklog = weightedBacklogUsd(state)
@@ -134,8 +138,10 @@ function buildReport(
         pivot: pivotActive(state),
         constructionUsd,
         weightedBacklogUsd: weightedBacklog,
+        evMult,
       },
     ),
+    ...(evMult !== undefined ? { evMult } : {}),
     priceAlerts: st.priceAlerts,
     marginCalls: st.marginCalls,
     founderStake: state.founderStake,

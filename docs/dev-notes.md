@@ -202,6 +202,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.7: `hires_act2.json` (byte copy): Act II salaries for the 5, Head of Development (+1 BW from next quarter) and
   Capital Markets Lead (−0.75 pt on equipment loan and DDTL spreads; mine: the middle). Act II Bandwidth per scope
   §2.2 (3, +1 at 50 MW, +1 at 200 MW, CoS, HoD; max 8): the own site's Act I +1 no longer applies (a 20 MW company has 3).
+- M5.8: `src/content/events_act2.json`, the pack's cards in game format (21 played; ec03/ec05 by other systems, ec21
+  STOPPED) + timeline effects (FTX −1 notch 2 q, SVB no new debt 2023Q2, DeepSeek AI multiple −3 2 q); crypto loans back
+  from 2023Q3 (scope §2.7). Durations/targets the pack left open are mine (list in the M5 report).
 
 ## Next
 

@@ -93,7 +93,13 @@
     },
     "taxPlan": null,
     "runHotQuarter": null,
-    "moratoriumWaiver": {}
+    "moratoriumWaiver": {},
+    "creditNotch": null,
+    "valuationMult": null,
+    "ebitdaMult": null,
+    "spreadAddBps": 0,
+    "aiLabRevenueMult": 1,
+    "extraOffers": null
   },
   "failureWaves": [
     {

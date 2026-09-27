@@ -1,0 +1,120 @@
+{
+ "schema_version": 1,
+ "note": "The game's Act II deck (scope 0.2 §2.12; doc 18 §11): docs/act2-content/events_act2.json's 24 cards in events.json's game format (structured effects, texts in src/i18n/en.json › event.<id>.*). Played elsewhere: ec03 (the lifeline, on the Act II intro) and ec05 (the GPU allocation alert, since M3). ec21 (the moratorium) waits for Ratepayer Anger (STOPPED in dev-notes). Where the pack's effect had no number or no duration, the value here is Claude Code's (dev-notes › M5.8). market_effects are the scripted timeline's effects that apply whatever the choice.",
+ "engine": {
+  "random_chance_per_quarter": 0.35,
+  "random_start": "2022Q4",
+  "random_week_range": [2, 12]
+ },
+ "market_effects": [
+  {"id": "ftx_collapse", "from": "2022Q4", "quarters": 2, "credit_notch": -1, "source": "events_act2.json › ftx_collapse: -1 notch to all miner credit ratings for 2 quarters"},
+  {"id": "svb_collapse", "from": "2023Q2", "quarters": 1, "no_new_debt": true, "source": "events_act2.json › svb_collapse: 1-quarter credit freeze, no new debt (the quarter after 10 Mar 2023)"},
+  {"id": "deepseek_shock", "from": "2025Q1", "quarters": 2, "ai_multiple_delta": -3, "ai_demand_delta": -10, "source": "events_act2.json › deepseek_shock game_effect; scope 0.2 §2.12"}
+ ],
+ "events": [
+  {"id": "ec01_ftx_contagion", "type": "scripted", "quarter": "2022Q4", "week_of": "2022-11-07", "news_unless": "has_treasury", "default": "hold",
+   "choices": [
+    {"id": "sell", "effects": {"sell_treasury_pct": 1}},
+    {"id": "hold", "effects": {}}
+   ]},
+  {"id": "ec02_chatgpt_rumor", "type": "scripted", "quarter": "2022Q4", "week_of": "2022-11-28", "default": "note",
+   "choices": [
+    {"id": "note", "effects": {}},
+    {"id": "prepare", "effects": {"bandwidth_next": -1, "cash": -50000}}
+   ]},
+  {"id": "ec04_svb_freeze", "type": "scripted", "quarter": "2023Q1", "week_of": "2023-03-06", "default": "ride",
+   "choices": [
+    {"id": "move", "effects": {"cash": -20000}},
+    {"id": "ride", "effects": {"credit_notch": {"notches": -1, "quarters": 2}}}
+   ]},
+  {"id": "ec06_ordinals_fee_spike", "type": "scripted", "quarter": "2023Q4", "week_of": "2023-12-11", "news_unless": "mining", "default": "bank",
+   "choices": [
+    {"id": "bank", "effects": {"cash_revenue_share": 0.08}}
+   ]},
+  {"id": "ec07_etf_rally", "type": "scripted", "quarter": "2024Q1", "week_of": "2024-01-08", "news_unless": "has_treasury", "default": "hold",
+   "choices": [
+    {"id": "sell", "effects": {"sell_treasury_pct": 0.3}},
+    {"id": "hold", "effects": {}}
+   ]},
+  {"id": "ec08_halving_night", "type": "scripted", "quarter": "2024Q2", "week_of": "2024-04-22", "news_unless": "mining", "default": "switch_off",
+   "choices": [
+    {"id": "switch_off", "effects": {}},
+    {"id": "keep_running", "effects": {"hashrate_mult": {"mult": 0.9, "scope": "fleet", "until": "quarter_end"}}}
+   ]},
+  {"id": "ec09_pivot_premium", "type": "random", "trigger": "first_ai_deal", "weight": 1, "bypass_random_roll": true, "default": "quiet",
+   "choices": [
+    {"id": "pr_push", "effects": {"cash": -100000, "valuation_mult": {"mult": 1.05, "quarters": 4}}},
+    {"id": "quiet", "effects": {}}
+   ]},
+  {"id": "ec10_pjm_shock", "type": "scripted", "quarter": "2024Q4", "week_of": "2024-10-14", "requires": "site_pjm_ohio_georgia", "default": "absorb",
+   "choices": [
+    {"id": "absorb", "effects": {"region_power_mult": {"regions": ["pjm", "ohio", "georgia"], "mult": 1.3, "quarters": 4}}},
+    {"id": "lobby", "effects": {"bandwidth_next": -1, "region_grievance": {"regions": ["pjm", "ohio", "georgia"], "value": 10}}}
+   ]},
+  {"id": "ec11_warrenton_backlash", "type": "scripted", "quarter": "2024Q4", "week_of": "2024-11-04", "requires": "site_pjm", "site": "pjm_site", "default": "proceed",
+   "choices": [
+    {"id": "scale_back", "effects": {"grievance": -10, "bandwidth_next": -1}},
+    {"id": "proceed", "effects": {"grievance": 15}}
+   ]},
+  {"id": "ec12_stargate_rfp", "type": "scripted", "quarter": "2025Q1", "week_of": "2025-01-20", "default": "pass",
+   "choices": [
+    {"id": "bid", "effects": {"bandwidth_next": -2, "extra_tenant_offers": 1}},
+    {"id": "pass", "effects": {}}
+   ]},
+  {"id": "ec13_deepseek_wobble", "type": "scripted", "quarter": "2025Q1", "week_of": "2025-01-27", "default": "stay",
+   "choices": [
+    {"id": "hedge", "effects": {"delay_marginal_project": 1}},
+    {"id": "stay", "effects": {}},
+    {"id": "buy_dip", "effects": {"plan_gpu_price_mult": 0.9, "bandwidth_next": -1}}
+   ]},
+  {"id": "ec14_coreweave_ipo_news", "type": "scripted", "quarter": "2025Q1", "week_of": "2025-03-24", "default": "note",
+   "choices": [
+    {"id": "note", "effects": {}}
+   ]},
+  {"id": "ec15_spot_price_shock", "type": "scripted", "quarter": "2025Q2", "week_of": "2025-06-09", "news_unless": "spot_cluster", "default": "lock",
+   "choices": [
+    {"id": "lock", "effects": {"lock_spot": {"price_mult": 0.7, "quarters": 4}}},
+    {"id": "stay", "effects": {"spot_price_mult": {"mult": 0.7, "until": "quarter_end"}}}
+   ]},
+  {"id": "ec16_backstop_offer", "type": "random", "trigger": "backstop_eligible", "weight": 1, "bypass_random_roll": true, "window": ["2025Q3", "2026Q4"], "default": "decline",
+   "choices": [
+    {"id": "accept", "effects": {"take_backstop": true}},
+    {"id": "decline", "effects": {}}
+   ]},
+  {"id": "ec17_jv_partner_offer", "type": "random", "trigger": "jv_eligible", "weight": 1, "bypass_random_roll": true, "window": ["2025Q1", "2026Q4"], "default": "self",
+   "choices": [
+    {"id": "take", "effects": {"take_jv": 0.65}},
+    {"id": "self", "effects": {}}
+   ]},
+  {"id": "ec18_depreciation_debate", "type": "scripted", "quarter": "2025Q4", "week_of": "2025-11-10", "news_unless": "gpu_cluster", "default": "conservative",
+   "choices": [
+    {"id": "aggressive", "effects": {"ebitda_mult": {"mult": 1.1, "quarters": 5}}},
+    {"id": "conservative", "effects": {"ebitda_mult": {"mult": 0.9, "quarters": 5}}}
+   ]},
+  {"id": "ec19_gpu_failure_wave", "type": "random", "trigger": "big_cluster", "weight": 6, "default": "repair",
+   "choices": [
+    {"id": "repair", "effects": {"gpu_repair": {"share": [0.005, 0.01], "usd_per_gpu": 30000, "cost_share": 0.3}}},
+    {"id": "degraded", "effects": {"gpu_degraded": {"mult": 0.95, "quarters": 2}}}
+   ]},
+  {"id": "ec20_blocked_projects", "type": "scripted", "quarter": "2026Q1", "week_of": "2026-02-02", "default": "slow",
+   "choices": [
+    {"id": "slow", "effects": {"all_sites_grievance": -15, "delay_building_projects": 1}},
+    {"id": "push", "effects": {"all_sites_grievance": 10}}
+   ]},
+  {"id": "ec22_ddtl_widening", "type": "scripted", "quarter": "2026Q3", "week_of": "2026-08-03", "default": "lock",
+   "choices": [
+    {"id": "lock", "effects": {"debt_spread_add": 200}},
+    {"id": "wait", "effects": {"debt_spread_add": 300}}
+   ]},
+  {"id": "ec23_oracle_force_majeure", "type": "scripted", "quarter": "2026Q4", "week_of": "2026-10-05", "news_unless": "ai_lab_tenant", "default": "renegotiate",
+   "choices": [
+    {"id": "renegotiate", "effects": {"ai_lab_revenue_mult": 0.7}},
+    {"id": "hold", "effects": {"ai_lab_walk_chance": 0.3}}
+   ]},
+  {"id": "ec24_tenant_rfp_random", "type": "random", "trigger": "always", "weight": 10, "weight_by_ai_demand": true, "window": ["2023Q3", "2026Q4"], "default": "pass",
+   "choices": [
+    {"id": "bid", "effects": {"bandwidth_next": -2, "extra_tenant_offers": 1}},
+    {"id": "pass", "effects": {}}
+   ]}
+ ]
+}

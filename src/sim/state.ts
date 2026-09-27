@@ -57,6 +57,8 @@ export interface Site {
    * build starts; null before).
    */
   powerAdds?: PowerAdd[]
+  /** Act II card (the PJM shock): power × mult from…until (quarter indexes, both included). */
+  eventPowerMult?: { mult: number; from: number; until: number }
 }
 
 /** Power added to a site for one project (M5.6). */
@@ -235,6 +237,11 @@ export interface Project {
   tenant: ProjectTenant | null
   /** Cloud projects: sell capacity on the spot market (the only tenant option so far). */
   spot: boolean
+  /**
+   * A spot cluster's capacity locked at a price after a spot price shock (M5.8): every GPU earns
+   * usdHr until (and including) that quarter, whatever the utilisation.
+   */
+  spotLock?: { usdHr: number; until: number }
   /** The capital slot: closed with own cash covering whatever the chosen debt doesn't. */
   capital: 'cash' | null
   /** Debt chosen for the build (Act II capital, M4): drawn when it starts. Missing = none. */
@@ -576,6 +583,8 @@ export interface QuarterReport {
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
   /** Act II: the credit rating at quarter end (absent in Act I). */
   creditRating?: string
+  /** Act II: a card's premium on the operating value that quarter (absent when there's none). */
+  evMult?: number
 }
 
 export function emptyQuarterStats(): QuarterStats {

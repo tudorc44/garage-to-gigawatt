@@ -18,6 +18,7 @@ import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
 import sitesAct2Raw from './sites_act2.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
+import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -46,6 +47,7 @@ import {
   heatFileSchema,
   hiresFileSchema,
   hiresAct2FileSchema,
+  eventsAct2FileSchema,
   failureWaveRulesSchema,
   mergeFileSchema,
   eventsFileSchema,
@@ -73,6 +75,7 @@ import {
   type FailureWaveRules,
   type EventCardRaw,
   type EventChoice,
+  type MarketEffect,
   type Interrupt,
   type LadderStep,
   type Machine,
@@ -91,6 +94,7 @@ import {
 
 export { BALANCE }
 export type {
+  MarketEffect,
   RegionPolicy,
   SiteCategory,
   NegotiationRules,
@@ -388,17 +392,27 @@ export type EventCard = EventCardRaw & {
   /** Scripted cards: quarter index and week index (0–12) of the card. */
   quarterIndex?: number
   weekIndex?: number
+  /** The act whose deck it's in: events.json is Act I's, events_act2.json Act II's. */
+  act: 1 | 2
 }
 
-export interface EventRules {
+/** One act's random-card settings. */
+export interface RandomCardRules {
   randomChance: number
   /** First quarter index with random cards. */
   randomStart: number
   /** Week numbers (1–13) a random card can come after. */
   randomWeeks: [number, number]
+}
+
+export interface EventRules extends RandomCardRules {
+  /** Act II's own random-card settings (events_act2.json); the top-level ones are Act I's. */
+  act2: RandomCardRules
   winterQuarters: string[]
   cards: EventCard[]
   byId: Record<string, EventCard>
+  /** The Act II timeline's market effects (events_act2.json › market_effects). */
+  marketEffects: MarketEffect[]
 }
 
 export interface Shock {
@@ -430,6 +444,7 @@ export interface RawContent {
   regions: unknown
   sitesAct2: unknown
   hiresAct2: unknown
+  eventsAct2: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -507,6 +522,11 @@ export function parseContent(raw: RawContent): Content {
     hiresAct2FileSchema,
     raw.hiresAct2,
   )
+  const eventsAct2File = check(
+    'events_act2.json',
+    eventsAct2FileSchema,
+    raw.eventsAct2,
+  )
   const interruptsAct2File = check(
     'interrupts_act2.json',
     interruptsAct2FileSchema,
@@ -576,6 +596,7 @@ export function parseContent(raw: RawContent): Content {
     !regionsFile ||
     !sitesAct2File ||
     !hiresAct2File ||
+    !eventsAct2File ||
     !delayRules ||
     !allocationRules ||
     !rivalsFile ||
@@ -1215,23 +1236,48 @@ export function parseContent(raw: RawContent): Content {
   if (!byId.price_alert)
     problems.push('interrupts.json: missing the "price_alert" interrupt')
 
-  const cards: EventCard[] = eventsFile.events.map((e) => {
-    if (e.type !== 'scripted') return e
-    const qi = quarters.indexOf(e.quarter)
-    const wi = qi < 0 ? -1 : market[qi].findIndex((w) => w.week === e.week_of)
-    if (wi < 0)
+  const toCard =
+    (file: string, act: 1 | 2) =>
+    (e: EventCardRaw): EventCard => {
+      if (e.type !== 'scripted') return { ...e, act }
+      const qi = quarters.indexOf(e.quarter)
+      const wi = qi < 0 ? -1 : market[qi].findIndex((w) => w.week === e.week_of)
+      if (wi < 0)
+        problems.push(
+          `${file} › ${e.id}: week ${e.week_of} isn't a week of ${e.quarter}`,
+        )
+      if (qi >= 0 && actOf(qi) !== act)
+        problems.push(`${file} › ${e.id}: ${e.quarter} isn't in Act ${act}`)
+      return { ...e, quarterIndex: qi, weekIndex: wi, act }
+    }
+  const actOf = (qi: number) => (qi <= acts[0].lastQuarter ? 1 : 2)
+  const cards: EventCard[] = [
+    ...eventsFile.events.map(toCard('events.json', 1)),
+    ...eventsAct2File.events.map(toCard('events_act2.json', 2)),
+  ]
+  const seen = new Set<string>()
+  for (const c of cards) {
+    if (seen.has(c.id)) problems.push(`events: card id "${c.id}" appears twice`)
+    seen.add(c.id)
+  }
+  for (const m of eventsAct2File.market_effects)
+    if (!act2Quarters.includes(m.from))
       problems.push(
-        `events.json › ${e.id}: week ${e.week_of} isn't a week of ${e.quarter}`,
+        `events_act2.json › market_effects.${m.id}: ${m.from} isn't an Act II quarter`,
       )
-    return { ...e, quarterIndex: qi, weekIndex: wi }
-  })
   const events: EventRules = {
     randomChance: eventsFile.engine.random_chance_per_quarter,
     randomStart: quarters.indexOf(eventsFile.engine.random_start),
     randomWeeks: eventsFile.engine.random_week_range,
+    act2: {
+      randomChance: eventsAct2File.engine.random_chance_per_quarter,
+      randomStart: quarters.indexOf(eventsAct2File.engine.random_start),
+      randomWeeks: eventsAct2File.engine.random_week_range,
+    },
     winterQuarters: eventsFile.market_phases.winter,
     cards,
     byId: Object.fromEntries(cards.map((c) => [c.id, c])),
+    marketEffects: eventsAct2File.market_effects,
   }
 
   const shocks: Shock[] = []
@@ -1470,6 +1516,7 @@ export const CONTENT: Content = parseContent({
   regions: regionsRaw,
   sitesAct2: sitesAct2Raw,
   hiresAct2: hiresAct2Raw,
+  eventsAct2: eventsAct2Raw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

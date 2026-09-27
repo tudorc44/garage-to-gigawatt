@@ -2,7 +2,7 @@
 // failures and rent for a span of weeks, and the next Plan phase's price changes and locks.
 // Kept apart from the event engine (events.ts) so mining, rent and buying can read them
 // without importing the whole engine.
-import { BALANCE, type Machine } from '../../content/index.ts'
+import { BALANCE, CONTENT, type Machine } from '../../content/index.ts'
 import type { Condition, GameState } from '../state.ts'
 import { buyPrice } from './market.ts'
 
@@ -16,9 +16,12 @@ export interface ScheduledEvent {
   siteId?: string
 }
 
-/** A multiplier on one thing at some sites (null = every site), for absolute weeks from…to. */
+/**
+ * A multiplier on one thing at some sites (null = every site), for absolute weeks from…to. Act II
+ * adds 'spot' (the neocloud price spot clusters earn) and 'utilisation' (AI clouds' revenue).
+ */
 export interface Modifier {
-  kind: 'hashrate' | 'failure' | 'rent'
+  kind: 'hashrate' | 'failure' | 'rent' | 'spot' | 'utilisation'
   siteIds: string[] | null
   mult: number
   /** Absolute weeks (quarter × 13 + week index), both included. */
@@ -45,7 +48,19 @@ export interface EventState {
     usedDiscount: number
     openBuy: boolean
     guaranteedAuction: boolean
+    /** Act II: GPU purchase prices × this in that Plan phase (DeepSeek's "buy the dip"). */
+    gpuPriceMult?: number
   } | null
+  /** Act II cards' lasting effects (M5.8), each until (and including) a quarter index. */
+  creditNotch: { notches: number; until: number } | null
+  valuationMult: { mult: number; until: number } | null
+  ebitdaMult: { mult: number; until: number } | null
+  /** Added to the spread of new equipment loans and DDTLs, in bps, from then on. */
+  spreadAddBps: number
+  /** AI-lab tenants' rent (and GPU contracts) × this, from then on. */
+  aiLabRevenueMult: number
+  /** Extra tenant offers per project drawn in this quarter's Plan phase (a bid RFP). */
+  extraOffers: { quarter: number; n: number } | null
   /** No new GPU rigs can be bought in this quarter's Plan phase. */
   gpuLockQuarter: number | null
   /** Added to next quarter's Bandwidth (negative). */
@@ -82,7 +97,70 @@ export function emptyEventState(): EventState {
     taxPlan: null,
     runHotQuarter: null,
     moratoriumWaiver: {},
+    creditNotch: null,
+    valuationMult: null,
+    ebitdaMult: null,
+    spreadAddBps: 0,
+    aiLabRevenueMult: 1,
+    extraOffers: null,
   }
+}
+
+/** A lasting Act II card effect's value this quarter (its neutral value when it has run out). */
+export function lasting<T extends { until: number }>(
+  state: GameState,
+  x: T | null,
+): T | null {
+  return x && state.quarter <= x.until ? x : null
+}
+
+/** The scripted Act II timeline's market effects in force in `quarter` (events_act2.json). */
+export function marketEffectsAt(quarter: number) {
+  const label = CONTENT.quarters[quarter] ?? ''
+  return CONTENT.events.marketEffects.filter((m) => {
+    const from = CONTENT.quarters.indexOf(m.from)
+    return label >= m.from && quarter < from + m.quarters
+  })
+}
+
+/** Credit-rating notches from the timeline and from cards now (negative = down). */
+export function eventRatingNotches(state: GameState): number {
+  return (
+    (lasting(state, state.events.creditNotch)?.notches ?? 0) +
+    marketEffectsAt(state.quarter).reduce(
+      (n, m) => n + (m.credit_notch ?? 0),
+      0,
+    )
+  )
+}
+
+/** The AI-infrastructure multiple's change from the timeline in `quarter` (DeepSeek: −3). */
+export function aiMultipleDelta(quarter: number): number {
+  return marketEffectsAt(quarter).reduce(
+    (n, m) => n + (m.ai_multiple_delta ?? 0),
+    0,
+  )
+}
+
+/** The AI demand index's change from the timeline in `quarter` (DeepSeek: −10). */
+export function aiDemandDelta(quarter: number): number {
+  return marketEffectsAt(quarter).reduce(
+    (n, m) => n + (m.ai_demand_delta ?? 0),
+    0,
+  )
+}
+
+/** Whether lenders write no new debt this quarter (the SVB freeze). */
+export function debtFrozen(state: GameState): boolean {
+  return marketEffectsAt(state.quarter).some((m) => m.no_new_debt)
+}
+
+/** This Plan phase's GPU price multiplier (DeepSeek's "buy the dip"), 1 normally. */
+export function gpuPriceMultNow(state: GameState, quarter: number): number {
+  const p = state.events.plan
+  return p && p.quarter === state.quarter && quarter === state.quarter
+    ? (p.gpuPriceMult ?? 1)
+    : 1
 }
 
 /** The absolute week being played (or about to be): quarter × 13 + week index. */
@@ -94,13 +172,13 @@ export function absWeek(state: GameState): number {
 export function modifierMult(
   state: GameState,
   kind: Modifier['kind'],
-  siteId: string,
+  siteId: string | null,
 ): number {
   const now = absWeek(state)
   let m = 1
   for (const x of state.events.modifiers) {
     if (x.kind !== kind || now < x.from || now > x.to) continue
-    if (x.siteIds && !x.siteIds.includes(siteId)) continue
+    if (x.siteIds && (siteId === null || !x.siteIds.includes(siteId))) continue
     m *= x.mult
   }
   return m

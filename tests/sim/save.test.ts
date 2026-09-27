@@ -126,6 +126,12 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   act2Entry: null,
   bridgeLoan: null,
   preset: false,
+  'events.creditNotch': null,
+  'events.valuationMult': null,
+  'events.ebitdaMult': null,
+  'events.spreadAddBps': 0,
+  'events.aiLabRevenueMult': 1,
+  'events.extraOffers': null,
 }
 
 /**

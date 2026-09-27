@@ -65,7 +65,9 @@ export function ratingView(state: GameState) {
   const inputs = ratingInputs(state, report)
   const matrix = CONTENT.finance.rating.matrix
   const i = BANDS.indexOf(inputs.band)
-  const shift = inputs.shortRunway ? CONTENT.finance.rating.runwayNotches : 0
+  const shift =
+    (inputs.shortRunway ? CONTENT.finance.rating.runwayNotches : 0) +
+    inputs.eventNotches
   const at = (band: LeverageBand) => notch(matrix[band][inputs.quality], shift)
   const edges = BAND_EDGES[inputs.band]
   const band = ratingLoanBand(state.creditRating)
@@ -304,7 +306,8 @@ export function dealCapitalView(state: GameState, p: Project) {
     )
     ratingAfter = notch(
       CONTENT.finance.rating.matrix[band][inputs.quality],
-      inputs.shortRunway ? CONTENT.finance.rating.runwayNotches : 0,
+      (inputs.shortRunway ? CONTENT.finance.rating.runwayNotches : 0) +
+        inputs.eventNotches,
     )
   }
   return {

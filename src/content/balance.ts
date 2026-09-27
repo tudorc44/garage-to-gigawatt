@@ -199,6 +199,19 @@ export const BALANCE = {
   },
 
   /**
+   * Act II event cards (events_act2.json, M5.8): the GPU failure wave hits clusters of 10,000 GPUs
+   * and up (interrupts_act2.json › gpu_failure_wave's trigger); the JV card offers the middle of the
+   * JV share range (50–80%; mine).
+   */
+  act2Events: {
+    bigClusterGpus: 10_000,
+    jvShare: 0.65,
+  },
+
+  /** Crypto-backed loans come back in Act II from this quarter (scope 0.2 §2.7: FTX closed them 2022Q4–2023Q2). */
+  act2CryptoLoansFrom: '2023Q3',
+
+  /**
    * Act II Bandwidth (scope 0.2 §2.2): base 3; +1 at 50 MW energized, +1 more at 200 MW; +1 each from
    * the Chief of Staff and the Head of Development; at most 8. (It replaces Act I's +1 for the own site.)
    */

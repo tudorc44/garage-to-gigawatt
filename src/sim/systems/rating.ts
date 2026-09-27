@@ -9,6 +9,7 @@ import {
   type LeverageBand,
 } from '../../content/index.ts'
 import type { GameState, QuarterReport } from '../state.ts'
+import { eventRatingNotches } from './eventEffects.ts'
 import { isInvestmentGrade } from './finance.ts'
 import { debtUsd } from './loans.ts'
 import { remainingContractUsd, tenantCard } from './projects.ts'
@@ -77,6 +78,8 @@ export function ratingInputs(state: GameState, report: QuarterReport) {
   const shortRunway =
     runwayQuarters !== null && runwayQuarters < r.runwayQuarters
   const base = r.matrix[band][quality]
+  // The timeline and cards can move it too (FTX: −1 for 2 quarters; SVB "ride it out": −1).
+  const eventNotches = eventRatingNotches(state)
   return {
     debtUsd: debt,
     debtToEbitda: yearlyEbitda > 0 ? debt / yearlyEbitda : null,
@@ -86,6 +89,7 @@ export function ratingInputs(state: GameState, report: QuarterReport) {
     runwayQuarters,
     shortRunway,
     base,
-    rating: notch(base, shortRunway ? r.runwayNotches : 0),
+    eventNotches,
+    rating: notch(base, (shortRunway ? r.runwayNotches : 0) + eventNotches),
   }
 }

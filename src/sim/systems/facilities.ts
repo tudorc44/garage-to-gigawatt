@@ -20,6 +20,7 @@ import {
   sofr,
 } from './finance.ts'
 import { spreadCut } from './hires.ts'
+import { debtFrozen } from './eventEffects.ts'
 import {
   contractQuarters,
   getProject,
@@ -46,6 +47,7 @@ export function debtBlocker(
   const from = kind === 'project_debt' ? f.projectDebt.from : f.ddtl.from
   if (CONTENT.quarters[state.quarter] < from)
     return { key: 'error.debt_early', params: { quarter: from } }
+  if (debtFrozen(state)) return { key: 'error.debt_frozen' }
   if (p.stage !== 'proposed') return { key: 'error.project_started' }
   const rating = tenantRating(p)
   if (kind === 'project_debt') {
@@ -104,12 +106,13 @@ export function debtOffer(
     apr:
       kind === 'project_debt'
         ? projectDebtRate(state.quarter)
-        : // The Capital Markets Lead cuts the DDTL's spread (M5.7).
+        : // The Capital Markets Lead cuts the DDTL's spread (M5.7); a card can widen it (M5.8).
           ddtlRate(state.quarter, ig) -
           Math.min(
             spreadCut(state),
             ddtlRate(state.quarter, ig) - sofr(state.quarter),
-          ),
+          ) +
+          state.events.spreadAddBps / 10_000,
     tenorQuarters: Math.max(1, contractQuarters(p)),
     // Secured debt on a strong tenant rates A even when the company doesn't (doc 18 §7.2).
     rating: strong ? 'A' : (rating.split(/[\s/(]/)[0] ?? ''),

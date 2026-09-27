@@ -11,6 +11,7 @@ import {
   type GameState,
 } from '../state.ts'
 import { loansLocked } from './cryptoLoan.ts'
+import { debtFrozen } from './eventEffects.ts'
 import { ratingRank, sofr } from './finance.ts'
 import { spreadCut } from './hires.ts'
 import { saleValueUsd } from './machines.ts'
@@ -68,8 +69,11 @@ export function equipmentTerms(state: GameState): LoanTerms | undefined {
   const band = ratingLoanBand(rating)
   return {
     ltv: band.ltv,
-    // The Capital Markets Lead cuts the spread (M5.7).
-    apr: sofr(state.quarter) + Math.max(0, band.spread - spreadCut(state)),
+    // The Capital Markets Lead cuts the spread (M5.7); a card can widen it (DDTL widening, M5.8).
+    apr:
+      sofr(state.quarter) +
+      Math.max(0, band.spread - spreadCut(state)) +
+      state.events.spreadAddBps / 10_000,
     tenorQuarters: BALANCE.finance.equipmentLoan.tenorQuarters,
     rating,
   }
@@ -110,6 +114,7 @@ export function borrowBlocker(
   if (state.equipmentLoan) return { key: 'error.loan_exists' }
   const locked = loansLocked(state)
   if (locked) return locked
+  if (debtFrozen(state)) return { key: 'error.debt_frozen' }
   const terms = equipmentTerms(state)
   if (!terms) return { key: 'error.loan_not_offered' }
   if (!Number.isInteger(amountUsd) || amountUsd < 1)

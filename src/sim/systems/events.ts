@@ -11,19 +11,34 @@
 import {
   BALANCE,
   CONTENT,
+  act2Quarter,
   type EventCard,
   type EventChoice,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, random, substream, uniform } from '../rng.ts'
-import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
+import {
+  logEntry,
+  projectGone,
+  roundCents,
+  type GameState,
+  type Site,
+} from '../state.ts'
 import { getStep, unmetRequirement } from './capital.ts'
-import { absWeek } from './eventEffects.ts'
+import { absWeek, aiDemandDelta } from './eventEffects.ts'
 import type { ScheduledEvent } from './eventEffects.ts'
 import { addGrievance, siteHeatValue } from './heat.ts'
 import { addMachines, removeMachines, saleValueUsd } from './machines.ts'
 import { buyPrice, coinPrice, getModel, marketWeek } from './market.ts'
-import { capacityKw, isReady, tierIndex, usedKw } from './sites.ts'
+import { backstopBlocker, jvBlocker, setJv, takeBackstop } from './partners.ts'
+import {
+  neocloudUsdHr,
+  projectedReturn,
+  slipProject,
+  tenantCard,
+  tenantWalks,
+} from './projects.ts'
+import { capacityKw, isReady, regionOf, tierIndex, usedKw } from './sites.ts'
 import { sellTreasury } from './treasury.ts'
 
 const W = BALANCE.weeksPerQuarter
@@ -143,7 +158,51 @@ const CONDITIONS: Record<string, (s: GameState, card?: EventCard) => boolean> =
       CONTENT.events.winterQuarters.includes(label(s)),
     tax_quarter: (s, card) =>
       card?.type === 'random' && (card.quarters ?? []).includes(label(s)),
+    // Act II (events_act2.json, M5.8)
+    first_ai_deal: (s) => s.firstAiDealQuarter !== null,
+    site_pjm: (s) => sitesIn(s, ['pjm']).length > 0,
+    site_pjm_ohio_georgia: (s) =>
+      sitesIn(s, ['pjm', 'ohio', 'georgia']).length > 0,
+    backstop_eligible: (s) => backstopProject(s) !== undefined,
+    jv_eligible: (s) => jvProject(s) !== undefined,
+    big_cluster: (s) =>
+      liveClusters(s).some(
+        (p) => p.gpuCount >= BALANCE.act2Events.bigClusterGpus,
+      ),
+    ai_lab_tenant: (s) => aiLabProjects(s).length > 0,
+    building_project: (s) => s.projects.some((p) => p.stage === 'building'),
+    has_treasury: (s) => s.treasury.BTC + s.treasury.ETH > 0,
+    spot_cluster: (s) => liveClusters(s).some((p) => !p.tenant?.gpu),
+    gpu_cluster: (s) => liveClusters(s).length > 0,
+    mining: (s) => s.machines.some((l) => getModel(l.model)?.coin === 'BTC'),
+    always: () => true,
   }
+
+// ---------- Act II helpers (M5.8) ----------
+
+/** Sites with power in these regions. */
+function sitesIn(s: GameState, regions: string[]): Site[] {
+  return s.sites.filter((x) => regions.includes(regionOf(x) ?? ''))
+}
+const liveClusters = (s: GameState) =>
+  s.projects.filter((p) => p.stage === 'live' && p.kind !== 'shell')
+const aiLabProjects = (s: GameState) =>
+  s.projects.filter(
+    (p) =>
+      !projectGone(p) &&
+      p.tenant &&
+      tenantCard(p.tenant.card)?.type === 'ai_lab',
+  )
+/** The first project a backstop could go on now (Bandwidth aside: a card's offer costs none). */
+const backstopProject = (s: GameState) =>
+  s.projects.find((p) => !backstopBlocker({ ...s, bandwidth: 99 }, p.id))
+/** The first proposed project a JV partner could come into now (Bandwidth aside). */
+const jvProject = (s: GameState) =>
+  s.projects.find(
+    (p) =>
+      !p.jv &&
+      !jvBlocker({ ...s, bandwidth: 99 }, p.id, BALANCE.act2Events.jvShare),
+  )
 
 const SITES: Record<string, (s: GameState) => Site | undefined> = {
   most_machines: mostMachines,
@@ -151,6 +210,7 @@ const SITES: Record<string, (s: GameState) => Site | undefined> = {
   moratorium_site: moratoriumSite,
   theft_site: theftSite,
   rate_class_site: rateClassSite,
+  pjm_site: (s) => sitesIn(s, ['pjm'])[0],
 }
 
 function holds(state: GameState, cond: string | undefined, card?: EventCard) {
@@ -164,9 +224,18 @@ function inWindow(state: GameState, card: EventCard): boolean {
   return label(state) >= from && label(state) <= to
 }
 
-/** A random card's weight now: garage_weight_mult applies when its site is the garage. */
+/**
+ * A random card's weight now: garage_weight_mult applies when its site is the garage; Act II's
+ * weight_by_ai_demand scales it by the AI demand index ÷ 50 (the tenant RFP, busiest 2024–25).
+ */
 function cardWeight(state: GameState, card: EventCard): number {
   if (card.type !== 'random') return 0
+  if (card.weight_by_ai_demand) {
+    const index =
+      (act2Quarter(state.quarter)?.aiDemandIndex ?? 0) +
+      aiDemandDelta(state.quarter)
+    return (card.weight * Math.max(0, index)) / 50
+  }
   const mult = card.garage_weight_mult
   if (mult === undefined || !card.site) return card.weight
   return SITES[card.site](state)?.tier === 'garage'
@@ -195,20 +264,22 @@ function schedule(
   state.events.queue.push({ id: card.id, week, random, siteId: site?.id })
 }
 
-/** Plans this quarter's cards when the Plan phase ends. */
+/** Plans this quarter's cards when the Plan phase ends (each act plays its own deck). */
 export function scheduleEvents(state: GameState): void {
   const ev = state.events
   ev.queue = []
+  const deck = CONTENT.events.cards.filter((c) => c.act === state.act)
   // Scripted: their own week, when `requires` holds.
-  for (const card of CONTENT.events.cards) {
+  for (const card of deck) {
     if (card.type !== 'scripted' || card.quarterIndex !== state.quarter)
       continue
     if (!holds(state, card.requires, card)) continue
     schedule(state, card, card.weekIndex! + 1, false)
   }
-  if (state.quarter < CONTENT.events.randomStart) return
+  const rules = state.act === 2 ? CONTENT.events.act2 : CONTENT.events
+  if (state.quarter < rules.randomStart) return
   const r = substream(state.seed, `events:${state.quarter}`)
-  const [w0, w1] = CONTENT.events.randomWeeks
+  const [w0, w1] = rules.randomWeeks
   // A card deferred from last quarter (cap was full) takes the slot, in week 1.
   if (ev.deferred) {
     ev.queue.push({ ...ev.deferred, week: 1 })
@@ -217,7 +288,7 @@ export function scheduleEvents(state: GameState): void {
     return
   }
   // Cards that skip the roll when their condition is first met.
-  for (const card of CONTENT.events.cards) {
+  for (const card of deck) {
     if (card.type !== 'random' || !card.bypass_random_roll) continue
     if (
       ev.fired.includes(card.id) ||
@@ -231,7 +302,7 @@ export function scheduleEvents(state: GameState): void {
       return
     }
   }
-  const eligible = CONTENT.events.cards.filter(
+  const eligible = deck.filter(
     (c) =>
       c.type === 'random' &&
       !c.bypass_random_roll &&
@@ -243,7 +314,7 @@ export function scheduleEvents(state: GameState): void {
   const total = eligible.reduce((w, c) => w + cardWeight(state, c), 0)
   if (total <= 0) return
   ev.eligibleQuarters++
-  if (uniform(r, 0, 1) >= CONTENT.events.randomChance) return
+  if (uniform(r, 0, 1) >= rules.randomChance) return
   let roll = uniform(r, 0, total)
   const card =
     eligible.find((c) => (roll -= cardWeight(state, c)) < 0) ?? eligible.at(-1)!
@@ -609,6 +680,147 @@ export function resolveEvent(
           }
         break
       }
+      // ---------- Act II (M5.8) ----------
+      case 'credit_notch': {
+        const x = v as { notches: number; quarters: number }
+        ev.creditNotch = {
+          notches: x.notches,
+          until: state.quarter + x.quarters - 1,
+        }
+        break
+      }
+      case 'cash_revenue_share':
+        // A share of this quarter's mining revenue so far (the Ordinals fee spike).
+        state.cash += state.quarterStats.revenueUsd * Number(value)
+        break
+      case 'valuation_mult': {
+        const x = v as { mult: number; quarters: number }
+        ev.valuationMult = {
+          mult: x.mult,
+          until: state.quarter + x.quarters - 1,
+        }
+        break
+      }
+      case 'region_power_mult': {
+        // From next quarter, at your sites in those regions.
+        const x = v as { regions: string[]; mult: number; quarters: number }
+        for (const s of sitesIn(state, x.regions))
+          s.eventPowerMult = {
+            mult: x.mult,
+            from: state.quarter + 1,
+            until: state.quarter + x.quarters,
+          }
+        break
+      }
+      case 'region_grievance': {
+        const x = v as { regions: string[]; value: number }
+        for (const s of sitesIn(state, x.regions))
+          addGrievance(state, s.id, x.value)
+        break
+      }
+      case 'all_sites_grievance':
+        for (const s of state.sites)
+          if (s.tier !== BALANCE.startSite)
+            addGrievance(state, s.id, Number(value))
+        break
+      case 'plan_gpu_price_mult': {
+        const plan = nextPlan(state)
+        plan.gpuPriceMult = (plan.gpuPriceMult ?? 1) * Number(value)
+        break
+      }
+      case 'delay_marginal_project': {
+        // The building project with the lowest projected return.
+        const building = state.projects.filter((p) => p.stage === 'building')
+        const irr = (p: (typeof building)[number]) =>
+          projectedReturn(state, p).irr ?? -Infinity
+        const marginal = [...building].sort((a, b) => irr(a) - irr(b))[0]
+        if (marginal) slipProject(state, marginal, Number(value))
+        break
+      }
+      case 'delay_building_projects':
+        for (const p of state.projects.filter((x) => x.stage === 'building'))
+          slipProject(state, p, Number(value))
+        break
+      case 'spot_price_mult': {
+        const x = v as Until & { mult: number }
+        ev.modifiers.push({
+          kind: 'spot',
+          siteIds: null,
+          mult: x.mult,
+          ...span(state, x),
+        })
+        break
+      }
+      case 'lock_spot': {
+        // Each live cluster on spot locks its capacity at the shocked price for a while.
+        const x = v as { price_mult: number; quarters: number }
+        for (const p of liveClusters(state))
+          if (!p.tenant?.gpu)
+            p.spotLock = {
+              usdHr: (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) * x.price_mult,
+              until: state.quarter + x.quarters - 1,
+            }
+        break
+      }
+      case 'take_backstop': {
+        // The card's offer costs no Bandwidth.
+        const p = backstopProject(state)
+        if (p) {
+          takeBackstop(state, p.id)
+          state.bandwidth += BALANCE.finance.bandwidth.backstop
+        }
+        break
+      }
+      case 'take_jv': {
+        const p = jvProject(state)
+        if (p) {
+          setJv(state, p.id, Number(value))
+          state.bandwidth += BALANCE.finance.bandwidth.jv
+        }
+        break
+      }
+      case 'ebitda_mult': {
+        const x = v as { mult: number; quarters: number }
+        ev.ebitdaMult = { mult: x.mult, until: state.quarter + x.quarters - 1 }
+        break
+      }
+      case 'gpu_repair': {
+        // Replace the failed share of the big clusters' GPUs (most incidents are short).
+        const x = v as {
+          share: [number, number]
+          usd_per_gpu: number
+          cost_share: number
+        }
+        const gpus = liveClusters(state).reduce((n, p) => n + p.gpuCount, 0)
+        const failed = Math.round(gpus * uniform(r, x.share[0], x.share[1]))
+        state.cash -= failed * x.usd_per_gpu * x.cost_share
+        break
+      }
+      case 'gpu_degraded': {
+        // Until the end of the last of those quarters (this one counts).
+        const x = v as { mult: number; quarters: number }
+        ev.modifiers.push({
+          kind: 'utilisation',
+          siteIds: null,
+          mult: x.mult,
+          from: absWeek(state),
+          to: (state.quarter + x.quarters) * W - 1,
+        })
+        break
+      }
+      case 'debt_spread_add':
+        ev.spreadAddBps += Number(value)
+        break
+      case 'ai_lab_revenue_mult':
+        ev.aiLabRevenueMult *= Number(value)
+        break
+      case 'ai_lab_walk_chance':
+        for (const p of aiLabProjects(state))
+          if (random(r) < Number(value)) tenantWalks(state, p)
+        break
+      case 'extra_tenant_offers':
+        ev.extraOffers = { quarter: state.quarter + 1, n: Number(value) }
+        break
       default:
         throw new Error(`Event effect "${key}" is not implemented`)
     }

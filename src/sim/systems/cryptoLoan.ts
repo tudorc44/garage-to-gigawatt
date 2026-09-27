@@ -2,16 +2,27 @@
 // treasury and borrow up to ltv_max of their value. Interest is paid weekly; the loan
 // itself is repaid whenever you like (no fixed term). One at a time.
 // LTV (loan-to-value) = what you owe ÷ what the pledged coins are worth now.
-import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
+import {
+  BALANCE,
+  CONTENT,
+  act2Quarter,
+  type MarketWeek,
+} from '../../content/index.ts'
+import { debtFrozen } from './eventEffects.ts'
 import { marginWarningAlert } from './hires.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines, saleValueUsd } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
 
+/**
+ * Whether lenders offer crypto-backed loans in a quarter: Act I's window (capital.json), and in Act
+ * II again from 2023Q3 (scope 0.2 §2.7: unavailable 2022Q4–2023Q2 after FTX), on Act I's terms.
+ */
 export function cryptoLoanOffered(quarter: number): boolean {
   const q = CONTENT.quarters[quarter]
   const [from, to] = CONTENT.cryptoLoan.available
+  if (act2Quarter(quarter)) return q >= BALANCE.act2CryptoLoansFrom
   return q >= from && q <= to
 }
 
@@ -49,6 +60,7 @@ export function cryptoBorrowBlocker(
     const [from, to] = CONTENT.cryptoLoan.available
     return { key: 'error.crypto_loan_window', params: { from, to } }
   }
+  if (debtFrozen(state)) return { key: 'error.debt_frozen' }
   if (coin !== 'BTC' && coin !== 'ETH') return { key: 'error.bad_choice' }
   if (!Number.isInteger(amountUsd) || amountUsd < 1)
     return { key: 'error.bad_amount' }

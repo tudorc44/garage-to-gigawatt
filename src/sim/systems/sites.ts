@@ -180,8 +180,10 @@ export function powerPriceUsdKwh(site: Site, quarter: number): number {
   const base = c
     ? c.price * (c.indexMult ?? 1)
     : normalPriceUsdKwh(site, quarter)
+  const e = site.eventPowerMult
+  const eventMult = e && quarter >= e.from && quarter <= e.until ? e.mult : 1
   return (
-    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) +
+    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult +
     regionPowerAdderUsdKwh(regionOf(site), quarter)
   )
 }

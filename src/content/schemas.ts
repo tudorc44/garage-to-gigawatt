@@ -1039,6 +1039,27 @@ export const EVENT_EFFECTS = [
   'stake_points',
   'tax',
   'tax_plan',
+  // Act II (events_act2.json, M5.8)
+  'credit_notch',
+  'cash_revenue_share',
+  'valuation_mult',
+  'region_power_mult',
+  'region_grievance',
+  'all_sites_grievance',
+  'plan_gpu_price_mult',
+  'delay_marginal_project',
+  'delay_building_projects',
+  'spot_price_mult',
+  'lock_spot',
+  'take_backstop',
+  'take_jv',
+  'ebitda_mult',
+  'gpu_repair',
+  'gpu_degraded',
+  'debt_spread_add',
+  'ai_lab_revenue_mult',
+  'ai_lab_walk_chance',
+  'extra_tenant_offers',
 ] as const
 /** Named conditions (events.ts): a card's requires/trigger, a choice's requires, the card's site. */
 export const EVENT_CONDITIONS = [
@@ -1057,6 +1078,20 @@ export const EVENT_CONDITIONS = [
   'q3_big_site',
   'ff_winter',
   'tax_quarter',
+  // Act II (events_act2.json, M5.8)
+  'first_ai_deal',
+  'site_pjm',
+  'site_pjm_ohio_georgia',
+  'backstop_eligible',
+  'jv_eligible',
+  'big_cluster',
+  'ai_lab_tenant',
+  'building_project',
+  'has_treasury',
+  'spot_cluster',
+  'gpu_cluster',
+  'mining',
+  'always',
 ] as const
 export const EVENT_SITES = [
   'most_machines',
@@ -1064,6 +1099,7 @@ export const EVENT_SITES = [
   'moratorium_site',
   'theft_site',
   'rate_class_site',
+  'pjm_site',
 ] as const
 
 const eventChoiceSchema = z.object({
@@ -1089,7 +1125,7 @@ const eventBase = {
   /** When this condition fails, the card shows its news text (body_news) instead of body. */
   news_unless: z.enum(EVENT_CONDITIONS).optional(),
   default: z.string(),
-  choices: z.array(eventChoiceSchema).min(2),
+  choices: z.array(eventChoiceSchema).min(1),
 }
 
 export const eventSchema = z
@@ -1117,6 +1153,8 @@ export const eventSchema = z
       min_units: z.number().int().min(1).optional(),
       /** The card's weight is multiplied by this when its site is the garage. */
       garage_weight_mult: nonNeg.optional(),
+      /** Act II: the weight scales with the AI demand index (index ÷ 50). */
+      weight_by_ai_demand: z.boolean().optional(),
     }),
   ])
   .refine((e) => e.choices.some((c) => c.id === e.default), {
@@ -1144,6 +1182,38 @@ export const eventsFileSchema = z.object({
   events: z.array(eventSchema).min(1),
 })
 
+/**
+ * events_act2.json (the game's Act II deck, M5.8): the same card format as events.json, its own
+ * random-card engine settings, and the scripted timeline's market effects (they apply whatever
+ * anyone chooses).
+ */
+export const eventsAct2FileSchema = z.looseObject({
+  engine: z.object({
+    random_chance_per_quarter: z.number().min(0).max(1),
+    random_start: quarterId,
+    random_week_range: z.tuple([
+      z.number().int().min(1),
+      z.number().int().max(13),
+    ]),
+  }),
+  market_effects: z.array(
+    z.object({
+      id: z.string(),
+      from: quarterId,
+      quarters: z.number().int().min(1),
+      ai_multiple_delta: z.number().optional(),
+      ai_demand_delta: z.number().optional(),
+      credit_notch: z.number().int().optional(),
+      no_new_debt: z.boolean().optional(),
+      source: z.string(),
+    }),
+  ),
+  events: z.array(eventSchema).min(1),
+})
+
+export type MarketEffect = z.output<
+  typeof eventsAct2FileSchema
+>['market_effects'][number]
 export type EventCardRaw = z.output<typeof eventSchema>
 export type EventChoice = z.output<typeof eventChoiceSchema>
 

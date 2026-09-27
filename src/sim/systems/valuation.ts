@@ -8,6 +8,7 @@ import {
   act2Quarter,
 } from '../../content/index.ts'
 import type { QuarterReport } from '../state.ts'
+import { aiMultipleDelta } from './eventEffects.ts'
 
 /**
  * The era's EV/EBITDA multiple for a quarter index: Act I's from capital.json, then Act II's
@@ -19,9 +20,13 @@ export function eraMultiple(quarter: number): number {
   return CONTENT.eraMultiple[act1ValueQuarter(quarter)]
 }
 
-/** Act II's AI-infrastructure multiple (doc 18 §8), for AI shell and AI cloud units. 0 in Act I. */
+/**
+ * Act II's AI-infrastructure multiple (doc 18 §8), for AI shell and AI cloud units, with the
+ * timeline's shocks (DeepSeek: −3 in 2025Q1–Q2). 0 in Act I.
+ */
 export function aiInfraMultiple(quarter: number): number {
-  return act2Quarter(quarter)?.multiple.aiInfra ?? 0
+  const base = act2Quarter(quarter)?.multiple.aiInfra
+  return base === undefined ? 0 : Math.max(0, base + aiMultipleDelta(quarter))
 }
 
 /**
@@ -62,6 +67,8 @@ export interface ValuationParts {
   constructionUsd?: number
   /** The credit-weighted backlog. */
   weightedBacklogUsd?: number
+  /** A card's premium on the operating value (the pivot premium's PR push, M5.8). */
+  evMult?: number
 }
 
 /**
@@ -82,8 +89,9 @@ export function valuationUsd(
   const mining =
     eraMultiple(quarter) + (parts.pivot ? BALANCE.projects.pivotPremium : 0)
   const enterprise =
-    Math.max(0, (quarterEbitdaUsd - ai) * 4) * mining +
-    Math.max(0, ai * 4) * aiInfraMultiple(quarter)
+    (Math.max(0, (quarterEbitdaUsd - ai) * 4) * mining +
+      Math.max(0, ai * 4) * aiInfraMultiple(quarter)) *
+    (parts.evMult ?? 1)
   return (
     enterprise +
     cashUsd +
@@ -109,8 +117,10 @@ export function valuationSplit(
   const miningMultiple =
     eraMultiple(q) + (pivot ? BALANCE.projects.pivotPremium : 0)
   const aiMultiple = aiInfraMultiple(q)
-  const miningEvUsd = Math.max(0, (r.ebitdaUsd - ai) * 4) * miningMultiple
-  const aiEvUsd = Math.max(0, ai * 4) * aiMultiple
+  const evMult = r.evMult ?? 1
+  const miningEvUsd =
+    Math.max(0, (r.ebitdaUsd - ai) * 4) * miningMultiple * evMult
+  const aiEvUsd = Math.max(0, ai * 4) * aiMultiple * evMult
   const constructionUsd = r.constructionUsd ?? 0
   const weightedBacklogUsd = r.weightedBacklogUsd ?? 0
   return {

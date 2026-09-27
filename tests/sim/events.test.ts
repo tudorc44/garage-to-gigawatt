@@ -63,7 +63,7 @@ const rigs = (count: number, siteId = 'site-1', model = 'gpu_gen1') => ({
 
 describe('event cards (events.json)', () => {
   it('has 9 scripted + 10 random cards; Uri is the existing alert with the card text', () => {
-    const cards = CONTENT.events.cards
+    const cards = CONTENT.events.cards.filter((c) => c.act === 1)
     expect(cards.filter((c) => c.type === 'scripted')).toHaveLength(9)
     expect(cards.filter((c) => c.type === 'random')).toHaveLength(10)
     expect(CONTENT.events.byId.uri_2021).toBeUndefined()

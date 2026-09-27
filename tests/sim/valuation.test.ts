@@ -51,7 +51,9 @@ describe('Act II multiples (capital_act2.json, doc 18 §8)', () => {
   it('AI infrastructure: 10 → 20 → 26 → 30, then the 2026 compression 24 → 20 → 18 → 15', () => {
     expect(aiInfraMultiple(q('2022Q4'))).toBe(10)
     expect(aiInfraMultiple(q('2023Q4'))).toBe(20)
-    expect(aiInfraMultiple(q('2025Q2'))).toBe(28) // halfway from 26 to 30
+    // Halfway from 26 to 30, less DeepSeek's −3 in 2025Q1–Q2 (events_act2.json, M5.8).
+    expect(aiInfraMultiple(q('2025Q2'))).toBe(25)
+    expect(aiInfraMultiple(q('2025Q3'))).toBe(29)
     expect(aiInfraMultiple(q('2025Q4'))).toBe(30)
     expect(
       ['2026Q1', '2026Q2', '2026Q3', '2026Q4'].map((l) =>
