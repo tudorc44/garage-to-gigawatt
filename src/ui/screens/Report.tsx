@@ -3,6 +3,7 @@ import { t, tDynamic, type MessageKey } from '../../i18n/t.ts'
 import {
   actTurn,
   averagePrice,
+  gameOverView,
   leagueScaleView,
   quarterName,
   rivalMovesView,
@@ -17,6 +18,7 @@ import {
 import type { Coin, GameState, QuarterReport } from '../../sim/state.ts'
 import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
+import { gameOverText } from '../chapter.ts'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
@@ -72,6 +74,8 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
   const prevCost = coin && prev ? prev.costPerCoinUsd[coin] : null
   const isLast = state.quarter === actLastQuarter(state.act)
   const { turn, turns } = actTurn(state)
+  // Act II game over (M6.4): its cause, next to the button that shows the end.
+  const gameOver = gameOverView(state)
 
   return (
     <div class="screen">
@@ -180,6 +184,11 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
         </div>
 
         <div class="report-foot">
+          {gameOver && (
+            <span class="num-s loss">
+              {`${gameOverText(gameOver).title} · ${gameOverText(gameOver).body}`}
+            </span>
+          )}
           {state.phase === 'gameover' ? (
             <button
               type="button"

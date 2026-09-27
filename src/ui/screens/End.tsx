@@ -11,7 +11,7 @@ import {
   mergeView,
 } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
-import { momentLines, runSummaryText } from '../chapter.ts'
+import { gameOverText, momentLines, runSummaryText } from '../chapter.ts'
 import { fmt } from '../format.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { League } from './Report.tsx'
@@ -264,18 +264,12 @@ function GameOverCause({
 }: {
   cause: NonNullable<ReturnType<typeof gameOverView>>
 }) {
+  const text = gameOverText(cause)
   return (
     <div class="panel p">
-      <span class="label loss">{t(`ui.gameover.cause.${cause.cause}`)}</span>
+      <span class="label loss">{text.title}</span>
       <p class="num-s" style={{ margin: 0 }}>
-        {cause.cause === 'foreclosure'
-          ? t('ui.gameover.foreclosure_body', {
-              n: cause.foreclosed.length,
-              debt: fmt.money(cause.foreclosedDebtUsd),
-            })
-          : t('ui.gameover.cash_body', {
-              short: fmt.money(cause.shortUsd),
-            })}
+        {text.body}
       </p>
       {cause.foreclosed.map((f) => (
         <div class="num-s" key={f.n}>
@@ -286,7 +280,7 @@ function GameOverCause({
           })}
         </div>
       ))}
-      {cause.missed.length > 0 && (
+      {cause.cause === 'foreclosure' && cause.missed.length > 0 && (
         <div class="num-s muted">
           {t('ui.gameover.missed', { n: cause.missed.length })}
         </div>

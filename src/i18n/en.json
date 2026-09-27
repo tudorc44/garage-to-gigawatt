@@ -1398,6 +1398,8 @@
   "ui.chapter2.teaser": "2027. The megawatts are spoken for, the money is cheap for the strong and ruinous for the rest, and Washington has started asking who owns the grid. Act III: the bubble and the reckoning.",
   "ui.gameover.cause.foreclosure": "Foreclosure",
   "ui.gameover.cause.cash": "Out of cash",
+  "ui.gameover.cause.debt": "Debt you couldn't pay",
+  "ui.gameover.debt_body": "Debt service came due on {n} project(s) and the cash wasn't there; selling everything didn't cover it.",
   "ui.gameover.foreclosure_body": "Your lenders took {n} project(s) with {debt} of debt still owed, and what was left couldn't pay the bills.",
   "ui.gameover.cash_body": "After selling every coin and machine you were still {short} short at quarter end.",
   "ui.gameover.foreclosed_line": "Project {n}: foreclosed in {quarter} ({debt} owed).",

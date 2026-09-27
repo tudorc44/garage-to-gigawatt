@@ -237,3 +237,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
 - M6.3: Act II chapter report (End.tsx › Act2Chapter; selectors › act2ChapterView): scope §2.13 title bands by end valuation, net worth /
   peak / league rank tiles, 2017–2026 curve, 2026Q4 value parts, moments (head start, lifeline, projects, tenants, slips, foreclosures,
   sales, halving, price reset, peak), league, Act III teaser (mine). Checked in the browser.
+- M6.4: game over (A2-10): `gameOverView` cause = foreclosure (a project foreclosed in the last 4 q) / debt (service missed in the final
+  quarter) / cash; shown on the report's game-over footer and the Act II end card. Lenders take projects (as built), not the company.

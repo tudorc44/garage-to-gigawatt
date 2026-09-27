@@ -1267,9 +1267,9 @@ export function chapterReport(state: GameState) {
 
 /**
  * Why an Act II game ended (wireframe A2-10, the foreclosure variant; scope 0.2 §2.7, M6.4), or null
- * if it hasn't. 'foreclosure' when lenders foreclosed on projects in the last 4 quarters or debt
- * service went unpaid in the final one (the debt default rules as built: 2 missed quarters on a
- * project → the lender takes it); otherwise 'cash' (cash below zero after every forced sale).
+ * if it hasn't. 'foreclosure' when lenders foreclosed on projects in the last 4 quarters (the debt
+ * default rules as built: 2 missed quarters on a project → the lender takes it); 'debt' when debt
+ * service went unpaid in the final quarter; otherwise 'cash' (below zero after every forced sale).
  */
 export function gameOverView(state: GameState) {
   if (state.phase !== 'gameover' || state.act !== 2) return null
@@ -1286,9 +1286,11 @@ export function gameOverView(state: GameState) {
   )
   return {
     cause:
-      foreclosed.length > 0 || missed.length > 0
+      foreclosed.length > 0
         ? ('foreclosure' as const)
-        : ('cash' as const),
+        : missed.length > 0
+          ? ('debt' as const)
+          : ('cash' as const),
     foreclosed,
     foreclosedDebtUsd: foreclosed.reduce((a, f) => a + f.debtUsd, 0),
     missed: missed.map((e) => Number(e.params?.n)),

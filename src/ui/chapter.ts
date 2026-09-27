@@ -2,12 +2,29 @@
 // run as a plain-text summary ("Export run", and the terminal game's ending). Reads the sim's
 // chapterReport() facts only; all wording comes from en.json.
 import { t, tDynamic } from '../i18n/t.ts'
-import { chapterReport } from '../sim/selectors.ts'
+import { chapterReport, gameOverView } from '../sim/selectors.ts'
 import type { GameState } from '../sim/state.ts'
 import { fmt } from './format.ts'
 import { rivalName, tierName } from './names.ts'
 
 type Chapter = ReturnType<typeof chapterReport>
+
+/** An Act II game over's cause in words (M6.4): the heading and the sentence under it. */
+export function gameOverText(
+  cause: NonNullable<ReturnType<typeof gameOverView>>,
+): { title: string; body: string } {
+  const title = t(`ui.gameover.cause.${cause.cause}`)
+  const body =
+    cause.cause === 'foreclosure'
+      ? t('ui.gameover.foreclosure_body', {
+          n: cause.foreclosed.length,
+          debt: fmt.money(cause.foreclosedDebtUsd),
+        })
+      : cause.cause === 'debt'
+        ? t('ui.gameover.debt_body', { n: cause.missed.length })
+        : t('ui.gameover.cash_body', { short: fmt.money(cause.shortUsd) })
+  return { title, body }
+}
 
 const list = (names: string[]) =>
   names.length === 0 ? t('ui.chapter.none') : names.join(', ')

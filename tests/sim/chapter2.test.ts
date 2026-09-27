@@ -82,6 +82,17 @@ describe('game over in Act II: its cause', () => {
     expect(act2ChapterView(s).title).toBe('bust')
   })
 
+  it('debt when service went unpaid in the final quarter and nothing was foreclosed yet', () => {
+    const s = over()
+    logEntry(s, 'log.debt_missed', {
+      n: 1,
+      debt: 'project_debt',
+      dueUsd: 500_000,
+      missed: 1,
+    })
+    expect(gameOverView(s)!.cause).toBe('debt')
+  })
+
   it('none while the game goes on, and none for an Act I bust', () => {
     expect(gameOverView(act2Company('2025Q2'))).toBeNull()
     expect(gameOverView({ ...over(), act: 1 })).toBeNull()
