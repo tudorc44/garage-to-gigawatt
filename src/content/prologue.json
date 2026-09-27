@@ -73,7 +73,7 @@
     "odds": {"on_time": 0.45, "moderate": 0.35, "severe": 0.15, "never": 0.05}, "moderate_quarters": [2, 3], "severe_quarters": [4, 6], "refund_share": 0.5},
    {"id": "preorder_northgate_asics", "window": ["2013Q1", "2013Q2"], "model": "asic_preorder_early", "price_usd": 1450, "unit_share": 1, "promised_quarters": 1,
     "odds": {"on_time": 0.40, "moderate": 0.40, "severe": 0.15, "never": 0.05}, "moderate_quarters": [2, 3], "severe_quarters": [4, 5], "refund_share": 0.5},
-   {"id": "group_buy", "window": ["2013Q1", "2013Q2"], "model": "asic_preorder_early", "price_usd": 650, "unit_share": 0.5, "promised_quarters": 1,
+   {"id": "group_buy", "window": ["2013Q1", "2013Q2"], "model": "asic_preorder_group", "price_usd": 650, "unit_share": 0.5, "promised_quarters": 1,
     "odds": {"on_time": 0.40, "moderate": 0.35, "severe": 0.18, "never": 0.07}, "moderate_quarters": [2, 3], "severe_quarters": [4, 6], "refund_share": 0.4}
   ],
   "note": "Delay rolled at order time on its own seeded stream. Delay quarters count after the promised delivery (on time = delivered after promised_quarters). The conference contact moves 10 points into on-time, taken from severe first, then never."
@@ -88,6 +88,6 @@
   {"id": "offer_final_hobby_offer", "quarter": "2010Q4", "btc": 300, "usd": 90}
  ],
  "offer_note": "An offer opens in its quarter (from its date) and stays in the tray until the end of the next decision quarter at or after it (a Prologue choice: most offer quarters auto-play).",
- "not_for_sale": ["pc_cpu", "asic_preorder_early"],
+ "not_for_sale": ["pc_cpu", "asic_preorder_early", "asic_preorder_group"],
  "handover": {"model_map": {"antminer_s9_early": "s9"}, "home_tiers_to": "garage"}
 }

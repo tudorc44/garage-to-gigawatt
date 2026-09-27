@@ -328,6 +328,9 @@ balance → **P3** events, theme, screens → the Prologue report.
 - Custody: a sell order (Plan screen, keep/sell %, or a card) moves what it needs from the wallet first (a week);
   the keep/sell % orders nothing while there's no price; a prologue start keeps 100% by default; offers are taken
   from the wallet first, then the exchange.
+- Pre-orders: the group buy's half unit is its own model (`asic_preorder_group`, half hashrate / power / prices);
+  a unit arrives at the start of promised + delay quarters after the order and earns from the next (as Act I); on
+  time = 0 delay; a "never" vendor refunds at the end of the very-late range; units with no room wait (sold at handover).
 
 ### Prologue progress
 - P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.

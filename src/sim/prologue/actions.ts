@@ -27,6 +27,7 @@ import {
   onMachineBought,
   takeUsedOffer,
 } from './life.ts'
+import { placePreorder } from './preorders.ts'
 import { P, siteCapacityKw, siteLoadKw } from './setup.ts'
 
 export type PrologueAction =
@@ -179,6 +180,8 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       return undefined
     case 'P0_OFFER':
       return answerOffer(s, a.id, a.accept)
+    case 'P0_PREORDER':
+      return placePreorder(s, a.vendor)
     default:
       return fail('error.not_in_prologue')
   }

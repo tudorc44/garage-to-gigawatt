@@ -193,7 +193,7 @@ export function answerOffer(
   s.treasury.BTC -= offer.btc
   s.cash = roundCents(s.cash + offer.usd)
   p.offersTaken.push(id)
-  logEntry(s, 'log.p0_offer_taken', { btc: offer.btc, usd: offer.usd })
+  logEntry(s, 'log.p0_offer_taken', { btc: offer.btc, cashUsd: offer.usd })
   return undefined
 }
 

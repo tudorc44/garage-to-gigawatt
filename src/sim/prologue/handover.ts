@@ -13,7 +13,9 @@ import {
   type GameState,
 } from '../state.ts'
 import { prologueNetWorth } from './engine.ts'
+import { buyPrice, getModel } from '../systems/market.ts'
 import { moveIntoGarage } from './life.ts'
+import { boxedPreorders, vendor } from './preorders.ts'
 import { P, depositUsd } from './setup.ts'
 
 export function handOverToAct1(s: GameState): void {
@@ -25,6 +27,12 @@ export function handOverToAct1(s: GameState): void {
     if (s.cash >= deposit) s.cash = roundCents(s.cash - deposit)
   }
   moveIntoGarage(s, 0)
+  // Pre-ordered units still in their box are sold at the used price.
+  for (const o of boxedPreorders(s)) {
+    const model = getModel(vendor(o.vendor)!.model)!
+    s.cash += buyPrice(model, s.quarter, 'used') ?? 0
+    o.delivered = true
+  }
   // Act I's own S9.
   for (const lot of s.machines) {
     const to = P().handover.model_map[lot.model]

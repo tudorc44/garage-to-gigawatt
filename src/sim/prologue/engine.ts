@@ -16,6 +16,7 @@ import { removeMachines } from '../systems/machines.ts'
 import { getModel, marketWeek } from '../systems/market.ts'
 import { expireOffers, orderSale } from './custody.ts'
 import { checkPrologueEvents, schedulePrologueEvents } from './events.ts'
+import { deliverPreorders } from './preorders.ts'
 import {
   P,
   emptyPrologueQuarter,
@@ -303,6 +304,7 @@ export function prologueNextQuarter(s: GameState, stopHere = false): void {
   s.bandwidth = Math.max(0, prologueBandwidth(s) + s.events.bandwidthNext)
   s.events.bandwidthNext = 0
   if (p.usedOffer && p.usedOffer.quarter < s.quarter) p.usedOffer = null
+  deliverPreorders(s)
   if (isDecisionQuarter(s.quarter) || stopHere || p.stopNext) {
     p.stopNext = false
     if (!isDecisionQuarter(s.quarter)) p.flags.push('planned_now')

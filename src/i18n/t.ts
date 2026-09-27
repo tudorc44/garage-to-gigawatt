@@ -43,6 +43,8 @@ const ID_PARAMS: Record<string, string> = {
   region: 'ui.region.',
   flawAct2: 'flaw_act2.',
   side: 'deal_side.',
+  vendor: 'p0.vendor.',
+  item: 'p0.vanity.',
 }
 
 function fill(text: string, params: MessageParams): string {
