@@ -18,6 +18,7 @@ import type {
   PowerContract,
 } from './state.ts'
 import { repairCostPerUnit, saleValueUsd } from './systems/machines.ts'
+import { eraMultiple } from './systems/valuation.ts'
 import {
   coinPrice,
   getModel,
@@ -1038,7 +1039,7 @@ export function failureWaveView(state: GameState) {
 export function valuationBreakdown(state: GameState) {
   const r = state.reports.at(-1)
   if (!r) return null
-  const multiple = CONTENT.eraMultiple[r.quarter]
+  const multiple = eraMultiple(CONTENT.quarters.indexOf(r.quarter))
   const enterpriseUsd = Math.max(0, r.ebitdaUsd * 4) * multiple
   return {
     quarter: r.quarter,

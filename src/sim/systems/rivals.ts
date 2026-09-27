@@ -1,7 +1,7 @@
 // Rivals (scope §2.9): 4 real companies with scripted growth curves, not AI.
 // Their end-of-quarter numbers come from rivals.json; the league table ranks
 // everyone by value (market cap for rivals, the company valuation for you).
-import { CONTENT, type Rival } from '../../content/index.ts'
+import { CONTENT, act1ValueQuarter, type Rival } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
 
 /** A rival's end-of-quarter numbers. Missing values are null (not mining yet, or private). */
@@ -18,12 +18,15 @@ export function getRival(id: string): Rival | undefined {
   return CONTENT.rivals.find((r) => r.id === id)
 }
 
-/** The rival's numbers at the end of a quarter, or null if it isn't in the game yet. */
+/**
+ * The rival's numbers at the end of a quarter, or null if it isn't in the game yet.
+ * rivals.json ends in 2022Q3: from 2022Q4 on, each rival's 2022Q3 numbers hold.
+ */
 export function rivalSnapshot(
   rival: Rival,
   quarter: number,
 ): RivalSnapshot | null {
-  const q = CONTENT.quarters[quarter]
+  const q = act1ValueQuarter(quarter)
   const value = (series: Record<string, number>) => series[q] ?? null
   const snap = {
     id: rival.id,

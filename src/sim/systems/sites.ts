@@ -1,6 +1,11 @@
 // Sites: the ladder (garage → small unit → warehouse → own site → Texas), capacity,
 // power prices, scouting offers and hidden flaws.
-import { BALANCE, CONTENT, type SiteTier } from '../../content/index.ts'
+import {
+  BALANCE,
+  CONTENT,
+  act1ValueQuarter,
+  type SiteTier,
+} from '../../content/index.ts'
 import { pick, randomInt, random } from '../rng.ts'
 import {
   roundCents,
@@ -68,7 +73,8 @@ export function normalPriceUsdKwh(
   type: ContractType = BALANCE.sites.defaultPowerOption,
 ): number {
   const tier = getTier(site.tier)!
-  const year = CONTENT.quarters[quarter].slice(0, 4)
+  // 2022Q4+: the 2022 price holds (Act I's power paths end there).
+  const year = act1ValueQuarter(quarter).slice(0, 4)
   const base = tier.power_path?.[year] ?? tier.power_options![type].price
   return base * site.powerPriceMult
 }

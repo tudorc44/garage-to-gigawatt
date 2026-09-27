@@ -614,6 +614,16 @@ export function actLastQuarter(act: ActSpan['act']): number {
   return CONTENT.acts.find((a) => a.act === act)!.lastQuarter
 }
 
+/**
+ * The quarter label to read an Act I content value with (a price, a power path, a multiple,
+ * a rival's numbers). Act I's files have no values after 2022Q3, so from 2022Q4 on the value
+ * of 2022Q3 holds, until Act II content replaces it. Dated windows ("open until 2022Q2")
+ * compare the real quarter instead, so they stay closed.
+ */
+export function act1ValueQuarter(quarter: number): string {
+  return CONTENT.quarters[Math.min(quarter, actLastQuarter(1))]
+}
+
 export function nextQuarter(q: string): string {
   const year = Number(q.slice(0, 4))
   const n = Number(q.slice(5))

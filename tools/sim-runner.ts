@@ -14,6 +14,7 @@ import type {
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
+import { eraMultiple } from '../src/sim/systems/valuation.ts'
 import { BOTS, PROBES } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -261,7 +262,7 @@ function waveStats(runs: Run[]) {
 
 /** A quarter's valuation split: operations (EBITDA × 4 × the era multiple), cash, coins, debt. */
 function valuationSplit(r: QuarterReport) {
-  const multiple = CONTENT.eraMultiple[r.quarter]
+  const multiple = eraMultiple(CONTENT.quarters.indexOf(r.quarter))
   const ops = Math.max(0, r.ebitdaUsd * 4) * multiple
   // Coins include pledged collateral, as in the valuation itself.
   const coins = r.valuationUsd - ops - r.cash + r.debtUsd

@@ -774,8 +774,7 @@ at a time (MW by use → projects → credit rating → tenants → capital → 
 
 ### Step 1: the act boundary (no new Act II gameplay), split into 5 parts
 - **1a. Market to 2026Q4 + act spans** — done (27 Sep 2026, not committed yet).
-- 1b. Held Act I values for 2022Q4+ (machine prices, power paths, era multiples, loan eras, salaries, rivals,
-  era theme): each system holds its last Act I value; every case listed here. No new numbers.
+- **1b. Held Act I values for 2022Q4+** — done (27 Sep 2026, not committed yet); the list is below.
 - 1c. `act` field + save version 2 (a real version step) + the Act I → II migration test.
 - 1d. The phase flow Merge → Act I chapter report → Act II intro → 2022Q4 Plan (Act I systems keep running), the
   "Start of Act II" autosave slot; `replay.ts`, `tools/play.ts`, the sim-runner and the goldens stop at the act
@@ -802,6 +801,34 @@ at a time (MW by use → projects → credit rating → tenants → capital → 
   contract runs out). A contract signed in 2021–22 runs past 2022Q3; that quarter used to print "—" (not in the
   data) and now prints its label (2022Q4, 2023Q2, 2023Q3). No number or ending changed in any of the 11 replays.
 - The sim-runner's "price alerts per quarter" line lists only quarters that were played.
+
+**1b, Act I values from 2022Q4 on** (no new numbers; Act II content replaces each one in its own step). One helper,
+`act1ValueQuarter(quarter)` in `src/content/index.ts`, gives the quarter label to read Act I content with: the
+quarter itself in Act I, 2022Q3 after it. Dated windows ("open until 2022Q2") still compare the real quarter, so
+they stay closed. Each case (tests in `tests/sim/act1-hold.test.ts`):
+- **Machine prices and lead times** (`machines.json`, `market.ts` buyPrice / sellPrice / leadTimeQuarters): 2022Q3's
+  hold. So S9, S19 Pro and both GPU rigs stay buyable (used; new where 2022Q3 had a new price) and sellable at
+  2022Q3 prices. The S9's retail sale stays ended (since 2020Q1).
+- **Power prices** (`sites.json` power_path by year, `sites.ts` normalPriceUsdKwh): the 2022 price holds. Contracts
+  signed or renewed in Act II open from it.
+- **Era multiple** (`capital.json`, new `eraMultiple()` in `valuation.ts`, also used by the valuation breakdown
+  and the sim-runner): 2022Q3's holds.
+- **Rivals** (`rivals.json`, `rivals.ts` rivalSnapshot): each rival's 2022Q3 numbers hold, so the four stay in the
+  league table instead of dropping out.
+- **Salaries** (`hires.json`, `hires.ts` salaryUsdQ): already held; the 2022 value (2021 × salary_2022_mult) applies
+  to every year from 2022. No code change.
+- **Equipment loan**: already held; the 2022 era was offered until 2022Q2 and no era covers 2023+, so lenders keep
+  offering nothing, as in 2022Q3. (Scope 0.2 §2.7 has it "always" available in Act II: that comes with the Act II
+  capital step.) The crypto-backed loan's window (2018Q1–2022Q2) stays closed the same way.
+- **Era theme** (`app.tsx`): already held; "industrial" from 2020Q1 on, so it stays industrial. The design system's
+  `campus` theme for Act II comes with the act boundary screens.
+- Windows that simply stay closed (no change): distressed auctions, the IPO window, the GPU cap, the construction
+  loan (from 2020Q3, still open), Heat's era bump (from 2021Q3, still on), scripted events and shocks.
+
+What the Act I systems do in Act II (probe, 3 seeds per bot, stepping over the Merge by hand until 1d): nothing
+errors; no Act I event card fired after 2022Q3 in these runs. Fleets of S9s and GPU rigs (raise-climb, cautious,
+hodl) are switched off by 2026 at 2022 power prices (BTC hashprice ~$40/PH/day, no ETH mining). texas-ipo's S19
+fleet earns through Act II: revenue ~$21M (2022Q4) → ~$34–37M (2024Q1, before the halving) → ~$13M (2026Q4).
 
 ## Next
 
