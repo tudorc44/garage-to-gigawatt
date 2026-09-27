@@ -14,6 +14,7 @@ import { binomial, substream } from '../rng.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines } from '../systems/machines.ts'
 import { getModel, marketWeek } from '../systems/market.ts'
+import { expireOffers, orderSale } from './custody.ts'
 import { checkPrologueEvents, schedulePrologueEvents } from './events.ts'
 import {
   P,
@@ -126,17 +127,18 @@ export function prologueWeek(s: GameState): void {
     btcCoins = blocks * perBlock
   }
 
-  // 4. The coins land: in your wallet, or on the exchange (where the sell share is queued).
+  // 4. The coins land in your wallet or on the exchange; the keep/sell % orders the sell share sold
+  //    (once there's a price: with no market there's nothing to sell to).
   for (const coin of COINS) {
     const coins = coin === 'BTC' ? btcCoins : ethCoins
     if (coins <= 0) continue
     s.treasury[coin] += coins
     p.mined[coin] += coins
     p.quarter.coinsMined[coin] += coins
-    if (p.minedTo === 'exchange') {
-      p.onExchange[coin] += coins
-      p.sellQueue[coin] += coins * (1 - s.hodlPct[coin])
-    }
+    if (p.minedTo === 'exchange') p.onExchange[coin] += coins
+    const sellShare = 1 - s.hodlPct[coin]
+    if (sellShare > 0 && price(w, coin) > 0)
+      orderSale(s, coin, coins * sellShare)
   }
   p.blocksFound += blocks
   p.quarter.blocksFound += blocks
@@ -219,6 +221,17 @@ export function prologueEndQuarter(s: GameState): void {
     }
   }
   if (s.cash < 0) forcedSale(s, w)
+  // A sell order can't outgrow the coins that are (or are heading) on the exchange.
+  for (const coin of COINS) {
+    const heading = p.moves
+      .filter((m) => m.coin === coin && m.to === 'exchange')
+      .reduce((n, m) => n + m.amount, 0)
+    p.sellQueue[coin] = Math.min(
+      p.sellQueue[coin],
+      p.onExchange[coin] + heading,
+    )
+  }
+  expireOffers(s)
   const first = marketWeek(s.quarter, 0)
   p.reports.push({
     quarter: CONTENT.quarters[s.quarter],

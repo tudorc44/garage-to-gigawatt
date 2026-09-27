@@ -9,6 +9,14 @@ import { buyPrice, getModel } from '../systems/market.ts'
 import { beginPrologueLive } from './engine.ts'
 import { resolvePrologueInterrupt } from './events.ts'
 import {
+  answerOffer,
+  cancelSale,
+  moveCoins,
+  sellCoins,
+  setMinedTo,
+  setPool,
+} from './custody.ts'
+import {
   answerHousehold,
   attendConference,
   backUpWallet,
@@ -42,6 +50,7 @@ export type PrologueAction =
     }
   | { type: 'P0_MINED_TO'; to: 'wallet' | 'exchange' }
   | { type: 'P0_SELL'; coin: Coin; amount: number }
+  | { type: 'P0_CANCEL_SALE'; coin: Coin }
   | { type: 'P0_BACKUP' }
   | { type: 'P0_OFFER'; id: string; accept: boolean }
   | { type: 'P0_PREORDER'; vendor: string }
@@ -156,6 +165,20 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       return takeUsedOffer(s, a.siteId)
     case 'P0_VANITY':
       return buyVanity(s, a.id)
+    case 'P0_SET_POOL':
+      return setPool(s, a.pool)
+    case 'P0_MINED_TO':
+      setMinedTo(s, a.to)
+      return undefined
+    case 'P0_MOVE_COINS':
+      return moveCoins(s, a.coin, a.amount, a.to)
+    case 'P0_SELL':
+      return sellCoins(s, a.coin, a.amount)
+    case 'P0_CANCEL_SALE':
+      cancelSale(s, a.coin)
+      return undefined
+    case 'P0_OFFER':
+      return answerOffer(s, a.id, a.accept)
     default:
       return fail('error.not_in_prologue')
   }

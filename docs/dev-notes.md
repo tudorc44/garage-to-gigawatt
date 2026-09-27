@@ -325,6 +325,9 @@ balance → **P3** events, theme, screens → the Prologue report.
   (home rig, move out, small unit) and Plan-screen selling cost 1 BW as in Act I, buying and coin moves 0; after the
   forced cut patience returns to 50; the backup lapses on a PC / GPU purchase; a conference's used offer is the newest
   model sold used that quarter.
+- Custody: a sell order (Plan screen, keep/sell %, or a card) moves what it needs from the wallet first (a week);
+  the keep/sell % orders nothing while there's no price; a prologue start keeps 100% by default; offers are taken
+  from the wallet first, then the exchange.
 
 ### Prologue progress
 - P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.

@@ -193,6 +193,8 @@ export function newPrologueGame(seed: number): GameState {
       earnsFromQuarter: first,
     })),
     nextId: 2 + s.machines.length,
+    // Keep everything to begin with: in 2009 there's no market to sell to (Prologue choice).
+    hodlPct: { BTC: 1, ETH: 1 },
     quarterStats: emptyQuarterStats(),
     prologue,
   }
