@@ -601,13 +601,17 @@ export function planProjectEvents(state: GameState): void {
   }
 }
 
-/** How many quarters waiting for GPUs takes (one more at GPU know-how 0, doc 18 §5.4). */
-export function gpuWaitQuarters(state: GameState): number {
+/**
+ * How many quarters waiting for GPUs takes: one more at GPU know-how 0 (doc 18 §5.4), except for a
+ * pilot, which is how you gain the know-how (owner decision on the M3 questions).
+ */
+export function gpuWaitQuarters(state: GameState, p: Project): number {
   const g = BALANCE.projects.gpuAllocation
-  return (
-    g.waitQuarters +
-    (knowHow(state) === 0 ? BALANCE.projects.knowHowZero.extraWaitQuarters : 0)
-  )
+  const extra =
+    knowHow(state) === 0 && p.kind !== 'pilot'
+      ? BALANCE.projects.knowHowZero.extraWaitQuarters
+      : 0
+  return g.waitQuarters + extra
 }
 
 /**
@@ -625,7 +629,7 @@ export function checkProjectEvents(state: GameState): void {
       state.interruptsThisQuarter >= CONTENT.interrupts.maxPerQuarter
     if (state.interrupt || capFull) {
       if (e.kind === 'construction_delay') slip(state, p, 1, 'silent')
-      else slip(state, p, gpuWaitQuarters(state), 'silent_wait')
+      else slip(state, p, gpuWaitQuarters(state, p), 'silent_wait')
       continue
     }
     state.interrupt = {
@@ -716,7 +720,7 @@ export function resolveProjectEvent(
       slip(state, p, 1, 'accepted')
       break
     case 'wait':
-      slip(state, p, gpuWaitQuarters(state), 'wait')
+      slip(state, p, gpuWaitQuarters(state, p), 'wait')
       break
     case 'change_contractor': {
       state.events.bandwidthNext += P().delay.contractorBandwidthNext

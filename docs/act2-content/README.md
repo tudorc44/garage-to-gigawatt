@@ -20,6 +20,12 @@ the earlier weeks and **keep the last week**: it carries the real quarter close 
 - The game's copies in `src/content/` (`market_quarterly_act2.csv`, `capital_act2.json`, `conversions.json`,
   `tenants.json`) are byte-for-byte these files; a test checks it.
 
+## Owner decisions of 27 Sep 2026 (after milestone M3)
+
+- **H200 rental = H100 × 1.20.** `gpu_h200_hyperscaler_usd_hr` and `gpu_h200_neocloud_usd_hr` (2024Q3–2026Q4) are now
+  the same quarter's H100 column × 1.20 (e.g. 2024Q3 neocloud $3.50 → H200 $4.20, was $6.00). The pack's H200 rents
+  were 1.4–1.9× the H100's; the owner set the H200 premium at 20%. Purchase prices unchanged.
+
 ## market_weekly.csv / market_quarterly.csv: fixes of 27 Sep 2026
 
 The six BTC columns changed and an `eth_usd` column was added (see the ETH section below) (`btc_usd`, `btc_difficulty_T`, `btc_hashrate_EHs`, `btc_block_subsidy`,

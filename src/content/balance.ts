@@ -131,6 +131,8 @@ export const BALANCE = {
     pivotPremium: 2,
     /** Doc 18 §7.3: projects this big sell at the hyperscale NNN cap rate, smaller at the powered-shell rate. */
     hyperscaleKw: 100_000,
+    /** A live AI hall's kW count this share of mining's toward a site's Heat load (liquid-cooled halls are quieter; owner). */
+    aiHeatShare: 0.5,
     /**
      * The deal builder's projected return (A2-05, a display only): a cloud or pilot is projected
      * over this many years of running with no GPU resale value; a shell over its tenant's term.

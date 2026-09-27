@@ -1240,6 +1240,58 @@ Commits: M3.0 `1e555f4`, M3.1 `f9b3e21`, M3.2 `c957019`, M3.3 `17d7ad1`, M3.4 `1
    tuning of Act II values before then).
 5. Projected return horizon for clouds (5 years, no GPU resale) is mine: does the design thread have a GPU life?
 
+### Owner decisions on the M3 questions (27 Sep 2026)
+1. **GPU contracts (contracted full stack).** The neocloud, AI-lab and enterprise tenant cards can also offer GPU
+   contracts to an AI cloud project (the hyperscaler overflow card only at GPU know-how 3); 2–3 offers per cloud,
+   drawn as for shells, from 2023Q3. The pilot stays spot-only. **Price** locked at signing = that quarter's H100
+   1-year contract $/GPU-hr × a term factor (1 year 100%, 2 years 85%, 3 years 70%); H200 = H100 × 1.20; B200 uses
+   its own series where the file has one. **Term** drawn per offer: AI lab 1–2 years, neocloud 1–3, enterprise 2–3.
+   **Billing** take-or-pay on reserved capacity: 100% of contracted GPUs × price × hours from go-live, whatever the
+   utilisation; opex, power and insurance as for spot clouds; after the term the GPUs fall back to spot unless
+   re-contracted. **Ready-by** = go-live quarter + a buffer per offer (AI lab 0–1 quarter, neocloud 1, enterprise
+   1–2); late damages 3%/quarter and walk chances by tenant type, as for shells. **Backlog** = remaining contract
+   value, credit-weighted as for shells.
+2. **Hosting check:** apply (c): the power reservation also applies to MW whose machines are switched off for the
+   whole quarter. Hosting rates, conversion cost and the 2024Q1 check stay. If it still misses, record and leave it.
+3. **Pilot:** (b) a pilot that rolls the allocation queue waits 1 quarter (no know-how-0 extra). **GPU resale is
+   modelled:** residual = purchase price × (1 − 15% per year since delivery), floored at 35%; a "Sell GPUs" action
+   for a live cloud or pilot (1 BW): cash at the residual value, the project ends, its MW go idle. The curve lives
+   in content. Re-check the pilot target with resale.
+4. **M4 = capital.**
+5. **GPU life:** the Deal builder IRR for clouds and pilots = 5 years of running + the residual value at year 5.
+6. **Small decisions:** all approved except: a **backstopped tenant's backlog weight = 10%**; **live AI MW add half
+   of mining's load to a site's Heat** (Ratepayer Anger comes with the regional milestone).
+Also: the H200 rental fix (H200 = H100 × 1.20 in the market file and the game copy, noted in the README) and the
+Deal builder's spot projection before a tenant is chosen.
+
+### Milestone M4: owner answers + capital (batch mode, 27 Sep 2026)
+Sources: the answers above, scope 0.2 §2.2 and §2.7, doc 18 §7, `docs/act2-content/lenders.json`, wireframes
+A2-05 / A2-07. Sub-steps:
+- **M4.0a** Small answers: H200 data fix; reservation on switched-off MW; pilot waits 1 quarter; AI Heat at half.
+  **Done.** H200 hyperscaler and neocloud rents = H100 × 1.20 (docs and game copy, README note, JSON regenerated).
+  Each machine batch remembers the last Act II quarter it ran (`lastRanQuarter`); at quarter end, batches that
+  could earn but never ran pay the reservation on their kW (capped at the site's mining kW), in `reservationUsd`
+  and the power cost. A pilot's GPU wait is 1 quarter (a cloud still 2 at know-how 0). Live AI kW count half
+  toward the Heat load (`balance.ts` › `projects.aiHeatShare`). New `tests/sim/m4Answers.test.ts`.
+  **Effect:** raise-climb (the good path, keeping its switched-off S9s) now goes bust in Act II in 6 of the first 12
+  seeds (was 1 in 50): its whole 20 MW site is reserved at ~$0.46M a quarter with little income. The act1-hold test
+  that plays raise-climb to 2026Q4 now uses seed 2 (seed 1 busts in 2025). Full numbers in M4.0d.
+- **M4.0b** GPU resale: the residual curve, "Sell GPUs", the Deal builder IRR with year-5 residual, and the spot
+  projection before a tenant is chosen.
+- **M4.0c** GPU contracts for AI clouds (offers, locked price, take-or-pay billing, ready-by buffer, fallback to spot,
+  backlog).
+- **M4.0d** Sims re-run against §5 (hosting, pilot with resale).
+- **M4.1** Finance content: `lenders.json` game copy + schema; SOFR, project-debt rate path, DDTL spreads; Act II
+  equipment-loan terms.
+- **M4.2** Project facilities: project debt and the GPU-backed DDTL on a project (sizing, DSCR ≥ 1.12×, interest while
+  building, amortisation once live), debt service at quarter end, missed payments and foreclosure (2 quarters).
+- **M4.3** The equipment loan extended to GPUs (collateral includes delivered GPUs).
+- **M4.4** The credit rating (matrix, backlog quality, runway notch, project-level A) each quarter.
+- **M4.5** Equity raise / ATM offering (2 BW, dilution shown first).
+- **M4.6** JV partner and big-tech backstop (cut #1 and #2 if they get expensive).
+- **M4.7** UI: the Capital screen (A2-07) and the Deal builder's capital rows (A2-05); top-bar rating.
+- **M4.8** Bots with capital, sims (good and great path re-checked), terminal commands, milestone report.
+
 ## Next
 
 **Milestone M3 done (27 Sep 2026).** Projects (shell, cloud on spot, pilot), the build with delays and the GPU

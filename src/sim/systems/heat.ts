@@ -99,7 +99,8 @@ export function loadHeat(
       if (h.siteId === site.id && h.readyQuarter <= state.quarter)
         runningKw += h.kw
     for (const p of state.projects)
-      if (p.siteId === site.id && p.stage === 'live') runningKw += p.kw
+      if (p.siteId === site.id && p.stage === 'live')
+        runningKw += p.kw * BALANCE.projects.aiHeatShare
   }
   const raw =
     tier.id === 'garage'

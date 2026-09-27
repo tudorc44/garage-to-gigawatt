@@ -170,13 +170,14 @@ describe('construction delays and GPU allocation (scope §2.9)', () => {
     expect(c.events.bandwidthNext).toBe(s.events.bandwidthNext - 1)
   })
 
-  it('GPU allocation: pay 8% to ship now, or wait (2 quarters at know-how 0)', () => {
+  it('GPU allocation: pay 8% to ship now, or wait (a pilot 1 quarter even at know-how 0; a cloud 2)', () => {
     const s = withAlert('gpu_allocation')
     expect(s.interrupt?.id).toBe('gpu_allocation')
     expect(defaultChoice(s)).toBe('wait')
-    expect(gpuWaitQuarters(s)).toBe(2)
+    expect(gpuWaitQuarters(s, s.projects[0])).toBe(1)
+    expect(gpuWaitQuarters(s, { ...s.projects[0], kind: 'cloud' })).toBe(2)
     const w = ok(s, { type: 'RESOLVE_INTERRUPT', choice: 'wait' })
-    expect(w.projects[0].readyQuarter).toBe(s.projects[0].readyQuarter! + 2)
+    expect(w.projects[0].readyQuarter).toBe(s.projects[0].readyQuarter! + 1)
     const pay = ok(s, { type: 'RESOLVE_INTERRUPT', choice: 'pay_premium' })
     expect(pay.cash).toBeCloseTo(
       s.cash - Math.round(s.projects[0].capexUsd * 0.08),

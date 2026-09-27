@@ -3,6 +3,8 @@
 // AI cloud come with projects (M3); building = not energized yet, or being converted; idle = the rest.
 import { BALANCE, act2Quarter } from '../../content/index.ts'
 import type { GameState, Site } from '../state.ts'
+import { getModel } from './market.ts'
+import { isEarning } from './mining.ts'
 import {
   capacityKw,
   machinesKw,
@@ -97,6 +99,32 @@ export function payReservationWeek(state: GameState): number {
       hours *
       powerPriceUsdKwh(site, state.quarter) *
       share
+  }
+  state.cash -= usd
+  return usd
+}
+
+/**
+ * At quarter end (Act II, owner decision on the M3 questions): energized but unused is unused, so
+ * the machines that could earn this quarter but were switched off every week pay the reservation
+ * on their kW too (no more than the site's mining kW). The garage pays none. Cash goes out here.
+ */
+export function paySwitchedOffReservation(state: GameState): number {
+  if (!act2Quarter(state.quarter)) return 0
+  const { share, hoursPerQuarter } = BALANCE.powerReservation
+  let usd = 0
+  for (const site of state.sites) {
+    if (!regionOf(site)) continue
+    const offKw = state.machines
+      .filter(
+        (l) =>
+          l.siteId === site.id &&
+          isEarning(state, l) &&
+          l.lastRanQuarter !== state.quarter,
+      )
+      .reduce((kw, l) => kw + l.count * getModel(l.model)!.power_kw, 0)
+    const kw = Math.min(offKw, siteMwByUse(state, site, state.quarter).mining)
+    usd += kw * hoursPerQuarter * powerPriceUsdKwh(site, state.quarter) * share
   }
   state.cash -= usd
   return usd

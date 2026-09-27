@@ -27,6 +27,7 @@ import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
+import { paySwitchedOffReservation } from './mwUse.ts'
 import {
   backlogUsd,
   constructionValueUsd,
@@ -45,6 +46,9 @@ import { aiEbitdaUsd, ebitdaUsd, valuationUsd } from './valuation.ts'
 export function endQuarter(state: GameState): void {
   const w = marketWeek(state.quarter, BALANCE.weeksPerQuarter - 1)
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
+  const offUsd = paySwitchedOffReservation(state)
+  state.quarterStats.reservationUsd += offUsd
+  state.quarterStats.powerCostUsd += offUsd
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   state.cash = roundCents(state.cash)
   state.reports.push(buildReport(state, w, forcedSale))

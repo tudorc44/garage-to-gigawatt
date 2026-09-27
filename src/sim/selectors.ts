@@ -1118,7 +1118,7 @@ export function projectAlertView(state: GameState) {
     kw: p.kw,
     tier: state.sites.find((x) => x.id === p.siteId)?.tier ?? '',
     costUsd: projectEventCostUsd(state),
-    waitQuarters: gpuWaitQuarters(state),
+    waitQuarters: gpuWaitQuarters(state, p),
   }
 }
 
