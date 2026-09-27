@@ -239,3 +239,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   sales, halving, price reset, peak), league, Act III teaser (mine). Checked in the browser.
 - M6.4: game over (A2-10): `gameOverView` cause = foreclosure (a project foreclosed in the last 4 q) / debt (service missed in the final
   quarter) / cash; shown on the report's game-over footer and the Act II end card. Lenders take projects (as built), not the company.
+- M6.5: `Tip` (basics.tsx; "Got it" hides it for good, `src/platform/tips.ts`): the pack's 7 tooltips (content.en.json › tooltip.act2.*) on the
+  Dashboard (2022Q4–2023Q1: MW uses, projects), Deal builder (projects; take-or-pay or pilot), region panel, rating and backlog cards.

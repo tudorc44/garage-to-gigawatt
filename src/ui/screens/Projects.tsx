@@ -15,7 +15,7 @@ import {
   type ProjectCardView,
 } from '../../sim/selectors.ts'
 import type { PowerSource, ProjectKind } from '../../sim/state.ts'
-import { Dialog, Icon, Pips } from '../components/basics.tsx'
+import { Dialog, Icon, Pips, Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName, tierIcon, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -823,6 +823,13 @@ function DealBuilder(
         </span>
         <SlotChips card={card} />
       </div>
+
+      <Tip id="projects" />
+      {p.kind === 'pilot' ? (
+        <Tip id="pilot_cluster" />
+      ) : (
+        <Tip id="take_or_pay" />
+      )}
 
       <NegotiationPanel state={state} act={act} projectId={p.id} />
 

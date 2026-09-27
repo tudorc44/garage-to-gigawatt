@@ -11,6 +11,7 @@ import {
   ratingView,
   valuationBreakdown,
 } from '../../sim/selectors.ts'
+import { Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { LoanDialog } from './dialogs.tsx'
@@ -37,6 +38,7 @@ function RatingCard({ state }: { state: ScreenProps['state'] }) {
   return (
     <section class="panel p cap-rating">
       <div class="label">{t('ui.cap2.rating')}</div>
+      <Tip id="credit_rating" />
       {!v ? (
         <p class="num-s muted">{t('ui.cap2.not_rated')}</p>
       ) : (
@@ -233,6 +235,7 @@ function Backlog({ state }: { state: ScreenProps['state'] }) {
       <div class="label">
         {t('ui.cap2.backlog', { total: fmt.money(v.totalUsd) })}
       </div>
+      <Tip id="backlog" />
       {v.rows.length === 0 ? (
         <p class="num-s muted">{t('ui.cap2.no_backlog')}</p>
       ) : (

@@ -1,8 +1,9 @@
 // Small building blocks ported from the design system bundle (Icon, Pips, Sparkline,
 // week strip) plus the dialog frame and the to-do action row from the mockup.
 import type { ComponentChildren } from 'preact'
-import { useEffect } from 'preact/hooks'
-import { t } from '../../i18n/t.ts'
+import { useEffect, useState } from 'preact/hooks'
+import { hasText, t, tDynamic } from '../../i18n/t.ts'
+import { dismissTip, readDismissedTips } from '../../platform/tips.ts'
 import { ICONS, type IconName } from '../icons.ts'
 
 export function Icon(props: {
@@ -217,5 +218,33 @@ export function ActionRow(props: {
       )}
       <span class="num-s price">{props.price ?? ''}</span>
     </button>
+  )
+}
+
+/**
+ * An onboarding tip (M6.5; scope 0.2 §2.15): a small info box with "Got it", which hides it for good
+ * in this browser. `id` names the text (content.en.json › tooltip.act2.<id>).
+ */
+export function Tip(props: { id: string }) {
+  const [gone, setGone] = useState(() => readDismissedTips().includes(props.id))
+  if (gone || !hasText(`tooltip.act2.${props.id}`)) return null
+  return (
+    <div class="signal tip" role="note">
+      <Icon name="info" />
+      <div>
+        <span class="label">{t('ui.signals.tip')}</span>
+        {tDynamic(`tooltip.act2.${props.id}`, '')}{' '}
+        <button
+          type="button"
+          class="btn"
+          onClick={() => {
+            dismissTip(props.id)
+            setGone(true)
+          }}
+        >
+          {t('ui.tip.got_it')}
+        </button>
+      </div>
+    </div>
   )
 }

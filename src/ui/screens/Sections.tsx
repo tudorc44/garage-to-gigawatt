@@ -16,7 +16,7 @@ import {
   valuationBreakdown,
 } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
-import { Icon } from '../components/basics.tsx'
+import { Icon, Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import {
   machineIcon,
@@ -292,6 +292,7 @@ function RegionPanel({ state }: { state: GameState }) {
           ))}
         </select>
       </div>
+      <Tip id="regions" />
       <table>
         <tbody>
           <tr>

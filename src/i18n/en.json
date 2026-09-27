@@ -854,6 +854,7 @@
   "ui.signals.title": "Signals",
   "ui.signals.headline": "Headline · {quarter}",
   "ui.signals.tip": "Tip",
+  "ui.tip.got_it": "Got it",
   "ui.signals.more": "Read the market",
   "ui.signals.read_market": "Read the market ({bw} Bandwidth) hints whether BTC and ETH rise or fall more than {up} this quarter.",
   "ui.plan.read_market_price": "BTC & ETH hint",

@@ -8,6 +8,7 @@ import {
   HEAT_MARKS,
   SELL_TREASURY_BANDWIDTH,
   act2MarketView,
+  actTurn,
   fleetOfferView,
   repairAllView,
   projectsView,
@@ -40,7 +41,7 @@ import {
   type LotView,
 } from '../../sim/selectors.ts'
 import type { Coin, GameState } from '../../sim/state.ts'
-import { ActionRow, Icon, Sparkline } from '../components/basics.tsx'
+import { ActionRow, Icon, Sparkline, Tip } from '../components/basics.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { fmt } from '../format.ts'
@@ -1420,6 +1421,13 @@ function SignalsPanel({ state, news }: { state: GameState; news: string[] }) {
             </div>
           </div>
         ))}
+      {/* Act II's first two quarters (2022Q4–2023Q1): what a megawatt does now, and projects. */}
+      {state.act === 2 && actTurn(state).turn <= 2 && (
+        <>
+          <Tip id="mw_uses" />
+          <Tip id="projects" />
+        </>
+      )}
       <div class="signal">
         <Icon name="read-market" />
         <div>
