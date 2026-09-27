@@ -101,6 +101,18 @@ Projects header, the Act II quarter report additions. M6 covers the first four.
   GPU rigs (2020Q4–2022Q1, 250 kW a quarter), phased Texas (5 × 20 MW, 2-quarter phases, construction loans),
   the transformer upgrade ($150K).
 - The real CoinMetrics data swap is **not** for Alpha 0.2 (answer 19): revisit at Alpha 0.3 (the 2009–2016 prologue).
+- **Act I as built, confirmed by the owner (28 Sep 2026, answer 18; details: archive › "Chosen by Claude Code"):**
+  - `requires.min_mw` = a built, powered site whose usable capacity (after an undersized-transformer flaw) is at least that size,
+    machines or not (the IPO's 20 MW); Series A's `min_total_mw` adds powered usable MW across sites.
+  - Equipment loan: one at a time, 1 BW, up to era LTV × the machines' used value, repaid weekly over 8 quarters, early repay free, no
+    covenant. Crypto loan: one at a time, 1 BW, 50% LTV, weekly interest, no term; margin call at 70%, liquidation at 80%, default = coins
+    kept + 4 quarters with no loans.
+  - Distressed auctions: a Plan-phase action (2 BW, one sealed bid, the highest bid wins and pays its bid; no bid → a rival takes the lot).
+  - Curtailment (Texas, once per Q3 at most, 35%): curtail = no mining that week, credit max($15K × MW, 1.25 × forgone revenue); keep
+    mining = +5 grievance there.
+  - Heat 50: read at each quarter's end (≥ 50 → next quarter's power hiked; < 50 → the hike ends); moratorium at the moment you buy.
+  - Power contracts: a due renewal left alone = same type at the opening for 4 quarters; negotiation finished before the quarter starts;
+    the first Texas contract is fixed, index from its first renewal.
 
 ### Owner decisions: Act II (details: archive › "Act II readiness", "Owner decisions on the M2 / M3 questions")
 - Scope 0.2 v1.0 frozen; P1–P5 confirmed: take-or-pay 3% of the annual contract per late quarter and walk chance
