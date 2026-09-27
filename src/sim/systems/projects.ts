@@ -19,6 +19,7 @@ import {
   projectGone,
   type GameState,
   type Project,
+  type PowerSource,
   type ProjectKind,
   type TenantOffer,
 } from '../state.ts'
@@ -29,6 +30,12 @@ import {
   shellReady,
   tenantsFrom,
 } from './headStarts.ts'
+import {
+  drawPowerQuarters,
+  expectedPowerQuarters,
+  powerBlocker,
+  powerCostUsd,
+} from './power.ts'
 import { isHired } from './hires.ts'
 import { convertibleKw } from './hosting.ts'
 import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
@@ -118,6 +125,17 @@ export function projectBuildQuarters(
   return Math.max(1, buildQuarters(p.kind) + headStartBuildDelta(state, p))
 }
 
+/**
+ * Quarters from a build start to going live, as planned now: the build, or the new power if it
+ * takes longer (a grid upgrade at its queue's short end).
+ */
+export function plannedBuildQuarters(state: GameState, p: Project): number {
+  return Math.max(
+    projectBuildQuarters(state, p),
+    expectedPowerQuarters(state, p),
+  )
+}
+
 export function tenantCard(id: string): TenantCard | undefined {
   return P().tenantCards.find((c) => c.id === id)
 }
@@ -166,19 +184,25 @@ export function contractQuarters(p: Project): number {
 /**
  * What a project costs to build if it starts in `quarter` (conversions.json, market_quarterly):
  * the retrofit per MW, plus for clouds and pilots the GPUs (gpus per MW × the unit price; +10%
- * for a cloud at GPU know-how 0), less the tenant's capex credit (capped at the retrofit).
+ * for a cloud at GPU know-how 0), plus any new power (a grid upgrade or on-site gas), less the
+ * tenant's capex credit (capped at the retrofit).
  */
 export function projectCapex(
   state: GameState,
-  p: Pick<Project, 'kw' | 'kind' | 'gpu' | 'tenant'> & { siteId?: string },
+  p: Pick<Project, 'kw' | 'kind' | 'gpu' | 'tenant'> & {
+    siteId?: string
+    power?: PowerSource
+  },
   quarter = state.quarter,
 ): {
   retrofitUsd: number
   gpuUsd: number
+  powerUsd: number
   creditUsd: number
   totalUsd: number
   gpuCount: number
 } {
+  const powerUsd = p.power ? powerCostUsd(p.power, p.kw) : 0
   const mw = p.kw / 1000
   // A shell at a shell-ready site (the hosting head start) costs less to retrofit.
   const ready =
@@ -208,8 +232,9 @@ export function projectCapex(
   return {
     retrofitUsd,
     gpuUsd,
+    powerUsd,
     creditUsd,
-    totalUsd: retrofitUsd + gpuUsd - creditUsd,
+    totalUsd: retrofitUsd + gpuUsd + powerUsd - creditUsd,
     gpuCount,
   }
 }
@@ -273,7 +298,13 @@ export function drawOffers(state: GameState, p: Project): void {
 /** Why a project can't be opened like this now, or undefined if it can. */
 export function openBlocker(
   state: GameState,
-  a: { siteId: string; kw: number; kind: ProjectKind; gpu?: string },
+  a: {
+    siteId: string
+    kw: number
+    kind: ProjectKind
+    gpu?: string
+    power?: PowerSource
+  },
 ): Message | undefined {
   if (state.act !== 2) return { key: 'error.act2_only' }
   const site = state.sites.find((s) => s.id === a.siteId)
@@ -309,12 +340,20 @@ export function openBlocker(
       key: 'error.moratorium',
       params: { tier: site.tier, at: CONTENT.heat.moratoriumAt },
     }
-  const freeKw = convertibleKw(state, a.siteId)
-  if (a.kw > freeKw + 1e-9)
-    return {
-      key: 'error.no_project_room',
-      params: { tier: site.tier, freeKw, neededKw: a.kw },
-    }
+  if (a.power) {
+    // New power (a grid upgrade or on-site gas) brings its own MW.
+    if (a.power !== 'grid' && a.power !== 'gas')
+      return { key: 'error.bad_choice' }
+    const blocked = powerBlocker(state, site, a.power)
+    if (blocked) return blocked
+  } else {
+    const freeKw = convertibleKw(state, a.siteId)
+    if (a.kw > freeKw + 1e-9)
+      return {
+        key: 'error.no_project_room',
+        params: { tier: site.tier, freeKw, neededKw: a.kw },
+      }
+  }
   const need = BALANCE.projects.bandwidth.open
   if (state.bandwidth < need)
     return {
@@ -324,10 +363,19 @@ export function openBlocker(
   return undefined
 }
 
-/** Opens a project (assumes openBlocker passed): its Power slot is the site's free MW. */
+/**
+ * Opens a project (assumes openBlocker passed): its Power slot is the site's free MW, or new power
+ * (a grid upgrade or on-site gas) that joins the site's capacity now and is energized after it's built.
+ */
 export function openProject(
   state: GameState,
-  a: { siteId: string; kw: number; kind: ProjectKind; gpu?: string },
+  a: {
+    siteId: string
+    kw: number
+    kind: ProjectKind
+    gpu?: string
+    power?: PowerSource
+  },
 ): Project {
   const n = state.projects.reduce((m, p) => Math.max(m, p.n), 0) + 1
   const p: Project = {
@@ -353,8 +401,15 @@ export function openProject(
   }
   state.bandwidth -= BALANCE.projects.bandwidth.open
   state.projects.push(p)
-  drawOffers(state, p)
   const site = state.sites.find((s) => s.id === a.siteId)!
+  if (a.power) {
+    p.power = a.power
+    site.powerAdds = [
+      ...(site.powerAdds ?? []),
+      { projectId: p.id, kw: a.kw, source: a.power, readyQuarter: null },
+    ]
+  }
+  drawOffers(state, p)
   logEntry(state, 'log.project_opened', {
     n,
     tier: site.tier,
@@ -419,7 +474,7 @@ export function signTenant(
 export function plannedLiveQuarter(state: GameState, p: Project): number {
   if (p.stage === 'live') return state.quarter
   if (p.stage === 'building' && p.readyQuarter !== null) return p.readyQuarter
-  return state.quarter + projectBuildQuarters(state, p)
+  return state.quarter + plannedBuildQuarters(state, p)
 }
 
 function signGpuContract(
@@ -514,6 +569,12 @@ export function cancelProject(
   // A signed tenant is a contract: no walking away with its prepayment and the pivot premium.
   if (p.tenant) return { key: 'error.project_signed' }
   state.projects = state.projects.filter((x) => x.id !== projectId)
+  // New power it would have brought is dropped with it.
+  const site = state.sites.find((s) => s.id === p.siteId)
+  if (site?.powerAdds) {
+    site.powerAdds = site.powerAdds.filter((x) => x.projectId !== projectId)
+    if (site.powerAdds.length === 0) delete site.powerAdds
+  }
   logEntry(state, 'log.project_cancelled', { n: p.n })
   return undefined
 }
@@ -568,6 +629,14 @@ export function startBuild(state: GameState, projectId: string): void {
   p.gpuCapexUsd = Math.round(cost.gpuUsd)
   p.gpuCount = cost.gpuCount
   p.readyQuarter = state.quarter + projectBuildQuarters(state, p)
+  // New power is ordered now; the project goes live when both it and the build are done.
+  const add = state.sites
+    .find((s) => s.id === p.siteId)
+    ?.powerAdds?.find((x) => x.projectId === p.id)
+  if (add) {
+    add.readyQuarter = state.quarter + drawPowerQuarters(state, p)
+    p.readyQuarter = Math.max(p.readyQuarter, add.readyQuarter)
+  }
   p.startQuarter = state.quarter
   p.stage = 'building'
   state.cash -= p.capexUsd
@@ -969,7 +1038,7 @@ export function projectedReturn(state: GameState, p: Project) {
       ? 0
       : p.stage === 'building'
         ? Math.max(0, (p.readyQuarter ?? state.quarter) - state.quarter)
-        : projectBuildQuarters(state, p)
+        : plannedBuildQuarters(state, p)
   const flows = [-capexUsd, ...Array<number>(wait).fill(0), ...quarters]
   flows[flows.length - 1] += residualUsd
   return {

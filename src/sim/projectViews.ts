@@ -20,7 +20,7 @@ import {
   gpuResidualUsd,
   knowHow,
   neocloudUsdHr,
-  projectBuildQuarters,
+  plannedBuildQuarters,
   projectCapex,
   projectedReturn,
   remainingContractUsd,
@@ -31,6 +31,7 @@ import {
   tenantCard,
 } from './systems/projects.ts'
 import { capacityKw, regionOf } from './systems/sites.ts'
+import { gridQuarterRange, powerBlocker } from './systems/power.ts'
 
 const P = () => CONTENT.projects
 const label = (q: number | null) =>
@@ -99,7 +100,7 @@ export function projectCard(state: GameState, p: Project) {
         ? Math.max(0, p.readyQuarter - state.quarter)
         : null,
     ready: label(p.readyQuarter),
-    buildQuarters: projectBuildQuarters(state, p),
+    buildQuarters: plannedBuildQuarters(state, p),
     gpuCount:
       p.stage === 'proposed' ? projectCapex(state, p).gpuCount : p.gpuCount,
     utilisation: p.kind === 'shell' ? null : spotUtilisation(state),
@@ -158,11 +159,26 @@ export function openProjectView(state: GameState) {
   return {
     sites: state.sites
       .filter((s) => s.tier !== BALANCE.startSite)
-      .map((site) => ({
-        site,
-        region: regionOf(site) ?? null,
-        freeKw: convertibleKw(state, site.id),
-      })),
+      .map((site) => {
+        const region = regionOf(site) ?? null
+        return {
+          site,
+          region,
+          freeKw: convertibleKw(state, site.id),
+          /** New power for a project here (M5.6): its cost, time and why it can't be had now. */
+          grid: {
+            usdMw: P().power.grid.capexUsdMw,
+            quarters: region ? gridQuarterRange(state, region) : null,
+            blocker: powerBlocker(state, site, 'grid') ?? null,
+          },
+          gas: {
+            usdMw: P().power.gas.capexUsdMw,
+            quarters: P().power.gas.buildQuarters,
+            heat: P().power.gas.heatDelta,
+            blocker: powerBlocker(state, site, 'gas') ?? null,
+          },
+        }
+      }),
     gpus: availableGpus(state.quarter).map((g) => g.id),
     pilotFrom: pilot.from,
     pilotOpen: CONTENT.quarters[state.quarter] >= pilot.from,
@@ -185,12 +201,23 @@ export function dealView(state: GameState, projectId: string) {
   const use = siteMwByUse(state, site, state.quarter)
   const card = projectCard(state, p)
   const cost = projectCapex(state, p)
+  const add = site.powerAdds?.find((a) => a.projectId === p.id)
   return {
     card,
     power: {
       totalKw: capacityKw(site),
       miningKw: use.mining,
       freeKw: convertibleKw(state, site.id),
+      /** New power (grid upgrade or gas): its source, cost, and when it's energized (null: not ordered yet). */
+      added: add
+        ? {
+            source: add.source,
+            costUsd: cost.powerUsd,
+            readyQuarter:
+              add.readyQuarter === null ? null : label(add.readyQuarter),
+            expectedQuarters: plannedBuildQuarters(state, p),
+          }
+        : null,
     },
     offers: p.offers.map((o) => {
       const c = tenantCard(o.card)!

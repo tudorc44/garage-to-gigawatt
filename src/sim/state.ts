@@ -51,7 +51,24 @@ export interface Site {
   /** Act II scouted sites: their category (sites_act2.json) and size, which replaces the tier's. */
   category?: string
   kw?: number
+  /**
+   * Act II: new power added for a project (its Power slot: a grid upgrade or on-site gas). Part of
+   * the site's capacity from the project's opening; energized from readyQuarter (set when its
+   * build starts; null before).
+   */
+  powerAdds?: PowerAdd[]
 }
+
+/** Power added to a site for one project (M5.6). */
+export interface PowerAdd {
+  projectId: string
+  kw: number
+  source: PowerSource
+  readyQuarter: number | null
+}
+
+/** Where a project's power comes from beyond the site's existing MW (scope 0.2 §2.5, A2-05). */
+export type PowerSource = 'grid' | 'gas'
 
 export type ContractType = 'fixed' | 'index'
 
@@ -205,6 +222,8 @@ export interface Project {
   kind: ProjectKind
   /** GPU generation (cloud and pilot), or null for a shell. */
   gpu: string | null
+  /** Its Power slot: new power (a grid upgrade or on-site gas); missing = the site's existing MW. */
+  power?: PowerSource
   openedQuarter: number
   /**
    * 'sold': sold with its MW (they leave the site); 'ended': its GPUs sold, its MW idle again;

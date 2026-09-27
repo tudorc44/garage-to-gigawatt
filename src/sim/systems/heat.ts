@@ -15,6 +15,7 @@ import { randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type GameState, type Site } from '../state.ts'
 import { getModel } from './market.ts'
 import type { LotWeek } from './mining.ts'
+import { gasHeat } from './power.ts'
 import { nationalHeatDelta, regionHeatMult } from './regions.ts'
 import { capacityKw, flawEffect, getTier, regionOf } from './sites.ts'
 
@@ -118,7 +119,11 @@ export function loadHeat(
 export function recalcHeat(state: GameState, site: Site): void {
   const h = heatOf(state, site.id)
   const parts =
-    baseHeat(state, site) + h.load + h.grievance + eraHeat(state, site)
+    baseHeat(state, site) +
+    h.load +
+    h.grievance +
+    eraHeat(state, site) +
+    gasHeat(site, state.quarter)
   const total =
     parts * regionHeatMult(regionOf(site), state.quarter) +
     nationalHeatDelta(state.quarter)

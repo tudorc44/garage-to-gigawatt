@@ -159,6 +159,24 @@ export const conversionsFileSchema = z.looseObject({
 /** One conversion's flat cost per MW ({ value, source, estimate }). */
 export const flatCapexSchema = sourced
 
+/** conversions.json › grid_upgrade: a cost per MW and a queue in quarters by (pack) region id. */
+export const gridUpgradeSchema = z.looseObject({
+  capex_usd_mw: sourced,
+  build_quarters_by_region: z.record(
+    z.string(),
+    z.looseObject({
+      value: z.tuple([z.number().int().min(0), z.number().int().min(0)]),
+    }),
+  ),
+})
+
+/** conversions.json › on_site_gas: a cost per MW, a build and the Heat it adds. */
+export const onSiteGasSchema = z.looseObject({
+  capex_usd_mw: sourced,
+  build_quarters: z.number().int().min(0),
+  heat_delta: nonNeg,
+})
+
 /** conversions.json › pilot_cluster (scope 0.2 §2.5 [P3], owner decision 27 Sep 2026). */
 export const pilotClusterSchema = z.looseObject({
   mw_min: nonNeg,

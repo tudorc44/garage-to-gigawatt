@@ -13,7 +13,7 @@ import {
   whyNot,
   type ProjectCardView,
 } from '../../sim/selectors.ts'
-import type { ProjectKind } from '../../sim/state.ts'
+import type { PowerSource, ProjectKind } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName, tierIcon, tierName } from '../names.ts'
@@ -316,6 +316,7 @@ function OpenProjectDialog(
   const [gpu, setGpu] = useState<string>(v.gpus[0] ?? 'h100')
   const site = v.sites.find((x) => x.site.id === siteId)
   const [kw, setKw] = useState(Math.floor(site?.freeKw ?? 0))
+  const [power, setPower] = useState<'existing' | PowerSource>('existing')
   const size =
     kind === 'pilot' ? (v.pilotSizes.includes(kw) ? kw : v.pilotSizes[0]) : kw
   const action: Action = {
@@ -324,7 +325,24 @@ function OpenProjectDialog(
     kw: size,
     kind,
     ...(kind === 'cloud' ? { gpu } : {}),
+    ...(power !== 'existing' ? { power } : {}),
   }
+  const powerNote =
+    !site || power === 'existing'
+      ? t('ui.projects.power_note.existing', {
+          free: fmt.power(site?.freeKw ?? 0),
+        })
+      : power === 'grid'
+        ? t('ui.projects.power_note.grid', {
+            usd: fmt.money(site.grid.usdMw),
+            from: site.grid.quarters?.[0] ?? 0,
+            to: site.grid.quarters?.[1] ?? 0,
+          })
+        : t('ui.projects.power_note.gas', {
+            usd: fmt.money(site.gas.usdMw),
+            quarters: site.gas.quarters,
+            heat: site.gas.heat,
+          })
   const why = whyNot(state, action)
   const kinds: ProjectKind[] = ['shell', 'cloud', 'pilot']
   return (
@@ -378,6 +396,27 @@ function OpenProjectDialog(
       </div>
       <p class="num-s muted" style={{ margin: 0 }}>
         {tDynamic(`ui.projects.kind_note.${kind}`, '')}
+      </p>
+      <div class="label">{t('ui.projects.open_power')}</div>
+      <div
+        class="seg"
+        role="group"
+        aria-label={t('ui.projects.open_power')}
+        style={{ alignSelf: 'flex-start' }}
+      >
+        {(['existing', 'grid', 'gas'] as const).map((k) => (
+          <button
+            type="button"
+            key={k}
+            aria-pressed={power === k}
+            onClick={() => setPower(k)}
+          >
+            {t(`ui.projects.power.${k}`)}
+          </button>
+        ))}
+      </div>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {powerNote}
       </p>
       {kind === 'cloud' && (
         <label class="form-row">
@@ -671,15 +710,31 @@ function DealBuilder(
 
       <div class="deal-panel">
         <div class="label">{t('ui.deal.power')} ✓</div>
-        <div class="num-s">
-          {t('ui.deal.power_line', {
-            tier: tierName(card.tier),
-            total: fmt.power(v.power.totalKw),
-            mining: fmt.power(v.power.miningKw),
-            free: fmt.power(v.power.freeKw),
-          })}
-        </div>
-        <div class="num-s muted">{t('ui.deal.power_later')}</div>
+        {v.power.added ? (
+          <div class="num-s">
+            {t(`ui.deal.power_added.${v.power.added.source}`, {
+              power: fmt.power(p.kw),
+              cost: fmt.money(v.power.added.costUsd),
+              when: v.power.added.readyQuarter
+                ? fmt.quarter(v.power.added.readyQuarter)
+                : t('ui.deal.power_after', {
+                    n: v.power.added.expectedQuarters,
+                  }),
+            })}
+          </div>
+        ) : (
+          <>
+            <div class="num-s">
+              {t('ui.deal.power_line', {
+                tier: tierName(card.tier),
+                total: fmt.power(v.power.totalKw),
+                mining: fmt.power(v.power.miningKw),
+                free: fmt.power(v.power.freeKw),
+              })}
+            </div>
+            <div class="num-s muted">{t('ui.deal.power_later')}</div>
+          </>
+        )}
       </div>
 
       {card.slots.tenant !== null && (

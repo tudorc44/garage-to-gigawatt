@@ -21,6 +21,7 @@ import {
   type ContractType,
   type Condition,
   type GameState,
+  type PowerSource,
   type ProjectKind,
   type Site,
 } from './state.ts'
@@ -189,6 +190,8 @@ export type Action =
       kind: ProjectKind
       /** Cloud projects: the GPU generation (a pilot always uses conversions.json's). */
       gpu?: string
+      /** Its Power slot: new power (a grid upgrade or on-site gas) instead of the site's free MW. */
+      power?: PowerSource
     }
   /** Act II: a shell project signs one of its tenant offers (accept, 0 Bandwidth). */
   | { type: 'PROJECT_SIGN_TENANT'; projectId: string; offerId: string }

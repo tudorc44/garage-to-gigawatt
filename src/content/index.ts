@@ -36,6 +36,8 @@ import {
   interruptsAct2FileSchema,
   lendersFileSchema,
   pilotClusterSchema,
+  gridUpgradeSchema,
+  onSiteGasSchema,
   regionsFileSchema,
   sitesAct2FileSchema,
   tenantsFileSchema,
@@ -156,6 +158,17 @@ export interface ProjectRules {
   fullStack: { extraBuildQuarters: number }
   /** A shell at a site that hosts (the Merge "hosting" head start): conversions.json › hosting_to_ai_shell. */
   shellReady: { capexDiscount: number; quarterDiscount: number }
+  /**
+   * New power for a project (the Power slot beyond existing MW; conversions.json): a grid upgrade
+   * (a cost per MW, a queue in quarters by region) or on-site gas (a cost per MW, a build, Heat).
+   */
+  power: {
+    grid: {
+      capexUsdMw: number
+      quartersByRegion: Record<PowerRegion, [number, number]>
+    }
+    gas: { capexUsdMw: number; buildQuarters: number; heatDelta: number }
+  }
   pilot: {
     kwMin: number
     kwMax: number
@@ -860,6 +873,42 @@ export function parseContent(raw: RawContent): Content {
     problems.push(
       'conversions.json: needs shell_to_fullstack with build_quarters_additional',
     )
+  // New power (conversions.json › grid_upgrade, on_site_gas): regions keyed by the pack's region ids.
+  const gridRaw = gridUpgradeSchema.safeParse(
+    (conversionsFile as Record<string, unknown>).grid_upgrade,
+  )
+  const gasRaw = onSiteGasSchema.safeParse(
+    (conversionsFile as Record<string, unknown>).on_site_gas,
+  )
+  if (!gridRaw.success)
+    problems.push(
+      'conversions.json › grid_upgrade: needs capex_usd_mw { value } and build_quarters_by_region',
+    )
+  if (!gasRaw.success)
+    problems.push(
+      'conversions.json › on_site_gas: needs capex_usd_mw { value }, build_quarters and heat_delta',
+    )
+  const quartersByRegion = {} as Record<PowerRegion, [number, number]>
+  for (const id of POWER_REGIONS) {
+    const packId = regionsFile.regions.find((r) => r.id === id)?.pack_id ?? id
+    const q = gridRaw.data?.build_quarters_by_region[packId]
+    if (!q && gridRaw.success)
+      problems.push(
+        `conversions.json › grid_upgrade.build_quarters_by_region: no "${packId}"`,
+      )
+    quartersByRegion[id] = q?.value ?? [0, 0]
+  }
+  const power: ProjectRules['power'] = {
+    grid: {
+      capexUsdMw: gridRaw.data?.capex_usd_mw.value ?? 0,
+      quartersByRegion,
+    },
+    gas: {
+      capexUsdMw: gasRaw.data?.capex_usd_mw.value ?? 0,
+      buildQuarters: gasRaw.data?.build_quarters ?? 0,
+      heatDelta: gasRaw.data?.heat_delta ?? 0,
+    },
+  }
   const tenantCards: TenantCard[] = tenantsFile.tenant_cards.flatMap((c) =>
     c.type === 'spot' || c.price_usd_mw_yr === undefined
       ? []
@@ -916,6 +965,7 @@ export function parseContent(raw: RawContent): Content {
         Number(hostingToShell?.capex_usd_mw_discount_pct ?? 0) / 100,
       quarterDiscount: Number(hostingToShell?.build_quarters_discount ?? 0),
     },
+    power,
     pilot: {
       kwMin: (pilotRaw?.mw_min ?? 0) * 1000,
       kwMax: (pilotRaw?.mw_max ?? 0) * 1000,

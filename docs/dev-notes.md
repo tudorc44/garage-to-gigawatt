@@ -144,6 +144,8 @@ Still open from Act I (never answered; details in the archive):
   2024Q4, +10 everywhere in 2026Q1); adds Anger ÷ 5 to the region's sites' Heat; ec21 fires at Anger ≥ 50.
 - **Policy effects with no number (M5.4):** AEP Ohio tariff (2026Q2), Georgia cost shift (2026Q1), Arizona incentive
   pause (2026Q2) are news only. Proposal: +$0.005/kWh on that region's power from that quarter.
+- **Air-permit lawsuit (M5.6):** sites_act2.json gives the air_permit_for_gas flaw a 40% lawsuit chance but no
+  consequence. Built: its +25 Heat with gas. Proposal: a lawsuit shuts the gas plant for 2 quarters (project waits).
 
 ## Small follow-ups
 
@@ -194,6 +196,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.5: `sites_act2.json` (game copy), `scouting.ts`: "Scout for sites" (1 BW) → 2–3 mixed offers. Mine: an owned
   own_site of its size; random region; every offer has a flaw; energized land priced at the pack's "announced"
   $3–12M/MW; greenfield waits the region's queue; a voided zoning doubles its delay; site names show type · region.
+- M5.6: Power slot (`power.ts`): existing MW / grid upgrade ($750K/MW, regional queue drawn at build start; Ex-Utility
+  −1; PJM +4 from 2026Q1; ERCOT halt) / on-site gas ($1.5M/MW, 2 q, +20 Heat). Mine: power cost in the capex; live when
+  build and power are both done; waiting MW pay no reservation; the air-permit lawsuit (40%) has no consequence yet.
 
 ## Next
 

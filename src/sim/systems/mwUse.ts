@@ -6,6 +6,7 @@ import { projectGone, type GameState, type Site } from '../state.ts'
 import {
   capacityKw,
   machinesKw,
+  powerAddsKw,
   poweredKw,
   powerPriceUsdKwh,
   regionOf,
@@ -61,7 +62,8 @@ export function siteMwByUse(
     if (p.stage === 'live') {
       if (p.kind === 'shell') out.aiShell += p.kw
       else out.aiCloud += p.kw
-    } else if (p.stage === 'building') projectBuilding += p.kw
+    } else if (p.stage === 'building' && !pendingPower(site, p.id, quarter))
+      projectBuilding += p.kw
   }
   const ai = out.aiShell + out.aiCloud
   const projectConverting = Math.min(
@@ -78,11 +80,18 @@ export function siteMwByUse(
   return out
 }
 
+/** Whether a project's own new power (grid upgrade, gas) isn't energized yet in `quarter`. */
+function pendingPower(site: Site, projectId: string, quarter: number): boolean {
+  const add = site.powerAdds?.find((a) => a.projectId === projectId)
+  return !!add && (add.readyQuarter === null || add.readyQuarter > quarter)
+}
+
 /**
  * One week of the power reservation (Act II, owner decision A2): idle and under-construction kW
  * pay a share of their full-load power cost at the site's current price; a quarter is
- * hoursPerQuarter hours, spread over its weeks. The garage (household power) pays none. Cash
- * goes out here; the dollars are returned.
+ * hoursPerQuarter hours, spread over its weeks. New power still waiting for its grid upgrade or gas
+ * plant isn't reserved yet (mine). The garage (household power) pays none. Cash goes out here; the
+ * dollars are returned.
  */
 export function payReservationWeek(state: GameState): number {
   if (!act2Quarter(state.quarter)) return 0
@@ -92,8 +101,9 @@ export function payReservationWeek(state: GameState): number {
   for (const site of state.sites) {
     if (!regionOf(site)) continue
     const u = siteMwByUse(state, site, state.quarter)
+    const pending = powerAddsKw(site) - powerAddsKw(site, state.quarter)
     usd +=
-      (u.idle + u.building) *
+      Math.max(0, u.idle + u.building - pending) *
       hours *
       powerPriceUsdKwh(site, state.quarter) *
       share

@@ -52,24 +52,45 @@ export function nominalKw(site: Site): number {
   return site.kw ?? tier.capacity_kw
 }
 
-/** Capacity to place machines in: a phased site counts every phase started (built or building). */
+/** kW of power added for projects (grid upgrades, on-site gas): all of it, or energized by `quarter`. */
+export function powerAddsKw(site: Site, quarter?: number): number {
+  return (site.powerAdds ?? [])
+    .filter(
+      (a) =>
+        quarter === undefined ||
+        (a.readyQuarter !== null && a.readyQuarter <= quarter),
+    )
+    .reduce((kw, a) => kw + a.kw, 0)
+}
+
+/**
+ * Capacity to place machines and projects in: a phased site counts every phase started (built or
+ * building), and power added for projects counts from their opening.
+ */
 export function capacityKw(site: Site): number {
   return (
     nominalKw(site) * (flawEffect(site, 'capacity_mult') ?? 1) -
-    (site.soldKw ?? 0)
+    (site.soldKw ?? 0) +
+    powerAddsKw(site)
   )
 }
 
-/** Capacity energized in `quarter`: a phased site counts its finished phases only. */
+/**
+ * Capacity energized in `quarter`: a phased site counts its finished phases only; power added for a
+ * project counts once it's energized.
+ */
 export function poweredKw(site: Site, quarter: number): number {
-  if (!site.phases) return isReady(site, quarter) ? capacityKw(site) : 0
+  const pending = powerAddsKw(site) - powerAddsKw(site, quarter)
+  if (!site.phases)
+    return isReady(site, quarter) ? capacityKw(site) - pending : 0
   const done = site.phases.filter((q) => q <= quarter).length
   return Math.max(
     0,
     getTier(site.tier)!.phases!.kw *
       done *
       (flawEffect(site, 'capacity_mult') ?? 1) -
-      (site.soldKw ?? 0),
+      (site.soldKw ?? 0) +
+      powerAddsKw(site, quarter),
   )
 }
 
