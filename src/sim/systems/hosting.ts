@@ -140,10 +140,7 @@ export function startHosting(
   }
   if (converted > 0) {
     const costUsd = hostingCostUsd(converted)
-    const c = add(
-      converted,
-      state.quarter + 1 + CONTENT.hosting.buildQuarters,
-    )
+    const c = add(converted, state.quarter + 1 + CONTENT.hosting.buildQuarters)
     state.cash -= costUsd
     logEntry(state, 'log.hosting_started', {
       tier: site.tier,

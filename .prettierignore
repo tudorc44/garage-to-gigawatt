@@ -9,3 +9,4 @@ tests/golden
 sim-output
 staging
 tests/fixtures
+.claude

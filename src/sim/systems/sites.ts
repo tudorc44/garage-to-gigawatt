@@ -80,8 +80,7 @@ export function usedKw(state: GameState, siteId: string): number {
 /** The site's Act II region (owner decision B3): its own tag, else its tier's; the garage has none. */
 export function regionOf(site: Site): PowerRegion | undefined {
   return (site.region ?? BALANCE.act2Regions.byTier[site.tier]) as
-    | PowerRegion
-    | undefined
+    PowerRegion | undefined
 }
 
 /**

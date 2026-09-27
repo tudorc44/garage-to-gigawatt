@@ -103,7 +103,8 @@
     "gpu_gen1": 150,
     "gpu_gen2": 200,
     "s9": 120,
-    "s19pro": 350
+    "s19pro": 350,
+    "s21": 350
    },
    "source": "Hashboard repair $100–400; fans and PSUs $30–150 (repair-shop price lists, ≈)",
    "estimate": true

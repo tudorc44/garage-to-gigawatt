@@ -567,6 +567,19 @@ export function parseContent(raw: RawContent): Content {
       if (m.price_new[q] === undefined)
         problems.push(`machines.json › ${m.id}: no price_new for ${q}`)
     }
+    // Act II prices (owner B7): the used/new ratio comes from a model and quarter with both.
+    const from = m.act2_price?.used_ratio_from
+    if (from) {
+      const src = machinesFile.models.find((x) => x.id === from.model)
+      if (
+        !src ||
+        src.price_new[from.quarter] === undefined ||
+        src.price_used[from.quarter] === undefined
+      )
+        problems.push(
+          `machines.json › ${m.id}.act2_price: ${from.model} has no new and used price in ${from.quarter}`,
+        )
+    }
   }
 
   // Sites: every flaw must exist, and every year of Act I needs a power price.

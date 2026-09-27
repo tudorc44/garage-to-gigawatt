@@ -3,6 +3,7 @@
 import {
   CONTENT,
   act1ValueQuarter,
+  act2Quarter,
   type Machine,
   type MarketWeek,
 } from '../../content/index.ts'
@@ -44,14 +45,51 @@ export function revenuePerUnitDay(model: Machine, w: MarketWeek): number {
 }
 
 /**
+ * Act II prices for machines with an `act2_price` (owner decision B7): the quarter's $/TH tier
+ * (its first week, the Plan-phase price) × the machine's TH/s is the new price; used = new ×
+ * the used/new ratio of the model and quarter named in `used_ratio_from`. undefined outside
+ * Act II or for machines without Act II pricing (GPU rigs keep their held 2022Q3 prices).
+ */
+export function act2Prices(
+  model: Machine,
+  quarter: number,
+): { newUsd: number; usedUsd: number } | undefined {
+  const price = model.act2_price
+  if (!price || !act2Quarter(quarter)) return undefined
+  const perTh = marketWeek(quarter, 0)[`asic_price_usd_th_${price.tier}`]
+  if (perTh === null) return undefined
+  const from = getModel(price.used_ratio_from.model)!
+  const q = price.used_ratio_from.quarter
+  const newUsd = perTh * model.hashrate
+  return {
+    newUsd,
+    usedUsd: newUsd * (from.price_used[q]! / from.price_new[q]!),
+  }
+}
+
+/**
  * Purchase price this quarter, or undefined if it can't be bought (not out yet, or retail ended).
- * Machine prices end in 2022Q3: from 2022Q4 on the 2022Q3 prices hold.
+ * Act I prices come from machines.json. From 2022Q4 on, ASICs follow the $/TH tiers (act2Prices;
+ * an ASIC whose retail ended stays used-only; the S21's used market opens at act2_used_from);
+ * other machines keep their 2022Q3 prices.
  */
 export function buyPrice(
   model: Machine,
   quarter: number,
   condition: Condition,
 ): number | undefined {
+  const label = CONTENT.quarters[quarter]
+  const act2 = act2Prices(model, quarter)
+  if (act2) {
+    if (label < model.available_from) return undefined
+    if (condition === 'new')
+      return model.retail_new_ends && label > model.retail_new_ends
+        ? undefined
+        : act2.newUsd
+    return model.act2_used_from && label < model.act2_used_from
+      ? undefined
+      : act2.usedUsd
+  }
   const q = act1ValueQuarter(quarter)
   if (q < model.available_from) return undefined
   if (condition === 'new') return model.price_new[q]
@@ -70,8 +108,13 @@ export function buyPrice(
   return used
 }
 
-/** What one working unit sells for: the market's used price (2022Q3's from 2022Q4 on). */
+/**
+ * What one working unit sells for: the market's used price. In Act II, ASICs sell at their
+ * tier-based used price (even before a used market opens for buyers); others at 2022Q3's.
+ */
 export function sellPrice(model: Machine, quarter: number): number {
+  const act2 = act2Prices(model, quarter)
+  if (act2) return act2.usedUsd
   return model.price_used[act1ValueQuarter(quarter)] ?? 0
 }
 

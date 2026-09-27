@@ -255,6 +255,11 @@
    "price_source": "Bitmain shop batches 2017 ($1,265–2,320); secondary-market quotes (Kaboomracks, ASIC Miner Value archive) and Hashrate Index ASIC Price Index '>68 J/TH' tier from 2020 (≈)",
    "retail_new_ends": "2020Q1",
    "used_only_from": "2020Q2",
+   "act2_price": {
+    "tier": "old",
+    "used_ratio_from": { "model": "s9", "quarter": "2020Q1" },
+    "note": "Owner decision B7 (27 Sep 2026): Act II price = the market file's 'old' $/TH tier (>68 J/TH) × 13.5 TH/s; used only (retail ended 2020Q1), at its last retail quarter's used/new ratio (120 / 300)"
+   },
    "lead_time_quarters": {
     "default": 0,
     "2017Q4": 1,
@@ -343,7 +348,58 @@
     "2021Q4": 2,
     "2022Q1": 1
    },
-   "lead_time_source": "Bitmain futures batches sold 6–9 months forward during 2021; Riot/Marathon 10-Q purchase schedules (≈)"
+   "lead_time_source": "Bitmain futures batches sold 6–9 months forward during 2021; Riot/Marathon 10-Q purchase schedules (≈)",
+   "act2_price": {
+    "tier": "new",
+    "used_ratio_from": { "model": "s19pro", "quarter": "2022Q3" },
+    "note": "Owner decision B7 (27 Sep 2026): Act II price = the market file's 'new' $/TH tier (<38 J/TH) × 110 TH/s; used = new × its 2022Q3 used/new ratio (2,900 / 3,300)"
+   }
+  },
+  {
+   "id": "s21",
+   "name": "Antminer S21",
+   "coin": "BTC",
+   "available_from": "2024Q1",
+   "real_basis": "Bitmain Antminer S21 200 TH/s, launched Sep 2023 (World Digital Mining Summit, Hong Kong), shipping 2024",
+   "hashrate_ths": {
+    "value": 200,
+    "source": "Bitmain product page (m.bitmain.com, Bitcoin Miner S21): 200 TH/s; checked 27 Sep 2026",
+    "estimate": false
+   },
+   "power_kw": {
+    "value": 3.5,
+    "source": "Bitmain product page: 3,500 W (one reseller lists 3,550 W; Bitmain's figure used)",
+    "estimate": false
+   },
+   "efficiency_j_per_th": {
+    "value": 17.5,
+    "source": "Bitmain product page: 17.5 J/T",
+    "estimate": false
+   },
+   "lifespan_years": {
+    "value": 5,
+    "source": "≈ the S19 Pro's value (proxy; no published figure)",
+    "estimate": true
+   },
+   "annual_failure_rate": {
+    "value": 0.06,
+    "source": "≈ the S19 Pro's value (proxy; no published figure)",
+    "estimate": true
+   },
+   "heat_per_unit_garage": 15,
+   "price_new": {},
+   "price_used": {},
+   "price_source": "Act II only: the market file's 'latest' $/TH tier (<20 J/TH) × 200 TH/s (owner decision B7)",
+   "act2_price": {
+    "tier": "latest",
+    "used_ratio_from": { "model": "s19pro", "quarter": "2022Q3" },
+    "note": "Owner decision B7 (27 Sep 2026): new from 2024Q1 at the 'latest' tier; used from 2025Q1 at the S19 Pro's 2022Q3 used/new ratio (the closest Act I machine)"
+   },
+   "act2_used_from": "2025Q1",
+   "lead_time_quarters": {
+    "default": 0
+   },
+   "game_note": "Owner decision B7 (27 Sep 2026). heat_per_unit_garage, lifespan, failure rate and repair cost are the S19 Pro's (proxies)."
   }
  ],
  "infrastructure_per_mw": {

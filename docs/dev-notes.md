@@ -1066,6 +1066,17 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   live quarter starts, so a default costs the whole quarter's fees and the kW can be re-let from the next Plan phase;
   re-let clients move in at once (nothing to convert); re-letting still costs the hosting Bandwidth (1).
 - **M3.3** Act II ASIC prices from the $/TH tiers and the Antminer S21 (B7).
+  **Done.** `machines.json`: `act2_price { tier, used_ratio_from }` for the S9 ("old", ratio of 2020Q1: 120/300) and
+  the S19 Pro ("new", 2022Q3: 2,900/3,300), and a new **`s21`** (200 TH/s, 3.5 kW, "latest" tier, new from 2024Q1,
+  `act2_used_from` 2025Q1, ratio from the S19 Pro's 2022Q3). `market.ts` › `act2Prices`: the quarter's first-week
+  $/TH tier × TH/s = new; used = new × the ratio; `buyPrice` / `sellPrice` use it in Act II (the S9 stays used-only;
+  GPU rigs keep their 2022Q3 prices). The loader checks each `used_ratio_from` has both prices.
+  **S21 spec check (27 Sep 2026):** Bitmain's product page lists 200 TH/s, 3,500 W, 17.5 J/T (m.bitmain.com, "Bitcoin
+  Miner S21"); launched Sep 2023 at the World Digital Mining Summit (Hashrate Index). One reseller lists 3,550 W;
+  Bitmain's 3,500 W is used. Decisions (mine, reversible): the S21's lifespan (5 y), failure rate (6%/y), garage Heat
+  (15) and repair cost ($350) are the S19 Pro's (no published figures); its used/new ratio is the S19 Pro's 2022Q3
+  one; prices use the quarter's first week (the Plan-phase price, like the coins); selling an S21 before 2025Q1 pays
+  the used price anyway. `.claude` is now in `.prettierignore` (the formatter had reflowed the owner's settings).
 - **M3.4** Re-run the M2 sims and compare with scope §5.
 - **M3.5** Projects: the model, content (tenant cards, conversions, GPUs, cap rates, backlog weights), opening a
   project, the Power slot (existing MW), the Tenant slot (tenant offers, spot), the Capital slot (own cash).

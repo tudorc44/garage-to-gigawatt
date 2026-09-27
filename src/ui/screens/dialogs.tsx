@@ -1770,8 +1770,10 @@ export function HostingDialog({ state, act, onClose }: DialogProps) {
                       {t('ui.hosting.convert', {
                         // What the sim would charge (re-let kW are free); an estimate if not allowed.
                         value: fmt.money(
-                          -(cashChange(state, a) ??
-                            -(amount / 1000) * x.costPerMwUsd),
+                          -(
+                            cashChange(state, a) ??
+                            -(amount / 1000) * x.costPerMwUsd
+                          ),
                         ),
                       })}
                       <Pips

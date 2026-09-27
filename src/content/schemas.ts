@@ -202,6 +202,18 @@ export const machineSchema = z
     price_new: priceCurve,
     price_used: priceCurve,
     retail_new_ends: quarterId.optional(),
+    /**
+     * Act II prices (owner decision B7): the market file's $/TH tier × the machine's TH/s; used =
+     * new × the used/new ratio of `used_ratio_from` (a model and an Act I quarter with both prices).
+     */
+    act2_price: z
+      .object({
+        tier: z.enum(['old', 'mid', 'new', 'latest']),
+        used_ratio_from: z.object({ model: z.string(), quarter: quarterId }),
+      })
+      .optional(),
+    /** Act II: the first quarter you can buy it used (before that, new only). */
+    act2_used_from: quarterId.optional(),
     lead_time_quarters: z
       .record(
         z.string().regex(/^(default|\d{4}Q[1-4])$/),

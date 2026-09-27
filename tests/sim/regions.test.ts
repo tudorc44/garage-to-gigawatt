@@ -70,11 +70,12 @@ describe('regions for Act I sites (owner B3)', () => {
     )
     // Texas: fixed = ERCOT; index keeps its Act I discount to fixed (2.8¢ vs 3.5¢).
     const e = region('2024Q2').ercot
-    expect(normalPriceUsdKwh(site('texas_site'), q('2024Q2'), 'fixed')).toBeCloseTo(e, 10)
-    expect(normalPriceUsdKwh(site('texas_site'), q('2024Q2'), 'index')).toBeCloseTo(
-      e * 0.8,
-      10,
-    )
+    expect(
+      normalPriceUsdKwh(site('texas_site'), q('2024Q2'), 'fixed'),
+    ).toBeCloseTo(e, 10)
+    expect(
+      normalPriceUsdKwh(site('texas_site'), q('2024Q2'), 'index'),
+    ).toBeCloseTo(e * 0.8, 10)
     // The scouting multiplier still applies.
     expect(
       normalPriceUsdKwh(site('own_site', { powerPriceMult: 1.1 }), q('2024Q2')),

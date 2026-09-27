@@ -34,17 +34,19 @@ describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
     expect(act1ValueQuarter(Q4_2026)).toBe('2022Q3')
   })
 
-  it('machine prices and lead times (machines.json)', () => {
+  it('GPU rig prices and every lead time hold; ASIC prices follow the Act II tiers (owner B7, M3.3)', () => {
     for (const m of CONTENT.machines) {
+      expect(sellPrice(m, Q4_2022)).toBeGreaterThan(0)
+      for (const q of [Q4_2022, Q4_2026])
+        expect(leadTimeQuarters(m, q, 'new')).toBe(
+          leadTimeQuarters(m, Q3_2022, 'new'),
+        )
+      if (m.act2_price) continue // ASICs: tests/sim/asicPrices.test.ts
       for (const q of [Q4_2022, Q4_2026]) {
         expect(buyPrice(m, q, 'used')).toBe(buyPrice(m, Q3_2022, 'used'))
         expect(buyPrice(m, q, 'new')).toBe(buyPrice(m, Q3_2022, 'new'))
         expect(sellPrice(m, q)).toBe(sellPrice(m, Q3_2022))
-        expect(leadTimeQuarters(m, q, 'new')).toBe(
-          leadTimeQuarters(m, Q3_2022, 'new'),
-        )
       }
-      expect(sellPrice(m, Q4_2022)).toBeGreaterThan(0)
     }
     // The S9's retail sale ended in 2020Q1, and stays ended.
     expect(buyPrice(getModel('s9')!, Q4_2022, 'new')).toBeUndefined()
