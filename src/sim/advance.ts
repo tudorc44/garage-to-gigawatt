@@ -3,7 +3,7 @@
 // treasury → hosting, reservation and AI projects → Heat → loans → margin call → curtailment alert →
 // failure wave → project alerts → neighbour complaint → event card → price alert.
 // After week 13 the quarter ends (report, or game over).
-import { BALANCE, act2Quarter } from '../content/index.ts'
+import { BALANCE } from '../content/index.ts'
 import { logEntry, roundCents, type GameState } from './state.ts'
 import { checkPriceAlert } from './systems/interrupts.ts'
 import { marketWeek, previousMarketWeek } from './systems/market.ts'
@@ -40,13 +40,6 @@ export function advance(state: GameState): GameState {
   const failures = rollFailures(s)
   const curtailed = applyCurtailment(s, mineWeek(s, w))
   const lots = curtailed.lots
-  // Act II: remember which batches ran (the others pay the reservation at quarter end).
-  if (act2Quarter(s.quarter))
-    for (const l of lots)
-      if (l.running) {
-        const lot = s.machines.find((x) => x.id === l.lotId)
-        if (lot) lot.lastRanQuarter = s.quarter
-      }
   const money = settleWeek(s, lots, w)
   const hosting = settleHostingWeek(s)
   const reservationUsd = payReservationWeek(s)

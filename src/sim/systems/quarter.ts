@@ -28,7 +28,6 @@ import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
-import { paySwitchedOffReservation } from './mwUse.ts'
 import { serviceFacilities } from './facilities.ts'
 import { ratingInputs } from './rating.ts'
 import {
@@ -49,9 +48,6 @@ import { aiEbitdaUsd, ebitdaUsd, valuationUsd } from './valuation.ts'
 export function endQuarter(state: GameState): void {
   const w = marketWeek(state.quarter, BALANCE.weeksPerQuarter - 1)
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
-  const offUsd = paySwitchedOffReservation(state)
-  state.quarterStats.reservationUsd += offUsd
-  state.quarterStats.powerCostUsd += offUsd
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
   state.quarterStats.interestUsd += service.interestUsd

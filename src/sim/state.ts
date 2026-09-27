@@ -75,8 +75,6 @@ export interface MachineLot {
   failed: number
   /** Quarter index when the lot starts earning (the quarter after delivery). */
   earnsFromQuarter: number
-  /** Act II: the last quarter the batch ran at least one week (for the reservation on switched-off MW). */
-  lastRanQuarter?: number
 }
 
 /** An equipment loan, secured on machines, repaid in equal weekly slices plus interest. */

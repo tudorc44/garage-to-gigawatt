@@ -162,6 +162,8 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 
 ### M5 progress
 - M5.0a: done.
+- M5.0b: the reservation on switched-off machines removed (and the batches' `lastRanQuarter` with it); idle and
+  building MW still pay 25%.
 
 ## Next
 

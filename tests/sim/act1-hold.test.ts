@@ -95,8 +95,8 @@ describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
 
 describe('the Act I systems keep running through Act II', () => {
   it('plays a raise-climb game through the act boundary to the end of 2026Q4 without errors', () => {
-    // playGame throws if the bot sends an action the game refuses. Seed 2: since the reservation on
-    // switched-off machines (M4.0a), seed 1's raise-climb goes bust in 2025 with its idle S9s.
+    // playGame throws if the bot sends an action the game refuses. (Seed 2 since M4.0a, when seed 1's
+    // raise-climb went bust in 2025 with its idle S9s.)
     const s = playGame(2, BOTS['raise-climb'], { through: 2 }).state
     expect(s.phase).toBe('chapter')
     expect(s.act).toBe(2)

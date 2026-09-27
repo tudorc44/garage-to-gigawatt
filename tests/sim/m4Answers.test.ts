@@ -1,5 +1,6 @@
 // The owner's answers to the M3 questions that change existing rules (M4.0a): the H200 rent, the
-// reservation on switched-off machines' MW, and live AI halls at half of mining's Heat load.
+// reservation on switched-off machines' MW (reverted by the M4 answers, M5.0b), and live AI halls
+// at half of mining's Heat load.
 import { describe, expect, it } from 'vitest'
 import { BALANCE, CONTENT, act2Quarter } from '../../src/content/index.ts'
 import type { GameState, MachineLot } from '../../src/sim/state.ts'
@@ -42,24 +43,28 @@ function withLot(model: string, count: number, label = '2023Q3'): GameState {
   return s
 }
 
-describe('the power reservation on switched-off machines (owner, M3 answers)', () => {
+describe('switched-off machines pay no power reservation (the M4.0a rule, reverted in M5.0b)', () => {
   const full = (s: GameState) =>
     20_000 *
     BALANCE.powerReservation.hoursPerQuarter *
     powerPriceUsdKwh(s.sites[1], s.quarter) *
     BALANCE.powerReservation.share
+  const kw = (model: string) =>
+    2000 * CONTENT.machines.find((m) => m.id === model)!.power_kw
 
-  it('S9s switched off all quarter pay it like idle MW: the whole 20 MW is reserved', () => {
+  it('S9s switched off all quarter: only the MW they leave empty are reserved', () => {
     const s = withLot('s9', 2000)
     const r = playQuarter(s).reports.at(-1)!
-    expect(r.reservationUsd).toBeCloseTo(full(s), 0)
+    expect(r.reservationUsd).toBeCloseTo(full(s) * (1 - kw('s9') / 20_000), 0)
   })
 
-  it('machines that ran pay no reservation on their kW', () => {
+  it('machines that ran pay none on their kW either', () => {
     const s = withLot('s19pro', 2000)
     const r = playQuarter(s).reports.at(-1)!
-    expect(r.reservationUsd).toBeLessThan(full(s) * 0.9)
-    expect(r.reservationUsd).toBeGreaterThan(0) // the rest of the site sits idle
+    expect(r.reservationUsd).toBeCloseTo(
+      full(s) * (1 - kw('s19pro') / 20_000),
+      0,
+    )
   })
 
   it('not in Act I', () => {
