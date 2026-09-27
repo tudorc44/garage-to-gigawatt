@@ -34,8 +34,9 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 
 ## Key docs (read before bigger tasks)
 
-- `docs/dev-notes.md`: **read this first in a new session.** Where the build stands, every decision made so
-  far (confirmed or not), balance findings, open questions and what's next.
+- `docs/dev-notes.md`: **read this first in a new session.** Where the build stands, the rules and decisions in
+  force, open questions, STOPPED items and what's next (kept under ~250 lines). The finished history (every step,
+  balance review and milestone in detail) is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 - `docs/alpha-0.1-scope.md`: **source of truth for scope.** What's in, what's out, cut order, exit checklist.
 - `docs/content-pack-review.md`: its §4 amendments (A1–A9) **override** the scope doc where they differ.
 - `docs/player-actions-and-pacing.md` (build order in §7) and `docs/act-i-content-pack.md` (content and data notes).
@@ -138,9 +139,12 @@ All other rules still apply.
 
 - **Work through the whole milestone without pausing between sub-steps.** Split it into sub-steps yourself
   (M2.1, M2.2 …) and write the split into `docs/dev-notes.md` before starting.
-- **After each sub-step:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes briefly and
-  commit on `act2` with the prefix `M<n>.<k>: `. Never push, never force-push, never rewrite history, never commit
-  to `main`, never touch `staging/`.
+- **After each sub-step:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes with **at
+  most 3 lines** and commit on `act2` with the prefix `M<n>.<k>: `. Never push, never force-push, never rewrite
+  history, never commit to `main`, never touch `staging/`.
+- **Run the sims only at the end of a milestone,** unless the sub-step exists to check balance.
+- **Read `docs/dev-notes-archive.md` only when a task needs the history** (finished steps, old balance reviews,
+  sub-step details); `docs/dev-notes.md` has where the build stands and the rules in force.
 - **Change files only with the Edit and Write tools,** never with `python3`, `node`, `sed` or heredoc scripts (those
   need an approval every time and stop batch mode). Use the shell only for `npm`, `git` and read-only commands.
 - **Decide small things yourself:** file layout, naming, extra tests, UI details within the wireframes, and values
