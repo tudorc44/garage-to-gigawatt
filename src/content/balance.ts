@@ -46,6 +46,16 @@ export const BALANCE = {
     ] as readonly string[],
   },
 
+  /** Hosting (Act II, scope 0.2 §2.4). Its cost and rates are in conversions.json and tenants.json. */
+  hosting: {
+    /** Contract term in quarters (scope 0.2 §2.4: "4-quarter contracts"); it renews at the then-current rate. */
+    termQuarters: 4,
+    /** Ending a contract mid-term costs this many quarters of fees (doc 18 §2.3). */
+    earlyEndFeeQuarters: 1,
+    /** Converting MW to hosting (scope 0.2 §2.6: building or upgrading a site costs 1). */
+    bandwidth: 1,
+  },
+
   sites: {
     /** Tiers you can build straight away, without scouting first (scope §2.5: "Cash"). */
     noScoutingNeeded: ['small_unit'],

@@ -164,6 +164,25 @@ function showPlan(s: GameState) {
     else if (underMoratorium(s, site.id)) line += t('play.site_moratorium')
     console.log(line)
   })
+  // Act II: hosting contracts (scope 0.2 §2.4).
+  s.hosting.forEach((h, i) => {
+    const site = s.sites.find((x) => x.id === h.siteId)
+    say(
+      h.readyQuarter > s.quarter
+        ? 'play.hosting_converting'
+        : 'play.hosting_line',
+      {
+        n: i + 1,
+        tier: name('site', site?.tier ?? ''),
+        hostedKw: h.kw,
+        rate: fmt.cents(h.rateUsdKwh),
+        quarter:
+          CONTENT.quarters[
+            h.readyQuarter > s.quarter ? h.readyQuarter : h.termEndQuarter
+          ] ?? '—',
+      },
+    )
+  })
 
   console.log()
   say('play.machines')
@@ -419,6 +438,16 @@ function parse(
       const site = s.sites[(rest[1] ? num(1) : 1) - 1]
       if (!site) return 'play.bad_number'
       return { type: 'BID_AUCTION', bidUsd: num(0), siteId: site.id }
+    }
+    case 'host': {
+      const site = item(s.sites, 0)
+      return site
+        ? { type: 'HOST_START', siteId: site.id, kw: num(1) }
+        : 'play.bad_number'
+    }
+    case 'unhost': {
+      const h = item(s.hosting, 0)
+      return h ? { type: 'HOST_END', contractId: h.id } : 'play.bad_number'
     }
     case 'leave': {
       const site = item(s.sites, 0)

@@ -9,6 +9,8 @@ import marketAct2Raw from './market_weekly_act2.json' with { type: 'json' }
 import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
+import conversionsRaw from './conversions.json' with { type: 'json' }
+import tenantsRaw from './tenants.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -20,6 +22,9 @@ import {
   auctionRulesSchema,
   capitalAct2FileSchema,
   capitalFileSchema,
+  conversionsFileSchema,
+  flatCapexSchema,
+  tenantsFileSchema,
   curtailmentRulesSchema,
   heatFileSchema,
   hiresFileSchema,
@@ -169,6 +174,15 @@ export interface Content {
   acts: ActSpan[]
   /** Act II's quarterly market, in quarter order (index 0 = 2022Q4). See act2Quarter(). */
   act2Market: Act2Quarter[]
+  /** Hosting (scope 0.2 §2.4): the same-site conversion and the all-in rate by year. */
+  hosting: {
+    /** conversions.json › mining_to_hosting_same_site. */
+    conversionCapexUsdMw: number
+    /** Build quarters after the order quarter (0: live next quarter). */
+    buildQuarters: number
+    /** tenants.json › hosting_market_2022_2024.rate_usd_kwh, by year. */
+    rateUsdKwhByYear: Record<string, number>
+  }
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -253,6 +267,8 @@ export interface RawContent {
   marketQuarterlyAct2: unknown
   capital: unknown
   capitalAct2: unknown
+  conversions: unknown
+  tenants: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -311,6 +327,12 @@ export function parseContent(raw: RawContent): Content {
     capitalAct2FileSchema,
     raw.capitalAct2,
   )
+  const conversionsFile = check(
+    'conversions.json',
+    conversionsFileSchema,
+    raw.conversions,
+  )
+  const tenantsFile = check('tenants.json', tenantsFileSchema, raw.tenants)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
@@ -356,6 +378,8 @@ export function parseContent(raw: RawContent): Content {
     !marketQuarterlyAct2Rows ||
     !capitalFile ||
     !capitalAct2File ||
+    !conversionsFile ||
+    !tenantsFile ||
     !rivalsFile ||
     !auction ||
     !curtailment ||
@@ -485,6 +509,29 @@ export function parseContent(raw: RawContent): Content {
       return a.v + ((b.v - a.v) * (i - a.i)) / (b.i - a.i)
     })
   }
+  // Hosting: the same-site conversion's flat cost, and a rate for Act II's first year at least.
+  const hostingConversion = conversionsFile.conversions.find(
+    (c) => c.id === 'mining_to_hosting_same_site',
+  )
+  const hostingCapex = flatCapexSchema.safeParse(
+    hostingConversion?.capex_usd_mw,
+  )
+  if (!hostingConversion || !hostingCapex.success)
+    problems.push(
+      'conversions.json: needs mining_to_hosting_same_site with a capex_usd_mw { value }',
+    )
+  const hostingRates = tenantsFile.hosting_market_2022_2024.rate_usd_kwh
+  const firstAct2Year = act2Quarters[0].slice(0, 4)
+  if (hostingRates[firstAct2Year] === undefined)
+    problems.push(
+      `tenants.json › hosting_market_2022_2024.rate_usd_kwh: no rate for ${firstAct2Year}`,
+    )
+  const hosting: Content['hosting'] = {
+    conversionCapexUsdMw: hostingCapex.success ? hostingCapex.data.value : 0,
+    buildQuarters: hostingConversion?.build_quarters ?? 0,
+    rateUsdKwhByYear: hostingRates,
+  }
+
   const act2Market = marketQuarterlyAct2Rows.map((r, i) =>
     act2QuarterOf(r, {
       mining: interpolated.mining[i] ?? 0,
@@ -689,6 +736,7 @@ export function parseContent(raw: RawContent): Content {
     market,
     acts,
     act2Market,
+    hosting,
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
@@ -858,6 +906,8 @@ export const CONTENT: Content = parseContent({
   marketQuarterlyAct2: marketQuarterlyAct2Raw,
   capital: capitalRaw,
   capitalAct2: capitalAct2Raw,
+  conversions: conversionsRaw,
+  tenants: tenantsRaw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

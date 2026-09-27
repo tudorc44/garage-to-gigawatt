@@ -935,9 +935,37 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
   checks that fields added since a save was made get a new game's value and everything else is unchanged.
 - **M2.4** The hosting unit: mining → hosting on the same site ($0.1M/MW, live next quarter), 4-quarter contracts at
   the year's all-in rate, fees and power in EBITDA, Heat load, ending a contract; terminal commands.
+  **Done.** `systems/hosting.ts`; content from `src/content/conversions.json` (mining_to_hosting_same_site: $100K/MW,
+  0 build quarters) and `src/content/tenants.json` (hosting rate by year: 2022 $0.085, 2023 $0.075, 2024 $0.060),
+  both copies of docs/act2-content (only these parts are read so far); `balance.ts` › hosting: term 4 quarters (scope
+  §2.4), early-end fee 1 quarter of fees (doc 18 §2.3), 1 Bandwidth. Actions `HOST_START { siteId, kw }` and
+  `HOST_END { contractId }` (Plan phase); terminal `host <site#> <kW>` / `unhost <#>` and hosting lines on the Plan
+  screen. Each week, live contracts earn kW × 168 h × uptime × rate and pay the same kWh at the site's power price
+  (in the power cost line); fees are `hostingFeesUsd` in the quarter totals and the report, and count toward
+  EBITDA (so the valuation, at the mining multiple) and the site tier's margin. Contracts renew at quarter start
+  when their term has run out. Hosted machines add to the site's Heat load and stop in a Heat shutdown; a Heat 70
+  moratorium blocks new hosting; leaving a site ends its hosting.
+  Decisions (mine, reversible): only energized kW that no machine or contract has taken can be converted (sell
+  machines first to free more; "mining → hosting" = the same ASIC site); never the garage; the rate is the one for
+  the year the clients move in, fixed for the term; after 2024 the 2024 rate holds; hosted machines run all week
+  (doc 18's ~$0.5–0.75M gross per MW-year matches 100% at $0.085); ending is free while converting or in the first
+  quarter of a renewed term, else a quarter of fees; hosting isn't curtailed by the Texas grid or Uri (only your
+  own machines are); leaving a site ends its hosting with no extra fee.
+  **Golden change (explained):** the 11 goldens gain `"hostingFeesUsd": 0` in every report and the quarter
+  totals (233 added lines, nothing else). The v1-save test now checks recursively: every old value kept, and new
+  fields only from a known list (`hosting`, `quarterStats.hostingFeesUsd`, `reports.*.hostingFeesUsd`).
 - **M2.5** UI: the dashboard's MW-by-use bar, the top bar's rating / backlog placeholders and H100 spot chip, an
   Act II market strip (A2-03), the MW bar per site, and the hosting dialog.
 - **M2.6** Sim: a hosting-switcher bot and Act II numbers from the sim-runner for the milestone report.
+
+
+### STOPPED (M2)
+- **Hosting client defaults in winters** (scope 0.2 §2.4: "client default risk in winters"): no content file has a
+  rate or size for it (tenants.json only names Compute North, Sep 2022). Needs a number from the design thread,
+  e.g. a chance per winter quarter per contract and what a default costs (lost fees, early termination).
+  Hosting works without it.
+- **Idle MW's power reservation** (scope 0.2 §2.4: "Idle: pays power reservation + rent"): no content file gives the
+  reservation charge. Idle MW pay the site's rent as in Act I, no reservation yet. Needs a number (e.g. $/kW-month).
 
 ## Next
 

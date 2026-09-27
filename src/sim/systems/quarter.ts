@@ -26,6 +26,7 @@ import { debtUsd } from './loans.ts'
 import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
+import { renewHosting } from './hosting.ts'
 import { ebitdaUsd, valuationUsd } from './valuation.ts'
 
 /**
@@ -108,6 +109,7 @@ function buildReport(
     soldUsd: st.soldUsd,
     treasurySoldUsd: st.treasurySoldUsd,
     gridCreditsUsd: st.gridCreditsUsd,
+    hostingFeesUsd: st.hostingFeesUsd,
     rateHikeUsd: st.rateHikeUsd,
     stormChargeUsd: st.stormChargeUsd,
     salariesUsd: st.salariesUsd,
@@ -133,6 +135,7 @@ export function startNextQuarter(state: GameState): void {
   state.quarter++
   state.week = 0
   state.phase = 'plan'
+  renewHosting(state)
   state.bandwidth = bandwidthForQuarter(state) // unused Bandwidth is lost
   state.interruptsThisQuarter = 0
   state.curtailment = null

@@ -83,6 +83,7 @@ import {
 } from './systems/loans.ts'
 import { getModel, marketWeek } from './systems/market.ts'
 import { sellTreasury, treasuryValueUsd } from './systems/treasury.ts'
+import { endHosting, hostingBlocker, startHosting } from './systems/hosting.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
   baseCapexUsd,
@@ -126,6 +127,10 @@ export type Action =
   | { type: 'BUILD_SITE'; tier: string }
   /** Break the site's lease: its machines are sold, a penalty is paid, rent stops. */
   | { type: 'LEAVE_SITE'; siteId: string }
+  /** Act II: convert free energized kW at a site to hosting (conversions.json cost, 1 Bandwidth). */
+  | { type: 'HOST_START'; siteId: string; kw: number }
+  /** Act II: end a hosting contract (a quarter of fees mid-term; free while converting or renewing). */
+  | { type: 'HOST_END'; contractId: string }
   /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
   | { type: 'SELL_TREASURY'; coin: Coin; pct: number }
   /** Talk to the neighbours at a site: cash + 1 Bandwidth for goodwill (heat.json outreach). */
@@ -657,6 +662,16 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'REPAY_CRYPTO_LOAN':
       return repayCryptoLoan(s)
 
+    case 'HOST_START': {
+      const blocker = hostingBlocker(s, a.siteId, a.kw)
+      if (blocker) return blocker
+      startHosting(s, a.siteId, a.kw)
+      return
+    }
+
+    case 'HOST_END':
+      return endHosting(s, a.contractId)
+
     case 'LEAVE_SITE': {
       const site = s.sites.find((x) => x.id === a.siteId)
       if (!site) return fail('error.unknown_site')
@@ -675,6 +690,8 @@ function run(s: GameState, a: Action): Message | undefined {
         logEntry(s, 'log.sold', { count, model: lot.model, valueUsd })
       }
       s.cash -= penaltyUsd
+      // Hosting there ends with the lease (the clients leave with it; no separate fee).
+      s.hosting = s.hosting.filter((h) => h.siteId !== site.id)
       s.sites = s.sites.filter((x) => x !== site)
       delete s.siteHeat[site.id]
       logEntry(s, 'log.site_left', { tier: site.tier, penaltyUsd })

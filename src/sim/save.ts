@@ -97,6 +97,7 @@ export function restoreSave(raw: unknown): Loaded {
   state.reports = state.reports.map((r) => ({
     ...r,
     salariesUsd: r.salariesUsd ?? 0,
+    hostingFeesUsd: r.hostingFeesUsd ?? 0,
     marginByTier: r.marginByTier ?? {},
   }))
   // Saves from before phased Texas had one construction loan (or none).

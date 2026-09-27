@@ -1,0 +1,99 @@
+{
+ "schema_version": 1,
+ "conversions": [
+  {
+   "id": "mining_to_hosting_same_site",
+   "label": "Mining MW -> hosting on the same site (third-party ASICs)",
+   "capex_usd_mw": {"value": 100000, "source": "Alpha 0.2 scope v1.0 §2.4 / §7 [P2]: hosting ASICs on a site already built for ASICs needs almost no work (~$0.1M/MW); ready next quarter", "estimate": true},
+   "build_quarters": 0,
+   "carries_over": ["substation", "land", "permits", "switchgear", "ASIC racks and busbar layout"],
+   "does_not_carry_over": [],
+   "basis": "doc 18 §16.5 [P2]: the pack's $1.5-3M/MW applies to converting GPU halls, not ASIC sites"
+  },
+  {
+   "id": "gpu_hall_to_hosting",
+   "label": "GPU hall -> hosting (third-party ASICs)",
+   "fix": "Alpha 0.2 scope v1.0 §7: relabelled from the pack's mining_to_hosting (id and label). This cost is for converting a GPU hall (e.g. the Merge 'hosting' choice), not an ASIC site; for that see mining_to_hosting_same_site.",
+   "capex_usd_mw": {"2022Q4": 1500000, "2023Q4": 1800000, "2024Q4": 2200000, "2025Q4": 2600000, "2026Q3": 3000000,
+     "source": "≈ pure electrical/mechanical retrofit, distinct from a compute-ready shell; Cipher's 313MW priced at $2.9M/MW in the market (Jun2026, sourced) sits at the top of this band", "estimate": true},
+   "build_quarters": 1,
+   "carries_over": ["substation", "land", "permits", "some switchgear"],
+   "does_not_carry_over": ["ASIC-specific busbar layout is fine for hosting (still ASICs)"],
+   "basis": "Core Scientific/Cipher hosting-for-others deals 2022-24; Hashrate Index hosting-rate reporting"
+  },
+  {
+   "id": "mining_or_idle_to_ai_shell_retrofit",
+   "label": "Mining/idle MW -> AI shell (retrofit: liquid cooling + electrical)",
+   "capex_usd_mw": {"2022Q4": 6000000, "2023Q4": 7000000, "2024Q4": 8000000, "2025Q4": 9000000, "2026Q3": 10000000,
+     "source": "Measured AI substack: IREN $6-7M/MW all-in, Riot Rockdale $3.6M/MW (cheapest disclosed), Core Scientific Austin 16MW for CoreWeave comparable; PUE moves from <1.05 (mining) to 1.35-1.40 (HPC)", "estimate": false},
+   "build_quarters": 3,
+   "carries_over": ["substation", "land", "permits", "some transformers"],
+   "does_not_carry_over": ["cooling (air->liquid)", "rack density/redundancy", "fibre (must add)"],
+   "basis": "IREN, Riot (Rockdale AMD lease Jan 2026), Core Scientific Austin retrofit case studies"
+  },
+  {
+   "id": "greenfield_ai_shell",
+   "label": "New AI shell (greenfield, energized land)",
+   "capex_usd_mw": {"2022Q4": 10000000, "2023Q4": 11000000, "2024Q4": 12500000, "2025Q4": 15000000, "2026Q3": 18000000,
+     "source": "irecruit.co 2026 benchmarks: national avg $11.3M/MW shell-and-core; AI-optimized tier $15-20M+/MW; Applied Digital ND disclosed $10-13M/MW; historical trend $7M/MW (2020) -> $11-20M/MW (2026)", "estimate": false},
+   "build_quarters": 5,
+   "carries_over": [],
+   "does_not_carry_over": ["nothing -- built from bare land"],
+   "basis": "irecruit.co 2026 construction-cost benchmarks; Applied Digital investor disclosures"
+  },
+  {
+   "id": "shell_to_fullstack",
+   "label": "AI shell -> full stack (add owned GPUs)",
+   "capex_usd_mw_incremental": {"2022Q4": 18000000, "2023Q4": 20000000, "2024Q4": 24000000, "2025Q4": 28000000, "2026Q3": 30000000,
+     "source": "≈ triangulated from GPU purchase pricing (gpus.json) x gpus-per-MW, no single clean company disclosure found; total full-stack all-in (shell+GPU) implied ~$28-45M/MW matches 01-02-industry-and-timeline.md A.4c", "estimate": true},
+   "build_quarters_additional": 1,
+   "gating_resource": "GPU allocation queue (2023-24 shortage; see gpus.json lead_time_weeks)",
+   "basis": "derived; no company publishes a clean 'shell to full-stack' delta -- flagged as the pack's single weakest-sourced build-cost line, recommend treating as an estimate to be tuned in playtesting"
+  },
+  {
+   "id": "pilot_cluster",
+   "label": "Pilot cluster: a small full-stack GPU cluster, spot-only",
+   "mw_min": 0.5, "mw_max": 2.0, "mw_step": 0.5,
+   "available_from": "2023Q1",
+   "tenant_slot": "none (spot-only: no tenant needed)",
+   "gpu": "h100",
+   "gpus_per_mw": 750,
+   "capex_usd_mw": {"formula": "gpus_per_mw x the quarter's H100 unit price (gpus.json) + mining_or_idle_to_ai_shell_retrofit capex for that quarter (this file)",
+     "check_2023": [31000000, 33000000],
+     "check_note": "Open: with the pack's own prices the formula gives $30.75M/MW in 2023Q3 (750 x $32,000 + $6.75M) and $30.25M in 2023Q4, just under the scope's $31-33M. gpus.json has no H100 price before 2023Q3, but the pilot opens in 2023Q1 (the loader could hold the 2023Q3 price earlier).",
+     "source": "Alpha 0.2 scope v1.0 §2.5 [P3], owner decision 27 Sep 2026: 750 H100s ~ $24-26M + retrofit ~ $6.75M (2023Q3) ~ $31-33M per MW, before networking; a 0.5 MW pilot ~ $16M", "estimate": true},
+   "build_quarters": 1,
+   "gating_resource": "GPU allocation queue (interrupts_act2.json gpu_allocation, 2023-24)",
+   "financing": "the Act I equipment loan, secured on the GPUs (DDTLs need a rated tenant, so they are not available to a pilot)",
+   "revenue": {"price": "H100 neocloud rental price (market_quarterly.csv gpu_h100_neocloud_usd_hr; gpus.json h100 rental_usd_hr.neocloud_on_demand)",
+     "utilisation_base": 0.70,
+     "utilisation_bonus_by_know_how": {"0": 0, "1": 0, "2": 0.05, "3": 0.10},
+     "source": "Alpha 0.2 scope v1.0 §2.5, owner decision 27 Sep 2026: neocloud price x utilisation, starting at 70% and rising with GPU know-how (+5 points at 2, +10 at 3); tune in the sim", "estimate": true},
+   "basis": "doc 18 §5.5 / §16.5 [P3]; the scope's pilot-timing balance check (§5): a 1 MW pilot from 2023Q3 returns >= 1.7x by 2026Q4, one from 2025Q2 <= 1.3x"
+  },
+  {
+   "id": "hosting_to_ai_shell",
+   "label": "Existing hosting (Merge 'hosting' head start) -> AI shell",
+   "capex_usd_mw_discount_pct": 25,
+   "build_quarters_discount": 1,
+   "basis": "18-act-ii-design.md ⚙ value confirmed: hosting sites are electrically/mechanically closer to AI-ready than raw mining sites, so the design's -25% capex / -1 quarter discount is directionally right and is CONFIRMED as the game value"
+  }
+ ],
+ "grid_upgrade": {
+  "capex_usd_mw": {"value": 750000, "source": "≈ $0.5-1M/MW per 18-act-ii-design.md §5.3; consistent with substation/transformer cost data in Act I sites.json scaled up", "estimate": true},
+  "build_quarters_by_region": {
+   "texas_ercot": {"value": [3, 8], "source": "SB6 (2025) reformed queue; 474GW ERCOT backlog persists (electricchoice.com)", "estimate": true},
+   "virginia_pjm": {"value": [20, 32], "source": "PJM average interconnection wait now ~7 years (electricchoice.com, sourced)", "estimate": false},
+   "ohio": {"value": [8, 16], "estimate": true},
+   "georgia": {"value": [8, 16], "estimate": true},
+   "arizona": {"value": [6, 12], "estimate": true},
+   "nordics": {"value": [4, 12], "source": "faster than US ISO queues; government fast-tracking (Nebius Finland buildout)", "estimate": true}
+  }
+ },
+ "on_site_gas": {
+  "capex_usd_mw": {"value": 1500000, "source": "18-act-ii-design.md ⚙, confirmed directionally by xAI Colossus Memphis case (fast, temporary turbines)", "estimate": true},
+  "build_quarters": 2,
+  "heat_delta": 20,
+  "risk": "air-permit lawsuit risk (xAI Memphis NAACP/SELC pattern, 2025-26)"
+ }
+}

@@ -17,6 +17,8 @@ import marketAct2 from '../src/content/market_weekly_act2.json' with { type: 'js
 import marketQuarterlyAct2 from '../src/content/market_quarterly_act2.json' with { type: 'json' }
 import capital from '../src/content/capital.json' with { type: 'json' }
 import capitalAct2 from '../src/content/capital_act2.json' with { type: 'json' }
+import conversions from '../src/content/conversions.json' with { type: 'json' }
+import tenants from '../src/content/tenants.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
@@ -36,6 +38,8 @@ const raw = (): RawContent =>
     marketQuarterlyAct2,
     capital,
     capitalAct2,
+    conversions,
+    tenants,
     rivals,
     heat,
     shocks,

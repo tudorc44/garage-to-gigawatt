@@ -17,17 +17,22 @@ export function aiInfraMultiple(quarter: number): number {
   return act2Quarter(quarter)?.multiple.aiInfra ?? 0
 }
 
-/** EBITDA for a quarter: mining revenue plus grid credits, minus power, rent and salaries (loan interest isn't in it). */
+/**
+ * EBITDA for a quarter: mining revenue plus grid credits and hosting fees, minus power, rent and
+ * salaries (loan interest isn't in it).
+ */
 export function ebitdaUsd(q: {
   revenueUsd: number
   powerCostUsd: number
   rentUsd: number
   gridCreditsUsd?: number
+  hostingFeesUsd?: number
   salariesUsd?: number
 }): number {
   return (
     q.revenueUsd +
-    (q.gridCreditsUsd ?? 0) -
+    (q.gridCreditsUsd ?? 0) +
+    (q.hostingFeesUsd ?? 0) -
     q.powerCostUsd -
     q.rentUsd -
     (q.salariesUsd ?? 0)

@@ -144,6 +144,38 @@ const quarterAnchors = z
     ),
   )
 
+// ---------- conversions.json and tenants.json (Act II) ----------
+// So far only what hosting needs (scope 0.2 §2.4): the same-site mining → hosting conversion,
+// and the hosting market's all-in rate by year. The rest is read with projects (M3).
+
+export const conversionsFileSchema = z.looseObject({
+  conversions: z.array(
+    z.looseObject({
+      id: z.string(),
+      capex_usd_mw: z.unknown().optional(),
+      build_quarters: z.number().int().min(0).optional(),
+    }),
+  ),
+})
+
+/** One conversion's flat cost per MW ({ value, source, estimate }). */
+export const flatCapexSchema = sourced
+
+export const tenantsFileSchema = z.looseObject({
+  hosting_market_2022_2024: z.object({
+    rate_usd_kwh: z
+      .record(z.string(), z.union([nonNeg, z.string(), z.boolean()]))
+      .transform((r) =>
+        Object.fromEntries(
+          Object.entries(r).filter(
+            (e): e is [string, number] =>
+              yearId.safeParse(e[0]).success && typeof e[1] === 'number',
+          ),
+        ),
+      ),
+  }),
+})
+
 export const capitalAct2FileSchema = z.looseObject({
   era_multiple_ev_ebitda: z.object({
     mining: quarterAnchors,

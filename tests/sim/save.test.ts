@@ -102,6 +102,50 @@ const V1_SAVES = [
   'v1-merge-2022Q3',
   'v1-ended-2022Q3',
 ] as const
+/**
+ * Fields the game gained after the version-1 saves were captured, as paths (`*` = every item),
+ * with the starting value a loaded save must get for them.
+ */
+const ADDED_SINCE_V1: Record<string, unknown> = {
+  hosting: [],
+  'quarterStats.hostingFeesUsd': 0,
+  'reports.*.hostingFeesUsd': 0,
+}
+
+/**
+ * Checks that `actual` keeps every value of `expected`, recursively, and that anything extra is
+ * a known addition (ADDED_SINCE_V1) with its starting value. Records the extra paths in `added`.
+ */
+function expectKeeps(
+  actual: unknown,
+  expected: unknown,
+  path: string,
+  added: string[],
+): void {
+  const isObj = (x: unknown): x is Record<string, unknown> =>
+    typeof x === 'object' && x !== null && !Array.isArray(x)
+  if (Array.isArray(expected) && Array.isArray(actual)) {
+    expect(actual.length).toBe(expected.length)
+    expected.forEach((e, i) => expectKeeps(actual[i], e, `${path}.*`, added))
+    return
+  }
+  if (isObj(expected) && isObj(actual)) {
+    for (const key of Object.keys(actual)) {
+      const p = path ? `${path}.${key}` : key
+      if (key in expected) expectKeeps(actual[key], expected[key], p, added)
+      else {
+        expect(ADDED_SINCE_V1, `unexpected new field ${p}`).toHaveProperty([p])
+        expect(actual[key]).toEqual(ADDED_SINCE_V1[p])
+        added.push(p)
+      }
+    }
+    for (const key of Object.keys(expected))
+      expect(actual).toHaveProperty([key])
+    return
+  }
+  expect(actual, path).toEqual(expected)
+}
+
 const readV1 = (name: string): Record<string, unknown> =>
   JSON.parse(
     readFileSync(
@@ -126,27 +170,15 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const r = restoreSave(v1)
       expect(r.ok).toBe(true)
       if (!r.ok) return
-      const { version, act, ...rest } = r.state
-      expect(version).toBe(2)
-      expect(act).toBe(1)
-      // Fields added to the game since the save was made (e.g. Act II's hosting list) get a new
-      // game's starting value; everything the save had stays as it was.
-      const fresh = newGame(v1.seed as number) as unknown as Record<
-        string,
-        unknown
-      >
-      const added = Object.keys(rest).filter((key) => !(key in v1))
-      for (const key of added)
-        expect((rest as Record<string, unknown>)[key]).toEqual(fresh[key])
-      const kept = Object.fromEntries(
-        Object.entries(rest).filter(([key]) => key in v1),
-      )
-      const v1Rest = Object.fromEntries(
-        Object.entries(v1).filter(([key]) => key !== 'version'),
-      )
-      // A finished Act I game ("ended") is now at the Act I chapter report.
-      if (v1.phase === 'ended') v1Rest.phase = 'chapter'
-      expect(kept).toEqual(v1Rest)
+      expect(r.state.version).toBe(2)
+      expect(r.state.act).toBe(1)
+      // Everything the save had stays as it was (a finished game's "ended" is now "chapter");
+      // fields added to the game since are known additions with their starting values.
+      const expected = { ...v1, version: 2, act: 1 } as Record<string, unknown>
+      if (v1.phase === 'ended') expected.phase = 'chapter'
+      const added: string[] = []
+      expectKeeps(r.state, expected, '', added)
+      expect(added).toContain('hosting')
     },
   )
 
