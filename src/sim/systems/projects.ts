@@ -23,6 +23,12 @@ import {
   type TenantOffer,
 } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
+import {
+  headStartBuildDelta,
+  headStartKnowHow,
+  shellReady,
+  tenantsFrom,
+} from './headStarts.ts'
 import { isHired } from './hires.ts'
 import { convertibleKw } from './hosting.ts'
 import { powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
@@ -79,16 +85,22 @@ export function availableGpus(quarter: number): GpuGeneration[] {
 
 /**
  * GPU know-how 0–3 (doc 18 §5.4): 1 once a cluster (cloud or pilot) is live, 2 at two live
- * clusters, 3 at 100 MW of live full stack. (The gpu_cloud Merge head start comes later.)
+ * clusters, 3 at 100 MW of live full stack; at least 1 with the gpu_cloud head start's legacy cloud.
  */
 export function knowHow(state: GameState): number {
   const live = state.projects.filter(
     (p) => p.stage === 'live' && p.kind !== 'shell',
   )
   const kw = live.reduce((sum, p) => sum + p.kw, 0)
-  if (kw >= BALANCE.projects.knowHowThreeKw) return 3
-  if (live.length >= 2) return 2
-  return live.length >= 1 ? 1 : 0
+  const level =
+    kw >= BALANCE.projects.knowHowThreeKw
+      ? 3
+      : live.length >= 2
+        ? 2
+        : live.length >= 1
+          ? 1
+          : 0
+  return Math.max(level, headStartKnowHow(state))
 }
 
 /** Build quarters: a shell retrofit; a cloud adds a quarter for the GPUs; a pilot its own. */
@@ -96,6 +108,14 @@ export function buildQuarters(kind: ProjectKind): number {
   if (kind === 'pilot') return P().pilot.buildQuarters
   const shell = P().retrofit.buildQuarters
   return kind === 'cloud' ? shell + P().fullStack.extraBuildQuarters : shell
+}
+
+/** This project's build quarters: its kind's, changed by the Merge head start (never under 1). */
+export function projectBuildQuarters(
+  state: GameState,
+  p: Pick<Project, 'id' | 'kind' | 'siteId'>,
+): number {
+  return Math.max(1, buildQuarters(p.kind) + headStartBuildDelta(state, p))
 }
 
 export function tenantCard(id: string): TenantCard | undefined {
@@ -150,7 +170,7 @@ export function contractQuarters(p: Project): number {
  */
 export function projectCapex(
   state: GameState,
-  p: Pick<Project, 'kw' | 'kind' | 'gpu' | 'tenant'>,
+  p: Pick<Project, 'kw' | 'kind' | 'gpu' | 'tenant'> & { siteId?: string },
   quarter = state.quarter,
 ): {
   retrofitUsd: number
@@ -160,7 +180,13 @@ export function projectCapex(
   gpuCount: number
 } {
   const mw = p.kw / 1000
-  const retrofitUsd = (act2Quarter(quarter)?.capexUsdMw.retrofitShell ?? 0) * mw
+  // A shell at a shell-ready site (the hosting head start) costs less to retrofit.
+  const ready =
+    p.kind === 'shell' && shellReady(state, p.siteId)
+      ? 1 - P().shellReady.capexDiscount
+      : 1
+  const retrofitUsd =
+    (act2Quarter(quarter)?.capexUsdMw.retrofitShell ?? 0) * mw * ready
   let gpuUsd = 0
   let gpuCount = 0
   if (p.kind !== 'shell' && p.gpu) {
@@ -183,9 +209,9 @@ export function projectCapex(
   }
 }
 
-/** Whether tenant offers exist yet (doc 18 §2.3: from 2023Q3). */
-export function tenantsOpen(quarter: number): boolean {
-  return CONTENT.quarters[quarter] >= BALANCE.projects.tenantsFrom
+/** Whether tenant offers exist yet (doc 18 §2.3: from 2023Q3; 2023Q1 with the gpu_cloud head start). */
+export function tenantsOpen(state: GameState, quarter = state.quarter): boolean {
+  return CONTENT.quarters[quarter] >= tenantsFrom(state)
 }
 
 /**
@@ -194,7 +220,7 @@ export function tenantsOpen(quarter: number): boolean {
  * them. A pilot has none.
  */
 export function drawOffers(state: GameState, p: Project): void {
-  if (p.kind === 'pilot' || !tenantsOpen(state.quarter)) return
+  if (p.kind === 'pilot' || !tenantsOpen(state)) return
   const site = state.sites.find((s) => s.id === p.siteId)
   const level = knowHow(state)
   const contracts = BALANCE.projects.gpuContracts
@@ -385,7 +411,7 @@ export function signTenant(
 export function plannedLiveQuarter(state: GameState, p: Project): number {
   if (p.stage === 'live') return state.quarter
   if (p.stage === 'building' && p.readyQuarter !== null) return p.readyQuarter
-  return state.quarter + buildQuarters(p.kind)
+  return state.quarter + projectBuildQuarters(state, p)
 }
 
 function signGpuContract(
@@ -533,8 +559,8 @@ export function startBuild(state: GameState, projectId: string): void {
   p.capexUsd = Math.round(cost.totalUsd)
   p.gpuCapexUsd = Math.round(cost.gpuUsd)
   p.gpuCount = cost.gpuCount
+  p.readyQuarter = state.quarter + projectBuildQuarters(state, p)
   p.startQuarter = state.quarter
-  p.readyQuarter = state.quarter + buildQuarters(p.kind)
   p.stage = 'building'
   state.cash -= p.capexUsd
   state.bandwidth -= BALANCE.projects.bandwidth.start
@@ -935,7 +961,7 @@ export function projectedReturn(state: GameState, p: Project) {
       ? 0
       : p.stage === 'building'
         ? Math.max(0, (p.readyQuarter ?? state.quarter) - state.quarter)
-        : buildQuarters(p.kind)
+        : projectBuildQuarters(state, p)
   const flows = [-capexUsd, ...Array<number>(wait).fill(0), ...quarters]
   flows[flows.length - 1] += residualUsd
   return {

@@ -143,6 +143,7 @@
   "firedQuarter": {},
   "marketRead": null,
   "mergeChoice": "hold_and_wait",
+  "act2Entry": null,
   "events": {
     "queue": [],
     "deferred": null,

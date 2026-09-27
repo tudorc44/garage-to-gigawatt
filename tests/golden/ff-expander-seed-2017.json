@@ -65,6 +65,7 @@
   "firedQuarter": {},
   "marketRead": null,
   "mergeChoice": null,
+  "act2Entry": null,
   "events": {
     "queue": [],
     "deferred": null,

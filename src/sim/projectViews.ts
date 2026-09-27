@@ -15,12 +15,12 @@ import {
   gpuContractUsdHr,
   plannedLiveQuarter,
   buildBlocker,
-  buildQuarters,
   capRate,
   gpuResidualShare,
   gpuResidualUsd,
   knowHow,
   neocloudUsdHr,
+  projectBuildQuarters,
   projectCapex,
   projectedReturn,
   remainingContractUsd,
@@ -99,7 +99,7 @@ export function projectCard(state: GameState, p: Project) {
         ? Math.max(0, p.readyQuarter - state.quarter)
         : null,
     ready: label(p.readyQuarter),
-    buildQuarters: buildQuarters(p.kind),
+    buildQuarters: projectBuildQuarters(state, p),
     gpuCount:
       p.stage === 'proposed' ? projectCapex(state, p).gpuCount : p.gpuCount,
     utilisation: p.kind === 'shell' ? null : spotUtilisation(state),

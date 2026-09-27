@@ -25,6 +25,7 @@ import { settleWeek } from './systems/treasury.ts'
 import { settleHostingWeek } from './systems/hosting.ts'
 import { payReservationWeek } from './systems/mwUse.ts'
 import { checkProjectEvents, settleProjectsWeek } from './systems/projects.ts'
+import { settleLegacyCloudWeek } from './systems/headStarts.ts'
 
 export function advance(state: GameState): GameState {
   if (state.phase !== 'live') {
@@ -44,6 +45,7 @@ export function advance(state: GameState): GameState {
   const hosting = settleHostingWeek(s)
   const reservationUsd = payReservationWeek(s)
   const ai = settleProjectsWeek(s)
+  const legacy = settleLegacyCloudWeek(s)
   // Winter Storm Uri: index contracts that didn't curtail pay the storm price on their firm load.
   const stormUsd = curtailed.creditUsd > 0 ? 0 : stormChargeUsd(s, s.week)
   if (stormUsd > 0) {
@@ -66,9 +68,13 @@ export function advance(state: GameState): GameState {
   st.hostingFeesUsd += hosting.feesUsd
   st.powerCostUsd += hosting.powerUsd + reservationUsd
   st.reservationUsd += reservationUsd
-  st.aiRevenueUsd += ai.revenueUsd
-  st.aiCostUsd += ai.costUsd
-  for (const byTier of [hosting.marginByTier, ai.marginByTier])
+  st.aiRevenueUsd += ai.revenueUsd + legacy.revenueUsd
+  st.aiCostUsd += ai.costUsd + legacy.costUsd
+  for (const byTier of [
+    hosting.marginByTier,
+    ai.marginByTier,
+    legacy.marginByTier,
+  ])
     for (const [tier, usd] of Object.entries(byTier))
       st.marginByTier[tier] = (st.marginByTier[tier] ?? 0) + usd
   st.rateHikeUsd += rateHikeUsd(s, lots)

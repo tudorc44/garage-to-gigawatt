@@ -927,6 +927,19 @@ export function carryOver(state: GameState) {
     btcThs,
     founderStake: state.founderStake,
     mergeChoice: state.mergeChoice,
+    /** The Merge head start as applied at the act boundary (null before it), and its terms. */
+    headStart: state.act2Entry,
+    headStartTerms: {
+      leanPct: 1 - BALANCE.headStarts.leanOps.powerMult,
+      leanQuarters: BALANCE.headStarts.leanOps.quarters,
+      usdHr: BALANCE.headStarts.legacyCloud.usdPerGpuHr,
+      utilPct: BALANCE.headStarts.legacyCloud.utilisation,
+      tenantsFrom: BALANCE.headStarts.gpuCloudTenantsFrom,
+      tenantsLater: BALANCE.projects.tenantsFrom,
+      rateCents: BALANCE.headStarts.hostingRateUsdKwh * 100,
+      termQuarters: BALANCE.hosting.termQuarters,
+      discountPct: CONTENT.projects.shellReady.capexDiscount,
+    },
   }
 }
 

@@ -155,6 +155,33 @@ export const BALANCE = {
   },
 
   /**
+   * The Merge head starts (scope 0.2 §2.10; doc 18 §2.3; merge_headstarts.json), applied at the act
+   * boundary. hold_and_wait has no rule of its own: the GPUs stay, switched off (nothing earns ETH).
+   * The shell-ready discount (hosting) is conversions.json › hosting_to_ai_shell.
+   */
+  headStarts: {
+    /** sell_gpus_keep_btc: lean ops, mining power × 0.9 for 4 quarters from 2022Q4. */
+    leanOps: { powerMult: 0.9, quarters: 4 },
+    /** sell_gpus_keep_btc's handicap: the first AI project builds 1 quarter longer. */
+    firstProjectExtraQuarters: 1,
+    /**
+     * gpu_cloud: the GPU rigs become an RTX-class legacy cloud at $0.15/GPU-hr × 40% utilisation
+     * (merge_headstarts.json), 6 GPUs to a rig (machines.json real_basis). GPU know-how 1, the first
+     * tenant cards from 2023Q1 (others 2023Q3), and the first cluster builds 1 quarter faster.
+     */
+    legacyCloud: { usdPerGpuHr: 0.15, utilisation: 0.4, gpusPerRig: 6 },
+    gpuCloudKnowHow: 1,
+    gpuCloudTenantsFrom: '2023Q1',
+    firstClusterQuarters: -1,
+    /**
+     * hosting: the GPU halls host third-party ASICs at $0.075/kWh for their first 4-quarter term
+     * (merge_headstarts.json), converted at conversions.json › gpu_hall_to_hosting's 2022Q4 cost,
+     * live in 2022Q4 (the Merge quarter was the build; mine). Garage rigs are sold (no hosting there).
+     */
+    hostingRateUsdKwh: 0.075,
+  },
+
+  /**
    * Power reservation on idle and under-construction MW (Act II, owner decision A2): each quarter,
    * share × the full-load power cost at the site's current power price (MW × 2,190 h × $/kWh × 1,000).
    */

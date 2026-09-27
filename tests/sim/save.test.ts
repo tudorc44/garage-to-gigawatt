@@ -123,6 +123,7 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   facilities: [],
   creditRating: null,
   firstAiDealQuarter: null,
+  act2Entry: null,
 }
 
 /**

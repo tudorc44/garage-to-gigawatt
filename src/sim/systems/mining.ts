@@ -7,6 +7,7 @@ import type { Coin, GameState, MachineLot, Site } from '../state.ts'
 import { isShutDown } from './heat.ts'
 import { failureMult } from './hires.ts'
 import { modifierMult } from './eventEffects.ts'
+import { miningPowerMult } from './headStarts.ts'
 import { coinPrice, getModel, revenuePerUnitDay } from './market.ts'
 import {
   flawEffect,
@@ -66,8 +67,9 @@ export function mineWeek(
   /** Price the week at normal power prices even during Uri (for the curtailment offer). */
   opts: { ignoreStorm?: boolean } = {},
 ): LotWeek[] {
+  const powerMult = miningPowerMult(state)
   return state.machines
-    .filter((lot) => isEarning(state, lot))
+    .filter((lot) => isEarning(state, lot) && !lot.legacyCloud)
     .map((lot) => {
       const model = getModel(lot.model)!
       const site = state.sites.find((s) => s.id === lot.siteId)!
@@ -86,6 +88,7 @@ export function mineWeek(
         24 *
         7 *
         up *
+        powerMult *
         ((opts.ignoreStorm ? undefined : stormPrice(state, site, w)) ??
           powerPriceUsdKwh(site, state.quarter))
       const running =
@@ -124,7 +127,7 @@ export function poweredShare(state: GameState, site: Site): number {
 export function hashrate(state: GameState): Record<Coin, number> {
   const out: Record<Coin, number> = { BTC: 0, ETH: 0 }
   for (const lot of state.machines) {
-    if (!isEarning(state, lot)) continue
+    if (!isEarning(state, lot) || lot.legacyCloud) continue
     const model = getModel(lot.model)!
     const site = state.sites.find((s) => s.id === lot.siteId)!
     out[model.coin] +=

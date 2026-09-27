@@ -1,7 +1,7 @@
 // The Act II intro (act boundary, scope 0.2 §2.1 and §2.14 screen 2; wireframe A2-02). Shown once,
-// after the Act I chapter report and before the 2022Q4 Plan phase: what the company carries over.
-// The head start (from the Merge choice) and the lifeline (weak runs) come in later milestones.
-import { t } from '../../i18n/t.ts'
+// after the Act I chapter report and before the 2022Q4 Plan phase: what the company carries over
+// and the head start its Merge choice gave it.
+import { t, tDynamic } from '../../i18n/t.ts'
 import { carryOver } from '../../sim/selectors.ts'
 import { fmt } from '../format.ts'
 import { tierName } from '../names.ts'
@@ -60,6 +60,34 @@ export function ActIntroScreen({ state, act }: ScreenProps) {
               </tbody>
             </table>
           </div>
+          {c.headStart && (
+            <div class="panel act-intro-box">
+              <div class="label">{t('ui.act2_intro.head_start')}</div>
+              <p style={{ margin: 0 }}>
+                <strong>
+                  {tDynamic(
+                    `merge_choice.${c.headStart.headStart}`,
+                    c.headStart.headStart,
+                  )}
+                </strong>
+              </p>
+              <p class="num-s" style={{ margin: 0 }}>
+                {tDynamic(
+                  `ui.act2_intro.head_start.${c.headStart.headStart}`,
+                  '',
+                  {
+                    ...c.headStartTerms,
+                    tenantsFrom: fmt.quarter(c.headStartTerms.tenantsFrom),
+                    tenantsLater: fmt.quarter(c.headStartTerms.tenantsLater),
+                    count: c.headStart.gpuRigsSold || c.headStart.legacyGpuRigs,
+                    valueUsd: c.headStart.gpuSaleUsd,
+                    hostedKw: c.headStart.hostedKw,
+                    costUsd: c.headStart.conversionUsd,
+                  },
+                )}
+              </p>
+            </div>
+          )}
           <div>
             <button
               type="button"

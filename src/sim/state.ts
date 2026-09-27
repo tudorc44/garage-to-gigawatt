@@ -75,6 +75,26 @@ export interface MachineLot {
   failed: number
   /** Quarter index when the lot starts earning (the quarter after delivery). */
   earnsFromQuarter: number
+  /** Act II, the gpu_cloud head start: GPU rigs rented out as a legacy cloud instead of mining. */
+  legacyCloud?: boolean
+}
+
+/**
+ * How the company entered Act II (scope 0.2 §2.10): the Merge choice's head start, applied at the
+ * act boundary (doc 18 §2.3), and what it did.
+ */
+export interface Act2Entry {
+  /** The Merge choice (merge.json id) whose head start applies. */
+  headStart: string
+  /** GPU rigs sold at the boundary (sell_gpus_keep_btc; hosting: those converted), and for how much. */
+  gpuRigsSold: number
+  gpuSaleUsd: number
+  /** gpu_cloud: GPU rigs kept as a legacy cloud (its know-how and early tenants need at least one). */
+  legacyGpuRigs: number
+  /** hosting: kW of GPU halls now hosting, what converting them cost, and the sites (shell-ready). */
+  hostedKw: number
+  conversionUsd: number
+  shellReadySites: string[]
 }
 
 /** An equipment loan, secured on machines, repaid in equal weekly slices plus interest. */
@@ -320,6 +340,8 @@ export interface GameState {
   marketRead: MarketRead | null
   /** The Merge decision (merge.json choice id) once made, or null. */
   mergeChoice: string | null
+  /** Act II: the head start (and lifeline) set at the act boundary; null in Act I. */
+  act2Entry: Act2Entry | null
   /** Event cards: what's due, what's been played, and their lasting effects. */
   events: EventState
   /** This quarter's failure-wave rolls, one per site (drawn when the Plan phase ends). */
@@ -602,6 +624,7 @@ export function newGame(seed: number): GameState {
     firedQuarter: {},
     marketRead: null,
     mergeChoice: null,
+    act2Entry: null,
     events: emptyEventState(),
     failureWaves: [],
     siteHeat: {

@@ -174,6 +174,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
   sign-then-raise 5 busts, $381M (peak $739M, $1B+ in 0/50); asic-retirer 4 busts, $2.2B, 2025 peak $3.6B, 46/50
   alive with ≥ 4 q runway; shell-capital 9 busts (was 22), $141M; texas-capital $370M, peak $874M; raise-climb 1
   bust (was 14); pilot 1.89× vs 1.39× (gap 0.50: pass); hosting ahead at 2026Q4 in 19/47 (pass).
+- M5.1: head starts at the act boundary (`headStarts.ts`, balance.ts › headStarts). Mine, reversible: GPUs sell at
+  the game's used price; the legacy cloud counts as AI EBITDA; hosting's GPU halls convert at the 2022Q4 cost, live
+  in 2022Q4, as far as cash goes; shell-ready = any shell at that site; hold_and_wait has no mechanic (open question).
 
 ## Next
 

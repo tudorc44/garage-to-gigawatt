@@ -145,6 +145,8 @@ export interface ProjectRules {
   latePenaltyShareYr: number
   retrofit: { buildQuarters: number }
   fullStack: { extraBuildQuarters: number }
+  /** A shell at a site that hosts (the Merge "hosting" head start): conversions.json › hosting_to_ai_shell. */
+  shellReady: { capexDiscount: number; quarterDiscount: number }
   pilot: {
     kwMin: number
     kwMax: number
@@ -755,6 +757,14 @@ export function parseContent(raw: RawContent): Content {
       Record<string, unknown> | undefined
   const retrofit = conversion('mining_or_idle_to_ai_shell_retrofit')
   const shellToFull = conversion('shell_to_fullstack')
+  const hostingToShell = conversion('hosting_to_ai_shell')
+  if (
+    typeof hostingToShell?.capex_usd_mw_discount_pct !== 'number' ||
+    typeof hostingToShell.build_quarters_discount !== 'number'
+  )
+    problems.push(
+      'conversions.json: needs hosting_to_ai_shell with capex_usd_mw_discount_pct and build_quarters_discount',
+    )
   const pilotRaw = check(
     'conversions.json › pilot_cluster',
     pilotClusterSchema,
@@ -818,6 +828,10 @@ export function parseContent(raw: RawContent): Content {
     retrofit: { buildQuarters: Number(retrofit?.build_quarters ?? 0) },
     fullStack: {
       extraBuildQuarters: Number(shellToFull?.build_quarters_additional ?? 0),
+    },
+    shellReady: {
+      capexDiscount: Number(hostingToShell?.capex_usd_mw_discount_pct ?? 0) / 100,
+      quarterDiscount: Number(hostingToShell?.build_quarters_discount ?? 0),
     },
     pilot: {
       kwMin: (pilotRaw?.mw_min ?? 0) * 1000,

@@ -106,6 +106,7 @@ import {
   useSpot,
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
+import { applyHeadStart } from './systems/headStarts.ts'
 import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
   backstopBlocker,
@@ -332,6 +333,7 @@ function run(s: GameState, a: Action): Message | undefined {
       if (s.phase !== 'chapter' || s.act !== 1) return fail('error.wrong_phase')
       s.act = 2
       s.phase = 'intro'
+      applyHeadStart(s)
       return
 
     case 'START_ACT_2':
