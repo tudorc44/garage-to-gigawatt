@@ -28,6 +28,15 @@ export function unmetRequirement(
 ): Message | undefined {
   const req = step.requires
   if (!req) return
+  // The seed (owner, 28 Sep 2026, answer 17): quarters in which you mined anything, at any site.
+  if (req.min_quarters_operated !== undefined) {
+    const operated = state.reports.filter((r) => r.revenueUsd > 0).length
+    if (operated < req.min_quarters_operated)
+      return {
+        key: 'error.raise_needs_operation',
+        params: { n: req.min_quarters_operated },
+      }
+  }
   if (req.min_mw !== undefined) {
     const needKw = req.min_mw * 1000
     const has = state.sites.some(

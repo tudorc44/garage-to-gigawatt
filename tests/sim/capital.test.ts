@@ -76,7 +76,7 @@ describe('friends & family raise', () => {
 
 describe('seed round', () => {
   const raiseSeed: Action = { type: 'RAISE', round: 'seed' }
-  /** A game in `label` with a powered 100 kW small unit and 3 Bandwidth. */
+  /** A game in `label` with a powered 100 kW small unit, a quarter of mining behind it and 3 Bandwidth. */
   function withSmallUnit(label: string): GameState {
     const s = { ...newGame(1), quarter: q(label), bandwidth: 3 }
     s.sites.push({
@@ -87,6 +87,7 @@ describe('seed round', () => {
       powerPriceMult: 1,
       flaw: null,
     })
+    s.reports.push({ revenueUsd: 1_000 } as GameState['reports'][number])
     return s
   }
 
@@ -95,7 +96,7 @@ describe('seed round', () => {
       amount_usd: 1_500_000,
       dilution: 0.2,
       window: ['2017Q4', '2019Q4'],
-      requires: { min_mw: 0.1 },
+      requires: { min_quarters_operated: 1 },
     })
   })
 
@@ -120,17 +121,21 @@ describe('seed round', () => {
     expect(err(withSmallUnit('2020Q1'), raiseSeed)).toBe('error.raise_window')
   })
 
-  it('needs a powered 100 kW site: not the garage alone', () => {
-    const garageOnly = { ...newGame(1), quarter: q('2017Q4') }
-    expect(err(garageOnly, raiseSeed)).toBe('error.raise_needs_site')
+  it('needs a quarter of mining behind you, at any site (owner, 28 Sep 2026): the garage counts', () => {
+    const fresh = { ...newGame(1), quarter: q('2017Q4'), bandwidth: 3 }
+    expect(err(fresh, raiseSeed)).toBe('error.raise_needs_operation')
+    fresh.reports.push({ revenueUsd: 0 } as GameState['reports'][number])
+    expect(err(fresh, raiseSeed)).toBe('error.raise_needs_operation')
+    fresh.reports.push({ revenueUsd: 50 } as GameState['reports'][number])
+    expect(ok(fresh, raiseSeed).cash).toBe(1_510_000)
   })
 
-  it('is lost if you leave the small unit first', () => {
+  it('is no longer lost if you leave the small unit first', () => {
     const s = ok(withSmallUnit('2018Q1'), {
       type: 'LEAVE_SITE',
       siteId: 'site-2',
     })
-    expect(err(s, raiseSeed)).toBe('error.raise_needs_site')
+    expect(ok({ ...s, bandwidth: 3 }, raiseSeed).cash).toBeGreaterThan(s.cash)
   })
 })
 
@@ -185,7 +190,8 @@ describe('Series A and IPO / SPAC', () => {
 })
 
 describe('requires.min_mw = a built, powered site of that size (not machines running)', () => {
-  const seed = getStep('seed')! // requires min_mw 0.1
+  // The seed used to need min_mw 0.1 (until 28 Sep 2026); the rule itself stays (the IPO uses it).
+  const seed = { ...getStep('seed')!, requires: { min_mw: 0.1 } }
   const site = (
     tier: string,
     readyQuarter: number,

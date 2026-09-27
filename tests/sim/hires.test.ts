@@ -118,7 +118,11 @@ describe('hires (hires.json)', () => {
     expect(pitchShift(base)).toBe(0)
     expect(pitchShift(bd)).toBe(0.05)
     const p = ok(
-      { ...bd, quarter: q('2018Q2') },
+      {
+        ...bd,
+        quarter: q('2018Q2'),
+        reports: [{ revenueUsd: 1_000 } as GameState['reports'][number]],
+      },
       {
         type: 'PITCH_START',
         round: 'seed',

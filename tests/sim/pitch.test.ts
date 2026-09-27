@@ -33,6 +33,8 @@ function seedOpen(label = '2018Q2', seed = 1): GameState {
     powerPriceMult: 1,
     flaw: null,
   })
+  // A quarter of mining behind it: the seed's condition (owner, 28 Sep 2026).
+  s.reports.push({ revenueUsd: 1_000 } as GameState['reports'][number])
   return s
 }
 const start: Action = { type: 'PITCH_START', round: 'seed' }

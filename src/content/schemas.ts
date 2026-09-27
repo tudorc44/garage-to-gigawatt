@@ -706,6 +706,8 @@ export const ladderStepSchema = z.object({
       /** At least this many MW powered across all your sites together. */
       min_total_mw: nonNeg.optional(),
       min_ebitda_usd_q: nonNeg.optional(),
+      /** At least this many quarters with machines earning, at any site (seed; owner, 28 Sep 2026). */
+      min_quarters_operated: z.number().int().min(1).optional(),
     })
     .strict()
     .optional(),

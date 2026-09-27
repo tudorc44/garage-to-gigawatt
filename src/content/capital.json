@@ -38,7 +38,7 @@
     "2019Q4"
    ],
    "requires": {
-    "min_mw": 0.1
+    "min_quarters_operated": 1
    }
   },
   {

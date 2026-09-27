@@ -216,3 +216,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   (projects.ts › gasLawsuits). A plant switches on with its project, so the "live → grid power / curtail" case can't arise yet.
 - M6.0k: ec18 audit (eventEffects › depreciationAudit): Q4 ends while the ×1.1 runs, 10% → boost ends, −1 notch and equity × 0.9 this quarter and
   next (mine: "2 quarters" counted from the audit's). SB6 per site on energized MW. SVB: arranged debt exempt (moot: project debt opens 2023Q3).
+- M6.0l: seed round `requires.min_quarters_operated: 1` (a report with mining revenue, any site incl. the garage). Goldens unchanged: every
+  bot that raises the seed has mined a quarter first, so no Act I game changes.
