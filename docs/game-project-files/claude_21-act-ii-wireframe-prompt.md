@@ -1,6 +1,6 @@
 # 21: Claude Design Prompt: Act II Wireframes
 
-*Draft v0.9, 27 Sep 2026. Paste everything below the line into Claude Design, as a new canvas or added to the existing "Garage to Gigawatt – Act I Wireframes" canvas. The example numbers are illustrative; they will be updated from the Act II content pack, but layout doesn't depend on them.*
+*v1.0, 27 Sep 2026 (matches the frozen scope, 20 v1.0). Paste everything below the line into Claude Design, as a new canvas or added to the existing "Garage to Gigawatt – Act I Wireframes" canvas. The example numbers come from the corrected Act II market data (`docs/act2-content/`).*
 
 ---
 
@@ -21,7 +21,7 @@ Create **low-fidelity wireframes** for **Act II of "Garage to Gigawatt"**, a tur
 
 ## Persistent layout changes
 
-- **Top bar:** add a **credit rating badge** (e.g. "BB ▲") and **backlog** ("Backlog $412M"). Keep date, cash, treasury, Bandwidth pips (now up to 8), BTC price and hashprice. Add a **GPU spot price** chip ("H100 spot $2.40/hr ▼").
+- **Top bar:** add a **credit rating badge** (e.g. "BB ▲"; company ratings run CCC− to BBB) and **backlog** ("Backlog $412M"). Keep date, cash, treasury, Bandwidth pips (now up to 8), BTC price and hashprice. Add a **GPU spot price** chip ("H100 spot $2.40/hr ▼").
 - **Left nav:** Dashboard · **Projects** (new) · Sites & Fleet · Capital · People · League · Log.
 
 ## Screens to draw (10 artboards)
@@ -49,14 +49,15 @@ Answer "where should my megawatts go this quarter?" at a glance:
 ### 4. Projects (new)
 - **Columns by stage:** Proposed · Slots filling · Building · Live · Sold.
 - **Project card:** name ("Pecos AI Hall 1"), site + region tag, MW, target use, three **slot chips** (Power ✓ / Tenant ◐ / Capital ○), timeline (quarters to go), **ready-by** date with a warning state when late, and the projected IRR.
-- A late project card showing the take-or-pay penalty ("Late 1Q: −$9.2M; tenant may walk at 2Q").
+- A **pilot cluster** card: full stack, 0.5–2 MW, **spot-only, so it has only two slot chips (Power, Capital)** and shows utilisation instead of a tenant ("Pecos Pilot · 1 MW · 750 H100s · 70% utilised · $4.00/GPU-hr").
+- A late project card showing the take-or-pay penalty ("Late 1Q: −$1.0M (3% of annual contract) · AI-lab tenant may walk at 2Q late (20%)").
 - An empty-state column with guidance ("Open a project from Dashboard or Sites").
 
 ### 5. Deal builder (new, modal: the heart of Act II)
 One project, three slot panels side by side:
 - **Power:** use existing MW (instant) / grid upgrade (queue timer) / on-site gas (fast, +Heat). Show MW available at the site.
-- **Tenant:** 2–3 offer cards (type, rating, price, term, prepayment, ready-by). Buttons: "Accept" (0 BW) / "Negotiate" (2 BW) / "Leave on spot" (full stack only).
-- **Capital:** a stack builder: own cash / project debt / DDTL / equity / JV / backstop. Each shows amount, rate, and its requirement (e.g. "needs BBB+ tenant"). A **debt vs equity bar**.
+- **Tenant:** 2–3 offer cards (type, rating, price, term, prepayment, ready-by, walk-away chance if 2 quarters late). Buttons: "Accept" (0 BW) / "Negotiate" (2 BW) / "Leave on spot" (full stack only). For a pilot cluster this panel is replaced by a note: "Spot-only: earns the neocloud price × utilisation".
+- **Capital:** a stack builder: own cash / equipment loan (on GPUs) / project debt / DDTL / equity / JV / backstop. Each shows amount, rate, and its requirement (e.g. "needs a tenant rated BBB or better", "DDTL: needs a rated tenant"). A **debt vs equity bar**.
 - **Projected return panel** along the bottom: capex, equity needed, revenue/yr, EBITDA/yr, payback, IRR, and **the effect on the credit rating** ("BB → BB−").
 - Primary action: "Start build (1 BW)". Disabled until all slots are filled, with the reason.
 
@@ -67,7 +68,7 @@ One project, three slot panels side by side:
 - **Scouting result drawer:** 2–3 offers with type badges (Distressed / Energized land / Greenfield) and a hidden-flaw "?".
 
 ### 7. Capital (changed)
-- **Credit rating** card with the three inputs (debt/EBITDA, backlog quality, runway) and what the next notch up or down would change.
+- **Credit rating** card with the three inputs (debt/EBITDA, backlog quality, runway) and what the next notch up or down would change. Annotation: "Company ratings stop at BBB; debt secured on a strong-tenant project can rate A".
 - **Debt stack table** by instrument (project debt, DDTL, equipment, bridge), with rate, maturity, covenant status (DSCR).
 - **Backlog by tenant** table (tenant, rating, remaining $, weight %, value counted).
 - **Valuation breakdown:** mining EBITDA × mining multiple + AI EBITDA × AI multiple + cash + treasury − debt + backlog value.
@@ -84,24 +85,25 @@ Career graph **2017 → 2026** with the Merge marked, peak valuation and quarter
 
 ## Example data (use it)
 
-Show the dashboard at the **start of Q2 2024** (plan phase):
+Show the dashboard at the **start of Q3 2024** (plan phase, just after the halving):
 - Cash **$38M**. Debt **$214M**. Rating **BB ▲**. Backlog **$412M**. Bandwidth **5 of 6**. Runway **5 quarters**.
-- BTC **$64,200** ▼4%. Hashprice **$52/PH/day** ▼48% (the April halving). H100 contract **$2.10/hr**, spot **$2.60/hr**. AI demand index **71 ▲**.
-- MW by use (60 MW total): mining 22 · hosting 0 · AI shell 20 (live) · AI cloud 8 (building) · idle 10.
+- BTC **$62,700** ▼12%. Hashprice **$48/PH/day** ▼57% (the April halving). H100 1-year contract **$4.20/hr**, neocloud **$4.00/hr**, spot **$2.50/hr** ▼. AI demand index **32 ▲**.
+- MW by use (60 MW total): mining 21 · hosting 0 · AI shell 20 live + 18 building · AI cloud 1 (pilot, live) · idle 0.
 - Sites:
-  - **Pecos, TX** (ERCOT), 40 MW: mining 22, AI shell 18 (under construction), Heat 18
+  - **Pecos, TX** (ERCOT), 40 MW: mining 21, AI shell 18 (under construction), pilot cluster 1 MW live, Heat 18
   - **Loudoun-adjacent, VA** (PJM), 20 MW: AI shell 20 live, Heat 41, Ratepayer Anger 58
 - Projects:
   - "Loudoun Hall A": 20 MW AI shell, **Live**, tenant: hyperscaler (AA), 10 years, $1.7M/MW/yr
-  - "Pecos AI Hall 1": 18 MW AI shell, **Building**, 1 quarter left, tenant: AI lab (BB), ready-by Q3 2024
-  - "Pecos Cluster": 8 MW full stack H100, **Slots filling**: Power ✓, Tenant ◐ (negotiating), Capital ○
-- News: "Halving day: miners' revenue per hash cut in half overnight".
+  - "Pecos AI Hall 1": 18 MW AI shell, **Building**, 1 quarter left, tenant: AI lab (BB), ready-by Q4 2024
+  - "Pecos Pilot": 1 MW full stack, **Live**, spot-only, 750 H100s, 70% utilised
+  - "Pecos Cluster": 8 MW full stack H100 (converting 8 of Pecos's mining MW), **Slots filling**: Power ✓, Tenant ◐ (negotiating), Capital ○
+- News: "Halving: miners' revenue per hash cut in half overnight".
 
-League (Q2 2024, illustrative): CoreWeave (benchmark) · Core Scientific · IREN · Hut 8 · Cipher · You.
+League (Q3 2024, illustrative): CoreWeave (benchmark) · Core Scientific · IREN · Hut 8 · Cipher · You.
 
-Deal builder example: "Pecos Cluster", 8 MW, ~5,600 H100s, capex ≈ $190M. Tenant offer: "Enterprise AI (BBB), $2.05/GPU-hr, 3 years, 15% prepaid". Capital: DDTL 65% at SOFR + 6%, equity 35%. Projected IRR 21%, payback 2.6 years, rating effect BB → BB−.
+Deal builder example: "Pecos Cluster", 8 MW, **6,000 H100s** (750 per MW), capex ≈ **$250M** (GPUs ≈ $190M + retrofit ≈ $60M). Tenant offer: "Enterprise AI (BBB), **$2.40/GPU-hr, 3 years**, no prepayment, walks at 2Q late: 10%". Capital: DDTL 65% at SOFR + 7%, equity 35%. Projected IRR **26%** (project, before debt), payback **2.3 years**, rating effect **BB → BB−**.
 
 ## Deliverable
 - One board with the **10 artboards** in flow order, titled "A2-01 Title" … "A2-10 Game over (foreclosure)".
 - A **flow strip**: Merge → Act I chapter report → Act II intro → Plan → (Deal builder / Projects) → Live quarter → Report → … → Act II chapter report.
-- A **component sheet** with the new components: MW-by-use bar, project card (all 5 stages + late state), slot chip (empty/partial/done), rating badge, backlog chip, region tag, Ratepayer Anger meter, tenant offer card, capital stack row, projected-return panel.
+- A **component sheet** with the new components: MW-by-use bar, project card (all 5 stages + late state + the spot-only pilot variant), slot chip (empty/partial/done), rating badge, backlog chip, region tag, Ratepayer Anger meter, tenant offer card, capital stack row, projected-return panel.

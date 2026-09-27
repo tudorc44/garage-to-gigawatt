@@ -712,31 +712,36 @@ price floor on their 2021 GPU buys.)
 
 ## Act II readiness (27 Sep 2026)
 
-The owner brought Act II (Alpha 0.2, 2022Q4 → 2026Q4, 17 quarters) into scope. Sources, all in
-`docs/game-project-files/`: the design (`claude_18`, locked decisions + §16 content-pack decisions), the
-**draft** scope (`claude_20`, v0.9), the Claude Design wireframe prompt (`claude_21`, v0.9) and the content
-pack (`claude_act2-content_*`: report + 15 data files, all complete). CLAUDE.md now says so.
+The owner brought Act II (Alpha 0.2, 2022Q4 → 2026Q4, 17 quarters) into scope. **The scope is frozen: v1.0 in
+`docs/alpha-0.2-scope.md`** (the source of truth; its §8 lists where it corrects doc 18). Reference copies in
+`docs/game-project-files/`: the design (`claude_18`), the same scope text (`claude_20`), the Claude Design
+wireframe prompt (`claude_21`, v1.0) and the content pack (`claude_act2-content_*`). Corrected data:
+`docs/act2-content/`.
 
-**Blocking the build (decisions, for the owner / design thread), in doc 18 §17's order:**
-1. Confirm or override pushbacks **[P1]–[P5]** (doc 18 §16.5: take-or-pay 3%/quarter + walk chance by
-   tenant type; mining→hosting $0.1M/MW; pilot cluster 0.5–2 MW; corporate rating CCC− to BBB; construction
-   delay 15% a quarter).
-2. **Freeze the scope** v0.9 → v1.0 (doc 20 §7 checklist), then copy it to `docs/alpha-0.2-scope.md`.
-3. **Wireframes:** update the doc 21 prompt's example data, run it in Claude Design, and bring the result
-   (plus, ideally, an Act II mockup like `docs/mockups/q4-2017.html`) into the repo. None exists yet. The
-   `campus` era theme already exists in the design-system tokens.
+**Decided (owner, 27 Sep 2026):**
+1. ~~Confirm or override [P1]–[P5]~~ **all confirmed** (doc 18 §16.5: take-or-pay 3% of annual contract value
+   per late quarter + walk chance by tenant type 5/10/20%; mining→hosting $0.1M/MW; pilot cluster 0.5–2 MW;
+   corporate rating CCC− to BBB; construction delay 15% per project per quarter).
+2. ~~Freeze the scope~~ **frozen, v1.0** (`docs/alpha-0.2-scope.md`).
+3. **Pilot cluster** (scope §2.5): full stack, 0.5–2 MW, spot-only, from 2023Q1, financed by the equipment loan
+   on the GPUs. Revenue = the H100 **neocloud** price × utilisation, starting at **70%** and rising with GPU
+   know-how (+5 points at know-how 2, +10 at 3; tune in the sim). Cost ≈ **$31–33M per MW** in 2023 (accepted).
+4. ETH gets a price series (done, below).
+
+**Still blocking the Act II build:**
+1. **Wireframes:** run the doc 21 v1.0 prompt in Claude Design and bring the result (plus, ideally, an Act II
+   mockup like `docs/mockups/q4-2017.html`) into the repo. The `campus` era theme already exists in the tokens.
+2. **The Act I playtests** (Alpha 0.1 §5 "Playable" and "People"): scope 0.2 §6 puts them before Act II code.
 
 **Content gaps found by Claude Code (not in doc 18 §16.6's fix list):**
-- **No ETH price after 2022Q3.** The Act II market files have no ETH column, but the coin treasury carries
-  over "as is" (doc 18 §2.1), and an ETH crypto-backed loan can be open. Needs an ETH series (or a rule: sell /
-  convert ETH at the act boundary).
+- ~~No ETH price after 2022Q3~~ **fixed** (owner chose a price series): `eth_usd` added to `docs/act2-content/market_weekly.csv`
+  and `eth_usd_close` to `market_quarterly.csv`, from real month-end closes (method in its README).
 - ~~A price seam at the act boundary~~ **fixed** in `docs/act2-content/` (see "Next"): Act I's last week
   $19,480 / 31.5T → Act II's first week $19,700 / 31.5T (+1.1%).
 - 2024Q3 has 14 weeks (the loader trims to 13, as in Act I: fine, just noted).
-- **Beyond the draft scope:** `hires_act2.json` has 3 new hires (Head of Development, Capital Markets Lead,
-  **Government Affairs Lead**); the scope allows the Head of Development + "up to 1 more", and government /
-  lobbying is Act III backlog. `gpus.json` has 6 generations (A100, H100, H200, B200, GB200, GB300); the scope
-  says Hopper → Blackwell.
+- ~~Beyond the draft scope (hires, GPU generations)~~ **settled by scope v1.0**: Head of Development + Capital
+  Markets Lead are in, the Government Affairs Lead is Act III (§2.8); GPUs are H100, H200, B200, GB200 NVL72;
+  GB300 and the A100 are out (§3).
 - `gb200_nvl72` / `gb300_nvl72` have no `gpus_per_mw_it_load` (rack-based); H100/H200 still at 1,000/MW (§16.6
   fix → 750).
 - The ASIC price index and SOFR / spread series are estimates (doc 18 §15; pull before final balance).
@@ -756,7 +761,7 @@ pack (`claude_act2-content_*`: report + 15 data files, all complete). CLAUDE.md 
   The sim-runner's Merge metrics use the last quarter.
 - Text: `ui.title.act`, `ui.chapter.act_done` ("Act I · …").
 
-**First build step once unblocked (proposal, not decided):** a small "act boundary" task with no new
+**First build step once unblocked** (scope v1.0 §6.4 adopts this order): a small "act boundary" task with no new
 gameplay: an `act` field and save version 2 with the Act I → II migration test; the market extended to
 2026Q4 (with the ETH answer) while Act I still ends at 2022Q3; the phase flow Merge → Act I chapter report →
 Act II intro → 2022Q4 Plan; the "Start of Act II" autosave slot; goldens unchanged for Act I. Then systems one
@@ -784,8 +789,8 @@ and "Balance review" 1–3 above): **the Act I balance pass is DONE**, every §5
 sim. Next: playtests (scope §5 "Playable" and "People": a first-time run in 35–50 minutes, 3+ real
 decisions per quarter, 5 crash-free runs, 3 outside testers). Small follow-ups: an ear test of the sounds; the build's main
 JS chunk is just over Vite's 500 KB warning (card text; split it later).
-**Act II** (27 Sep 2026): in scope, blocked on the decisions in "Act II readiness" (P1–P5, the scope freeze,
-wireframes, the ETH answer; the price seam is fixed). Note: the Alpha 0.1 go/no-go gate (scope §5: playtests, 3 outside
-testers) hasn't run yet; the owner chose to start Act II anyway, so the playtests can run alongside.
+**Act II** (27 Sep 2026): scope frozen (v1.0, `docs/alpha-0.2-scope.md`); P1–P5, the pilot and the ETH series
+decided. Still blocking the build: the wireframes (doc 21 v1.0 → Claude Design) and the Act I playtests, which
+scope 0.2 §6 puts before Act II code. Preparation that can happen now: the scope §7 content fixes.
 Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing
 EBITDA, clamped to ±30% of the capital.json terms).

@@ -14,8 +14,8 @@ question: *is Act I a fun 40-minute run where decisions, not luck, decide whethe
 **Act II is coming into scope (owner, 27 Sep 2026):** Alpha 0.2, "The Pivot and the Boom", 17 quarterly turns
 (2022Q4 → 2026Q4), continuing from an Act I save or a standalone preset. The miner turns its energized MW into
 AI data-center capacity through projects (power, tenant and capital slots), a credit rating and five MW uses.
-Its scope doc is still a **draft (v0.9)**: Act II building starts once the design thread freezes it (v1.0) and
-it is copied into `docs/alpha-0.2-scope.md`. Until then, Act II work is limited to preparation.
+Its scope is **frozen (v1.0)** in `docs/alpha-0.2-scope.md`. Act II building can start once the Act I playtests
+are done (that scope's §6); until then, Act II work is limited to preparation.
 
 ## Commands
 
@@ -48,10 +48,11 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 - `docs/mockups/q4-2017.html`: the approved **visual target** for the Plan, Live quarter and Quarter report
   screens (open it in a browser). Match its layout and style.
 - `src/ui/audio/` holds the sound code (moved from `docs/audio/`, where `audio-notes.md` stays as the reference).
+- `docs/alpha-0.2-scope.md`: **source of truth for Act II scope** (v1.0, frozen). Its §8 lists where it corrects doc 18.
 - **Act II** (reference copies in `docs/game-project-files/`, read-only; the game will read `src/content/`):
   `claude_18-act-ii-design.md` (the design and its decisions, incl. §16 "Decisions from the content pack"),
-  `claude_20-alpha-0_2-scope.md` (**draft** scope; `docs/alpha-0.2-scope.md` becomes the source of truth once
-  frozen), `claude_21-act-ii-wireframe-prompt.md` (the Claude Design prompt; no Act II wireframes or mockup
+  `claude_20-alpha-0_2-scope.md` (the same scope text, kept in sync with the design project),
+  `claude_21-act-ii-wireframe-prompt.md` (the Claude Design prompt, v1.0; no Act II wireframes or mockup
   exist yet), `claude_act2-content_*` (the Act II content pack: report plus data files). The `campus` era
   theme for Act II already exists in `docs/design-system/tokens.css`.
   Corrected Act II data lives in `docs/act2-content/`; where a file exists there, it replaces the

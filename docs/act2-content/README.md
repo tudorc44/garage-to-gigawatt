@@ -5,7 +5,7 @@ Files here are the corrected versions that the Act II build should read. So far 
 
 ## market_weekly.csv / market_quarterly.csv: fixes of 27 Sep 2026
 
-Only the six BTC columns changed (`btc_usd`, `btc_difficulty_T`, `btc_hashrate_EHs`, `btc_block_subsidy`,
+The six BTC columns changed and an `eth_usd` column was added (see the ETH section below) (`btc_usd`, `btc_difficulty_T`, `btc_hashrate_EHs`, `btc_block_subsidy`,
 `btc_hashprice_usd_th_day`, `btc_hashprice_usd_ph_day`). ASIC, GPU, financing, power and demand columns are as in the pack.
 
 1. **Hashprice now follows from its inputs, the same way as Act I.** The sim pays miners straight from
@@ -23,6 +23,24 @@ Only the six BTC columns changed (`btc_usd`, `btc_difficulty_T`, `btc_hashrate_E
 5. **Each quarter's last week equals the sourced quarter close** in `market_quarterly.csv`. The weekly path was
    off by 1–3%; the gap is closed by a correction that ramps linearly across the quarter, so there are no jumps.
 6. **market_quarterly.csv BTC columns** (difficulty, hashrate, subsidy, hashprice) now equal the quarter's last week.
+
+## ETH price series (added 27 Sep 2026, owner decision)
+
+The pack had no ETH price after 2022Q3, but the ETH treasury and ETH-backed loans carry into Act II "as is" (doc 18 §2.1).
+`eth_usd` is now in `market_weekly.csv` (after `btc_usd`, same position as Act I) and `eth_usd_close` in `market_quarterly.csv`.
+
+- **Source:** month-end closes Oct 2022 → Aug 2026 from Yahoo Finance ETH-USD monthly history, each cross-checked against
+  CoinLore (all within 0.3%, except Aug 2024: Yahoo $2,513 vs CoinLore $2,494; Yahoo used). Sep 2026 = 26 Sep close $2,690
+  (Investing.com).
+- **Dated extremes** shape the big weeks: pre-FTX high (5 Nov 2022, date approximate), FTX low (9 Nov 2022), yen-carry crash
+  (5 Aug 2024), tariff low (9 Apr 2025), all-time high (24 Aug 2025), the 10/10 crash (11 Oct 2025), the Feb 2026 low
+  (5 Feb) and the Jun 2026 low (6 Jun), plus the 21 Sep 2026 high. Intraday extremes enter at half weight (log-midpoint with
+  the path drawn from month-end closes) to approximate a daily close.
+- **Weekly value** = the average of the daily path over the week (Mon–Sun, log scale). Each quarter's last week = the real
+  quarter-end close, as for BTC.
+- **Act boundary:** Act I's last week $1,366 → Act II's first week $1,393 (+2%).
+- **After 26 Sep 2026** (the 2026Q3 label week and all of 2026Q4): estimate, following the BTC path (same weekly % moves).
+- Largest weekly moves: −17% (FTX week), −15% (Aug 2024), −16% (Feb 2026).
 
 ## Checks
 - Every weekly row satisfies the hashprice formula; Act I (2022-09-26) → Act II (2022-10-03): $19.5k → $19.7k,
