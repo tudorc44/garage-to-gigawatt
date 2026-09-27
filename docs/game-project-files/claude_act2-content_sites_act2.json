@@ -1,0 +1,51 @@
+{
+ "schema_version": 1,
+ "site_categories": [
+  {
+   "id": "distressed_miner_site",
+   "window": ["2022Q4", "2023Q4"],
+   "mw_range": [20, 300],
+   "price_usd_mw": {"value": [150000, 400000], "source": "Argo->Galaxy Helios: $65M facility sale (Dec 2022) implying ≈$325k/MW on a ~200MW-designed site (MW figure ≈); CleanSpark comparable distressed-site pricing $270-500k/MW", "estimate": true},
+   "real_examples": [
+    {"name": "Core Scientific Chapter 11", "date": "2022-12-20", "note": "filed owing hundreds of millions; continued mining through bankruptcy; emerged 2024-01-24 with ~$400M debt equitized; relisted with 724MW operating capacity", "source": "CNBC; Core Scientific emergence PR"},
+    {"name": "Compute North Chapter 11", "date": "2022-09-22", "note": "owed up to $500M; fixed-rate hosting contracts prevented pass-through of 2022 power-cost spike -- direct trigger; Crusoe bought a $1.55M asset tranche, Generate Capital bought CN's stake in 2 mining facilities", "source": "Yahoo Finance; CoinDesk; Decrypt"},
+    {"name": "Celsius Mining -> Fahrenheit/US Bitcoin Corp", "date": "2023 (mid)", "note": "structured as a management-fee deal ($35M + $15M mgmt fees) over ~12.2 EH/s / 121,800 rigs, not a clean per-MW sale", "source": "Hashrate Index"},
+    {"name": "Argo Blockchain -> Galaxy Digital (Helios, TX)", "date": "2022-12-28", "note": "$65M facility sale + separate $35M term loan from Galaxy (~$100M total bailout package); this same site later became the CoreWeave-leased Helios AI campus worth $15B in contracted lease revenue -- a 230x value-creation arc from raw site to AI-leased asset", "source": "SiliconANGLE; CoinDesk"},
+    {"name": "Greenidge Generation", "date": "2022-2023", "note": "avoided bankruptcy via debt restructuring with NYDIG ($11M+, Jan 2023), not a sale", "source": "CoinDesk"}
+   ],
+   "hidden_flaws": ["queue_position_lost", "water_limits", "undersized_transformer", "title_defect"]
+  },
+  {
+   "id": "energized_land_powered_shell",
+   "window": ["2024Q1", "2026Q4"],
+   "mw_range": [50, 400],
+   "price_usd_mw_announced": {"value": [3000000, 12000000], "source": "market-implied at deal-announcement stage; Cipher Mining's 313MW priced at $2.9M/MW (Jun 2026) vs Digital Realty's stabilized AI benchmark of $27M/MW -- miners trade at 8-14 cents on the dollar vs stabilized AI infra", "estimate": false},
+   "price_usd_mw_stabilized": {"value": [20000000, 27000000], "source": "Digital Realty NoVA stabilized-asset benchmark", "estimate": false},
+   "real_examples": [
+    {"name": "Core Scientific-CoreWeave (Denton, TX expansion)", "date": "2024-2025", "note": "$1.2B expansion tranche on top of the original 200MW/12yr deal", "source": "Core Scientific IR"},
+    {"name": "CoreWeave unsolicited bid for Core Scientific", "date": "2025", "note": "~$1B all-stock initial offer, later increased; rejected by CORZ shareholders Oct 2025 -- good rival-interaction texture", "source": "DCD; CNBC"},
+    {"name": "IREN-Microsoft (Childress, TX)", "date": "2025-11-03", "note": "200MW (4x50MW tranches), $9.7B/5yr AI cloud deal incl. GPU compute -- 20% prepayment; IREN separately buys ~$5.8B of Dell/Nvidia GB300 hardware to fulfill", "source": "Nasdaq PR; IREN IR"},
+    {"name": "Cipher Mining-Fluidstack (Barber Lake, Google-backed)", "date": "2025-09-25", "note": "168MW critical IT, 10yr (+2x5yr), ~$3B initial (~$7B w/ extensions); Google backstops $1.4B, takes ~5.4% CIFR equity via warrants", "source": "Blockspace; Yahoo Finance"},
+    {"name": "Hut 8 Beacon Point (undisclosed hyperscaler)", "date": "2026-05", "note": "352MW IT, 15yr, $9.8B base term ($25.1B incl. all renewal options); pure triple-net colo, full 1GW campus fully contracted by Jul2026 at $19.6B", "source": "Hut 8 PR; TechTimes"}
+   ],
+   "hidden_flaws": ["fibre_distance", "air_permit_for_gas", "zoning_challenge", "tenant_unfit_power_quality"]
+  },
+  {
+   "id": "greenfield_new_site",
+   "window": ["2023Q1", "2026Q4"],
+   "mw_range": [50, 300],
+   "price_usd_mw": "land + interconnection deposit only, ≈$0.5-2M/MW upfront (site control) before any shell capex (see conversions.json greenfield_ai_shell for build cost)",
+   "hidden_flaws": ["queue_position_lost", "water_limits", "fibre_distance", "zoning_challenge"]
+  }
+ ],
+ "flaws": {
+  "queue_position_lost": {"label": "Interconnection queue position must be re-filed", "effect": {"delay_quarters": 3}, "basis": "PJM ~7yr average wait (electricchoice.com); losing queue position on a re-purposed distressed site is a real, documented risk"},
+  "water_limits": {"label": "Water permit / cooling capacity limit", "effect": {"capacity_mult": 0.8, "summer_derate": 0.9}, "basis": "liquid-cooled AI retrofit needs far more water than ASIC air-cooling; several 2025-26 siting fights cite water use explicitly"},
+  "fibre_distance": {"label": "Nearest fibre backbone is 15+ miles away", "effect": {"capex_usd_mw_delta": 300000, "delay_quarters": 1}, "basis": "AI shell conversions need far more network bandwidth than mining; remote crypto sites often lack it"},
+  "air_permit_for_gas": {"label": "On-site gas turbines need an air permit fight", "effect": {"heat_delta": 25, "lawsuit_chance": 0.4}, "basis": "xAI Memphis Colossus: unpermitted gas turbines, NAACP/SELC legal action 2025-26"},
+  "zoning_challenge": {"label": "Zoning approval vulnerable to a procedural challenge", "effect": {"delay_quarters": 4, "chance_voided": 0.25}, "basis": "Prince William Digital Gateway: zoning voided by a court over a newspaper-notice technicality; Compass and QTS/Blackstone both exited in 2026"},
+  "tenant_unfit_power_quality": {"label": "Power quality (harmonics/voltage sag) unsuitable for GPU racks without conditioning", "effect": {"capex_usd_mw_delta": 400000}, "basis": "≈ mining-grade power delivery is less clean than what dense GPU racks need; a plausible, under-documented but realistic flaw"},
+  "undersized_transformer": {"label": "Undersized transformer inherited from the mining era", "effect": {"capacity_mult": 0.6, "upgrade_cost_usd_mw": 300000}, "basis": "carried over from Act I sites.json flaw of the same name, scaled to Act II costs"},
+  "title_defect": {"label": "Distressed-sale title/lien not fully cleared", "effect": {"delay_quarters": 2, "cash": -500000}, "basis": "≈ typical bankruptcy-auction risk; several 2022-23 crypto-miner asset sales carried disputed liens"}
+ }
+}

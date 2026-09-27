@@ -1,0 +1,87 @@
+{
+ "schema_version": 1,
+ "instruments": [
+  {
+   "id": "project_debt",
+   "label": "Project debt (secured on a signed tenant + the asset)",
+   "available_from": "2023Q3",
+   "ltv_max_pct": {"value": [60, 75], "source": "18-act-ii-design.md §7.1, consistent with Blue Owl/Meta Hyperion structures (Blue Owl 80% of a $27.3B SPV)", "estimate": true},
+   "rate_pct": {"2023Q3": 10.5, "2024Q4": 8.5, "2025Q4": 7.0, "2026Q3": 7.5,
+    "source": "≈ IG hyperscaler-backed project bonds ~4-4.5%; sub-IG/private-credit project debt 7-9% (01-02-industry-and-timeline.md A.4c); blended for a mid-quality Act II borrower", "estimate": true},
+   "tenor": "= contract term",
+   "covenant": "DSCR >= 1.12x typical (Meta Hyperion bond)",
+   "requires": "a signed tenant with credit >= BBB"
+  },
+  {
+   "id": "gpu_backed_ddtl",
+   "label": "GPU-backed delayed-draw term loan (DDTL)",
+   "available_from": "2023Q3",
+   "generations": [
+    {"gen": "1.0 (initial facility)", "date": "2023-08-03", "size_usd": 2300000000, "spread_bps": "not fully disclosed; treat as SOFR+900-1000bps (highest of the series)", "lenders": "Magnetar Capital, Blackstone Tactical Opportunities, Coatue, DigitalBridge Credit, BlackRock, PIMCO, Carlyle", "source": "Blackstone/CoreWeave PR", "estimate_spread": true},
+    {"gen": "expanded facility", "date": "2024-05", "size_usd": 7500000000, "spread_bps": "not disclosed", "lenders": "Blackstone, Magnetar", "source": "Blackstone PR; IFR award citation"},
+    {"gen": "$2.6B secured facility", "date": "2025", "size_usd": 2600000000, "source": "CoreWeave IR"},
+    {"gen": "DDTL 4.0", "date": "2026-03-31", "size_usd": 8500000000, "size_usd_upsize_potential": 1000000000, "spread_bps": 225, "rate_note": "SOFR+225bps, ~5.9% all-in fixed-equivalent", "tenor": "~6yr, matures 2032-03-31", "rating": "A3 (Moody's) / A-low (DBRS) -- first investment-grade-rated GPU-backed financing", "advance_rate_pct": [90, 102], "collateral": "first-priority security interest in cloud infra equipment + underlying customer contract; non-recourse to parent", "source": "CoreWeave IR press release (sourced)", "estimate": false},
+    {"gen": "$3.1B loan facility", "date": "2026", "size_usd": 3100000000, "note": "explicitly 'expanding access to public markets for GPU-backed financing'", "source": "CoreWeave IR"},
+    {"gen": "DDTL 5.0", "date": "2026-05-18", "size_usd": 3100000000, "spread_bps": 450, "rating": "Ba2 (Moody's) / BB+ (Fitch)", "tenor": "~5.5yr", "note": "publicly syndicated, backed by two non-IG customers -- spread WIDER than DDTL 4.0 because the underlying tenants are weaker credit, not because of a market-wide repricing", "source": "davefriedman.substack.com (sourced)", "estimate": false},
+    {"gen": "DDTL 5.5", "date": "2026 (Aug, ~$2.6B)", "size_usd": 2600000000, "spread_bps": "≈475, wider still", "note": "the design doc's '18. DDTL spread widening (Aug 2026)' event; matches this generation", "source": "SEC filing (sourced size); spread ≈ estimate", "estimate": true}
+   ],
+   "spread_trend_bps": {"2023Q3": 900, "2024Q4": 550, "2025Q4": 420, "2026Q1": 225, "2026Q2": 300, "2026Q3": 450, "2026Q4": 475,
+    "note": "spread fell dramatically 2023->early2026 as the asset class matured and got its first IG wrap (DDTL 4.0), then WIDENED again for DDTL 5.0/5.5 because those were backed by weaker (non-IG) tenants -- model spread as a function of (counterparty credit tier x asset seasoning), not pure calendar time", "estimate": true},
+   "requires": "a GPU contract with any rated tenant; advance rate and spread scale with tenant credit quality"
+  },
+  {
+   "id": "equity_atm",
+   "label": "Equity raise: at-the-market offering / convertible notes",
+   "available_from": "any quarter",
+   "real_examples": [
+    {"issuer": "Core Scientific", "instrument": "convertible senior notes", "date": "2024", "size_usd": 400000000, "note": "upsized", "source": "Core Scientific PR"},
+    {"issuer": "Core Scientific", "instrument": "convertible senior notes", "date": "2025", "size_usd": 550000000, "note": "upsized", "source": "Core Scientific PR"},
+    {"issuer": "Core Scientific", "instrument": "convertible senior notes", "date": "2025-12", "size_usd": 625000000, "source": "Cooley coverage"},
+    {"issuer": "IREN", "instrument": "convertible notes (total closed)", "date": "2025", "size_usd": 2300000000, "source": "IREN IR"},
+    {"issuer": "TeraWulf", "instrument": "convertible notes (upsized)", "date": "2025", "size_usd": 900000000, "source": "Barchart"}
+   ],
+   "typical_terms": {"coupon_pct": [0, 2.5], "conversion_premium_pct": [25, 40], "source": "≈ pattern typical of the sector (not individually confirmed per-deal); exact coupon/premium terms sit in SEC prospectus supplements not retrieved in this pass", "estimate": true},
+   "dilution_pct": {"value": [8, 20], "note": "scales with raise size relative to market cap"}
+  },
+  {
+   "id": "jv_partner",
+   "label": "JV equity partner",
+   "available_from": "2025Q1",
+   "funds_pct_of_equity": [50, 80],
+   "takes_pct_of_project": [50, 80],
+   "real_examples": [
+    {"name": "Crusoe/Blue Owl/Primary Digital (Abilene, Stargate)", "date": "2025-05", "structure": "Blue Owl + Crusoe + Primary Digital JV", "size_usd": 15000000000, "debt_usd": 7100000000, "note": "JPMorgan-led construction loan; total debt+equity $11.6B initial, expanded to $15B", "source": "Bloomberg; DCD; Crusoe PR"},
+    {"name": "Meta Hyperion SPV", "date": "2025-10", "structure": "Meta + Blue Owl Capital", "size_usd": 27300000000, "size_usd_total_incl_equity": 30000000000, "note": "fully-amortizing A+ senior secured notes due 2049; Blue Owl 80%, Meta ~20%/5% cash-in; keeps the campus off Meta's balance sheet, Meta retains operational control as anchor tenant", "source": "DCD; CNBC; Bisnow"},
+    {"name": "TeraWulf-Fluidstack Abernathy JV", "date": "2025-10-28", "structure": "TeraWulf majority + Fluidstack", "note": "equity-JV hybrid -- TeraWulf keeps majority ownership and JV profit upside, not just a hosting fee", "source": "GlobeNewswire"}
+   ]
+  },
+  {
+   "id": "backstop",
+   "label": "Big-tech backstop (guarantee + warrants)",
+   "available_from": "2025Q1",
+   "takes_pct_equity": [3, 6],
+   "real_examples": [
+    {"provider": "Google", "beneficiary": "Cipher Mining / Fluidstack", "date": "2025-09-25", "backstop_usd": 1400000000, "equity_warrants_pct": 5.4, "source": "Blockspace; Yahoo Finance (sourced)"},
+    {"provider": "Google", "beneficiary": "Cipher Mining / Fluidstack (2nd tranche)", "date": "2025-09", "backstop_usd": 333000000, "source": "Davis Polk; Globe and Mail"}
+   ],
+   "pricing_rule_of_thumb": "backstop $ size implies ~0.3-0.5x that dollar amount in warrant value at the observed Google/Cipher ratio (~$1.73B total backstop for ~5.4%+ equity of a company valued in the low billions) -- backstops are priced as expensive but bankable credit enhancement, not free insurance"
+  }
+ ],
+ "credit_rating_mapping": {
+  "note": "no public corporate ratings exist for Core Scientific, Cipher, TeraWulf, IREN, Hut 8, or Applied Digital individually -- they access capital via project-level secured debt/converts, not a rated corporate structure. CoreWeave is the outlier: S&P 'B+' issuer rating (Positive outlook), with DDTL 4.0 achieving the sector's first investment-grade-rated GPU-backed financing (A3/A-low) despite the corporate rating staying at B+ -- i.e. structured/secured debt can be rated far above the parent when backlog quality is strong.",
+  "matrix": {
+   "debt_to_ebitda_lt_2x": {"weak_backlog": "B+", "mixed_backlog": "BB", "strong_backlog": "BBB"},
+   "debt_to_ebitda_2_4x": {"weak_backlog": "CCC+", "mixed_backlog": "B+", "strong_backlog": "BB+"},
+   "debt_to_ebitda_4_6x": {"weak_backlog": "CCC-", "mixed_backlog": "CCC+", "strong_backlog": "B"},
+   "debt_to_ebitda_gt_6x": {"weak_backlog": "D (foreclosure)", "mixed_backlog": "CCC", "strong_backlog": "CCC+"}
+  },
+  "backlog_quality_definition": "weak = mostly unrated/AI-lab tenants, no backstop; mixed = blend; strong = mostly hyperscaler/IG tenants, backstopped",
+  "source": "recommended mapping, derived from the CoreWeave pattern -- confirmed as the game value"
+ },
+ "distress_events": [
+  {"name": "Compute North", "date": "2022-09-22", "type": "Chapter 11", "trigger": "owed up to $500M; fixed-rate hosting contracts prevented pass-through of the 2022 power-cost spike"},
+  {"name": "Core Scientific", "date": "2022-12-20", "emerged": "2024-01-24", "type": "Chapter 11", "trigger": "crypto-winter power costs, heavy equipment-lender debt; plan converted equipment-lender + convertible-noteholder debt to equity, reducing debt by ≈$400M"},
+  {"name": "Celsius Mining (part of Celsius Network Ch.11)", "date": "2022-07 (parent)", "type": "Chapter 11", "trigger": "crypto-lending platform collapse dragged its captive mining subsidiary in alongside it"},
+  {"name": "2025-2026 AI-infra distress", "date": "ongoing commentary only", "type": "forward risk, not yet realized", "trigger": "circular financing among OpenAI/Oracle/CoreWeave/Nvidia; thin-margin neocloud sub-tenants (Fluidstack) needing backstops -- multiple law-firm/analyst pieces flag emerging bankruptcy/litigation risk in AI data-center power deals, but no headline neocloud/miner-turned-AI-host bankruptcy occurred through Sep 2026", "source": "Law360; Bisnow; Compute Law Blog"}
+ ]
+}

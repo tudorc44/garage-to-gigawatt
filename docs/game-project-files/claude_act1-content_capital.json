@@ -1,0 +1,392 @@
+{
+ "schema_version": 1,
+ "ladder": [
+  {
+   "id": "savings",
+   "amount_usd": 10000,
+   "dilution": 0,
+   "window": [
+    "2017Q1",
+    "2017Q1"
+   ]
+  },
+  {
+   "id": "friends_family",
+   "amount_usd": {
+    "value": 40000,
+    "source": "≈; typical F&F $25–100k",
+    "estimate": true
+   },
+   "dilution": 0.1,
+   "window": [
+    "2017Q1",
+    "2018Q2"
+   ],
+   "type": "convertible note, 20% discount"
+  },
+  {
+   "id": "seed",
+   "amount_usd": {
+    "value": 1500000,
+    "source": "≈; 2018 mining seeds $1–5M (e.g. early Layer1, Blockcap-type raises)",
+    "estimate": true
+   },
+   "pre_money_usd": 6000000,
+   "dilution": 0.2,
+   "window": [
+    "2017Q4",
+    "2019Q4"
+   ],
+   "requires": {
+    "min_mw": 0.1
+   }
+  },
+  {
+   "id": "series_a",
+   "amount_usd": {
+    "value": 8000000,
+    "source": "Layer1 raised $50M (2019) — big; Bitfarms private placements C$20–30M (2018–19); $5–15M typical ≈",
+    "estimate": true
+   },
+   "pre_money_usd": 32000000,
+   "dilution": 0.2,
+   "window": [
+    "2019Q1",
+    "2021Q2"
+   ],
+   "requires": {
+    "min_mw": 1
+   }
+  },
+  {
+   "id": "ipo_spac",
+   "amount_usd": {
+    "value": 150000000,
+    "source": "2021 deals: IREN $231.5M IPO; Stronghold $127.5M; Argo $112.5M ADS",
+    "estimate": true
+   },
+   "dilution": 0.15,
+   "window": [
+    "2021Q1",
+    "2021Q4"
+   ],
+   "requires": {
+    "min_mw": 20,
+    "min_ebitda_usd_q": 5000000
+   },
+   "bandwidth": 3
+  }
+ ],
+ "loans": {
+  "equipment": [
+   {
+    "era": "2017-2019",
+    "lenders": "specialty lessors, few",
+    "ltv": {
+     "value": 0.5,
+     "source": "≈",
+     "estimate": true
+    },
+    "apr": {
+     "value": 0.15,
+     "source": "≈ 12–18%",
+     "estimate": true
+    },
+    "tenor_quarters": 8,
+    "collateral": "machines"
+   },
+   {
+    "era": "2020-2021",
+    "lenders": "NYDIG, Galaxy, BlockFi, Anchorage, Trinity Capital",
+    "ltv": {
+     "value": 0.7,
+     "source": "NYDIG facilities 2021 70–80% of ASIC cost (Greenidge, Stronghold, Core disclosures)",
+     "estimate": true
+    },
+    "apr": {
+     "value": 0.11,
+     "source": "Greenidge/NYDIG 2021 loans ~10–11%; Core/Trinity ~10–12%",
+     "estimate": true
+    },
+    "tenor_quarters": 8,
+    "collateral": "machines"
+   },
+   {
+    "era": "2022",
+    "lenders": "shrinking",
+    "ltv": {
+     "value": 0.5,
+     "source": "≈",
+     "estimate": true
+    },
+    "apr": {
+     "value": 0.14,
+     "source": "≈",
+     "estimate": true
+    },
+    "tenor_quarters": 8,
+    "collateral": "machines",
+    "available_until": "2022Q2"
+   }
+  ],
+  "crypto_backed": [
+   {
+    "lender": "BlockFi (fictionalised in game as 'a crypto lender')",
+    "ltv_max": 0.5,
+    "apr": [
+     0.045,
+     0.12
+    ],
+    "margin_call_ltv": 0.7,
+    "liquidation_ltv": 0.8,
+    "cure_hours": 72,
+    "source": "BlockFi loan terms page 2020–21",
+    "estimate": false
+   },
+   {
+    "lender": "Celsius",
+    "ltv_max": 0.5,
+    "apr": [
+     0.01,
+     0.12
+    ],
+    "margin_call_ltv": 0.65,
+    "liquidation_ltv": 0.8,
+    "cure_hours": 24,
+    "source": "Celsius terms 2021 (≈ thresholds)",
+    "estimate": true
+   },
+   {
+    "lender": "Nexo",
+    "ltv_max": 0.5,
+    "apr": [
+     0.0,
+     0.139
+    ],
+    "margin_call_ltv": 0.71,
+    "liquidation_ltv": 0.833,
+    "cure_hours": "auto partial liquidation",
+    "source": "Nexo credit line terms 2021",
+    "estimate": false
+   },
+   {
+    "lender": "Genesis (institutional)",
+    "ltv_max": 0.6,
+    "apr": [
+     0.06,
+     0.1
+    ],
+    "margin_call_ltv": 0.75,
+    "liquidation_ltv": 0.85,
+    "cure_hours": 24,
+    "source": "≈ institutional term sheets",
+    "estimate": true
+   }
+  ],
+  "game_crypto_loan": {
+   "ltv_max": 0.5,
+   "apr": 0.09,
+   "margin_call_ltv": 0.7,
+   "liquidation_ltv": 0.8,
+   "cure_weeks": 1,
+   "available": [
+    "2018Q1",
+    "2022Q2"
+   ],
+   "closes_after": "2022Q2 (Celsius freezes 12 Jun 2022)"
+  },
+  "miner_outcomes_2022": [
+   "Stronghold returned ~26,200 miners to NYDIG to extinguish ~$67M debt (Aug 2022)",
+   "Core Scientific missed Celsius/equipment payments, Chapter 11 on 21 Dec 2022",
+   "Compute North Chapter 11, 22 Sep 2022",
+   "Greenidge restructured NYDIG debt, sold machines (late 2022)",
+   "Argo sold Helios site to Galaxy (Dec 2022)"
+  ]
+ },
+ "ipo_window": {
+  "open": "2021Q1",
+  "close": "2021Q4",
+  "deals": [
+   {
+    "co": "Cipher Mining",
+    "type": "SPAC (Good Works)",
+    "closed": "2021-08-27",
+    "ev_usd": 2000000000.0,
+    "sep2022_mcap_usd": {
+     "value": 350000000.0,
+     "source": "≈",
+     "estimate": true
+    }
+   },
+   {
+    "co": "Greenidge",
+    "type": "merger with Support.com",
+    "closed": "2021-09-14",
+    "ev_usd": {
+     "value": 1000000000.0,
+     "source": "≈ implied",
+     "estimate": true
+    },
+    "sep2022_mcap_usd": {
+     "value": 100000000.0,
+     "source": "≈",
+     "estimate": true
+    }
+   },
+   {
+    "co": "Stronghold",
+    "type": "IPO",
+    "closed": "2021-10-20",
+    "raise_usd": 127500000.0,
+    "mcap_usd": {
+     "value": 950000000.0,
+     "source": "≈ at $19",
+     "estimate": true
+    },
+    "sep2022_mcap_usd": {
+     "value": 50000000.0,
+     "source": "≈",
+     "estimate": true
+    }
+   },
+   {
+    "co": "IREN (Iris Energy)",
+    "type": "IPO",
+    "closed": "2021-11-17",
+    "raise_usd": 231500000.0,
+    "mcap_usd": {
+     "value": 1600000000.0,
+     "source": "≈ at $28",
+     "estimate": true
+    },
+    "sep2022_mcap_usd": {
+     "value": 200000000.0,
+     "source": "≈",
+     "estimate": true
+    }
+   },
+   {
+    "co": "TeraWulf",
+    "type": "merger with IKONICS",
+    "closed": "2021-12-13",
+    "mcap_usd": {
+     "value": 1000000000.0,
+     "source": "≈",
+     "estimate": true
+    },
+    "sep2022_mcap_usd": {
+     "value": 150000000.0,
+     "source": "≈",
+     "estimate": true
+    }
+   },
+   {
+    "co": "Core Scientific",
+    "type": "SPAC (XPDI)",
+    "closed": "2022-01-19",
+    "ev_usd": 4300000000.0,
+    "sep2022_mcap_usd": {
+     "value": 450000000.0,
+     "source": "≈",
+     "estimate": true
+    }
+   },
+   {
+    "co": "Bitdeer",
+    "type": "SPAC (Blue Safari)",
+    "announced": "2021-11-18",
+    "closed": "2023-04-13",
+    "ev_usd": 4000000000.0
+   },
+   {
+    "co": "Rhodium",
+    "type": "IPO",
+    "filed": "2021-11",
+    "outcome": "withdrawn 2022"
+   }
+  ]
+ },
+ "era_multiple_ev_ebitda": {
+  "2017Q1": 6,
+  "2017Q2": 6,
+  "2017Q3": 6,
+  "2017Q4": 6,
+  "2018Q1": 6,
+  "2018Q2": 6,
+  "2018Q3": 6,
+  "2018Q4": 6,
+  "2019Q1": 5,
+  "2019Q2": 7,
+  "2019Q3": 7,
+  "2019Q4": 6,
+  "2020Q1": 5,
+  "2020Q2": 7,
+  "2020Q3": 10,
+  "2020Q4": 18,
+  "2021Q1": 25,
+  "2021Q2": 16,
+  "2021Q3": 15,
+  "2021Q4": 14,
+  "2022Q1": 9,
+  "2022Q2": 5,
+  "2022Q3": 4,
+  "source": "≈ derived from RIOT/MARA/HUT/BITF market caps vs trailing adj. EBITDA; 2021Q3 15x per brief. 2017–18: few listed comps (Hive, Hut 8 on TSX-V), use 6x",
+  "estimate": true
+ },
+ "price_per_ths_listed": {
+  "2020Q4": {
+   "value": 1500,
+   "source": "≈ EV/(TH/s)",
+   "estimate": true
+  },
+  "2021Q2": {
+   "value": 1200,
+   "source": "≈",
+   "estimate": true
+  },
+  "2021Q4": {
+   "value": 700,
+   "source": "≈",
+   "estimate": true
+  },
+  "2022Q3": {
+   "value": 120,
+   "source": "≈",
+   "estimate": true
+  }
+ },
+ "distressed": [
+  {
+   "period": "2018Q4-2019Q1",
+   "asset": "used S9",
+   "usd": {
+    "value": 100,
+    "source": "≈ $80–150; ~$8/TH",
+    "estimate": true
+   }
+  },
+  {
+   "period": "2018Q4",
+   "asset": "GPU rigs (RX 5xx)",
+   "usd": {
+    "value": 600,
+    "source": "≈ ~$80–110 per RX 580",
+    "estimate": true
+   }
+  },
+  {
+   "period": "2022Q3",
+   "asset": "used S19 class",
+   "usd_per_th": {
+    "value": 25,
+    "source": "Hashrate Index",
+    "estimate": true
+   }
+  },
+  {
+   "period": "2022",
+   "asset": "sites",
+   "note": "Compute North, Core Scientific, Celsius Mining assets auctioned 2022–23 at deep discounts"
+  }
+ ]
+}

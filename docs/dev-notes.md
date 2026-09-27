@@ -711,6 +711,11 @@ price floor on their 2021 GPU buys.)
 
 ## Next
 
+Reference copy (27 Sep 2026): `docs/game-project-files/` holds the design thread's project files as the
+owner exported them (numbered design docs 01–21, Act I and Act II content, audio code). It's a snapshot for
+reference only: the game reads `src/content/`, and the Act II files (design, alpha 0.2 scope, content) are
+outside the Alpha 0.1 scope.
+
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
 save/load, the 20 event cards, the failure wave, the left-nav screens + Settings, and sound. Every item
 in the scope's build list now exists. 27 Sep 2026: the balance pass and three reviews (see "Balance pass"

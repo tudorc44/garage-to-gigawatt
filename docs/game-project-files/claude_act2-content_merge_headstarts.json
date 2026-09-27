@@ -1,0 +1,37 @@
+{
+ "schema_version": 1,
+ "choices": [
+  {
+   "id": "sell_gpus_keep_btc",
+   "immediate_effect": "GPUs sold at Oct-2022 resale prices (see Act I merge.json: 3060 Ti ~$300-400, RX 580 ~$80-300) -> cash",
+   "head_start": "mining unit: -10% power cost for 4 quarters (lean ops)",
+   "handicap": "first AI project: +1 quarter build and no GPU know-how until the first cluster is live",
+   "confirmed_vs_design": "18-act-ii-design.md §2.3 ⚙ values CONFIRMED as-is -- no real-world figure contradicts this design abstraction; it is a reasonable simplification"
+  },
+  {
+   "id": "gpu_cloud",
+   "immediate_effect": "GPUs kept as a legacy cloud (RTX-class): revenue $0.12-0.20/GPU-hr at ~40% utilisation",
+   "corrected_value": {"revenue_usd_gpu_hr": 0.15, "utilization_pct": 40,
+    "source": "≈ no direct 2022-era small-scale GPU rental data found; consistent with A100 pricing trajectory (research: A100 hyperscaler ~$4.5/hr in 2022Q4 declining to ~$1.76 by 2026) scaled down heavily for consumer/prosumer RTX-class cards which are far less capable for serious ML workloads -- CORRECTED from the design's ⚙ placeholder $0.10-0.20 to a single point estimate $0.15", "estimate": true},
+   "head_start": "GPU know-how 1: first AI tenant card arrives 2023Q1 (others: 2023Q3); first cluster builds -1 quarter",
+   "handicap": "2023 cash burn: legacy cloud barely covers its power",
+   "confirmed_vs_design": "directionally CONFIRMED -- CoreWeave's own real history (founded as an ETH miner, pivoted to GPU rental 2019, revenue was tiny until the 2022-23 AI wave) is the exact real-world basis for this choice and supports the 'barely covers power' framing"
+  },
+  {
+   "id": "hosting",
+   "immediate_effect": "GPU halls converted: hosts third-party ASICs",
+   "corrected_value": {"rate_usd_kwh": 0.075, "source": "Hashrate Index: hosting rates ballooned to ~$0.08-0.09/kWh in 2022, easing to ~$0.06-0.07 by 2024; CORRECTED from the design's ⚙ placeholder to $0.075/kWh as a single Q4 2022 game value", "estimate": true},
+   "head_start": "hosted sites are shell-ready: conversion to AI shell -25% capex and -1 quarter",
+   "handicap": "hosting contracts run 4 quarters; ending them early costs 1 quarter of fees",
+   "confirmed_vs_design": "CONFIRMED -- carried-over infrastructure (substation, land, permits, some switchgear) genuinely does reduce AI-shell conversion cost per conversions.json; -25%/-1 quarter is a reasonable game value"
+  },
+  {
+   "id": "hold_and_wait",
+   "immediate_effect": "GPUs switched off; sites stay energized and idle. Resale value keeps falling (Act I merge.json 3060 Ti path: $800->$400->$300 through 2022)",
+   "head_start": "idle MW convert with no re-energise delay; 2024 BTC recovery upside if mining is restarted",
+   "handicap": "full power and rent burn on idle MW until used",
+   "confirmed_vs_design": "CONFIRMED -- matches the real 'hold energized megawatts and wait' strategy that several distressed miners (and the Argo->Galaxy Helios site specifically) followed into 2023-24 before the AI-hosting wave made those same megawatts valuable"
+  }
+ ],
+ "lifeline_and_preset": "see capital_act2.json lifeline_card_final_numbers and standalone_preset_final_numbers for the final confirmed numbers"
+}

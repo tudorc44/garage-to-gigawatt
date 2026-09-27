@@ -1,0 +1,105 @@
+{
+ "schema_version": 1,
+ "regions": [
+  {
+   "id": "texas_ercot",
+   "name": "Texas (ERCOT)",
+   "power_usd_kwh": {"2022Q4": 0.033, "2023Q4": 0.035, "2024Q4": 0.040, "2025Q4": 0.045, "2026Q3": 0.052, "2026Q4": 0.055,
+     "source": "≈ industrial baseline, rising trend consistent with ERCOT retail 2026 avg ~14c (nuwattenergy.com) but industrial/large-load rates run well below retail", "estimate": true},
+   "queue_months": {"value": [12, 24], "source": "SB6-reformed queue, but 474GW backlog persists", "estimate": true},
+   "land_shell_cost_note": "cheapest construction of the 6 regions ($600-900/sqft per irecruit.co)",
+   "political_climate": "pro-growth, business-friendly historically; 2026 backlash emerging",
+   "community_sensitivity": "low-moderate",
+   "moratoriums_incentives": [
+    {"date": "2025-06-20", "event": "SB6 signed: large-load (>=75MW) interconnection reform -- transmission screening deposit, site-control proof, mandatory curtailment equipment after 2025-12-31", "source": "Bracewell law firm summary", "estimate": false},
+    {"date": "2026-08-03", "event": "Gov. Abbott halts new ERCOT grid connections pending a PUCT/ERCOT audit", "source": "electricchoice.com moratorium tracker", "estimate": false}
+   ],
+   "heat_modifier": 0.9,
+   "anger_modifier": 1.0
+  },
+  {
+   "id": "virginia_pjm",
+   "name": "Virginia (PJM / 'Data Center Alley')",
+   "power_usd_kwh": {"2022Q4": 0.045, "2023Q4": 0.050, "2024Q4": 0.060, "2025Q4": 0.075, "2026Q3": 0.082, "2026Q4": 0.085,
+     "source": "PJM capacity price +76% 2024->2025 (eenews.net, sourced), the fastest-rising region", "estimate": true},
+   "queue_months": {"value": [60, 96], "source": "PJM average interconnection wait now ~7 years (electricchoice.com, sourced)", "estimate": false},
+   "land_shell_cost_note": "highest construction cost of the 6 ($800-1,100/sqft NoVA)",
+   "political_climate": "historically most welcoming (Data Center Alley); backlash emerging 2024-26",
+   "community_sensitivity": "high (Northern Virginia density; Warrenton council losses Nov 2024)",
+   "moratoriums_incentives": [
+    {"date": "2024-11-05", "event": "Every Warrenton, VA council member who backed an Amazon data center loses re-election", "source": "01-02-industry-and-timeline.md", "estimate": false},
+    {"date": "2026-06-30", "event": "Virginia enacts $0.011/kWh tax on large loads", "source": "electricchoice.com", "estimate": true},
+    {"date": "2026-07", "event": "Compass exits Prince William Digital Gateway; QTS/Blackstone abandons it Jul 2026", "source": "01-02-industry-and-timeline.md, CDM", "estimate": false}
+   ],
+   "heat_modifier": 1.3,
+   "anger_modifier": 1.4
+  },
+  {
+   "id": "ohio",
+   "name": "Ohio (PJM / AEP territory)",
+   "power_usd_kwh": {"2022Q4": 0.042, "2023Q4": 0.045, "2024Q4": 0.050, "2025Q4": 0.058, "2026Q3": 0.063, "2026Q4": 0.065, "estimate": true},
+   "queue_months": {"value": [24, 48], "estimate": true},
+   "land_shell_cost_note": "mid-range ($650-950/sqft)",
+   "political_climate": "mixed -- first state with a bespoke data-center tariff",
+   "community_sensitivity": "growing (organized Columbus-area opposition)",
+   "moratoriums_incentives": [
+    {"date": "2026-04", "event": "AEP Ohio landmark data-center-specific tariff (minimum-take, exit fees) approved by PUCO; rate increases effective", "source": "powermag.com, electricityrates.com", "estimate": false}
+   ],
+   "heat_modifier": 1.05,
+   "anger_modifier": 1.1
+  },
+  {
+   "id": "georgia",
+   "name": "Georgia (SERC / Georgia Power territory)",
+   "power_usd_kwh": {"2022Q4": 0.040, "2023Q4": 0.043, "2024Q4": 0.048, "2025Q4": 0.054, "2026Q3": 0.058, "2026Q4": 0.060, "estimate": true},
+   "queue_months": {"value": [24, 48], "estimate": true},
+   "land_shell_cost_note": "mid-low",
+   "political_climate": "mixed, following Ohio's cost-shift model",
+   "community_sensitivity": "growing",
+   "moratoriums_incentives": [
+    {"date": "2026-03", "event": "Georgia PSC approves new rule shifting data-center power costs onto data centers ('Georgia follows Ohio's lead')", "source": "datacenterfrontier.com; psc.ga.gov fact sheet", "estimate": false}
+   ],
+   "heat_modifier": 1.0,
+   "anger_modifier": 1.05
+  },
+  {
+   "id": "arizona",
+   "name": "Arizona (APS / SRP territory)",
+   "power_usd_kwh": {"2022Q4": 0.036, "2023Q4": 0.038, "2024Q4": 0.042, "2025Q4": 0.048, "2026Q3": 0.053, "2026Q4": 0.055, "estimate": true},
+   "queue_months": {"value": [18, 36], "estimate": true},
+   "land_shell_cost_note": "mid ($700-1,000/sqft, Mountain West)",
+   "political_climate": "cooling -- incentive pause",
+   "community_sensitivity": "growing (water/power concerns)",
+   "moratoriums_incentives": [
+    {"date": "2026-06-13", "event": "Arizona pauses tax incentives for new data-center projects (3-year pause)", "source": "electricchoice.com; 18-act-ii-design.md", "estimate": false}
+   ],
+   "heat_modifier": 1.1,
+   "anger_modifier": 1.15
+  },
+  {
+   "id": "nordics",
+   "name": "Nordics (Finland / Sweden / Norway)",
+   "power_usd_kwh": {"2022Q4": 0.030, "2023Q4": 0.032, "2024Q4": 0.035, "2025Q4": 0.040, "2026Q3": 0.043, "2026Q4": 0.045,
+     "source": "≈ historically among cheapest industrial power in Europe (hydro/wind/nuclear-heavy); flattest, least data-center-driven inflation of the 6 regions", "estimate": true},
+   "queue_months": {"value": [12, 36], "source": "≈ faster than US ISO queues due to smaller/less-congested grid + government fast-tracking", "estimate": true},
+   "land_shell_cost_note": "lower construction cost; cold climate enables free/economizer cooling",
+   "political_climate": "very welcoming (Finland 'AI Region' branding)",
+   "community_sensitivity": "low",
+   "moratoriums_incentives": [
+    {"date": "2025-2026", "event": "Nebius builds 310MW Finland site, triples Mantsala to 75MW, plans EUR8.5B Lappeenranta project -- net-positive incentive climate, no moratorium found", "source": "qz.com Nebius Finland reporting", "estimate": false}
+   ],
+   "heat_modifier": 0.7,
+   "anger_modifier": 0.6
+  }
+ ],
+ "other_state_actions_not_region_specific": [
+  {"date": "2026-07-14", "state": "New York", "event": "Gov. Hochul signs Executive Order No. 62: statewide moratorium on new hyperscale (50MW+) data centers, ~1yr pending a Generic Environmental Impact Statement", "source": "axios.com; governor.ny.gov EO text", "estimate": false},
+  {"date": "2022-06 to 2024 (lapsed)", "state": "New York (earlier)", "event": "2022 statewide moratorium on new fossil-fuel-powered proof-of-work crypto mining; expired 2024 without a completed environmental study", "source": "internetandtechnologylaw.com; earthjustice.org", "estimate": false},
+  {"date": "2026-07-07", "state": "New Jersey", "event": "Fair Share Act signed: 50MW+ facilities require a 10-year community commitment", "source": "electricchoice.com", "estimate": true},
+  {"date": "2026-07-01", "state": "Illinois", "event": "Indefinite pause on data-center tax incentives", "source": "electricchoice.com", "estimate": true},
+  {"date": "n/a", "state": "Maine", "event": "Statewide moratorium bill LD 307 VETOED by Gov. Mills -- did not pass", "source": "electricchoice.com", "estimate": true},
+  {"date": "2026 (pending)", "state": "Oklahoma", "event": "SB 1488 statewide moratorium bill pending in committee", "source": "electricchoice.com", "estimate": true},
+  {"date": "2026Q1", "state": "national", "event": "Nearly $130B of US data-center projects blocked or delayed in Q1 2026 (75+ projects); running tally grew toward ~$200B later in the year", "source": "Data Center Watch Q1 2026 report; Gizmodo", "estimate": false},
+  {"date": "2026-05-13", "state": "national", "event": "Gallup poll: 71% of Americans oppose a data center in their own community", "source": "news.gallup.com; Washington Post", "estimate": false}
+ ]
+}

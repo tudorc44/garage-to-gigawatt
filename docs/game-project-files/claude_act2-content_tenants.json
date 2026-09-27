@@ -1,0 +1,76 @@
+{
+ "schema_version": 1,
+ "tenant_types": [
+  {
+   "id": "hyperscaler",
+   "label": "Hyperscaler (Microsoft, Meta, Google, Oracle, Amazon)",
+   "credit_rating": "A/AA",
+   "price_usd_mw_yr_colo": {"value": [1500000, 2000000], "source": "Hut 8 Beacon Point $9.8B/352MW/15yr = ~$1.86M/MW/yr base term; Applied Digital Forge tranches ~$0.7-1M+/MW/yr", "estimate": false},
+   "price_multiplier_compute_bundled": {"value": [5, 10], "note": "compute-inclusive deals (GPU cloud, not pure colo) run 5-10x higher per MW because GPU/compute revenue dominates -- IREN-Microsoft implies ~$9.7M/MW/yr but that is NOT a colo comparable"},
+   "term_years": [5, 15],
+   "prepayment_pct": {"value": 0, "note": "not typically required directly -- hyperscalers are creditworthy enough; prepayment appears when the counterparty is a neocloud intermediary, not the hyperscaler itself"},
+   "sla_penalty": "high take-or-pay, liquidated damages for late delivery, standard in all disclosed deals",
+   "default_behavior": "none observed 2022-2026; hyperscalers have not defaulted or renegotiated down -- they are the credit anchor of the ecosystem",
+   "backstop_needed": false,
+   "walk_chance_late_2q": 0.05
+  },
+  {
+   "id": "ai_lab",
+   "label": "AI lab (OpenAI, Anthropic, xAI)",
+   "credit_rating": "BB/unrated",
+   "price_multiplier": 1.4,
+   "term_years": [5, 7],
+   "prepayment_pct": {"value": [0, 15], "note": "some deals include equity-for-commitment structures instead (OpenAI took CoreWeave warrants)"},
+   "sla_penalty": "same take-or-pay language as hyperscaler deals, but weaker ultimate counterparty credit -- flagged repeatedly by rating agencies and short-sellers (e.g. Kerrisdale on CoreWeave) as the key backlog risk",
+   "default_behavior": "no public defaults through Sep 2026; risk is unrealized/forward-looking, not yet realized -- model as a rare but real tail event, not a common one",
+   "backstop_needed": false,
+   "walk_chance_late_2q": 0.20,
+   "real_examples": [
+    {"name": "Oracle-OpenAI (Stargate)", "date": "2025-09", "value_usd": 300000000000, "term": "multi-year through early 2030s", "note": "largest cloud commitment on record; central 'circularity' criticism case -- OpenAI has no revenue base remotely near $300B", "source": "Built In; OpenAI"},
+    {"name": "CoreWeave-OpenAI", "date": "2025-03", "value_usd": 11900000000, "expanded_usd": 6500000000, "term": "5yr", "source": "CNBC; CoreWeave IR"}
+   ]
+  },
+  {
+   "id": "neocloud_sub_tenant",
+   "label": "Neocloud / enterprise sub-tenant (e.g. Fluidstack subletting from a miner-landlord, backed by a hyperscaler)",
+   "credit_rating": "BB/B (backed to near-hyperscaler with a backstop)",
+   "price_usd_mw_yr": {"value": [1500000, 2260000], "source": "Cipher-Fluidstack ≈$1.79M/MW/yr initial (168MW/$3B/10yr); TeraWulf-Fluidstack JV (Abernathy) ≈$2.26M/MW/yr (168MW/$9.5B/25yr, hybrid hosting+JV-profit structure)", "estimate": false},
+   "term_years": 10,
+   "extension_years": [5, 5],
+   "prepayment_pct": {"note": "backstop replaces prepayment in these deals -- see lenders.json Google-backstop entry"},
+   "sla_penalty": "liquidated damages, but real credit support comes from the third-party backstop, not tenant balance sheet",
+   "default_behavior": "none observed; structure exists precisely because the market doesn't trust neocloud sub-tenant credit alone",
+   "backstop_needed": true,
+   "walk_chance_late_2q": 0.10,
+   "real_examples": [
+    {"name": "Cipher Mining-Fluidstack (Barber Lake, Google-backed)", "date": "2025-09-25", "mw": 168, "value_usd": 3000000000, "backstop_usd": 1400000000, "backstop_provider": "Google", "backstop_equity_pct": 5.4, "source": "Blockspace; Yahoo Finance"},
+    {"name": "Cipher Mining-Fluidstack (additional tranche)", "date": "2025-09", "mw": 56, "value_usd": 830000000, "backstop_usd": 333000000, "backstop_provider": "Google", "source": "Davis Polk; Globe and Mail"},
+    {"name": "TeraWulf-Fluidstack (initial)", "date": "2025-08-14", "mw": 200, "term": "10yr", "source": "GlobeNewswire"},
+    {"name": "TeraWulf-Fluidstack JV (Abernathy)", "date": "2025-10-28", "mw": 168, "term": "25yr", "value_usd": 9500000000, "structure": "majority-owned JV -- TeraWulf keeps majority ownership + hosting fee + JV profit share", "source": "GlobeNewswire"}
+   ]
+  }
+ ],
+ "tenant_cards": [
+  {"id": "tc_north_azure_cloud", "type": "hyperscaler", "fictional_name": "Northgate Cloud", "credit_rating": "AA", "price_usd_mw_yr": 1800000, "term_years": 15, "prepayment_pct": 0, "ready_by_window_quarters": [4,6], "walk_chance": 0.03},
+  {"id": "tc_meridian_labs", "type": "ai_lab", "fictional_name": "Meridian Labs", "credit_rating": "BB", "price_usd_mw_yr": 2600000, "term_years": 5, "prepayment_pct": 10, "ready_by_window_quarters": [3,5], "walk_chance": 0.20},
+  {"id": "tc_frontier_intelligence", "type": "ai_lab", "fictional_name": "Frontier Intelligence", "credit_rating": "B", "price_usd_mw_yr": 2900000, "term_years": 5, "prepayment_pct": 0, "ready_by_window_quarters": [3,4], "walk_chance": 0.28},
+  {"id": "tc_fluidline_backstopped", "type": "neocloud_sub_tenant", "fictional_name": "Fluidline (Google-style backstop available)", "credit_rating": "BB (backstopped to A)", "price_usd_mw_yr": 1900000, "term_years": 10, "prepayment_pct": 0, "backstop_available": true, "backstop_pct_of_lease": 47, "backstop_equity_ask_pct": 5.0, "ready_by_window_quarters": [4,6], "walk_chance": 0.08},
+  {"id": "tc_realname_coreweave_style", "type": "neocloud_sub_tenant", "real_or_fictional": "real-name allowed if factual", "fictional_name": "a CoreWeave-style hosting anchor", "credit_rating": "B+ (rising)", "price_usd_mw_yr": 2000000, "term_years": 12, "prepayment_pct": 0, "capex_credit_cap_usd_mw": 1500000, "ready_by_window_quarters": [4,8], "walk_chance": 0.05, "basis": "Core Scientific-CoreWeave: $1.96M/MW/yr implied, tenant funds capex up to a $1.5M/MW credit cap"},
+  {"id": "tc_enterprise_render", "type": "ai_lab", "fictional_name": "Kestrel Render (enterprise/media AI)", "credit_rating": "BBB", "price_usd_mw_yr": 2200000, "term_years": 7, "prepayment_pct": 15, "ready_by_window_quarters": [3,5], "walk_chance": 0.12},
+  {"id": "tc_spot_only", "type": "spot", "fictional_name": "(no tenant -- sell full-stack capacity at the spot index)", "credit_rating": "n/a", "price_usd_gpu_hr": "market spot (see gpus.json / market_quarterly.csv)", "term_years": 0, "prepayment_pct": 0, "ready_by_window_quarters": [0,0], "walk_chance": 0.0},
+  {"id": "tc_hyperscaler_overflow", "type": "hyperscaler", "fictional_name": "Northgate Overflow Capacity", "credit_rating": "AA", "price_usd_mw_yr": 1600000, "term_years": 5, "prepayment_pct": 0, "unlock": "GPU know-how level 3 (100MW+ full stack)", "ready_by_window_quarters": [2,4], "walk_chance": 0.02, "basis": "the Microsoft-CoreWeave overflow-capacity pattern"},
+  {"id": "tc_regional_state_tenant", "type": "hyperscaler", "fictional_name": "a sovereign/regional cloud program (Nordics)", "credit_rating": "A", "price_usd_mw_yr": 1500000, "term_years": 10, "prepayment_pct": 5, "region_lock": "nordics", "ready_by_window_quarters": [5,7], "walk_chance": 0.04}
+ ],
+ "take_or_pay_terms": {
+  "penalty_pct_of_annual_contract_per_quarter_late": {"value": [1, 3], "source": "not publicly disclosed in any reviewed press release (confidential contract exhibits); design default", "estimate": true},
+  "termination_chance_at_2q_late": {"value": 0.50, "source": "18-act-ii-design.md §5.2 default, retained -- consistent with the low real-world incidence of actual terminations (most disclosed 'ready for service' dates were hit or only modestly slipped, e.g. Applied Digital Polaris Forge Building 1)", "estimate": true},
+  "real_delivery_track_record": "no public example found of a hyperscaler invoking termination-for-delay against a miner-turned-AI-host through Sep 2026; model termination as a rare tail event, standard liquidated-damages as the common case"
+ },
+ "hosting_market_2022_2024": {
+  "rate_usd_kwh": {"pre_2022": 0.055, "2022": 0.085, "2023": 0.075, "2024": 0.060,
+   "source": "Hashrate Index: hosting rates ballooned in 2022 (power-cost spike post energy crisis); many hosts shifted to profit/revenue-share instead of flat $/kWh; Core Scientific raised to $0.10/kWh and still filed Ch.11 anyway", "estimate": true},
+  "client_defaults": [
+   {"name": "Compute North", "date": "2022-09-22", "note": "fixed-rate hosting contracts prevented passing rising power costs through to clients -- a direct bankruptcy trigger, owed up to $500M"}
+  ]
+ }
+}

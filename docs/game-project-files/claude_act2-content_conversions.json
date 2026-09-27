@@ -1,0 +1,68 @@
+{
+ "schema_version": 1,
+ "conversions": [
+  {
+   "id": "mining_to_hosting",
+   "label": "Mining site -> hosting (third-party ASICs)",
+   "capex_usd_mw": {"2022Q4": 1500000, "2023Q4": 1800000, "2024Q4": 2200000, "2025Q4": 2600000, "2026Q3": 3000000,
+     "source": "≈ pure electrical/mechanical retrofit, distinct from a compute-ready shell; Cipher's 313MW priced at $2.9M/MW in the market (Jun2026, sourced) sits at the top of this band", "estimate": true},
+   "build_quarters": 1,
+   "carries_over": ["substation", "land", "permits", "some switchgear"],
+   "does_not_carry_over": ["ASIC-specific busbar layout is fine for hosting (still ASICs)"],
+   "basis": "Core Scientific/Cipher hosting-for-others deals 2022-24; Hashrate Index hosting-rate reporting"
+  },
+  {
+   "id": "mining_or_idle_to_ai_shell_retrofit",
+   "label": "Mining/idle MW -> AI shell (retrofit: liquid cooling + electrical)",
+   "capex_usd_mw": {"2022Q4": 6000000, "2023Q4": 7000000, "2024Q4": 8000000, "2025Q4": 9000000, "2026Q3": 10000000,
+     "source": "Measured AI substack: IREN $6-7M/MW all-in, Riot Rockdale $3.6M/MW (cheapest disclosed), Core Scientific Austin 16MW for CoreWeave comparable; PUE moves from <1.05 (mining) to 1.35-1.40 (HPC)", "estimate": false},
+   "build_quarters": 3,
+   "carries_over": ["substation", "land", "permits", "some transformers"],
+   "does_not_carry_over": ["cooling (air->liquid)", "rack density/redundancy", "fibre (must add)"],
+   "basis": "IREN, Riot (Rockdale AMD lease Jan 2026), Core Scientific Austin retrofit case studies"
+  },
+  {
+   "id": "greenfield_ai_shell",
+   "label": "New AI shell (greenfield, energized land)",
+   "capex_usd_mw": {"2022Q4": 10000000, "2023Q4": 11000000, "2024Q4": 12500000, "2025Q4": 15000000, "2026Q3": 18000000,
+     "source": "irecruit.co 2026 benchmarks: national avg $11.3M/MW shell-and-core; AI-optimized tier $15-20M+/MW; Applied Digital ND disclosed $10-13M/MW; historical trend $7M/MW (2020) -> $11-20M/MW (2026)", "estimate": false},
+   "build_quarters": 5,
+   "carries_over": [],
+   "does_not_carry_over": ["nothing -- built from bare land"],
+   "basis": "irecruit.co 2026 construction-cost benchmarks; Applied Digital investor disclosures"
+  },
+  {
+   "id": "shell_to_fullstack",
+   "label": "AI shell -> full stack (add owned GPUs)",
+   "capex_usd_mw_incremental": {"2022Q4": 18000000, "2023Q4": 20000000, "2024Q4": 24000000, "2025Q4": 28000000, "2026Q3": 30000000,
+     "source": "≈ triangulated from GPU purchase pricing (gpus.json) x gpus-per-MW, no single clean company disclosure found; total full-stack all-in (shell+GPU) implied ~$28-45M/MW matches 01-02-industry-and-timeline.md A.4c", "estimate": true},
+   "build_quarters_additional": 1,
+   "gating_resource": "GPU allocation queue (2023-24 shortage; see gpus.json lead_time_weeks)",
+   "basis": "derived; no company publishes a clean 'shell to full-stack' delta -- flagged as the pack's single weakest-sourced build-cost line, recommend treating as an estimate to be tuned in playtesting"
+  },
+  {
+   "id": "hosting_to_ai_shell",
+   "label": "Existing hosting (Merge 'hosting' head start) -> AI shell",
+   "capex_usd_mw_discount_pct": 25,
+   "build_quarters_discount": 1,
+   "basis": "18-act-ii-design.md ⚙ value confirmed: hosting sites are electrically/mechanically closer to AI-ready than raw mining sites, so the design's -25% capex / -1 quarter discount is directionally right and is CONFIRMED as the game value"
+  }
+ ],
+ "grid_upgrade": {
+  "capex_usd_mw": {"value": 750000, "source": "≈ $0.5-1M/MW per 18-act-ii-design.md §5.3; consistent with substation/transformer cost data in Act I sites.json scaled up", "estimate": true},
+  "build_quarters_by_region": {
+   "texas_ercot": {"value": [3, 8], "source": "SB6 (2025) reformed queue; 474GW ERCOT backlog persists (electricchoice.com)", "estimate": true},
+   "virginia_pjm": {"value": [20, 32], "source": "PJM average interconnection wait now ~7 years (electricchoice.com, sourced)", "estimate": false},
+   "ohio": {"value": [8, 16], "estimate": true},
+   "georgia": {"value": [8, 16], "estimate": true},
+   "arizona": {"value": [6, 12], "estimate": true},
+   "nordics": {"value": [4, 12], "source": "faster than US ISO queues; government fast-tracking (Nebius Finland buildout)", "estimate": true}
+  }
+ },
+ "on_site_gas": {
+  "capex_usd_mw": {"value": 1500000, "source": "18-act-ii-design.md ⚙, confirmed directionally by xAI Colossus Memphis case (fast, temporary turbines)", "estimate": true},
+  "build_quarters": 2,
+  "heat_delta": 20,
+  "risk": "air-permit lawsuit risk (xAI Memphis NAACP/SELC pattern, 2025-26)"
+ }
+}

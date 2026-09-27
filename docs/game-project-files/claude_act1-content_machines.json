@@ -1,0 +1,359 @@
+{
+ "schema_version": 2,
+ "notes": "v2 (26 Sep 2026 review): S9 new-price series ends when retail ends (2020Q1); LHR is news-only in the alpha; added heat_per_unit_garage (flag F7). Prices are USD per complete unit (GPU rigs = 6 GPUs + frame/PSU/board). Used = healthy second-hand unit. In boom quarters used can exceed new because new units carry a lead time.",
+ "models": [
+  {
+   "id": "gpu_gen1",
+   "name": "GPU Rig Gen 1",
+   "coin": "ETH",
+   "available_from": "2017Q1",
+   "real_basis": "6× AMD Radeon RX 580 8GB (memory-tuned ~30 MH/s each)",
+   "why": "The card of the 2017 shortage: best MH per $ (MSRP $229, street $350–450 mid-2017). A GTX 1070 rig gives similar hashrate for more money.",
+   "hashrate_mhs": {
+    "value": 180,
+    "source": "whattomine RX 580 ~30 MH/s tuned",
+    "estimate": false
+   },
+   "power_kw": {
+    "value": 0.95,
+    "source": "~135 W per card at the wall, tuned, ×6 + ~140 W platform (≈)",
+    "estimate": true
+   },
+   "efficiency_w_per_mh": {
+    "value": 5.3,
+    "source": "derived",
+    "estimate": true
+   },
+   "noise_db": {
+    "value": 58,
+    "source": "open-frame rig with 6 axial GPU fans, 55–65 dB at 1 m (≈)",
+    "estimate": true
+   },
+   "lifespan_years": {
+    "value": 3,
+    "source": "fans and thermal pads degrade in 2–4 years of 24/7 load (≈)",
+    "estimate": true
+   },
+   "annual_failure_rate": {
+    "value": 0.08,
+    "source": "≈ mining forum and hosting anecdotes: fans, risers, PSUs; used ×1.5",
+    "estimate": true
+   },
+   "heat_per_unit_garage": 1,
+   "price_new": {
+    "2017Q1": 2000,
+    "2017Q2": 3200,
+    "2017Q3": 3600,
+    "2017Q4": 3000,
+    "2018Q1": 3400,
+    "2018Q2": 2400,
+    "2018Q3": 1900,
+    "2018Q4": 1500,
+    "2019Q1": 1450,
+    "2019Q2": 1400,
+    "2019Q3": 1350,
+    "2019Q4": 1300,
+    "2020Q1": 1300,
+    "2020Q2": 1300,
+    "2020Q3": 1500,
+    "2020Q4": 1700,
+    "2021Q1": 2800,
+    "2021Q2": 3300,
+    "2021Q3": 2950,
+    "2021Q4": 2600,
+    "2022Q1": 2250,
+    "2022Q2": 1900,
+    "2022Q3": 1200
+   },
+   "price_used": {
+    "2017Q1": 1500,
+    "2017Q2": 2500,
+    "2017Q3": 2700,
+    "2017Q4": 2300,
+    "2018Q1": 2500,
+    "2018Q2": 1500,
+    "2018Q3": 1000,
+    "2018Q4": 650,
+    "2019Q1": 600,
+    "2019Q2": 750,
+    "2019Q3": 700,
+    "2019Q4": 650,
+    "2020Q1": 600,
+    "2020Q2": 700,
+    "2020Q3": 900,
+    "2020Q4": 1100,
+    "2021Q1": 1900,
+    "2021Q2": 2300,
+    "2021Q3": 2050,
+    "2021Q4": 1800,
+    "2022Q1": 1500,
+    "2022Q2": 900,
+    "2022Q3": 550
+   },
+   "price_source": "RX 580 MSRP $229 (AMD, Apr 2017); street prices via Tom's Hardware / PCPartPicker history and the Tom's Hardware eBay GPU price index 2021–22 (≈)",
+   "lead_time_quarters": {
+    "default": 0,
+    "2017Q2": 1,
+    "2017Q3": 1,
+    "2021Q1": 1,
+    "2021Q2": 1
+   }
+  },
+  {
+   "id": "gpu_gen2",
+   "name": "GPU Rig Gen 2",
+   "coin": "ETH",
+   "available_from": "2020Q4",
+   "real_basis": "6× Nvidia RTX 3060 Ti (non-LHR, ~60 MH/s at ~120 W)",
+   "why": "The efficiency sweet spot of Nvidia's Ampere generation and the most-mined card of 2021. Launched 1 Dec 2020 at $399 MSRP.",
+   "hashrate_mhs": {
+    "value": 360,
+    "source": "whattomine 3060 Ti ~60 MH/s",
+    "estimate": false
+   },
+   "power_kw": {
+    "value": 0.85,
+    "source": "~125 W per card at the wall ×6 + ~100 W platform (≈)",
+    "estimate": true
+   },
+   "efficiency_w_per_mh": {
+    "value": 2.4,
+    "source": "derived",
+    "estimate": true
+   },
+   "noise_db": {
+    "value": 58,
+    "source": "≈",
+    "estimate": true
+   },
+   "lifespan_years": {
+    "value": 4,
+    "source": "≈",
+    "estimate": true
+   },
+   "annual_failure_rate": {
+    "value": 0.05,
+    "source": "≈",
+    "estimate": true
+   },
+   "heat_per_unit_garage": 1,
+   "lhr_note": "LHR (Lite Hash Rate) cards shipped from late May 2021 at ~50% ETH hashrate; software unlocked ~70% (Aug 2021) and ~100% (May 2022). Alpha decision: news item only (news.2021Q2.1). Gen 2 prices already reflect the premium for non-LHR cards. Candidate post-alpha mechanic.",
+   "price_new": {
+    "2020Q4": 3600,
+    "2021Q1": 6000,
+    "2021Q2": 7500,
+    "2021Q3": 6800,
+    "2021Q4": 6600,
+    "2022Q1": 5800,
+    "2022Q2": 3900,
+    "2022Q3": 2800
+   },
+   "price_used": {
+    "2020Q4": 3000,
+    "2021Q1": 5200,
+    "2021Q2": 6500,
+    "2021Q3": 5800,
+    "2021Q4": 5600,
+    "2022Q1": 4800,
+    "2022Q2": 3000,
+    "2022Q3": 1800
+   },
+   "price_source": "3060 Ti MSRP $399 (Nvidia, Dec 2020); eBay averages ~$800–1,000 mid-2021 → ~$350 Sep 2022 (Tom's Hardware GPU price index) (≈)",
+   "lead_time_quarters": {
+    "default": 0,
+    "2021Q1": 1,
+    "2021Q2": 1,
+    "2021Q3": 1
+   }
+  },
+  {
+   "id": "s9",
+   "name": "Antminer S9",
+   "coin": "BTC",
+   "available_from": "2017Q1",
+   "real_basis": "Bitmain Antminer S9 13.5 TH/s (APW3++ PSU)",
+   "hashrate_ths": {
+    "value": 13.5,
+    "source": "Bitmain spec",
+    "estimate": false
+   },
+   "power_kw": {
+    "value": 1.32,
+    "source": "Bitmain spec 1,323 W at wall",
+    "estimate": false
+   },
+   "efficiency_j_per_th": {
+    "value": 98,
+    "source": "Bitmain spec",
+    "estimate": false
+   },
+   "noise_db": {
+    "value": 85,
+    "source": "measured 76–85 dB (≈)",
+    "estimate": true
+   },
+   "lifespan_years": {
+    "value": 4,
+    "source": "≈ hashboard and fan wear",
+    "estimate": true
+   },
+   "annual_failure_rate": {
+    "value": 0.1,
+    "source": "≈ hosts report 5–15%/yr hashboard issues on aged S9s",
+    "estimate": true
+   },
+   "heat_per_unit_garage": 8,
+   "price_new": {
+    "2017Q1": 1300,
+    "2017Q2": 1500,
+    "2017Q3": 1800,
+    "2017Q4": 2300,
+    "2018Q1": 2200,
+    "2018Q2": 1100,
+    "2018Q3": 700,
+    "2018Q4": 450,
+    "2019Q1": 350,
+    "2019Q2": 450,
+    "2019Q3": 400,
+    "2019Q4": 350,
+    "2020Q1": 300
+   },
+   "price_used": {
+    "2017Q1": 1000,
+    "2017Q2": 1200,
+    "2017Q3": 1500,
+    "2017Q4": 2500,
+    "2018Q1": 1800,
+    "2018Q2": 700,
+    "2018Q3": 400,
+    "2018Q4": 150,
+    "2019Q1": 110,
+    "2019Q2": 250,
+    "2019Q3": 250,
+    "2019Q4": 150,
+    "2020Q1": 120,
+    "2020Q2": 50,
+    "2020Q3": 55,
+    "2020Q4": 60,
+    "2021Q1": 120,
+    "2021Q2": 180,
+    "2021Q3": 90,
+    "2021Q4": 120,
+    "2022Q1": 80,
+    "2022Q2": 40,
+    "2022Q3": 25
+   },
+   "price_source": "Bitmain shop batches 2017 ($1,265–2,320); secondary-market quotes (Kaboomracks, ASIC Miner Value archive) and Hashrate Index ASIC Price Index '>68 J/TH' tier from 2020 (≈)",
+   "retail_new_ends": "2020Q1",
+   "used_only_from": "2020Q2",
+   "lead_time_quarters": {
+    "default": 0,
+    "2017Q4": 1,
+    "2018Q1": 1
+   }
+  },
+  {
+   "id": "s19pro",
+   "name": "Antminer S19 Pro",
+   "coin": "BTC",
+   "available_from": "2020Q2",
+   "real_basis": "Bitmain Antminer S19 Pro 110 TH/s",
+   "hashrate_ths": {
+    "value": 110,
+    "source": "Bitmain spec",
+    "estimate": false
+   },
+   "power_kw": {
+    "value": 3.25,
+    "source": "Bitmain spec 3,250 W",
+    "estimate": false
+   },
+   "efficiency_j_per_th": {
+    "value": 29.5,
+    "source": "Bitmain spec",
+    "estimate": false
+   },
+   "noise_db": {
+    "value": 75,
+    "source": "Bitmain spec 75 dB; field readings ~80 (≈)",
+    "estimate": true
+   },
+   "lifespan_years": {
+    "value": 5,
+    "source": "≈",
+    "estimate": true
+   },
+   "annual_failure_rate": {
+    "value": 0.06,
+    "source": "≈ early batches had hashboard and PSU issues",
+    "estimate": true
+   },
+   "heat_per_unit_garage": 15,
+   "price_new": {
+    "2020Q2": 2600,
+    "2020Q3": 2400,
+    "2020Q4": 3200,
+    "2021Q1": 6500,
+    "2021Q2": 9500,
+    "2021Q3": 9800,
+    "2021Q4": 11000,
+    "2022Q1": 9000,
+    "2022Q2": 5500,
+    "2022Q3": 3300
+   },
+   "price_used": {
+    "2020Q2": 2300,
+    "2020Q3": 2200,
+    "2020Q4": 3000,
+    "2021Q1": 6000,
+    "2021Q2": 8500,
+    "2021Q3": 8800,
+    "2021Q4": 10500,
+    "2022Q1": 8200,
+    "2022Q2": 4400,
+    "2022Q3": 2900
+   },
+   "usd_per_th_index": {
+    "2020Q3": 22,
+    "2020Q4": 28,
+    "2021Q1": 58,
+    "2021Q2": 85,
+    "2021Q3": 88,
+    "2021Q4": 98,
+    "2022Q1": 78,
+    "2022Q2": 45,
+    "2022Q3": 27
+   },
+   "price_source": "Launch ~$2,400–2,800 (Bitmain, May 2020); Hashrate Index ASIC Price Index '<38 J/TH' tier: ~$20/TH mid-2020 → ~$95–105/TH Oct–Nov 2021 → ~$25–30/TH Sep 2022 (≈, read from published charts)",
+   "lead_time_quarters": {
+    "default": 0,
+    "2020Q4": 1,
+    "2021Q1": 2,
+    "2021Q2": 3,
+    "2021Q3": 3,
+    "2021Q4": 2,
+    "2022Q1": 1
+   },
+   "lead_time_source": "Bitmain futures batches sold 6–9 months forward during 2021; Riot/Marathon 10-Q purchase schedules (≈)"
+  }
+ ],
+ "infrastructure_per_mw": {
+  "racks_pdus_cabling_usd": {
+   "value": 60000,
+   "source": "≈ industry quotes $40–80k/MW",
+   "estimate": true
+  },
+  "cooling_fans_container_usd": {
+   "value": 120000,
+   "source": "≈ air-cooled; immersion $250k+/MW",
+   "estimate": true
+  },
+  "note": "Excludes the site build (see sites.json capex)"
+ },
+ "machine_cost_per_mw_2021_peak": {
+  "value": 3400000,
+  "source": "S19 Pro: 1 MW ≈ 308 units × ~$11k (2021Q4) = $3.4M",
+  "estimate": true
+ },
+ "garage_heat_note": "heat_per_unit_garage applies only at the garage tier (flag F7): 3 S9s add +24 Heat, so ASICs in a garage trigger neighbour complaints fast. Other tiers use the site's heat_base."
+}
