@@ -956,6 +956,27 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
   fields only from a known list (`hosting`, `quarterStats.hostingFeesUsd`, `reports.*.hostingFeesUsd`).
 - **M2.5** UI: the dashboard's MW-by-use bar, the top bar's rating / backlog placeholders and H100 spot chip, an
   Act II market strip (A2-03), the MW bar per site, and the hosting dialog.
+  **Done.** In Act II (`state.act === 2`):
+  - **Dashboard:** a "Where your megawatts go · N MW" panel above the three columns: key with every use (zeros
+    too), the bar (`components/mwbar.tsx`: fixed order, labels only on segments ≥ 3%, building hatched) and a hint
+    when MW sit idle.
+  - **Market card:** BTC, hashprice and H100 spot sparklines, then the AI demand index (with its change since last
+    quarter) and the quarter's H100 1-year contract and neocloud prices. Before 2023Q3 the H100 slot reads "No GPU
+    rental market yet".
+  - **Top bar:** a Rating badge (dashed "NR" = not rated yet), Backlog ($0), and H100 spot in place of the ETH price.
+  - **To-do list:** "Host other miners' machines" in Sites & power opens the **hosting dialog**: per site, the free
+    energized kW, the rate vs the site's power, the margin per MW-quarter (red when negative), a kW box and a convert
+    button with its cost and Bandwidth; then the contracts with "End · fee" (or "End · free").
+  - **Fleet panel** (dashboard and Fleet & Sites): a compact MW bar under each site.
+  - **Quarter report:** hosting fees are in the cash line's inflows, with their own line.
+  - Selectors: `act2MarketView`, `hostingView`, `ratingBacklogView` (placeholders: no rating, $0 backlog until
+    those systems exist), `mwByUse` / `siteMwByUse` re-exported.
+  - Decisions (mine, reversible): segment colours from the tokens (mining = BTC series, hosting = hashprice series,
+    AI shell = muted ink, AI cloud = benchmark series, building hatched, idle = sunken panel); the ETH price leaves
+    the Act II top bar (ETH still shows in the treasury chip); A2-03's KPI row, active-projects box and inbox are
+    left for the milestones that give them content.
+  - Checked in the browser at 1280×800 (campus theme): dashboard, dialog, converting 200 kW (cash −$20K, 1
+    Bandwidth, bar shows 200 kW building, "End · free"), no console errors.
 - **M2.6** Sim: a hosting-switcher bot and Act II numbers from the sim-runner for the milestone report.
 
 

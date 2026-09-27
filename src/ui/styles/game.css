@@ -1120,3 +1120,89 @@ td.wrap {
 .act-intro-box td.r {
   white-space: normal;
 }
+
+/* ===== Act II: the MW-by-use bar (wireframes A2-03 / A2-06, component sheet) ===== */
+.mwbar {
+  display: flex;
+  height: 22px;
+  border: var(--border-hair) solid var(--ink-muted);
+  border-radius: var(--radius-1);
+  overflow: hidden;
+  background: var(--panel-sunk);
+}
+.mwbar.compact {
+  height: 12px;
+}
+.mwbar > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  white-space: nowrap;
+  font-family: var(--font-num);
+  font-size: 11px;
+}
+.mw-mining {
+  background: var(--series-btc);
+  color: var(--on-action);
+}
+.mw-hosting {
+  background: var(--series-hashprice);
+  color: var(--on-action);
+}
+.mw-aiShell {
+  background: var(--ink-muted);
+  color: var(--on-action);
+}
+.mw-aiCloud {
+  background: var(--series-benchmark);
+  color: var(--on-action);
+}
+.mw-building {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--panel) 0 4px,
+    var(--ink-disabled) 4px 6px
+  );
+  color: var(--ink);
+}
+.mw-idle {
+  background: var(--panel-sunk);
+  color: var(--ink-muted);
+}
+.mw-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  font-size: 12px;
+}
+.mw-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.mw-key i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: var(--border-hair) solid var(--ink-muted);
+}
+.mw-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+/* The credit rating badge (component sheet): dashed = not rated yet. */
+.rating-badge {
+  display: inline-block;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-1);
+  padding: 0 6px;
+  font-weight: 700;
+  font-family: var(--font-num);
+}
+.rating-badge.unrated {
+  border-style: dashed;
+  color: var(--ink-muted);
+  border-color: var(--ink-muted);
+}

@@ -9,6 +9,7 @@ import {
   auctionView,
   bestSite,
   communityView,
+  hostingView,
   cryptoLoanView,
   equipmentLoanView,
   constructionLoanView,
@@ -1664,5 +1665,166 @@ export function HiresTable({ state, act }: ScreenProps) {
         })}
       </tbody>
     </table>
+  )
+}
+
+/**
+ * Act II hosting (scope 0.2 §2.4): per site, convert free energized kW (cost, rate, power price and
+ * a quarter's margin per MW shown up front); then the contracts, each with what ending costs now.
+ */
+export function HostingDialog({ state, act, onClose }: DialogProps) {
+  const v = hostingView(state)
+  const [kw, setKw] = useState<Record<string, number>>(() =>
+    Object.fromEntries(v.sites.map((x) => [x.site.id, Math.floor(x.freeKw)])),
+  )
+  return (
+    <Dialog title={t('ui.hosting.title')} onClose={onClose}>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.hosting.note', {
+          cost: fmt.money(v.sites[0]?.costPerMwUsd ?? 0),
+          bw: v.bandwidth,
+          term: v.termQuarters,
+        })}
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>{t('ui.hosting.col.site')}</th>
+            <th class="r">{t('ui.hosting.col.rate')}</th>
+            <th class="r">{t('ui.hosting.col.margin')}</th>
+            <th class="r">{t('ui.hosting.col.convert')}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {v.sites.map((x) => {
+            const amount = kw[x.site.id] ?? 0
+            const a: Action = {
+              type: 'HOST_START',
+              siteId: x.site.id,
+              kw: amount,
+            }
+            const why = whyNot(state, a)
+            return (
+              <tr key={x.site.id}>
+                <td>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      gap: '8px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Icon name={tierIcon(x.site.tier)} size={16} />
+                    {tierName(x.site.tier)}
+                  </span>
+                  <div class="num-s muted">
+                    {t('ui.hosting.free', { value: fmt.power(x.freeKw) })}
+                  </div>
+                </td>
+                <td class="num r">
+                  {fmt.cents(x.rateUsdKwh)} / {fmt.cents(x.powerUsdKwh)}
+                </td>
+                <td class={`num r ${x.marginPerMwQUsd < 0 ? 'loss' : ''}`}>
+                  {fmt.money(x.marginPerMwQUsd)}
+                </td>
+                <td class="r" style={{ whiteSpace: 'nowrap' }}>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      gap: '6px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <input
+                      type="number"
+                      min={0}
+                      max={Math.floor(x.freeKw)}
+                      step={10}
+                      value={amount}
+                      aria-label={t('ui.hosting.col.convert')}
+                      style={{ width: '72px' }}
+                      onInput={(e) =>
+                        setKw({
+                          ...kw,
+                          [x.site.id]: Math.max(
+                            0,
+                            Math.floor(
+                              Number((e.target as HTMLInputElement).value),
+                            ),
+                          ),
+                        })
+                      }
+                    />
+                    <button
+                      type="button"
+                      class="btn"
+                      disabled={!!why}
+                      title={why ? say(why) : undefined}
+                      onClick={() => act(a)}
+                    >
+                      {t('ui.hosting.convert', {
+                        value: fmt.money((amount / 1000) * x.costPerMwUsd),
+                      })}
+                      <Pips
+                        total={v.bandwidth}
+                        filled={v.bandwidth}
+                        label={t('ui.plan.costs_bandwidth', { n: v.bandwidth })}
+                      />
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <div class="label">{t('ui.hosting.contracts')}</div>
+      {v.contracts.length === 0 ? (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.hosting.none')}
+        </p>
+      ) : (
+        v.contracts.map((c) => {
+          const a: Action = { type: 'HOST_END', contractId: c.contract.id }
+          const why = whyNot(state, a)
+          return (
+            <div class="row-between" key={c.contract.id}>
+              <span class="num-s">
+                {c.live
+                  ? t('ui.hosting.live', {
+                      kw: fmt.power(c.contract.kw),
+                      tier: tierName(c.tier),
+                      rate: fmt.cents(c.contract.rateUsdKwh),
+                      quarter: fmt.quarter(c.termEnd),
+                      fees: fmt.money(c.quarterFeesUsd),
+                    })
+                  : t('ui.hosting.converting', {
+                      kw: fmt.power(c.contract.kw),
+                      tier: tierName(c.tier),
+                      quarter: fmt.quarter(c.readyQuarter),
+                    })}
+              </span>
+              <button
+                type="button"
+                class="btn"
+                disabled={!!why}
+                title={why ? say(why) : undefined}
+                onClick={() => act(a)}
+              >
+                {c.endFeeUsd > 0
+                  ? t('ui.hosting.end', { fee: fmt.money(c.endFeeUsd) })
+                  : t('ui.hosting.end_free')}
+              </button>
+            </div>
+          )
+        })
+      )}
+      <div class="row-between">
+        <span />
+        <button type="button" class="btn btn-primary" onClick={onClose}>
+          {t('ui.hosting.close')}
+        </button>
+      </div>
+    </Dialog>
   )
 }

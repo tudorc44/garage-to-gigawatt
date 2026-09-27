@@ -7,6 +7,7 @@ import {
   BANDWIDTH_COST,
   HEAT_MARKS,
   SELL_TREASURY_BANDWIDTH,
+  act2MarketView,
   auctionView,
   communityView,
   cryptoLoanView,
@@ -19,8 +20,11 @@ import {
   planOpensOnBuy,
   marketReadView,
   heatBand,
+  hostingView,
   lotViews,
   machineMarket,
+  mwByUse,
+  siteMwByUse,
   nextRenewal,
   quarterName,
   recentMarket,
@@ -35,6 +39,7 @@ import {
 import type { Coin, GameState } from '../../sim/state.ts'
 import { ActionRow, Icon, Sparkline } from '../components/basics.tsx'
 import { Delta, Shell } from '../components/frame.tsx'
+import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -51,6 +56,7 @@ import {
   CommunityDialog,
   CryptoLoanDialog,
   FleetDialog,
+  HostingDialog,
   LeaveDialog,
   LoanDialog,
   OffersDialog,
@@ -75,6 +81,7 @@ type Open =
   | 'sell_coins'
   | 'auction'
   | 'community'
+  | 'hosting'
   | `leave:${string}`
   | `renew:${string}`
   | `pitch:${string}`
@@ -90,6 +97,7 @@ export function PlanScreen({ state, act }: ScreenProps) {
     <div class="screen">
       <Shell state={state}>
         <main class="main">
+          {state.act === 2 && <MwPanel state={state} />}
           <div class="dash">
             <div class="col">
               <MarketPanel state={state} />
@@ -172,6 +180,9 @@ export function PlanScreen({ state, act }: ScreenProps) {
       {open === 'loan' && (
         <LoanDialog state={state} act={act} onClose={() => setOpen(null)} />
       )}
+      {open === 'hosting' && (
+        <HostingDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
       {open?.startsWith('leave:') && (
         <LeaveDialog
           state={state}
@@ -184,8 +195,31 @@ export function PlanScreen({ state, act }: ScreenProps) {
   )
 }
 
+/** Act II (A2-03): where the company's megawatts go, with the key and a hint when some sit idle. */
+function MwPanel({ state }: { state: GameState }) {
+  const use = mwByUse(state, state.quarter)
+  const totalKw = Object.values(use).reduce((kw, x) => kw + x, 0)
+  return (
+    <div class="panel p mw-panel">
+      <div class="row-between">
+        <h2 class="panel-title">
+          {t('ui.mw.title', { total: fmt.power(totalKw) })}
+        </h2>
+        <MwLegend use={use} />
+      </div>
+      <MwBar use={use} />
+      {use.idle > 0 && (
+        <span class="num-s muted">
+          {t('ui.mw.idle_hint', { value: fmt.power(use.idle) })}
+        </span>
+      )}
+    </div>
+  )
+}
+
 function MarketPanel({ state }: { state: GameState }) {
   const weeks = recentMarket(state)
+  const act2 = act2MarketView(state)
   const first = weeks[0]
   const now = weeks[weeks.length - 1]
   const spark = (
@@ -207,6 +241,76 @@ function MarketPanel({ state }: { state: GameState }) {
       />
     </div>
   )
+  if (act2) {
+    // Act II (A2-03): BTC, hashprice and the H100 spot price; ETH no longer mines.
+    const gpuWeeks = weeks.filter((w) => w.gpu_h100_spot_usd_hr !== null)
+    const gpuFirst = gpuWeeks[0]
+    return (
+      <div class="panel p">
+        <div class="row-between">
+          <h2 class="panel-title">{t('ui.market.title')}</h2>
+        </div>
+        <div class="mkt">
+          {spark('BTC', 'btc', (w) => w.btc_usd, fmt.money(now.btc_usd))}
+          {spark(
+            t('ui.market.hashprice_label'),
+            'hash',
+            (w) => w.btc_hashprice_usd_ph_day,
+            fmt.money(now.btc_hashprice_usd_ph_day),
+          )}
+          {act2.h100SpotUsdHr === null || gpuWeeks.length === 0 ? (
+            <div class="spark">
+              <span class="label">{t('ui.market.h100_spot')}</span>
+              <span class="num-s muted">{t('ui.market.no_gpu_market')}</span>
+            </div>
+          ) : (
+            <div class="spark">
+              <span class="label">{t('ui.market.h100_spot')}</span>
+              <span class="num">
+                {fmt.money(act2.h100SpotUsdHr, { exact: true, dp: 2 })}{' '}
+                {gpuWeeks.length > 1 && (
+                  <Delta
+                    value={
+                      act2.h100SpotUsdHr / gpuFirst.gpu_h100_spot_usd_hr! - 1
+                    }
+                  />
+                )}
+              </span>
+              <Sparkline
+                points={gpuWeeks.map((w) => w.gpu_h100_spot_usd_hr!)}
+                series="eth"
+                label={t('ui.market.trend', {
+                  name: t('ui.market.h100_spot'),
+                })}
+              />
+            </div>
+          )}
+        </div>
+        <div class="row-between num-s muted">
+          <span>
+            {t('ui.market.ai_demand', { value: act2.aiDemandIndex })}{' '}
+            {act2.aiDemandPrev !== null && (
+              <Delta value={act2.aiDemandIndex / act2.aiDemandPrev - 1} />
+            )}
+          </span>
+          {act2.h100Contract1yUsdHr !== null && (
+            <span>
+              {t('ui.market.h100_contract', {
+                contract: fmt.money(act2.h100Contract1yUsdHr, {
+                  exact: true,
+                  dp: 2,
+                }),
+                neocloud: fmt.money(act2.h100NeocloudUsdHr ?? 0, {
+                  exact: true,
+                  dp: 2,
+                }),
+              })}
+            </span>
+          )}
+        </div>
+      </div>
+    )
+  }
   return (
     <div class="panel p">
       <div class="row-between">
@@ -284,6 +388,12 @@ export function FleetPanel({ state }: { state: GameState }) {
                     cap: fmt.power(sv.capacityKw),
                   })}
                 </div>
+                {state.act === 2 && (
+                  <MwBar
+                    use={siteMwByUse(state, sv.site, state.quarter)}
+                    compact
+                  />
+                )}
                 {sv.contract && (
                   <div class={`num-s ${sv.renewalDue ? 'warn' : 'muted'}`}>
                     {sv.renewalDue
@@ -643,6 +753,7 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.sites')}</div>
       {ladderRows}
+      {state.act === 2 && <HostingRow state={state} open={open} />}
       {phaseViews(state).flatMap((p) => {
         if (!p.next) return []
         const plain: Action = { type: 'BUILD_PHASE', siteId: p.site.id }
@@ -821,6 +932,38 @@ function TodoPanel({
 }
 
 /** Read the market: 1 Bandwidth (0 with the Trader), once per quarter. */
+/** Act II: rent free energized power to other miners (scope 0.2 §2.4). */
+function HostingRow({
+  state,
+  open,
+}: {
+  state: GameState
+  open: (o: Open) => void
+}) {
+  const v = hostingView(state)
+  const free = v.sites.reduce((kw, x) => kw + x.freeKw, 0)
+  const rate = v.sites[0]?.rateUsdKwh
+  return (
+    <ActionRow
+      icon="power"
+      name={t('ui.plan.hosting')}
+      bandwidth={free > 0 ? v.bandwidth : undefined}
+      bandwidthLeft={state.bandwidth}
+      price={
+        free > 0 && rate !== undefined
+          ? t('ui.plan.hosting_price', {
+              cost: fmt.money(v.sites[0].costPerMwUsd),
+              rate: fmt.cents(rate),
+            })
+          : v.contracts.length > 0
+            ? undefined
+            : t('ui.plan.hosting_none')
+      }
+      onClick={() => open('hosting')}
+    />
+  )
+}
+
 function ReadMarketRow({ state, act }: ScreenProps) {
   const v = marketReadView(state)
   if (v.read) {

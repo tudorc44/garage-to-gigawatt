@@ -4,6 +4,7 @@
 import {
   BALANCE,
   CONTENT,
+  act2Quarter,
   actLastQuarter,
   type MarketWeek,
 } from '../content/index.ts'
@@ -110,6 +111,15 @@ import { treasuryValueUsd } from './systems/treasury.ts'
 import { bandwidthForQuarter } from './systems/bandwidth.ts'
 import { getStep, raiseBandwidth, unmetRequirement } from './systems/capital.ts'
 export { upcomingRivals } from './systems/rivals.ts'
+export { mwByUse, siteMwByUse, MW_USES, type MwUse } from './systems/mwUse.ts'
+import {
+  convertibleKw,
+  endHostingFeeUsd,
+  hostingBlocker,
+  hostingCostUsd,
+  hostingRateUsdKwh,
+  quarterFeesUsd,
+} from './systems/hosting.ts'
 import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
@@ -1169,4 +1179,84 @@ export function phaseViews(state: GameState) {
 /** kW of this machine you may still buy this quarter (the GPU shortage cap), or Infinity. */
 export function buyCapKw(state: GameState, modelId: string): number {
   return getModel(modelId)?.coin === 'ETH' ? gpuKwLeft(state) : Infinity
+}
+
+// ---------- Act II (wireframe A2-03) ----------
+
+/**
+ * The Act II dashboard's market (A2-03): the H100 spot price this week and its change since the
+ * week before (null before a GPU rental market exists, 2023Q3), the quarter's H100 1-year contract
+ * and neocloud prices, and the AI demand index now and last quarter. undefined in Act I.
+ */
+export function act2MarketView(state: GameState) {
+  const q = act2Quarter(state.quarter)
+  if (!q) return undefined
+  const w = currentMarket(state)
+  const prev = previousMarketWeek(
+    state.quarter,
+    state.phase === 'plan' ? 0 : Math.max(state.week - 1, 0),
+  )
+  const spot = w.gpu_h100_spot_usd_hr
+  const prevSpot = prev?.gpu_h100_spot_usd_hr ?? null
+  return {
+    h100SpotUsdHr: spot,
+    h100SpotChange:
+      spot !== null && prevSpot !== null && prevSpot > 0
+        ? spot / prevSpot - 1
+        : null,
+    h100Contract1yUsdHr: q.gpuRentalUsdHr.h100.contract1y,
+    h100NeocloudUsdHr: q.gpuRentalUsdHr.h100.neocloud,
+    aiDemandIndex: q.aiDemandIndex,
+    aiDemandPrev: act2Quarter(state.quarter - 1)?.aiDemandIndex ?? null,
+  }
+}
+
+/**
+ * Credit rating and contracted backlog (scope 0.2 §2.2): placeholders until the credit rating and
+ * tenants are built. No rating yet (null = "not rated"), and no contracts, so no backlog.
+ */
+export function ratingBacklogView() {
+  return { rating: null as string | null, backlogUsd: 0 }
+}
+
+/**
+ * The hosting dialog (scope 0.2 §2.4): per site, the free energized kW you could convert, the rate
+ * clients would pay (the year they move in), the site's power price, and a quarter's margin per
+ * MW at those prices; then your contracts, with what ending each would cost now.
+ */
+export function hostingView(state: GameState) {
+  const nextQ = Math.min(state.quarter + 1, CONTENT.quarters.length - 1)
+  const hoursQ = 24 * 7 * BALANCE.weeksPerQuarter
+  const sites = state.sites
+    .filter((site) => site.tier !== BALANCE.startSite)
+    .map((site) => {
+      const rateUsdKwh = hostingRateUsdKwh(nextQ)
+      const powerUsdKwh = powerPriceUsdKwh(site, nextQ)
+      const freeKw = convertibleKw(state, site.id)
+      return {
+        site,
+        freeKw,
+        rateUsdKwh,
+        powerUsdKwh,
+        costPerMwUsd: hostingCostUsd(1000),
+        /** Fees minus power for 1 MW over a quarter, at next quarter's prices. */
+        marginPerMwQUsd: 1000 * hoursQ * (rateUsdKwh - powerUsdKwh),
+        blocker: hostingBlocker(state, site.id, Math.max(1, freeKw)),
+      }
+    })
+  const contracts = state.hosting.map((h) => ({
+    contract: h,
+    tier: state.sites.find((x) => x.id === h.siteId)?.tier ?? '',
+    live: h.readyQuarter <= state.quarter,
+    readyQuarter: quarterName(h.readyQuarter),
+    termEnd: quarterName(h.termEndQuarter),
+    quarterFeesUsd: quarterFeesUsd(h),
+    endFeeUsd: endHostingFeeUsd(state, h),
+  }))
+  return {
+    sites,
+    contracts,
+    bandwidth: BALANCE.hosting.bandwidth,
+    termQuarters: BALANCE.hosting.termQuarters,
+  }
 }

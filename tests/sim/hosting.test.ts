@@ -11,6 +11,11 @@ import {
   quarterFeesUsd,
 } from '../../src/sim/systems/hosting.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
+import {
+  act2MarketView,
+  hostingView,
+  ratingBacklogView,
+} from '../../src/sim/selectors.ts'
 import { heatOf } from '../../src/sim/systems/heat.ts'
 import { siteMwByUse } from '../../src/sim/systems/mwUse.ts'
 import { powerPriceUsdKwh } from '../../src/sim/systems/sites.ts'
@@ -170,5 +175,43 @@ describe('hosting (scope 0.2 §2.4)', () => {
     s = ok(s, { type: 'HOST_START', siteId: 'site-2', kw: 100 })
     s = ok(s, { type: 'LEAVE_SITE', siteId: 'site-2' })
     expect(s.hosting).toEqual([])
+  })
+})
+
+describe('Act II views for the UI (A2-03)', () => {
+  it('the market view: no H100 rental before 2023Q3, then spot, contract, neocloud and AI demand', () => {
+    expect(
+      act2MarketView({ ...newGame(1), quarter: q('2022Q3') }),
+    ).toBeUndefined()
+    const early = act2MarketView(act2('2022Q4'))!
+    expect(early.h100SpotUsdHr).toBeNull()
+    expect(early.aiDemandIndex).toBe(8)
+    expect(early.aiDemandPrev).toBeNull()
+    const later = act2MarketView(act2('2024Q3'))!
+    expect(later.h100SpotUsdHr).toBeGreaterThan(0)
+    expect(later.h100Contract1yUsdHr).toBeGreaterThan(0)
+    expect(later.aiDemandPrev).not.toBeNull()
+  })
+
+  it('the hosting view: free kW, rate vs power, margin per MW-quarter, and the contracts', () => {
+    let s = act2('2022Q4')
+    const before = hostingView(s)
+    expect(before.sites.map((x) => x.site.tier)).toEqual(['warehouse']) // never the garage
+    const w = before.sites[0]
+    expect(w.freeKw).toBe(1000)
+    expect(w.rateUsdKwh).toBe(0.075) // clients would move in next quarter, 2023
+    expect(w.costPerMwUsd).toBe(100_000)
+    expect(w.marginPerMwQUsd).toBeCloseTo(
+      1000 * 24 * 7 * 13 * (w.rateUsdKwh - w.powerUsdKwh),
+    )
+    s = ok(s, { type: 'HOST_START', siteId: 'site-2', kw: 400 })
+    const after = hostingView(s)
+    expect(after.sites[0].freeKw).toBe(600)
+    expect(after.contracts).toHaveLength(1)
+    expect(after.contracts[0]).toMatchObject({ live: false, endFeeUsd: 0 })
+  })
+
+  it('rating and backlog are placeholders until those systems exist', () => {
+    expect(ratingBacklogView()).toEqual({ rating: null, backlogUsd: 0 })
   })
 })

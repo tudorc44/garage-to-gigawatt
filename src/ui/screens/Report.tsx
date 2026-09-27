@@ -310,7 +310,10 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
           ? t('ui.report.cash_line_loan', {
               start: fmt.money(st.startCash),
               sales: fmt.money(
-                st.soldUsd + st.treasurySoldUsd + st.gridCreditsUsd,
+                st.soldUsd +
+                  st.treasurySoldUsd +
+                  st.gridCreditsUsd +
+                  st.hostingFeesUsd,
               ),
               power: fmt.money(st.powerCostUsd),
               rent: fmt.money(st.rentUsd),
@@ -320,7 +323,10 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
           : t('ui.report.cash_line', {
               start: fmt.money(st.startCash),
               sales: fmt.money(
-                st.soldUsd + st.treasurySoldUsd + st.gridCreditsUsd,
+                st.soldUsd +
+                  st.treasurySoldUsd +
+                  st.gridCreditsUsd +
+                  st.hostingFeesUsd,
               ),
               power: fmt.money(st.powerCostUsd),
               rent: fmt.money(st.rentUsd),
@@ -330,6 +336,11 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
       {r.gridCreditsUsd > 0 && (
         <p class="num-s muted" style={{ margin: 0 }}>
           {t('ui.report.grid_line', { credits: fmt.money(r.gridCreditsUsd) })}
+        </p>
+      )}
+      {r.hostingFeesUsd > 0 && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.report.hosting_line', { fees: fmt.money(r.hostingFeesUsd) })}
         </p>
       )}
       {r.stormChargeUsd > 0 && (

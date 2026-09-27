@@ -16,6 +16,7 @@ export const NavContext = createContext<{
 } | null>(null)
 import { t } from '../../i18n/t.ts'
 import {
+  act2MarketView,
   actTurn,
   bandwidthTotal,
   currentMarket,
@@ -23,6 +24,7 @@ import {
   priceChanges,
   quarterName,
   treasuryValue,
+  ratingBacklogView,
   topHeat,
 } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
@@ -55,6 +57,8 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
   const valuation = lastReport(s)?.valuationUsd
   const heat = topHeat(s)
   const total = bandwidthTotal(s)
+  const act2 = act2MarketView(s)
+  const rb = ratingBacklogView()
   return (
     <div class="topbar">
       <div class="brand">{t('ui.brand')}</div>
@@ -109,6 +113,25 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           {valuation === undefined ? t('ui.top.empty') : fmt.money(valuation)}
         </span>
       </div>
+      {act2 && (
+        <div
+          class="stat"
+          title={rb.rating ? undefined : t('ui.top.not_rated_title')}
+        >
+          <span class="label">{t('ui.top.rating')}</span>
+          <span class="num">
+            <span class={`rating-badge${rb.rating ? '' : ' unrated'}`}>
+              {rb.rating ?? t('ui.top.not_rated')}
+            </span>
+          </span>
+        </div>
+      )}
+      {act2 && (
+        <div class="stat">
+          <span class="label">{t('ui.top.backlog')}</span>
+          <span class="num">{fmt.money(rb.backlogUsd)}</span>
+        </div>
+      )}
       <div class="stat">
         <span class="label">BTC</span>
         <span class="num">
@@ -116,13 +139,31 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
         </span>
         <span class="stat-note">{since}</span>
       </div>
-      <div class="stat">
-        <span class="label">ETH</span>
-        <span class="num">
-          {fmt.money(w.eth_usd)} {change.since && <Delta value={change.eth} />}
-        </span>
-        <span class="stat-note">{since}</span>
-      </div>
+      {act2 ? (
+        <div class="stat">
+          <span class="label">{t('ui.top.h100_spot')}</span>
+          <span class="num">
+            {act2.h100SpotUsdHr === null
+              ? t('ui.top.empty')
+              : t('ui.top.per_hour', {
+                  value: fmt.money(act2.h100SpotUsdHr, { exact: true, dp: 2 }),
+                })}{' '}
+            {act2.h100SpotChange !== null && (
+              <Delta value={act2.h100SpotChange} />
+            )}
+          </span>
+          <span class="stat-note">{since}</span>
+        </div>
+      ) : (
+        <div class="stat">
+          <span class="label">ETH</span>
+          <span class="num">
+            {fmt.money(w.eth_usd)}{' '}
+            {change.since && <Delta value={change.eth} />}
+          </span>
+          <span class="stat-note">{since}</span>
+        </div>
+      )}
       <SettingsButton />
       {props.paused && (
         <div class="stat">
