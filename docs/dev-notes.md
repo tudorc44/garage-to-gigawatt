@@ -772,6 +772,13 @@ at a time (MW by use → projects → credit rating → tenants → capital → 
 
 ## Act II build
 
+**Branches and batch mode (owner, 27 Sep 2026):** Act II is built on the **`act2`** branch (created from `main` after
+1c; 1d is its first commit). `main` stays the stable, deployable version; the owner merges `act2` into `main` after
+reviewing a milestone. Milestones run in **batch mode** (CLAUDE.md "Batch mode"): sub-steps `M<n>.<k>`, each one
+lint + test + build → dev-notes → commit on `act2`; small decisions labelled "(mine, reversible)"; blockers go under
+"STOPPED". `.claude/settings.json` holds the command permissions (git push, reset --hard, rebase, clean, rm -rf and
+staging:build are denied; npm install and npx ask first).
+
 ### Step 1: the act boundary (no new Act II gameplay), split into 5 parts
 - **1a. Market to 2026Q4 + act spans** — done (27 Sep 2026, not committed yet).
 - **1b. Held Act I values for 2022Q4+** — done (27 Sep 2026, not committed yet); the list is below.

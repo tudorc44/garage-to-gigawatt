@@ -124,3 +124,38 @@ folders only as a task needs them.
 10. **Keep `docs/dev-notes.md` current.** At the end of each finished task, update its status, decisions and next
     step in the same commit. The project is worked on from more than one Claude account and machine, and chat
     history doesn't carry over: anything not written in the repo is lost.
+
+## Branches
+
+- **`main`** is the stable, deployable version (GitHub Pages publishes it). Don't commit to it.
+- **`act2`** is where the Act II build happens. Work only there. The owner merges `act2` into `main` after
+  reviewing a milestone.
+
+## Batch mode (Act II milestones)
+
+While the owner's milestone prompt is running (e.g. "Milestone M2: …"), these rules **override rules 1, 2 and 7**.
+All other rules still apply.
+
+- **Work through the whole milestone without pausing between sub-steps.** Split it into sub-steps yourself
+  (M2.1, M2.2 …) and write the split into `docs/dev-notes.md` before starting.
+- **After each sub-step:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes briefly and
+  commit on `act2` with the prefix `M<n>.<k>: `. Never push, never force-push, never rewrite history, never commit
+  to `main`, never touch `staging/`.
+- **Decide small things yourself:** file layout, naming, extra tests, UI details within the wireframes, and values
+  that are already in `docs/alpha-0.2-scope.md` or `docs/act2-content/`. Label each such decision
+  **"(mine, reversible)"** in dev-notes.
+- **STOP only for:**
+  - a new dependency;
+  - anything that would break an architecture rule;
+  - a scope question: not covered by `alpha-0.2-scope.md`, or it needs a number that isn't in the content files;
+  - a golden-replay change you can't explain as the intended effect of the sub-step;
+  - tests still failing after 3 honest attempts.
+
+  When stopped on one sub-step, record it under **"STOPPED"** in dev-notes and carry on with any sub-step that
+  doesn't depend on it.
+- **End of milestone:** one plain-language report covering:
+  - what was built and the commit list;
+  - how to see it (e.g. "npm run dev, continue past the Merge, open Projects");
+  - the "(mine, reversible)" decisions;
+  - the STOPPED items and open questions;
+  - test and sim numbers.
