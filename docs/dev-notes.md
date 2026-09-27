@@ -241,3 +241,6 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   quarter) / cash; shown on the report's game-over footer and the Act II end card. Lenders take projects (as built), not the company.
 - M6.5: `Tip` (basics.tsx; "Got it" hides it for good, `src/platform/tips.ts`): the pack's 7 tooltips (content.en.json › tooltip.act2.*) on the
   Dashboard (2022Q4–2023Q1: MW uses, projects), Deal builder (projects; take-or-pay or pilot), region panel, rating and backlog cards.
+- M6.6: scope §2.15's 7 bots = sign-then-raise (good), asic-retirer (great), texas-ipo (pure miner), new `overleveraged` (H100 clouds on
+  AI-lab contracts, DDTL + max equipment loan), shell-climb (cautious shell), pilot probes, hosting-switcher; + `open-*`. `tools/section5.ts`
+  (delay cost to 2026Q4, 2024 vs 2025Q3 contract IRR; methods mine) and a §5 PASS/MISS table at the end of `npm run sim -- --act2`.

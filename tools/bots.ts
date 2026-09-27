@@ -646,7 +646,13 @@ function hostingSwitcher(base: Strategy): Strategy {
 function aiProjects(
   base: Strategy,
   opts: {
-    kind: 'pilot' | 'shell'
+    kind: 'pilot' | 'shell' | 'cloud'
+    /** A cloud's GPU generation (default: the pilot's H100). */
+    gpu?: string
+    /** A cloud signs a GPU contract with this tenant type when offered (else it goes on spot). */
+    tenantType?: string
+    /** Also take the biggest equipment loan whenever there's none (the overleveraged bot). */
+    maxEquipmentLoan?: boolean
     from: string
     pilotKw?: number
     /** true: may sell GPU rigs and S9s for room; 'any': any machine (the pilot measurement). */
@@ -709,7 +715,20 @@ function aiProjects(
               offerId: best.id,
             })
           }
-          if (p.kind === 'cloud') run({ type: 'PROJECT_SPOT', projectId: p.id })
+          if (p.kind === 'cloud') {
+            const wanted = opts.tenantType
+              ? p.offers.find(
+                  (o) => tenantCard(o.card)!.type === opts.tenantType,
+                )
+              : undefined
+            if (wanted)
+              run({
+                type: 'PROJECT_SIGN_TENANT',
+                projectId: p.id,
+                offerId: wanted.id,
+              })
+            else run({ type: 'PROJECT_SPOT', projectId: p.id })
+          }
           if (opts.capital)
             for (const debt of ['project_debt', 'ddtl'] as const)
               run({ type: 'PROJECT_DEBT', projectId: p.id, debt, on: true })
@@ -792,6 +811,11 @@ function aiProjects(
       // A Head of Development first (1 Bandwidth now, +1 every quarter after): Act II Bandwidth is tight.
       if (opts.hireHod && s.staff.head_of_development === undefined)
         run({ type: 'HIRE', hire: 'head_of_development' })
+      // The overleveraged bot: the biggest equipment loan on its machines and GPUs whenever it has none.
+      if (opts.maxEquipmentLoan && !s.equipmentLoan) {
+        const amountUsd = Math.floor(maxEquipmentLoanUsd(s))
+        if (amountUsd >= 1) run({ type: 'TAKE_LOAN', amountUsd })
+      }
       finish()
       const label = CONTENT.quarters[s.quarter]
       const pending = s.projects.some((x) => x.stage === 'proposed')
@@ -823,12 +847,22 @@ function aiProjects(
             const saved = s
             const n = actions.length
             freeUp(site.id, mw * 1000)
-            const opened = run({
-              type: 'PROJECT_OPEN',
-              siteId: site.id,
-              kw: mw * 1000,
-              kind: 'shell',
-            })
+            const opened = run(
+              opts.kind === 'cloud'
+                ? {
+                    type: 'PROJECT_OPEN',
+                    siteId: site.id,
+                    kw: mw * 1000,
+                    kind: 'cloud',
+                    gpu: opts.gpu ?? CONTENT.projects.pilot.gpu,
+                  }
+                : {
+                    type: 'PROJECT_OPEN',
+                    siteId: site.id,
+                    kw: mw * 1000,
+                    kind: 'shell',
+                  },
+            )
             if (opened) finish()
             const p = s.projects.at(-1)
             // It must leave the usual reserve of the quarter's starting cash for running costs, plus
@@ -1109,6 +1143,22 @@ export const BOTS: Record<string, Strategy> = {
     capital: true,
     searchSize: true,
     hireHod: true,
+  }),
+  /**
+   * Scope §5 "overleveraged full stack": texas-ipo; from 2024Q1 sells its ASICs for room and builds
+   * H100 clouds on AI-lab GPU contracts (never a backstop), with a DDTL, equity to close the gap and
+   * the biggest equipment loan on everything it owns, sized as big as closes.
+   */
+  overleveraged: aiProjects(makeBot(TEXAS_IPO), {
+    kind: 'cloud',
+    gpu: 'h100',
+    tenantType: 'ai_lab',
+    from: '2024Q1',
+    freeUp: 'any',
+    capital: true,
+    searchSize: true,
+    hireHod: true,
+    maxEquipmentLoan: true,
   }),
   /**
    * The lifeline path (scope §5): a weak Act I (cautious: half its cash kept, 3-quarter paybacks)
