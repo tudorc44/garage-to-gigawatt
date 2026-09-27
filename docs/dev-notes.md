@@ -4,7 +4,8 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 27 Sep 2026: the Act I balance pass is DONE (every scope §5 balance anchor passes in the sim).
+Last updated: 27 Sep 2026: **Act II is coming into scope** (owner); readiness check below ("Act II
+readiness"). The Act I balance pass is DONE (every scope §5 balance anchor passes in the sim).
 
 ## How the owner works
 
@@ -709,7 +710,67 @@ price floor on their 2021 GPU buys.)
 - Confirm the power contract details above (auto-renew keeps the type; Uri doesn't count as an interrupt).
 - Replace the reconstructed market data with real CoinMetrics weekly data before final balancing.
 
+## Act II readiness (27 Sep 2026)
+
+The owner brought Act II (Alpha 0.2, 2022Q4 → 2026Q4, 17 quarters) into scope. Sources, all in
+`docs/game-project-files/`: the design (`claude_18`, locked decisions + §16 content-pack decisions), the
+**draft** scope (`claude_20`, v0.9), the Claude Design wireframe prompt (`claude_21`, v0.9) and the content
+pack (`claude_act2-content_*`: report + 15 data files, all complete). CLAUDE.md now says so.
+
+**Blocking the build (decisions, for the owner / design thread), in doc 18 §17's order:**
+1. Confirm or override pushbacks **[P1]–[P5]** (doc 18 §16.5: take-or-pay 3%/quarter + walk chance by
+   tenant type; mining→hosting $0.1M/MW; pilot cluster 0.5–2 MW; corporate rating CCC− to BBB; construction
+   delay 15% a quarter).
+2. **Freeze the scope** v0.9 → v1.0 (doc 20 §7 checklist), then copy it to `docs/alpha-0.2-scope.md`.
+3. **Wireframes:** update the doc 21 prompt's example data, run it in Claude Design, and bring the result
+   (plus, ideally, an Act II mockup like `docs/mockups/q4-2017.html`) into the repo. None exists yet. The
+   `campus` era theme already exists in the design-system tokens.
+
+**Content gaps found by Claude Code (not in doc 18 §16.6's fix list):**
+- **No ETH price after 2022Q3.** The Act II market files have no ETH column, but the coin treasury carries
+  over "as is" (doc 18 §2.1), and an ETH crypto-backed loan can be open. Needs an ETH series (or a rule: sell /
+  convert ETH at the act boundary).
+- ~~A price seam at the act boundary~~ **fixed** in `docs/act2-content/` (see "Next"): Act I's last week
+  $19,480 / 31.5T → Act II's first week $19,700 / 31.5T (+1.1%).
+- 2024Q3 has 14 weeks (the loader trims to 13, as in Act I: fine, just noted).
+- **Beyond the draft scope:** `hires_act2.json` has 3 new hires (Head of Development, Capital Markets Lead,
+  **Government Affairs Lead**); the scope allows the Head of Development + "up to 1 more", and government /
+  lobbying is Act III backlog. `gpus.json` has 6 generations (A100, H100, H200, B200, GB200, GB300); the scope
+  says Hopper → Blackwell.
+- `gb200_nvl72` / `gb300_nvl72` have no `gpus_per_mw_it_load` (rack-based); H100/H200 still at 1,000/MW (§16.6
+  fix → 750).
+- The ASIC price index and SOFR / spread series are estimates (doc 18 §15; pull before final balance).
+
+**Code: what assumes Act I (audit, 27 Sep 2026).** No `act` field or Act II code yet. The game's end is
+`CONTENT.quarters.length − 1` (the market data), so it isn't a hard-coded 2022Q3, but:
+- Phases: last quarter → `merge` → `MERGE_CHOOSE` → `ended` (`quarter.ts` startNextQuarter, `actions.ts`),
+  and `replay.ts`, `tools/play.ts`, the UI router and the audio director stop at `ended`.
+- One market array indexed by `state.quarter`; `marketWeek` has no bounds check (past the end it throws).
+- `GameState.version` is the literal 1; `save.ts` rejects other versions; migration is "fill missing fields
+  from `newGame`", not versioned. The Act I → II save migration (scope §2.15) needs a real version step.
+- The content loader validates everything against the market's quarter range (prices, power paths, era
+  multiples, loan eras by year, rival series "outside Act I", auction windows). Year-specific schemas: the
+  equipment-loan era regex, hire salaries anchored 2017 / 2021 (+2022 multiplier, flat after), the era theme
+  (`app.tsx`: garage / industrial only).
+- Tests: every golden file ends `"phase":"ended","quarter":22`, so extending the timeline changes them all.
+  The sim-runner's Merge metrics use the last quarter.
+- Text: `ui.title.act`, `ui.chapter.act_done` ("Act I · …").
+
+**First build step once unblocked (proposal, not decided):** a small "act boundary" task with no new
+gameplay: an `act` field and save version 2 with the Act I → II migration test; the market extended to
+2026Q4 (with the ETH answer) while Act I still ends at 2022Q3; the phase flow Merge → Act I chapter report →
+Act II intro → 2022Q4 Plan; the "Start of Act II" autosave slot; goldens unchanged for Act I. Then systems one
+at a time (MW by use → projects → credit rating → tenants → capital → regions → events), as with Act I.
+
 ## Next
+
+Act II market data fixed (27 Sep 2026): corrected copies of the Act II market files are in `docs/act2-content/`
+(`market_weekly.csv`, `market_quarterly.csv`; the originals in `docs/game-project-files/` are untouched). Hashprice is now
+calculated from price, difficulty, block subsidy and fees as in Act I (the pack's hand-drawn curve ignored the halving), hashrate
+comes from difficulty, the halving is on 20 Apr 2024 (was 1 Apr), Oct–Dec 2022 is rebuilt with the FTX crash (Act II no longer
+opens $3k below Act I's last week), and each quarter's last week equals the sourced close. What changed and why, the checks and
+what's still open: `docs/act2-content/README.md`. Balance effect for Act II: miners earn about 2× the pack's figure just before the
+halving (~$113/PH/day in 2024Q1) and about 20% less in 2026 (~$38–41). Not yet read by the game (Act II isn't built).
 
 Reference copy (27 Sep 2026): `docs/game-project-files/` holds the design thread's project files as the
 owner exported them (numbered design docs 01–21, Act I and Act II content, audio code). It's a snapshot for
@@ -722,7 +783,9 @@ in the scope's build list now exists. 27 Sep 2026: the balance pass and three re
 and "Balance review" 1–3 above): **the Act I balance pass is DONE**, every §5 balance anchor passes in the
 sim. Next: playtests (scope §5 "Playable" and "People": a first-time run in 35–50 minutes, 3+ real
 decisions per quarter, 5 crash-free runs, 3 outside testers). Small follow-ups: an ear test of the sounds; the build's main
-JS chunk is just over Vite's 500 KB warning (card text; split it later); CLAUDE.md still says
-`src/platform/` doesn't exist and that sound lives in `docs/audio/` (owner's file: flag, don't edit).
+JS chunk is just over Vite's 500 KB warning (card text; split it later).
+**Act II** (27 Sep 2026): in scope, blocked on the decisions in "Act II readiness" (P1–P5, the scope freeze,
+wireframes, the ETH answer; the price seam is fixed). Note: the Alpha 0.1 go/no-go gate (scope §5: playtests, 3 outside
+testers) hasn't run yet; the owner chose to start Act II anyway, so the playtests can run alongside.
 Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing
 EBITDA, clamped to ±30% of the capital.json terms).
