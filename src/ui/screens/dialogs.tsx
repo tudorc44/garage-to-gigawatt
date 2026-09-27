@@ -11,6 +11,8 @@ import {
   communityView,
   cryptoLoanView,
   equipmentLoanView,
+  constructionLoanView,
+  buyCapKw,
   fundingRound,
   hireViews,
   negotiationResult,
@@ -72,7 +74,9 @@ export function BuyDialog({ state, act, onClose }: DialogProps) {
   const maxCount = Math.max(
     1,
     Math.min(
-      Math.floor(freeKw / m.powerKw),
+      Math.floor(
+        Math.min(freeKw, buyCapKw(state, model, condition)) / m.powerKw,
+      ),
       price ? Math.floor(state.cash / price) : 0,
     ),
   )
@@ -410,6 +414,13 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
           {state.siteOffers.map((o) => {
             const a: Action = { type: 'BUILD_SITE', offerId: o.id }
             const why = whyNot(state, a)
+            const fin = constructionLoanView(state).financing(o)
+            const financed: Action = {
+              type: 'BUILD_SITE',
+              offerId: o.id,
+              financed: true,
+            }
+            const whyFinanced = fin ? whyNot(state, financed) : null
             return (
               <tr key={o.id}>
                 <td>
@@ -457,6 +468,29 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
                       })}
                     />
                   </button>
+                  {fin && (
+                    <button
+                      type="button"
+                      class="btn"
+                      style={{ marginTop: '6px' }}
+                      disabled={!!whyFinanced}
+                      title={
+                        whyFinanced
+                          ? say(whyFinanced)
+                          : t('ui.offers.financed_hint', {
+                              loan: fmt.money(fin.loanUsd),
+                              cash: fmt.money(fin.cashUsd),
+                            })
+                      }
+                      onClick={() => {
+                        if (!act(financed)) onClose()
+                      }}
+                    >
+                      {t('ui.offers.build_financed', {
+                        cash: fmt.money(fin.cashUsd),
+                      })}
+                    </button>
+                  )}
                 </td>
               </tr>
             )

@@ -150,14 +150,14 @@ describe('Series A and IPO / SPAC', () => {
     return s
   }
 
-  it('Series A: $8M for 20%, 2019Q1–2021Q2, needs a powered 1 MW site', () => {
+  it('Series A: $8M for 20%, 2019Q1–2021Q2, needs 1 MW powered across your sites', () => {
     const a: Action = { type: 'RAISE', round: 'series_a' }
     const s = ok(withSite('2019Q1', 'warehouse'), a)
     expect(s.cash).toBe(8_010_000)
     expect(s.founderStake).toBeCloseTo(0.8)
     expect(s.bandwidth).toBe(1)
     expect(err(withSite('2019Q1', 'small_unit'), a)).toBe(
-      'error.raise_needs_site',
+      'error.raise_needs_total_mw',
     )
     expect(err(withSite('2018Q4', 'warehouse'), a)).toBe('error.raise_window')
     expect(err(withSite('2021Q3', 'warehouse'), a)).toBe('error.raise_window')
@@ -218,12 +218,21 @@ describe('requires.min_mw = a built, powered site of that size (not machines run
     expect(unmetRequirement(s, seed)).toBeUndefined()
   })
 
-  it('uses usable capacity: a 1 MW site with an undersized transformer (×0.6) is not 1 MW', () => {
-    const seriesA = getStep('series_a')! // min_mw 1
+  it('Series A counts powered MW across all sites (usable capacity)', () => {
+    const seriesA = getStep('series_a')! // min_total_mw 1
     const s = { ...newGame(1), quarter: 5 }
+    // An undersized transformer (×0.6) leaves the warehouse at 0.6 MW: with the garage and a
+    // small unit that's 0.705 MW, not enough.
     s.sites.push(site('warehouse', 1, 'undersized_transformer'))
-    expect(unmetRequirement(s, seriesA)?.key).toBe('error.raise_needs_site')
-    s.sites[1].flaw = null
+    s.sites.push(site('small_unit', 1))
+    const r = unmetRequirement(s, seriesA)
+    expect(r?.key).toBe('error.raise_needs_total_mw')
+    expect(r?.params).toMatchObject({ neededKw: 1000, haveKw: 705 })
+    // A second warehouse (still being built) doesn't count until it's powered...
+    s.sites.push({ ...site('warehouse', 7), id: 'site-w2' })
+    expect(unmetRequirement(s, seriesA)?.key).toBe('error.raise_needs_total_mw')
+    // ...and once it is, two sites together pass.
+    s.sites[3].readyQuarter = 1
     expect(unmetRequirement(s, seriesA)).toBeUndefined()
   })
 })

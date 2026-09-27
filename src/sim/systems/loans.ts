@@ -104,12 +104,24 @@ export function repayEquipmentLoan(state: GameState): Message | undefined {
   state.equipmentLoan = null
 }
 
-/** One week's loan payment: interest on what's owed plus a slice of principal. */
+/** One week's loan payments (equipment and construction): interest plus a slice of principal. */
 export function payLoanWeek(state: GameState): {
   interestUsd: number
   principalUsd: number
 } {
-  const loan = state.equipmentLoan
+  const a = payOneWeek(state, 'equipmentLoan')
+  const b = payOneWeek(state, 'constructionLoan')
+  return {
+    interestUsd: a.interestUsd + b.interestUsd,
+    principalUsd: a.principalUsd + b.principalUsd,
+  }
+}
+
+function payOneWeek(
+  state: GameState,
+  which: 'equipmentLoan' | 'constructionLoan',
+): { interestUsd: number; principalUsd: number } {
+  const loan = state[which]
   if (!loan) return { interestUsd: 0, principalUsd: 0 }
   const interestUsd = roundCents(
     (loan.balanceUsd * loan.apr) / (4 * BALANCE.weeksPerQuarter),
@@ -122,8 +134,15 @@ export function payLoanWeek(state: GameState): {
   loan.weeksLeft--
   state.cash -= interestUsd + principalUsd
   if (loan.balanceUsd <= 0) {
-    state.equipmentLoan = null
-    logEntry(state, 'log.loan_paid_off', {}, state.week + 1)
+    state[which] = null
+    logEntry(
+      state,
+      which === 'equipmentLoan'
+        ? 'log.loan_paid_off'
+        : 'log.construction_loan_paid_off',
+      {},
+      state.week + 1,
+    )
   }
   return { interestUsd, principalUsd }
 }
@@ -131,6 +150,8 @@ export function payLoanWeek(state: GameState): {
 /** Everything still owed on loans (equipment and crypto-backed). */
 export function debtUsd(state: GameState): number {
   return (
-    (state.equipmentLoan?.balanceUsd ?? 0) + (state.cryptoLoan?.balanceUsd ?? 0)
+    (state.equipmentLoan?.balanceUsd ?? 0) +
+    (state.constructionLoan?.balanceUsd ?? 0) +
+    (state.cryptoLoan?.balanceUsd ?? 0)
   )
 }

@@ -193,7 +193,7 @@ Cut from the top, one item at a time:
 - [ ] **Reinvesting 100% every quarter goes bust** somewhere in 2018 Q2 – 2019 Q2 in **80%+ of runs**. "Reinvesting 100%" = take the F&F money and build the small unit (sim-runner bot ff-climb). With the seed round it should hurt (cash below half the seed in 2018–19) but not bust
 - [ ] The **"good player"** path (raise-climb: F&F, seed, Series A, one 20 MW site, no IPO) peaks at a median **$400–700M**
 - [ ] The **"great player"** path (texas-ipo: the good path plus the IPO, Texas and loans) peaks at a median **~$1.5–2.5B in 2021**
-- [ ] The good path reaches the Merge at **−85% to −95% from peak** (median about −90%)
+- [ ] The good path reaches the Merge at **−85% to −98% from peak** (with every machine switched off, a near-total drawdown is correct); the great path (an S19 fleet) at **−85% to −95%**
 - [ ] A cautious bot survives but finishes clearly below the good path
 - [ ] Some runs reach the Merge with **empty energized MW**, which makes the Merge choice real: 30%+ of good-path runs with 10%+ of energized MW not hashing in the last week
 

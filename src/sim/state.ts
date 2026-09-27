@@ -30,6 +30,8 @@ export interface Site {
   contract?: PowerContract
   /** rate_class flaw, set by its event card: power × this until the next contract renewal. */
   rateMult?: number
+  /** Transformer upgrade under way: the flaw clears when this quarter starts. */
+  upgradeReadyQuarter?: number
 }
 
 export type ContractType = 'fixed' | 'index'
@@ -137,6 +139,8 @@ export interface GameState {
   siteOffers: SiteOffer[]
   /** The one equipment loan you can have at a time, or null. */
   equipmentLoan: EquipmentLoan | null
+  /** The Texas construction loan (same payment shape as the equipment loan), or null. */
+  constructionLoan: EquipmentLoan | null
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
@@ -381,6 +385,7 @@ export function newGame(seed: number): GameState {
     machines: [],
     siteOffers: [],
     equipmentLoan: null,
+    constructionLoan: null,
     cryptoLoan: null,
     auction: null,
     curtailment: null,

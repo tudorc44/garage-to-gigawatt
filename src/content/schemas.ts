@@ -82,6 +82,11 @@ export const machineSchema = z
   }))
 
 export const machinesFileSchema = z.object({
+  /** The 2020Q4–2022Q1 GPU shortage: new GPU rigs bought per quarter are capped (kW). */
+  new_gpu_cap: z.object({
+    window: z.tuple([quarterId, quarterId]),
+    kw_per_quarter: nonNeg,
+  }),
   models: z.array(machineSchema).min(1),
 })
 
@@ -268,6 +273,8 @@ export const ladderStepSchema = z.object({
     .object({
       /** A built, powered site of at least this many MW (not machines running). */
       min_mw: nonNeg.optional(),
+      /** At least this many MW powered across all your sites together. */
+      min_total_mw: nonNeg.optional(),
       min_ebitda_usd_q: nonNeg.optional(),
     })
     .strict()
@@ -355,10 +362,35 @@ export const cryptoLoanSchema = z
     available: c.available,
   }))
 
+/** The Texas construction loan: a share (ltc) of a site's build cost, financed when you build it. */
+export const constructionLoanSchema = z
+  .object({
+    tier: z.string(),
+    from: quarterId,
+    /** Loan-to-cost: the most it finances, as a share of the build cost. */
+    ltc: z.number().min(0).max(1),
+    apr: z.number().min(0),
+    tenor_quarters: z.number().int().min(1),
+    requires_round: z.string(),
+    requires_contract: z.boolean(),
+  })
+  .transform((c) => ({
+    tier: c.tier,
+    from: c.from,
+    ltc: c.ltc,
+    apr: c.apr,
+    tenorQuarters: c.tenor_quarters,
+    requiresRound: c.requires_round,
+    requiresContract: c.requires_contract,
+  }))
+
+export type ConstructionLoanTerms = z.output<typeof constructionLoanSchema>
+
 export const capitalFileSchema = z.object({
   ladder: z.array(ladderStepSchema).min(1),
   pitch: pitchRulesSchema,
   loans: z.object({
+    construction: constructionLoanSchema,
     equipment: z.array(equipmentLoanSchema).min(1),
     game_crypto_loan: cryptoLoanSchema,
   }),

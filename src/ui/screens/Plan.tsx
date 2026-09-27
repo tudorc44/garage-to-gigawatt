@@ -11,6 +11,8 @@ import {
   communityView,
   cryptoLoanView,
   equipmentLoanView,
+  constructionLoanView,
+  transformerViews,
   fundingRound,
   hireViews,
   planOpensOnBuy,
@@ -625,6 +627,34 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.sites')}</div>
       {ladderRows}
+      {transformerViews(state).map((u) =>
+        u.readyQuarter !== undefined ? (
+          <ActionRow
+            key={`transformer-${u.site.id}`}
+            icon="power"
+            name={t('ui.plan.transformer', { tier: tierName(u.site.tier) })}
+            locked={t('ui.locked.transformer_underway', {
+              quarter: fmt.quarter(quarterName(u.readyQuarter)),
+            })}
+          />
+        ) : (
+          <ActionRow
+            key={`transformer-${u.site.id}`}
+            icon="power"
+            name={t('ui.plan.transformer', { tier: tierName(u.site.tier) })}
+            bandwidth={u.bandwidth}
+            bandwidthLeft={left}
+            price={t('ui.plan.minus', { value: fmt.money(u.costUsd) })}
+            disabledReason={reason({
+              type: 'UPGRADE_TRANSFORMER',
+              siteId: u.site.id,
+            })}
+            onClick={() =>
+              act({ type: 'UPGRADE_TRANSFORMER', siteId: u.site.id })
+            }
+          />
+        ),
+      )}
       {siteViews(state).map(
         (sv) =>
           sv.leaving && (
@@ -682,6 +712,7 @@ function TodoPanel({
       <div class="label group">{t('ui.plan.group.capital')}</div>
       <RaiseRow state={state} act={act} open={open} round="friends_family" />
       <EquipmentLoanRow state={state} act={act} open={open} />
+      <ConstructionLoanRow state={state} act={act} />
       <CryptoLoanRow state={state} act={act} open={open} />
       <RaiseRow state={state} act={act} open={open} round="seed" />
       <RaiseRow state={state} act={act} open={open} round="series_a" />
@@ -835,6 +866,25 @@ function AuctionRow({
       price={t('ui.plan.min_bid', { value: fmt.money(v.lot.reserveUsd) })}
       disabledReason={why}
       onClick={() => open('auction')}
+    />
+  )
+}
+
+/** The Texas construction loan: shown only while you have one (it's taken when you build Texas). */
+function ConstructionLoanRow({ state, act }: ScreenProps) {
+  const v = constructionLoanView(state)
+  if (!v.loan) return null
+  const a: Action = { type: 'REPAY_CONSTRUCTION_LOAN' }
+  const why = whyNot(state, a)
+  return (
+    <ActionRow
+      icon="loan"
+      name={t('ui.plan.repay_construction', {
+        left: fmt.money(v.loan.balanceUsd),
+      })}
+      price={t('ui.plan.minus', { value: fmt.money(v.loan.balanceUsd) })}
+      disabledReason={why ? say(why) : undefined}
+      onClick={() => act(a)}
     />
   )
 }

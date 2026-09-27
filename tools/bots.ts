@@ -14,6 +14,11 @@ import {
 import { collateralUsd, maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit, saleValueUsd } from '../src/sim/systems/machines.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
+import { buyCapKw } from '../src/sim/selectors.ts'
+import {
+  constructionLoanBlocker,
+  constructionLoanUsd,
+} from '../src/sim/systems/construction.ts'
 import { canPitch } from '../src/sim/systems/pitch.ts'
 import {
   getModel,
@@ -87,6 +92,17 @@ interface BotSettings {
    * times its profit per kW (or the lot is losing money), if the swap is affordable.
    */
   upgradeAt?: number
+  /** Only upgrade once this funding round is done (e.g. after the IPO). */
+  upgradeAfterRound?: string
+  /** Once upgrading has started (upgradeAfterRound), smartFill and upgrades pick BTC machines only. */
+  asicOnly?: boolean
+  /** Also buy machines for a site that powers on next quarter, so they earn from its first quarter. */
+  prebuy?: boolean
+  /**
+   * Build the construction-loan tier (Texas) as soon as the loan allows it, paying only the
+   * part the loan doesn't cover, even before the climb limit's funding round.
+   */
+  constructionLoan?: boolean
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -258,7 +274,32 @@ function makeBot(settings: BotSettings): Strategy {
           CONTENT.quarters[s.quarter] < next.available_from
         )
       const nextOpen = available && !capped
-      if (
+      // The construction loan: build Texas as soon as it's allowed and the rest is affordable.
+      const loanOffer =
+        settings.constructionLoan &&
+        next &&
+        next.id === CONTENT.constructionLoan.tier
+          ? s.siteOffers
+              .filter((o) => o.tier === next.id)
+              .sort((a, b) => a.capexUsd - b.capexUsd)[0]
+          : undefined
+      const loanBuild =
+        loanOffer &&
+        topIsFull &&
+        bandwidth >= 1 &&
+        !constructionLoanBlocker(s, loanOffer.tier) &&
+        loanOffer.capexUsd - constructionLoanUsd(loanOffer.capexUsd) <=
+          spendable() &&
+        (capped || loanOffer.capexUsd > spendable())
+      if (loanBuild) {
+        actions.push({
+          type: 'BUILD_SITE',
+          offerId: loanOffer.id,
+          financed: true,
+        })
+        cash -= loanOffer.capexUsd - constructionLoanUsd(loanOffer.capexUsd)
+        bandwidth -= 1
+      } else if (
         settings.scoutAhead &&
         next &&
         available &&
@@ -330,12 +371,23 @@ function makeBot(settings: BotSettings): Strategy {
       // 3. Fill free space with the best machine per dollar, cheapest power first.
       const w = marketWeek(s.quarter, 0)
       const ready = s.sites
-        .filter((x) => isReady(x, s.quarter) && !underMoratorium(s, x.id))
+        .filter(
+          (x) =>
+            (isReady(x, s.quarter) ||
+              (settings.prebuy && x.readyQuarter === s.quarter + 1)) &&
+            !underMoratorium(s, x.id),
+        )
         .sort(
           (a, b) =>
             powerPriceUsdKwh(a, s.quarter) - powerPriceUsdKwh(b, s.quarter),
         )
       const freedKw: Record<string, number> = {}
+      const addedKw: Record<string, number> = {}
+      // The GPU shortage cap is per quarter across all sites: count what this plan buys.
+      let gpuKwBought = 0
+      const capLeft = (m: { id: string; coin: string }, c: Condition) =>
+        buyCapKw(s, m.id, c) -
+        (m.coin === 'ETH' && c === 'new' ? gpuKwBought : 0)
       for (const site of ready) {
         const power = powerPriceUsdKwh(site, s.quarter)
         const options = CONTENT.machines.flatMap((m) =>
@@ -347,68 +399,103 @@ function makeBot(settings: BotSettings): Strategy {
             return { m, condition, price, dailyProfit, payback }
           }),
         )
-        const viable = options.filter(
-          (o) =>
-            o.price !== undefined &&
-            o.dailyProfit > 0 &&
-            o.payback <= settings.maxPaybackQuarters,
-        )
-        let best = [...viable].sort((a, b) => a.payback - b.payback)[0]
-        if (!best) continue
-        // With cash to spare, power is the scarce thing: take the most profit per kW.
-        if (settings.smartFill) {
-          const perKw = [...viable].sort(
-            (a, b) =>
-              b.dailyProfit / b.m.power_kw - a.dailyProfit / a.m.power_kw ||
-              a.payback - b.payback,
-          )[0]
-          const fits = Math.floor(
-            (capacityKw(site) - usedKw(after, site.id)) / perKw.m.power_kw,
+        // Up to two machines per site: the best, then the next best if the GPU cap stopped it.
+        const skipped = new Set<(typeof options)[number]>()
+        let gpuCapped = false
+        for (let pass = 0; pass < 2 && (pass === 0 || gpuCapped); pass++) {
+          const viable = options.filter(
+            (o) =>
+              !skipped.has(o) &&
+              o.price !== undefined &&
+              o.dailyProfit > 0 &&
+              o.payback <= settings.maxPaybackQuarters,
           )
-          if (spendable() >= perKw.price! * Math.max(1, fits)) best = perKw
-        }
-        // 3b. Upgrade: sell old lots here that make far less per kW than the best machine.
-        if (settings.upgradeAt) {
-          const perKw = (m: typeof best.m) =>
-            (revenuePerUnitDay(m, w) - m.power_kw * 24 * power) / m.power_kw
-          const bestPerKw = best.dailyProfit / best.m.power_kw
-          for (const lot of s.machines) {
-            if (lot.siteId !== site.id || lot.model === best.m.id) continue
-            const m = getModel(lot.model)!
-            const own = perKw(m)
-            if (own > 0 && own * settings.upgradeAt > bestPerKw) continue
-            // Sell as many units as the cash (plus their sale value) can replace.
-            const unitSale = saleValueUsd(lot, 1, s.quarter)
-            const netPerUnit =
-              (m.power_kw / best.m.power_kw) * best.price! - unitSale
-            const k =
-              netPerUnit <= 0
-                ? lot.count
-                : Math.min(lot.count, Math.floor(spendable() / netPerUnit))
-            if (k < 1) continue
-            actions.push({ type: 'SELL_MACHINES', lotId: lot.id, count: k })
-            cash += saleValueUsd(lot, k, s.quarter)
-            freedKw[site.id] = (freedKw[site.id] ?? 0) + m.power_kw * k
+          let best = [...viable].sort((a, b) => a.payback - b.payback)[0]
+          if (!best) break
+          // With cash to spare, power is the scarce thing: take the most profit per kW.
+          const upgrading =
+            !settings.upgradeAfterRound ||
+            s.raisesDone.includes(settings.upgradeAfterRound) ||
+            raisedNow.includes(settings.upgradeAfterRound)
+          const candidates =
+            settings.asicOnly && upgrading
+              ? viable.filter((o) => o.m.coin === 'BTC')
+              : viable
+          if (settings.smartFill && candidates.length > 0) {
+            const perKw = [...candidates].sort(
+              (a, b) =>
+                b.dailyProfit / b.m.power_kw - a.dailyProfit / a.m.power_kw ||
+                a.payback - b.payback,
+            )[0]
+            const fits = Math.floor(
+              (capacityKw(site) -
+                usedKw(after, site.id) -
+                (addedKw[site.id] ?? 0)) /
+                perKw.m.power_kw,
+            )
+            if (spendable() >= perKw.price! * Math.max(1, fits)) best = perKw
           }
+          // 3b. Upgrade: sell old lots here that make far less per kW than the best machine.
+          const upgradeNow =
+            settings.upgradeAt !== undefined &&
+            upgrading &&
+            (!settings.asicOnly || best.m.coin === 'BTC')
+          if (pass === 0 && upgradeNow && settings.upgradeAt) {
+            const perKw = (m: typeof best.m) =>
+              (revenuePerUnitDay(m, w) - m.power_kw * 24 * power) / m.power_kw
+            const bestPerKw = best.dailyProfit / best.m.power_kw
+            for (const lot of s.machines) {
+              if (lot.siteId !== site.id || lot.model === best.m.id) continue
+              const m = getModel(lot.model)!
+              const own = perKw(m)
+              if (own > 0 && own * settings.upgradeAt > bestPerKw) continue
+              // Sell as many units as the cash (plus their sale value) can replace.
+              const unitSale = saleValueUsd(lot, 1, s.quarter)
+              const netPerUnit =
+                (m.power_kw / best.m.power_kw) * best.price! - unitSale
+              const k =
+                netPerUnit <= 0
+                  ? lot.count
+                  : Math.min(lot.count, Math.floor(spendable() / netPerUnit))
+              if (k < 1) continue
+              actions.push({ type: 'SELL_MACHINES', lotId: lot.id, count: k })
+              cash += saleValueUsd(lot, k, s.quarter)
+              freedKw[site.id] = (freedKw[site.id] ?? 0) + m.power_kw * k
+            }
+          }
+          const count = Math.min(
+            Math.floor(
+              (capacityKw(site) -
+                usedKw(after, site.id) -
+                (addedKw[site.id] ?? 0) +
+                (freedKw[site.id] ?? 0)) /
+                best.m.power_kw,
+            ),
+            Math.floor(spendable() / best.price!),
+            Math.floor(capLeft(best.m, best.condition) / best.m.power_kw),
+          )
+          gpuCapped =
+            count ===
+              Math.floor(capLeft(best.m, best.condition) / best.m.power_kw) &&
+            capLeft(best.m, best.condition) !== Infinity
+          if (count < 1) {
+            skipped.add(best)
+            continue
+          }
+          actions.push({
+            type: 'BUY_MACHINES',
+            model: best.m.id,
+            condition: best.condition,
+            count,
+            siteId: site.id,
+          })
+          cash -= best.price! * count
+          if (best.m.coin === 'ETH' && best.condition === 'new')
+            gpuKwBought += best.m.power_kw * count
+          addedKw[site.id] = (addedKw[site.id] ?? 0) + best.m.power_kw * count
+          // Capped by the GPU shortage? Fill the rest with the next best machine.
+          skipped.add(best)
         }
-        const count = Math.min(
-          Math.floor(
-            (capacityKw(site) -
-              usedKw(after, site.id) +
-              (freedKw[site.id] ?? 0)) /
-              best.m.power_kw,
-          ),
-          Math.floor(spendable() / best.price!),
-        )
-        if (count < 1) continue
-        actions.push({
-          type: 'BUY_MACHINES',
-          model: best.m.id,
-          condition: best.condition,
-          count,
-          siteId: site.id,
-        })
-        cash -= best.price! * count
       }
       return actions
     },
@@ -531,11 +618,17 @@ export const BOTS: Record<string, Strategy> = {
     smartFill: true,
     borrow: true,
     maxLtv: 0.5,
+    constructionLoan: true,
+    prebuy: true,
+    // After the IPO: replace S9s with S19s wherever they make more per kW (no GPU swap).
+    upgradeAt: 1,
+    upgradeAfterRound: 'ipo_spac',
+    asicOnly: true,
   }),
   /**
-   * Measurement, not a design-thread path: texas-ipo that also replaces old machines (sells a lot
-   * when the best machine makes 2× its profit per kW, or it loses money). Shows what upgrading
-   * the fleet (S9 → S19 Pro in 2020) is worth.
+   * Measurement, not a design-thread path: texas-ipo without the ASIC-only rule, upgrading any
+   * machine (GPU rigs included) from the start when the best one makes 2× its profit per kW.
+   * Checks the GPU shortage cap (target: no more than texas-ipo + 50%).
    */
   'texas-ipo-upgrade': makeBot({
     hodlPct: 0,
@@ -548,6 +641,7 @@ export const BOTS: Record<string, Strategy> = {
     borrow: true,
     maxLtv: 0.5,
     smartFill: true,
+    constructionLoan: true,
     upgradeAt: 2,
   }),
   /** raise-climb that stops buying, repairing and building from 2022Q1 (the idle-MW check, E1). */

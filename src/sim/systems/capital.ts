@@ -36,6 +36,20 @@ export function unmetRequirement(
     if (!has)
       return { key: 'error.raise_needs_site', params: { neededKw: needKw } }
   }
+  if (req.min_total_mw !== undefined) {
+    const haveKw = state.sites
+      .filter((s) => isReady(s, state.quarter))
+      .reduce((kw, s) => kw + capacityKw(s), 0)
+    if (haveKw < req.min_total_mw * 1000 - 1e-9)
+      return {
+        key: 'error.raise_needs_total_mw',
+        params: {
+          round: step.id,
+          neededKw: req.min_total_mw * 1000,
+          haveKw,
+        },
+      }
+  }
   if (req.min_ebitda_usd_q !== undefined) {
     const last = state.reports.at(-1)?.ebitdaUsd ?? 0
     if (last < req.min_ebitda_usd_q) {

@@ -1,6 +1,7 @@
 // Quarter boundaries: the end-of-quarter report and bankruptcy check, and the move
 // to the next quarter's Plan phase.
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
+import { finishUpgrades } from './construction.ts'
 import {
   emptyQuarterStats,
   logEntry,
@@ -128,6 +129,7 @@ export function startNextQuarter(state: GameState): void {
   endQuarterHeat(state)
   state.quarterStats = emptyQuarterStats()
   startQuarterHeat(state)
+  finishUpgrades(state)
   for (const site of state.sites) {
     if (site.readyQuarter === state.quarter && state.quarter > 0) {
       logEntry(state, 'log.site_ready', { tier: site.tier })

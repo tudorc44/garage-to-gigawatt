@@ -49,6 +49,7 @@
   ],
   "siteOffers": [],
   "equipmentLoan": null,
+  "constructionLoan": null,
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,

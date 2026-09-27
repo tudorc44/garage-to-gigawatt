@@ -316,9 +316,10 @@ function parse(
     case 'build': {
       if (/^\d+$/.test(rest[0] ?? '')) {
         const offer = item(s.siteOffers, 0)
-        return offer
-          ? { type: 'BUILD_SITE', offerId: offer.id }
-          : 'play.bad_number'
+        if (!offer) return 'play.bad_number'
+        return rest[1] === 'loan'
+          ? { type: 'BUILD_SITE', offerId: offer.id, financed: true }
+          : { type: 'BUILD_SITE', offerId: offer.id }
       }
       return { type: 'BUILD_SITE', tier: rest[0] ?? '' }
     }
@@ -395,7 +396,15 @@ function parse(
     case 'loan':
       return { type: 'TAKE_LOAN', amountUsd: num(0) }
     case 'repay':
-      return { type: 'REPAY_LOAN' }
+      return rest[0] === 'construction'
+        ? { type: 'REPAY_CONSTRUCTION_LOAN' }
+        : { type: 'REPAY_LOAN' }
+    case 'upgrade': {
+      const site = item(s.sites, 0)
+      return site
+        ? { type: 'UPGRADE_TRANSFORMER', siteId: site.id }
+        : 'play.bad_number'
+    }
     case 'bid': {
       const site = s.sites[(rest[1] ? num(1) : 1) - 1]
       if (!site) return 'play.bad_number'

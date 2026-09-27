@@ -313,6 +313,9 @@ function CapitalSection({ state, act }: ScreenProps) {
                       reopens: r.reopens ? fmt.quarter(r.reopens) : '',
                     })}
                   </span>
+                  {r.requirement && (
+                    <span class="num-s warn">{say(r.requirement)}</span>
+                  )}
                 </div>
               )
             })}

@@ -1,6 +1,15 @@
 // Player decisions as plain action objects. applyAction checks an action against the
 // rules and returns either the new state or an error message (the old state is untouched).
 import { BALANCE, CONTENT } from '../content/index.ts'
+import {
+  constructionLoanBlocker,
+  constructionLoanUsd,
+  newGpuKwLeft,
+  repayConstructionLoan,
+  takeConstructionLoan,
+  transformerBlocker,
+  upgradeTransformer,
+} from './systems/construction.ts'
 import type { Message, MessageKey, MessageParams } from '../i18n/t.ts'
 import {
   logEntry,
@@ -91,7 +100,7 @@ export type Action =
   | { type: 'SET_HODL'; pct: number; coin?: Coin }
   | { type: 'SCOUT_SITES'; tier: string }
   /** Build from a scouted offer, or (tiers that need no scouting) straight from the tier. */
-  | { type: 'BUILD_SITE'; offerId: string }
+  | { type: 'BUILD_SITE'; offerId: string; financed?: boolean }
   | { type: 'BUILD_SITE'; tier: string }
   /** Break the site's lease: its machines are sold, a penalty is paid, rent stops. */
   | { type: 'LEAVE_SITE'; siteId: string }
@@ -120,6 +129,10 @@ export type Action =
   | { type: 'TAKE_LOAN'; amountUsd: number }
   /** Pay the equipment loan off early. */
   | { type: 'REPAY_LOAN' }
+  /** Pay off the Texas construction loan early. */
+  | { type: 'REPAY_CONSTRUCTION_LOAN' }
+  /** Clear an undersized-transformer flaw (sites.json upgrade cost, Bandwidth and build time). */
+  | { type: 'UPGRADE_TRANSFORMER'; siteId: string }
   /** Pledge treasury coins and borrow against them (crypto-backed loan). */
   | { type: 'TAKE_CRYPTO_LOAN'; coin: Coin; amountUsd: number }
   /** Repay the crypto-backed loan and get the pledged coins back. */
@@ -227,6 +240,14 @@ function run(s: GameState, a: Action): Message | undefined {
         return fail('error.bad_count')
       if (model.coin === 'ETH' && a.condition === 'new' && newGpusLocked(s))
         return fail('error.gpus_sold_out')
+      if (model.coin === 'ETH' && a.condition === 'new') {
+        const leftKw = newGpuKwLeft(s)
+        if (model.power_kw * a.count > leftKw + 1e-9)
+          return fail('error.gpu_cap', {
+            capKw: CONTENT.newGpuCap.kwPerQuarter,
+            leftKw,
+          })
+      }
       const unit = buyPriceNow(s, model, a.condition)
       const cost = unit === undefined ? undefined : unit * a.count
       if (cost === undefined) {
@@ -422,13 +443,21 @@ function run(s: GameState, a: Action): Message | undefined {
       const cost = BALANCE.bandwidth.build
       if (s.bandwidth < cost)
         return fail('error.no_bandwidth', { needed: cost, have: s.bandwidth })
-      if (terms.capexUsd > s.cash) {
+      // A financed build (the Texas construction loan) needs only the rest in cash.
+      const financed = 'offerId' in a && a.financed === true
+      if (financed) {
+        const blocked = constructionLoanBlocker(s, terms.tier)
+        if (blocked) return blocked
+      }
+      const loanUsd = financed ? constructionLoanUsd(terms.capexUsd) : 0
+      if (terms.capexUsd - loanUsd > s.cash) {
         return fail('error.no_cash', {
-          costUsd: terms.capexUsd,
+          costUsd: terms.capexUsd - loanUsd,
           cashUsd: s.cash,
         })
       }
       s.bandwidth -= cost
+      if (financed) takeConstructionLoan(s, loanUsd)
       s.cash -= terms.capexUsd
       const site = {
         id: `site-${s.nextId++}`,
@@ -526,6 +555,16 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'REPAY_LOAN':
       return repayEquipmentLoan(s)
+
+    case 'REPAY_CONSTRUCTION_LOAN':
+      return repayConstructionLoan(s)
+
+    case 'UPGRADE_TRANSFORMER': {
+      const blocked = transformerBlocker(s, a.siteId)
+      if (blocked) return blocked
+      upgradeTransformer(s, a.siteId)
+      return
+    }
 
     case 'TAKE_CRYPTO_LOAN': {
       const blocked = cryptoBorrowBlocker(s, a.coin, a.amountUsd)

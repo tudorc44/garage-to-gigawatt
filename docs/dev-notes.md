@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 27 Sep 2026, with the balance pass (design thread A–F).
+Last updated: 27 Sep 2026, with the balance pass and its review (Texas loan, GPU cap, transformer upgrade).
 
 ## How the owner works
 
@@ -68,7 +68,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 334 passing.
+   heat-climber, negotiator, pitcher) and unit tests: 342 passing.
 8. **GitHub Pages** (https://tudorc44.github.io/garage-to-gigawatt/): `.github/workflows/deploy-pages.yml`
    runs the tests, builds, and publishes `dist/` on every push to `main` (or by hand from the Actions
    tab). Needs the repository's Settings → Pages → Source set to "GitHub Actions" (once). Vite's
@@ -103,8 +103,8 @@ See `CLAUDE.md` for the full list. The main ones:
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
 Nothing in the scope's build list; what's left is the balance pass and playtesting (see Next). The
-undersized-transformer flaw's upgrade has no effect yet (landlord_sale works through its event card;
-noise ordinance and hostile council through Heat). The UI has no automated tests (would need e.g. jsdom:
+undersized-transformer flaw is fixed by the "Upgrade transformer" action (landlord_sale works through its
+event card; noise ordinance and hostile council through Heat). The UI has no automated tests (would need e.g. jsdom:
 ask first).
 
 ## Decisions
@@ -151,8 +151,8 @@ ask first).
 - Seed: 2 Bandwidth, +$1.5M for 20% ($6M pre-money), open 2017Q4–2019Q4, once, needs a powered site of
   at least 100 kW usable capacity (from `capital.json`). Taken as a fixed offer: the scope's fallback
   while the negotiation mini-game isn't built.
-- Series A: 2 Bandwidth, +$8M for 20% ($32M pre-money), open 2019Q1–2021Q2, once, needs a powered site of
-  at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
+- Series A: 2 Bandwidth, +$8M for 20% ($32M pre-money), open 2019Q1–2021Q2, once, needs 1 MW of usable
+  capacity powered across all your sites (`requires.min_total_mw`; balance review, was one 1 MW site). IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
   a powered 20 MW site and at least $3M EBITDA in the last quarter report (was $5M; balance pass). Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
 - **Sound** (scope §2.13, docs/audio; the owner approved installing `zzfx`, MIT, 1.3.2):
@@ -496,6 +496,50 @@ negotiation / Uri rules were not touched, per F2):
   path (rig theft now shifts the random numbers): it scouts a warehouse with the undersized-transformer
   flaw, stays under 1 MW and never qualifies for Series A (end value $16.8M → $0.76M). A legitimate outcome.
 
+### Balance review (design thread, 27 Sep 2026, second round)
+
+**Decisions:** the great-path target stays $1.5–2.5B; fix the timing. Good-path drawdown band −85% to −98%
+(the EBITDA floor at 0 makes near-total drawdown correct when every machine is off); 100% idle at the Merge
+is the intended setup; the 2021Q4 good-path peak matches the real Nov-2021 top; rig_theft 61% and a
+player-only tariff card are accepted. A flaw must be fixable.
+
+**Built:**
+- **Texas construction loan** (`capital.json` › loans.construction, `src/sim/systems/construction.ts`): when
+  you build a Texas offer you can finance 60% of its cost (11% a year, 8 quarters, weekly payments like the
+  equipment loan; counts as debt). From 2020Q3, needs Series A closed and a signed power contract at one of
+  your sites (read as "any site you own has a contract"), one at a time, no extra Bandwidth. Offers dialog:
+  "Build with a loan · $X cash"; Plan: "Repay the construction loan"; terminal: `build <offer#> loan`,
+  `repay construction`.
+- **GPU shortage cap** (`machines.json` › new_gpu_cap): 2020Q4–2022Q1, at most 250 kW of NEW GPU rigs bought
+  per quarter across all sites; used rigs uncapped. The Buy dialog's Max respects it.
+- **Upgrade transformer** (sites.json undersized_transformer: `upgrade_cost_usd` 250,000 → **150,000**,
+  `upgrade_quarters` 1, `upgrade_bw` 1): Plan row "Upgrade the <site>'s transformer"; the flaw clears when
+  the next quarter starts. Terminal: `upgrade <site#>`.
+- **Series A** counts total powered MW across sites; the Capital screen shows what an open round still
+  needs, e.g. "Series A needs 1 MW powered across your sites (you have 605 kW)."
+- **texas-ipo bot:** builds Texas on the construction loan as soon as it's allowed and affordable; buys
+  machines for a site that powers on next quarter (so they earn from its first quarter); after the IPO it
+  replaces S9s with S19s wherever they make more per kW (ASICs only, no GPU swap). The bots' fill takes a
+  second machine type when the GPU cap stops the first.
+
+**Report** (50 seeds):
+
+| Check | Target | Result |
+|---|---|---|
+| texas-ipo peak | $1.5–2.5B | ✓ **$2.3B, 2021Q4** (IPO in 43/50 runs); the Texas 3→2 fallback was not needed |
+| texas-ipo drawdown | −85% to −95% | ✓ **−87%** (Merge: $268M of operations, S19s still running) |
+| texas-ipo idle at the Merge | — | 37/50 runs ≥ 10% idle, median 16% |
+| texas-ipo-upgrade after the GPU cap | ≤ texas-ipo + 50% (≈ $3.45B) | ✗ **$6.2B**, unchanged |
+| ff-climb | unchanged | ✓ 100% bust (2018Q4 ×7, 2019Q1 ×43) |
+| good path | unchanged | ✓ $485–515M, 2021Q4, −97%; every golden replay ends exactly as before |
+
+- **Where texas-ipo's value comes from:** not Texas. After the 2021Q2 IPO it swaps the 20 MW site's S9s for
+  ~6,150 used S19 Pros (no lead time for used), and EBITDA goes from ~$3–4M to ~$18.5M a quarter from
+  2021Q3. Texas is ready in 2022Q2 in 33/50 runs. The construction loan is never used: the 40% cash part
+  (~$16M of a $40M site) is far beyond what the bot has before the IPO (~$1–5M).
+- **Why the GPU cap doesn't bite:** texas-ipo-upgrade buys ~23,500 **used** GPU Gen 2 rigs in 2021Q2–Q3,
+  which the cap leaves alone by design. EBITDA ~$50M a quarter → $6.2B.
+
 ## Balance findings (from `npm run sim`, 50 seeds per bot)
 
 *(Before the balance pass; kept for history. The table's numbers are from 26 Sep 2026.)*
@@ -575,18 +619,15 @@ negotiation / Uri rules were not touched, per F2):
 
 ## Open questions for the design thread
 
-- **Balance pass follow-ups** (numbers in "Balance pass" above):
-  - The great path misses $1.5–2.5B ($669M): Texas can't be ready before 2022. Options: count the fleet
-    upgrade as part of the great path (but upgrading everything gives $6.2B: the GPU Gen 2 swap may need a
-    limit), allow Texas to be built earlier (e.g. a pre-IPO build with a loan), or accept a lower target.
-  - Good-path drawdown −97% (target −85 to −95): operations are worth $0 at the Merge (every S9 off), so the
-    value is cash. Accept, or should the good path keep some profitable machines to the end?
-  - Idle share is 100% in every run: accept, or should "some runs" mean a narrower band?
-  - The good path peaks in 2021Q4, not 2021Q1 as expected. Fine?
-  - rig_theft 61% (target 30–60%): accept, or trim its weight?
-  - section301_tariff 0% in the sim (no bot buys new ASICs in 2018Q3–2019Q4): accept as a player-only card?
-  - A scouted warehouse with the undersized-transformer flaw (under 1 MW) blocks Series A for the whole
-    game, and the flaw's upgrade isn't built. Intended?
+- **Balance review follow-ups** (numbers in "Balance review" above):
+  - The GPU cap misses its check (texas-ipo-upgrade $6.2B vs ≤ $3.45B) because used GPU rigs are
+    uncapped. Cap used rigs too (e.g. a shared kW cap, or a used-price jump when buying in bulk), or accept
+    that a GPU-farm strategy can win 2021 big (and lose it all at the Merge: −96%)?
+  - The construction loan is unaffordable before the IPO for the bots (40% of ~$40M). Fine as a player
+    option (it only matters with cash), or should it finance more, or allow a smaller Texas phase?
+  - The great path hits its band through the S9→S19 upgrade, not Texas. Is that the intended story?
+  - "Signed power contract" read as "any site you own has one". Or should it mean a contract for Texas
+    itself (e.g. chosen at build)?
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
@@ -608,9 +649,9 @@ negotiation / Uri rules were not touched, per F2):
 
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
 save/load, the 20 event cards, the failure wave, the left-nav screens + Settings, and sound. Every item
-in the scope's build list now exists. 27 Sep 2026: the balance pass (see "Balance pass" above). Next:
-take the balance-pass follow-ups in the open questions back to the design thread (above all the great
-path's $669M vs $1.5–2.5B), then playtests. Small follow-ups: an ear test of the sounds; the build's main
+in the scope's build list now exists. 27 Sep 2026: the balance pass and its review (see "Balance pass"
+and "Balance review" above); every §5 balance anchor now passes in the sim. Next: the review follow-ups in
+the open questions (above all the used-GPU loophole), then playtests. Small follow-ups: an ear test of the sounds; the build's main
 JS chunk is just over Vite's 500 KB warning (card text; split it later); CLAUDE.md still says
 `src/platform/` doesn't exist and that sound lives in `docs/audio/` (owner's file: flag, don't edit).
 Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing

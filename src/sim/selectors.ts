@@ -58,6 +58,11 @@ import { rushRepairUsd } from './systems/failureWave.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import {
+  constructionLoanUsd,
+  newGpuKwLeft,
+  transformerUpgrade,
+} from './systems/construction.ts'
+import {
   activeRivals,
   rivalSnapshot,
   upcomingRivals,
@@ -93,7 +98,7 @@ import {
 } from './systems/sites.ts'
 import { treasuryValueUsd } from './systems/treasury.ts'
 import { bandwidthForQuarter } from './systems/bandwidth.ts'
-import { getStep, raiseBandwidth } from './systems/capital.ts'
+import { getStep, raiseBandwidth, unmetRequirement } from './systems/capital.ts'
 export { upcomingRivals } from './systems/rivals.ts'
 import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
 
@@ -433,6 +438,8 @@ export function fundingRound(state: GameState, id: string) {
     from,
     to,
     status,
+    /** What the round still needs (a site size, total MW, EBITDA), while it's open. */
+    requirement: status === 'open' ? unmetRequirement(state, step) : undefined,
   }
 }
 
@@ -1026,4 +1033,38 @@ export function valuationBreakdown(state: GameState) {
 /** Rivals not in the game yet, and when each one arrives. */
 export function upcomingRivalsView(state: GameState) {
   return upcomingRivals(state.quarter)
+}
+
+/** Sites whose flaw can be fixed (the transformer upgrade): its price, and when it's done if under way. */
+export function transformerViews(state: GameState) {
+  return state.sites.flatMap((site) => {
+    const u = transformerUpgrade(site)
+    return u ? [{ site, ...u, readyQuarter: site.upgradeReadyQuarter }] : []
+  })
+}
+
+/** The construction loan you have, and what a financed build of an offer would cost you. */
+export function constructionLoanView(state: GameState) {
+  const terms = CONTENT.constructionLoan
+  return {
+    loan: state.constructionLoan,
+    tier: terms.tier,
+    /** Loan and cash for a financed build of this offer (null if the tier can't be financed). */
+    financing: (offer: { tier: string; capexUsd: number }) => {
+      if (offer.tier !== terms.tier) return null
+      const loanUsd = constructionLoanUsd(offer.capexUsd)
+      return { loanUsd, cashUsd: offer.capexUsd - loanUsd }
+    },
+  }
+}
+
+/** kW of this machine you may still buy this quarter (the GPU shortage cap on new rigs), or Infinity. */
+export function buyCapKw(
+  state: GameState,
+  modelId: string,
+  condition: 'new' | 'used',
+): number {
+  return condition === 'new' && getModel(modelId)?.coin === 'ETH'
+    ? newGpuKwLeft(state)
+    : Infinity
 }

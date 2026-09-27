@@ -31,6 +31,7 @@ import {
   shocksFileSchema,
   sitesFileSchema,
   type AuctionRules,
+  type ConstructionLoanTerms,
   type CryptoLoanTerms,
   type CurtailmentRules,
   type EquipmentLoanTerms,
@@ -64,6 +65,7 @@ export type {
   ReadMarketRules,
   EventChoice,
   AuctionRules,
+  ConstructionLoanTerms,
   CryptoLoanTerms,
   CurtailmentRules,
   EquipmentLoanTerms,
@@ -93,6 +95,10 @@ export interface Content {
   pitch: PitchRules
   /** Equipment loan terms by era (fromYear–toYear). */
   equipmentLoans: EquipmentLoanTerms[]
+  /** The Texas construction loan (capital.json › loans.construction). */
+  constructionLoan: ConstructionLoanTerms
+  /** The 2020Q4–2022Q1 cap on new GPU rigs per quarter (machines.json › new_gpu_cap). */
+  newGpuCap: { window: [string, string]; kwPerQuarter: number }
   /** The crypto-backed loan's terms. */
   cryptoLoan: CryptoLoanTerms
   /** Distressed auction rules (interrupts.json › distressed_auction). */
@@ -494,6 +500,11 @@ export function parseContent(raw: RawContent): Content {
     ladder: Object.fromEntries(capitalFile.ladder.map((s) => [s.id, s])),
     pitch: capitalFile.pitch,
     equipmentLoans: capitalFile.loans.equipment,
+    constructionLoan: capitalFile.loans.construction,
+    newGpuCap: {
+      window: machinesFile.new_gpu_cap.window,
+      kwPerQuarter: machinesFile.new_gpu_cap.kw_per_quarter,
+    },
     cryptoLoan: capitalFile.loans.game_crypto_loan,
     rivals: rivalsFile.rivals,
     auction,

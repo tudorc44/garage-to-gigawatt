@@ -55,7 +55,7 @@
     "2021Q2"
    ],
    "requires": {
-    "min_mw": 1
+    "min_total_mw": 1
    }
   },
   {
@@ -101,6 +101,16 @@
   "hire_shift_source": "bd_lead"
  },
  "loans": {
+  "construction": {
+   "notes": "Texas construction loan (design thread, balance review 27 Sep 2026): finances up to ltc of a Texas site's build cost when you build it; weekly payments like the equipment loan. Needs Series A closed and a signed power contract at one of your sites.",
+   "tier": "texas_site",
+   "from": "2020Q3",
+   "ltc": 0.6,
+   "apr": 0.11,
+   "tenor_quarters": 8,
+   "requires_round": "series_a",
+   "requires_contract": true
+  },
   "equipment": [
    {
     "era": "2017-2019",
