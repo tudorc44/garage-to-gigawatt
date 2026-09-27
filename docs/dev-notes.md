@@ -913,6 +913,14 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
   `capital_act2.json` has the corrected path (M2.2). Short region keys, not regions.json's ids (mine, reversible).
 - **M2.2** Era multiples for Act II: mining and AI-infra series from `capital_act2.json`, interpolated per quarter;
   Act II valuations use the Act II mining multiple.
+  **Done.** `src/content/capital_act2.json` (a copy of docs/act2-content's; only the multiples are read so far) →
+  `Act2Quarter.multiple` { mining, aiInfra } for every Act II quarter, interpolated linearly between the anchors
+  (the loader needs anchors at 2022Q4 and 2026Q4). `eraMultiple(q)` now reads Act II's mining multiple from 2022Q4
+  (this replaces 1b's "hold 2022Q3"; both are 4× at the boundary, so no jump); `aiInfraMultiple(q)` is ready for the
+  AI units (M3). The game's copy adds **mining 2026Q1 6 and 2026Q2 6** from doc 18 §8's table (the scope points to
+  it; without them the line would give 6.67 and 6.33) (mine, reversible). Valuation is still one multiple on total
+  EBITDA: with only mining and hosting units there's nothing to sum yet; sum-of-parts comes with the AI units
+  (mine, reversible).
 - **M2.3** MW by use per site: mining / hosting / AI shell / AI cloud / building / idle (selector + tests).
 - **M2.4** The hosting unit: mining → hosting on the same site ($0.1M/MW, live next quarter), 4-quarter contracts at
   the year's all-in rate, fees and power in EBITDA, Heat load, ending a contract; terminal commands.

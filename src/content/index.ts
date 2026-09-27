@@ -8,6 +8,7 @@ import marketRaw from './market_weekly.json' with { type: 'json' }
 import marketAct2Raw from './market_weekly_act2.json' with { type: 'json' }
 import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
+import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -17,6 +18,7 @@ import eventsRaw from './events.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
   auctionRulesSchema,
+  capitalAct2FileSchema,
   capitalFileSchema,
   curtailmentRulesSchema,
   heatFileSchema,
@@ -139,6 +141,8 @@ export interface Act2Quarter {
   }
   sofrPct: number
   hySpreadBps: number
+  /** EV/EBITDA multiples (capital_act2.json, doc 18 §8), interpolated between the anchor quarters. */
+  multiple: { mining: number; aiInfra: number }
   /** GPU-backed DDTL spread (null before the first DDTL, 2023Q3). */
   ddtlSpreadBps: number | null
   capRateHyperscalePct: number
@@ -248,6 +252,7 @@ export interface RawContent {
   marketAct2: unknown
   marketQuarterlyAct2: unknown
   capital: unknown
+  capitalAct2: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -301,6 +306,11 @@ export function parseContent(raw: RawContent): Content {
     raw.marketQuarterlyAct2,
   )
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
+  const capitalAct2File = check(
+    'capital_act2.json',
+    capitalAct2FileSchema,
+    raw.capitalAct2,
+  )
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
@@ -345,6 +355,7 @@ export function parseContent(raw: RawContent): Content {
     !marketAct2Rows ||
     !marketQuarterlyAct2Rows ||
     !capitalFile ||
+    !capitalAct2File ||
     !rivalsFile ||
     !auction ||
     !curtailment ||
@@ -443,7 +454,43 @@ export function parseContent(raw: RawContent): Content {
         )
     })
   }
-  const act2Market = marketQuarterlyAct2Rows.map(act2QuarterOf)
+  // Act II multiples: every anchor must be an Act II quarter, and the first and last Act II
+  // quarters must be anchors, so every quarter in between can be interpolated.
+  const multiples = capitalAct2File.era_multiple_ev_ebitda
+  const interpolated = {
+    mining: interpolate('mining', multiples.mining),
+    aiInfra: interpolate('ai_infra', multiples.ai_infra),
+  }
+  function interpolate(field: string, anchors: Record<string, number>) {
+    const at = Object.entries(anchors)
+      .map(([q, v]) => ({ i: act2Quarters.indexOf(q), q, v }))
+      .sort((a, b) => a.i - b.i)
+    for (const a of at)
+      if (a.i < 0)
+        problems.push(
+          `capital_act2.json › era_multiple_ev_ebitda.${field}: ${a.q} isn't an Act II quarter`,
+        )
+    const inside = at.filter((a) => a.i >= 0)
+    if (inside[0]?.i !== 0 || inside.at(-1)?.i !== act2Quarters.length - 1) {
+      problems.push(
+        `capital_act2.json › era_multiple_ev_ebitda.${field}: needs a value for ${act2Quarters[0]} and ${act2Quarters.at(-1)}`,
+      )
+      return act2Quarters.map(() => 0)
+    }
+    return act2Quarters.map((_, i) => {
+      const next = inside.findIndex((a) => a.i >= i)
+      const b = inside[next]
+      if (b.i === i) return b.v
+      const a = inside[next - 1]
+      return a.v + ((b.v - a.v) * (i - a.i)) / (b.i - a.i)
+    })
+  }
+  const act2Market = marketQuarterlyAct2Rows.map((r, i) =>
+    act2QuarterOf(r, {
+      mining: interpolated.mining[i] ?? 0,
+      aiInfra: interpolated.aiInfra[i] ?? 0,
+    }),
+  )
 
   // Machines: prices must exist for every quarter the machine can be bought or sold.
   for (const m of machinesFile.models) {
@@ -699,9 +746,13 @@ function act2Week(row: MarketWeekAct2): MarketWeek {
 }
 
 /** A market_quarterly_act2 row, reshaped for the sim. */
-function act2QuarterOf(r: MarketQuarterAct2Row): Act2Quarter {
+function act2QuarterOf(
+  r: MarketQuarterAct2Row,
+  multiple: Act2Quarter['multiple'],
+): Act2Quarter {
   return {
     quarter: r.quarter,
+    multiple,
     gpuRentalUsdHr: {
       h100: {
         hyperscaler: r.gpu_h100_hyperscaler_usd_hr,
@@ -806,6 +857,7 @@ export const CONTENT: Content = parseContent({
   marketAct2: marketAct2Raw,
   marketQuarterlyAct2: marketQuarterlyAct2Raw,
   capital: capitalRaw,
+  capitalAct2: capitalAct2Raw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

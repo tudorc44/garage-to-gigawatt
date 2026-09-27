@@ -60,9 +60,10 @@ describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
     }
   })
 
-  it('the era multiple (capital.json)', () => {
+  it('the era multiple: replaced by Act II content (capital_act2.json, M2.2), no longer held', () => {
+    // Act II's mining multiple starts where Act I's ended (4×), so there's no jump at the boundary.
     expect(eraMultiple(Q4_2022)).toBe(CONTENT.eraMultiple['2022Q3'])
-    expect(eraMultiple(Q4_2026)).toBe(CONTENT.eraMultiple['2022Q3'])
+    expect(eraMultiple(Q4_2026)).toBe(5)
   })
 
   it("rivals keep their 2022Q3 numbers (rivals.json), so they don't drop out of the table", () => {

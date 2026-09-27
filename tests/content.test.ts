@@ -16,6 +16,7 @@ import market from '../src/content/market_weekly.json' with { type: 'json' }
 import marketAct2 from '../src/content/market_weekly_act2.json' with { type: 'json' }
 import marketQuarterlyAct2 from '../src/content/market_quarterly_act2.json' with { type: 'json' }
 import capital from '../src/content/capital.json' with { type: 'json' }
+import capitalAct2 from '../src/content/capital_act2.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
@@ -34,6 +35,7 @@ const raw = (): RawContent =>
     marketAct2,
     marketQuarterlyAct2,
     capital,
+    capitalAct2,
     rivals,
     heat,
     shocks,
@@ -329,6 +331,19 @@ describe("Act II's quarterly market (market_quarterly_act2, scope 0.2 §2.3)", (
     )[0].btc_usd_close = 1
     expect(problemsFor(data).join('\n')).toMatch(
       /market_quarterly_act2 › 2022Q4: closes \(BTC 1,/,
+    )
+  })
+
+  it('catches an Act II multiple series that stops short', () => {
+    const data = raw()
+    const m = (
+      data.capitalAct2 as {
+        era_multiple_ev_ebitda: { mining: Record<string, unknown> }
+      }
+    ).era_multiple_ev_ebitda.mining
+    delete m['2026Q4']
+    expect(problemsFor(data)).toContain(
+      'capital_act2.json › era_multiple_ev_ebitda.mining: needs a value for 2022Q4 and 2026Q4',
     )
   })
 

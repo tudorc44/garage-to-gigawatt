@@ -127,6 +127,29 @@ export const marketQuarterAct2Schema = z.object({
 })
 export const marketQuarterlyAct2Schema = z.array(marketQuarterAct2Schema).min(1)
 export type MarketQuarterAct2Row = z.infer<typeof marketQuarterAct2Schema>
+
+// ---------- capital_act2.json ----------
+// So far only the era multiples (doc 18 §8): anchor quarters with a value; the loader
+// interpolates the quarters in between. The rest of the file is read in later steps.
+
+/** { "2022Q4": 4, "2023Q4": 8, …, "source": "…" } → the quarter entries only. */
+const quarterAnchors = z
+  .record(z.string(), z.union([nonNeg, z.string(), z.boolean()]))
+  .transform((r) =>
+    Object.fromEntries(
+      Object.entries(r).filter(
+        (e): e is [string, number] =>
+          quarterId.safeParse(e[0]).success && typeof e[1] === 'number',
+      ),
+    ),
+  )
+
+export const capitalAct2FileSchema = z.looseObject({
+  era_multiple_ev_ebitda: z.object({
+    mining: quarterAnchors,
+    ai_infra: quarterAnchors,
+  }),
+})
 export type MarketWeekAct1 = z.infer<typeof marketWeekSchema>
 export type MarketWeekAct2 = z.infer<typeof marketWeekAct2Schema>
 
