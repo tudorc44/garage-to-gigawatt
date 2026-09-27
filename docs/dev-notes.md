@@ -328,3 +328,5 @@ balance → **P3** events, theme, screens → the Prologue report.
 - P1.2: `src/content/machines_prologue.json` + `prologue.json` (game copies, schemas; getModel finds prologue machines,
   Act I lists don't); state `act: 0`, `prologue?` / `prologueCarry?`; save format 3 (2 → 3 changes nothing) + tests;
   `src/sim/prologue/` (setup, engine: week / quarter end / auto-play / Stop here; handover; actions router).
+- P1.3: title buttons (Start in 2017 → / Start in 2009 / Start at Act II); `src/ui/screens/Prologue.tsx` (intro, a
+  basic Plan, live, auto-play summary card with Stop here, chapter → Act I); `prologue/views.ts` (odds in words).

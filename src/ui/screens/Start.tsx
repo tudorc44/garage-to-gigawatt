@@ -9,6 +9,8 @@ export function TitleScreen(props: {
   onStart: (seedText: string) => void
   /** "Start at Act II": the standalone preset company (scope 0.2 §2.10). */
   onStartAct2: (seedText: string) => void
+  /** "Start in 2009 (prologue)": Act 0 (Alpha 0.3). */
+  onStartPrologue: (seedText: string) => void
   /** Games saved in this browser (null when there's none). */
   saves: { autosave: GameState | null; manual: GameState | null }
   onLoad: (state: GameState) => void
@@ -41,6 +43,14 @@ export function TitleScreen(props: {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button type="submit" class="btn btn-primary">
               {t('ui.title.new_career')}
+            </button>
+            <button
+              type="button"
+              class="btn"
+              title={t('ui.title.start_prologue_note')}
+              onClick={() => props.onStartPrologue(seed.trim())}
+            >
+              {t('ui.title.start_prologue')}
             </button>
             <button
               type="button"

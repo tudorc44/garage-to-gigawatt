@@ -8,6 +8,8 @@ import { seedFromString } from '../sim/rng.ts'
 import { bandwidthMax, quarterName } from '../sim/selectors.ts'
 import { newGame, type GameState } from '../sim/state.ts'
 import { presetGame } from '../sim/preset.ts'
+import { newPrologueGame } from '../sim/prologue/setup.ts'
+import { PrologueScreen } from './screens/Prologue.tsx'
 import { restoreSave } from '../sim/save.ts'
 import { LiveScreen } from './screens/Live.tsx'
 import { PlanScreen } from './screens/Plan.tsx'
@@ -140,11 +142,29 @@ export function App() {
           setShowEnd(false)
           commit(presetGame(toSeed(text)))
         }}
+        onStartPrologue={(text) => {
+          setShowEnd(false)
+          commit(newPrologueGame(toSeed(text)))
+        }}
         saves={{
           autosave: readSlot('autosave'),
           manual: readSlot('manual'),
         }}
         onLoad={saves.load}
+      />
+    )
+  } else if (game.act === 0) {
+    // The prologue (Alpha 0.3) has its own screens for every phase.
+    screen = (
+      <PrologueScreen
+        state={game}
+        act={act}
+        tick={tick}
+        skip={skip}
+        onNew={() => {
+          setShowEnd(false)
+          commit(null)
+        }}
       />
     )
   } else if (
