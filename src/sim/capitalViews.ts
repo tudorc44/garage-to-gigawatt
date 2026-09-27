@@ -93,7 +93,13 @@ export function ratingView(state: GameState) {
 /** The debt stack (A2-07): every loan, with its rate, maturity and (project debt) DSCR status. */
 export function debtStackView(state: GameState) {
   const rows: {
-    kind: 'project_debt' | 'ddtl' | 'equipment' | 'construction' | 'crypto'
+    kind:
+      | 'project_debt'
+      | 'ddtl'
+      | 'equipment'
+      | 'construction'
+      | 'bridge'
+      | 'crypto'
     projectN: number | null
     balanceUsd: number
     amountUsd: number
@@ -165,6 +171,21 @@ export function debtStackView(state: GameState) {
       rating: null,
       missed: 0,
     })
+  // The lifeline's bridge loan (M5.2): only when there is one.
+  const bridge = state.bridgeLoan
+  if (bridge)
+    rows.push({
+      kind: 'bridge',
+      projectN: null,
+      balanceUsd: bridge.balanceUsd,
+      amountUsd: bridge.amountUsd,
+      apr: bridge.apr,
+      maturity: label(bridge.dueQuarter),
+      dscr: null,
+      status: null,
+      rating: null,
+      missed: 0,
+    })
   if (state.cryptoLoan)
     rows.push({
       kind: 'crypto',
@@ -183,6 +204,8 @@ export function debtStackView(state: GameState) {
     totalUsd: rows.reduce((a, r) => a + r.balanceUsd, 0),
     equipmentOffered: !!equipmentTerms(state),
     dscrMin: BALANCE.finance.dscrMin,
+    /** Paying the bridge off early: why not now (null if it can be), when there is one. */
+    bridgeRepay: bridge ? whyNot(state, { type: 'REPAY_BRIDGE_LOAN' }) : null,
   }
 }
 

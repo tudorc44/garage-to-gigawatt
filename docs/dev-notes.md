@@ -177,6 +177,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.1: head starts at the act boundary (`headStarts.ts`, balance.ts › headStarts). Mine, reversible: GPUs sell at
   the game's used price; the legacy cloud counts as AI EBITDA; hosting's GPU halls convert at the 2022Q4 cost, live
   in 2022Q4, as far as cash goes; shell-ready = any shell at that site; hold_and_wait has no mechanic (open question).
+- M5.2: lifeline (`lifeline.ts`): below 20 MW energized OR $5M cash at the boundary; the intro offers it (default
+  take). Mine, reversible: an owned 20 MW ERCOT site live 2022Q4; the bridge is interest-only with a bullet at the
+  end of 2024Q3; "Bridge" row + early repay on the Capital screen; terminal game asks too.
 
 ## Next
 

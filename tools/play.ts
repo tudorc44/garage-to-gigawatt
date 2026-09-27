@@ -46,6 +46,7 @@ import {
   usedKw,
 } from '../src/sim/systems/sites.ts'
 import { treasuryValueUsd } from '../src/sim/systems/treasury.ts'
+import { lifelineTerms } from '../src/sim/systems/lifeline.ts'
 import { leagueTable, yourRank } from '../src/sim/systems/rivals.ts'
 
 // ---------- input / output ----------
@@ -882,11 +883,33 @@ for (;;) {
       break
     }
   } else if (state.phase === 'intro') {
-    // The Act II intro (the carry-over summary comes with build step 1e).
+    // The Act II intro: the head start, and the lifeline when the company is below the floor.
     console.log()
     say('play.act2_intro')
-    if ((await ask(t('play.act2_start'))) === 'quit') bye()
-    const r = applyAction(state, { type: 'START_ACT_2' })
+    const e = state.act2Entry
+    if (e)
+      say(`log.head_start.${e.headStart}` as MessageKey, {
+        count: e.gpuRigsSold || e.legacyGpuRigs,
+        valueUsd: e.gpuSaleUsd,
+        hostedKw: e.hostedKw,
+        costUsd: e.conversionUsd,
+      })
+    let lifeline: 'take' | 'pass' | undefined
+    if (e?.lifeline === 'offered') {
+      const l = lifelineTerms(state)
+      say('play.lifeline', {
+        siteKw: l.siteKw,
+        priceUsd: l.priceUsd,
+        loanUsd: l.loanUsd,
+        aprPct: l.apr,
+        quarters: l.tenorQuarters,
+        cashUsd: l.cashAfterUsd,
+      })
+      const answer = await ask(t('play.lifeline_ask'))
+      if (answer === 'quit') bye()
+      lifeline = answer === 'pass' ? 'pass' : 'take'
+    } else if ((await ask(t('play.act2_start'))) === 'quit') bye()
+    const r = applyAction(state, { type: 'START_ACT_2', lifeline })
     if (r.ok) state = r.state
   } else {
     // The chapter report (after the Merge, or at the end of Act II), or game over.

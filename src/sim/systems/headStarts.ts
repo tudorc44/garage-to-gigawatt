@@ -37,6 +37,7 @@ export function applyHeadStart(state: GameState): void {
     hostedKw: 0,
     conversionUsd: 0,
     shellReadySites: [],
+    lifeline: null,
   }
   state.act2Entry = entry
   const rigs = state.machines.filter(isGpuRig)
@@ -138,7 +139,10 @@ export function tenantsFrom(state: GameState): string {
 }
 
 /** Whether a site is shell-ready (the hosting head start converted its GPU halls). */
-export function shellReady(state: GameState, siteId: string | undefined): boolean {
+export function shellReady(
+  state: GameState,
+  siteId: string | undefined,
+): boolean {
   return !!siteId && !!state.act2Entry?.shellReadySites.includes(siteId)
 }
 
@@ -189,7 +193,8 @@ export function settleLegacyCloudWeek(state: GameState): {
     if (!site || isShutDown(state, site.id)) continue
     const working = lot.count - lot.failed
     const up = uptime(site)
-    const rev = working * c.gpusPerRig * c.usdPerGpuHr * c.utilisation * hours * up
+    const rev =
+      working * c.gpusPerRig * c.usdPerGpuHr * c.utilisation * hours * up
     const cost =
       working *
       getModel(lot.model)!.power_kw *

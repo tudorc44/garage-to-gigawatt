@@ -95,6 +95,21 @@ export interface Act2Entry {
   hostedKw: number
   conversionUsd: number
   shellReadySites: string[]
+  /**
+   * The distressed lifeline (scope 0.2 §2.10): null when the company is above the floor; offered at
+   * the act boundary, then taken (the site and the bridge loan) or passed as Act II begins.
+   */
+  lifeline: 'offered' | 'taken' | 'passed' | null
+}
+
+/** The lifeline's bridge loan: interest each week, the whole principal at the end of its term. */
+export interface BridgeLoan {
+  amountUsd: number
+  balanceUsd: number
+  apr: number
+  takenQuarter: number
+  /** The quarter at whose end the principal is due. */
+  dueQuarter: number
 }
 
 /** An equipment loan, secured on machines, repaid in equal weekly slices plus interest. */
@@ -310,6 +325,8 @@ export interface GameState {
   equipmentLoan: EquipmentLoan | null
   /** Texas construction loans, one per financed phase (same payment shape as the equipment loan). */
   constructionLoans: EquipmentLoan[]
+  /** Act II: the lifeline's bridge loan, or null. */
+  bridgeLoan: BridgeLoan | null
   /** Hosting contracts at your sites (Act II). */
   hosting: HostingContract[]
   /** Projects (Act II): AI shells, AI clouds and pilot clusters. */
@@ -607,6 +624,7 @@ export function newGame(seed: number): GameState {
     siteOffers: [],
     equipmentLoan: null,
     constructionLoans: [],
+    bridgeLoan: null,
     hosting: [],
     projects: [],
     projectEvents: [],

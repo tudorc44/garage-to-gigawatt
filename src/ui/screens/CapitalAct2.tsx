@@ -12,6 +12,7 @@ import {
   valuationBreakdown,
 } from '../../sim/selectors.ts'
 import { fmt } from '../format.ts'
+import { say } from '../names.ts'
 import { LoanDialog } from './dialogs.tsx'
 import type { ScreenProps } from './Plan.tsx'
 import { BwButton } from './Projects.tsx'
@@ -203,6 +204,20 @@ function DebtStack({ state, act }: ScreenProps) {
             ))}
           </tbody>
         </table>
+      )}
+      {v.rows.some((r) => r.kind === 'bridge') && (
+        <div class="row-between">
+          <span class="num-s muted">{t('ui.cap2.bridge_note')}</span>
+          <button
+            type="button"
+            class="btn"
+            disabled={v.bridgeRepay !== null}
+            title={v.bridgeRepay ? say(v.bridgeRepay) : undefined}
+            onClick={() => act({ type: 'REPAY_BRIDGE_LOAN' })}
+          >
+            {t('ui.cap2.bridge_repay')}
+          </button>
+        </div>
       )}
       {loan && (
         <LoanDialog state={state} act={act} onClose={() => setLoan(false)} />

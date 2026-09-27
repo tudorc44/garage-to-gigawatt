@@ -240,6 +240,20 @@ export const capitalAct2FileSchema = z.looseObject({
     ai_lab_tenant: nonNeg,
     spot: nonNeg,
   }),
+  /** Scope 0.2 §2.10, doc 18 §2.2: the distressed lifeline card (ec03). */
+  lifeline_card_final_numbers: z.looseObject({
+    site_mw: nonNeg,
+    price_usd: sourced,
+    bridge_loan_apr_pct: nonNeg,
+    bridge_loan_tenor_quarters: z.number().int().min(1),
+    cash_floor_reached_usd: nonNeg,
+  }),
+  /** Scope 0.2 §2.10, doc 18 §2.4: the standalone preset company ("Q4 2022: a mid-size miner"). */
+  standalone_preset_final_numbers: z.looseObject({
+    cash_usd: nonNeg,
+    equipment_debt_usd: nonNeg,
+    founder_stake_pct: z.number().min(0).max(100),
+  }),
 })
 
 // ---------- lenders.json (Act II capital, doc 18 §7) ----------

@@ -31,6 +31,8 @@ export interface Strategy {
   answer?(state: GameState): string | undefined
   /** The Merge decision; undefined (or no function) = merge.json bot_default. */
   merge?(state: GameState): string | undefined
+  /** The lifeline card, when it's offered; undefined (or no function) = take it (the card's default). */
+  lifeline?(state: GameState): 'take' | 'pass' | undefined
 }
 
 /** Which act a played game stops after: 1 = at the Act I chapter report (after the Merge). */
@@ -78,7 +80,13 @@ export function playFrom(
     } else if (state.phase === 'chapter') {
       step({ type: 'CONTINUE_TO_ACT_2' })
     } else if (state.phase === 'intro') {
-      step({ type: 'START_ACT_2' })
+      const lifeline =
+        state.act2Entry?.lifeline === 'offered'
+          ? strategy.lifeline?.(state)
+          : undefined
+      step(
+        lifeline ? { type: 'START_ACT_2', lifeline } : { type: 'START_ACT_2' },
+      )
     } else if (state.phase === 'live') {
       if (state.interrupt) {
         const choice = strategy.answer?.(state) ?? defaultChoice(state)

@@ -13,6 +13,7 @@ import {
 import { loansLocked } from './cryptoLoan.ts'
 import { ratingRank, sofr } from './finance.ts'
 import { saleValueUsd } from './machines.ts'
+import { payBridgeWeek } from './lifeline.ts'
 import { gpuResidualUsd } from './projects.ts'
 import { ratingInputs } from './rating.ts'
 
@@ -42,7 +43,9 @@ function eraTerms(quarter: number): LoanTerms | undefined {
 export function loanRating(state: GameState): string {
   if (state.creditRating !== null) return state.creditRating
   const report = state.reports.at(-1)
-  return report ? ratingInputs(state, report).rating : CONTENT.finance.rating.min
+  return report
+    ? ratingInputs(state, report).rating
+    : CONTENT.finance.rating.min
 }
 
 /** The Act II equipment loan's band for a rating (owner decision on the M4 questions). */
@@ -191,6 +194,7 @@ export function payLoanWeek(state: GameState): {
       logEntry(state, 'log.construction_loan_paid_off', {}, state.week + 1)
     }
   }
+  add(payBridgeWeek(state))
   return total
 }
 
@@ -211,11 +215,12 @@ function payOneWeek(
   return { interestUsd, principalUsd, paidOff: loan.balanceUsd <= 0 }
 }
 
-/** Everything still owed on loans (equipment, construction, crypto-backed and Act II project debt). */
+/** Everything still owed on loans (equipment, construction, bridge, crypto-backed and Act II project debt). */
 export function debtUsd(state: GameState): number {
   return (
     (state.equipmentLoan?.balanceUsd ?? 0) +
     state.constructionLoans.reduce((sum, l) => sum + l.balanceUsd, 0) +
+    (state.bridgeLoan?.balanceUsd ?? 0) +
     (state.cryptoLoan?.balanceUsd ?? 0) +
     (state.facilities ?? []).reduce((sum, f) => sum + f.balanceUsd, 0)
   )

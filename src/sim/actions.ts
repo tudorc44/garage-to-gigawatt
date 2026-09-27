@@ -107,6 +107,11 @@ import {
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import { applyHeadStart } from './systems/headStarts.ts'
+import {
+  offerLifeline,
+  repayBridgeLoan,
+  takeLifeline,
+} from './systems/lifeline.ts'
 import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
   backstopBlocker,
@@ -260,8 +265,13 @@ export type Action =
   | { type: 'MERGE_CHOOSE'; choice: string }
   /** From the Act I chapter report to the Act II intro (the act boundary, scope 0.2 §2.1). */
   | { type: 'CONTINUE_TO_ACT_2' }
-  /** From the Act II intro to the 2022Q4 Plan phase. */
-  | { type: 'START_ACT_2' }
+  /**
+   * From the Act II intro to the 2022Q4 Plan phase. Below the floor, `lifeline` answers the
+   * distressed lifeline card: take it (the default) or pass.
+   */
+  | { type: 'START_ACT_2'; lifeline?: 'take' | 'pass' }
+  /** Act II: pay the lifeline's bridge loan off early (Plan phase). */
+  | { type: 'REPAY_BRIDGE_LOAN' }
 
 export type ActionResult =
   { ok: true; state: GameState } | { ok: false; error: Message }
@@ -334,10 +344,17 @@ function run(s: GameState, a: Action): Message | undefined {
       s.act = 2
       s.phase = 'intro'
       applyHeadStart(s)
+      offerLifeline(s)
       return
 
     case 'START_ACT_2':
       if (s.phase !== 'intro') return fail('error.wrong_phase')
+      if (s.act2Entry?.lifeline === 'offered') {
+        if (a.lifeline === 'pass') {
+          s.act2Entry.lifeline = 'passed'
+          logEntry(s, 'log.lifeline_passed')
+        } else takeLifeline(s)
+      }
       startNextQuarter(s)
       return
   }
@@ -708,6 +725,9 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'REPAY_CONSTRUCTION_LOAN':
       return repayConstructionLoan(s)
+
+    case 'REPAY_BRIDGE_LOAN':
+      return repayBridgeLoan(s)
 
     case 'BUILD_PHASE': {
       const blocked = phaseBlocker(s, a.siteId, a.financed === true)

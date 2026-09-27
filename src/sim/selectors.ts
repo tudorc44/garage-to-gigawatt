@@ -70,6 +70,7 @@ import {
 } from './systems/projects.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
+import { lifelineTerms } from './systems/lifeline.ts'
 import {
   constructionLoanUsd,
   gpuKwLeft,
@@ -929,6 +930,9 @@ export function carryOver(state: GameState) {
     mergeChoice: state.mergeChoice,
     /** The Merge head start as applied at the act boundary (null before it), and its terms. */
     headStart: state.act2Entry,
+    /** The lifeline card's terms while it's on offer (below the floor), else null. */
+    lifeline:
+      state.act2Entry?.lifeline === 'offered' ? lifelineTerms(state) : null,
     headStartTerms: {
       leanPct: 1 - BALANCE.headStarts.leanOps.powerMult,
       leanQuarters: BALANCE.headStarts.leanOps.quarters,

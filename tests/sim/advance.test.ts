@@ -105,7 +105,9 @@ describe('the quarter loop', () => {
     expect(s.quarter).toBe(actLastQuarter(1)) // still 2022Q3 on the intro
     expect(applyAction(s, { type: 'CONTINUE_TO_ACT_2' }).ok).toBe(false)
     const cash = s.cash
-    s = act(s, { type: 'START_ACT_2' })
+    // A garage is below the floor (M5.2): passing the lifeline leaves the company as it was.
+    expect(s.act2Entry!.lifeline).toBe('offered')
+    s = act(s, { type: 'START_ACT_2', lifeline: 'pass' })
     expect(s.phase).toBe('plan')
     expect(CONTENT.quarters[s.quarter]).toBe('2022Q4')
     expect(s.week).toBe(0)

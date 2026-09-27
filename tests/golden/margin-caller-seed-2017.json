@@ -42,6 +42,7 @@
   "siteOffers": [],
   "equipmentLoan": null,
   "constructionLoans": [],
+  "bridgeLoan": null,
   "hosting": [],
   "projects": [],
   "projectEvents": [],

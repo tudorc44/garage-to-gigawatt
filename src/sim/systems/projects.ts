@@ -210,7 +210,10 @@ export function projectCapex(
 }
 
 /** Whether tenant offers exist yet (doc 18 §2.3: from 2023Q3; 2023Q1 with the gpu_cloud head start). */
-export function tenantsOpen(state: GameState, quarter = state.quarter): boolean {
+export function tenantsOpen(
+  state: GameState,
+  quarter = state.quarter,
+): boolean {
   return CONTENT.quarters[quarter] >= tenantsFrom(state)
 }
 

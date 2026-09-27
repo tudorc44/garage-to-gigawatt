@@ -88,14 +88,51 @@ export function ActIntroScreen({ state, act }: ScreenProps) {
               </p>
             </div>
           )}
-          <div>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onClick={() => act({ type: 'START_ACT_2' })}
-            >
-              {t('ui.act2_intro.start')}
-            </button>
+          {c.lifeline && (
+            <div class="panel act-intro-box">
+              <div class="label">{t('ui.act2_intro.lifeline')}</div>
+              <p style={{ margin: 0 }}>
+                <strong>{t('ui.act2_intro.lifeline_title')}</strong>
+              </p>
+              <p class="num-s" style={{ margin: 0 }}>
+                {t('ui.act2_intro.lifeline_body', {
+                  siteKw: c.lifeline.siteKw,
+                  priceUsd: c.lifeline.priceUsd,
+                  loanUsd: c.lifeline.loanUsd,
+                  aprPct: c.lifeline.apr,
+                  quarters: c.lifeline.tenorQuarters,
+                  cashUsd: c.lifeline.cashAfterUsd,
+                })}
+              </p>
+            </div>
+          )}
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            {c.lifeline ? (
+              <>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onClick={() => act({ type: 'START_ACT_2', lifeline: 'take' })}
+                >
+                  {t('ui.act2_intro.lifeline_take')}
+                </button>
+                <button
+                  type="button"
+                  class="btn"
+                  onClick={() => act({ type: 'START_ACT_2', lifeline: 'pass' })}
+                >
+                  {t('ui.act2_intro.lifeline_pass')}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={() => act({ type: 'START_ACT_2' })}
+              >
+                {t('ui.act2_intro.start')}
+              </button>
+            )}
           </div>
         </div>
       </div>

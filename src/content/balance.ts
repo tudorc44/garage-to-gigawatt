@@ -182,6 +182,19 @@ export const BALANCE = {
   },
 
   /**
+   * The distressed lifeline (scope 0.2 §2.10, doc 18 §2.2): below 20 MW energized or $5M cash at the
+   * act boundary (the cash floor is in capital_act2.json), Act II opens with a bankrupt miner's 20 MW
+   * site, bought with a bridge loan. The site is an owned 20 MW site in ERCOT (the Core Scientific /
+   * Compute North / Helios pattern; mine), energized from 2022Q4. The bridge pays interest weekly and
+   * its principal at the end of its term (a bullet, as bridges are; mine, reversible).
+   */
+  lifeline: {
+    floorKw: 20_000,
+    siteTier: 'own_site',
+    region: 'ercot',
+  },
+
+  /**
    * Power reservation on idle and under-construction MW (Act II, owner decision A2): each quarter,
    * share × the full-load power cost at the site's current power price (MW × 2,190 h × $/kWh × 1,000).
    */

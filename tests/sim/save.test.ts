@@ -124,6 +124,7 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   creditRating: null,
   firstAiDealQuarter: null,
   act2Entry: null,
+  bridgeLoan: null,
 }
 
 /**

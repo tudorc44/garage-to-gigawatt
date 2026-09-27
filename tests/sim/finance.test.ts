@@ -95,9 +95,7 @@ describe('the equipment loan in Act II: priced on the credit rating (owner, M4 a
   })
 
   it('closed in 2022Q3 (Act I’s 2022 era ended in 2022Q2), always offered in Act II', () => {
-    expect(
-      equipmentTerms({ ...rated('2022Q3', null), act: 1 }),
-    ).toBeUndefined()
+    expect(equipmentTerms({ ...rated('2022Q3', null), act: 1 })).toBeUndefined()
     for (const label of ['2022Q4', '2024Q2', '2026Q4'])
       expect(equipmentTerms(rated(label, 'BB'))).toBeDefined()
   })

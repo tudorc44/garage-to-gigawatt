@@ -289,6 +289,18 @@ export interface Content {
   projects: ProjectRules
   /** Act II capital (scope 0.2 §2.2, §2.7; doc 18 §7): lenders.json, per Act II quarter where it varies. */
   finance: FinanceRules
+  /** The distressed lifeline (capital_act2.json › lifeline_card_final_numbers; scope 0.2 §2.10). */
+  lifeline: {
+    siteKw: number
+    priceUsd: number
+    /** The bridge loan's yearly rate (a fraction) and term. */
+    apr: number
+    tenorQuarters: number
+    /** The bridge is sized so cash also reaches this. */
+    cashFloorUsd: number
+  }
+  /** The standalone preset's balance sheet (capital_act2.json › standalone_preset_final_numbers). */
+  preset: { cashUsd: number; equipmentDebtUsd: number; founderStake: number }
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -830,7 +842,8 @@ export function parseContent(raw: RawContent): Content {
       extraBuildQuarters: Number(shellToFull?.build_quarters_additional ?? 0),
     },
     shellReady: {
-      capexDiscount: Number(hostingToShell?.capex_usd_mw_discount_pct ?? 0) / 100,
+      capexDiscount:
+        Number(hostingToShell?.capex_usd_mw_discount_pct ?? 0) / 100,
       quarterDiscount: Number(hostingToShell?.build_quarters_discount ?? 0),
     },
     pilot: {
@@ -1085,6 +1098,23 @@ export function parseContent(raw: RawContent): Content {
     hosting,
     projects,
     finance,
+    lifeline: {
+      siteKw: capitalAct2File.lifeline_card_final_numbers.site_mw * 1000,
+      priceUsd: capitalAct2File.lifeline_card_final_numbers.price_usd.value,
+      apr:
+        capitalAct2File.lifeline_card_final_numbers.bridge_loan_apr_pct / 100,
+      tenorQuarters:
+        capitalAct2File.lifeline_card_final_numbers.bridge_loan_tenor_quarters,
+      cashFloorUsd:
+        capitalAct2File.lifeline_card_final_numbers.cash_floor_reached_usd,
+    },
+    preset: {
+      cashUsd: capitalAct2File.standalone_preset_final_numbers.cash_usd,
+      equipmentDebtUsd:
+        capitalAct2File.standalone_preset_final_numbers.equipment_debt_usd,
+      founderStake:
+        capitalAct2File.standalone_preset_final_numbers.founder_stake_pct / 100,
+    },
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
