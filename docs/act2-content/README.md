@@ -10,6 +10,16 @@ changed by the Alpha 0.2 scope's content fixes (§7, below), copied under short 
 the earlier weeks and **keep the last week**: it carries the real quarter close (BTC and ETH), which
 `market_quarterly.csv` repeats.
 
+## Owner decisions of 27 Sep 2026 (after milestone M2)
+
+- **B6: `market_quarterly.csv` has no multiple columns any more.** `mining_ev_ebitda_mult` and `ai_infra_ev_ebitda_mult`
+  were deleted (they still had the pack's old 2026 AI values, 24 and 20). **`capital_act2.json` is the only source for
+  multiples.** Every other column and value is unchanged.
+- **B5: `capital_act2.json` › `era_multiple_ev_ebitda.mining`** has explicit 2026 anchors: Q1 6, Q2 6, Q3 6, Q4 5 (doc 18
+  §8's table), so the file and the design doc agree.
+- The game's copies in `src/content/` (`market_quarterly_act2.csv`, `capital_act2.json`, `conversions.json`,
+  `tenants.json`) are byte-for-byte these files; a test checks it.
+
 ## market_weekly.csv / market_quarterly.csv: fixes of 27 Sep 2026
 
 The six BTC columns changed and an `eth_usd` column was added (see the ETH section below) (`btc_usd`, `btc_difficulty_T`, `btc_hashrate_EHs`, `btc_block_subsidy`,

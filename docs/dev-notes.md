@@ -1016,13 +1016,47 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
     the numbers worse, because the underlying reinvest bot then refilled the MW with S19s at held 2022 prices.
 
 
-### STOPPED (M2)
-- **Hosting client defaults in winters** (scope 0.2 §2.4: "client default risk in winters"): no content file has a
-  rate or size for it (tenants.json only names Compute North, Sep 2022). Needs a number from the design thread,
-  e.g. a chance per winter quarter per contract and what a default costs (lost fees, early termination).
-  Hosting works without it.
-- **Idle MW's power reservation** (scope 0.2 §2.4: "Idle: pays power reservation + rent"): no content file gives the
-  reservation charge. Idle MW pay the site's rent as in Act I, no reservation yet. Needs a number (e.g. $/kW-month).
+### STOPPED (M2) — answered by the owner, applied in M3.0–M3.3
+- Hosting client defaults in winters → A1 below. Idle MW's power reservation → A2 below.
+
+### Owner decisions on the M2 questions (27 Sep 2026)
+- **A1 Hosting client defaults.** Winter = Q4 and Q1. Chance per hosting contract per winter quarter: **15%** in 2022Q4
+  and 2023Q1 (the FTX / Core Scientific winter), **5%** in every later winter quarter. A default: that quarter's fees
+  are lost, the contract ends and its MW go idle. The player can re-let those MW from the next Plan phase at the
+  current rate with **no conversion cost**. No machines are seized. Each default is logged.
+- **A2 Power reservation.** Each quarter, idle and under-construction MW pay **25% of the full-load power cost** at
+  the site's current power price (MW × 2,190 h × $/kWh × 1,000 × 0.25; ≈ $6/kW-month in ERCOT to ≈ $15 in PJM), on
+  top of rent. It follows the region through the power price.
+- **B3 Regions for Act I sites (fixed tags).** Texas site → ERCOT. Own site → Georgia. Small unit and warehouse →
+  Georgia plus a **small-load premium** = their 2022 gap over the region (small unit ≈ +6¢, warehouse ≈ +3.5¢), held
+  constant. Garage → no region (keeps its household path, held). Each site keeps its Act I contract until its next
+  renewal, then renews against its region's series (+ the premium), with the Act I renewal/negotiation rules.
+- **B4** Hosted machines add to Heat like your own (as built).
+- **B5** Mining multiples 2026Q1–Q4 = 6, 6, 6, 5: explicit anchors in `docs/act2-content/capital_act2.json`.
+- **B6** The two multiple columns are deleted from `docs/act2-content/market_quarterly.csv`; `capital_act2.json` is
+  the only source for multiples (noted in its README).
+- **B7 ASIC prices in Act II.** S9 → the "old" $/TH tier, S19 Pro → "new"; price = tier $/TH × TH/s; the used price
+  follows the Act I used/new ratio. Add the **Antminer S21**: 200 TH/s, 3,500 W (17.5 J/TH), new from 2024Q1 on the
+  "latest" tier, used market from 2025Q1. Tier prices are pack estimates (fine for now).
+- **C** All seven M2 choices approved as built. ERCOT's 2026 large-load rules (SB6) come with the regional events (M5).
+
+### Milestone M3: owner decisions + Projects and the Deal builder (batch mode, started 27 Sep 2026)
+
+Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/act2-content/`. Sub-steps:
+- **M3.0** Data fixes B5 + B6 (docs and game copies, README, a copy test); decisions recorded here.
+- **M3.1** Regions (B3): region tags for Act I sites, Act II normal power prices from the region series (+ premium),
+  renewals against them; the power reservation on idle and under-construction MW (A2).
+- **M3.2** Hosting client defaults (A1) and re-letting with no conversion cost.
+- **M3.3** Act II ASIC prices from the $/TH tiers and the Antminer S21 (B7).
+- **M3.4** Re-run the M2 sims and compare with scope §5.
+- **M3.5** Projects: the model, content (tenant cards, conversions, GPUs, cap rates, backlog weights), opening a
+  project, the Power slot (existing MW), the Tenant slot (tenant offers, spot), the Capital slot (own cash).
+- **M3.6** The build lifecycle: start build, building quarters, live units (AI shell lease, AI cloud / pilot on spot),
+  take-or-pay (P1), construction delays (P5), the GPU allocation interrupt.
+- **M3.7** Valuation: sum of the parts (mining multiple + pivot premium, AI multiple), projects under construction at
+  capex spent, the credit-weighted backlog; the real backlog on the top bar; selling a live project at the cap rate.
+- **M3.8** UI: the Projects page (A2-04) and the Deal builder (A2-05); dashboard hooks.
+- **M3.9** GPU know-how, terminal commands, bots and sim numbers; milestone report.
 
 ## Next
 

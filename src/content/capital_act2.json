@@ -2,7 +2,7 @@
  "schema_version": 1,
  "era_multiple_ev_ebitda": {
   "mining": {"2022Q4": 4, "2023Q4": 8, "2024Q4": 9, "2025Q4": 7, "2026Q1": 6, "2026Q2": 6, "2026Q3": 6, "2026Q4": 5,
-   "fix": "The game's copy adds 2026Q1 6 and 2026Q2 6 from doc 18 §8's table (scope 0.2 §2.2 points to it); the docs/act2-content copy has no anchors there, which would interpolate to 6.67 and 6.33.",
+   "fix": "Owner decision B5 (27 Sep 2026): explicit 2026 anchors Q1 6, Q2 6, Q3 6, Q4 5, so this file and doc 18 §8's table agree.",
    "source": "multiples.vc public-comps snapshots (Sep2026): most miners show negative/near-zero LTM EBITDA making the multiple not-meaningful in practice; game value smooths this into a usable 4-9x band, CONFIRMING 18-act-ii-design.md §8's ⚙ 4-6/6/8-10/8/6 sequence is roughly right but 2025 should be lower (7x not 8x) given real 2025 EBITDA weakness at Core Scientific/Hut8/IREN", "estimate": true},
   "ai_infra": {"2022Q4": 10, "2023Q4": 20, "2024Q4": 26, "2025Q4": 30, "2026Q1": 24, "2026Q2": 20, "2026Q3": 18, "2026Q4": 15,
    "fix": "Alpha 0.2 scope v1.0 §7 (doc 18 §16.1): the 2026 AI-infra floor lowered to 15-18x, path 24 -> 20 -> 18 -> 15 (was 2026Q3 24, 2026Q4 20).",

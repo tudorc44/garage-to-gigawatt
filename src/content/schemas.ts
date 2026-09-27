@@ -74,7 +74,7 @@ export const marketAct2Schema = z.array(marketWeekAct2Schema).min(1)
 // ---------- market_quarterly_act2.json (generated from market_quarterly_act2.csv) ----------
 // One row per Act II quarter: GPU rental and purchase prices (empty before a GPU exists, so null),
 // build costs per MW, rates and spreads, cap rates, regional power prices and the AI demand index.
-// Its two multiple columns aren't used: capital_act2.json holds the corrected multiples.
+// It has no multiple columns: capital_act2.json is the only source for multiples (owner, B6).
 
 const n = nonNeg
 const nn = nullableNonNeg
@@ -109,8 +109,6 @@ export const marketQuarterAct2Schema = z.object({
   hy_spread_bps: n,
   ddtl_spread_bps: nn,
   cap_rate_hyperscale_pct: n,
-  mining_ev_ebitda_mult: n,
-  ai_infra_ev_ebitda_mult: n,
   ev_per_mw_mining_usd_m: n,
   ev_per_mw_ai_announced_usd_m: nn,
   ev_per_mw_ai_stabilized_usd_m: nn,

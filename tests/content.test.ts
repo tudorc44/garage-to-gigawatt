@@ -167,15 +167,28 @@ describe('content loads', () => {
     }
   })
 
-  it('the Act II market CSVs are the corrected copies in docs/act2-content/', () => {
+  it('the Act II content files are the corrected copies in docs/act2-content/', () => {
     const read = (path: string) =>
       readFileSync(new URL(path, import.meta.url), 'utf8')
-    expect(read('../src/content/market_weekly_act2.csv')).toBe(
-      read('../docs/act2-content/market_weekly.csv'),
-    )
-    expect(read('../src/content/market_quarterly_act2.csv')).toBe(
-      read('../docs/act2-content/market_quarterly.csv'),
-    )
+    const copies: [string, string][] = [
+      ['market_weekly_act2.csv', 'market_weekly.csv'],
+      ['market_quarterly_act2.csv', 'market_quarterly.csv'],
+      ['capital_act2.json', 'capital_act2.json'],
+      ['conversions.json', 'conversions.json'],
+      ['tenants.json', 'tenants.json'],
+    ]
+    for (const [game, docs] of copies)
+      expect(read(`../src/content/${game}`), game).toBe(
+        read(`../docs/act2-content/${docs}`),
+      )
+  })
+
+  it('the quarterly market has no multiple columns (owner B6: capital_act2.json is the only source)', () => {
+    const header = readFileSync(
+      new URL('../src/content/market_quarterly_act2.csv', import.meta.url),
+      'utf8',
+    ).split('\n')[0]
+    expect(header).not.toMatch(/ev_ebitda_mult/)
   })
 
   it('reads an empty CSV cell as null, never 0, and True/False as booleans', () => {
