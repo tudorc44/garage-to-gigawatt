@@ -1568,6 +1568,62 @@ E. Still open from Act I (never answered)
 Please reply with numbered answers. Where you pick numbers, give exact values so the code thread doesn't have to guess.
 ```
 
+### Milestone M6: M5 answers, fix-all, rivals, chapter report, foreclosure, tooltips, bots (batch mode, 28 Sep 2026) — DONE
+
+- **M6.0** the M5 answers: **a** records + scope edits, valuation breakdown / EV/MW in the sim, land price and 70%
+  flaws, sims (tuning step 1); **b** backlog weights + 18× floor, sims; **c** LTC / capex credit (only if needed),
+  sims; **d** lifeline AND + the lifeline and preset bots; **e** Bandwidth base 4; **f** head starts + their bots;
+  **g** Ratepayer Anger; **h** GA / OH / AZ policies + the PJM card target; **i** tenant / lender negotiation;
+  **j** air-permit lawsuit; **k** aggressive-depreciation audit + the confirmed dates; **l** seed-round condition
+  (Act I goldens); **m** the Act I as-built readings (answer 18).
+- **M6.1** "Fix all" on the Dashboard + `g2g.bandwidth(n?)`. **M6.2** rivals and the league (A2-08). **M6.3** the
+  Act II chapter report (A2-09). **M6.4** the foreclosure game over (A2-10). **M6.5** onboarding tooltips. **M6.6** the
+  Act II bots (scope §2.15's 7 + the head-start bots) and the §5 balance report. **M6.7** the milestone report.
+
+#### M6 progress
+- M6.0a: land $/MW by year × region ±15%, 70% flawed offers; `tools/valuation-breakdown.ts` → `sim-output/act2-valuation.csv` +
+  table. Sims ≈ M5 (bots buy no land): sign-then-raise $187M all runs, 13/50 bust, 15 AI MW; asic-retirer peak $3.7B. EV/MW
+  2026Q4: announced AI $13M (above band already), stabilized IG $26M ✓ (2025 peak $50M: 2025 AI multiple); texas-capital mining $1.7–5.2M ✗.
+- M6.0b: weights A/AA 25% → announced AI $14.8M/MW, so A/AA 20% (rule); BBB 15%, AI lab 8%, backstop 20%; 18× floor (`aiFloorEbitdaUsd`).
+  Sims at 20%: sign-then-raise $358M all runs, 12/50 bust, 17.5 AI MW; asic-retirer peak $3.5B, end $2.6B; announced AI still $14M,
+  stabilized IG $31M (> $27M: the floor) at 2026Q4. Capital screen's weight note now reads the weights.
+- M6.0c: project-debt LTC A/AA-backstopped 75%, BBB 65% (AI lab 50% recorded; project debt still needs BBB+: open question); capex
+  credit cap $2.0M/MW. Worse: sign-then-raise $198M all runs, 17/50 bust; asic-retirer peak $3.5B, 18/50 bust, 32/50 ≥ 4 q runway.
+  **Still > 2× short → tuning STOPPED** (answer 1's rule); breakdown in the M6 report.
+- M6.0d: lifeline floor = under 20 MW **and** under $5M. Bot bugs fixed (tools/bots.ts › aiProjects): the lifeline bot never paid its
+  bridge bullet (now raises equity and repays it from the quarter before); the preset bot filled its free MW with S19s and never built
+  (AI bots buy no machines in Act II); sizing reserves the equipment loan's payments too (the preset's shells were foreclosed).
+- M6.0e: Act II Bandwidth base 4 (balance.ts › act2Bandwidth); the Chief of Staff already carried (staff persist), nothing else does.
+- M6.0f: head starts (headStarts.ts; balance.ts › headStarts): guaranteed offers (mine: in the project's tenant offers, until signed),
+  gpu_cloud's first pilot skips allocation, sell_gpus' 2023Q1 fleet (BUY_DISTRESSED_FLEET, Dashboard row), hold_and_wait +25% / +1 BW; all
+  Act II GPU rigs resell on the 15%/yr curve (mine). Bots `open-*` (tools/bots.ts); AI bots mine only until their AI phase (M6.0d fix).
+- M6.0g: Ratepayer Anger (`anger.ts`, balance.ts › act2Regions.anger): Heat + floor(Anger ÷ 5), region panel row; ec21 (bypass card from
+  2026Q2, the angriest region ≥ 50): wait = 4-quarter regional moratorium on opening/starting projects, lobby = −2 BW next and 2 quarters (mine).
+- M6.0h: regions.json effects: Georgia +$0.005 (2026Q1); Ohio +$0.005 and `project_reservation_share` 0.85 (building MW of projects started
+  from 2026Q2; mine: not idle MW, not grid/gas-powered builds); Arizona `project_capex_mult` 1.05 (all of capex). ec10 hits Virginia + Ohio only.
+- M6.0i: `dealNegotiation.ts` (DEAL_NEGOTIATE_START/COUNTER/ACCEPT/WALK; "Negotiate · 2 BW" on Deal-builder offers and debt rows + panel).
+  Mine: fixed limits (no random draw); a GPU contract's $/GPU-hr × the won multiple; lender walk = that debt off this quarter.
+- M6.0j: air-permit lawsuit rolled once as the gas plant is due on (mine: that moment): $1M, plant off 2 more quarters, project waits
+  (projects.ts › gasLawsuits). A plant switches on with its project, so the "live → grid power / curtail" case can't arise yet.
+- M6.0k: ec18 audit (eventEffects › depreciationAudit): Q4 ends while the ×1.1 runs, 10% → boost ends, −1 notch and equity × 0.9 this quarter and
+  next (mine: "2 quarters" counted from the audit's). SB6 per site on energized MW. SVB: arranged debt exempt (moot: project debt opens 2023Q3).
+- M6.0l: seed round `requires.min_quarters_operated: 1` (a report with mining revenue, any site incl. the garage). Goldens unchanged: every
+  bot that raises the seed has mined a quarter first, so no Act I game changes.
+- M6.1: "Fix all (N machines · $X)" on the Dashboard to-do list (REPAIR_ALL, 0 BW like one repair, all or nothing; disabled "Need $X ·
+  you have $Y"); `g2g.bandwidth(n?)` and a new `g2g.help()` (every build, like the other helpers). Checked in the browser.
+- M6.2: `src/content/rivals_act2.json` (game copy: series + move quarters, texts in en.json › rival_move.*); the 5 replace Act I's in the
+  league from 2022Q4 (2026Q4 holds 2026Q3); report's league shows AI / mining MW and "Rivals this quarter"; a passed RFP card → a rival (log).
+- M6.3: Act II chapter report (End.tsx › Act2Chapter; selectors › act2ChapterView): scope §2.13 title bands by end valuation, net worth /
+  peak / league rank tiles, 2017–2026 curve, 2026Q4 value parts, moments (head start, lifeline, projects, tenants, slips, foreclosures,
+  sales, halving, price reset, peak), league, Act III teaser (mine). Checked in the browser.
+- M6.4: game over (A2-10): `gameOverView` cause = foreclosure (a project foreclosed in the last 4 q) / debt (service missed in the final
+  quarter) / cash; shown on the report's game-over footer and the Act II end card. Lenders take projects (as built), not the company.
+- M6.5: `Tip` (basics.tsx; "Got it" hides it for good, `src/platform/tips.ts`): the pack's 7 tooltips (content.en.json › tooltip.act2.*) on the
+  Dashboard (2022Q4–2023Q1: MW uses, projects), Deal builder (projects; take-or-pay or pilot), region panel, rating and backlog cards.
+- M6.6: scope §2.15's 7 bots = sign-then-raise (good), asic-retirer (great), texas-ipo (pure miner), new `overleveraged` (H100 clouds on
+  AI-lab contracts, DDTL + max equipment loan), shell-climb (cautious shell), pilot probes, hosting-switcher; + `open-*`. `tools/section5.ts`
+  (delay cost to 2026Q4, 2024 vs 2025Q3 contract IRR; methods mine) and a §5 PASS/MISS table at the end of `npm run sim -- --act2`.
+
 ## Earlier "Next" notes (history)
 
 Act II market data fixed (27 Sep 2026): corrected copies of the Act II market files are in `docs/act2-content/`
