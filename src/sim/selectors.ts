@@ -19,6 +19,7 @@ import type {
   GameState,
   MachineLot,
   Site,
+  SiteOffer,
   PowerContract,
 } from './state.ts'
 import { repairCostPerUnit, saleValueUsd } from './systems/machines.ts'
@@ -999,6 +1000,23 @@ export function regionsView(state: GameState) {
     national: CONTENT.nationalPolicies.map(policy),
     /** The region of your biggest site (the one to show first). */
     home: biggest.id,
+  }
+}
+
+/** An Act II site offer as the offers dialog shows it (A2-06's scouting drawer), or null for an Act I offer. */
+export function act2OfferView(state: GameState, o: SiteOffer) {
+  if (!o.category || !o.region || !o.kw) return null
+  const ready = state.quarter + (o.readyQuarters ?? 1)
+  return {
+    category: o.category,
+    kw: o.kw,
+    region: o.region,
+    /** The quarter it has power, or null if that's after the end of Act II. */
+    readyQuarter: CONTENT.quarters[ready] ?? null,
+    perMwUsd: o.capexUsd / (o.kw / 1000),
+    powerUsdKwh:
+      (act2Quarter(state.quarter)?.powerUsdKwh[o.region as PowerRegion] ?? 0) +
+      regionPowerAdderUsdKwh(o.region as PowerRegion, state.quarter),
   }
 }
 

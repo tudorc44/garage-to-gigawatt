@@ -23,6 +23,7 @@ import {
   machineName,
   rivalName,
   say,
+  siteName,
   tierIcon,
   tierName,
 } from '../names.ts'
@@ -170,7 +171,7 @@ function FleetSection({ state, act }: ScreenProps) {
                           )}
                         </span>
                       </td>
-                      <td>{tierName(site.tier)}</td>
+                      <td>{siteName(site)}</td>
                       <td class="num r">
                         {v.lot.failed > 0
                           ? t('ui.section.units_broken', {

@@ -16,6 +16,7 @@ import gpusRaw from './gpus.json' with { type: 'json' }
 import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
 import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
+import sitesAct2Raw from './sites_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -36,6 +37,7 @@ import {
   lendersFileSchema,
   pilotClusterSchema,
   regionsFileSchema,
+  sitesAct2FileSchema,
   tenantsFileSchema,
   curtailmentRulesSchema,
   heatFileSchema,
@@ -79,12 +81,14 @@ import {
   type Rival,
   type RegionPolicy,
   type RegionRaw,
+  type SiteCategory,
   type SiteTier,
 } from './schemas.ts'
 
 export { BALANCE }
 export type {
   RegionPolicy,
+  SiteCategory,
   NegotiationRules,
   PitchRules,
   HeatRules,
@@ -312,6 +316,8 @@ export interface Content {
   /** The six Act II regions (regions.json), by the market file's region id, and the national policies. */
   regions: Record<PowerRegion, Region>
   nationalPolicies: RegionPolicy[]
+  /** Act II scouting (sites_act2.json): the site categories and their hidden flaws. */
+  act2Sites: { categories: SiteCategory[]; flaws: Record<string, Flaw> }
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -402,6 +408,7 @@ export interface RawContent {
   interruptsAct2: unknown
   lenders: unknown
   regions: unknown
+  sitesAct2: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -469,6 +476,11 @@ export function parseContent(raw: RawContent): Content {
   const gpusFile = check('gpus.json', gpusFileSchema, raw.gpus)
   const lendersFile = check('lenders.json', lendersFileSchema, raw.lenders)
   const regionsFile = check('regions.json', regionsFileSchema, raw.regions)
+  const sitesAct2File = check(
+    'sites_act2.json',
+    sitesAct2FileSchema,
+    raw.sitesAct2,
+  )
   const interruptsAct2File = check(
     'interrupts_act2.json',
     interruptsAct2FileSchema,
@@ -536,6 +548,7 @@ export function parseContent(raw: RawContent): Content {
     !gpusFile ||
     !lendersFile ||
     !regionsFile ||
+    !sitesAct2File ||
     !delayRules ||
     !allocationRules ||
     !rivalsFile ||
@@ -800,6 +813,16 @@ export function parseContent(raw: RawContent): Content {
     for (const region of Object.keys(p.effect.queue_quarters ?? {}))
       if (!(POWER_REGIONS as readonly string[]).includes(region))
         problems.push(`regions.json › ${p.id}: unknown region "${region}"`)
+  }
+
+  // Act II scouting (sites_act2.json): windows inside Act II, every hidden flaw defined.
+  for (const c of sitesAct2File.site_categories) {
+    for (const q of c.window)
+      if (!act2Quarters.includes(q))
+        problems.push(`sites_act2.json › ${c.id}: ${q} isn't an Act II quarter`)
+    for (const f of c.hidden_flaws)
+      if (!sitesAct2File.flaws[f])
+        problems.push(`sites_act2.json › ${c.id}: unknown flaw "${f}"`)
   }
 
   const act2Market = marketQuarterlyAct2Rows.map((r, i) =>
@@ -1164,6 +1187,15 @@ export function parseContent(raw: RawContent): Content {
     },
     regions,
     nationalPolicies: regionsFile.national,
+    act2Sites: {
+      categories: sitesAct2File.site_categories,
+      flaws: Object.fromEntries(
+        Object.entries(sitesAct2File.flaws).map(([id, f]) => [
+          id,
+          { label: id, effect: f.effect, basis: f.basis } as Flaw,
+        ]),
+      ),
+    },
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
@@ -1339,6 +1371,7 @@ export const CONTENT: Content = parseContent({
   interruptsAct2: interruptsAct2Raw,
   lenders: lendersRaw,
   regions: regionsRaw,
+  sitesAct2: sitesAct2Raw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

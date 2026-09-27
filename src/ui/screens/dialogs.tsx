@@ -6,6 +6,7 @@ import { applyAction, type Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
   SELL_TREASURY_BANDWIDTH,
+  act2OfferView,
   auctionView,
   bestSite,
   communityView,
@@ -424,7 +425,11 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
           <tr>
             <th>{t('ui.offers.col.site')}</th>
             <th class="r">{t('ui.offers.col.build')}</th>
-            <th class="r">{t('ui.offers.col.rent')}</th>
+            <th class="r">
+              {state.siteOffers.every((o) => o.category)
+                ? t('ui.offers.col.per_mw')
+                : t('ui.offers.col.rent')}
+            </th>
             <th class="r">{t('ui.offers.col.power')}</th>
             <th>{t('ui.offers.col.flaw')}</th>
             <th class="r" />
@@ -445,30 +450,70 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
               contractType,
             }
             const whyFinanced = fin ? whyNot(state, financed) : null
+            const v2 = act2OfferView(state, o)
             return (
               <tr key={o.id}>
                 <td>
-                  <span
-                    style={{
-                      display: 'inline-flex',
-                      gap: '8px',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Icon name={tierIcon(o.tier)} size={16} />
-                    {tierName(o.tier)}
-                  </span>
+                  {v2 ? (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        gap: '6px',
+                        alignItems: 'center',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <span class="tag">
+                        {tDynamic(
+                          `site_category_badge.${v2.category}`,
+                          v2.category,
+                        )}
+                      </span>
+                      {fmt.power(v2.kw)} ·{' '}
+                      {tDynamic(`ui.region.${v2.region}`, v2.region)}
+                      <span class="num-s muted">
+                        {v2.readyQuarter
+                          ? t('ui.offers.act2_ready', {
+                              quarter: fmt.quarter(v2.readyQuarter),
+                            })
+                          : t('ui.offers.act2_after_act')}
+                      </span>
+                    </span>
+                  ) : (
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        gap: '8px',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Icon name={tierIcon(o.tier)} size={16} />
+                      {tierName(o.tier)}
+                    </span>
+                  )}
                 </td>
                 <td class="num r">{fmt.money(o.capexUsd)}</td>
                 <td class="num r">
-                  {t('ui.offers.per_quarter', { value: fmt.money(o.rentUsdQ) })}
+                  {v2
+                    ? t('ui.offers.act2_per_mw', {
+                        value: fmt.money(v2.perMwUsd),
+                      })
+                    : t('ui.offers.per_quarter', {
+                        value: fmt.money(o.rentUsdQ),
+                      })}
                 </td>
-                <td class="num r">{fmt.pct(o.powerPriceMult)}</td>
+                <td class="num r">
+                  {v2 ? fmt.cents(v2.powerUsdKwh) : fmt.pct(o.powerPriceMult)}
+                </td>
                 <td>
                   {!offerFlawsVisible(state) ? (
                     <span class="tag">{t('ui.offers.hidden_flaw')}</span>
                   ) : o.flaw ? (
-                    <span class="tag warn">{flawName(o.flaw)}</span>
+                    <span class="tag warn">
+                      {v2
+                        ? tDynamic(`flaw_act2.${o.flaw}`, o.flaw)
+                        : flawName(o.flaw)}
+                    </span>
                   ) : (
                     <span class="num-s muted">{t('ui.offers.no_flaw')}</span>
                   )}

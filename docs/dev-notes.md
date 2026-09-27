@@ -191,6 +191,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.4: `regions.json` (game copy: modifiers + policies with doc 18's effects), `regions.ts`, region panel on Fleet &
   Sites. In force: Heat × region modifier (Act II), +10 Heat everywhere from 2026Q1, VA +$0.011/kWh from 2026Q3,
   ERCOT upgrade halt 2026Q3–Q4 and PJM queue +4 (used by M5.6), SB6 (used by M5.9). Anger: STOPPED.
+- M5.5: `sites_act2.json` (game copy), `scouting.ts`: "Scout for sites" (1 BW) → 2–3 mixed offers. Mine: an owned
+  own_site of its size; random region; every offer has a flaw; energized land priced at the pack's "announced"
+  $3–12M/MW; greenfield waits the region's queue; a voided zoning doubles its delay; site names show type · region.
 
 ## Next
 

@@ -13,6 +13,7 @@ export function act2Company(label: string, seed = 1): GameState {
     quarter: CONTENT.quarters.indexOf(label),
     cash: 500_000_000,
     bandwidth: 6,
+    nextId: 3, // site-2 below
   }
   s.sites.push({
     id: 'site-2',

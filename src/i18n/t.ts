@@ -39,6 +39,9 @@ const ID_PARAMS: Record<string, string> = {
   kind: 'project_kind.',
   gpu: 'gpu.',
   debt: 'debt_kind.',
+  category: 'site_category.',
+  region: 'ui.region.',
+  flawAct2: 'flaw_act2.',
 }
 
 function fill(text: string, params: MessageParams): string {

@@ -48,6 +48,7 @@ import {
   machineIcon,
   machineName,
   say,
+  siteName,
   tierIcon,
   tierName,
 } from '../names.ts'
@@ -392,7 +393,7 @@ export function FleetPanel({ state }: { state: GameState }) {
             <div class="fleet-row">
               <Icon name={tierIcon(sv.site.tier)} />
               <div>
-                <div class="site-head">{tierName(sv.site.tier)}</div>
+                <div class="site-head">{siteName(sv.site)}</div>
                 <div class="num-s muted">
                   {t('ui.fleet.site_sub', {
                     power: fmt.cents(sv.powerUsdKwh),
@@ -638,6 +639,31 @@ function TodoPanel({
   const next = nextRenewal(state)
 
   const ladderRows = []
+  // Act II scouting (M5.5): distressed sites, greenfield and energized land, any region.
+  if (state.act === 2) {
+    const offers = state.siteOffers.filter((o) => o.category).length
+    if (offers > 0)
+      ladderRows.push(
+        <ActionRow
+          key="act2-offers"
+          icon="scout"
+          name={t('ui.plan.review_act2_offers', { n: offers })}
+          onClick={() => open('offers')}
+        />,
+      )
+    const a: Action = { type: 'SCOUT_SITES_ACT2' }
+    ladderRows.push(
+      <ActionRow
+        key="act2-scout"
+        icon="scout"
+        name={t(offers > 0 ? 'ui.plan.scout_act2_again' : 'ui.plan.scout_act2')}
+        bandwidth={BANDWIDTH_COST.scout}
+        bandwidthLeft={left}
+        disabledReason={reason(a)}
+        onClick={() => act(a)}
+      />,
+    )
+  }
   for (const r of siteLadder(state).slice(1)) {
     if (r.status === 'owned' || r.status === 'building') continue
     const name = { tier: tierName(r.tier), cap: fmt.power(r.capacityKw) }

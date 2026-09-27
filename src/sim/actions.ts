@@ -112,6 +112,12 @@ import {
   repayBridgeLoan,
   takeLifeline,
 } from './systems/lifeline.ts'
+import {
+  buyAct2Blocker,
+  buyAct2Site,
+  scoutAct2,
+  scoutAct2Blocker,
+} from './systems/scouting.ts'
 import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
   backstopBlocker,
@@ -153,6 +159,8 @@ export type Action =
   /** Share of mined coins to keep (0–1), for one coin, or for both if `coin` is left out. */
   | { type: 'SET_HODL'; pct: number; coin?: Coin }
   | { type: 'SCOUT_SITES'; tier: string }
+  /** Act II: scout for sites (1 Bandwidth): 2–3 offers from the categories open now. */
+  | { type: 'SCOUT_SITES_ACT2' }
   /** Build from a scouted offer, or (tiers that need no scouting) straight from the tier. */
   /**
    * Build a scouted offer. Phased tiers (Texas) build phase 1 and sign the site's power contract
@@ -531,7 +539,25 @@ function run(s: GameState, a: Action): Message | undefined {
       return
     }
 
+    case 'SCOUT_SITES_ACT2': {
+      const blocked = scoutAct2Blocker(s)
+      if (blocked) return blocked
+      scoutAct2(s)
+      return
+    }
+
     case 'BUILD_SITE': {
+      // Act II scouted offers (a category, size and region of their own).
+      const act2Offer =
+        'offerId' in a
+          ? s.siteOffers.find((o) => o.id === a.offerId && o.category)
+          : undefined
+      if (act2Offer) {
+        const blocked = buyAct2Blocker(s, act2Offer)
+        if (blocked) return blocked
+        buyAct2Site(s, act2Offer)
+        return
+      }
       let terms: {
         tier: string
         rentUsdQ: number

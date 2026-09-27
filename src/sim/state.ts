@@ -48,6 +48,9 @@ export interface Site {
   hostingReletKw?: number
   /** Act II: kW sold with a live project (they belong to the buyer and leave the site's capacity). */
   soldKw?: number
+  /** Act II scouted sites: their category (sites_act2.json) and size, which replaces the tier's. */
+  category?: string
+  kw?: number
 }
 
 export type ContractType = 'fixed' | 'index'
@@ -149,6 +152,11 @@ export interface SiteOffer {
   capexUsd: number
   powerPriceMult: number
   flaw: string | null
+  /** Act II offers: the category (sites_act2.json), size, region and quarters until it has power. */
+  category?: string
+  kw?: number
+  region?: string
+  readyQuarters?: number
 }
 
 /** What a project turns its MW into (scope 0.2 §2.4–2.5). */

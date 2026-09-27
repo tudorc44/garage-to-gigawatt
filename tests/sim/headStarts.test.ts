@@ -30,6 +30,7 @@ function chapter(choice: string): GameState {
     mergeChoice: choice,
     cash: 50_000_000,
     bandwidth: 6,
+    nextId: 3, // site-2 below
   }
   s.sites.push({
     id: 'site-2',

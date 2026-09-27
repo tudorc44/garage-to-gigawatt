@@ -5,6 +5,23 @@ import type { IconName } from './icons.ts'
 
 export const machineName = (id: string) => tDynamic(`machine.${id}`, id)
 export const tierName = (id: string) => tDynamic(`site.${id}`, id)
+/** A site's name: its tier's, or for an Act II scouted site its type, region and size. */
+export const siteName = (site: {
+  tier: string
+  category?: string
+  region?: string
+  kw?: number
+}) =>
+  site.category
+    ? t('ui.site_name_act2', {
+        category: tDynamic(
+          `site_category_badge.${site.category}`,
+          site.category,
+        ),
+        region: tDynamic(`ui.region.${site.region ?? ''}`, site.region ?? ''),
+        siteKw: site.kw ?? 0,
+      })
+    : tierName(site.tier)
 export const flawName = (id: string) => tDynamic(`flaw.${id}`, id)
 export const rivalName = (id: string) => tDynamic(`rival.${id}`, id)
 /** The two-letter monogram on the league table and auction tiles, e.g. "RI". */

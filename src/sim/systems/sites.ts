@@ -35,18 +35,29 @@ export function isReady(site: Site, quarter: number): boolean {
   return quarter >= site.readyQuarter
 }
 
-/** A number from the site's flaw (sites.json flaws.effect), or undefined if it has none. */
+/**
+ * A number from the site's flaw, or undefined if it has none: sites.json's flaws, or for an Act II
+ * scouted site sites_act2.json's.
+ */
 export function flawEffect(site: Site, key: string): number | undefined {
-  return site.flaw ? CONTENT.flaws[site.flaw]?.effect[key] : undefined
+  if (!site.flaw) return undefined
+  const flaws = site.category ? CONTENT.act2Sites.flaws : CONTENT.flaws
+  return flaws[site.flaw]?.effect[key]
+}
+
+/** The site's size before flaws: its own (Act II scouted sites), else its tier's. */
+export function nominalKw(site: Site): number {
+  const tier = getTier(site.tier)!
+  if (site.phases) return tier.phases!.kw * site.phases.length
+  return site.kw ?? tier.capacity_kw
 }
 
 /** Capacity to place machines in: a phased site counts every phase started (built or building). */
 export function capacityKw(site: Site): number {
-  const tier = getTier(site.tier)!
-  const base = site.phases
-    ? tier.phases!.kw * site.phases.length
-    : tier.capacity_kw
-  return base * (flawEffect(site, 'capacity_mult') ?? 1) - (site.soldKw ?? 0)
+  return (
+    nominalKw(site) * (flawEffect(site, 'capacity_mult') ?? 1) -
+    (site.soldKw ?? 0)
+  )
 }
 
 /** Capacity energized in `quarter`: a phased site counts its finished phases only. */
@@ -159,10 +170,14 @@ export function uptime(site: Site): number {
   return flawEffect(site, 'uptime') ?? 1
 }
 
-/** Hashrate multiplier for the site this quarter (cooling flaw bites in Q3, summer). */
+/** Hashrate multiplier for the site this quarter (cooling flaws bite in Q3, summer; Act II: water limits). */
 export function hashrateMult(site: Site, quarter: number): number {
   const summer = CONTENT.quarters[quarter].endsWith('Q3')
-  return summer ? (flawEffect(site, 'summer_hashrate_mult') ?? 1) : 1
+  return summer
+    ? (flawEffect(site, 'summer_hashrate_mult') ??
+        flawEffect(site, 'summer_derate') ??
+        1)
+    : 1
 }
 
 /** Up-front cost of building a tier with standard terms: capex (or capex per MW) plus land. */

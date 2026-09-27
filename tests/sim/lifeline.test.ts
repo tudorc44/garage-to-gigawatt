@@ -19,6 +19,7 @@ function chapter(tier: string, cash: number): GameState {
     mergeChoice: 'hold_and_wait',
     cash,
     bandwidth: 6,
+    nextId: 3, // site-2 below
   }
   s.sites.push({
     id: 'site-2',

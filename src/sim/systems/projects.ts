@@ -31,7 +31,7 @@ import {
 } from './headStarts.ts'
 import { isHired } from './hires.ts'
 import { convertibleKw } from './hosting.ts'
-import { powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
+import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
 
 const P = () => CONTENT.projects
 
@@ -185,8 +185,13 @@ export function projectCapex(
     p.kind === 'shell' && shellReady(state, p.siteId)
       ? 1 - P().shellReady.capexDiscount
       : 1
+  // An Act II site's flaw can add to the build per MW (fibre far away, poor power quality).
+  const site = p.siteId ? state.sites.find((s) => s.id === p.siteId) : undefined
+  const flawUsdMw = site ? (flawEffect(site, 'capex_usd_mw_delta') ?? 0) : 0
   const retrofitUsd =
-    (act2Quarter(quarter)?.capexUsdMw.retrofitShell ?? 0) * mw * ready
+    ((act2Quarter(quarter)?.capexUsdMw.retrofitShell ?? 0) * ready +
+      flawUsdMw) *
+    mw
   let gpuUsd = 0
   let gpuCount = 0
   if (p.kind !== 'shell' && p.gpu) {

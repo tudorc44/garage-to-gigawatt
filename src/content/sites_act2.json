@@ -1,0 +1,40 @@
+{
+ "schema_version": 1,
+ "note": "The game's copy of the Act II site categories and flaws (scope 0.2 §2.6; doc 18 §6). From docs/game-project-files/claude_act2-content_sites_act2.json (the pack, used as it is; its real_examples are left there). Greenfield's price is text in the pack ('≈$0.5-2M/MW upfront'); its range is written out here. Energized land is priced at the pack's price_usd_mw_announced (what an energized site with an AI story sells for).",
+ "site_categories": [
+  {
+   "id": "distressed_miner_site",
+   "window": ["2022Q4", "2023Q4"],
+   "mw_range": [20, 300],
+   "price_usd_mw": [150000, 400000],
+   "source": "Argo->Galaxy Helios: $65M facility sale (Dec 2022) implying ≈$325k/MW; CleanSpark comparable distressed-site pricing $270-500k/MW (estimate)",
+   "hidden_flaws": ["queue_position_lost", "water_limits", "undersized_transformer", "title_defect"]
+  },
+  {
+   "id": "energized_land_powered_shell",
+   "window": ["2024Q1", "2026Q4"],
+   "mw_range": [50, 400],
+   "price_usd_mw": [3000000, 12000000],
+   "source": "market-implied at deal-announcement stage; Cipher Mining's 313MW priced at $2.9M/MW (Jun 2026); the pack's price_usd_mw_announced",
+   "hidden_flaws": ["fibre_distance", "air_permit_for_gas", "zoning_challenge", "tenant_unfit_power_quality"]
+  },
+  {
+   "id": "greenfield_new_site",
+   "window": ["2023Q1", "2026Q4"],
+   "mw_range": [50, 300],
+   "price_usd_mw": [500000, 2000000],
+   "source": "the pack: land + interconnection deposit only, ≈$0.5-2M/MW upfront (site control) before any shell capex; energized after the region's grid queue",
+   "hidden_flaws": ["queue_position_lost", "water_limits", "fibre_distance", "zoning_challenge"]
+  }
+ ],
+ "flaws": {
+  "queue_position_lost": {"effect": {"delay_quarters": 3}, "basis": "PJM ~7yr average wait (electricchoice.com); losing queue position on a re-purposed distressed site is a real, documented risk"},
+  "water_limits": {"effect": {"capacity_mult": 0.8, "summer_derate": 0.9}, "basis": "liquid-cooled AI retrofit needs far more water than ASIC air-cooling; several 2025-26 siting fights cite water use explicitly"},
+  "fibre_distance": {"effect": {"capex_usd_mw_delta": 300000, "delay_quarters": 1}, "basis": "AI shell conversions need far more network bandwidth than mining; remote crypto sites often lack it"},
+  "air_permit_for_gas": {"effect": {"heat_delta": 25, "lawsuit_chance": 0.4}, "basis": "xAI Memphis Colossus: unpermitted gas turbines, NAACP/SELC legal action 2025-26"},
+  "zoning_challenge": {"effect": {"delay_quarters": 4, "chance_voided": 0.25}, "basis": "Prince William Digital Gateway: zoning voided by a court over a newspaper-notice technicality; Compass and QTS/Blackstone both exited in 2026"},
+  "tenant_unfit_power_quality": {"effect": {"capex_usd_mw_delta": 400000}, "basis": "mining-grade power delivery is less clean than what dense GPU racks need"},
+  "undersized_transformer": {"effect": {"capacity_mult": 0.6, "upgrade_cost_usd_mw": 300000}, "basis": "carried over from Act I sites.json flaw of the same name, scaled to Act II costs"},
+  "title_defect": {"effect": {"delay_quarters": 2, "cash": -500000}, "basis": "typical bankruptcy-auction risk; several 2022-23 crypto-miner asset sales carried disputed liens"}
+ }
+}

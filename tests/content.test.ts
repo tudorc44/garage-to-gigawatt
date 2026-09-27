@@ -23,6 +23,7 @@ import gpus from '../src/content/gpus.json' with { type: 'json' }
 import interruptsAct2 from '../src/content/interrupts_act2.json' with { type: 'json' }
 import lenders from '../src/content/lenders.json' with { type: 'json' }
 import regions from '../src/content/regions.json' with { type: 'json' }
+import sitesAct2 from '../src/content/sites_act2.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
@@ -48,6 +49,7 @@ const raw = (): RawContent =>
     interruptsAct2,
     lenders,
     regions,
+    sitesAct2,
     rivals,
     heat,
     shocks,

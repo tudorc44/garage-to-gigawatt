@@ -16,7 +16,7 @@ import {
 import type { ProjectKind } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
-import { say, tierIcon, tierName } from '../names.ts'
+import { say, siteName, tierIcon, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 const kindName = (kind: string) => tDynamic(`project_kind.${kind}`, kind)
@@ -348,8 +348,10 @@ function OpenProjectDialog(
               }}
             />
             <Icon name={tierIcon(x.site.tier)} size={16} />
-            {tierName(x.site.tier)}
-            {x.region && <span class="tag">{regionName(x.region)}</span>}
+            {siteName(x.site)}
+            {x.region && !x.site.category && (
+              <span class="tag">{regionName(x.region)}</span>
+            )}
             <span class="num-s muted">
               {t('ui.projects.free', { value: fmt.power(x.freeKw) })}
             </span>

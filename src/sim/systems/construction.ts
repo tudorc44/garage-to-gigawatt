@@ -10,7 +10,7 @@ import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
 import { buildQuartersFor } from './hires.ts'
 import { getModel } from './market.ts'
-import { flawEffect, getTier } from './sites.ts'
+import { flawEffect, getTier, nominalKw } from './sites.ts'
 
 const W = BALANCE.weeksPerQuarter
 
@@ -195,27 +195,32 @@ export function transformerBlocker(
 ): Message | undefined {
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
-  if (flawEffect(site, 'upgrade_cost_usd') === undefined)
+  const u = transformerUpgrade(site)
+  if (!u)
     return { key: 'error.nothing_to_upgrade', params: { tier: site.tier } }
   if (site.upgradeReadyQuarter !== undefined)
     return { key: 'error.upgrade_underway', params: { tier: site.tier } }
-  const bw = flawEffect(site, 'upgrade_bw') ?? 1
-  if (state.bandwidth < bw)
+  if (state.bandwidth < u.bandwidth)
     return {
       key: 'error.no_bandwidth',
-      params: { needed: bw, have: state.bandwidth },
+      params: { needed: u.bandwidth, have: state.bandwidth },
     }
-  const cost = flawEffect(site, 'upgrade_cost_usd')!
-  if (cost > state.cash)
+  if (u.costUsd > state.cash)
     return {
       key: 'error.no_cash',
-      params: { costUsd: cost, cashUsd: state.cash },
+      params: { costUsd: u.costUsd, cashUsd: state.cash },
     }
 }
 
-/** What the upgrade costs at this site (undefined if its flaw has no upgrade). */
+/**
+ * What the upgrade costs at this site (undefined if its flaw has no upgrade): a flat cost (Act I),
+ * or per MW of the site (an Act II scouted site's undersized transformer).
+ */
 export function transformerUpgrade(site: Site) {
-  const costUsd = flawEffect(site, 'upgrade_cost_usd')
+  const perMw = flawEffect(site, 'upgrade_cost_usd_mw')
+  const costUsd =
+    flawEffect(site, 'upgrade_cost_usd') ??
+    (perMw === undefined ? undefined : (perMw * nominalKw(site)) / 1000)
   if (costUsd === undefined) return undefined
   return {
     costUsd,

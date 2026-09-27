@@ -256,6 +256,32 @@ export const capitalAct2FileSchema = z.looseObject({
   }),
 })
 
+// ---------- sites_act2.json (Act II scouting, scope 0.2 §2.6, doc 18 §6) ----------
+
+export const sitesAct2FileSchema = z.object({
+  site_categories: z.array(
+    z.object({
+      id: z.string(),
+      window: z.tuple([quarterId, quarterId]),
+      mw_range: z.tuple([nonNeg, nonNeg]),
+      price_usd_mw: z.tuple([nonNeg, nonNeg]),
+      source: z.string(),
+      hidden_flaws: z.array(z.string()).min(1),
+    }),
+  ),
+  flaws: z.record(
+    z.string(),
+    z.object({
+      effect: z.record(z.string(), z.number()),
+      basis: z.string(),
+    }),
+  ),
+})
+
+export type SiteCategory = z.output<
+  typeof sitesAct2FileSchema
+>['site_categories'][number]
+
 // ---------- regions.json (Act II regions, scope 0.2 §2.6, doc 18 §6) ----------
 
 /** A policy's game effect (doc 18 §6, §11). Empty = news only. */

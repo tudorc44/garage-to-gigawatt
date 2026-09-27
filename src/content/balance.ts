@@ -302,6 +302,23 @@ export const BALANCE = {
     cloudProjectionYears: 5,
   },
 
+  /**
+   * Act II scouting (scope 0.2 §2.6; sites_act2.json): 1 Bandwidth for 2–3 offers (+1 with the BD
+   * Lead), each from a category open that quarter, in a random region, of a size in its MW range (10
+   * MW steps), priced per MW in its range, with one hidden flaw (mine: every offer has one, as in
+   * Act I). A bought site is an owned site (tier own_site) of that size. Distressed and energized
+   * sites have power from next quarter; greenfield waits the region's grid queue (months ÷ 3).
+   */
+  act2Scouting: {
+    bandwidth: 1,
+    offers: { min: 2, max: 3 },
+    mwStep: 10,
+    siteTier: 'own_site',
+    greenfield: 'greenfield_new_site',
+    /** A zoning challenge that is voided (its chance_voided) waits its delay a second time (mine). */
+    voidedDelayMult: 2,
+  },
+
   sites: {
     /** Tiers you can build straight away, without scouting first (scope §2.5: "Cash"). */
     noScoutingNeeded: ['small_unit'],
