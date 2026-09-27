@@ -11,6 +11,12 @@ margin-call), hires staff, manages community Heat and raises money, all against 
 → Quarter report. The act ends at the Merge decision screen and a chapter report. The alpha must answer one
 question: *is Act I a fun 40-minute run where decisions, not luck, decide whether you survive?*
 
+**Act II is coming into scope (owner, 27 Sep 2026):** Alpha 0.2, "The Pivot and the Boom", 17 quarterly turns
+(2022Q4 → 2026Q4), continuing from an Act I save or a standalone preset. The miner turns its energized MW into
+AI data-center capacity through projects (power, tenant and capital slots), a credit rating and five MW uses.
+Its scope doc is still a **draft (v0.9)**: Act II building starts once the design thread freezes it (v1.0) and
+it is copied into `docs/alpha-0.2-scope.md`. Until then, Act II work is limited to preparation.
+
 ## Commands
 
 ```bash
@@ -41,7 +47,15 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 - `docs/wireframes-spec.md`: **source of truth for screen layout and flow.**
 - `docs/mockups/q4-2017.html`: the approved **visual target** for the Plan, Live quarter and Quarter report
   screens (open it in a browser). Match its layout and style.
-- `docs/audio/`: **source of truth for sound.** Move it to `src/ui/audio/` when sound is built.
+- `src/ui/audio/` holds the sound code (moved from `docs/audio/`, where `audio-notes.md` stays as the reference).
+- **Act II** (reference copies in `docs/game-project-files/`, read-only; the game will read `src/content/`):
+  `claude_18-act-ii-design.md` (the design and its decisions, incl. §16 "Decisions from the content pack"),
+  `claude_20-alpha-0_2-scope.md` (**draft** scope; `docs/alpha-0.2-scope.md` becomes the source of truth once
+  frozen), `claude_21-act-ii-wireframe-prompt.md` (the Claude Design prompt; no Act II wireframes or mockup
+  exist yet), `claude_act2-content_*` (the Act II content pack: report plus data files). The `campus` era
+  theme for Act II already exists in `docs/design-system/tokens.css`.
+  Corrected Act II data lives in `docs/act2-content/`; where a file exists there, it replaces the
+  `docs/game-project-files/` copy (see its README).
 
 ## Architecture rules (non-negotiable)
 
@@ -80,9 +94,9 @@ src/i18n/       en.json, t.ts
 tools/          sim-runner.ts, validate-content.ts
 tests/          unit, golden-replay, smoke
 ```
-`src/sim`, `src/content`, `src/i18n`, `src/ui` and `tools/` exist. `src/sim/selectors.ts` holds read-only views
-the UI uses instead of computing rules itself. `src/platform/` doesn't exist yet; create folders only as a task
-needs them.
+`src/sim`, `src/content`, `src/i18n`, `src/ui`, `src/platform` (browser storage: saves, settings) and `tools/`
+exist. `src/sim/selectors.ts` holds read-only views the UI uses instead of computing rules itself. Create new
+folders only as a task needs them.
 
 ## Working rules for Claude
 
@@ -93,7 +107,8 @@ needs them.
    (e.g. "run `npm run dev` and click End Quarter").
 3. **Ask before adding any dependency** (npm package, CDN script, tool). Say what it's for and whether there's a
    no-dependency option.
-4. **Scope guard.** `docs/alpha-0.1-scope.md` decides what gets built. If a request falls outside it
+4. **Scope guard.** `docs/alpha-0.1-scope.md` decides what gets built for Act I, and `docs/alpha-0.2-scope.md`
+   (once frozen) for Act II. If a request falls outside it
    (see its §3 "Not in the alpha"), say so and push back politely. Offer to add it to the backlog, or to swap
    it for something of similar size per the scope doc's change rule. Don't quietly build it.
 5. **Respect the architecture rules above.** If a task seems to need breaking one, stop and explain instead.
