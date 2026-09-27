@@ -232,3 +232,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   bot that raises the seed has mined a quarter first, so no Act I game changes.
 - M6.1: "Fix all (N machines · $X)" on the Dashboard to-do list (REPAIR_ALL, 0 BW like one repair, all or nothing; disabled "Need $X ·
   you have $Y"); `g2g.bandwidth(n?)` and a new `g2g.help()` (every build, like the other helpers). Checked in the browser.
+- M6.2: `src/content/rivals_act2.json` (game copy: series + move quarters, texts in en.json › rival_move.*); the 5 replace Act I's in the
+  league from 2022Q4 (2026Q4 holds 2026Q3); report's league shows AI / mining MW and "Rivals this quarter"; a passed RFP card → a rival (log).

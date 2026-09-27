@@ -40,6 +40,7 @@ import {
 } from './projects.ts'
 import { capacityKw, isReady, regionOf, tierIndex, usedKw } from './sites.ts'
 import { moratoriumRegion } from './anger.ts'
+import { activeRivals } from './rivals.ts'
 import { sellTreasury } from './treasury.ts'
 
 const W = BALANCE.weeksPerQuarter
@@ -854,6 +855,15 @@ export function resolveEvent(
     },
     weekNo,
   )
+  // A tenant RFP you pass on goes to a rival (scope 0.2 §2.11): one of the Act II rivals, drawn on
+  // the card's own stream, gets it (M6.2).
+  if (BALANCE.act2Events.rfpCards.includes(card.id) && choiceId === 'pass') {
+    const rivals = activeRivals(state.quarter)
+    if (rivals.length > 0) {
+      const winner = rivals[randomInt(r, 0, rivals.length - 1)]
+      logEntry(state, 'log.rfp_to_rival', { rival: winner.id }, weekNo)
+    }
+  }
   state.interrupt = null
 }
 

@@ -294,6 +294,11 @@ export const BALANCE = {
      * `quarters` (that one and the next; mine) the rating is `notches` lower and equity prices × `equityMult`.
      */
     audit: { chance: 0.1, notches: -1, quarters: 2, equityMult: 0.9 },
+    /** Tenant RFP cards: passed, the RFP goes to a rival (scope 0.2 §2.11; the log says who). */
+    rfpCards: [
+      'ec12_stargate_rfp',
+      'ec24_tenant_rfp_random',
+    ] as readonly string[],
   },
 
   /**

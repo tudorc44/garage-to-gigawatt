@@ -17,6 +17,7 @@ import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
 import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
 import sitesAct2Raw from './sites_act2.json' with { type: 'json' }
+import rivalsAct2Raw from './rivals_act2.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
@@ -61,6 +62,7 @@ import {
   marketSchema,
   negotiationRulesSchema,
   rivalsFileSchema,
+  rivalsAct2FileSchema,
   shocksFileSchema,
   sitesFileSchema,
   type AuctionRules,
@@ -88,6 +90,7 @@ import {
   type NegotiationRules,
   type PitchRules,
   type Rival,
+  type RivalAct2,
   type RegionPolicy,
   type RegionRaw,
   type SiteCategory,
@@ -118,6 +121,7 @@ export type {
   Machine,
   MarketWeek,
   Rival,
+  RivalAct2,
   SiteTier,
 }
 
@@ -376,6 +380,8 @@ export interface Content {
   curtailment: CurtailmentRules
   /** The 4 scripted rivals, in file order. */
   rivals: Rival[]
+  /** The 5 Act II rivals (rivals_act2.json), in file order: they replace Act I's from 2022Q4. */
+  act2Rivals: RivalAct2[]
   /** Community Heat rules (heat.json). */
   heat: HeatRules
   /** The 5 hires and the hiring rules (hires.json). */
@@ -452,6 +458,7 @@ export interface RawContent {
   hiresAct2: unknown
   eventsAct2: unknown
   rivals: unknown
+  rivalsAct2: unknown
   heat: unknown
   shocks: unknown
   hires: unknown
@@ -563,6 +570,11 @@ export function parseContent(raw: RawContent): Content {
     ),
   )
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
+  const rivalsAct2File = check(
+    'rivals_act2.json',
+    rivalsAct2FileSchema,
+    raw.rivalsAct2,
+  )
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
   const merge = check('merge.json', mergeFileSchema, raw.merge)
@@ -620,6 +632,7 @@ export function parseContent(raw: RawContent): Content {
     !spotShockRules ||
     !curtailAiRules ||
     !rivalsFile ||
+    !rivalsAct2File ||
     !auction ||
     !curtailment ||
     !heat ||
@@ -1377,6 +1390,7 @@ export function parseContent(raw: RawContent): Content {
     },
     cryptoLoan: capitalFile.loans.game_crypto_loan,
     rivals: rivalsFile.rivals,
+    act2Rivals: rivalsAct2File.rivals,
     auction,
     curtailment,
     heat,
@@ -1540,6 +1554,7 @@ export const CONTENT: Content = parseContent({
   hiresAct2: hiresAct2Raw,
   eventsAct2: eventsAct2Raw,
   rivals: rivalsRaw,
+  rivalsAct2: rivalsAct2Raw,
   heat: heatRaw,
   hires: hiresRaw,
   merge: mergeRaw,

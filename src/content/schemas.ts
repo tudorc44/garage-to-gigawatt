@@ -861,6 +861,27 @@ export const rivalsFileSchema = z.object({
   rivals: z.array(rivalSchema).min(1),
 })
 
+/** An Act II rival (rivals_act2.json, the game copy of the pack's file; M6.2). Series by quarter. */
+export const rivalAct2Schema = z.object({
+  id: z.string(),
+  name: z.string(),
+  style: z.string(),
+  mw_energized: quarterSeries,
+  mw_ai_contracted: quarterSeries,
+  mw_mining: quarterSeries,
+  hashrate_ehs: quarterSeries,
+  /** Value in millions of dollars (market cap; a private valuation before an IPO). */
+  mcap_usd_m: quarterSeries,
+  debt_usd_m: quarterSeries,
+  /** Quarters with a key move (its text: en.json › rival_move.<id>.<quarter>). */
+  moves: z.array(quarterId),
+})
+
+export const rivalsAct2FileSchema = z.object({
+  rivals: z.array(rivalAct2Schema).min(1),
+})
+export type RivalAct2 = z.output<typeof rivalAct2Schema>
+
 export type LadderStep = z.output<typeof ladderStepSchema>
 export type EquipmentLoanTerms = z.output<typeof equipmentLoanSchema>
 export type CryptoLoanTerms = z.output<typeof cryptoLoanSchema>

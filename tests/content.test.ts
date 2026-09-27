@@ -27,6 +27,7 @@ import sitesAct2 from '../src/content/sites_act2.json' with { type: 'json' }
 import hiresAct2 from '../src/content/hires_act2.json' with { type: 'json' }
 import eventsAct2 from '../src/content/events_act2.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
+import rivalsAct2 from '../src/content/rivals_act2.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
 import hires from '../src/content/hires.json' with { type: 'json' }
@@ -55,6 +56,7 @@ const raw = (): RawContent =>
     hiresAct2,
     eventsAct2,
     rivals,
+    rivalsAct2,
     heat,
     shocks,
     hires,

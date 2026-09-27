@@ -106,10 +106,12 @@ import {
 } from './systems/construction.ts'
 import {
   activeRivals,
+  rivalMoves,
   rivalSnapshot,
   upcomingRivals,
   yourRank,
 } from './systems/rivals.ts'
+import { mwByUse as mwByUseOf } from './systems/mwUse.ts'
 import {
   allHires,
   buildQuartersFor,
@@ -1353,6 +1355,17 @@ export function valuationBreakdown(state: GameState) {
     debtUsd: r.debtUsd,
     valuationUsd: r.valuationUsd,
   }
+}
+
+/** Act II's league scale for you: MW in AI (live and building projects) and in mining (M6.2). */
+export function leagueScaleView(state: GameState) {
+  const u = mwByUseOf(state, state.quarter)
+  return { aiKw: u.aiShell + u.aiCloud, miningKw: u.mining + u.hosting }
+}
+
+/** The Act II rivals' key moves in a quarter, for the quarter report (M6.2). */
+export function rivalMovesView(quarter: number) {
+  return rivalMoves(quarter)
 }
 
 /** Rivals not in the game yet, and when each one arrives. */

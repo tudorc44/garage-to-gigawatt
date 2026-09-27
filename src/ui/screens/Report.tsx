@@ -1,9 +1,11 @@
 // Quarter report: headline tiles, cost per coin vs price, league table, notes.
-import { t, type MessageKey } from '../../i18n/t.ts'
+import { t, tDynamic, type MessageKey } from '../../i18n/t.ts'
 import {
   actTurn,
   averagePrice,
+  leagueScaleView,
   quarterName,
+  rivalMovesView,
   siteViews,
   upcomingRivals,
 } from '../../sim/selectors.ts'
@@ -391,6 +393,9 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
   const before = i > 0 ? yourRank(state, i - 1) : null
   const moved = before ? before.rank - now.rank : 0
   const coming = upcomingRivals(state.quarter)
+  // Act II (M6.2): your AI and mining MW for the scale column, and the rivals' moves this quarter.
+  const act2 = state.act === 2 ? leagueScaleView(state) : null
+  const moves = rivalMovesView(state.quarter)
   return (
     <div class="panel p">
       <div class="row-between">
@@ -425,7 +430,14 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
                   {t('ui.report.you')}
                 </td>
                 <td class="num">
-                  {hash ? `${fmt.power(kw)} · ${hash}` : fmt.power(kw)}
+                  {act2
+                    ? t('ui.report.scale_act2', {
+                        ai: fmt.power(act2.aiKw),
+                        mining: fmt.power(act2.miningKw),
+                      })
+                    : hash
+                      ? `${fmt.power(kw)} · ${hash}`
+                      : fmt.power(kw)}
                 </td>
                 <td class="num r">{fmt.money(r.valuationUsd)}</td>
               </tr>
@@ -450,6 +462,16 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
           )}
         </tbody>
       </table>
+      {moves.length > 0 && (
+        <div class="num-s">
+          <div class="label">{t('ui.report.rival_moves')}</div>
+          {moves.map((m) => (
+            <div key={m.key}>
+              <strong>{rivalName(m.rival)}</strong> {tDynamic(m.key, '')}
+            </div>
+          ))}
+        </div>
+      )}
       {coming.length > 0 && (
         <p class="num-s muted" style={{ margin: 0 }}>
           {coming
@@ -466,8 +488,13 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
   )
 }
 
-/** "16 MW · 0.07 EH/s", or null before the rival mines. */
+/** "16 MW · 0.07 EH/s", or null before the rival mines. Act II: "AI 590 MW · mining 560 MW". */
 function rivalScale(r: RivalSnapshot): string | null {
+  if (r.aiMw !== undefined || r.miningMw !== undefined)
+    return t('ui.report.scale_act2', {
+      ai: fmt.power((r.aiMw ?? 0) * 1000),
+      mining: fmt.power((r.miningMw ?? 0) * 1000),
+    })
   const parts = [
     r.mw !== null ? fmt.power(r.mw * 1000) : null,
     r.hashrateEhs !== null ? fmt.hash(r.hashrateEhs * 1e6, 'TH') : null,

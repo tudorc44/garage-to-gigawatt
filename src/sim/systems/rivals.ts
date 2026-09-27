@@ -1,7 +1,13 @@
 // Rivals (scope §2.9): 4 real companies with scripted growth curves, not AI.
 // Their end-of-quarter numbers come from rivals.json; the league table ranks
 // everyone by value (market cap for rivals, the company valuation for you).
-import { CONTENT, act1ValueQuarter, type Rival } from '../../content/index.ts'
+import {
+  CONTENT,
+  act1ValueQuarter,
+  act2Quarter,
+  type Rival,
+  type RivalAct2,
+} from '../../content/index.ts'
 import type { GameState } from '../state.ts'
 
 /** A rival's end-of-quarter numbers. Missing values are null (not mining yet, or private). */
@@ -12,6 +18,9 @@ export interface RivalSnapshot {
   /** Market cap in dollars, or null while there's no public value. */
   valueUsd: number | null
   btcHeld: number | null
+  /** Act II: MW contracted to AI tenants and MW mining (the league's scale column). */
+  aiMw?: number | null
+  miningMw?: number | null
 }
 
 export function getRival(id: string): Rival | undefined {
@@ -41,11 +50,53 @@ export function rivalSnapshot(
     : snap
 }
 
-/** Rivals that exist in this quarter (have any numbers yet). */
+/**
+ * An Act II rival's numbers at the end of a quarter (rivals_act2.json, M6.2). The data ends in
+ * 2026Q3; later quarters hold its last numbers.
+ */
+export function act2RivalSnapshot(
+  rival: RivalAct2,
+  quarter: number,
+): RivalSnapshot {
+  const label = CONTENT.quarters[quarter] ?? ''
+  const at = (series: Record<string, number>) => {
+    const keys = Object.keys(series)
+      .filter((k) => k <= label)
+      .sort()
+    const key = keys.at(-1)
+    return key === undefined ? null : series[key]
+  }
+  const mcap = at(rival.mcap_usd_m)
+  return {
+    id: rival.id,
+    hashrateEhs: at(rival.hashrate_ehs),
+    mw: at(rival.mw_energized),
+    valueUsd: mcap === null ? null : mcap * 1e6,
+    btcHeld: null,
+    aiMw: at(rival.mw_ai_contracted),
+    miningMw: at(rival.mw_mining),
+  }
+}
+
+/**
+ * Rivals that exist in this quarter (have any numbers yet). Act II has its own five (scope 0.2
+ * §2.11: Core Scientific, IREN, Hut 8, Cipher, CoreWeave), from 2022Q4.
+ */
 export function activeRivals(quarter: number): RivalSnapshot[] {
+  if (act2Quarter(quarter))
+    return CONTENT.act2Rivals.map((r) => act2RivalSnapshot(r, quarter))
   return CONTENT.rivals
     .map((r) => rivalSnapshot(r, quarter))
     .filter((r): r is RivalSnapshot => r !== null)
+}
+
+/** The Act II rivals' key moves in a quarter (the quarter report shows them; texts in en.json). */
+export function rivalMoves(quarter: number): { rival: string; key: string }[] {
+  if (!act2Quarter(quarter)) return []
+  const label = CONTENT.quarters[quarter]
+  return CONTENT.act2Rivals
+    .filter((r) => r.moves.includes(label))
+    .map((r) => ({ rival: r.id, key: `rival_move.${r.id}.${label}` }))
 }
 
 export interface LeagueRow {
