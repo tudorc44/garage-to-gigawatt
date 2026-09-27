@@ -12,6 +12,7 @@ import {
 } from '../state.ts'
 import { loansLocked } from './cryptoLoan.ts'
 import { ratingRank, sofr } from './finance.ts'
+import { spreadCut } from './hires.ts'
 import { saleValueUsd } from './machines.ts'
 import { payBridgeWeek } from './lifeline.ts'
 import { gpuResidualUsd } from './projects.ts'
@@ -67,7 +68,8 @@ export function equipmentTerms(state: GameState): LoanTerms | undefined {
   const band = ratingLoanBand(rating)
   return {
     ltv: band.ltv,
-    apr: sofr(state.quarter) + band.spread,
+    // The Capital Markets Lead cuts the spread (M5.7).
+    apr: sofr(state.quarter) + Math.max(0, band.spread - spreadCut(state)),
     tenorQuarters: BALANCE.finance.equipmentLoan.tenorQuarters,
     rating,
   }

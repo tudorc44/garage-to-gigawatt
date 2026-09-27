@@ -199,6 +199,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.6: Power slot (`power.ts`): existing MW / grid upgrade ($750K/MW, regional queue drawn at build start; Ex-Utility
   −1; PJM +4 from 2026Q1; ERCOT halt) / on-site gas ($1.5M/MW, 2 q, +20 Heat). Mine: power cost in the capex; live when
   build and power are both done; waiting MW pay no reservation; the air-permit lawsuit (40%) has no consequence yet.
+- M5.7: `hires_act2.json` (byte copy): Act II salaries for the 5, Head of Development (+1 BW from next quarter) and
+  Capital Markets Lead (−0.75 pt on equipment loan and DDTL spreads; mine: the middle). Act II Bandwidth per scope
+  §2.2 (3, +1 at 50 MW, +1 at 200 MW, CoS, HoD; max 8): the own site's Act I +1 no longer applies (a 20 MW company has 3).
 
 ## Next
 

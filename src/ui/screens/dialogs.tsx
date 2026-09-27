@@ -1682,10 +1682,12 @@ export function HiresTable({ state, act }: ScreenProps) {
               <td class="wrap">
                 <strong>{tDynamic(`hire.${h.id}`, h.id)}</strong>
                 <br />
-                <span class="num-s">{h.name}</span>
+                <span class="num-s">
+                  {h.name || tDynamic(`hire_name.${h.id}`, '')}
+                </span>
                 <br />
                 <span class="num-s muted" style={{ fontStyle: 'italic' }}>
-                  {h.bio}
+                  {h.bio || tDynamic(`hire_bio.${h.id}`, '')}
                 </span>
               </td>
               <td class="num-s wrap">{tDynamic(`hire_effect.${h.id}`, '')}</td>

@@ -182,6 +182,33 @@ export const BALANCE = {
   },
 
   /**
+   * Act II hires (scope 0.2 §2.8; hires_act2.json): the Act I hires at Act II salaries, and two new
+   * ones. hires_act2.json names the Ex-Utility Exec ex_utility_exec. The new hires' effects (the file
+   * says them in words): the Head of Development +1 Bandwidth (from the quarter after hiring, like
+   * the Chief of Staff; mine); the Capital Markets Lead cuts the spread on new equipment loans and
+   * DDTLs by 0.75 point (the middle of the owner's 0.5–1.0; mine).
+   */
+  act2Hires: {
+    idMap: { ex_utility_exec: 'ex_utility' } as Readonly<
+      Record<string, string>
+    >,
+    effects: {
+      head_of_development: { bandwidth: 1 },
+      capital_markets_lead: { spread_cut: 0.0075 },
+    } as Readonly<Record<string, Record<string, number>>>,
+  },
+
+  /**
+   * Act II Bandwidth (scope 0.2 §2.2): base 3; +1 at 50 MW energized, +1 more at 200 MW; +1 each from
+   * the Chief of Staff and the Head of Development; at most 8. (It replaces Act I's +1 for the own site.)
+   */
+  act2Bandwidth: {
+    base: 3,
+    mwSteps: [50_000, 200_000] as readonly number[],
+    max: 8,
+  },
+
+  /**
    * The standalone preset, "Q4 2022: a mid-size miner" (scope 0.2 §2.10; doc 18 §2.4; the numbers in
    * capital_act2.json): 40 MW across 2 sites, a 20 MW own site and one 20 MW Texas phase on fixed
    * power, S19-class machines filling 70% of each site (used S19 Pros; mine), F&F, seed and Series A

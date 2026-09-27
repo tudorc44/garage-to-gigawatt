@@ -17,6 +17,7 @@ import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
 import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
 import sitesAct2Raw from './sites_act2.json' with { type: 'json' }
+import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -44,6 +45,7 @@ import {
   curtailmentRulesSchema,
   heatFileSchema,
   hiresFileSchema,
+  hiresAct2FileSchema,
   failureWaveRulesSchema,
   mergeFileSchema,
   eventsFileSchema,
@@ -331,6 +333,11 @@ export interface Content {
   nationalPolicies: RegionPolicy[]
   /** Act II scouting (sites_act2.json): the site categories and their hidden flaws. */
   act2Sites: { categories: SiteCategory[]; flaws: Record<string, Flaw> }
+  /**
+   * Act II hires (hires_act2.json): each hire's yearly salary per Act II quarter (index 0 = 2022Q4,
+   * interpolated between the anchors, held at the ends), by game hire id; and the new hires.
+   */
+  hiresAct2: { salaryYr: Record<string, number[]>; newHires: Hire[] }
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -422,6 +429,7 @@ export interface RawContent {
   lenders: unknown
   regions: unknown
   sitesAct2: unknown
+  hiresAct2: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -494,6 +502,11 @@ export function parseContent(raw: RawContent): Content {
     sitesAct2FileSchema,
     raw.sitesAct2,
   )
+  const hiresAct2File = check(
+    'hires_act2.json',
+    hiresAct2FileSchema,
+    raw.hiresAct2,
+  )
   const interruptsAct2File = check(
     'interrupts_act2.json',
     interruptsAct2FileSchema,
@@ -562,6 +575,7 @@ export function parseContent(raw: RawContent): Content {
     !lendersFile ||
     !regionsFile ||
     !sitesAct2File ||
+    !hiresAct2File ||
     !delayRules ||
     !allocationRules ||
     !rivalsFile ||
@@ -827,6 +841,38 @@ export function parseContent(raw: RawContent): Content {
       if (!(POWER_REGIONS as readonly string[]).includes(region))
         problems.push(`regions.json › ${p.id}: unknown region "${region}"`)
   }
+
+  // Act II hires (hires_act2.json): salaries for every Act I hire, and the new hires' effects.
+  const salaryYr: Record<string, number[]> = {}
+  const newHires: Hire[] = []
+  const act1HireIds = hires.list.map((h) => h.id)
+  for (const h of hiresAct2File.hires) {
+    if (!h.in_alpha_0_2) continue
+    const id = BALANCE.act2Hires.idMap[h.id] ?? h.id
+    const anchors = Object.fromEntries(
+      Object.entries(h.salary_usd_yr).filter(
+        (e): e is [string, number] =>
+          /^\d{4}Q[1-4]$/.test(e[0]) && typeof e[1] === 'number',
+      ),
+    )
+    salaryYr[id] = held(anchors)
+    if (act1HireIds.includes(id)) continue
+    const effect = BALANCE.act2Hires.effects[id]
+    if (!effect)
+      problems.push(`balance.ts › act2Hires.effects: no effect for "${id}"`)
+    newHires.push({
+      id,
+      name: '',
+      bio: '',
+      salary_usd_year: { '2017': 0, '2021': 0 },
+      effect: effect ?? {},
+    })
+  }
+  for (const id of act1HireIds)
+    if (!salaryYr[id])
+      problems.push(
+        `hires_act2.json: no Act II salary for the Act I hire "${id}"`,
+      )
 
   // Act II scouting (sites_act2.json): windows inside Act II, every hidden flaw defined.
   for (const c of sitesAct2File.site_categories) {
@@ -1237,6 +1283,7 @@ export function parseContent(raw: RawContent): Content {
     },
     regions,
     nationalPolicies: regionsFile.national,
+    hiresAct2: { salaryYr, newHires },
     act2Sites: {
       categories: sitesAct2File.site_categories,
       flaws: Object.fromEntries(
@@ -1422,6 +1469,7 @@ export const CONTENT: Content = parseContent({
   lenders: lendersRaw,
   regions: regionsRaw,
   sitesAct2: sitesAct2Raw,
+  hiresAct2: hiresAct2Raw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

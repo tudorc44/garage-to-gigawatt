@@ -983,6 +983,21 @@ export const hiresFileSchema = z
     hireCashQuarters: f.global.hire_cash_quarters,
   }))
 
+/** hires_act2.json (scope 0.2 §2.8): Act II salaries by quarter anchor, and the new hires. */
+export const hiresAct2FileSchema = z.looseObject({
+  hires: z.array(
+    z.looseObject({
+      id: z.string(),
+      in_alpha_0_2: z.boolean(),
+      label: z.string(),
+      salary_usd_yr: z.record(
+        z.string(),
+        z.union([z.number(), z.string(), z.boolean()]),
+      ),
+    }),
+  ),
+})
+
 export type Hire = z.output<typeof hireSchema>
 export type HiresRules = z.output<typeof hiresFileSchema>
 

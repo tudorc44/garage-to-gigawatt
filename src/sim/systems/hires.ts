@@ -8,14 +8,25 @@
 import {
   BALANCE,
   CONTENT,
+  act2Quarter,
   type Hire,
   type SiteTier,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type GameState } from '../state.ts'
 
+/** Every hire the game knows: Act I's five, then Act II's new ones (hires_act2.json). */
+export function allHires(): Hire[] {
+  return [...CONTENT.hires.list, ...CONTENT.hiresAct2.newHires]
+}
+
+/** Hires that exist only in Act II (the Head of Development, the Capital Markets Lead). */
+export function isAct2Hire(id: string): boolean {
+  return CONTENT.hiresAct2.newHires.some((h) => h.id === id)
+}
+
 export function getHire(id: string): Hire | undefined {
-  return CONTENT.hires.list.find((h) => h.id === id)
+  return allHires().find((h) => h.id === id)
 }
 
 export function isHired(state: GameState, id: string): boolean {
@@ -23,14 +34,18 @@ export function isHired(state: GameState, id: string): boolean {
 }
 
 function staffHires(state: GameState): Hire[] {
-  return CONTENT.hires.list.filter((h) => isHired(state, h.id))
+  return allHires().filter((h) => isHired(state, h.id))
 }
 
 /**
- * Quarterly salary in a quarter: the yearly salary ÷ 4, straight line from the 2017 to the
- * 2021 value by year, then the 2021 value × salary_2022_mult in 2022.
+ * Quarterly salary in a quarter: the yearly salary ÷ 4. Act I: straight line from the 2017 to the
+ * 2021 value by year, then the 2021 value × salary_2022_mult in 2022. Act II: hires_act2.json's
+ * salary for that quarter.
  */
 export function salaryUsdQ(hire: Hire, quarter: number): number {
+  const act2 = act2Quarter(quarter)
+  const series = CONTENT.hiresAct2.salaryYr[hire.id]
+  if (act2 && series) return series[quarter - CONTENT.acts[1].firstQuarter] / 4
   const year = Number(CONTENT.quarters[quarter].slice(0, 4))
   const { '2017': from, '2021': to } = hire.salary_usd_year
   const yearly =
@@ -131,6 +146,14 @@ export function readMarketBandwidth(state: GameState): number {
     : CONTENT.readMarket.bandwidth
 }
 
+/** Capital Markets Lead (Act II): the cut on a new equipment loan's or DDTL's spread, as a fraction. */
+export function spreadCut(state: GameState): number {
+  return staffHires(state).reduce(
+    (n, h) => n + (numberEffect(h, 'spread_cut') ?? 0),
+    0,
+  )
+}
+
 /** Trader: the LTV warning becomes an alert that pauses the live quarter. */
 export function marginWarningAlert(state: GameState): boolean {
   return staffHires(state).some(
@@ -145,6 +168,7 @@ export function hireBlocker(state: GameState, id: string): Message | undefined {
   const hire = getHire(id)
   if (!hire) return { key: 'error.unknown_hire' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
+  if (isAct2Hire(id) && state.act !== 2) return { key: 'error.act2_only' }
   if (isHired(state, id))
     return { key: 'error.already_hired', params: { hire: id } }
   if (

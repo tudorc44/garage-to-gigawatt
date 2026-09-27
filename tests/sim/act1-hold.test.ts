@@ -80,10 +80,13 @@ describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
     expect(rivalSnapshot(getRival('riot')!, Q4_2022)).not.toBeNull()
   })
 
-  it('salaries hold the 2022 value (hires.json: 2021 × salary_2022_mult)', () => {
-    for (const h of CONTENT.hires.list) {
-      expect(salaryUsdQ(h, Q4_2026)).toBe(salaryUsdQ(h, Q3_2022))
-    }
+  it('salaries: Act I’s 2022 value to 2022Q3, then hires_act2.json’s from 2022Q4 (M5.7)', () => {
+    const ops = CONTENT.hires.list.find((h) => h.id === 'ops_manager')!
+    expect(salaryUsdQ(ops, Q3_2022)).toBe((130_000 * 1.08) / 4)
+    expect(salaryUsdQ(ops, Q4_2022)).toBe(120_000 / 4)
+    expect(salaryUsdQ(ops, Q4_2026)).toBe(185_000 / 4) // held after the 2026Q3 anchor
+    const exUtility = CONTENT.hires.list.find((h) => h.id === 'ex_utility')!
+    expect(salaryUsdQ(exUtility, Q4_2022)).toBe(180_000 / 4) // the file's ex_utility_exec
   })
 
   it('equipment loans: closed in 2022Q3 (the 2022 era ended 2022Q2), always offered in Act II (scope 0.2 §2.7, M4.1)', () => {

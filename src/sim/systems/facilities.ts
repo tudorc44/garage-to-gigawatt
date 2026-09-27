@@ -17,7 +17,9 @@ import {
   isInvestmentGrade,
   projectDebtRate,
   ratingRank,
+  sofr,
 } from './finance.ts'
+import { spreadCut } from './hires.ts'
 import {
   contractQuarters,
   getProject,
@@ -102,7 +104,12 @@ export function debtOffer(
     apr:
       kind === 'project_debt'
         ? projectDebtRate(state.quarter)
-        : ddtlRate(state.quarter, ig),
+        : // The Capital Markets Lead cuts the DDTL's spread (M5.7).
+          ddtlRate(state.quarter, ig) -
+          Math.min(
+            spreadCut(state),
+            ddtlRate(state.quarter, ig) - sofr(state.quarter),
+          ),
     tenorQuarters: Math.max(1, contractQuarters(p)),
     // Secured debt on a strong tenant rates A even when the company doesn't (doc 18 §7.2).
     rating: strong ? 'A' : (rating.split(/[\s/(]/)[0] ?? ''),

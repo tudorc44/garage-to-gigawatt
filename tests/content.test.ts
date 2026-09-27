@@ -24,6 +24,7 @@ import interruptsAct2 from '../src/content/interrupts_act2.json' with { type: 'j
 import lenders from '../src/content/lenders.json' with { type: 'json' }
 import regions from '../src/content/regions.json' with { type: 'json' }
 import sitesAct2 from '../src/content/sites_act2.json' with { type: 'json' }
+import hiresAct2 from '../src/content/hires_act2.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
@@ -50,6 +51,7 @@ const raw = (): RawContent =>
     lenders,
     regions,
     sitesAct2,
+    hiresAct2,
     rivals,
     heat,
     shocks,
@@ -189,6 +191,7 @@ describe('content loads', () => {
       ['gpus.json', 'gpus.json'],
       ['interrupts_act2.json', 'interrupts_act2.json'],
       ['lenders.json', 'lenders.json'],
+      ['hires_act2.json', 'hires_act2.json'],
     ]
     for (const [game, docs] of copies)
       expect(read(`../src/content/${game}`), game).toBe(

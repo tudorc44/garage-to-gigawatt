@@ -94,7 +94,9 @@ import {
   yourRank,
 } from './systems/rivals.ts'
 import {
+  allHires,
   buildQuartersFor,
+  isAct2Hire,
   isHired,
   readMarketBandwidth,
   revealsFlaws,
@@ -853,17 +855,19 @@ export function negotiationResult(state: GameState, tier: string) {
 export const URI_STORM_PRICE =
   CONTENT.shocks.find((sh) => sh.id === 'uri')?.stormPriceUsdKwh ?? 0
 
-/** The five hires as the People dialog shows them: on staff or not, pay, and what's blocking. */
+/** The hires as the People dialog shows them (Act II adds two): on staff or not, pay, and what's blocking. */
 export function hireViews(state: GameState) {
-  return CONTENT.hires.list.map((h) => ({
-    id: h.id,
-    name: h.name,
-    bio: h.bio,
-    hired: isHired(state, h.id),
-    salaryUsdQ: salaryUsdQ(h, state.quarter),
-    severanceUsd: severanceUsd(h, state.quarter),
-    bandwidth: CONTENT.hires.bandwidth,
-  }))
+  return allHires()
+    .filter((h) => state.act === 2 || !isAct2Hire(h.id))
+    .map((h) => ({
+      id: h.id,
+      name: h.name,
+      bio: h.bio,
+      hired: isHired(state, h.id),
+      salaryUsdQ: salaryUsdQ(h, state.quarter),
+      severanceUsd: severanceUsd(h, state.quarter),
+      bandwidth: CONTENT.hires.bandwidth,
+    }))
 }
 
 /** Scouted offers show their hidden flaw (BD Lead on staff). */
