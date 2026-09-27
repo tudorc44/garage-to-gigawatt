@@ -1720,6 +1720,11 @@ export function HostingDialog({ state, act, onClose }: DialogProps) {
                   <div class="num-s muted">
                     {t('ui.hosting.free', { value: fmt.power(x.freeKw) })}
                   </div>
+                  {x.reletKw > 0 && (
+                    <div class="num-s">
+                      {t('ui.hosting.relet', { value: fmt.power(x.reletKw) })}
+                    </div>
+                  )}
                 </td>
                 <td class="num r">
                   {fmt.cents(x.rateUsdKwh)} / {fmt.cents(x.powerUsdKwh)}
@@ -1763,7 +1768,11 @@ export function HostingDialog({ state, act, onClose }: DialogProps) {
                       onClick={() => act(a)}
                     >
                       {t('ui.hosting.convert', {
-                        value: fmt.money((amount / 1000) * x.costPerMwUsd),
+                        // What the sim would charge (re-let kW are free); an estimate if not allowed.
+                        value: fmt.money(
+                          -(cashChange(state, a) ??
+                            -(amount / 1000) * x.costPerMwUsd),
+                        ),
                       })}
                       <Pips
                         total={v.bandwidth}

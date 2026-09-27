@@ -54,6 +54,21 @@ export const BALANCE = {
     earlyEndFeeQuarters: 1,
     /** Converting MW to hosting (scope 0.2 §2.6: building or upgrading a site costs 1). */
     bandwidth: 1,
+    /**
+     * Client defaults in winter (owner decision A1): rolled per live contract as a winter quarter
+     * starts. A default loses that quarter's fees, ends the contract and leaves its MW idle; they
+     * can be re-let with no conversion cost.
+     */
+    defaults: {
+      /** Quarter numbers that count as winter (Q4 and Q1). */
+      winterQuarters: [4, 1] as readonly number[],
+      /** The FTX / Core Scientific winter. */
+      chanceByQuarter: { '2022Q4': 0.15, '2023Q1': 0.15 } as Readonly<
+        Record<string, number>
+      >,
+      /** Every later winter quarter. */
+      chance: 0.05,
+    },
   },
 
   /**

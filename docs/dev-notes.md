@@ -1057,6 +1057,14 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   reservation is spread evenly over the 13 weeks. **Golden change (explained):** `"reservationUsd": 0` added to
   every report and the quarter totals (233 lines). The 1b "power prices hold 2022" test now says only the garage holds.
 - **M3.2** Hosting client defaults (A1) and re-letting with no conversion cost.
+  **Done.** `balance.ts` › hosting.defaults (winter = Q4, Q1; 15% in 2022Q4 and 2023Q1, else 5%).
+  `rollHostingDefaults` runs as the live quarter starts (END_PLAN), per live contract, on its own stream
+  (`hosting_default:<quarter>:<contract>`): a default removes the contract (no fees, no power this quarter), adds its
+  kW to the site's `hostingReletKw` and logs `log.hosting_default`. `HOST_START` re-lets those kW first: free, live at
+  once, at this quarter's rate (`log.hosting_relet`); any extra kW convert as before. The dialog shows "ready to
+  re-let" and prices the button through a dry run of the action. Decisions (mine, reversible): the roll happens as the
+  live quarter starts, so a default costs the whole quarter's fees and the kW can be re-let from the next Plan phase;
+  re-let clients move in at once (nothing to convert); re-letting still costs the hosting Bandwidth (1).
 - **M3.3** Act II ASIC prices from the $/TH tiers and the Antminer S21 (B7).
 - **M3.4** Re-run the M2 sims and compare with scope §5.
 - **M3.5** Projects: the model, content (tenant cards, conversions, GPUs, cap rates, backlog weights), opening a

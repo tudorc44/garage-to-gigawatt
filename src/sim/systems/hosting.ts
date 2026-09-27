@@ -6,6 +6,7 @@
 // costs a quarter of fees (doc 18 §2.3); ending it as a term renews is free.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { chance, substream } from '../rng.ts'
 import { logEntry, type GameState, type HostingContract } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import { poweredKw, powerPriceUsdKwh, uptime, usedKw } from './sites.ts'
@@ -45,6 +46,24 @@ export function convertibleKw(
   return Math.max(0, poweredKw(site, quarter) - usedKw(state, siteId))
 }
 
+/**
+ * kW at a site that a defaulted client left behind (owner decision A1): still fitted for hosting,
+ * so re-letting them costs nothing and the new client moves in at once. Capped by the free kW.
+ */
+export function reletKw(state: GameState, siteId: string): number {
+  const site = state.sites.find((s) => s.id === siteId)
+  return Math.min(site?.hostingReletKw ?? 0, convertibleKw(state, siteId))
+}
+
+/** What an order for `kw` of hosting at a site costs: re-let kW are free, the rest converts. */
+export function hostingOrderCostUsd(
+  state: GameState,
+  siteId: string,
+  kw: number,
+): number {
+  return hostingCostUsd(Math.max(0, kw - reletKw(state, siteId)))
+}
+
 /** Why hosting can't start at this site for `kw` right now, or undefined if it can. */
 export function hostingBlocker(
   state: GameState,
@@ -73,42 +92,95 @@ export function hostingBlocker(
       key: 'error.no_bandwidth',
       params: { needed: need, have: state.bandwidth },
     }
-  const costUsd = hostingCostUsd(kw)
+  const costUsd = hostingOrderCostUsd(state, siteId, kw)
   if (state.cash < costUsd)
     return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
   return undefined
 }
 
-/** Converts `kw` of free energized MW at a site to hosting. Assumes hostingBlocker passed. */
+/**
+ * Starts hosting `kw` of free energized MW at a site (assumes hostingBlocker passed). kW a
+ * defaulted client left are re-let first: free, live this quarter at this quarter's rate. The
+ * rest is converted: conversions.json's cost, live next quarter at that quarter's rate.
+ */
 export function startHosting(
   state: GameState,
   siteId: string,
   kw: number,
-): HostingContract {
-  const costUsd = hostingCostUsd(kw)
-  const readyQuarter = state.quarter + 1 + CONTENT.hosting.buildQuarters
-  const contract: HostingContract = {
-    id: `host-${state.log.length}-${state.hosting.length + 1}`,
-    siteId,
-    kw,
-    readyQuarter,
-    rateUsdKwh: hostingRateUsdKwh(
-      Math.min(readyQuarter, CONTENT.quarters.length - 1),
-    ),
-    termEndQuarter: readyQuarter + BALANCE.hosting.termQuarters - 1,
-  }
-  state.cash -= costUsd
-  state.bandwidth -= BALANCE.hosting.bandwidth
-  state.hosting.push(contract)
+): HostingContract[] {
   const site = state.sites.find((s) => s.id === siteId)!
-  logEntry(state, 'log.hosting_started', {
-    tier: site.tier,
-    hostedKw: kw,
-    costUsd,
-    rateCents: contract.rateUsdKwh * 100,
-    quarter: CONTENT.quarters[readyQuarter] ?? '—',
-  })
-  return contract
+  const relet = Math.min(kw, reletKw(state, siteId))
+  const converted = kw - relet
+  const out: HostingContract[] = []
+  const add = (part: number, readyQuarter: number) => {
+    const contract: HostingContract = {
+      id: `host-${state.log.length}-${state.hosting.length + 1}`,
+      siteId,
+      kw: part,
+      readyQuarter,
+      rateUsdKwh: hostingRateUsdKwh(
+        Math.min(readyQuarter, CONTENT.quarters.length - 1),
+      ),
+      termEndQuarter: readyQuarter + BALANCE.hosting.termQuarters - 1,
+    }
+    state.hosting.push(contract)
+    out.push(contract)
+    return contract
+  }
+  state.bandwidth -= BALANCE.hosting.bandwidth
+  if (relet > 0) {
+    const c = add(relet, state.quarter)
+    site.hostingReletKw = (site.hostingReletKw ?? 0) - relet
+    if (site.hostingReletKw <= 1e-9) delete site.hostingReletKw
+    logEntry(state, 'log.hosting_relet', {
+      tier: site.tier,
+      hostedKw: relet,
+      rateCents: c.rateUsdKwh * 100,
+    })
+  }
+  if (converted > 0) {
+    const costUsd = hostingCostUsd(converted)
+    const c = add(
+      converted,
+      state.quarter + 1 + CONTENT.hosting.buildQuarters,
+    )
+    state.cash -= costUsd
+    logEntry(state, 'log.hosting_started', {
+      tier: site.tier,
+      hostedKw: converted,
+      costUsd,
+      rateCents: c.rateUsdKwh * 100,
+      quarter: CONTENT.quarters[c.readyQuarter] ?? '—',
+    })
+  }
+  return out
+}
+
+/**
+ * Winter client defaults (owner decision A1), rolled as the live quarter starts: in a winter
+ * quarter (Q4, Q1) each live contract defaults with the quarter's chance, on its own random
+ * stream. A default earns nothing this quarter, ends the contract and leaves its kW idle,
+ * ready to re-let with no conversion cost.
+ */
+export function rollHostingDefaults(state: GameState): void {
+  if (state.act !== 2) return
+  const label = CONTENT.quarters[state.quarter]
+  const rules = BALANCE.hosting.defaults
+  if (!rules.winterQuarters.includes(Number(label.slice(5)))) return
+  const p = rules.chanceByQuarter[label] ?? rules.chance
+  for (const h of [...state.hosting]) {
+    if (h.readyQuarter > state.quarter) continue
+    if (!chance(substream(state.seed, `hosting_default:${label}:${h.id}`), p))
+      continue
+    state.hosting = state.hosting.filter((x) => x.id !== h.id)
+    const site = state.sites.find((s) => s.id === h.siteId)
+    if (site) site.hostingReletKw = (site.hostingReletKw ?? 0) + h.kw
+    logEntry(state, 'log.hosting_default', {
+      tier: site?.tier ?? '',
+      hostedKw: h.kw,
+      feesUsd: quarterFeesUsd(h),
+    })
+  }
 }
 
 /** A quarter of this contract's fees at its rate (the hosted machines running all quarter). */

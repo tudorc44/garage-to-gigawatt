@@ -83,7 +83,12 @@ import {
 } from './systems/loans.ts'
 import { getModel, marketWeek } from './systems/market.ts'
 import { sellTreasury, treasuryValueUsd } from './systems/treasury.ts'
-import { endHosting, hostingBlocker, startHosting } from './systems/hosting.ts'
+import {
+  endHosting,
+  hostingBlocker,
+  rollHostingDefaults,
+  startHosting,
+} from './systems/hosting.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
   baseCapexUsd,
@@ -223,6 +228,7 @@ function run(s: GameState, a: Action): Message | undefined {
       scheduleComplaint(s)
       scheduleEvents(s)
       planFailureWaves(s)
+      rollHostingDefaults(s)
       s.quarterStats.startCash = s.cash
       s.quarterStats.startTreasuryUsd = treasuryValueUsd(
         s,

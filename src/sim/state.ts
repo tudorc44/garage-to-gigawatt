@@ -44,6 +44,8 @@ export interface Site {
   phaseCapexUsd?: number
   /** Act II region tag (market_quarterly_act2 power columns). Act I sites use their tier's (balance.ts). */
   region?: string
+  /** Act II: kW left idle by a defaulted hosting client, which can be re-let with no conversion cost. */
+  hostingReletKw?: number
 }
 
 export type ContractType = 'fixed' | 'index'

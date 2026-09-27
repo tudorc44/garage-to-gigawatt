@@ -9,6 +9,7 @@ import {
   endHostingFeeUsd,
   hostingRateUsdKwh,
   quarterFeesUsd,
+  rollHostingDefaults,
 } from '../../src/sim/systems/hosting.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import {
@@ -175,6 +176,85 @@ describe('hosting (scope 0.2 §2.4)', () => {
     s = ok(s, { type: 'HOST_START', siteId: 'site-2', kw: 100 })
     s = ok(s, { type: 'LEAVE_SITE', siteId: 'site-2' })
     expect(s.hosting).toEqual([])
+  })
+})
+
+describe('hosting client defaults in winter (owner A1)', () => {
+  /** An Act II company with `n` live 10 kW contracts at a 20 MW own site, in `label`'s Plan phase. */
+  function withContracts(label: string, n: number, seed = 1): GameState {
+    const s: GameState = {
+      ...newGame(seed),
+      act: 2,
+      quarter: q(label),
+      cash: 5_000_000,
+      bandwidth: 3,
+    }
+    s.sites.push({ ...warehouse, id: 'site-2', tier: 'own_site' })
+    for (let i = 0; i < n; i++)
+      s.hosting.push({
+        id: `h-${i}`,
+        siteId: 'site-2',
+        kw: 10,
+        readyQuarter: q(label) - 1,
+        rateUsdKwh: 0.075,
+        termEndQuarter: q(label) + 2,
+      })
+    return s
+  }
+  const defaults = (s: GameState) =>
+    s.log.filter((e) => e.key === 'log.hosting_default').length
+
+  it('15% in 2022Q4 and 2023Q1, 5% in later winters, none in spring or summer', () => {
+    const rate = (label: string) => {
+      let n = 0
+      for (let seed = 1; seed <= 20; seed++) {
+        const s = withContracts(label, 100, seed)
+        rollHostingDefaults(s)
+        n += defaults(s)
+      }
+      return n / 2000
+    }
+    expect(rate('2022Q4')).toBeGreaterThan(0.12)
+    expect(rate('2022Q4')).toBeLessThan(0.18)
+    expect(rate('2023Q1')).toBeGreaterThan(0.12)
+    expect(rate('2024Q4')).toBeGreaterThan(0.03)
+    expect(rate('2024Q4')).toBeLessThan(0.07)
+    expect(rate('2025Q1')).toBeLessThan(0.07)
+    expect(rate('2023Q3')).toBe(0)
+    expect(rate('2024Q2')).toBe(0)
+  })
+
+  it('a default ends the contract, loses the quarter’s fees and leaves its kW to re-let', () => {
+    // Find a seed where the single contract defaults in 2023Q1.
+    let s: GameState | undefined
+    for (let seed = 1; seed <= 200 && !s; seed++) {
+      const t = withContracts('2023Q1', 1, seed)
+      const started = ok(t, { type: 'END_PLAN' })
+      if (defaults(started) === 1) s = t
+    }
+    expect(s).toBeDefined()
+    s = playQuarter(s!)
+    expect(s.hosting).toEqual([])
+    expect(s.reports.at(-1)!.hostingFeesUsd).toBe(0)
+    expect(s.sites[1].hostingReletKw).toBe(10)
+    // Next Plan phase: re-let for free, live at once, at this quarter's rate.
+    s = ok(s, { type: 'NEXT_QUARTER' })
+    const cash = s.cash
+    expect(hostingView(s).sites[0].reletKw).toBe(10)
+    s = ok(s, { type: 'HOST_START', siteId: 'site-2', kw: 30 })
+    expect(s.hosting.map((h) => [h.kw, h.readyQuarter])).toEqual([
+      [10, s.quarter], // re-let: live now
+      [20, s.quarter + 1], // converted: next quarter
+    ])
+    expect(s.cash).toBe(cash - 2_000) // only the 20 kW converted cost anything ($0.1M/MW)
+    expect(s.sites[1].hostingReletKw).toBeUndefined()
+    expect(s.log.some((e) => e.key === 'log.hosting_relet')).toBe(true)
+  })
+
+  it('Act I has no hosting defaults', () => {
+    const s = { ...withContracts('2022Q3', 100), act: 1 as const }
+    rollHostingDefaults(s)
+    expect(defaults(s)).toBe(0)
   })
 })
 

@@ -119,6 +119,7 @@ import {
   hostingCostUsd,
   hostingRateUsdKwh,
   quarterFeesUsd,
+  reletKw,
 } from './systems/hosting.ts'
 import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
 
@@ -1236,6 +1237,8 @@ export function hostingView(state: GameState) {
       return {
         site,
         freeKw,
+        /** Of the free kW, those a defaulted client left: re-let for free, live at once. */
+        reletKw: reletKw(state, site.id),
         rateUsdKwh,
         powerUsdKwh,
         costPerMwUsd: hostingCostUsd(1000),
