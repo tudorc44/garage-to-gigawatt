@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 27 Sep 2026, with the balance pass and two reviews (phased Texas, construction loans, GPU cap, transformer upgrade).
+Last updated: 27 Sep 2026: the Act I balance pass is DONE (every scope §5 balance anchor passes in the sim).
 
 ## How the owner works
 
@@ -102,7 +102,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 ### Not built yet (shown as locked "not built yet" rows or missing)
 
-Nothing in the scope's build list; what's left is the balance pass and playtesting (see Next). The
+Nothing in the scope's build list, and the balance pass is done; what's left is playtesting (see Next). The
 undersized-transformer flaw is fixed by the "Upgrade transformer" action (landlord_sale works through its
 event card; noise ordinance and hostile council through Heat). The UI has no automated tests (would need e.g. jsdom:
 ask first).
@@ -588,6 +588,31 @@ Texas loan is secured on Texas's own contract, chosen (fixed or index) when phas
   Texas **49%** ✓, drawdown −93% ✓; the good path then peaks **$406M in 2021Q1** (in its $400–700M band,
   barely).
 
+### Balance review 3 (design thread, 27 Sep 2026): the balance pass is DONE
+
+**Applied:** Texas phase build 3 → **2 quarters**; era_multiple_ev_ebitda **2021Q4 30 → 20** (2021Q1 stays 35,
+Q2–Q3 22). Guard rails (good path < $400M → 2021Q1 38; texas-ipo > $3.0B → 2021Q4 18) did not fire. The
+0.1% / 0.5% shifts from the used-GPU price floor were accepted. Golden replays re-baselined: 9 files change
+by one line each (their 2021Q4 valuation, from the new multiple); every ending is identical. (The three
+replays that moved +0.5% in review 2, heat-climber, negotiator and pitcher, did so because of the used-GPU
+price floor on their 2021 GPU buys.)
+
+**Final report** (50 seeds per bot):
+
+| Anchor (scope §5) | Band | Result |
+|---|---|---|
+| Garage Gen 1 rig | ~$7–8/day in 2017Q4, loss in 2018Q4 | ✓ (content test) |
+| Reinvest-all bust (ff-climb) | ≥ 80%, 2018Q2–2019Q2 | ✓ 100%: 2018Q4 ×7, 2019Q1 ×43 |
+| Seed cash floor (raise-climb) | < 50% of the seed, no bust | ✓ median 38%, 0 busts |
+| Good path peak (raise-* bots) | $400–700M | ✓ $405.8M (raise-climb) to $434.5M, 2021Q1 |
+| Great path peak (texas-ipo) | $1.5–3.0B | ✓ $2.87B, 2021Q4 |
+| Texas share of peak EBITDA | ≥ 25% | ✓ median 49% (≥ 25% in 34/42 runs with Texas) |
+| Drawdown to the Merge | −85% to −98% | ✓ good −96%, great −93% |
+| Cautious | survives, clearly below good | ✓ 0% bust, ends $41.3K |
+| Empty MW at the Merge | 30%+ of good runs with 10%+ idle | ✓ 50/50 (great path: 46/50, median 40%) |
+| GPU-swap bot (texas-ipo-upgrade) | ≤ texas-ipo × 1.5 | ✓ $606M |
+| Card frequencies | as reviewed | rig_theft 60%, tariff 0% (player-only, accepted), flaw-bound 10–18% (accepted) |
+
 ## Balance findings (from `npm run sim`, 50 seeds per bot)
 
 *(Before the balance pass; kept for history. The table's numbers are from 26 Sep 2026.)*
@@ -667,12 +692,6 @@ Texas loan is secured on Texas's own contract, chosen (fixed or index) when phas
 
 ## Open questions for the design thread
 
-- **Balance review 2 follow-ups** (numbers in "Balance review 2" above):
-  - The great path can't pass both new checks with the rules as decided: 3-quarter phases → $2.2B but
-    Texas 0% of peak EBITDA; 2-quarter phases → Texas 49% but $4.3B. Measured option: 2-quarter phases +
-    2021Q4 multiple 20 ($2.9B, Texas 49%, good path $406M). Or: cheaper/earlier phase 1, or measure Texas's
-    share differently.
-  - The good path moved by 0.1% and three goldens by 0.5% from the used-GPU price floor: fine?
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
@@ -694,10 +713,10 @@ Texas loan is secured on Texas's own contract, chosen (fixed or index) when phas
 
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
 save/load, the 20 event cards, the failure wave, the left-nav screens + Settings, and sound. Every item
-in the scope's build list now exists. 27 Sep 2026: the balance pass and two reviews (see "Balance pass",
-"Balance review" and "Balance review 2" above); every §5 balance anchor passes in the sim except the great
-path's "Texas ≥ 25% of peak EBITDA". Next: the review 2 follow-ups in the open questions (that conflict
-first), then playtests. Small follow-ups: an ear test of the sounds; the build's main
+in the scope's build list now exists. 27 Sep 2026: the balance pass and three reviews (see "Balance pass"
+and "Balance review" 1–3 above): **the Act I balance pass is DONE**, every §5 balance anchor passes in the
+sim. Next: playtests (scope §5 "Playable" and "People": a first-time run in 35–50 minutes, 3+ real
+decisions per quarter, 5 crash-free runs, 3 outside testers). Small follow-ups: an ear test of the sounds; the build's main
 JS chunk is just over Vite's 500 KB warning (card text; split it later); CLAUDE.md still says
 `src/platform/` doesn't exist and that sound lives in `docs/audio/` (owner's file: flag, don't edit).
 Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing
