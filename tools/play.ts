@@ -10,6 +10,8 @@ import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
 import {
   failureWaveView,
+  projectAlertView,
+  projectsView,
   interruptChoices,
   mergeView,
 } from '../src/sim/selectors.ts'
@@ -183,6 +185,44 @@ function showPlan(s: GameState) {
       },
     )
   })
+  // Act II: projects, with their slots and (for a shell still looking) its tenant offers.
+  if (s.act === 2) {
+    const pv = projectsView(s)
+    s.projects.forEach((p, i) => {
+      const c = pv.cards[i]
+      say('play.project_line', {
+        n: i + 1,
+        tier: c.tier,
+        projectKw: p.kw,
+        kind: p.kind,
+        stage: tDynamic(`play.project_stage.${c.column}`, c.column),
+        slots: [
+          c.slots.tenant === null
+            ? null
+            : `tenant ${c.slots.tenant ? '✓' : '○'}`,
+          `capital ${c.slots.capital ? '✓' : '○'}`,
+        ]
+          .filter(Boolean)
+          .join(' · '),
+        irr: c.irr === null ? '—' : fmt.pct(c.irr),
+        quarter: c.ready || '—',
+      })
+      if (p.stage === 'proposed' && !p.tenant)
+        p.offers.forEach((o, j) => {
+          const card = CONTENT.projects.tenantCards.find(
+            (x) => x.id === o.card,
+          )!
+          say('play.project_offer', {
+            n: j + 1,
+            tenant: o.card,
+            rating: card.rating,
+            rentUsd: (card.priceUsdMwYr * p.kw) / 1000,
+            years: card.termYears,
+            readyBy: CONTENT.quarters[s.quarter + o.readyByQuarters] ?? '—',
+          })
+        })
+    })
+  }
 
   console.log()
   say('play.machines')
@@ -449,6 +489,46 @@ function parse(
       const h = item(s.hosting, 0)
       return h ? { type: 'HOST_END', contractId: h.id } : 'play.bad_number'
     }
+    // Act II projects (scope 0.2 §2.5): "project 2 5000 shell", "project 2 1000 pilot",
+    // "project 2 4000 cloud h100", then sign / spot / fund / start / cancel / sellproject <project#>.
+    case 'project': {
+      const site = item(s.sites, 0)
+      const kind = rest[2]
+      if (!site || (kind !== 'shell' && kind !== 'cloud' && kind !== 'pilot'))
+        return 'play.bad_number'
+      return {
+        type: 'PROJECT_OPEN',
+        siteId: site.id,
+        kw: num(1),
+        kind,
+        ...(kind === 'cloud' ? { gpu: rest[3] ?? 'h100' } : {}),
+      }
+    }
+    case 'sign': {
+      const p = item(s.projects, 0)
+      const o = p?.offers[num(1) - 1]
+      return p && o
+        ? { type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: o.id }
+        : 'play.bad_number'
+    }
+    case 'spot':
+    case 'fund':
+    case 'start':
+    case 'cancel':
+    case 'sellproject': {
+      const p = item(s.projects, 0)
+      if (!p) return 'play.bad_number'
+      const type = (
+        {
+          spot: 'PROJECT_SPOT',
+          fund: 'PROJECT_FUND_CASH',
+          start: 'PROJECT_START',
+          cancel: 'PROJECT_CANCEL',
+          sellproject: 'PROJECT_SELL',
+        } as const
+      )[cmd]
+      return { type, projectId: p.id }
+    }
     case 'leave': {
       const site = item(s.sites, 0)
       return site ? { type: 'LEAVE_SITE', siteId: site.id } : 'play.bad_number'
@@ -626,6 +706,17 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
       creditUsd: alert.curtail!.creditUsd,
       forgoneUsd: alert.curtail!.forgoneUsd,
     })
+  } else if (
+    alert.id === 'construction_delay' ||
+    alert.id === 'gpu_allocation'
+  ) {
+    const v = projectAlertView(s)!
+    say(
+      alert.id === 'construction_delay'
+        ? 'play.construction_delay'
+        : 'play.gpu_allocation',
+      { n: v.n, costUsd: v.costUsd, quarters: v.waitQuarters },
+    )
   } else {
     say('play.alert', {
       coin: alert.coin,

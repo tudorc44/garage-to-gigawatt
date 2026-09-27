@@ -6,7 +6,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONTENT, actLastQuarter } from '../src/content/index.ts'
-import { playGame } from '../src/sim/replay.ts'
+import { playGame, type Strategy } from '../src/sim/replay.ts'
+import { projectCapex } from '../src/sim/systems/projects.ts'
 import type {
   ContractType,
   GameState,
@@ -16,7 +17,7 @@ import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
-import { valuationSplit } from '../src/sim/systems/valuation.ts'
+import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
 import { BOTS, PROBES } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -648,13 +649,19 @@ console.table(
 // ---------- Act II (--act2): a few bots played on through 2026Q4 ----------
 
 if (args.includes('--act2')) {
-  const ACT2_BOTS = ['raise-climb', 'hosting-switcher', 'texas-ipo']
+  const ACT2_BOTS = [
+    'raise-climb',
+    'hosting-switcher',
+    'texas-ipo',
+    'shell-climb',
+    'texas-shell',
+  ]
   const t0 = performance.now()
   const byBot = ACT2_BOTS.map((name) => ({
     name,
     runs: Array.from({ length: SEEDS }, (_, i) => ({
       seed: i + 1,
-      state: playGame(i + 1, BOTS[name], { through: 2 }).state,
+      state: playGame(i + 1, BOTS[name] ?? PROBES[name], { through: 2 }).state,
     })),
   }))
   const at = (r: Run, q: string) =>
@@ -684,6 +691,13 @@ if (args.includes('--act2')) {
       const fees = ended.map((r) =>
         r.state.reports.reduce((a, x) => a + (x.hostingFeesUsd ?? 0), 0),
       )
+      const last = (r: Run) => r.state.reports.at(-1)!
+      const aiMw = ended.map(
+        (r) =>
+          r.state.projects
+            .filter((p) => p.stage === 'live')
+            .reduce((a, p) => a + p.kw, 0) / 1000,
+      )
       return {
         strategy: name,
         'reached Act II': `${alive.length}/${runs.length}`,
@@ -694,9 +708,63 @@ if (args.includes('--act2')) {
         'Act II peak': usd(median(act2Peak.map((x) => x.valuationUsd))),
         'hosting fees (Act II)': usd(median(fees)),
         'EV per energized MW, 2026Q4': usd(median(evPerMw)),
+        'live AI MW, 2026Q4': median(aiMw),
+        'AI EBITDA 2026Q4 (q)': usd(
+          median(ended.map((r) => aiEbitdaUsd(last(r)))),
+        ),
+        'backlog 2026Q4': usd(
+          median(ended.map((r) => last(r).backlogUsd ?? 0)),
+        ),
       }
     }),
   )
+  // Scope 0.2 §5 pilot timing: a 1 MW pilot's operating return by 2026Q4 (its AI EBITDA over the
+  // quarters: the pilot is the bot's only AI project) ÷ its capex; the scope's reference adds 50%
+  // GPU resale, which the game doesn't model: shown separately. No bot has a pilot's ~$31M in
+  // cash (capital beyond own cash comes later), so this is a measurement harness: texas-ipo with
+  // the pilot bot, its cash topped up by exactly the pilot's cost in the pilot quarter.
+  const withPilotCash = (name: string): Strategy => {
+    const inner = PROBES[name]
+    const from = name.slice('pilot-'.length)
+    return {
+      ...inner,
+      plan(state) {
+        if (
+          state.act === 2 &&
+          CONTENT.quarters[state.quarter] === from &&
+          !state.projects.some((p) => p.kind === 'pilot')
+        )
+          state.cash += projectCapex(state, {
+            kw: 1000,
+            kind: 'pilot',
+            gpu: CONTENT.projects.pilot.gpu,
+            tenant: null,
+          }).totalUsd
+        return inner.plan(state)
+      },
+    }
+  }
+  for (const name of ['pilot-2023Q3', 'pilot-2025Q2']) {
+    const multiples = Array.from({ length: SEEDS }, (_, i) =>
+      playGame(i + 1, withPilotCash(name), { through: 2 }),
+    )
+      .map((g) => ({ state: g.state }))
+      .filter((r) => r.state.phase === 'chapter')
+      .flatMap((r) => {
+        const p = r.state.projects.find((x) => x.kind === 'pilot')
+        if (!p || p.capexUsd <= 0) return []
+        const margin = r.state.reports.reduce((a, x) => a + aiEbitdaUsd(x), 0)
+        return [
+          {
+            ops: margin / p.capexUsd,
+            withResale: (margin + 0.5 * p.gpuCapexUsd) / p.capexUsd,
+          },
+        ]
+      })
+    console.log(
+      `  Pilot timing (${name}): ${multiples.length} pilots built; returns ${median(multiples.map((m) => m.ops)).toFixed(2)}× its cost from operations, ${median(multiples.map((m) => m.withResale)).toFixed(2)}× with 50% GPU resale (scope 0.2 §5: 2023Q3 ≥ 1.7×, 2025Q2 ≤ 1.3×)`,
+    )
+  }
   // Scope 0.2 §5 "hosting isn't a free win": hosting vs staying in mining, same seeds, 2022Q4–2024Q1.
   const climb = byBot.find((b) => b.name === 'raise-climb')!.runs
   const host = byBot.find((b) => b.name === 'hosting-switcher')!.runs

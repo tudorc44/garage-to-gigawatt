@@ -16,6 +16,7 @@ import { repairCostPerUnit, saleValueUsd } from '../src/sim/systems/machines.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { buyCapKw, hostingView } from '../src/sim/selectors.ts'
 import { convertibleKw } from '../src/sim/systems/hosting.ts'
+import { projectCapex, tenantCard } from '../src/sim/systems/projects.ts'
 import {
   constructionLoanBlocker,
   constructionLoanUsd,
@@ -630,9 +631,179 @@ function hostingSwitcher(base: Strategy): Strategy {
   }
 }
 
+/**
+ * Act II projects (scope 0.2 §2.5): plays `base`, and before it each Plan phase:
+ * - finishes any proposed project: signs the best tenant offer (the best-rated, then the highest
+ *   rent) or puts a cloud on spot, funds it with cash and starts the build;
+ * - from `from`, opens a new one: a `pilot` of `pilotKw` (once), or a `shell` on the site with the
+ *   most free MW, sized to what the cash can build (1 MW steps), after selling the machines that no
+ *   longer mine there (GPU rigs and S9s) when `freeUp` is set. Shells keep coming while there's
+ *   room and cash.
+ */
+function aiProjects(
+  base: Strategy,
+  opts: {
+    kind: 'pilot' | 'shell'
+    from: string
+    pilotKw?: number
+    /** true: may sell GPU rigs and S9s for room; 'any': any machine (the pilot measurement). */
+    freeUp?: boolean | 'any'
+    /** Keep this share of cash back (default 20%) when sizing a shell or affording a pilot. */
+    reserveShare?: number
+  },
+): Strategy {
+  const ratingRank = (r: string) =>
+    r.startsWith('A') ? 2 : r.startsWith('BBB') ? 1 : 0
+  return {
+    ...base,
+    plan(state) {
+      if (state.act !== 2) return base.plan(state)
+      const actions: Action[] = []
+      let s = state
+      const run = (a: Action) => {
+        const r = applyAction(s, a)
+        if (r.ok) {
+          s = r.state
+          actions.push(a)
+        }
+        return r.ok
+      }
+      const finish = () => {
+        for (const p of s.projects.filter((x) => x.stage === 'proposed')) {
+          if (p.kind === 'shell' && !p.tenant && p.offers.length > 0) {
+            const best = [...p.offers].sort((a, b) => {
+              const ca = tenantCard(a.card)!
+              const cb = tenantCard(b.card)!
+              return (
+                ratingRank(cb.rating) - ratingRank(ca.rating) ||
+                cb.priceUsdMwYr - ca.priceUsdMwYr
+              )
+            })[0]
+            run({
+              type: 'PROJECT_SIGN_TENANT',
+              projectId: p.id,
+              offerId: best.id,
+            })
+          }
+          if (p.kind === 'cloud') run({ type: 'PROJECT_SPOT', projectId: p.id })
+          run({ type: 'PROJECT_FUND_CASH', projectId: p.id })
+          run({ type: 'PROJECT_START', projectId: p.id })
+        }
+      }
+      /** Machines `freeUp` may sell: GPU rigs and S9s (or, with 'any', every machine). */
+      const sellable = (modelId: string) => {
+        const m = getModel(modelId)!
+        return opts.freeUp === 'any' || m.coin === 'ETH' || m.id === 's9'
+      }
+      /** With `freeUp`: sells the site's sellable machines, a batch at a time, until `kw` are free. */
+      const freeUp = (siteId: string, kw: number) => {
+        if (!opts.freeUp) return
+        for (const lot of s.machines.filter((l) => l.siteId === siteId)) {
+          const left = kw - convertibleKw(s, siteId)
+          if (left <= 0) return
+          if (!sellable(lot.model)) continue
+          const units = Math.min(
+            lot.count,
+            Math.ceil(left / getModel(lot.model)!.power_kw),
+          )
+          run({ type: 'SELL_MACHINES', lotId: lot.id, count: units })
+        }
+      }
+      /** kW the site could give a project: free now, plus (with freeUp) its sellable machines. */
+      const roomKw = (siteId: string) =>
+        convertibleKw(s, siteId) +
+        (opts.freeUp
+          ? s.machines
+              .filter((l) => l.siteId === siteId && sellable(l.model))
+              .reduce((a, l) => a + l.count * getModel(l.model)!.power_kw, 0)
+          : 0)
+      finish()
+      const label = CONTENT.quarters[s.quarter]
+      const pending = s.projects.some((x) => x.stage === 'proposed')
+      if (label >= opts.from && !pending) {
+        const sites = s.sites.filter((x) => x.tier !== BALANCE.startSite)
+        const budget = s.cash * (1 - (opts.reserveShare ?? 0.2))
+        if (opts.kind === 'pilot') {
+          const kw = opts.pilotKw ?? 1000
+          const cost = projectCapex(s, {
+            kw,
+            kind: 'pilot',
+            gpu: CONTENT.projects.pilot.gpu,
+            tenant: null,
+          }).totalUsd
+          const site = sites.find((x) => roomKw(x.id) >= kw)
+          if (
+            site &&
+            cost <= budget &&
+            !s.projects.some((x) => x.kind === 'pilot')
+          ) {
+            freeUp(site.id, kw)
+            run({ type: 'PROJECT_OPEN', siteId: site.id, kw, kind: 'pilot' })
+          }
+        } else {
+          const site = [...sites].sort((a, b) => roomKw(b.id) - roomKw(a.id))[0]
+          if (site) {
+            const perMw = projectCapex(s, {
+              kw: 1000,
+              kind: 'shell',
+              gpu: null,
+              tenant: null,
+            }).totalUsd
+            const mw = Math.min(
+              Math.floor(roomKw(site.id) / 1000),
+              Math.floor(budget / perMw),
+            )
+            if (mw >= 1) {
+              freeUp(site.id, mw * 1000)
+              run({
+                type: 'PROJECT_OPEN',
+                siteId: site.id,
+                kw: mw * 1000,
+                kind: 'shell',
+              })
+            }
+          }
+        }
+        finish()
+      }
+      return [...actions, ...base.plan(s)]
+    },
+  }
+}
+
 /** The good path's rounds (no IPO) and its top site (the 20 MW own site; design thread A1). */
 const GOOD_PATH_RAISES = ['friends_family', 'seed', 'series_a']
 const GOOD_PATH_TOP = { tier: 'own_site' }
+
+/** The raise-climb bot's settings (the good path). */
+const RAISE_CLIMB: BotSettings = {
+  hodlPct: 0,
+  reserveUsd: () => 0,
+  maxPaybackQuarters: Infinity,
+  sellOnDrops: false,
+  raises: GOOD_PATH_RAISES,
+  climbLimit: GOOD_PATH_TOP,
+}
+
+/** The texas-ipo bot's settings (the great path). */
+const TEXAS_IPO: BotSettings = {
+  hodlPct: 0,
+  reserveUsd: () => 0,
+  maxPaybackQuarters: Infinity,
+  sellOnDrops: false,
+  raises: [...GOOD_PATH_RAISES, 'ipo_spac'],
+  climbLimit: { tier: 'own_site', afterRound: 'ipo_spac' },
+  scoutAhead: true,
+  smartFill: true,
+  borrow: true,
+  maxLtv: 0.5,
+  phasedTexas: true,
+  prebuy: true,
+  // After the IPO: replace S9s with S19s wherever they make more per kW (no GPU swap).
+  upgradeAt: 1,
+  upgradeAfterRound: 'ipo_spac',
+  asicOnly: true,
+}
 
 export const BOTS: Record<string, Strategy> = {
   /** Keeps half its cash, only buys machines that pay back within 3 quarters, holds 20%. */
@@ -736,23 +907,21 @@ export const BOTS: Record<string, Strategy> = {
    * The "great player" path (scope §5): raise-climb plus the IPO (as soon as it qualifies), then
    * climbs to Texas with the IPO money and fills it, borrowing up to 50% of the machines' value.
    */
-  'texas-ipo': makeBot({
-    hodlPct: 0,
-    reserveUsd: () => 0,
-    maxPaybackQuarters: Infinity,
-    sellOnDrops: false,
-    raises: [...GOOD_PATH_RAISES, 'ipo_spac'],
-    climbLimit: { tier: 'own_site', afterRound: 'ipo_spac' },
-    scoutAhead: true,
-    smartFill: true,
-    borrow: true,
-    maxLtv: 0.5,
-    phasedTexas: true,
-    prebuy: true,
-    // After the IPO: replace S9s with S19s wherever they make more per kW (no GPU swap).
-    upgradeAt: 1,
-    upgradeAfterRound: 'ipo_spac',
-    asicOnly: true,
+  'texas-ipo': makeBot(TEXAS_IPO),
+  /**
+   * Act II good path with AI (scope §5): raise-climb, then from 2023Q3 frees its S9s and GPU rigs
+   * and turns the free MW into AI shells as far as the cash goes (see aiProjects).
+   */
+  'shell-climb': aiProjects(makeBot(RAISE_CLIMB), {
+    kind: 'shell',
+    from: '2023Q3',
+    freeUp: true,
+  }),
+  /** Act II great path with AI: texas-ipo, then AI shells the same way. */
+  'texas-shell': aiProjects(makeBot(TEXAS_IPO), {
+    kind: 'shell',
+    from: '2023Q3',
+    freeUp: true,
   }),
   /**
    * Measurement, not a design-thread path: texas-ipo without the ASIC-only rule, upgrading any
@@ -820,6 +989,22 @@ export const BOTS: Record<string, Strategy> = {
  * (a full garage), sells every coin and never spends again: the best case for garage-only cash.
  */
 export const PROBES: Record<string, Strategy> = {
+  /**
+   * Scope §5 pilot timing: texas-ipo (the only path with a pilot's ~$31M) plus one 1 MW pilot,
+   * opened in 2023Q3 (or 2025Q2) on MW freed by selling miners if needed.
+   */
+  'pilot-2023Q3': aiProjects(makeBot(TEXAS_IPO), {
+    kind: 'pilot',
+    from: '2023Q3',
+    freeUp: 'any',
+    reserveShare: 0,
+  }),
+  'pilot-2025Q2': aiProjects(makeBot(TEXAS_IPO), {
+    kind: 'pilot',
+    from: '2025Q2',
+    freeUp: 'any',
+    reserveShare: 0,
+  }),
   'garage-max': {
     plan: (s) =>
       s.quarter === 0

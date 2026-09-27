@@ -1047,7 +1047,7 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
   "latest" tier, used market from 2025Q1. Tier prices are pack estimates (fine for now).
 - **C** All seven M2 choices approved as built. ERCOT's 2026 large-load rules (SB6) come with the regional events (M5).
 
-### Milestone M3: owner decisions + Projects and the Deal builder (batch mode, started 27 Sep 2026)
+### Milestone M3: owner decisions + Projects and the Deal builder (batch mode, 27 Sep 2026) — DONE
 
 Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/act2-content/`. Sub-steps:
 - **M3.0** Data fixes B5 + B6 (docs and game copies, README, a copy test); decisions recorded here.
@@ -1194,8 +1194,58 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   the Act II top bar wraps its last stat (H100 spot) to a second line when the backlog is non-zero.
   Tests: 462 pass (new `tests/sim/projectViews.test.ts`). No golden change.
 - **M3.9** GPU know-how, terminal commands, bots and sim numbers; milestone report.
+  **Done.** GPU know-how shows on the Projects page header (it was built in M3.5: 1 live GPU project = 1, 2 = 2,
+  100 MW = 3). Terminal (`npm run play`): Plan screen lists each project (size, kind, site, stage, slots, IRR, live
+  quarter) and a shell's tenant offers; commands `project <site#> <kW> shell|cloud|pilot [gpu]`, `sign`, `spot`,
+  `fund`, `start`, `cancel`, `sellproject`; the construction-delay and GPU-allocation alerts have their own lines.
+  (Help text checked; the commands weren't played through in the terminal: a piped run stays garage-only.)
+  Bots: `aiProjects(base, …)` in `tools/bots.ts` finishes proposed projects (best-rated offer, then highest rent;
+  spot for a cloud; own cash; start) and opens new ones: `shell-climb` (raise-climb + shells from 2023Q3, sized to
+  80% of cash, freeing only as many S9 / GPU-rig MW as it builds on), `texas-shell` (texas-ipo + the same). Probes
+  `pilot-2023Q3` / `pilot-2025Q2` (texas-ipo + a 1 MW pilot). `npm run sim -- --act2` adds live AI MW, AI EBITDA,
+  backlog and the pilot-timing check. First version of the bot sold every S9 and rig, left ~18 MW idle paying the
+  reservation, and went bust in 8/50 runs; fixed by freeing only what it builds on (now 1/50, same as raise-climb).
+  **Sim numbers (50 seeds, `npm run sim -- --act2`):**
+
+  | bot | Act II busts | value 2022Q3 | 2024Q1 | 2026Q4 | Act II peak | live AI MW 2026Q4 | backlog 2026Q4 |
+  |---|---|---|---|---|---|---|---|
+  | raise-climb | 1 | $14.9M | $14.2M | $13.0M | $14.8M | 0 | $0 |
+  | hosting-switcher | 4 | $14.9M | $20.6M | $12.5M | $41.8M | 0 | $0 |
+  | texas-ipo | 0 | $206M | $112M | $331M | $755M | 0 | $0 |
+  | shell-climb | 1 | $14.9M | $19.0M | $59.5M | $103M | 2 | $22.5M |
+  | texas-shell | 0 | $206M | $115M | $427M | $853M | 2 | $19.6M |
+
+  Scope §5 checks: **pure miner ~$100–400M alive** ✓ (texas-ipo $331M). **EV/MW pure mining $0.4–1.2M** ✓ for
+  raise-climb ($0.62M); texas-ipo $3.0M (as in M3.4). **Pilot timing** (harness: texas-ipo + the pilot, its cash
+  topped up by exactly the pilot's cost, because no bot has ~$31M spare with own cash as the only capital): 2023Q3
+  pilot **1.26× from operations, 1.65× with 50% GPU resale** (target ≥ 1.7×: **near miss**); 2025Q2 pilot 0.82× /
+  **1.17×** (target ≤ 1.3× ✓). The miss comes mostly from the GPU allocation queue: 60% of 2023 pilots roll it and the
+  bots take the default "wait", 2 quarters at know-how 0. **Good path ~$1–3B**: **not reachable yet**: with own cash
+  as the only capital the good path (~$15M at the Merge) builds 1–2 MW of shell ($6.75M/MW) and ends at $60M;
+  project debt, DDTLs and equity (the capital milestone) are what size a 20–40 MW entry. **Great path $10B+**: same
+  (texas-ipo holds its value in machines, not cash; peak $853M). **Hosting isn't a free win**: still **missed**
+  (40/50, target ≤ ~60%; unchanged since M3.4). **2-quarter delay ≥ 80% of a full-stack project's profit** and **2024
+  vs post-Jun-2025 full-stack IRR**: need contracted full stack (STOPPED). Overleveraged foreclosure, lifeline, head
+  starts: later milestones.
+  Tests 464 pass, lint and build pass; no golden change.
+
+### Milestone M3 report (27 Sep 2026) — DONE
+Commits: M3.0 `1e555f4`, M3.1 `f9b3e21`, M3.2 `c957019`, M3.3 `17d7ad1`, M3.4 `163e4e5`, M3.5 `5d24706`, M3.6
+`32e7211`, M3.7 `3c3df23`, M3.8 `968b12d`, M3.9 (this commit). Open questions for the design thread:
+1. **Contracted full stack** (STOPPED above): price basis, term, billed utilisation, ready-by.
+2. **Hosting check missed** (40/50 vs ≤ ~60%): tune the hosting rate, the conversion cost, or the reservation on
+   switched-off machines' MW (S9s that sit switched off pay no reservation, so staying in mining is cheap)?
+3. **Pilot timing near miss** (1.65× vs ≥ 1.7×): accept, or soften the GPU queue for a pilot (it's 1 MW)?
+4. **Balance targets for the good / great paths** depend on the capital milestone; confirm that's the plan (no
+   tuning of Act II values before then).
+5. Projected return horizon for clouds (5 years, no GPU resale) is mine: does the design thread have a GPU life?
 
 ## Next
+
+**Milestone M3 done (27 Sep 2026).** Projects (shell, cloud on spot, pilot), the build with delays and the GPU
+queue, take-or-pay, the sum-of-the-parts valuation, selling a shell, the Projects page and the Deal builder are in
+the game on branch `act2`. Next: the design thread's answers to the M3 questions above, then the next milestone
+(capital: project debt, DDTLs, equity; or whatever the design thread orders).
 
 Act II market data fixed (27 Sep 2026): corrected copies of the Act II market files are in `docs/act2-content/`
 (`market_weekly.csv`, `market_quarterly.csv`; the originals in `docs/game-project-files/` are untouched). Hashprice is now
