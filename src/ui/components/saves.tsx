@@ -36,11 +36,13 @@ export function saveLabel(s: GameState): string {
   // The "Start of Act II" save sits on the Act II intro, still dated 2022Q3.
   if (s.phase === 'intro')
     return t('ui.save.label_act2', { cash: fmt.money(s.cash) })
-  return t(s.phase === 'live' ? 'ui.save.label_live' : 'ui.save.label', {
+  const label = t(s.phase === 'live' ? 'ui.save.label_live' : 'ui.save.label', {
     quarter: fmt.quarter(quarterName(s.quarter)),
     week: s.week + 1,
     cash: fmt.money(s.cash),
   })
+  // Saves in Act II carry an "Act II" tag (A2-01).
+  return s.act === 2 ? t('ui.save.act2_tag', { label }) : label
 }
 
 /** Paste-a-save box: decodes the text and hands the game over, or shows what's wrong. */

@@ -119,6 +119,7 @@
   "marketRead": null,
   "mergeChoice": "hold_and_wait",
   "act2Entry": null,
+  "preset": false,
   "events": {
     "queue": [],
     "deferred": null,

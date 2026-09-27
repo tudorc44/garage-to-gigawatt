@@ -125,6 +125,7 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   firstAiDealQuarter: null,
   act2Entry: null,
   bridgeLoan: null,
+  preset: false,
 }
 
 /**

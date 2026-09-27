@@ -337,14 +337,13 @@ function run(s: GameState, a: Action): Message | undefined {
       s.mergeChoice = a.choice
       s.phase = 'chapter'
       logEntry(s, 'log.merge_choice', { mergeChoice: a.choice })
+      // The standalone preset has no Act I career to report on: straight to the Act II intro.
+      if (s.preset) enterAct2(s)
       return
 
     case 'CONTINUE_TO_ACT_2':
       if (s.phase !== 'chapter' || s.act !== 1) return fail('error.wrong_phase')
-      s.act = 2
-      s.phase = 'intro'
-      applyHeadStart(s)
-      offerLifeline(s)
+      enterAct2(s)
       return
 
     case 'START_ACT_2':
@@ -865,6 +864,14 @@ function run(s: GameState, a: Action): Message | undefined {
       return
     }
   }
+}
+
+/** The act boundary: Act II starts at its intro, with the Merge head start and (below the floor) the lifeline. */
+function enterAct2(s: GameState): void {
+  s.act = 2
+  s.phase = 'intro'
+  applyHeadStart(s)
+  offerLifeline(s)
 }
 
 function tierNotAvailable(s: GameState, tierId: string): Message | undefined {

@@ -7,6 +7,7 @@ import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
 import { quarterName } from '../sim/selectors.ts'
 import { newGame, type GameState } from '../sim/state.ts'
+import { presetGame } from '../sim/preset.ts'
 import { restoreSave } from '../sim/save.ts'
 import { LiveScreen } from './screens/Live.tsx'
 import { PlanScreen } from './screens/Plan.tsx'
@@ -118,6 +119,10 @@ export function App() {
     screen = (
       <TitleScreen
         onStart={(text) => start(toSeed(text))}
+        onStartAct2={(text) => {
+          setShowEnd(false)
+          commit(presetGame(toSeed(text)))
+        }}
         saves={{
           autosave: readSlot('autosave'),
           manual: readSlot('manual'),

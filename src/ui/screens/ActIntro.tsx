@@ -73,7 +73,13 @@ export function ActIntroScreen({ state, act }: ScreenProps) {
               </p>
               <p class="num-s" style={{ margin: 0 }}>
                 {tDynamic(
-                  `ui.act2_intro.head_start.${c.headStart.headStart}`,
+                  `ui.act2_intro.head_start.${c.headStart.headStart}${
+                    c.headStart.headStart !== 'hold_and_wait' &&
+                    c.headStart.gpuRigsSold === 0 &&
+                    c.headStart.legacyGpuRigs === 0
+                      ? '_none'
+                      : ''
+                  }`,
                   '',
                   {
                     ...c.headStartTerms,

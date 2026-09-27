@@ -359,6 +359,8 @@ export interface GameState {
   mergeChoice: string | null
   /** Act II: the head start (and lifeline) set at the act boundary; null in Act I. */
   act2Entry: Act2Entry | null
+  /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
+  preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
   events: EventState
   /** This quarter's failure-wave rolls, one per site (drawn when the Plan phase ends). */
@@ -643,6 +645,7 @@ export function newGame(seed: number): GameState {
     marketRead: null,
     mergeChoice: null,
     act2Entry: null,
+    preset: false,
     events: emptyEventState(),
     failureWaves: [],
     siteHeat: {

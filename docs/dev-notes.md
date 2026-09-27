@@ -180,6 +180,8 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.2: lifeline (`lifeline.ts`): below 20 MW energized OR $5M cash at the boundary; the intro offers it (default
   take). Mine, reversible: an owned 20 MW ERCOT site live 2022Q4; the bridge is interest-only with a bullet at the
   end of 2024Q3; "Bridge" row + early repay on the Capital screen; terminal game asks too.
+- M5.3: "Start at Act II" (`preset.ts`): the preset plays 2022Q3 for a real report, then cash/debt are set to $12M
+  / $25M; Merge screen → intro (no Act I chapter). Mine: the garage stays; used S19 Pros; Act II save tag.
 
 ## Next
 

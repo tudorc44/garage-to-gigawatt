@@ -1,4 +1,5 @@
-// Title screen: new career, with an optional seed. (The end screens are in End.tsx.)
+// Title screen: new career, or Act II from the preset company (A2-01), with an optional seed.
+// (The end screens are in End.tsx.)
 import { useState } from 'preact/hooks'
 import { t } from '../../i18n/t.ts'
 import type { GameState } from '../../sim/state.ts'
@@ -6,6 +7,8 @@ import { ImportBox, saveLabel } from '../components/saves.tsx'
 
 export function TitleScreen(props: {
   onStart: (seedText: string) => void
+  /** "Start at Act II": the standalone preset company (scope 0.2 §2.10). */
+  onStartAct2: (seedText: string) => void
   /** Games saved in this browser (null when there's none). */
   saves: { autosave: GameState | null; manual: GameState | null }
   onLoad: (state: GameState) => void
@@ -38,6 +41,14 @@ export function TitleScreen(props: {
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
             <button type="submit" class="btn btn-primary">
               {t('ui.title.new_career')}
+            </button>
+            <button
+              type="button"
+              class="btn"
+              title={t('ui.title.start_act2_note')}
+              onClick={() => props.onStartAct2(seed.trim())}
+            >
+              {t('ui.title.start_act2')}
             </button>
             {autosave && (
               <button

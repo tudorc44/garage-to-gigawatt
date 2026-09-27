@@ -182,6 +182,22 @@ export const BALANCE = {
   },
 
   /**
+   * The standalone preset, "Q4 2022: a mid-size miner" (scope 0.2 §2.10; doc 18 §2.4; the numbers in
+   * capital_act2.json): 40 MW across 2 sites, a 20 MW own site and one 20 MW Texas phase on fixed
+   * power, S19-class machines filling 70% of each site (used S19 Pros; mine), F&F, seed and Series A
+   * taken, no IPO. The equipment debt is one loan at the last Act I era's terms. The company plays
+   * 2022Q3 (so it has a quarter report), then its cash and debt are set to the preset's.
+   */
+  preset: {
+    sites: [
+      { tier: 'own_site', phases: 0 },
+      { tier: 'texas_site', phases: 1 },
+    ],
+    fleet: { model: 's19pro', condition: 'used', shareOfCapacity: 0.7 },
+    raisesDone: ['friends_family', 'seed', 'series_a'] as readonly string[],
+  },
+
+  /**
    * The distressed lifeline (scope 0.2 §2.10, doc 18 §2.2): below 20 MW energized or $5M cash at the
    * act boundary (the cash floor is in capital_act2.json), Act II opens with a bankrupt miner's 20 MW
    * site, bought with a bridge loan. The site is an owned 20 MW site in ERCOT (the Core Scientific /
