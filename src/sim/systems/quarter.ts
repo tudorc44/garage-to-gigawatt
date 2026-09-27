@@ -110,6 +110,7 @@ function buildReport(
     treasurySoldUsd: st.treasurySoldUsd,
     gridCreditsUsd: st.gridCreditsUsd,
     hostingFeesUsd: st.hostingFeesUsd,
+    reservationUsd: st.reservationUsd,
     rateHikeUsd: st.rateHikeUsd,
     stormChargeUsd: st.stormChargeUsd,
     salariesUsd: st.salariesUsd,

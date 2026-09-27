@@ -664,6 +664,7 @@
   "ui.report.cash_line_loan": "Cash: start {start} + coin sales {sales} − power {power} − rent {rent} − loan payments {loan} = end {end}.",
   "ui.report.grid_line": "Includes {credits} of grid credits for curtailing the Texas site.",
   "ui.report.hosting_line": "Includes {fees} of hosting fees from other miners' machines (the power they used is in the power cost).",
+  "ui.report.reservation_line": "Power cost includes {usd} of reservation charges: idle and under-construction megawatts pay 25% of full-load power to keep their grid connection.",
   "ui.report.storm_line": "Winter Storm Uri: storm power charge {usd} (included in power).",
   "ui.report.rate_hike_line": "Power includes {usd} of rate-hike surcharge (Heat 50+).",
   "ui.report.debt_line": "Still owed on the equipment loan: {debt} (interest this quarter: {interest}).",

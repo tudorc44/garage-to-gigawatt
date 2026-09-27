@@ -532,6 +532,21 @@ export function parseContent(raw: RawContent): Content {
     rateUsdKwhByYear: hostingRates,
   }
 
+  // Act II regions for Act I sites (balance.ts act2Regions): known tiers and region columns only.
+  for (const [tier, region] of Object.entries(BALANCE.act2Regions.byTier)) {
+    if (!sitesFile.tiers.some((t) => t.id === tier))
+      problems.push(`balance.ts › act2Regions: unknown site tier "${tier}"`)
+    if (!(POWER_REGIONS as readonly string[]).includes(region))
+      problems.push(`balance.ts › act2Regions: unknown region "${region}"`)
+  }
+  for (const tier of BALANCE.act2Regions.premiumTiers) {
+    const t = sitesFile.tiers.find((x) => x.id === tier)
+    if (!t?.power_path?.[firstAct2Year])
+      problems.push(
+        `balance.ts › act2Regions: premium tier "${tier}" needs a ${firstAct2Year} power_path`,
+      )
+  }
+
   const act2Market = marketQuarterlyAct2Rows.map((r, i) =>
     act2QuarterOf(r, {
       mining: interpolated.mining[i] ?? 0,

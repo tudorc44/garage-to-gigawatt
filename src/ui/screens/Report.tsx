@@ -343,6 +343,13 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
           {t('ui.report.hosting_line', { fees: fmt.money(r.hostingFeesUsd) })}
         </p>
       )}
+      {r.reservationUsd > 0 && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.report.reservation_line', {
+            usd: fmt.money(r.reservationUsd),
+          })}
+        </p>
+      )}
       {r.stormChargeUsd > 0 && (
         <p class="num-s loss" style={{ margin: 0 }}>
           {t('ui.report.storm_line', { usd: fmt.money(r.stormChargeUsd) })}

@@ -98,6 +98,7 @@ export function restoreSave(raw: unknown): Loaded {
     ...r,
     salariesUsd: r.salariesUsd ?? 0,
     hostingFeesUsd: r.hostingFeesUsd ?? 0,
+    reservationUsd: r.reservationUsd ?? 0,
     marginByTier: r.marginByTier ?? {},
   }))
   // Saves from before phased Texas had one construction loan (or none).

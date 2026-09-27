@@ -4,6 +4,8 @@ import {
   BALANCE,
   CONTENT,
   act1ValueQuarter,
+  act2Quarter,
+  type PowerRegion,
   type SiteTier,
 } from '../../content/index.ts'
 import { pick, randomInt, random } from '../rng.ts'
@@ -75,9 +77,31 @@ export function usedKw(state: GameState, siteId: string): number {
   return machinesKw(state, siteId) + hostingKw(state, siteId)
 }
 
+/** The site's Act II region (owner decision B3): its own tag, else its tier's; the garage has none. */
+export function regionOf(site: Site): PowerRegion | undefined {
+  return (site.region ?? BALANCE.act2Regions.byTier[site.tier]) as
+    | PowerRegion
+    | undefined
+}
+
 /**
- * The site's normal price per kWh this quarter, before contracts and surcharges: the tier's
- * price path for the year (or, for Texas, the contract type's price) × the scouting multiplier.
+ * The small-load premium over the region (owner decision B3): for the tiers that pay it, the
+ * tier's 2022 power price minus the region's first Act II price, held constant. 0 otherwise.
+ */
+export function smallLoadPremiumUsdKwh(site: Site): number {
+  const region = regionOf(site)
+  const tier = getTier(site.tier)!
+  if (!region || !BALANCE.act2Regions.premiumTiers.includes(tier.id)) return 0
+  const first = CONTENT.act2Market[0]
+  const year = first.quarter.slice(0, 4)
+  return (tier.power_path?.[year] ?? 0) - first.powerUsdKwh[region]
+}
+
+/**
+ * The site's normal price per kWh this quarter, before contracts and surcharges, × the scouting
+ * multiplier. Act I: the tier's price path for the year (Texas: the contract type's price).
+ * Act II: the region's series (+ the small-load premium); Texas's index option keeps its Act I
+ * discount to fixed. The garage has no region and keeps its 2022 household price.
  */
 export function normalPriceUsdKwh(
   site: Site,
@@ -85,7 +109,15 @@ export function normalPriceUsdKwh(
   type: ContractType = BALANCE.sites.defaultPowerOption,
 ): number {
   const tier = getTier(site.tier)!
-  // 2022Q4+: the 2022 price holds (Act I's power paths end there).
+  const act2 = act2Quarter(quarter)
+  const region = regionOf(site)
+  if (act2 && region) {
+    const regional = act2.powerUsdKwh[region] + smallLoadPremiumUsdKwh(site)
+    const options = tier.power_options
+    const typeMult = options ? options[type].price / options.fixed.price : 1
+    return regional * typeMult * site.powerPriceMult
+  }
+  // 2022Q4+ without a region (the garage): the 2022 price holds (Act I's paths end there).
   const year = act1ValueQuarter(quarter).slice(0, 4)
   const base = tier.power_path?.[year] ?? tier.power_options![type].price
   return base * site.powerPriceMult

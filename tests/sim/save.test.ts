@@ -110,6 +110,8 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   hosting: [],
   'quarterStats.hostingFeesUsd': 0,
   'reports.*.hostingFeesUsd': 0,
+  'quarterStats.reservationUsd': 0,
+  'reports.*.reservationUsd': 0,
 }
 
 /**

@@ -23,6 +23,7 @@ import { paySalariesWeek } from './systems/hires.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
 import { settleHostingWeek } from './systems/hosting.ts'
+import { payReservationWeek } from './systems/mwUse.ts'
 
 export function advance(state: GameState): GameState {
   if (state.phase !== 'live') {
@@ -40,6 +41,7 @@ export function advance(state: GameState): GameState {
   const lots = curtailed.lots
   const money = settleWeek(s, lots, w)
   const hosting = settleHostingWeek(s)
+  const reservationUsd = payReservationWeek(s)
   // Winter Storm Uri: index contracts that didn't curtail pay the storm price on their firm load.
   const stormUsd = curtailed.creditUsd > 0 ? 0 : stormChargeUsd(s, s.week)
   if (stormUsd > 0) {
@@ -60,7 +62,8 @@ export function advance(state: GameState): GameState {
   st.soldUsd += money.soldUsd
   st.gridCreditsUsd += curtailed.creditUsd
   st.hostingFeesUsd += hosting.feesUsd
-  st.powerCostUsd += hosting.powerUsd
+  st.powerCostUsd += hosting.powerUsd + reservationUsd
+  st.reservationUsd += reservationUsd
   for (const [tier, usd] of Object.entries(hosting.marginByTier))
     st.marginByTier[tier] = (st.marginByTier[tier] ?? 0) + usd
   st.rateHikeUsd += rateHikeUsd(s, lots)

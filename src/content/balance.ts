@@ -56,6 +56,30 @@ export const BALANCE = {
     bandwidth: 1,
   },
 
+  /**
+   * Act II regions for Act I sites (owner decision B3). Each tier has a fixed region; the garage
+   * has none and keeps its household path. Tiers listed in premiumTiers pay a small-load premium
+   * over the region: their 2022 power path minus the region's first Act II price, held constant.
+   */
+  act2Regions: {
+    byTier: {
+      small_unit: 'georgia',
+      warehouse: 'georgia',
+      own_site: 'georgia',
+      texas_site: 'ercot',
+    } as Readonly<Record<string, string>>,
+    premiumTiers: ['small_unit', 'warehouse'] as readonly string[],
+  },
+
+  /**
+   * Power reservation on idle and under-construction MW (Act II, owner decision A2): each quarter,
+   * share × the full-load power cost at the site's current power price (MW × 2,190 h × $/kWh × 1,000).
+   */
+  powerReservation: {
+    share: 0.25,
+    hoursPerQuarter: 2190,
+  },
+
   sites: {
     /** Tiers you can build straight away, without scouting first (scope §2.5: "Cash"). */
     noScoutingNeeded: ['small_unit'],

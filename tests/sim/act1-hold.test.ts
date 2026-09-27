@@ -50,13 +50,18 @@ describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
     expect(buyPrice(getModel('s9')!, Q4_2022, 'new')).toBeUndefined()
   })
 
-  it('power prices (sites.json power_path: the 2022 price)', () => {
+  it('power prices: replaced by the region series (owner B3, M3.1); only the garage holds 2022', () => {
     for (const tier of CONTENT.siteTiers) {
       const site = { tier: tier.id, powerPriceMult: 1 } as Site
-      expect(normalPriceUsdKwh(site, Q4_2026)).toBe(
-        normalPriceUsdKwh(site, Q3_2022),
-      )
       expect(normalPriceUsdKwh(site, Q4_2022)).toBeGreaterThan(0)
+      if (tier.id === 'garage')
+        expect(normalPriceUsdKwh(site, Q4_2026)).toBe(
+          normalPriceUsdKwh(site, Q3_2022),
+        )
+      else
+        expect(normalPriceUsdKwh(site, Q4_2026)).not.toBe(
+          normalPriceUsdKwh(site, Q3_2022),
+        )
     }
   })
 

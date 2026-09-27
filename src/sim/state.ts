@@ -42,6 +42,8 @@ export interface Site {
   phases?: number[]
   /** Phased sites: what each phase costs (a share of the site's full build cost). */
   phaseCapexUsd?: number
+  /** Act II region tag (market_quarterly_act2 power columns). Act I sites use their tier's (balance.ts). */
+  region?: string
 }
 
 export type ContractType = 'fixed' | 'index'
@@ -274,6 +276,8 @@ export interface QuarterStats {
   gridCreditsUsd: number
   /** Hosting clients' fees (Act II; counts toward EBITDA; their power is in the power cost). */
   hostingFeesUsd: number
+  /** Act II power reservation on idle and under-construction MW (also in the power cost). */
+  reservationUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
@@ -340,6 +344,8 @@ export interface QuarterReport {
   gridCreditsUsd: number
   /** Hosting clients' fees (Act II). */
   hostingFeesUsd: number
+  /** Act II power reservation on idle and under-construction MW (included in the power cost). */
+  reservationUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
@@ -372,6 +378,7 @@ export function emptyQuarterStats(): QuarterStats {
     soldUsd: 0,
     gridCreditsUsd: 0,
     hostingFeesUsd: 0,
+    reservationUsd: 0,
     rateHikeUsd: 0,
     stormChargeUsd: 0,
     salariesUsd: 0,

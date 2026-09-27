@@ -1046,6 +1046,16 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
 - **M3.0** Data fixes B5 + B6 (docs and game copies, README, a copy test); decisions recorded here.
 - **M3.1** Regions (B3): region tags for Act I sites, Act II normal power prices from the region series (+ premium),
   renewals against them; the power reservation on idle and under-construction MW (A2).
+  **Done.** `balance.ts` › `act2Regions` (tier → region, premium tiers) and `powerReservation` (25%, 2,190 h a quarter);
+  the loader checks the tiers and regions. `sites.ts`: `regionOf(site)` (a site's own `region`, else its tier's;
+  the garage has none), `smallLoadPremiumUsdKwh` (the tier's 2022 path − the region's 2022Q4 price: small unit +6¢,
+  warehouse +3.5¢), and `normalPriceUsdKwh` in Act II = (region price + premium) × the scouting multiplier (Texas's
+  index option keeps its Act I ratio to fixed, 2.8/3.5). Contracts are untouched until their renewal, whose
+  opening now comes from the region. `payReservationWeek` (mwUse.ts): idle + building kW × 2,190/13 h × the site's
+  power price × 25% each week, in the power cost and `reservationUsd` (report line). Decisions (mine, reversible):
+  the scouting multiplier also scales the regional price; the garage pays no reservation (household power); the
+  reservation is spread evenly over the 13 weeks. **Golden change (explained):** `"reservationUsd": 0` added to
+  every report and the quarter totals (233 lines). The 1b "power prices hold 2022" test now says only the garage holds.
 - **M3.2** Hosting client defaults (A1) and re-letting with no conversion cost.
 - **M3.3** Act II ASIC prices from the $/TH tiers and the Antminer S21 (B7).
 - **M3.4** Re-run the M2 sims and compare with scope §5.
