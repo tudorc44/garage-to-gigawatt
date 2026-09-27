@@ -141,6 +141,8 @@ All other rules still apply.
 - **After each sub-step:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes briefly and
   commit on `act2` with the prefix `M<n>.<k>: `. Never push, never force-push, never rewrite history, never commit
   to `main`, never touch `staging/`.
+- **Change files only with the Edit and Write tools,** never with `python3`, `node`, `sed` or heredoc scripts (those
+  need an approval every time and stop batch mode). Use the shell only for `npm`, `git` and read-only commands.
 - **Decide small things yourself:** file layout, naming, extra tests, UI details within the wireframes, and values
   that are already in `docs/alpha-0.2-scope.md` or `docs/act2-content/`. Label each such decision
   **"(mine, reversible)"** in dev-notes.
