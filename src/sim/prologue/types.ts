@@ -47,6 +47,8 @@ export interface PrologueReport {
   soldUsd: number
   netWorthUsd: number
   patience: number | null
+  /** Cards played this quarter and the answer (auto-played ones took their default). */
+  cards: { id: string; choice: string }[]
 }
 
 export interface PrologueState {
@@ -90,6 +92,16 @@ export interface PrologueState {
   stopNext: boolean
   /** Story flags set by cards (read_whitepaper, has_eth …). */
   flags: string[]
+  /** This quarter's cards not played yet (week = the 1-based week they come in). */
+  cardQueue: { id: string; week: number }[]
+  /** Random cards already played (each at most once a game; the wallet-loss card may repeat). */
+  cardsFired: string[]
+  /** Cards that paused the game for a choice, over the prologue (the pacing check, scope §5). */
+  cardsShown: number
+  /** A card slowed your machines until (and including) this absolute week. */
+  slowdown: { mult: number; until: number } | null
+  /** A card asked for a panel in the next Plan phase ('buy:<model>', 'preorders', 'wallet', 'offers'). */
+  openPanel: string | null
   reports: PrologueReport[]
   /** This quarter's running totals. */
   quarter: {
@@ -99,6 +111,7 @@ export interface PrologueState {
     incomeUsd: number
     rentUsd: number
     soldUsd: number
+    cards: { id: string; choice: string }[]
   }
 }
 

@@ -331,6 +331,10 @@ balance → **P3** events, theme, screens → the Prologue report.
 - Pre-orders: the group buy's half unit is its own model (`asic_preorder_group`, half hashrate / power / prices);
   a unit arrives at the start of promised + delay quarters after the order and earns from the next (as Act I); on
   time = 0 delay; a "never" vendor refunds at the end of the very-late range; units with no room wait (sold at handover).
+- Cards (events_prologue.json notes): Act I's engine (35% a quarter, weeks 2–12, once a game); defaults = the passive
+  answer; the dead drive is the wallet-loss roll's card (takes the random slot, may repeat, pauses auto-play); Bitfinex
+  is a roll in its week, separate from its news card; card sales of wallet coins move them to the exchange first.
+  Note: the conference card's quarters (2013Q2, 2014Q2) auto-play, so it takes "skip" unless you stopped there.
 
 ### Prologue progress
 - P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.

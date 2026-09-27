@@ -15,7 +15,11 @@ import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines } from '../systems/machines.ts'
 import { getModel, marketWeek } from '../systems/market.ts'
 import { expireOffers, orderSale } from './custody.ts'
-import { checkPrologueEvents, schedulePrologueEvents } from './events.ts'
+import {
+  checkPrologueEvents,
+  prologueExchangeWeek,
+  schedulePrologueEvents,
+} from './events.ts'
 import { deliverPreorders } from './preorders.ts'
 import {
   P,
@@ -68,6 +72,7 @@ export function prologueWeek(s: GameState): void {
     else p.onExchange[m.coin] = Math.max(0, p.onExchange[m.coin] - m.amount)
   }
   p.moves = p.moves.filter((x) => x.arrives > now)
+  prologueExchangeWeek(s, w)
 
   // 2. Failures (as Act I: annual rate ÷ 52, × 1.5 used). Main stream, like Act I.
   for (const lot of s.machines) {
@@ -92,6 +97,8 @@ export function prologueWeek(s: GameState): void {
     if (!site || s.quarter < site.readyQuarter) continue
     const model = getModel(lot.model)!
     let working = lot.count - lot.failed
+    // A card slowed things down (a rig switched off, an underclocked PC).
+    if (p.slowdown && now <= p.slowdown.until) working *= p.slowdown.mult
     // The household made you cut back: household sites run only up to their threshold.
     const home = householdTier(site.tier)
     if (home && cutBack(s)) {
@@ -158,7 +165,7 @@ export function prologueWeek(s: GameState): void {
   if (blocks > 0)
     logEntry(s, 'log.p0_blocks', { n: blocks, coins: btcCoins }, weekNo)
 
-  checkPrologueEvents(s, w)
+  checkPrologueEvents(s, weekNo)
   s.week++
   if (s.week === WEEKS() && !s.interrupt) prologueEndQuarter(s)
 }
@@ -254,6 +261,7 @@ export function prologueEndQuarter(s: GameState): void {
     soldUsd: p.quarter.soldUsd,
     netWorthUsd: netWorthUsd(s, w),
     patience: p.livingAtHome ? p.patience : null,
+    cards: [...p.quarter.cards],
   })
   p.flags = p.flags.filter((f) => f !== 'planned_now')
   s.phase = s.cash < 0 ? 'gameover' : 'report'
@@ -286,6 +294,7 @@ export function beginPrologueLive(s: GameState): void {
   s.interrupt = null
   s.interruptsThisQuarter = 0
   s.prologue!.quarter = emptyPrologueQuarter()
+  s.prologue!.openPanel = null
   schedulePrologueEvents(s)
 }
 

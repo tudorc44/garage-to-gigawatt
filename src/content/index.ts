@@ -21,6 +21,7 @@ import sitesAct2Raw from './sites_act2.json' with { type: 'json' }
 import rivalsAct2Raw from './rivals_act2.json' with { type: 'json' }
 import machinesPrologueRaw from './machines_prologue.json' with { type: 'json' }
 import prologueRaw from './prologue.json' with { type: 'json' }
+import eventsPrologueRaw from './events_prologue.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
@@ -68,6 +69,8 @@ import {
   rivalsAct2FileSchema,
   machinesPrologueFileSchema,
   prologueFileSchema,
+  eventsPrologueFileSchema,
+  type PrologueCardFile,
   type PrologueRules,
   shocksFileSchema,
   sitesFileSchema,
@@ -393,7 +396,17 @@ export interface Content {
    * The prologue (Alpha 0.3, Act 0): its machine ladder (machines_prologue.json, found by getModel
    * but not in `machines`, so Act I's lists never show them) and its rules (prologue.json).
    */
-  prologue: { machines: Machine[]; rules: PrologueRules }
+  prologue: {
+    machines: Machine[]
+    rules: PrologueRules
+    /** The prologue's 24 cards (events_prologue.json) and its random-card engine. */
+    events: {
+      random_chance_per_quarter: number
+      random_start: string
+      random_week_range: [number, number]
+      cards: PrologueCard[]
+    }
+  }
   /** Community Heat rules (heat.json). */
   heat: HeatRules
   /** The 5 hires and the hiring rules (hires.json). */
@@ -418,6 +431,12 @@ export type EventCard = EventCardRaw & {
   weekIndex?: number
   /** The act whose deck it's in: events.json is Act I's, events_act2.json Act II's. */
   act: 1 | 2
+}
+
+/** A prologue card (events_prologue.json); scripted ones carry their quarter and week index. */
+export type PrologueCard = PrologueCardFile & {
+  quarterIndex?: number
+  weekIndex?: number
 }
 
 /** One act's random-card settings. */
@@ -474,6 +493,7 @@ export interface RawContent {
   rivalsAct2: unknown
   machinesPrologue: unknown
   prologue: unknown
+  eventsPrologue: unknown
   heat: unknown
   shocks: unknown
   hires: unknown
@@ -612,6 +632,11 @@ export function parseContent(raw: RawContent): Content {
     raw.machinesPrologue,
   )
   const prologueFile = check('prologue.json', prologueFileSchema, raw.prologue)
+  const eventsPrologueFile = check(
+    'events_prologue.json',
+    eventsPrologueFileSchema,
+    raw.eventsPrologue,
+  )
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
   const merge = check('merge.json', mergeFileSchema, raw.merge)
@@ -673,6 +698,7 @@ export function parseContent(raw: RawContent): Content {
     !rivalsAct2File ||
     !machinesPrologueFile ||
     !prologueFile ||
+    !eventsPrologueFile ||
     !auction ||
     !curtailment ||
     !heat ||
@@ -1412,6 +1438,30 @@ export function parseContent(raw: RawContent): Content {
     })
   }
 
+  // The prologue's cards: a scripted card's quarter and week as indices (the prologue's quarters
+  // are the negative indices of `quarters`).
+  const prologueQuarterIndex = (label: string) => {
+    for (let q = -1; quarters[q] !== undefined; q--)
+      if (quarters[q] === label) return q
+    return undefined
+  }
+  const prologueEvents = {
+    ...eventsPrologueFile.engine,
+    cards: eventsPrologueFile.cards.map((c): PrologueCard => {
+      if (c.type !== 'scripted') return c
+      const qi = prologueQuarterIndex(c.quarter ?? '')
+      const wi =
+        qi === undefined
+          ? -1
+          : market[qi].findIndex((w) => w.week === c.week_of)
+      if (wi < 0)
+        problems.push(
+          `events_prologue.json › ${c.id}: week ${c.week_of} isn't a week of ${c.quarter}`,
+        )
+      return { ...c, quarterIndex: qi, weekIndex: wi }
+    }),
+  }
+
   if (problems.length > 0) throw new ContentError(problems)
 
   return {
@@ -1471,6 +1521,7 @@ export function parseContent(raw: RawContent): Content {
     prologue: {
       machines: machinesPrologueFile.models,
       rules: prologueFile,
+      events: prologueEvents,
     },
     auction,
     curtailment,
@@ -1662,6 +1713,7 @@ export const CONTENT: Content = parseContent({
   rivalsAct2: rivalsAct2Raw,
   machinesPrologue: machinesPrologueRaw,
   prologue: prologueRaw,
+  eventsPrologue: eventsPrologueRaw,
   heat: heatRaw,
   hires: hiresRaw,
   merge: mergeRaw,

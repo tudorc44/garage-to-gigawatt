@@ -45,6 +45,8 @@ const ID_PARAMS: Record<string, string> = {
   side: 'deal_side.',
   vendor: 'p0.vendor.',
   item: 'p0.vanity.',
+  p0Card: 'p0.event.',
+  p0Choice: 'p0.event.',
 }
 
 function fill(text: string, params: MessageParams): string {

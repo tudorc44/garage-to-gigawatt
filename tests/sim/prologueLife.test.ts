@@ -5,6 +5,7 @@ import { CONTENT, quarterIndex } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { addMachines } from '../../src/sim/systems/machines.ts'
+import { prologueDefaultChoice } from '../../src/sim/prologue/events.ts'
 import { usedOfferPrice } from '../../src/sim/prologue/life.ts'
 import { newPrologueGame } from '../../src/sim/prologue/setup.ts'
 import type { GameState } from '../../src/sim/state.ts'
@@ -31,7 +32,10 @@ function planAt(quarter: string, cash = 50_000): GameState {
 
 function playQuarter(s: GameState): GameState {
   s = ok(s, { type: 'END_PLAN' })
-  while (s.phase === 'live') s = advance(s)
+  while (s.phase === 'live')
+    s = s.interrupt
+      ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: prologueDefaultChoice(s) })
+      : advance(s)
   return s
 }
 

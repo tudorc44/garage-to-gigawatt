@@ -5,6 +5,7 @@ import { quarterIndex } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { openOffers } from '../../src/sim/prologue/custody.ts'
+import { prologueDefaultChoice } from '../../src/sim/prologue/events.ts'
 import { newPrologueGame, sellCapUsdWeek } from '../../src/sim/prologue/setup.ts'
 import { marketWeek } from '../../src/sim/systems/market.ts'
 import type { GameState } from '../../src/sim/state.ts'
@@ -73,7 +74,10 @@ describe('custody (scope §2.7)', () => {
     s = ok(s, { type: 'SET_HODL', coin: 'BTC', pct: 0 })
     s = ok(s, { type: 'P0_SET_POOL', pool: true })
     s = ok(s, { type: 'END_PLAN' })
-    while (s.phase === 'live') s = advance(s)
+    while (s.phase === 'live')
+      s = s.interrupt
+        ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: prologueDefaultChoice(s) })
+        : advance(s)
     const r = s.prologue!.reports.at(-1)!
     expect(r.coinsMined.BTC).toBeGreaterThan(0)
     expect(r.soldUsd).toBeGreaterThan(0)

@@ -4,6 +4,7 @@
 import { useEffect } from 'preact/hooks'
 import { hasText, t, tDynamic } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
+import { prologueCard } from '../../sim/prologue/events.ts'
 import { prologueNews, prologueView } from '../../sim/prologue/views.ts'
 import type { GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
@@ -99,6 +100,18 @@ function PlanP0({ state, act }: PrologueProps) {
     <Page>
       <Header state={state} />
       <h1 class="screen-title">{fmt.quarter(v.quarter)}</h1>
+      {state.prologue!.householdCard && (
+        <Card
+          id="household"
+          choices={['move_out', 'cut_load']}
+          onChoose={(choice) =>
+            act({
+              type: 'P0_HOUSEHOLD',
+              choice: choice as 'move_out' | 'cut_load',
+            })
+          }
+        />
+      )}
       <News state={state} />
       <p class="num-s">{say(v.solo.words)}</p>
       <div>
@@ -114,12 +127,53 @@ function PlanP0({ state, act }: PrologueProps) {
   )
 }
 
-function Live({ state, skip, tick }: PrologueProps) {
+/** A card (Act I's shape): title, story, one button per answer. */
+function Card(props: {
+  id: string
+  choices: string[]
+  onChoose: (choice: string) => void
+}) {
+  const k = `p0.event.${props.id}`
+  return (
+    <div class="panel">
+      <h2 class="screen-title">{tDynamic(`${k}.title`, props.id)}</h2>
+      <p class="pitch">{tDynamic(`${k}.body`, '')}</p>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        {props.choices.map((c) => (
+          <button
+            key={c}
+            type="button"
+            class="btn"
+            onClick={() => props.onChoose(c)}
+          >
+            {tDynamic(`${k}.choice.${c}`, c)}
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function Live({ state, act, skip, tick }: PrologueProps) {
   const v = prologueView(state)
+  const card = state.interrupt?.event
+    ? prologueCard(state.interrupt.event)
+    : null
   // An auto-played quarter runs by itself to its end (a card stops it).
   useEffect(() => {
     if (v.autoPlay && !state.interrupt) skip()
   }, [state.quarter, state.week, state.interrupt, v.autoPlay])
+  if (card)
+    return (
+      <Page>
+        <Header state={state} />
+        <Card
+          id={card.id}
+          choices={card.choices.map((c) => c.id)}
+          onChoose={(choice) => act({ type: 'RESOLVE_INTERRUPT', choice })}
+        />
+      </Page>
+    )
   return (
     <Page>
       <Header state={state} />

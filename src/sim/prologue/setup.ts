@@ -132,6 +132,7 @@ export function emptyPrologueQuarter(): PrologueState['quarter'] {
     incomeUsd: 0,
     rentUsd: 0,
     soldUsd: 0,
+    cards: [],
   }
 }
 
@@ -163,6 +164,11 @@ export function newPrologueGame(seed: number): GameState {
     blocksFound: 0,
     stopNext: false,
     flags: [],
+    cardQueue: [],
+    cardsFired: [],
+    cardsShown: 0,
+    slowdown: null,
+    openPanel: null,
     reports: [],
     quarter: emptyPrologueQuarter(),
   }

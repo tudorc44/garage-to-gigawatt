@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { CONTENT, quarterIndex } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
+import { prologueDefaultChoice } from '../../src/sim/prologue/events.ts'
 import { newPrologueGame } from '../../src/sim/prologue/setup.ts'
 import { restoreSave } from '../../src/sim/save.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
@@ -14,9 +15,16 @@ function ok(s: GameState, a: Action): GameState {
   return r.state
 }
 
-/** Plays the live quarter to its report (no cards yet). */
+/** One week, or the card on screen answered with its default. */
+function step(s: GameState): GameState {
+  return s.interrupt
+    ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: prologueDefaultChoice(s) })
+    : advance(s)
+}
+
+/** Plays the live quarter to its report (cards take their default). */
 function playLive(s: GameState): GameState {
-  while (s.phase === 'live') s = advance(s)
+  while (s.phase === 'live') s = step(s)
   return s
 }
 
@@ -72,7 +80,7 @@ describe('a prologue start (scope §2.3)', () => {
     let s = ok(newPrologueGame(1), { type: 'START_PROLOGUE' })
     while (s.phase !== 'chapter') {
       if (s.phase === 'plan') s = ok(s, { type: 'END_PLAN' })
-      else if (s.phase === 'live') s = advance(s)
+      else if (s.phase === 'live') s = step(s)
       else s = ok(s, { type: 'NEXT_QUARTER' })
     }
     expect(s.quarter).toBe(-1)

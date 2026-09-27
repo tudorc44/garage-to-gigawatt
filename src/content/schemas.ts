@@ -1508,3 +1508,66 @@ export const prologueFileSchema = z.object({
   }),
 })
 export type PrologueRules = z.output<typeof prologueFileSchema>
+
+/** A prologue card's effects (events_prologue.json notes). */
+const prologueEffects = z
+  .object({
+    flag: z.string(),
+    sell: z.object({
+      coin: z.enum(['BTC', 'ETH']),
+      pct: z.number().min(0).max(1),
+      of: z.enum(['exchange', 'treasury']),
+    }),
+    withdraw_all: z.literal(true),
+    open_buy: z.string(),
+    open_preorders: z.literal(true),
+    open_offers: z.literal(true),
+    open_wallet: z.literal(true),
+    preorder: z.string(),
+    cash: z.number(),
+    household_patience: z.number(),
+    slowdown: z.object({
+      mult: z.number().min(0).max(1),
+      weeks: z.number().int().positive(),
+    }),
+    bandwidth_next: z.number().int(),
+    recovery: z.object({ success_p: z.number().min(0).max(1) }),
+    wallet_loss: z.number().min(0).max(1),
+    conference: z.literal(true),
+    gox_collapse: z.object({ withdraw: z.boolean() }),
+  })
+  .partial()
+  .strict()
+
+const prologueCardSchema = z
+  .object({
+    id: z.string(),
+    type: z.enum(['scripted', 'random', 'roll']),
+    quarter: quarterId.optional(),
+    week_of: isoDate.optional(),
+    quarters: z.array(quarterId).optional(),
+    from: quarterId.optional(),
+    requires: z.array(z.string()).optional(),
+    weight: nonNeg.optional(),
+    pauses_autoplay: z.boolean().optional(),
+    default: z.string(),
+    choices: z
+      .array(z.object({ id: z.string(), effects: prologueEffects }))
+      .min(1),
+  })
+  .refine((c) => c.choices.some((x) => x.id === c.default), {
+    message: 'default must be one of the choices',
+  })
+  .refine((c) => c.type !== 'scripted' || (c.quarter && c.week_of), {
+    message: 'a scripted card needs quarter and week_of',
+  })
+
+export const eventsPrologueFileSchema = z.object({
+  engine: z.object({
+    random_chance_per_quarter: z.number().min(0).max(1),
+    random_start: quarterId,
+    random_week_range: z.tuple([z.number().int(), z.number().int()]),
+  }),
+  cards: z.array(prologueCardSchema),
+})
+export type PrologueCardFile = z.output<typeof prologueCardSchema>
