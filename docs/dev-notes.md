@@ -780,11 +780,11 @@ lint + test + build → dev-notes → commit on `act2`; small decisions labelled
 staging:build are denied; npm install and npx ask first).
 
 ### Step 1: the act boundary (no new Act II gameplay), split into 5 parts
-- **1a. Market to 2026Q4 + act spans** — done (27 Sep 2026, not committed yet).
-- **1b. Held Act I values for 2022Q4+** — done (27 Sep 2026, not committed yet); the list is below.
-- **1c. `act` field + save version 2 + migration tests** — done (27 Sep 2026, not committed yet).
-- **1d. The act boundary flow + "Start of Act II" slot** — done (27 Sep 2026, not committed yet).
-- 1e. The Act II intro screen (wireframe A2-02, carry-over summary only) and the chapter report's way into it.
+- **1a. Market to 2026Q4 + act spans** — done, commit `d08b9b9` (on main).
+- **1b. Held Act I values for 2022Q4+** — done, commit `cb475bd` (on main); the list is below.
+- **1c. `act` field + save version 2 + migration tests** — done, commit `d9b0fd4` (on main).
+- **1d. The act boundary flow + "Start of Act II" slot** — done, commit `b50ac83` (on act2).
+- **1e** is done as **M2.0** (below).
 
 **1a, what was built:**
 - `src/content/market_weekly_act2.csv` = `docs/act2-content/market_weekly.csv` (a test checks they're identical);
@@ -885,6 +885,30 @@ fleet earns through Act II: revenue ~$21M (2022Q4) → ~$34–37M (2024Q1, befor
   later); the title screen has no "Start at Act II" (that's the standalone preset, a later step).
 
 
+
+### Milestone M2: Act II market engine + MW by use (batch mode, started 27 Sep 2026)
+
+Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03 / A2-06 / Components
+(https://claude.ai/artifact/LVnSiEH9RRHtU16Ld4C59S), `docs/act2-content/`. Sub-steps:
+- **M2.0** Step 1e: the Act II intro's carry-over summary (A2-02, no head start or lifeline yet), the `campus` era
+  theme from the Act II intro on, a clear "Start of Act II" slot label; dev-notes labels fixed.
+  **Done.** `carryOver(state)` (selectors) feeds `ActIntro.tsx`: sites with energized MW, total energized, cash, debt,
+  treasury (coins + value at 2022Q3's last week), fleet (ASICs, installed TH/s of working units, GPU rigs), founder
+  stake. Title text from A2-02; "Begin Act II →". The "Start of Act II" slot reads "Act II intro · cash …".
+  Decisions: the treasury row isn't in A2-02 but scope 0.2 §2.2 carries it over (mine, reversible); the act name
+  stays "The Pivot and the Boom" (the scope's) rather than A2-02's "Megawatts to AI" (mine, reversible); the
+  `campus` theme starts on the Act II intro (the design system says "switch at the Merge") (mine, reversible).
+- **M2.1** Act II market data in the sim: `market_quarterly_act2` (GPU rental and purchase prices, capex per MW,
+  SOFR, credit and DDTL spreads, cap rates, regional power prices, AI demand index) + `capital_act2.json` loaded,
+  checked and exposed through selectors.
+- **M2.2** Era multiples for Act II: mining and AI-infra series from `capital_act2.json`, interpolated per quarter;
+  Act II valuations use the Act II mining multiple.
+- **M2.3** MW by use per site: mining / hosting / AI shell / AI cloud / building / idle (selector + tests).
+- **M2.4** The hosting unit: mining → hosting on the same site ($0.1M/MW, live next quarter), 4-quarter contracts at
+  the year's all-in rate, fees and power in EBITDA, Heat load, ending a contract; terminal commands.
+- **M2.5** UI: the dashboard's MW-by-use bar, the top bar's rating / backlog placeholders and H100 spot chip, an
+  Act II market strip (A2-03), the MW bar per site, and the hosting dialog.
+- **M2.6** Sim: a hosting-switcher bot and Act II numbers from the sim-runner for the milestone report.
 
 ## Next
 

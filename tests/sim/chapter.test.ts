@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { CONTENT, actLastQuarter } from '../../src/content/index.ts'
 import { playGame } from '../../src/sim/replay.ts'
-import { chapterReport, mergeView } from '../../src/sim/selectors.ts'
+import { carryOver, chapterReport, mergeView } from '../../src/sim/selectors.ts'
+import { applyAction } from '../../src/sim/actions.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 import { runSummaryText } from '../../src/ui/chapter.ts'
 import { BOTS } from '../../tools/bots.ts'
@@ -71,5 +72,24 @@ describe('the chapter report', () => {
     expect(c.title).toBe('Bust')
     expect(c.mergeChoice).toBeNull()
     expect(runSummaryText(state)).toContain('Chapter ends early')
+  })
+})
+
+describe('the Act II intro (wireframe A2-02)', () => {
+  it('summarises what the company carries over into Act II, as it is', () => {
+    const { state } = playGame(2017, BOTS['raise-climb'])
+    const intro = applyAction(state, { type: 'CONTINUE_TO_ACT_2' })
+    if (!intro.ok) throw new Error(intro.error.key)
+    const s = intro.state
+    const c = carryOver(s)
+    expect(c.cashUsd).toBe(s.cash)
+    expect(c.founderStake).toBe(s.founderStake)
+    expect(c.treasury).toEqual(s.treasury)
+    expect(c.sites.map((x) => x.tier)).toEqual(s.sites.map((x) => x.tier))
+    expect(c.energizedKw).toBe(c.sites.reduce((kw, x) => kw + x.energizedKw, 0))
+    expect(c.energizedKw).toBeGreaterThan(0)
+    expect(c.asics + c.gpus).toBe(s.machines.reduce((n, l) => n + l.count, 0))
+    expect(c.btcThs).toBeGreaterThan(0)
+    expect(c.mergeChoice).toBe(CONTENT.merge.botDefault)
   })
 })

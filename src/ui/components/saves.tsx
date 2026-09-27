@@ -33,6 +33,9 @@ export const SaveContext = createContext<SaveApi | null>(null)
 
 /** "Q2 2019 · week 5 · cash $1.2M" */
 export function saveLabel(s: GameState): string {
+  // The "Start of Act II" save sits on the Act II intro, still dated 2022Q3.
+  if (s.phase === 'intro')
+    return t('ui.save.label_act2', { cash: fmt.money(s.cash) })
   return t(s.phase === 'live' ? 'ui.save.label_live' : 'ui.save.label', {
     quarter: fmt.quarter(quarterName(s.quarter)),
     week: s.week + 1,

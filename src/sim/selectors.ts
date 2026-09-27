@@ -29,6 +29,7 @@ import {
 } from './systems/market.ts'
 import {
   collateralUsd,
+  debtUsd,
   equipmentTerms,
   maxEquipmentLoanUsd,
 } from './systems/loans.ts'
@@ -99,6 +100,7 @@ import {
   getTier,
   isReady,
   leavingTerms,
+  poweredKw,
   powerPriceUsdKwh,
   tierIndex,
   topTierIndex,
@@ -857,6 +859,44 @@ function energizedKw(state: GameState): { totalKw: number; usedKw: number } {
     used += usedKw(state, site.id)
   }
   return { totalKw, usedKw: Math.min(used, totalKw) }
+}
+
+/**
+ * The Act II intro (wireframe A2-02): what the company carries over from Act I, as it is
+ * (doc 18 §2.1). Sites with their energized MW, cash, debt, the coin treasury (at the last
+ * week of 2022Q3), the fleet and its installed hashrate (working units), and the founder's stake.
+ */
+export function carryOver(state: GameState) {
+  const q = Math.min(state.quarter, actLastQuarter(1))
+  const w = marketWeek(q, BALANCE.weeksPerQuarter - 1)
+  const sites = state.sites.map((site) => ({
+    id: site.id,
+    tier: site.tier,
+    energizedKw: poweredKw(site, q),
+  }))
+  let asics = 0
+  let gpus = 0
+  let btcThs = 0
+  for (const lot of state.machines) {
+    const model = getModel(lot.model)!
+    if (model.coin === 'BTC') {
+      asics += lot.count
+      btcThs += (lot.count - lot.failed) * model.hashrate
+    } else gpus += lot.count
+  }
+  return {
+    sites,
+    energizedKw: sites.reduce((kw, s) => kw + s.energizedKw, 0),
+    cashUsd: state.cash,
+    debtUsd: debtUsd(state),
+    treasury: state.treasury,
+    treasuryUsd: treasuryValueUsd(state, w),
+    asics,
+    gpus,
+    btcThs,
+    founderStake: state.founderStake,
+    mergeChoice: state.mergeChoice,
+  }
 }
 
 /**
