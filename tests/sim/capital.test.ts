@@ -163,13 +163,13 @@ describe('Series A and IPO / SPAC', () => {
     expect(err(withSite('2021Q3', 'warehouse'), a)).toBe('error.raise_window')
   })
 
-  it('IPO / SPAC: $150M for 15%, only in 2021, needs 20 MW and $5M quarterly EBITDA, 3 Bandwidth', () => {
+  it('IPO / SPAC: $150M for 15%, only in 2021, needs 20 MW and $3M quarterly EBITDA, 3 Bandwidth', () => {
     const ipo: Action = { type: 'RAISE', round: 'ipo_spac' }
-    const s = ok(withSite('2021Q2', 'own_site', 5_000_000), ipo)
+    const s = ok(withSite('2021Q2', 'own_site', 3_000_000), ipo)
     expect(s.cash).toBe(150_010_000)
     expect(s.founderStake).toBeCloseTo(0.85)
     expect(s.bandwidth).toBe(0)
-    expect(err(withSite('2021Q2', 'own_site', 4_999_999), ipo)).toBe(
+    expect(err(withSite('2021Q2', 'own_site', 2_999_999), ipo)).toBe(
       'error.raise_needs_ebitda',
     )
     expect(err(withSite('2021Q2', 'warehouse', 5_000_000), ipo)).toBe(

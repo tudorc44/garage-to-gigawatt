@@ -559,11 +559,12 @@ export const EVENT_EFFECTS = [
 export const EVENT_CONDITIONS = [
   'owns_s9',
   'ipo_eligible',
+  'not_ipo_eligible',
   'spare_mw',
   'has_crypto_loan',
   'machines_30',
   'landlord_site',
-  'pending_asics',
+  'bought_new_asics',
   'heat_70',
   'theft_site',
   'bought_used',
@@ -600,6 +601,8 @@ const eventBase = {
   id: z.string(),
   requires: z.enum(EVENT_CONDITIONS).optional(),
   site: z.enum(EVENT_SITES).optional(),
+  /** When this condition fails, the card shows its news text (body_news) instead of body. */
+  news_unless: z.enum(EVENT_CONDITIONS).optional(),
   default: z.string(),
   choices: z.array(eventChoiceSchema).min(2),
 }
@@ -623,6 +626,12 @@ export const eventSchema = z
       defer_if_cap_full: z.boolean().optional(),
       /** Only in these quarters (the tax_quarter trigger). */
       quarters: z.array(quarterId).optional(),
+      /** Only from the first to the last of these quarters. */
+      window: z.tuple([quarterId, quarterId]).optional(),
+      /** The theft_site condition: a site needs at least this many units. */
+      min_units: z.number().int().min(1).optional(),
+      /** The card's weight is multiplied by this when its site is the garage. */
+      garage_weight_mult: nonNeg.optional(),
     }),
   ])
   .refine((e) => e.choices.some((c) => c.id === e.default), {

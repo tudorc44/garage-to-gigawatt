@@ -3,13 +3,17 @@ import { CONTENT } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { interruptChoices, machineMarket } from '../../src/sim/selectors.ts'
-import { newGame, type GameState } from '../../src/sim/state.ts'
+import { logEntry, newGame, type GameState } from '../../src/sim/state.ts'
 import { bandwidthForQuarter } from '../../src/sim/systems/bandwidth.ts'
 import { raiseBandwidth, getStep } from '../../src/sim/systems/capital.ts'
 import { signContract } from '../../src/sim/systems/contracts.ts'
 import { marginLevels } from '../../src/sim/systems/cryptoLoan.ts'
 import { modifierMult } from '../../src/sim/systems/eventEffects.ts'
-import { scheduleEvents } from '../../src/sim/systems/events.ts'
+import {
+  eventBodyKey,
+  eventChoices,
+  scheduleEvents,
+} from '../../src/sim/systems/events.ts'
 import { underMoratorium } from '../../src/sim/systems/heat.ts'
 import { startNextQuarter } from '../../src/sim/systems/quarter.ts'
 import { powerPriceUsdKwh } from '../../src/sim/systems/sites.ts'
@@ -276,7 +280,7 @@ describe('event cards (events.json)', () => {
   })
 
   it('spac_mania "roadshow": the IPO costs 2 Bandwidth for the rest of 2021', () => {
-    const s = choose(onCard('spac_mania_2021', '2021Q1'), 'roadshow')
+    const s = choose(ipoReady(onCard('spac_mania_2021', '2021Q1')), 'roadshow')
     const ipo = getStep('ipo_spac')!
     expect(raiseBandwidth(ipo, s)).toBe(2)
     expect(raiseBandwidth(ipo, { ...s, quarter: q('2022Q1') })).toBe(3)
@@ -289,5 +293,201 @@ describe('event cards (events.json)', () => {
     )
     expect(s.cash).toBe(485_000)
     expect(s.founderStake).toBeCloseTo(0.92)
+  })
+
+  it('spac_mania always comes in 2021Q1: the roadshow if you qualify, news only if not', () => {
+    const plain = { ...newGame(1), quarter: q('2021Q1') }
+    scheduleEvents(plain)
+    expect(plain.events.queue.map((e) => e.id)).toContain('spac_mania_2021')
+    const news = onCard('spac_mania_2021', '2021Q1')
+    expect(eventChoices(news)).toEqual(['ok'])
+    expect(eventBodyKey(news)).toBe('body_news')
+    const offer = ipoReady(onCard('spac_mania_2021', '2021Q1'))
+    expect(eventChoices(offer)).toEqual(['roadshow', 'private'])
+    expect(eventBodyKey(offer)).toBe('body')
+  })
+})
+
+/** Only `id` is left to fire among the random cards, so eligibleQuarters says if it could. */
+function eligibleFor(id: string, s: GameState): boolean {
+  s.events.fired = CONTENT.events.cards
+    .filter((c) => c.type === 'random' && c.id !== id)
+    .map((c) => c.id)
+  const before = s.events.eligibleQuarters
+  scheduleEvents(s)
+  return (
+    s.events.eligibleQuarters > before ||
+    s.events.queue.some((e) => e.id === id)
+  )
+}
+
+/** A powered 20 MW site and last quarter's EBITDA at the IPO bar. */
+function ipoReady(s: GameState): GameState {
+  return {
+    ...s,
+    sites: [
+      ...s.sites,
+      {
+        id: 'site-9',
+        tier: 'own_site',
+        readyQuarter: 0,
+        rentUsdQ: 0,
+        powerPriceMult: 1,
+        flaw: null,
+      },
+    ],
+    reports: [{ ebitdaUsd: 3_000_000 } as GameState['reports'][number]],
+  }
+}
+
+describe('balance pass: card triggers (design thread D1–D4)', () => {
+  it('rig_theft: from 2018Q1, only at a garage or small unit with 6+ units', () => {
+    const at = (label: string, units: number) =>
+      eligibleFor('rig_theft', {
+        ...newGame(1),
+        quarter: q(label),
+        machines: [rigs(units)],
+      })
+    expect(at('2017Q4', 8)).toBe(false)
+    expect(at('2018Q1', 5)).toBe(false)
+    expect(at('2018Q1', 6)).toBe(true)
+  })
+
+  it('rig_theft is half as likely at the garage as at a small unit', () => {
+    // rig_theft and friend_wants_money (weight 1, F&F in a winter quarter) are the only candidates.
+    const share = (siteId: string) => {
+      let theft = 0
+      let cards = 0
+      for (let seed = 1; seed <= 600; seed++) {
+        const s: GameState = {
+          ...newGame(seed),
+          quarter: q('2018Q2'),
+          raisesDone: ['friends_family'],
+          machines: [rigs(10, siteId)],
+        }
+        s.sites = [
+          ...s.sites,
+          {
+            id: 'site-2',
+            tier: 'small_unit',
+            readyQuarter: 0,
+            rentUsdQ: 0,
+            powerPriceMult: 1,
+            flaw: null,
+          },
+        ]
+        s.events.fired = CONTENT.events.cards
+          .filter(
+            (c) =>
+              c.type === 'random' &&
+              !['rig_theft', 'friend_wants_money'].includes(c.id),
+          )
+          .map((c) => c.id)
+        scheduleEvents(s)
+        const e = s.events.queue.find((x) => x.random)
+        if (!e) continue
+        cards++
+        if (e.id === 'rig_theft') theft++
+      }
+      return theft / cards
+    }
+    // Weight 0.5 vs 1 → about 1/3 of the cards at the garage, 1/2 at the small unit.
+    expect(share('site-1')).toBeGreaterThan(0.25)
+    expect(share('site-1')).toBeLessThan(0.42)
+    expect(share('site-2')).toBeGreaterThan(0.42)
+    expect(share('site-2')).toBeLessThan(0.58)
+  })
+
+  /** A quarter whose Plan phase bought 100 S9s for $100K (they arrive next quarter). */
+  function boughtAsics(label: string, condition: 'new' | 'used' = 'new') {
+    const s: GameState = {
+      ...newGame(1),
+      quarter: q(label),
+      machines: [
+        {
+          ...rigs(100, 'site-1', 's9'),
+          condition,
+          earnsFromQuarter: q(label) + 1,
+        },
+      ],
+    }
+    logEntry(s, 'log.bought', {
+      count: 100,
+      model: 's9',
+      condition,
+      costUsd: 100_000,
+    })
+    return s
+  }
+
+  it('section301_tariff: 2018Q3–2019Q4, in a quarter that bought new ASICs', () => {
+    expect(eligibleFor('section301_tariff', boughtAsics('2018Q2'))).toBe(false)
+    expect(eligibleFor('section301_tariff', boughtAsics('2018Q3'))).toBe(true)
+    expect(eligibleFor('section301_tariff', boughtAsics('2019Q4'))).toBe(true)
+    expect(eligibleFor('section301_tariff', boughtAsics('2020Q1'))).toBe(false)
+    expect(
+      eligibleFor('section301_tariff', boughtAsics('2019Q1', 'used')),
+    ).toBe(false)
+  })
+
+  it('section301_tariff: "pay" is 25% of the new-ASIC spend; "wait" delivers a quarter late', () => {
+    const card = (s: GameState): GameState => ({
+      ...s,
+      phase: 'live',
+      week: 6,
+      cash: 500_000,
+      interrupt: {
+        id: 'event',
+        event: 'section301_tariff',
+        week: 5,
+        coin: 'BTC',
+        changePct: 0,
+      },
+    })
+    const paid = choose(card(boughtAsics('2019Q1')), 'pay')
+    expect(paid.cash).toBe(475_000)
+    expect(paid.machines[0].earnsFromQuarter).toBe(q('2019Q2'))
+    const waited = choose(card(boughtAsics('2019Q1')), 'wait')
+    expect(waited.cash).toBe(500_000)
+    expect(waited.machines[0].earnsFromQuarter).toBe(q('2019Q3'))
+  })
+
+  it('flaw-bound cards fire when their condition is forced (landlord sale, rate class, Heat 70)', () => {
+    const withSite = (flaw: string | null, label: string, readyAt: string) => {
+      const s: GameState = { ...newGame(1), quarter: q(label) }
+      s.sites = [
+        ...s.sites,
+        {
+          id: 'site-2',
+          tier: 'warehouse',
+          readyQuarter: q(readyAt),
+          rentUsdQ: 30_000,
+          powerPriceMult: 1,
+          flaw,
+        },
+      ]
+      return s
+    }
+    expect(
+      eligibleFor(
+        'landlord_eviction',
+        withSite('landlord_sale', '2019Q1', '2018Q3'),
+      ),
+    ).toBe(true)
+    expect(
+      eligibleFor('landlord_eviction', withSite(null, '2019Q1', '2018Q3')),
+    ).toBe(false)
+    const hike = withSite('rate_class', '2019Q3', '2018Q3')
+    scheduleEvents(hike)
+    expect(hike.events.queue.map((e) => e.id)).toContain('utility_rate_hike')
+    const hot = withSite(null, '2021Q3', '2019Q3')
+    hot.siteHeat = {
+      ...hot.siteHeat,
+      'site-2': { ...hot.siteHeat['site-1'], value: 72 },
+    }
+    scheduleEvents(hot)
+    expect(hot.events.queue.find((e) => e.id === 'moratorium')?.siteId).toBe(
+      'site-2',
+    )
   })
 })

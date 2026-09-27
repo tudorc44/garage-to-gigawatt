@@ -56,6 +56,7 @@ import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
 import { rushRepairUsd } from './systems/failureWave.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
+import { eventBodyKey } from './systems/events.ts'
 import {
   activeRivals,
   rivalSnapshot,
@@ -965,6 +966,8 @@ export function eventCardView(state: GameState) {
   return {
     id: alert.event,
     type: CONTENT.events.byId[alert.event]?.type ?? 'random',
+    /** The card's text: its story, or its news version (events.json news_unless). */
+    bodyKey: eventBodyKey(state),
     week: alert.week,
     siteTier: state.sites.find((x) => x.id === alert.siteId)?.tier ?? null,
     choices: availableChoices(state).map((id) => {

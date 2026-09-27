@@ -22,6 +22,7 @@ import {
   underMoratorium,
 } from '../src/sim/systems/heat.ts'
 import { defaultChoice } from '../src/sim/systems/interrupts.ts'
+import { eventBodyKey } from '../src/sim/systems/events.ts'
 import { walkawayEndsRound } from '../src/sim/systems/pitch.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import {
@@ -549,7 +550,7 @@ async function answerInterrupt(s: GameState): Promise<GameState> {
   } else if (alert.id === 'event') {
     say('play.event', {
       title: tDynamic(`event.${alert.event}.title`, ''),
-      body: tDynamic(`event.${alert.event}.body`, ''),
+      body: tDynamic(`event.${alert.event}.${eventBodyKey(s)}`, ''),
     })
   } else if (alert.id === 'margin_warning') {
     say('play.margin_warning', {

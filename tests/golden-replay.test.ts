@@ -339,8 +339,6 @@ describe('balance anchors (scope §5)', () => {
     expect(state.reports.at(-1)!.quarter.startsWith('2018')).toBe(true)
   })
 
-  // Can't be tested yet: with only savings to spend, the 5 kW garage caps growth, so an
-  // all-in bot never over-extends. Needs loans/investors (week 4) and the sim-runner.
   it('the auction bidder loses its 2019Q1 bid and wins the 2020Q2 lot', () => {
     const { state } = playGame(SEED, bots['auction-bidder'])
     const keys = state.log.map((e) => e.key)
@@ -351,5 +349,34 @@ describe('balance anchors (scope §5)', () => {
     )
   })
 
-  it.todo('reinvesting 100% every quarter goes bust between 2018Q2 and 2019Q2')
+  // "Reinvesting 100%" = take the F&F money and build the small unit (design thread B1): the
+  // sim-runner's ff-climb bot. Target: 80%+ of runs bust, in 2018Q2–2019Q2.
+  it('reinvesting 100% every quarter goes bust between 2018Q2 and 2019Q2', () => {
+    const quarters = Array.from(
+      { length: 20 },
+      (_, i) => playGame(i + 1, BOTS['ff-climb']).state,
+    )
+      .filter((s) => s.phase === 'gameover')
+      .map((s) => s.reports.at(-1)!.quarter)
+    expect(quarters.length).toBeGreaterThanOrEqual(16)
+    for (const q of quarters) {
+      expect(q >= '2018Q2' && q <= '2019Q2').toBe(true)
+    }
+  })
+
+  // The seed round is the lesson "raise before the winter" (design thread B2): reinvesting with
+  // the seed money hurts in 2018–19 (cash below half the seed) but doesn't go bust.
+  it('the seed cushions the crash: cash dips below half the seed in 2018–19, no bust', () => {
+    const seedUsd = CONTENT.ladder.seed.amount_usd
+    for (let seed = 1; seed <= 5; seed++) {
+      const { state } = playGame(seed, BOTS['raise-climb'])
+      expect(state.phase).toBe('ended')
+      const floor = Math.min(
+        ...state.reports
+          .filter((r) => r.quarter >= '2018Q1' && r.quarter <= '2019Q4')
+          .map((r) => r.cash),
+      )
+      expect(floor).toBeLessThan(seedUsd * 0.5)
+    }
+  })
 })

@@ -223,11 +223,12 @@
    "type": "scripted",
    "quarter": "2021Q1",
    "week_of": "2021-03-08",
-   "requires": "ipo_eligible",
+   "news_unless": "ipo_eligible",
    "default": "private",
    "choices": [
     {
      "id": "roadshow",
+     "requires": "ipo_eligible",
      "effects": {
       "ipo_bandwidth": {
        "bw": 2,
@@ -237,6 +238,12 @@
     },
     {
      "id": "private",
+     "requires": "ipo_eligible",
+     "effects": {}
+    },
+    {
+     "id": "ok",
+     "requires": "not_ipo_eligible",
      "effects": {}
     }
    ],
@@ -378,7 +385,11 @@
   {
    "id": "section301_tariff",
    "type": "random",
-   "trigger": "pending_asics",
+   "trigger": "bought_new_asics",
+   "window": [
+    "2018Q3",
+    "2019Q4"
+   ],
    "weight": 1.0,
    "default": "wait",
    "choices": [
@@ -429,7 +440,13 @@
    "id": "rig_theft",
    "type": "random",
    "trigger": "theft_site",
+   "window": [
+    "2018Q1",
+    "2022Q3"
+   ],
+   "min_units": 6,
    "weight": 1.0,
+   "garage_weight_mult": 0.5,
    "site": "theft_site",
    "default": "loss",
    "choices": [

@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 26 Sep 2026, with the event cards, the failure wave, the left-nav screens + Settings, and sound.
+Last updated: 27 Sep 2026, with the balance pass (design thread A–F).
 
 ## How the owner works
 
@@ -68,7 +68,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 323 passing + 1 to-do.
+   heat-climber, negotiator, pitcher) and unit tests: 334 passing.
 8. **GitHub Pages** (https://tudorc44.github.io/garage-to-gigawatt/): `.github/workflows/deploy-pages.yml`
    runs the tests, builds, and publishes `dist/` on every push to `main` (or by hand from the Actions
    tab). Needs the repository's Settings → Pages → Source set to "GitHub Actions" (once). Vite's
@@ -153,7 +153,7 @@ ask first).
   while the negotiation mini-game isn't built.
 - Series A: 2 Bandwidth, +$8M for 20% ($32M pre-money), open 2019Q1–2021Q2, once, needs a powered site of
   at least 1 MW usable capacity. IPO / SPAC: 3 Bandwidth, +$150M for 15%, open 2021Q1–2021Q4, once, needs
-  a powered 20 MW site and at least $5M EBITDA in the last quarter report. Both from `capital.json`, taken
+  a powered 20 MW site and at least $3M EBITDA in the last quarter report (was $5M; balance pass). Both from `capital.json`, taken
   as fixed offers like the seed round. **Not yet confirmed by the owner.**
 - **Sound** (scope §2.13, docs/audio; the owner approved installing `zzfx`, MIT, 1.3.2):
   `docs/audio/sounds.ts` and `sfx.ts` moved to `src/ui/audio/` (as CLAUDE.md said; `audio-notes.md`
@@ -434,7 +434,71 @@ ask first).
   - The pre-selected answer is the first one possible of: post → pay cash → sell machines → default.
   - Loans taken before 2022Q2 carry on after the window closes; only new ones stop.
 
+## Balance pass (design thread, 27 Sep 2026)
+
+**Changes** (only these; the price paths, machines, site ladder, scripted dates and the Heat /
+negotiation / Uri rules were not touched, per F2):
+- `capital.json` › era_multiple_ev_ebitda, 2021 only: Q1 25→35, Q2 16→22, Q3 15→22, Q4 14→25, then
+  **→30 by the thread's fallback rule** (the great path stayed under $1.5B). 2017–2020 and 2022 unchanged.
+  The formula is unchanged (EBITDA × 4, floored at 0, × multiple + cash + coins − debt).
+- IPO bar: $5M → **$3M** quarterly EBITDA.
+- rig_theft: from 2018Q1, sites with 6+ units (`min_units`), weight × 0.5 at the garage
+  (`garage_weight_mult`), via a new random-card `window`.
+- section301_tariff: 2018Q3–2019Q4, any quarter whose Plan phase bought new ASICs (trigger
+  `bought_new_asics`). Pay = 25% of that quarter's new-ASIC spend; wait = undelivered new ASICs arrive a
+  quarter later.
+- spac_mania_2021 always fires in 2021Q1: the roadshow offer if IPO-eligible, else a news-only card
+  (`news_unless`, text `body_news`, one "Keep building" answer).
+- Bots: the raise-* bots are the **good path** (F&F, seed, Series A; they climb no higher than the 20 MW own
+  site; no IPO). New: **texas-ipo** (the great path: + IPO, then Texas; scouts ahead; fills with the most
+  profit per kW once it has the cash; equipment loans up to 50% of the machines' value), **stop-2022** (no
+  buying, repairs or building from 2022Q1), and the measurement bot **texas-ipo-upgrade** (texas-ipo that
+  also sells old machines for ones making 2× the profit per kW). Bots skip sites under a moratorium.
+- Sim report: the valuation split (ops / cash / coins / debt) at the peak and at the Merge, drawdown, idle
+  share at the Merge, IPO/Texas runs, the seed cash floor.
+- Tests: the reinvest-bust anchor (ff-climb, 20 seeds: 16+ bust, all in 2018Q2–2019Q2), the seed cash
+  floor, rig_theft/tariff/SPAC triggers, and controlled tests that force the landlord-sale flaw, the
+  rate-class flaw and Heat 70. Scope §5 updated with the new anchors.
+
+**Report** (50 seeds per bot, default answers):
+
+| Check | Target | Result |
+|---|---|---|
+| ff-climb bust | ≥ 80%, 2018Q2–2019Q2 | ✓ 100%: 2018Q4 ×7, 2019Q1 ×43 |
+| Seed cash floor (raise-climb) | < 50% of the seed in 2018–19, no bust | ✓ median 38%, 50/50 runs under 50%, 0 busts |
+| Garage $/day (Gen 1, Q4 2017) | $7–8 | ✓ unchanged ($7–8.5 test; loses money in Q4 2018) |
+| Good peak (raise-*) | $400–700M | ✓ $485–515M median, but in **2021Q4**, not 2021Q1 |
+| Great peak (texas-ipo) | $1.5–2.5B | ✗ **$669M** (2021Q4), even after the 30× fallback |
+| Drawdown (good path) | −85% to −95% | ✗ **−97%** (was −96% before the fallback) |
+| Idle share at the Merge | 30%+ of good runs with 10%+ idle | ✓ 50/50 runs, median **100%** idle |
+| Cautious card impact | within ±15% | ✓ $41.3K vs $41.5K without cards (−0.5%); no 0.25 garage weight needed |
+| Card frequencies | 15–70% of runs (theft 30–60%) | rig_theft 61% (target 30–60%, 1 point over), farm_fire 59%, used_rig_scam 54%, heat_wave 46%, friend 59%, tax 58%; flaw-bound landlord 10%, moratorium 11%, rate hike 17% (accepted as rare, controlled tests pass); **section301_tariff 0%** (no bot buys new ASICs in 2018Q3–2019Q4; the controlled test passes); spac_mania 88% (= every run alive in 2021) |
+
+**What the numbers say:**
+- **Where the value is.** The good path's peak is almost all operations ($481M ops + $13M cash + no
+  coins, raise-climb). At the Merge its operations are worth $0 and its value is its ~$15M of cash: that
+  is the −97%. Per F4-amended, this is reported, not tuned.
+- **Why the great path misses.** The first quarter with $3M+ EBITDA is 2021Q1, so the IPO comes in 2021Q2
+  at the earliest (43/50 runs take it). Texas takes a quarter to scout (texas-ipo scouts ahead) and 3 to
+  build, so it is ready in 2022, after the 2021 peak and when multiples are 9× → 4×. At the peak, texas-ipo
+  is $538M of operations plus ~$131M of unspent IPO cash.
+- **The fleet is the real lever.** The raise bots fill the 20 MW site with S9s in 2019–20 and never
+  replace them (S19 Pro: 3.3× the hashrate per kW). texas-ipo-upgrade, which swaps old machines for the
+  most profit per kW once the IPO money arrives, turns the 20 MW site into GPU Gen 2 rigs in 2021Q2–Q3
+  (ETH mining paid ~3× an ASIC per kW in 2021) and peaks at **$6.2B** (2021Q4, EBITDA ~$50M a quarter), then
+  −96% by the Merge (the Merge ends GPU mining). So the $1.5–2.5B band sits between "never upgrade" and
+  "upgrade everything".
+- **Idle MW is 100%, not "some".** In the last week of 2022Q3 the hashprice is $0.079/TH/day, below an
+  S9's power cost at every site, so every S9 switches itself off; ETH revenue is 0 after the Merge. The
+  target passes, but "some runs" became "every run".
+- **Other:** the raise bots now peak in 2021Q4, not 2021Q1: their EBITDA keeps growing through 2021, and
+  25–30× on ~$4M/quarter beats 35× on ~$3M. The seed-2017 golden for raise-climb/-negotiate/-pitch changed
+  path (rig theft now shifts the random numbers): it scouts a warehouse with the undersized-transformer
+  flaw, stays under 1 MW and never qualifies for Series A (end value $16.8M → $0.76M). A legitimate outcome.
+
 ## Balance findings (from `npm run sim`, 50 seeds per bot)
+
+*(Before the balance pass; kept for history. The table's numbers are from 26 Sep 2026.)*
 
 | Bot | What it does | Bust rate | Median end value |
 |---|---|---|---|
@@ -511,28 +575,24 @@ ask first).
 
 ## Open questions for the design thread
 
-- **Event-card sim checks** (50 seeds, default answers; targets from the design thread E2):
-  - Random card in 30–40% of eligible quarters: 34–37% for most bots, 28–29% for the garage-only ones ✓
-    (roughly). Never 2 in a quarter ✓. Scripted cards fire in every run where they can ✓.
-  - Bankruptcy within ±3 runs: ✓ after one change. With rig_theft as written (4 units), the garage-only
-    reinvest bot went bust in 16/50 runs (was 0). Weights didn't help (theft is often the only eligible
-    card for a garage player), so, following the tuning order, the card's cost changed: thieves take a
-    quarter of that site's units (1 to 4). Busts are then back to the old numbers exactly.
-  - Median end value within ±15%: ✓ for every bot except "cautious" (−20%, $41.5K → $33.4K).
-  - Each random card in 15–70% of runs: ✗ for five cards, none of it fixable by chance or weights —
-    rig_theft 97% (nearly every garage has 4+ units, and it's often the only card a garage player can
-    get); section301_tariff 0% (needs new ASICs still in delivery; the bots buy used); landlord_eviction
-    8%, utility_rate_hike 16%, moratorium 10% (need a landlord_sale / rate_class flaw, or Heat 70).
-    Options: narrow theft (e.g. only 2018+, or only small units), accept flaw-bound cards as rare, and
-    judge the tariff card in a controlled test. Needs a design-thread decision.
-
+- **Balance pass follow-ups** (numbers in "Balance pass" above):
+  - The great path misses $1.5–2.5B ($669M): Texas can't be ready before 2022. Options: count the fleet
+    upgrade as part of the great path (but upgrading everything gives $6.2B: the GPU Gen 2 swap may need a
+    limit), allow Texas to be built earlier (e.g. a pre-IPO build with a loan), or accept a lower target.
+  - Good-path drawdown −97% (target −85 to −95): operations are worth $0 at the Merge (every S9 off), so the
+    value is cash. Accept, or should the good path keep some profitable machines to the end?
+  - Idle share is 100% in every run: accept, or should "some runs" mean a narrower band?
+  - The good path peaks in 2021Q4, not 2021Q1 as expected. Fine?
+  - rig_theft 61% (target 30–60%): accept, or trim its weight?
+  - section301_tariff 0% in the sim (no bot buys new ASICs in 2018Q3–2019Q4): accept as a player-only card?
+  - A scouted warehouse with the undersized-transformer flaw (under 1 MW) blocks Series A for the whole
+    game, and the flaw's upgrade isn't built. Intended?
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
 - Confirm the equipment loan rules above (one at a time, weekly payments, no covenant).
 - Confirm the crypto loan rules above, especially the extra "pay down with cash" margin-call answer.
-- Series A and the IPO taken as fixed offers from `capital.json`: fine until negotiation exists? The IPO's
-  $5M EBITDA bar is just out of reach for a bot that fills one 20 MW site. Intended, or lower it?
+- Series A and the IPO taken as fixed offers from `capital.json`: fine until negotiation exists?
 - Auctions as a Plan-phase action (not a mid-quarter interrupt): OK? And the lot sizes (50–500 units)
   mostly need a warehouse, so small-unit players rarely have room.
 - Curtailment: "keep mining" now costs grievance +5 at Texas (Heat). Curtailing still always pays more
@@ -548,10 +608,10 @@ ask first).
 
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
 save/load, the 20 event cards, the failure wave, the left-nav screens + Settings, and sound. Every item
-in the scope's build list now exists. Next: a balance pass against the exit checklist (scope §5), which
-needs the design thread (the best bot peaks at ~$310M vs the $1.5–2.5B target; the all-in reinvest
-bust; the event-card questions above), then playtests. Small follow-ups: an ear test of the sounds;
-the build's main JS chunk is just over Vite's 500 KB warning (card text; split it later); CLAUDE.md
-still says `src/platform/` doesn't exist and that sound lives in `docs/audio/` (owner's file: flag, don't
-edit). Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA ×
-trailing EBITDA, clamped to ±30% of the capital.json terms).
+in the scope's build list now exists. 27 Sep 2026: the balance pass (see "Balance pass" above). Next:
+take the balance-pass follow-ups in the open questions back to the design thread (above all the great
+path's $669M vs $1.5–2.5B), then playtests. Small follow-ups: an ear test of the sounds; the build's main
+JS chunk is just over Vite's 500 KB warning (card text; split it later); CLAUDE.md still says
+`src/platform/` doesn't exist and that sound lives in `docs/audio/` (owner's file: flag, don't edit).
+Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing
+EBITDA, clamped to ±30% of the capital.json terms).

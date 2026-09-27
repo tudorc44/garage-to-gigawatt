@@ -12,9 +12,9 @@ describe('valuation (review A5)', () => {
   })
 
   it('run-rate EBITDA × era multiple + cash + treasury', () => {
-    // 2021Q3 multiple is 15×: $1M a quarter → $4M a year → $60M, plus $5M cash and $2M coins.
+    // 2021Q3 multiple is 22×: $1M a quarter → $4M a year → $88M, plus $5M cash and $2M coins.
     expect(valuationUsd(q('2021Q3'), 1_000_000, 5_000_000, 2_000_000)).toBe(
-      67_000_000,
+      95_000_000,
     )
     // The same business is worth far less in 2022Q3 (4×).
     expect(valuationUsd(q('2022Q3'), 1_000_000, 0, 0)).toBe(16_000_000)

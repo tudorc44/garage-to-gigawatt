@@ -801,7 +801,7 @@ function EventCard({ state, act }: ScreenProps) {
         <h2 class="event-title" id="card-title">
           {text('title')}
         </h2>
-        <p class="event-body">{text('body')}</p>
+        <p class="event-body">{text(v.bodyKey)}</p>
         {v.choices.map((c) => (
           <button
             key={c.id}

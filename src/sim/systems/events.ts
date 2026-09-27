@@ -51,14 +51,26 @@ export function spareKw(state: GameState): number {
     .reduce((kw, s) => kw + Math.max(0, capacityKw(s) - usedKw(state, s.id)), 0)
 }
 
-/** New BTC machines bought but not delivered yet (they arrive in a later quarter). */
-function pendingAsics(state: GameState) {
+const isNewAsic = (l: { condition?: unknown; model?: unknown }) =>
+  l.condition === 'new' && getModel(String(l.model))?.coin === 'BTC'
+
+/** New BTC machines that don't earn yet (bought this quarter, or still in delivery). */
+function undeliveredAsics(state: GameState) {
   return state.machines.filter(
-    (l) =>
-      l.condition === 'new' &&
-      getModel(l.model)!.coin === 'BTC' &&
-      l.earnsFromQuarter - 1 > state.quarter,
+    (l) => isNewAsic(l) && l.earnsFromQuarter > state.quarter,
   )
+}
+
+/** What this quarter's Plan phase spent on new BTC machines. */
+function newAsicSpendUsd(state: GameState): number {
+  return state.log
+    .filter(
+      (e) =>
+        e.quarter === state.quarter &&
+        e.key === 'log.bought' &&
+        isNewAsic(e.params ?? {}),
+    )
+    .reduce((sum, e) => sum + Number(e.params?.costUsd ?? 0), 0)
 }
 
 const landlordSite = (s: GameState) =>
@@ -80,13 +92,22 @@ const moratoriumSite = (s: GameState) =>
   [...s.sites]
     .sort((a, b) => siteHeatValue(s, b.id) - siteHeatValue(s, a.id))
     .find((x) => siteHeatValue(s, x.id) >= CONTENT.heat.moratoriumAt)
-const theftSite = (s: GameState) =>
-  s.events.flags.includes('security')
+const theftSite = (s: GameState) => {
+  const card = getCard('rig_theft')
+  const minUnits = (card?.type === 'random' && card.min_units) || 4
+  return s.events.flags.includes('security')
     ? undefined
     : s.sites
         .filter((x) => ['garage', 'small_unit'].includes(x.tier))
         .sort((a, b) => units(s, b.id) - units(s, a.id))
-        .find((x) => units(s, x.id) >= 4)
+        .find((x) => units(s, x.id) >= minUnits)
+}
+const ipoEligible = (s: GameState) => {
+  const step = getStep('ipo_spac')
+  if (!step || s.raisesDone.includes('ipo_spac')) return false
+  const [from, to] = step.window
+  return label(s) >= from && label(s) <= to && !unmetRequirement(s, step)
+}
 const mostMachines = (s: GameState) =>
   [...s.sites].sort((a, b) => units(s, b.id) - units(s, a.id))[0]
 /** Sites of 1 MW and more (warehouse tier and up) that are powered. */
@@ -98,17 +119,13 @@ const bigSites = (s: GameState) =>
 const CONDITIONS: Record<string, (s: GameState, card?: EventCard) => boolean> =
   {
     owns_s9: (s) => s.machines.some((l) => l.model === 's9'),
-    ipo_eligible: (s) => {
-      const step = getStep('ipo_spac')
-      if (!step || s.raisesDone.includes('ipo_spac')) return false
-      const [from, to] = step.window
-      return label(s) >= from && label(s) <= to && !unmetRequirement(s, step)
-    },
+    ipo_eligible: ipoEligible,
+    not_ipo_eligible: (s) => !ipoEligible(s),
     spare_mw: (s) => spareKw(s) >= 1000,
     has_crypto_loan: (s) => s.cryptoLoan !== null,
     machines_30: (s) => units(s) >= 30,
     landlord_site: (s) => landlordSite(s) !== undefined,
-    pending_asics: (s) => label(s) >= '2018Q3' && pendingAsics(s).length > 0,
+    bought_new_asics: (s) => newAsicSpendUsd(s) > 0,
     heat_70: (s) => moratoriumSite(s) !== undefined,
     theft_site: (s) => theftSite(s) !== undefined,
     bought_used: (s) =>
@@ -138,6 +155,31 @@ const SITES: Record<string, (s: GameState) => Site | undefined> = {
 
 function holds(state: GameState, cond: string | undefined, card?: EventCard) {
   return !cond || CONDITIONS[cond](state, card)
+}
+
+/** A random card's own quarter window (events.json `window`), if it has one. */
+function inWindow(state: GameState, card: EventCard): boolean {
+  if (card.type !== 'random' || !card.window) return true
+  const [from, to] = card.window
+  return label(state) >= from && label(state) <= to
+}
+
+/** A random card's weight now: garage_weight_mult applies when its site is the garage. */
+function cardWeight(state: GameState, card: EventCard): number {
+  if (card.type !== 'random') return 0
+  const mult = card.garage_weight_mult
+  if (mult === undefined || !card.site) return card.weight
+  return SITES[card.site](state)?.tier === 'garage'
+    ? card.weight * mult
+    : card.weight
+}
+
+/** Which text the card on screen shows: its body, or its news text (news_unless fails). */
+export function eventBodyKey(state: GameState): 'body' | 'body_news' {
+  const card = getCard(state.interrupt?.event ?? '')
+  return card?.news_unless && !holds(state, card.news_unless, card)
+    ? 'body_news'
+    : 'body'
 }
 
 // ---------- scheduling (at END_PLAN) ----------
@@ -177,7 +219,11 @@ export function scheduleEvents(state: GameState): void {
   // Cards that skip the roll when their condition is first met.
   for (const card of CONTENT.events.cards) {
     if (card.type !== 'random' || !card.bypass_random_roll) continue
-    if (ev.fired.includes(card.id) || !holds(state, card.trigger, card))
+    if (
+      ev.fired.includes(card.id) ||
+      !inWindow(state, card) ||
+      !holds(state, card.trigger, card)
+    )
       continue
     schedule(state, card, randomInt(r, w0, w1), true)
     if (ev.queue.some((q) => q.random)) {
@@ -190,20 +236,17 @@ export function scheduleEvents(state: GameState): void {
       c.type === 'random' &&
       !c.bypass_random_roll &&
       !ev.fired.includes(c.id) &&
+      inWindow(state, c) &&
       holds(state, c.trigger, c) &&
       holds(state, c.requires, c),
   )
-  const total = eligible.reduce(
-    (w, c) => w + (c.type === 'random' ? c.weight : 0),
-    0,
-  )
+  const total = eligible.reduce((w, c) => w + cardWeight(state, c), 0)
   if (total <= 0) return
   ev.eligibleQuarters++
   if (uniform(r, 0, 1) >= CONTENT.events.randomChance) return
   let roll = uniform(r, 0, total)
   const card =
-    eligible.find((c) => (roll -= c.type === 'random' ? c.weight : 0) < 0) ??
-    eligible.at(-1)!
+    eligible.find((c) => (roll -= cardWeight(state, c)) < 0) ?? eligible.at(-1)!
   schedule(state, card, randomInt(r, w0, w1), true)
 }
 
@@ -461,14 +504,10 @@ export function resolveEvent(
         if (site) site.rentUsdQ = 0
         break
       case 'tariff_pay_pct':
-        for (const lot of pendingAsics(state)) {
-          const price =
-            buyPrice(getModel(lot.model)!, state.quarter, 'new') ?? 0
-          state.cash -= price * lot.count * Number(value)
-        }
+        state.cash -= newAsicSpendUsd(state) * Number(value)
         break
       case 'tariff_delay_quarters':
-        for (const lot of pendingAsics(state))
+        for (const lot of undeliveredAsics(state))
           lot.earnsFromQuarter += Number(value)
         break
       case 'lawyer': {

@@ -72,7 +72,7 @@
    ],
    "requires": {
     "min_mw": 20,
-    "min_ebitda_usd_q": 5000000
+    "min_ebitda_usd_q": 3000000
    },
    "bandwidth": 3
   }
@@ -346,14 +346,14 @@
   "2020Q2": 7,
   "2020Q3": 10,
   "2020Q4": 18,
-  "2021Q1": 25,
-  "2021Q2": 16,
-  "2021Q3": 15,
-  "2021Q4": 14,
+  "2021Q1": 35,
+  "2021Q2": 22,
+  "2021Q3": 22,
+  "2021Q4": 30,
   "2022Q1": 9,
   "2022Q2": 5,
   "2022Q3": 4,
-  "source": "≈ derived from RIOT/MARA/HUT/BITF market caps vs trailing adj. EBITDA; 2021Q3 15x per brief. 2017–18: few listed comps (Hive, Hut 8 on TSX-V), use 6x",
+  "source": "≈ derived from RIOT/MARA/HUT/BITF market caps vs trailing adj. EBITDA; 2017–18: few listed comps (Hive, Hut 8 on TSX-V), use 6x. 2021 raised by the balance pass (design thread, 27 Sep 2026): 35x at the Feb-2021 peak, 22x mid-year, 25x at the Nov-2021 peak, then 30x by the thread's fallback rule because the great path stayed under $1.5B (was 25/16/15/14)",
   "estimate": true
  },
  "price_per_ths_listed": {

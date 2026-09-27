@@ -11,7 +11,13 @@ import type {
   GameState,
   QuarterReport,
 } from '../src/sim/state.ts'
-import { normalPriceUsdKwh } from '../src/sim/systems/sites.ts'
+import { marketWeek } from '../src/sim/systems/market.ts'
+import { mineWeek } from '../src/sim/systems/mining.ts'
+import {
+  capacityKw,
+  isReady,
+  normalPriceUsdKwh,
+} from '../src/sim/systems/sites.ts'
 import { BOTS, PROBES } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -257,6 +263,51 @@ function waveStats(runs: Run[]) {
   }
 }
 
+/** A quarter's valuation split: operations (EBITDA × 4 × the era multiple), cash, coins, debt. */
+function valuationSplit(r: QuarterReport) {
+  const multiple = CONTENT.eraMultiple[r.quarter]
+  const ops = Math.max(0, r.ebitdaUsd * 4) * multiple
+  // Coins include pledged collateral, as in the valuation itself.
+  const coins = r.valuationUsd - ops - r.cash + r.debtUsd
+  return { ops, cash: r.cash, coins, debt: r.debtUsd }
+}
+
+/**
+ * Idle share at the Merge (design thread E1): energized kW not hashing in the last week of
+ * 2022Q3 (switched off, broken or empty), over all energized kW. null for a bust run.
+ */
+function idleShare(r: Run): number | null {
+  const s = r.state
+  if (s.phase === 'gameover') return null
+  const q = CONTENT.quarters.length - 1
+  const ready = s.sites.filter((x) => isReady(x, q))
+  const energized = ready.reduce((a, x) => a + capacityKw(x), 0)
+  if (energized === 0) return null
+  const lots = new Map(s.machines.map((l) => [l.id, l]))
+  const hashing = mineWeek(s, marketWeek(q, 12))
+    .filter((w) => w.running)
+    .reduce(
+      (a, w) =>
+        a +
+        w.working *
+          CONTENT.machines.find((m) => m.id === lots.get(w.lotId)!.model)!
+            .power_kw,
+      0,
+    )
+  return Math.max(0, 1 - hashing / energized)
+}
+
+/** Lowest quarter-end cash in 2018–2019 over the seed round's amount (runs that took the seed). */
+function seedCashFloor(r: Run): number | null {
+  if (!r.state.raisesDone.includes('seed')) return null
+  const floor = Math.min(
+    ...r.state.reports
+      .filter((x) => x.quarter >= '2018Q1' && x.quarter <= '2019Q4')
+      .map((x) => x.cash),
+  )
+  return floor / CONTENT.ladder.seed.amount_usd
+}
+
 const summaries = runAll(BOTS, true)
 const probes = runAll(PROBES, false)
 
@@ -269,6 +320,28 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
   const peaks = runs.map((r) =>
     r.state.reports.reduce((a, b) => (b.valuationUsd > a.valuationUsd ? b : a)),
   )
+  // Runs that reached the Merge: drawdown from peak, and the valuation splits.
+  const merged = runs.filter((r) => r.state.phase !== 'gameover')
+  const peakSplits = merged.map((r) =>
+    valuationSplit(
+      r.state.reports.reduce((a, b) =>
+        b.valuationUsd > a.valuationUsd ? b : a,
+      ),
+    ),
+  )
+  const mergeSplits = merged.map((r) => valuationSplit(r.state.reports.at(-1)!))
+  const drawdowns = merged.map((r) => {
+    const peak = Math.max(...r.state.reports.map((x) => x.valuationUsd))
+    return peak > 0 ? r.state.reports.at(-1)!.valuationUsd / peak - 1 : 0
+  })
+  const idle = runs.map(idleShare).filter((x): x is number => x !== null)
+  const floors = runs.map(seedCashFloor).filter((x): x is number => x !== null)
+  const splitMedians = (xs: ReturnType<typeof valuationSplit>[]) => ({
+    ops: median(xs.map((x) => x.ops)),
+    cash: median(xs.map((x) => x.cash)),
+    coins: median(xs.map((x) => x.coins)),
+    debt: median(xs.map((x) => x.debt)),
+  })
   const powered = runs
     .map(smallUnitPowered)
     .filter((q): q is string => q !== null)
@@ -312,6 +385,20 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
       runs.length,
     rate_hikes_per_run: logCount('log.rate_hike') / runs.length,
     outreach_per_run: logCount('log.outreach') / runs.length,
+    median_drawdown: median(drawdowns),
+    peak_split: splitMedians(peakSplits),
+    merge_split: splitMedians(mergeSplits),
+    idle_runs: idle.length,
+    idle_10pct_runs: idle.filter((x) => x >= 0.1).length,
+    median_idle_share: median(idle),
+    seed_floor_runs: floors.length,
+    median_seed_cash_floor: median(floors),
+    seed_floor_under_half: floors.filter((x) => x < 0.5).length,
+    ipo_runs: runs.filter((r) => r.state.raisesDone.includes('ipo_spac'))
+      .length,
+    texas_runs: runs.filter((r) =>
+      r.state.sites.some((x) => x.tier === 'texas_site'),
+    ).length,
     ...renewalStats(runs),
     ...pitchStats(runs),
     ...eventStats(runs),
@@ -321,6 +408,8 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
 const csvRows = summaryRows.map((r) => {
   const row: Partial<typeof r> = { ...r }
   delete row.cards_seen // a table, printed below; not a CSV column
+  delete row.peak_split // printed below
+  delete row.merge_split
   return row
 })
 const header = Object.keys(csvRows[0]).join(',')
@@ -502,3 +591,32 @@ const line = CONTENT.quarters.map((q) => {
 })
 for (let i = 0; i < line.length; i += 6)
   console.log('  ' + line.slice(i, i + 6).join('  '))
+
+// ---------- valuation, drawdown and idle MW (balance pass, design thread 27 Sep 2026) ----------
+
+console.log(
+  '\nValuation at the peak and at the Merge (medians of each part, runs that reached the Merge):',
+)
+console.table(
+  summaryRows
+    .filter((r) => r.median_peak_valuation >= 1e6)
+    .map((r) => ({
+      strategy: r.strategy,
+      'peak (quarter)': `${usd(r.median_peak_valuation)} (${r.usual_peak_quarter})`,
+      'peak: ops / cash / coins / debt': `${usd(r.peak_split.ops)} / ${usd(r.peak_split.cash)} / ${usd(r.peak_split.coins)} / ${usd(r.peak_split.debt)}`,
+      'Merge: ops / cash / coins / debt': `${usd(r.merge_split.ops)} / ${usd(r.merge_split.cash)} / ${usd(r.merge_split.coins)} / ${usd(r.merge_split.debt)}`,
+      drawdown: `${(r.median_drawdown * 100).toFixed(0)}%`,
+      'IPO / Texas runs': `${r.ipo_runs} / ${r.texas_runs}`,
+      'idle ≥ 10% at Merge': `${r.idle_10pct_runs}/${r.idle_runs} (median ${(r.median_idle_share * 100).toFixed(0)}%)`,
+    })),
+)
+{
+  const seedRows = summaryRows.filter((r) => r.seed_floor_runs > 0)
+  console.log(
+    '  Seed cash floor (lowest 2018–19 quarter-end cash ÷ the seed amount):',
+  )
+  for (const r of seedRows)
+    console.log(
+      `    ${r.strategy.padEnd(18)} median ${(r.median_seed_cash_floor * 100).toFixed(0)}%, under 50% in ${r.seed_floor_under_half}/${r.seed_floor_runs} runs`,
+    )
+}

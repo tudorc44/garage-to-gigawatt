@@ -6,9 +6,13 @@ import type { Strategy } from '../src/sim/replay.ts'
 import type { Condition, GameState } from '../src/sim/state.ts'
 import { renewalDue } from '../src/sim/systems/contracts.ts'
 import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
-import { outreachCostUsd, siteHeatValue } from '../src/sim/systems/heat.ts'
-import { maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
-import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
+import {
+  outreachCostUsd,
+  siteHeatValue,
+  underMoratorium,
+} from '../src/sim/systems/heat.ts'
+import { collateralUsd, maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
+import { repairCostPerUnit, saleValueUsd } from '../src/sim/systems/machines.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { canPitch } from '../src/sim/systems/pitch.ts'
 import {
@@ -62,6 +66,27 @@ interface BotSettings {
    * After a walk-away it pitches again when the round reopens.
    */
   pitchAt?: number[]
+  /** Borrow at most this share of the machines' value (below the lender's own LTV). */
+  maxLtv?: number
+  /**
+   * The highest site tier it climbs to (default: the top of the ladder). With `afterRound`, it
+   * climbs past `tier` only once that funding round is done.
+   */
+  climbLimit?: { tier: string; afterRound?: string }
+  /** From this quarter on: no more machines, no repairs, no new sites. */
+  stopFrom?: string
+  /**
+   * Pick machines by profit per kW instead of payback per dollar whenever the cash can fill
+   * the site's free space with them ("S19-class" machines once the money is there).
+   */
+  smartFill?: boolean
+  /** Scout the next tier as soon as the top site is full, before it can pay to build (scouting is free). */
+  scoutAhead?: boolean
+  /**
+   * Replace old machines: sell a lot when the best machine on sale makes at least this many
+   * times its profit per kW (or the lot is losing money), if the swap is affordable.
+   */
+  upgradeAt?: number
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -72,6 +97,7 @@ function makeBot(settings: BotSettings): Strategy {
       let bandwidth = s.bandwidth
       // 0. Take funding rounds when allowed (checked by dry-running the action).
       let reserveBase = s.cash
+      const raisedNow: string[] = []
       for (const round of settings.raises ?? []) {
         if (settings.pitchAt && canPitch(round)) {
           // The pitch is deterministic: play it out on a copy, then commit the same moves.
@@ -97,12 +123,14 @@ function makeBot(settings: BotSettings): Strategy {
           }
           cash += sim.cash - s.cash
           reserveBase += sim.cash - s.cash
+          if (sim.raisesDone.includes(round)) raisedNow.push(round)
           continue
         }
         const a: Action = { type: 'RAISE', round }
         const r = applyAction(s, a)
         if (r.ok && bandwidth >= s.bandwidth - r.state.bandwidth) {
           actions.push(a)
+          raisedNow.push(round)
           cash += r.state.cash - s.cash
           reserveBase += r.state.cash - s.cash
           bandwidth -= s.bandwidth - r.state.bandwidth
@@ -110,7 +138,10 @@ function makeBot(settings: BotSettings): Strategy {
       }
       // 0b. Borrow the most lenders allow against the machines it owns.
       if (settings.borrow && !s.equipmentLoan && bandwidth >= 1) {
-        const amountUsd = maxEquipmentLoanUsd(s)
+        const amountUsd = Math.min(
+          maxEquipmentLoanUsd(s),
+          Math.floor((settings.maxLtv ?? 1) * collateralUsd(s)),
+        )
         const a: Action = { type: 'TAKE_LOAN', amountUsd }
         if (amountUsd >= 1 && applyAction(s, a).ok) {
           actions.push(a)
@@ -182,10 +213,15 @@ function makeBot(settings: BotSettings): Strategy {
         }
       }
       const spendable = () => cash - settings.reserveUsd(reserveBase)
+      const stopped =
+        settings.stopFrom !== undefined &&
+        CONTENT.quarters[s.quarter] >= settings.stopFrom
 
       if (s.quarter === 0) {
         actions.push({ type: 'SET_HODL', pct: settings.hodlPct })
       }
+
+      if (stopped) return actions
 
       // 1. Repair broken machines.
       for (const lot of s.machines) {
@@ -205,13 +241,38 @@ function makeBot(settings: BotSettings): Strategy {
       const topIsFull =
         isReady(topSite, s.quarter) &&
         usedKw(s, topSite.id) >= capacityKw(topSite) * 0.8
-      const nextOpen =
+      const limit = settings.climbLimit
+      const capped =
+        next &&
+        limit &&
+        top >= CONTENT.siteTiers.findIndex((t) => t.id === limit.tier) &&
+        !(
+          limit.afterRound &&
+          (s.raisesDone.includes(limit.afterRound) ||
+            raisedNow.includes(limit.afterRound))
+        )
+      const available =
         next &&
         !(
           next.available_from &&
           CONTENT.quarters[s.quarter] < next.available_from
         )
-      if (next && nextOpen && topIsFull && bandwidth >= 1) {
+      const nextOpen = available && !capped
+      if (
+        settings.scoutAhead &&
+        next &&
+        available &&
+        topIsFull &&
+        bandwidth >= 1 &&
+        !(BALANCE.sites.noScoutingNeeded as readonly string[]).includes(
+          next.id,
+        ) &&
+        !s.siteOffers.some((o) => o.tier === next.id) &&
+        (capped || baseCapexUsd(next) * 0.85 > spendable())
+      ) {
+        actions.push({ type: 'SCOUT_SITES', tier: next.id })
+        bandwidth -= 1
+      } else if (next && nextOpen && topIsFull && bandwidth >= 1) {
         const direct = (
           BALANCE.sites.noScoutingNeeded as readonly string[]
         ).includes(next.id)
@@ -269,11 +330,12 @@ function makeBot(settings: BotSettings): Strategy {
       // 3. Fill free space with the best machine per dollar, cheapest power first.
       const w = marketWeek(s.quarter, 0)
       const ready = s.sites
-        .filter((x) => isReady(x, s.quarter))
+        .filter((x) => isReady(x, s.quarter) && !underMoratorium(s, x.id))
         .sort(
           (a, b) =>
             powerPriceUsdKwh(a, s.quarter) - powerPriceUsdKwh(b, s.quarter),
         )
+      const freedKw: Record<string, number> = {}
       for (const site of ready) {
         const power = powerPriceUsdKwh(site, s.quarter)
         const options = CONTENT.machines.flatMap((m) =>
@@ -285,18 +347,56 @@ function makeBot(settings: BotSettings): Strategy {
             return { m, condition, price, dailyProfit, payback }
           }),
         )
-        const best = options
-          .filter(
-            (o) =>
-              o.price !== undefined &&
-              o.dailyProfit > 0 &&
-              o.payback <= settings.maxPaybackQuarters,
-          )
-          .sort((a, b) => a.payback - b.payback)[0]
+        const viable = options.filter(
+          (o) =>
+            o.price !== undefined &&
+            o.dailyProfit > 0 &&
+            o.payback <= settings.maxPaybackQuarters,
+        )
+        let best = [...viable].sort((a, b) => a.payback - b.payback)[0]
         if (!best) continue
+        // With cash to spare, power is the scarce thing: take the most profit per kW.
+        if (settings.smartFill) {
+          const perKw = [...viable].sort(
+            (a, b) =>
+              b.dailyProfit / b.m.power_kw - a.dailyProfit / a.m.power_kw ||
+              a.payback - b.payback,
+          )[0]
+          const fits = Math.floor(
+            (capacityKw(site) - usedKw(after, site.id)) / perKw.m.power_kw,
+          )
+          if (spendable() >= perKw.price! * Math.max(1, fits)) best = perKw
+        }
+        // 3b. Upgrade: sell old lots here that make far less per kW than the best machine.
+        if (settings.upgradeAt) {
+          const perKw = (m: typeof best.m) =>
+            (revenuePerUnitDay(m, w) - m.power_kw * 24 * power) / m.power_kw
+          const bestPerKw = best.dailyProfit / best.m.power_kw
+          for (const lot of s.machines) {
+            if (lot.siteId !== site.id || lot.model === best.m.id) continue
+            const m = getModel(lot.model)!
+            const own = perKw(m)
+            if (own > 0 && own * settings.upgradeAt > bestPerKw) continue
+            // Sell as many units as the cash (plus their sale value) can replace.
+            const unitSale = saleValueUsd(lot, 1, s.quarter)
+            const netPerUnit =
+              (m.power_kw / best.m.power_kw) * best.price! - unitSale
+            const k =
+              netPerUnit <= 0
+                ? lot.count
+                : Math.min(lot.count, Math.floor(spendable() / netPerUnit))
+            if (k < 1) continue
+            actions.push({ type: 'SELL_MACHINES', lotId: lot.id, count: k })
+            cash += saleValueUsd(lot, k, s.quarter)
+            freedKw[site.id] = (freedKw[site.id] ?? 0) + m.power_kw * k
+          }
+        }
         const count = Math.min(
           Math.floor(
-            (capacityKw(site) - usedKw(after, site.id)) / best.m.power_kw,
+            (capacityKw(site) -
+              usedKw(after, site.id) +
+              (freedKw[site.id] ?? 0)) /
+              best.m.power_kw,
           ),
           Math.floor(spendable() / best.price!),
         )
@@ -325,6 +425,10 @@ function makeBot(settings: BotSettings): Strategy {
   }
 }
 
+/** The good path's rounds (no IPO) and its top site (the 20 MW own site; design thread A1). */
+const GOOD_PATH_RAISES = ['friends_family', 'seed', 'series_a']
+const GOOD_PATH_TOP = { tier: 'own_site' }
+
 export const BOTS: Record<string, Strategy> = {
   /** Keeps half its cash, only buys machines that pay back within 3 quarters, holds 20%. */
   cautious: makeBot({
@@ -340,13 +444,17 @@ export const BOTS: Record<string, Strategy> = {
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
   }),
-  /** reinvest, plus every funding round (F&F, seed, Series A, IPO) as soon as each is allowed; climbs the ladder. */
+  /**
+   * The "good player" path (scope §5): reinvest, plus F&F, seed and Series A as soon as each is
+   * allowed; climbs the ladder up to one 20 MW own site. No IPO, no Texas.
+   */
   'raise-climb': makeBot({
     hodlPct: 0,
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
   }),
   /** raise-climb that talks to the neighbours at any site with Heat 50 or more. */
   'raise-outreach': makeBot({
@@ -354,7 +462,8 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
     outreachAt: 50,
   }),
   /** raise-climb that negotiates every power renewal: counters at 92%, 97%, 102% of normal. */
@@ -363,7 +472,8 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
     negotiateAt: [0.92, 0.97, 1.02],
   }),
   /** raise-climb that pitches the seed and Series A: asks 1.10× then 1.05× the opening, then accepts. */
@@ -372,7 +482,8 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
     pitchAt: [1.1, 1.05],
   }),
   /** raise-pitch, bolder: asks 1.20× then 1.10× the opening (design-thread target check). */
@@ -381,7 +492,8 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
     pitchAt: [1.2, 1.1],
   }),
   /** raise-climb that also borrows the maximum equipment loan whenever it has none. */
@@ -390,7 +502,8 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
     borrow: true,
   }),
   /** raise-climb that also bids 85% of list on every distressed auction lot it has room and cash for. */
@@ -399,8 +512,53 @@ export const BOTS: Record<string, Strategy> = {
     reserveUsd: () => 0,
     maxPaybackQuarters: Infinity,
     sellOnDrops: false,
-    raises: ['friends_family', 'seed', 'series_a', 'ipo_spac'],
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
     auctionBidShare: 0.85,
+  }),
+  /**
+   * The "great player" path (scope §5): raise-climb plus the IPO (as soon as it qualifies), then
+   * climbs to Texas with the IPO money and fills it, borrowing up to 50% of the machines' value.
+   */
+  'texas-ipo': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: [...GOOD_PATH_RAISES, 'ipo_spac'],
+    climbLimit: { tier: 'own_site', afterRound: 'ipo_spac' },
+    scoutAhead: true,
+    smartFill: true,
+    borrow: true,
+    maxLtv: 0.5,
+  }),
+  /**
+   * Measurement, not a design-thread path: texas-ipo that also replaces old machines (sells a lot
+   * when the best machine makes 2× its profit per kW, or it loses money). Shows what upgrading
+   * the fleet (S9 → S19 Pro in 2020) is worth.
+   */
+  'texas-ipo-upgrade': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: [...GOOD_PATH_RAISES, 'ipo_spac'],
+    climbLimit: { tier: 'own_site', afterRound: 'ipo_spac' },
+    scoutAhead: true,
+    borrow: true,
+    maxLtv: 0.5,
+    smartFill: true,
+    upgradeAt: 2,
+  }),
+  /** raise-climb that stops buying, repairing and building from 2022Q1 (the idle-MW check, E1). */
+  'stop-2022': makeBot({
+    hodlPct: 0,
+    reserveUsd: () => 0,
+    maxPaybackQuarters: Infinity,
+    sellOnDrops: false,
+    raises: GOOD_PATH_RAISES,
+    climbLimit: GOOD_PATH_TOP,
+    stopFrom: '2022Q1',
   }),
   /** Keeps every coin it mines; spends only its cash; never sells in alerts. */
   hodl: makeBot({
