@@ -6,6 +6,7 @@ import sitesRaw from './sites.json' with { type: 'json' }
 import interruptsRaw from './interrupts.json' with { type: 'json' }
 import marketRaw from './market_weekly.json' with { type: 'json' }
 import marketAct2Raw from './market_weekly_act2.json' with { type: 'json' }
+import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
@@ -27,6 +28,7 @@ import {
   interruptsFileSchema,
   machinesFileSchema,
   marketAct2Schema,
+  marketQuarterlyAct2Schema,
   marketSchema,
   negotiationRulesSchema,
   rivalsFileSchema,
@@ -52,6 +54,7 @@ import {
   type MarketWeek,
   type MarketWeekAct1,
   type MarketWeekAct2,
+  type MarketQuarterAct2Row,
   type NegotiationRules,
   type PitchRules,
   type Rival,
@@ -89,6 +92,70 @@ export interface ActSpan {
   lastQuarter: number
 }
 
+/** The six Act II region tags' power price columns (market_quarterly_act2). */
+export const POWER_REGIONS = [
+  'ercot',
+  'pjm',
+  'ohio',
+  'georgia',
+  'arizona',
+  'nordics',
+] as const
+export type PowerRegion = (typeof POWER_REGIONS)[number]
+
+/**
+ * One Act II quarter's market (market_quarterly_act2, scope 0.2 §2.3). Prices are null before the
+ * product exists (no H100 rental before 2023Q3, no B200 before 2025Q1 …).
+ */
+export interface Act2Quarter {
+  quarter: string
+  /** GPU rental, $ per GPU-hour. */
+  gpuRentalUsdHr: {
+    h100: {
+      hyperscaler: number | null
+      neocloud: number | null
+      spot: number | null
+      contract1y: number | null
+    }
+    a100Hyperscaler: number | null
+    h200: { hyperscaler: number | null; neocloud: number | null }
+    b200: { hyperscaler: number | null; neocloud: number | null }
+    gb200Blended: number | null
+  }
+  /** GPU purchase prices, $: per unit, the 8-GPU H100 system, the GB200 NVL72 rack. */
+  gpuPurchaseUsd: {
+    h100: number | null
+    h100Hgx8: number | null
+    h200: number | null
+    b200: number | null
+    gb200Rack: number | null
+  }
+  /** Build cost per MW by conversion (the quarterly series of conversions.json). */
+  capexUsdMw: {
+    gpuHallToHosting: number
+    retrofitShell: number
+    greenfieldShell: number
+    fullstackIncremental: number
+  }
+  sofrPct: number
+  hySpreadBps: number
+  /** GPU-backed DDTL spread (null before the first DDTL, 2023Q3). */
+  ddtlSpreadBps: number | null
+  capRateHyperscalePct: number
+  /** EV per MW benchmarks, $M (the sanity check of doc 18 §8). */
+  evPerMwUsdM: {
+    mining: number
+    aiAnnounced: number | null
+    aiStabilized: number | null
+  }
+  powerUsdKwh: Record<PowerRegion, number>
+  pjmCapacityUsdMwDay: number
+  hyperscalerCapexUsdBnQ: number
+  /** 0–100: drives RFP frequency and quality. */
+  aiDemandIndex: number
+  estimate: boolean
+}
+
 export interface Content {
   /** Every quarter of the game in order: Act I "2017Q1" … "2022Q3", then Act II "2022Q4" … "2026Q4". */
   quarters: string[]
@@ -96,6 +163,8 @@ export interface Content {
   market: MarketWeek[][]
   /** The acts, in order. Act I's last quarter (2022Q3) is where the Merge decision comes. */
   acts: ActSpan[]
+  /** Act II's quarterly market, in quarter order (index 0 = 2022Q4). See act2Quarter(). */
+  act2Market: Act2Quarter[]
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -177,6 +246,7 @@ export interface RawContent {
   interrupts: unknown
   market: unknown
   marketAct2: unknown
+  marketQuarterlyAct2: unknown
   capital: unknown
   rivals: unknown
   heat: unknown
@@ -225,6 +295,11 @@ export function parseContent(raw: RawContent): Content {
     marketAct2Schema,
     raw.marketAct2,
   )
+  const marketQuarterlyAct2Rows = check(
+    'market_quarterly_act2',
+    marketQuarterlyAct2Schema,
+    raw.marketQuarterlyAct2,
+  )
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
@@ -268,6 +343,7 @@ export function parseContent(raw: RawContent): Content {
     !interruptsFile ||
     !marketRows ||
     !marketAct2Rows ||
+    !marketQuarterlyAct2Rows ||
     !capitalFile ||
     !rivalsFile ||
     !auction ||
@@ -349,6 +425,25 @@ export function parseContent(raw: RawContent): Content {
   // cover Act I's quarters. What the sim uses after 2022Q3 comes in the Act II steps.
   const act1Quarters = quarters.slice(0, acts[0].lastQuarter + 1)
   const lastQuarter = act1Quarters.at(-1)!
+
+  // Act II's quarterly market: one row per Act II quarter, in order, and its BTC and ETH closes
+  // must be the last week of the quarter in the weekly file (both come from the same closes).
+  const act2Quarters = quarters.slice(acts[1].firstQuarter)
+  const rowQuarters = marketQuarterlyAct2Rows.map((r) => r.quarter)
+  if (rowQuarters.join() !== act2Quarters.join()) {
+    problems.push(
+      `market_quarterly_act2: has ${rowQuarters.join(', ')}; expected Act II's ${act2Quarters.join(', ')}`,
+    )
+  } else {
+    marketQuarterlyAct2Rows.forEach((r, i) => {
+      const last = market[acts[1].firstQuarter + i].at(-1)!
+      if (r.btc_usd_close !== last.btc_usd || r.eth_usd_close !== last.eth_usd)
+        problems.push(
+          `market_quarterly_act2 › ${r.quarter}: closes (BTC ${r.btc_usd_close}, ETH ${r.eth_usd_close}) don't match the weekly file's last week (BTC ${last.btc_usd}, ETH ${last.eth_usd})`,
+        )
+    })
+  }
+  const act2Market = marketQuarterlyAct2Rows.map(act2QuarterOf)
 
   // Machines: prices must exist for every quarter the machine can be bought or sold.
   for (const m of machinesFile.models) {
@@ -546,6 +641,7 @@ export function parseContent(raw: RawContent): Content {
     quarters,
     market,
     acts,
+    act2Market,
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
@@ -602,6 +698,70 @@ function act2Week(row: MarketWeekAct2): MarketWeek {
   }
 }
 
+/** A market_quarterly_act2 row, reshaped for the sim. */
+function act2QuarterOf(r: MarketQuarterAct2Row): Act2Quarter {
+  return {
+    quarter: r.quarter,
+    gpuRentalUsdHr: {
+      h100: {
+        hyperscaler: r.gpu_h100_hyperscaler_usd_hr,
+        neocloud: r.gpu_h100_neocloud_usd_hr,
+        spot: r.gpu_h100_spot_usd_hr,
+        contract1y: r.gpu_h100_1yr_contract_usd_hr,
+      },
+      a100Hyperscaler: r.gpu_a100_hyperscaler_usd_hr,
+      h200: {
+        hyperscaler: r.gpu_h200_hyperscaler_usd_hr,
+        neocloud: r.gpu_h200_neocloud_usd_hr,
+      },
+      b200: {
+        hyperscaler: r.gpu_b200_hyperscaler_usd_hr,
+        neocloud: r.gpu_b200_neocloud_usd_hr,
+      },
+      gb200Blended: r.gpu_gb200nvl72_blended_usd_hr,
+    },
+    gpuPurchaseUsd: {
+      h100: r.h100_unit_purchase_usd,
+      h100Hgx8: r.h100_hgx8_system_usd,
+      h200: r.h200_unit_purchase_usd,
+      b200: r.b200_unit_purchase_usd,
+      gb200Rack: r.gb200_nvl72_rack_usd,
+    },
+    capexUsdMw: {
+      gpuHallToHosting: r.capex_hosting_usd_mw,
+      retrofitShell: r.capex_retrofit_shell_usd_mw,
+      greenfieldShell: r.capex_greenfield_shell_usd_mw,
+      fullstackIncremental: r.capex_fullstack_incremental_usd_mw,
+    },
+    sofrPct: r.sofr_pct,
+    hySpreadBps: r.hy_spread_bps,
+    ddtlSpreadBps: r.ddtl_spread_bps,
+    capRateHyperscalePct: r.cap_rate_hyperscale_pct,
+    evPerMwUsdM: {
+      mining: r.ev_per_mw_mining_usd_m,
+      aiAnnounced: r.ev_per_mw_ai_announced_usd_m,
+      aiStabilized: r.ev_per_mw_ai_stabilized_usd_m,
+    },
+    powerUsdKwh: {
+      ercot: r.power_usd_kwh_ercot,
+      pjm: r.power_usd_kwh_pjm,
+      ohio: r.power_usd_kwh_ohio,
+      georgia: r.power_usd_kwh_georgia,
+      arizona: r.power_usd_kwh_arizona,
+      nordics: r.power_usd_kwh_nordics,
+    },
+    pjmCapacityUsdMwDay: r.pjm_capacity_price_usd_mwday,
+    hyperscalerCapexUsdBnQ: r.hyperscaler_capex_usd_bn_q,
+    aiDemandIndex: r.ai_demand_index_0_100,
+    estimate: r.estimate,
+  }
+}
+
+/** Act II's market for a quarter index, or undefined in Act I. */
+export function act2Quarter(quarter: number): Act2Quarter | undefined {
+  return CONTENT.act2Market[quarter - CONTENT.acts[1].firstQuarter]
+}
+
 /** The act a quarter index belongs to (quarters past the end count as the last act). */
 export function actOfQuarter(quarter: number): ActSpan['act'] {
   return (
@@ -644,6 +804,7 @@ export const CONTENT: Content = parseContent({
   interrupts: interruptsRaw,
   market: marketRaw,
   marketAct2: marketAct2Raw,
+  marketQuarterlyAct2: marketQuarterlyAct2Raw,
   capital: capitalRaw,
   rivals: rivalsRaw,
   heat: heatRaw,

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 import {
   CONTENT,
   ContentError,
+  act2Quarter,
   actLastQuarter,
   actOfQuarter,
   parseContent,
@@ -13,6 +14,7 @@ import sites from '../src/content/sites.json' with { type: 'json' }
 import interrupts from '../src/content/interrupts.json' with { type: 'json' }
 import market from '../src/content/market_weekly.json' with { type: 'json' }
 import marketAct2 from '../src/content/market_weekly_act2.json' with { type: 'json' }
+import marketQuarterlyAct2 from '../src/content/market_quarterly_act2.json' with { type: 'json' }
 import capital from '../src/content/capital.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
@@ -30,6 +32,7 @@ const raw = (): RawContent =>
     interrupts,
     market,
     marketAct2,
+    marketQuarterlyAct2,
     capital,
     rivals,
     heat,
@@ -143,10 +146,11 @@ describe('content loads', () => {
     ])
   })
 
-  it('market_weekly.json and market_weekly_act2.json are up to date with their CSVs', () => {
+  it('the market JSON files are up to date with their CSVs', () => {
     const json = {
       'market_weekly.json': market,
       'market_weekly_act2.json': marketAct2,
+      'market_quarterly_act2.json': marketQuarterlyAct2,
     }
     for (const [csvName, jsonName] of MARKET_FILES) {
       const csv = readFileSync(
@@ -157,11 +161,14 @@ describe('content loads', () => {
     }
   })
 
-  it('src/content/market_weekly_act2.csv is the corrected copy in docs/act2-content/', () => {
+  it('the Act II market CSVs are the corrected copies in docs/act2-content/', () => {
     const read = (path: string) =>
       readFileSync(new URL(path, import.meta.url), 'utf8')
     expect(read('../src/content/market_weekly_act2.csv')).toBe(
       read('../docs/act2-content/market_weekly.csv'),
+    )
+    expect(read('../src/content/market_quarterly_act2.csv')).toBe(
+      read('../docs/act2-content/market_quarterly.csv'),
     )
   })
 
@@ -180,17 +187,17 @@ describe('content loads', () => {
   })
 })
 
-describe('bad content fails loudly', () => {
-  function problemsFor(data: RawContent): string[] {
-    try {
-      parseContent(data)
-    } catch (e) {
-      if (e instanceof ContentError) return e.problems
-      throw e
-    }
-    throw new Error('expected parseContent to throw')
+function problemsFor(data: RawContent): string[] {
+  try {
+    parseContent(data)
+  } catch (e) {
+    if (e instanceof ContentError) return e.problems
+    throw e
   }
+  throw new Error('expected parseContent to throw')
+}
 
+describe('bad content fails loudly', () => {
   it('names the file and field of a wrong type', () => {
     const data = raw()
     ;(data.machines as typeof machines).models[0].power_kw = 'lots' as never
@@ -272,5 +279,64 @@ describe('bad content fails loudly', () => {
     expect(problemsFor(data)).toEqual([
       expect.stringMatching(/^market_weekly_act2 › 0\.estimate/),
     ])
+  })
+})
+
+describe("Act II's quarterly market (market_quarterly_act2, scope 0.2 §2.3)", () => {
+  const q = (label: string) => act2Quarter(CONTENT.quarters.indexOf(label))!
+
+  it('has one row per Act II quarter, reached by quarter index; none in Act I', () => {
+    expect(CONTENT.act2Market.map((x) => x.quarter)).toEqual(
+      CONTENT.quarters.slice(CONTENT.acts[1].firstQuarter),
+    )
+    expect(act2Quarter(23)!.quarter).toBe('2022Q4')
+    expect(act2Quarter(39)!.quarter).toBe('2026Q4')
+    expect(act2Quarter(22)).toBeUndefined()
+  })
+
+  it('has GPU rental prices from 2023Q3 (null before, never 0)', () => {
+    expect(q('2023Q2').gpuRentalUsdHr.h100.neocloud).toBeNull()
+    expect(q('2023Q3').gpuRentalUsdHr.h100.neocloud).toBeGreaterThan(0)
+    expect(q('2024Q4').gpuRentalUsdHr.b200.hyperscaler).toBeNull()
+    expect(q('2025Q1').gpuRentalUsdHr.b200.hyperscaler).toBeGreaterThan(0)
+    expect(q('2023Q3').gpuPurchaseUsd.h100).toBe(32000)
+  })
+
+  it('has rates, spreads, regional power and the AI demand index', () => {
+    expect(q('2022Q4').sofrPct).toBe(4.3)
+    expect(q('2023Q2').ddtlSpreadBps).toBeNull() // no DDTL before 2023Q3
+    expect(q('2023Q3').ddtlSpreadBps).toBeGreaterThan(0)
+    expect(q('2022Q4').aiDemandIndex).toBe(8)
+    expect(q('2026Q3').aiDemandIndex).toBe(88)
+    expect(q('2022Q4').powerUsdKwh).toEqual({
+      ercot: 0.033,
+      pjm: 0.045,
+      ohio: 0.042,
+      georgia: 0.04,
+      arizona: 0.036,
+      nordics: 0.03,
+    })
+    // PJM ends the act the most expensive, the Nordics the cheapest (doc 18 §6).
+    const last = q('2026Q4').powerUsdKwh
+    expect(Math.min(...Object.values(last))).toBe(last.nordics)
+    expect(Math.max(...Object.values(last))).toBe(last.pjm)
+  })
+
+  it("catches a quarterly close that doesn't match the weekly file", () => {
+    const data = raw()
+    ;(
+      data.marketQuarterlyAct2 as { btc_usd_close: number }[]
+    )[0].btc_usd_close = 1
+    expect(problemsFor(data).join('\n')).toMatch(
+      /market_quarterly_act2 › 2022Q4: closes \(BTC 1,/,
+    )
+  })
+
+  it('catches a missing Act II quarter', () => {
+    const data = raw()
+    ;(data.marketQuarterlyAct2 as unknown[]).splice(3, 1)
+    expect(problemsFor(data).join('\n')).toMatch(
+      /market_quarterly_act2: has .*expected Act II's/,
+    )
   })
 })

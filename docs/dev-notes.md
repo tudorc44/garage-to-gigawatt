@@ -901,6 +901,16 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
 - **M2.1** Act II market data in the sim: `market_quarterly_act2` (GPU rental and purchase prices, capex per MW,
   SOFR, credit and DDTL spreads, cap rates, regional power prices, AI demand index) + `capital_act2.json` loaded,
   checked and exposed through selectors.
+  **Done.** `src/content/market_quarterly_act2.csv` (= `docs/act2-content/market_quarterly.csv`, test) → JSON via
+  `npm run content:market`; `marketQuarterlyAct2Schema`; the loader reshapes each row into an `Act2Quarter`
+  (`CONTENT.act2Market`, read with `act2Quarter(quarterIndex)`, undefined in Act I): GPU rental ($/GPU-hr: H100
+  hyperscaler / neocloud / spot / 1-yr contract, A100, H200, B200, GB200), GPU purchase prices, capex per MW, SOFR,
+  high-yield and DDTL spreads, the hyperscale cap rate, EV/MW benchmarks, power by region (`POWER_REGIONS`: ercot,
+  pjm, ohio, georgia, arizona, nordics), the PJM capacity price, hyperscaler capex and the AI demand index. Empty
+  cells stay null (no H100 rent before 2023Q3, no DDTL spread before 2023Q3). The loader checks the rows are Act
+  II's 17 quarters in order and that each BTC/ETH close equals the weekly file's last week of that quarter.
+  The file's two multiple columns are ignored: they still have the pack's old 2026 AI values (24, 20);
+  `capital_act2.json` has the corrected path (M2.2). Short region keys, not regions.json's ids (mine, reversible).
 - **M2.2** Era multiples for Act II: mining and AI-infra series from `capital_act2.json`, interpolated per quarter;
   Act II valuations use the Act II mining multiple.
 - **M2.3** MW by use per site: mining / hosting / AI shell / AI cloud / building / idle (selector + tests).

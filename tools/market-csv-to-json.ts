@@ -1,7 +1,8 @@
-// Converts the weekly market CSVs in src/content/ into JSON files, which both the browser and
+// Converts the market CSVs in src/content/ into JSON files, which both the browser and
 // Node can import. Run it after replacing a CSV: `npm run content:market`.
 //   market_weekly.csv      → market_weekly.json       (Act I, 2017Q1–2022Q3)
 //   market_weekly_act2.csv → market_weekly_act2.json  (Act II, 2022Q4–2026Q4)
+//   market_quarterly_act2.csv → market_quarterly_act2.json  (Act II: GPU prices, rates, multiples, power, AI demand)
 import { readFileSync, writeFileSync } from 'node:fs'
 
 const dir = new URL('../src/content/', import.meta.url)
@@ -9,6 +10,7 @@ const dir = new URL('../src/content/', import.meta.url)
 export const MARKET_FILES = [
   ['market_weekly.csv', 'market_weekly.json'],
   ['market_weekly_act2.csv', 'market_weekly_act2.json'],
+  ['market_quarterly_act2.csv', 'market_quarterly_act2.json'],
 ] as const
 
 type Cell = string | number | boolean | null
@@ -36,6 +38,6 @@ if (import.meta.main) {
   for (const [csvName, jsonName] of MARKET_FILES) {
     const rows = csvToRows(readFileSync(new URL(csvName, dir), 'utf8'))
     writeFileSync(new URL(jsonName, dir), JSON.stringify(rows) + '\n')
-    console.log(`Wrote ${rows.length} weeks to src/content/${jsonName}`)
+    console.log(`Wrote ${rows.length} rows to src/content/${jsonName}`)
   }
 }

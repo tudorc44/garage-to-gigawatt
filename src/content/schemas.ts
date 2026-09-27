@@ -70,6 +70,63 @@ export const marketWeekAct2Schema = z.object({
   estimate: z.boolean(),
 })
 export const marketAct2Schema = z.array(marketWeekAct2Schema).min(1)
+
+// ---------- market_quarterly_act2.json (generated from market_quarterly_act2.csv) ----------
+// One row per Act II quarter: GPU rental and purchase prices (empty before a GPU exists, so null),
+// build costs per MW, rates and spreads, cap rates, regional power prices and the AI demand index.
+// Its two multiple columns aren't used: capital_act2.json holds the corrected multiples.
+
+const n = nonNeg
+const nn = nullableNonNeg
+export const marketQuarterAct2Schema = z.object({
+  quarter: quarterId,
+  btc_usd_close: n,
+  eth_usd_close: n,
+  btc_difficulty_T: n,
+  btc_hashrate_EHs: n,
+  btc_block_subsidy: n,
+  btc_hashprice_usd_ph_day: n,
+  gpu_h100_hyperscaler_usd_hr: nn,
+  gpu_h100_neocloud_usd_hr: nn,
+  gpu_h100_spot_usd_hr: nn,
+  gpu_h100_1yr_contract_usd_hr: nn,
+  gpu_a100_hyperscaler_usd_hr: nn,
+  gpu_h200_hyperscaler_usd_hr: nn,
+  gpu_h200_neocloud_usd_hr: nn,
+  gpu_b200_hyperscaler_usd_hr: nn,
+  gpu_b200_neocloud_usd_hr: nn,
+  gpu_gb200nvl72_blended_usd_hr: nn,
+  h100_unit_purchase_usd: nn,
+  h100_hgx8_system_usd: nn,
+  h200_unit_purchase_usd: nn,
+  b200_unit_purchase_usd: nn,
+  gb200_nvl72_rack_usd: nn,
+  capex_hosting_usd_mw: n,
+  capex_retrofit_shell_usd_mw: n,
+  capex_greenfield_shell_usd_mw: n,
+  capex_fullstack_incremental_usd_mw: n,
+  sofr_pct: n,
+  hy_spread_bps: n,
+  ddtl_spread_bps: nn,
+  cap_rate_hyperscale_pct: n,
+  mining_ev_ebitda_mult: n,
+  ai_infra_ev_ebitda_mult: n,
+  ev_per_mw_mining_usd_m: n,
+  ev_per_mw_ai_announced_usd_m: nn,
+  ev_per_mw_ai_stabilized_usd_m: nn,
+  power_usd_kwh_ercot: n,
+  power_usd_kwh_pjm: n,
+  power_usd_kwh_ohio: n,
+  power_usd_kwh_georgia: n,
+  power_usd_kwh_arizona: n,
+  power_usd_kwh_nordics: n,
+  pjm_capacity_price_usd_mwday: n,
+  hyperscaler_capex_usd_bn_q: n,
+  ai_demand_index_0_100: z.number().min(0).max(100),
+  estimate: z.boolean(),
+})
+export const marketQuarterlyAct2Schema = z.array(marketQuarterAct2Schema).min(1)
+export type MarketQuarterAct2Row = z.infer<typeof marketQuarterAct2Schema>
 export type MarketWeekAct1 = z.infer<typeof marketWeekSchema>
 export type MarketWeekAct2 = z.infer<typeof marketWeekAct2Schema>
 
