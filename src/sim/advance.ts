@@ -27,6 +27,7 @@ import { payReservationWeek } from './systems/mwUse.ts'
 import { checkProjectEvents, settleProjectsWeek } from './systems/projects.ts'
 import { settleLegacyCloudWeek } from './systems/headStarts.ts'
 import { checkSpotAlerts } from './systems/spotMarket.ts'
+import { prologueWeek } from './prologue/engine.ts'
 
 export function advance(state: GameState): GameState {
   if (state.phase !== 'live') {
@@ -36,6 +37,11 @@ export function advance(state: GameState): GameState {
     throw new Error('advance() is paused until the interrupt is resolved')
   }
   const s = structuredClone(state)
+  // The prologue (act 0) has its own week (src/sim/prologue/engine.ts).
+  if (s.act === 0) {
+    prologueWeek(s)
+    return s
+  }
   const w = marketWeek(s.quarter, s.week)
   const weekNo = s.week + 1
 

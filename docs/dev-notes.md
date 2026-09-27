@@ -310,7 +310,21 @@ balance → **P3** events, theme, screens → the Prologue report.
   first week still has no "week before" (no 2016 week leaks into a 2017 start).
 - The prologue market JSON is built by `npm run content:market` straight from `docs/prologue-content/` (the merge
   rule is code in tools/market-csv-to-json.ts); ETH cells before 2015-07-27 are 0 in the game.
+- **Save format 3 vs the goldens:** the scope wants a version step and unchanged goldens, but the goldens store the
+  format number. The golden files are unchanged; the golden test compares with `version` set back to 2 (format number
+  only; nothing else in an Act I game changed). Question for the design thread.
+- Prologue state lives in `GameState.prologue` (only prologue starts have it; removed at the handover, a summary kept in
+  `prologueCarry`); prologue reports are their own list, so Act I's report history starts at 2017Q1.
+- Machines: pc_cpu fails 3%/yr; the pre-order ASIC's used prices (none in the pack) follow the S1's scaled by hashrate;
+  lead times 0; the prologue has no Heat (heat_per_unit 0). Power at the garage / small unit in the prologue is Act I's
+  2017Q1 price. ETH is always pooled. Solo pays subsidy ÷ (1 − fee share) per block (the pack's hashprice formula).
+- A cash shortfall at quarter end sells exchange coins, then machines; still short is game over.
+- Handover: household sites go; their machines move to the garage and what doesn't fit is sold at the used price; the
+  start wealth (P0-17) is net worth at 2016Q4's last week (cash + coins + machines at used prices).
 
 ### Prologue progress
 - P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.
 - P1.1: the prologue market (−32 … −1), act 0 in the act list, `quarterLabel` / `quarterIndex`.
+- P1.2: `src/content/machines_prologue.json` + `prologue.json` (game copies, schemas; getModel finds prologue machines,
+  Act I lists don't); state `act: 0`, `prologue?` / `prologueCarry?`; save format 3 (2 → 3 changes nothing) + tests;
+  `src/sim/prologue/` (setup, engine: week / quarter end / auto-play / Stop here; handover; actions router).

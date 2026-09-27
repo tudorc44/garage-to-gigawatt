@@ -5,13 +5,43 @@ import {
   CONTENT,
   act1ValueQuarter,
   act2Quarter,
+  nextQuarter,
   type Machine,
   type MarketWeek,
 } from '../../content/index.ts'
 import type { Coin, Condition } from '../state.ts'
 
 export function getModel(id: string): Machine | undefined {
-  return CONTENT.machines.find((m) => m.id === id)
+  return (
+    CONTENT.machines.find((m) => m.id === id) ??
+    CONTENT.prologue.machines.find((m) => m.id === id)
+  )
+}
+
+/** A prologue machine (machines_prologue.json): its prices follow the prologue's own rule. */
+export function isPrologueModel(model: Machine): boolean {
+  return CONTENT.prologue.machines.includes(model)
+}
+
+/**
+ * A prologue machine's price in a quarter (Alpha 0.3 §2.5): the latest listed quarter at or before
+ * it; none before the first listed quarter, and for buying none more than 4 quarters after the
+ * last. Selling uses the latest listed price for good (a machine carried into Act I).
+ */
+function prologuePrice(
+  curve: Record<string, number>,
+  label: string,
+  buying: boolean,
+): number | undefined {
+  const keys = Object.keys(curve).sort()
+  const at = keys.filter((k) => k <= label).at(-1)
+  if (at === undefined) return undefined
+  if (buying) {
+    let end = keys.at(-1)!
+    for (let i = 0; i < 4; i++) end = nextQuarter(end)
+    if (label > end) return undefined
+  }
+  return curve[at]
 }
 
 /** Market data for a week of a quarter (week 0–12). Throws past the end of the data, so a
@@ -83,6 +113,14 @@ export function buyPrice(
   condition: Condition,
 ): number | undefined {
   const label = CONTENT.quarters[quarter]
+  if (isPrologueModel(model)) {
+    if (label < model.available_from) return undefined
+    return prologuePrice(
+      condition === 'new' ? model.price_new : model.price_used,
+      label,
+      true,
+    )
+  }
   const act2 = act2Prices(model, quarter)
   if (act2) {
     if (label < model.available_from) return undefined
@@ -117,6 +155,10 @@ export function buyPrice(
  * tier-based used price (even before a used market opens for buyers); others at 2022Q3's.
  */
 export function sellPrice(model: Machine, quarter: number): number {
+  if (isPrologueModel(model))
+    return (
+      prologuePrice(model.price_used, CONTENT.quarters[quarter], false) ?? 0
+    )
   const act2 = act2Prices(model, quarter)
   if (act2) return act2.usedUsd
   const held = model.price_used[act1ValueQuarter(quarter)] ?? 0

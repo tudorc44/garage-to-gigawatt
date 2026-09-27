@@ -3,7 +3,7 @@
 //  1. Version steps: each change of format has a migration from version n to n + 1, run in turn.
 //  2. Small additions within a version: fields added since the save was made get their
 //     starting values, as in a new game.
-import { actLastQuarter } from '../content/index.ts'
+import { actFirstQuarter, actLastQuarter } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
 import {
@@ -24,7 +24,7 @@ const PHASES: Phase[] = [
 ]
 
 /** The save format this build writes (GameState.version). */
-export const SAVE_VERSION = 2
+export const SAVE_VERSION = 3
 
 type SaveData = Record<string, unknown>
 
@@ -40,6 +40,9 @@ const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
     act: 1,
     phase: data.phase === 'ended' ? 'chapter' : data.phase,
   }),
+  // 2 → 3 (the prologue, Alpha 0.3): a save can now be in act 0 (quarters −32 … −1) and carry the
+  // prologue's state. Nothing in a version-2 save changes: it was Act I or Act II.
+  2: (data) => ({ ...data, version: 3 }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }
@@ -54,7 +57,9 @@ function isObject(x: unknown): x is Record<string, unknown> {
  */
 function actFitsQuarter(act: unknown, quarter: number): boolean {
   const boundary = actLastQuarter(1)
-  if (act === 1) return quarter <= boundary
+  // The prologue: 2009Q1–2016Q4; its chapter report hands over at 2016Q4 (still −1).
+  if (act === 0) return quarter >= actFirstQuarter(0) && quarter < 0
+  if (act === 1) return quarter <= boundary && quarter >= 0
   if (act === 2) return quarter >= boundary
   return false
 }

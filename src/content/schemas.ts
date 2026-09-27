@@ -1382,3 +1382,126 @@ export const shocksFileSchema = z.object({
     }),
   ),
 })
+
+// ---------- the prologue (Alpha 0.3): machines_prologue.json, prologue.json ----------
+
+export const machinesPrologueFileSchema = z.object({
+  models: z.array(machineSchema).min(1),
+})
+
+const yearValues = z.record(z.string().regex(/^\d{4}$/), nonNeg)
+const designedValue = z.object({ value: nonNeg }).passthrough()
+
+export const prologueFileSchema = z.object({
+  start: z.object({
+    cash_usd: nonNeg,
+    income_usd_q: nonNeg,
+    site_tier: z.string(),
+    machines: z.array(z.string()),
+    bandwidth: z.number().int().min(1),
+    bandwidth_after_move_out: z.number().int().min(0),
+  }),
+  site_tiers: z.array(
+    z.object({
+      id: z.string(),
+      capacity_kw: nonNeg,
+      household_threshold_kw: nonNeg,
+      capex_usd: nonNeg,
+      unlock: z.string(),
+    }),
+  ),
+  act1_tiers: z.record(
+    z.string(),
+    z.object({ unlock: z.string(), from: quarterId.optional() }),
+  ),
+  household: z.object({
+    patience_start: nonNeg,
+    drain_per_quarter: designedValue,
+    at_zero_default: z.enum(['cut_load', 'move_out']),
+  }),
+  move_out: z.object({
+    deposit_usd_by_year: yearValues,
+    rent_usd_q_by_year: yearValues,
+  }),
+  conferences: z.array(
+    z.object({ id: z.string(), quarter: quarterId, cost_usd: nonNeg }),
+  ),
+  conference_effect: z.object({
+    preorder_on_time_pp: nonNeg,
+    used_offer_discount: nonNeg,
+  }),
+  vanity: z.array(z.object({ id: z.string(), cost_usd: nonNeg })),
+  pools: z.object({
+    from: quarterId,
+    fee_by_year: z.record(z.string(), z.number().min(0).max(1)),
+  }),
+  blocks_per_week: z.number().positive(),
+  exchange: z.object({
+    gox_hack: z.object({
+      quarter: quarterId,
+      week_of: isoDate,
+      no_selling_weeks: z.number().int().min(0),
+      household_patience: z.number(),
+    }),
+    gox_collapse: z.object({
+      quarter: quarterId,
+      week_of: isoDate,
+      loss_share: z.number().min(0).max(1),
+      withdraw_success: z.number().min(0).max(1),
+      withdraw_saves_share: z.number().min(0).max(1),
+    }),
+    bitfinex: z.object({
+      quarter: quarterId,
+      week_of: isoDate,
+      chance: designedValue,
+      loss_share: z.number().min(0).max(1),
+    }),
+    named_until: quarterId,
+  }),
+  wallet_loss: z.object({
+    chance_per_quarter: designedValue,
+    backup_mult: z.number().min(0).max(1),
+    backup_bandwidth: z.number().int().min(0),
+    backup_cash_usd: nonNeg,
+  }),
+  sell_caps_usd_week: z.object({
+    by_year: yearValues,
+    impact: z.number().min(0).max(1),
+  }),
+  preorders: z.object({
+    vendors: z.array(
+      z.object({
+        id: z.string(),
+        window: z.tuple([quarterId, quarterId]),
+        model: z.string(),
+        price_usd: nonNeg,
+        unit_share: z.number().positive().max(1),
+        promised_quarters: z.number().int().min(0),
+        odds: z.object({
+          on_time: nonNeg,
+          moderate: nonNeg,
+          severe: nonNeg,
+          never: nonNeg,
+        }),
+        moderate_quarters: z.tuple([z.number().int(), z.number().int()]),
+        severe_quarters: z.tuple([z.number().int(), z.number().int()]),
+        refund_share: z.number().min(0).max(1),
+      }),
+    ),
+  }),
+  decision_quarters: z.array(quarterId),
+  offers: z.array(
+    z.object({
+      id: z.string(),
+      quarter: quarterId,
+      btc: z.number().positive(),
+      usd: nonNeg,
+    }),
+  ),
+  not_for_sale: z.array(z.string()),
+  handover: z.object({
+    model_map: z.record(z.string(), z.string()),
+    home_tiers_to: z.string(),
+  }),
+})
+export type PrologueRules = z.output<typeof prologueFileSchema>

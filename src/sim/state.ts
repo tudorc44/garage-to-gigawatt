@@ -5,6 +5,7 @@ import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { DealNegotiation } from './systems/dealNegotiation.ts'
+import type { PrologueCarry, PrologueState } from './prologue/types.ts'
 import type { InvestorPitch, PitchWalkaway } from './systems/pitch.ts'
 import type { MarketRead } from './systems/readMarket.ts'
 import { emptyEventState, type EventState } from './systems/eventEffects.ts'
@@ -351,9 +352,16 @@ export interface Auction {
 
 export interface GameState {
   /** Save-format version (save.ts SAVE_VERSION). Older saves are migrated step by step when loaded. */
-  version: 2
-  /** The act being played: 1 = Act I (2017Q1–2022Q3), 2 = Act II (2022Q4–2026Q4). */
-  act: 1 | 2
+  version: 3
+  /**
+   * The act being played: 0 = the prologue (2009Q1–2016Q4, quarter indices −32 … −1), 1 = Act I
+   * (2017Q1–2022Q3), 2 = Act II (2022Q4–2026Q4).
+   */
+  act: 0 | 1 | 2
+  /** The prologue's own state: only a prologue start has it (Alpha 0.3). */
+  prologue?: PrologueState
+  /** What a prologue start brought into Act I (its net worth for the growth multiple, custody). */
+  prologueCarry?: PrologueCarry
   seed: number
   /** Current position of the seeded RNG (see rng.ts). */
   rng: number
@@ -671,7 +679,7 @@ export function roundCents(usd: number): number {
 export function newGame(seed: number): GameState {
   const start = CONTENT.siteTiers.find((t) => t.id === BALANCE.startSite)!
   return {
-    version: 2,
+    version: 3,
     act: 1,
     seed,
     rng: seed | 0,

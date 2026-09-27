@@ -1,0 +1,88 @@
+{
+ "schema_version": 1,
+ "note": "The game's copy of the prologue's rules (Alpha 0.3 §2; docs/prologue-content/: sites_prologue.json, life.json, custody.json, preorders.json and events_prologue.json's decision quarters and offers), reshaped into structured fields. Values are the pack's; 'designed' marks the scope's designed values (§2.8, §6). Where the pack's text had to become numbers, the reading is in the field's note.",
+ "start": {
+  "cash_usd": 2000,
+  "income_usd_q": 1200,
+  "site_tier": "bedroom",
+  "machines": ["pc_cpu"],
+  "bandwidth": 2,
+  "bandwidth_after_move_out": 1
+ },
+ "site_tiers": [
+  {"id": "bedroom", "capacity_kw": 0.15, "household_threshold_kw": 0.5, "capex_usd": 0, "unlock": "start"},
+  {"id": "home_rig", "capacity_kw": 1.5, "household_threshold_kw": 0.8, "capex_usd": 300, "unlock": "cash"}
+ ],
+ "act1_tiers": {
+  "garage": {"unlock": "moved_out"},
+  "small_unit": {"unlock": "moved_out", "from": "2014Q1"}
+ },
+ "household": {
+  "patience_start": 100,
+  "drain_per_quarter": {"value": 15, "designed": true, "note": "at each quarter end while the load at a household site is above its threshold (scope §2.3)"},
+  "at_zero_default": "cut_load"
+ },
+ "move_out": {
+  "deposit_usd_by_year": {"2010": 900, "2013": 940, "2016": 1030},
+  "rent_usd_q_by_year": {"2010": 2685, "2011": 2790, "2012": 2820, "2013": 2811, "2014": 2880, "2015": 2970, "2016": 3087},
+  "rent_note": "Years before the first listed use the first listed value; others the latest listed at or before (the pack's national averages; a college town would be 10–20% lower: a tuning lever, scope P4)."
+ },
+ "conferences": [
+  {"id": "bitcoin2013", "quarter": "2013Q2", "cost_usd": 900},
+  {"id": "bitcoin2014", "quarter": "2014Q2", "cost_usd": 1400}
+ ],
+ "conference_effect": {"preorder_on_time_pp": 0.10, "used_offer_discount": 0.15},
+ "vanity": [
+  {"id": "watch", "cost_usd": 7000},
+  {"id": "car", "cost_usd": 11000},
+  {"id": "trip", "cost_usd": 3000},
+  {"id": "macbook", "cost_usd": 2200},
+  {"id": "iphone4", "cost_usd": 299}
+ ],
+ "pools": {
+  "from": "2010Q4",
+  "fee_by_year": {"2010": 0.0, "2011": 0.02, "2012": 0.02, "2013": 0.02, "2014": 0.02, "2015": 0.015, "2016": 0.015}
+ },
+ "blocks_per_week": 1008,
+ "exchange": {
+  "gox_hack": {"quarter": "2011Q2", "week_of": "2011-06-13", "no_selling_weeks": 1, "household_patience": -5},
+  "gox_collapse": {"quarter": "2014Q1", "week_of": "2014-02-10", "loss_share": 0.8, "withdraw_success": 0.2, "withdraw_saves_share": 0.5},
+  "bitfinex": {"quarter": "2016Q3", "week_of": "2016-08-01", "chance": {"value": 0.12, "designed": true}, "loss_share": 0.36},
+  "named_until": "2014Q1"
+ },
+ "wallet_loss": {
+  "chance_per_quarter": {"value": 0.0075, "designed": true, "note": "3%/year ÷ 4 (scope §2.7)"},
+  "backup_mult": 0.15,
+  "backup_bandwidth": 1,
+  "backup_cash_usd": 0
+ },
+ "sell_caps_usd_week": {
+  "designed": true,
+  "note": "Designed weekly caps on coin sales (scope §2.8, P0-16: the pack has no volume series). Realised price = market × (1 − impact × sale ÷ cap). Unfilled orders carry to the next week. Forum offers are outside the cap. 2009 has no market (price $0).",
+  "by_year": {"2009": 0, "2010": 500, "2011": 20000, "2012": 20000, "2013": 500000, "2014": 500000, "2015": 500000, "2016": 1000000},
+  "impact": 0.2
+ },
+ "preorders": {
+  "vendors": [
+   {"id": "preorder_summit_silicon", "window": ["2012Q4", "2013Q1"], "model": "asic_preorder_early", "price_usd": 1300, "unit_share": 1, "promised_quarters": 1,
+    "odds": {"on_time": 0.45, "moderate": 0.35, "severe": 0.15, "never": 0.05}, "moderate_quarters": [2, 3], "severe_quarters": [4, 6], "refund_share": 0.5},
+   {"id": "preorder_northgate_asics", "window": ["2013Q1", "2013Q2"], "model": "asic_preorder_early", "price_usd": 1450, "unit_share": 1, "promised_quarters": 1,
+    "odds": {"on_time": 0.40, "moderate": 0.40, "severe": 0.15, "never": 0.05}, "moderate_quarters": [2, 3], "severe_quarters": [4, 5], "refund_share": 0.5},
+   {"id": "group_buy", "window": ["2013Q1", "2013Q2"], "model": "asic_preorder_early", "price_usd": 650, "unit_share": 0.5, "promised_quarters": 1,
+    "odds": {"on_time": 0.40, "moderate": 0.35, "severe": 0.18, "never": 0.07}, "moderate_quarters": [2, 3], "severe_quarters": [4, 6], "refund_share": 0.4}
+  ],
+  "note": "Delay rolled at order time on its own seeded stream. Delay quarters count after the promised delivery (on time = delivered after promised_quarters). The conference contact moves 10 points into on-time, taken from severe first, then never."
+ },
+ "decision_quarters": ["2009Q1", "2009Q4", "2010Q2", "2010Q3", "2011Q2", "2011Q4", "2012Q4", "2013Q1", "2013Q4", "2014Q1", "2015Q3", "2016Q3", "2016Q4"],
+ "offers": [
+  {"id": "offer_forum_buyer_1", "quarter": "2009Q4", "btc": 5000, "usd": 5},
+  {"id": "offer_forum_buyer_2", "quarter": "2010Q1", "btc": 2000, "usd": 10},
+  {"id": "offer_local_trade", "quarter": "2010Q1", "btc": 1000, "usd": 3},
+  {"id": "offer_forum_buyer_3", "quarter": "2010Q2", "btc": 500, "usd": 40},
+  {"id": "offer_forum_buyer_4", "quarter": "2010Q3", "btc": 2000, "usd": 130},
+  {"id": "offer_final_hobby_offer", "quarter": "2010Q4", "btc": 300, "usd": 90}
+ ],
+ "offer_note": "An offer opens in its quarter (from its date) and stays in the tray until the end of the next decision quarter at or after it (a Prologue choice: most offer quarters auto-play).",
+ "not_for_sale": ["pc_cpu", "asic_preorder_early"],
+ "handover": {"model_map": {"antminer_s9_early": "s9"}, "home_tiers_to": "garage"}
+}

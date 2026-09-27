@@ -108,6 +108,9 @@ import {
   useSpot,
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
+import { prologueNextQuarter } from './prologue/engine.ts'
+import { handOverToAct1 } from './prologue/handover.ts'
+import { runPrologue, type PrologueAction } from './prologue/actions.ts'
 import {
   dealAccept,
   dealCounter,
@@ -285,7 +288,14 @@ export type Action =
   /** Answer the alert that paused the live quarter. */
   | { type: 'RESOLVE_INTERRUPT'; choice: string }
   /** Close the quarter report and go to the next Plan phase. */
-  | { type: 'NEXT_QUARTER' }
+  /** From the report to the next quarter. Prologue only: `stopHere` gives it a Plan phase even if it would auto-play. */
+  | { type: 'NEXT_QUARTER'; stopHere?: boolean }
+  /** The prologue's intro → its first Plan phase (2009Q1). */
+  | { type: 'START_PROLOGUE' }
+  /** The prologue's chapter report → Act I, 2017Q1, with everything carried (Alpha 0.3 §2.12). */
+  | { type: 'CONTINUE_TO_ACT_1' }
+  /** The prologue's Plan-phase actions (src/sim/prologue/actions.ts). */
+  | PrologueAction
   /** The Merge decision (merge.json choice id): ends Act I. */
   | { type: 'MERGE_CHOOSE'; choice: string }
   /** From the Act I chapter report to the Act II intro (the act boundary, scope 0.2 §2.1). */
@@ -329,6 +339,11 @@ function fail(key: MessageKey, params?: MessageParams): Message {
 }
 
 function run(s: GameState, a: Action): Message | undefined {
+  // The prologue (act 0) has its own actions; a few of Act I's work there unchanged.
+  if (s.act === 0) {
+    const r = runPrologue(s, a as { type: string } & Record<string, unknown>)
+    if (r !== 'act1') return r
+  }
   switch (a.type) {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
@@ -369,7 +384,18 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'NEXT_QUARTER':
       if (s.phase !== 'report') return fail('error.wrong_phase')
-      startNextQuarter(s)
+      if (s.act === 0) prologueNextQuarter(s, a.stopHere === true)
+      else startNextQuarter(s)
+      return
+
+    case 'START_PROLOGUE':
+      if (s.phase !== 'intro' || s.act !== 0) return fail('error.wrong_phase')
+      s.phase = 'plan'
+      return
+
+    case 'CONTINUE_TO_ACT_1':
+      if (s.phase !== 'chapter' || s.act !== 0) return fail('error.wrong_phase')
+      handOverToAct1(s)
       return
 
     case 'MERGE_CHOOSE':

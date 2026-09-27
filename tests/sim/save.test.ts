@@ -178,14 +178,14 @@ const readV1 = (name: string): Record<string, unknown> =>
   )
 
 describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
-  it('a new game is version 2, in Act I', () => {
+  it('a new game is the current version (3 since the prologue), in Act I', () => {
     expect(newGame(1).version).toBe(SAVE_VERSION)
-    expect(SAVE_VERSION).toBe(2)
+    expect(SAVE_VERSION).toBe(3)
     expect(newGame(1).act).toBe(1)
   })
 
   it.each(V1_SAVES)(
-    'migrates the version-1 save %s: version 2, Act I, nothing else changed',
+    'migrates the version-1 save %s: version 3, Act I, nothing else changed',
     (name) => {
       const v1 = readV1(name)
       expect(v1.version).toBe(1)
@@ -193,11 +193,11 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const r = restoreSave(v1)
       expect(r.ok).toBe(true)
       if (!r.ok) return
-      expect(r.state.version).toBe(2)
+      expect(r.state.version).toBe(3)
       expect(r.state.act).toBe(1)
       // Everything the save had stays as it was (a finished game's "ended" is now "chapter");
       // fields added to the game since are known additions with their starting values.
-      const expected = { ...v1, version: 2, act: 1 } as Record<string, unknown>
+      const expected = { ...v1, version: 3, act: 1 } as Record<string, unknown>
       if (v1.phase === 'ended') expected.phase = 'chapter'
       const added: string[] = []
       expectKeeps(r.state, expected, '', added)
@@ -209,8 +209,29 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
     const v1 = readV1('v1-plan-2021Q2')
     const text = 'G2G1.' + Buffer.from(JSON.stringify(v1)).toString('base64')
     const r = decodeSave(text)
-    expect(r.ok && r.state.version).toBe(2)
+    expect(r.ok && r.state.version).toBe(3)
     expect(r.ok && r.state.act).toBe(1)
+  })
+
+  it('migrates a version-2 save (Act I or Act II) to version 3 with nothing else changed (the prologue step)', () => {
+    for (const s of [
+      newGame(7),
+      { ...newGame(7), act: 2 as const, quarter: 30 },
+    ]) {
+      const v2 = { ...structuredClone(s), version: 2 }
+      const r = restoreSave(v2)
+      expect(r.ok).toBe(true)
+      if (!r.ok) return
+      expect(r.state).toEqual({ ...s, version: 3 })
+    }
+  })
+
+  it('accepts an act-0 (prologue) save only inside the prologue’s quarters', () => {
+    const p = { ...newGame(7), act: 0 as const, quarter: -20 }
+    expect(restoreSave(p).ok).toBe(true)
+    expect(restoreSave({ ...p, quarter: 3 }).ok).toBe(false)
+    expect(restoreSave({ ...p, quarter: -40 }).ok).toBe(false)
+    expect(restoreSave({ ...newGame(7), quarter: -5 }).ok).toBe(false)
   })
 
   it('a migrated version-1 save plays on to the Merge', () => {

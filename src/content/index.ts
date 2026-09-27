@@ -19,6 +19,8 @@ import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
 import sitesAct2Raw from './sites_act2.json' with { type: 'json' }
 import rivalsAct2Raw from './rivals_act2.json' with { type: 'json' }
+import machinesPrologueRaw from './machines_prologue.json' with { type: 'json' }
+import prologueRaw from './prologue.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
@@ -64,6 +66,9 @@ import {
   negotiationRulesSchema,
   rivalsFileSchema,
   rivalsAct2FileSchema,
+  machinesPrologueFileSchema,
+  prologueFileSchema,
+  type PrologueRules,
   shocksFileSchema,
   sitesFileSchema,
   type AuctionRules,
@@ -384,6 +389,11 @@ export interface Content {
   rivals: Rival[]
   /** The 5 Act II rivals (rivals_act2.json), in file order: they replace Act I's from 2022Q4. */
   act2Rivals: RivalAct2[]
+  /**
+   * The prologue (Alpha 0.3, Act 0): its machine ladder (machines_prologue.json, found by getModel
+   * but not in `machines`, so Act I's lists never show them) and its rules (prologue.json).
+   */
+  prologue: { machines: Machine[]; rules: PrologueRules }
   /** Community Heat rules (heat.json). */
   heat: HeatRules
   /** The 5 hires and the hiring rules (hires.json). */
@@ -462,6 +472,8 @@ export interface RawContent {
   eventsAct2: unknown
   rivals: unknown
   rivalsAct2: unknown
+  machinesPrologue: unknown
+  prologue: unknown
   heat: unknown
   shocks: unknown
   hires: unknown
@@ -594,6 +606,12 @@ export function parseContent(raw: RawContent): Content {
     rivalsAct2FileSchema,
     raw.rivalsAct2,
   )
+  const machinesPrologueFile = check(
+    'machines_prologue.json',
+    machinesPrologueFileSchema,
+    raw.machinesPrologue,
+  )
+  const prologueFile = check('prologue.json', prologueFileSchema, raw.prologue)
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
   const merge = check('merge.json', mergeFileSchema, raw.merge)
@@ -653,6 +671,8 @@ export function parseContent(raw: RawContent): Content {
     !curtailAiRules ||
     !rivalsFile ||
     !rivalsAct2File ||
+    !machinesPrologueFile ||
+    !prologueFile ||
     !auction ||
     !curtailment ||
     !heat ||
@@ -1448,6 +1468,10 @@ export function parseContent(raw: RawContent): Content {
     cryptoLoan: capitalFile.loans.game_crypto_loan,
     rivals: rivalsFile.rivals,
     act2Rivals: rivalsAct2File.rivals,
+    prologue: {
+      machines: machinesPrologueFile.models,
+      rules: prologueFile,
+    },
     auction,
     curtailment,
     heat,
@@ -1581,6 +1605,11 @@ export function quarterIndex(label: string): number | undefined {
   return undefined
 }
 
+/** The first quarter index of an act (the prologue: −32, 2009Q1). */
+export function actFirstQuarter(act: ActSpan['act']): number {
+  return CONTENT.acts.find((a) => a.act === act)!.firstQuarter
+}
+
 /** The last quarter index of an act (Act I: 2022Q3). */
 export function actLastQuarter(act: ActSpan['act']): number {
   return CONTENT.acts.find((a) => a.act === act)!.lastQuarter
@@ -1631,6 +1660,8 @@ export const CONTENT: Content = parseContent({
   eventsAct2: eventsAct2Raw,
   rivals: rivalsRaw,
   rivalsAct2: rivalsAct2Raw,
+  machinesPrologue: machinesPrologueRaw,
+  prologue: prologueRaw,
   heat: heatRaw,
   hires: hiresRaw,
   merge: mergeRaw,

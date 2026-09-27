@@ -30,6 +30,8 @@ import eventsAct2 from '../src/content/events_act2.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import rivalsAct2 from '../src/content/rivals_act2.json' with { type: 'json' }
 import marketPrologue from '../src/content/market_weekly_prologue.json' with { type: 'json' }
+import machinesPrologue from '../src/content/machines_prologue.json' with { type: 'json' }
+import prologue from '../src/content/prologue.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
 import hires from '../src/content/hires.json' with { type: 'json' }
@@ -47,6 +49,8 @@ const raw = (): RawContent =>
     marketAct2,
     marketQuarterlyAct2,
     marketPrologue,
+    machinesPrologue,
+    prologue,
     capital,
     capitalAct2,
     conversions,
