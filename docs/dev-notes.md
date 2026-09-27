@@ -169,6 +169,11 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
   built Capital screen never had a "Raise debt" button, so nothing to remove.
 - M5.0d: equity pre-money = last report's valuation + this quarter's signed contracts × their backlog weight + the
   pivot premium on last quarter's mining EBITDA if the first AI deal is this quarter's (`signedThisQuarterUsd`).
+- M5.0e: bots `sign-then-raise` (good) and `asic-retirer` (great): biggest shell that starts, keeping 20% of cash
+  + the build's interest (mine); `--act2-bots` filter. Sims (50 seeds, 2026Q4 medians of the alive runs):
+  sign-then-raise 5 busts, $381M (peak $739M, $1B+ in 0/50); asic-retirer 4 busts, $2.2B, 2025 peak $3.6B, 46/50
+  alive with ≥ 4 q runway; shell-capital 9 busts (was 22), $141M; texas-capital $370M, peak $874M; raise-climb 1
+  bust (was 14); pilot 1.89× vs 1.39× (gap 0.50: pass); hosting ahead at 2026Q4 in 19/47 (pass).
 
 ## Next
 

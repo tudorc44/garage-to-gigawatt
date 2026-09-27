@@ -654,6 +654,12 @@ function aiProjects(
     capital?: boolean
     /** Keep this share of cash back (default 20%) when sizing a shell or affording a pilot. */
     reserveShare?: number
+    /**
+     * Size shells by trying: the biggest shell (1 MW steps) whose whole sequence (free the MW, open,
+     * sign, debt, raise equity, start) the game accepts, played on a copy first. With `capital`, the
+     * raise is priced after the signing (M5.0d), so a signed tenant funds a bigger build.
+     */
+    searchSize?: boolean
   },
 ): Strategy {
   const ratingRank = (r: string) =>
@@ -771,6 +777,51 @@ function aiProjects(
             freeUp(site.id, kw)
             run({ type: 'PROJECT_OPEN', siteId: site.id, kw, kind: 'pilot' })
           }
+        } else if (opts.searchSize) {
+          const site = [...sites].sort((a, b) => roomKw(b.id) - roomKw(a.id))[0]
+          /** Plays one shell of `mw` from freeing its MW to the build start; undone unless `keep` and it started. */
+          const attempt = (mw: number, keep: boolean): boolean => {
+            if (!site) return false
+            const saved = s
+            const n = actions.length
+            freeUp(site.id, mw * 1000)
+            const opened = run({
+              type: 'PROJECT_OPEN',
+              siteId: site.id,
+              kw: mw * 1000,
+              kind: 'shell',
+            })
+            if (opened) finish()
+            const p = s.projects.at(-1)
+            // It must leave the usual reserve of the quarter's starting cash for running costs, plus
+            // the interest every building project's debt charges until it goes live (and a quarter more).
+            const carryUsd = s.facilities.reduce((sum, f) => {
+              const q = s.projects.find((x) => x.id === f.projectId)
+              if (q?.stage !== 'building' || q.readyQuarter === null) return sum
+              const quarters = q.readyQuarter - s.quarter + 1
+              return sum + ((f.balanceUsd * f.apr) / 4) * quarters
+            }, 0)
+            const started =
+              opened &&
+              p !== undefined &&
+              p.kw === mw * 1000 &&
+              p.stage === 'building' &&
+              s.cash >= state.cash * (opts.reserveShare ?? 0.2) + carryUsd
+            if (!started || !keep) {
+              s = saved
+              actions.length = n
+            }
+            return started
+          }
+          // The biggest size that starts (bigger ones need more cash, so it's a binary search).
+          let lo = 0
+          let hi = site ? Math.floor(roomKw(site.id) / 1000) : 0
+          while (lo < hi) {
+            const mid = Math.ceil((lo + hi) / 2)
+            if (attempt(mid, false)) lo = mid
+            else hi = mid - 1
+          }
+          if (lo >= 1) attempt(lo, true)
         } else {
           const site = [...sites].sort((a, b) => roomKw(b.id) - roomKw(a.id))[0]
           if (site) {
@@ -971,6 +1022,29 @@ export const BOTS: Record<string, Strategy> = {
     from: '2023Q3',
     freeUp: true,
     capital: true,
+  }),
+  /**
+   * Good path, owner's M4 answer (c): raise-climb; from 2023Q3 signs a shell tenant first, then
+   * raises equity priced with the contract in it and takes project debt, building the biggest shell
+   * that closes (searchSize).
+   */
+  'sign-then-raise': aiProjects(makeBot(RAISE_CLIMB), {
+    kind: 'shell',
+    from: '2023Q3',
+    freeUp: true,
+    capital: true,
+    searchSize: true,
+  }),
+  /**
+   * Great path, owner's M4 answer: texas-ipo; from 2023Q3 sells working ASICs too (any machine) to
+   * free MW and cash for AI shells, with the same capital and sizing as sign-then-raise.
+   */
+  'asic-retirer': aiProjects(makeBot(TEXAS_IPO), {
+    kind: 'shell',
+    from: '2023Q3',
+    freeUp: 'any',
+    capital: true,
+    searchSize: true,
   }),
   /**
    * Measurement, not a design-thread path: texas-ipo without the ASIC-only rule, upgrading any

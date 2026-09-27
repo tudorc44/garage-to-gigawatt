@@ -3,6 +3,7 @@
 //   npm run sim                      (50 seeds, output in sim-output/)
 //   npm run sim -- --seeds 10 --out some/folder
 //   npm run sim -- --act2            (also plays a few bots on through Act II, to 2026Q4)
+//   npm run sim -- --act2 --act2-bots sign-then-raise,asic-retirer   (only those, for a quick check)
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONTENT, actLastQuarter } from '../src/content/index.ts'
@@ -657,7 +658,12 @@ if (args.includes('--act2')) {
     'texas-shell',
     'shell-capital',
     'texas-capital',
-  ]
+    'sign-then-raise',
+    'asic-retirer',
+  ].filter((name) => {
+    const only = argValue('--act2-bots', '')
+    return only === '' || only.split(',').includes(name)
+  })
   const t0 = performance.now()
   const byBot = ACT2_BOTS.map((name) => ({
     name,
@@ -746,7 +752,9 @@ if (args.includes('--act2')) {
       },
     }
   }
-  for (const name of ['pilot-2023Q3', 'pilot-2025Q2']) {
+  const pilotMedian: Record<string, number> = {}
+  const allBots = argValue('--act2-bots', '') === ''
+  for (const name of allBots ? ['pilot-2023Q3', 'pilot-2025Q2'] : []) {
     const multiples = Array.from({ length: SEEDS }, (_, i) =>
       playGame(i + 1, withPilotCash(name), { through: 2 }),
     )
@@ -764,20 +772,63 @@ if (args.includes('--act2')) {
           },
         ]
       })
+    pilotMedian[name] = median(multiples.map((m) => m.withResale))
     console.log(
-      `  Pilot timing (${name}): ${multiples.length} pilots built; returns ${median(multiples.map((m) => m.ops)).toFixed(2)}× its cost from operations, ${median(multiples.map((m) => m.withResale)).toFixed(2)}× with the GPUs' 2026Q4 resale value (scope 0.2 §5: 2023Q3 ≥ 1.7×, 2025Q2 ≤ 1.3×)`,
+      `  Pilot timing (${name}): ${multiples.length} pilots built; returns ${median(multiples.map((m) => m.ops)).toFixed(2)}× its cost from operations, ${pilotMedian[name].toFixed(2)}× with the GPUs' 2026Q4 resale value`,
     )
   }
-  // Scope 0.2 §5 "hosting isn't a free win": hosting vs staying in mining, same seeds, 2022Q4–2024Q1.
-  const climb = byBot.find((b) => b.name === 'raise-climb')!.runs
-  const host = byBot.find((b) => b.name === 'hosting-switcher')!.runs
-  const pairs = climb
-    .map((c, i) => [at(c, '2024Q1'), at(host[i], '2024Q1')])
-    .filter(
-      (p): p is [number, number] => p[0] !== undefined && p[1] !== undefined,
+  if (allBots) {
+    const gap = pilotMedian['pilot-2023Q3'] - pilotMedian['pilot-2025Q2']
+    console.log(
+      `  Pilot check (scope 0.2 §5, revised 27 Sep 2026): 2023Q3 ${pilotMedian['pilot-2023Q3'].toFixed(2)}× (≥ 1.7×), ${gap.toFixed(2)}× above 2025Q2 (≥ 0.4×): ${pilotMedian['pilot-2023Q3'] >= 1.7 && gap >= 0.4 ? 'pass' : 'miss'}`,
     )
-  const wins = pairs.filter(([c, h]) => h > c).length
-  console.log(
-    `  Hosting vs staying in mining (hosting-switcher vs raise-climb, same seeds, value at 2024Q1): hosting ahead in ${wins}/${pairs.length} runs (scope 0.2 §5: should be ≤ ~60%)`,
-  )
+  }
+  const runsOf = (name: string) => byBot.find((b) => b.name === name)?.runs
+  // Scope 0.2 §5 "hosting isn't a free win" (revised 27 Sep 2026): hosting vs staying in mining,
+  // same seeds, judged at 2026Q4.
+  const climb = runsOf('raise-climb')
+  const host = runsOf('hosting-switcher')
+  if (climb && host) {
+    const pairs = climb
+      .map((c, i) => [at(c, '2026Q4'), at(host[i], '2026Q4')])
+      .filter(
+        (p): p is [number, number] => p[0] !== undefined && p[1] !== undefined,
+      )
+    const wins = pairs.filter(([c, h]) => h > c).length
+    console.log(
+      `  Hosting vs staying in mining (hosting-switcher vs raise-climb, same seeds, value at 2026Q4): hosting ahead in ${wins}/${pairs.length} runs (scope 0.2 §5: should be ≤ ~60%)`,
+    )
+  }
+  // Scope 0.2 §5 good and great paths: the good path ends 2026Q4 at ~$1–3B; the great path peaks at
+  // $10B+ in 2025 and survives 2026 with ≥ 12 months (4 quarters) of runway.
+  for (const name of ['shell-capital', 'sign-then-raise']) {
+    const runs = runsOf(name)
+    if (!runs) continue
+    const ends = runs.map((r) => at(r, '2026Q4') ?? 0)
+    const inBand = ends.filter((v) => v >= 1e9).length
+    console.log(
+      `  Good path (${name}): 2026Q4 median ${usd(median(ends))}; at $1B+ in ${inBand}/${ends.length} runs (target ~$1–3B)`,
+    )
+  }
+  for (const name of ['texas-capital', 'asic-retirer']) {
+    const runs = runsOf(name)
+    if (!runs) continue
+    const peak2025 = runs.map((r) =>
+      Math.max(
+        0,
+        ...r.state.reports
+          .filter((x) => x.quarter.startsWith('2025'))
+          .map((x) => x.valuationUsd),
+      ),
+    )
+    const survivors = runs.filter((r) => {
+      if (r.state.phase !== 'chapter') return false
+      const last = r.state.reports.at(-1)!
+      const burn = last.ebitdaUsd - last.interestUsd - last.principalUsd
+      return burn >= 0 || last.cash / -burn >= 4
+    }).length
+    console.log(
+      `  Great path (${name}): 2025 peak median ${usd(median(peak2025))} (target $10B+); alive at 2026Q4 with ≥ 4 quarters of runway in ${survivors}/${runs.length} runs`,
+    )
+  }
 }
