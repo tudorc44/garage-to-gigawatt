@@ -1,6 +1,7 @@
 // Market system: this week's coin prices and mining revenue, and machine prices.
 // Everything comes straight from the scripted content (market_weekly + machines.json).
 import {
+  BALANCE,
   CONTENT,
   act1ValueQuarter,
   act2Quarter,
@@ -115,7 +116,15 @@ export function buyPrice(
 export function sellPrice(model: Machine, quarter: number): number {
   const act2 = act2Prices(model, quarter)
   if (act2) return act2.usedUsd
-  return model.price_used[act1ValueQuarter(quarter)] ?? 0
+  const held = model.price_used[act1ValueQuarter(quarter)] ?? 0
+  // Act II GPU rigs (parked or not) lose value on the Act II GPU resale curve from 2022Q4
+  // (owner, 28 Sep 2026: hold_and_wait's "resale keeps decaying on the normal curve").
+  if (model.coin === 'ETH' && act2Quarter(quarter)) {
+    const r = BALANCE.projects.gpuResidual
+    const years = (quarter - CONTENT.acts[1].firstQuarter) / 4
+    return held * Math.max(r.floor, 1 - r.declinePerYear * years)
+  }
+  return held
 }
 
 /** Quarters from order to delivery. Used machines are delivered at once. */

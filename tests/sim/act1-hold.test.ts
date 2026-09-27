@@ -45,8 +45,14 @@ describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
       for (const q of [Q4_2022, Q4_2026]) {
         expect(buyPrice(m, q, 'used')).toBe(buyPrice(m, Q3_2022, 'used'))
         expect(buyPrice(m, q, 'new')).toBe(buyPrice(m, Q3_2022, 'new'))
-        expect(sellPrice(m, q)).toBe(sellPrice(m, Q3_2022))
       }
+      // Selling: GPU rigs follow the Act II GPU resale curve (−15% a year from 2022Q4, owner
+      // 28 Sep 2026); other machines hold.
+      expect(sellPrice(m, Q4_2022)).toBe(sellPrice(m, Q3_2022))
+      expect(sellPrice(m, Q4_2026)).toBeCloseTo(
+        sellPrice(m, Q3_2022) * (m.coin === 'ETH' ? 0.4 : 1),
+        6,
+      )
     }
     // The S9's retail sale ended in 2020Q1, and stays ended.
     expect(buyPrice(getModel('s9')!, Q4_2022, 'new')).toBeUndefined()

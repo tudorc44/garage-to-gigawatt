@@ -190,6 +190,40 @@ export const BALANCE = {
      * live in 2022Q4 (the Merge quarter was the build; mine). Garage rigs are sold (no hosting there).
      */
     hostingRateUsdKwh: 0.075,
+    /**
+     * Owner, 28 Sep 2026 (M5 answer 2): each head start's own opening.
+     * - gpu_cloud: from 2023Q2 its cloud projects always get a neocloud GPU-contract offer (until one
+     *   is signed; mine: "scouting" read as the project's tenant offers), and its first pilot skips
+     *   the GPU allocation interrupt.
+     * - hosting: from 2023Q3 its shell projects always get an AA hyperscaler lease offer (until one is
+     *   signed).
+     * - sell_gpus_keep_btc: in 2023Q1 only, a distressed fleet: up to 10 MW of S19 Pro-class machines
+     *   (used) at 60% of that quarter's new price, into one site's free power.
+     * - hold_and_wait: the GPU rigs are parked (off, no power, no revenue; their resale follows the
+     *   Act II GPU curve like every rig); +25% on their resale in 2023Q2–Q4; +1 Bandwidth in
+     *   2022Q4 and 2023Q1.
+     */
+    guaranteedOffer: {
+      gpu_cloud: {
+        from: '2023Q2',
+        card: 'tc_realname_coreweave_style',
+        kind: 'cloud',
+      },
+      hosting: { from: '2023Q3', card: 'tc_north_azure_cloud', kind: 'shell' },
+    } as Readonly<Record<string, { from: string; card: string; kind: string }>>,
+    distressedFleet: {
+      quarter: '2023Q1',
+      model: 's19pro',
+      maxKw: 10_000,
+      priceShareOfNew: 0.6,
+      bandwidth: 1,
+    },
+    holdAndWait: {
+      resalePremium: 0.25,
+      premiumQuarters: ['2023Q2', '2023Q4'] as readonly [string, string],
+      bandwidthQuarters: ['2022Q4', '2023Q1'] as readonly string[],
+      bandwidthBonus: 1,
+    },
   },
 
   /**

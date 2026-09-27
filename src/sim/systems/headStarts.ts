@@ -16,10 +16,11 @@ import {
   type MachineLot,
   type Project,
 } from '../state.ts'
-import { removeMachines } from './machines.ts'
-import { getModel } from './market.ts'
+import type { Message } from '../../i18n/t.ts'
+import { addMachines, removeMachines } from './machines.ts'
+import { act2Prices, getModel } from './market.ts'
 import { isShutDown } from './heat.ts'
-import { powerPriceUsdKwh, uptime } from './sites.ts'
+import { capacityKw, powerPriceUsdKwh, uptime, usedKw } from './sites.ts'
 
 const H = BALANCE.headStarts
 const firstAct2Quarter = () => CONTENT.acts[1].firstQuarter
@@ -170,6 +171,125 @@ export function headStartBuildDelta(
   if (p.kind === 'shell' && shellReady(state, p.siteId))
     delta -= CONTENT.projects.shellReady.quarterDiscount
   return delta
+}
+
+// ---------- each head start's own opening (owner, 28 Sep 2026; M5 answer 2) ----------
+
+/**
+ * gpu_cloud / hosting: the tenant card a project's offers must include (a neocloud GPU contract for
+ * a cloud from 2023Q2; an AA hyperscaler lease for a shell from 2023Q3), until one is signed.
+ */
+export function guaranteedOfferCard(
+  state: GameState,
+  p: Pick<Project, 'kind'>,
+): string | undefined {
+  const g = H.guaranteedOffer[state.act2Entry?.headStart ?? '']
+  if (!g || p.kind !== g.kind) return undefined
+  if (CONTENT.quarters[state.quarter] < g.from) return undefined
+  if (state.projects.some((x) => x.tenant?.card === g.card)) return undefined
+  return g.card
+}
+
+/** gpu_cloud: the company's first pilot skips the GPU allocation interrupt (its supplier knows it). */
+export function skipsAllocation(state: GameState, p: Project): boolean {
+  return (
+    state.act2Entry?.headStart === 'gpu_cloud' &&
+    p.kind === 'pilot' &&
+    !state.projects.some(
+      (x) =>
+        x.id !== p.id &&
+        x.kind === 'pilot' &&
+        x.startQuarter !== null &&
+        x.startQuarter < (p.startQuarter ?? state.quarter),
+    )
+  )
+}
+
+/** sell_gpus_keep_btc: the one-off distressed fleet on offer now (2023Q1 only), or undefined. */
+export function fleetOffer(state: GameState) {
+  const f = H.distressedFleet
+  const e = state.act2Entry
+  if (e?.headStart !== 'sell_gpus_keep_btc' || e.fleetBought) return undefined
+  if (CONTENT.quarters[state.quarter] !== f.quarter) return undefined
+  const model = getModel(f.model)!
+  const newUsd = act2Prices(model, state.quarter)?.newUsd
+  if (newUsd === undefined) return undefined
+  return {
+    model: model.id,
+    maxUnits: Math.floor(f.maxKw / model.power_kw),
+    unitKw: model.power_kw,
+    unitUsd: Math.round(newUsd * f.priceShareOfNew),
+    newUnitUsd: newUsd,
+    bandwidth: f.bandwidth,
+  }
+}
+
+/** The units of the fleet a site can take now: its free power, up to the offer's 10 MW. */
+export function fleetUnitsFor(state: GameState, siteId: string): number {
+  const o = fleetOffer(state)
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!o || !site) return 0
+  const freeKw = capacityKw(site) - usedKw(state, siteId)
+  return Math.max(0, Math.min(o.maxUnits, Math.floor(freeKw / o.unitKw)))
+}
+
+/** Why the fleet can't be bought into this site now, or undefined if it can. */
+export function fleetBlocker(
+  state: GameState,
+  siteId: string,
+): Message | undefined {
+  const o = fleetOffer(state)
+  if (!o) return { key: 'error.no_fleet_offer' }
+  const units = fleetUnitsFor(state, siteId)
+  if (units < 1) return { key: 'error.fleet_no_room' }
+  if (state.bandwidth < o.bandwidth)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: o.bandwidth, have: state.bandwidth },
+    }
+  if (units * o.unitUsd > state.cash)
+    return {
+      key: 'error.no_cash',
+      params: { costUsd: units * o.unitUsd, cashUsd: state.cash },
+    }
+  return undefined
+}
+
+/** Buys the distressed fleet into a site (assumes fleetBlocker passed): used units, earning next quarter. */
+export function buyFleet(state: GameState, siteId: string): void {
+  const o = fleetOffer(state)!
+  const units = fleetUnitsFor(state, siteId)
+  const costUsd = units * o.unitUsd
+  state.cash -= costUsd
+  state.bandwidth -= o.bandwidth
+  addMachines(state, o.model, 'used', units, siteId)
+  state.act2Entry!.fleetBought = true
+  logEntry(state, 'log.fleet_bought', {
+    count: units,
+    model: o.model,
+    costUsd,
+  })
+}
+
+/** hold_and_wait: parked GPU rigs sell for +25% in 2023Q2–Q4 (the 2023 GPU scarcity); 1 otherwise. */
+export function rigResaleMult(state: GameState, lot: MachineLot): number {
+  const h = H.holdAndWait
+  const label = CONTENT.quarters[state.quarter]
+  return state.act2Entry?.headStart === 'hold_and_wait' &&
+    isGpuRig(lot) &&
+    label >= h.premiumQuarters[0] &&
+    label <= h.premiumQuarters[1]
+    ? 1 + h.resalePremium
+    : 1
+}
+
+/** hold_and_wait: +1 Bandwidth in 2022Q4 and 2023Q1 (no GPU operations to run); 0 otherwise. */
+export function holdBandwidthBonus(state: GameState): number {
+  const h = H.holdAndWait
+  return state.act2Entry?.headStart === 'hold_and_wait' &&
+    h.bandwidthQuarters.includes(CONTENT.quarters[state.quarter])
+    ? h.bandwidthBonus
+    : 0
 }
 
 /**

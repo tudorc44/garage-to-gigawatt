@@ -108,6 +108,8 @@ export interface MachineLot {
 export interface Act2Entry {
   /** The Merge choice (merge.json id) whose head start applies. */
   headStart: string
+  /** sell_gpus_keep_btc: the 2023Q1 distressed fleet was bought (it's one-off). */
+  fleetBought?: boolean
   /** GPU rigs sold at the boundary (sell_gpus_keep_btc; hosting: those converted), and for how much. */
   gpuRigsSold: number
   gpuSaleUsd: number

@@ -203,3 +203,6 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   bridge bullet (now raises equity and repays it from the quarter before); the preset bot filled its free MW with S19s and never built
   (AI bots buy no machines in Act II); sizing reserves the equipment loan's payments too (the preset's shells were foreclosed).
 - M6.0e: Act II Bandwidth base 4 (balance.ts › act2Bandwidth); the Chief of Staff already carried (staff persist), nothing else does.
+- M6.0f: head starts (headStarts.ts; balance.ts › headStarts): guaranteed offers (mine: in the project's tenant offers, until signed),
+  gpu_cloud's first pilot skips allocation, sell_gpus' 2023Q1 fleet (BUY_DISTRESSED_FLEET, Dashboard row), hold_and_wait +25% / +1 BW; all
+  Act II GPU rigs resell on the 15%/yr curve (mine). Bots `open-*` (tools/bots.ts); AI bots mine only until their AI phase (M6.0d fix).

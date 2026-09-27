@@ -107,7 +107,12 @@ import {
   useSpot,
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
-import { applyHeadStart } from './systems/headStarts.ts'
+import {
+  applyHeadStart,
+  buyFleet,
+  fleetBlocker,
+  rigResaleMult,
+} from './systems/headStarts.ts'
 import {
   offerLifeline,
   repayBridgeLoan,
@@ -284,6 +289,8 @@ export type Action =
   | { type: 'START_ACT_2'; lifeline?: 'take' | 'pass' }
   /** Act II: pay the lifeline's bridge loan off early (Plan phase). */
   | { type: 'REPAY_BRIDGE_LOAN' }
+  /** sell_gpus_keep_btc's 2023Q1 distressed fleet, into this site's free power (1 Bandwidth). */
+  | { type: 'BUY_DISTRESSED_FLEET'; siteId: string }
 
 export type ActionResult =
   { ok: true; state: GameState } | { ok: false; error: Message }
@@ -430,7 +437,8 @@ function run(s: GameState, a: Action): Message | undefined {
         return fail('error.bad_count')
       if (a.count > lot.count)
         return fail('error.too_many_units', { have: lot.count })
-      const valueUsd = removeMachines(s, lot, a.count)
+      // hold_and_wait: parked GPU rigs fetch a scarcity premium in 2023Q2–Q4.
+      const valueUsd = removeMachines(s, lot, a.count) * rigResaleMult(s, lot)
       s.cash += valueUsd
       logEntry(s, 'log.sold', { count: a.count, model: lot.model, valueUsd })
       return
@@ -758,6 +766,13 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'REPAY_BRIDGE_LOAN':
       return repayBridgeLoan(s)
+
+    case 'BUY_DISTRESSED_FLEET': {
+      const blocked = fleetBlocker(s, a.siteId)
+      if (blocked) return blocked
+      buyFleet(s, a.siteId)
+      return
+    }
 
     case 'BUILD_PHASE': {
       const blocked = phaseBlocker(s, a.siteId, a.financed === true)

@@ -19,6 +19,7 @@ import { convertibleKw } from '../src/sim/systems/hosting.ts'
 import { projectCapex, tenantCard } from '../src/sim/systems/projects.ts'
 import { debtPlan } from '../src/sim/systems/facilities.ts'
 import { equityPreMoneyUsd } from '../src/sim/systems/equity.ts'
+import { fleetOffer } from '../src/sim/systems/headStarts.ts'
 import {
   constructionLoanBlocker,
   constructionLoanUsd,
@@ -729,10 +730,19 @@ function aiProjects(
           run({ type: 'PROJECT_START', projectId: p.id })
         }
       }
-      /** Machines `freeUp` may sell: GPU rigs and S9s (or, with 'any', every machine). */
-      const sellable = (modelId: string) => {
-        const m = getModel(modelId)!
-        return opts.freeUp === 'any' || m.coin === 'ETH' || m.id === 's9'
+      /**
+       * Machines `freeUp` may sell: GPU rigs and S9s (or, with 'any', every machine), and any machine
+       * bought in Act II: a stopgap until the AI build (M6.0d).
+       */
+      const act2Start = CONTENT.acts[1].firstQuarter
+      const sellable = (lot: { model: string; earnsFromQuarter: number }) => {
+        const m = getModel(lot.model)!
+        return (
+          opts.freeUp === 'any' ||
+          m.coin === 'ETH' ||
+          m.id === 's9' ||
+          lot.earnsFromQuarter > act2Start
+        )
       }
       /** With `freeUp`: sells the site's sellable machines, a batch at a time, until `kw` are free. */
       const freeUp = (siteId: string, kw: number) => {
@@ -740,7 +750,7 @@ function aiProjects(
         for (const lot of s.machines.filter((l) => l.siteId === siteId)) {
           const left = kw - convertibleKw(s, siteId)
           if (left <= 0) return
-          if (!sellable(lot.model)) continue
+          if (!sellable(lot)) continue
           const units = Math.min(
             lot.count,
             Math.ceil(left / getModel(lot.model)!.power_kw),
@@ -753,7 +763,7 @@ function aiProjects(
         convertibleKw(s, siteId) +
         (opts.freeUp
           ? s.machines
-              .filter((l) => l.siteId === siteId && sellable(l.model))
+              .filter((l) => l.siteId === siteId && sellable(l))
               .reduce((a, l) => a + l.count * getModel(l.model)!.power_kw, 0)
           : 0)
       // The lifeline's bridge is due in one payment (M6.0d: the lifeline bot went bust on it). From the
@@ -898,11 +908,12 @@ function aiProjects(
         }
         finish()
       }
-      // Its MW are kept for AI: no new mining machines in Act II (M6.0d: the preset's miner filled its
-      // free MW with S19s in 2022Q4 and never had room for a shell).
+      // Its MW are kept for AI: no new mining machines once its AI phase has begun (M6.0d). Before
+      // that it may mine as a stopgap; those machines are sellable (see sellable).
+      const aiPhase = label >= opts.from
       return [
         ...actions,
-        ...base.plan(s).filter((a) => a.type !== 'BUY_MACHINES'),
+        ...base.plan(s).filter((a) => !aiPhase || a.type !== 'BUY_MACHINES'),
       ]
     },
   }
@@ -1185,6 +1196,120 @@ export const BOTS: Record<string, Strategy> = {
  * Probes: not strategies, just measurements. garage-max buys 5 GPU Gen 1 rigs on day one
  * (a full garage), sells every coin and never spends again: the best case for garage-only cash.
  */
+/** sign-then-raise's Act II settings (the shell path every opening ends up on). */
+const SHELL_PATH = {
+  kind: 'shell' as const,
+  freeUp: true,
+  capital: true,
+  searchSize: true,
+  hireHod: true,
+}
+
+/**
+ * Each Merge head start's intended opening (owner, 28 Sep 2026; M5 answer 2), on the good path's
+ * Act I (raise-climb), each making its own Merge choice. All end up on sign-then-raise's shells:
+ * - open-pilot (gpu_cloud): a 0.5 MW pilot in 2023Q2, the gap raised as equity; shells from 2023Q3.
+ * - open-shell (hosting): shells from 2023Q3 (where the guaranteed AA offer waits).
+ * - open-fleet (sell_gpus_keep_btc): frees a site's S9s and buys the distressed fleet in 2023Q1;
+ *   shells only from 2024Q1 (mine more first, pivot later).
+ * - open-hold (hold_and_wait): sells the parked rigs in 2023Q2 (the scarcity premium); shells from 2023Q3.
+ */
+function opening(
+  choice: string,
+  shellsFrom: string,
+  before?: (now: () => GameState, run: (a: Action) => boolean) => void,
+): Strategy {
+  const shells = aiProjects(makeBot(RAISE_CLIMB), {
+    ...SHELL_PATH,
+    from: shellsFrom,
+  })
+  return {
+    ...shells,
+    merge: () => choice,
+    plan(state) {
+      if (state.act !== 2 || !before) return shells.plan(state)
+      let s = state
+      const actions: Action[] = []
+      const run = (a: Action) => {
+        const r = applyAction(s, a)
+        if (r.ok) {
+          s = r.state
+          actions.push(a)
+        }
+        return r.ok
+      }
+      before(() => s, run)
+      return [...actions, ...shells.plan(s)]
+    },
+  }
+}
+
+export const HEAD_START_OPENINGS: Record<string, Strategy> = {
+  'open-pilot': opening('gpu_cloud', '2023Q3', (now, run) => {
+    const s0 = now()
+    if (CONTENT.quarters[s0.quarter] !== '2023Q2') return
+    if (s0.projects.some((p) => p.kind === 'pilot')) return
+    const kw = 500
+    const spare = (l: { model: string }) =>
+      getModel(l.model)!.coin === 'ETH' || l.model === 's9'
+    const site =
+      s0.sites.find((x) => convertibleKw(s0, x.id) >= kw) ??
+      s0.sites.find((x) =>
+        s0.machines.some((l) => l.siteId === x.id && spare(l)),
+      )
+    if (!site) return
+    for (const lot of s0.machines.filter(
+      (l) => l.siteId === site.id && spare(l),
+    ))
+      if (convertibleKw(now(), site.id) < kw)
+        run({ type: 'SELL_MACHINES', lotId: lot.id, count: lot.count })
+    const cost = projectCapex(now(), {
+      kw,
+      kind: 'pilot',
+      gpu: CONTENT.projects.pilot.gpu,
+      tenant: null,
+    }).totalUsd
+    const need = cost * 1.1 - now().cash
+    const pre = equityPreMoneyUsd(now())
+    if (need > 0 && pre > 0)
+      run({
+        type: 'RAISE_EQUITY',
+        dilution: Math.min(
+          CONTENT.finance.equity.dilution[1],
+          Math.max(CONTENT.finance.equity.dilution[0], need / (pre + need)),
+        ),
+      })
+    if (now().cash < cost) return
+    if (!run({ type: 'PROJECT_OPEN', siteId: site.id, kw, kind: 'pilot' }))
+      return
+    const p = now().projects.at(-1)!
+    run({ type: 'PROJECT_FUND_CASH', projectId: p.id })
+    run({ type: 'PROJECT_START', projectId: p.id })
+  }),
+  'open-shell': opening('hosting', '2023Q3'),
+  'open-fleet': opening('sell_gpus_keep_btc', '2024Q1', (now, run) => {
+    const s0 = now()
+    if (!fleetOffer(s0)) return
+    const site = [...s0.sites]
+      .filter((x) => x.tier !== BALANCE.startSite)
+      .sort((a, b) => capacityKw(b) - capacityKw(a))[0]
+    if (!site) return
+    for (const lot of s0.machines.filter(
+      (l) => l.siteId === site.id && l.model === 's9',
+    ))
+      run({ type: 'SELL_MACHINES', lotId: lot.id, count: lot.count })
+    run({ type: 'BUY_DISTRESSED_FLEET', siteId: site.id })
+  }),
+  'open-hold': opening('hold_and_wait', '2023Q3', (now, run) => {
+    const s0 = now()
+    if (CONTENT.quarters[s0.quarter] !== '2023Q2') return
+    for (const lot of s0.machines.filter(
+      (l) => getModel(l.model)!.coin === 'ETH',
+    ))
+      run({ type: 'SELL_MACHINES', lotId: lot.id, count: lot.count })
+  }),
+}
+
 export const PROBES: Record<string, Strategy> = {
   /**
    * Scope §5 pilot timing: texas-ipo (the only path with a pilot's ~$31M) plus one 1 MW pilot,

@@ -8,8 +8,21 @@ import {
   actLastQuarter,
 } from '../../src/content/index.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
-import { miningPowerMult } from '../../src/sim/systems/headStarts.ts'
+import { bandwidthForQuarter } from '../../src/sim/systems/bandwidth.ts'
+import {
+  fleetOffer,
+  fleetUnitsFor,
+  holdBandwidthBonus,
+  miningPowerMult,
+  rigResaleMult,
+  skipsAllocation,
+} from '../../src/sim/systems/headStarts.ts'
 import { saleValueUsd } from '../../src/sim/systems/machines.ts'
+import {
+  act2Prices,
+  getModel,
+  sellPrice,
+} from '../../src/sim/systems/market.ts'
 import {
   knowHow,
   projectBuildQuarters,
@@ -205,12 +218,97 @@ describe('hosting', () => {
 })
 
 describe('hold_and_wait (the bots’ choice)', () => {
-  it('changes nothing: the rigs stay, switched off', () => {
+  it('changes nothing at the boundary: the rigs stay, parked', () => {
     const before = chapter('hold_and_wait')
     const s = ok(before, { type: 'CONTINUE_TO_ACT_2' })
     expect(s.machines).toEqual(before.machines)
     expect(s.cash).toBe(before.cash)
     expect(s.act2Entry!.headStart).toBe('hold_and_wait')
     expect(miningPowerMult(s)).toBe(1)
+  })
+
+  it('+1 Bandwidth in 2022Q4 and 2023Q1 only (owner, 28 Sep 2026)', () => {
+    let s = enter('hold_and_wait')
+    const other = enter('sell_gpus_keep_btc')
+    expect(bandwidthForQuarter(s)).toBe(bandwidthForQuarter(other) + 1)
+    s = until(s, '2023Q1')
+    expect(holdBandwidthBonus(s)).toBe(1)
+    s = until(s, '2023Q2')
+    expect(holdBandwidthBonus(s)).toBe(0)
+  })
+
+  it('parked rigs sell any Plan phase, for 25% more in 2023Q2–Q4; their value falls 15% a year', () => {
+    const s = until(enter('hold_and_wait'), '2023Q2')
+    const lot = s.machines.find((l) => l.model === 'gpu_gen2')!
+    const plain = saleValueUsd(lot, 10, s.quarter)
+    const rig = getModel('gpu_gen2')!
+    expect(sellPrice(rig, s.quarter)).toBeCloseTo(
+      sellPrice(rig, q('2022Q3')) * (1 - 0.15 * 0.5),
+      6,
+    )
+    const sold = ok(s, { type: 'SELL_MACHINES', lotId: lot.id, count: 10 })
+    expect(sold.cash - s.cash).toBeCloseTo(plain * 1.25, 4)
+    expect(rigResaleMult({ ...s, quarter: q('2024Q1') }, lot)).toBe(1)
+  })
+})
+
+describe('each head start’s own opening (owner, 28 Sep 2026)', () => {
+  it('gpu_cloud: from 2023Q2 a cloud project always has a neocloud GPU-contract offer', () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const s = until({ ...enter('gpu_cloud'), seed }, '2023Q2')
+      const p = ok(s, {
+        type: 'PROJECT_OPEN',
+        siteId: 'site-2',
+        kw: 1000,
+        kind: 'cloud',
+        gpu: 'h100',
+      }).projects[0]
+      expect(p.offers.map((o) => o.card)).toContain(
+        'tc_realname_coreweave_style',
+      )
+    }
+  })
+
+  it('gpu_cloud: the first pilot skips the GPU allocation interrupt', () => {
+    const s = until(enter('gpu_cloud'), '2023Q2')
+    const pilot = {
+      ...s.projects[0],
+      id: 'project-x',
+      kind: 'pilot' as const,
+      startQuarter: s.quarter,
+    }
+    expect(skipsAllocation(s, pilot as never)).toBe(true)
+    expect(
+      skipsAllocation(
+        { ...s, act2Entry: { ...s.act2Entry!, headStart: 'hosting' } },
+        pilot as never,
+      ),
+    ).toBe(false)
+  })
+
+  it('hosting: from 2023Q3 a shell project always has an AA hyperscaler offer', () => {
+    for (const seed of [1, 2, 3, 4, 5]) {
+      const s = shell(until({ ...enter('hosting'), seed }, '2023Q3'))
+      expect(s.projects[0].offers.map((o) => o.card)).toContain(
+        'tc_north_azure_cloud',
+      )
+    }
+  })
+
+  it('sell_gpus: in 2023Q1 only, up to 10 MW of S19 Pros at 60% of the new price, once', () => {
+    const s = until(enter('sell_gpus_keep_btc'), '2023Q1')
+    s.machines = s.machines.filter((l) => l.model !== 's19pro') // free the site
+    const offer = fleetOffer(s)!
+    expect(offer.unitUsd).toBe(
+      Math.round(act2Prices(getModel('s19pro')!, s.quarter)!.newUsd * 0.6),
+    )
+    const units = fleetUnitsFor(s, 'site-2')
+    expect(units).toBe(Math.floor(10_000 / getModel('s19pro')!.power_kw))
+    const bought = ok(s, { type: 'BUY_DISTRESSED_FLEET', siteId: 'site-2' })
+    expect(bought.cash).toBeCloseTo(s.cash - units * offer.unitUsd, 2)
+    expect(bought.bandwidth).toBe(s.bandwidth - 1)
+    expect(fleetOffer(bought)).toBeUndefined()
+    expect(fleetOffer({ ...s, quarter: q('2023Q2') })).toBeUndefined()
+    expect(fleetOffer(until(enter('hosting'), '2023Q1'))).toBeUndefined()
   })
 })

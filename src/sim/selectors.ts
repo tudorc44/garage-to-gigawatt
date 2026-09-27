@@ -76,6 +76,12 @@ import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import { lifelineTerms } from './systems/lifeline.ts'
 import {
+  fleetBlocker,
+  fleetOffer,
+  fleetUnitsFor,
+  rigResaleMult,
+} from './systems/headStarts.ts'
+import {
   extraQueueQuarters,
   gridUpgradesHalted,
   regionPowerAdderUsdKwh,
@@ -372,7 +378,8 @@ export function lotViews(state: GameState): LotView[] {
         'after Act I',
       dailyProfitEachUsd: profit,
       repairCostUsd: lot.failed * repairCostPerUnit(lot.model),
-      sellValueUsd: saleValueUsd(lot, lot.count, state.quarter),
+      sellValueUsd:
+        saleValueUsd(lot, lot.count, state.quarter) * rigResaleMult(state, lot),
     }
   })
 }
@@ -960,7 +967,36 @@ export function carryOver(state: GameState) {
       rateCents: BALANCE.headStarts.hostingRateUsdKwh * 100,
       termQuarters: BALANCE.hosting.termQuarters,
       discountPct: CONTENT.projects.shellReady.capexDiscount,
+      cloudOfferFrom: BALANCE.headStarts.guaranteedOffer.gpu_cloud.from,
+      shellOfferFrom: BALANCE.headStarts.guaranteedOffer.hosting.from,
+      fleetQuarter: BALANCE.headStarts.distressedFleet.quarter,
+      fleetKw: BALANCE.headStarts.distressedFleet.maxKw,
+      fleetPct: BALANCE.headStarts.distressedFleet.priceShareOfNew,
+      premiumPct: BALANCE.headStarts.holdAndWait.resalePremium,
+      premiumFrom: BALANCE.headStarts.holdAndWait.premiumQuarters[0],
+      premiumTo: BALANCE.headStarts.holdAndWait.premiumQuarters[1],
     },
+  }
+}
+
+/**
+ * sell_gpus_keep_btc's 2023Q1 distressed fleet (owner, 28 Sep 2026), while it's on offer: the offer
+ * and, for each site but the garage, how many units fit and why it can't be bought there. Else null.
+ */
+export function fleetOfferView(state: GameState) {
+  const offer = fleetOffer(state)
+  if (!offer || state.phase !== 'plan') return null
+  return {
+    ...offer,
+    sites: state.sites
+      .filter((s) => s.tier !== BALANCE.startSite)
+      .map((s) => ({
+        siteId: s.id,
+        tier: s.tier,
+        units: fleetUnitsFor(state, s.id),
+        costUsd: fleetUnitsFor(state, s.id) * offer.unitUsd,
+        blocker: fleetBlocker(state, s.id) ?? null,
+      })),
   }
 }
 

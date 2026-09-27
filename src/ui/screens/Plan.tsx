@@ -8,6 +8,7 @@ import {
   HEAT_MARKS,
   SELL_TREASURY_BANDWIDTH,
   act2MarketView,
+  fleetOfferView,
   projectsView,
   auctionView,
   communityView,
@@ -793,6 +794,7 @@ function TodoPanel({
       <div class="label group">{t('ui.plan.group.sites')}</div>
       {ladderRows}
       {state.act === 2 && <HostingRow state={state} open={open} />}
+      {state.act === 2 && <FleetRow state={state} act={act} />}
       {phaseViews(state).flatMap((p) => {
         if (!p.next) return []
         const plain: Action = { type: 'BUILD_PHASE', siteId: p.site.id }
@@ -999,6 +1001,35 @@ function HostingRow({
             : t('ui.plan.hosting_none')
       }
       onClick={() => open('hosting')}
+    />
+  )
+}
+
+/**
+ * sell_gpus_keep_btc's one-off distressed fleet (2023Q1): buys into the site where the most of it
+ * fits (mine). Hidden when it isn't on offer.
+ */
+function FleetRow({ state, act }: ScreenProps) {
+  const v = fleetOfferView(state)
+  if (!v) return null
+  const best = [...v.sites].sort((a, b) => b.units - a.units)[0]
+  if (!best) return null
+  return (
+    <ActionRow
+      icon="asic"
+      name={t('ui.plan.fleet', {
+        count: best.units,
+        model: machineName(v.model),
+        tier: tierName(best.tier),
+      })}
+      bandwidth={v.bandwidth}
+      bandwidthLeft={state.bandwidth}
+      price={t('ui.plan.fleet_price', {
+        cost: fmt.money(best.costUsd),
+        pct: fmt.pct(v.unitUsd / v.newUnitUsd),
+      })}
+      disabledReason={best.blocker ? say(best.blocker) : undefined}
+      onClick={() => act({ type: 'BUY_DISTRESSED_FLEET', siteId: best.siteId })}
     />
   )
 }

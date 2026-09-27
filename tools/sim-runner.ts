@@ -20,7 +20,7 @@ import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
-import { BOTS, PROBES } from './bots.ts'
+import { BOTS, HEAD_START_OPENINGS, PROBES } from './bots.ts'
 import {
   BREAKDOWN_COLUMNS,
   breakdown,
@@ -985,25 +985,44 @@ if (args.includes('--act2')) {
         `    ${name.padEnd(16)} bust ${busts}/${presetSeeds}; 2026Q4 median ${usd(median(alive.map((x) => x.reports.at(-1)!.valuationUsd)))}; peak median ${usd(median(alive.map((x) => Math.max(...x.reports.map((r) => r.valuationUsd)))))}`,
       )
     }
-    // Scope 0.2 §5: each Merge head start should make a different opening best. Three openings
-    // (stay mining, host, AI shells with capital) under each head start, from the preset.
-    const openings = ['raise-climb', 'hosting-switcher', 'shell-capital']
+    // Scope 0.2 §5 (owner, 28 Sep 2026): each Merge head start has its own intended-opening bot.
+    // On the good path's Act I (the openings play raise-climb), every opening under every head start;
+    // passes when ≥ 3 of the 4 head starts have a different best opening and the four matching bots'
+    // 2026Q4 medians are within ±30% of their average.
+    const hsSeeds = Math.min(SEEDS, 20)
+    const matching: Record<string, string> = {
+      gpu_cloud: 'open-pilot',
+      hosting: 'open-shell',
+      sell_gpus_keep_btc: 'open-fleet',
+      hold_and_wait: 'open-hold',
+    }
+    const names = Object.values(matching)
     console.log(
-      `\n  Head starts × openings (preset, ${presetSeeds} seeds, 2026Q4 median value):`,
+      `\n  Head starts × openings (good path through Act I, ${hsSeeds} seeds, 2026Q4 median value, busts count 0):`,
     )
+    const bests: string[] = []
+    const own: number[] = []
     for (const choice of CONTENT.merge.choices.map((c) => c.id)) {
-      const row = openings.map((name) => {
-        const bot = { ...BOTS[name], merge: () => choice }
-        const vals = Array.from({ length: presetSeeds }, (_, i) => {
-          const end = playFrom(presetGame(i + 1), bot, { through: 2 }).state
+      const row = names.map((name) => {
+        const bot = { ...HEAD_START_OPENINGS[name], merge: () => choice }
+        const vals = Array.from({ length: hsSeeds }, (_, i) => {
+          const end = playGame(i + 1, bot, { through: 2 }).state
           return end.phase === 'chapter' ? end.reports.at(-1)!.valuationUsd : 0
         })
         return { name, value: median(vals) }
       })
       const best = row.reduce((a, b) => (b.value > a.value ? b : a))
+      bests.push(best.name)
+      own.push(row.find((x) => x.name === matching[choice])!.value)
       console.log(
         `    ${choice.padEnd(20)} ${row.map((x) => `${x.name} ${usd(x.value)}`).join(' · ')} → best: ${best.name}`,
       )
     }
+    const distinct = new Set(bests).size
+    const avg = own.reduce((a, b) => a + b, 0) / own.length
+    const within = own.every((v) => Math.abs(v / avg - 1) <= 0.3)
+    console.log(
+      `  Head-start check: ${distinct}/4 different best openings (≥ 3); matching bots ${own.map(usd).join(' / ')}, within ±30% of their average: ${within ? 'yes' : 'no'} → ${distinct >= 3 && within ? 'pass' : 'miss'}`,
+    )
   }
 }

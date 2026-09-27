@@ -26,9 +26,11 @@ import {
 import { gpuPriceMultNow, modifierMult } from './eventEffects.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import {
+  guaranteedOfferCard,
   headStartBuildDelta,
   headStartKnowHow,
   shellReady,
+  skipsAllocation,
   tenantsFrom,
 } from './headStarts.ts'
 import {
@@ -302,6 +304,38 @@ export function drawOffers(state: GameState, p: Project): void {
         bufferQuarters: randomInt(r, ...profile.bufferQuarters),
       },
     })
+  }
+  // A head start's guaranteed offer (gpu_cloud, hosting; owner 28 Sep 2026): if the draw missed it,
+  // it takes the last place (or is added when there were none), drawn on its own stream.
+  const must = guaranteedOfferCard(state, p)
+  const card = must && P().tenantCards.find((c) => c.id === must)
+  if (card && !p.offers.some((o) => o.card === must)) {
+    const g = substream(state.seed, `guaranteed_offer:${state.quarter}:${p.id}`)
+    const id = `${p.id}-offer-${state.quarter}-g`
+    const offer =
+      p.kind === 'shell'
+        ? {
+            id,
+            card: card.id,
+            readyByQuarters: randomInt(g, card.readyBy[0], card.readyBy[1]),
+          }
+        : {
+            id,
+            card: card.id,
+            readyByQuarters: 0,
+            gpu: {
+              termYears: randomInt(
+                g,
+                ...contracts.profiles[contracts.cards[card.id]].termYears,
+              ),
+              bufferQuarters: randomInt(
+                g,
+                ...contracts.profiles[contracts.cards[card.id]].bufferQuarters,
+              ),
+            },
+          }
+    if (p.offers.length >= max) p.offers[p.offers.length - 1] = offer
+    else p.offers.push(offer)
   }
 }
 
@@ -853,6 +887,7 @@ export function planProjectEvents(state: GameState): void {
       p.kind !== 'shell' &&
       p.startQuarter === state.quarter &&
       inAllocationWindow(state.quarter) &&
+      !skipsAllocation(state, p) &&
       chance(
         substream(state.seed, `gpu_allocation:${label}:${p.id}`),
         P().allocationChance,

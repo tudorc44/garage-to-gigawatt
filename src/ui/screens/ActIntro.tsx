@@ -85,6 +85,15 @@ export function ActIntroScreen({ state, act }: ScreenProps) {
                     ...c.headStartTerms,
                     tenantsFrom: fmt.quarter(c.headStartTerms.tenantsFrom),
                     tenantsLater: fmt.quarter(c.headStartTerms.tenantsLater),
+                    cloudOfferFrom: fmt.quarter(
+                      c.headStartTerms.cloudOfferFrom,
+                    ),
+                    shellOfferFrom: fmt.quarter(
+                      c.headStartTerms.shellOfferFrom,
+                    ),
+                    fleetQuarter: fmt.quarter(c.headStartTerms.fleetQuarter),
+                    premiumFrom: fmt.quarter(c.headStartTerms.premiumFrom),
+                    premiumTo: fmt.quarter(c.headStartTerms.premiumTo),
                     count: c.headStart.gpuRigsSold || c.headStart.legacyGpuRigs,
                     valueUsd: c.headStart.gpuSaleUsd,
                     hostedKw: c.headStart.hostedKw,
