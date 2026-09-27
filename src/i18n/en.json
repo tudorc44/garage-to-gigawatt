@@ -1308,6 +1308,7 @@
   "log.lifeline_offered": "Below the floor: a bankrupt miner's {siteKw} site is offered for {priceUsd}, with a bridge loan.",
   "log.lifeline_taken": "Bought a bankrupt miner's {siteKw} site for {priceUsd} with a {loanUsd} bridge loan at {aprPct}, due at the end of {quarter}.",
   "log.lifeline_passed": "Passed on the bankrupt miner's site.",
+  "log.gas_lawsuit": "Project {n}: neighbours sued over the gas plant's air permit. Legal costs {costUsd}; the plant stays off until {quarter}.",
   "log.fleet_bought": "Bought a bankrupt miner's fleet: {count} × {model} for {costUsd}. They mine from next quarter.",
   "log.bridge_repaid": "Bridge loan repaid: {amountUsd}.",
   "ui.chapter.act_done": "Act I · chapter report",

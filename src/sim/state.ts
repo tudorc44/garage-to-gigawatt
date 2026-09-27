@@ -68,6 +68,8 @@ export interface PowerAdd {
   kw: number
   source: PowerSource
   readyQuarter: number | null
+  /** On-site gas at a site with the air-permit flaw: its lawsuit was rolled (M6.0j). */
+  lawsuitRolled?: boolean
 }
 
 /** Where a project's power comes from beyond the site's existing MW (scope 0.2 §2.5, A2-05). */

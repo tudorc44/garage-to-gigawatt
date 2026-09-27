@@ -710,8 +710,42 @@ export function startBuild(state: GameState, projectId: string): void {
   })
 }
 
+/**
+ * The air-permit lawsuit (sites_act2.json › air_permit_for_gas; owner, 28 Sep 2026, M5 answer 9): as
+ * an on-site gas plant at a site with that flaw is due to switch on, the flaw's lawsuit chance is
+ * rolled once. On a hit: $1M in legal costs, and the plant stays shut 2 more quarters; its project
+ * waits for it. (A plant only switches on with its project, so the "already operating, falls back
+ * to grid power" case can't come up here.)
+ */
+function gasLawsuits(state: GameState): void {
+  const L = BALANCE.projects.gasLawsuit
+  for (const site of state.sites) {
+    const chanceOf = flawEffect(site, 'lawsuit_chance')
+    if (chanceOf === undefined) continue
+    for (const add of site.powerAdds ?? []) {
+      if (add.source !== 'gas' || add.lawsuitRolled) continue
+      if (add.readyQuarter === null || add.readyQuarter > state.quarter)
+        continue
+      add.lawsuitRolled = true
+      const r = substream(state.seed, `gas_lawsuit:${add.projectId}`)
+      if (!chance(r, chanceOf)) continue
+      add.readyQuarter = state.quarter + L.shutQuarters
+      state.cash -= L.legalUsd
+      const p = state.projects.find((x) => x.id === add.projectId)
+      if (p && p.stage === 'building' && p.readyQuarter !== null)
+        p.readyQuarter = Math.max(p.readyQuarter, add.readyQuarter)
+      logEntry(state, 'log.gas_lawsuit', {
+        n: p?.n ?? 0,
+        costUsd: L.legalUsd,
+        quarter: CONTENT.quarters[add.readyQuarter] ?? '—',
+      })
+    }
+  }
+}
+
 /** At the start of a quarter: finished builds go live; shells and clouds without a tenant get offers. */
 export function startQuarterProjects(state: GameState): void {
+  gasLawsuits(state)
   for (const p of state.projects) {
     if (
       p.stage === 'building' &&

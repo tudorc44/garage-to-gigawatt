@@ -5,7 +5,10 @@ import { CONTENT } from '../../src/content/index.ts'
 import type { GameState } from '../../src/sim/state.ts'
 import { siteMwByUse } from '../../src/sim/systems/mwUse.ts'
 import { gasHeat, gridQuarterRange } from '../../src/sim/systems/power.ts'
-import { projectCapex } from '../../src/sim/systems/projects.ts'
+import {
+  projectCapex,
+  startQuarterProjects,
+} from '../../src/sim/systems/projects.ts'
 import { capacityKw, poweredKw } from '../../src/sim/systems/sites.ts'
 import { act2Company, ok, playQuarter } from './act2Helpers.ts'
 
@@ -137,5 +140,35 @@ describe('on-site gas', () => {
     s.sites[1].flaw = 'air_permit_for_gas'
     s.sites[1].category = 'energized_land_powered_shell'
     expect(gasHeat(s.sites[1], s.quarter + 2)).toBe(45)
+  })
+
+  it('the air-permit lawsuit (40%, once): $1M, the plant stays off 2 more quarters, the project waits', () => {
+    let hits = 0
+    for (let seed = 1; seed <= 100; seed++) {
+      const s = start(open({ ...full(), seed }, 'gas'))
+      s.sites[1].flaw = 'air_permit_for_gas'
+      s.sites[1].category = 'energized_land_powered_shell'
+      const add = s.sites[1].powerAdds![0]
+      const planned = s.projects[0].readyQuarter!
+      s.quarter = add.readyQuarter!
+      const cash = s.cash
+      startQuarterProjects(s)
+      expect(add.lawsuitRolled).toBe(true)
+      if (s.cash < cash) {
+        hits++
+        expect(cash - s.cash).toBe(1_000_000)
+        expect(add.readyQuarter).toBe(s.quarter + 2)
+        expect(s.projects[0].readyQuarter).toBe(
+          Math.max(planned, s.quarter + 2),
+        )
+        expect(gasHeat(s.sites[1], s.quarter)).toBe(0)
+      }
+      // Rolled once only.
+      const again = s.cash
+      startQuarterProjects(s)
+      expect(s.cash).toBe(again)
+    }
+    expect(hits).toBeGreaterThan(25)
+    expect(hits).toBeLessThan(55)
   })
 })

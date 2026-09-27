@@ -212,3 +212,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   from 2026Q2; mine: not idle MW, not grid/gas-powered builds); Arizona `project_capex_mult` 1.05 (all of capex). ec10 hits Virginia + Ohio only.
 - M6.0i: `dealNegotiation.ts` (DEAL_NEGOTIATE_START/COUNTER/ACCEPT/WALK; "Negotiate · 2 BW" on Deal-builder offers and debt rows + panel).
   Mine: fixed limits (no random draw); a GPU contract's $/GPU-hr × the won multiple; lender walk = that debt off this quarter.
+- M6.0j: air-permit lawsuit rolled once as the gas plant is due on (mine: that moment): $1M, plant off 2 more quarters, project waits
+  (projects.ts › gasLawsuits). A plant switches on with its project, so the "live → grid power / curtail" case can't arise yet.

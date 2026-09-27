@@ -429,6 +429,8 @@ export const BALANCE = {
      * the pack's range is 35–65%). Selling a live cloud's or pilot's GPUs costs `sellBandwidth`.
      */
     gpuResidual: { declinePerYear: 0.15, floor: 0.35, sellBandwidth: 1 },
+    /** The air-permit lawsuit's cost (owner, 28 Sep 2026): the gas plant shut 2 quarters, $1M once. */
+    gasLawsuit: { shutQuarters: 2, legalUsd: 1_000_000 },
     /** A live AI hall's kW count this share of mining's toward a site's Heat load (liquid-cooled halls are quieter; owner). */
     aiHeatShare: 0.5,
     /**
