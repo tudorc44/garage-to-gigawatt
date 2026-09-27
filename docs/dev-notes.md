@@ -1365,6 +1365,10 @@ A2-05 / A2-07. Sub-steps:
   rating). Project-level rating: "A" on an A/AA tenant, else the tenant's grade (doc 18 §7.2). Tests 493 pass
   (new `tests/sim/facilities.test.ts`). **Golden change (explained):** 11 goldens gain `"facilities": []`.
 - **M4.3** The equipment loan extended to GPUs (collateral includes delivered GPUs).
+  **Done.** The equipment loan's collateral adds the GPUs of live clouds and pilots at their resale value (the
+  M4.0b curve); GPUs already pledged to a DDTL don't count twice (mine, reversible). With Act II's terms (M4.1:
+  50%, 14%, 8 quarters) this is the pilot's financing "after delivery" (wireframe A2-05), as a refinancing once
+  it's live; it can't fund the pilot's build (the GPUs aren't delivered yet). Tests 494 pass. No golden change.
 - **M4.4** The credit rating (matrix, backlog quality, runway notch, project-level A) each quarter.
 - **M4.5** Equity raise / ATM offering (2 BW, dilution shown first).
 - **M4.6** JV partner and big-tech backstop (cut #1 and #2 if they get expensive).

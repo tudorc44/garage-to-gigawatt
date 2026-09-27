@@ -16,6 +16,7 @@ import {
 } from '../state.ts'
 import { loansLocked } from './cryptoLoan.ts'
 import { saleValueUsd } from './machines.ts'
+import { gpuResidualUsd } from './projects.ts'
 
 /**
  * This quarter's equipment loan terms, or undefined if lenders aren't offering any. In Act II the
@@ -40,12 +41,25 @@ export function equipmentTerms(
   return terms
 }
 
-/** What every machine you own would sell for today (the loan's collateral). */
+/**
+ * The loan's collateral: what every machine you own would sell for today, plus in Act II the
+ * delivered GPUs of live clouds and pilots at their resale value (scope 0.2 §2.7: "now also
+ * secured on GPUs"), except GPUs already pledged to a DDTL (mine, reversible).
+ */
 export function collateralUsd(state: GameState): number {
-  return state.machines.reduce(
+  const machines = state.machines.reduce(
     (sum, lot) => sum + saleValueUsd(lot, lot.count, state.quarter),
     0,
   )
+  const pledged = new Set(
+    (state.facilities ?? [])
+      .filter((f) => f.kind === 'ddtl')
+      .map((f) => f.projectId),
+  )
+  const gpus = (state.projects ?? [])
+    .filter((p) => !pledged.has(p.id))
+    .reduce((sum, p) => sum + gpuResidualUsd(p, state.quarter), 0)
+  return machines + gpus
 }
 
 /** The most you can borrow now: LTV × collateral, in whole dollars. 0 if no terms. */

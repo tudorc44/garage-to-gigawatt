@@ -1,6 +1,10 @@
 // GPU resale (owner decision on the M3 questions, M4.0b): the residual curve, selling a live
 // cloud's or pilot's GPUs, and the Deal builder IRR with the year-5 residual.
 import { describe, expect, it } from 'vitest'
+import {
+  collateralUsd,
+  maxEquipmentLoanUsd,
+} from '../../src/sim/systems/loans.ts'
 import { projectsView } from '../../src/sim/selectors.ts'
 import { siteMwByUse } from '../../src/sim/systems/mwUse.ts'
 import {
@@ -56,6 +60,19 @@ describe('selling the GPUs', () => {
     expect(() =>
       ok(s, { type: 'PROJECT_SELL_GPUS', projectId: 'project-1' }),
     ).toThrow('error.gpus_not_live')
+  })
+})
+
+describe('the equipment loan on GPUs (M4.3)', () => {
+  it('a live pilot’s GPUs are collateral at their resale value: the pilot’s financing after delivery', () => {
+    const s = livePilot()
+    const gpus = gpuResidualUsd(s.projects[0], s.quarter)
+    expect(collateralUsd(s)).toBeCloseTo(gpus, 4) // no machines
+    const max = maxEquipmentLoanUsd(s)
+    expect(max).toBe(Math.floor(0.5 * gpus))
+    const r = ok(s, { type: 'TAKE_LOAN', amountUsd: max })
+    expect(r.cash).toBe(s.cash + max)
+    expect(r.equipmentLoan!.apr).toBe(0.14)
   })
 })
 
