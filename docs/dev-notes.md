@@ -886,7 +886,22 @@ fleet earns through Act II: revenue ~$21M (2022Q4) → ~$34–37M (2024Q1, befor
 
 
 
-### Milestone M2: Act II market engine + MW by use (batch mode, started 27 Sep 2026)
+### Milestone M2: Act II market engine + MW by use (batch mode, 27 Sep 2026) — DONE
+
+Commits on `act2`: M2.0 `e7bfe16`, M2.1 `b73e46b`, M2.2 `9deadad`, M2.3 `83a8e7d`, M2.4 `8100fe9`, M2.5 `7cb6586`,
+M2.6 `497e83c`. 407 tests, lint and build pass. Open questions for the design thread (besides STOPPED below):
+1. **Which region is each Act I site in?** Act I sites keep their held 2022 power prices in Act II; the regional
+   prices (ERCOT 3.3 → 5.5¢, PJM 4.5 → 8.5¢ …) are loaded but no site has a region tag yet. Texas is ERCOT; the small
+   unit, warehouse and own site need a rule. This decides whether hosting (6¢ from 2024) can pay anywhere but Texas.
+2. **Hosted machines count toward the site's Heat** (mine): 20 MW hosted at the own site crosses Heat 50 (+20%
+   power). Confirm, or hosting should add less (or no) load.
+3. `docs/act2-content/market_quarterly.csv` still has the pack's old 2026 AI multiples (24, 20) in its multiple
+   columns; the game ignores them and uses `capital_act2.json`. Fix the data file, or leave it.
+4. Confirm the mining multiple anchors 2026Q1 6 and 2026Q2 6 (doc 18 §8's table), added to the game's copy.
+5. ASIC prices in Act II still hold 2022Q3's; the market file has $/TH price tiers (old / mid / new / latest). Map
+   S9 and S19 Pro to tiers (and add an S21-class machine?) in the mining-unit step.
+
+
 
 Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03 / A2-06 / Components
 (https://claude.ai/artifact/LVnSiEH9RRHtU16Ld4C59S), `docs/act2-content/`. Sub-steps:
@@ -1031,6 +1046,9 @@ and "Balance review" 1–3 above): **the Act I balance pass is DONE**, every §5
 sim. Act I playtests: **postponed until after Act II** (owner) (scope §5 "Playable" and "People": a first-time run in 35–50 minutes, 3+ real
 decisions per quarter, 5 crash-free runs, 3 outside testers). Small follow-ups: an ear test of the sounds; the build's main
 JS chunk is just over Vite's 500 KB warning (card text; split it later).
+**Act II build, next:** milestone M2 (market engine, MW by use, hosting, Act II dashboard) is done on `act2`. Next
+by scope 0.2 §6.4: **projects + the Deal builder** (shell lease first, then full stack and the pilot), which needs
+the region tags for its Power slot; the credit rating and capital instruments after that.
 **Act II** (27 Sep 2026): scope frozen (v1.0, `docs/alpha-0.2-scope.md`); P1–P5, the pilot and the ETH series
 decided; wireframes done; the Act I playtests postponed until after Act II. **Nothing blocks the build; it has
 started** (Step 1: the act boundary; see "Act II build" for where it stands). **The scope §7 content fixes are applied** (27 Sep 2026): corrected copies
