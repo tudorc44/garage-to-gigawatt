@@ -1078,6 +1078,26 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   one; prices use the quarter's first week (the Plan-phase price, like the coins); selling an S21 before 2025Q1 pays
   the used price anyway. `.claude` is now in `.prettierignore` (the formatter had reflowed the owner's settings).
 - **M3.4** Re-run the M2 sims and compare with scope §5.
+  **Done** (`npm run sim -- --act2`, 50 seeds, after M3.1–M3.3):
+
+  | Bot | Act II busts | Value 2022Q3 | 2024Q1 | 2026Q4 | Act II peak | Hosting fees | EV/MW 2026Q4 |
+  |---|---|---|---|---|---|---|---|
+  | raise-climb | 1 (was 1) | $14.9M | $14.2M | $13.0M (same) | $14.8M | $0 | $0.62M |
+  | hosting-switcher | 4 (was 3) | $14.9M | $20.6M (was $14.4M) | $12.5M (was $11.2M) | $41.8M (was $29.2M) | $44.4M | $0.59M |
+  | texas-ipo | 0 | $206M | $112M (was $872M) | $331M (was $213M) | $755M (was $872M) | $0 | $3.0M (was $2.0M) |
+
+  Against scope §5:
+  - **"Hosting isn't a free win": now MISSED**: hosting ahead in **40/50** runs at 2024Q1 (target ≤ ~60%; was 27/50).
+    Why: under B3 the own site renews at Georgia's price (≈ 4.1¢ in 2023, 4.4¢ in 2024), so hosting at 7.5¢ / 6¢
+    pays; the comparison bot keeps its switched-off S9s, which earn nothing and, being "mining" MW, pay no
+    reservation. Not tuned (a balance decision for the design thread): see open questions.
+  - EV/MW (pure mining $0.4–1.2M): raise-climb ✓, hosting-switcher ✓; texas-ipo $3.0M (its S21 fleet still earns in
+    2026Q4).
+  - Pure miner "~$100–400M, alive": texas-ipo (a pure miner in Act II) ends at **$331M** ✓.
+  - texas-ipo's 2024Q1 dip is its upgrade rule, not a bug: when the S21 appears it sells its S19s and buys S21s with
+    all its cash; machines earn from the quarter after purchase, so 2024Q1 earns ≈ $4M EBITDA (value $112–137M),
+    and 2024Q2 is back at $745M.
+  - The other §5 targets need AI projects (good / great path, delays, IRR, pilot, lifeline): after M3.
 - **M3.5** Projects: the model, content (tenant cards, conversions, GPUs, cap rates, backlog weights), opening a
   project, the Power slot (existing MW), the Tenant slot (tenant offers, spot), the Capital slot (own cash).
 - **M3.6** The build lifecycle: start build, building quarters, live units (AI shell lease, AI cloud / pilot on spot),
