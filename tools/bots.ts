@@ -14,7 +14,8 @@ import {
 import { collateralUsd, maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit, saleValueUsd } from '../src/sim/systems/machines.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
-import { buyCapKw } from '../src/sim/selectors.ts'
+import { buyCapKw, hostingView } from '../src/sim/selectors.ts'
+import { convertibleKw } from '../src/sim/systems/hosting.ts'
 import {
   constructionLoanBlocker,
   constructionLoanUsd,
@@ -594,6 +595,41 @@ function makeBot(settings: BotSettings): Strategy {
   }
 }
 
+/**
+ * Act II hosting (scope 0.2 §2.15, the "hosting-switcher" bot): plays `base`; in Act II, at every
+ * site where hosting pays (the clients' rate above the site's power price), it sells the machines
+ * that no longer mine there (GPU rigs and S9s) and converts all the free power to hosting ("switch
+ * and stay": contracts keep renewing). The base plan then runs on what's left.
+ */
+function hostingSwitcher(base: Strategy): Strategy {
+  return {
+    ...base,
+    plan(state) {
+      if (state.act !== 2) return base.plan(state)
+      const actions: Action[] = []
+      let s = state
+      const run = (a: Action) => {
+        const r = applyAction(s, a)
+        if (r.ok) {
+          s = r.state
+          actions.push(a)
+        }
+      }
+      for (const v of hostingView(state).sites) {
+        if (v.marginPerMwQUsd <= 0) continue
+        for (const lot of s.machines.filter((l) => l.siteId === v.site.id)) {
+          const model = getModel(lot.model)!
+          if (model.coin === 'ETH' || model.id === 's9')
+            run({ type: 'SELL_MACHINES', lotId: lot.id, count: lot.count })
+        }
+        const free = Math.floor(convertibleKw(s, v.site.id))
+        if (free > 0) run({ type: 'HOST_START', siteId: v.site.id, kw: free })
+      }
+      return [...actions, ...base.plan(s)]
+    },
+  }
+}
+
 /** The good path's rounds (no IPO) and its top site (the 20 MW own site; design thread A1). */
 const GOOD_PATH_RAISES = ['friends_family', 'seed', 'series_a']
 const GOOD_PATH_TOP = { tier: 'own_site' }
@@ -625,6 +661,17 @@ export const BOTS: Record<string, Strategy> = {
     raises: GOOD_PATH_RAISES,
     climbLimit: GOOD_PATH_TOP,
   }),
+  /** raise-climb, then in Act II hosts other miners wherever hosting pays (see hostingSwitcher). */
+  'hosting-switcher': hostingSwitcher(
+    makeBot({
+      hodlPct: 0,
+      reserveUsd: () => 0,
+      maxPaybackQuarters: Infinity,
+      sellOnDrops: false,
+      raises: GOOD_PATH_RAISES,
+      climbLimit: GOOD_PATH_TOP,
+    }),
+  ),
   /** raise-climb that talks to the neighbours at any site with Heat 50 or more. */
   'raise-outreach': makeBot({
     hodlPct: 0,

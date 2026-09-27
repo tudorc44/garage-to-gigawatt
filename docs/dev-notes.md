@@ -978,6 +978,27 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
   - Checked in the browser at 1280×800 (campus theme): dashboard, dialog, converting 200 kW (cash −$20K, 1
     Bandwidth, bar shows 200 kW building, "End · free"), no console errors.
 - **M2.6** Sim: a hosting-switcher bot and Act II numbers from the sim-runner for the milestone report.
+  **Done.** Bot `hosting-switcher` (tools/bots.ts): raise-climb, and in Act II, at every site where hosting pays
+  (rate above the site's power price), it sells its GPU rigs and S9s there and converts all the free power ("switch
+  and stay": contracts keep renewing). `npm run sim -- --act2` plays raise-climb, hosting-switcher and texas-ipo on
+  through 2026Q4 (about a minute for 50 seeds each; the plain `npm run sim` is unchanged) and prints values at
+  2022Q3 / 2024Q1 / 2026Q4, the Act II peak, hosting fees, EV per energized MW, and the scope's "hosting isn't a free
+  win" comparison. Results (50 seeds, 27 Sep 2026):
+
+  | Bot | Act II busts | Value 2022Q3 | 2024Q1 | 2026Q4 | Act II peak | Hosting fees | EV/MW 2026Q4 |
+  |---|---|---|---|---|---|---|---|
+  | raise-climb | 1 | $14.9M | $14.2M | $13.0M | $14.8M | $0 | $0.62M |
+  | hosting-switcher | 3 | $14.9M | $14.4M | $11.2M | $29.2M | $44.6M | $0.53M |
+  | texas-ipo | 0 | $206M | $872M | $213M | $872M | $0 | $2.0M |
+
+  - Hosting vs staying in mining (same seeds, value at 2024Q1): hosting ahead in **27/50** runs (scope §5: ≤ ~60% ✓).
+  - EV/MW (doc 18 §8 sanity band for pure mining $0.4–1.2M/MW): raise-climb ✓, hosting-switcher ✓, texas-ipo $2.0M
+    (above: its S19 fleet still earns in 2026Q4).
+  - Why hosting is only a stepping stone here: Act I sites keep their held 2022 power prices (own site ≈ 5.7¢,
+    warehouse 7.5¢, small unit 11¢); clients pay 7.5¢ in 2023 and 6¢ from 2024, so only the own site (and Texas)
+    make a margin, and 20 MW of hosted load pushes the own site's Heat past 50 (+20% power), after which it loses
+    ≈ $0.4M a quarter from 2024. Tried and dropped (mine, reversible): ending loss-making contracts at renewal made
+    the numbers worse, because the underlying reinvest bot then refilled the MW with S19s at held 2022 prices.
 
 
 ### STOPPED (M2)

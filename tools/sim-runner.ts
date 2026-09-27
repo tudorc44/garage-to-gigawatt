@@ -2,6 +2,7 @@
 // summary. For balance checks, not for players.
 //   npm run sim                      (50 seeds, output in sim-output/)
 //   npm run sim -- --seeds 10 --out some/folder
+//   npm run sim -- --act2            (also plays a few bots on through Act II, to 2026Q4)
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONTENT, actLastQuarter } from '../src/content/index.ts'
@@ -14,6 +15,7 @@ import type {
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
+import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { eraMultiple } from '../src/sim/systems/valuation.ts'
 import { BOTS, PROBES } from './bots.ts'
 
@@ -635,4 +637,70 @@ console.table(
     console.log(
       `    ${r.strategy.padEnd(18)} median ${(r.median_seed_cash_floor * 100).toFixed(0)}%, under 50% in ${r.seed_floor_under_half}/${r.seed_floor_runs} runs`,
     )
+}
+
+// ---------- Act II (--act2): a few bots played on through 2026Q4 ----------
+
+if (args.includes('--act2')) {
+  const ACT2_BOTS = ['raise-climb', 'hosting-switcher', 'texas-ipo']
+  const t0 = performance.now()
+  const byBot = ACT2_BOTS.map((name) => ({
+    name,
+    runs: Array.from({ length: SEEDS }, (_, i) => ({
+      seed: i + 1,
+      state: playGame(i + 1, BOTS[name], { through: 2 }).state,
+    })),
+  }))
+  const at = (r: Run, q: string) =>
+    r.state.reports.find((x) => x.quarter === q)?.valuationUsd
+  const act2First = CONTENT.quarters[actLastQuarter(1) + 1]
+  console.log(
+    `\nAct II (--act2): ${SEEDS} seeds × ${ACT2_BOTS.length} bots, played to 2026Q4 (${((performance.now() - t0) / 1000).toFixed(1)} s)`,
+  )
+  console.table(
+    byBot.map(({ name, runs }) => {
+      const alive = runs.filter((r) => at(r, '2022Q3') !== undefined)
+      const act2Busts = alive.filter((r) => r.state.phase === 'gameover')
+      const ended = alive.filter((r) => r.state.phase === 'chapter')
+      const act2Peak = ended.map((r) => {
+        const reps = r.state.reports.filter((x) => x.quarter >= act2First)
+        const best = reps.reduce((a, b) =>
+          b.valuationUsd > a.valuationUsd ? b : a,
+        )
+        return best
+      })
+      const evPerMw = ended.map((r) => {
+        const u = mwByUse(r.state, r.state.quarter)
+        const mw =
+          (u.mining + u.hosting + u.aiShell + u.aiCloud + u.idle) / 1000
+        return mw > 0 ? r.state.reports.at(-1)!.valuationUsd / mw : 0
+      })
+      const fees = ended.map((r) =>
+        r.state.reports.reduce((a, x) => a + (x.hostingFeesUsd ?? 0), 0),
+      )
+      return {
+        strategy: name,
+        'reached Act II': `${alive.length}/${runs.length}`,
+        'bust in Act II': act2Busts.length,
+        'value 2022Q3': usd(median(alive.map((r) => at(r, '2022Q3')!))),
+        'value 2024Q1': usd(median(ended.map((r) => at(r, '2024Q1') ?? 0))),
+        'value 2026Q4': usd(median(ended.map((r) => at(r, '2026Q4') ?? 0))),
+        'Act II peak': usd(median(act2Peak.map((x) => x.valuationUsd))),
+        'hosting fees (Act II)': usd(median(fees)),
+        'EV per energized MW, 2026Q4': usd(median(evPerMw)),
+      }
+    }),
+  )
+  // Scope 0.2 §5 "hosting isn't a free win": hosting vs staying in mining, same seeds, 2022Q4–2024Q1.
+  const climb = byBot.find((b) => b.name === 'raise-climb')!.runs
+  const host = byBot.find((b) => b.name === 'hosting-switcher')!.runs
+  const pairs = climb
+    .map((c, i) => [at(c, '2024Q1'), at(host[i], '2024Q1')])
+    .filter(
+      (p): p is [number, number] => p[0] !== undefined && p[1] !== undefined,
+    )
+  const wins = pairs.filter(([c, h]) => h > c).length
+  console.log(
+    `  Hosting vs staying in mining (hosting-switcher vs raise-climb, same seeds, value at 2024Q1): hosting ahead in ${wins}/${pairs.length} runs (scope 0.2 §5: should be ≤ ~60%)`,
+  )
 }
