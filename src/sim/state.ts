@@ -127,13 +127,19 @@ export interface TenantOffer {
   card: string
   /** Quarters after signing by which the project must be live (take-or-pay). */
   readyByQuarters: number
+  /** A GPU contract offer (an AI cloud): its term, and the ready-by buffer after the planned go-live. */
+  gpu?: { termYears: number; bufferQuarters: number }
 }
 
-/** The tenant a shell project signed (terms from its card). */
+/**
+ * The tenant a project signed: a shell's lease (terms from its card) or a cloud's GPU contract
+ * (`gpu`: take-or-pay on all its GPUs at a $/GPU-hr locked at signing, for a term in quarters).
+ */
 export interface ProjectTenant {
   card: string
   signedQuarter: number
   readyByQuarter: number
+  gpu?: { gpus: number; priceUsdHr: number; termQuarters: number }
   /** Quarters the project has been late so far (liquidated damages each). */
   lateQuarters: number
   /** The 2-quarters-late walk-away roll has happened. */

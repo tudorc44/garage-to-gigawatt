@@ -1289,6 +1289,22 @@ A2-05 / A2-07. Sub-steps:
   (new `tests/sim/gpuResale.test.ts`). No golden change.
 - **M4.0c** GPU contracts for AI clouds (offers, locked price, take-or-pay billing, ready-by buffer, fallback to spot,
   backlog).
+  **Done.** `balance.ts` › `projects.gpuContracts`: the cards that offer contracts and their profile (Meridian and
+  Frontier = AI lab; Fluidline and the CoreWeave-style anchor = neocloud; Kestrel Render = enterprise; the overflow
+  card = neocloud profile, only at know-how 3 via its card (mine, reversible)), term and buffer ranges, term factors,
+  H200 × 1.2. A cloud draws 2–3 offers when it opens (from 2023Q3) and again each quarter while it has no contract
+  (also when live on spot). Signing locks $/GPU-hr = the quarter's H100 1-year contract × the term factor (B200: its
+  neocloud series × the factor (mine, reversible: the file has no B200 contract column)); ready-by = the planned
+  go-live (now + build, or its ready quarter) + the offer's buffer; no prepayment and no capex credit on GPU
+  contracts (mine, reversible). Billing: all contracted GPUs × price × 168 h × uptime per week. At the end of the term
+  the contract ends and the cloud goes on spot (offers come again). Late damages 3% of the annual contract value;
+  walk chance by type; backlog = GPUs × price × 8,760 h × years left. GPUs under contract can't be sold
+  (`error.gpus_contracted`, mine, reversible). The Deal builder shows GPU offers ($/GPU-hr, a year's value, term,
+  ready-by, walk odds) and keeps them visible when a cloud is on spot; cards show "… $/GPU-hr take-or-pay"; the
+  projected return runs the contract's term then spot. Terminal lists GPU offers. New helpers `annualContractUsd`,
+  `contractQuarters`, `gpuContractUsdHr`. Seen in the browser: a 2 MW H100 cloud in 2023Q3 gets offers at $6.80
+  (2-year) and a projected payback of ~1 year at 2023 prices. Tests 480 pass (new `tests/sim/gpuContracts.test.ts`).
+  No golden change.
 - **M4.0d** Sims re-run against §5 (hosting, pilot with resale).
 - **M4.1** Finance content: `lenders.json` game copy + schema; SOFR, project-debt rate path, DDTL spreads; Act II
   equipment-loan terms.

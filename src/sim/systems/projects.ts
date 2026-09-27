@@ -20,6 +20,7 @@ import {
   type GameState,
   type Project,
   type ProjectKind,
+  type TenantOffer,
 } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import { isHired } from './hires.ts'
@@ -107,6 +108,42 @@ export function annualRentUsd(card: TenantCard, kw: number): number {
 }
 
 /**
+ * A GPU contract's $/GPU-hr for `gpu` over `termYears`, signed in `quarter` (owner decisions on
+ * the M3 questions): the H100 1-year contract price × the term factor; an H200 × 1.2; a B200 off
+ * its own neocloud series. Undefined before there are prices.
+ */
+export function gpuContractUsdHr(
+  gpu: string,
+  termYears: number,
+  quarter: number,
+): number | undefined {
+  const c = BALANCE.projects.gpuContracts
+  const base =
+    gpu === 'b200'
+      ? heldBack(quarter, (q) => q.gpuRentalUsdHr.b200.neocloud)
+      : heldBack(quarter, (q) => q.gpuRentalUsdHr.h100.contract1y)
+  if (base === undefined) return undefined
+  return (
+    base * (gpu === 'h200' ? c.h200Mult : 1) * (c.termFactor[termYears] ?? 1)
+  )
+}
+
+/** A signed tenant's contract value over a year: a shell's rent, or a cloud's GPUs × price × hours. */
+export function annualContractUsd(p: Project): number {
+  const t = p.tenant
+  if (!t) return 0
+  if (t.gpu) return t.gpu.gpus * t.gpu.priceUsdHr * 24 * 365
+  return annualRentUsd(tenantCard(t.card)!, p.kw)
+}
+
+/** A signed tenant's term in quarters. */
+export function contractQuarters(p: Project): number {
+  const t = p.tenant
+  if (!t) return 0
+  return t.gpu ? t.gpu.termQuarters : tenantCard(t.card)!.termYears * 4
+}
+
+/**
  * What a project costs to build if it starts in `quarter` (conversions.json, market_quarterly):
  * the retrofit per MW, plus for clouds and pilots the GPUs (gpus per MW × the unit price; +10%
  * for a cloud at GPU know-how 0), less the tenant's capex credit (capped at the retrofit).
@@ -151,15 +188,21 @@ export function tenantsOpen(quarter: number): boolean {
   return CONTENT.quarters[quarter] >= BALANCE.projects.tenantsFrom
 }
 
-/** Draws a shell project's tenant offers (2–3, +1 with the BD Lead) from the eligible cards. */
+/**
+ * Draws a project's tenant offers (2–3, +1 with the BD Lead) from the eligible cards: leases for a
+ * shell; GPU contracts (a term and a ready-by buffer each) for a cloud, from the cards that offer
+ * them. A pilot has none.
+ */
 export function drawOffers(state: GameState, p: Project): void {
-  if (p.kind !== 'shell' || !tenantsOpen(state.quarter)) return
+  if (p.kind === 'pilot' || !tenantsOpen(state.quarter)) return
   const site = state.sites.find((s) => s.id === p.siteId)
   const level = knowHow(state)
+  const contracts = BALANCE.projects.gpuContracts
   const pool = P().tenantCards.filter(
     (c) =>
       (c.needsKnowHow ?? 0) <= level &&
-      (!c.regionLock || (site && c.regionLock === regionOf(site))),
+      (!c.regionLock || (site && c.regionLock === regionOf(site))) &&
+      (p.kind === 'shell' || c.id in contracts.cards),
   )
   const r = substream(state.seed, `project_offers:${state.quarter}:${p.id}`)
   const { min, max } = BALANCE.projects.offers
@@ -171,10 +214,24 @@ export function drawOffers(state: GameState, p: Project): void {
   p.offers = []
   for (let i = 0; i < n; i++) {
     const card = left.splice(randomInt(r, 0, left.length - 1), 1)[0]
+    const id = `${p.id}-offer-${state.quarter}-${i + 1}`
+    if (p.kind === 'shell') {
+      p.offers.push({
+        id,
+        card: card.id,
+        readyByQuarters: randomInt(r, card.readyBy[0], card.readyBy[1]),
+      })
+      continue
+    }
+    const profile = contracts.profiles[contracts.cards[card.id]]
     p.offers.push({
-      id: `${p.id}-offer-${state.quarter}-${i + 1}`,
+      id,
       card: card.id,
-      readyByQuarters: randomInt(r, card.readyBy[0], card.readyBy[1]),
+      readyByQuarters: 0,
+      gpu: {
+        termYears: randomInt(r, ...profile.termYears),
+        bufferQuarters: randomInt(r, ...profile.bufferQuarters),
+      },
     })
   }
 }
@@ -278,9 +335,11 @@ export function getProject(state: GameState, id: string): Project | undefined {
 }
 
 /**
- * Signs one of a shell project's offers (accept: 0 Bandwidth). The tenant sets its ready-by
+ * Signs one of a project's offers (accept: 0 Bandwidth). A shell's tenant sets its ready-by
  * quarter; any prepayment (a share of the whole contract) comes in now and is set off against
- * rent later. The first signed AI deal starts the pivot premium.
+ * rent later. A cloud's GPU contract locks its $/GPU-hr now; its ready-by is the planned go-live
+ * plus the offer's buffer; a cloud on spot (even live) can sign one. The first signed AI deal
+ * starts the pivot premium.
  */
 export function signTenant(
   state: GameState,
@@ -289,12 +348,13 @@ export function signTenant(
 ): Message | undefined {
   const p = getProject(state, projectId)
   if (!p) return { key: 'error.unknown_project' }
-  if (p.kind !== 'shell') return { key: 'error.project_no_tenant' }
+  if (p.kind === 'pilot') return { key: 'error.project_no_tenant' }
   if (p.tenant) return { key: 'error.tenant_signed' }
   if (projectGone(p)) return { key: 'error.wrong_phase' }
   const offer = p.offers.find((o) => o.id === offerId)
   const card = offer && tenantCard(offer.card)
   if (!offer || !card) return { key: 'error.unknown_offer' }
+  if (offer.gpu) return signGpuContract(state, p, offer, card)
   const contractUsd = annualRentUsd(card, p.kw) * card.termYears
   const prepaymentUsd = Math.round(contractUsd * card.prepaymentShare)
   p.tenant = {
@@ -321,6 +381,50 @@ export function signTenant(
   return undefined
 }
 
+/** The quarter a project is planned to go live: now if live, its ready quarter, or after a build. */
+export function plannedLiveQuarter(state: GameState, p: Project): number {
+  if (p.stage === 'live') return state.quarter
+  if (p.stage === 'building' && p.readyQuarter !== null) return p.readyQuarter
+  return state.quarter + buildQuarters(p.kind)
+}
+
+function signGpuContract(
+  state: GameState,
+  p: Project,
+  offer: TenantOffer,
+  card: TenantCard,
+): Message | undefined {
+  const terms = offer.gpu!
+  const priceUsdHr = gpuContractUsdHr(p.gpu!, terms.termYears, state.quarter)
+  if (priceUsdHr === undefined) return { key: 'error.unknown_offer' }
+  const gpus =
+    p.stage === 'proposed' ? projectCapex(state, p).gpuCount : p.gpuCount
+  p.tenant = {
+    card: card.id,
+    signedQuarter: state.quarter,
+    readyByQuarter: plannedLiveQuarter(state, p) + terms.bufferQuarters,
+    gpu: { gpus, priceUsdHr, termQuarters: terms.termYears * 4 },
+    lateQuarters: 0,
+    walkRolled: false,
+    prepaymentLeftUsd: 0,
+    servedQuarters: 0,
+  }
+  p.spot = false
+  p.offers = []
+  if (state.firstAiDealQuarter === null)
+    state.firstAiDealQuarter = state.quarter
+  logEntry(state, 'log.gpu_contract_signed', {
+    n: p.n,
+    tenant: card.id,
+    count: gpus,
+    gpu: p.gpu!,
+    priceUsd: priceUsdHr,
+    years: terms.termYears,
+    quarter: CONTENT.quarters[p.tenant.readyByQuarter] ?? '—',
+  })
+  return undefined
+}
+
 /** A cloud project sells its capacity on the spot market (its Tenant slot). */
 export function useSpot(
   state: GameState,
@@ -330,6 +434,7 @@ export function useSpot(
   if (!p) return { key: 'error.unknown_project' }
   if (p.kind !== 'cloud') return { key: 'error.project_no_spot' }
   if (p.stage !== 'proposed') return { key: 'error.wrong_phase' }
+  if (p.tenant) return { key: 'error.tenant_signed' }
   p.spot = true
   return undefined
 }
@@ -355,7 +460,11 @@ export function slots(p: Project): {
   return {
     power: true,
     tenant:
-      p.kind === 'pilot' ? null : p.kind === 'shell' ? !!p.tenant : p.spot,
+      p.kind === 'pilot'
+        ? null
+        : p.kind === 'shell'
+          ? !!p.tenant
+          : p.spot || !!p.tenant,
     capital: p.capital !== null,
   }
 }
@@ -434,7 +543,7 @@ export function startBuild(state: GameState, projectId: string): void {
   })
 }
 
-/** At the start of a quarter: finished builds go live; shells without a tenant get offers. */
+/** At the start of a quarter: finished builds go live; shells and clouds without a tenant get offers. */
 export function startQuarterProjects(state: GameState): void {
   for (const p of state.projects) {
     if (
@@ -446,7 +555,7 @@ export function startQuarterProjects(state: GameState): void {
       logEntry(state, 'log.project_live', { n: p.n, kind: p.kind })
     }
     if (
-      p.kind === 'shell' &&
+      p.kind !== 'pilot' &&
       !projectGone(p) &&
       !p.tenant &&
       p.offers.length === 0
@@ -459,7 +568,8 @@ export function startQuarterProjects(state: GameState): void {
  * At the end of a quarter (scope §2.5 [P1], tenants.json take_or_pay_terms): a signed tenant whose
  * project isn't live by its ready-by quarter gets liquidated damages (3% of the annual contract)
  * for each late quarter; at 2 quarters late it may walk (its type's chance), and any prepayment
- * not yet set off is repaid. Live shells count a quarter of their term served. Returns the damages.
+ * not yet set off is repaid. Live projects count a quarter of their term served; a cloud's GPU
+ * contract that has run its term ends and the GPUs fall back to spot. Returns the damages.
  */
 export function endQuarterProjects(state: GameState): number {
   let damagesUsd = 0
@@ -470,10 +580,15 @@ export function endQuarterProjects(state: GameState): number {
     const card = tenantCard(t.card)!
     if (p.stage === 'live') {
       t.servedQuarters++
+      if (t.gpu && t.servedQuarters >= t.gpu.termQuarters) {
+        logEntry(state, 'log.gpu_contract_ended', { n: p.n, tenant: card.id })
+        p.tenant = null
+        p.spot = true
+      }
       continue
     }
     if (state.quarter < t.readyByQuarter) continue
-    const usd = annualRentUsd(card, p.kw) * P().latePenaltyShareYr
+    const usd = annualContractUsd(p) * P().latePenaltyShareYr
     damagesUsd += usd
     t.lateQuarters++
     logEntry(state, 'log.project_late', {
@@ -512,8 +627,10 @@ export function spotUtilisation(state: GameState): number {
 /**
  * One week of the live projects. A shell: its tenant's rent (a 52nd of a year), less the host's
  * costs (a share of rent; the tenant pays its own power), with any prepayment set off against the
- * cash. A cloud or pilot: GPUs × the neocloud price × utilisation × hours, less power at the AI
- * hall's PUE and a week of insurance on the GPUs. Cash moves here; the totals are returned.
+ * cash. A cloud or pilot on spot: GPUs × the neocloud price × utilisation × hours; a cloud under a
+ * GPU contract: all its contracted GPUs × the locked price × hours, whatever the utilisation. Both
+ * less power at the AI hall's PUE and a week of insurance on the GPUs. Cash moves here; the
+ * totals are returned.
  */
 export function settleProjectsWeek(state: GameState): {
   revenueUsd: number
@@ -540,12 +657,14 @@ export function settleProjectsWeek(state: GameState): {
       state.cash -= setOff
     } else {
       const up = uptime(site)
-      rev =
-        p.gpuCount *
-        (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
-        spotUtilisation(state) *
-        hours *
-        up
+      const contract = p.tenant?.gpu
+      rev = contract
+        ? contract.gpus * contract.priceUsdHr * hours * up
+        : p.gpuCount *
+          (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
+          spotUtilisation(state) *
+          hours *
+          up
       cost =
         p.kw * b.cloudPue * hours * up * powerPriceUsdKwh(site, state.quarter) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
@@ -746,9 +865,10 @@ export function resolveProjectEvent(
  * A project's projected return at today's prices, before debt: its capex (what starting now would
  * cost, or what was paid), a year's revenue and EBITDA once live, the payback in years and the IRR
  * of paying the capex now, earning nothing while it builds, then the EBITDA each quarter over the
- * tenant's term. A cloud or pilot runs cloudProjectionYears on spot (also before a tenant is
- * chosen) and then sells its GPUs at the residual value. A shell with no tenant has no revenue to
- * project (null figures).
+ * tenant's term. A cloud or pilot runs cloudProjectionYears (under its GPU contract for the
+ * contract's term, then on spot; on spot also before a tenant is chosen) and then sells its GPUs
+ * at the residual value. The revenue and EBITDA shown are the first year's. A shell with no tenant
+ * has no revenue to project (null figures).
  */
 export function projectedReturn(state: GameState, p: Project) {
   const capexUsd =
@@ -757,14 +877,15 @@ export function projectedReturn(state: GameState, p: Project) {
   const b = BALANCE.projects
   let revenueUsd: number | null = null
   let ebitdaUsd: number | null = null
-  let years: number = b.cloudProjectionYears
+  /** EBITDA for each quarter once live. */
+  let quarters: number[] = []
   let residualUsd = 0
   if (p.kind === 'shell') {
     if (p.tenant) {
       const card = tenantCard(p.tenant.card)!
       revenueUsd = annualRentUsd(card, p.kw)
       ebitdaUsd = revenueUsd * (1 - b.shellOpexShare)
-      years = card.termYears
+      quarters = Array<number>(card.termYears * 4).fill(ebitdaUsd / 4)
     }
   } else {
     const site = state.sites.find((s) => s.id === p.siteId)!
@@ -773,17 +894,31 @@ export function projectedReturn(state: GameState, p: Project) {
     const gpuUsd =
       p.stage === 'proposed' ? projectCapex(state, p).gpuUsd : p.gpuCapexUsd
     const up = uptime(site)
-    revenueUsd =
+    const costUsd =
+      p.kw * b.cloudPue * hoursYr * up * powerPriceUsdKwh(site, state.quarter) +
+      gpuUsd * b.cloudInsuranceShareYr
+    const spotRevenueUsd =
       gpus *
       (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
       spotUtilisation(state) *
       hoursYr *
       up
-    ebitdaUsd =
-      revenueUsd -
-      p.kw * b.cloudPue * hoursYr * up * powerPriceUsdKwh(site, state.quarter) -
-      gpuUsd * b.cloudInsuranceShareYr
-    residualUsd = gpuUsd * gpuResidualShare(years)
+    const contract = p.tenant?.gpu
+    const contractRevenueUsd = contract
+      ? contract.gpus * contract.priceUsdHr * hoursYr * up
+      : 0
+    const contractLeft = contract
+      ? Math.max(0, contract.termQuarters - p.tenant!.servedQuarters)
+      : 0
+    quarters = Array.from(
+      { length: b.cloudProjectionYears * 4 },
+      (_, i) =>
+        ((i < contractLeft ? contractRevenueUsd : spotRevenueUsd) - costUsd) /
+        4,
+    )
+    revenueUsd = contractLeft > 0 ? contractRevenueUsd : spotRevenueUsd
+    ebitdaUsd = revenueUsd - costUsd
+    residualUsd = gpuUsd * gpuResidualShare(b.cloudProjectionYears)
   }
   if (ebitdaUsd === null)
     return { capexUsd, revenueUsd, ebitdaUsd, paybackYears: null, irr: null }
@@ -793,11 +928,7 @@ export function projectedReturn(state: GameState, p: Project) {
       : p.stage === 'building'
         ? Math.max(0, (p.readyQuarter ?? state.quarter) - state.quarter)
         : buildQuarters(p.kind)
-  const flows = [
-    -capexUsd,
-    ...Array<number>(wait).fill(0),
-    ...Array<number>(Math.round(years * 4)).fill(ebitdaUsd / 4),
-  ]
+  const flows = [-capexUsd, ...Array<number>(wait).fill(0), ...quarters]
   flows[flows.length - 1] += residualUsd
   return {
     capexUsd,
@@ -847,6 +978,7 @@ export function sellGpusBlocker(
   if (!p) return { key: 'error.unknown_project' }
   if (p.kind === 'shell' || p.stage !== 'live')
     return { key: 'error.gpus_not_live' }
+  if (p.tenant?.gpu) return { key: 'error.gpus_contracted' }
   const need = BALANCE.projects.gpuResidual.sellBandwidth
   if (state.bandwidth < need)
     return {
@@ -877,12 +1009,14 @@ export function sellGpus(state: GameState, projectId: string): void {
 
 // ---------- valuation parts and selling (scope 0.2 §2.5, §2.8; doc 18 §7.3, §8) ----------
 
-/** A tenant contract's revenue still to come: the annual rent × the years left of its term. */
+/** A tenant contract's revenue still to come: its value a year × the years left of its term. */
 export function remainingContractUsd(p: Project): number {
   if (!p.tenant || projectGone(p)) return 0
-  const card = tenantCard(p.tenant.card)!
-  const quartersLeft = Math.max(0, card.termYears * 4 - p.tenant.servedQuarters)
-  return (annualRentUsd(card, p.kw) * quartersLeft) / 4
+  const quartersLeft = Math.max(
+    0,
+    contractQuarters(p) - p.tenant.servedQuarters,
+  )
+  return (annualContractUsd(p) * quartersLeft) / 4
 }
 
 /** The backlog weight by tenant credit (doc 18 §8): A/AA, BBB, or below (AI labs, B/BB). */

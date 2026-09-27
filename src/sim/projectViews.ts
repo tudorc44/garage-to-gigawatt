@@ -8,8 +8,12 @@ import { projectGone, type GameState, type Project } from './state.ts'
 import { convertibleKw } from './systems/hosting.ts'
 import { siteMwByUse } from './systems/mwUse.ts'
 import {
+  annualContractUsd,
   annualRentUsd,
   availableGpus,
+  contractQuarters,
+  gpuContractUsdHr,
+  plannedLiveQuarter,
   buildBlocker,
   buildQuarters,
   capRate,
@@ -64,7 +68,7 @@ export function projectCard(state: GameState, p: Project) {
     p.tenant && p.stage !== 'live' && !projectGone(p)
       ? {
           quarters: p.tenant.lateQuarters,
-          damagesUsd: annualRentUsd(card!, p.kw) * P().latePenaltyShareYr,
+          damagesUsd: annualContractUsd(p) * P().latePenaltyShareYr,
           walkChance: P().walkChanceLate2q[card!.type],
         }
       : null
@@ -79,11 +83,13 @@ export function projectCard(state: GameState, p: Project) {
           id: card.id,
           type: card.type,
           rating: card.rating,
-          termYears: card.termYears,
+          termYears: contractQuarters(p) / 4,
           priceUsdMwYr: card.priceUsdMwYr,
-          annualUsd: annualRentUsd(card, p.kw),
+          /** A GPU contract's locked $/GPU-hr, or null for a shell lease. */
+          gpuUsdHr: p.tenant!.gpu?.priceUsdHr ?? null,
+          annualUsd: annualContractUsd(p),
           readyBy: label(p.tenant!.readyByQuarter),
-          yearsLeft: remainingContractUsd(p) / annualRentUsd(card, p.kw),
+          yearsLeft: remainingContractUsd(p) / annualContractUsd(p),
         }
       : null,
     late,
@@ -188,20 +194,32 @@ export function dealView(state: GameState, projectId: string) {
     },
     offers: p.offers.map((o) => {
       const c = tenantCard(o.card)!
+      const gpuUsdHr = o.gpu
+        ? (gpuContractUsdHr(p.gpu!, o.gpu.termYears, state.quarter) ?? 0)
+        : null
+      const gpus = p.stage === 'proposed' ? cost.gpuCount : p.gpuCount
       return {
         offer: o,
         type: c.type,
         rating: c.rating,
         priceUsdMwYr: c.priceUsdMwYr,
-        annualUsd: annualRentUsd(c, p.kw),
-        termYears: c.termYears,
-        prepaymentShare: c.prepaymentShare,
-        readyBy: label(state.quarter + o.readyByQuarters),
-        walkChance: P().walkChanceLate2q[c.type],
-        capexCreditUsd: Math.min(
-          c.capexCreditUsdMw * (p.kw / 1000),
-          cost.retrofitUsd,
+        /** A GPU contract offer's $/GPU-hr (locked if signed now), or null for a lease. */
+        gpuUsdHr,
+        annualUsd:
+          gpuUsdHr === null
+            ? annualRentUsd(c, p.kw)
+            : gpus * gpuUsdHr * 24 * 365,
+        termYears: o.gpu ? o.gpu.termYears : c.termYears,
+        prepaymentShare: o.gpu ? 0 : c.prepaymentShare,
+        readyBy: label(
+          o.gpu
+            ? plannedLiveQuarter(state, p) + o.gpu.bufferQuarters
+            : state.quarter + o.readyByQuarters,
         ),
+        walkChance: P().walkChanceLate2q[c.type],
+        capexCreditUsd: o.gpu
+          ? 0
+          : Math.min(c.capexCreditUsdMw * (p.kw / 1000), cost.retrofitUsd),
         blocker: whyNot(state, {
           type: 'PROJECT_SIGN_TENANT',
           projectId: p.id,

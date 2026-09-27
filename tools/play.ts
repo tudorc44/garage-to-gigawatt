@@ -9,6 +9,7 @@ import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
 import {
+  dealView,
   failureWaveView,
   projectAlertView,
   projectsView,
@@ -207,19 +208,19 @@ function showPlan(s: GameState) {
         irr: c.irr === null ? '—' : fmt.pct(c.irr),
         quarter: c.ready || '—',
       })
-      if (p.stage === 'proposed' && !p.tenant)
-        p.offers.forEach((o, j) => {
-          const card = CONTENT.projects.tenantCards.find(
-            (x) => x.id === o.card,
-          )!
-          say('play.project_offer', {
+      if (!p.tenant)
+        dealView(s, p.id)!.offers.forEach((o, j) => {
+          const params = {
             n: j + 1,
-            tenant: o.card,
-            rating: card.rating,
-            rentUsd: (card.priceUsdMwYr * p.kw) / 1000,
-            years: card.termYears,
-            readyBy: CONTENT.quarters[s.quarter + o.readyByQuarters] ?? '—',
-          })
+            tenant: o.offer.card,
+            rating: o.rating,
+            rentUsd: o.annualUsd,
+            years: o.termYears,
+            readyBy: o.readyBy || '—',
+          }
+          if (o.gpuUsdHr === null) say('play.project_offer', params)
+          else
+            say('play.project_gpu_offer', { ...params, priceUsd: o.gpuUsdHr })
         })
     })
   }

@@ -76,6 +76,27 @@ function SlotChips({ card }: { card: ProjectCardView }) {
   )
 }
 
+/** A signed tenant: a shell's lease, or a cloud's GPU contract with its locked $/GPU-hr. */
+function TenantLine({ card }: { card: ProjectCardView }) {
+  const tn = card.tenant!
+  const params = {
+    name: tenantName(tn.id),
+    rating: tn.rating,
+    annual: fmt.money(tn.annualUsd),
+    years: tn.termYears,
+  }
+  return (
+    <>
+      {tn.gpuUsdHr === null
+        ? t('ui.projects.tenant', params)
+        : t('ui.projects.gpu_tenant', {
+            ...params,
+            price: fmt.money(tn.gpuUsdHr),
+          })}
+    </>
+  )
+}
+
 function projectName(card: ProjectCardView) {
   return t('ui.projects.name', { tier: card.tier, n: card.project.n })
 }
@@ -203,12 +224,7 @@ function ProjectCardEl(
       )}
       {card.tenant ? (
         <div class="num-s">
-          {t('ui.projects.tenant', {
-            name: tenantName(card.tenant.id),
-            rating: card.tenant.rating,
-            annual: fmt.money(card.tenant.annualUsd),
-            years: card.tenant.termYears,
-          })}
+          <TenantLine card={card} />
         </div>
       ) : (
         p.kind !== 'shell' &&
@@ -483,22 +499,16 @@ function DealBuilder(
           </div>
           {card.tenant ? (
             <div class="num-s">
-              {t('ui.projects.tenant', {
-                name: tenantName(card.tenant.id),
-                rating: card.tenant.rating,
-                annual: fmt.money(card.tenant.annualUsd),
-                years: card.tenant.termYears,
-              })}{' '}
-              ·{' '}
+              <TenantLine card={card} />
+              {' · '}
               {t('ui.projects.ready_by', {
                 quarter: fmt.quarter(card.tenant.readyBy),
               })}
             </div>
-          ) : p.spot ? (
-            <div class="num-s">{t('ui.deal.on_spot')}</div>
           ) : (
             <>
-              {v.offers.length === 0 && p.kind === 'shell' && (
+              {p.spot && <div class="num-s">{t('ui.deal.on_spot')}</div>}
+              {v.offers.length === 0 && (
                 <p class="num-s muted" style={{ margin: 0 }}>
                   {t('ui.deal.no_offers')}
                 </p>
@@ -524,20 +534,28 @@ function DealBuilder(
                     />
                   </div>
                   <div class="num-s">
-                    {t('ui.deal.offer_terms', {
-                      price: fmt.money(o.priceUsdMwYr),
-                      annual: fmt.money(o.annualUsd),
-                      years: o.termYears,
-                      prepay: fmt.pct(o.prepaymentShare),
-                      quarter: fmt.quarter(o.readyBy),
-                      walk: fmt.pct(o.walkChance),
-                    })}
+                    {o.gpuUsdHr === null
+                      ? t('ui.deal.offer_terms', {
+                          price: fmt.money(o.priceUsdMwYr),
+                          annual: fmt.money(o.annualUsd),
+                          years: o.termYears,
+                          prepay: fmt.pct(o.prepaymentShare),
+                          quarter: fmt.quarter(o.readyBy),
+                          walk: fmt.pct(o.walkChance),
+                        })
+                      : t('ui.deal.gpu_offer_terms', {
+                          price: fmt.money(o.gpuUsdHr),
+                          annual: fmt.money(o.annualUsd),
+                          years: o.termYears,
+                          quarter: fmt.quarter(o.readyBy),
+                          walk: fmt.pct(o.walkChance),
+                        })}
                     {o.capexCreditUsd > 0 &&
                       ` · ${t('ui.deal.credit', { value: fmt.money(o.capexCreditUsd) })}`}
                   </div>
                 </div>
               ))}
-              {v.spot && (
+              {v.spot && !p.spot && (
                 <div class="row-between">
                   <span class="num-s">
                     {t('ui.deal.spot', {

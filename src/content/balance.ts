@@ -132,6 +132,37 @@ export const BALANCE = {
     /** Doc 18 §7.3: projects this big sell at the hyperscale NNN cap rate, smaller at the powered-shell rate. */
     hyperscaleKw: 100_000,
     /**
+     * GPU contracts for AI clouds (owner decisions on the M3 questions). The cards that offer them
+     * and their profile (the overflow card only at know-how 3, via its card; its profile is the
+     * neocloud one: mine, reversible). Term in years and the ready-by buffer (quarters after the
+     * planned go-live) are drawn per offer. Price = the quarter's H100 1-year contract $/GPU-hr ×
+     * the term factor; H200 × h200Mult; B200 prices off its own neocloud series (the file has no
+     * B200 contract column: mine, reversible).
+     */
+    gpuContracts: {
+      cards: {
+        tc_meridian_labs: 'ai_lab',
+        tc_frontier_intelligence: 'ai_lab',
+        tc_fluidline_backstopped: 'neocloud',
+        tc_realname_coreweave_style: 'neocloud',
+        tc_enterprise_render: 'enterprise',
+        tc_hyperscaler_overflow: 'neocloud',
+      } as Record<string, 'ai_lab' | 'neocloud' | 'enterprise'>,
+      profiles: {
+        ai_lab: { termYears: [1, 2], bufferQuarters: [0, 1] },
+        neocloud: { termYears: [1, 3], bufferQuarters: [1, 1] },
+        enterprise: { termYears: [2, 3], bufferQuarters: [1, 2] },
+      } as Record<
+        string,
+        {
+          termYears: readonly [number, number]
+          bufferQuarters: readonly [number, number]
+        }
+      >,
+      termFactor: { 1: 1, 2: 0.85, 3: 0.7 } as Record<number, number>,
+      h200Mult: 1.2,
+    },
+    /**
      * GPU resale (owner decision on the M3 questions): a GPU is worth its purchase price × (1 −
      * declinePerYear × years since delivery), never below `floor` (an H100 of 2023 ≈ 55% by 2026;
      * the pack's range is 35–65%). Selling a live cloud's or pilot's GPUs costs `sellBandwidth`.
