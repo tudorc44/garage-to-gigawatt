@@ -85,7 +85,7 @@ describe('who can borrow', () => {
 })
 
 describe('how much', () => {
-  it('project debt: 75% of capex on an A/AA tenant (60% on BBB), at the quarter’s rate, over the lease', () => {
+  it('project debt: 75% of capex on an A/AA tenant (65% on BBB), at the quarter’s rate, over the lease', () => {
     const s = shellWith('tc_north_azure_cloud')
     const o = debtOffer(s, s.projects[0], 'project_debt')
     const capex = projectCapex(s, s.projects[0]).totalUsd
@@ -94,7 +94,7 @@ describe('how much', () => {
     expect(o.tenorQuarters).toBe(15 * 4)
     expect(o.rating).toBe('A') // secured on a strong tenant
     const bbb = shellWith('tc_enterprise_render')
-    expect(debtOffer(bbb, bbb.projects[0], 'project_debt').share).toBe(0.6)
+    expect(debtOffer(bbb, bbb.projects[0], 'project_debt').share).toBe(0.65)
   })
 
   it('a DDTL: 50% of GPU cost for a non-IG tenant at SOFR + the spread; trimmed to DSCR ≥ 1.12×', () => {

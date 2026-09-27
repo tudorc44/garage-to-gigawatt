@@ -162,7 +162,11 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
 
 ## STOPPED
 
-Nothing stopped. (M5's four STOPPED items were answered: 6, 7, 8, 9 above, built in M6.0.)
+- **Balance tuning (M6.0c, answer 1's stop rule):** after steps (a)–(c) the good path is ~5× short (`sign-then-raise`
+  2026Q4 median $198M, 17/50 bust) and the great path ~3× short (`asic-retirer` 2025 peak $3.5B). Step (c) raised busts
+  (more leverage, bigger builds). No further tuning until the design thread decides; the breakdown goes in the M6 report.
+
+(M5's four STOPPED items were answered: 6, 7, 8, 9 above, built in M6.0.)
 
 ## Small follow-ups
 
@@ -192,3 +196,6 @@ Nothing stopped. (M5's four STOPPED items were answered: 6, 7, 8, 9 above, built
 - M6.0b: weights A/AA 25% → announced AI $14.8M/MW, so A/AA 20% (rule); BBB 15%, AI lab 8%, backstop 20%; 18× floor (`aiFloorEbitdaUsd`).
   Sims at 20%: sign-then-raise $358M all runs, 12/50 bust, 17.5 AI MW; asic-retirer peak $3.5B, end $2.6B; announced AI still $14M,
   stabilized IG $31M (> $27M: the floor) at 2026Q4. Capital screen's weight note now reads the weights.
+- M6.0c: project-debt LTC A/AA-backstopped 75%, BBB 65% (AI lab 50% recorded; project debt still needs BBB+: open question); capex
+  credit cap $2.0M/MW. Worse: sign-then-raise $198M all runs, 17/50 bust; asic-retirer peak $3.5B, 18/50 bust, 32/50 ≥ 4 q runway.
+  **Still > 2× short → tuning STOPPED** (answer 1's rule); breakdown in the M6 report.

@@ -26,6 +26,13 @@ the earlier weeks and **keep the last week**: it carries the real quarter close 
   the same quarter's H100 column × 1.20 (e.g. 2024Q3 neocloud $3.50 → H200 $4.20, was $6.00). The pack's H200 rents
   were 1.4–1.9× the H100's; the owner set the H200 premium at 20%. Purchase prices unchanged.
 
+## Owner decisions of 28 Sep 2026 (the M5 answers)
+
+- **`capital_act2.json` › `backlog_weight_pct_of_remaining_revenue`:** A/AA 15 → 20 (25 was tried and cut back, because
+  announced AI went above the $3–12M/MW band), BBB 10 → 15, AI lab 5 → 8. The backstopped weight (20%) is in
+  `src/content/balance.ts`.
+- **`tenants.json` › `tc_realname_coreweave_style` › `capex_credit_cap_usd_mw`:** 1,500,000 → 2,000,000.
+
 ## market_weekly.csv / market_quarterly.csv: fixes of 27 Sep 2026
 
 The six BTC columns changed and an `eth_usd` column was added (see the ETH section below) (`btc_usd`, `btc_difficulty_T`, `btc_hashrate_EHs`, `btc_block_subsidy`,

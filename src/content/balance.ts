@@ -137,6 +137,12 @@ export const BALANCE = {
      * contract to run is valued at no less than this multiple (owner, 28 Sep 2026).
      */
     contractedAiMultipleFloor: { multiple: 18, minQuartersLeft: 20 },
+    /**
+     * Project debt's loan-to-cost by tenant band (owner, 28 Sep 2026, answer 1 step 3; lenders.json's
+     * 60–75% where higher): A/AA or backstopped 75%, BBB 65%. The AI-lab band (50%) is recorded, but
+     * project debt still needs a tenant rated BBB or better (scope §2.7), so it lends nothing yet.
+     */
+    projectDebtLtc: { strong: 0.75, bbb: 0.65, aiLab: 0.5 },
     /** Warrants worth this × the guaranteed dollars (lenders.json: 0.3–0.5×; mine: the middle), within 3–6%. */
     backstopWarrantValueShare: 0.4,
     /** Bandwidth: an equity raise 2 (scope §2.7); a JV or backstop deal 2 (mine, like negotiating). */

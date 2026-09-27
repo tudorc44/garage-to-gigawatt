@@ -89,11 +89,13 @@ export function debtOffer(
   const ig = isInvestmentGrade(rating)
   const strong = !!p.backstop || ratingRank(rating) >= ratingRank('A')
   const f = CONTENT.finance
+  // Project debt's loan-to-cost by tenant band (owner, 28 Sep 2026), never below lenders.json's.
+  const ltc = BALANCE.finance.projectDebtLtc
   const share =
     kind === 'project_debt'
       ? strong
-        ? f.projectDebt.ltv[1]
-        : f.projectDebt.ltv[0]
+        ? Math.max(f.projectDebt.ltv[1], ltc.strong)
+        : Math.max(f.projectDebt.ltv[0], ltc.bbb)
       : ig
         ? BALANCE.finance.ddtl.advance.ig
         : BALANCE.finance.ddtl.advance.other

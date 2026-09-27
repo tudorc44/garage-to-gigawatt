@@ -243,7 +243,7 @@ describe('the Capital slot, costs and cancelling', () => {
       tenant: null,
     })
     expect(cloud.gpuUsd).toBeCloseTo(750 * 32_000 * 1.1, 6)
-    // The CoreWeave-style anchor funds up to $1.5M/MW of capex.
+    // The CoreWeave-style anchor funds up to $2.0M/MW of capex (was $1.5M; owner, 28 Sep 2026).
     const credit = projectCapex(s, {
       kw: 5000,
       kind: 'shell',
@@ -258,8 +258,8 @@ describe('the Capital slot, costs and cancelling', () => {
         servedQuarters: 0,
       },
     })
-    expect(credit.creditUsd).toBe(1_500_000 * 5)
-    expect(credit.totalUsd).toBe(retrofit * 5 - 1_500_000 * 5)
+    expect(credit.creditUsd).toBe(2_000_000 * 5)
+    expect(credit.totalUsd).toBe(retrofit * 5 - 2_000_000 * 5)
   })
 
   it('GPU prices and rent before 2023Q3 hold the first known value (the pilot opens in 2023Q1)', () => {
