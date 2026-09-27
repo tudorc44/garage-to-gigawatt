@@ -57,10 +57,22 @@ export function poweredKw(site: Site, quarter: number): number {
 }
 
 /** kW taken by every machine placed at the site, including broken and undelivered ones. */
-export function usedKw(state: GameState, siteId: string): number {
+export function machinesKw(state: GameState, siteId: string): number {
   return state.machines
     .filter((lot) => lot.siteId === siteId)
     .reduce((kw, lot) => kw + lot.count * getModel(lot.model)!.power_kw, 0)
+}
+
+/** kW of hosting at the site: live and being converted (both are taken). */
+export function hostingKw(state: GameState, siteId: string): number {
+  return state.hosting
+    .filter((h) => h.siteId === siteId)
+    .reduce((kw, h) => kw + h.kw, 0)
+}
+
+/** kW taken at the site: your machines (placed anywhere in their life) and hosting. */
+export function usedKw(state: GameState, siteId: string): number {
+  return machinesKw(state, siteId) + hostingKw(state, siteId)
 }
 
 /**

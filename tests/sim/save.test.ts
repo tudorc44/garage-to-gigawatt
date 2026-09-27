@@ -129,12 +129,24 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const { version, act, ...rest } = r.state
       expect(version).toBe(2)
       expect(act).toBe(1)
+      // Fields added to the game since the save was made (e.g. Act II's hosting list) get a new
+      // game's starting value; everything the save had stays as it was.
+      const fresh = newGame(v1.seed as number) as unknown as Record<
+        string,
+        unknown
+      >
+      const added = Object.keys(rest).filter((key) => !(key in v1))
+      for (const key of added)
+        expect((rest as Record<string, unknown>)[key]).toEqual(fresh[key])
+      const kept = Object.fromEntries(
+        Object.entries(rest).filter(([key]) => key in v1),
+      )
       const v1Rest = Object.fromEntries(
         Object.entries(v1).filter(([key]) => key !== 'version'),
       )
       // A finished Act I game ("ended") is now at the Act I chapter report.
       if (v1.phase === 'ended') v1Rest.phase = 'chapter'
-      expect(rest).toEqual(v1Rest)
+      expect(kept).toEqual(v1Rest)
     },
   )
 

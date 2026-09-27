@@ -42,6 +42,7 @@
   "siteOffers": [],
   "equipmentLoan": null,
   "constructionLoans": [],
+  "hosting": [],
   "cryptoLoan": {
     "coin": "ETH",
     "collateral": 187.75111711914687,

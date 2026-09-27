@@ -112,7 +112,12 @@ export function poweredShare(state: GameState, site: Site): number {
   const placed = state.machines
     .filter((l) => l.siteId === site.id && state.quarter >= l.earnsFromQuarter)
     .reduce((kw, l) => kw + l.count * getModel(l.model)!.power_kw, 0)
-  return placed > 0 ? Math.min(1, poweredKw(site, state.quarter) / placed) : 1
+  // Live hosting (Act II) takes its share of the powered kW first.
+  const hosted = state.hosting
+    .filter((h) => h.siteId === site.id && h.readyQuarter <= state.quarter)
+    .reduce((kw, h) => kw + h.kw, 0)
+  const free = Math.max(0, poweredKw(site, state.quarter) - hosted)
+  return placed > 0 ? Math.min(1, free / placed) : 1
 }
 
 /** Hashrate of healthy, earning machines: BTC in TH/s, ETH in MH/s. */

@@ -922,6 +922,17 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
   EBITDA: with only mining and hosting units there's nothing to sum yet; sum-of-parts comes with the AI units
   (mine, reversible).
 - **M2.3** MW by use per site: mining / hosting / AI shell / AI cloud / building / idle (selector + tests).
+  **Done.** `systems/mwUse.ts`: `siteMwByUse(state, site, quarter)` and `mwByUse(state, quarter)` split each
+  site's capacity (built or building) into mining / hosting / aiShell / aiCloud / building / idle; they always add
+  up to the capacity. Rules (mine, reversible): **mining** = your machines' kW on energized kW not taken by hosting
+  (machines placed ahead on unpowered Texas phases wait, as they earn nothing); **building** = capacity not yet
+  energized + hosting still being converted (the wireframe's hatched "under construction", in the total, earning
+  nothing); **idle** = the rest of the energized kW. MW "use" is the allocation, so switched-off machines still
+  count as mining. New state: `hosting: HostingContract[]` (empty for now; M2.4 fills it); `usedKw` now counts
+  machines + hosting, so buying machines or winning an auction lot can't take hosted MW; mining's `poweredShare`
+  (phased Texas) gives live hosting its powered kW first. AI shell / AI cloud stay 0 until projects (M3).
+  **Golden change (explained):** all 11 goldens gain one line, `"hosting": []` (the new field). The v1-save test now
+  checks that fields added since a save was made get a new game's value and everything else is unchanged.
 - **M2.4** The hosting unit: mining → hosting on the same site ($0.1M/MW, live next quarter), 4-quarter contracts at
   the year's all-in rate, fees and power in EBITDA, Heat load, ending a contract; terminal commands.
 - **M2.5** UI: the dashboard's MW-by-use bar, the top bar's rating / backlog placeholders and H100 spot chip, an

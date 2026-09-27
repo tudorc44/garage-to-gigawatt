@@ -110,6 +110,23 @@ export interface SiteOffer {
   flaw: string | null
 }
 
+/**
+ * Hosting (Act II, scope 0.2 §2.4): MW at one of your sites rented to another miner's ASICs. The
+ * client pays an all-in rate per kWh its machines use (power passed through); you pay the site's
+ * power. Converted from mining MW on the same site, live from the quarter after the order.
+ */
+export interface HostingContract {
+  id: string
+  siteId: string
+  kw: number
+  /** The first quarter the hosted machines run (and pay); until then the MW are being converted. */
+  readyQuarter: number
+  /** All-in $/kWh, fixed for the term (the rate of the year it was signed). */
+  rateUsdKwh: number
+  /** The last quarter of the current term; it renews at the then-current rate after it. */
+  termEndQuarter: number
+}
+
 /** A distressed lot up for a sealed-bid auction this Plan phase (interrupts.json › distressed_auction). */
 export interface Auction {
   model: string
@@ -153,6 +170,8 @@ export interface GameState {
   equipmentLoan: EquipmentLoan | null
   /** Texas construction loans, one per financed phase (same payment shape as the equipment loan). */
   constructionLoans: EquipmentLoan[]
+  /** Hosting contracts at your sites (Act II). */
+  hosting: HostingContract[]
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
@@ -404,6 +423,7 @@ export function newGame(seed: number): GameState {
     siteOffers: [],
     equipmentLoan: null,
     constructionLoans: [],
+    hosting: [],
     cryptoLoan: null,
     auction: null,
     curtailment: null,
