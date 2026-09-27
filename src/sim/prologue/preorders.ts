@@ -78,7 +78,7 @@ export function placePreorder(
       outcome: 'late',
       deliverQuarter: due + randomInt(r, ...v.moderate_quarters),
     }
-  else if ((roll -= odds.severe) < 0)
+  else if (roll - odds.severe < 0)
     order = {
       outcome: 'very_late',
       deliverQuarter: due + randomInt(r, ...v.severe_quarters),
