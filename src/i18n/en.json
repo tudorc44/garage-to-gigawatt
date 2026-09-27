@@ -43,6 +43,7 @@
   "error.ddtl_needs_contract": "A GPU-backed DDTL needs a GPU contract with a rated tenant.",
   "debt_kind.project_debt": "project debt",
   "debt_kind.ddtl": "GPU-backed DDTL",
+  "log.rating_changed": "Credit rating: {from} → {to}.",
   "log.debt_drawn": "Project {n}: drew {amountUsd} of {debt} at {aprPct} a year.",
   "log.debt_paid_off": "Project {n}: the {debt} is paid off.",
   "log.debt_missed": "Project {n}: missed the {debt} payment of {dueUsd} ({missed} in a row). Two in a row and the lender forecloses.",

@@ -3,6 +3,7 @@
 import {
   BALANCE,
   CONTENT,
+  act2Quarter,
   actLastQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
@@ -29,6 +30,7 @@ import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
 import { paySwitchedOffReservation } from './mwUse.ts'
 import { serviceFacilities } from './facilities.ts'
+import { ratingInputs } from './rating.ts'
 import {
   backlogUsd,
   constructionValueUsd,
@@ -56,7 +58,18 @@ export function endQuarter(state: GameState): void {
   state.quarterStats.principalUsd += service.principalUsd
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   state.cash = roundCents(state.cash)
-  state.reports.push(buildReport(state, w, forcedSale))
+  const report = buildReport(state, w, forcedSale)
+  if (act2Quarter(state.quarter)) {
+    const previous = state.creditRating
+    state.creditRating = ratingInputs(state, report).rating
+    report.creditRating = state.creditRating
+    if (previous !== null && previous !== state.creditRating)
+      logEntry(state, 'log.rating_changed', {
+        from: previous,
+        to: state.creditRating,
+      })
+  }
+  state.reports.push(report)
   if (forcedSale) logEntry(state, 'log.forced_sale', { ...forcedSale })
   state.phase = state.cash < 0 ? 'gameover' : 'report'
   if (state.phase === 'gameover') logEntry(state, 'log.game_over')

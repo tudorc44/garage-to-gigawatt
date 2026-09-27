@@ -105,6 +105,7 @@
   "projectEvents": [],
   "firstAiDealQuarter": null,
   "facilities": [],
+  "creditRating": null,
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,

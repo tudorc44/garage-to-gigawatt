@@ -121,6 +121,7 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   projects: [],
   projectEvents: [],
   facilities: [],
+  creditRating: null,
   firstAiDealQuarter: null,
 }
 

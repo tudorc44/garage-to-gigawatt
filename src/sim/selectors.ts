@@ -1250,11 +1250,10 @@ export function act2MarketView(state: GameState) {
 
 /**
  * Credit rating and contracted backlog (scope 0.2 §2.2). The backlog is the remaining contracted
- * revenue, unweighted (§2.8). The rating is a placeholder until the credit rating is built (null =
- * "not rated").
+ * revenue, unweighted (§2.8). The rating is set at each Act II quarter end (null = "not rated" yet).
  */
 export function ratingBacklogView(state: GameState) {
-  return { rating: null as string | null, backlogUsd: backlogUsd(state) }
+  return { rating: state.creditRating ?? null, backlogUsd: backlogUsd(state) }
 }
 
 /**

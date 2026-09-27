@@ -47,6 +47,7 @@
   "projectEvents": [],
   "firstAiDealQuarter": null,
   "facilities": [],
+  "creditRating": null,
   "cryptoLoan": {
     "coin": "ETH",
     "collateral": 187.75111711914687,

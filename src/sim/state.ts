@@ -179,6 +179,8 @@ export interface Project {
   capital: 'cash' | null
   /** Debt chosen for the build (Act II capital, M4): drawn when it starts. Missing = none. */
   debt?: { projectDebt: boolean; ddtl: boolean }
+  /** A big-tech backstop on the lease (M4.6): the share it guarantees and the warrants it took. */
+  backstop?: { leaseShare: number; warrantsShare: number; quarter: number }
   /** Capex committed and paid at the start of the build (after any tenant capex credit). */
   capexUsd: number
   /** The GPUs' share of it (insured each year). */
@@ -295,6 +297,8 @@ export interface GameState {
   firstAiDealQuarter: number | null
   /** Act II debt secured on a project: project debt and GPU-backed DDTLs. */
   facilities: Facility[]
+  /** Act II corporate credit rating (CCC− to BBB), set at each Act II quarter end; null before. */
+  creditRating: string | null
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
@@ -499,6 +503,8 @@ export interface QuarterReport {
   heatTier: string
   /** Filled when cash went below zero and assets had to be sold. */
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
+  /** Act II: the credit rating at quarter end (absent in Act I). */
+  creditRating?: string
 }
 
 export function emptyQuarterStats(): QuarterStats {
@@ -581,6 +587,7 @@ export function newGame(seed: number): GameState {
     projectEvents: [],
     firstAiDealQuarter: null,
     facilities: [],
+    creditRating: null,
     cryptoLoan: null,
     auction: null,
     curtailment: null,

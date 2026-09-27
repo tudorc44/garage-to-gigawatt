@@ -1016,7 +1016,10 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
     the numbers worse, because the underlying reinvest bot then refilled the MW with S19s at held 2022 prices.
 
 
-### STOPPED (M3)
+### STOPPED (M4)
+- **Rating → rate and leverage of new corporate debt** (scope §2.2): no numbers in the content. See M4.4.
+
+### STOPPED (M3) — answered by the owner, built in M4.0c
 - **Contracted full stack (AI cloud with a tenant).** Scope §2.4 says an AI cloud is "contracted or spot", but the
   content has no terms for a GPU contract: the tenant cards are shell leases priced per MW-year; the market file has
   an H100 1-year contract $/GPU-hr but no rule for which price a contract locks, its term, or its utilisation.
@@ -1370,6 +1373,20 @@ A2-05 / A2-07. Sub-steps:
   50%, 14%, 8 quarters) this is the pilot's financing "after delivery" (wireframe A2-05), as a refinancing once
   it's live; it can't fund the pilot's build (the GPUs aren't delivered yet). Tests 494 pass. No golden change.
 - **M4.4** The credit rating (matrix, backlog quality, runway notch, project-level A) each quarter.
+  **Done.** New `src/sim/systems/rating.ts`; `GameState.creditRating` (null until the first Act II quarter end) and
+  `QuarterReport.creditRating` (Act II only); a log line when it changes; the top-bar badge shows it. Rules (mine,
+  reversible where marked): debt = everything owed (loans + facilities); leverage = debt ÷ (the quarter's EBITDA × 4),
+  no debt = "< 2×", debt with no EBITDA = "> 6×"; **backlog quality** = the share of the remaining contracted
+  revenue owed by investment-grade (BBB− or better) or backstopped tenants: ≥ ⅔ strong, ≥ ⅓ mixed, else weak, no
+  backlog weak (mine); **runway** = cash ÷ the quarter's burn (EBITDA − interest − principal) when negative, under 4
+  quarters → one notch down (lenders.json); clamped to CCC− … BBB. A pure miner with no debt rates B+. Project-level
+  "A" is on the facility (M4.2). Tests 500 pass (new `tests/sim/rating.test.ts`). **Golden change (explained):** 11
+  goldens gain `"creditRating": null`.
+  **STOPPED (part):** scope §2.2 says the rating "sets the rate and max leverage of new corporate debt", but the
+  content has no rating → rate or rating → leverage numbers (lenders.json has the matrix only; the market file has an
+  average HY spread). Built: the rating, its inputs and its display; the equipment loan (the only corporate debt)
+  keeps its fixed terms. Needs from the design thread: a spread and a max LTV (or debt/EBITDA cap) per rating band.
+  Scripted notches (FTX −1 for 2 quarters, SVB) come with the events milestone.
 - **M4.5** Equity raise / ATM offering (2 BW, dilution shown first).
 - **M4.6** JV partner and big-tech backstop (cut #1 and #2 if they get expensive).
 - **M4.7** UI: the Capital screen (A2-07) and the Deal builder's capital rows (A2-05); top-bar rating.
