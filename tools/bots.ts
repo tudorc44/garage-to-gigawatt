@@ -660,6 +660,8 @@ function aiProjects(
      * raise is priced after the signing (M5.0d), so a signed tenant funds a bigger build.
      */
     searchSize?: boolean
+    /** Hire the Head of Development (Act II, +1 Bandwidth from the next quarter) when cash allows. */
+    hireHod?: boolean
   },
 ): Strategy {
   const ratingRank = (r: string) =>
@@ -754,6 +756,9 @@ function aiProjects(
               .filter((l) => l.siteId === siteId && sellable(l.model))
               .reduce((a, l) => a + l.count * getModel(l.model)!.power_kw, 0)
           : 0)
+      // A Head of Development first (1 Bandwidth now, +1 every quarter after): Act II Bandwidth is tight.
+      if (opts.hireHod && s.staff.head_of_development === undefined)
+        run({ type: 'HIRE', hire: 'head_of_development' })
       finish()
       const label = CONTENT.quarters[s.quarter]
       const pending = s.projects.some((x) => x.stage === 'proposed')
@@ -1034,6 +1039,7 @@ export const BOTS: Record<string, Strategy> = {
     freeUp: true,
     capital: true,
     searchSize: true,
+    hireHod: true,
   }),
   /**
    * Great path, owner's M4 answer: texas-ipo; from 2023Q3 sells working ASICs too (any machine) to
@@ -1045,7 +1051,29 @@ export const BOTS: Record<string, Strategy> = {
     freeUp: 'any',
     capital: true,
     searchSize: true,
+    hireHod: true,
   }),
+  /**
+   * The lifeline path (scope §5): a weak Act I (cautious: half its cash kept, 3-quarter paybacks)
+   * ends below the floor and takes the lifeline; from 2023Q3 it builds shells with capital, sized
+   * to what closes (the 5 MW shell with a capex credit and project debt).
+   */
+  'lifeline-shell': aiProjects(
+    makeBot({
+      hodlPct: 0.2,
+      reserveUsd: (cash) => Math.max(5_000, cash * 0.5),
+      maxPaybackQuarters: 3,
+      sellOnDrops: true,
+    }),
+    {
+      kind: 'shell',
+      from: '2023Q3',
+      freeUp: true,
+      capital: true,
+      searchSize: true,
+      hireHod: true,
+    },
+  ),
   /**
    * Measurement, not a design-thread path: texas-ipo without the ASIC-only rule, upgrading any
    * machine (GPU rigs included) from the start when the best one makes 2× its profit per kW.

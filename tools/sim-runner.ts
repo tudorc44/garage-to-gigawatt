@@ -7,7 +7,8 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONTENT, actLastQuarter } from '../src/content/index.ts'
-import { playGame, type Strategy } from '../src/sim/replay.ts'
+import { playFrom, playGame, type Strategy } from '../src/sim/replay.ts'
+import { presetGame } from '../src/sim/preset.ts'
 import { gpuResidualUsd, projectCapex } from '../src/sim/systems/projects.ts'
 import type {
   ContractType,
@@ -660,6 +661,7 @@ if (args.includes('--act2')) {
     'texas-capital',
     'sign-then-raise',
     'asic-retirer',
+    'lifeline-shell',
   ].filter((name) => {
     const only = argValue('--act2-bots', '')
     return only === '' || only.split(',').includes(name)
@@ -830,5 +832,66 @@ if (args.includes('--act2')) {
     console.log(
       `  Great path (${name}): 2025 peak median ${usd(median(peak2025))} (target $10B+); alive at 2026Q4 with ≥ 4 quarters of runway in ${survivors}/${runs.length} runs`,
     )
+  }
+  // Scope 0.2 §5 lifeline: runs that took the lifeline reach a live AI project by 2024Q4 in ≥ 70%.
+  const byEnd2024 = CONTENT.quarters.indexOf('2024Q4')
+  const lifelineRuns = byBot.flatMap(({ name, runs }) =>
+    runs
+      .filter((r) => r.state.act2Entry?.lifeline === 'taken')
+      .map((r) => ({ name, r })),
+  )
+  const liveBy = lifelineRuns.filter(({ r }) =>
+    r.state.projects.some(
+      (p) =>
+        p.readyQuarter !== null &&
+        p.readyQuarter <= byEnd2024 &&
+        p.stage !== 'proposed' &&
+        p.stage !== 'building',
+    ),
+  ).length
+  const takers = [...new Set(lifelineRuns.map((x) => x.name))].map(
+    (n) => `${n} ${lifelineRuns.filter((x) => x.name === n).length}`,
+  )
+  console.log(
+    `  Lifeline: taken in ${lifelineRuns.length} runs (${takers.join(', ') || 'none'}); a live AI project by 2024Q4 in ${liveBy}/${lifelineRuns.length} (target ≥ 70%)`,
+  )
+  // Act II alone from the standalone preset (scope 0.2 §2.15).
+  if (allBots) {
+    const presetBots = ['texas-ipo', 'shell-capital', 'sign-then-raise']
+    const presetSeeds = Math.min(SEEDS, 20)
+    console.log(
+      `\n  Act II from the preset (${presetSeeds} seeds, the Merge choice: hold_and_wait):`,
+    )
+    for (const name of presetBots) {
+      const ends = Array.from(
+        { length: presetSeeds },
+        (_, i) => playFrom(presetGame(i + 1), BOTS[name], { through: 2 }).state,
+      )
+      const busts = ends.filter((x) => x.phase === 'gameover').length
+      const alive = ends.filter((x) => x.phase === 'chapter')
+      console.log(
+        `    ${name.padEnd(16)} bust ${busts}/${presetSeeds}; 2026Q4 median ${usd(median(alive.map((x) => x.reports.at(-1)!.valuationUsd)))}; peak median ${usd(median(alive.map((x) => Math.max(...x.reports.map((r) => r.valuationUsd)))))}`,
+      )
+    }
+    // Scope 0.2 §5: each Merge head start should make a different opening best. Three openings
+    // (stay mining, host, AI shells with capital) under each head start, from the preset.
+    const openings = ['raise-climb', 'hosting-switcher', 'shell-capital']
+    console.log(
+      `\n  Head starts × openings (preset, ${presetSeeds} seeds, 2026Q4 median value):`,
+    )
+    for (const choice of CONTENT.merge.choices.map((c) => c.id)) {
+      const row = openings.map((name) => {
+        const bot = { ...BOTS[name], merge: () => choice }
+        const vals = Array.from({ length: presetSeeds }, (_, i) => {
+          const end = playFrom(presetGame(i + 1), bot, { through: 2 }).state
+          return end.phase === 'chapter' ? end.reports.at(-1)!.valuationUsd : 0
+        })
+        return { name, value: median(vals) }
+      })
+      const best = row.reduce((a, b) => (b.value > a.value ? b : a))
+      console.log(
+        `    ${choice.padEnd(20)} ${row.map((x) => `${x.name} ${usd(x.value)}`).join(' · ')} → best: ${best.name}`,
+      )
+    }
   }
 }

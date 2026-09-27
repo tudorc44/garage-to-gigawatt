@@ -47,6 +47,7 @@ import {
 } from '../src/sim/systems/sites.ts'
 import { treasuryValueUsd } from '../src/sim/systems/treasury.ts'
 import { lifelineTerms } from '../src/sim/systems/lifeline.ts'
+import { allHires } from '../src/sim/systems/hires.ts'
 import { leagueTable, yourRank } from '../src/sim/systems/rivals.ts'
 
 // ---------- input / output ----------
@@ -385,7 +386,10 @@ function parse(
         coin: rest[1] === 'btc' ? 'BTC' : rest[1] === 'eth' ? 'ETH' : undefined,
       }
     case 'scout':
-      return { type: 'SCOUT_SITES', tier: rest[0] ?? '' }
+      // Act II: "scout" alone looks for distressed, greenfield and energized sites (M5.5).
+      return s.act === 2 && !rest[0]
+        ? { type: 'SCOUT_SITES_ACT2' }
+        : { type: 'SCOUT_SITES', tier: rest[0] ?? '' }
     case 'build': {
       if (/^\d+$/.test(rest[0] ?? '')) {
         const offer = item(s.siteOffers, 0)
@@ -456,7 +460,7 @@ function parse(
       return { type: 'READ_MARKET' }
     case 'hire':
     case 'fire': {
-      const ids = CONTENT.hires.list.map((h) => h.id)
+      const ids = allHires().map((h) => h.id)
       const id = ids[num(0) - 1] ?? rest[0] ?? ''
       return cmd === 'hire'
         ? { type: 'HIRE', hire: id }
@@ -475,7 +479,9 @@ function parse(
     case 'repay':
       return rest[0] === 'construction'
         ? { type: 'REPAY_CONSTRUCTION_LOAN' }
-        : { type: 'REPAY_LOAN' }
+        : rest[0] === 'bridge'
+          ? { type: 'REPAY_BRIDGE_LOAN' }
+          : { type: 'REPAY_LOAN' }
     case 'phase': {
       const site = item(s.sites, 0)
       return site
@@ -505,17 +511,26 @@ function parse(
     }
     // Act II projects (scope 0.2 §2.5): "project 2 5000 shell", "project 2 1000 pilot",
     // "project 2 4000 cloud h100", then sign / spot / fund / start / cancel / sellproject <project#>.
+    // Add "grid" or "gas" for new power instead of the site's free MW (M5.6).
     case 'project': {
       const site = item(s.sites, 0)
       const kind = rest[2]
       if (!site || (kind !== 'shell' && kind !== 'cloud' && kind !== 'pilot'))
         return 'play.bad_number'
+      const power = rest.includes('grid')
+        ? 'grid'
+        : rest.includes('gas')
+          ? 'gas'
+          : undefined
       return {
         type: 'PROJECT_OPEN',
         siteId: site.id,
         kw: num(1),
         kind,
-        ...(kind === 'cloud' ? { gpu: rest[3] ?? 'h100' } : {}),
+        ...(kind === 'cloud'
+          ? { gpu: rest.find((x) => /^[hb]\d00$/.test(x)) ?? 'h100' }
+          : {}),
+        ...(power ? { power } : {}),
       }
     }
     case 'sign': {

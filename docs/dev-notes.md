@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review and milestone, with the decisions in detail) is in
 `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
-Last updated: 27 Sep 2026, after milestone M4 (merged into `main` and pushed by the owner).
+Last updated: 28 Sep 2026, after milestone M5 (merged into `main` by fast-forward; the owner pushes).
 
 ## How the owner works
 
@@ -44,9 +44,9 @@ See `CLAUDE.md` for the full list. The main ones:
 
 **Act I (Alpha 0.1): complete.** Every system in its scope is built and the balance pass is DONE (every scope §5
 anchor passes in the sim). The Act I playtests are **postponed until after Act II** (owner). GitHub Pages
-publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now includes Act II up to M4.
+publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now includes Act II up to M5.
 
-**Act II (Alpha 0.2, scope frozen v1.0): built on `act2`, milestones M2–M4 done** (details in the archive):
+**Act II (Alpha 0.2, scope frozen v1.0): built on `act2`, milestones M2–M5 done** (M2–M4 details in the archive):
 - **Step 1, the act boundary:** one 40-quarter timeline (Act I = quarters 0–22, Act II = 23–39); `act` field;
   save version 2 with step-by-step migrations; Merge → Act I chapter report → Act II intro → 2022Q4; Act I values
   held after 2022Q3 until Act II content replaces them; the "Start of Act II" save slot.
@@ -59,17 +59,19 @@ publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now inc
   1-quarter wait, AI Heat at half, H200 rent; project debt, GPU-backed DDTLs, the equipment loan on GPUs, the credit
   rating, equity / ATM, the JV partner, the big-tech backstop, foreclosure; the Capital screen and the Deal
   builder's capital stack.
+- **M5, owner answers + entry and the world:** rating → equipment-loan terms, equity off the current valuation;
+  Merge head starts, lifeline + bridge loan, standalone preset ("Start at Act II"); Act II scouting, regions and
+  policies, grid upgrades / on-site gas; Act II hires and Bandwidth; the Act II event deck and interrupts.
 
-**Numbers:** 511 tests pass; lint and build pass. 11 golden replays (Act I only). Latest Act II sims (M4.8, 50
-seeds, medians): good path with capital (`shell-capital`) ends $104.5M (peak $227M), 22/50 bust; great path
-(`texas-capital`) peaks $874M; pure miner (texas-ipo) ends $314M ✓; 2023Q3 pilot 1.89× ✓, 2025Q2 pilot 1.39× ✗;
-hosting ahead in 45/50 ✗ (left, per the owner).
+**Numbers:** 588 tests pass; lint and build pass. 11 golden replays (Act I only). Act II sims (M5.10, 50 seeds,
+2026Q4 medians of alive runs): pilot 1.78× / 0.44× gap ✓; hosting ahead 11/40 ✓; good path (`sign-then-raise`)
+$331M, all runs $187M, $1B+ 0/50 ✗, 13 busts; great path (`asic-retirer`) 2025 peak $3.7B ✗ ($10B+), 8 busts;
+lifeline: live AI by 2024Q4 in 57/117 ✗ (≥70%; the `lifeline-shell` bot busts 50/50: check the bot first);
+preset ≈ $20M in every head start (the Merge choice doesn't matter yet). Questions sent to the design thread.
 
-**Not built yet in Act II** (scope 0.2 §6.4 order): the rating's corporate-debt terms (STOPPED), regions as
-places to build (Ratepayer Anger, grid upgrades, on-site gas), Act II events and interrupts (spot shock, tenant
-RFP, GPU failure wave), rivals, Act II hires, tenant negotiation ("Negotiate · 2 BW"), GPU know-how display
-beyond the Projects header, Merge head starts, the lifeline and the standalone preset, the Act II quarter report
-additions and chapter report, onboarding tooltips.
+**Not built yet in Act II** (scope 0.2 §6.4 order): Ratepayer Anger and tenant/lender negotiation (STOPPED),
+rivals, the GPU failure wave's interrupt form, GPU know-how display beyond the Projects header, the Act II quarter
+report additions and chapter report, onboarding tooltips.
 
 ## Rules and decisions in force
 
@@ -211,7 +213,11 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.9: `spotMarket.ts`: random spot shock (15%/q from 2025Q3, ×0.7) and GPU spot alert (±15% weekly H100 spot), both
   lock-4-quarters / stay; curtailment covers every ERCOT site in Act II, AI halls there go dark and pay 15% of a month's
   charge (spot clusters none; mine); SB6 forces it at 75 MW+ from 2026Q1. Tenant/lender negotiation: STOPPED.
+- M5.10: bots hire the Head of Development; `lifeline-shell` bot; sim-runner checks for the lifeline, preset and head
+  starts × openings; play.ts commands for the lifeline, Act II scouting, grid/gas, Act II hires, bridge repay.
+  Numbers under "Where the build stands". The 19 design-thread questions (balance, missing numbers, mine) went to the owner.
 
 ## Next
 
-Carry on with M5 (above).
+1. Check why `lifeline-shell` busts 50/50 (bot bug or design) and re-run its lifeline number.
+2. Apply the design thread's answers to the M5 questions (as M6.0), then the next milestone.
