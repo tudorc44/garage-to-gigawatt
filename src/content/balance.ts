@@ -138,6 +138,20 @@ export const BALANCE = {
     bandwidth: { equity: 2, jv: 2, backstop: 2 },
     /** Foreclosure: this many quarters in a row of missed debt service on a project (scope §2.7). */
     foreclosureMissedQuarters: 2,
+    /**
+     * The Act II equipment loan (owner decision on the M4 questions): the only corporate debt. Its rate
+     * (SOFR + spread) and max LTV come from the company's rating when it's taken: the first band whose
+     * `from` the rating reaches (BBB band incl. BBB−, then BB, B, CCC). 8-quarter tenor, as in Act I.
+     */
+    equipmentLoan: {
+      tenorQuarters: 8,
+      bands: [
+        { from: 'BBB-', spread: 0.025, ltv: 0.6 },
+        { from: 'BB-', spread: 0.04, ltv: 0.5 },
+        { from: 'B-', spread: 0.06, ltv: 0.4 },
+        { from: 'CCC-', spread: 0.09, ltv: 0.25 },
+      ],
+    },
   },
 
   /**

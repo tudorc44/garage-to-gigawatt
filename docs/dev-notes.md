@@ -164,6 +164,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.0a: done.
 - M5.0b: the reservation on switched-off machines removed (and the batches' `lastRanQuarter` with it); idle and
   building MW still pay 25%.
+- M5.0c: Act II equipment loan priced on the rating (balance.ts › finance.equipmentLoan; Capital screen lists the
+  bands). Before the first Act II quarter end it uses the rating the last report gives (mine, reversible). The
+  built Capital screen never had a "Raise debt" button, so nothing to remove.
 
 ## Next
 

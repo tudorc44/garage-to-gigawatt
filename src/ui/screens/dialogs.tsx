@@ -614,6 +614,15 @@ export function LoanDialog({ state, act, onClose }: DialogProps) {
       <p class="num-s muted" style={{ margin: 0 }}>
         {t('ui.loan.note', { quarters, apr: fmt.pct(v.terms.apr) })}
       </p>
+      {v.terms.rating && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.loan.rating_note', {
+            rating: v.terms.rating,
+            apr: fmt.pct(v.terms.apr, 1),
+            ltv: fmt.pct(v.terms.ltv),
+          })}
+        </p>
+      )}
       <table>
         <tbody>
           <tr>

@@ -51,14 +51,16 @@ const borrow = (amountUsd: number): Action => ({ type: 'TAKE_LOAN', amountUsd })
 
 describe('equipment loan terms (capital.json)', () => {
   it('change by era and stop after 2022Q2', () => {
-    expect(equipmentTerms(q('2017Q1'))).toMatchObject({
+    const at = (label: string) =>
+      equipmentTerms({ ...newGame(1), quarter: q(label) })
+    expect(at('2017Q1')).toMatchObject({
       ltv: 0.5,
       apr: 0.15,
       tenorQuarters: 8,
     })
-    expect(equipmentTerms(q('2020Q3'))).toMatchObject({ ltv: 0.7, apr: 0.11 })
-    expect(equipmentTerms(q('2022Q2'))).toMatchObject({ ltv: 0.5, apr: 0.14 })
-    expect(equipmentTerms(q('2022Q3'))).toBeUndefined()
+    expect(at('2020Q3')).toMatchObject({ ltv: 0.7, apr: 0.11 })
+    expect(at('2022Q2')).toMatchObject({ ltv: 0.5, apr: 0.14 })
+    expect(at('2022Q3')).toBeUndefined()
   })
 
   it('lends up to LTV × what your machines would sell for', () => {

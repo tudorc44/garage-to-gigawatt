@@ -10,7 +10,14 @@ import {
   ratingRank,
   sofr,
 } from '../../src/sim/systems/finance.ts'
-import { equipmentTerms } from '../../src/sim/systems/loans.ts'
+import {
+  collateralUsd,
+  equipmentTerms,
+  loanRating,
+  maxEquipmentLoanUsd,
+} from '../../src/sim/systems/loans.ts'
+import type { GameState, QuarterReport } from '../../src/sim/state.ts'
+import { act2Company, ok } from './act2Helpers.ts'
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
 
@@ -61,14 +68,62 @@ describe('tenant ratings', () => {
   })
 })
 
-describe('the equipment loan in Act II', () => {
-  it('is always offered, on the last Act I era’s terms', () => {
-    expect(equipmentTerms(q('2022Q3'))).toBeUndefined() // Act I 2022: until 2022Q2
+describe('the equipment loan in Act II: priced on the credit rating (owner, M4 answers)', () => {
+  const rated = (label: string, rating: string | null): GameState => ({
+    ...act2Company(label),
+    creditRating: rating,
+  })
+
+  it('SOFR + the band’s spread, up to its LTV, for 8 quarters', () => {
+    const cases: [string, number, number][] = [
+      ['BBB', 0.025, 0.6],
+      ['BBB-', 0.025, 0.6],
+      ['BB+', 0.04, 0.5],
+      ['BB-', 0.04, 0.5],
+      ['B+', 0.06, 0.4],
+      ['B-', 0.06, 0.4],
+      ['CCC+', 0.09, 0.25],
+      ['CCC-', 0.09, 0.25],
+    ]
+    for (const [rating, spread, ltv] of cases) {
+      const terms = equipmentTerms(rated('2024Q2', rating))!
+      expect(terms.apr).toBeCloseTo(sofr(q('2024Q2')) + spread, 9)
+      expect(terms.ltv).toBe(ltv)
+      expect(terms.tenorQuarters).toBe(8)
+      expect(terms.rating).toBe(rating)
+    }
+  })
+
+  it('closed in 2022Q3 (Act I’s 2022 era ended in 2022Q2), always offered in Act II', () => {
+    expect(
+      equipmentTerms({ ...rated('2022Q3', null), act: 1 }),
+    ).toBeUndefined()
     for (const label of ['2022Q4', '2024Q2', '2026Q4'])
-      expect(equipmentTerms(q(label))).toMatchObject({
-        ltv: 0.5,
-        apr: 0.14,
-        tenorQuarters: 8,
-      })
+      expect(equipmentTerms(rated(label, 'BB'))).toBeDefined()
+  })
+
+  it('before the first Act II quarter end: the rating the last report gives; none at all: CCC−', () => {
+    const s = rated('2022Q4', null)
+    expect(loanRating(s)).toBe('CCC-')
+    s.reports.push({ ebitdaUsd: 1_000_000 } as QuarterReport) // no debt: < 2×, weak backlog
+    expect(loanRating(s)).toBe('B+')
+  })
+
+  it('the loan taken keeps the rate it was priced at', () => {
+    const s = rated('2024Q2', 'BB')
+    s.machines.push({
+      id: 'lot-x',
+      model: 's19pro',
+      siteId: 'site-2',
+      condition: 'new',
+      count: 1000,
+      failed: 0,
+      earnsFromQuarter: 0,
+    })
+    const max = maxEquipmentLoanUsd(s)
+    expect(max).toBe(Math.floor(0.5 * collateralUsd(s)))
+    const after = ok(s, { type: 'TAKE_LOAN', amountUsd: max })
+    expect(after.equipmentLoan!.apr).toBeCloseTo(sofr(s.quarter) + 0.04, 9)
+    expect(after.equipmentLoan!.weeksLeft).toBe(8 * 13)
   })
 })

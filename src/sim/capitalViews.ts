@@ -17,7 +17,7 @@ import {
   equityRaiseUsd,
   isPublic,
 } from './systems/equity.ts'
-import { equipmentTerms } from './systems/loans.ts'
+import { equipmentTerms, ratingLoanBand } from './systems/loans.ts'
 import { backstopWarrants } from './systems/partners.ts'
 import {
   backlogWeight,
@@ -67,6 +67,7 @@ export function ratingView(state: GameState) {
   const shift = inputs.shortRunway ? CONTENT.finance.rating.runwayNotches : 0
   const at = (band: LeverageBand) => notch(matrix[band][inputs.quality], shift)
   const edges = BAND_EDGES[inputs.band]
+  const band = ratingLoanBand(state.creditRating)
   return {
     rating: state.creditRating,
     scale: CONTENT.finance.rating,
@@ -80,6 +81,11 @@ export function ratingView(state: GameState) {
     scaleList: (BALANCE.finance.ratingScale as readonly string[]).filter(
       (r) => r !== 'A',
     ),
+    /** The equipment loan's terms by rating band (the only corporate debt), and the one you're in. */
+    loanBands: BALANCE.finance.equipmentLoan.bands.map((b) => ({
+      ...b,
+      current: b === band,
+    })),
   }
 }
 
@@ -174,7 +180,7 @@ export function debtStackView(state: GameState) {
   return {
     rows,
     totalUsd: rows.reduce((a, r) => a + r.balanceUsd, 0),
-    equipmentOffered: !!equipmentTerms(state.quarter),
+    equipmentOffered: !!equipmentTerms(state),
     dscrMin: BALANCE.finance.dscrMin,
   }
 }
@@ -259,7 +265,7 @@ export function dealCapitalView(state: GameState, p: Project) {
   }
   const jvShares = [0.5, 0.65, 0.8]
   const jvUsd = p.jv ? p.jv.share * plan.equityUsd : 0
-  const eqTerms = equipmentTerms(state.quarter)
+  const eqTerms = equipmentTerms(state)
   // The rating if this debt were on the books now, with this quarter's EBITDA (mine: a preview).
   const report = state.reports.at(-1)
   let ratingAfter: string | null = null

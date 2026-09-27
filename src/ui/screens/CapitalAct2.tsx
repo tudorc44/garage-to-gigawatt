@@ -111,6 +111,22 @@ function RatingCard({ state }: { state: ScreenProps['state'] }) {
               {t('ui.cap2.down', { rating: v.down.rating, x: v.down.aboveX })}
             </div>
           )}
+          <div class="label">{t('ui.cap2.loan_terms')}</div>
+          <p class="num-s muted" style={{ margin: 0 }}>
+            {v.loanBands.map((b, i) => {
+              const text = t('ui.cap2.loan_band', {
+                band: tDynamic(`ui.cap2.loan_band.${b.from}`, b.from),
+                spread: fmt.pct(b.spread, 1),
+                ltv: fmt.pct(b.ltv),
+              })
+              return (
+                <span key={b.from}>
+                  {i > 0 && ' · '}
+                  {b.current ? <strong>{text}</strong> : text}
+                </span>
+              )
+            })}
+          </p>
         </>
       )}
       <p class="num-s muted" style={{ marginTop: 'auto' }}>

@@ -3,6 +3,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   collateralUsd,
+  equipmentTerms,
   maxEquipmentLoanUsd,
 } from '../../src/sim/systems/loans.ts'
 import { projectsView } from '../../src/sim/selectors.ts'
@@ -68,11 +69,12 @@ describe('the equipment loan on GPUs (M4.3)', () => {
     const s = livePilot()
     const gpus = gpuResidualUsd(s.projects[0], s.quarter)
     expect(collateralUsd(s)).toBeCloseTo(gpus, 4) // no machines
+    const terms = equipmentTerms(s)! // priced on the rating (M5.0c)
     const max = maxEquipmentLoanUsd(s)
-    expect(max).toBe(Math.floor(0.5 * gpus))
+    expect(max).toBe(Math.floor(terms.ltv * gpus))
     const r = ok(s, { type: 'TAKE_LOAN', amountUsd: max })
     expect(r.cash).toBe(s.cash + max)
-    expect(r.equipmentLoan!.apr).toBe(0.14)
+    expect(r.equipmentLoan!.apr).toBe(terms.apr)
   })
 })
 

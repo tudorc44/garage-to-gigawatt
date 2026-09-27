@@ -567,7 +567,7 @@ export function pitchResult(state: GameState, id: string) {
 
 /** The equipment loan as the Plan screen shows it: this quarter's terms, how much you could borrow, the loan you have. */
 export function equipmentLoanView(state: GameState) {
-  const terms = equipmentTerms(state.quarter)
+  const terms = equipmentTerms(state)
   return {
     /** undefined once lenders stop offering (after 2022Q2). */
     terms,

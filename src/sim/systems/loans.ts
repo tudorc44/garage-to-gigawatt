@@ -1,12 +1,8 @@
 // Loans. The equipment loan (capital.json loans.equipment): borrow up to a share (LTV) of
 // what your machines would sell for, one loan at a time, repaid over the era's term in
-// equal weekly slices of principal plus interest on what's still owed.
-import {
-  BALANCE,
-  CONTENT,
-  act2Quarter,
-  type EquipmentLoanTerms,
-} from '../../content/index.ts'
+// equal weekly slices of principal plus interest on what's still owed. In Act II its terms
+// come from the credit rating (balance.ts › finance.equipmentLoan).
+import { BALANCE, CONTENT, act2Quarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   logEntry,
@@ -15,23 +11,21 @@ import {
   type GameState,
 } from '../state.ts'
 import { loansLocked } from './cryptoLoan.ts'
+import { ratingRank, sofr } from './finance.ts'
 import { saleValueUsd } from './machines.ts'
 import { gpuResidualUsd } from './projects.ts'
+import { ratingInputs } from './rating.ts'
 
-/**
- * This quarter's equipment loan terms, or undefined if lenders aren't offering any. In Act II the
- * equipment loan is always offered (scope 0.2 §2.7), on the last Act I era's terms (mine,
- * reversible: lenders.json has no Act II equipment terms).
- */
-export function equipmentTerms(
-  quarter: number,
-): EquipmentLoanTerms | undefined {
-  if (act2Quarter(quarter)) {
-    const last = CONTENT.equipmentLoans.reduce((a, b) =>
-      b.toYear > a.toYear ? b : a,
-    )
-    return { ...last, availableUntil: undefined }
-  }
+/** An equipment loan offer: LTV and yearly rate (fractions), the term, and in Act II the rating it's priced on. */
+export interface LoanTerms {
+  ltv: number
+  apr: number
+  tenorQuarters: number
+  rating?: string
+}
+
+/** Act I: the era's terms that quarter (capital.json), or undefined if lenders aren't offering any. */
+function eraTerms(quarter: number): LoanTerms | undefined {
   const q = CONTENT.quarters[quarter]
   const year = Number(q.slice(0, 4))
   const terms = CONTENT.equipmentLoans.find(
@@ -39,6 +33,41 @@ export function equipmentTerms(
   )
   if (!terms || (terms.availableUntil && q > terms.availableUntil)) return
   return terms
+}
+
+/**
+ * The rating an Act II loan is priced on: the last quarter end's. Before the first Act II quarter
+ * end it's the one the last report would give (mine, reversible), CCC− with no report at all.
+ */
+export function loanRating(state: GameState): string {
+  if (state.creditRating !== null) return state.creditRating
+  const report = state.reports.at(-1)
+  return report ? ratingInputs(state, report).rating : CONTENT.finance.rating.min
+}
+
+/** The Act II equipment loan's band for a rating (owner decision on the M4 questions). */
+export function ratingLoanBand(rating: string) {
+  const bands = BALANCE.finance.equipmentLoan.bands
+  return (
+    bands.find((b) => ratingRank(rating) >= ratingRank(b.from)) ?? bands.at(-1)!
+  )
+}
+
+/**
+ * The equipment loan terms now, or undefined if lenders aren't offering any. Act I: the era's
+ * (capital.json). Act II: always offered (scope 0.2 §2.7), at SOFR + the rating band's spread, up to
+ * its LTV, for 8 quarters.
+ */
+export function equipmentTerms(state: GameState): LoanTerms | undefined {
+  if (!act2Quarter(state.quarter)) return eraTerms(state.quarter)
+  const rating = loanRating(state)
+  const band = ratingLoanBand(rating)
+  return {
+    ltv: band.ltv,
+    apr: sofr(state.quarter) + band.spread,
+    tenorQuarters: BALANCE.finance.equipmentLoan.tenorQuarters,
+    rating,
+  }
 }
 
 /**
@@ -64,7 +93,7 @@ export function collateralUsd(state: GameState): number {
 
 /** The most you can borrow now: LTV × collateral, in whole dollars. 0 if no terms. */
 export function maxEquipmentLoanUsd(state: GameState): number {
-  const terms = equipmentTerms(state.quarter)
+  const terms = equipmentTerms(state)
   return terms ? Math.floor(terms.ltv * collateralUsd(state)) : 0
 }
 
@@ -76,7 +105,7 @@ export function borrowBlocker(
   if (state.equipmentLoan) return { key: 'error.loan_exists' }
   const locked = loansLocked(state)
   if (locked) return locked
-  const terms = equipmentTerms(state.quarter)
+  const terms = equipmentTerms(state)
   if (!terms) return { key: 'error.loan_not_offered' }
   if (!Number.isInteger(amountUsd) || amountUsd < 1)
     return { key: 'error.bad_amount' }
@@ -99,7 +128,7 @@ export function borrowBlocker(
 
 /** Takes the loan: cash in, Bandwidth spent. Call borrowBlocker first. */
 export function takeEquipmentLoan(state: GameState, amountUsd: number): void {
-  const terms = equipmentTerms(state.quarter)!
+  const terms = equipmentTerms(state)!
   state.bandwidth -= BALANCE.bandwidth.loan
   state.cash += amountUsd
   state.equipmentLoan = {
