@@ -8,7 +8,18 @@ import { addMachines } from '../systems/machines.ts'
 import { buyPrice, getModel } from '../systems/market.ts'
 import { beginPrologueLive } from './engine.ts'
 import { resolvePrologueInterrupt } from './events.ts'
-import { P, householdTier, siteCapacityKw, siteLoadKw } from './setup.ts'
+import {
+  answerHousehold,
+  attendConference,
+  backUpWallet,
+  buildHomeRig,
+  buildSmallUnit,
+  buyVanity,
+  moveOut,
+  onMachineBought,
+  takeUsedOffer,
+} from './life.ts'
+import { P, siteCapacityKw, siteLoadKw } from './setup.ts'
 
 export type PrologueAction =
   | {
@@ -20,6 +31,7 @@ export type PrologueAction =
     }
   | { type: 'P0_BUILD_HOME_RIG' }
   | { type: 'P0_MOVE_OUT' }
+  | { type: 'P0_HOUSEHOLD'; choice: 'move_out' | 'cut_load' }
   | { type: 'P0_BUILD_SMALL_UNIT' }
   | { type: 'P0_SET_POOL'; pool: boolean }
   | {
@@ -34,7 +46,7 @@ export type PrologueAction =
   | { type: 'P0_OFFER'; id: string; accept: boolean }
   | { type: 'P0_PREORDER'; vendor: string }
   | { type: 'P0_CONFERENCE'; id: string }
-  | { type: 'P0_USED_OFFER' }
+  | { type: 'P0_USED_OFFER'; siteId: string }
   | { type: 'P0_VANITY'; id: string }
 
 /** Act I actions that work unchanged in the prologue. */
@@ -65,6 +77,8 @@ export function runPrologue(
   switch (a.type) {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
+      // The household's card unanswered: its default (cut the load this quarter).
+      if (s.prologue!.householdCard) answerHousehold(s, 'cut_load')
       beginPrologueLive(s)
       return undefined
     case 'RESOLVE_INTERRUPT':
@@ -109,7 +123,6 @@ export function p0BuyBlocker(
 }
 
 function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
-  const p = s.prologue!
   switch (a.type) {
     case 'P0_BUY': {
       const blocked = p0BuyBlocker(s, a)
@@ -118,6 +131,7 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       const cost = buyPrice(model, s.quarter, a.condition)! * a.count
       s.cash -= cost
       addMachines(s, a.model, a.condition, a.count, a.siteId)
+      onMachineBought(s, a.model)
       logEntry(s, 'log.bought', {
         count: a.count,
         model: a.model,
@@ -126,28 +140,22 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       })
       return undefined
     }
-    case 'P0_BUILD_HOME_RIG': {
-      const tier = householdTier('home_rig')!
-      if (!p.livingAtHome) return fail('error.p0_moved_out')
-      if (s.sites.some((x) => x.tier === tier.id))
-        return fail('error.p0_have_site')
-      if (s.cash < tier.capex_usd)
-        return fail('error.no_cash', {
-          costUsd: tier.capex_usd,
-          cashUsd: s.cash,
-        })
-      s.cash -= tier.capex_usd
-      s.sites.push({
-        id: `site-${s.nextId++}`,
-        tier: tier.id,
-        readyQuarter: s.quarter,
-        rentUsdQ: 0,
-        powerPriceMult: 1,
-        flaw: null,
-      })
-      logEntry(s, 'log.p0_home_rig', { costUsd: tier.capex_usd })
-      return undefined
-    }
+    case 'P0_BUILD_HOME_RIG':
+      return buildHomeRig(s)
+    case 'P0_MOVE_OUT':
+      return moveOut(s)
+    case 'P0_HOUSEHOLD':
+      return answerHousehold(s, a.choice)
+    case 'P0_BUILD_SMALL_UNIT':
+      return buildSmallUnit(s)
+    case 'P0_BACKUP':
+      return backUpWallet(s)
+    case 'P0_CONFERENCE':
+      return attendConference(s, a.id)
+    case 'P0_USED_OFFER':
+      return takeUsedOffer(s, a.siteId)
+    case 'P0_VANITY':
+      return buyVanity(s, a.id)
     default:
       return fail('error.not_in_prologue')
   }

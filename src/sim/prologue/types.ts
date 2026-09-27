@@ -56,6 +56,8 @@ export interface PrologueState {
   patience: number
   /** The household made you cut your load back to the threshold until (and including) this quarter. */
   cutLoadUntil: number | null
+  /** Patience hit 0: the household's card waits in the Plan phase (move out, or cut the load). */
+  householdCard: boolean
   /** Mine in a pool (from 2010Q4) instead of solo. */
   pool: boolean
   /** The part of the treasury that sits on an exchange (the rest is in your wallet). */

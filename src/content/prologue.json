@@ -20,8 +20,11 @@
  "household": {
   "patience_start": 100,
   "drain_per_quarter": {"value": 15, "designed": true, "note": "at each quarter end while the load at a household site is above its threshold (scope §2.3)"},
-  "at_zero_default": "cut_load"
+  "at_zero_default": "cut_load",
+  "patience_after_cut": 50,
+  "patience_note": "Prologue choice: after a forced cut quarter the household calms down to half its start patience."
  },
+ "bandwidth_costs": {"build": 1, "sell": 1, "note": "Prologue choice, as Act I: building a site (the home rig, moving out, the small unit) and selling from the Plan screen cost 1 Bandwidth each (balance.ts bandwidth.build / sellTreasury). Buying machines, moving coins, conferences and vanity cost none."},
  "move_out": {
   "deposit_usd_by_year": {"2010": 900, "2013": 940, "2016": 1030},
   "rent_usd_q_by_year": {"2010": 2685, "2011": 2790, "2012": 2820, "2013": 2811, "2014": 2880, "2015": 2970, "2016": 3087},
@@ -54,7 +57,9 @@
   "chance_per_quarter": {"value": 0.0075, "designed": true, "note": "3%/year ÷ 4 (scope §2.7)"},
   "backup_mult": 0.15,
   "backup_bandwidth": 1,
-  "backup_cash_usd": 0
+  "backup_cash_usd": 0,
+  "pc_class": ["pc_cpu", "gpu_gaming_2010", "gpu_eth_2015"],
+  "pc_class_note": "Prologue choice: a backup lasts until you buy a new PC-class machine (a PC, or a GPU that goes in one) or move out."
  },
  "sell_caps_usd_week": {
   "designed": true,

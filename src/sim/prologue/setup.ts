@@ -144,6 +144,7 @@ export function newPrologueGame(seed: number): GameState {
     livingAtHome: true,
     patience: P().household.patience_start,
     cutLoadUntil: null,
+    householdCard: false,
     pool: false,
     onExchange: zero(),
     minedTo: 'wallet',

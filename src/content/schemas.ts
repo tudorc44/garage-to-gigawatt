@@ -1418,7 +1418,9 @@ export const prologueFileSchema = z.object({
     patience_start: nonNeg,
     drain_per_quarter: designedValue,
     at_zero_default: z.enum(['cut_load', 'move_out']),
+    patience_after_cut: nonNeg,
   }),
+  bandwidth_costs: z.object({ build: nonNeg, sell: nonNeg }),
   move_out: z.object({
     deposit_usd_by_year: yearValues,
     rent_usd_q_by_year: yearValues,
@@ -1463,6 +1465,7 @@ export const prologueFileSchema = z.object({
     backup_mult: z.number().min(0).max(1),
     backup_bandwidth: z.number().int().min(0),
     backup_cash_usd: nonNeg,
+    pc_class: z.array(z.string()),
   }),
   sell_caps_usd_week: z.object({
     by_year: yearValues,

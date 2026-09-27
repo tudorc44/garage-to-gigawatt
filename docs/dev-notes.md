@@ -321,6 +321,10 @@ balance → **P3** events, theme, screens → the Prologue report.
 - A cash shortfall at quarter end sells exchange coins, then machines; still short is game over.
 - Handover: household sites go; their machines move to the garage and what doesn't fit is sold at the used price; the
   start wealth (P0-17) is net worth at 2016Q4's last week (cash + coins + machines at used prices).
+- Life (prologue.json notes): moving out moves your rigs into the garage (overflow sold, as the handover); building
+  (home rig, move out, small unit) and Plan-screen selling cost 1 BW as in Act I, buying and coin moves 0; after the
+  forced cut patience returns to 50; the backup lapses on a PC / GPU purchase; a conference's used offer is the newest
+  model sold used that quarter.
 
 ### Prologue progress
 - P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.
@@ -330,3 +334,6 @@ balance → **P3** events, theme, screens → the Prologue report.
   `src/sim/prologue/` (setup, engine: week / quarter end / auto-play / Stop here; handover; actions router).
 - P1.3: title buttons (Start in 2017 → / Start in 2009 / Start at Act II); `src/ui/screens/Prologue.tsx` (intro, a
   basic Plan, live, auto-play summary card with Stop here, chapter → Act I); `prologue/views.ts` (odds in words).
+- P2 split: P2.1 life (move out, household card, home rig / small unit, backup, conferences, vanity) · P2.2 custody
+  and selling (moves, mined-to, sell queue, pool, offers tray) · P2.3 pre-orders · P2.4 the 24 cards (game copy,
+  scheduler, exchange events, wallet-loss roll, resolver, a basic card screen) · P2.5 a full-run test.

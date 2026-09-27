@@ -211,12 +211,11 @@ export function prologueEndQuarter(s: GameState): void {
         0,
         p.patience - P().household.drain_per_quarter.value,
       )
-    // At 0 the household steps in: the load is cut to the threshold next quarter (the default of the
-    // forced card; moving out is the other answer, taken in the Plan phase).
-    if (p.patience <= 0) {
-      p.cutLoadUntil = s.quarter + 1
-      p.patience = P().household.patience_start / 2
-      logEntry(s, 'log.p0_household_cut')
+    // At 0 the household steps in: its card waits in next quarter's Plan phase (move out now, or
+    // cut the load to the threshold for that quarter: the default).
+    if (p.patience <= 0 && s.quarter < actLastQuarter(0)) {
+      p.householdCard = true
+      p.stopNext = true
     }
   }
   if (s.cash < 0) forcedSale(s, w)
