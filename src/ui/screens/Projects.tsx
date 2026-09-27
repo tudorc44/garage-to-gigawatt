@@ -6,6 +6,7 @@ import { t, tDynamic } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import {
   PROJECT_COLUMNS,
+  dealCapitalView,
   dealView,
   openProjectView,
   projectsView,
@@ -26,7 +27,7 @@ const regionName = (r: string | null) =>
   r ? tDynamic(`ui.region.${r}`, r.toUpperCase()) : ''
 
 /** A button that shows its Bandwidth cost as pips and, when not allowed, why (as its title). */
-function BwButton(props: {
+export function BwButton(props: {
   label: string
   bw: number
   action: Action
@@ -449,6 +450,193 @@ function OpenProjectDialog(
   )
 }
 
+// ---------- the Deal builder's capital stack (A2-05) ----------
+
+function CapitalRows(
+  props: ScreenProps & { card: ProjectCardView; cashUsd: number },
+) {
+  const { state, act, card } = props
+  const p = card.project
+  const c = dealCapitalView(state, p)
+  const debtRow = (row: typeof c.projectDebt) => (
+    <tr>
+      <td>{t(`ui.deal.cap.${row.kind}`)}</td>
+      <td class="num r">
+        {row.on ? fmt.money(row.amountUsd) : fmt.money(row.capUsd)}
+      </td>
+      <td class="num r">{fmt.pct(row.apr, 1)}</td>
+      <td class="num-s">
+        {row.blocker ? (
+          <span class="muted">{say(row.blocker)}</span>
+        ) : (
+          t('ui.deal.cap.debt_terms', {
+            share: fmt.pct(row.share),
+            years: (row.tenorQuarters / 4).toFixed(1).replace(/\.0$/, ''),
+            rating: row.rating,
+          })
+        )}
+      </td>
+      <td class="r">
+        {!row.blocker && (
+          <button
+            type="button"
+            class="btn"
+            disabled={!!row.toggle}
+            title={row.toggle ? say(row.toggle) : undefined}
+            onClick={() =>
+              act({
+                type: 'PROJECT_DEBT',
+                projectId: p.id,
+                debt: row.kind,
+                on: !row.on,
+              })
+            }
+          >
+            {row.on ? t('ui.deal.cap.remove') : t('ui.deal.cap.use')}
+          </button>
+        )}
+      </td>
+    </tr>
+  )
+  const debtShare = c.capexUsd > 0 ? c.debtUsd / c.capexUsd : 0
+  return (
+    <div class="deal-panel">
+      <div class="label">
+        {t('ui.deal.capital')} {card.slots.capital ? '✓' : '○'}
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td>{t('ui.deal.cap.own_cash')}</td>
+            <td class="num r">{fmt.money(c.ownCashUsd)}</td>
+            <td />
+            <td class="num-s muted">
+              {t('ui.deal.cap.of_cash', { cash: fmt.money(props.cashUsd) })}
+            </td>
+            <td class="r">
+              {card.slots.capital ? (
+                <span class="num-s">{t('ui.deal.funded')}</span>
+              ) : (
+                <BwButton
+                  label={t('ui.deal.fund')}
+                  bw={0}
+                  action={{ type: 'PROJECT_FUND_CASH', projectId: p.id }}
+                  state={state}
+                  act={act}
+                />
+              )}
+            </td>
+          </tr>
+          {c.equipment && (
+            <tr>
+              <td>{t('ui.deal.cap.equipment')}</td>
+              <td />
+              <td class="num r">{fmt.pct(c.equipment.apr, 1)}</td>
+              <td class="num-s muted" colSpan={2}>
+                {t('ui.deal.cap.equipment_note', {
+                  ltv: fmt.pct(c.equipment.ltv),
+                })}
+              </td>
+            </tr>
+          )}
+          {debtRow(c.projectDebt)}
+          {p.kind === 'cloud' && debtRow(c.ddtl)}
+          <tr>
+            <td>{t('ui.deal.cap.equity')}</td>
+            <td />
+            <td />
+            <td class="num-s muted" colSpan={2}>
+              {t('ui.deal.cap.equity_note')}
+            </td>
+          </tr>
+          <tr>
+            <td>{t('ui.deal.cap.jv')}</td>
+            <td class="num r">
+              {c.jv.share !== null ? fmt.money(c.jv.fundsUsd) : ''}
+            </td>
+            <td />
+            <td class="num-s" colSpan={2}>
+              {c.jv.options.every((o) => o.blocker && !c.jv.share) ? (
+                <span class="muted">{say(c.jv.options[0].blocker!)}</span>
+              ) : (
+                <span class="raise-options">
+                  {c.jv.options.map((o) => (
+                    <button
+                      key={o.share}
+                      type="button"
+                      class={`btn${c.jv.share === o.share ? ' btn-primary' : ''}`}
+                      disabled={!!o.blocker}
+                      title={o.blocker ? say(o.blocker) : undefined}
+                      onClick={() =>
+                        act({
+                          type: 'PROJECT_JV',
+                          projectId: p.id,
+                          share: o.share,
+                        })
+                      }
+                    >
+                      {t('ui.deal.cap.jv_share', { share: fmt.pct(o.share) })}
+                    </button>
+                  ))}
+                </span>
+              )}
+            </td>
+          </tr>
+          {p.kind === 'shell' && (
+            <tr>
+              <td>{t('ui.deal.cap.backstop')}</td>
+              <td />
+              <td />
+              <td class="num-s" colSpan={2}>
+                {c.backstop.taken ? (
+                  t('ui.deal.cap.backstop_taken', {
+                    warrants: fmt.pct(c.backstop.warrantsShare, 1),
+                  })
+                ) : c.backstop.blocker ? (
+                  <span class="muted">{say(c.backstop.blocker)}</span>
+                ) : (
+                  <BwButton
+                    label={t('ui.deal.cap.backstop_take', {
+                      warrants: fmt.pct(c.backstop.warrantsShare, 1),
+                    })}
+                    bw={2}
+                    action={{ type: 'PROJECT_BACKSTOP', projectId: p.id }}
+                    state={state}
+                    act={act}
+                  />
+                )}
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+      <div class="debt-bar" role="img" aria-label={fmt.pct(debtShare)}>
+        <div class="debt-part" style={{ width: `${debtShare * 100}%` }}>
+          {debtShare > 0.08 &&
+            t('ui.deal.cap.debt_pct', { pct: fmt.pct(debtShare) })}
+        </div>
+        <div class="equity-part">
+          {t('ui.deal.cap.equity_pct', { pct: fmt.pct(1 - debtShare) })}
+        </div>
+      </div>
+      {(c.dscr !== null || c.ratingAfter) && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {c.dscr !== null &&
+            t('ui.deal.cap.dscr', {
+              x: `${c.dscr.toFixed(2)}×`,
+              min: `${c.dscrMin.toFixed(2)}×`,
+            })}
+          {c.ratingAfter &&
+            ` ${t('ui.deal.cap.rating_effect', {
+              from: c.ratingBefore ?? '—',
+              to: c.ratingAfter,
+            })}`}
+        </p>
+      )}
+    </div>
+  )
+}
+
 // ---------- the Deal builder (A2-05) ----------
 
 function DealBuilder(
@@ -577,28 +765,12 @@ function DealBuilder(
         </div>
       )}
 
-      <div class="deal-panel">
-        <div class="label">
-          {t('ui.deal.capital')} {card.slots.capital ? '✓' : '○'}
-        </div>
-        <div class="row-between">
-          <span class="num-s">
-            {t('ui.deal.own_cash', { cash: fmt.money(v.capital.cashUsd) })}
-          </span>
-          {card.slots.capital ? (
-            <span class="num-s">{t('ui.deal.funded')}</span>
-          ) : (
-            <BwButton
-              label={t('ui.deal.fund')}
-              bw={0}
-              action={{ type: 'PROJECT_FUND_CASH', projectId: p.id }}
-              state={state}
-              act={act}
-            />
-          )}
-        </div>
-        <div class="num-s muted">{t('ui.deal.capital_later')}</div>
-      </div>
+      <CapitalRows
+        state={state}
+        act={act}
+        card={card}
+        cashUsd={v.capital.cashUsd}
+      />
 
       <div class="deal-panel">
         <div class="label">{t('ui.deal.return')}</div>
@@ -676,7 +848,9 @@ function DealBuilder(
             {t('ui.deal.save_close')}
           </button>
           <BwButton
-            label={t('ui.deal.start', { cost: fmt.money(ret.capexUsd) })}
+            label={t('ui.deal.start', {
+              cost: fmt.money(dealCapitalView(state, p).ownCashUsd),
+            })}
             bw={v.startBandwidth}
             action={{ type: 'PROJECT_START', projectId: p.id }}
             state={state}

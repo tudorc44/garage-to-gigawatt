@@ -34,6 +34,7 @@ import {
   OffersDialog,
 } from './dialogs.tsx'
 import { FleetPanel, type ScreenProps } from './Plan.tsx'
+import { CapitalAct2 } from './CapitalAct2.tsx'
 import { ProjectsSection } from './Projects.tsx'
 import { League } from './Report.tsx'
 
@@ -47,7 +48,11 @@ export function SectionView(props: ScreenProps & { section: Section }) {
     case 'fleet':
       return <FleetSection {...props} />
     case 'capital':
-      return <CapitalSection {...props} />
+      return props.state.act === 2 ? (
+        <CapitalAct2 {...props} />
+      ) : (
+        <CapitalSection {...props} />
+      )
     case 'people':
       return <PeopleSection {...props} />
     case 'league':

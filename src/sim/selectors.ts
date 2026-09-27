@@ -118,6 +118,13 @@ import { getStep, raiseBandwidth, unmetRequirement } from './systems/capital.ts'
 export { upcomingRivals } from './systems/rivals.ts'
 export { mwByUse, siteMwByUse, MW_USES, type MwUse } from './systems/mwUse.ts'
 export {
+  backlogView,
+  dealCapitalView,
+  debtStackView,
+  equityView,
+  ratingView,
+} from './capitalViews.ts'
+export {
   PROJECT_COLUMNS,
   dealView,
   openProjectView,

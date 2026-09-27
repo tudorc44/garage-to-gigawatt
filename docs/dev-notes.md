@@ -1411,6 +1411,26 @@ A2-05 / A2-07. Sub-steps:
   builder's projected return doesn't yet net the JV share out. Tests 507 pass (new `tests/sim/partners.test.ts`).
   No golden change.
 - **M4.7** UI: the Capital screen (A2-07) and the Deal builder's capital rows (A2-05); top-bar rating.
+  **Done.** In Act II the Capital nav section is the new `src/ui/screens/CapitalAct2.tsx` (Act I keeps its own):
+  the **credit rating** card (big badge, the CCC− … BBB scale with the current grade marked, the three inputs with
+  their band / quality / runway reading, the next notch up and down with the debt/EBITDA edge, the "company ratings
+  stop at BBB" note); the **debt stack** (project debt and DDTLs with their project and "A" rating, the equipment,
+  construction and crypto loans: balance, rate, due quarter (also past 2026), DSCR ✓ / watch (within 0.15×) /
+  below 1.12× or "construction", missed payments) with the equipment-loan dialog; **backlog by tenant** (remaining,
+  weight, counted, totals); the **valuation** line by line (mining + hosting EBITDA × the mining multiple with the
+  pivot premium, AI EBITDA × the AI multiple, cash, treasury, debt, under construction, backlog counted); **equity**
+  (the stake bar, the stake's value, and four raise buttons at 8 / 12 / 16 / 20% showing the amount and the stake
+  after: "at-the-market offering" once public). The **Deal builder**'s capital panel is now a stack: own cash (what
+  the build still needs, and Fund), the equipment loan on GPUs (clouds and pilots: "once delivered"), project debt
+  and (clouds) the DDTL with amount, rate, "up to x% · n yrs · rated R" or the reason it's not available, and Use /
+  Remove; equity ("raise it on the Capital page"); the JV partner (50 / 65 / 80% buttons or its reason); the
+  backstop (shells: take it for x% warrants, or its reason); a debt vs equity bar; the projected DSCR and the rating
+  effect ("Rating B+ → CCC+ while it builds"). "Start build" shows the cash it takes. Views in the new
+  `src/sim/capitalViews.ts` (re-exported by selectors.ts). Act II's top bar (`campus` theme) has tighter gaps so the
+  rating, backlog and H100 spot fit on one row at 1280 px (fixes the M3.8 polish item). Seen in the browser at
+  1280×800: a 5 MW AA shell with 75% project debt ($25.3M at 10.5%, own cash $8.4M, DSCR 1.71×), rated CCC+ after its
+  first building quarter (debt, no EBITDA yet, strong backlog), and the Capital screen with no panel overflowing.
+  Tests 509 pass (new `tests/sim/capitalViews.test.ts`). No golden change.
 - **M4.8** Bots with capital, sims (good and great path re-checked), terminal commands, milestone report.
 
 ## Next

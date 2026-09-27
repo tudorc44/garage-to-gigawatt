@@ -1206,6 +1206,87 @@ td.wrap {
   color: var(--ink-muted);
   border-color: var(--ink-muted);
 }
+/* Act II's top bar carries more stats (rating, backlog, H100 spot): tighter gaps so it fits one row. */
+[data-theme='campus'] .topbar {
+  column-gap: 14px;
+}
+[data-theme='campus'] .brand {
+  width: auto;
+}
+/* ===== Act II Capital (wireframe A2-07) ===== */
+.capital2 table td,
+.capital2 table th {
+  padding: 4px 5px;
+  font-size: 12px;
+  white-space: normal;
+}
+.cap-input {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12.5px;
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--line-soft);
+}
+.cap-input .r {
+  text-align: right;
+}
+.capital2 {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px minmax(0, 1fr) minmax(0, 1fr);
+  grid-auto-rows: min-content;
+  gap: var(--space-3);
+  align-items: start;
+  overflow-y: auto;
+}
+.capital2 > .panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cap-rating {
+  grid-row: span 2;
+  align-self: stretch;
+}
+.rating-badge.big {
+  align-self: flex-start;
+  font-size: 30px;
+  line-height: 38px;
+  padding: 2px 14px;
+  border-width: 3px;
+}
+.notch-box {
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-1);
+  padding: 6px 8px;
+}
+.debt-bar {
+  display: flex;
+  height: 22px;
+  border: var(--border-hair) solid var(--ink);
+  border-radius: var(--radius-1);
+  overflow: hidden;
+  font: 600 11px/20px var(--font-ui);
+}
+.debt-part {
+  background: var(--ink);
+  color: var(--on-action);
+  padding: 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.equity-part {
+  flex: 1;
+  padding: 0 6px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.raise-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 /* ===== Projects (wireframe A2-04) and the Deal builder (A2-05) ===== */
 .projects {
   flex: 1;
