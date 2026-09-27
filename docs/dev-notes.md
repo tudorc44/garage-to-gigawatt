@@ -221,3 +221,95 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 
 1. Check why `lifeline-shell` busts 50/50 (bot bug or design) and re-run its lifeline number.
 2. Apply the design thread's answers to the M5 questions (as M6.0), then the next milestone.
+
+## M5 report (questions answered in M6.0)
+
+The report sent to the design thread on 28 Sep 2026, verbatim. M6.0 applies the answers by number.
+
+```text
+Garage to Gigawatt — Act II build report from the code thread, milestone M5 (branch act2). I need your decisions.
+
+CONTEXT
+Milestone M5 is built. Everything is in the game and tested (588 tests pass):
+- Your M4 answers:
+  - the rating sets the equipment loan's terms (BBB +2.5%/60% LTV, BB +4.0%/50%, B +6.0%/40%, CCC +9.0%/25%, 8-quarter tenor);
+  - equity is priced off the current valuation plus this quarter's signed contracts;
+  - the switched-off reservation charge was reverted.
+- Merge head starts, the lifeline card and bridge loan (floor: 20 MW energized / $5M cash), the standalone preset and "Start at Act II".
+- Act II scouting (sites_act2.json categories and flaws), the region panel and regional policies (ERCOT SB6, the 2026Q3 ERCOT upgrade halt, the Virginia large-load tax, the PJM queue).
+- Grid upgrades and on-site gas in a project's Power slot.
+- The Act II hires (Head of Development +1 Bandwidth; Capital Markets Lead −0.75 pt on loan spreads).
+- The Act II event deck (21 cards played), and the Act II interrupts (spot price shock, GPU spot alert, curtailment at AI sites with an SLA credit).
+
+SIM RESULTS (50 seeds per bot, played 2017 → 2026Q4)
+Targets from scope 0.2 §5:
+- Pilot pays back more if built early: 2023Q3 pilot 1.78×, 0.44× ahead of a 2025Q2 pilot → PASS
+- Hosting is not the obvious choice (ahead in ≤ ~60% of runs): ahead in 11/40 → PASS
+- Good path ~$1–3B at 2026Q4 → MISS.
+  - Bot "sign-then-raise" (20 MW company; signs a tenant, then raises equity): median $187M across all runs, $331M among the runs that survive; $1B+ in 0/50 runs; 13/50 go bust in Act II.
+  - Bot "shell-capital": median $112M; 15/50 bust.
+- Great path $10B+ peak in 2025 → MISS.
+  - Bot "asic-retirer" (Texas-scale company that retires its ASICs and goes all-in on AI from 2023Q3): 2025 peak median $3.7B, 2026Q4 $2.2B, 8/50 bust, 41/50 alive with ≥ 4 quarters of runway.
+  - Bot "texas-capital": 2025 peak $690M.
+- Lifeline runs have a live AI project by 2024Q4 (≥ 70%) → MISS: 57/117 (49%).
+  - Caveat: my test bot for the lifeline case (a garage company that takes the lifeline) went bust in 50/50 runs. That may be a bug in my bot, and I'm checking it, so treat this number as provisional.
+- Head starts: in the preset game all four Merge choices end 2026Q4 at about $18–22M, and the same bot is best under every one. The Merge choice doesn't matter at the moment.
+- Preset: runs end around $20M (peak ~$270M), 0/20 bust.
+
+QUESTIONS (please answer by number; I'll apply the answers as M6.0)
+
+A. Balance (I was told not to tune these myself)
+1. The good and great paths are 5–10× short. Which levers should move, and by how much? Candidates:
+   - capex credits;
+   - the LTV per rating band;
+   - the backlog weight in the valuation;
+   - the AI EV/EBITDA multiple;
+   - tenant prices.
+   Or should the targets come down?
+2. Head starts don't differ. What should each one give so the choice matters? In particular, "hold and wait" has no mechanic in doc 18: what does it do?
+3. Should the standalone preset start bigger (e.g. closer to a Texas-scale company), or stay a small "second chance" start?
+4. The lifeline floor is built as "under 20 MW energized OR under $5M cash", so a 20 MW+ company that is short of cash also qualifies. Keep OR, or change it to AND?
+5. Act II Bandwidth (scope §2.2: 3, +1 at 50 MW, +1 at 200 MW, Chief of Staff, Head of Development; max 8) drops a 20 MW company to 3 at the Merge. Intended, or should Act I's bonuses carry over?
+
+B. Missing numbers (built without them; my proposal in brackets: accept, change or reject)
+6. Ratepayer Anger has no numbers for its level, its rise, its link to Heat, or card ec21's threshold. [Anger 0–100 per region = MW run there ÷ 10 × the region's anger modifier, plus policy bumps (PJM +20 in 2024Q4, +10 everywhere in 2026Q1); adds Anger ÷ 5 to Heat at that region's sites; ec21 fires at Anger ≥ 50.]
+7. The AEP Ohio tariff (2026Q2), the Georgia cost shift (2026Q1) and the Arizona incentive pause (2026Q2) have no effect numbers. [+$0.005/kWh on that region's power from that quarter.]
+8. Tenant and lender negotiation ("Negotiate · 2 BW", 3 rounds): the pack says the hidden limits are set by tenants.json / lenders.json, but neither file has any. [Tenant's limit = its card price +8%; lender's limit = its spread −75 bps; the opening offer = the card terms.]
+9. The air-permit lawsuit (40% chance on the air_permit_for_gas flaw) has no consequence. [The gas plant shuts for 2 quarters; the project waits.]
+
+C. Smaller rules questions
+10. The PJM shock card also hits Georgia sites (as the pack is written). Intended?
+11. "Aggressive" depreciation has no audit risk, so it's a free choice. Should it have a downside (e.g. an audit chance → a rating notch)?
+
+D. Choices I made where the pack was silent (please confirm or change)
+12.
+  - An AI hall shut by ERCOT curtailment pays the tenant 15% of a month's charge as an SLA credit.
+  - Spot-market GPU clusters pay no SLA credit.
+  - SB6 forces curtailment at 75 MW+ from 2026Q1.
+13. The Capital Markets Lead cuts spreads by 0.75 pt (the middle of the 0.5–1.0 range).
+14. Head starts:
+  - the legacy GPU cloud counts as AI EBITDA;
+  - GPU halls from the hosting head start convert at the 2022Q4 cost;
+  - GPUs sold at the Merge fetch the game's used price.
+15. Event card durations and targets the pack left open:
+  - FTX: −1 rating notch for 2 quarters;
+  - SVB: no new debt in 2023Q2;
+  - DeepSeek: AI multiple −3 and AI demand −10 for 2 quarters from 2025Q1.
+16. Scouting:
+  - every Act II offer has a hidden flaw;
+  - energized land is priced at the pack's "announced" $3–12M/MW;
+  - a voided zoning doubles the delay.
+
+E. Still open from Act I (never answered)
+17. Leaving the 100 kW site also locks you out of the seed round. Intended?
+18. Please confirm:
+  - min_mw means usable capacity;
+  - the equipment and crypto loan rules;
+  - auctions as a Plan-phase action;
+  - the curtailment trade-off;
+  - how the Heat 50 check reads;
+  - the power contract details.
+19. Should the reconstructed Act I market data be replaced with real CoinMetrics weekly data before final balancing?
+
+Please reply with numbered answers. Where you pick numbers, give exact values so the code thread doesn't have to guess.
+```
