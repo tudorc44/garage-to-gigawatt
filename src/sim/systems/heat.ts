@@ -15,7 +15,8 @@ import { randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type GameState, type Site } from '../state.ts'
 import { getModel } from './market.ts'
 import type { LotWeek } from './mining.ts'
-import { capacityKw, flawEffect, getTier } from './sites.ts'
+import { nationalHeatDelta, regionHeatMult } from './regions.ts'
+import { capacityKw, flawEffect, getTier, regionOf } from './sites.ts'
 
 export interface SiteHeat {
   /** Heat now (0–100), recalculated every week and after anything that changes it. */
@@ -109,11 +110,18 @@ export function loadHeat(
   return raw * growthMult(site)
 }
 
-/** Recalculates one site's Heat from its parts. */
+/**
+ * Recalculates one site's Heat from its parts. In Act II the sum is scaled by the site's region
+ * (doc 18 §6: Heat carries over, scaled by the region's Heat modifier) and national policies add
+ * to it (2026Q1: +10 everywhere).
+ */
 export function recalcHeat(state: GameState, site: Site): void {
   const h = heatOf(state, site.id)
-  const total =
+  const parts =
     baseHeat(state, site) + h.load + h.grievance + eraHeat(state, site)
+  const total =
+    parts * regionHeatMult(regionOf(site), state.quarter) +
+    nationalHeatDelta(state.quarter)
   h.value = Math.min(100, Math.max(0, total))
 }
 

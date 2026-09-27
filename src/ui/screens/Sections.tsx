@@ -10,6 +10,7 @@ import {
   lotViews,
   machineMarket,
   quarterName,
+  regionsView,
   siteLadder,
   upcomingRivalsView,
   valuationBreakdown,
@@ -76,6 +77,9 @@ function FleetSection({ state, act }: ScreenProps) {
     <div class="section">
       <div class="col">
         <FleetPanel state={state} />
+        {state.act === 2 && state.phase === 'plan' && (
+          <RegionPanel state={state} />
+        )}
         <div class="panel p">
           <h2 class="panel-title">{t('ui.section.ladder')}</h2>
           <div class="ladder">
@@ -251,6 +255,98 @@ function FleetSection({ state, act }: ScreenProps) {
       {open === 'offers' && (
         <OffersDialog state={state} act={act} onClose={close} />
       )}
+    </div>
+  )
+}
+
+/** The region panel (A2-06): one region at a time, your biggest site's first. */
+function RegionPanel({ state }: { state: GameState }) {
+  const v = regionsView(state)
+  const [pick, setPick] = useState<string>(v.home)
+  const r = v.regions.find((x) => x.id === pick) ?? v.regions[0]
+  const regionName = (id: string) => tDynamic(`ui.region.${id}`, id)
+  const policyLine = (p: (typeof r.policies)[number]) => (
+    <li key={p.id} class={p.active ? '' : 'muted'}>
+      <span class="num-s">{fmt.quarter(p.quarter)}</span>{' '}
+      {tDynamic(`policy.${p.id}`, p.id)}
+      {!p.hasEffect && (
+        <span class="num-s muted"> · {t('ui.regions.news_only')}</span>
+      )}
+    </li>
+  )
+  return (
+    <div class="panel p">
+      <div class="row-between">
+        <h2 class="panel-title">{t('ui.regions.title')}</h2>
+        <select
+          value={r.id}
+          aria-label={t('ui.regions.title')}
+          onChange={(e) => setPick((e.target as HTMLSelectElement).value)}
+        >
+          {v.regions.map((x) => (
+            <option key={x.id} value={x.id}>
+              {regionName(x.id)}
+              {x.siteCount > 0 ? ` · ${fmt.power(x.energizedKw)}` : ''}
+            </option>
+          ))}
+        </select>
+      </div>
+      <table>
+        <tbody>
+          <tr>
+            <td>{t('ui.regions.power')}</td>
+            <td class="num r">
+              {t('ui.regions.power_value', {
+                now: fmt.cents(r.powerUsdKwh),
+                next: fmt.cents(r.powerNextYearUsdKwh),
+              })}
+            </td>
+          </tr>
+          <tr>
+            <td>{t('ui.regions.queue')}</td>
+            <td class="num r">
+              {t('ui.regions.queue_value', {
+                from: r.queueMonths[0],
+                to: r.queueMonths[1],
+              })}
+              {r.extraQueueQuarters > 0 &&
+                ` · ${t('ui.regions.queue_extra', { n: r.extraQueueQuarters })}`}
+            </td>
+          </tr>
+          <tr>
+            <td>{t('ui.regions.heat')}</td>
+            <td class="num r">×{r.heatMult}</td>
+          </tr>
+          <tr>
+            <td>{t('ui.regions.anger')}</td>
+            <td class="num r">×{r.angerMult}</td>
+          </tr>
+          <tr>
+            <td>{t('ui.regions.your_sites')}</td>
+            <td class="num r">
+              {r.siteCount === 0
+                ? t('ui.regions.none')
+                : t('ui.regions.sites_value', {
+                    n: r.siteCount,
+                    power: fmt.power(r.energizedKw),
+                  })}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      {r.gridUpgradesHalted && (
+        <p class="num-s loss" style={{ margin: 0 }}>
+          {t('ui.regions.halted')}
+        </p>
+      )}
+      <div class="label">{t('ui.regions.policies')}</div>
+      <ul class="num-s" style={{ margin: 0, paddingLeft: '18px' }}>
+        {r.policies.map(policyLine)}
+      </ul>
+      <div class="label">{t('ui.regions.national')}</div>
+      <ul class="num-s" style={{ margin: 0, paddingLeft: '18px' }}>
+        {v.national.map(policyLine)}
+      </ul>
     </div>
   )
 }

@@ -4,9 +4,12 @@
 import {
   BALANCE,
   CONTENT,
+  POWER_REGIONS,
   act2Quarter,
   actLastQuarter,
   type MarketWeek,
+  type PowerRegion,
+  type RegionPolicy,
 } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
@@ -72,6 +75,11 @@ import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import { lifelineTerms } from './systems/lifeline.ts'
 import {
+  extraQueueQuarters,
+  gridUpgradesHalted,
+  regionPowerAdderUsdKwh,
+} from './systems/regions.ts'
+import {
   constructionLoanUsd,
   gpuKwLeft,
   nextPhase,
@@ -109,6 +117,7 @@ import {
   leavingTerms,
   poweredKw,
   powerPriceUsdKwh,
+  regionOf,
   tierIndex,
   topTierIndex,
   usedKw,
@@ -944,6 +953,52 @@ export function carryOver(state: GameState) {
       termQuarters: BALANCE.hosting.termQuarters,
       discountPct: CONTENT.projects.shellReady.capexDiscount,
     },
+  }
+}
+
+/**
+ * The region panel (Act II, wireframe A2-06; scope 0.2 §2.6): for each of the six regions, its power
+ * price now and a year on (with any policy charge), grid queue, Heat and anger modifiers, its policy
+ * events (in force or still to come), whether grid upgrades are halted, and your sites there. Then
+ * the national policies. (The Ratepayer Anger meter itself is STOPPED: no numbers in the content.)
+ */
+export function regionsView(state: GameState) {
+  const q = state.quarter
+  const now = CONTENT.quarters[q]
+  const next = Math.min(q + 4, CONTENT.quarters.length - 1)
+  const price = (id: PowerRegion, quarter: number) =>
+    (act2Quarter(quarter)?.powerUsdKwh[id] ?? 0) +
+    regionPowerAdderUsdKwh(id, quarter)
+  const policy = (p: RegionPolicy) => ({
+    id: p.id,
+    quarter: p.quarter,
+    active: p.quarter <= now,
+    /** Whether it changes numbers in the game (else it's news only, for now). */
+    hasEffect: Object.keys(p.effect).length > 0,
+  })
+  const regions = POWER_REGIONS.map((id) => {
+    const r = CONTENT.regions[id]
+    const sites = state.sites.filter((s) => regionOf(s) === id)
+    return {
+      id,
+      powerUsdKwh: price(id, q),
+      powerNextYearUsdKwh: price(id, next),
+      queueMonths: r.queue_months,
+      heatMult: r.heat_modifier,
+      angerMult: r.anger_modifier,
+      policies: r.policies.map(policy),
+      gridUpgradesHalted: gridUpgradesHalted(id, q),
+      extraQueueQuarters: extraQueueQuarters(id, q),
+      siteCount: sites.length,
+      energizedKw: sites.reduce((kw, s) => kw + poweredKw(s, q), 0),
+    }
+  })
+  const biggest = [...regions].sort((a, b) => b.energizedKw - a.energizedKw)[0]
+  return {
+    regions,
+    national: CONTENT.nationalPolicies.map(policy),
+    /** The region of your biggest site (the one to show first). */
+    home: biggest.id,
   }
 }
 

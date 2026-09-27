@@ -18,6 +18,7 @@ import {
   type SiteOffer,
 } from '../state.ts'
 import { extraScoutOffers } from './hires.ts'
+import { regionPowerAdderUsdKwh } from './regions.ts'
 import { saleValueUsd } from './machines.ts'
 import { getModel } from './market.ts'
 
@@ -139,14 +140,18 @@ export function normalPriceUsdKwh(
 /**
  * $/kWh at this site in this quarter: the contract's price if it has one (index: × this
  * quarter's move), otherwise the normal price; then the rate_class flaw's hike (set by its
- * event card, until the next renewal) and the Heat 50 rate hike on top.
+ * event card, until the next renewal) and the Heat 50 rate hike on top; then any regional
+ * policy's per-kWh charge (Act II: Virginia's large-load tax), contract or not.
  */
 export function powerPriceUsdKwh(site: Site, quarter: number): number {
   const c = site.contract
   const base = c
     ? c.price * (c.indexMult ?? 1)
     : normalPriceUsdKwh(site, quarter)
-  return base * (site.rateMult ?? 1) * (site.surcharge ?? 1)
+  return (
+    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) +
+    regionPowerAdderUsdKwh(regionOf(site), quarter)
+  )
 }
 
 /** Share of the week the site actually has power (outage flaw). */

@@ -137,7 +137,13 @@ Still open from Act I (never answered; details in the archive):
 
 ## STOPPED
 
-(none)
+- **Ratepayer Anger (M5.4)** (scope 0.2 §2.2 / §2.6; doc 18 §6): no numbers anywhere for its level, its rise per MW
+  built, its link to Heat or the moratorium threshold (card ec21 "anger ≥ threshold"). Built without it: the region
+  panel (showing only the anger *modifier*), Heat × region modifier, the policy effects that have numbers. Proposal
+  for the design thread: Anger 0–100 per region = MW you run there ÷ 10 × anger_modifier + policy bumps (PJM +20 in
+  2024Q4, +10 everywhere in 2026Q1); adds Anger ÷ 5 to the region's sites' Heat; ec21 fires at Anger ≥ 50.
+- **Policy effects with no number (M5.4):** AEP Ohio tariff (2026Q2), Georgia cost shift (2026Q1), Arizona incentive
+  pause (2026Q2) are news only. Proposal: +$0.005/kWh on that region's power from that quarter.
 
 ## Small follow-ups
 
@@ -182,6 +188,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
   end of 2024Q3; "Bridge" row + early repay on the Capital screen; terminal game asks too.
 - M5.3: "Start at Act II" (`preset.ts`): the preset plays 2022Q3 for a real report, then cash/debt are set to $12M
   / $25M; Merge screen → intro (no Act I chapter). Mine: the garage stays; used S19 Pros; Act II save tag.
+- M5.4: `regions.json` (game copy: modifiers + policies with doc 18's effects), `regions.ts`, region panel on Fleet &
+  Sites. In force: Heat × region modifier (Act II), +10 Heat everywhere from 2026Q1, VA +$0.011/kWh from 2026Q3,
+  ERCOT upgrade halt 2026Q3–Q4 and PJM queue +4 (used by M5.6), SB6 (used by M5.9). Anger: STOPPED.
 
 ## Next
 

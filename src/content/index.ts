@@ -15,6 +15,7 @@ import tenantsRaw from './tenants.json' with { type: 'json' }
 import gpusRaw from './gpus.json' with { type: 'json' }
 import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
 import lendersRaw from './lenders.json' with { type: 'json' }
+import regionsRaw from './regions.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -34,6 +35,7 @@ import {
   interruptsAct2FileSchema,
   lendersFileSchema,
   pilotClusterSchema,
+  regionsFileSchema,
   tenantsFileSchema,
   curtailmentRulesSchema,
   heatFileSchema,
@@ -75,11 +77,14 @@ import {
   type NegotiationRules,
   type PitchRules,
   type Rival,
+  type RegionPolicy,
+  type RegionRaw,
   type SiteTier,
 } from './schemas.ts'
 
 export { BALANCE }
 export type {
+  RegionPolicy,
   NegotiationRules,
   PitchRules,
   HeatRules,
@@ -241,6 +246,9 @@ export interface Act2Quarter {
   estimate: boolean
 }
 
+/** An Act II region (regions.json): its queue, Heat and anger modifiers and policy events, in date order. */
+export type Region = Omit<RegionRaw, 'id'> & { id: PowerRegion }
+
 export type BacklogQuality = 'weak' | 'mixed' | 'strong'
 export type LeverageBand = 'lt2' | 'from2to4' | 'from4to6' | 'gt6'
 
@@ -301,6 +309,9 @@ export interface Content {
   }
   /** The standalone preset's balance sheet (capital_act2.json › standalone_preset_final_numbers). */
   preset: { cashUsd: number; equipmentDebtUsd: number; founderStake: number }
+  /** The six Act II regions (regions.json), by the market file's region id, and the national policies. */
+  regions: Record<PowerRegion, Region>
+  nationalPolicies: RegionPolicy[]
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -390,6 +401,7 @@ export interface RawContent {
   gpus: unknown
   interruptsAct2: unknown
   lenders: unknown
+  regions: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -456,6 +468,7 @@ export function parseContent(raw: RawContent): Content {
   const tenantsFile = check('tenants.json', tenantsFileSchema, raw.tenants)
   const gpusFile = check('gpus.json', gpusFileSchema, raw.gpus)
   const lendersFile = check('lenders.json', lendersFileSchema, raw.lenders)
+  const regionsFile = check('regions.json', regionsFileSchema, raw.regions)
   const interruptsAct2File = check(
     'interrupts_act2.json',
     interruptsAct2FileSchema,
@@ -522,6 +535,7 @@ export function parseContent(raw: RawContent): Content {
     !tenantsFile ||
     !gpusFile ||
     !lendersFile ||
+    !regionsFile ||
     !delayRules ||
     !allocationRules ||
     !rivalsFile ||
@@ -753,6 +767,39 @@ export function parseContent(raw: RawContent): Content {
       problems.push(
         `balance.ts › act2Regions: premium tier "${tier}" needs a ${firstAct2Year} power_path`,
       )
+  }
+
+  // Regions (regions.json): exactly the market file's six, policies inside Act II, known regions.
+  const regions = {} as Record<PowerRegion, Region>
+  for (const r of regionsFile.regions) {
+    if (!(POWER_REGIONS as readonly string[]).includes(r.id)) {
+      problems.push(
+        `regions.json › ${r.id}: not a market region (${POWER_REGIONS.join(', ')})`,
+      )
+      continue
+    }
+    regions[r.id as PowerRegion] = {
+      ...r,
+      id: r.id as PowerRegion,
+      policies: [...r.policies].sort((a, b) =>
+        a.quarter < b.quarter ? -1 : 1,
+      ),
+    }
+  }
+  for (const id of POWER_REGIONS)
+    if (!regions[id]) problems.push(`regions.json: no region "${id}"`)
+  const allPolicies = [
+    ...regionsFile.regions.flatMap((r) => r.policies),
+    ...regionsFile.national,
+  ]
+  for (const p of allPolicies) {
+    if (!act2Quarters.includes(p.quarter))
+      problems.push(
+        `regions.json › ${p.id}: ${p.quarter} isn't an Act II quarter`,
+      )
+    for (const region of Object.keys(p.effect.queue_quarters ?? {}))
+      if (!(POWER_REGIONS as readonly string[]).includes(region))
+        problems.push(`regions.json › ${p.id}: unknown region "${region}"`)
   }
 
   const act2Market = marketQuarterlyAct2Rows.map((r, i) =>
@@ -1115,6 +1162,8 @@ export function parseContent(raw: RawContent): Content {
       founderStake:
         capitalAct2File.standalone_preset_final_numbers.founder_stake_pct / 100,
     },
+    regions,
+    nationalPolicies: regionsFile.national,
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
@@ -1289,6 +1338,7 @@ export const CONTENT: Content = parseContent({
   gpus: gpusRaw,
   interruptsAct2: interruptsAct2Raw,
   lenders: lendersRaw,
+  regions: regionsRaw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

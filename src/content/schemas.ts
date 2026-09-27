@@ -256,6 +256,48 @@ export const capitalAct2FileSchema = z.looseObject({
   }),
 })
 
+// ---------- regions.json (Act II regions, scope 0.2 §2.6, doc 18 §6) ----------
+
+/** A policy's game effect (doc 18 §6, §11). Empty = news only. */
+const policyEffectSchema = z.object({
+  /** ERCOT (SB6): it can curtail sites of min_kw and up directly, from this quarter. */
+  direct_curtailment_from: quarterId.optional(),
+  min_kw: nonNeg.optional(),
+  /** No new grid upgrades in the region for this many quarters. */
+  no_grid_upgrades_quarters: z.number().int().min(1).optional(),
+  /** Added to the region's power price per kWh from the policy's quarter on. */
+  power_adder_usd_kwh: nonNeg.optional(),
+  /** Added to every site's Heat from the policy's quarter on. */
+  heat_delta: z.number().optional(),
+  /** Extra quarters on grid-upgrade queues, by region, from the policy's quarter on. */
+  queue_quarters: z.record(z.string(), z.number().int().min(0)).optional(),
+})
+
+const policySchema = z.object({
+  id: z.string(),
+  date: z.string(),
+  quarter: quarterId,
+  effect: policyEffectSchema,
+  source: z.string(),
+})
+
+export const regionsFileSchema = z.object({
+  regions: z.array(
+    z.object({
+      id: z.string(),
+      pack_id: z.string(),
+      queue_months: z.tuple([nonNeg, nonNeg]),
+      heat_modifier: nonNeg,
+      anger_modifier: nonNeg,
+      policies: z.array(policySchema),
+    }),
+  ),
+  national: z.array(policySchema),
+})
+
+export type RegionPolicy = z.output<typeof policySchema>
+export type RegionRaw = z.output<typeof regionsFileSchema>['regions'][number]
+
 // ---------- lenders.json (Act II capital, doc 18 §7) ----------
 
 const pctRange = z

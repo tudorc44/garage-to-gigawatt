@@ -1,0 +1,75 @@
+{
+ "schema_version": 1,
+ "note": "The game's copy of the Act II regions (scope 0.2 §2.6; doc 18 §6). From docs/game-project-files/claude_act2-content_regions.json (the pack, used as it is): queue, Heat and anger modifiers, policy events. Region ids are the market file's power columns (texas_ercot -> ercot, virginia_pjm -> pjm). Power prices come from market_quarterly_act2.csv, not from here. Each policy's `effect` is the game effect from doc 18 §6 and §11; an empty effect means news only (no number in the content yet).",
+ "regions": [
+  {
+   "id": "ercot",
+   "pack_id": "texas_ercot",
+   "queue_months": [12, 24],
+   "heat_modifier": 0.9,
+   "anger_modifier": 1.0,
+   "policies": [
+    {"id": "ercot_sb6", "date": "2025-06-20", "quarter": "2025Q2", "effect": {"direct_curtailment_from": "2026Q1", "min_kw": 75000}, "source": "Bracewell law firm summary; doc 18 §9: from 2026Q1, ERCOT can curtail sites of 75 MW+ directly"},
+    {"id": "ercot_connection_halt", "date": "2026-08-03", "quarter": "2026Q3", "effect": {"no_grid_upgrades_quarters": 2}, "source": "electricchoice.com moratorium tracker; doc 18 §11: no new Texas grid upgrades for 2 quarters"}
+   ]
+  },
+  {
+   "id": "pjm",
+   "pack_id": "virginia_pjm",
+   "queue_months": [60, 96],
+   "heat_modifier": 1.3,
+   "anger_modifier": 1.4,
+   "policies": [
+    {"id": "pjm_capacity_spike", "date": "2024-07", "quarter": "2024Q4", "effect": {}, "source": "utilitydive.com; the price rise is in market_quarterly_act2.csv (power_usd_kwh_pjm, pjm_capacity_price_usd_mwday)"},
+    {"id": "warrenton_election", "date": "2024-11-05", "quarter": "2024Q4", "effect": {}, "source": "01-02-industry-and-timeline.md; event card ec11"},
+    {"id": "va_large_load_tax", "date": "2026-06-30", "quarter": "2026Q3", "effect": {"power_adder_usd_kwh": 0.011}, "source": "electricchoice.com (estimate); doc 18 §6: $0.011/kWh large-load tax"},
+    {"id": "pw_gateway_exit", "date": "2026-07", "quarter": "2026Q3", "effect": {}, "source": "01-02-industry-and-timeline.md, CDM"}
+   ]
+  },
+  {
+   "id": "ohio",
+   "pack_id": "ohio",
+   "queue_months": [24, 48],
+   "heat_modifier": 1.05,
+   "anger_modifier": 1.1,
+   "policies": [
+    {"id": "aep_ohio_tariff", "date": "2026-04", "quarter": "2026Q2", "effect": {}, "source": "powermag.com, electricityrates.com; doc 18 §6: cost allocation, not a moratorium (no number yet)"}
+   ]
+  },
+  {
+   "id": "georgia",
+   "pack_id": "georgia",
+   "queue_months": [24, 48],
+   "heat_modifier": 1.0,
+   "anger_modifier": 1.05,
+   "policies": [
+    {"id": "georgia_cost_shift", "date": "2026-03", "quarter": "2026Q1", "effect": {}, "source": "datacenterfrontier.com; psc.ga.gov fact sheet (no number yet)"}
+   ]
+  },
+  {
+   "id": "arizona",
+   "pack_id": "arizona",
+   "queue_months": [18, 36],
+   "heat_modifier": 1.1,
+   "anger_modifier": 1.15,
+   "policies": [
+    {"id": "arizona_incentive_pause", "date": "2026-06-13", "quarter": "2026Q2", "effect": {}, "source": "electricchoice.com; doc 18 §6: incentive pauses raise opex (no number yet)"}
+   ]
+  },
+  {
+   "id": "nordics",
+   "pack_id": "nordics",
+   "queue_months": [12, 36],
+   "heat_modifier": 0.7,
+   "anger_modifier": 0.6,
+   "policies": [
+    {"id": "nordics_buildout", "date": "2025-2026", "quarter": "2025Q1", "effect": {}, "source": "qz.com Nebius Finland reporting: no moratorium"}
+   ]
+  }
+ ],
+ "national": [
+  {"id": "blocked_projects_2026", "date": "2026Q1", "quarter": "2026Q1", "effect": {"heat_delta": 10, "queue_quarters": {"pjm": 4}}, "source": "Data Center Watch Q1 2026 report; doc 18 §11: Heat everywhere +10, PJM queue +4 quarters"},
+  {"id": "gallup_poll", "date": "2026-05-13", "quarter": "2026Q2", "effect": {}, "source": "news.gallup.com"},
+  {"id": "ny_moratorium", "date": "2026-07-14", "quarter": "2026Q3", "effect": {}, "source": "axios.com; governor.ny.gov EO 62 (not a region tag in the game: news only)"}
+ ]
+}
