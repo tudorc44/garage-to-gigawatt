@@ -285,6 +285,23 @@ export const BALANCE = {
    * and up (interrupts_act2.json › gpu_failure_wave's trigger); the JV card offers the middle of the
    * JV share range (50–80%; mine).
    */
+  /**
+   * The Act II chapter report (scope 0.2 §2.13): title bands by the end valuation, from the top
+   * (texts: en.json › chapter2.title.<id>); the scripted moments it marks.
+   */
+  act2Chapter: {
+    titleBands: [
+      { min: 10e9, id: 'hyperscaler_adjacent' },
+      { min: 3e9, id: 'scale_up' },
+      { min: 1e9, id: 'developer' },
+      { min: 400e6, id: 'contender' },
+      { min: 100e6, id: 'survivor' },
+      { min: -Infinity, id: 'also_ran' },
+    ] as readonly { min: number; id: string }[],
+    halvingQuarter: '2024Q2',
+    priceResetQuarter: '2025Q2',
+  },
+
   act2Events: {
     bigClusterGpus: 10_000,
     jvShare: 0.65,

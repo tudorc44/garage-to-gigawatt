@@ -1266,6 +1266,133 @@ export function chapterReport(state: GameState) {
 }
 
 /**
+ * Why an Act II game ended (wireframe A2-10, the foreclosure variant; scope 0.2 §2.7, M6.4), or null
+ * if it hasn't. 'foreclosure' when lenders foreclosed on projects in the last 4 quarters or debt
+ * service went unpaid in the final one (the debt default rules as built: 2 missed quarters on a
+ * project → the lender takes it); otherwise 'cash' (cash below zero after every forced sale).
+ */
+export function gameOverView(state: GameState) {
+  if (state.phase !== 'gameover' || state.act !== 2) return null
+  const recent = state.quarter - 3
+  const foreclosed = state.log
+    .filter((e) => e.key === 'log.project_foreclosed' && e.quarter >= recent)
+    .map((e) => ({
+      n: Number(e.params?.n),
+      quarter: CONTENT.quarters[e.quarter],
+      debtUsd: Number(e.params?.debtUsd),
+    }))
+  const missed = state.log.filter(
+    (e) => e.key === 'log.debt_missed' && e.quarter === state.quarter,
+  )
+  return {
+    cause:
+      foreclosed.length > 0 || missed.length > 0
+        ? ('foreclosure' as const)
+        : ('cash' as const),
+    foreclosed,
+    foreclosedDebtUsd: foreclosed.reduce((a, f) => a + f.debtUsd, 0),
+    missed: missed.map((e) => Number(e.params?.n)),
+    shortUsd: Math.max(0, -state.cash),
+  }
+}
+
+/**
+ * The Act II chapter report (wireframe A2-09; scope 0.2 §2.13), at the end of 2026Q4 or on a bust in
+ * Act II: the title by end valuation, the score (founder net worth, peak valuation, league rank),
+ * the career curve from 2017, the 2026Q4 valuation broken into its parts, and the act's key
+ * moments. Game over adds its cause (M6.4).
+ */
+export function act2ChapterView(state: GameState) {
+  const bust = state.phase === 'gameover'
+  const reports = state.reports
+  const last = reports.at(-1)
+  const finalValuationUsd = last?.valuationUsd ?? 0
+  const netWorthUsd = Math.max(0, state.founderStake * finalValuationUsd)
+  const C = BALANCE.act2Chapter
+  const title = bust
+    ? 'bust'
+    : C.titleBands.find((b) => finalValuationUsd >= b.min)!.id
+  const peak = reports.reduce<QuarterReport | undefined>(
+    (a, b) => (!a || b.valuationUsd > a.valuationUsd ? b : a),
+    undefined,
+  )
+  const act2From = CONTENT.acts[1].firstQuarter
+  const act2Log = state.log.filter((e) => e.quarter >= act2From)
+  const count = (...keys: string[]) =>
+    act2Log.filter((e) => keys.includes(e.key)).length
+  const firstOf = (key: string) => {
+    const e = act2Log.find((x) => x.key === key)
+    return e ? CONTENT.quarters[e.quarter] : null
+  }
+  const at = (label: string) => reports.find((r) => r.quarter === label)
+  const halving = CONTENT.quarters.indexOf(C.halvingQuarter)
+  const before = at(CONTENT.quarters[halving - 1])
+  const after = at(C.halvingQuarter)
+  const signed = act2Log.filter((e) => e.key === 'log.tenant_signed')
+  const biggest = signed.reduce<(typeof signed)[number] | undefined>(
+    (a, b) =>
+      !a || Number(b.params?.rentUsd) > Number(a.params?.rentUsd) ? b : a,
+    undefined,
+  )
+  const split = last ? valuationSplit(last, state.firstAiDealQuarter) : null
+  return {
+    bust,
+    title,
+    netWorthUsd,
+    finalValuationUsd,
+    founderStake: state.founderStake,
+    peak: peak
+      ? { valuationUsd: peak.valuationUsd, quarter: peak.quarter }
+      : null,
+    rank: last ? yourRank(state, reports.length - 1) : null,
+    curve: reports.map((r) => ({
+      quarter: r.quarter,
+      valuationUsd: r.valuationUsd,
+    })),
+    breakdown:
+      split && last
+        ? {
+            quarter: last.quarter,
+            miningEvUsd: split.miningEvUsd,
+            aiEvUsd: split.aiEvUsd,
+            backlogUsd: split.weightedBacklogUsd,
+            constructionUsd: split.constructionUsd,
+            cashUsd: last.cash,
+            treasuryUsd: split.treasuryUsd,
+            debtUsd: last.debtUsd,
+          }
+        : null,
+    moments: {
+      headStart: state.act2Entry?.headStart ?? null,
+      lifeline: state.act2Entry?.lifeline === 'taken',
+      projectsLive: count('log.project_live'),
+      firstLive: firstOf('log.project_live'),
+      tenantsSigned: signed.length,
+      biggestTenant: biggest
+        ? {
+            tenant: String(biggest.params?.tenant),
+            rentUsd: Number(biggest.params?.rentUsd),
+            quarter: CONTENT.quarters[biggest.quarter],
+          }
+        : null,
+      delays: count(
+        'log.project_slipped',
+        'log.project_slipped_silent',
+        'log.project_slipped_contractor',
+        'log.project_slipped_event',
+      ),
+      foreclosures: count('log.project_foreclosed'),
+      sold: count('log.project_sold'),
+      halving:
+        before && after && before.revenueUsd > 0
+          ? { miningChangePct: after.revenueUsd / before.revenueUsd - 1 }
+          : null,
+      priceReset: C.priceResetQuarter,
+    },
+  }
+}
+
+/**
  * The event card on screen: its id, site, and per choice what it would do to cash and machine
  * count right now (a dry run of the answer; lasting effects are described by the card's hints).
  */

@@ -234,3 +234,6 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   you have $Y"); `g2g.bandwidth(n?)` and a new `g2g.help()` (every build, like the other helpers). Checked in the browser.
 - M6.2: `src/content/rivals_act2.json` (game copy: series + move quarters, texts in en.json › rival_move.*); the 5 replace Act I's in the
   league from 2022Q4 (2026Q4 holds 2026Q3); report's league shows AI / mining MW and "Rivals this quarter"; a passed RFP card → a rival (log).
+- M6.3: Act II chapter report (End.tsx › Act2Chapter; selectors › act2ChapterView): scope §2.13 title bands by end valuation, net worth /
+  peak / league rank tiles, 2017–2026 curve, 2026Q4 value parts, moments (head start, lifeline, projects, tenants, slips, foreclosures,
+  sales, halving, price reset, peak), league, Act III teaser (mine). Checked in the browser.

@@ -3,7 +3,13 @@
 // to the chapter report ("Chapter ends early"), with no way on.
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
-import { actTurn, chapterReport, mergeView } from '../../sim/selectors.ts'
+import {
+  act2ChapterView,
+  actTurn,
+  chapterReport,
+  gameOverView,
+  mergeView,
+} from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
 import { momentLines, runSummaryText } from '../chapter.ts'
 import { fmt } from '../format.ts'
@@ -88,6 +94,207 @@ export function MergeScreen({ state, act }: ScreenProps) {
   )
 }
 
+/**
+ * The Act II chapter report (wireframe A2-09; scope 0.2 §2.13): the end of the game at 2026Q4, or a
+ * bust in Act II (with its cause, M6.4). Title by end valuation; score tiles; the career curve
+ * 2017–2026; the valuation's parts; the act's key moments; the league; the Act III teaser.
+ */
+function Act2Chapter(props: {
+  state: GameState
+  onReplay: () => void
+  onNew: () => void
+}) {
+  const s = props.state
+  const c = act2ChapterView(s)
+  const m = c.moments
+  const cause = c.bust ? gameOverView(s) : null
+  const b = c.breakdown
+  const moments = [
+    m.headStart &&
+      t('ui.chapter2.m.head_start', {
+        choice: tDynamic(`merge_choice.${m.headStart}`, m.headStart),
+      }),
+    m.lifeline && t('ui.chapter2.m.lifeline'),
+    m.projectsLive > 0 &&
+      t('ui.chapter2.m.projects', {
+        n: m.projectsLive,
+        quarter: fmt.quarter(m.firstLive ?? ''),
+      }),
+    m.biggestTenant &&
+      t('ui.chapter2.m.tenants', {
+        n: m.tenantsSigned,
+        tenant: tDynamic(
+          `tenant.${m.biggestTenant.tenant}`,
+          m.biggestTenant.tenant,
+        ),
+        rent: fmt.money(m.biggestTenant.rentUsd),
+      }),
+    m.delays > 0 && t('ui.chapter2.m.delays', { n: m.delays }),
+    m.foreclosures > 0 &&
+      t('ui.chapter2.m.foreclosures', { n: m.foreclosures }),
+    m.sold > 0 && t('ui.chapter2.m.sold', { n: m.sold }),
+    m.halving &&
+      t('ui.chapter2.m.halving', { pct: fmt.pct(m.halving.miningChangePct) }),
+    t('ui.chapter2.m.price_reset', { quarter: fmt.quarter(m.priceReset) }),
+    c.peak &&
+      t('ui.chapter2.m.peak', {
+        value: fmt.money(c.peak.valuationUsd),
+        quarter: fmt.quarter(c.peak.quarter),
+      }),
+  ].filter((x): x is string => typeof x === 'string')
+  return (
+    <div class="screen">
+      <div class="center-page">
+        <div class="panel end-card chapter-card">
+          <div class="label">
+            {t(c.bust ? 'ui.chapter2.ends_early' : 'ui.chapter2.done')}
+          </div>
+          <h1 class="screen-title">
+            {tDynamic(`ui.chapter2.title.${c.title}`, c.title)}
+          </h1>
+          <p class="pitch">
+            {c.bust
+              ? t('ui.chapter2.bust_body', {
+                  quarter: fmt.quarter(c.curve.at(-1)?.quarter ?? ''),
+                })
+              : t('ui.chapter2.body', {
+                  value: fmt.money(c.finalValuationUsd),
+                })}
+          </p>
+          {cause && <GameOverCause cause={cause} />}
+          <div class="end-tiles">
+            <div class="panel tile">
+              <span class="label">{t('ui.chapter.net_worth')}</span>
+              <span class="num-xl">{fmt.money(c.netWorthUsd)}</span>
+              <span class="num-s muted">
+                {t('ui.chapter.net_worth_sub', {
+                  stake: fmt.pct(c.founderStake),
+                  valuation: fmt.money(c.finalValuationUsd),
+                })}
+              </span>
+            </div>
+            <div class="panel tile">
+              <span class="label">{t('ui.end.peak')}</span>
+              <span class="num-xl">{fmt.money(c.peak?.valuationUsd ?? 0)}</span>
+              <span class="num-s muted">
+                {c.peak ? fmt.quarter(c.peak.quarter) : ''}
+              </span>
+            </div>
+            <div class="panel tile">
+              <span class="label">{t('ui.chapter.rank')}</span>
+              <span class="num-xl">
+                {c.rank ? t('ui.chapter.rank_value', c.rank) : '—'}
+              </span>
+              <span class="num-s muted">{t('ui.chapter2.rank_sub')}</span>
+            </div>
+          </div>
+          <div>
+            <span class="label">{t('ui.chapter2.curve')}</span>
+            <CareerChart curve={c.curve} />
+          </div>
+          {b && (
+            <div class="panel p">
+              <span class="label">
+                {t('ui.chapter2.breakdown', {
+                  quarter: fmt.quarter(b.quarter),
+                })}
+              </span>
+              <table>
+                <tbody>
+                  {(
+                    [
+                      ['mining', b.miningEvUsd],
+                      ['ai', b.aiEvUsd],
+                      ['backlog', b.backlogUsd],
+                      ['construction', b.constructionUsd],
+                      ['cash', b.cashUsd],
+                      ['treasury', b.treasuryUsd],
+                      ['debt', -b.debtUsd],
+                    ] as const
+                  ).map(([k, v]) => (
+                    <tr key={k}>
+                      <td>{t(`ui.chapter2.part.${k}`)}</td>
+                      <td class={`num r${v < 0 ? ' loss' : ''}`}>
+                        {fmt.money(v)}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr>
+                    <td>
+                      <strong>{t('ui.chapter2.part.total')}</strong>
+                    </td>
+                    <td class="num r">
+                      <strong>{fmt.money(c.finalValuationUsd)}</strong>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div class="log">
+            <span class="label">{t('ui.chapter.moments')}</span>
+            {moments.map((line, i) => (
+              <div key={i}>{line}</div>
+            ))}
+          </div>
+          {s.reports.length > 0 && <League state={s} r={s.reports.at(-1)!} />}
+          <div class="panel p">
+            <span class="label">{t('ui.chapter2.teaser_label')}</span>
+            <p class="num-s" style={{ margin: 0 }}>
+              {t('ui.chapter2.teaser')}
+            </p>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+            <button type="button" class="btn btn-primary" onClick={props.onNew}>
+              {t('ui.end.new')}
+            </button>
+            <button type="button" class="btn" onClick={props.onReplay}>
+              {t('ui.end.replay', { seed: String(s.seed) })}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** Why the company went under in Act II (M6.4, wireframe A2-10): the lenders' foreclosures, or cash. */
+function GameOverCause({
+  cause,
+}: {
+  cause: NonNullable<ReturnType<typeof gameOverView>>
+}) {
+  return (
+    <div class="panel p">
+      <span class="label loss">{t(`ui.gameover.cause.${cause.cause}`)}</span>
+      <p class="num-s" style={{ margin: 0 }}>
+        {cause.cause === 'foreclosure'
+          ? t('ui.gameover.foreclosure_body', {
+              n: cause.foreclosed.length,
+              debt: fmt.money(cause.foreclosedDebtUsd),
+            })
+          : t('ui.gameover.cash_body', {
+              short: fmt.money(cause.shortUsd),
+            })}
+      </p>
+      {cause.foreclosed.map((f) => (
+        <div class="num-s" key={f.n}>
+          {t('ui.gameover.foreclosed_line', {
+            n: f.n,
+            quarter: fmt.quarter(f.quarter),
+            debt: fmt.money(f.debtUsd),
+          })}
+        </div>
+      ))}
+      {cause.missed.length > 0 && (
+        <div class="num-s muted">
+          {t('ui.gameover.missed', { n: cause.missed.length })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 /** The career curve: company valuation at each quarter end, with the peak marked. */
 function CareerChart({
   curve,
@@ -140,8 +347,9 @@ export function ChapterScreen(props: {
   onContinue?: () => void
 }) {
   const s = props.state
-  const c = chapterReport(s)
   const [exported, setExported] = useState<string | null>(null)
+  if (s.act === 2) return <Act2Chapter {...props} />
+  const c = chapterReport(s)
   const exportRun = () => {
     const text = runSummaryText(s)
     setExported(text)
