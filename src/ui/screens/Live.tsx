@@ -8,6 +8,7 @@ import {
   PRICE_ALERT_THRESHOLD,
   complaintView,
   KEEP_MINING_GRIEVANCE,
+  SPOT_LOCK_QUARTERS,
   URI_STORM_PRICE,
   eventCardView,
   failureWaveView,
@@ -158,6 +159,10 @@ export function LiveScreen(
       {(state.interrupt?.id === 'construction_delay' ||
         state.interrupt?.id === 'gpu_allocation') && (
         <ProjectAlertCard state={state} act={act} />
+      )}
+      {(state.interrupt?.id === 'spot_price_shock' ||
+        state.interrupt?.id === 'gpu_spot_alert') && (
+        <SpotAlertCard state={state} act={act} />
       )}
       {state.interrupt?.id === 'event' && <EventCard state={state} act={act} />}
       {state.interrupt?.id === 'margin_warning' && (
@@ -598,6 +603,19 @@ function CurtailmentCard({ state, act }: ScreenProps) {
             forgone: fmt.money(offer.forgoneUsd),
           })}
         </p>
+        {(offer.aiMw ?? 0) > 0 && (
+          <p class="num-s loss" style={{ margin: 0 }}>
+            {t('ui.grid.ai_line', {
+              power: fmt.power((offer.aiMw ?? 0) * 1000),
+              sla: fmt.money(offer.slaUsd ?? 0),
+            })}
+          </p>
+        )}
+        {offer.forced && (
+          <p class="num-s" style={{ margin: 0 }}>
+            {t('ui.grid.forced')}
+          </p>
+        )}
         {interruptChoices(state).map((c) => (
           <button
             key={c.id}
@@ -903,6 +921,72 @@ function FailureWaveCard({ state, act }: ScreenProps) {
 }
 
 /** Act II: a construction delay or the GPU allocation queue on a project being built. */
+/** The spot price shock and the GPU spot alert (Act II, M5.9): lock the spot capacity, or stay on spot. */
+function SpotAlertCard({ state, act }: ScreenProps) {
+  const alert = state.interrupt!
+  const kind = alert.id as 'spot_price_shock' | 'gpu_spot_alert'
+  const params = {
+    change: fmt.delta(alert.changePct, 'pct'),
+    quarters: SPOT_LOCK_QUARTERS,
+  }
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="spot-alert-title"
+      >
+        <div class="row-between">
+          <span class="label">
+            {t('ui.event.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: alert.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', {
+              n: state.interruptsThisQuarter,
+              max: MAX_INTERRUPTS,
+            })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="warning" />
+          <span class={`num-xl ${alert.changePct < 0 ? 'loss' : 'gain'}`}>
+            {params.change}
+          </span>
+        </div>
+        <h2 class="event-title" id="spot-alert-title">
+          {t(`ui.spot_alert.${kind}.title`)}
+        </h2>
+        <p class="event-body">{t(`ui.spot_alert.${kind}.body`, params)}</p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.spot.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">
+              {tDynamic(`ui.spot_alert.${kind}.effect.${c.id}`, '', params)}
+            </span>
+          </button>
+        ))}
+      </article>
+    </div>
+  )
+}
+
 function ProjectAlertCard({ state, act }: ScreenProps) {
   const v = projectAlertView(state)
   if (!v) return null

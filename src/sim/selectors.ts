@@ -851,6 +851,9 @@ export function negotiationResult(state: GameState, tier: string) {
   return null
 }
 
+/** Act II spot alerts: how many quarters "lock" fixes the spot capacity's price for. */
+export const SPOT_LOCK_QUARTERS = BALANCE.act2Spot.lockQuarters
+
 /** Uri: the storm price per kWh index contracts pay on their firm load (shocks.json). */
 export const URI_STORM_PRICE =
   CONTENT.shocks.find((sh) => sh.id === 'uri')?.stormPriceUsdKwh ?? 0

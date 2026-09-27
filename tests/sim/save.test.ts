@@ -126,6 +126,7 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   act2Entry: null,
   bridgeLoan: null,
   preset: false,
+  spotShock: null,
   'events.creditNotch': null,
   'events.valuationMult': null,
   'events.ebitdaMult': null,

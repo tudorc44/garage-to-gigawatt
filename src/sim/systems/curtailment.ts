@@ -2,20 +2,23 @@
 // miners to switch off for a week and pays them for it. The alert comes at the end of a
 // week; if you agree, the Texas machines sit out the next week and the credit is paid then.
 // The rolls use their own stream (substream), so they don't change the rest of the game.
-import { CONTENT, type MarketWeek } from '../../content/index.ts'
+import { CONTENT, act2Quarter, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
 import {
   logEntry,
   type CurtailOffer,
   type GameState,
+  type Project,
   type Site,
 } from '../state.ts'
 import { addGrievance } from './heat.ts'
 import { getModel, marketWeek } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { mineWeek } from './mining.ts'
-import { getTier } from './sites.ts'
+import { annualContractUsd } from './projects.ts'
+import { directCurtailment } from './regions.ts'
+import { capacityKw, getTier, regionOf } from './sites.ts'
 
 /** The 1-based week after which the grid asks this quarter, or null if it doesn't. */
 export function curtailmentAlertWeek(state: GameState): number | null {
@@ -27,11 +30,28 @@ export function curtailmentAlertWeek(state: GameState): number | null {
   return randomInt(r, ...rules.alertAfterWeek)
 }
 
-/** True for a machine batch on a site of the curtailment tier (Texas). */
+/**
+ * A site the grid can curtail: the curtailment tier (Texas); in Act II, any site in ERCOT (the
+ * lifeline's and scouted Texas sites too; mine).
+ */
+export function isGridSite(state: GameState, site: Site): boolean {
+  if (site.tier === CONTENT.curtailment.siteTier) return true
+  return !!act2Quarter(state.quarter) && regionOf(site) === 'ercot'
+}
+
+/** True for a machine batch on a site the grid can curtail. */
 function onGridSite(state: GameState, lotId: string): boolean {
   const lot = state.machines.find((l) => l.id === lotId)
   const site = lot && state.sites.find((s) => s.id === lot.siteId)
-  return site?.tier === CONTENT.curtailment.siteTier
+  return !!site && isGridSite(state, site)
+}
+
+/** Live AI projects at the sites the grid can curtail (Act II). */
+export function curtailedProjects(state: GameState): Project[] {
+  return state.projects.filter((p) => {
+    const site = state.sites.find((s) => s.id === p.siteId)
+    return p.stage === 'live' && !!site && isGridSite(state, site)
+  })
 }
 
 /**
@@ -59,7 +79,7 @@ export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
   let forgoneUsd = 0
   let creditUsd = 0
   for (const site of state.sites) {
-    if (site.tier !== rules.siteTier) continue
+    if (!isGridSite(state, site)) continue
     let siteKw = 0
     let siteForgone = 0
     for (const l of lots) {
@@ -76,7 +96,40 @@ export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
         rules.forgoneRevenueMult * siteForgone,
       ) * curtailCreditMult(site)
   }
-  return { mw, forgoneUsd, creditUsd }
+  // Act II: AI halls there go dark too, and owe their tenants an SLA credit (a share of a month's
+  // charge); SB6 lets ERCOT curtail sites of 75 MW and up directly from 2026Q1.
+  const ai = curtailedProjects(state)
+  if (ai.length === 0 && !act2Quarter(state.quarter))
+    return { mw, forgoneUsd, creditUsd }
+  const slaUsd = ai.reduce(
+    (sum, p) =>
+      sum + monthlyChargeUsd(p) * CONTENT.projects.slaPenaltyShareMonth,
+    0,
+  )
+  const sb6 = directCurtailment('ercot', state.quarter)
+  const forced =
+    !!sb6 &&
+    state.sites.some(
+      (s) =>
+        isGridSite(state, s) &&
+        regionOf(s) === 'ercot' &&
+        capacityKw(s) >= sb6.minKw,
+    )
+  return {
+    mw,
+    forgoneUsd,
+    creditUsd,
+    aiMw: ai.reduce((kw, p) => kw + p.kw, 0) / 1000,
+    slaUsd,
+    ...(forced ? { forced } : {}),
+  }
+}
+
+/** A live AI project's monthly charge: a twelfth of its year's rent or GPU-hours. */
+function monthlyChargeUsd(p: Project): number {
+  if (p.tenant) return annualContractUsd(p) / 12
+  // A cluster on spot has no tenant to owe (mine: no SLA on spot).
+  return 0
 }
 
 /**
@@ -90,7 +143,7 @@ export function checkCurtailment(state: GameState): void {
   const next = state.week + 1
   if (next >= CONTENT.market[state.quarter].length) return
   const offer = curtailOffer(state, marketWeek(state.quarter, next))
-  if (offer.mw <= 0) return
+  if (offer.mw <= 0 && (offer.aiMw ?? 0) <= 0) return
   state.interrupt = {
     id: 'curtailment',
     week: state.week,
@@ -109,16 +162,20 @@ export function resolveCurtailment(
   const active = state.interrupt!
   const offer = active.curtail!
   if (choiceId === 'curtail') {
-    state.curtailment = { week: active.week + 1, creditUsd: offer.creditUsd }
+    state.curtailment = {
+      week: active.week + 1,
+      creditUsd: offer.creditUsd,
+      ...(offer.slaUsd ? { slaUsd: offer.slaUsd } : {}),
+    }
     logEntry(
       state,
       'log.curtail_agreed',
       { creditUsd: offer.creditUsd, week: active.week + 2 },
       active.week + 1,
     )
-  } else if (choiceId === 'mine') {
+  } else if (choiceId === 'mine' && !offer.forced) {
     for (const site of state.sites) {
-      if (site.tier === CONTENT.curtailment.siteTier)
+      if (isGridSite(state, site))
         addGrievance(state, site.id, CONTENT.heat.keepMining)
     }
     logEntry(
@@ -132,18 +189,26 @@ export function resolveCurtailment(
 }
 
 /**
- * The agreed curtailment week: Texas batches mine nothing and use no power, and the
- * credit is paid. Returns the batches to settle and the credit (0 in other weeks).
+ * The agreed curtailment week: Texas batches mine nothing and use no power, and the credit is
+ * paid; in Act II the AI halls there go dark too and their tenants' SLA credit is paid. Returns
+ * the batches to settle, the credit, the SLA credit and the sites whose AI halls are off (0 and
+ * none in other weeks).
  */
 export function applyCurtailment(
   state: GameState,
   lots: LotWeek[],
-): { lots: LotWeek[]; creditUsd: number } {
+): { lots: LotWeek[]; creditUsd: number; slaUsd: number; siteIds: string[] } {
   const c = state.curtailment
-  if (!c || c.week !== state.week) return { lots, creditUsd: 0 }
+  if (!c || c.week !== state.week)
+    return { lots, creditUsd: 0, slaUsd: 0, siteIds: [] }
   state.curtailment = null
-  state.cash += c.creditUsd
+  state.cash += c.creditUsd - (c.slaUsd ?? 0)
+  const siteIds = state.sites
+    .filter((s) => isGridSite(state, s))
+    .map((s) => s.id)
   return {
+    slaUsd: c.slaUsd ?? 0,
+    siteIds,
     lots: lots.map((l) =>
       onGridSite(state, l.lotId)
         ? {

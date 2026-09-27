@@ -38,6 +38,8 @@ import {
   interruptsAct2FileSchema,
   lendersFileSchema,
   pilotClusterSchema,
+  spotShockSchema,
+  curtailmentAiSchema,
   gridUpgradeSchema,
   onSiteGasSchema,
   regionsFileSchema,
@@ -201,6 +203,10 @@ export interface ProjectRules {
     default: string
   }
   allocationChance: number
+  /** A random spot price shock's chance per quarter after the scripted one (interrupts_act2.json). */
+  spotShockChance: number
+  /** An AI site's SLA credit when it curtails, as a share of a month's charge. */
+  slaPenaltyShareMonth: number
 }
 
 /** The six Act II region tags' power price columns (market_quarterly_act2). */
@@ -544,6 +550,18 @@ export function parseContent(raw: RawContent): Content {
     gpuAllocationSchema,
     act2Interrupt('gpu_allocation'),
   )
+  const spotShockRules = check(
+    'interrupts_act2.json › spot_price_shock',
+    spotShockSchema,
+    act2Interrupt('spot_price_shock'),
+  )
+  const curtailAiRules = check(
+    'interrupts_act2.json › curtailment_ai_sites',
+    curtailmentAiSchema,
+    interruptsAct2File?.updated_interrupts.find(
+      (i) => i.id === 'curtailment_ai_sites',
+    ),
+  )
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
@@ -599,6 +617,8 @@ export function parseContent(raw: RawContent): Content {
     !eventsAct2File ||
     !delayRules ||
     !allocationRules ||
+    !spotShockRules ||
+    !curtailAiRules ||
     !rivalsFile ||
     !auction ||
     !curtailment ||
@@ -1066,6 +1086,8 @@ export function parseContent(raw: RawContent): Content {
       default: delayRules.default,
     },
     allocationChance: allocationRules.chance_pct / 100,
+    spotShockChance: spotShockRules.chance_pct_random / 100,
+    slaPenaltyShareMonth: curtailAiRules.sla_penalty_pct_mrc.value / 100,
   }
   if (!gpus.some((g) => g.id === projects.pilot.gpu))
     problems.push(

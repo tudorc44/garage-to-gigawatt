@@ -413,6 +413,15 @@ export const gpusFileSchema = z.looseObject({
 
 export const interruptsAct2FileSchema = z.looseObject({
   new_interrupts: z.array(z.looseObject({ id: z.string() })),
+  updated_interrupts: z.array(z.looseObject({ id: z.string() })),
+})
+
+/** interrupts_act2.json › spot_price_shock: the random chance after the scripted one. */
+export const spotShockSchema = z.looseObject({ chance_pct_random: nonNeg })
+
+/** interrupts_act2.json › curtailment_ai_sites: an AI site's SLA credit when it curtails. */
+export const curtailmentAiSchema = z.looseObject({
+  sla_penalty_pct_mrc: z.looseObject({ value: nonNeg }),
 })
 
 /** interrupts_act2.json › construction_delay (scope §2.9 [P5]). */

@@ -144,6 +144,9 @@ Still open from Act I (never answered; details in the archive):
   2024Q4, +10 everywhere in 2026Q1); adds Anger ÷ 5 to the region's sites' Heat; ec21 fires at Anger ≥ 50.
 - **Policy effects with no number (M5.4):** AEP Ohio tariff (2026Q2), Georgia cost shift (2026Q1), Arizona incentive
   pause (2026Q2) are news only. Proposal: +$0.005/kWh on that region's power from that quarter.
+- **Tenant and lender negotiation (M5.9)** (interrupts_act2.json › tenant_lender_negotiation; the Deal builder's
+  "Negotiate · 2 BW"): the 3-round mini-game needs hidden limits "set by tenants.json / lenders.json", and neither file
+  has any. Proposal: a tenant's hidden limit = its card price +8%; a lender's = its spread −75 bps; opening = the card.
 - **Air-permit lawsuit (M5.6):** sites_act2.json gives the air_permit_for_gas flaw a 40% lawsuit chance but no
   consequence. Built: its +25 Heat with gas. Proposal: a lawsuit shuts the gas plant for 2 quarters (project waits).
 
@@ -205,6 +208,9 @@ Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done o
 - M5.8: `src/content/events_act2.json`, the pack's cards in game format (21 played; ec03/ec05 by other systems, ec21
   STOPPED) + timeline effects (FTX −1 notch 2 q, SVB no new debt 2023Q2, DeepSeek AI multiple −3 2 q); crypto loans back
   from 2023Q3 (scope §2.7). Durations/targets the pack left open are mine (list in the M5 report).
+- M5.9: `spotMarket.ts`: random spot shock (15%/q from 2025Q3, ×0.7) and GPU spot alert (±15% weekly H100 spot), both
+  lock-4-quarters / stay; curtailment covers every ERCOT site in Act II, AI halls there go dark and pay 15% of a month's
+  charge (spot clusters none; mine); SB6 forces it at 75 MW+ from 2026Q1. Tenant/lender negotiation: STOPPED.
 
 ## Next
 

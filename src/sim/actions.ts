@@ -119,6 +119,7 @@ import {
   scoutAct2,
   scoutAct2Blocker,
 } from './systems/scouting.ts'
+import { planSpotShock } from './systems/spotMarket.ts'
 import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
   backstopBlocker,
@@ -314,6 +315,7 @@ function run(s: GameState, a: Action): Message | undefined {
       planFailureWaves(s)
       rollHostingDefaults(s)
       planProjectEvents(s)
+      planSpotShock(s)
       s.quarterStats.startCash = s.cash
       s.quarterStats.startTreasuryUsd = treasuryValueUsd(
         s,

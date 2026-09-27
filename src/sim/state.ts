@@ -367,6 +367,8 @@ export interface GameState {
   projects: Project[]
   /** This quarter's planned construction delay / GPU allocation checks. */
   projectEvents: PlannedProjectEvent[]
+  /** Act II: a random spot price shock due this quarter, after week `week` (1–13), or null. */
+  spotShock: { week: number } | null
   /** The quarter the first AI deal was signed (the pivot premium), or null. */
   firstAiDealQuarter: number | null
   /** Act II debt secured on a project: project debt and GPU-backed DDTLs. */
@@ -401,8 +403,11 @@ export interface GameState {
   failureWaves: PlannedWave[]
   /** A neighbour complaint due this quarter (after week `week`, 1–13) or carried over; null = none. */
   complaint: { siteId: string; week: number } | null
-  /** An agreed grid curtailment: the week (0–12) the Texas machines go offline, and the credit. */
-  curtailment: { week: number; creditUsd: number } | null
+  /**
+   * An agreed grid curtailment: the week (0–12) the Texas machines go offline, the credit, and (Act
+   * II) the SLA credit owed to AI tenants at those sites.
+   */
+  curtailment: { week: number; creditUsd: number; slaUsd?: number } | null
   /** A distressed auction open this Plan phase, or null. */
   auction: Auction | null
   /** After a margin-call default: no loans until this quarter index. null = not locked. */
@@ -460,6 +465,11 @@ export interface CurtailOffer {
   creditUsd: number
   /** Uri only: the storm charge an index contract pays if you keep mining (firm load). */
   stormUsd?: number
+  /** Act II: live AI MW at the curtailed sites, and the SLA credit their tenants get for the week. */
+  aiMw?: number
+  slaUsd?: number
+  /** Act II, SB6: a big ERCOT site the grid curtails directly (no choice). */
+  forced?: boolean
 }
 
 export interface QuarterStats {
@@ -666,6 +676,7 @@ export function newGame(seed: number): GameState {
     hosting: [],
     projects: [],
     projectEvents: [],
+    spotShock: null,
     firstAiDealQuarter: null,
     facilities: [],
     creditRating: null,

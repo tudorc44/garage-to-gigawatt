@@ -744,7 +744,11 @@ export function spotUtilisation(state: GameState): number {
  * less power at the AI hall's PUE and a week of insurance on the GPUs. Cash moves here; the
  * totals are returned.
  */
-export function settleProjectsWeek(state: GameState): {
+export function settleProjectsWeek(
+  state: GameState,
+  /** Sites the grid curtailed this week (Act II): their AI halls earn and spend nothing. */
+  curtailedSiteIds: string[] = [],
+): {
   revenueUsd: number
   costUsd: number
   marginByTier: Record<string, number>
@@ -758,6 +762,7 @@ export function settleProjectsWeek(state: GameState): {
     if (p.stage !== 'live') continue
     const site = state.sites.find((s) => s.id === p.siteId)
     if (!site || isShutDown(state, site.id)) continue
+    if (curtailedSiteIds.includes(site.id)) continue
     let rev: number
     let cost: number
     // An AI-lab tenant that forced a renegotiation (card ec23) pays less.

@@ -19,6 +19,12 @@ import {
   resolveProjectEvent,
 } from './projects.ts'
 import { sellTreasury } from './treasury.ts'
+import {
+  isSpotAlert,
+  resolveSpotAlert,
+  spotAlertChoices,
+  spotAlertDefault,
+} from './spotMarket.ts'
 
 /** Act II project alerts (interrupts_act2.json): a construction delay or the GPU queue. */
 const isProjectEvent = (id: string) =>
@@ -68,6 +74,7 @@ export function resolveInterrupt(
   if (active.id === 'event') return resolveEvent(state, choiceId)
   if (active.id === 'failure_wave') return resolveFailureWave(state, choiceId)
   if (isProjectEvent(active.id)) return resolveProjectEvent(state, choiceId)
+  if (isSpotAlert(active.id)) return resolveSpotAlert(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )
@@ -164,6 +171,9 @@ export function availableChoices(state: GameState): string[] {
   if (active.id === 'event') return eventChoices(state)
   if (active.id === 'failure_wave') return failureWaveChoices(state)
   if (isProjectEvent(active.id)) return projectEventChoices(state)
+  if (isSpotAlert(active.id)) return spotAlertChoices()
+  // SB6: the grid curtails big ERCOT sites directly, so there's nothing to refuse.
+  if (active.id === 'curtailment' && active.curtail?.forced) return ['curtail']
   if (active.id === 'margin_warning') {
     const loan = state.cryptoLoan
     return loan && loan.balanceUsd <= state.cash ? ['repay', 'ok'] : ['ok']
@@ -183,6 +193,9 @@ export function availableChoices(state: GameState): string[] {
 export function defaultChoice(state: GameState): string {
   if (state.interrupt!.id === 'event') return defaultEventChoice(state)
   if (isProjectEvent(state.interrupt!.id)) return projectEventDefault(state)
+  if (isSpotAlert(state.interrupt!.id)) return spotAlertDefault(state)
+  if (state.interrupt!.id === 'curtailment' && state.interrupt!.curtail?.forced)
+    return 'curtail'
   const def = CONTENT.interrupts.byId[state.interrupt!.id]
   const open = availableChoices(state)
   const fallbacks = (def.default_if_unaffordable ?? '')

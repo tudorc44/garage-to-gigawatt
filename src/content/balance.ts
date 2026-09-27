@@ -208,6 +208,20 @@ export const BALANCE = {
     jvShare: 0.65,
   },
 
+  /**
+   * Act II spot-market alerts (scope 0.2 §2.9; M5.9). The random spot price shock (its chance is in
+   * interrupts_act2.json) comes after the scripted one (card ec15, 2025Q2): from 2025Q3, in a random
+   * week, and cuts spot prices like the card (× 0.7). The GPU spot alert fires on a weekly H100 spot
+   * move as big as the coin price alert's. Both only with a live cluster on spot; "lock" fixes its
+   * GPU-hours at a price for 4 quarters (the shocked price, or today's neocloud price for the alert).
+   */
+  act2Spot: {
+    shockFrom: '2025Q3',
+    shockMult: 0.7,
+    lockQuarters: 4,
+    weeks: [2, 12] as readonly [number, number],
+  },
+
   /** Crypto-backed loans come back in Act II from this quarter (scope 0.2 §2.7: FTX closed them 2022Q4–2023Q2). */
   act2CryptoLoansFrom: '2023Q3',
 

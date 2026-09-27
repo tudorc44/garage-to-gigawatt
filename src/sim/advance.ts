@@ -26,6 +26,7 @@ import { settleHostingWeek } from './systems/hosting.ts'
 import { payReservationWeek } from './systems/mwUse.ts'
 import { checkProjectEvents, settleProjectsWeek } from './systems/projects.ts'
 import { settleLegacyCloudWeek } from './systems/headStarts.ts'
+import { checkSpotAlerts } from './systems/spotMarket.ts'
 
 export function advance(state: GameState): GameState {
   if (state.phase !== 'live') {
@@ -44,7 +45,7 @@ export function advance(state: GameState): GameState {
   const money = settleWeek(s, lots, w)
   const hosting = settleHostingWeek(s)
   const reservationUsd = payReservationWeek(s)
-  const ai = settleProjectsWeek(s)
+  const ai = settleProjectsWeek(s, curtailed.siteIds)
   const legacy = settleLegacyCloudWeek(s)
   // Winter Storm Uri: index contracts that didn't curtail pay the storm price on their firm load.
   const stormUsd = curtailed.creditUsd > 0 ? 0 : stormChargeUsd(s, s.week)
@@ -69,7 +70,7 @@ export function advance(state: GameState): GameState {
   st.powerCostUsd += hosting.powerUsd + reservationUsd
   st.reservationUsd += reservationUsd
   st.aiRevenueUsd += ai.revenueUsd + legacy.revenueUsd
-  st.aiCostUsd += ai.costUsd + legacy.costUsd
+  st.aiCostUsd += ai.costUsd + legacy.costUsd + curtailed.slaUsd
   for (const byTier of [
     hosting.marginByTier,
     ai.marginByTier,
@@ -115,6 +116,7 @@ export function advance(state: GameState): GameState {
   checkUri(s)
   checkFailureWaves(s)
   checkProjectEvents(s)
+  checkSpotAlerts(s, w)
   checkComplaint(s)
   checkEvents(s)
   checkPriceAlert(s, w)
