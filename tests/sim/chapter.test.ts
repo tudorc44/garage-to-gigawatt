@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { CONTENT } from '../../src/content/index.ts'
+import { CONTENT, actLastQuarter } from '../../src/content/index.ts'
 import { playGame } from '../../src/sim/replay.ts'
 import { chapterReport, mergeView } from '../../src/sim/selectors.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 import { runSummaryText } from '../../src/ui/chapter.ts'
 import { BOTS } from '../../tools/bots.ts'
 
-const LAST = CONTENT.quarters.length - 1
+const LAST = actLastQuarter(1)
 
 describe('the Merge screen (merge.json)', () => {
   it('shows your GPUs and their resale value, BTC hashrate, and energized MW used vs idle', () => {

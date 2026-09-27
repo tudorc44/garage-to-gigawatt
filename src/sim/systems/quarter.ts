@@ -1,6 +1,11 @@
 // Quarter boundaries: the end-of-quarter report and bankruptcy check, and the move
 // to the next quarter's Plan phase.
-import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
+import {
+  BALANCE,
+  CONTENT,
+  actLastQuarter,
+  type MarketWeek,
+} from '../../content/index.ts'
 import { finishUpgrades } from './construction.ts'
 import {
   emptyQuarterStats,
@@ -117,7 +122,7 @@ function buildReport(
 
 /** From the report to the next Plan phase, or to the Merge decision after 2022Q3. */
 export function startNextQuarter(state: GameState): void {
-  if (state.quarter === CONTENT.quarters.length - 1) {
+  if (state.quarter === actLastQuarter(1)) {
     state.phase = 'merge'
     return
   }

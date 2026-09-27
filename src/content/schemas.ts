@@ -43,6 +43,36 @@ export const marketWeekSchema = z.object({
 })
 export const marketSchema = z.array(marketWeekSchema).min(1)
 
+// ---------- market_weekly_act2.json (generated from market_weekly_act2.csv) ----------
+// Act II's columns differ from Act I's: no ETH mining columns (no ETH mining after the Merge),
+// plus ASIC price tiers, H100 rental prices (empty before 2023Q3, so null) and an estimate flag.
+
+const nullableNonNeg = nonNeg.nullable()
+
+export const marketWeekAct2Schema = z.object({
+  week: isoDate,
+  quarter: quarterId,
+  btc_usd: nonNeg,
+  eth_usd: nonNeg,
+  btc_difficulty_T: nonNeg,
+  btc_hashrate_EHs: nonNeg,
+  btc_block_subsidy: nonNeg,
+  btc_fee_share: z.number().min(0).max(1),
+  btc_hashprice_usd_th_day: nonNeg,
+  btc_hashprice_usd_ph_day: nonNeg,
+  asic_price_usd_th_old: nonNeg,
+  asic_price_usd_th_mid: nonNeg,
+  asic_price_usd_th_new: nonNeg,
+  asic_price_usd_th_latest: nonNeg,
+  gpu_h100_hyperscaler_usd_hr: nullableNonNeg,
+  gpu_h100_neocloud_usd_hr: nullableNonNeg,
+  gpu_h100_spot_usd_hr: nullableNonNeg,
+  estimate: z.boolean(),
+})
+export const marketAct2Schema = z.array(marketWeekAct2Schema).min(1)
+export type MarketWeekAct1 = z.infer<typeof marketWeekSchema>
+export type MarketWeekAct2 = z.infer<typeof marketWeekAct2Schema>
+
 // ---------- machines.json ----------
 
 const priceCurve = z.record(quarterId, nonNeg)
@@ -444,7 +474,28 @@ export const rivalsFileSchema = z.object({
 export type LadderStep = z.output<typeof ladderStepSchema>
 export type EquipmentLoanTerms = z.output<typeof equipmentLoanSchema>
 export type CryptoLoanTerms = z.output<typeof cryptoLoanSchema>
-export type MarketWeek = z.output<typeof marketWeekSchema>
+/** Columns only one act's market file has. In the other act's weeks they are null ("no value"). */
+type ActOnlyMarketColumns = {
+  eth_hashrate_THs: number | null
+  eth_blocks_day: number | null
+  eth_block_reward: number | null
+  asic_price_usd_th_old: number | null
+  asic_price_usd_th_mid: number | null
+  asic_price_usd_th_new: number | null
+  asic_price_usd_th_latest: number | null
+  gpu_h100_hyperscaler_usd_hr: number | null
+  gpu_h100_neocloud_usd_hr: number | null
+  gpu_h100_spot_usd_hr: number | null
+  /** Act II's estimate flag; Act I's file has none (null). */
+  estimate: boolean | null
+}
+
+/**
+ * One week of the market as the sim sees it, in either act. Act II weeks have
+ * eth_rev_usd_mh_day = 0: there is no ETH mining after the Merge.
+ */
+export type MarketWeek = Omit<MarketWeekAct1, keyof ActOnlyMarketColumns> &
+  ActOnlyMarketColumns
 export type Machine = z.output<typeof machineSchema>
 export type SiteTier = z.output<typeof siteTierSchema>
 export type Flaw = z.output<typeof flawSchema>

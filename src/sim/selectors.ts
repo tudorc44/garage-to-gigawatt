@@ -1,7 +1,12 @@
 // Read-only views of the game state for the UI. These functions change nothing;
 // they answer display questions ("what does a GPU rig earn per day at this site?")
 // using the same rules the sim uses, so no game rules have to live in src/ui/.
-import { BALANCE, CONTENT, type MarketWeek } from '../content/index.ts'
+import {
+  BALANCE,
+  CONTENT,
+  actLastQuarter,
+  type MarketWeek,
+} from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import type {
@@ -854,7 +859,7 @@ export function mergeView(state: GameState) {
     (l) => getModel(l.model)!.coin === 'ETH',
   )
   const gpus = gpuLots.reduce((n, l) => n + l.count, 0)
-  const last = CONTENT.quarters.length - 1
+  const last = actLastQuarter(1)
   const gpuResaleUsd = gpuLots.reduce(
     (sum, l) => sum + saleValueUsd(l, l.count, last),
     0,
@@ -918,7 +923,7 @@ export function chapterReport(state: GameState) {
     : undefined
   // Rivals: everyone with numbers at the end of Act I reached the Merge; anyone in the game
   // earlier who has none by then dropped out.
-  const endQuarter = CONTENT.quarters.length - 1
+  const endQuarter = actLastQuarter(1)
   const reached = activeRivals(endQuarter).map((r) => r.id)
   const dropped = CONTENT.rivals
     .filter(

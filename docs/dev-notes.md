@@ -770,6 +770,39 @@ gameplay: an `act` field and save version 2 with the Act I → II migration test
 Act II intro → 2022Q4 Plan; the "Start of Act II" autosave slot; goldens unchanged for Act I. Then systems one
 at a time (MW by use → projects → credit rating → tenants → capital → regions → events), as with Act I.
 
+## Act II build
+
+### Step 1: the act boundary (no new Act II gameplay), split into 5 parts
+- **1a. Market to 2026Q4 + act spans** — done (27 Sep 2026, not committed yet).
+- 1b. Held Act I values for 2022Q4+ (machine prices, power paths, era multiples, loan eras, salaries, rivals,
+  era theme): each system holds its last Act I value; every case listed here. No new numbers.
+- 1c. `act` field + save version 2 (a real version step) + the Act I → II migration test.
+- 1d. The phase flow Merge → Act I chapter report → Act II intro → 2022Q4 Plan (Act I systems keep running), the
+  "Start of Act II" autosave slot; `replay.ts`, `tools/play.ts`, the sim-runner and the goldens stop at the act
+  boundary instead of `ended`.
+- 1e. The Act II intro screen (wireframe A2-02, carry-over summary only) and the chapter report's way into it.
+
+**1a, what was built:**
+- `src/content/market_weekly_act2.csv` = `docs/act2-content/market_weekly.csv` (a test checks they're identical);
+  `npm run content:market` now converts both CSVs. An empty cell becomes `null` (never 0); True/False become booleans.
+- `schemas.ts`: `marketWeekAct2Schema` (Act II's own columns). One `MarketWeek` type for both acts; columns only one
+  act has are `null` in the other: Act II weeks have no ETH network columns and **`eth_rev_usd_mh_day` = 0** (no ETH
+  mining after the Merge); Act I weeks have no ASIC/GPU columns and `estimate` = null. The H100 rental columns are
+  null before 2023Q3 (the file has no values there).
+- The loader joins both files into one timeline (`CONTENT.quarters`: 40 quarters) and records
+  `CONTENT.acts` (Act I = quarters 0–22, Act II = 23–39), with helpers `actOfQuarter` and `actLastQuarter`. It
+  checks the acts join without a gap or overlap.
+- **Trimming 14-week quarters:** Act I keeps its old rule (drop the last week, 2018Q4 and 2019Q3), so Act I plays
+  exactly as before; Act II drops the 13th week and **keeps the last** (2024Q3: 2024-09-23 goes, 2024-09-30 stays).
+- `marketWeek` throws a clear `RangeError` outside the data (it used to return undefined).
+- The game still ends after 2022Q3: every "last quarter" (`startNextQuarter`, the Report screen, the Merge view, the
+  chapter report, the sim-runner's idle metric) now means `actLastQuarter(1)`. The loader's range checks (machine
+  prices, power paths, era multiples, loan eras, rivals, auction windows) cover Act I's quarters only.
+- **Golden change (accepted):** 5 goldens changed by 9 lines, all the `log.contract_signed` "quarter" (when the
+  contract runs out). A contract signed in 2021–22 runs past 2022Q3; that quarter used to print "—" (not in the
+  data) and now prints its label (2022Q4, 2023Q2, 2023Q3). No number or ending changed in any of the 11 replays.
+- The sim-runner's "price alerts per quarter" line lists only quarters that were played.
+
 ## Next
 
 Act II market data fixed (27 Sep 2026): corrected copies of the Act II market files are in `docs/act2-content/`
@@ -794,7 +827,7 @@ decisions per quarter, 5 crash-free runs, 3 outside testers). Small follow-ups: 
 JS chunk is just over Vite's 500 KB warning (card text; split it later).
 **Act II** (27 Sep 2026): scope frozen (v1.0, `docs/alpha-0.2-scope.md`); P1–P5, the pilot and the ETH series
 decided; wireframes done; the Act I playtests postponed until after Act II. **Nothing blocks the build; it has
-started** (Step 1: the act boundary). **The scope §7 content fixes are applied** (27 Sep 2026): corrected copies
+started** (Step 1: the act boundary; see "Act II build" for where it stands). **The scope §7 content fixes are applied** (27 Sep 2026): corrected copies
 of 9 Act II JSON files in `docs/act2-content/` (capital_act2, gpus, tenants, conversions, lenders, interrupts_act2,
 events_act2, hires_act2, text_act2_en), each change listed in its README. Open points from that pass (in the README):
 the pilot comes to $30.25–30.75M/MW with the pack's prices (scope says $31–33M); no H100 price or neocloud rent

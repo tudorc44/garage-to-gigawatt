@@ -7,9 +7,15 @@ export function getModel(id: string): Machine | undefined {
   return CONTENT.machines.find((m) => m.id === id)
 }
 
-/** Market data for a week of a quarter (week 0–12). */
+/** Market data for a week of a quarter (week 0–12). Throws past the end of the data, so a
+ * wrong index fails loudly instead of reading undefined. */
 export function marketWeek(quarter: number, week: number): MarketWeek {
-  return CONTENT.market[quarter][week]
+  const w = CONTENT.market[quarter]?.[week]
+  if (!w)
+    throw new RangeError(
+      `No market data for quarter ${quarter}, week ${week} (the market has ${CONTENT.market.length} quarters of ${CONTENT.market[0].length} weeks)`,
+    )
+  return w
 }
 
 /** The week before, crossing into the previous quarter if needed. undefined for the very first week. */

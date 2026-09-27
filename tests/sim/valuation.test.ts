@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CONTENT } from '../../src/content/index.ts'
+import { CONTENT, actLastQuarter } from '../../src/content/index.ts'
 import { ebitdaUsd, valuationUsd } from '../../src/sim/systems/valuation.ts'
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
@@ -25,8 +25,8 @@ describe('valuation (review A5)', () => {
     expect(valuationUsd(0, 0, 10_000, 0, 4_000)).toBe(6_000)
   })
 
-  it('has a multiple for every quarter of the act', () => {
-    for (const label of CONTENT.quarters) {
+  it('has a multiple for every quarter of Act I', () => {
+    for (const label of CONTENT.quarters.slice(0, actLastQuarter(1) + 1)) {
       expect(CONTENT.eraMultiple[label]).toBeGreaterThan(0)
     }
   })

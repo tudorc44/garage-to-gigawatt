@@ -1,10 +1,11 @@
-// Loads the Act I content files, checks them against the schemas, and reshapes them
-// for the sim. Any problem stops the game with a list of what's wrong, where.
+// Loads the content files, checks them against the schemas, and reshapes them for the sim.
+// Act I's files plus, so far, Act II's weekly market (the timeline runs 2017Q1 → 2026Q4). Any problem stops the game with a list of what's wrong, where.
 import type { z } from 'zod'
 import machinesRaw from './machines.json' with { type: 'json' }
 import sitesRaw from './sites.json' with { type: 'json' }
 import interruptsRaw from './interrupts.json' with { type: 'json' }
 import marketRaw from './market_weekly.json' with { type: 'json' }
+import marketAct2Raw from './market_weekly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
@@ -25,6 +26,7 @@ import {
   readMarketSchema,
   interruptsFileSchema,
   machinesFileSchema,
+  marketAct2Schema,
   marketSchema,
   negotiationRulesSchema,
   rivalsFileSchema,
@@ -48,6 +50,8 @@ import {
   type LadderStep,
   type Machine,
   type MarketWeek,
+  type MarketWeekAct1,
+  type MarketWeekAct2,
   type NegotiationRules,
   type PitchRules,
   type Rival,
@@ -78,11 +82,20 @@ export type {
   SiteTier,
 }
 
+/** Where an act sits on the game's timeline (quarter indexes, inclusive). */
+export interface ActSpan {
+  act: 1 | 2
+  firstQuarter: number
+  lastQuarter: number
+}
+
 export interface Content {
-  /** Every quarter of Act I in order: "2017Q1" … "2022Q3". */
+  /** Every quarter of the game in order: Act I "2017Q1" … "2022Q3", then Act II "2022Q4" … "2026Q4". */
   quarters: string[]
   /** market[quarterIndex][week]: exactly 13 weeks per quarter. */
   market: MarketWeek[][]
+  /** The acts, in order. Act I's last quarter (2022Q3) is where the Merge decision comes. */
+  acts: ActSpan[]
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -163,6 +176,7 @@ export interface RawContent {
   sites: unknown
   interrupts: unknown
   market: unknown
+  marketAct2: unknown
   capital: unknown
   rivals: unknown
   heat: unknown
@@ -206,6 +220,11 @@ export function parseContent(raw: RawContent): Content {
     raw.interrupts,
   )
   const marketRows = check('market_weekly', marketSchema, raw.market)
+  const marketAct2Rows = check(
+    'market_weekly_act2',
+    marketAct2Schema,
+    raw.marketAct2,
+  )
   const capitalFile = check('capital.json', capitalFileSchema, raw.capital)
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
@@ -248,6 +267,7 @@ export function parseContent(raw: RawContent): Content {
     !sitesFile ||
     !interruptsFile ||
     !marketRows ||
+    !marketAct2Rows ||
     !capitalFile ||
     !rivalsFile ||
     !auction ||
@@ -264,42 +284,71 @@ export function parseContent(raw: RawContent): Content {
     throw new ContentError(problems)
   }
 
-  // Market: group the weeks by quarter and make every quarter exactly 13 weeks long.
-  // Calendar quarters have 12–14 Mondays; a 14th week is skipped, a missing 13th repeats week 12.
+  // Market: group each act's weeks by quarter and make every quarter exactly 13 weeks long.
+  // Calendar quarters have 12–14 Mondays; a missing 13th week repeats week 12. A 14th week is
+  // dropped: in Act I the last one (as it always was, so Act I plays exactly as before); in
+  // Act II an earlier one, because Act II's last week of each quarter holds the real quarter close.
   const quarters: string[] = []
   const market: MarketWeek[][] = []
-  for (const row of marketRows) {
-    if (quarters.at(-1) !== row.quarter) {
-      if (quarters.includes(row.quarter)) {
+  const acts: ActSpan[] = []
+  const perQuarter = BALANCE.weeksPerQuarter
+  function addAct(
+    act: ActSpan['act'],
+    file: string,
+    rows: MarketWeek[],
+    keepLastWeek: boolean,
+  ) {
+    const firstQuarter = quarters.length
+    const actQuarters: string[] = []
+    const actWeeks: MarketWeek[][] = []
+    for (const row of rows) {
+      if (actQuarters.at(-1) !== row.quarter) {
+        if (
+          actQuarters.includes(row.quarter) ||
+          quarters.includes(row.quarter)
+        ) {
+          problems.push(
+            `${file} › week ${row.week}: quarter ${row.quarter} appears twice`,
+          )
+        }
+        actQuarters.push(row.quarter)
+        actWeeks.push([])
+      }
+      actWeeks.at(-1)!.push(row)
+    }
+    actWeeks.forEach((weeks, i) => {
+      if (weeks.length < perQuarter - 1 || weeks.length > perQuarter + 1) {
         problems.push(
-          `market_weekly › week ${row.week}: quarter ${row.quarter} appears twice`,
+          `${file} › ${actQuarters[i]}: has ${weeks.length} weeks, expected 12–14`,
         )
       }
-      quarters.push(row.quarter)
-      market.push([])
-    }
-    market.at(-1)!.push(row)
-  }
-  const perQuarter = BALANCE.weeksPerQuarter
-  market.forEach((weeks, i) => {
-    if (weeks.length < perQuarter - 1 || weeks.length > perQuarter + 1) {
-      problems.push(
-        `market_weekly › ${quarters[i]}: has ${weeks.length} weeks, expected 12–14`,
+      const kept =
+        keepLastWeek && weeks.length > perQuarter
+          ? [...weeks.slice(0, perQuarter - 1), weeks.at(-1)!]
+          : weeks
+      market.push(
+        Array.from(
+          { length: perQuarter },
+          (_, w) => kept[Math.min(w, kept.length - 1)],
+        ),
       )
-    }
-    market[i] = Array.from(
-      { length: perQuarter },
-      (_, w) => weeks[Math.min(w, weeks.length - 1)],
-    )
-  })
+    })
+    quarters.push(...actQuarters)
+    acts.push({ act, firstQuarter, lastQuarter: quarters.length - 1 })
+  }
+  addAct(1, 'market_weekly', marketRows.map(act1Week), false)
+  addAct(2, 'market_weekly_act2', marketAct2Rows.map(act2Week), true)
   quarters.slice(1).forEach((q, i) => {
     if (q !== nextQuarter(quarters[i])) {
       problems.push(
-        `market_weekly: ${quarters[i]} is followed by ${q}, expected ${nextQuarter(quarters[i])}`,
+        `market: ${quarters[i]} is followed by ${q}, expected ${nextQuarter(quarters[i])}`,
       )
     }
   })
-  const lastQuarter = quarters.at(-1)!
+  // Act I's content (machines, power paths, multiples, loans, rivals, auctions) only has to
+  // cover Act I's quarters. What the sim uses after 2022Q3 comes in the Act II steps.
+  const act1Quarters = quarters.slice(0, acts[0].lastQuarter + 1)
+  const lastQuarter = act1Quarters.at(-1)!
 
   // Machines: prices must exist for every quarter the machine can be bought or sold.
   for (const m of machinesFile.models) {
@@ -316,8 +365,8 @@ export function parseContent(raw: RawContent): Content {
     }
   }
 
-  // Sites: every flaw must exist, and every year of the act needs a power price.
-  const years = [...new Set(quarters.map((q) => q.slice(0, 4)))]
+  // Sites: every flaw must exist, and every year of Act I needs a power price.
+  const years = [...new Set(act1Quarters.map((q) => q.slice(0, 4)))]
   for (const t of sitesFile.tiers) {
     for (const f of t.possible_flaws) {
       if (!sitesFile.flaws[f])
@@ -339,7 +388,7 @@ export function parseContent(raw: RawContent): Content {
       problems.push(`balance.ts: unknown site tier "${id}"`)
   }
 
-  for (const q of quarters) {
+  for (const q of act1Quarters) {
     if (capitalFile.era_multiple_ev_ebitda[q] === undefined) {
       problems.push(
         `capital.json › era_multiple_ev_ebitda: no multiple for ${q}`,
@@ -394,7 +443,7 @@ export function parseContent(raw: RawContent): Content {
       )
     }
   }
-  for (const year of new Set(quarters.map((q) => Number(q.slice(0, 4))))) {
+  for (const year of new Set(act1Quarters.map((q) => Number(q.slice(0, 4))))) {
     const eras = capitalFile.loans.equipment.filter(
       (e) => e.fromYear <= year && year <= e.toYear,
     )
@@ -411,13 +460,13 @@ export function parseContent(raw: RawContent): Content {
       mcap_musd: r.mcap_musd,
     })) {
       for (const q of Object.keys(series)) {
-        if (!quarters.includes(q))
+        if (!act1Quarters.includes(q))
           problems.push(`rivals.json › ${r.id}.${field}: ${q} is outside Act I`)
       }
     }
   }
   for (const win of auction.windows) {
-    if (!quarters.includes(win.from) || !quarters.includes(win.to)) {
+    if (!act1Quarters.includes(win.from) || !act1Quarters.includes(win.to)) {
       problems.push(
         `interrupts.json › distressed_auction: window ${win.from}–${win.to} is outside Act I`,
       )
@@ -496,6 +545,7 @@ export function parseContent(raw: RawContent): Content {
   return {
     quarters,
     market,
+    acts,
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
@@ -525,6 +575,45 @@ export function parseContent(raw: RawContent): Content {
   }
 }
 
+/** An Act I market row as the sim sees it: no Act II columns. */
+function act1Week(row: MarketWeekAct1): MarketWeek {
+  return {
+    ...row,
+    asic_price_usd_th_old: null,
+    asic_price_usd_th_mid: null,
+    asic_price_usd_th_new: null,
+    asic_price_usd_th_latest: null,
+    gpu_h100_hyperscaler_usd_hr: null,
+    gpu_h100_neocloud_usd_hr: null,
+    gpu_h100_spot_usd_hr: null,
+    estimate: null,
+  }
+}
+
+/** An Act II market row: no ETH mining after the Merge, so ETH mining revenue is 0 and the
+ * ETH network columns (which Act II's file doesn't have) are null. */
+function act2Week(row: MarketWeekAct2): MarketWeek {
+  return {
+    ...row,
+    eth_hashrate_THs: null,
+    eth_blocks_day: null,
+    eth_block_reward: null,
+    eth_rev_usd_mh_day: 0,
+  }
+}
+
+/** The act a quarter index belongs to (quarters past the end count as the last act). */
+export function actOfQuarter(quarter: number): ActSpan['act'] {
+  return (
+    CONTENT.acts.find((a) => quarter <= a.lastQuarter) ?? CONTENT.acts.at(-1)!
+  ).act
+}
+
+/** The last quarter index of an act (Act I: 2022Q3). */
+export function actLastQuarter(act: ActSpan['act']): number {
+  return CONTENT.acts.find((a) => a.act === act)!.lastQuarter
+}
+
 export function nextQuarter(q: string): string {
   const year = Number(q.slice(0, 4))
   const n = Number(q.slice(5))
@@ -544,6 +633,7 @@ export const CONTENT: Content = parseContent({
   sites: sitesRaw,
   interrupts: interruptsRaw,
   market: marketRaw,
+  marketAct2: marketAct2Raw,
   capital: capitalRaw,
   rivals: rivalsRaw,
   heat: heatRaw,

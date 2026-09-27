@@ -12,7 +12,7 @@ import {
   type RivalSnapshot,
 } from '../../sim/systems/rivals.ts'
 import type { Coin, GameState, QuarterReport } from '../../sim/state.ts'
-import { CONTENT } from '../../content/index.ts'
+import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -69,7 +69,7 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
   const coin = mainCoin(r)
   const cost = coin ? r.costPerCoinUsd[coin] : null
   const prevCost = coin && prev ? prev.costPerCoinUsd[coin] : null
-  const isLast = state.quarter === CONTENT.quarters.length - 1
+  const isLast = state.quarter === actLastQuarter(1)
   const turn = state.quarter + 1
 
   return (

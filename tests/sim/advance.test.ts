@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CONTENT } from '../../src/content/index.ts'
+import { CONTENT, actLastQuarter } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { interruptChoices } from '../../src/sim/selectors.ts'
@@ -80,7 +80,7 @@ describe('the quarter loop', () => {
   })
 
   it('after the last quarter (2022Q3) comes the Merge decision, and the choice ends the act', () => {
-    let s: GameState = { ...newGame(1), quarter: CONTENT.quarters.length - 1 }
+    let s: GameState = { ...newGame(1), quarter: actLastQuarter(1) }
     s = act(playQuarter(s), { type: 'NEXT_QUARTER' })
     expect(s.phase).toBe('merge')
     expect(applyAction(s, { type: 'MERGE_CHOOSE', choice: 'nope' }).ok).toBe(

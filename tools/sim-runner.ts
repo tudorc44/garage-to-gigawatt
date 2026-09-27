@@ -4,7 +4,7 @@
 //   npm run sim -- --seeds 10 --out some/folder
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { CONTENT } from '../src/content/index.ts'
+import { CONTENT, actLastQuarter } from '../src/content/index.ts'
 import { playGame } from '../src/sim/replay.ts'
 import type {
   ContractType,
@@ -275,7 +275,7 @@ function valuationSplit(r: QuarterReport) {
 function idleShare(r: Run): number | null {
   const s = r.state
   if (s.phase === 'gameover') return null
-  const q = CONTENT.quarters.length - 1
+  const q = actLastQuarter(1)
   const energized = s.sites.reduce((a, x) => a + poweredKw(x, q), 0)
   if (energized === 0) return null
   const lots = new Map(s.machines.map((l) => [l.id, l]))
@@ -590,7 +590,10 @@ console.log(
 
 console.log('\nPrice alerts per quarter (average per run, all strategies):')
 const allRuns = summaries.flatMap((s) => s.runs)
-const line = CONTENT.quarters.map((q) => {
+const played = CONTENT.quarters.filter((q) =>
+  allRuns.some((r) => r.state.reports.some((x) => x.quarter === q)),
+)
+const line = played.map((q) => {
   const total = allRuns.reduce(
     (a, r) =>
       a + (r.state.reports.find((x) => x.quarter === q)?.priceAlerts ?? 0),
