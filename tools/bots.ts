@@ -17,6 +17,8 @@ import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { buyCapKw, hostingView } from '../src/sim/selectors.ts'
 import { convertibleKw } from '../src/sim/systems/hosting.ts'
 import { projectCapex, tenantCard } from '../src/sim/systems/projects.ts'
+import { debtPlan } from '../src/sim/systems/facilities.ts'
+import { equityPreMoneyUsd } from '../src/sim/systems/equity.ts'
 import {
   constructionLoanBlocker,
   constructionLoanUsd,
@@ -648,6 +650,8 @@ function aiProjects(
     pilotKw?: number
     /** true: may sell GPU rigs and S9s for room; 'any': any machine (the pilot measurement). */
     freeUp?: boolean | 'any'
+    /** Use Act II capital: project debt and DDTLs where lenders allow, and equity to close a gap. */
+    capital?: boolean
     /** Keep this share of cash back (default 20%) when sizing a shell or affording a pilot. */
     reserveShare?: number
   },
@@ -670,6 +674,17 @@ function aiProjects(
       }
       const finish = () => {
         for (const p of s.projects.filter((x) => x.stage === 'proposed')) {
+          // Relying on project debt: only a tenant rated BBB or better will do; without one, drop
+          // the project (nothing signed yet) and try again with new offers next quarter.
+          if (
+            opts.capital &&
+            p.kind === 'shell' &&
+            !p.tenant &&
+            !p.offers.some((o) => ratingRank(tenantCard(o.card)!.rating) >= 1)
+          ) {
+            run({ type: 'PROJECT_CANCEL', projectId: p.id })
+            continue
+          }
           if (p.kind === 'shell' && !p.tenant && p.offers.length > 0) {
             const best = [...p.offers].sort((a, b) => {
               const ca = tenantCard(a.card)!
@@ -686,7 +701,23 @@ function aiProjects(
             })
           }
           if (p.kind === 'cloud') run({ type: 'PROJECT_SPOT', projectId: p.id })
+          if (opts.capital)
+            for (const debt of ['project_debt', 'ddtl'] as const)
+              run({ type: 'PROJECT_DEBT', projectId: p.id, debt, on: true })
           run({ type: 'PROJECT_FUND_CASH', projectId: p.id })
+          // Short of cash for the part the debt doesn't cover: sell 8–20% of the company for it.
+          const q = s.projects.find((x) => x.id === p.id)!
+          const needUsd =
+            projectCapex(s, q).totalUsd - debtPlan(s, q).totalUsd - s.cash
+          const preUsd = equityPreMoneyUsd(s)
+          if (opts.capital && needUsd > 0 && preUsd > 0) {
+            const d = needUsd / (preUsd + needUsd)
+            if (d <= CONTENT.finance.equity.dilution[1])
+              run({
+                type: 'RAISE_EQUITY',
+                dilution: Math.max(CONTENT.finance.equity.dilution[0], d),
+              })
+          }
           run({ type: 'PROJECT_START', projectId: p.id })
         }
       }
@@ -749,9 +780,13 @@ function aiProjects(
               gpu: null,
               tenant: null,
             }).totalUsd
+            // With capital, size for the lender funding 60% (lenders.json's low end).
+            const ownShare = opts.capital
+              ? 1 - CONTENT.finance.projectDebt.ltv[0]
+              : 1
             const mw = Math.min(
               Math.floor(roomKw(site.id) / 1000),
-              Math.floor(budget / perMw),
+              Math.floor(budget / (perMw * ownShare)),
             )
             if (mw >= 1) {
               freeUp(site.id, mw * 1000)
@@ -922,6 +957,20 @@ export const BOTS: Record<string, Strategy> = {
     kind: 'shell',
     from: '2023Q3',
     freeUp: true,
+  }),
+  /** shell-climb with Act II capital: project debt where the tenant allows, equity to close gaps. */
+  'shell-capital': aiProjects(makeBot(RAISE_CLIMB), {
+    kind: 'shell',
+    from: '2023Q3',
+    freeUp: true,
+    capital: true,
+  }),
+  /** texas-shell with Act II capital (the great path's AI build-out). */
+  'texas-capital': aiProjects(makeBot(TEXAS_IPO), {
+    kind: 'shell',
+    from: '2023Q3',
+    freeUp: true,
+    capital: true,
   }),
   /**
    * Measurement, not a design-thread path: texas-ipo without the ASIC-only rule, upgrading any

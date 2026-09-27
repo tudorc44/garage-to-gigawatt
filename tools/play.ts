@@ -186,6 +186,18 @@ function showPlan(s: GameState) {
       },
     )
   })
+  // Act II: the credit rating and the debt secured on projects.
+  if (s.act === 2) {
+    say('play.rating_line', { rating: s.creditRating ?? '—' })
+    for (const f of s.facilities)
+      say('play.facility_line', {
+        debt: f.kind,
+        n: s.projects.find((p) => p.id === f.projectId)?.n ?? 0,
+        balanceUsd: f.balanceUsd,
+        aprPct: f.apr,
+        missed: f.missedQuarters,
+      })
+  }
   // Act II: projects, with their slots and (for a shell still looking) its tenant offers.
   if (s.act === 2) {
     const pv = projectsView(s)
@@ -512,6 +524,33 @@ function parse(
         ? { type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: o.id }
         : 'play.bad_number'
     }
+    // Act II capital: "debt 1 project", "debt 1 ddtl off", "backstop 1", "jv 1 50", "equity 10".
+    case 'debt': {
+      const p = item(s.projects, 0)
+      const debt =
+        rest[1] === 'ddtl'
+          ? 'ddtl'
+          : rest[1] === 'project'
+            ? 'project_debt'
+            : null
+      return p && debt
+        ? { type: 'PROJECT_DEBT', projectId: p.id, debt, on: rest[2] !== 'off' }
+        : 'play.bad_number'
+    }
+    case 'backstop': {
+      const p = item(s.projects, 0)
+      return p
+        ? { type: 'PROJECT_BACKSTOP', projectId: p.id }
+        : 'play.bad_number'
+    }
+    case 'jv': {
+      const p = item(s.projects, 0)
+      return p
+        ? { type: 'PROJECT_JV', projectId: p.id, share: num(1) / 100 }
+        : 'play.bad_number'
+    }
+    case 'equity':
+      return { type: 'RAISE_EQUITY', dilution: num(0) / 100 }
     case 'spot':
     case 'fund':
     case 'start':

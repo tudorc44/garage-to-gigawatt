@@ -1432,13 +1432,57 @@ A2-05 / A2-07. Sub-steps:
   first building quarter (debt, no EBITDA yet, strong backlog), and the Capital screen with no panel overflowing.
   Tests 509 pass (new `tests/sim/capitalViews.test.ts`). No golden change.
 - **M4.8** Bots with capital, sims (good and great path re-checked), terminal commands, milestone report.
+  **Done.** Terminal: `debt <project#> project|ddtl [off]`, `backstop <project#>`, `jv <project#> <50-80>`,
+  `equity <8-20>`; the Plan screen lists the credit rating and each facility. Bots: `aiProjects(…, {capital: true})`
+  sizes shells as if 60% is debt, switches project debt and the DDTL on, raises 8–20% equity if the build is still
+  short, and (relying on debt) signs only BBB-or-better tenants, dropping the project for new offers otherwise:
+  `shell-capital` (the good path) and `texas-capital` (the great path). Sims (50 seeds, medians):
+
+  | bot | Act II busts | value 2024Q1 | 2026Q4 | Act II peak | live AI MW 2026Q4 | backlog 2026Q4 |
+  |---|---|---|---|---|---|---|
+  | raise-climb | 14 | $12.8M | $4.0M | $15.8M | 0 | $0 |
+  | shell-climb | 22 | $18.0M | $38.6M | $75.6M | 1 | $18.7M |
+  | **shell-capital** | 22 | $37.6M | **$104.5M** | **$227M** | 4.5 | $97.5M |
+  | texas-ipo | 0 | $60.4M | $314M | $867M | 0 | $0 |
+  | texas-shell | 0 | $60.4M | $404M | $868M | 1 | $17.6M |
+  | **texas-capital** | 0 | $60.4M | **$373M** | **$874M** | 0 | $0 |
+
+  - **Good path ~$1–3B: not reached** (median $104.5M, peak $227M). The good path reaches Act II with ~$15M; a 20 MW
+    shell costs ~$135M, so even at 75% project debt it needs ~$34M of equity, and a raise priced at a ~$15–40M
+    valuation brings in $1–8M. It grows shell by shell (4–7 MW by 2026).
+  - **Great path $10B+ peak: not reached** (peak $874M). texas-ipo's MW are full of S19s / S21s (nothing to free, and
+    the bot won't retire working ASICs) and it holds little cash, so it builds almost no AI.
+  - texas-ipo's 2024Q1 value fell ($112M → $60M) because the equipment loan is now offered in Act II and that bot
+    borrows the maximum; its peak rose ($755M → $867M).
+  - Hosting 45/50 and the pilot (1.89× / 1.39×) as in M4.0d. Tests 511 pass. No golden change.
+
+### Milestone M4 report (27 Sep 2026) — DONE
+Commits: M4.0a `f079832`, M4.0b `7607273`, M4.0c `059b57d`, M4.0d `899b6fc`, M4.1 `9da696a`, M4.2 `d2d9ed5`,
+M4.3 `3e4ecdc`, M4.4 `57e7131`, M4.5 `7d1230f`, M4.6 `d8b877e`, M4.7 `d5e3f4f`, M4.8 (this commit).
+Open questions for the design thread:
+1. **Rating → corporate debt terms** (STOPPED): a spread and a max leverage per rating band.
+2. **Good and great path targets are far off** with the capital rules as built (see the M4.8 table): the good path
+   can't fund a 20 MW shell's equity; the great path's MW are full of working ASICs. Which lever: tenant capex credits
+   and prepayments on more cards, a higher project-debt LTV or equity priced off the projected (not last) value,
+   the lifeline / head starts (a later milestone), or lower targets?
+3. **The reservation on switched-off machines** (M4.0a) makes the good path fragile: raise-climb busts in 14/50,
+   shell-climb and shell-capital in 22/50 (was 1/50). Keep, soften (e.g. a lower share on switched-off MW), or
+   accept as "mining in 2023 was brutal"?
+4. **Hosting** 45/50 (recorded and left, per the owner) and the **2025Q2 pilot** 1.39× (target ≤ 1.3×: resale
+   lifts it): accept?
+5. My M4 choices to confirm (all "(mine, reversible)" above), in particular: a debt row takes the most the lender
+   allows (no amount slider); DSCR is only the sizing rule (no breach effect); a missed payment isn't forced but
+   adds its interest; the DDTL's tenor is the GPU contract's term; project debt 75% on A/AA, 60% on BBB; the JV
+   shares earnings but not debt service; a backstopped tenant doesn't walk; equity once a quarter.
 
 ## Next
 
-**Milestone M3 done (27 Sep 2026).** Projects (shell, cloud on spot, pilot), the build with delays and the GPU
-queue, take-or-pay, the sum-of-the-parts valuation, selling a shell, the Projects page and the Deal builder are in
-the game on branch `act2`. Next: the design thread's answers to the M3 questions above, then the next milestone
-(capital: project debt, DDTLs, equity; or whatever the design thread orders).
+**Milestone M4 done (27 Sep 2026).** On branch `act2`: the owner's M3 answers (GPU contracts, GPU resale, the
+reservation on switched-off machines, the pilot's 1-quarter wait, AI Heat at half, H200 rent) and Act II capital
+(project debt, GPU-backed DDTLs, the equipment loan on GPUs, the credit rating, equity / ATM, the JV partner, the
+big-tech backstop, foreclosure), the Capital screen and the Deal builder's capital stack. Next: the design
+thread's answers to the M4 questions above (the rating's corporate-debt terms, the good / great path gap, the
+switched-off reservation), then the next milestone.
 
 Act II market data fixed (27 Sep 2026): corrected copies of the Act II market files are in `docs/act2-content/`
 (`market_weekly.csv`, `market_quarterly.csv`; the originals in `docs/game-project-files/` are untouched). Hashprice is now

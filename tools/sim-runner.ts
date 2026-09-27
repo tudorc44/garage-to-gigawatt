@@ -655,6 +655,8 @@ if (args.includes('--act2')) {
     'texas-ipo',
     'shell-climb',
     'texas-shell',
+    'shell-capital',
+    'texas-capital',
   ]
   const t0 = performance.now()
   const byBot = ACT2_BOTS.map((name) => ({
