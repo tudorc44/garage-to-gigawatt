@@ -1,6 +1,6 @@
 {
  "schema_version": 1,
- "note": "The game's Act II deck (scope 0.2 §2.12; doc 18 §11): docs/act2-content/events_act2.json's 24 cards in events.json's game format (structured effects, texts in src/i18n/en.json › event.<id>.*). Played elsewhere: ec03 (the lifeline, on the Act II intro) and ec05 (the GPU allocation alert, since M3). ec21 (the moratorium) waits for Ratepayer Anger (STOPPED in dev-notes). Where the pack's effect had no number or no duration, the value here is Claude Code's (dev-notes › M5.8). market_effects are the scripted timeline's effects that apply whatever the choice.",
+ "note": "The game's Act II deck (scope 0.2 §2.12; doc 18 §11): docs/act2-content/events_act2.json's 24 cards in events.json's game format (structured effects, texts in src/i18n/en.json › event.<id>.*). Played elsewhere: ec03 (the lifeline, on the Act II intro) and ec05 (the GPU allocation alert, since M3). ec21 (the moratorium) comes once a region where you have a site reaches Ratepayer Anger 50, from 2026Q2 (M6.0g); its lobbying choice shortens the moratorium to 2 quarters (mine). Where the pack's effect had no number or no duration, the value here is Claude Code's (dev-notes › M5.8). market_effects are the scripted timeline's effects that apply whatever the choice.",
  "engine": {
   "random_chance_per_quarter": 0.35,
   "random_start": "2022Q4",
@@ -100,6 +100,11 @@
    "choices": [
     {"id": "slow", "effects": {"all_sites_grievance": -15, "delay_building_projects": 1}},
     {"id": "push", "effects": {"all_sites_grievance": 10}}
+   ]},
+  {"id": "ec21_moratorium_hits", "type": "random", "trigger": "anger_high", "weight": 1, "bypass_random_roll": true, "window": ["2026Q2", "2026Q4"], "site": "anger_site", "default": "wait",
+   "choices": [
+    {"id": "wait", "effects": {"region_moratorium": 4}},
+    {"id": "lobby", "effects": {"bandwidth_next": -2, "region_moratorium": 2}}
    ]},
   {"id": "ec22_ddtl_widening", "type": "scripted", "quarter": "2026Q3", "week_of": "2026-08-03", "default": "lock",
    "choices": [

@@ -39,6 +39,7 @@ import {
   tenantWalks,
 } from './projects.ts'
 import { capacityKw, isReady, regionOf, tierIndex, usedKw } from './sites.ts'
+import { moratoriumRegion } from './anger.ts'
 import { sellTreasury } from './treasury.ts'
 
 const W = BALANCE.weeksPerQuarter
@@ -163,6 +164,8 @@ const CONDITIONS: Record<string, (s: GameState, card?: EventCard) => boolean> =
     site_pjm: (s) => sitesIn(s, ['pjm']).length > 0,
     site_pjm_ohio_georgia: (s) =>
       sitesIn(s, ['pjm', 'ohio', 'georgia']).length > 0,
+    site_pjm_ohio: (s) => sitesIn(s, ['pjm', 'ohio']).length > 0,
+    anger_high: (s) => moratoriumRegion(s) !== undefined,
     backstop_eligible: (s) => backstopProject(s) !== undefined,
     jv_eligible: (s) => jvProject(s) !== undefined,
     big_cluster: (s) =>
@@ -211,6 +214,10 @@ const SITES: Record<string, (s: GameState) => Site | undefined> = {
   theft_site: theftSite,
   rate_class_site: rateClassSite,
   pjm_site: (s) => sitesIn(s, ['pjm'])[0],
+  anger_site: (s) => {
+    const region = moratoriumRegion(s)
+    return region ? sitesIn(s, [region])[0] : undefined
+  },
 }
 
 function holds(state: GameState, cond: string | undefined, card?: EventCard) {
@@ -735,6 +742,16 @@ export function resolveEvent(
           projectedReturn(state, p).irr ?? -Infinity
         const marginal = [...building].sort((a, b) => irr(a) - irr(b))[0]
         if (marginal) slipProject(state, marginal, Number(value))
+        break
+      }
+      case 'region_moratorium': {
+        // ec21: no new projects at your sites in the card's region, from now for that many quarters.
+        const region = site ? regionOf(site) : undefined
+        if (region)
+          ev.regionMoratorium = {
+            region,
+            until: state.quarter + Number(value) - 1,
+          }
         break
       }
       case 'delay_building_projects':

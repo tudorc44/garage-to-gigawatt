@@ -29,16 +29,13 @@ const choose = (s: GameState, choice: string) =>
   ok(s, { type: 'RESOLVE_INTERRUPT', choice })
 
 describe('the deck', () => {
-  it('21 cards: 16 scripted, 5 random (ec03 and ec05 are played by the lifeline and the GPU alert; ec21 waits for Anger)', () => {
+  it('22 cards: 16 scripted, 6 random (ec03 and ec05 are played by the lifeline and the GPU alert)', () => {
     const cards = act2Cards()
     expect(cards.filter((c) => c.type === 'scripted')).toHaveLength(16)
-    expect(cards.filter((c) => c.type === 'random')).toHaveLength(5)
-    for (const id of [
-      'ec03_lifeline_auction',
-      'ec05_gpu_allocation_queue',
-      'ec21_moratorium_hits',
-    ])
+    expect(cards.filter((c) => c.type === 'random')).toHaveLength(6)
+    for (const id of ['ec03_lifeline_auction', 'ec05_gpu_allocation_queue'])
       expect(CONTENT.events.byId[id]).toBeUndefined()
+    expect(CONTENT.events.byId['ec21_moratorium_hits']).toBeDefined()
   })
 
   it('every card has a title, a body, a news body where it needs one, and every choice a label and hint', () => {

@@ -319,6 +319,16 @@ function RegionPanel({ state }: { state: GameState }) {
             <td class="num r">×{r.heatMult}</td>
           </tr>
           <tr>
+            <td>{t('ui.regions.anger_level')}</td>
+            <td class={`num r${r.anger >= r.angerMoratoriumAt ? ' loss' : ''}`}>
+              {t('ui.regions.anger_value', {
+                anger: r.anger,
+                heat: r.angerHeat,
+                at: r.angerMoratoriumAt,
+              })}
+            </td>
+          </tr>
+          <tr>
             <td>{t('ui.regions.anger')}</td>
             <td class="num r">×{r.angerMult}</td>
           </tr>
@@ -338,6 +348,11 @@ function RegionPanel({ state }: { state: GameState }) {
       {r.gridUpgradesHalted && (
         <p class="num-s loss" style={{ margin: 0 }}>
           {t('ui.regions.halted')}
+        </p>
+      )}
+      {r.moratorium && (
+        <p class="num-s loss" style={{ margin: 0 }}>
+          {t('ui.regions.moratorium')}
         </p>
       )}
       <div class="label">{t('ui.regions.policies')}</div>

@@ -1,0 +1,69 @@
+// Ratepayer Anger (Act II, scope 0.2 §2.2 / §2.6; owner, 28 Sep 2026, M5 answer 6): each region's
+// anger at data centers, 0–100. It grows with the megawatts you run there (× the region's anger
+// modifier from regions.json) plus policy bumps (the PJM capacity shock in Virginia and Ohio from
+// 2024Q4; the national backlash from 2026Q1). It adds Heat at your sites in that region, and at 50
+// the state's moratorium card (ec21) can come. It's regional: local Heat actions don't lower it.
+import {
+  BALANCE,
+  POWER_REGIONS,
+  act2Quarter,
+  type PowerRegion,
+} from '../../content/index.ts'
+import type { GameState } from '../state.ts'
+import { getRegion } from './regions.ts'
+import { poweredKw, regionOf } from './sites.ts'
+
+const A = BALANCE.act2Regions.anger
+
+/** A region's Ratepayer Anger in `quarter` (0 in Act I and without a region). */
+export function regionAnger(
+  state: GameState,
+  region: PowerRegion | undefined,
+  quarter = state.quarter,
+): number {
+  if (!region || !act2Quarter(quarter)) return 0
+  const kw = state.sites
+    .filter((s) => regionOf(s) === region)
+    .reduce((sum, s) => sum + poweredKw(s, quarter), 0)
+  const label = act2Quarter(quarter)!.quarter
+  const bumps = A.bumps
+    .filter(
+      (b) =>
+        label >= b.from && (b.regions === null || b.regions.includes(region)),
+    )
+    .reduce((sum, b) => sum + b.add, 0)
+  const fromMw = Math.floor(
+    (kw / 1000 / A.mwPerPoint) * getRegion(region).anger_modifier,
+  )
+  return Math.min(A.max, fromMw + bumps)
+}
+
+/** Heat Anger adds at a site in that region: floor(Anger ÷ 5). */
+export function angerHeat(
+  state: GameState,
+  region: PowerRegion | undefined,
+): number {
+  return Math.floor(regionAnger(state, region) / A.heatDivisor)
+}
+
+/** The angriest region where you have a site, if its Anger is at the moratorium level (ec21). */
+export function moratoriumRegion(state: GameState): PowerRegion | undefined {
+  const mine = POWER_REGIONS.filter((r) =>
+    state.sites.some((s) => regionOf(s) === r),
+  )
+  const angriest = [...mine].sort(
+    (a, b) => regionAnger(state, b) - regionAnger(state, a),
+  )[0]
+  return angriest && regionAnger(state, angriest) >= A.moratoriumAt
+    ? angriest
+    : undefined
+}
+
+/** Whether new projects are blocked at sites in this region now (ec21's moratorium). */
+export function regionMoratoriumOn(
+  state: GameState,
+  region: PowerRegion | undefined,
+): boolean {
+  const m = state.events.regionMoratorium
+  return !!m && !!region && m.region === region && state.quarter <= m.until
+}

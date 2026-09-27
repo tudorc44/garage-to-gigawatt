@@ -12,6 +12,12 @@ import {
   nationalHeatDelta,
 } from '../../src/sim/systems/regions.ts'
 import { powerPriceUsdKwh } from '../../src/sim/systems/sites.ts'
+import {
+  moratoriumRegion,
+  regionAnger,
+  regionMoratoriumOn,
+} from '../../src/sim/systems/anger.ts'
+import { openBlocker } from '../../src/sim/systems/projects.ts'
 import { act2Company } from './act2Helpers.ts'
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
@@ -87,14 +93,21 @@ describe('Heat in Act II: scaled by the region, plus national policies', () => {
   const parts = (s: GameState, site: Site) =>
     baseHeat(s, site) + eraHeat(s, site)
 
-  it('an ERCOT site’s Heat is 0.9 × its parts; from 2026Q1 +10 on top', () => {
+  it('an ERCOT site’s Heat is 0.9 × its parts (+ Anger ÷ 5); from 2026Q1 +10 on top', () => {
     const s = act2Company('2025Q4')
     const site = siteIn('ercot', s)
     recalcHeat(s, site)
-    expect(s.siteHeat[site.id].value).toBeCloseTo(parts(s, site) * 0.9, 9)
+    const anger = () => Math.floor(regionAnger(s, 'ercot') / 5)
+    expect(s.siteHeat[site.id].value).toBeCloseTo(
+      parts(s, site) * 0.9 + anger(),
+      9,
+    )
     s.quarter = q('2026Q1')
     recalcHeat(s, site)
-    expect(s.siteHeat[site.id].value).toBeCloseTo(parts(s, site) * 0.9 + 10, 9)
+    expect(s.siteHeat[site.id].value).toBeCloseTo(
+      parts(s, site) * 0.9 + 10 + anger(),
+      9,
+    )
   })
 
   it('unchanged in Act I', () => {
@@ -106,6 +119,59 @@ describe('Heat in Act II: scaled by the region, plus national policies', () => {
     const site = siteIn('ercot', s)
     recalcHeat(s, site)
     expect(s.siteHeat[site.id].value).toBeCloseTo(parts(s, site), 9)
+  })
+})
+
+describe('Ratepayer Anger (owner, 28 Sep 2026)', () => {
+  /** A company with `mw` MW energized in `region` (one owned site of that size). */
+  function withMw(region: string, mw: number, label: string): GameState {
+    const s = act2Company(label)
+    s.sites = s.sites.filter((x) => x.tier === 'garage')
+    const site = siteIn(region, s)
+    site.kw = mw * 1000
+    return s
+  }
+
+  it('floor(MW ÷ 10 × the anger modifier), plus PJM/Ohio +20 from 2024Q4 and +10 everywhere from 2026Q1, at most 100', () => {
+    expect(regionAnger(withMw('ercot', 95, '2024Q2'), 'ercot')).toBe(9)
+    expect(regionAnger(withMw('pjm', 100, '2024Q2'), 'pjm')).toBe(14) // ×1.4
+    expect(regionAnger(withMw('pjm', 100, '2024Q4'), 'pjm')).toBe(34)
+    expect(regionAnger(withMw('ohio', 100, '2026Q1'), 'ohio')).toBe(
+      Math.floor(10 * CONTENT.regions.ohio.anger_modifier) + 30,
+    )
+    expect(regionAnger(withMw('nordics', 100, '2026Q1'), 'nordics')).toBe(16)
+    expect(regionAnger(withMw('ercot', 5000, '2026Q1'), 'ercot')).toBe(100)
+    // A region without your sites still carries its policy bumps; Act I has none.
+    expect(regionAnger(withMw('ercot', 100, '2025Q1'), 'pjm')).toBe(20)
+    expect(
+      regionAnger(
+        { ...withMw('pjm', 100, '2024Q4'), act: 1, quarter: q('2021Q1') },
+        'pjm',
+      ),
+    ).toBe(0)
+  })
+
+  it('adds floor(Anger ÷ 5) Heat at your sites there', () => {
+    const s = withMw('pjm', 100, '2024Q4') // Anger 34 → +6
+    const site = s.sites.at(-1)!
+    recalcHeat(s, site)
+    expect(s.siteHeat[site.id].value).toBeCloseTo(
+      (baseHeat(s, site) + eraHeat(s, site)) * 1.3 + 6,
+      9,
+    )
+  })
+
+  it('at 50, card ec21 can come (from 2026Q2); its moratorium blocks new projects in that region', () => {
+    const s = withMw('pjm', 200, '2026Q2') // 28 + 20 + 10 = 58
+    expect(moratoriumRegion(s)).toBe('pjm')
+    expect(moratoriumRegion(withMw('ercot', 100, '2026Q2'))).toBeUndefined()
+    s.events.regionMoratorium = { region: 'pjm', until: s.quarter + 3 }
+    expect(regionMoratoriumOn(s, 'pjm')).toBe(true)
+    expect(
+      openBlocker(s, { siteId: 'site-pjm', kw: 5000, kind: 'shell' })?.key,
+    ).toBe('error.region_moratorium')
+    s.quarter += 4
+    expect(regionMoratoriumOn(s, 'pjm')).toBe(false)
   })
 })
 

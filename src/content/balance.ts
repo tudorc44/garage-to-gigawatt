@@ -84,6 +84,25 @@ export const BALANCE = {
       texas_site: 'ercot',
     } as Readonly<Record<string, string>>,
     premiumTiers: ['small_unit', 'warehouse'] as readonly string[],
+    /**
+     * Ratepayer Anger per region (owner, 28 Sep 2026; M5 answer 6): floor(your energized MW there ÷
+     * `mwPerPoint` × the region's anger modifier) + policy bumps, capped at `max`. It adds
+     * floor(Anger ÷ `heatDivisor`) Heat at your sites there; card ec21 fires at `moratoriumAt`.
+     */
+    anger: {
+      mwPerPoint: 10,
+      max: 100,
+      heatDivisor: 5,
+      moratoriumAt: 50,
+      bumps: [
+        { regions: ['pjm', 'ohio'], from: '2024Q4', add: 20 },
+        { regions: null, from: '2026Q1', add: 10 },
+      ] as readonly {
+        regions: readonly string[] | null
+        from: string
+        add: number
+      }[],
+    },
   },
 
   /**

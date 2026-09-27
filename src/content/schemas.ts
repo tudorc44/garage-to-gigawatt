@@ -1069,6 +1069,8 @@ export const EVENT_EFFECTS = [
   'ai_lab_revenue_mult',
   'ai_lab_walk_chance',
   'extra_tenant_offers',
+  // M6.0g: ec21's moratorium in the card's region
+  'region_moratorium',
 ] as const
 /** Named conditions (events.ts): a card's requires/trigger, a choice's requires, the card's site. */
 export const EVENT_CONDITIONS = [
@@ -1101,6 +1103,9 @@ export const EVENT_CONDITIONS = [
   'gpu_cluster',
   'mining',
   'always',
+  // M6.0g–h
+  'anger_high',
+  'site_pjm_ohio',
 ] as const
 export const EVENT_SITES = [
   'most_machines',
@@ -1109,6 +1114,7 @@ export const EVENT_SITES = [
   'theft_site',
   'rate_class_site',
   'pjm_site',
+  'anger_site',
 ] as const
 
 const eventChoiceSchema = z.object({

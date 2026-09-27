@@ -17,6 +17,7 @@ import { getModel } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { gasHeat } from './power.ts'
 import { nationalHeatDelta, regionHeatMult } from './regions.ts'
+import { angerHeat } from './anger.ts'
 import { capacityKw, flawEffect, getTier, regionOf } from './sites.ts'
 
 export interface SiteHeat {
@@ -124,9 +125,11 @@ export function recalcHeat(state: GameState, site: Site): void {
     h.grievance +
     eraHeat(state, site) +
     gasHeat(site, state.quarter)
+  // Ratepayer Anger adds floor(Anger ÷ 5) at every site in its region (owner, 28 Sep 2026).
   const total =
     parts * regionHeatMult(regionOf(site), state.quarter) +
-    nationalHeatDelta(state.quarter)
+    nationalHeatDelta(state.quarter) +
+    angerHeat(state, regionOf(site))
   h.value = Math.min(100, Math.max(0, total))
 }
 

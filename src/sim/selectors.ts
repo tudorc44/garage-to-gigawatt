@@ -75,6 +75,7 @@ import {
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import { lifelineTerms } from './systems/lifeline.ts'
+import { angerHeat, regionAnger, regionMoratoriumOn } from './systems/anger.ts'
 import {
   fleetBlocker,
   fleetOffer,
@@ -1004,7 +1005,7 @@ export function fleetOfferView(state: GameState) {
  * The region panel (Act II, wireframe A2-06; scope 0.2 §2.6): for each of the six regions, its power
  * price now and a year on (with any policy charge), grid queue, Heat and anger modifiers, its policy
  * events (in force or still to come), whether grid upgrades are halted, and your sites there. Then
- * the national policies. (The Ratepayer Anger meter itself is STOPPED: no numbers in the content.)
+ * the national policies. Ratepayer Anger (0–100) with the Heat it adds there and any moratorium.
  */
 export function regionsView(state: GameState) {
   const q = state.quarter
@@ -1030,6 +1031,10 @@ export function regionsView(state: GameState) {
       queueMonths: r.queue_months,
       heatMult: r.heat_modifier,
       angerMult: r.anger_modifier,
+      anger: regionAnger(state, id),
+      angerHeat: angerHeat(state, id),
+      angerMoratoriumAt: BALANCE.act2Regions.anger.moratoriumAt,
+      moratorium: regionMoratoriumOn(state, id),
       policies: r.policies.map(policy),
       gridUpgradesHalted: gridUpgradesHalted(id, q),
       extraQueueQuarters: extraQueueQuarters(id, q),

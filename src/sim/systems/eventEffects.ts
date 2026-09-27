@@ -79,6 +79,8 @@ export interface EventState {
   runHotQuarter: number | null
   /** Moratorium lifted at a site until (and including) this quarter index. */
   moratoriumWaiver: Record<string, number>
+  /** Act II card ec21: no new projects at your sites in this region until (and including) a quarter. */
+  regionMoratorium?: { region: string; until: number } | null
 }
 
 export function emptyEventState(): EventState {

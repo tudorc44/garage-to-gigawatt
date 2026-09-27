@@ -40,6 +40,7 @@ import {
   powerCostUsd,
 } from './power.ts'
 import { isHired } from './hires.ts'
+import { regionMoratoriumOn } from './anger.ts'
 import { convertibleKw } from './hosting.ts'
 import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
 
@@ -355,6 +356,8 @@ export function openBlocker(
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.project_garage' }
   if (!Number.isFinite(a.kw) || a.kw <= 0) return { key: 'error.bad_kw' }
+  if (regionMoratoriumOn(state, regionOf(site)))
+    return { key: 'error.region_moratorium' }
   const label = CONTENT.quarters[state.quarter]
   if (a.kind === 'pilot') {
     const pilot = P().pilot
@@ -644,6 +647,9 @@ export function buildBlocker(
   const p = getProject(state, projectId)
   if (!p) return { key: 'error.unknown_project' }
   if (p.stage !== 'proposed') return { key: 'error.project_started' }
+  const site = state.sites.find((s) => s.id === p.siteId)
+  if (site && regionMoratoriumOn(state, regionOf(site)))
+    return { key: 'error.region_moratorium' }
   const missing = missingSlots(p)
   if (missing.length > 0)
     return {
