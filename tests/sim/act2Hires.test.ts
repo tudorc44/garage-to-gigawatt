@@ -58,9 +58,9 @@ describe('the new hires', () => {
       type: 'HIRE',
       hire: 'head_of_development',
     })
-    expect(bandwidthForQuarter(s)).toBe(3)
+    expect(bandwidthForQuarter(s)).toBe(4)
     s = playQuarter(s)
-    expect(s.bandwidth).toBe(4)
+    expect(s.bandwidth).toBe(5)
   })
 
   it('the Capital Markets Lead cuts 0.75 point off new equipment loans and DDTLs', () => {
@@ -90,19 +90,21 @@ describe('the new hires', () => {
 })
 
 describe('Act II Bandwidth', () => {
-  it('base 3; +1 at 50 MW energized, +1 more at 200 MW; the own site’s Act I bonus is gone', () => {
+  it('base 4 (owner, 28 Sep 2026); +1 at 50 MW energized, +1 more at 200 MW; the own site’s Act I bonus is gone', () => {
     const s = act2Company('2024Q2') // a 20 MW own site
-    expect(bandwidthForQuarter(s)).toBe(3)
-    expect(bandwidthForQuarter(withSite(act2Company('2024Q2'), 30_000))).toBe(4)
+    expect(bandwidthForQuarter(s)).toBe(4)
+    expect(bandwidthForQuarter(withSite(act2Company('2024Q2'), 30_000))).toBe(5)
     expect(bandwidthForQuarter(withSite(act2Company('2024Q2'), 180_000))).toBe(
-      5,
+      6,
     )
   })
 
-  it('+1 each from the Chief of Staff and the Head of Development, at most 8', () => {
+  it('+1 each from the Chief of Staff (an Act I hire carries over) and the Head of Development, at most 8', () => {
     const s = withSite(act2Company('2024Q2'), 500_000)
     s.staff = { chief_of_staff: 0, head_of_development: 0 }
-    expect(bandwidthForQuarter(s)).toBe(7)
+    expect(bandwidthForQuarter(s)).toBe(8)
     expect(bandwidthForQuarter({ ...s, act: 1, quarter: q('2021Q1') })).toBe(6)
+    s.staff = { chief_of_staff: 0 }
+    expect(bandwidthForQuarter(s)).toBe(7)
   })
 })

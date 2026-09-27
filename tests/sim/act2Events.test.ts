@@ -172,6 +172,6 @@ describe('card effects', () => {
       Math.min(before, 3),
     )
     expect(s.projects[0].offers[0].id).toContain(`-${s.quarter}-`)
-    expect(s.bandwidth).toBe(3 - 2)
+    expect(s.bandwidth).toBe(4 - 2)
   })
 })

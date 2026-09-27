@@ -241,7 +241,8 @@ export const BALANCE = {
    * the Chief of Staff and the Head of Development; at most 8. (It replaces Act I's +1 for the own site.)
    */
   act2Bandwidth: {
-    base: 3,
+    /** Owner, 28 Sep 2026: 4 (was 3). An Act I Chief of Staff carries over (+1); no other Act I bonus. */
+    base: 4,
     mwSteps: [50_000, 200_000] as readonly number[],
     max: 8,
   },

@@ -202,3 +202,4 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
 - M6.0d: lifeline floor = under 20 MW **and** under $5M. Bot bugs fixed (tools/bots.ts › aiProjects): the lifeline bot never paid its
   bridge bullet (now raises equity and repays it from the quarter before); the preset bot filled its free MW with S19s and never built
   (AI bots buy no machines in Act II); sizing reserves the equipment loan's payments too (the preset's shells were foreclosed).
+- M6.0e: Act II Bandwidth base 4 (balance.ts › act2Bandwidth); the Chief of Staff already carried (staff persist), nothing else does.

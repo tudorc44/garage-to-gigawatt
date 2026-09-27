@@ -6,8 +6,8 @@ import { isReady, poweredKw } from './sites.ts'
 
 /**
  * Bandwidth for the quarter. Act I: 3, +1 once the 20 MW own site is energized, +1 Chief of Staff,
- * capped at 6. Act II (scope 0.2 §2.2): 3, +1 at 50 MW energized and +1 more at 200 MW, +1 each from
- * the Chief of Staff and the Head of Development, capped at 8.
+ * capped at 6. Act II (scope 0.2 §2.2): 4, +1 at 50 MW energized and +1 more at 200 MW, +1 each from
+ * the Chief of Staff (one hired in Act I carries over) and the Head of Development, capped at 8.
  */
 export function bandwidthForQuarter(state: GameState): number {
   if (state.act === 2) {
