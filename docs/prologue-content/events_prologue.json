@@ -1,0 +1,398 @@
+{
+ "schema_version": 1,
+ "notes": "Follows Act I's events.json effect_vocabulary and card shape (id, type, trigger, week, weight, body, choices/effects, real_basis, source). 'household_patience' and 'wallet_backup' are new prologue-only effect keys; everything else reuses Act I's vocabulary. Real names only for sourced factual events (Mt Gox, Silk Road, halvings, The DAO); invented names for the player's own counterparties.",
+ "decision_quarters": [
+  { "quarter": "2009Q1", "focus": "Start: genesis block, your PC, no price yet." },
+  { "quarter": "2009Q4", "focus": "First exchange rate (New Liberty Standard, 5 Oct 2009) — still no real market." },
+  { "quarter": "2010Q2", "focus": "Pizza Day (22 May 2010) as news; your own first 'sell for almost nothing' offers." },
+  { "quarter": "2010Q3", "focus": "Mt Gox opens (18 Jul 2010); GPU mining becomes viable." },
+  { "quarter": "2011Q2", "focus": "June 2011 bubble (~$31, 8 Jun) and the Mt Gox hack (19 Jun)." },
+  { "quarter": "2011Q4", "focus": "Post-bubble bottom (~$2, Nov 2011); FPGAs available." },
+  { "quarter": "2012Q4", "focus": "First halving (28 Nov 2012, 50→25 BTC)." },
+  { "quarter": "2013Q1", "focus": "First ASIC pre-orders open (two invented vendors, incl. a group-buy option)." },
+  { "quarter": "2013Q4", "focus": "December 2013 peak (~$1,150, Mt Gox) and Silk Road seizure (2 Oct 2013)." },
+  { "quarter": "2014Q1", "focus": "Mt Gox collapse (Feb 2014)." },
+  { "quarter": "2015Q3", "focus": "Ethereum launches (30 Jul 2015); GPU-ETH rigs available." },
+  { "quarter": "2016Q3", "focus": "Second halving (9 Jul 2016, 25→12.5 BTC); Antminer S9 available; Bitfinex hack (2 Aug 2016) as a possible random event." },
+  { "quarter": "2016Q4", "focus": "Handover to Act I (2017Q1)." },
+  { "note": "REVISION 1: 2013Q2 (Cyprus) dropped as a decision quarter per owner review — 13 decision quarters remain (was 14). Cyprus is now a 'random' event card (id cyprus_rally) that can pause an otherwise auto-played 2013Q2, the same pattern Act I uses for uri_2021/spac_mania_2021 (a scripted real event with a chance to fire, rather than a guaranteed full Plan-phase stop). This also helps the run-length balance anchor (doc 23 §9; see report's Balance-anchor check). doc 23 §2's other proposed touchpoints (2013Q1/2013Q4) are kept as full decision quarters. No dates in doc 23's list were found to be wrong — all confirmed within a few days by research (see report §E)." }
+ ],
+ "events": [
+  {
+   "id": "genesis_block",
+   "type": "scripted",
+   "title": "Chancellor on Brink of Second Bailout",
+   "trigger": "fixed:2009Q1",
+   "week": "2009-01-05",
+   "weight": null,
+   "body": "A new program starts on your PC. Block zero carries a headline clipped from that morning's Times: banks, again, need saving. Nobody is paying you anything for this. There is nothing to sell it for yet.",
+   "choices": [
+    { "label": "Let it run", "effects": {} },
+    { "label": "Read the whitepaper properly first", "effects": { "flag": "read_whitepaper" } }
+   ],
+   "real_basis": "Genesis block mined 3 Jan 2009; embedded coinbase text: 'The Times 03/Jan/2009 Chancellor on brink of second bailout for banks'",
+   "source": "Bitcoin Wiki 'Genesis block'"
+  },
+  {
+   "id": "first_exchange_rate",
+   "type": "scripted",
+   "title": "A Price, of Sorts",
+   "trigger": "fixed:2009Q4",
+   "week": "2009-10-05",
+   "weight": null,
+   "body": "A forum post proposes a rate: 1,309.03 coins to the dollar, worked out from the electricity it costs to mine one. It's not a market — nobody's actually trading at that number — but for the first time, there's a number.",
+   "choices": [
+    { "label": "Note the number and keep mining", "effects": {} },
+    { "label": "Message the poster to try a trade", "effects": { "flag": "nls_contact" } }
+   ],
+   "real_basis": "New Liberty Standard's first published exchange rate, 5 Oct 2009: $1 = 1,309.03 BTC, derived from electricity cost",
+   "source": "BullionStar, 'The Very Early Bitcoin Exchanges of 2009 to 2011'"
+  },
+  {
+   "id": "pizza_day",
+   "type": "scripted",
+   "title": "Two Pizzas",
+   "trigger": "fixed:2010Q2",
+   "week": "2010-05-24",
+   "weight": null,
+   "body": "Someone on the forum paid ten thousand coins for two pizzas. People are calling it the first real-world trade. You have your own offer sitting in your inbox, for a lot less than that per coin.",
+   "choices": [
+    { "label": "Take your own offer (see 'sell for almost nothing' cards)", "effects": { "flag": "open_offers_tray" } },
+    { "label": "Hold", "effects": {} }
+   ],
+   "real_basis": "22 May 2010: Laszlo Hanyecz posted an offer for 10,000 BTC; forum user 'jercos' had two Papa John's pizzas delivered to him in return, worth roughly $25-41",
+   "source": "Bitcoin Wiki 'Laszlo Hanyecz'"
+  },
+  {
+   "id": "mtgox_opens",
+   "type": "scripted",
+   "title": "A Real Exchange",
+   "trigger": "fixed:2010Q3",
+   "week": "2010-07-19",
+   "weight": null,
+   "body": "A Japanese site that used to trade Magic: The Gathering cards has pivoted to bitcoin. It has an order book, real volume, and a price that moves by the hour. Cards are also newly worth mining with — a decent GPU is many times faster than your CPU.",
+   "choices": [
+    { "label": "Move some coins to the exchange", "effects": { "flag": "exchange_custody_opened" } },
+    { "label": "Keep everything in your own wallet for now", "effects": {} },
+    { "label": "Buy a gaming GPU (if you can afford one)", "effects": { "flag": "open_buy_menu:gpu_gaming_2010" } }
+   ],
+   "real_basis": "Mt Gox launched as a bitcoin exchange 18 Jul 2010",
+   "source": "Wikipedia 'Mt. Gox'"
+  },
+  {
+   "id": "value_overflow_bug",
+   "type": "random",
+   "title": "184.467 Billion Coins",
+   "trigger": "random:quarter==2010Q3",
+   "week": "2010-08-15",
+   "weight": 1.0,
+   "body": "A bug let someone create 184 billion coins out of nothing in one transaction. The network patches itself within hours; a stricter chain overtakes the bad one the next day. Nothing you own is affected — it's just a reminder this is still very new software.",
+   "choices": [
+    { "label": "Update your client immediately", "effects": {} },
+    { "label": "Shrug and keep mining", "effects": {} }
+   ],
+   "real_basis": "The 'value overflow incident', block 74,638, 15 Aug 2010: a signed-integer overflow created ~184.467B BTC in one transaction; a corrected chain (new consensus rules, commonly called a fork) overtook it at block 74,691 the next day",
+   "source": "Bitcoin Wiki 'Value overflow incident'"
+  },
+  {
+   "id": "bubble_and_hack_2011",
+   "type": "scripted",
+   "title": "Thirty-One Dollars, Then One Cent",
+   "trigger": "fixed:2011Q2",
+   "week": "2011-06-13",
+   "weight": null,
+   "body": "The price touched $31 last week. Today, a compromised trading account crashed the displayed price toward a single cent before the exchange rolled the trades back. Everyone on the forum is arguing about whether their coins are actually safe anywhere.",
+   "choices": [
+    { "label": "Sell a chunk of what's on the exchange while it still trades", "effects": { "sell_treasury_pct": 0.4 } },
+    { "label": "Move everything into your own wallet", "effects": { "flag": "exchange_custody_closed" } },
+    { "label": "Do nothing", "effects": {} }
+   ],
+   "real_basis": "Price peak ~$31 (commonly cited 8 Jun 2011, precision moderate); the Mt Gox hack, 19 Jun 2011: a compromised auditor/trading account crashed the displayed price to $0.01 before trades were rolled back and 424,242 BTC moved from cold storage to prove solvency",
+   "source": "Wikipedia 'Mt. Gox'; BitMEX Research, 'The June 2011 Bitcoin Flash Crash' (recommended for deeper detail)"
+  },
+  {
+   "id": "crash_bottom_2011",
+   "type": "scripted",
+   "title": "Two Dollars",
+   "trigger": "fixed:2011Q4",
+   "week": "2011-11-07",
+   "weight": null,
+   "body": "The price that touched $31 in June is now about $2. Half the forum has stopped posting. A new kind of board just started shipping — an FPGA, purpose-leaning hardware that mines for a fraction of a GPU's power draw, if you can flash the bitstream yourself.",
+   "choices": [
+    { "label": "Buy an FPGA board", "effects": { "flag": "open_buy_menu:fpga_board" } },
+    { "label": "Keep mining on GPUs", "effects": {} },
+    { "label": "Take a break from buying anything", "effects": {} }
+   ],
+   "real_basis": "Nov 2011 price bottom ~$2, tied to the post-hack collapse; FPGA boards (e.g. ZTEX 1.15x) were on sale to hobbyist miners through 2011-12",
+   "source": "DaveManuel.com bitcoin price history; Bitcoin Wiki 'ZTEX FPGA Boards for Bitcoin Mining'"
+  },
+  {
+   "id": "first_halving",
+   "type": "scripted",
+   "title": "Twenty-Five, Not Fifty",
+   "trigger": "fixed:2012Q4",
+   "week": "2012-11-26",
+   "weight": null,
+   "body": "Block 210,000. The reward that's paid every block was cut in half overnight, exactly as the code always said it would be. Anyone still mining with a GPU alone is starting to lose the arithmetic.",
+   "choices": [
+    { "label": "Look into pre-ordering an ASIC", "effects": { "flag": "open_preorder_menu" } },
+    { "label": "Keep the GPU/FPGA fleet running", "effects": {} }
+   ],
+   "real_basis": "First halving, block 210,000, 28 Nov 2012, subsidy 50→25 BTC; price at the time ~$12",
+   "source": "LookIntoBitcoin, 'Complete List of Bitcoin Halving Dates'"
+  },
+  {
+   "id": "asic_preorders_open",
+   "type": "scripted",
+   "title": "Pay Now, Mine Later",
+   "trigger": "fixed:2013Q1",
+   "week": "2013-01-14",
+   "weight": null,
+   "body": "Two small companies are taking deposits for purpose-built mining chips, promised to ship 'next quarter'. One shipped its first batch almost on time. Most of these startups do not. A forum thread is also organizing a group buy — chip in for half a unit, split the hashrate with someone you've never met, for half the risk.",
+   "choices": [
+    { "label": "Pre-order from Summit Silicon", "effects": { "flag": "preorder:preorder_summit_silicon" } },
+    { "label": "Pre-order from Northgate ASICs", "effects": { "flag": "preorder:preorder_northgate_asics" } },
+    { "label": "Join a group buy (half a unit, half the price)", "effects": { "flag": "preorder:group_buy" } },
+    { "label": "Skip pre-orders, wait for retail ASICs", "effects": {} }
+   ],
+   "real_basis": "Composite of Avalon Batch 1 (shipped ~on time, Jan 2013) and Butterfly Labs (opened preorders mid-2012, didn't ship in volume until Jun 2013, later an FTC enforcement action); group buys of ASIC hardware were a real, common practice — bitcointalk.org ran (and still runs) a dedicated 'Group Buys' board, and ASIC.COOP (16 Jun 2012) sold 5,000 shares at 1 BTC each in a pooled Butterfly Labs BitForce SC order",
+   "source": "Bitcoin Magazine 'Avalon Ships Bitcoin's First Consumer ASICs'; CoinDesk 'Butterfly Labs finally ships out last year's Jalapeno orders'; bitcointalk.org board 137 ('Group Buys'); bitcointalk.org topic 88008 ('ASIC.COOP ASIC MINERS COOPERATIVE', 16 Jun 2012); see preorders.json"
+  },
+  {
+   "id": "cyprus_rally",
+   "type": "random",
+   "title": "The Bank Won't Open",
+   "trigger": "random:quarter==2013Q2",
+   "week": "2013-04-08",
+   "weight": 1.0,
+   "pauses_autoplay": true,
+   "fallback": "news only (news.2013Q2.0) if it doesn't fire",
+   "body": "Cyprus proposed taking a cut of ordinary bank deposits to fund a bailout. Bitcoin's price quadrupled in weeks, past $260, before sliding hard the same week it peaked. Financial press outside crypto is finally paying attention.",
+   "choices": [
+    { "label": "Sell into the spike", "effects": { "sell_treasury_pct": 0.5 } },
+    { "label": "Hold through the crash back down", "effects": {} }
+   ],
+   "real_basis": "Cyprus bank deposit levy proposal, 16 Mar 2013; BTC rose from ~$47 (15 Mar) to a peak near $265-266 in early-mid April 2013, then crashed hard the same week",
+   "source": "Bitcoin.com News, 'Cyprus Bank Panic: Frozen Savings Meet Bitcoin's Explosive Rally'; Bloomberg 16 Mar 2013",
+   "revision_note": "REVISION 1: was a 'scripted'/'fixed' card tied to its own decision quarter (2013Q2); now a 'random' card with a high weight that can pause the (now auto-played) 2013Q2, matching Act I's uri_2021/spac_mania_2021 pattern. If it doesn't fire, the quarter's auto-play summary should still mention the rally via news.2013Q2.0."
+  },
+  {
+   "id": "peak_and_silk_road",
+   "type": "scripted",
+   "title": "Eleven Hundred Dollars, and the Marketplace Is Gone",
+   "trigger": "fixed:2013Q4",
+   "week": "2013-12-02",
+   "weight": null,
+   "body": "Bitcoin crossed a thousand dollars last week, then went higher — on the same exchange that hacked itself two years ago. Two months ago the FBI shut down the internet's biggest drug marketplace and seized tens of thousands of coins from its operator. None of it has slowed the price down.",
+   "choices": [
+    { "label": "Sell most of the treasury near the top", "effects": { "sell_treasury_pct": 0.6 } },
+    { "label": "HODL through whatever comes next", "effects": {} }
+   ],
+   "real_basis": "Silk Road shut down and Ross Ulbricht arrested 2 Oct 2013 (~29,655 BTC seized from marketplace wallets; a further ~144,336 BTC seized from Ulbricht personally on 25 Oct 2013); BTC crossed $1,000 on 27 Nov 2013 and peaked near $1,150-1,242 (Mt Gox) in early December 2013",
+   "source": "DOJ press release 25 Oct 2013; DaveManuel.com bitcoin price history"
+  },
+  {
+   "id": "china_ban_2013",
+   "type": "random",
+   "title": "Beijing Says No",
+   "trigger": "random:quarter==2013Q4",
+   "week": "2013-12-09",
+   "weight": 1.0,
+   "body": "China's central bank has barred financial institutions from touching bitcoin. The price, still near its all-time high, drops hard on the news. Individuals can apparently still hold and trade it — for now.",
+   "choices": [
+    { "label": "Sell some of the treasury on the drop", "effects": { "sell_treasury_pct": 0.3 } },
+    { "label": "Hold", "effects": {} }
+   ],
+   "real_basis": "PBOC notice barring financial institutions from bitcoin business, 5 Dec 2013; sharp price drop from the ~$1,150-1,242 Dec 2013 peak",
+   "source": "CoinDesk, 'Bitcoin Price Crashes as China Outlaws Bitcoin for Financial Institutions', 5 Dec 2013"
+  },
+  {
+   "id": "mtgox_collapse",
+   "type": "scripted",
+   "title": "The Exchange Goes Dark",
+   "trigger": "fixed:2014Q1",
+   "week": "2014-02-10",
+   "weight": null,
+   "body": "Withdrawals stopped three days ago over a technical excuse nobody fully buys. In two weeks the site will go blank, and in three, it will file for bankruptcy. Roughly 850,000 coins — most of it customer money — are unaccounted for. Whatever you left on that exchange, you're about to find out if you'll ever see it again.",
+   "choices": [
+    { "label": "Try to withdraw everything right now", "effects": { "flag": "attempt_gox_withdrawal" } },
+    { "label": "Accept the loss and move on", "effects": {} }
+   ],
+   "real_basis": "Withdrawal halt 7 Feb 2014; site offline 24 Feb 2014; bankruptcy filing 28 Feb 2014; ~850,000 BTC reported missing (~750,000 customer, ~100,000 company); ~199,999.99 BTC later found in an old cold wallet, 20 Mar 2014, leaving ~650,000 BTC gone",
+   "source": "Wikipedia 'Mt. Gox'"
+  },
+  {
+   "id": "eth_launch",
+   "type": "scripted",
+   "title": "A Second Chain",
+   "trigger": "fixed:2015Q3",
+   "week": "2015-08-03",
+   "weight": null,
+   "body": "A new network launched this summer with its own coin and its own miners. It's still worth only a few dollars, but the GPUs you already own can mine it, and its own difficulty hasn't caught up yet.",
+   "choices": [
+    { "label": "Build a GPU rig for the new coin", "effects": { "flag": "open_buy_menu:gpu_eth_2015" } },
+    { "label": "Stay focused on bitcoin ASICs", "effects": {} }
+   ],
+   "real_basis": "Ethereum's Frontier genesis block launched 30 Jul 2015",
+   "source": "Ethereum Foundation blog, 'Ethereum Launches', 30 Jul 2015"
+  },
+  {
+   "id": "dao_hack_fork",
+   "type": "random",
+   "title": "The Fund That Emptied Itself",
+   "trigger": "random:quarter==2016Q3 && flag(has_eth)",
+   "week": "2016-06-17",
+   "weight": 1.0,
+   "body": "A smart contract holding a huge pool of the new coin was drained overnight — about 3.6 million coins, roughly a third of what it held. The network is arguing about whether to rewrite history to get it back. A month from now they will, and the chain will split in two.",
+   "choices": [
+    { "label": "Watch and keep mining either way", "effects": {} },
+    { "label": "Sell your ETH holdings until the dust settles", "effects": { "sell_treasury_pct": 0.5 } }
+   ],
+   "real_basis": "The DAO hack, 17 Jun 2016, ~3.6M ETH stolen (~$50-60M at the time); hard fork to reverse it, 20 Jul 2016, creating Ethereum (ETH) and Ethereum Classic (ETC)",
+   "source": "Wikipedia 'The DAO'; Ethereum Foundation blog 'Hard Fork Completed', 20 Jul 2016"
+  },
+  {
+   "id": "second_halving_s9",
+   "type": "scripted",
+   "title": "Twelve and a Half",
+   "trigger": "fixed:2016Q3",
+   "week": "2016-07-04",
+   "weight": null,
+   "body": "Block 420,000: the reward halves again, from 25 to 12.5. A new machine just went on sale that's more efficient than anything before it — expensive at launch, the way they always are.",
+   "choices": [
+    { "label": "Buy an Antminer S9 at launch prices", "effects": { "flag": "open_buy_menu:antminer_s9_early" } },
+    { "label": "Wait for the price to come down", "effects": {} }
+   ],
+   "real_basis": "Second halving, block 420,000, 9 Jul 2016, subsidy 25→12.5 BTC, price at the time ~$650-660; Antminer S9 launched around the same window",
+   "source": "blockchain.com block explorer (halving timestamp); Bitmain product history"
+  },
+  {
+   "id": "bitfinex_hack_news",
+   "type": "random",
+   "title": "Another Exchange, Another Hack",
+   "trigger": "random:quarter==2016Q3 && flag(exchange_custody_opened)",
+   "week": "2016-08-02",
+   "weight": 1.0,
+   "body": "A different exchange just lost about 120,000 coins to a hack. The price drops sharply on the news, then starts to recover within days. You check which exchange you're using.",
+   "choices": [
+    { "label": "Move everything to your own wallet", "effects": { "flag": "exchange_custody_closed" } },
+    { "label": "Stay put", "effects": {} }
+   ],
+   "real_basis": "Bitfinex hack, 2 Aug 2016, 119,756 BTC stolen (~$72M); price fell ~20% on the news",
+   "source": "Wikipedia '2016 Bitfinex hack'; TechCrunch, 2 Aug 2016",
+   "design_note": "See custody.json bitfinex_2016_hack for the resolvable loss-share roll if the player is actually on this exchange."
+  },
+  {
+   "id": "handover",
+   "type": "scripted",
+   "title": "Into the Garage",
+   "trigger": "fixed:2016Q4",
+   "week": "2016-12-26",
+   "weight": null,
+   "body": "Whatever you built over the last eight years — the machines, the sites, the coins you kept and the ones you lost — comes with you now. It's 2017. You're doing this full-time.",
+   "choices": [
+    { "label": "Carry everything into Act I", "effects": {} }
+   ],
+   "real_basis": "Design handover point (doc 23 §8); Act I begins 2017Q1",
+   "source": "doc 23"
+  },
+  {
+   "id": "power_bill",
+   "type": "random",
+   "title": "The Electric Bill",
+   "trigger": "random:site==bedroom || site==home_rig",
+   "week": null,
+   "weight": 1.0,
+   "body": "Your mother puts the bill on the kitchen table and doesn't say anything. She doesn't have to.",
+   "choices": [
+    { "label": "Offer to chip in", "effects": { "cash": -80, "household_patience": 10 } },
+    { "label": "Say nothing and turn a rig off for a week", "effects": { "hashrate_mult": 0.5, "duration_weeks": 1 } }
+   ],
+   "real_basis": "Household power/noise friction is invented flavour, not a sourced event; the underlying household electricity price data (EIA-derived, ~11.5¢/kWh in 2009 rising to ~12.7¢ by 2015) is sourced",
+   "source": "electricchoice.com, 'U.S. Electricity Rate History'"
+  },
+  {
+   "id": "pc_overheats",
+   "type": "random",
+   "title": "Too Hot to Touch",
+   "trigger": "random:site==bedroom",
+   "week": null,
+   "weight": 1.0,
+   "body": "The case is hot enough to worry about. The fan sounds like it's dying because it is.",
+   "choices": [
+    { "label": "Buy a better cooler", "effects": { "cash": -40 } },
+    { "label": "Underclock it", "effects": { "hashrate_mult": 0.8, "duration_quarters": 1 } }
+   ],
+   "real_basis": "Invented personal card, per doc 23 §6",
+   "source": "≈"
+  },
+  {
+   "id": "friend_wants_coins",
+   "type": "random",
+   "title": "A Friend Asks",
+   "trigger": "random:btc>0",
+   "week": null,
+   "weight": 1.0,
+   "body": "A friend heard you've got some of these internet coins and wants in, cash in hand, whatever the going rate is.",
+   "choices": [
+    { "label": "Sell them a small amount", "effects": { "sell_treasury_pct": 0.05 } },
+    { "label": "Tell them to buy their own", "effects": {} }
+   ],
+   "real_basis": "Invented personal card, per doc 23 §6",
+   "source": "≈"
+  },
+  {
+   "id": "dead_hard_drive",
+   "type": "random",
+   "title": "The Drive Won't Spin Up",
+   "trigger": "random:btc>0 && !flag(wallet_backed_up)",
+   "week": null,
+   "weight": 1.0,
+   "body": "The drive with your wallet on it just clicks instead of spinning. This is the moment a backup would have mattered.",
+   "choices": [
+    { "label": "Roll the dice on data recovery", "effects": { "cash": -150, "success_p": 0.3, "on_failure": { "wallet_loss_pct": 1.0 } } },
+    { "label": "Accept the loss", "effects": { "wallet_loss_pct": 1.0 } }
+   ],
+   "real_basis": "This card IS the wallet-loss roll described in custody.json (chance derived from Chainalysis's 2017 lost-BTC estimate); dead hard drives are the most commonly cited real cause of lost keys in this era",
+   "source": "Chainalysis 2017 study (via Yahoo Finance, NewsBTC)"
+  },
+  {
+   "id": "job_offer",
+   "type": "random",
+   "title": "A Real Job Offer",
+   "trigger": "random:quarter>=2012Q1 && !flag(moved_out)",
+   "week": null,
+   "weight": 1.0,
+   "body": "A local shop wants you part-time, more hours than you have free. It pays better than what you're making now, if you can spare the time.",
+   "choices": [
+    { "label": "Take it", "effects": { "cash": 300, "bandwidth_next": -1 } },
+    { "label": "Turn it down", "effects": {} }
+   ],
+   "real_basis": "Invented personal card, per doc 23 §6",
+   "source": "≈"
+  },
+  {
+   "id": "conference_invitation",
+   "type": "random",
+   "title": "A Conference Invitation",
+   "trigger": "random:quarter in(2013Q2,2014Q2)",
+   "week": null,
+   "weight": 1.0,
+   "body": "There's a bitcoin conference this spring, real speakers, real vendors. It's not cheap to get to.",
+   "choices": [
+    { "label": "Go (see life.json conferences)", "effects": { "flag": "attend_conference" } },
+    { "label": "Skip it", "effects": {} }
+   ],
+   "real_basis": "Bitcoin 2013 Conference, San Jose, 17-19 May 2013; Bitcoin 2014 Conference, Amsterdam, May 2014",
+   "source": "SiliconANGLE; CoinDesk"
+  }
+ ],
+ "offers": [
+  { "id": "offer_forum_buyer_1", "name": "A forum buyer (invented)", "date": "2009-11-02", "terms": "Buys 5,000 BTC for $5 cash, mailed", "real_basis": "≈ modeled on the NewLibertyStandard/Sirius sale of 5,050 BTC for $5.02, 12 Oct 2009", "source": "BullionStar" },
+  { "id": "offer_forum_buyer_2", "name": "A different forum buyer (invented)", "date": "2010-01-18", "terms": "Buys 2,000 BTC for a $10 Amazon gift card", "estimate": true },
+  { "id": "offer_local_trade", "name": "A local trade (invented)", "date": "2010-03-15", "terms": "Buys 1,000 BTC for $3 in cash, meets in person", "estimate": true },
+  { "id": "offer_forum_buyer_3", "name": "A forum regular (invented)", "date": "2010-06-21", "terms": "Buys 500 BTC for $40 (post-Mt-Gox-open pricing)", "estimate": true },
+  { "id": "offer_forum_buyer_4", "name": "A bulk offer (invented)", "date": "2010-09-06", "terms": "Buys 2,000 BTC for $130", "estimate": true },
+  { "id": "offer_final_hobby_offer", "name": "One last hobby-era offer (invented)", "date": "2010-11-15", "terms": "Buys 300 BTC for $90, right before prices start climbing in earnest", "estimate": true }
+ ]
+}

@@ -1,0 +1,44 @@
+{
+ "schema_version": 1,
+ "notes": "Student start, income, moving out, conference and vanity-purchase numbers (doc 23 §3, §7, §D).",
+ "student_start": {
+  "starting_cash_usd": { "value": 2000, "source": "doc 23 P0-6 placeholder, kept; consistent with 'has some savings' range for a diligent working student (≈, no single citable study)", "estimate": true },
+  "part_time_income_usd_per_quarter": { "value": 1200, "source": "≈ derived: US federal minimum wage was flat at $7.25/hr the whole window (US DOL); a realistic campus/retail job paid somewhat above minimum, ~$8-11/hr at ~15-18 hrs/week → roughly $500-800/month ≈ $1,500-2,400/quarter. Set below that range's midpoint to keep the early game tight, per doc 23 §9's 'decisions must matter' anchor", "estimate": true },
+  "income_stops_at": "move_out (doc 23 §8: 'the income stops ⚙ — you're now full-time on mining')",
+  "starting_machines": ["pc_cpu"],
+  "starting_site": "bedroom"
+ },
+ "moving_out": {
+  "deposit_usd_by_year": {
+   "2010": { "value": 900, "source": "iPropertyManagement.com 'Average Rent By Year', ~$895/mo national avg used as a 1-month-deposit proxy", "estimate": true },
+   "2013": { "value": 940, "source": "same source, ~$937/mo", "estimate": true },
+   "2016": { "value": 1030, "source": "same source, ~$1,029/mo", "estimate": true }
+  },
+  "rent_usd_per_quarter_by_year": {
+   "2010": { "value": 2685, "source": "derived: ~$895/mo × 3", "estimate": true },
+   "2011": { "value": 2790, "estimate": true },
+   "2012": { "value": 2820, "estimate": true },
+   "2013": { "value": 2811, "source": "derived: ~$937/mo × 3", "estimate": true },
+   "2014": { "value": 2880, "estimate": true },
+   "2015": { "value": 2970, "estimate": true },
+   "2016": { "value": 3087, "source": "derived: ~$1,029/mo × 3", "estimate": true }
+  },
+  "effect": "ends household power and household cards; unlocks the garage tier; +1 Bandwidth (doc 23 §7)",
+  "discount_note": "National averages are used as-is; a real college town would likely run 10-20% below this, which is a reasonable place to tune down in sim if playtesting shows the sink is too punishing."
+ },
+ "conferences": {
+  "available_events": [
+   { "id": "bitcoin2013", "name": "a 2013 bitcoin conference (invented framing of the real San Jose event)", "real_date": "2013-05-17 to 2013-05-19", "real_basis": "Bitcoin 2013 Conference, San Jose, CA, 'The Future of Payments' [SiliconANGLE; CoinDesk]", "trigger_quarter": "2013Q2", "travel_cost_usd": { "value": 900, "source": "≈ ticket + flight + 3 nights hotel for a student attending a 3-day tech conference in 2013; no sourced ticket price found", "estimate": true } },
+   { "id": "bitcoin2014", "name": "a 2014 bitcoin conference (invented framing of the real Amsterdam event)", "real_date": "2014-05 (mid-May, exact days unconfirmed)", "real_basis": "Bitcoin 2014 Conference, Amsterdam [CoinDesk]", "trigger_quarter": "2014Q2", "travel_cost_usd": { "value": 1400, "source": "≈ international travel raises the cost vs the 2013 US event", "estimate": true } }
+  ],
+  "effect": "a contact: better pre-order odds (see preorders.json conference_contact_effect) and a used-machine offer (doc 23 §7)",
+  "used_machine_offer_discount": { "value": 0.15, "source": "≈", "estimate": true }
+ },
+ "vanity_purchases": [
+  { "id": "watch", "name": "A nice watch", "real_basis": "Steel Rolex Submariner Date retail, era-appropriate", "price_usd": { "value": 7000, "source": "Bob's Watches gives $6,000 retail by 2008 and ~$8,950 by 2020; $7,000 is a reasonable midpoint for 2010-2016", "estimate": true } },
+  { "id": "car", "name": "A decent used car", "real_basis": "a 3-5 year old Civic/Accord/Camry-class used car", "price_usd": { "value": 11000, "source": "≈, no single sourced figure found; FRED's 'Used Cars and Trucks' CPI series is the right primary source for exact index values if needed later", "estimate": true } },
+  { "id": "trip", "name": "A vacation", "real_basis": "a nice international or multi-stop US trip", "price_usd": { "value": 3000, "source": "≈ sanity-check tier, not separately researched", "estimate": true } },
+  { "id": "macbook", "name": "A MacBook Pro", "real_basis": "Apple MacBook Pro Retina, mid-decade configuration", "price_usd": { "value": 2200, "source": "EveryMac.com 'Original Prices for All MacBook Pro in the United States': Early 2015 15\" Retina from $2,699 (top config $3,199); 13\" from $1,299. $2,200 is a mid config", "estimate": false } },
+  { "id": "iphone4", "name": "The new iPhone", "real_basis": "iPhone 4, launched Jun 2010", "price_usd": { "value": 299, "source": "general knowledge, not independently re-verified via search this session: $199 (16GB) / $299 (32GB) with 2-year contract", "estimate": true } }
+ ]
+}

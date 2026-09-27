@@ -236,6 +236,13 @@ export function backlogView(state: GameState) {
     rows,
     totalUsd: rows.reduce((a, r) => a + r.remainingUsd, 0),
     countedUsd: rows.reduce((a, r) => a + r.countedUsd, 0),
+    /** The weights by tenant credit, for the note under the table. */
+    weights: {
+      a: backlogWeight('A'),
+      bbb: backlogWeight('BBB'),
+      backstop: BALANCE.finance.backstopBacklogWeight,
+      below: backlogWeight('B'),
+    },
   }
 }
 

@@ -135,6 +135,7 @@ function buildReport(
       debtUsd(state),
       {
         aiEbitdaUsd: aiEbitdaUsd(st),
+        aiFloorEbitdaUsd: st.aiFloorEbitdaUsd,
         pivot: pivotActive(state),
         constructionUsd,
         weightedBacklogUsd: weightedBacklog,
@@ -154,6 +155,9 @@ function buildReport(
     reservationUsd: st.reservationUsd,
     aiRevenueUsd: st.aiRevenueUsd,
     aiCostUsd: st.aiCostUsd,
+    ...(st.aiFloorEbitdaUsd !== undefined
+      ? { aiFloorEbitdaUsd: st.aiFloorEbitdaUsd }
+      : {}),
     lateDamagesUsd: st.lateDamagesUsd,
     constructionUsd,
     backlogUsd: backlogUsd(state),

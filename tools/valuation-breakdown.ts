@@ -14,6 +14,7 @@ import {
   annualContractUsd,
   annualRentUsd,
   contractWeight,
+  floorEligible,
   ownedShareOut,
   remainingContractUsd,
   tenantCard,
@@ -103,7 +104,14 @@ export function breakdown(state: GameState, r: QuarterReport): Breakdown {
       announcedMw += p.kw / 1000
     } else if (p.stage === 'live' && igBacked(p)) {
       stableUsd +=
-        Math.max(0, projectEbitdaYrUsd(state, p)) * aiInfraMultiple(q) + backlog
+        Math.max(0, projectEbitdaYrUsd(state, p)) *
+          (floorEligible(p)
+            ? Math.max(
+                aiInfraMultiple(q),
+                BALANCE.finance.contractedAiMultipleFloor.multiple,
+              )
+            : aiInfraMultiple(q)) +
+        backlog
       stableMw += p.kw / 1000
     }
   }

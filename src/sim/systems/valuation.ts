@@ -57,10 +57,29 @@ export function ebitdaUsd(q: {
   )
 }
 
+/**
+ * The AI units' enterprise value: run-rate EBITDA × the AI multiple, except the part earned under
+ * long A/AA or backstopped contracts (`floorUsd`), valued at no less than the contracted floor
+ * (18×, owner 28 Sep 2026). A loss-making AI business adds nothing.
+ */
+export function aiEnterpriseUsd(
+  quarter: number,
+  aiEbitdaUsd: number,
+  floorUsd = 0,
+): number {
+  const ai = Math.max(0, aiEbitdaUsd)
+  const floored = Math.min(ai, Math.max(0, floorUsd))
+  const m = aiInfraMultiple(quarter)
+  const floorM = Math.max(m, BALANCE.finance.contractedAiMultipleFloor.multiple)
+  return floored * 4 * floorM + (ai - floored) * 4 * m
+}
+
 /** Act II's extra valuation parts (scope 0.2 §2.8). All optional: Act I has none. */
 export interface ValuationParts {
   /** The quarter's EBITDA from AI shell and AI cloud units (part of the total EBITDA). */
   aiEbitdaUsd?: number
+  /** Its part under long A/AA or backstopped contracts (the 18× floor). */
+  aiFloorEbitdaUsd?: number
   /** The pivot premium on the mining multiple (from the first AI deal). */
   pivot?: boolean
   /** Projects under construction, at the capex spent so far. */
@@ -90,7 +109,7 @@ export function valuationUsd(
     eraMultiple(quarter) + (parts.pivot ? BALANCE.projects.pivotPremium : 0)
   const enterprise =
     (Math.max(0, (quarterEbitdaUsd - ai) * 4) * mining +
-      Math.max(0, ai * 4) * aiInfraMultiple(quarter)) *
+      aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd)) *
     (parts.evMult ?? 1)
   return (
     enterprise +
@@ -116,11 +135,12 @@ export function valuationSplit(
   const pivot = firstAiDealQuarter !== null && q >= firstAiDealQuarter
   const miningMultiple =
     eraMultiple(q) + (pivot ? BALANCE.projects.pivotPremium : 0)
-  const aiMultiple = aiInfraMultiple(q)
   const evMult = r.evMult ?? 1
   const miningEvUsd =
     Math.max(0, (r.ebitdaUsd - ai) * 4) * miningMultiple * evMult
-  const aiEvUsd = Math.max(0, ai * 4) * aiMultiple * evMult
+  const aiEvUsd = aiEnterpriseUsd(q, ai, r.aiFloorEbitdaUsd) * evMult
+  // The multiple the AI EBITDA earns overall (the era's, lifted by any contracted floor).
+  const aiMultiple = ai > 0 ? aiEvUsd / evMult / (ai * 4) : aiInfraMultiple(q)
   const constructionUsd = r.constructionUsd ?? 0
   const weightedBacklogUsd = r.weightedBacklogUsd ?? 0
   return {

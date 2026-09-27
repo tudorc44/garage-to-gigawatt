@@ -1,0 +1,39 @@
+{
+ "schema_version": 1,
+ "notes": "Prologue-only site tiers. 'garage' and 'small_unit' are Act I's own tiers (claude_act1-content_sites.json) and are NOT redefined here — the prologue unlocks them as-is so the handover to Act I is seamless (doc 23 §4.1). This file adds the two tiers that exist only before the garage: the player's bedroom and a spare room.",
+ "tiers": [
+  {
+   "id": "bedroom",
+   "capacity_kw": { "value": 0.15, "source": "≈ a single 15A US household circuit derated 80% (~1.44kW) shared with the rest of the room; the PC alone draws ~0.09kW so this cap only starts to bind once a GPU is added", "estimate": true },
+   "power_usd_kwh": { "value": 0.0, "source": "Household pays while the player lives at home (doc 23 §3) — power is 'free' to the player's own cash, but load above household_threshold_kw triggers household cards", "estimate": false },
+   "household_threshold_kw": { "value": 0.5, "source": "≈ above this a parent notices the electric bill / room heat", "estimate": true },
+   "rent_usd_q": 0,
+   "capex_usd": 0,
+   "build_quarters": 0,
+   "heat_base": 0,
+   "household_heat_note": "Bedroom and home_rig don't use Community Heat (no neighbours) — they use a separate household_patience resource that random 'household cards' draw down instead.",
+   "possible_flaws": []
+  },
+  {
+   "id": "home_rig",
+   "capacity_kw": { "value": 1.5, "source": "doc 23 §4.1 placeholder, kept: roughly a 20A circuit derated (~1.9kW) minus headroom for the rest of the spare room's normal load", "estimate": true },
+   "power_usd_kwh": { "value": 0.0, "source": "still household power while living at home", "estimate": false },
+   "household_threshold_kw": { "value": 0.8, "source": "≈", "estimate": true },
+   "rent_usd_q": 0,
+   "capex_usd": { "value": 300, "source": "≈ a used desk, shelving, a couple of surge-protected power strips — flavour cost, not a real infrastructure spend", "estimate": true },
+   "build_quarters": 0,
+   "heat_base": 0,
+   "unlock": "cash (small, doc 23 §4.1)",
+   "possible_flaws": []
+  }
+ ],
+ "household_rules": {
+  "power_is_free_while_living_at_home": true,
+  "household_patience": {
+   "start": { "value": 100, "estimate": true },
+   "effect_at_zero": "forces a move-out decision or a load cutback (parents unplug the rig) — design flag, tune in sim",
+   "drains_from": ["load above household_threshold_kw", "household event-card choices", "noise/heat cards"]
+  },
+  "ends_when": "player takes the Move Out sink (doc 23 §7); from then on the player pays for power at garage-tier rates ($0.12/kWh, Act I's own path) and Community Heat replaces household_patience"
+ }
+}

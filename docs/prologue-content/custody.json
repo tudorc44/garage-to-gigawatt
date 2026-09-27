@@ -1,0 +1,70 @@
+{
+ "schema_version": 1,
+ "notes": "Custody mechanic data (doc 23 §5.2): pool fees, exchange hack/collapse loss shares, wallet-loss base rate + backup effect. Real names only for sourced factual events; invented names used in events.json for the player's own exchange/vendor unless the event is one of these scripted real ones.",
+ "pools": {
+  "start_available": "2010Q4",
+  "real_basis": "Slush's Pool (originally 'Bitcoin Pooled Mining'), announced 27 Nov 2010 on BitcoinTalk",
+  "source": "Bitcoin Wiki, en.bitcoin.it/wiki/Slush_Pool",
+  "fee_pct_by_year": {
+   "2010": { "value": 0.0, "source": "early pools often ran fee-free to attract miners; ≈", "estimate": true },
+   "2011": { "value": 0.02, "source": "Slush Pool's documented fee is 'around 2%' per Bitcoin Wiki, though the source doesn't pin the year it started — used as a flat estimate 2011-2016", "estimate": true },
+   "2012": { "value": 0.02, "estimate": true },
+   "2013": { "value": 0.02, "estimate": true, "note": "GHash.IO ran 0% fees in this era as a deliberate growth strategy (sourced: ViaBTC retrospective) and briefly exceeded 50% of network hashrate 12-13 Jun 2014 as a result — see events_prologue.json ghash_51pct" },
+   "2014": { "value": 0.02, "estimate": true },
+   "2015": { "value": 0.015, "estimate": true },
+   "2016": { "value": 0.015, "estimate": true }
+  },
+  "payout_methods": {
+   "PPS": "Pay Per Share: the pool pays a fixed amount for every valid share you submit, whether or not the pool actually finds a block. The pool carries the variance and charges a higher fee for it.",
+   "PPLNS": "Pay Per Last N Shares: when the pool finds a block, the reward is split among the last N shares submitted, weighted by who contributed. The miner carries more variance; pools can charge lower or zero fees. Became the more common large-pool model through 2013-14 as pools competed on price — direction sourced (fee pressure), exact adoption year is an estimate."
+  }
+ },
+ "exchange_events": [
+  {
+   "id": "mtgox_2011_hack",
+   "real": true,
+   "name": "Mt Gox",
+   "date": "2011-06-19",
+   "trigger": "fixed:2011Q2",
+   "magnitude": "A compromised Mt Gox account was used to crash the displayed price to $0.01 in minutes; Mt Gox rolled back the fraudulent trades and moved 424,242 BTC from cold storage to prove solvency.",
+   "loss_share_of_exchange_balance": { "value": 0.0, "source": "trades were rolled back — real depositor loss from THIS specific incident was near zero, unlike the 2014 collapse", "estimate": true },
+   "design_effect": "A scare, not a loss: trading halts for the rest of the week (no selling), small Heat/household_patience hit, no coin loss. Sets up the 2014 event as the real one to fear.",
+   "source": "Wikipedia 'Mt. Gox'"
+  },
+  {
+   "id": "mtgox_2014_collapse",
+   "real": true,
+   "name": "Mt Gox",
+   "date_withdrawal_halt": "2014-02-07",
+   "date_site_offline": "2014-02-24",
+   "date_bankruptcy_filing": "2014-02-28",
+   "trigger": "fixed:2014Q1",
+   "magnitude": "~850,000 BTC reported missing (~750,000 customer-owned, ~100,000 company-owned); 199,999.99 BTC later found in an old-format cold wallet (20 Mar 2014), leaving ~650,000 BTC unaccounted for.",
+   "loss_share_of_exchange_balance": { "value": 0.8, "source": "derived: ~750,000 of an implied ~940,000 customer BTC on the exchange going effectively unrecoverable for years; game value rounded for playability", "estimate": true },
+   "repayment_note": "Real Mt Gox trustee repayments to creditors did not begin until 2023-2024, a decade later — too far outside the prologue's window to matter; treat as 'gone' for game purposes.",
+   "design_effect": "Coins on an exchange at this event lose ~80% of their value permanently (game rounding of the real ~80-90% of customer BTC never returned within any relevant timeframe). This is the prologue's central custody lesson.",
+   "source": "Wikipedia 'Mt. Gox' collapse timeline"
+  },
+  {
+   "id": "bitfinex_2016_hack",
+   "real": true,
+   "name": "Bitfinex",
+   "date": "2016-08-02",
+   "trigger": "fixed:2016Q3",
+   "magnitude": "119,756 BTC stolen (~$72M at the time); bitcoin's market price fell ~20% on the news.",
+   "loss_share_of_exchange_balance": { "value": 0.36, "source": "commonly repeated figure (~36% of Bitfinex's BTC holdings) but NOT independently confirmed by primary sourcing in this research pass — flagged as uncertain", "estimate": true },
+   "design_effect": "A late-game random-chance exchange hack (not scripted to every playthrough): if the player has coins on an exchange in 2016Q3, a small chance (≈10-15%, tune in sim) of losing ~35% of that exchange balance.",
+   "source": "Wikipedia '2016 Bitfinex hack'; TechCrunch 2 Aug 2016"
+  }
+ ],
+ "wallet_loss": {
+  "base_annual_chance": { "value": 0.03, "source": "derived from Chainalysis 2017 estimate that 2.78-3.79M BTC (~17-23% of then-circulating supply) were lost forever over Bitcoin's history to date (2009-2017); spread across ~8 prologue years and weighted toward the CPU/GPU/FPGA era when drives were swapped and wallets re-installed more often, ~3%/year is a reasonable game rate", "estimate": true },
+  "backup_action": {
+   "cost_bandwidth": 1,
+   "cost_cash": { "value": 0, "source": "backing up a wallet.dat file cost nothing but attention in this era", "estimate": false },
+   "chance_multiplier_with_backup": { "value": 0.15, "source": "≈ a backed-up wallet is only vulnerable to a lost/destroyed backup too, not a single point of failure — cuts the base chance by ~85%", "estimate": true },
+   "duration": "lasts until the player changes machines/moves house, per doc 23 §5.2, at which point it should be prompted again"
+  },
+  "source": "Chainalysis 2017 study (reported via Yahoo Finance, NewsBTC, PaymentsNext, Nov 2017)"
+ }
+}

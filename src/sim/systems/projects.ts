@@ -752,9 +752,12 @@ export function settleProjectsWeek(
   revenueUsd: number
   costUsd: number
   marginByTier: Record<string, number>
+  /** The part of the margin from projects with the contracted multiple floor (floorEligible). */
+  floorMarginUsd: number
 } {
   let revenueUsd = 0
   let costUsd = 0
+  let floorMarginUsd = 0
   const marginByTier: Record<string, number> = {}
   const hours = 24 * 7
   const b = BALANCE.projects
@@ -804,10 +807,26 @@ export function settleProjectsWeek(
     cost *= ours
     revenueUsd += rev
     costUsd += cost
+    if (floorEligible(p)) floorMarginUsd += rev - cost
     marginByTier[site.tier] = (marginByTier[site.tier] ?? 0) + rev - cost
   }
   state.cash += revenueUsd - costUsd
-  return { revenueUsd, costUsd, marginByTier }
+  return { revenueUsd, costUsd, marginByTier, floorMarginUsd }
+}
+
+/**
+ * Whether a project's earnings get the contracted-AI multiple floor (owner, 28 Sep 2026): an A/AA or
+ * backstopped tenant with at least 5 years of the contract left.
+ */
+export function floorEligible(p: Project): boolean {
+  if (!p.tenant || p.stage !== 'live') return false
+  const strong =
+    p.backstop !== undefined ||
+    (tenantCard(p.tenant.card)?.rating ?? '').startsWith('A')
+  const left = contractQuarters(p) - p.tenant.servedQuarters
+  return (
+    strong && left >= BALANCE.finance.contractedAiMultipleFloor.minQuartersLeft
+  )
 }
 
 // ---------- construction delays and GPU allocation (scope §2.9) ----------

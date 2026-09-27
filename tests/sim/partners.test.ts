@@ -24,7 +24,7 @@ function shellWith(card: string, label = '2025Q3'): GameState {
 }
 
 describe('the big-tech backstop', () => {
-  it('on a BB tenant’s lease: warrants of 3–6%, backlog weight 10%, strong backlog, bankable for project debt', () => {
+  it('on a BB tenant’s lease: warrants of 3–6%, backlog weight 20%, strong backlog, bankable for project debt', () => {
     const s = shellWith('tc_meridian_labs') // BB
     expect(debtBlocker(s, s.projects[0], 'project_debt')?.key).toBe(
       'error.debt_needs_bbb',
@@ -39,7 +39,7 @@ describe('the big-tech backstop', () => {
     )
     expect(r.bandwidth).toBe(s.bandwidth - 2)
     expect(weightedBacklogUsd(r)).toBeCloseTo(
-      remainingContractUsd(r.projects[0]) * 0.1,
+      remainingContractUsd(r.projects[0]) * 0.2,
       4,
     )
     expect(backlogQuality(r).quality).toBe('strong')

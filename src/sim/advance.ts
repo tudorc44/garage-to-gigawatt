@@ -71,6 +71,8 @@ export function advance(state: GameState): GameState {
   st.reservationUsd += reservationUsd
   st.aiRevenueUsd += ai.revenueUsd + legacy.revenueUsd
   st.aiCostUsd += ai.costUsd + legacy.costUsd + curtailed.slaUsd
+  if (ai.floorMarginUsd !== 0)
+    st.aiFloorEbitdaUsd = (st.aiFloorEbitdaUsd ?? 0) + ai.floorMarginUsd
   for (const byTier of [
     hosting.marginByTier,
     ai.marginByTier,

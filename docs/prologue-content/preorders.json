@@ -1,0 +1,65 @@
+{
+ "schema_version": 1,
+ "notes": "Invented pre-order vendor cards (doc 23 §5.3). The real Butterfly Labs case (severe, ~12-15 month delays, later an FTC enforcement action, Sep 2014-May 2016) sets the DELAY DISTRIBUTION; the real Avalon Batch 1 (on-time, Jan 2013) sets the 'good outcome' baseline. No real vendor names are used in the cards themselves — Butterfly Labs appears only as a sourced news item (see events_prologue.json bfl_news).",
+ "delay_distribution_basis": {
+  "avalon_batch1": "Shipped ~on schedule, Jan 2013, 300 units. Batch 2 (500 units) priced $1,499, planned 1 Mar 2013. [Bitcoin Magazine]",
+  "butterfly_labs": "Preorders opened mid-2012 promising ~3 months; volume shipping did not begin until Jun 2013 for orders as early as Mar 2012 — roughly a 12-15 month delay. FTC obtained a TRO/asset freeze Sep 2014; by Sep 2013 over 20,000 consumers had not received paid-for machines; final judgment (largely suspended) Feb/May 2016. [CoinDesk; FTC press release]",
+  "design_choice": "No sourced percentage of pre-order customers who got nothing at all exists; the game uses an invented but historically-flavoured distribution: 45% on-time-ish (0-1Q late), 35% moderately late (2-3Q late, the 'BFL zone'), 15% very late (4+Q late), 5% never delivered (refund only, no unit)."
+ },
+ "vendors": [
+  {
+   "id": "preorder_summit_silicon",
+   "name": "Summit Silicon (invented)",
+   "order_window": "2012Q4-2013Q1",
+   "unit_model": "asic_preorder_early",
+   "price_usd": 1300,
+   "promised_delivery_quarters_after_order": 1,
+   "delay_roll": {
+    "on_time_0_1q": { "p": 0.45, "delay_quarters": 0 },
+    "moderate_2_3q": { "p": 0.35, "delay_quarters_range": [2, 3] },
+    "severe_4plus_q": { "p": 0.15, "delay_quarters_range": [4, 6] },
+    "never": { "p": 0.05, "effect": "refund_no_unit", "refund_pct": { "value": 0.5, "source": "≈ typical partial-refund outcome in real ASIC-vendor disputes of this era (BFL's eventual settlement was largely suspended for inability to pay, i.e. worse than 50% — game rounds up slightly for playability)", "estimate": true } }
+   },
+   "seed_note": "Resolved with the seeded RNG at order time so golden replays hold (doc 23 §11)."
+  },
+  {
+   "id": "preorder_northgate_asics",
+   "name": "Northgate ASICs (invented)",
+   "order_window": "2013Q1-2013Q2",
+   "unit_model": "asic_preorder_early",
+   "price_usd": 1450,
+   "promised_delivery_quarters_after_order": 1,
+   "delay_roll": {
+    "on_time_0_1q": { "p": 0.4, "delay_quarters": 0 },
+    "moderate_2_3q": { "p": 0.4, "delay_quarters_range": [2, 3] },
+    "severe_4plus_q": { "p": 0.15, "delay_quarters_range": [4, 5] },
+    "never": { "p": 0.05, "effect": "refund_no_unit", "refund_pct": 0.5 }
+   },
+   "seed_note": "A second, slightly-worse-odds vendor so the player can compare two pre-order offers side by side, as real 2012-13 buyers often weighed several ASIC startups against each other."
+  },
+  {
+   "id": "group_buy",
+   "name": "A forum group buy (invented specific thread; the practice itself is real)",
+   "order_window": "2013Q1-2013Q2",
+   "unit_model": "asic_preorder_early",
+   "share_of_unit": 0.5,
+   "price_usd": 650,
+   "hashrate_share": 0.5,
+   "promised_delivery_quarters_after_order": 1,
+   "delay_roll": {
+    "on_time_0_1q": { "p": 0.40, "delay_quarters": 0 },
+    "moderate_2_3q": { "p": 0.35, "delay_quarters_range": [2, 3] },
+    "severe_4plus_q": { "p": 0.18, "delay_quarters_range": [4, 6] },
+    "never": { "p": 0.07, "effect": "refund_no_unit", "refund_pct": 0.4 }
+   },
+   "delay_roll_note": "REVISION 1 addition. Odds are set slightly worse than the two solo vendors (lower on-time share, higher never share, lower refund on failure) — a group buy adds an extra layer of real-world risk on top of the vendor itself: the organizer/operator running the shared unit (real ASIC.COOP-style arrangements had the operator run the hardware and distribute payouts, so an unreliable or dishonest organizer is a second point of failure a solo pre-order doesn't have).",
+   "real_basis": "Group buys of early ASIC hardware were a real, common practice, not an invented mechanic. bitcointalk.org runs a dedicated 'Group Buys' board (board=137) for exactly this — miners coordinating bulk/shared orders to split cost and risk. A directly on-period example: 'ASIC.COOP ASIC MINERS COOPERATIVE' (bitcointalk.org topic 88008, posted 16 Jun 2012) sold 5,000 shares at 1 BTC each in a pooled Butterfly Labs BitForce SC Mini Rig (1 TH/s, $29,899) order, with the operator running the hardware, taking weekly operating costs, and distributing the remaining profits to shareholders — the structural real-world basis for this card's 'half a unit, shared with invented forum friends' framing.",
+   "source": "bitcointalk.org board 137 ('Group Buys'); bitcointalk.org topic 88008 ('ASIC.COOP ASIC MINERS COOPERATIVE', 16 Jun 2012)",
+   "seed_note": "Cheaper entry point for a cash-constrained early path (Design flag 4 in the report's original pass) — half the price for half the hashrate, with slightly worse delivery odds than going it alone."
+  }
+ ],
+ "conference_contact_effect": {
+  "description": "Taking the 'Go to a conference' money sink (doc 23 §7) before ordering shifts the roll: +10 percentage points from severe_4plus_q/never into on_time_0_1q, reflecting a real-world edge from meeting a vendor's team in person before wiring money.",
+  "estimate": true
+ }
+}

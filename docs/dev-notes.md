@@ -189,3 +189,6 @@ Nothing stopped. (M5's four STOPPED items were answered: 6, 7, 8, 9 above, built
 - M6.0a: land $/MW by year × region ±15%, 70% flawed offers; `tools/valuation-breakdown.ts` → `sim-output/act2-valuation.csv` +
   table. Sims ≈ M5 (bots buy no land): sign-then-raise $187M all runs, 13/50 bust, 15 AI MW; asic-retirer peak $3.7B. EV/MW
   2026Q4: announced AI $13M (above band already), stabilized IG $26M ✓ (2025 peak $50M: 2025 AI multiple); texas-capital mining $1.7–5.2M ✗.
+- M6.0b: weights A/AA 25% → announced AI $14.8M/MW, so A/AA 20% (rule); BBB 15%, AI lab 8%, backstop 20%; 18× floor (`aiFloorEbitdaUsd`).
+  Sims at 20%: sign-then-raise $358M all runs, 12/50 bust, 17.5 AI MW; asic-retirer peak $3.5B, end $2.6B; announced AI still $14M,
+  stabilized IG $31M (> $27M: the floor) at 2026Q4. Capital screen's weight note now reads the weights.

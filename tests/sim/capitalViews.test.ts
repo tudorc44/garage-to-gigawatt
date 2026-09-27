@@ -56,8 +56,8 @@ describe('the Capital screen', () => {
     })
     expect(d.rows[0].maturity).toBe('2039Q2') // live 2024Q2 + 15 years
     const b = backlogView(s)
-    expect(b.rows[0]).toMatchObject({ rating: 'AA', weight: 0.15 })
-    expect(b.countedUsd).toBeCloseTo(b.totalUsd * 0.15, 4)
+    expect(b.rows[0]).toMatchObject({ rating: 'AA', weight: 0.2 })
+    expect(b.countedUsd).toBeCloseTo(b.totalUsd * 0.2, 4)
     const e = equityView(s)
     expect(e.options.map((o) => o.dilution)).toEqual([0.08, 0.12, 0.16, 0.2])
     expect(e.options[0].blocker).toBeNull()

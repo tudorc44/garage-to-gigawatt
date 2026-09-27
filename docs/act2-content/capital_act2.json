@@ -18,7 +18,8 @@
   "pivot_premium_mechanic": "announcing a hyperscaler-anchored AI hosting deal (e.g. Core Scientific-CoreWeave, Jun 2024) re-rates a miner from pure-mining EV/MW (~$0.3-1M/MW) toward the $3-12M/MW hosting-conversion band, with further re-rating toward $20-27M/MW as the deal is de-risked/energized/delivered and becomes investment-grade backed. This 8-14 cents-on-the-dollar gap between announced and stabilized value is the single best-sourced 'why sign contracts early' mechanic in this whole pack."
  },
  "backlog_weight_pct_of_remaining_revenue": {
-  "a_aa_tenant": 15, "bbb_tenant": 10, "ai_lab_tenant": 5, "spot": 0,
+  "a_aa_tenant": 20, "bbb_tenant": 15, "ai_lab_tenant": 8, "spot": 0,
+  "owner_change_2026_09_28": "raised from 15 / 10 / 5 (and the backstopped weight 10 → 20, in balance.ts) by the owner's answer to the M5 question 1, step 2; A/AA set to 25, then 20 by that answer's rule (announced AI went above $12M/MW at 25)",
   "source": "18-act-ii-design.md §8/§14 -- CONFIRMED as game value; no contradicting real-world data found (backlog-quality-weighted valuation is a design abstraction, not something companies report this way, but it is a reasonable simplification of how the market visibly prices CoreWeave/Nebius backlog differently by counterparty)"
  },
  "cap_rate_pct": {

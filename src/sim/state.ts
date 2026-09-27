@@ -497,6 +497,8 @@ export interface QuarterStats {
   aiRevenueUsd: number
   /** Their running costs: shell opex, cloud power and GPU insurance (counted in EBITDA). */
   aiCostUsd: number
+  /** The part of the AI margin valued at the contracted multiple floor (M6.0b); missing = 0. */
+  aiFloorEbitdaUsd?: number
   /** Take-or-pay damages paid for late projects (counted in EBITDA). */
   lateDamagesUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
@@ -570,6 +572,8 @@ export interface QuarterReport {
   /** Act II AI projects: revenue, running costs and take-or-pay damages. */
   aiRevenueUsd: number
   aiCostUsd: number
+  /** The part of the AI EBITDA valued at the contracted multiple floor (M6.0b); missing = 0. */
+  aiFloorEbitdaUsd?: number
   lateDamagesUsd: number
   /** The valuation's Act II parts at quarter end: projects under construction (capex spent), the
    *  remaining contracted revenue (unweighted, as the top bar shows it) and its credit-weighted value. */

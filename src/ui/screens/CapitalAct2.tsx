@@ -279,7 +279,12 @@ function Backlog({ state }: { state: ScreenProps['state'] }) {
         </table>
       )}
       <p class="num-s muted" style={{ margin: 0 }}>
-        {t('ui.cap2.weights_note')}
+        {t('ui.cap2.weights_note', {
+          aPct: v.weights.a,
+          bbbPct: v.weights.bbb,
+          backstopPct: v.weights.backstop,
+          belowPct: v.weights.below,
+        })}
       </p>
     </section>
   )

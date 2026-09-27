@@ -10,6 +10,8 @@ import {
   backlogUsd,
   backlogWeight,
   capRate,
+  contractQuarters,
+  floorEligible,
   remainingContractUsd,
   saleValueUsd,
   tenantCard,
@@ -17,6 +19,7 @@ import {
 } from '../../src/sim/systems/projects.ts'
 import { capacityKw } from '../../src/sim/systems/sites.ts'
 import {
+  aiEnterpriseUsd,
   valuationSplit,
   valuationUsd,
 } from '../../src/sim/systems/valuation.ts'
@@ -45,6 +48,32 @@ describe('the sum of the parts', () => {
     )
   })
 
+  it('long A/AA or backstopped contracts: at least 18× (owner, 28 Sep 2026); the rest at the era multiple', () => {
+    const late = q('2026Q4') // AI infra 15×
+    expect(aiEnterpriseUsd(late, 1_000_000, 600_000)).toBe(
+      600_000 * 4 * 18 + 400_000 * 4 * 15,
+    )
+    // The floor never lowers a higher era multiple (2025Q4: 30×).
+    expect(aiEnterpriseUsd(q('2025Q4'), 1_000_000, 600_000)).toBe(
+      1_000_000 * 4 * 30,
+    )
+    // The floored part can't exceed the AI EBITDA, and losses add nothing.
+    expect(aiEnterpriseUsd(late, 500_000, 900_000)).toBe(500_000 * 4 * 18)
+    expect(aiEnterpriseUsd(late, -100_000, 50_000)).toBe(0)
+  })
+
+  it('a 15-year AA shell earns the floor while at least 5 years are left', () => {
+    const s = shellReady()
+    const p = s.projects[0]
+    p.stage = 'live'
+    p.tenant!.card = 'tc_north_azure_cloud' // AA, 15 years
+    expect(floorEligible(p)).toBe(true)
+    p.tenant!.servedQuarters = contractQuarters(p) - 20
+    expect(floorEligible(p)).toBe(true)
+    p.tenant!.servedQuarters++
+    expect(floorEligible(p)).toBe(false)
+  })
+
   it('adds projects under construction and the weighted backlog', () => {
     expect(
       valuationUsd(q('2024Q2'), 0, 1_000, 0, 0, {
@@ -56,13 +85,13 @@ describe('the sum of the parts', () => {
 })
 
 describe('the backlog (remaining contracted revenue)', () => {
-  it('weights by tenant credit: A/AA 15%, BBB 10%, below 5%', () => {
-    expect(backlogWeight('AA')).toBe(0.15)
-    expect(backlogWeight('A/AA')).toBe(0.15)
-    expect(backlogWeight('A')).toBe(0.15)
-    expect(backlogWeight('BBB')).toBe(0.1)
-    expect(backlogWeight('BB (backstopped to A)')).toBe(0.05)
-    expect(backlogWeight('B+ (rising)')).toBe(0.05)
+  it('weights by tenant credit: A/AA 20%, BBB 15%, below 8% (owner, 28 Sep 2026)', () => {
+    expect(backlogWeight('AA')).toBe(0.2)
+    expect(backlogWeight('A/AA')).toBe(0.2)
+    expect(backlogWeight('A')).toBe(0.2)
+    expect(backlogWeight('BBB')).toBe(0.15)
+    expect(backlogWeight('BB (backstopped to A)')).toBe(0.08)
+    expect(backlogWeight('B+ (rising)')).toBe(0.08)
   })
 
   it('a signed shell adds its whole contract, shrinking as quarters are served; the top bar shows it unweighted', () => {

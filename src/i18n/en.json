@@ -563,7 +563,7 @@
   "ui.cap2.col.counted": "Counted",
   "ui.cap2.backstopped": "backstopped",
   "ui.cap2.total": "Total",
-  "ui.cap2.weights_note": "Weights by tenant credit: A/AA 15%, BBB 10%, backstopped 10%, others 5%, spot 0%.",
+  "ui.cap2.weights_note": "Weights by tenant credit: A/AA {aPct}, BBB {bbbPct}, backstopped {backstopPct}, others {belowPct}, spot 0%. Long A/AA or backstopped leases (5+ years left) are valued at 18× EBITDA or more.",
   "ui.cap2.valuation": "Valuation · {total}",
   "ui.cap2.val.mining": "Mining and hosting EBITDA {ebitda}/yr × {multiple}",
   "ui.cap2.val.ai": "AI EBITDA {ebitda}/yr × {multiple}",
