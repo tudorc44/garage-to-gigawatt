@@ -72,9 +72,20 @@ export function hostingKw(state: GameState, siteId: string): number {
     .reduce((kw, h) => kw + h.kw, 0)
 }
 
-/** kW taken at the site: your machines (placed anywhere in their life) and hosting. */
+/** kW of projects at the site (Act II): taken from opening until sold. */
+export function projectsKw(state: GameState, siteId: string): number {
+  return state.projects
+    .filter((p) => p.siteId === siteId && p.stage !== 'sold')
+    .reduce((kw, p) => kw + p.kw, 0)
+}
+
+/** kW taken at the site: your machines (placed anywhere in their life), hosting and projects. */
 export function usedKw(state: GameState, siteId: string): number {
-  return machinesKw(state, siteId) + hostingKw(state, siteId)
+  return (
+    machinesKw(state, siteId) +
+    hostingKw(state, siteId) +
+    projectsKw(state, siteId)
+  )
 }
 
 /** The site's Act II region (owner decision B3): its own tag, else its tier's; the garage has none. */

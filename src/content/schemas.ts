@@ -159,6 +159,20 @@ export const conversionsFileSchema = z.looseObject({
 /** One conversion's flat cost per MW ({ value, source, estimate }). */
 export const flatCapexSchema = sourced
 
+/** conversions.json › pilot_cluster (scope 0.2 §2.5 [P3], owner decision 27 Sep 2026). */
+export const pilotClusterSchema = z.looseObject({
+  mw_min: nonNeg,
+  mw_max: nonNeg,
+  mw_step: nonNeg,
+  available_from: quarterId,
+  build_quarters: z.number().int().min(0),
+  gpu: z.enum(['h100', 'h200', 'b200']),
+  revenue: z.looseObject({
+    utilisation_base: z.number().min(0).max(1),
+    utilisation_bonus_by_know_how: z.record(z.string(), nonNeg),
+  }),
+})
+
 export const tenantsFileSchema = z.looseObject({
   hosting_market_2022_2024: z.object({
     rate_usd_kwh: z
@@ -172,13 +186,97 @@ export const tenantsFileSchema = z.looseObject({
         ),
       ),
   }),
+  /** Projects (M3): the tenant cards a shell project can sign, and the take-or-pay terms. */
+  tenant_cards: z.array(
+    z.looseObject({
+      id: z.string(),
+      type: z.enum(['hyperscaler', 'ai_lab', 'neocloud_sub_tenant', 'spot']),
+      fictional_name: z.string(),
+      credit_rating: z.string(),
+      price_usd_mw_yr: nonNeg.optional(),
+      term_years: nonNeg,
+      prepayment_pct: nonNeg,
+      ready_by_window_quarters: z.tuple([nonNeg, nonNeg]),
+      capex_credit_cap_usd_mw: nonNeg.optional(),
+      unlock: z.string().optional(),
+      region_lock: z.string().optional(),
+    }),
+  ),
+  take_or_pay_terms: z.looseObject({
+    penalty_pct_of_annual_contract_per_quarter_late: sourced,
+    walk_chance_late_2q: z.looseObject({
+      hyperscaler: z.number().min(0).max(1),
+      neocloud_sub_tenant: z.number().min(0).max(1),
+      ai_lab: z.number().min(0).max(1),
+    }),
+  }),
 })
+
+/** A year / quarter keyed series with notes, e.g. { "2023": 7, "2026Q3": 5.25, "source": "…" }. */
+const numberSeries = z
+  .record(z.string(), z.unknown())
+  .transform((r) =>
+    Object.fromEntries(
+      Object.entries(r).filter(
+        (e): e is [string, number] => typeof e[1] === 'number',
+      ),
+    ),
+  )
 
 export const capitalAct2FileSchema = z.looseObject({
   era_multiple_ev_ebitda: z.object({
     mining: quarterAnchors,
     ai_infra: quarterAnchors,
   }),
+  /** Doc 18 §7.3: cap rates (%) by year, 2026Q3, and the 2026Q4 aftershock. */
+  cap_rate_pct: z.looseObject({
+    hyperscale_nnn_100mw_plus: numberSeries,
+    powered_shell_stabilized: numberSeries,
+  }),
+  /** Doc 18 §8: the share (%) of remaining take-or-pay revenue counted in the valuation. */
+  backlog_weight_pct_of_remaining_revenue: z.looseObject({
+    a_aa_tenant: nonNeg,
+    bbb_tenant: nonNeg,
+    ai_lab_tenant: nonNeg,
+    spot: nonNeg,
+  }),
+})
+
+// ---------- gpus.json and interrupts_act2.json ----------
+
+export const gpusFileSchema = z.looseObject({
+  generations: z.array(
+    z.looseObject({
+      id: z.string(),
+      /** "2022Q4 (shipping began …)": the loader reads the leading quarter. */
+      available_from: z.string().regex(/^\d{4}Q[1-4]/),
+      in_alpha_0_2: z.boolean(),
+      gpus_per_mw_it_load: sourced.optional(),
+    }),
+  ),
+})
+
+export const interruptsAct2FileSchema = z.looseObject({
+  new_interrupts: z.array(z.looseObject({ id: z.string() })),
+})
+
+/** interrupts_act2.json › construction_delay (scope §2.9 [P5]). */
+export const constructionDelaySchema = z.looseObject({
+  chance_pct: sourced,
+  choices: z.array(
+    z.looseObject({
+      id: z.string(),
+      cost_pct_of_capex: nonNeg.optional(),
+      bandwidth_next_quarter: z.number().optional(),
+      no_slip_chance: z.number().min(0).max(1).optional(),
+    }),
+  ),
+  default: z.string(),
+})
+
+/** interrupts_act2.json › gpu_allocation (scope §2.9). */
+export const gpuAllocationSchema = z.looseObject({
+  chance_pct: nonNeg,
 })
 export type MarketWeekAct1 = z.infer<typeof marketWeekSchema>
 export type MarketWeekAct2 = z.infer<typeof marketWeekAct2Schema>

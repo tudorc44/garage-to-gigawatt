@@ -1,5 +1,6 @@
 // Loads the content files, checks them against the schemas, and reshapes them for the sim.
-// Act I's files plus, so far, Act II's weekly market (the timeline runs 2017Q1 → 2026Q4). Any problem stops the game with a list of what's wrong, where.
+// Act I's files plus Act II's (the timeline runs 2017Q1 → 2026Q4). Any problem stops the game
+// with a list of what's wrong, where.
 import type { z } from 'zod'
 import machinesRaw from './machines.json' with { type: 'json' }
 import sitesRaw from './sites.json' with { type: 'json' }
@@ -11,6 +12,8 @@ import capitalRaw from './capital.json' with { type: 'json' }
 import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
 import conversionsRaw from './conversions.json' with { type: 'json' }
 import tenantsRaw from './tenants.json' with { type: 'json' }
+import gpusRaw from './gpus.json' with { type: 'json' }
+import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -22,8 +25,13 @@ import {
   auctionRulesSchema,
   capitalAct2FileSchema,
   capitalFileSchema,
+  constructionDelaySchema,
   conversionsFileSchema,
   flatCapexSchema,
+  gpuAllocationSchema,
+  gpusFileSchema,
+  interruptsAct2FileSchema,
+  pilotClusterSchema,
   tenantsFileSchema,
   curtailmentRulesSchema,
   heatFileSchema,
@@ -97,6 +105,70 @@ export interface ActSpan {
   act: 1 | 2
   firstQuarter: number
   lastQuarter: number
+}
+
+/** A tenant type (tenants.json); each has its own walk-away chance at 2 quarters late. */
+export type TenantType = 'hyperscaler' | 'ai_lab' | 'neocloud_sub_tenant'
+
+/** A tenant card a shell project can sign (tenants.json › tenant_cards). */
+export interface TenantCard {
+  id: string
+  type: TenantType
+  rating: string
+  priceUsdMwYr: number
+  termYears: number
+  /** Share of the whole contract value paid up front at signing. */
+  prepaymentShare: number
+  /** The ready-by quarter is drawn in this window after signing (quarters). */
+  readyBy: [number, number]
+  /** Capex the tenant funds, per MW (the CoreWeave-style anchor). */
+  capexCreditUsdMw: number
+  /** Only at this GPU know-how level (the overflow tenant: 3). */
+  needsKnowHow?: number
+  /** Only for sites in this region. */
+  regionLock?: string
+}
+
+/** A GPU generation a full-stack project can buy (gpus.json, per-unit GPUs in Alpha 0.2). */
+export interface GpuGeneration {
+  id: 'h100' | 'h200' | 'b200'
+  from: string
+  gpusPerMw: number
+}
+
+export interface ProjectRules {
+  tenantCards: TenantCard[]
+  walkChanceLate2q: Record<TenantType, number>
+  /** Liquidated damages per late quarter, as a share of the annual contract value. */
+  latePenaltyShareYr: number
+  retrofit: { buildQuarters: number }
+  fullStack: { extraBuildQuarters: number }
+  pilot: {
+    kwMin: number
+    kwMax: number
+    kwStep: number
+    from: string
+    buildQuarters: number
+    gpu: GpuGeneration['id']
+    utilisationBase: number
+    utilisationBonusByKnowHow: Record<string, number>
+  }
+  gpus: GpuGeneration[]
+  /** Cap rates (%) by year / quarter key, and the 2026Q4 aftershock (doc 18 §7.3). */
+  capRates: {
+    hyperscale: Record<string, number>
+    shell: Record<string, number>
+  }
+  /** Backlog weights (shares of remaining take-or-pay revenue, doc 18 §8). */
+  backlogWeights: { a: number; bbb: number; below: number; spot: number }
+  delay: {
+    chance: number
+    accelerateShareOfCapex: number
+    contractorBandwidthNext: number
+    contractorNoSlipChance: number
+    default: string
+  }
+  allocationChance: number
 }
 
 /** The six Act II region tags' power price columns (market_quarterly_act2). */
@@ -183,6 +255,8 @@ export interface Content {
     /** tenants.json › hosting_market_2022_2024.rate_usd_kwh, by year. */
     rateUsdKwhByYear: Record<string, number>
   }
+  /** Projects (Act II, scope 0.2 §2.5): what the Act II content files say about them. */
+  projects: ProjectRules
   machines: Machine[]
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
@@ -269,6 +343,8 @@ export interface RawContent {
   capitalAct2: unknown
   conversions: unknown
   tenants: unknown
+  gpus: unknown
+  interruptsAct2: unknown
   rivals: unknown
   heat: unknown
   shocks: unknown
@@ -333,6 +409,24 @@ export function parseContent(raw: RawContent): Content {
     raw.conversions,
   )
   const tenantsFile = check('tenants.json', tenantsFileSchema, raw.tenants)
+  const gpusFile = check('gpus.json', gpusFileSchema, raw.gpus)
+  const interruptsAct2File = check(
+    'interrupts_act2.json',
+    interruptsAct2FileSchema,
+    raw.interruptsAct2,
+  )
+  const act2Interrupt = (id: string) =>
+    interruptsAct2File?.new_interrupts.find((i) => i.id === id)
+  const delayRules = check(
+    'interrupts_act2.json › construction_delay',
+    constructionDelaySchema,
+    act2Interrupt('construction_delay'),
+  )
+  const allocationRules = check(
+    'interrupts_act2.json › gpu_allocation',
+    gpuAllocationSchema,
+    act2Interrupt('gpu_allocation'),
+  )
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const heat = check('heat.json', heatFileSchema, raw.heat)
   const hires = check('hires.json', hiresFileSchema, raw.hires)
@@ -380,6 +474,9 @@ export function parseContent(raw: RawContent): Content {
     !capitalAct2File ||
     !conversionsFile ||
     !tenantsFile ||
+    !gpusFile ||
+    !delayRules ||
+    !allocationRules ||
     !rivalsFile ||
     !auction ||
     !curtailment ||
@@ -553,6 +650,116 @@ export function parseContent(raw: RawContent): Content {
       aiInfra: interpolated.aiInfra[i] ?? 0,
     }),
   )
+
+  // Projects (scope 0.2 §2.5): tenant cards, build times, the pilot, GPUs, cap rates, backlog
+  // weights and the delay / allocation rules, from the Act II content files.
+  const conversion = (id: string) =>
+    conversionsFile.conversions.find((c) => c.id === id) as
+      Record<string, unknown> | undefined
+  const retrofit = conversion('mining_or_idle_to_ai_shell_retrofit')
+  const shellToFull = conversion('shell_to_fullstack')
+  const pilotRaw = check(
+    'conversions.json › pilot_cluster',
+    pilotClusterSchema,
+    conversion('pilot_cluster'),
+  )
+  if (typeof retrofit?.build_quarters !== 'number')
+    problems.push(
+      'conversions.json: needs mining_or_idle_to_ai_shell_retrofit with build_quarters',
+    )
+  if (typeof shellToFull?.build_quarters_additional !== 'number')
+    problems.push(
+      'conversions.json: needs shell_to_fullstack with build_quarters_additional',
+    )
+  const tenantCards: TenantCard[] = tenantsFile.tenant_cards.flatMap((c) =>
+    c.type === 'spot' || c.price_usd_mw_yr === undefined
+      ? []
+      : [
+          {
+            id: c.id,
+            type: c.type,
+            rating: c.credit_rating,
+            priceUsdMwYr: c.price_usd_mw_yr,
+            termYears: c.term_years,
+            prepaymentShare: c.prepayment_pct / 100,
+            readyBy: c.ready_by_window_quarters,
+            capexCreditUsdMw: c.capex_credit_cap_usd_mw ?? 0,
+            needsKnowHow: /level (\d)/.exec(c.unlock ?? '')?.[1]
+              ? Number(/level (\d)/.exec(c.unlock!)![1])
+              : undefined,
+            regionLock: c.region_lock,
+          },
+        ],
+  )
+  const gpus: GpuGeneration[] = gpusFile.generations.flatMap((g) =>
+    g.in_alpha_0_2 &&
+    (g.id === 'h100' || g.id === 'h200' || g.id === 'b200') &&
+    g.gpus_per_mw_it_load
+      ? [
+          {
+            id: g.id,
+            from: g.available_from.slice(0, 6),
+            gpusPerMw: g.gpus_per_mw_it_load.value,
+          },
+        ]
+      : [],
+  )
+  const delayChoice = (id: string) =>
+    delayRules.choices.find((c) => c.id === id)
+  for (const id of ['accelerate', 'accept_slip', 'change_contractor'])
+    if (!delayChoice(id))
+      problems.push(
+        `interrupts_act2.json › construction_delay: needs a "${id}" choice`,
+      )
+  const weights = capitalAct2File.backlog_weight_pct_of_remaining_revenue
+  const projects: ProjectRules = {
+    tenantCards,
+    walkChanceLate2q: tenantsFile.take_or_pay_terms.walk_chance_late_2q,
+    latePenaltyShareYr:
+      tenantsFile.take_or_pay_terms
+        .penalty_pct_of_annual_contract_per_quarter_late.value / 100,
+    retrofit: { buildQuarters: Number(retrofit?.build_quarters ?? 0) },
+    fullStack: {
+      extraBuildQuarters: Number(shellToFull?.build_quarters_additional ?? 0),
+    },
+    pilot: {
+      kwMin: (pilotRaw?.mw_min ?? 0) * 1000,
+      kwMax: (pilotRaw?.mw_max ?? 0) * 1000,
+      kwStep: (pilotRaw?.mw_step ?? 0) * 1000,
+      from: pilotRaw?.available_from ?? act2Quarters[0],
+      buildQuarters: pilotRaw?.build_quarters ?? 1,
+      gpu: pilotRaw?.gpu ?? 'h100',
+      utilisationBase: pilotRaw?.revenue.utilisation_base ?? 0,
+      utilisationBonusByKnowHow:
+        pilotRaw?.revenue.utilisation_bonus_by_know_how ?? {},
+    },
+    gpus,
+    capRates: {
+      hyperscale: capitalAct2File.cap_rate_pct.hyperscale_nnn_100mw_plus,
+      shell: capitalAct2File.cap_rate_pct.powered_shell_stabilized,
+    },
+    backlogWeights: {
+      a: weights.a_aa_tenant / 100,
+      bbb: weights.bbb_tenant / 100,
+      below: weights.ai_lab_tenant / 100,
+      spot: weights.spot / 100,
+    },
+    delay: {
+      chance: delayRules.chance_pct.value / 100,
+      accelerateShareOfCapex:
+        (delayChoice('accelerate')?.cost_pct_of_capex ?? 0) / 100,
+      contractorBandwidthNext:
+        delayChoice('change_contractor')?.bandwidth_next_quarter ?? 0,
+      contractorNoSlipChance:
+        delayChoice('change_contractor')?.no_slip_chance ?? 0,
+      default: delayRules.default,
+    },
+    allocationChance: allocationRules.chance_pct / 100,
+  }
+  if (!gpus.some((g) => g.id === projects.pilot.gpu))
+    problems.push(
+      `conversions.json › pilot_cluster: GPU "${projects.pilot.gpu}" isn't a per-unit GPU in gpus.json`,
+    )
 
   // Machines: prices must exist for every quarter the machine can be bought or sold.
   for (const m of machinesFile.models) {
@@ -765,6 +972,7 @@ export function parseContent(raw: RawContent): Content {
     acts,
     act2Market,
     hosting,
+    projects,
     machines: machinesFile.models,
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
@@ -936,6 +1144,8 @@ export const CONTENT: Content = parseContent({
   capitalAct2: capitalAct2Raw,
   conversions: conversionsRaw,
   tenants: tenantsRaw,
+  gpus: gpusRaw,
+  interruptsAct2: interruptsAct2Raw,
   rivals: rivalsRaw,
   heat: heatRaw,
   hires: hiresRaw,

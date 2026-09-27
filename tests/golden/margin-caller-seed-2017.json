@@ -43,6 +43,9 @@
   "equipmentLoan": null,
   "constructionLoans": [],
   "hosting": [],
+  "projects": [],
+  "projectEvents": [],
+  "firstAiDealQuarter": null,
   "cryptoLoan": {
     "coin": "ETH",
     "collateral": 187.75111711914687,

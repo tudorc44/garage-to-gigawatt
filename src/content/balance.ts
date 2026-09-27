@@ -95,6 +95,44 @@ export const BALANCE = {
     hoursPerQuarter: 2190,
   },
 
+  /**
+   * Act II projects (scope 0.2 §2.5, doc 18 §4–5). Tenant cards, build costs, GPUs, cap rates,
+   * backlog weights and the delay rule live in the Act II content files; these are the scope's
+   * and the design doc's own numbers.
+   */
+  projects: {
+    /** Scope §2.5: open 1, accept a tenant 0 (negotiate 2 comes later), start the build 1, sell 2. */
+    bandwidth: { open: 1, accept: 0, start: 1, sell: 2 },
+    /** Tenant offers from this quarter (doc 18 §2.3: "others 2023Q3"; the gpu_cloud head start comes later). */
+    tenantsFrom: '2023Q3',
+    /** Offers per shell project (like scouting, 2–3; +1 with the BD Lead, scope §2.8). */
+    offers: { min: 2, max: 3 },
+    /** AI shell lease: the host's costs are 15–20% of rent (doc 18 §4: an 80–85% margin); the tenant pays its power. */
+    shellOpexShare: 0.175,
+    /** AI cloud: power at a liquid-cooled AI hall's PUE (hires_act2.json operating_costs_ai_sites: 1.15). */
+    cloudPue: 1.15,
+    /** AI cloud: insurance a year on the GPUs' cost (hires_act2.json: 0.3–0.6% of replacement value). */
+    cloudInsuranceShareYr: 0.0045,
+    /** GPU know-how 0 (doc 18 §5.4): full stack costs +10%, and waiting for GPUs takes a quarter more. */
+    knowHowZero: { costMult: 1.1, extraWaitQuarters: 1 },
+    /** GPU know-how 3 at this many MW of live full stack (doc 18 §5.4). */
+    knowHowThreeKw: 100_000,
+    /** GPU allocation (scope §2.9; interrupts_act2.json gpu_allocation): 2023–24, pay 8% of capex or wait. */
+    gpuAllocation: {
+      from: '2023Q1',
+      to: '2024Q4',
+      premiumShareOfCapex: 0.08,
+      waitQuarters: 1,
+      week: 1,
+    },
+    /** Construction delays roll in a random week in this range (like the failure wave). */
+    delayWeeks: [2, 12] as readonly [number, number],
+    /** Scope §2.2: the mining multiple +2 from the quarter the first AI deal is signed. */
+    pivotPremium: 2,
+    /** Doc 18 §7.3: projects this big sell at the hyperscale NNN cap rate, smaller at the powered-shell rate. */
+    hyperscaleKw: 100_000,
+  },
+
   sites: {
     /** Tiers you can build straight away, without scouting first (scope §2.5: "Cash"). */
     noScoutingNeeded: ['small_unit'],

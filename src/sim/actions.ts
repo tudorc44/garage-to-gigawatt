@@ -21,6 +21,7 @@ import {
   type ContractType,
   type Condition,
   type GameState,
+  type ProjectKind,
   type Site,
 } from './state.ts'
 import {
@@ -89,6 +90,14 @@ import {
   rollHostingDefaults,
   startHosting,
 } from './systems/hosting.ts'
+import {
+  cancelProject,
+  fundWithCash,
+  openBlocker,
+  openProject,
+  signTenant,
+  useSpot,
+} from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
   baseCapexUsd,
@@ -136,6 +145,23 @@ export type Action =
   | { type: 'HOST_START'; siteId: string; kw: number }
   /** Act II: end a hosting contract (a quarter of fees mid-term; free while converting or renewing). */
   | { type: 'HOST_END'; contractId: string }
+  /** Act II: open a project on free energized kW at a site (1 Bandwidth; scope 0.2 §2.5). */
+  | {
+      type: 'PROJECT_OPEN'
+      siteId: string
+      kw: number
+      kind: ProjectKind
+      /** Cloud projects: the GPU generation (a pilot always uses conversions.json's). */
+      gpu?: string
+    }
+  /** Act II: a shell project signs one of its tenant offers (accept, 0 Bandwidth). */
+  | { type: 'PROJECT_SIGN_TENANT'; projectId: string; offerId: string }
+  /** Act II: a cloud project sells its capacity on spot (its Tenant slot). */
+  | { type: 'PROJECT_SPOT'; projectId: string }
+  /** Act II: fund a project with own cash (its Capital slot). */
+  | { type: 'PROJECT_FUND_CASH'; projectId: string }
+  /** Act II: drop a project that hasn't started building (0 Bandwidth). */
+  | { type: 'PROJECT_CANCEL'; projectId: string }
   /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
   | { type: 'SELL_TREASURY'; coin: Coin; pct: number }
   /** Talk to the neighbours at a site: cash + 1 Bandwidth for goodwill (heat.json outreach). */
@@ -677,6 +703,25 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'HOST_END':
       return endHosting(s, a.contractId)
+
+    case 'PROJECT_OPEN': {
+      const blocker = openBlocker(s, a)
+      if (blocker) return blocker
+      openProject(s, a)
+      return
+    }
+
+    case 'PROJECT_SIGN_TENANT':
+      return signTenant(s, a.projectId, a.offerId)
+
+    case 'PROJECT_SPOT':
+      return useSpot(s, a.projectId)
+
+    case 'PROJECT_FUND_CASH':
+      return fundWithCash(s, a.projectId)
+
+    case 'PROJECT_CANCEL':
+      return cancelProject(s, a.projectId)
 
     case 'LEAVE_SITE': {
       const site = s.sites.find((x) => x.id === a.siteId)

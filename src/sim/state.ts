@@ -114,6 +114,72 @@ export interface SiteOffer {
   flaw: string | null
 }
 
+/** What a project turns its MW into (scope 0.2 §2.4–2.5). */
+export type ProjectKind = 'shell' | 'cloud' | 'pilot'
+
+/** A tenant's offer on a shell project: a tenants.json card and the ready-by window it drew. */
+export interface TenantOffer {
+  id: string
+  card: string
+  /** Quarters after signing by which the project must be live (take-or-pay). */
+  readyByQuarters: number
+}
+
+/** The tenant a shell project signed (terms from its card). */
+export interface ProjectTenant {
+  card: string
+  signedQuarter: number
+  readyByQuarter: number
+  /** Quarters the project has been late so far (liquidated damages each). */
+  lateQuarters: number
+  /** The 2-quarters-late walk-away roll has happened. */
+  walkRolled: boolean
+  /** Prepayment still to be set off against rent. */
+  prepaymentLeftUsd: number
+  /** Quarters of the term already served (live). */
+  servedQuarters: number
+}
+
+/**
+ * A project (Act II, scope 0.2 §2.5): converts `kw` of one site to an AI shell lease, an AI
+ * cloud (your GPUs, on spot) or a pilot cluster. Proposed (filling its slots) → building → live
+ * → sold. Its kW are taken at the site from the moment it's opened.
+ */
+export interface Project {
+  id: string
+  /** 1, 2, 3 … for the name ("Warehouse AI 2"). */
+  n: number
+  siteId: string
+  kw: number
+  kind: ProjectKind
+  /** GPU generation (cloud and pilot), or null for a shell. */
+  gpu: string | null
+  openedQuarter: number
+  stage: 'proposed' | 'building' | 'live' | 'sold'
+  /** Tenant offers (shell projects). */
+  offers: TenantOffer[]
+  tenant: ProjectTenant | null
+  /** Cloud projects: sell capacity on the spot market (the only tenant option so far). */
+  spot: boolean
+  /** The capital slot: own cash (the other sources come with the capital milestone). */
+  capital: 'cash' | null
+  /** Capex committed and paid at the start of the build (after any tenant capex credit). */
+  capexUsd: number
+  gpuCount: number
+  startQuarter: number | null
+  /** The quarter it goes live (moves with delays and GPU waits). */
+  readyQuarter: number | null
+  soldQuarter: number | null
+}
+
+/** A construction delay or GPU allocation alert planned for this quarter (like the failure wave). */
+export interface PlannedProjectEvent {
+  projectId: string
+  kind: 'construction_delay' | 'gpu_allocation'
+  /** Week number (1–13): the check happens after this week is played. */
+  week: number
+}
+
 /**
  * Hosting (Act II, scope 0.2 §2.4): MW at one of your sites rented to another miner's ASICs. The
  * client pays an all-in rate per kWh its machines use (power passed through); you pay the site's
@@ -176,6 +242,12 @@ export interface GameState {
   constructionLoans: EquipmentLoan[]
   /** Hosting contracts at your sites (Act II). */
   hosting: HostingContract[]
+  /** Projects (Act II): AI shells, AI clouds and pilot clusters. */
+  projects: Project[]
+  /** This quarter's planned construction delay / GPU allocation checks. */
+  projectEvents: PlannedProjectEvent[]
+  /** The quarter the first AI deal was signed (the pivot premium), or null. */
+  firstAiDealQuarter: number | null
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
@@ -438,6 +510,9 @@ export function newGame(seed: number): GameState {
     equipmentLoan: null,
     constructionLoans: [],
     hosting: [],
+    projects: [],
+    projectEvents: [],
+    firstAiDealQuarter: null,
     cryptoLoan: null,
     auction: null,
     curtailment: null,

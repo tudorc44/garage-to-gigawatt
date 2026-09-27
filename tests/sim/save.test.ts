@@ -112,6 +112,9 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   'reports.*.hostingFeesUsd': 0,
   'quarterStats.reservationUsd': 0,
   'reports.*.reservationUsd': 0,
+  projects: [],
+  projectEvents: [],
+  firstAiDealQuarter: null,
 }
 
 /**

@@ -1016,6 +1016,13 @@ Sources: scope 0.2 §2.2–2.4, doc 18 §4–5 and §8, wireframes A2-02 / A2-03
     the numbers worse, because the underlying reinvest bot then refilled the MW with S19s at held 2022 prices.
 
 
+### STOPPED (M3)
+- **Contracted full stack (AI cloud with a tenant).** Scope §2.4 says an AI cloud is "contracted or spot", but the
+  content has no terms for a GPU contract: the tenant cards are shell leases priced per MW-year; the market file has
+  an H100 1-year contract $/GPU-hr but no rule for which price a contract locks, its term, or its utilisation.
+  Needs from the design thread: the price basis ($/GPU-hr at signing?), the term (the card's years, or 1–3?), the
+  billed utilisation (100% take-or-pay?), and the ready-by window. Built: clouds on spot only (like the pilot).
+
 ### STOPPED (M2) — answered by the owner, applied in M3.0–M3.3
 - Hosting client defaults in winters → A1 below. Idle MW's power reservation → A2 below.
 
@@ -1100,6 +1107,25 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   - The other §5 targets need AI projects (good / great path, delays, IRR, pilot, lifeline): after M3.
 - **M3.5** Projects: the model, content (tenant cards, conversions, GPUs, cap rates, backlog weights), opening a
   project, the Power slot (existing MW), the Tenant slot (tenant offers, spot), the Capital slot (own cash).
+  **Done.** New game copies `src/content/gpus.json` and `interrupts_act2.json` (= docs/act2-content, copy test);
+  the loader builds `CONTENT.projects` (tenant cards, walk chances, 3% late damages, build quarters, the pilot,
+  per-unit GPUs H100 / H200 / B200 with 750 per MW, cap rates, backlog weights, the delay and allocation rules);
+  `balance.ts` › projects holds the scope's own numbers (Bandwidth 1 / 0 / 1 / 2, tenants from 2023Q3, 2–3
+  offers, shell costs 17.5% of rent, cloud PUE 1.15 and insurance 0.45%/yr, know-how 0 +10% / +1 quarter wait,
+  pivot premium +2, 100 MW for the hyperscale cap rate). State: `projects`, `projectEvents`, `firstAiDealQuarter`.
+  `systems/projects.ts`: `PROJECT_OPEN` (1 BW; free energized kW at a non-garage site; pilot 0.5–2 MW in 0.5 steps
+  from 2023Q1; cloud GPUs by release date), offers drawn for shells (2–3, +1 BD Lead; no know-how-3 or wrong-region
+  cards), `PROJECT_SIGN_TENANT` (accept, 0 BW: ready-by = now + the drawn window; prepayment = its share of the
+  whole contract, in cash now; the first deal starts the pivot premium), `PROJECT_SPOT` (clouds), `PROJECT_FUND_CASH`,
+  `PROJECT_CANCEL` (before the build). `projectCapex`: retrofit $/MW (market file) × MW + GPUs × unit price (+10%
+  for a cloud at know-how 0) − the tenant's capex credit (capped at the retrofit). Project kW count as taken from
+  opening; MW by use: proposed = idle, building = building, live = AI shell / AI cloud.
+  Decisions (mine, reversible): Power slot = existing MW only (grid upgrade and on-site gas come with the sites
+  and regions work); Capital slot = own cash only (loans, DDTLs, equity come with the capital milestone); GPU
+  prices and neocloud rent before their first value (2023Q3) hold that value, so a 2023Q1 pilot can be priced;
+  the know-how +10% doesn't apply to the pilot (it's how you gain know-how); walk-away chance by tenant type
+  (scope P1), not the cards' own `walk_chance`; offers are drawn when a shell opens (and again later if none).
+  **Golden change (explained):** 11 goldens gain `"projects": []`, `"projectEvents": []`, `"firstAiDealQuarter": null`.
 - **M3.6** The build lifecycle: start build, building quarters, live units (AI shell lease, AI cloud / pilot on spot),
   take-or-pay (P1), construction delays (P5), the GPU allocation interrupt.
 - **M3.7** Valuation: sum of the parts (mining multiple + pivot premium, AI multiple), projects under construction at

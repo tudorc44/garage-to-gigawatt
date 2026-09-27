@@ -1,0 +1,64 @@
+{
+ "schema_version": 1,
+ "new_interrupts": [
+  {
+   "id": "construction_delay",
+   "trigger": "each building project, rolled per quarter",
+   "chance_pct": {"value": 15, "per": "building project per quarter", "source": "Alpha 0.2 scope v1.0 §2.9 / §7 [P5]: a flat 15% per project per quarter, so 39% of 3-quarter builds and 56% of 5-quarter builds slip at least once, matching the real 30-50% of projects (01-02 §5). The pack's 30-50% was a per-project rate; used per quarter it would make ~80% of builds slip", "estimate": true},
+   "choices": [
+    {"id": "accelerate", "label": "Pay to accelerate", "cost_pct_of_capex": 10, "effect": "no slip"},
+    {"id": "accept_slip", "label": "Accept the slip", "effect": "+1 quarter to the build"},
+    {"id": "change_contractor", "label": "Change contractor", "bandwidth_next_quarter": -1, "no_slip_chance": 0.5, "effect": "-1 BW next quarter, then 50% no slip (else +1 quarter)"}
+   ],
+   "default": "accept_slip",
+   "when_cap_full": "resolves silently as accept_slip and is logged (scope v1.0 §2.9)",
+   "frequency_note": "the most common interrupt by frequency, not by weight (doc 18 §16.3)",
+   "magnitude": "2-quarter delay on a full-stack project costs >=80% of that project's profit (05-systems-draft.md anchor, CONFIRMED -- see report §12)"
+  },
+  {
+   "id": "gpu_allocation",
+   "trigger": "2023-2024 H100 shortage window; any full-stack project ordering GPUs",
+   "chance_pct": 60,
+   "choices": ["pay a premium for earlier delivery (~8% of project capex)", "wait 1 quarter"],
+   "basis": "GPU Utils 2023 report: lead times up to 4-5 months at peak, easing to 8-12 weeks by early 2024"
+  },
+  {
+   "id": "spot_price_shock",
+   "trigger": "Jun 2025 (scripted, AWS cut) plus random thereafter",
+   "chance_pct_random": 15,
+   "choices": ["lock uncontracted capacity into a contract at the new price", "stay on spot"],
+   "basis": "AWS H100/H200/A100 price cut ~30-45%, Jun 2025 (sourced)"
+  },
+  {
+   "id": "tenant_rfp",
+   "trigger": "scripted + random, weight higher 2024-2025",
+   "choices": ["bid now (opens a negotiation, 2 BW)", "pass"],
+   "note": "counts as a card, not an interrupt, per 18-act-ii-design.md §9"
+  }
+ ],
+ "updated_interrupts": [
+  {
+   "id": "gpu_failure_wave",
+   "carried_from": "Act I machine_failure_wave",
+   "trigger": "full-stack cluster >=10,000 GPUs, random",
+   "chance_pct": null,
+   "magnitude": "at cluster scale, model a 'failure wave' roughly every 3-4 hours of game-time-equivalent, each event taking out 0.5-1% of the active cluster (matches Meta Llama 3: 148 GPU-level incidents / 16,384 GPUs ≈ 0.9% of fleet over a 54-day run)",
+   "cause_split": "GPU + HBM3 memory failures ≈50% of incidents; remainder software/network/CPU (CPUs are far more reliable at this scale)",
+   "cost_model": "repair/replace ≈$30,000 per failed GPU (hardware-only) if full replacement is needed; most incidents are short (hours), automated-recovery events (Meta maintained >90% effective training time despite ~7.76 unexpected interruptions/day)",
+   "source": "Tom's Hardware / DataCenterDynamics reporting on Meta's Llama 3 training run failure report (sourced)"
+  },
+  {
+   "id": "curtailment_ai_sites",
+   "carried_from": "Act I grid_curtailment",
+   "trigger": "heat waves; Texas SB6 mandatory curtailment equipment (after 2025-12-31)",
+   "note": "AI sites cannot curtail without an SLA penalty (unlike mining, which can profit from curtailment) -- ERCOT can now directly curtail large loads in emergencies (SB6, sourced)",
+   "sla_penalty_pct_mrc": {"value": 15, "source": "typical colocation SLA: below-99% uptime triggers a 15% monthly-recurring-charge credit, capped at 50% MRC/month (Advanced Hosting colo SLA; DCD SLA-risk guide)", "estimate": false}
+  },
+  {
+   "id": "tenant_lender_negotiation",
+   "carried_from": "Act I negotiation",
+   "trigger": "signing a tenant contract or a lender facility",
+   "note": "now covers tenant contracts (hyperscaler/AI-lab/neocloud) and lender facilities (project debt/DDTL/JV/backstop) using the same 3-round offer/counter-offer mini-game as Act I investor pitches, with a hidden limit set by tenants.json / lenders.json"
+  }
+ ]
+}

@@ -53,12 +53,28 @@ export function siteMwByUse(
   }
   out.hosting = Math.min(hostingLive, energized)
   const converting = Math.min(hostingPending, energized - out.hosting)
+  // Projects (Act II): live ones are AI shell or AI cloud; building ones are under construction;
+  // proposed ones hold their kW but use them for nothing yet (idle).
+  let projectBuilding = 0
+  for (const p of state.projects) {
+    if (p.siteId !== site.id || p.stage === 'sold') continue
+    if (p.stage === 'live') {
+      if (p.kind === 'shell') out.aiShell += p.kw
+      else out.aiCloud += p.kw
+    } else if (p.stage === 'building') projectBuilding += p.kw
+  }
+  const ai = out.aiShell + out.aiCloud
+  const projectConverting = Math.min(
+    projectBuilding,
+    Math.max(0, energized - out.hosting - converting - ai),
+  )
   out.mining = Math.min(
     machinesKw(state, site.id),
-    energized - out.hosting - converting,
+    Math.max(0, energized - out.hosting - converting - ai - projectConverting),
   )
-  out.building = total - energized + converting
-  out.idle = energized - out.hosting - converting - out.mining
+  out.building = total - energized + converting + projectConverting
+  out.idle =
+    energized - out.hosting - converting - ai - projectConverting - out.mining
   return out
 }
 

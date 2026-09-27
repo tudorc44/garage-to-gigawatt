@@ -3,7 +3,8 @@
 // pack's tooltips, glossary and news, copied from docs/act1-content/text.en.json).
 // Number params are formatted by name with fmt (src/ui/format.ts):
 //   …Usd → money, …Pct → percent, …Delta → ▲/▼ percent change, …Kw → power.
-// String params named model / tier / condition / flaw are content ids and get translated.
+// String params named model / tier / condition / flaw (and the others in ID_PARAMS) are content
+// ids and get translated.
 import en from './en.json' with { type: 'json' }
 import contentText from './content.en.json' with { type: 'json' }
 import { fmt } from '../ui/format.ts'
@@ -34,6 +35,9 @@ const ID_PARAMS: Record<string, string> = {
   eventChoice: 'event.',
   btcRead: 'read.',
   ethRead: 'read.',
+  tenant: 'tenant.',
+  kind: 'project_kind.',
+  gpu: 'gpu.',
 }
 
 function fill(text: string, params: MessageParams): string {
