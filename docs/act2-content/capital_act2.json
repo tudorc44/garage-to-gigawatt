@@ -1,0 +1,51 @@
+{
+ "schema_version": 1,
+ "era_multiple_ev_ebitda": {
+  "mining": {"2022Q4": 4, "2023Q4": 8, "2024Q4": 9, "2025Q4": 7, "2026Q3": 6, "2026Q4": 5,
+   "source": "multiples.vc public-comps snapshots (Sep2026): most miners show negative/near-zero LTM EBITDA making the multiple not-meaningful in practice; game value smooths this into a usable 4-9x band, CONFIRMING 18-act-ii-design.md §8's ⚙ 4-6/6/8-10/8/6 sequence is roughly right but 2025 should be lower (7x not 8x) given real 2025 EBITDA weakness at Core Scientific/Hut8/IREN", "estimate": true},
+  "ai_infra": {"2022Q4": 10, "2023Q4": 20, "2024Q4": 26, "2025Q4": 30, "2026Q1": 24, "2026Q2": 20, "2026Q3": 18, "2026Q4": 15,
+   "fix": "Alpha 0.2 scope v1.0 §7 (doc 18 §16.1): the 2026 AI-infra floor lowered to 15-18x, path 24 -> 20 -> 18 -> 15 (was 2026Q3 24, 2026Q4 20).",
+   "source": "CoreWeave EV/EBITDA LTM 15.0x (down from 38.8x 'Last FY', i.e. it compressed hard through 2026 as revenue caught up to valuation -- multiples.vc, sourced); Nebius EV/EBITDA LTM 68.3x (down from 133.4x) shows the same growth-multiple-compression pattern. Design doc's §8 sequence (12/18/25/30/22->18) is CONFIRMED directionally -- peak around the CoreWeave IPO (Mar 2025) then compression through 2026 is real and sourced, though the compression is sharper than the design assumed (down to ~15x by parts of 2026, not just 18x)", "estimate": true}
+ },
+ "ev_per_mw_usd_m": {
+  "pure_mining": {"2022Q4": 0.4, "2023Q4": 0.6, "2024Q4": 1.0, "2025Q4": 1.2, "2026Q3": 1.0, "2026Q4": 0.9,
+   "source": "≈ baseline, no clean single figure; derived from the Cipher 313MW @ $2.9M/MW being described as market-implied for a SITE WITH AN AI DEAL ANNOUNCED already trading far above pure-mining comps", "estimate": true},
+  "ai_hosting_deal_announced": {"2023Q4": 3, "2024Q4": 6, "2025Q4": 9, "2026Q3": 10, "2026Q4": 9,
+   "source": "Cipher Mining's 313MW capacity priced at $2.9M/MW (Jun2026, sourced) sits toward the LOW end of a broader $3-12M/MW cohort for miners with an announced AI hosting deal (rallies.ai, sourced)", "estimate": false},
+  "ai_stabilized_ig_backed": {"2024Q4": 18, "2025Q4": 24, "2026Q3": 27, "2026Q4": 25,
+   "source": "Digital Realty NoVA acquisition stabilized-asset benchmark: $27M/MW (sourced, rallies.ai)", "estimate": false},
+  "pivot_premium_mechanic": "announcing a hyperscaler-anchored AI hosting deal (e.g. Core Scientific-CoreWeave, Jun 2024) re-rates a miner from pure-mining EV/MW (~$0.3-1M/MW) toward the $3-12M/MW hosting-conversion band, with further re-rating toward $20-27M/MW as the deal is de-risked/energized/delivered and becomes investment-grade backed. This 8-14 cents-on-the-dollar gap between announced and stabilized value is the single best-sourced 'why sign contracts early' mechanic in this whole pack."
+ },
+ "backlog_weight_pct_of_remaining_revenue": {
+  "a_aa_tenant": 15, "bbb_tenant": 10, "ai_lab_tenant": 5, "spot": 0,
+  "source": "18-act-ii-design.md §8/§14 -- CONFIRMED as game value; no contradicting real-world data found (backlog-quality-weighted valuation is a design abstraction, not something companies report this way, but it is a reasonable simplification of how the market visibly prices CoreWeave/Nebius backlog differently by counterparty)"
+ },
+ "cap_rate_pct": {
+  "hyperscale_nnn_100mw_plus": {"2023": 7.0, "2024": 6.25, "2025": 5.25, "2026Q3": 5.25, "2026Q4_aftershock": 6.25,
+   "source": "maxlifedevelopment.com 2026 benchmarks (sourced): hyperscale NNN 5.00-5.50% by 2026; powered-shell stabilized 5.25-6.00%; wholesale colo 5.50-6.25%. DESIGN FLAG: 18-act-ii-design.md §7.3 assumed cap rates WIDEN in 2026 (6.5-7.5%) for the credit-squeeze narrative, but real 2023-2026 cap rates COMPRESSED steadily (asset class maturing, demand certainty rising) to ~5.25% by Sep2026. Recommended fix: keep compression through 2025-2026Q3, and model the widening the design wants as landing specifically in the 2026Q4 'aftershock' quarter (Oracle force majeure + DDTL spread widening triggering a real, if short, repricing) rather than across all of 2026."},
+  "powered_shell_stabilized": {"2023": 7.5, "2024": 6.75, "2025": 6.0, "2026Q3": 5.75, "2026Q4_aftershock": 6.5},
+  "powered_shell_yield_on_cost": {"2026": [7.0, 8.5], "source": "maxlifedevelopment.com"}
+ },
+ "equity_atm_rules": {
+  "typical_coupon_pct": [0, 2.5], "typical_conversion_premium_pct": [25, 40],
+  "dilution_pct_of_raise": [8, 20],
+  "source": "see lenders.json equity_atm instrument for real deal sizes (Core Scientific, IREN, TeraWulf converts)"
+ },
+ "lifeline_card_final_numbers": {
+  "site_mw": 20,
+  "site_source": "a bankrupt miner's site at the Dec 2022 Chapter 11 auction wave (Core Scientific / Compute North pattern)",
+  "price_usd": {"value": 6500000, "source": "≈ $325k/MW x 20MW, derived from the Argo->Galaxy Helios $65M/~200MW distressed sale ratio", "estimate": true},
+  "bridge_loan_apr_pct": 14,
+  "bridge_loan_tenor_quarters": 8,
+  "cash_floor_reached_usd": 5000000,
+  "confirmed_vs_design": "CONFIRMS 18-act-ii-design.md §2.2/§14 ⚙ values -- 20MW/$5M floor and a 14%/8q bridge loan are consistent with real distressed-auction pricing and 2022-23 crypto-lender rates"
+ },
+ "standalone_preset_final_numbers": {
+  "sites": "2: one 20MW owned site, one 20MW Texas lease on fixed power",
+  "fleet": "S19 class at 70% of rated capacity",
+  "cash_usd": 12000000,
+  "equipment_debt_usd": 25000000,
+  "founder_stake_pct": 45,
+  "confirmed_vs_design": "18-act-ii-design.md §2.4 numbers are reasonable mid-size-miner figures for Q4 2022 (a company roughly IREN/Cipher pre-IPO scale) -- CONFIRMED, no change recommended"
+ }
+}

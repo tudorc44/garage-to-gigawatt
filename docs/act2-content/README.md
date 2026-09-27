@@ -1,7 +1,14 @@
 # Act II content (fixed copies)
 
 The originals are in `docs/game-project-files/claude_act2-content_*` (the design thread's snapshot, left untouched).
-Files here are the corrected versions that the Act II build should read. So far only the two market files are here.
+Files here are the corrected versions that the Act II build should read: the two market files, and the JSON files
+changed by the Alpha 0.2 scope's content fixes (§7, below), copied under short names (e.g. `claude_act2-content_tenants.json`
+→ `tenants.json`). Any Act II file not here (regions, sites, rivals, Merge head starts) is used as it is in
+`docs/game-project-files/`.
+
+**Note for the future market loader:** 2024Q3 has 14 weeks. If the loader trims it to 13 (as Act I does), drop one of
+the earlier weeks and **keep the last week**: it carries the real quarter close (BTC and ETH), which
+`market_quarterly.csv` repeats.
 
 ## market_weekly.csv / market_quarterly.csv: fixes of 27 Sep 2026
 
@@ -56,3 +63,60 @@ The pack had no ETH price after 2022Q3, but the ETH treasury and ETH-backed loan
 - **2026 hashprice is now $38–41** (the pack's curve said $46–50, unsourced). It's consistent with the pack's own
   price and difficulty, and with its miner-capitulation story, but it's lower pay for miners.
 - The pack's own follow-ups still stand: ASIC $/TH index and FRED-verified SOFR/credit spreads.
+
+## JSON content fixes (Alpha 0.2 scope v1.0 §7, 27 Sep 2026)
+
+Each change is also marked inside the file (a `fix`, `source`, `note` or `scope_note` field that names the scope section),
+and the existing text is otherwise left as the pack wrote it.
+
+- **`capital_act2.json`** › `era_multiple_ev_ebitda.ai_infra`: 2026 path 24 → 20 → 18 → 15 (2026Q1–Q4). The pack had 2026Q3 24,
+  2026Q4 20 and no Q1/Q2 anchors.
+- **`gpus.json`:**
+  - `gpus_per_mw_it_load` for H100 and H200 1,000 → **750** (the all-in ~1.2–1.4 kW per GPU).
+  - Every generation has `in_alpha_0_2`: true for H100, H200, B200 and GB200 NVL72; **false for the A100** (not buyable) and
+    **GB300 NVL72** (Act III), each with a `scope_note`.
+- **`tenants.json`** › `take_or_pay_terms` [P1]:
+  - The late penalty is **3%** of annual contract value per late quarter (was a 1–3% range).
+  - `termination_chance_at_2q_late` 0.50 is replaced by **`walk_chance_late_2q`** per tenant type: hyperscaler 0.05,
+    neocloud 0.10, AI lab 0.20 (the same values already in `tenant_types`).
+- **`conversions.json`:**
+  - New **`mining_to_hosting_same_site`** [P2]: $100K/MW, 0 build quarters (ready next quarter).
+  - The pack's `mining_to_hosting` is **renamed `gpu_hall_to_hosting`** (id and label; its $1.5–3M/MW is for GPU halls).
+  - New **`pilot_cluster`** tier [P3], with the owner's decision of 27 Sep 2026:
+    - 0.5–2 MW in 0.5 MW steps, spot-only (no tenant slot), from 2023Q1, 1 quarter build plus the GPU allocation queue.
+    - 750 H100s per MW; capex = 750 × the H100 price + the shell retrofit cost of that quarter.
+    - Financed by the equipment loan on the GPUs.
+    - Revenue = the H100 **neocloud** price × utilisation: 70%, +5 points at know-how 2, +10 at 3.
+- **`lenders.json`** › `credit_rating_mapping` [P4]:
+  - The > 6× weak-backlog cell "D (foreclosure)" → **CCC−**.
+  - Added `corporate_rating_range` (CCC− to BBB), `project_debt_can_rate_a`, `runway_notch` (runway under 4 quarters → −1
+    notch) and `never_forecloses`.
+- **`interrupts_act2.json`** › `construction_delay` [P5]:
+  - **15%** per building project per quarter (was 30–50%).
+  - Structured choices: accelerate = 10% of capex, no slip; accept the slip (+1 quarter, the default); change contractor =
+    −1 BW next quarter, then 50% no slip.
+  - `when_cap_full`: resolves silently as accept the slip, logged.
+- **`events_act2.json`:**
+  - `ec13_deepseek_wobble` gets a third choice, **Buy the dip** (`gpu_price_mult_next_plan` 0.9, `bandwidth` −1), and a
+    scripted `market_effect` (AI demand −10, AI multiple −3, 2 quarters).
+  - The `deepseek_shock` timeline entry's effect matches (it said "growth pauses for 1 quarter"), with a `game_effect` block.
+- **`hires_act2.json`:** every hire has `in_alpha_0_2`. The **Government Affairs Lead is false** (Act III, kept in the file,
+  not loaded); the other 7 are true.
+- **`text_act2_en.json`:**
+  - `tt03` now says "CCC to BBB" and "Act I had no such meter".
+  - New tooltip **`tt07_pilot_cluster`**.
+  - **10 more ticker headlines** (35 in all, marked `"added"`). Every quarter now has at least one, including 2026Q4.
+  - The new headlines follow the pack's style (real events, no company names): Nvidia's May 2023 guidance, the Jul 2023 rate
+    peak, the H200 announcement, Core Scientific leaving Chapter 11, the Aug 2024 yen unwind, the Apr 2025 tariff low,
+    ETH's Aug 2025 high, the Feb 2026 hashrate peak, the Sep 2026 hike, and a speculative 2026Q4 aftershock line.
+
+### Open points found while applying the fixes
+- **Pilot cost:** the pack's own prices give **$30.75M/MW** in 2023Q3 (750 × $32,000 + $6.75M retrofit) and $30.25M in 2023Q4,
+  just under the scope's $31–33M. Recorded in `pilot_cluster.capex_usd_mw.check_note`; not forced to match.
+- **The pilot opens in 2023Q1, but `gpus.json` has no H100 price before 2023Q3** (and the neocloud rental series also starts
+  in 2023Q3). The loader needs a rule (e.g. hold the 2023Q3 values earlier) or the data a 2023Q1–Q2 anchor.
+- **GB200 NVL72 has no `gpus_per_mw_it_load`** (the pack prices it per rack: 72 GPUs, ~120 kW). Its per-MW figures will need
+  deriving from `kw_per_rack` or adding.
+- **Tooltips:** the scope lists 6 (MW uses, projects, credit rating, backlog, tenants, pilot). The file now has 7 (the pack's
+  `tt06_regions` kept). `tt01` says "Nothing builds until all three are filled", which the pilot (no tenant slot) is an
+  exception to.

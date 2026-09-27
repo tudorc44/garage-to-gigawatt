@@ -791,6 +791,11 @@ decisions per quarter, 5 crash-free runs, 3 outside testers). Small follow-ups: 
 JS chunk is just over Vite's 500 KB warning (card text; split it later).
 **Act II** (27 Sep 2026): scope frozen (v1.0, `docs/alpha-0.2-scope.md`); P1–P5, the pilot and the ETH series
 decided. Still blocking the build: the wireframes (doc 21 v1.0 → Claude Design) and the Act I playtests, which
-scope 0.2 §6 puts before Act II code. Preparation that can happen now: the scope §7 content fixes.
+scope 0.2 §6 puts before Act II code. **The scope §7 content fixes are applied** (27 Sep 2026): corrected copies
+of 9 Act II JSON files in `docs/act2-content/` (capital_act2, gpus, tenants, conversions, lenders, interrupts_act2,
+events_act2, hires_act2, text_act2_en), each change listed in its README. Open points from that pass (in the README):
+the pilot comes to $30.25–30.75M/MW with the pack's prices (scope says $31–33M); no H100 price or neocloud rent
+before 2023Q3 although the pilot opens in 2023Q1; GB200 NVL72 has no GPUs-per-MW value; 7 tooltips against the
+scope's 6. The market loader should trim 2024Q3 (14 weeks) by keeping its last week (the real quarter close).
 Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing
 EBITDA, clamped to ±30% of the capital.json terms).
