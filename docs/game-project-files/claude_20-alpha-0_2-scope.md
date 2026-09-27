@@ -182,8 +182,8 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
 - [ ] Overleveraged full stack (> 6× debt/EBITDA, AI-lab tenant, no backstop): **≥ 50% foreclosure** in 2026
 - [ ] A 2-quarter delay costs **≥ 80%** of a full-stack project's profit
 - [ ] A 2024 full-stack contract beats a post-Jun-2025 one by **≥ 30%** IRR (a floor, not a target)
-- [ ] **Pilot timing:** a 1 MW pilot started in 2023Q3 returns **≥ 1.7×** its cost by 2026Q4 (operating margin + GPU resale); the same pilot started in 2025Q2 returns **≤ 1.3×**. (Reference calculation from the pack's prices, 70–80% utilisation, 50% resale, power only as opex: ≈ 1.9–2.2× vs ≈ 1.2–1.3×.)
-- [ ] **Hosting isn't a free win:** switching mining MW to hosting in 2022Q4–2023 (at ~$0.1M/MW) doesn't beat staying in mining in more than ~60% of bot runs over 2022Q4–2024Q1 (proposed threshold; the point is that hosting must not be a dominant, near-free switch)
+- [ ] **Pilot timing:** a 1 MW pilot started in 2023Q3 returns **≥ 1.7×** its cost by 2026Q4 (operating margin + GPU resale on the residual curve), and at least 0.4× more than the same pilot started in 2025Q2 (revised 27 Sep 2026: the M4 sim gives 1.89× vs 1.39×)
+- [ ] **Hosting isn't a free win:** switching mining MW to hosting doesn't beat staying in mining at 2026Q4 in more than ~60% of bot runs (hosting is meant to pay early and carry its risk over the full act; revised 27 Sep 2026 after the M3/M4 sims)
 - [ ] A lifeline run (weak Act I) reaches at least one live AI project by 2024Q4 in ≥ 70% of runs (via the 5 MW shell path)
 - [ ] Each Merge head start produces a different best opening strategy (checked by bot comparisons)
 - [ ] **EV/MW sanity check:** pure mining ~$0.4–1.2M/MW, announced AI $3–12M/MW, stabilized IG-backed $18–27M/MW
@@ -238,3 +238,5 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
    - §12 pilot anchor "pays back within 6 quarters on spot; a 2025Q2 pilot doesn't pay back within Act II" → replaced by the return-multiple comparison in §5 (at the neocloud price, a 2025Q2 pilot still recovers its cost, thanks to the 2026 "Hopper isn't dead yet" rebound).
    - §2.1 "coin treasury as is": ETH now has a price all act.
    - §8 valuation formula: adds projects under construction at capex spent, so a build doesn't erase its cost from the valuation until it goes live (owner decision, 27 Sep 2026).
+9. §2.2 credit rating: sets the spread over SOFR and the max LTV of the equipment loan (the only corporate debt); no general corporate term loan (owner decision 27 Sep 2026).
+10. §5 targets revised after the M3/M4 sims: hosting check judged at 2026Q4; pilot target as a margin over the 2025Q2 pilot. The switched-off-MW power reservation was tried and reverted (reservation applies to idle and under-construction MW only).

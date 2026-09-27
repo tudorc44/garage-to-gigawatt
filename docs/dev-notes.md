@@ -111,27 +111,23 @@ additions and chapter report, onboarding tooltips.
 - B7 ASIC prices from the $/TH tiers (S9 old, S19 Pro new); the S21 (200 TH, 3,500 W) from 2024Q1.
 - GPU contracts for clouds: neocloud, AI-lab and enterprise cards (overflow at know-how 3); price = H100 1-year
   contract × term factor (1 y 100%, 2 y 85%, 3 y 70%), H200 × 1.2; take-or-pay on every GPU; back to spot after.
-- Reservation also on machines switched off for the whole quarter; hosting check left at 2024Q1 even if it misses.
 - Pilot waits 1 quarter in the GPU queue. GPU resale: price × (1 − 15%/year), floor 35%; "Sell GPUs" (1 BW).
 - Deal builder IRR for clouds and pilots: 5 years + the year-5 residual.
 - Backstopped tenant backlog weight 10%; live AI MW count half of mining's Heat load.
 - H200 rent = H100 × 1.20 (market file). M4 = capital (built).
 
-## Open questions for the design thread
+### Owner decisions on the M4 questions (27 Sep 2026)
+- **Rating → corporate debt:** the equipment loan (machines + delivered GPUs) is the only corporate debt; its rate
+  and max LTV come from the rating when it's taken (8-quarter tenor): BBB band SOFR + 2.5% / 60%, BB + 4.0% / 50%,
+  B + 6.0% / 40%, CCC + 9.0% / 25%. No corporate term loan ("Raise debt" off the Capital screen); a "Bridge" row
+  only when a lifeline bridge loan exists.
+- **Equity** is priced off the valuation including contracts signed this quarter (backlog weight + pivot premium
+  at once), not last quarter's report. Capex credits and LTVs untouched until the M5 re-check.
+- **The reservation on switched-off machines is reverted** (idle and building MW only, as in M3.1); no "release MW".
+- **Scope §5 revised:** hosting check at 2026Q4 (≤ ~60% of runs); pilot 2023Q3 ≥ 1.7× and ≥ 0.4× above the 2025Q2
+  pilot. §8 records both. The M4 choices (archive › "Milestone M4 report") are all approved.
 
-From M4 (the full report is in the archive › "Milestone M4 report"):
-1. **Rating → corporate debt terms** (STOPPED): a spread and a max leverage per rating band.
-2. **Good and great path targets are far off:** the good path can't fund a 20 MW shell's equity (~$34M at 75%
-   debt, from ~$15M); the great path's MW are full of working ASICs. Which lever: more tenant capex credits or
-   prepayments, a higher project-debt LTV, equity priced off projected value, the lifeline / head starts, or
-   lower targets?
-3. **The switched-off reservation** makes the good path fragile (raise-climb 14/50 busts, shell-capital 22/50;
-   was 1/50). Keep, soften, or accept?
-4. Hosting 45/50 (target ≤ ~60%) and the 2025Q2 pilot 1.39× (target ≤ 1.3×): accept?
-5. Confirm my M4 choices: a debt row takes the most the lender allows; DSCR only sizes the loan; a missed payment
-   adds its interest instead of forcing a sale; the DDTL's tenor = the GPU contract's term; project debt 75% on
-   A/AA, 60% on BBB; the JV shares earnings but not debt service; a backstopped tenant doesn't walk; one equity
-   raise a quarter.
+## Open questions for the design thread
 
 Still open from Act I (never answered; details in the archive):
 - Leaving the 100 kW site also locks you out of the seed round. Intended? Is the seed round too generous?
@@ -141,8 +137,7 @@ Still open from Act I (never answered; details in the archive):
 
 ## STOPPED
 
-- **Rating → rate and leverage of new corporate debt** (scope 0.2 §2.2): the content has no rating → spread or
-  rating → leverage numbers. Built: the rating, its inputs and display; the equipment loan keeps its fixed terms.
+(none)
 
 ## Small follow-ups
 
@@ -153,7 +148,21 @@ Still open from Act I (never answered; details in the archive):
   clamped to ±30% of the `capital.json` terms).
 - The Deal builder's projected return doesn't net out a JV partner's share yet.
 
+## Milestone M5 (in progress): owner answers, then entry and the world
+
+Housekeeping (dev-notes trim, archive, CLAUDE.md batch rules) was already done on the Mac (`f1abef6`).
+- **M5.0a** owner decisions recorded; scope §5 / §8 edits. **M5.0b** revert the switched-off reservation.
+  **M5.0c** rating → equipment-loan terms. **M5.0d** equity priced off the current valuation. **M5.0e** bots
+  sign-then-raise and asic-retirer, sims.
+- **M5.1** Merge head starts (doc 18 §2.3). **M5.2** lifeline card + bridge loan. **M5.3** standalone preset and
+  "Start at Act II" (A2-01, A2-02). **M5.4** regions: region panel, Ratepayer Anger, regional policy events.
+  **M5.5** scouting with Act II site categories and flaws. **M5.6** grid upgrades and on-site gas (Power slot).
+  **M5.7** Act II hires and Bandwidth. **M5.8** the 24 event cards. **M5.9** Act II interrupts. **M5.10** bots,
+  sims and the M5 report.
+
+### M5 progress
+- M5.0a: done.
+
 ## Next
 
-The design thread's answers to the M4 questions above, then the next Act II milestone (scope 0.2 §6.4: regions,
-events and rivals, the Act II hires, head starts / lifeline / preset, the chapter report), as the owner orders.
+Carry on with M5 (above).
