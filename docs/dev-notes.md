@@ -214,3 +214,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   Mine: fixed limits (no random draw); a GPU contract's $/GPU-hr × the won multiple; lender walk = that debt off this quarter.
 - M6.0j: air-permit lawsuit rolled once as the gas plant is due on (mine: that moment): $1M, plant off 2 more quarters, project waits
   (projects.ts › gasLawsuits). A plant switches on with its project, so the "live → grid power / curtail" case can't arise yet.
+- M6.0k: ec18 audit (eventEffects › depreciationAudit): Q4 ends while the ×1.1 runs, 10% → boost ends, −1 notch and equity × 0.9 this quarter and
+  next (mine: "2 quarters" counted from the audit's). SB6 per site on energized MW. SVB: arranged debt exempt (moot: project debt opens 2023Q3).

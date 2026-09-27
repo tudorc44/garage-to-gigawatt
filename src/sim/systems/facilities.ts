@@ -47,7 +47,10 @@ export function debtBlocker(
   const from = kind === 'project_debt' ? f.projectDebt.from : f.ddtl.from
   if (CONTENT.quarters[state.quarter] < from)
     return { key: 'error.debt_early', params: { quarter: from } }
-  if (debtFrozen(state)) return { key: 'error.debt_frozen' }
+  // The SVB freeze stops new debt only: debt already arranged on a project can still draw (owner,
+  // 28 Sep 2026).
+  const arranged = kind === 'project_debt' ? p.debt?.projectDebt : p.debt?.ddtl
+  if (debtFrozen(state) && !arranged) return { key: 'error.debt_frozen' }
   if (p.stage !== 'proposed') return { key: 'error.project_started' }
   if (p.debt?.walkedQuarter?.[kind] === state.quarter)
     return { key: 'error.lender_walked' }

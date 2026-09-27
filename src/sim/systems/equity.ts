@@ -8,6 +8,7 @@ import type { Message } from '../../i18n/t.ts'
 import { logEntry, type GameState } from '../state.ts'
 import { contractWeight, remainingContractUsd } from './projects.ts'
 import { aiEbitdaUsd } from './valuation.ts'
+import { auditEquityMult } from './eventEffects.ts'
 
 /** The raisesDone entry that marks this quarter's equity raise (one a quarter). */
 const marker = (quarter: number) => `equity-${CONTENT.quarters[quarter]}`
@@ -43,7 +44,11 @@ export function equityPreMoneyUsd(state: GameState): number {
   const report = state.reports.at(-1)
   if (!report) return 0
   const added = signedThisQuarterUsd(state)
-  return Math.max(0, report.valuationUsd + added.backlogUsd + added.pivotUsd)
+  // An audit that found aggressive depreciation prices equity 10% lower for 2 quarters (M6.0k).
+  return (
+    Math.max(0, report.valuationUsd + added.backlogUsd + added.pivotUsd) *
+    auditEquityMult(state)
+  )
 }
 
 /** What raising at `dilution` brings in now. */

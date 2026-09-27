@@ -39,7 +39,7 @@ import {
   weightedBacklogUsd,
 } from './projects.ts'
 import { aiEbitdaUsd, ebitdaUsd, valuationUsd } from './valuation.ts'
-import { lasting } from './eventEffects.ts'
+import { depreciationAudit, lasting } from './eventEffects.ts'
 
 /**
  * Runs after week 13. If cash is below zero: sell treasury coins, then machines
@@ -55,6 +55,8 @@ export function endQuarter(state: GameState): void {
   state.quarterStats.principalUsd += service.principalUsd
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   state.cash = roundCents(state.cash)
+  // Aggressive depreciation's Q4 audit (card ec18): a restatement shows in this quarter's report.
+  if (act2Quarter(state.quarter)) depreciationAudit(state)
   const report = buildReport(state, w, forcedSale)
   if (act2Quarter(state.quarter)) {
     const previous = state.creditRating

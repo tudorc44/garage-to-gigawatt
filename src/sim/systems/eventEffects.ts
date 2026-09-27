@@ -3,7 +3,8 @@
 // Kept apart from the event engine (events.ts) so mining, rent and buying can read them
 // without importing the whole engine.
 import { BALANCE, CONTENT, type Machine } from '../../content/index.ts'
-import type { Condition, GameState } from '../state.ts'
+import { chance, substream } from '../rng.ts'
+import { logEntry, type Condition, type GameState } from '../state.ts'
 import { buyPrice } from './market.ts'
 
 export interface ScheduledEvent {
@@ -81,6 +82,8 @@ export interface EventState {
   moratoriumWaiver: Record<string, number>
   /** Act II card ec21: no new projects at your sites in this region until (and including) a quarter. */
   regionMoratorium?: { region: string; until: number } | null
+  /** An audit found aggressive depreciation (M6.0k): rating notch and cheaper equity until a quarter. */
+  auditPenalty?: { until: number } | null
 }
 
 export function emptyEventState(): EventState {
@@ -125,10 +128,37 @@ export function marketEffectsAt(quarter: number) {
   })
 }
 
+/**
+ * At the end of a Q4 (Act II): while aggressive depreciation's EBITDA boost runs (card ec18), an
+ * audit comes with its chance. A hit restates the numbers (the boost ends now) and costs a rating
+ * notch and 10% on equity prices for 2 quarters (owner, 28 Sep 2026). Its own random stream.
+ */
+export function depreciationAudit(state: GameState): void {
+  const boost = lasting(state, state.events.ebitdaMult)
+  if (!boost || boost.mult <= 1) return
+  if (!(CONTENT.quarters[state.quarter] ?? '').endsWith('Q4')) return
+  const a = BALANCE.act2Events.audit
+  const r = substream(state.seed, `depreciation_audit:${state.quarter}`)
+  if (!chance(r, a.chance)) return
+  state.events.ebitdaMult = null
+  state.events.auditPenalty = { until: state.quarter + a.quarters - 1 }
+  logEntry(state, 'log.depreciation_audit', { quarters: a.quarters })
+}
+
+/** Equity is priced this much lower after an audit found aggressive depreciation (1 otherwise). */
+export function auditEquityMult(state: GameState): number {
+  return lasting(state, state.events.auditPenalty ?? null)
+    ? BALANCE.act2Events.audit.equityMult
+    : 1
+}
+
 /** Credit-rating notches from the timeline and from cards now (negative = down). */
 export function eventRatingNotches(state: GameState): number {
   return (
     (lasting(state, state.events.creditNotch)?.notches ?? 0) +
+    (lasting(state, state.events.auditPenalty ?? null)
+      ? BALANCE.act2Events.audit.notches
+      : 0) +
     marketEffectsAt(state.quarter).reduce(
       (n, m) => n + (m.credit_notch ?? 0),
       0,

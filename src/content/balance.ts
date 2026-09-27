@@ -288,6 +288,12 @@ export const BALANCE = {
   act2Events: {
     bigClusterGpus: 10_000,
     jvShare: 0.65,
+    /**
+     * Aggressive depreciation's audit risk (card ec18; owner, 28 Sep 2026): while its EBITDA boost
+     * runs, each Q4 ends with a `chance` audit. A hit restates the numbers (the boost ends), and for
+     * `quarters` (that one and the next; mine) the rating is `notches` lower and equity prices × `equityMult`.
+     */
+    audit: { chance: 0.1, notches: -1, quarters: 2, equityMult: 0.9 },
   },
 
   /**

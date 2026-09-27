@@ -18,7 +18,7 @@ import type { LotWeek } from './mining.ts'
 import { mineWeek } from './mining.ts'
 import { annualContractUsd } from './projects.ts'
 import { directCurtailment } from './regions.ts'
-import { capacityKw, getTier, regionOf } from './sites.ts'
+import { getTier, poweredKw, regionOf } from './sites.ts'
 
 /** The 1-based week after which the grid asks this quarter, or null if it doesn't. */
 export function curtailmentAlertWeek(state: GameState): number | null {
@@ -113,7 +113,8 @@ export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
       (s) =>
         isGridSite(state, s) &&
         regionOf(s) === 'ercot' &&
-        capacityKw(s) >= sb6.minKw,
+        // Per site, on its energized MW (owner, 28 Sep 2026).
+        poweredKw(s, state.quarter) >= sb6.minKw,
     )
   return {
     mw,

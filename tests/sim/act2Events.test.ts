@@ -4,6 +4,13 @@ import { describe, expect, it } from 'vitest'
 import { CONTENT, act2Quarter } from '../../src/content/index.ts'
 import { projectCapex } from '../../src/sim/systems/projects.ts'
 import {
+  auditEquityMult,
+  debtFrozen as debtFrozenNow,
+  depreciationAudit,
+  eventRatingNotches,
+} from '../../src/sim/systems/eventEffects.ts'
+import { debtBlocker } from '../../src/sim/systems/facilities.ts'
+import {
   projectPolicy,
   regionPowerAdderUsdKwh,
 } from '../../src/sim/systems/regions.ts'
@@ -136,6 +143,58 @@ describe('card effects', () => {
       powerPriceUsdKwh(georgia.sites[1], q('2025Q1')),
       9,
     )
+  })
+
+  it('aggressive depreciation: a 10% audit each Q4 while it runs → restated, −1 notch and equity × 0.9 for 2 quarters', () => {
+    let hits = 0
+    for (let seed = 1; seed <= 300; seed++) {
+      const s = { ...act2Company('2025Q4', seed) }
+      s.events.ebitdaMult = { mult: 1.1, until: s.quarter + 4 }
+      depreciationAudit(s)
+      if (s.events.ebitdaMult === null) {
+        hits++
+        expect(s.events.auditPenalty).toEqual({ until: s.quarter + 1 })
+        expect(eventRatingNotches(s)).toBe(-1)
+        expect(auditEquityMult(s)).toBe(0.9)
+        expect(auditEquityMult({ ...s, quarter: s.quarter + 2 })).toBe(1)
+      }
+    }
+    expect(hits).toBeGreaterThan(15)
+    expect(hits).toBeLessThan(50)
+    // Not in a Q3, and never with the conservative schedule.
+    const q3 = act2Company('2026Q3')
+    q3.events.ebitdaMult = { mult: 1.1, until: q3.quarter + 2 }
+    const safe = act2Company('2025Q4')
+    safe.events.ebitdaMult = { mult: 0.9, until: safe.quarter + 4 }
+    for (const s of [q3, safe]) {
+      depreciationAudit(s)
+      expect(s.events.auditPenalty ?? null).toBeNull()
+    }
+  })
+
+  it('the SVB freeze stops new debt, but debt already arranged on a project still draws', () => {
+    let s = ok(act2Company('2023Q3'), {
+      type: 'PROJECT_OPEN',
+      siteId: 'site-2',
+      kw: 5000,
+      kind: 'shell',
+    })
+    const p = s.projects[0]
+    p.offers[0].card = 'tc_north_azure_cloud'
+    s = ok(s, {
+      type: 'PROJECT_SIGN_TENANT',
+      projectId: p.id,
+      offerId: p.offers[0].id,
+    })
+    // Project debt and DDTLs open only in 2023Q3, after the 2023Q2 freeze: in the freeze they're
+    // "too early", so the freeze itself only stops the equipment and crypto loans.
+    s.projects[0].debt = { projectDebt: true, ddtl: false }
+    const frozen = { ...s, quarter: q('2023Q2') }
+    expect(debtFrozenNow(frozen)).toBe(true)
+    expect(debtBlocker(frozen, frozen.projects[0], 'project_debt')?.key).toBe(
+      'error.debt_early',
+    )
+    expect(debtBlocker(s, s.projects[0], 'project_debt')).toBeUndefined()
   })
 
   it('regional policies (owner, 28 Sep 2026): Georgia and Ohio +$0.005/kWh, Ohio builds pay 85%, Arizona builds +5%', () => {
