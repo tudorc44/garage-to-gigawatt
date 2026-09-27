@@ -106,6 +106,7 @@ import {
   useSpot,
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
+import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
   debtPlan,
   drawFacilities,
@@ -180,6 +181,8 @@ export type Action =
   | { type: 'PROJECT_START'; projectId: string }
   /** Act II: sell a live AI shell at its cap rate (2 Bandwidth); its MW go with it. */
   | { type: 'PROJECT_SELL'; projectId: string }
+  /** Act II: raise equity (an at-the-market offering if public) diluting by `dilution` (2 BW). */
+  | { type: 'RAISE_EQUITY'; dilution: number }
   /** Act II: switch project debt or a GPU-backed DDTL on or off for a proposed project (0 BW). */
   | { type: 'PROJECT_DEBT'; projectId: string; debt: DebtKind; on: boolean }
   /** Act II: sell a live cloud's or pilot's GPUs at their residual value (1 Bandwidth); it ends. */
@@ -748,6 +751,13 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'PROJECT_DEBT':
       return setProjectDebt(s, a.projectId, a.debt, a.on)
+
+    case 'RAISE_EQUITY': {
+      const blocker = equityBlocker(s, a.dilution)
+      if (blocker) return blocker
+      raiseEquity(s, a.dilution)
+      return
+    }
 
     case 'PROJECT_START': {
       const p = s.projects.find((x) => x.id === a.projectId)

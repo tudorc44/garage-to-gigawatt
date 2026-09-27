@@ -1,0 +1,63 @@
+// Act II equity (scope 0.2 §2.7; doc 18 §7.1): a private equity raise, or an at-the-market offering
+// once the company is public. Priced at the last quarter report's valuation (the pre-money); the
+// player picks the dilution within lenders.json's 8–20% and raises pre-money × d ÷ (1 − d), so the
+// new shares are exactly d of the company after the raise. 2 Bandwidth; once a quarter (mine).
+import { BALANCE, CONTENT } from '../../content/index.ts'
+import type { Message } from '../../i18n/t.ts'
+import { logEntry, type GameState } from '../state.ts'
+
+/** The raisesDone entry that marks this quarter's equity raise (one a quarter). */
+const marker = (quarter: number) => `equity-${CONTENT.quarters[quarter]}`
+
+/** Public once the IPO / SPAC round is done: the raise is an at-the-market offering. */
+export function isPublic(state: GameState): boolean {
+  return state.raisesDone.includes('ipo_spac')
+}
+
+/** The pre-money valuation an equity raise is priced at now: the last report's valuation. */
+export function equityPreMoneyUsd(state: GameState): number {
+  return Math.max(0, state.reports.at(-1)?.valuationUsd ?? 0)
+}
+
+/** What raising at `dilution` brings in now. */
+export function equityRaiseUsd(state: GameState, dilution: number): number {
+  return Math.floor((equityPreMoneyUsd(state) * dilution) / (1 - dilution))
+}
+
+/** Why an equity raise at `dilution` can't happen now, or undefined if it can. */
+export function equityBlocker(
+  state: GameState,
+  dilution: number,
+): Message | undefined {
+  if (state.act !== 2) return { key: 'error.act2_only' }
+  const [lo, hi] = CONTENT.finance.equity.dilution
+  if (!(dilution >= lo - 1e-9 && dilution <= hi + 1e-9))
+    return {
+      key: 'error.equity_dilution',
+      params: { minPct: lo, maxPct: hi },
+    }
+  if (equityPreMoneyUsd(state) <= 0) return { key: 'error.equity_no_value' }
+  if (state.raisesDone.includes(marker(state.quarter)))
+    return { key: 'error.equity_once' }
+  const need = BALANCE.finance.bandwidth.equity
+  if (state.bandwidth < need)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: need, have: state.bandwidth },
+    }
+  return undefined
+}
+
+/** Raises equity at `dilution` (assumes equityBlocker passed): cash in, founder diluted. */
+export function raiseEquity(state: GameState, dilution: number): void {
+  const amountUsd = equityRaiseUsd(state, dilution)
+  state.cash += amountUsd
+  state.founderStake *= 1 - dilution
+  state.bandwidth -= BALANCE.finance.bandwidth.equity
+  state.raisesDone.push(marker(state.quarter))
+  logEntry(state, isPublic(state) ? 'log.atm_raised' : 'log.equity_raised', {
+    amountUsd,
+    dilutionPct: dilution,
+    stakePct: state.founderStake,
+  })
+}

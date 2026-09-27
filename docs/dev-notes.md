@@ -1388,6 +1388,13 @@ A2-05 / A2-07. Sub-steps:
   keeps its fixed terms. Needs from the design thread: a spread and a max LTV (or debt/EBITDA cap) per rating band.
   Scripted notches (FTX −1 for 2 quarters, SVB) come with the events milestone.
 - **M4.5** Equity raise / ATM offering (2 BW, dilution shown first).
+  **Done.** New `src/sim/systems/equity.ts`, action `RAISE_EQUITY {dilution}` (Act II, 2 BW). Priced at the last
+  quarter report's valuation (the pre-money; doc 18: "priced at the valuation"); the player picks the dilution
+  within lenders.json's 8–20% and raises pre-money × d ÷ (1 − d), so the new shares are d of the company; the
+  founder's stake × (1 − d). Once a quarter (mine, reversible; marked in `raisesDone` as `equity-<quarter>`, no new
+  state field). If the IPO / SPAC round is done it's logged as an at-the-market offering, otherwise an equity raise;
+  same terms (mine). Convertible notes (doc 18) aren't built (not in scope §2.7's table). The dilution is shown
+  before confirming in the Capital screen (M4.7). Tests 503 pass (new `tests/sim/equity.test.ts`). No golden change.
 - **M4.6** JV partner and big-tech backstop (cut #1 and #2 if they get expensive).
 - **M4.7** UI: the Capital screen (A2-07) and the Deal builder's capital rows (A2-05); top-bar rating.
 - **M4.8** Bots with capital, sims (good and great path re-checked), terminal commands, milestone report.
