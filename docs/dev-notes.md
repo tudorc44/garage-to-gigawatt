@@ -1170,6 +1170,29 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   in every report (666 added lines; nothing else changed, so Act I values are the same). Tests: 455 pass (new
   `tests/sim/projectValue.test.ts`).
 - **M3.8** UI: the Projects page (A2-04) and the Deal builder (A2-05); dashboard hooks.
+  **Done.** A **Projects** nav section (Act II only, second in the nav): a kanban Proposed / Slots filling /
+  Building / Live / Sold with project cards (name "‹site› AI n", IRR, region tag, size and kind, slot chips, the
+  tenant line or the spot line (GPUs × utilisation × $/GPU-hr), quarters to go and ready-by, a LATE tag with the
+  damages and walk odds, years left on a live lease, "Sell for $X" on a live shell). **Open a project** dialog: site
+  (free MW, region), kind (shell / cloud / pilot, with a one-line explainer), GPU (cloud), size (pilot: 0.5–2 MW);
+  opening goes straight into the deal builder. **Deal builder** dialog: header chips; 1 · Power (the site's MW);
+  2 · Tenant (each offer: rating, type, $/MW/yr and a year's rent, term, prepayment, ready-by, walk odds, capex
+  credit; Accept 0 BW; or "Leave on spot" for a cloud); 3 · Capital (own cash); the projected return (capex with the
+  GPU / retrofit split, revenue and EBITDA a year, payback, IRR); "Can't start: …", Cancel project, Save & close,
+  Start build. The Plan dashboard's MW panel links to Projects ("Projects: n building · n live →"); the top bar's
+  backlog is live since M3.7. Views in the new `src/sim/projectViews.ts` (re-exported by selectors.ts);
+  `projectedReturn` and `annualIrr` in `systems/projects.ts`. The Live screen's alert card came in M3.6.
+  Found while testing: a project with a signed tenant could be cancelled, keeping the prepayment and the pivot
+  premium; now refused (`error.project_signed`).
+  Decisions (mine, reversible): the projected return is project level before debt at today's prices; a shell over
+  its lease, a cloud or pilot over 5 years with no GPU resale (`balance.ts` › `cloudProjectionYears`: the content
+  has no GPU life); the capital rows for loans, project debt, DDTLs, equity, JV and backstop aren't drawn (one line
+  says they come later) rather than greyed rows; Power shows existing MW only (grid upgrade and gas later); no
+  "Negotiate · 2 BW" button yet (negotiation deferred); nav icon = power. Seen in the browser at 1280×800: opened a
+  5 MW shell, signed Northgate (AA), funded, started (cash −$33.8M, backlog $135M, IRR 19%), and a construction
+  delay alert resolved as "accept the slip" (+1 quarter, logged). Known polish item: in the live quarter at 1280 px
+  the Act II top bar wraps its last stat (H100 spot) to a second line when the backlog is non-zero.
+  Tests: 462 pass (new `tests/sim/projectViews.test.ts`). No golden change.
 - **M3.9** GPU know-how, terminal commands, bots and sim numbers; milestone report.
 
 ## Next

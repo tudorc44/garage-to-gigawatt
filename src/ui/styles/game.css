@@ -1206,3 +1206,80 @@ td.wrap {
   color: var(--ink-muted);
   border-color: var(--ink-muted);
 }
+/* ===== Projects (wireframe A2-04) and the Deal builder (A2-05) ===== */
+.projects {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: 0;
+}
+.kanban {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--space-2);
+  min-height: 0;
+}
+.kanban-col {
+  background: var(--panel-sunk);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-2);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 0;
+  overflow-y: auto;
+}
+.kanban-empty {
+  border: 1px dashed var(--line);
+  border-radius: var(--radius-2);
+  padding: var(--space-4) var(--space-2);
+  text-align: center;
+}
+.project-card {
+  background: var(--panel);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-2);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.project-card.late {
+  border: 2px solid var(--loss);
+}
+.slots {
+  display: inline-flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.slot {
+  border: 1px dashed var(--ink-muted);
+  border-radius: 10px;
+  padding: 0 6px;
+  font: 600 10.5px/16px var(--font-ui);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.slot.done {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--on-action);
+}
+.deal-panel {
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-2);
+  padding: var(--space-2) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.offer {
+  border-top: var(--border-hair) solid var(--line);
+  padding-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}

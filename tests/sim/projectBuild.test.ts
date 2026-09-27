@@ -58,6 +58,12 @@ describe('starting a build (1 Bandwidth, the capex paid up front)', () => {
     ).toThrow()
   })
 
+  it('a project with a signed tenant can’t be cancelled (it would keep the prepayment)', () => {
+    expect(() =>
+      ok(shellReady(), { type: 'PROJECT_CANCEL', projectId: 'project-1' }),
+    ).toThrow('error.project_signed')
+  })
+
   it('refuses without the cash', () => {
     const s = { ...pilotReady(), cash: 1_000_000 }
     expect(() =>

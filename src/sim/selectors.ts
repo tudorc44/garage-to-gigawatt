@@ -117,6 +117,14 @@ import { bandwidthForQuarter } from './systems/bandwidth.ts'
 import { getStep, raiseBandwidth, unmetRequirement } from './systems/capital.ts'
 export { upcomingRivals } from './systems/rivals.ts'
 export { mwByUse, siteMwByUse, MW_USES, type MwUse } from './systems/mwUse.ts'
+export {
+  PROJECT_COLUMNS,
+  dealView,
+  openProjectView,
+  projectsView,
+  type ProjectCardView,
+  type ProjectColumn,
+} from './projectViews.ts'
 import {
   convertibleKw,
   endHostingFeeUsd,

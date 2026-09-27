@@ -131,6 +131,12 @@ export const BALANCE = {
     pivotPremium: 2,
     /** Doc 18 §7.3: projects this big sell at the hyperscale NNN cap rate, smaller at the powered-shell rate. */
     hyperscaleKw: 100_000,
+    /**
+     * The deal builder's projected return (A2-05, a display only): a cloud or pilot is projected
+     * over this many years of running with no GPU resale value; a shell over its tenant's term.
+     * (mine, reversible: the content has no GPU life.)
+     */
+    cloudProjectionYears: 5,
   },
 
   sites: {

@@ -34,13 +34,16 @@ import {
   OffersDialog,
 } from './dialogs.tsx'
 import { FleetPanel, type ScreenProps } from './Plan.tsx'
+import { ProjectsSection } from './Projects.tsx'
 import { League } from './Report.tsx'
 
 export type Section =
-  'dashboard' | 'fleet' | 'capital' | 'people' | 'league' | 'log'
+  'dashboard' | 'projects' | 'fleet' | 'capital' | 'people' | 'league' | 'log'
 
 export function SectionView(props: ScreenProps & { section: Section }) {
   switch (props.section) {
+    case 'projects':
+      return <ProjectsSection {...props} />
     case 'fleet':
       return <FleetSection {...props} />
     case 'capital':

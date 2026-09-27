@@ -367,6 +367,8 @@ export function cancelProject(
   const p = getProject(state, projectId)
   if (!p) return { key: 'error.unknown_project' }
   if (p.stage !== 'proposed') return { key: 'error.project_started' }
+  // A signed tenant is a contract: no walking away with its prepayment and the pivot premium.
+  if (p.tenant) return { key: 'error.project_signed' }
   state.projects = state.projects.filter((x) => x.id !== projectId)
   logEntry(state, 'log.project_cancelled', { n: p.n })
   return undefined
@@ -731,6 +733,85 @@ export function resolveProjectEvent(
   }
   state.interrupt = null
   return undefined
+}
+
+// ---------- the projected return (the deal builder, A2-05) ----------
+
+/**
+ * A project's projected return at today's prices, before debt: its capex (what starting now would
+ * cost, or what was paid), a year's revenue and EBITDA once live, the payback in years and the IRR
+ * of paying the capex now, earning nothing while it builds, then the EBITDA each quarter over the
+ * tenant's term (a cloud or pilot: cloudProjectionYears). A shell with no tenant, or a cloud not
+ * yet on spot, has no revenue to project (null figures).
+ */
+export function projectedReturn(state: GameState, p: Project) {
+  const capexUsd =
+    p.stage === 'proposed' ? projectCapex(state, p).totalUsd : p.capexUsd
+  const hoursYr = 24 * 365
+  const b = BALANCE.projects
+  let revenueUsd: number | null = null
+  let ebitdaUsd: number | null = null
+  let years: number = b.cloudProjectionYears
+  if (p.kind === 'shell') {
+    if (p.tenant) {
+      const card = tenantCard(p.tenant.card)!
+      revenueUsd = annualRentUsd(card, p.kw)
+      ebitdaUsd = revenueUsd * (1 - b.shellOpexShare)
+      years = card.termYears
+    }
+  } else if (p.kind === 'pilot' || p.spot) {
+    const site = state.sites.find((s) => s.id === p.siteId)!
+    const gpus =
+      p.stage === 'proposed' ? projectCapex(state, p).gpuCount : p.gpuCount
+    const gpuUsd =
+      p.stage === 'proposed' ? projectCapex(state, p).gpuUsd : p.gpuCapexUsd
+    const up = uptime(site)
+    revenueUsd =
+      gpus *
+      (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
+      spotUtilisation(state) *
+      hoursYr *
+      up
+    ebitdaUsd =
+      revenueUsd -
+      p.kw * b.cloudPue * hoursYr * up * powerPriceUsdKwh(site, state.quarter) -
+      gpuUsd * b.cloudInsuranceShareYr
+  }
+  if (ebitdaUsd === null)
+    return { capexUsd, revenueUsd, ebitdaUsd, paybackYears: null, irr: null }
+  const wait =
+    p.stage === 'live'
+      ? 0
+      : p.stage === 'building'
+        ? Math.max(0, (p.readyQuarter ?? state.quarter) - state.quarter)
+        : buildQuarters(p.kind)
+  const flows = [
+    -capexUsd,
+    ...Array<number>(wait).fill(0),
+    ...Array<number>(Math.round(years * 4)).fill(ebitdaUsd / 4),
+  ]
+  return {
+    capexUsd,
+    revenueUsd,
+    ebitdaUsd,
+    paybackYears: ebitdaUsd > 0 ? capexUsd / ebitdaUsd : null,
+    irr: annualIrr(flows),
+  }
+}
+
+/** The yearly IRR of quarterly cash flows (bisection), or null if it doesn't pay back. */
+export function annualIrr(flows: number[]): number | null {
+  const npv = (r: number) =>
+    flows.reduce((sum, f, i) => sum + f / Math.pow(1 + r, i), 0)
+  if (npv(0) <= 0) return null
+  let lo = 0
+  let hi = 10
+  for (let i = 0; i < 100; i++) {
+    const mid = (lo + hi) / 2
+    if (npv(mid) > 0) lo = mid
+    else hi = mid
+  }
+  return Math.pow(1 + lo, 4) - 1
 }
 
 // ---------- valuation parts and selling (scope 0.2 §2.5, §2.8; doc 18 §7.3, §8) ----------

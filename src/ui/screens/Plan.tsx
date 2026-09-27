@@ -1,6 +1,6 @@
 // Plan dashboard: market, fleet & sites, sell slider | the quarter's to-do list | signals.
 // Reads the state through selectors and sends actions; no game rules here.
-import { useState } from 'preact/hooks'
+import { useContext, useState } from 'preact/hooks'
 import { hasText, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import {
@@ -8,6 +8,7 @@ import {
   HEAT_MARKS,
   SELL_TREASURY_BANDWIDTH,
   act2MarketView,
+  projectsView,
   auctionView,
   communityView,
   cryptoLoanView,
@@ -38,7 +39,7 @@ import {
 } from '../../sim/selectors.ts'
 import type { Coin, GameState } from '../../sim/state.ts'
 import { ActionRow, Icon, Sparkline } from '../components/basics.tsx'
-import { Delta, Shell } from '../components/frame.tsx'
+import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { fmt } from '../format.ts'
 import {
@@ -199,6 +200,8 @@ export function PlanScreen({ state, act }: ScreenProps) {
 function MwPanel({ state }: { state: GameState }) {
   const use = mwByUse(state, state.quarter)
   const totalKw = Object.values(use).reduce((kw, x) => kw + x, 0)
+  const nav = useContext(NavContext)
+  const projects = projectsView(state)
   return (
     <div class="panel p mw-panel">
       <div class="row-between">
@@ -208,11 +211,21 @@ function MwPanel({ state }: { state: GameState }) {
         <MwLegend use={use} />
       </div>
       <MwBar use={use} />
-      {use.idle > 0 && (
+      <div class="row-between">
         <span class="num-s muted">
-          {t('ui.mw.idle_hint', { value: fmt.power(use.idle) })}
+          {use.idle > 0 && t('ui.mw.idle_hint', { value: fmt.power(use.idle) })}
         </span>
-      )}
+        <button
+          type="button"
+          class="btn btn-ghost"
+          onClick={() => nav?.setSection('projects')}
+        >
+          {t('ui.mw.projects', {
+            building: projects.byColumn.building.length,
+            live: projects.byColumn.live.length,
+          })}
+        </button>
+      </div>
     </div>
   )
 }

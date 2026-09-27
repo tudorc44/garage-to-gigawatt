@@ -177,8 +177,15 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
   )
 }
 
-const NAV: { id: Section; icon: IconName; key: Parameters<typeof t>[0] }[] = [
+const NAV: {
+  id: Section
+  icon: IconName
+  key: Parameters<typeof t>[0]
+  /** Only in Act II. */
+  act2?: boolean
+}[] = [
   { id: 'dashboard', icon: 'dashboard', key: 'ui.nav.dashboard' },
+  { id: 'projects', icon: 'power', key: 'ui.nav.projects', act2: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
   { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
   { id: 'people', icon: 'people', key: 'ui.nav.people' },
@@ -190,13 +197,13 @@ const NAV: { id: Section; icon: IconName; key: Parameters<typeof t>[0] }[] = [
  * Left navigation. The sections open in the Plan phase; during the live quarter and the report
  * only the dashboard shows. Save / load sits at the foot.
  */
-export function Nav(props: { seed: number; plan: boolean }) {
+export function Nav(props: { seed: number; plan: boolean; act: number }) {
   const [saving, setSaving] = useState(false)
   const nav = useContext(NavContext)
   const current = props.plan ? (nav?.section ?? 'dashboard') : 'dashboard'
   return (
     <nav class="nav" aria-label={t('ui.nav.label')}>
-      {NAV.map((item) => (
+      {NAV.filter((item) => !item.act2 || props.act === 2).map((item) => (
         <button
           key={item.key}
           type="button"
@@ -243,7 +250,7 @@ export function Shell(props: {
     <>
       <TopBar state={props.state} paused={props.paused} />
       <div class="body">
-        <Nav seed={props.state.seed} plan={plan} />
+        <Nav seed={props.state.seed} plan={plan} act={props.state.act} />
         {section === 'dashboard' || !nav ? (
           props.children
         ) : (
