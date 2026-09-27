@@ -32,6 +32,10 @@ export interface Site {
   rateMult?: number
   /** Transformer upgrade under way: the flaw clears when this quarter starts. */
   upgradeReadyQuarter?: number
+  /** Phased sites (Texas): the quarter each started phase is energized (phase 1 = readyQuarter). */
+  phases?: number[]
+  /** Phased sites: what each phase costs (a share of the site's full build cost). */
+  phaseCapexUsd?: number
 }
 
 export type ContractType = 'fixed' | 'index'
@@ -139,8 +143,8 @@ export interface GameState {
   siteOffers: SiteOffer[]
   /** The one equipment loan you can have at a time, or null. */
   equipmentLoan: EquipmentLoan | null
-  /** The Texas construction loan (same payment shape as the equipment loan), or null. */
-  constructionLoan: EquipmentLoan | null
+  /** Texas construction loans, one per financed phase (same payment shape as the equipment loan). */
+  constructionLoans: EquipmentLoan[]
   /** The one crypto-backed loan you can have at a time, or null. */
   cryptoLoan: CryptoLoan | null
   /** Community Heat per site id (see systems/heat.ts). */
@@ -230,6 +234,8 @@ export interface QuarterStats {
   rentUsd: number
   coinsMined: Record<Coin, number>
   powerByCoin: Record<Coin, number>
+  /** Mining revenue minus power cost, by site tier (sim report: where EBITDA comes from). */
+  marginByTier: Record<string, number>
   failures: number
   /** Dollars raised by selling treasury coins in alerts. */
   treasurySoldUsd: number
@@ -278,6 +284,8 @@ export interface QuarterReport {
   /** Healthy, earning hashrate at quarter end: BTC in TH/s, ETH in MH/s. */
   hashrate: Record<Coin, number>
   revenueUsd: number
+  /** Mining revenue minus power cost, by site tier. */
+  marginByTier: Record<string, number>
   powerCostUsd: number
   rentUsd: number
   coinsMined: Record<Coin, number>
@@ -325,6 +333,7 @@ export function emptyQuarterStats(): QuarterStats {
     rentUsd: 0,
     coinsMined: { BTC: 0, ETH: 0 },
     powerByCoin: { BTC: 0, ETH: 0 },
+    marginByTier: {},
     failures: 0,
     treasurySoldUsd: 0,
     priceAlerts: 0,
@@ -385,7 +394,7 @@ export function newGame(seed: number): GameState {
     machines: [],
     siteOffers: [],
     equipmentLoan: null,
-    constructionLoan: null,
+    constructionLoans: [],
     cryptoLoan: null,
     auction: null,
     curtailment: null,

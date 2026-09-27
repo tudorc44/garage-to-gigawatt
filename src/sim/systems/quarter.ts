@@ -86,6 +86,7 @@ function buildReport(
     treasuryValueUsd: treasuryUsd,
     cash: state.cash,
     ebitdaUsd: ebitda,
+    marginByTier: { ...st.marginByTier },
     valuationUsd: valuationUsd(
       state.quarter,
       ebitda,

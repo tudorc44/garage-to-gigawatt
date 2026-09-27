@@ -10,6 +10,7 @@ import { addMachines } from './machines.ts'
 import { getModel, sellPrice } from './market.ts'
 import { activeRivals } from './rivals.ts'
 import { underMoratorium } from './heat.ts'
+import { gpuKwLeft } from './construction.ts'
 import { capacityKw, usedKw } from './sites.ts'
 
 /** The auction window covering this quarter, if any. */
@@ -80,6 +81,15 @@ export function bidBlocker(
       key: 'error.bid_below_reserve',
       params: { reserveUsd: a.reserveUsd },
     }
+  // The 2020Q4–2022Q1 GPU shortage cap counts auction lots too.
+  if (getModel(a.model)!.coin === 'ETH') {
+    const leftKw = gpuKwLeft(state)
+    if (getModel(a.model)!.power_kw * a.count > leftKw + 1e-9)
+      return {
+        key: 'error.gpu_cap',
+        params: { capKw: CONTENT.gpuCap.kwPerQuarter, leftKw },
+      }
+  }
   const bw = CONTENT.auction.bandwidth
   if (state.bandwidth < bw)
     return {

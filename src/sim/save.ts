@@ -49,6 +49,14 @@ export function restoreSave(data: unknown): Loaded {
   state.reports = state.reports.map((r) => ({
     ...r,
     salariesUsd: r.salariesUsd ?? 0,
+    marginByTier: r.marginByTier ?? {},
   }))
+  // Saves from before phased Texas had one construction loan (or none).
+  const old = (
+    data as { constructionLoan?: GameState['constructionLoans'][number] | null }
+  ).constructionLoan
+  if (!Array.isArray(data.constructionLoans))
+    state.constructionLoans = old ? [structuredClone(old)] : []
+  delete (state as { constructionLoan?: unknown }).constructionLoan
   return { ok: true, state }
 }

@@ -18,6 +18,8 @@ import { buyCapKw } from '../src/sim/selectors.ts'
 import {
   constructionLoanBlocker,
   constructionLoanUsd,
+  nextPhase,
+  phaseStartBlocker,
 } from '../src/sim/systems/construction.ts'
 import { canPitch } from '../src/sim/systems/pitch.ts'
 import {
@@ -31,6 +33,7 @@ import {
   capacityKw,
   isReady,
   powerPriceUsdKwh,
+  poweredKw,
   topTierIndex,
   usedKw,
 } from '../src/sim/systems/sites.ts'
@@ -99,10 +102,30 @@ interface BotSettings {
   /** Also buy machines for a site that powers on next quarter, so they earn from its first quarter. */
   prebuy?: boolean
   /**
-   * Build the construction-loan tier (Texas) as soon as the loan allows it, paying only the
-   * part the loan doesn't cover, even before the climb limit's funding round.
+   * Phased Texas: start phase 1 on the construction loan as soon as it's allowed (even before
+   * the climb limit's funding round), then, once that round is done, one more phase per spare
+   * Bandwidth (cash first, the loan if cash is short).
    */
-  constructionLoan?: boolean
+  phasedTexas?: boolean
+}
+
+/** Phased Texas: phase 1 could start now (offer scouted, allowed, loan allowed, cash for its part). */
+function phaseOneReady(s: GameState): boolean {
+  const tier = CONTENT.siteTiers.find((t) => t.phases)
+  if (!tier || s.sites.some((x) => x.phases)) return false
+  const offer = s.siteOffers
+    .filter((o) => o.tier === tier.id)
+    .sort((a, b) => a.capexUsd - b.capexUsd)[0]
+  if (!offer || phaseStartBlocker(s, tier.id)) return false
+  if (
+    constructionLoanBlocker(s, {
+      tier: tier.id,
+      contract: { type: 'fixed', price: 0, startQuarter: 0, endQuarter: 0 },
+    })
+  )
+    return false
+  const cost = Math.round(offer.capexUsd * tier.phases!.cost_share)
+  return s.cash >= cost - constructionLoanUsd(cost)
 }
 
 function makeBot(settings: BotSettings): Strategy {
@@ -114,6 +137,8 @@ function makeBot(settings: BotSettings): Strategy {
       // 0. Take funding rounds when allowed (checked by dry-running the action).
       let reserveBase = s.cash
       const raisedNow: string[] = []
+      // Phased Texas: phase 1 comes before the IPO, so keep 1 Bandwidth for it when it's ready.
+      const keepBw = settings.phasedTexas && phaseOneReady(s) ? 1 : 0
       for (const round of settings.raises ?? []) {
         if (settings.pitchAt && canPitch(round)) {
           // The pitch is deterministic: play it out on a copy, then commit the same moves.
@@ -144,7 +169,7 @@ function makeBot(settings: BotSettings): Strategy {
         }
         const a: Action = { type: 'RAISE', round }
         const r = applyAction(s, a)
-        if (r.ok && bandwidth >= s.bandwidth - r.state.bandwidth) {
+        if (r.ok && bandwidth - keepBw >= s.bandwidth - r.state.bandwidth) {
           actions.push(a)
           raisedNow.push(round)
           cash += r.state.cash - s.cash
@@ -153,7 +178,7 @@ function makeBot(settings: BotSettings): Strategy {
         }
       }
       // 0b. Borrow the most lenders allow against the machines it owns.
-      if (settings.borrow && !s.equipmentLoan && bandwidth >= 1) {
+      if (settings.borrow && !s.equipmentLoan && bandwidth - keepBw >= 1) {
         const amountUsd = Math.min(
           maxEquipmentLoanUsd(s),
           Math.floor((settings.maxLtv ?? 1) * collateralUsd(s)),
@@ -228,7 +253,9 @@ function makeBot(settings: BotSettings): Strategy {
           bandwidth -= 1
         }
       }
-      const spendable = () => cash - settings.reserveUsd(reserveBase)
+      // Cash held back for a coming build (phased Texas: saving up for phase 1).
+      let hold = 0
+      const spendable = () => cash - settings.reserveUsd(reserveBase) - hold
       const stopped =
         settings.stopFrom !== undefined &&
         CONTENT.quarters[s.quarter] >= settings.stopFrom
@@ -274,30 +301,76 @@ function makeBot(settings: BotSettings): Strategy {
           CONTENT.quarters[s.quarter] < next.available_from
         )
       const nextOpen = available && !capped
-      // The construction loan: build Texas as soon as it's allowed and the rest is affordable.
-      const loanOffer =
-        settings.constructionLoan &&
-        next &&
-        next.id === CONTENT.constructionLoan.tier
-          ? s.siteOffers
-              .filter((o) => o.tier === next.id)
-              .sort((a, b) => a.capexUsd - b.capexUsd)[0]
-          : undefined
-      const loanBuild =
-        loanOffer &&
+      // Phased Texas: phase 1 on the construction loan as soon as it's allowed; later phases
+      // once the climb limit's round (the IPO) is done.
+      const roundDone =
+        !limit?.afterRound ||
+        s.raisesDone.includes(limit.afterRound) ||
+        raisedNow.includes(limit.afterRound)
+      const phaseTier = settings.phasedTexas && next?.phases ? next : undefined
+      const phaseOffer = phaseTier
+        ? s.siteOffers
+            .filter((o) => o.tier === phaseTier.id)
+            .sort((a, b) => a.capexUsd - b.capexUsd)[0]
+        : undefined
+      const phaseOneCash = phaseOffer
+        ? Math.round(phaseOffer.capexUsd * phaseTier!.phases!.cost_share) -
+          constructionLoanUsd(
+            Math.round(phaseOffer.capexUsd * phaseTier!.phases!.cost_share),
+          )
+        : Infinity
+      const phaseOne =
+        phaseOffer &&
         topIsFull &&
         bandwidth >= 1 &&
-        !constructionLoanBlocker(s, loanOffer.tier) &&
-        loanOffer.capexUsd - constructionLoanUsd(loanOffer.capexUsd) <=
-          spendable() &&
-        (capped || loanOffer.capexUsd > spendable())
-      if (loanBuild) {
+        !phaseStartBlocker(s, phaseTier!.id) &&
+        !constructionLoanBlocker(s, {
+          tier: phaseTier!.id,
+          contract: { type: 'fixed', price: 0, startQuarter: 0, endQuarter: 0 },
+        }) &&
+        phaseOneCash <= spendable()
+      const phased = s.sites.find((x) => x.phases)
+      if (settings.phasedTexas && phased && roundDone) {
+        const n = nextPhase(s, phased)
+        let added = 0
+        while (n && n.n + added <= n.of && bandwidth >= 1) {
+          const loanOk = !constructionLoanBlocker(s, phased)
+          const loanCash = n.costUsd - constructionLoanUsd(n.costUsd)
+          if (n.costUsd <= spendable()) {
+            actions.push({ type: 'BUILD_PHASE', siteId: phased.id })
+            cash -= n.costUsd
+          } else if (loanOk && loanCash <= spendable()) {
+            actions.push({
+              type: 'BUILD_PHASE',
+              siteId: phased.id,
+              financed: true,
+            })
+            cash -= loanCash
+          } else break
+          bandwidth -= 1
+          added++
+        }
+      }
+      // Phase 1 is allowed but the cash isn't there yet: save for it instead of buying machines.
+      if (
+        !phaseOne &&
+        phaseOffer &&
+        !phased &&
+        !phaseStartBlocker(s, phaseTier!.id) &&
+        !constructionLoanBlocker(s, {
+          tier: phaseTier!.id,
+          contract: { type: 'fixed', price: 0, startQuarter: 0, endQuarter: 0 },
+        })
+      )
+        hold = phaseOneCash
+      if (phaseOne) {
         actions.push({
           type: 'BUILD_SITE',
-          offerId: loanOffer.id,
+          offerId: phaseOffer.id,
           financed: true,
+          contractType: 'fixed',
         })
-        cash -= loanOffer.capexUsd - constructionLoanUsd(loanOffer.capexUsd)
+        cash -= phaseOneCash
         bandwidth -= 1
       } else if (
         settings.scoutAhead &&
@@ -313,7 +386,13 @@ function makeBot(settings: BotSettings): Strategy {
       ) {
         actions.push({ type: 'SCOUT_SITES', tier: next.id })
         bandwidth -= 1
-      } else if (next && nextOpen && topIsFull && bandwidth >= 1) {
+      } else if (
+        next &&
+        nextOpen &&
+        topIsFull &&
+        bandwidth >= 1 &&
+        !(settings.phasedTexas && next.phases)
+      ) {
         const direct = (
           BALANCE.sites.noScoutingNeeded as readonly string[]
         ).includes(next.id)
@@ -385,9 +464,14 @@ function makeBot(settings: BotSettings): Strategy {
       const addedKw: Record<string, number> = {}
       // The GPU shortage cap is per quarter across all sites: count what this plan buys.
       let gpuKwBought = 0
-      const capLeft = (m: { id: string; coin: string }, c: Condition) =>
-        buyCapKw(s, m.id, c) -
-        (m.coin === 'ETH' && c === 'new' ? gpuKwBought : 0)
+      const capLeft = (m: { id: string; coin: string }) =>
+        buyCapKw(s, m.id) - (m.coin === 'ETH' ? gpuKwBought : 0)
+      // Room to fill: phased sites only count phases with power (next quarter's, with prebuy).
+      const roomCapKw = (site: (typeof s.sites)[number]) =>
+        Math.min(
+          capacityKw(site),
+          poweredKw(site, s.quarter + (settings.prebuy ? 1 : 0)),
+        )
       for (const site of ready) {
         const power = powerPriceUsdKwh(site, s.quarter)
         const options = CONTENT.machines.flatMap((m) =>
@@ -428,7 +512,7 @@ function makeBot(settings: BotSettings): Strategy {
                 a.payback - b.payback,
             )[0]
             const fits = Math.floor(
-              (capacityKw(site) -
+              (roomCapKw(site) -
                 usedKw(after, site.id) -
                 (addedKw[site.id] ?? 0)) /
                 perKw.m.power_kw,
@@ -465,19 +549,18 @@ function makeBot(settings: BotSettings): Strategy {
           }
           const count = Math.min(
             Math.floor(
-              (capacityKw(site) -
+              (roomCapKw(site) -
                 usedKw(after, site.id) -
                 (addedKw[site.id] ?? 0) +
                 (freedKw[site.id] ?? 0)) /
                 best.m.power_kw,
             ),
             Math.floor(spendable() / best.price!),
-            Math.floor(capLeft(best.m, best.condition) / best.m.power_kw),
+            Math.floor(capLeft(best.m) / best.m.power_kw),
           )
           gpuCapped =
-            count ===
-              Math.floor(capLeft(best.m, best.condition) / best.m.power_kw) &&
-            capLeft(best.m, best.condition) !== Infinity
+            count === Math.floor(capLeft(best.m) / best.m.power_kw) &&
+            capLeft(best.m) !== Infinity
           if (count < 1) {
             skipped.add(best)
             continue
@@ -490,8 +573,7 @@ function makeBot(settings: BotSettings): Strategy {
             siteId: site.id,
           })
           cash -= best.price! * count
-          if (best.m.coin === 'ETH' && best.condition === 'new')
-            gpuKwBought += best.m.power_kw * count
+          if (best.m.coin === 'ETH') gpuKwBought += best.m.power_kw * count
           addedKw[site.id] = (addedKw[site.id] ?? 0) + best.m.power_kw * count
           // Capped by the GPU shortage? Fill the rest with the next best machine.
           skipped.add(best)
@@ -618,7 +700,7 @@ export const BOTS: Record<string, Strategy> = {
     smartFill: true,
     borrow: true,
     maxLtv: 0.5,
-    constructionLoan: true,
+    phasedTexas: true,
     prebuy: true,
     // After the IPO: replace S9s with S19s wherever they make more per kW (no GPU swap).
     upgradeAt: 1,
@@ -641,7 +723,8 @@ export const BOTS: Record<string, Strategy> = {
     borrow: true,
     maxLtv: 0.5,
     smartFill: true,
-    constructionLoan: true,
+    phasedTexas: true,
+    prebuy: true,
     upgradeAt: 2,
   }),
   /** raise-climb that stops buying, repairing and building from 2022Q1 (the idle-MW check, E1). */

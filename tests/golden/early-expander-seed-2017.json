@@ -61,7 +61,7 @@
     }
   ],
   "equipmentLoan": null,
-  "constructionLoan": null,
+  "constructionLoans": [],
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
@@ -136,6 +136,9 @@
     "powerByCoin": {
       "BTC": 0,
       "ETH": 995.9039999999994
+    },
+    "marginByTier": {
+      "garage": 582.0696000000004
     },
     "failures": 0,
     "treasurySoldUsd": 0,
@@ -401,6 +404,7 @@
       "treasuryValueUsd": 0,
       "cash": 0,
       "ebitdaUsd": 0,
+      "marginByTier": {},
       "valuationUsd": 0,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -446,6 +450,9 @@
       "treasuryValueUsd": 0,
       "cash": 21087.75,
       "ebitdaUsd": 21087.737999999998,
+      "marginByTier": {
+        "garage": 21087.738000000005
+      },
       "valuationUsd": 527193.4619999999,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -491,6 +498,9 @@
       "treasuryValueUsd": 0,
       "cash": 28160.83,
       "ebitdaUsd": 7073.073000000001,
+      "marginByTier": {
+        "garage": 7073.0729999999985
+      },
       "valuationUsd": 197914.58200000005,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -536,6 +546,9 @@
       "treasuryValueUsd": 0,
       "cash": 31725.26,
       "ebitdaUsd": 3564.4139999999998,
+      "marginByTier": {
+        "garage": 3564.4140000000007
+      },
       "valuationUsd": 117271.19599999998,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -581,6 +594,9 @@
       "treasuryValueUsd": 0,
       "cash": 37754.8,
       "ebitdaUsd": 6029.541,
+      "marginByTier": {
+        "garage": 6029.540999999999
+      },
       "valuationUsd": 182463.78399999999,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -626,6 +642,9 @@
       "treasuryValueUsd": 0,
       "cash": 292.67,
       "ebitdaUsd": -3962.139000000001,
+      "marginByTier": {
+        "garage": 2037.8610000000006
+      },
       "valuationUsd": 292.67,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -675,6 +694,9 @@
       "treasuryValueUsd": 0,
       "cash": -1125.26,
       "ebitdaUsd": -5417.9304,
+      "marginByTier": {
+        "garage": 582.0696000000004
+      },
       "valuationUsd": -1125.26,
       "priceAlerts": 0,
       "marginCalls": 0,

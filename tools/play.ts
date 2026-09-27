@@ -317,9 +317,13 @@ function parse(
       if (/^\d+$/.test(rest[0] ?? '')) {
         const offer = item(s.siteOffers, 0)
         if (!offer) return 'play.bad_number'
-        return rest[1] === 'loan'
-          ? { type: 'BUILD_SITE', offerId: offer.id, financed: true }
-          : { type: 'BUILD_SITE', offerId: offer.id }
+        // Texas: "build 1 [loan] [fixed|index]" (phase 1 signs the site's power contract).
+        return {
+          type: 'BUILD_SITE',
+          offerId: offer.id,
+          financed: rest.includes('loan'),
+          contractType: rest.includes('index') ? 'index' : 'fixed',
+        }
       }
       return { type: 'BUILD_SITE', tier: rest[0] ?? '' }
     }
@@ -399,6 +403,12 @@ function parse(
       return rest[0] === 'construction'
         ? { type: 'REPAY_CONSTRUCTION_LOAN' }
         : { type: 'REPAY_LOAN' }
+    case 'phase': {
+      const site = item(s.sites, 0)
+      return site
+        ? { type: 'BUILD_PHASE', siteId: site.id, financed: rest[1] === 'loan' }
+        : 'play.bad_number'
+    }
     case 'upgrade': {
       const site = item(s.sites, 0)
       return site

@@ -59,7 +59,9 @@ import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import {
   constructionLoanUsd,
-  newGpuKwLeft,
+  gpuKwLeft,
+  nextPhase,
+  constructionDebtUsd,
   transformerUpgrade,
 } from './systems/construction.ts'
 import {
@@ -232,6 +234,12 @@ export interface SiteView {
   /** The site's power contract, if it has one, and whether its renewal is due now. */
   contract: PowerContract | null
   renewalDue: boolean
+  phases: {
+    started: number
+    powered: number
+    of: number
+    nextReady: string
+  } | null
 }
 
 export function siteViews(state: GameState): SiteView[] {
@@ -250,6 +258,15 @@ export function siteViews(state: GameState): SiteView[] {
     shutDown: isShutDown(state, site.id),
     contract: site.contract ?? null,
     renewalDue: renewalDue(state, site),
+    /** Phased sites (Texas): phases started, powered, of how many, and when the latest powers on. */
+    phases: site.phases
+      ? {
+          started: site.phases.length,
+          powered: site.phases.filter((q) => q <= state.quarter).length,
+          of: getTier(site.tier)!.phases!.count,
+          nextReady: quarterName(Math.max(...site.phases)),
+        }
+      : null,
   }))
 }
 
@@ -1043,28 +1060,58 @@ export function transformerViews(state: GameState) {
   })
 }
 
-/** The construction loan you have, and what a financed build of an offer would cost you. */
+/** Construction loans owed, and what a financed Texas phase would cost you. */
 export function constructionLoanView(state: GameState) {
   const terms = CONTENT.constructionLoan
+  const phaseCost = (tier: string, capexUsd: number) => {
+    const rules = getTier(tier)?.phases
+    return rules ? Math.round(capexUsd * rules.cost_share) : capexUsd
+  }
   return {
-    loan: state.constructionLoan,
+    owedUsd: constructionDebtUsd(state),
+    loans: state.constructionLoans.length,
     tier: terms.tier,
-    /** Loan and cash for a financed build of this offer (null if the tier can't be financed). */
-    financing: (offer: { tier: string; capexUsd: number }) => {
-      if (offer.tier !== terms.tier) return null
-      const loanUsd = constructionLoanUsd(offer.capexUsd)
-      return { loanUsd, cashUsd: offer.capexUsd - loanUsd }
+    /**
+     * An offer's first build: phase 1 for a phased tier (Texas), with and without the loan
+     * (financed is null if the tier can't take the loan).
+     */
+    firstBuild: (offer: { tier: string; capexUsd: number }) => {
+      const costUsd = phaseCost(offer.tier, offer.capexUsd)
+      const phases = getTier(offer.tier)?.phases
+      const loanUsd = constructionLoanUsd(costUsd)
+      return {
+        costUsd,
+        phase: phases ? { n: 1, of: phases.count, kw: phases.kw } : null,
+        financed:
+          offer.tier === terms.tier
+            ? { loanUsd, cashUsd: costUsd - loanUsd }
+            : null,
+      }
     },
   }
 }
 
-/** kW of this machine you may still buy this quarter (the GPU shortage cap on new rigs), or Infinity. */
-export function buyCapKw(
-  state: GameState,
-  modelId: string,
-  condition: 'new' | 'used',
-): number {
-  return condition === 'new' && getModel(modelId)?.coin === 'ETH'
-    ? newGpuKwLeft(state)
-    : Infinity
+/** Phased sites (Texas): phases built and powered, and the next phase's cost and loan. */
+export function phaseViews(state: GameState) {
+  return state.sites.flatMap((site) => {
+    const next = nextPhase(state, site)
+    if (!next || !site.phases) return []
+    const loanUsd = constructionLoanUsd(next.costUsd)
+    return [
+      {
+        site,
+        started: site.phases.length,
+        powered: site.phases.filter((q) => q <= state.quarter).length,
+        of: next.of,
+        /** When the latest phase powers on (a quarter label). */
+        nextReady: quarterName(Math.max(...site.phases)),
+        next: next.n <= next.of ? { ...next, loanUsd } : null,
+      },
+    ]
+  })
+}
+
+/** kW of this machine you may still buy this quarter (the GPU shortage cap), or Infinity. */
+export function buyCapKw(state: GameState, modelId: string): number {
+  return getModel(modelId)?.coin === 'ETH' ? gpuKwLeft(state) : Infinity
 }

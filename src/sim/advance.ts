@@ -63,6 +63,13 @@ export function advance(state: GameState): GameState {
   st.interestUsd += loan.interestUsd + cryptoInterestUsd
   st.principalUsd += loan.principalUsd
   st.failures += failures
+  for (const l of lots) {
+    const lot = s.machines.find((x) => x.id === l.lotId)
+    const tier = s.sites.find((x) => x.id === lot?.siteId)?.tier
+    if (tier)
+      st.marginByTier[tier] =
+        (st.marginByTier[tier] ?? 0) + l.revenueUsd - l.powerCostUsd
+  }
   for (const coin of ['BTC', 'ETH'] as const) {
     st.coinsMined[coin] += money.coinsMined[coin]
     st.powerByCoin[coin] += money.powerByCoin[coin]

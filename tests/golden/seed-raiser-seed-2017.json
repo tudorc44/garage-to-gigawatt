@@ -66,7 +66,7 @@
   ],
   "siteOffers": [],
   "equipmentLoan": null,
-  "constructionLoan": null,
+  "constructionLoans": [],
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
@@ -156,6 +156,10 @@
     "powerByCoin": {
       "BTC": 0,
       "ETH": 9192.960000000001
+    },
+    "marginByTier": {
+      "garage": 118.57860000000005,
+      "small_unit": 4570.3098
     },
     "failures": 3,
     "treasurySoldUsd": 0,
@@ -421,6 +425,7 @@
       "treasuryValueUsd": 0,
       "cash": 999.98,
       "ebitdaUsd": -6000.000000000001,
+      "marginByTier": {},
       "valuationUsd": 999.98,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -466,6 +471,9 @@
       "treasuryValueUsd": 0,
       "cash": 11870.18,
       "ebitdaUsd": 10870.1904,
+      "marginByTier": {
+        "garage": 16870.1904
+      },
       "valuationUsd": 272754.7496,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -511,6 +519,9 @@
       "treasuryValueUsd": 0,
       "cash": 11528.62,
       "ebitdaUsd": -341.54159999999956,
+      "marginByTier": {
+        "garage": 5658.4583999999995
+      },
       "valuationUsd": 11528.62,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -556,6 +567,9 @@
       "treasuryValueUsd": 0,
       "cash": 1278380.15,
       "ebitdaUsd": -3148.4688,
+      "marginByTier": {
+        "garage": 2851.5312000000004
+      },
       "valuationUsd": 1278380.15,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -601,6 +615,10 @@
       "treasuryValueUsd": 0,
       "cash": 1406093.79,
       "ebitdaUsd": 127713.65279999998,
+      "marginByTier": {
+        "garage": 4823.632799999998,
+        "small_unit": 128890.01999999996
+      },
       "valuationUsd": 4471221.4572,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -646,6 +664,10 @@
       "treasuryValueUsd": 0,
       "cash": 1448380.46,
       "ebitdaUsd": 42286.6734,
+      "marginByTier": {
+        "garage": 1630.2888000000005,
+        "small_unit": 46656.38460000001
+      },
       "valuationUsd": 2463260.6216,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -691,6 +713,10 @@
       "treasuryValueUsd": 0,
       "cash": 1463345.84,
       "ebitdaUsd": 14965.392000000014,
+      "marginByTier": {
+        "garage": 582.0696000000004,
+        "small_unit": 20383.32239999999
+      },
       "valuationUsd": 1822515.2480000004,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -736,6 +762,10 @@
       "treasuryValueUsd": 0,
       "cash": 1460919.62,
       "ebitdaUsd": -2426.215800000001,
+      "marginByTier": {
+        "garage": 21.571200000000132,
+        "small_unit": 3552.213000000001
+      },
       "valuationUsd": 1460919.62,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -781,6 +811,10 @@
       "treasuryValueUsd": 0,
       "cash": 1455155.28,
       "ebitdaUsd": -5764.329600000001,
+      "marginByTier": {
+        "garage": 0,
+        "small_unit": 235.67040000000043
+      },
       "valuationUsd": 1455155.28,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -826,6 +860,10 @@
       "treasuryValueUsd": 0,
       "cash": 1458282.27,
       "ebitdaUsd": 3126.9905999999964,
+      "marginByTier": {
+        "garage": 200.1888000000002,
+        "small_unit": 8926.801799999997
+      },
       "valuationUsd": 1545838.0067999999,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -871,6 +909,10 @@
       "treasuryValueUsd": 0,
       "cash": 1459712.62,
       "ebitdaUsd": 1430.346000000004,
+      "marginByTier": {
+        "garage": 131.24160000000015,
+        "small_unit": 7299.104399999998
+      },
       "valuationUsd": 1499762.3080000002,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -916,6 +958,10 @@
       "treasuryValueUsd": 0,
       "cash": 1454831.69,
       "ebitdaUsd": -4880.9184,
+      "marginByTier": {
+        "garage": 0,
+        "small_unit": 1119.0816000000013
+      },
       "valuationUsd": 1454831.69,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -961,6 +1007,10 @@
       "treasuryValueUsd": 0,
       "cash": 1451191.23,
       "ebitdaUsd": -3640.4568000000017,
+      "marginByTier": {
+        "garage": 7.560000000000059,
+        "small_unit": 2351.9831999999997
+      },
       "valuationUsd": 1451191.23,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1006,6 +1056,10 @@
       "treasuryValueUsd": 0,
       "cash": 1451903.67,
       "ebitdaUsd": 712.4442000000026,
+      "marginByTier": {
+        "garage": 131.2416000000003,
+        "small_unit": 6581.202599999999
+      },
       "valuationUsd": 1471852.1076,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1051,6 +1105,10 @@
       "treasuryValueUsd": 0,
       "cash": 1468194.32,
       "ebitdaUsd": 16290.66,
+      "marginByTier": {
+        "garage": 979.7256000000004,
+        "small_unit": 21310.934399999995
+      },
       "valuationUsd": 2119820.72,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1096,6 +1154,10 @@
       "treasuryValueUsd": 0,
       "cash": 1483027.34,
       "ebitdaUsd": 14833.024799999992,
+      "marginByTier": {
+        "garage": 1024.6824000000008,
+        "small_unit": 19808.342399999998
+      },
       "valuationUsd": 2551005.1255999994,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1141,6 +1203,10 @@
       "treasuryValueUsd": 0,
       "cash": 1529371.01,
       "ebitdaUsd": 46343.688599999994,
+      "marginByTier": {
+        "garage": 2902.6031999999996,
+        "small_unit": 49441.08539999999
+      },
       "valuationUsd": 8017487.413999999,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1186,6 +1252,10 @@
       "treasuryValueUsd": 0,
       "cash": 1591990.12,
       "ebitdaUsd": 62619.1044,
+      "marginByTier": {
+        "garage": 4108.271999999998,
+        "small_unit": 64510.832399999985
+      },
       "valuationUsd": 7102471.3072,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1231,6 +1301,10 @@
       "treasuryValueUsd": 0,
       "cash": 1637197.98,
       "ebitdaUsd": 45207.84899999999,
+      "marginByTier": {
+        "garage": 3071.3423999999995,
+        "small_unit": 48136.50660000002
+      },
       "valuationUsd": 5615488.691999999,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1276,6 +1350,10 @@
       "treasuryValueUsd": 0,
       "cash": 1684431.71,
       "ebitdaUsd": 47233.744199999994,
+      "marginByTier": {
+        "garage": 3286.348799999999,
+        "small_unit": 49947.39540000001
+      },
       "valuationUsd": 7352481.0139999995,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1321,6 +1399,10 @@
       "treasuryValueUsd": 0,
       "cash": 1705213.36,
       "ebitdaUsd": 20781.648599999993,
+      "marginByTier": {
+        "garage": 1209.3732000000005,
+        "small_unit": 25572.275399999995
+      },
       "valuationUsd": 2453352.7095999997,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1366,6 +1448,10 @@
       "treasuryValueUsd": 0,
       "cash": 1700520.16,
       "ebitdaUsd": 5857.330799999993,
+      "marginByTier": {
+        "garage": 469.47600000000006,
+        "small_unit": 11387.854800000003
+      },
       "valuationUsd": 1817666.7759999998,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -1411,6 +1497,10 @@
       "treasuryValueUsd": 0,
       "cash": 1688658.49,
       "ebitdaUsd": -1311.111600000003,
+      "marginByTier": {
+        "garage": 118.57860000000005,
+        "small_unit": 4570.3098
+      },
       "valuationUsd": 1688658.49,
       "priceAlerts": 0,
       "marginCalls": 0,

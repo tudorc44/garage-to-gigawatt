@@ -2,9 +2,13 @@
 // rules and returns either the new state or an error message (the old state is untouched).
 import { BALANCE, CONTENT } from '../content/index.ts'
 import {
+  buildPhase,
   constructionLoanBlocker,
   constructionLoanUsd,
-  newGpuKwLeft,
+  gpuKwLeft,
+  phaseBlocker,
+  phaseBuildQuarters,
+  phaseStartBlocker,
   repayConstructionLoan,
   takeConstructionLoan,
   transformerBlocker,
@@ -17,6 +21,7 @@ import {
   type ContractType,
   type Condition,
   type GameState,
+  type Site,
 } from './state.ts'
 import {
   addMachines,
@@ -39,7 +44,12 @@ import {
   scheduleComplaint,
   underMoratorium,
 } from './systems/heat.ts'
-import { acceptBlocker, acceptOpening, autoRenew } from './systems/contracts.ts'
+import {
+  acceptBlocker,
+  acceptOpening,
+  autoRenew,
+  signContract,
+} from './systems/contracts.ts'
 import {
   acceptOffer,
   counter,
@@ -80,6 +90,7 @@ import {
   flawEffect,
   getTier,
   leavingTerms,
+  normalPriceUsdKwh,
   rollOffers,
   tierIndex,
   topTierIndex,
@@ -100,7 +111,18 @@ export type Action =
   | { type: 'SET_HODL'; pct: number; coin?: Coin }
   | { type: 'SCOUT_SITES'; tier: string }
   /** Build from a scouted offer, or (tiers that need no scouting) straight from the tier. */
-  | { type: 'BUILD_SITE'; offerId: string; financed?: boolean }
+  /**
+   * Build a scouted offer. Phased tiers (Texas) build phase 1 and sign the site's power contract
+   * (contractType, negotiated like a renewal); `financed` takes the construction loan.
+   */
+  | {
+      type: 'BUILD_SITE'
+      offerId: string
+      financed?: boolean
+      contractType?: ContractType
+    }
+  /** Start the next 20 MW phase of a phased site (Texas). */
+  | { type: 'BUILD_PHASE'; siteId: string; financed?: boolean }
   | { type: 'BUILD_SITE'; tier: string }
   /** Break the site's lease: its machines are sold, a penalty is paid, rent stops. */
   | { type: 'LEAVE_SITE'; siteId: string }
@@ -240,11 +262,11 @@ function run(s: GameState, a: Action): Message | undefined {
         return fail('error.bad_count')
       if (model.coin === 'ETH' && a.condition === 'new' && newGpusLocked(s))
         return fail('error.gpus_sold_out')
-      if (model.coin === 'ETH' && a.condition === 'new') {
-        const leftKw = newGpuKwLeft(s)
+      if (model.coin === 'ETH') {
+        const leftKw = gpuKwLeft(s)
         if (model.power_kw * a.count > leftKw + 1e-9)
           return fail('error.gpu_cap', {
-            capKw: CONTENT.newGpuCap.kwPerQuarter,
+            capKw: CONTENT.gpuCap.kwPerQuarter,
             leftKw,
           })
       }
@@ -443,32 +465,69 @@ function run(s: GameState, a: Action): Message | undefined {
       const cost = BALANCE.bandwidth.build
       if (s.bandwidth < cost)
         return fail('error.no_bandwidth', { needed: cost, have: s.bandwidth })
-      // A financed build (the Texas construction loan) needs only the rest in cash.
+      // Phased tiers (Texas): this builds phase 1, which signs the site's power contract.
+      const tierInfo = getTier(terms.tier)!
+      const phased = tierInfo.phases
+      const contractType =
+        'offerId' in a ? (a.contractType ?? 'fixed') : 'fixed'
+      if (phased) {
+        const blocked = phaseStartBlocker(s, terms.tier)
+        if (blocked) return blocked
+        if (!['fixed', 'index'].includes(contractType))
+          return fail('error.bad_choice')
+      }
+      const buildUsd = phased
+        ? Math.round(terms.capexUsd * phased.cost_share)
+        : terms.capexUsd
+      // A financed build (the construction loan) needs only the rest in cash.
       const financed = 'offerId' in a && a.financed === true
       if (financed) {
-        const blocked = constructionLoanBlocker(s, terms.tier)
+        const blocked = constructionLoanBlocker(s, {
+          tier: terms.tier,
+          // Phase 1 signs the contract the loan is secured on.
+          contract: phased
+            ? { type: contractType, price: 0, startQuarter: 0, endQuarter: 0 }
+            : undefined,
+        })
         if (blocked) return blocked
       }
-      const loanUsd = financed ? constructionLoanUsd(terms.capexUsd) : 0
-      if (terms.capexUsd - loanUsd > s.cash) {
+      const loanUsd = financed ? constructionLoanUsd(buildUsd) : 0
+      if (buildUsd - loanUsd > s.cash) {
         return fail('error.no_cash', {
-          costUsd: terms.capexUsd - loanUsd,
+          costUsd: buildUsd - loanUsd,
           cashUsd: s.cash,
         })
       }
       s.bandwidth -= cost
       if (financed) takeConstructionLoan(s, loanUsd)
-      s.cash -= terms.capexUsd
-      const site = {
+      s.cash -= buildUsd
+      const site: Site = {
         id: `site-${s.nextId++}`,
         tier: terms.tier,
-        readyQuarter: s.quarter + buildQuartersFor(s, getTier(terms.tier)!),
+        readyQuarter:
+          s.quarter +
+          (phased
+            ? phaseBuildQuarters(s, tierInfo)
+            : buildQuartersFor(s, tierInfo)),
         rentUsdQ: terms.rentUsdQ,
         powerPriceMult: terms.powerPriceMult,
         flaw: terms.flaw,
       }
       // The hidden flaw is revealed now that it's bought: delays and one-off costs apply.
       site.readyQuarter += flawEffect(site, 'delay_quarters') ?? 0
+      if (phased) {
+        site.phases = [site.readyQuarter]
+        site.phaseCapexUsd = buildUsd
+        // The contract is signed now and negotiated like a renewal this Plan phase (its term
+        // ends this quarter; untouched, it takes the opening offer at the end of the Plan).
+        signContract(
+          s,
+          site,
+          contractType,
+          normalPriceUsdKwh(site, s.quarter, contractType),
+          0,
+        )
+      }
       s.cash += flawEffect(site, 'cash') ?? 0
       s.sites.push(site)
       recalcHeat(s, site)
@@ -558,6 +617,13 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'REPAY_CONSTRUCTION_LOAN':
       return repayConstructionLoan(s)
+
+    case 'BUILD_PHASE': {
+      const blocked = phaseBlocker(s, a.siteId, a.financed === true)
+      if (blocked) return blocked
+      buildPhase(s, a.siteId, a.financed === true)
+      return
+    }
 
     case 'UPGRADE_TRANSFORMER': {
       const blocked = transformerBlocker(s, a.siteId)

@@ -140,6 +140,15 @@
   {
    "id": "texas_site",
    "available_from": "2020Q1",
+   "phases": {
+    "notes": "Built in 20 MW phases (design thread, balance review 2, 27 Sep 2026): each phase costs cost_share of the site's full build cost and takes build_quarters (2 in the decision, raised to 3 by its fallback rule because the great path peaked over $3.0B); later phases can start any time after phase 1. Phase 1 from `from`, needs requires_round, and signs the site's power contract (fixed or index; negotiated like a renewal).",
+    "count": 5,
+    "kw": 20000,
+    "cost_share": 0.2,
+    "build_quarters": 3,
+    "from": "2020Q3",
+    "requires_round": "series_a"
+   },
    "capacity_kw": 100000,
    "power_options": {
     "fixed": {

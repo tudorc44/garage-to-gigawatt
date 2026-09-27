@@ -31,9 +31,23 @@ export function flawEffect(site: Site, key: string): number | undefined {
   return site.flaw ? CONTENT.flaws[site.flaw]?.effect[key] : undefined
 }
 
+/** Capacity to place machines in: a phased site counts every phase started (built or building). */
 export function capacityKw(site: Site): number {
+  const tier = getTier(site.tier)!
+  const base = site.phases
+    ? tier.phases!.kw * site.phases.length
+    : tier.capacity_kw
+  return base * (flawEffect(site, 'capacity_mult') ?? 1)
+}
+
+/** Capacity energized in `quarter`: a phased site counts its finished phases only. */
+export function poweredKw(site: Site, quarter: number): number {
+  if (!site.phases) return isReady(site, quarter) ? capacityKw(site) : 0
+  const done = site.phases.filter((q) => q <= quarter).length
   return (
-    getTier(site.tier)!.capacity_kw * (flawEffect(site, 'capacity_mult') ?? 1)
+    getTier(site.tier)!.phases!.kw *
+    done *
+    (flawEffect(site, 'capacity_mult') ?? 1)
   )
 }
 

@@ -1,13 +1,14 @@
 {
  "schema_version": 2,
  "notes": "v2 (26 Sep 2026 review): S9 new-price series ends when retail ends (2020Q1); LHR is news-only in the alpha; added heat_per_unit_garage (flag F7). Prices are USD per complete unit (GPU rigs = 6 GPUs + frame/PSU/board). Used = healthy second-hand unit. In boom quarters used can exceed new because new units carry a lead time.",
- "new_gpu_cap": {
-  "notes": "2020Q4–2022Q1 GPU shortage (design thread, balance review 27 Sep 2026): at most kw_per_quarter of NEW GPU rigs bought per quarter, across all sites. Used rigs are uncapped (market price).",
+ "gpu_cap": {
+  "notes": "2020Q4–2022Q1 GPU shortage (design thread, balance reviews 27 Sep 2026): at most kw_per_quarter of GPU rigs bought per quarter across all sites, new and used, auctions included. In the window a used GPU rig costs at least used_price_min_new_mult x the new price (real 2021: used cards sold at or above MSRP).",
   "window": [
    "2020Q4",
    "2022Q1"
   ],
-  "kw_per_quarter": 250
+  "kw_per_quarter": 250,
+  "used_price_min_new_mult": 1.0
  },
  "models": [
   {

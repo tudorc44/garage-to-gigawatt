@@ -102,7 +102,7 @@
  },
  "loans": {
   "construction": {
-   "notes": "Texas construction loan (design thread, balance review 27 Sep 2026): finances up to ltc of a Texas site's build cost when you build it; weekly payments like the equipment loan. Needs Series A closed and a signed power contract at one of your sites.",
+   "notes": "Texas construction loan (design thread, balance reviews 27 Sep 2026): finances up to ltc of each Texas phase's cost when you start it (one loan per phase); weekly payments like the equipment loan. Needs Series A closed and the Texas site's own power contract (phase 1 signs it); secured on that site.",
    "tier": "texas_site",
    "from": "2020Q3",
    "ltc": 0.6,

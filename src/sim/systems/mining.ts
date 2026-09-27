@@ -12,6 +12,7 @@ import {
   flawEffect,
   hashrateMult,
   isReady,
+  poweredKw,
   powerPriceUsdKwh,
   uptime,
 } from './sites.ts'
@@ -70,7 +71,7 @@ export function mineWeek(
     .map((lot) => {
       const model = getModel(lot.model)!
       const site = state.sites.find((s) => s.id === lot.siteId)!
-      const working = lot.count - lot.failed
+      const working = (lot.count - lot.failed) * poweredShare(state, site)
       const up = uptime(site)
       const revenueUsd =
         working *
@@ -101,13 +102,28 @@ export function mineWeek(
     })
 }
 
+/**
+ * Phased sites (Texas): machines placed in phases still being built wait. The share of the
+ * site's placed kW that has power (1 for ordinary sites).
+ */
+export function poweredShare(state: GameState, site: Site): number {
+  if (!site.phases) return 1
+  // Delivered machines share the powered phases; undelivered ones don't take a place yet.
+  const placed = state.machines
+    .filter((l) => l.siteId === site.id && state.quarter >= l.earnsFromQuarter)
+    .reduce((kw, l) => kw + l.count * getModel(l.model)!.power_kw, 0)
+  return placed > 0 ? Math.min(1, poweredKw(site, state.quarter) / placed) : 1
+}
+
 /** Hashrate of healthy, earning machines: BTC in TH/s, ETH in MH/s. */
 export function hashrate(state: GameState): Record<Coin, number> {
   const out: Record<Coin, number> = { BTC: 0, ETH: 0 }
   for (const lot of state.machines) {
     if (!isEarning(state, lot)) continue
     const model = getModel(lot.model)!
-    out[model.coin] += (lot.count - lot.failed) * model.hashrate
+    const site = state.sites.find((s) => s.id === lot.siteId)!
+    out[model.coin] +=
+      (lot.count - lot.failed) * model.hashrate * poweredShare(state, site)
   }
   return out
 }

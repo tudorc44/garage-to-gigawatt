@@ -7,7 +7,12 @@ import {
   type EquipmentLoanTerms,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { logEntry, roundCents, type GameState } from '../state.ts'
+import {
+  logEntry,
+  roundCents,
+  type EquipmentLoan,
+  type GameState,
+} from '../state.ts'
 import { loansLocked } from './cryptoLoan.ts'
 import { saleValueUsd } from './machines.ts'
 
@@ -109,20 +114,36 @@ export function payLoanWeek(state: GameState): {
   interestUsd: number
   principalUsd: number
 } {
-  const a = payOneWeek(state, 'equipmentLoan')
-  const b = payOneWeek(state, 'constructionLoan')
-  return {
-    interestUsd: a.interestUsd + b.interestUsd,
-    principalUsd: a.principalUsd + b.principalUsd,
+  const total = { interestUsd: 0, principalUsd: 0 }
+  const add = (x: { interestUsd: number; principalUsd: number }) => {
+    total.interestUsd += x.interestUsd
+    total.principalUsd += x.principalUsd
   }
+  if (state.equipmentLoan) {
+    const x = payOneWeek(state, state.equipmentLoan)
+    add(x)
+    if (x.paidOff) {
+      state.equipmentLoan = null
+      logEntry(state, 'log.loan_paid_off', {}, state.week + 1)
+    }
+  }
+  for (const loan of [...state.constructionLoans]) {
+    const x = payOneWeek(state, loan)
+    add(x)
+    if (x.paidOff) {
+      state.constructionLoans = state.constructionLoans.filter(
+        (l) => l !== loan,
+      )
+      logEntry(state, 'log.construction_loan_paid_off', {}, state.week + 1)
+    }
+  }
+  return total
 }
 
 function payOneWeek(
   state: GameState,
-  which: 'equipmentLoan' | 'constructionLoan',
-): { interestUsd: number; principalUsd: number } {
-  const loan = state[which]
-  if (!loan) return { interestUsd: 0, principalUsd: 0 }
+  loan: EquipmentLoan,
+): { interestUsd: number; principalUsd: number; paidOff: boolean } {
   const interestUsd = roundCents(
     (loan.balanceUsd * loan.apr) / (4 * BALANCE.weeksPerQuarter),
   )
@@ -133,25 +154,14 @@ function payOneWeek(
   loan.balanceUsd = roundCents(loan.balanceUsd - principalUsd)
   loan.weeksLeft--
   state.cash -= interestUsd + principalUsd
-  if (loan.balanceUsd <= 0) {
-    state[which] = null
-    logEntry(
-      state,
-      which === 'equipmentLoan'
-        ? 'log.loan_paid_off'
-        : 'log.construction_loan_paid_off',
-      {},
-      state.week + 1,
-    )
-  }
-  return { interestUsd, principalUsd }
+  return { interestUsd, principalUsd, paidOff: loan.balanceUsd <= 0 }
 }
 
 /** Everything still owed on loans (equipment and crypto-backed). */
 export function debtUsd(state: GameState): number {
   return (
     (state.equipmentLoan?.balanceUsd ?? 0) +
-    (state.constructionLoan?.balanceUsd ?? 0) +
+    state.constructionLoans.reduce((sum, l) => sum + l.balanceUsd, 0) +
     (state.cryptoLoan?.balanceUsd ?? 0)
   )
 }

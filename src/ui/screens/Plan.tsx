@@ -13,6 +13,7 @@ import {
   equipmentLoanView,
   constructionLoanView,
   transformerViews,
+  phaseViews,
   fundingRound,
   hireViews,
   planOpensOnBuy,
@@ -307,6 +308,21 @@ export function FleetPanel({ state }: { state: GameState }) {
                 {sv.site.flaw && (
                   <div class="num-s warn">
                     {t('ui.fleet.flaw', { flaw: flawName(sv.site.flaw) })}
+                  </div>
+                )}
+                {sv.phases && (
+                  <div class="num-s muted">
+                    {sv.phases.powered < sv.phases.started
+                      ? t('ui.fleet.phases_building', {
+                          powered: sv.phases.powered,
+                          started: sv.phases.started,
+                          of: sv.phases.of,
+                          quarter: fmt.quarter(sv.phases.nextReady),
+                        })
+                      : t('ui.fleet.phases', {
+                          powered: sv.phases.powered,
+                          of: sv.phases.of,
+                        })}
                   </div>
                 )}
               </div>
@@ -627,6 +643,45 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.sites')}</div>
       {ladderRows}
+      {phaseViews(state).flatMap((p) => {
+        if (!p.next) return []
+        const plain: Action = { type: 'BUILD_PHASE', siteId: p.site.id }
+        const loan: Action = {
+          type: 'BUILD_PHASE',
+          siteId: p.site.id,
+          financed: true,
+        }
+        const name = t('ui.plan.phase', {
+          tier: tierName(p.site.tier),
+          n: p.next.n,
+          of: p.next.of,
+          kw: fmt.power(p.next.kw),
+        })
+        return [
+          <ActionRow
+            key={`phase-${p.site.id}`}
+            icon="texas-site"
+            name={name}
+            bandwidth={1}
+            bandwidthLeft={left}
+            price={t('ui.plan.minus', { value: fmt.money(p.next.costUsd) })}
+            disabledReason={reason(plain)}
+            onClick={() => act(plain)}
+          />,
+          <ActionRow
+            key={`phase-loan-${p.site.id}`}
+            icon="loan"
+            name={t('ui.plan.phase_loan', { name })}
+            bandwidth={1}
+            bandwidthLeft={left}
+            price={t('ui.plan.minus', {
+              value: fmt.money(p.next.costUsd - p.next.loanUsd),
+            })}
+            disabledReason={reason(loan)}
+            onClick={() => act(loan)}
+          />,
+        ]
+      })}
       {transformerViews(state).map((u) =>
         u.readyQuarter !== undefined ? (
           <ActionRow
@@ -870,19 +925,19 @@ function AuctionRow({
   )
 }
 
-/** The Texas construction loan: shown only while you have one (it's taken when you build Texas). */
+/** Texas construction loans: shown only while you owe on one (they're taken with Texas phases). */
 function ConstructionLoanRow({ state, act }: ScreenProps) {
   const v = constructionLoanView(state)
-  if (!v.loan) return null
+  if (v.owedUsd <= 0) return null
   const a: Action = { type: 'REPAY_CONSTRUCTION_LOAN' }
   const why = whyNot(state, a)
   return (
     <ActionRow
       icon="loan"
       name={t('ui.plan.repay_construction', {
-        left: fmt.money(v.loan.balanceUsd),
+        left: fmt.money(v.owedUsd),
       })}
-      price={t('ui.plan.minus', { value: fmt.money(v.loan.balanceUsd) })}
+      price={t('ui.plan.minus', { value: fmt.money(v.owedUsd) })}
       disabledReason={why ? say(why) : undefined}
       onClick={() => act(a)}
     />

@@ -82,10 +82,11 @@ export const machineSchema = z
   }))
 
 export const machinesFileSchema = z.object({
-  /** The 2020Q4–2022Q1 GPU shortage: new GPU rigs bought per quarter are capped (kW). */
-  new_gpu_cap: z.object({
+  /** The 2020Q4–2022Q1 GPU shortage: GPU rigs bought per quarter are capped (kW), used ones cost at least new. */
+  gpu_cap: z.object({
     window: z.tuple([quarterId, quarterId]),
     kw_per_quarter: nonNeg,
+    used_price_min_new_mult: nonNeg,
   }),
   models: z.array(machineSchema).min(1),
 })
@@ -118,6 +119,17 @@ export const siteTierSchema = z
     capex_per_mw_usd: num.optional(),
     land_usd: num.optional(),
     build_quarters: z.number().int().min(0),
+    /** Texas: built in phases of `kw`, each cost_share of the full cost (design thread). */
+    phases: z
+      .object({
+        count: z.number().int().min(1),
+        kw: z.number().positive(),
+        cost_share: z.number().min(0).max(1),
+        build_quarters: z.number().int().min(0),
+        from: quarterId,
+        requires_round: z.string(),
+      })
+      .optional(),
     heat_base: nonNeg,
     /** Heat added by a full site of running machines (0 for the garage, which counts units instead). */
     heat_load_max: nonNeg,

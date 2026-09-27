@@ -74,9 +74,7 @@ export function BuyDialog({ state, act, onClose }: DialogProps) {
   const maxCount = Math.max(
     1,
     Math.min(
-      Math.floor(
-        Math.min(freeKw, buyCapKw(state, model, condition)) / m.powerKw,
-      ),
+      Math.floor(Math.min(freeKw, buyCapKw(state, model)) / m.powerKw),
       price ? Math.floor(state.cash / price) : 0,
     ),
   )
@@ -394,11 +392,32 @@ function FleetRow(props: {
 }
 
 export function OffersDialog({ state, act, onClose }: DialogProps) {
+  // Phased sites (Texas) sign their power contract with phase 1: fixed or index.
+  const [contractType, setContractType] = useState<ContractType>('fixed')
+  const phased = state.siteOffers.some(
+    (o) => constructionLoanView(state).firstBuild(o).phase,
+  )
   return (
     <Dialog title={t('ui.offers.title')} onClose={onClose}>
       <p class="num-s muted" style={{ margin: 0 }}>
         {t('ui.offers.note')}
       </p>
+      {phased && (
+        <label class="num-s">
+          {t('ui.offers.contract')}{' '}
+          <select
+            value={contractType}
+            onChange={(e) =>
+              setContractType(
+                (e.currentTarget as HTMLSelectElement).value as ContractType,
+              )
+            }
+          >
+            <option value="fixed">{tDynamic('contract.fixed', 'fixed')}</option>
+            <option value="index">{tDynamic('contract.index', 'index')}</option>
+          </select>
+        </label>
+      )}
       <table>
         <thead>
           <tr>
@@ -412,13 +431,17 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
         </thead>
         <tbody>
           {state.siteOffers.map((o) => {
-            const a: Action = { type: 'BUILD_SITE', offerId: o.id }
+            const first = constructionLoanView(state).firstBuild(o)
+            const a: Action = first.phase
+              ? { type: 'BUILD_SITE', offerId: o.id, contractType }
+              : { type: 'BUILD_SITE', offerId: o.id }
             const why = whyNot(state, a)
-            const fin = constructionLoanView(state).financing(o)
+            const fin = first.financed
             const financed: Action = {
               type: 'BUILD_SITE',
               offerId: o.id,
               financed: true,
+              contractType,
             }
             const whyFinanced = fin ? whyNot(state, financed) : null
             return (
@@ -459,7 +482,12 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
                       if (!act(a)) onClose()
                     }}
                   >
-                    {t('ui.offers.build')}
+                    {first.phase
+                      ? t('ui.offers.build_phase', {
+                          kw: fmt.power(first.phase.kw),
+                          cost: fmt.money(first.costUsd),
+                        })
+                      : t('ui.offers.build')}
                     <Pips
                       total={BANDWIDTH_COST.build}
                       filled={BANDWIDTH_COST.build}

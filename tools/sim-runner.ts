@@ -13,11 +13,7 @@ import type {
 } from '../src/sim/state.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
-import {
-  capacityKw,
-  isReady,
-  normalPriceUsdKwh,
-} from '../src/sim/systems/sites.ts'
+import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { BOTS, PROBES } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -280,8 +276,7 @@ function idleShare(r: Run): number | null {
   const s = r.state
   if (s.phase === 'gameover') return null
   const q = CONTENT.quarters.length - 1
-  const ready = s.sites.filter((x) => isReady(x, q))
-  const energized = ready.reduce((a, x) => a + capacityKw(x), 0)
+  const energized = s.sites.reduce((a, x) => a + poweredKw(x, q), 0)
   if (energized === 0) return null
   const lots = new Map(s.machines.map((l) => [l.id, l]))
   const hashing = mineWeek(s, marketWeek(q, 12))
@@ -330,6 +325,17 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
     ),
   )
   const mergeSplits = merged.map((r) => valuationSplit(r.state.reports.at(-1)!))
+  // Texas's share of EBITDA in the peak quarter (runs that built Texas; design thread check 3).
+  const texasShares = runs
+    .filter((r) => r.state.sites.some((x) => x.tier === 'texas_site'))
+    .map((r) => {
+      const p = r.state.reports.reduce((a, b) =>
+        b.valuationUsd > a.valuationUsd ? b : a,
+      )
+      return p.ebitdaUsd > 0
+        ? (p.marginByTier?.texas_site ?? 0) / p.ebitdaUsd
+        : 0
+    })
   const drawdowns = merged.map((r) => {
     const peak = Math.max(...r.state.reports.map((x) => x.valuationUsd))
     return peak > 0 ? r.state.reports.at(-1)!.valuationUsd / peak - 1 : 0
@@ -386,6 +392,9 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
     rate_hikes_per_run: logCount('log.rate_hike') / runs.length,
     outreach_per_run: logCount('log.outreach') / runs.length,
     median_drawdown: median(drawdowns),
+    texas_share_runs: texasShares.length,
+    median_texas_share: median(texasShares),
+    texas_share_25_runs: texasShares.filter((x) => x >= 0.25).length,
     peak_split: splitMedians(peakSplits),
     merge_split: splitMedians(mergeSplits),
     idle_runs: idle.length,
@@ -607,6 +616,9 @@ console.table(
       'Merge: ops / cash / coins / debt': `${usd(r.merge_split.ops)} / ${usd(r.merge_split.cash)} / ${usd(r.merge_split.coins)} / ${usd(r.merge_split.debt)}`,
       drawdown: `${(r.median_drawdown * 100).toFixed(0)}%`,
       'IPO / Texas runs': `${r.ipo_runs} / ${r.texas_runs}`,
+      'Texas share of peak EBITDA': r.texas_share_runs
+        ? `${(r.median_texas_share * 100).toFixed(0)}% (≥25% in ${r.texas_share_25_runs}/${r.texas_share_runs})`
+        : '—',
       'idle ≥ 10% at Merge': `${r.idle_10pct_runs}/${r.idle_runs} (median ${(r.median_idle_share * 100).toFixed(0)}%)`,
     })),
 )

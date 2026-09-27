@@ -40,7 +40,20 @@ export function buyPrice(
 ): number | undefined {
   const q = CONTENT.quarters[quarter]
   if (q < model.available_from) return undefined
-  return condition === 'new' ? model.price_new[q] : model.price_used[q]
+  if (condition === 'new') return model.price_new[q]
+  // The 2020Q4–2022Q1 GPU shortage: used rigs cost at least the new price (machines.json gpu_cap).
+  const cap = CONTENT.gpuCap
+  const used = model.price_used[q]
+  const newPrice = model.price_new[q]
+  if (
+    model.coin === 'ETH' &&
+    q >= cap.window[0] &&
+    q <= cap.window[1] &&
+    used !== undefined &&
+    newPrice !== undefined
+  )
+    return Math.max(used, newPrice * cap.usedPriceMinNewMult)
+  return used
 }
 
 /** What one working unit sells for: the market's used price. */

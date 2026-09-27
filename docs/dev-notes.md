@@ -4,7 +4,7 @@ The running record of what's built, what was decided and what's next. It exists 
 or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this file.**
 Update it at the end of every finished task (status, new decisions, next step).
 
-Last updated: 27 Sep 2026, with the balance pass and its review (Texas loan, GPU cap, transformer upgrade).
+Last updated: 27 Sep 2026, with the balance pass and two reviews (phased Texas, construction loans, GPU cap, transformer upgrade).
 
 ## How the owner works
 
@@ -68,7 +68,7 @@ See `CLAUDE.md` for the full list. The main ones:
    Fontsource fonts; era themes (`garage` until 2019, `industrial` from 2020Q1). Text via `t()` + `en.json`.
 7. **Sim-runner** with bots (see results below), **golden replay tests** (`tests/golden/`: steady-grower,
    early-expander, ff-expander, ff-leaver, seed-raiser, loan-taker, margin-caller, auction-bidder,
-   heat-climber, negotiator, pitcher) and unit tests: 342 passing.
+   heat-climber, negotiator, pitcher) and unit tests: 346 passing.
 8. **GitHub Pages** (https://tudorc44.github.io/garage-to-gigawatt/): `.github/workflows/deploy-pages.yml`
    runs the tests, builds, and publishes `dist/` on every push to `main` (or by hand from the Actions
    tab). Needs the repository's Settings → Pages → Source set to "GitHub Actions" (once). Vite's
@@ -540,6 +540,54 @@ player-only tariff card are accepted. A flaw must be fixable.
 - **Why the GPU cap doesn't bite:** texas-ipo-upgrade buys ~23,500 **used** GPU Gen 2 rigs in 2021Q2–Q3,
   which the cap leaves alone by design. EBITDA ~$50M a quarter → $6.2B.
 
+### Balance review 2 (design thread, 27 Sep 2026, third round)
+
+**Decisions:** cap used GPUs too; keep the construction loan and build Texas in phases; the great path =
+S9→S19 upgrade **and** Texas online in 2021 (Texas ≥ 25% of peak EBITDA, median peak $1.5–3.0B); the
+Texas loan is secured on Texas's own contract, chosen (fixed or index) when phase 1 starts.
+
+**Built:**
+- **GPU cap on all GPU rigs** (`machines.json` › `gpu_cap`, was `new_gpu_cap`): 2020Q4–2022Q1, 250 kW a
+  quarter across all sites, new + used + auction lots; in that window a used GPU rig costs at least the
+  new price (`used_price_min_new_mult` 1.0).
+- **Phased Texas** (`sites.json` › texas_site.phases): 5 phases of 20 MW, each 20% of the offer's cost;
+  phase 1 from 2020Q3 with Series A closed; later phases any time after phase 1. The site's capacity for
+  placing machines = phases started; only powered phases run (`poweredKw`): delivered machines beyond the
+  powered kW wait (mining scales them by powered ÷ placed kW). Phase 1 (BUILD_SITE on the Texas offer)
+  signs Texas's power contract, fixed or index, with a term ending that quarter, so it is negotiated (or
+  auto-accepted at the opening) like a renewal. Later phases: BUILD_PHASE. **Phase build time: 3
+  quarters** — the decision said 2, and its fallback rule ("over $3.0B → 3") fired: see the report.
+- **Construction loans:** one per financed phase (`constructionLoans`, a list; older saves migrate), 60% of
+  the phase cost, 11%, 8 quarters; needs Series A and the Texas site's own contract. Repay-all action.
+- **UI/terminal:** the offers dialog picks the contract and builds phase 1 (cash or loan); Plan rows
+  "Build Texas site phase N of 5 (20 MW)" and "… with a construction loan"; the fleet shows "k of 5
+  phases powered"; terminal `build <offer#> [loan] [fixed|index]`, `phase <site#> [loan]`.
+- **Sim:** quarter reports carry `marginByTier` (mining revenue − power by site tier) and the report
+  shows Texas's share of EBITDA in the peak quarter.
+- **texas-ipo bot:** phase 1 on the loan as soon as it can (it keeps 1 Bandwidth free for it before the
+  IPO and saves cash for it); phases 2–5 after the IPO (cash, or the loan if short); fills only powered
+  phases (next quarter's, buying ahead); S9→S19 after the IPO.
+
+**Report** (50 seeds; phases at 3 quarters, 2021Q4 multiple 30):
+
+| Check | Target | Result |
+|---|---|---|
+| texas-ipo peak | $1.5–3.0B | ✓ **$2.2B, 2021Q4** |
+| Texas share of peak EBITDA | ≥ 25% | ✗ **median 0%** (≥ 25% in 3/42 runs): phase 1 (2021Q2) powers on in 2022Q1 |
+| texas-ipo drawdown / idle | −85% to −95% | ✓ −88%; idle ≥ 10% in 49/50 runs, median 25% |
+| texas-ipo-upgrade (GPU swap) | ≤ texas-ipo × 1.5 | ✓ **$606M** (was $6.2B) |
+| ff-climb | unchanged | ✓ 100% bust (2018Q4 ×7, 2019Q1 ×43) |
+| good path | unchanged | ≈ $490.4M (was $490.8M; the used-GPU price floor touches its few GPU buys) |
+| golden replays | unchanged | 8/11 identical; heat-climber, negotiator, pitcher end +0.5% (same GPU cause) |
+
+- **The two great-path checks conflict.** With **2-quarter** phases (the decision): peak **$4.3B** ✗,
+  Texas **49%** of peak EBITDA ✓ (≥ 25% in 34/42 runs), drawdown −95%. With **3-quarter** phases (the
+  fallback): $2.2B ✓ but Texas 0% ✗. The bot starts phase 1 in 2021Q2 in most runs (before that its cash
+  is ~$2–3M, just under phase 1's $3.2M cash part), so a 3-quarter build lands in 2022.
+- **Measured alternative (not applied):** 2-quarter phases + 2021Q4 multiple 20 → texas-ipo **$2.9B** ✓,
+  Texas **49%** ✓, drawdown −93% ✓; the good path then peaks **$406M in 2021Q1** (in its $400–700M band,
+  barely).
+
 ## Balance findings (from `npm run sim`, 50 seeds per bot)
 
 *(Before the balance pass; kept for history. The table's numbers are from 26 Sep 2026.)*
@@ -619,15 +667,12 @@ player-only tariff card are accepted. A flaw must be fixable.
 
 ## Open questions for the design thread
 
-- **Balance review follow-ups** (numbers in "Balance review" above):
-  - The GPU cap misses its check (texas-ipo-upgrade $6.2B vs ≤ $3.45B) because used GPU rigs are
-    uncapped. Cap used rigs too (e.g. a shared kW cap, or a used-price jump when buying in bulk), or accept
-    that a GPU-farm strategy can win 2021 big (and lose it all at the Merge: −96%)?
-  - The construction loan is unaffordable before the IPO for the bots (40% of ~$40M). Fine as a player
-    option (it only matters with cash), or should it finance more, or allow a smaller Texas phase?
-  - The great path hits its band through the S9→S19 upgrade, not Texas. Is that the intended story?
-  - "Signed power contract" read as "any site you own has one". Or should it mean a contract for Texas
-    itself (e.g. chosen at build)?
+- **Balance review 2 follow-ups** (numbers in "Balance review 2" above):
+  - The great path can't pass both new checks with the rules as decided: 3-quarter phases → $2.2B but
+    Texas 0% of peak EBITDA; 2-quarter phases → Texas 49% but $4.3B. Measured option: 2-quarter phases +
+    2021Q4 multiple 20 ($2.9B, Texas 49%, good path $406M). Or: cheaper/earlier phase 1, or measure Texas's
+    share differently.
+  - The good path moved by 0.1% and three goldens by 0.5% from the used-GPU price floor: fine?
 - Leaving the 100 kW site also locks you out of the seed round (it needs a powered 100 kW site). Intended?
 - Confirm the `min_mw` = usable capacity rule.
 - Is the seed round too generous? $1.5M in 2017Q4 makes the 2018 crash harmless for anyone who takes it.
@@ -649,9 +694,10 @@ player-only tariff card are accepted. A flaw must be fixable.
 
 Built on 26 Sep 2026: investor pitches, hires, Read the market, the Merge decision and chapter report,
 save/load, the 20 event cards, the failure wave, the left-nav screens + Settings, and sound. Every item
-in the scope's build list now exists. 27 Sep 2026: the balance pass and its review (see "Balance pass"
-and "Balance review" above); every §5 balance anchor now passes in the sim. Next: the review follow-ups in
-the open questions (above all the used-GPU loophole), then playtests. Small follow-ups: an ear test of the sounds; the build's main
+in the scope's build list now exists. 27 Sep 2026: the balance pass and two reviews (see "Balance pass",
+"Balance review" and "Balance review 2" above); every §5 balance anchor passes in the sim except the great
+path's "Texas ≥ 25% of peak EBITDA". Next: the review 2 follow-ups in the open questions (that conflict
+first), then playtests. Small follow-ups: an ear test of the sounds; the build's main
 JS chunk is just over Vite's 500 KB warning (card text; split it later); CLAUDE.md still says
 `src/platform/` doesn't exist and that sound lives in `docs/audio/` (owner's file: flag, don't edit).
 Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing
