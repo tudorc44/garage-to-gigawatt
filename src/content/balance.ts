@@ -130,6 +130,8 @@ export const BALANCE = {
     backstopFrom: '2025Q3',
     /** It guarantees this share of the lease (tenants.json › Fluidline; doc 18 §7.1: ~47%). */
     backstopLeaseShare: 0.47,
+    /** A backstopped tenant's backlog weight (owner, M3 answers: between its own tier and A). */
+    backstopBacklogWeight: 0.1,
     /** Warrants worth this × the guaranteed dollars (lenders.json: 0.3–0.5×; mine: the middle), within 3–6%. */
     backstopWarrantValueShare: 0.4,
     /** Bandwidth: an equity raise 2 (scope §2.7); a JV or backstop deal 2 (mine, like negotiating). */

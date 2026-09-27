@@ -48,9 +48,11 @@ export function debtBlocker(
   const rating = tenantRating(p)
   if (kind === 'project_debt') {
     if (p.kind === 'pilot') return { key: 'error.debt_no_tenant' }
+    // A backstopped tenant is bankable (M4.6, mine).
     if (
       rating === null ||
-      ratingRank(rating) < ratingRank(BALANCE.finance.projectDebtMinRating)
+      (!p.backstop &&
+        ratingRank(rating) < ratingRank(BALANCE.finance.projectDebtMinRating))
     )
       return { key: 'error.debt_needs_bbb' }
     return undefined
@@ -81,7 +83,7 @@ export function debtOffer(
   const cost = projectCapex(state, p)
   const rating = tenantRating(p) ?? ''
   const ig = isInvestmentGrade(rating)
-  const strong = ratingRank(rating) >= ratingRank('A')
+  const strong = !!p.backstop || ratingRank(rating) >= ratingRank('A')
   const f = CONTENT.finance
   const share =
     kind === 'project_debt'

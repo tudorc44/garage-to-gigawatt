@@ -181,6 +181,11 @@ export interface Project {
   debt?: { projectDebt: boolean; ddtl: boolean }
   /** A big-tech backstop on the lease (M4.6): the share it guarantees and the warrants it took. */
   backstop?: { leaseShare: number; warrantsShare: number; quarter: number }
+  /**
+   * A JV partner (M4.6): funds `share` of the build's equity (capex less debt) and takes the same
+   * share of the project's earnings, backlog and sale proceeds. `fundedUsd` once the build starts.
+   */
+  jv?: { share: number; fundedUsd: number }
   /** Capex committed and paid at the start of the build (after any tenant capex credit). */
   capexUsd: number
   /** The GPUs' share of it (insured each year). */

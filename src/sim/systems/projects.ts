@@ -499,7 +499,7 @@ function missingSlots(p: Project): string[] {
 export function buildBlocker(
   state: GameState,
   projectId: string,
-  /** Debt the build will draw (facilities.ts › debtPlan): the cash only has to cover the rest. */
+  /** Money others put in (the debt from facilities.ts › debtPlan, a JV partner's share): the cash covers the rest. */
   debtUsd = 0,
 ): Message | undefined {
   const p = getProject(state, projectId)
@@ -590,7 +590,8 @@ export function endQuarterProjects(state: GameState): number {
       continue
     }
     if (state.quarter < t.readyByQuarter) continue
-    const usd = annualContractUsd(p) * P().latePenaltyShareYr
+    const usd =
+      annualContractUsd(p) * P().latePenaltyShareYr * (1 - ownedShareOut(p))
     damagesUsd += usd
     t.lateQuarters++
     logEntry(state, 'log.project_late', {
@@ -599,7 +600,8 @@ export function endQuarterProjects(state: GameState): number {
       late: t.lateQuarters,
       damagesUsd: usd,
     })
-    if (t.lateQuarters >= 2 && !t.walkRolled) {
+    // A backstopped tenant doesn't walk: the guarantor stands behind the lease (M4.6, mine).
+    if (t.lateQuarters >= 2 && !t.walkRolled && !p.backstop) {
       t.walkRolled = true
       const walk = P().walkChanceLate2q[card.type]
       if (chance(substream(state.seed, `tenant_walk:${label}:${p.id}`), walk)) {
@@ -671,6 +673,10 @@ export function settleProjectsWeek(state: GameState): {
         p.kw * b.cloudPue * hours * up * powerPriceUsdKwh(site, state.quarter) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
     }
+    // A JV partner takes its share of the project's earnings (M4.6).
+    const ours = 1 - ownedShareOut(p)
+    rev *= ours
+    cost *= ours
     revenueUsd += rev
     costUsd += cost
     marginByTier[site.tier] = (marginByTier[site.tier] ?? 0) + rev - cost
@@ -996,7 +1002,9 @@ export function sellGpusBlocker(
  */
 export function sellGpus(state: GameState, projectId: string): void {
   const p = getProject(state, projectId)!
-  const valueUsd = Math.round(gpuResidualUsd(p, state.quarter))
+  const valueUsd = Math.round(
+    gpuResidualUsd(p, state.quarter) * (1 - ownedShareOut(p)),
+  )
   state.cash += valueUsd
   state.bandwidth -= BALANCE.projects.gpuResidual.sellBandwidth
   p.stage = 'ended'
@@ -1011,14 +1019,22 @@ export function sellGpus(state: GameState, projectId: string): void {
 
 // ---------- valuation parts and selling (scope 0.2 §2.5, §2.8; doc 18 §7.3, §8) ----------
 
-/** A tenant contract's revenue still to come: its value a year × the years left of its term. */
+/**
+ * A tenant contract's revenue still to come, to the company: its value a year × the years left of
+ * its term, less a JV partner's share.
+ */
 export function remainingContractUsd(p: Project): number {
   if (!p.tenant || projectGone(p)) return 0
   const quartersLeft = Math.max(
     0,
     contractQuarters(p) - p.tenant.servedQuarters,
   )
-  return (annualContractUsd(p) * quartersLeft) / 4
+  return ((annualContractUsd(p) * quartersLeft) / 4) * (1 - ownedShareOut(p))
+}
+
+/** The share of a project a JV partner owns (M4.6), 0 without one. */
+export function ownedShareOut(p: Project): number {
+  return p.jv?.share ?? 0
 }
 
 /** The backlog weight by tenant credit (doc 18 §8): A/AA, BBB, or below (AI labs, B/BB). */
@@ -1041,7 +1057,9 @@ export function weightedBacklogUsd(state: GameState): number {
       p.tenant
         ? sum +
           remainingContractUsd(p) *
-            backlogWeight(tenantCard(p.tenant.card)!.rating)
+            (p.backstop
+              ? BALANCE.finance.backstopBacklogWeight
+              : backlogWeight(tenantCard(p.tenant.card)!.rating))
         : sum,
     0,
   )
@@ -1089,7 +1107,10 @@ export function saleValueUsd(state: GameState, p: Project): number {
   const noi =
     annualRentUsd(tenantCard(p.tenant.card)!, p.kw) *
     (1 - BALANCE.projects.shellOpexShare)
-  return noi / capRate(state.quarter, p.kw) - p.tenant.prepaymentLeftUsd
+  return (
+    (noi / capRate(state.quarter, p.kw)) * (1 - ownedShareOut(p)) -
+    p.tenant.prepaymentLeftUsd
+  )
 }
 
 /** Why a project can't be sold now, or undefined if it can. */

@@ -1396,6 +1396,20 @@ A2-05 / A2-07. Sub-steps:
   same terms (mine). Convertible notes (doc 18) aren't built (not in scope §2.7's table). The dilution is shown
   before confirming in the Capital screen (M4.7). Tests 503 pass (new `tests/sim/equity.test.ts`). No golden change.
 - **M4.6** JV partner and big-tech backstop (cut #1 and #2 if they get expensive).
+  **Done (both built, neither cut).** New `src/sim/systems/partners.ts`.
+  **Backstop** `PROJECT_BACKSTOP {projectId}` (2 BW): from 2025Q3 (scope; lenders.json says 2025Q1), on a signed
+  AI-shell lease whose tenant is rated BB or lower. It guarantees 47% of the remaining lease; the warrants are
+  0.4 × the guaranteed dollars ÷ the last valuation, kept within 3–6% (mine: the middle of lenders.json's 0.3–0.5×
+  pricing rule); the founder is diluted by them. Effects: backlog weight 10% (owner); counts as strong backlog in the
+  rating; the tenant qualifies for project debt as if rated A (75% LTV, "A" project rating) (mine); a backstopped
+  tenant doesn't walk when late (mine). Shells only (the Google–Cipher pattern), once per lease.
+  **JV partner** `PROJECT_JV {projectId, share}` (2 BW the first time, changing the share is free): from 2025Q1, on a
+  proposed project of 100 MW+, share 50–80%. One share for both sides (mine: lenders.json has "funds 50–80% of
+  equity for 50–80% of the project"): at the build start the partner pays share × (capex − debt); afterwards the
+  company books (1 − share) of the project's revenue and costs, late damages, remaining backlog, sale price and GPU
+  resale. Simplified (mine, reversible): the project's debt and its service stay 100% the company's. The Deal
+  builder's projected return doesn't yet net the JV share out. Tests 507 pass (new `tests/sim/partners.test.ts`).
+  No golden change.
 - **M4.7** UI: the Capital screen (A2-07) and the Deal builder's capital rows (A2-05); top-bar rating.
 - **M4.8** Bots with capital, sims (good and great path re-checked), terminal commands, milestone report.
 

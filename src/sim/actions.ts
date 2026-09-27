@@ -108,6 +108,13 @@ import {
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
+  backstopBlocker,
+  fundJv,
+  jvBlocker,
+  setJv,
+  takeBackstop,
+} from './systems/partners.ts'
+import {
   debtPlan,
   drawFacilities,
   repayProjectFacilities,
@@ -181,6 +188,10 @@ export type Action =
   | { type: 'PROJECT_START'; projectId: string }
   /** Act II: sell a live AI shell at its cap rate (2 Bandwidth); its MW go with it. */
   | { type: 'PROJECT_SELL'; projectId: string }
+  /** Act II: a big-tech backstop on a shell's lease (2025Q3+, tenant BB or lower; 2 BW, warrants). */
+  | { type: 'PROJECT_BACKSTOP'; projectId: string }
+  /** Act II: a JV partner in a proposed 100 MW+ project for `share` of it (2025Q1+; 2 BW). */
+  | { type: 'PROJECT_JV'; projectId: string; share: number }
   /** Act II: raise equity (an at-the-market offering if public) diluting by `dilution` (2 BW). */
   | { type: 'RAISE_EQUITY'; dilution: number }
   /** Act II: switch project debt or a GPU-backed DDTL on or off for a proposed project (0 BW). */
@@ -762,10 +773,31 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'PROJECT_START': {
       const p = s.projects.find((x) => x.id === a.projectId)
       const plan = p ? debtPlan(s, p) : null
-      const blocker = buildBlocker(s, a.projectId, plan?.totalUsd ?? 0)
+      // A JV partner pays its share of what the debt doesn't cover.
+      const jvUsd = p?.jv ? p.jv.share * (plan?.equityUsd ?? 0) : 0
+      const blocker = buildBlocker(
+        s,
+        a.projectId,
+        (plan?.totalUsd ?? 0) + jvUsd,
+      )
       if (blocker) return blocker
       startBuild(s, a.projectId)
       drawFacilities(s, a.projectId, plan!)
+      fundJv(s, a.projectId, plan!.equityUsd)
+      return
+    }
+
+    case 'PROJECT_BACKSTOP': {
+      const blocker = backstopBlocker(s, a.projectId)
+      if (blocker) return blocker
+      takeBackstop(s, a.projectId)
+      return
+    }
+
+    case 'PROJECT_JV': {
+      const blocker = jvBlocker(s, a.projectId, a.share)
+      if (blocker) return blocker
+      setJv(s, a.projectId, a.share)
       return
     }
 
