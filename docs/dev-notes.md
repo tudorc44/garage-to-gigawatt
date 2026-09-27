@@ -318,7 +318,8 @@ balance → **P3** events, theme, screens → the Prologue report.
 - Machines: pc_cpu fails 3%/yr; the pre-order ASIC's used prices (none in the pack) follow the S1's scaled by hashrate;
   lead times 0; the prologue has no Heat (heat_per_unit 0). Power at the garage / small unit in the prologue is Act I's
   2017Q1 price. ETH is always pooled. Solo pays subsidy ÷ (1 − fee share) per block (the pack's hashprice formula).
-- A cash shortfall at quarter end sells exchange coins, then machines; still short is game over.
+- A cash shortfall at quarter end sells coins at the week's price (exchange first, then wallet as an emergency), then
+  machines; still short is game over (a player sitting on $200M of wallet BTC must not go bust over rent).
 - Handover: household sites go; their machines move to the garage and what doesn't fit is sold at the used price; the
   start wealth (P0-17) is net worth at 2016Q4's last week (cash + coins + machines at used prices).
 - Life (prologue.json notes): moving out moves your rigs into the garage (overflow sold, as the handover); building
@@ -326,7 +327,8 @@ balance → **P3** events, theme, screens → the Prologue report.
   forced cut patience returns to 50; the backup lapses on a PC / GPU purchase; a conference's used offer is the newest
   model sold used that quarter.
 - Custody: a sell order (Plan screen, keep/sell %, or a card) moves what it needs from the wallet first (a week);
-  the keep/sell % orders nothing while there's no price; a prologue start keeps 100% by default; offers are taken
+  the keep/sell % orders the sell share even before there's a price (it waits, as unfilled orders do); a prologue
+  start keeps 100% by default; offers are taken
   from the wallet first, then the exchange.
 - Pre-orders: the group buy's half unit is its own model (`asic_preorder_group`, half hashrate / power / prices);
   a unit arrives at the start of promised + delay quarters after the order and earns from the next (as Act I); on
@@ -335,6 +337,8 @@ balance → **P3** events, theme, screens → the Prologue report.
   answer; the dead drive is the wallet-loss roll's card (takes the random slot, may repeat, pauses auto-play); Bitfinex
   is a roll in its week, separate from its news card; card sales of wallet coins move them to the exchange first.
   Note: the conference card's quarters (2013Q2, 2014Q2) auto-play, so it takes "skip" unless you stopped there.
+- P2.5: `playPrologue` / `through: 0` in replay.ts (act 0 only; Act I/II paths unchanged); `tools/prologueBots.ts`
+  (settings-driven prologue bot, hands over to `shell-climb`); whole-run tests to the handover and to 2026Q4.
 
 ### Prologue progress
 - P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.

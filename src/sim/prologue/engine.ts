@@ -136,7 +136,7 @@ export function prologueWeek(s: GameState): void {
   }
 
   // 4. The coins land in your wallet or on the exchange; the keep/sell % orders the sell share sold
-  //    (once there's a price: with no market there's nothing to sell to).
+  //    (with no market yet the order waits, like any unfilled order: scope §2.8).
   for (const coin of COINS) {
     const coins = coin === 'BTC' ? btcCoins : ethCoins
     if (coins <= 0) continue
@@ -145,8 +145,7 @@ export function prologueWeek(s: GameState): void {
     p.quarter.coinsMined[coin] += coins
     if (p.minedTo === 'exchange') p.onExchange[coin] += coins
     const sellShare = 1 - s.hodlPct[coin]
-    if (sellShare > 0 && price(w, coin) > 0)
-      orderSale(s, coin, coins * sellShare)
+    if (sellShare > 0) orderSale(s, coin, coins * sellShare)
   }
   p.blocksFound += blocks
   p.quarter.blocksFound += blocks
@@ -268,17 +267,23 @@ export function prologueEndQuarter(s: GameState): void {
   if (s.phase === 'gameover') logEntry(s, 'log.game_over')
 }
 
-/** Cash below zero at quarter end: coins on the exchange sell at the week's price, then machines. */
+/**
+ * Cash below zero at quarter end: coins sell at the week's price (the exchange's first, then, as an
+ * emergency, your wallet's), then machines.
+ */
 function forcedSale(s: GameState, w: MarketWeek): void {
   const p = s.prologue!
-  for (const coin of COINS) {
-    const px = price(w, coin)
-    if (s.cash >= 0 || px <= 0) continue
-    const coins = Math.min(p.onExchange[coin], -s.cash / px)
-    s.cash += coins * px
-    s.treasury[coin] -= coins
-    p.onExchange[coin] -= coins
-  }
+  for (const where of ['exchange', 'wallet'] as const)
+    for (const coin of COINS) {
+      const px = price(w, coin)
+      if (s.cash >= 0 || px <= 0) continue
+      const held =
+        where === 'exchange' ? p.onExchange[coin] : walletCoins(s, coin)
+      const coins = Math.min(held, -s.cash / px)
+      s.cash += coins * px
+      s.treasury[coin] -= coins
+      if (where === 'exchange') p.onExchange[coin] -= coins
+    }
   for (const lot of [...s.machines]) {
     if (s.cash >= 0) break
     s.cash += removeMachines(s, lot, lot.count)

@@ -7,6 +7,8 @@ import { applyAction, type Action } from './actions.ts'
 import { advance } from './advance.ts'
 import { newGame, type GameState } from './state.ts'
 import { defaultChoice } from './systems/interrupts.ts'
+import { prologueDefaultChoice } from './prologue/events.ts'
+import { newPrologueGame } from './prologue/setup.ts'
 
 export type Step = Action | { type: 'ADVANCE' }
 
@@ -33,15 +35,20 @@ export interface Strategy {
   merge?(state: GameState): string | undefined
   /** The lifeline card, when it's offered; undefined (or no function) = take it (the card's default). */
   lifeline?(state: GameState): 'take' | 'pass' | undefined
+  /** The prologue: "Stop here" on a quarter report (the next quarter gets a Plan phase). */
+  stopHere?(state: GameState): boolean
 }
 
-/** Which act a played game stops after: 1 = at the Act I chapter report (after the Merge). */
+/**
+ * Which act a played game stops after: 1 = at the Act I chapter report (after the Merge); 0 = at
+ * the prologue's chapter report.
+ */
 export interface PlayOptions {
-  through?: 1 | 2
+  through?: 0 | 1 | 2
 }
 
 /** Whether a played game stops here: game over, or the chapter report of the last act played. */
-function finished(state: GameState, through: 1 | 2): boolean {
+function finished(state: GameState, through: 0 | 1 | 2): boolean {
   if (state.phase === 'gameover') return true
   return state.phase === 'chapter' && state.act >= through
 }
@@ -58,6 +65,15 @@ export function playGame(
   return playFrom(newGame(seed), strategy, options)
 }
 
+/** Plays a game from the prologue (2009) the same way, on into Act I and, with through: 2, Act II. */
+export function playPrologue(
+  seed: number,
+  strategy: Strategy,
+  options: PlayOptions = {},
+): { state: GameState; log: Step[] } {
+  return playFrom(newPrologueGame(seed), strategy, options)
+}
+
 /** Plays on from any state (a loaded save, say) the same way as playGame. */
 export function playFrom(
   start: GameState,
@@ -71,6 +87,27 @@ export function playFrom(
     log.push(s)
   }
   while (!finished(state, through)) {
+    // The prologue (act 0): its intro, its chapter report (on to Act I), its cards and reports.
+    if (state.act === 0) {
+      if (state.phase === 'intro') step({ type: 'START_PROLOGUE' })
+      else if (state.phase === 'chapter') step({ type: 'CONTINUE_TO_ACT_1' })
+      else if (state.phase === 'report')
+        step(
+          strategy.stopHere?.(state)
+            ? { type: 'NEXT_QUARTER', stopHere: true }
+            : { type: 'NEXT_QUARTER' },
+        )
+      else if (state.phase === 'live' && state.interrupt) {
+        const choice =
+          strategy.answer?.(state) ?? prologueDefaultChoice(state)
+        step({ type: 'RESOLVE_INTERRUPT', choice })
+      } else if (state.phase === 'live') step({ type: 'ADVANCE' })
+      else {
+        for (const a of strategy.plan(state)) step(a)
+        step({ type: 'END_PLAN' })
+      }
+      continue
+    }
     if (state.phase === 'plan') {
       for (const a of strategy.plan(state)) step(a)
       step({ type: 'END_PLAN' })
