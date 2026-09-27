@@ -719,7 +719,15 @@ for (;;) {
       if (r.ok) state = r.state
       break
     }
+  } else if (state.phase === 'intro') {
+    // The Act II intro (the carry-over summary comes with build step 1e).
+    console.log()
+    say('play.act2_intro')
+    if ((await ask(t('play.act2_start'))) === 'quit') bye()
+    const r = applyAction(state, { type: 'START_ACT_2' })
+    if (r.ok) state = r.state
   } else {
+    // The chapter report (after the Merge, or at the end of Act II), or game over.
     if (state.phase === 'gameover') {
       showReport(state)
       console.log()
@@ -733,6 +741,10 @@ for (;;) {
     })
     console.log()
     console.log(runSummaryText(state))
-    bye()
+    if (state.phase !== 'chapter' || state.act !== 1) bye()
+    console.log()
+    if ((await ask(t('play.continue_act2'))) === 'quit') bye()
+    const r = applyAction(state, { type: 'CONTINUE_TO_ACT_2' })
+    if (r.ok) state = r.state
   }
 }

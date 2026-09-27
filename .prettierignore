@@ -8,3 +8,4 @@ src/content/*.csv
 tests/golden
 sim-output
 staging
+tests/fixtures

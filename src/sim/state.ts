@@ -9,7 +9,13 @@ import type { MarketRead } from './systems/readMarket.ts'
 import { emptyEventState, type EventState } from './systems/eventEffects.ts'
 import type { PlannedWave, WaveDamage } from './systems/failureWave.ts'
 
-export type Phase = 'plan' | 'live' | 'report' | 'merge' | 'gameover' | 'ended'
+/**
+ * plan → live → report, each quarter. After 2022Q3's report: merge (the Merge decision) →
+ * chapter (the Act I chapter report) → intro (Act II's intro, act 2, still 2022Q3) → 2022Q4 plan.
+ * After 2026Q4's report: chapter (act 2), the end of the game. gameover = bust (either act).
+ */
+export type Phase =
+  'plan' | 'live' | 'report' | 'merge' | 'chapter' | 'intro' | 'gameover'
 export type Coin = 'BTC' | 'ETH'
 export type Condition = 'new' | 'used'
 

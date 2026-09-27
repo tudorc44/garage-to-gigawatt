@@ -57,7 +57,7 @@ export function soundsFor(
     if (after.phase === 'report') out.push('quarter-report')
     if (after.phase === 'gameover') out.push('game-over')
     if (after.phase === 'merge') out.push('merge')
-    if (after.phase === 'ended') out.push('chapter-complete')
+    if (after.phase === 'chapter') out.push('chapter-complete')
   }
   if (after.interrupt && !before.interrupt) out.push(alertSound(after))
   for (const e of after.log.slice(before.log.length)) {

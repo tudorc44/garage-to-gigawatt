@@ -185,6 +185,10 @@ export type Action =
   | { type: 'NEXT_QUARTER' }
   /** The Merge decision (merge.json choice id): ends Act I. */
   | { type: 'MERGE_CHOOSE'; choice: string }
+  /** From the Act I chapter report to the Act II intro (the act boundary, scope 0.2 §2.1). */
+  | { type: 'CONTINUE_TO_ACT_2' }
+  /** From the Act II intro to the 2022Q4 Plan phase. */
+  | { type: 'START_ACT_2' }
 
 export type ActionResult =
   { ok: true; state: GameState } | { ok: false; error: Message }
@@ -246,8 +250,19 @@ function run(s: GameState, a: Action): Message | undefined {
       if (!CONTENT.merge.choices.some((c) => c.id === a.choice))
         return fail('error.bad_choice')
       s.mergeChoice = a.choice
-      s.phase = 'ended'
+      s.phase = 'chapter'
       logEntry(s, 'log.merge_choice', { mergeChoice: a.choice })
+      return
+
+    case 'CONTINUE_TO_ACT_2':
+      if (s.phase !== 'chapter' || s.act !== 1) return fail('error.wrong_phase')
+      s.act = 2
+      s.phase = 'intro'
+      return
+
+    case 'START_ACT_2':
+      if (s.phase !== 'intro') return fail('error.wrong_phase')
+      startNextQuarter(s)
       return
   }
 

@@ -7,13 +7,9 @@ import {
   act1ValueQuarter,
   actLastQuarter,
 } from '../../src/content/index.ts'
-import { applyAction } from '../../src/sim/actions.ts'
-import { advance } from '../../src/sim/advance.ts'
 import { playGame } from '../../src/sim/replay.ts'
-import { emptyQuarterStats, type Site } from '../../src/sim/state.ts'
-import { bandwidthForQuarter } from '../../src/sim/systems/bandwidth.ts'
+import type { Site } from '../../src/sim/state.ts'
 import { salaryUsdQ } from '../../src/sim/systems/hires.ts'
-import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { equipmentTerms } from '../../src/sim/systems/loans.ts'
 import {
   buyPrice,
@@ -90,40 +86,12 @@ describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
 })
 
 describe('the Act I systems keep running through Act II', () => {
-  it('plays a raise-climb game on from 2022Q4 to the 2026Q4 report without errors', () => {
-    const bot = BOTS['raise-climb']
-    let s = playGame(1, bot).state
-    expect(s.phase).toBe('ended')
-    // Until the act boundary flow exists (step 1d), step over the Merge by hand.
-    s = structuredClone(s)
-    Object.assign(s, {
-      phase: 'plan',
-      quarter: Q4_2022,
-      week: 0,
-      interruptsThisQuarter: 0,
-      curtailment: null,
-      quarterStats: emptyQuarterStats(),
-    })
-    s.bandwidth = bandwidthForQuarter(s)
-    const act = (a: Parameters<typeof applyAction>[1]) => {
-      const r = applyAction(s, a)
-      if (!r.ok) throw new Error(`${a.type}: ${r.error.key}`)
-      s = r.state
-    }
-    while (!(s.phase === 'report' && s.quarter === Q4_2026)) {
-      expect(s.phase).not.toBe('gameover')
-      if (s.phase === 'plan') {
-        for (const a of bot.plan(s)) {
-          const r = applyAction(s, a)
-          if (r.ok) s = r.state
-        }
-        act({ type: 'END_PLAN' })
-      } else if (s.phase === 'live') {
-        if (s.interrupt)
-          act({ type: 'RESOLVE_INTERRUPT', choice: defaultChoice(s) })
-        else s = advance(s)
-      } else act({ type: 'NEXT_QUARTER' })
-    }
+  it('plays a raise-climb game through the act boundary to the end of 2026Q4 without errors', () => {
+    // playGame throws if the bot sends an action the game refuses.
+    const s = playGame(1, BOTS['raise-climb'], { through: 2 }).state
+    expect(s.phase).toBe('chapter')
+    expect(s.act).toBe(2)
+    expect(s.quarter).toBe(Q4_2026)
     const act2Reports = s.reports.filter(
       (r) => CONTENT.quarters.indexOf(r.quarter) >= Q4_2022,
     )

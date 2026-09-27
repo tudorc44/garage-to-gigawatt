@@ -12,6 +12,7 @@ import { LiveScreen } from './screens/Live.tsx'
 import { PlanScreen } from './screens/Plan.tsx'
 import { ReportScreen } from './screens/Report.tsx'
 import { ChapterScreen, MergeScreen } from './screens/End.tsx'
+import { ActIntroScreen } from './screens/ActIntro.tsx'
 import { TitleScreen } from './screens/Start.tsx'
 import { readSlot, writeSlot } from '../platform/saves.ts'
 import { SaveContext, type SaveApi } from './components/saves.tsx'
@@ -52,6 +53,8 @@ export function App() {
       (before?.phase !== 'plan' || before.quarter !== s.quarter)
     )
       writeSlot('autosave', s)
+    // "Start of Act II": its own slot, saved when the game reaches the Act II intro (scope 0.2 §2.1).
+    if (s?.phase === 'intro' && before?.phase !== 'intro') writeSlot('act2', s)
   }
   const saves: SaveApi = {
     current: () => ref.current,
@@ -118,7 +121,10 @@ export function App() {
         onLoad={saves.load}
       />
     )
-  } else if (game.phase === 'ended' || (game.phase === 'gameover' && showEnd)) {
+  } else if (
+    game.phase === 'chapter' ||
+    (game.phase === 'gameover' && showEnd)
+  ) {
     screen = (
       <ChapterScreen
         state={game}
@@ -127,8 +133,15 @@ export function App() {
           setShowEnd(false)
           commit(null)
         }}
+        onContinue={
+          game.phase === 'chapter' && game.act === 1
+            ? () => act({ type: 'CONTINUE_TO_ACT_2' })
+            : undefined
+        }
       />
     )
+  } else if (game.phase === 'intro') {
+    screen = <ActIntroScreen state={game} act={act} />
   } else if (game.phase === 'merge') {
     screen = <MergeScreen state={game} act={act} />
   } else if (game.phase === 'plan') {

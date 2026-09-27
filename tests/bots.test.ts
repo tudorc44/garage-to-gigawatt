@@ -8,7 +8,8 @@ describe('sim-runner bots', () => {
     (name) => {
       // playGame throws if any action the bot sends is rejected.
       const { state } = playGame(1, BOTS[name])
-      expect(['ended', 'gameover']).toContain(state.phase)
+      expect(['chapter', 'gameover']).toContain(state.phase)
+      if (state.phase === 'chapter') expect(state.act).toBe(1)
       for (const r of state.reports)
         expect(Number.isFinite(r.valuationUsd)).toBe(true)
     },

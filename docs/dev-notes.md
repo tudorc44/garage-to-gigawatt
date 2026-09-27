@@ -776,9 +776,7 @@ at a time (MW by use → projects → credit rating → tenants → capital → 
 - **1a. Market to 2026Q4 + act spans** — done (27 Sep 2026, not committed yet).
 - **1b. Held Act I values for 2022Q4+** — done (27 Sep 2026, not committed yet); the list is below.
 - **1c. `act` field + save version 2 + migration tests** — done (27 Sep 2026, not committed yet).
-- 1d. The phase flow Merge → Act I chapter report → Act II intro → 2022Q4 Plan (Act I systems keep running), the
-  "Start of Act II" autosave slot; `replay.ts`, `tools/play.ts`, the sim-runner and the goldens stop at the act
-  boundary instead of `ended`.
+- **1d. The act boundary flow + "Start of Act II" slot** — done (27 Sep 2026, not committed yet).
 - 1e. The Act II intro screen (wireframe A2-02, carry-over summary only) and the chapter report's way into it.
 
 **1a, what was built:**
@@ -843,7 +841,8 @@ fleet earns through Act II: revenue ~$21M (2022Q4) → ~$34–37M (2024Q1, befor
 - **Tests with real old saves:** `tests/fixtures/saves/v1-*.json` are three version-1 saves captured from the Act I
   build before this change (seed 7, raise-climb: 2021Q2 Plan, 2020Q4 live at week 5, the 2022Q3 Merge). They load
   as version 2 / Act I with nothing else changed, also from an exported `G2G1.` string, and play on to the Merge.
-  Keep these files forever: every future build must load them. The "into Act II" half of the migration test
+  Keep these files forever and never reformat them (`tests/fixtures` is in `.prettierignore`): every future
+  build must load them. The "into Act II" half of the migration test
   comes with 1d.
 - **Golden change (accepted):** all 11 goldens change by the same two lines: `"version": 1` → `2`, and `"act": 1`
   added. Nothing else.
@@ -851,6 +850,33 @@ fleet earns through Act II: revenue ~$21M (2022Q4) → ~$34–37M (2024Q1, befor
   force-clears one it can't answer, which skips the end of the quarter if the alert came in week 13. The new
   bounds check caught it (it used to read an undefined week). The game itself is fine (answering an alert in
   week 13 ends the quarter, `actions.ts`); the new tests answer with `defaultChoice`.
+
+**1d, the act boundary flow:**
+- Phases (`state.ts`): `ended` is gone; after the Merge choice comes **`chapter`** (the Act I chapter report), then
+  `CONTINUE_TO_ACT_2` → **`intro`** (act becomes 2, still at 2022Q3), then `START_ACT_2` → the 2022Q4 Plan phase
+  (through the normal `startNextQuarter`, so Bandwidth, Heat's quarter end etc. happen as between any quarters).
+  After 2026Q4's report comes `chapter` with act 2: the end of the game. Out-of-order steps are refused.
+- `startNextQuarter` ends each act at `actLastQuarter(state.act)`: Act I → `merge`, Act II → `chapter`.
+- Save migration 1 → 2 also turns a finished Act I game (`ended`) into `chapter`, from where it can carry on into
+  Act II (a real finished v1 save, `tests/fixtures/saves/v1-ended-2022Q3.json`, was captured from the build of
+  commit cb475bd). Version 2 hadn't been pushed, so the step was extended instead of adding a version 3.
+- `replay.ts`: `playGame(seed, bot, { through: 1 | 2 })` and `playFrom(state, bot, …)`. Default `through: 1` stops at
+  the Act I chapter report (the goldens, the sim-runner and the bots stay Act I); `through: 2` carries on to the
+  end of Act II. Replays across the boundary are exact (test).
+- `tools/play.ts`: after the Merge and the summary, "Press Enter to carry on into Act II", an Act II line, then
+  2022Q4 … 2026Q4 and the final summary.
+- Browser: the Act I chapter report has **Continue to Act II**; the intro (`ActIntro.tsx`) is a bare title + "Start
+  Q4 2022" for now (1e fills it in); a **"Start of Act II"** slot (`g2g.save.act2`) is written when the game reaches
+  the intro and shows in the Save / load dialog. The turn counter counts within the act (`actTurn`: Act I 1–23,
+  Act II 1–17; it was a hard-coded 23 in three screens); the last report of Act II says "Finish Act II →".
+- Sounds: the chapter-complete sting plays on `chapter`.
+- **Golden change (accepted):** the 9 goldens that reach the Merge change one line, `"phase": "ended"` →
+  `"chapter"`; the 2 busts are unchanged.
+- Placeholders until later steps: the Act II end uses the Act I chapter report (the Act II chapter report is its own
+  step); the intro shows no carry-over yet (1e); Heat's "grievance resets at the act boundary" (scope 0.2 §2.2) is
+  an Act II carry-over rule, not applied yet; the era theme stays "industrial" (the `campus` theme comes with 1e or
+  later); the title screen has no "Start at Act II" (that's the standalone preset, a later step).
+
 
 
 ## Next

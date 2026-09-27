@@ -16,6 +16,7 @@ export const NavContext = createContext<{
 } | null>(null)
 import { t } from '../../i18n/t.ts'
 import {
+  actTurn,
   bandwidthTotal,
   currentMarket,
   lastReport,
@@ -29,8 +30,6 @@ import { fmt } from '../format.ts'
 import { tierName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
 import type { IconName } from '../icons.ts'
-
-const TURNS = 23
 
 function Delta(props: { value: number; dp?: number }) {
   const tone = props.value > 0 ? 'gain' : props.value < 0 ? 'loss' : 'muted'
@@ -65,8 +64,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           {t('ui.top.date_value', {
             quarter: fmt.quarter(quarterName(s.quarter)),
             week,
-            turn: s.quarter + 1,
-            turns: TURNS,
+            ...actTurn(s),
           })}
         </span>
       </div>

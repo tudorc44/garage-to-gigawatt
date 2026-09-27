@@ -90,7 +90,7 @@ export function SavePanel({ onLoaded }: { onLoaded: () => void }) {
   const [, refresh] = useState(0)
   if (!api) return null
   const now = api.current()
-  const slots: Slot[] = ['manual', 'autosave']
+  const slots: Slot[] = ['manual', 'autosave', 'act2']
   const load = (s: GameState) => {
     api.load(s)
     onLoaded()

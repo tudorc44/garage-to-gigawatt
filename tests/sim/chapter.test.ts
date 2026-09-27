@@ -43,7 +43,7 @@ describe('the Merge screen (merge.json)', () => {
 describe('the chapter report', () => {
   it('scores net worth = stake × the last valuation, titled by the bands', () => {
     const { state } = playGame(2017, BOTS['raise-climb'])
-    expect(state.phase).toBe('ended')
+    expect(state.phase).toBe('chapter')
     const c = chapterReport(state)
     const last = state.reports.at(-1)!
     expect(c.netWorthUsd).toBeCloseTo(state.founderStake * last.valuationUsd)

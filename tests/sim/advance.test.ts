@@ -87,9 +87,43 @@ describe('the quarter loop', () => {
       false,
     )
     s = act(s, { type: 'MERGE_CHOOSE', choice: 'gpu_cloud' })
-    expect(s.phase).toBe('ended')
+    expect(s.phase).toBe('chapter')
+    expect(s.act).toBe(1)
     expect(s.mergeChoice).toBe('gpu_cloud')
     expect(s.log.at(-1)!.key).toBe('log.merge_choice')
+  })
+
+  it('the act boundary: Act I chapter report → Act II intro → the 2022Q4 Plan phase', () => {
+    let s: GameState = { ...newGame(1), quarter: actLastQuarter(1) }
+    s = act(playQuarter(s), { type: 'NEXT_QUARTER' })
+    s = act(s, { type: 'MERGE_CHOOSE', choice: 'hold_and_wait' })
+    // Out-of-order steps are refused.
+    expect(applyAction(s, { type: 'START_ACT_2' }).ok).toBe(false)
+    s = act(s, { type: 'CONTINUE_TO_ACT_2' })
+    expect(s.phase).toBe('intro')
+    expect(s.act).toBe(2)
+    expect(s.quarter).toBe(actLastQuarter(1)) // still 2022Q3 on the intro
+    expect(applyAction(s, { type: 'CONTINUE_TO_ACT_2' }).ok).toBe(false)
+    const cash = s.cash
+    s = act(s, { type: 'START_ACT_2' })
+    expect(s.phase).toBe('plan')
+    expect(CONTENT.quarters[s.quarter]).toBe('2022Q4')
+    expect(s.week).toBe(0)
+    expect(s.cash).toBe(cash) // the company carries over as it is
+    expect(applyAction(s, { type: 'START_ACT_2' }).ok).toBe(false)
+  })
+
+  it('after the last quarter of Act II (2026Q4) comes its chapter report, the end of the game', () => {
+    let s: GameState = {
+      ...newGame(1),
+      act: 2,
+      quarter: CONTENT.quarters.length - 1,
+    }
+    s = act(playQuarter(s), { type: 'NEXT_QUARTER' })
+    expect(s.phase).toBe('chapter')
+    expect(s.act).toBe(2)
+    expect(applyAction(s, { type: 'CONTINUE_TO_ACT_2' }).ok).toBe(false)
+    expect(applyAction(s, { type: 'NEXT_QUARTER' }).ok).toBe(false)
   })
 })
 

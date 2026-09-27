@@ -1,15 +1,17 @@
 // Saves in the browser (scope §2.13): an autosave at the start of every quarter, one manual
-// slot, and export/import as a text string. Storage can be missing or blocked (private windows,
+// slot, a "Start of Act II" autosave at the act boundary, and export/import as a text string. Storage can be missing or blocked (private windows,
 // cleared site data), so every read and write is wrapped and simply reports failure.
 import type { Message } from '../i18n/t.ts'
 import { restoreSave } from '../sim/save.ts'
 import type { GameState } from '../sim/state.ts'
 
-export type Slot = 'autosave' | 'manual'
+/** act2 = "Start of Act II": saved at the act boundary, to replay Act II without Act I (scope 0.2 §2.1). */
+export type Slot = 'autosave' | 'manual' | 'act2'
 
 const KEY: Record<Slot, string> = {
   autosave: 'g2g.save.autosave',
   manual: 'g2g.save.manual',
+  act2: 'g2g.save.act2',
 }
 /**
  * Marks an exported save string. This wrapper hasn't changed since the first build; the save

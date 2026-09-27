@@ -120,6 +120,15 @@ export function quarterName(quarter: number): string {
   return CONTENT.quarters[quarter] ?? ''
 }
 
+/** The turn within the current act and the act's length: Act I 1–23, Act II 1–17 (2022Q4 = 1). */
+export function actTurn(state: GameState): { turn: number; turns: number } {
+  const span = CONTENT.acts.find((a) => a.act === state.act)!
+  return {
+    turn: state.quarter - span.firstQuarter + 1,
+    turns: span.lastQuarter - span.firstQuarter + 1,
+  }
+}
+
 /** The market week the player is looking at: week 1 in the Plan phase, the last played week in the live quarter. */
 export function currentMarket(state: GameState): MarketWeek {
   const w = Math.min(Math.max(state.week - 1, 0), BALANCE.weeksPerQuarter - 1)

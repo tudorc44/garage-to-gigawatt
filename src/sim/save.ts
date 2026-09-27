@@ -13,7 +13,15 @@ import {
   type Phase,
 } from './state.ts'
 
-const PHASES: Phase[] = ['plan', 'live', 'report', 'merge', 'gameover', 'ended']
+const PHASES: Phase[] = [
+  'plan',
+  'live',
+  'report',
+  'merge',
+  'chapter',
+  'intro',
+  'gameover',
+]
 
 /** The save format this build writes (GameState.version). */
 export const SAVE_VERSION = 2
@@ -23,8 +31,15 @@ type SaveData = Record<string, unknown>
 /** One step per format change: MIGRATIONS[n] turns a version-n save into a version-(n + 1) save. */
 const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
   // 1 → 2 (the Act II build): a save records the act being played. Version 1 had only
-  // Act I (the game ended at the Merge), so every version-1 save is an Act I save.
-  1: (data) => ({ ...data, version: 2, act: 1 }),
+  // Act I (the game ended at the Merge), so every version-1 save is an Act I save. Its
+  // last phase, "ended" (after the Merge choice), is now "chapter": the Act I chapter
+  // report, from where the game carries on into Act II.
+  1: (data) => ({
+    ...data,
+    version: 2,
+    act: 1,
+    phase: data.phase === 'ended' ? 'chapter' : data.phase,
+  }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }

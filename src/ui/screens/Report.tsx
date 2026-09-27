@@ -1,6 +1,7 @@
 // Quarter report: headline tiles, cost per coin vs price, league table, notes.
 import { t, type MessageKey } from '../../i18n/t.ts'
 import {
+  actTurn,
   averagePrice,
   quarterName,
   siteViews,
@@ -16,8 +17,6 @@ import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
-
-const TURNS = 23
 
 /** The coin that earned more this quarter (for "cost per coin"). */
 function mainCoin(r: QuarterReport): Coin | null {
@@ -69,17 +68,15 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
   const coin = mainCoin(r)
   const cost = coin ? r.costPerCoinUsd[coin] : null
   const prevCost = coin && prev ? prev.costPerCoinUsd[coin] : null
-  const isLast = state.quarter === actLastQuarter(1)
-  const turn = state.quarter + 1
+  const isLast = state.quarter === actLastQuarter(state.act)
+  const { turn, turns } = actTurn(state)
 
   return (
     <div class="screen">
       <div class="report">
         <div class="report-head">
           <div>
-            <div class="label">
-              {t('ui.report.label', { turn, turns: TURNS })}
-            </div>
+            <div class="label">{t('ui.report.label', { turn, turns })}</div>
             <h1 class="screen-title">{fmt.quarter(r.quarter)}</h1>
             {first && last && (
               <div class="num-s muted">
@@ -196,7 +193,11 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
               onClick={() => act({ type: 'NEXT_QUARTER' })}
             >
               {isLast
-                ? t('ui.report.finish')
+                ? t(
+                    state.act === 1
+                      ? 'ui.report.finish'
+                      : 'ui.report.finish_act2',
+                  )
                 : t('ui.report.continue', {
                     quarter: fmt.quarter(quarterName(state.quarter + 1)),
                   })}

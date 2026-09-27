@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { applyAction } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
-import { playGame, replay } from '../../src/sim/replay.ts'
+import { playFrom, playGame, replay } from '../../src/sim/replay.ts'
 import { SAVE_VERSION, restoreSave } from '../../src/sim/save.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
@@ -93,12 +93,14 @@ describe('saves (scope §2.13)', () => {
 })
 
 // Real version-1 saves, made by the Act I build before the act field existed (27 Sep 2026,
-// seed 7, raise-climb bot): a Plan phase, a live quarter at week 5, and the Merge decision.
+// seed 7, raise-climb bot): a Plan phase, a live quarter at week 5, the Merge decision, and a
+// finished game (phase "ended", made with the build of commit cb475bd).
 // They must keep loading in every later build.
 const V1_SAVES = [
   'v1-plan-2021Q2',
   'v1-live-2020Q4',
   'v1-merge-2022Q3',
+  'v1-ended-2022Q3',
 ] as const
 const readV1 = (name: string): Record<string, unknown> =>
   JSON.parse(
@@ -130,6 +132,8 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const v1Rest = Object.fromEntries(
         Object.entries(v1).filter(([key]) => key !== 'version'),
       )
+      // A finished Act I game ("ended") is now at the Act I chapter report.
+      if (v1.phase === 'ended') v1Rest.phase = 'chapter'
       expect(rest).toEqual(v1Rest)
     },
   )
@@ -144,7 +148,7 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
 
   it('a migrated version-1 save plays on to the Merge', () => {
     const bot = BOTS['raise-climb']
-    for (const name of V1_SAVES) {
+    for (const name of V1_SAVES.filter((n) => n !== 'v1-ended-2022Q3')) {
       const r = restoreSave(readV1(name))
       if (!r.ok) throw new Error(name)
       let s = r.state
@@ -170,8 +174,55 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       expect(s.quarter).toBe(22)
       expect(s.act).toBe(1)
       s = ok(applyAction(s, { type: 'MERGE_CHOOSE', choice: 'hold_and_wait' }))
-      expect(s.phase).toBe('ended')
+      expect(s.phase).toBe('chapter')
     }
+  })
+
+  it('Act I → Act II: a finished version-1 game loads at the Act I chapter report and plays on to the end of Act II', () => {
+    const r = restoreSave(readV1('v1-ended-2022Q3'))
+    if (!r.ok) throw new Error('load')
+    expect(r.state.phase).toBe('chapter')
+    expect(r.state.act).toBe(1)
+    expect(r.state.mergeChoice).toBe('hold_and_wait')
+    const { state, log } = playFrom(r.state, BOTS['raise-climb'], {
+      through: 2,
+    })
+    expect(log.slice(0, 2)).toEqual([
+      { type: 'CONTINUE_TO_ACT_2' },
+      { type: 'START_ACT_2' },
+    ])
+    expect(state.act).toBe(2)
+    expect(state.phase).toBe('chapter')
+    expect(state.reports.at(-1)!.quarter).toBe('2026Q4')
+    // What carried over is still there: the machines and the founder's stake.
+    expect(state.founderStake).toBe(r.state.founderStake)
+    expect(state.machines.length).toBeGreaterThan(0)
+  })
+
+  it('Act I → Act II: a version-1 save at the Merge decision carries on into Act II', () => {
+    const r = restoreSave(readV1('v1-merge-2022Q3'))
+    if (!r.ok) throw new Error('load')
+    const { state } = playFrom(r.state, BOTS['raise-climb'], { through: 2 })
+    expect(state.act).toBe(2)
+    expect(state.phase).toBe('chapter')
+  })
+
+  it('a save made at the Act II intro (the "Start of Act II" slot) loads and starts 2022Q4', () => {
+    const r = restoreSave(readV1('v1-ended-2022Q3'))
+    if (!r.ok) throw new Error('load')
+    const intro = ok(applyAction(r.state, { type: 'CONTINUE_TO_ACT_2' }))
+    const loaded = decodeSave(encodeSave(intro))
+    expect(loaded.ok && loaded.state).toEqual(intro)
+    if (!loaded.ok) return
+    const q4 = ok(applyAction(loaded.state, { type: 'START_ACT_2' }))
+    expect(q4.phase).toBe('plan')
+    expect(q4.quarter).toBe(23)
+  })
+
+  it('a game played across the act boundary replays exactly from its seed and steps', () => {
+    const { state, log } = playGame(3, BOTS['raise-climb'], { through: 2 })
+    expect(state.act).toBe(2)
+    expect(replay(3, log)).toEqual(state)
   })
 
   it('a version-2 save round-trips unchanged', () => {

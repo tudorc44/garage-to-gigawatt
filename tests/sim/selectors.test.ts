@@ -3,6 +3,7 @@ import { CONTENT } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import {
+  actTurn,
   averagePrice,
   lotViews,
   machineMarket,
@@ -96,5 +97,23 @@ describe('game log', () => {
     s = act(s, { type: 'RESOLVE_INTERRUPT', choice: 'hold' })
     expect(s.log.at(-1)).toMatchObject({ key: 'log.alert_held', week: 10 })
     expect(s.quarterStats.weeks.at(-1)!.priceAlert).toBe(true)
+  })
+})
+
+describe('turns within an act', () => {
+  it('Act I counts 1–23 from 2017Q1, Act II 1–17 from 2022Q4', () => {
+    expect(actTurn(newGame(1))).toEqual({ turn: 1, turns: 23 })
+    expect(actTurn({ ...newGame(1), quarter: 22 })).toEqual({
+      turn: 23,
+      turns: 23,
+    })
+    expect(actTurn({ ...newGame(1), act: 2, quarter: 23 })).toEqual({
+      turn: 1,
+      turns: 17,
+    })
+    expect(actTurn({ ...newGame(1), act: 2, quarter: 39 })).toEqual({
+      turn: 17,
+      turns: 17,
+    })
   })
 })

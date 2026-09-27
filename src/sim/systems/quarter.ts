@@ -120,10 +120,14 @@ function buildReport(
   }
 }
 
-/** From the report to the next Plan phase, or to the Merge decision after 2022Q3. */
+/**
+ * From the report to the next Plan phase. At the end of an act: after 2022Q3 comes the Merge
+ * decision (Act I); after 2026Q4 the chapter report (Act II, the end of the game). The Act II
+ * intro calls this too (act 2, still 2022Q3) to start 2022Q4.
+ */
 export function startNextQuarter(state: GameState): void {
-  if (state.quarter === actLastQuarter(1)) {
-    state.phase = 'merge'
+  if (state.quarter === actLastQuarter(state.act)) {
+    state.phase = state.act === 1 ? 'merge' : 'chapter'
     return
   }
   state.quarter++

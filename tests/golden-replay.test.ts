@@ -300,8 +300,8 @@ const bots: Record<string, Strategy> = {
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
   const run = playGame(SEED, bot)
 
-  it('plays until the Merge or game over without errors', () => {
-    expect(['ended', 'gameover']).toContain(run.state.phase)
+  it('plays through the Merge to the Act I chapter report, or game over, without errors', () => {
+    expect(['chapter', 'gameover']).toContain(run.state.phase)
   })
 
   it('same seed + same strategy → identical game', () => {
@@ -325,12 +325,12 @@ describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
 
 describe('balance anchors (scope §5)', () => {
   it('the steady grower survives to the Merge', () => {
-    expect(playGame(SEED, bots['steady-grower']).state.phase).toBe('ended')
+    expect(playGame(SEED, bots['steady-grower']).state.phase).toBe('chapter')
   })
 
   it('the F&F expander goes bust, but survives if it breaks the lease in 2018', () => {
     expect(playGame(SEED, bots['ff-expander']).state.phase).toBe('gameover')
-    expect(playGame(SEED, bots['ff-leaver']).state.phase).toBe('ended')
+    expect(playGame(SEED, bots['ff-leaver']).state.phase).toBe('chapter')
   })
 
   it('over-expanding into a small unit in the 2018 winter goes bust in 2018', () => {
@@ -370,7 +370,7 @@ describe('balance anchors (scope §5)', () => {
     const seedUsd = CONTENT.ladder.seed.amount_usd
     for (let seed = 1; seed <= 5; seed++) {
       const { state } = playGame(seed, BOTS['raise-climb'])
-      expect(state.phase).toBe('ended')
+      expect(state.phase).toBe('chapter')
       const floor = Math.min(
         ...state.reports
           .filter((r) => r.quarter >= '2018Q1' && r.quarter <= '2019Q4')

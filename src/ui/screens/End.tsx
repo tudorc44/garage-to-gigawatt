@@ -1,8 +1,9 @@
 // The end of Act I: the Merge decision screen (after the 2022Q3 report), then the chapter
-// report. A bust skips the Merge and goes straight to the chapter report ("Chapter ends early").
+// report, from where the game carries on into Act II. A bust skips the Merge and goes straight
+// to the chapter report ("Chapter ends early"), with no way on.
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
-import { chapterReport, mergeView } from '../../sim/selectors.ts'
+import { actTurn, chapterReport, mergeView } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
 import { momentLines, runSummaryText } from '../chapter.ts'
 import { fmt } from '../format.ts'
@@ -135,6 +136,8 @@ export function ChapterScreen(props: {
   state: GameState
   onReplay: () => void
   onNew: () => void
+  /** The Act I chapter report after the Merge: carry on into Act II. */
+  onContinue?: () => void
 }) {
   const s = props.state
   const c = chapterReport(s)
@@ -187,7 +190,10 @@ export function ChapterScreen(props: {
                 {c.rank ? t('ui.chapter.rank_value', c.rank) : '—'}
               </span>
               <span class="num-s muted">
-                {t('ui.chapter.quarters', { n: c.quartersPlayed, of: 23 })}
+                {t('ui.chapter.quarters', {
+                  n: c.quartersPlayed,
+                  of: actTurn(s).turns,
+                })}
               </span>
             </div>
           </div>
@@ -226,7 +232,20 @@ export function ChapterScreen(props: {
             </label>
           )}
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button type="button" class="btn btn-primary" onClick={props.onNew}>
+            {props.onContinue && (
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={props.onContinue}
+              >
+                {t('ui.chapter.continue_act2')}
+              </button>
+            )}
+            <button
+              type="button"
+              class={props.onContinue ? 'btn' : 'btn btn-primary'}
+              onClick={props.onNew}
+            >
               {t('ui.end.new')}
             </button>
             <button type="button" class="btn" onClick={props.onReplay}>
