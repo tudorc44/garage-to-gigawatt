@@ -756,13 +756,36 @@ function aiProjects(
               .filter((l) => l.siteId === siteId && sellable(l.model))
               .reduce((a, l) => a + l.count * getModel(l.model)!.power_kw, 0)
           : 0)
+      // The lifeline's bridge is due in one payment (M6.0d: the lifeline bot went bust on it). From the
+      // quarter before it falls due: raise equity for whatever cash can't cover, then repay it; until
+      // it's repaid, no new project may spend the money it needs.
+      const bridge = s.bridgeLoan
+      const bridgeSoon = bridge !== null && s.quarter >= bridge.dueQuarter - 1
+      if (bridge && bridgeSoon) {
+        const needUsd = bridge.balanceUsd * 1.05 - s.cash
+        const preUsd = equityPreMoneyUsd(s)
+        if (needUsd > 0 && preUsd > 0)
+          run({
+            type: 'RAISE_EQUITY',
+            dilution: Math.min(
+              CONTENT.finance.equity.dilution[1],
+              Math.max(
+                CONTENT.finance.equity.dilution[0],
+                needUsd / (preUsd + needUsd),
+              ),
+            ),
+          })
+        if (s.cash >= bridge.balanceUsd * 1.05)
+          run({ type: 'REPAY_BRIDGE_LOAN' })
+      }
+      const bridgeOpen = s.bridgeLoan !== null && bridgeSoon
       // A Head of Development first (1 Bandwidth now, +1 every quarter after): Act II Bandwidth is tight.
       if (opts.hireHod && s.staff.head_of_development === undefined)
         run({ type: 'HIRE', hire: 'head_of_development' })
       finish()
       const label = CONTENT.quarters[s.quarter]
       const pending = s.projects.some((x) => x.stage === 'proposed')
-      if (label >= opts.from && !pending) {
+      if (label >= opts.from && !pending && !bridgeOpen) {
         const sites = s.sites.filter((x) => x.tier !== BALANCE.startSite)
         const budget = s.cash * (1 - (opts.reserveShare ?? 0.2))
         if (opts.kind === 'pilot') {
@@ -806,12 +829,30 @@ function aiProjects(
               const quarters = q.readyQuarter - s.quarter + 1
               return sum + ((f.balanceUsd * f.apr) / 4) * quarters
             }, 0)
+            // …and the equipment loan's payments over the same quarters (M6.0d: the preset's $25M
+            // loan drained the cash its builds needed, and the lender foreclosed on both shells).
+            const building = s.projects.filter(
+              (x) => x.stage === 'building' && x.readyQuarter !== null,
+            )
+            const buildQuarters = Math.max(
+              0,
+              ...building.map((x) => x.readyQuarter! - s.quarter + 1),
+            )
+            const eq = s.equipmentLoan
+            const loanUsd = eq
+              ? Math.min(
+                  eq.balanceUsd,
+                  eq.weeklyPrincipalUsd * 13 * buildQuarters,
+                ) +
+                ((eq.balanceUsd * eq.apr) / 4) * buildQuarters
+              : 0
             const started =
               opened &&
               p !== undefined &&
               p.kw === mw * 1000 &&
               p.stage === 'building' &&
-              s.cash >= state.cash * (opts.reserveShare ?? 0.2) + carryUsd
+              s.cash >=
+                state.cash * (opts.reserveShare ?? 0.2) + carryUsd + loanUsd
             if (!started || !keep) {
               s = saved
               actions.length = n
@@ -857,7 +898,12 @@ function aiProjects(
         }
         finish()
       }
-      return [...actions, ...base.plan(s)]
+      // Its MW are kept for AI: no new mining machines in Act II (M6.0d: the preset's miner filled its
+      // free MW with S19s in 2022Q4 and never had room for a shell).
+      return [
+        ...actions,
+        ...base.plan(s).filter((a) => a.type !== 'BUY_MACHINES'),
+      ]
     },
   }
 }

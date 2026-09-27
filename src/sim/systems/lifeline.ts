@@ -1,5 +1,5 @@
 // The distressed lifeline (Act II entry, scope 0.2 §2.10; doc 18 §2.2; event card ec03). A company
-// below the floor at the act boundary (under 20 MW energized, or under $5M cash) is offered a
+// below the floor at the act boundary (under 20 MW energized and under $5M cash) is offered a
 // bankrupt miner's 20 MW site for $6.5M, bought with a bridge loan at 14% for 8 quarters, sized so
 // its cash also reaches $5M. The card's default is to take it; the player can pass. The bridge
 // pays interest every week and its principal at the end of its last quarter.
@@ -16,10 +16,13 @@ export function energizedKwNow(state: GameState): number {
   return state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0)
 }
 
-/** Below the floor: under 20 MW energized, or under $5M cash. */
+/**
+ * Below the floor: under 20 MW energized and under $5M cash (owner, 28 Sep 2026: both; a cash-short
+ * company at 20 MW or more uses the normal capital tools).
+ */
 export function belowFloor(state: GameState): boolean {
   return (
-    energizedKwNow(state) < BALANCE.lifeline.floorKw ||
+    energizedKwNow(state) < BALANCE.lifeline.floorKw &&
     state.cash < L().cashFloorUsd
   )
 }

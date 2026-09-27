@@ -199,3 +199,6 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
 - M6.0c: project-debt LTC A/AA-backstopped 75%, BBB 65% (AI lab 50% recorded; project debt still needs BBB+: open question); capex
   credit cap $2.0M/MW. Worse: sign-then-raise $198M all runs, 17/50 bust; asic-retirer peak $3.5B, 18/50 bust, 32/50 ≥ 4 q runway.
   **Still > 2× short → tuning STOPPED** (answer 1's rule); breakdown in the M6 report.
+- M6.0d: lifeline floor = under 20 MW **and** under $5M. Bot bugs fixed (tools/bots.ts › aiProjects): the lifeline bot never paid its
+  bridge bullet (now raises equity and repays it from the quarter before); the preset bot filled its free MW with S19s and never built
+  (AI bots buy no machines in Act II); sizing reserves the equipment loan's payments too (the preset's shells were foreclosed).

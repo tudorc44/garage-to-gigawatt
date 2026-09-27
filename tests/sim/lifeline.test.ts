@@ -42,13 +42,19 @@ describe('the floor', () => {
     expect(started.bridgeLoan).toBeNull()
   })
 
-  it('under 20 MW, or under $5M, is below it: the lifeline is offered', () => {
-    expect(boundary(chapter('warehouse', 50_000_000)).act2Entry!.lifeline).toBe(
+  it('under 20 MW and under $5M is below it: the lifeline is offered (owner, 28 Sep 2026: AND)', () => {
+    expect(boundary(chapter('warehouse', 4_999_999)).act2Entry!.lifeline).toBe(
       'offered',
     )
-    expect(boundary(chapter('own_site', 4_999_999)).act2Entry!.lifeline).toBe(
-      'offered',
-    )
+  })
+
+  it('only one of the two is not below it: a small rich company or a cash-short 20 MW one plays normally', () => {
+    expect(
+      boundary(chapter('warehouse', 50_000_000)).act2Entry!.lifeline,
+    ).toBeNull()
+    expect(
+      boundary(chapter('own_site', 4_999_999)).act2Entry!.lifeline,
+    ).toBeNull()
   })
 })
 
