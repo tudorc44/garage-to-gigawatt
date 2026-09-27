@@ -7,6 +7,7 @@ import {
   actLastQuarter,
   actOfQuarter,
   parseContent,
+  quarterIndex,
   type RawContent,
 } from '../src/content/index.ts'
 import machines from '../src/content/machines.json' with { type: 'json' }
@@ -28,13 +29,14 @@ import hiresAct2 from '../src/content/hires_act2.json' with { type: 'json' }
 import eventsAct2 from '../src/content/events_act2.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import rivalsAct2 from '../src/content/rivals_act2.json' with { type: 'json' }
+import marketPrologue from '../src/content/market_weekly_prologue.json' with { type: 'json' }
 import heat from '../src/content/heat.json' with { type: 'json' }
 import shocks from '../src/content/shocks.json' with { type: 'json' }
 import hires from '../src/content/hires.json' with { type: 'json' }
 import merge from '../src/content/merge.json' with { type: 'json' }
 import events from '../src/content/events.json' with { type: 'json' }
 import { MARKET_FILES, csvToRows } from '../tools/market-csv-to-json.ts'
-import { marketWeek } from '../src/sim/systems/market.ts'
+import { marketWeek, previousMarketWeek } from '../src/sim/systems/market.ts'
 
 const raw = (): RawContent =>
   structuredClone({
@@ -44,6 +46,7 @@ const raw = (): RawContent =>
     market,
     marketAct2,
     marketQuarterlyAct2,
+    marketPrologue,
     capital,
     capitalAct2,
     conversions,
@@ -70,6 +73,8 @@ describe('content loads', () => {
     expect(CONTENT.acts).toEqual([
       { act: 1, firstQuarter: 0, lastQuarter: 22 },
       { act: 2, firstQuarter: 23, lastQuarter: 39 },
+      // The prologue (Alpha 0.3) sits at negative indices: Act I and II keep theirs.
+      { act: 0, firstQuarter: -32, lastQuarter: -1 },
     ])
     expect(CONTENT.quarters[0]).toBe('2017Q1')
     expect(CONTENT.quarters[22]).toBe('2022Q3')
@@ -120,7 +125,26 @@ describe('content loads', () => {
     expect(marketWeek(39, 12).week).toBe('2026-12-28')
     expect(() => marketWeek(40, 0)).toThrow(RangeError)
     expect(() => marketWeek(0, 13)).toThrow(RangeError)
-    expect(() => marketWeek(-1, 0)).toThrow(RangeError)
+    expect(() => marketWeek(-33, 0)).toThrow(RangeError)
+  })
+
+  it('the prologue: 2009Q1–2016Q4 at −32 … −1, 13 weeks each, ETH from 2015Q3 with the Etherscan revenue', () => {
+    expect(CONTENT.quarters[-32]).toBe('2009Q1')
+    expect(CONTENT.quarters[-1]).toBe('2016Q4')
+    expect(quarterIndex('2013Q1')).toBe(-16)
+    expect(quarterIndex('2017Q1')).toBe(0)
+    expect(actOfQuarter(-5)).toBe(0)
+    expect(actOfQuarter(0)).toBe(1)
+    for (let q = -32; q < 0; q++) expect(CONTENT.market[q]).toHaveLength(13)
+    expect(marketWeek(-32, 0).btc_usd).toBe(0)
+    expect(marketWeek(-32, 0).eth_usd).toBe(0)
+    const launch = CONTENT.market[quarterIndex('2015Q3')!].find(
+      (w) => w.week === '2015-07-27',
+    )!
+    expect(launch.eth_rev_usd_mh_day).toBeCloseTo(0.7719653 * 2.83, 9)
+    // Act I's first week still has no week before it.
+    expect(previousMarketWeek(0, 0)).toBeUndefined()
+    expect(previousMarketWeek(-31, 0)!.quarter).toBe('2009Q1')
   })
 
   it('puts the Merge in week 11 of 2022Q3: a part-week of ETH revenue, then 0', () => {

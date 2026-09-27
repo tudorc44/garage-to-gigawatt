@@ -7,6 +7,7 @@ import sitesRaw from './sites.json' with { type: 'json' }
 import interruptsRaw from './interrupts.json' with { type: 'json' }
 import marketRaw from './market_weekly.json' with { type: 'json' }
 import marketAct2Raw from './market_weekly_act2.json' with { type: 'json' }
+import marketPrologueRaw from './market_weekly_prologue.json' with { type: 'json' }
 import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
@@ -127,7 +128,8 @@ export type {
 
 /** Where an act sits on the game's timeline (quarter indexes, inclusive). */
 export interface ActSpan {
-  act: 1 | 2
+  /** 0 = the prologue (Alpha 0.3, quarter indices −32 … −1), 1 = Act I, 2 = Act II. */
+  act: 0 | 1 | 2
   firstQuarter: number
   lastQuarter: number
 }
@@ -446,6 +448,7 @@ export interface RawContent {
   market: unknown
   marketAct2: unknown
   marketQuarterlyAct2: unknown
+  marketPrologue: unknown
   capital: unknown
   capitalAct2: unknown
   conversions: unknown
@@ -500,6 +503,22 @@ export function parseContent(raw: RawContent): Content {
     raw.interrupts,
   )
   const marketRows = check('market_weekly', marketSchema, raw.market)
+  // The prologue's market (Alpha 0.3 §2.1): Act I's columns; before ETH exists (2015-07-27) its
+  // cells are empty in the file and 0 here ("no ETH yet": no price, nothing to mine).
+  const prologueRows = check(
+    'market_weekly_prologue',
+    marketSchema,
+    Array.isArray(raw.marketPrologue)
+      ? (raw.marketPrologue as Record<string, unknown>[]).map((r) => ({
+          ...r,
+          eth_usd: r.eth_usd ?? 0,
+          eth_hashrate_THs: r.eth_hashrate_THs ?? 0,
+          eth_blocks_day: r.eth_blocks_day ?? 0,
+          eth_block_reward: r.eth_block_reward ?? 0,
+          eth_rev_usd_mh_day: r.eth_rev_usd_mh_day ?? 0,
+        }))
+      : raw.marketPrologue,
+  )
   const marketAct2Rows = check(
     'market_weekly_act2',
     marketAct2Schema,
@@ -615,6 +634,7 @@ export function parseContent(raw: RawContent): Content {
     !sitesFile ||
     !interruptsFile ||
     !marketRows ||
+    !prologueRows ||
     !marketAct2Rows ||
     !marketQuarterlyAct2Rows ||
     !capitalFile ||
@@ -701,6 +721,43 @@ export function parseContent(raw: RawContent): Content {
   }
   addAct(1, 'market_weekly', marketRows.map(act1Week), false)
   addAct(2, 'market_weekly_act2', marketAct2Rows.map(act2Week), true)
+  // The prologue (Act 0, Alpha 0.3): 2009Q1–2016Q4 at quarter indices −32 … −1, set as properties
+  // of the same arrays, so every Act I and Act II index (and every save and golden) stays as it was.
+  // `quarters.indexOf` and loops over the arrays don't see them; use prologueQuarter() for a label.
+  {
+    const labels: string[] = []
+    const weeks: MarketWeek[][] = []
+    for (const row of prologueRows.map(act1Week)) {
+      if (labels.at(-1) !== row.quarter) {
+        labels.push(row.quarter)
+        weeks.push([])
+      }
+      weeks.at(-1)!.push(row)
+    }
+    if (labels.at(-1) && nextQuarter(labels.at(-1)!) !== quarters[0])
+      problems.push(
+        `market_weekly_prologue: ends ${labels.at(-1)}, expected the quarter before ${quarters[0]}`,
+      )
+    labels.forEach((label, i) => {
+      const q = i - labels.length
+      const w = weeks[i]
+      if (w.length < perQuarter - 1 || w.length > perQuarter + 1)
+        problems.push(
+          `market_weekly_prologue › ${label}: has ${w.length} weeks, expected 12–14`,
+        )
+      // A 14th week is dropped like Act I's (its last); a 12-week quarter repeats week 12.
+      ;(quarters as unknown as Record<number, string>)[q] = label
+      ;(market as unknown as Record<number, MarketWeek[]>)[q] = Array.from(
+        { length: perQuarter },
+        (_, k) => w[Math.min(k, w.length - 1)],
+      )
+    })
+    acts.push({
+      act: 0,
+      firstQuarter: -labels.length,
+      lastQuarter: -1,
+    })
+  }
   quarters.slice(1).forEach((q, i) => {
     if (q !== nextQuarter(quarters[i])) {
       problems.push(
@@ -1501,9 +1558,27 @@ export function act2Quarter(quarter: number): Act2Quarter | undefined {
 
 /** The act a quarter index belongs to (quarters past the end count as the last act). */
 export function actOfQuarter(quarter: number): ActSpan['act'] {
+  if (quarter < 0) return 0
   return (
-    CONTENT.acts.find((a) => quarter <= a.lastQuarter) ?? CONTENT.acts.at(-1)!
+    CONTENT.acts.find((a) => a.act !== 0 && quarter <= a.lastQuarter) ??
+    CONTENT.acts.at(-1)!
   ).act
+}
+
+/** The label of any quarter index, the prologue's negative ones included ('' outside the timeline). */
+export function quarterLabel(quarter: number): string {
+  return CONTENT.quarters[quarter] ?? ''
+}
+
+/** The index of a quarter label, the prologue's included (−1 … −32), or undefined if unknown. */
+export function quarterIndex(label: string): number | undefined {
+  const i = CONTENT.quarters.indexOf(label)
+  if (i >= 0) return i
+  const p = CONTENT.acts.find((a) => a.act === 0)
+  if (!p) return undefined
+  for (let q = p.firstQuarter; q <= p.lastQuarter; q++)
+    if (CONTENT.quarters[q] === label) return q
+  return undefined
 }
 
 /** The last quarter index of an act (Act I: 2022Q3). */
@@ -1542,6 +1617,7 @@ export const CONTENT: Content = parseContent({
   market: marketRaw,
   marketAct2: marketAct2Raw,
   marketQuarterlyAct2: marketQuarterlyAct2Raw,
+  marketPrologue: marketPrologueRaw,
   capital: capitalRaw,
   capitalAct2: capitalAct2Raw,
   conversions: conversionsRaw,

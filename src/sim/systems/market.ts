@@ -31,6 +31,9 @@ export function previousMarketWeek(
   week: number,
 ): MarketWeek | undefined {
   if (week > 0) return CONTENT.market[quarter][week - 1]
+  // Act I's first week has no week before it, as before the prologue existed (its 2016 weeks sit
+  // at negative indices): a 2017 start stays exactly as it was.
+  if (quarter === 0) return undefined
   return CONTENT.market[quarter - 1]?.at(-1)
 }
 

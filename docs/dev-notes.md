@@ -296,3 +296,21 @@ INCIDENTS
 - The M6.0b commit also swept in the design thread's new docs/prologue-content/ files (git add -A); history was
   not rewritten. From then on only my own files were staged.
 ```
+
+## The Prologue (Alpha 0.3), branch `prologue` (from `act2` after M6; owner's unattended run, 28 Sep 2026)
+
+Spec: `docs/alpha-0.3-scope.md` (wins), design doc 23, `docs/prologue-content/` (README build rules). Overnight
+rules: no stopping for questions (simplest option consistent with Act I, logged below); hard invariant: "Start in
+2017" identical and every existing golden unchanged. Plan: **P1** Act 0 boundary → **P2** economy → **P4** bots and
+balance → **P3** events, theme, screens → the Prologue report.
+
+### Prologue choices (where the scope and doc 23 are silent)
+- Prologue quarters are indices −32 … −1 on the same `CONTENT.quarters` / `CONTENT.market` arrays (set as properties),
+  so 2017Q1 stays 0 and no Act I / II index, save or golden moves. `quarterLabel()` / `quarterIndex()` read them; Act I's
+  first week still has no "week before" (no 2016 week leaks into a 2017 start).
+- The prologue market JSON is built by `npm run content:market` straight from `docs/prologue-content/` (the merge
+  rule is code in tools/market-csv-to-json.ts); ETH cells before 2015-07-27 are 0 in the game.
+
+### Prologue progress
+- P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.
+- P1.1: the prologue market (−32 … −1), act 0 in the act list, `quarterLabel` / `quarterIndex`.
