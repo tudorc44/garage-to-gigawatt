@@ -131,12 +131,18 @@ export const BALANCE = {
     pivotPremium: 2,
     /** Doc 18 §7.3: projects this big sell at the hyperscale NNN cap rate, smaller at the powered-shell rate. */
     hyperscaleKw: 100_000,
+    /**
+     * GPU resale (owner decision on the M3 questions): a GPU is worth its purchase price × (1 −
+     * declinePerYear × years since delivery), never below `floor` (an H100 of 2023 ≈ 55% by 2026;
+     * the pack's range is 35–65%). Selling a live cloud's or pilot's GPUs costs `sellBandwidth`.
+     */
+    gpuResidual: { declinePerYear: 0.15, floor: 0.35, sellBandwidth: 1 },
     /** A live AI hall's kW count this share of mining's toward a site's Heat load (liquid-cooled halls are quieter; owner). */
     aiHeatShare: 0.5,
     /**
      * The deal builder's projected return (A2-05, a display only): a cloud or pilot is projected
-     * over this many years of running with no GPU resale value; a shell over its tenant's term.
-     * (mine, reversible: the content has no GPU life.)
+     * over this many years of running plus its GPUs' residual value then (owner decision on the M3
+     * questions); a shell over its tenant's term.
      */
     cloudProjectionYears: 5,
   },

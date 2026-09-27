@@ -2,7 +2,7 @@
 // exactly one use. Mining = your machines; hosting = rented to another miner's ASICs; AI shell and
 // AI cloud come with projects (M3); building = not energized yet, or being converted; idle = the rest.
 import { BALANCE, act2Quarter } from '../../content/index.ts'
-import type { GameState, Site } from '../state.ts'
+import { projectGone, type GameState, type Site } from '../state.ts'
 import { getModel } from './market.ts'
 import { isEarning } from './mining.ts'
 import {
@@ -59,7 +59,7 @@ export function siteMwByUse(
   // proposed ones hold their kW but use them for nothing yet (idle).
   let projectBuilding = 0
   for (const p of state.projects) {
-    if (p.siteId !== site.id || p.stage === 'sold') continue
+    if (p.siteId !== site.id || projectGone(p)) continue
     if (p.stage === 'live') {
       if (p.kind === 'shell') out.aiShell += p.kw
       else out.aiCloud += p.kw

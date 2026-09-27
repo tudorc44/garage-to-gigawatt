@@ -10,6 +10,7 @@ import {
 } from '../../content/index.ts'
 import { pick, randomInt, random } from '../rng.ts'
 import {
+  projectGone,
   roundCents,
   type ContractType,
   type GameState,
@@ -77,7 +78,7 @@ export function hostingKw(state: GameState, siteId: string): number {
 /** kW of projects at the site (Act II): taken from opening until sold. */
 export function projectsKw(state: GameState, siteId: string): number {
   return state.projects
-    .filter((p) => p.siteId === siteId && p.stage !== 'sold')
+    .filter((p) => p.siteId === siteId && !projectGone(p))
     .reduce((kw, p) => kw + p.kw, 0)
 }
 

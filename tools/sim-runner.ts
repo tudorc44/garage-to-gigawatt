@@ -7,7 +7,7 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { CONTENT, actLastQuarter } from '../src/content/index.ts'
 import { playGame, type Strategy } from '../src/sim/replay.ts'
-import { projectCapex } from '../src/sim/systems/projects.ts'
+import { gpuResidualUsd, projectCapex } from '../src/sim/systems/projects.ts'
 import type {
   ContractType,
   GameState,
@@ -719,8 +719,8 @@ if (args.includes('--act2')) {
     }),
   )
   // Scope 0.2 §5 pilot timing: a 1 MW pilot's operating return by 2026Q4 (its AI EBITDA over the
-  // quarters: the pilot is the bot's only AI project) ÷ its capex; the scope's reference adds 50%
-  // GPU resale, which the game doesn't model: shown separately. No bot has a pilot's ~$31M in
+  // quarters: the pilot is the bot's only AI project) ÷ its capex, and with its GPUs' resale value
+  // at 2026Q4 (the game's residual curve, M4.0b). No bot has a pilot's ~$31M in
   // cash (capital beyond own cash comes later), so this is a measurement harness: texas-ipo with
   // the pilot bot, its cash topped up by exactly the pilot's cost in the pilot quarter.
   const withPilotCash = (name: string): Strategy => {
@@ -757,12 +757,13 @@ if (args.includes('--act2')) {
         return [
           {
             ops: margin / p.capexUsd,
-            withResale: (margin + 0.5 * p.gpuCapexUsd) / p.capexUsd,
+            withResale:
+              (margin + gpuResidualUsd(p, r.state.quarter)) / p.capexUsd,
           },
         ]
       })
     console.log(
-      `  Pilot timing (${name}): ${multiples.length} pilots built; returns ${median(multiples.map((m) => m.ops)).toFixed(2)}× its cost from operations, ${median(multiples.map((m) => m.withResale)).toFixed(2)}× with 50% GPU resale (scope 0.2 §5: 2023Q3 ≥ 1.7×, 2025Q2 ≤ 1.3×)`,
+      `  Pilot timing (${name}): ${multiples.length} pilots built; returns ${median(multiples.map((m) => m.ops)).toFixed(2)}× its cost from operations, ${median(multiples.map((m) => m.withResale)).toFixed(2)}× with the GPUs' 2026Q4 resale value (scope 0.2 §5: 2023Q3 ≥ 1.7×, 2025Q2 ≤ 1.3×)`,
     )
   }
   // Scope 0.2 §5 "hosting isn't a free win": hosting vs staying in mining, same seeds, 2022Q4–2024Q1.

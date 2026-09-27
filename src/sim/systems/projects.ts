@@ -16,6 +16,7 @@ import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream } from '../rng.ts'
 import {
   logEntry,
+  projectGone,
   type GameState,
   type Project,
   type ProjectKind,
@@ -290,7 +291,7 @@ export function signTenant(
   if (!p) return { key: 'error.unknown_project' }
   if (p.kind !== 'shell') return { key: 'error.project_no_tenant' }
   if (p.tenant) return { key: 'error.tenant_signed' }
-  if (p.stage === 'sold') return { key: 'error.wrong_phase' }
+  if (projectGone(p)) return { key: 'error.wrong_phase' }
   const offer = p.offers.find((o) => o.id === offerId)
   const card = offer && tenantCard(offer.card)
   if (!offer || !card) return { key: 'error.unknown_offer' }
@@ -446,7 +447,7 @@ export function startQuarterProjects(state: GameState): void {
     }
     if (
       p.kind === 'shell' &&
-      p.stage !== 'sold' &&
+      !projectGone(p) &&
       !p.tenant &&
       p.offers.length === 0
     )
@@ -465,7 +466,7 @@ export function endQuarterProjects(state: GameState): number {
   const label = CONTENT.quarters[state.quarter]
   for (const p of state.projects) {
     const t = p.tenant
-    if (!t || p.stage === 'sold') continue
+    if (!t || projectGone(p)) continue
     const card = tenantCard(t.card)!
     if (p.stage === 'live') {
       t.servedQuarters++
@@ -745,8 +746,9 @@ export function resolveProjectEvent(
  * A project's projected return at today's prices, before debt: its capex (what starting now would
  * cost, or what was paid), a year's revenue and EBITDA once live, the payback in years and the IRR
  * of paying the capex now, earning nothing while it builds, then the EBITDA each quarter over the
- * tenant's term (a cloud or pilot: cloudProjectionYears). A shell with no tenant, or a cloud not
- * yet on spot, has no revenue to project (null figures).
+ * tenant's term. A cloud or pilot runs cloudProjectionYears on spot (also before a tenant is
+ * chosen) and then sells its GPUs at the residual value. A shell with no tenant has no revenue to
+ * project (null figures).
  */
 export function projectedReturn(state: GameState, p: Project) {
   const capexUsd =
@@ -756,6 +758,7 @@ export function projectedReturn(state: GameState, p: Project) {
   let revenueUsd: number | null = null
   let ebitdaUsd: number | null = null
   let years: number = b.cloudProjectionYears
+  let residualUsd = 0
   if (p.kind === 'shell') {
     if (p.tenant) {
       const card = tenantCard(p.tenant.card)!
@@ -763,7 +766,7 @@ export function projectedReturn(state: GameState, p: Project) {
       ebitdaUsd = revenueUsd * (1 - b.shellOpexShare)
       years = card.termYears
     }
-  } else if (p.kind === 'pilot' || p.spot) {
+  } else {
     const site = state.sites.find((s) => s.id === p.siteId)!
     const gpus =
       p.stage === 'proposed' ? projectCapex(state, p).gpuCount : p.gpuCount
@@ -780,6 +783,7 @@ export function projectedReturn(state: GameState, p: Project) {
       revenueUsd -
       p.kw * b.cloudPue * hoursYr * up * powerPriceUsdKwh(site, state.quarter) -
       gpuUsd * b.cloudInsuranceShareYr
+    residualUsd = gpuUsd * gpuResidualShare(years)
   }
   if (ebitdaUsd === null)
     return { capexUsd, revenueUsd, ebitdaUsd, paybackYears: null, irr: null }
@@ -794,6 +798,7 @@ export function projectedReturn(state: GameState, p: Project) {
     ...Array<number>(wait).fill(0),
     ...Array<number>(Math.round(years * 4)).fill(ebitdaUsd / 4),
   ]
+  flows[flows.length - 1] += residualUsd
   return {
     capexUsd,
     revenueUsd,
@@ -818,11 +823,63 @@ export function annualIrr(flows: number[]): number | null {
   return Math.pow(1 + lo, 4) - 1
 }
 
+// ---------- GPU resale (owner decision on the M3 questions) ----------
+
+/** What share of their purchase price GPUs are worth `years` after delivery (linear, floored). */
+export function gpuResidualShare(years: number): number {
+  const r = BALANCE.projects.gpuResidual
+  return Math.max(r.floor, 1 - r.declinePerYear * Math.max(0, years))
+}
+
+/** What a live cloud's or pilot's GPUs would sell for in `quarter` (delivered when it went live). */
+export function gpuResidualUsd(p: Project, quarter: number): number {
+  if (p.kind === 'shell' || p.stage !== 'live' || p.readyQuarter === null)
+    return 0
+  return p.gpuCapexUsd * gpuResidualShare((quarter - p.readyQuarter) / 4)
+}
+
+/** Why a project's GPUs can't be sold now, or undefined if they can. */
+export function sellGpusBlocker(
+  state: GameState,
+  projectId: string,
+): Message | undefined {
+  const p = getProject(state, projectId)
+  if (!p) return { key: 'error.unknown_project' }
+  if (p.kind === 'shell' || p.stage !== 'live')
+    return { key: 'error.gpus_not_live' }
+  const need = BALANCE.projects.gpuResidual.sellBandwidth
+  if (state.bandwidth < need)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: need, have: state.bandwidth },
+    }
+  return undefined
+}
+
+/**
+ * Sells a live cloud's or pilot's GPUs at their residual value (1 Bandwidth; assumes
+ * sellGpusBlocker passed): the project ends and its MW are idle again.
+ */
+export function sellGpus(state: GameState, projectId: string): void {
+  const p = getProject(state, projectId)!
+  const valueUsd = Math.round(gpuResidualUsd(p, state.quarter))
+  state.cash += valueUsd
+  state.bandwidth -= BALANCE.projects.gpuResidual.sellBandwidth
+  p.stage = 'ended'
+  p.soldQuarter = state.quarter
+  logEntry(state, 'log.gpus_sold', {
+    n: p.n,
+    count: p.gpuCount,
+    gpu: p.gpu ?? '',
+    valueUsd,
+  })
+}
+
 // ---------- valuation parts and selling (scope 0.2 §2.5, §2.8; doc 18 §7.3, §8) ----------
 
 /** A tenant contract's revenue still to come: the annual rent × the years left of its term. */
 export function remainingContractUsd(p: Project): number {
-  if (!p.tenant || p.stage === 'sold') return 0
+  if (!p.tenant || projectGone(p)) return 0
   const card = tenantCard(p.tenant.card)!
   const quartersLeft = Math.max(0, card.termYears * 4 - p.tenant.servedQuarters)
   return (annualRentUsd(card, p.kw) * quartersLeft) / 4

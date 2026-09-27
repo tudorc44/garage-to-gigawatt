@@ -4,7 +4,7 @@
 import { BALANCE, CONTENT } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
-import type { GameState, Project } from './state.ts'
+import { projectGone, type GameState, type Project } from './state.ts'
 import { convertibleKw } from './systems/hosting.ts'
 import { siteMwByUse } from './systems/mwUse.ts'
 import {
@@ -13,6 +13,8 @@ import {
   buildBlocker,
   buildQuarters,
   capRate,
+  gpuResidualShare,
+  gpuResidualUsd,
   knowHow,
   neocloudUsdHr,
   projectCapex,
@@ -42,6 +44,7 @@ export const PROJECT_COLUMNS: ProjectColumn[] = [
 ]
 
 function columnOf(p: Project): ProjectColumn {
+  if (p.stage === 'ended') return 'sold'
   if (p.stage !== 'proposed') return p.stage
   const s = slots(p)
   return s.tenant === true || s.capital ? 'filling' : 'proposed'
@@ -58,7 +61,7 @@ export function projectCard(state: GameState, p: Project) {
   const card = p.tenant ? tenantCard(p.tenant.card)! : null
   const ret = projectedReturn(state, p)
   const late =
-    p.tenant && p.stage !== 'live' && p.stage !== 'sold'
+    p.tenant && p.stage !== 'live' && !projectGone(p)
       ? {
           quarters: p.tenant.lateQuarters,
           damagesUsd: annualRentUsd(card!, p.kw) * P().latePenaltyShareYr,
@@ -104,6 +107,17 @@ export function projectCard(state: GameState, p: Project) {
       p.stage === 'live'
         ? sellBlocker(state, p.id)
         : { key: 'error.project_not_live' as const },
+    /** A live cloud or pilot: what its GPUs would sell for now, and why they can't (or null). */
+    gpuSale:
+      p.stage === 'live' && p.kind !== 'shell'
+        ? {
+            valueUsd: gpuResidualUsd(p, state.quarter),
+            blocker: whyNot(state, {
+              type: 'PROJECT_SELL_GPUS',
+              projectId: p.id,
+            }),
+          }
+        : null,
   }
 }
 
@@ -117,9 +131,9 @@ export function projectsView(state: GameState) {
     byColumn: Object.fromEntries(
       PROJECT_COLUMNS.map((c) => [c, cards.filter((x) => x.column === c)]),
     ) as Record<ProjectColumn, ProjectCardView[]>,
-    count: state.projects.filter((p) => p.stage !== 'sold').length,
+    count: state.projects.filter((p) => !projectGone(p)).length,
     kw: state.projects
-      .filter((p) => p.stage !== 'sold')
+      .filter((p) => !projectGone(p))
       .reduce((sum, p) => sum + p.kw, 0),
     knowHow: knowHow(state),
     openBandwidth: BALANCE.projects.bandwidth.open,
@@ -210,6 +224,7 @@ export function dealView(state: GameState, projectId: string) {
     cost,
     projected: projectedReturn(state, p),
     projectionYears: BALANCE.projects.cloudProjectionYears,
+    residualShareAtEnd: gpuResidualShare(BALANCE.projects.cloudProjectionYears),
     capRate: p.kind === 'shell' ? capRate(state.quarter, p.kw) : null,
     startBlocker:
       p.stage === 'proposed' ? (buildBlocker(state, p.id) ?? null) : null,

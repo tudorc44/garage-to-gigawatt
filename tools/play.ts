@@ -515,6 +515,7 @@ function parse(
     case 'fund':
     case 'start':
     case 'cancel':
+    case 'sellgpus':
     case 'sellproject': {
       const p = item(s.projects, 0)
       if (!p) return 'play.bad_number'
@@ -524,6 +525,7 @@ function parse(
           fund: 'PROJECT_FUND_CASH',
           start: 'PROJECT_START',
           cancel: 'PROJECT_CANCEL',
+          sellgpus: 'PROJECT_SELL_GPUS',
           sellproject: 'PROJECT_SELL',
         } as const
       )[cmd]

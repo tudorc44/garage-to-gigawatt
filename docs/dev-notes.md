@@ -1278,6 +1278,15 @@ A2-05 / A2-07. Sub-steps:
   that plays raise-climb to 2026Q4 now uses seed 2 (seed 1 busts in 2025). Full numbers in M4.0d.
 - **M4.0b** GPU resale: the residual curve, "Sell GPUs", the Deal builder IRR with year-5 residual, and the spot
   projection before a tenant is chosen.
+  **Done.** `balance.ts` › `projects.gpuResidual` {15%/year, floor 35%, 1 BW}. `gpuResidualShare(years)` is linear
+  (1 − 0.15 × years, so 3 years = 55%, as the owner's example). A GPU is "delivered" when its project goes live; the
+  purchase price is what the project paid for its GPUs (`gpuCapexUsd`, incl. any know-how-0 markup) (mine,
+  reversible). `PROJECT_SELL_GPUS` (1 BW, live cloud or pilot): cash at the residual value, the project's stage
+  becomes `'ended'` and its MW are idle again (new helper `projectGone` = sold or ended). The Projects card of a live
+  cloud or pilot has "Sell the GPUs for $X"; terminal `sellgpus <project#>`. The Deal builder projects a cloud on
+  spot even before a tenant is chosen, and adds the GPUs' year-5 residual (35%) as the last cash flow. The
+  sim-runner's pilot check now adds the game's own 2026Q4 residual instead of a flat 50%. Tests 473 pass
+  (new `tests/sim/gpuResale.test.ts`). No golden change.
 - **M4.0c** GPU contracts for AI clouds (offers, locked price, take-or-pay billing, ready-by buffer, fallback to spot,
   backlog).
 - **M4.0d** Sims re-run against §5 (hosting, pilot with resale).

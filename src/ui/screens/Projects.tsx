@@ -269,6 +269,17 @@ function ProjectCardEl(
           act={act}
         />
       )}
+      {card.gpuSale && (
+        <BwButton
+          label={t('ui.projects.sell_gpus', {
+            value: fmt.money(card.gpuSale.valueUsd),
+          })}
+          bw={1}
+          action={{ type: 'PROJECT_SELL_GPUS', projectId: p.id }}
+          state={state}
+          act={act}
+        />
+      )}
     </article>
   )
 }
@@ -619,7 +630,10 @@ function DealBuilder(
               <td class="num-s muted">
                 {p.kind === 'shell'
                   ? t('ui.deal.irr_note.shell')
-                  : t('ui.deal.irr_note.cloud', { years: v.projectionYears })}
+                  : t('ui.deal.irr_note.cloud', {
+                      years: v.projectionYears,
+                      residual: fmt.pct(v.residualShareAtEnd),
+                    })}
               </td>
             </tr>
           </tbody>

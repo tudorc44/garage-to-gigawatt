@@ -159,7 +159,8 @@ export interface Project {
   /** GPU generation (cloud and pilot), or null for a shell. */
   gpu: string | null
   openedQuarter: number
-  stage: 'proposed' | 'building' | 'live' | 'sold'
+  /** 'sold': sold with its MW (they leave the site); 'ended': its GPUs sold, its MW idle again. */
+  stage: 'proposed' | 'building' | 'live' | 'sold' | 'ended'
   /** Tenant offers (shell projects). */
   offers: TenantOffer[]
   tenant: ProjectTenant | null
@@ -177,6 +178,10 @@ export interface Project {
   readyQuarter: number | null
   soldQuarter: number | null
 }
+
+/** A project that no longer holds its MW or earns: sold, or ended by selling its GPUs. */
+export const projectGone = (p: Project) =>
+  p.stage === 'sold' || p.stage === 'ended'
 
 /** A construction delay or GPU allocation alert planned for this quarter (like the failure wave). */
 export interface PlannedProjectEvent {
