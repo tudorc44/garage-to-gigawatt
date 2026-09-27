@@ -3,7 +3,6 @@
 import { describe, expect, it } from 'vitest'
 import { BALANCE, CONTENT } from '../../src/content/index.ts'
 import { advance } from '../../src/sim/advance.ts'
-import type { GameState } from '../../src/sim/state.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import {
   annualRentUsd,
@@ -16,53 +15,16 @@ import {
 } from '../../src/sim/systems/projects.ts'
 import { powerPriceUsdKwh, uptime } from '../../src/sim/systems/sites.ts'
 import { ebitdaUsd } from '../../src/sim/systems/valuation.ts'
-import { act2Company, ok } from './act2Helpers.ts'
+import {
+  act2Company,
+  endPlan,
+  ok,
+  pilotReady,
+  playQuarter,
+  shellReady,
+} from './act2Helpers.ts'
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
-
-/** Ends the Plan phase; with `quiet`, no project alerts are planned (for the other tests). */
-function endPlan(s: GameState, quiet = true): GameState {
-  s = ok(s, { type: 'END_PLAN' })
-  if (quiet) s.projectEvents = []
-  return s
-}
-
-/** Plays the live quarter (default answers to alerts) and starts the next Plan phase. */
-function playQuarter(s: GameState, quiet = true): GameState {
-  s = endPlan(s, quiet)
-  while (s.phase === 'live')
-    s = s.interrupt
-      ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: defaultChoice(s) })
-      : advance(s)
-  return ok(s, { type: 'NEXT_QUARTER' })
-}
-
-/** A 1 MW pilot opened and funded in `label`, ready to start. */
-function pilotReady(label = '2023Q3', seed = 1): GameState {
-  const s = ok(act2Company(label, seed), {
-    type: 'PROJECT_OPEN',
-    siteId: 'site-2',
-    kw: 1000,
-    kind: 'pilot',
-  })
-  return ok(s, { type: 'PROJECT_FUND_CASH', projectId: 'project-1' })
-}
-
-/** A 5 MW shell with its first offer signed and funded, ready to start. */
-function shellReady(label = '2023Q3'): GameState {
-  let s = ok(act2Company(label), {
-    type: 'PROJECT_OPEN',
-    siteId: 'site-2',
-    kw: 5000,
-    kind: 'shell',
-  })
-  s = ok(s, {
-    type: 'PROJECT_SIGN_TENANT',
-    projectId: 'project-1',
-    offerId: s.projects[0].offers[0].id,
-  })
-  return ok(s, { type: 'PROJECT_FUND_CASH', projectId: 'project-1' })
-}
 
 describe('starting a build (1 Bandwidth, the capex paid up front)', () => {
   it('needs every slot filled first', () => {

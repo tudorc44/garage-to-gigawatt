@@ -44,17 +44,19 @@ export function capacityKw(site: Site): number {
   const base = site.phases
     ? tier.phases!.kw * site.phases.length
     : tier.capacity_kw
-  return base * (flawEffect(site, 'capacity_mult') ?? 1)
+  return base * (flawEffect(site, 'capacity_mult') ?? 1) - (site.soldKw ?? 0)
 }
 
 /** Capacity energized in `quarter`: a phased site counts its finished phases only. */
 export function poweredKw(site: Site, quarter: number): number {
   if (!site.phases) return isReady(site, quarter) ? capacityKw(site) : 0
   const done = site.phases.filter((q) => q <= quarter).length
-  return (
+  return Math.max(
+    0,
     getTier(site.tier)!.phases!.kw *
-    done *
-    (flawEffect(site, 'capacity_mult') ?? 1)
+      done *
+      (flawEffect(site, 'capacity_mult') ?? 1) -
+      (site.soldKw ?? 0),
   )
 }
 

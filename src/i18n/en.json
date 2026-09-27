@@ -230,6 +230,7 @@
   "log.project_gpu_wait_silent": "Project {n}: the GPUs are allocated late (no time to deal with it this quarter); now ready in {quarter}.",
   "log.project_paid": "Project {n}: paid {costUsd} to keep the date.",
   "log.project_contractor_saved": "Project {n}: the new contractor kept the date.",
+  "log.project_sold": "Sold project {n} with its tenant for {priceUsd}: its power goes with it.",
   "interrupt.construction_delay.accelerate": "Pay to accelerate",
   "interrupt.construction_delay.accept_slip": "Accept the slip",
   "interrupt.construction_delay.change_contractor": "Change contractor",

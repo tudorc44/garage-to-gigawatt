@@ -1150,6 +1150,25 @@ Sources: scope 0.2 §2.5 and §2.9, doc 18 §5, wireframes A2-04 / A2-05, `docs/
   `tests/sim/projectBuild.test.ts`; shared helpers moved to `tests/sim/act2Helpers.ts`).
 - **M3.7** Valuation: sum of the parts (mining multiple + pivot premium, AI multiple), projects under construction at
   capex spent, the credit-weighted backlog; the real backlog on the top bar; selling a live project at the cap rate.
+  **Done.** `valuationUsd` takes Act II parts: (EBITDA − AI EBITDA) × 4 × (mining multiple, +2 from the quarter
+  of the first AI deal) + AI EBITDA × 4 × the AI-infrastructure multiple (each part floored at 0 on its own) +
+  cash + treasury + projects under construction at capex spent + the weighted backlog − debt. AI EBITDA = AI revenue
+  − AI costs − late damages. Backlog = each signed tenant's annual rent × the years left of its term (quarters served
+  count down); weights by the card's credit rating: starts with "A" 15%, "BBB" 10%, anything else 5% (spot has no
+  contract, 0). The top bar's backlog is now the real unweighted number (`ratingBacklogView(state)`); the rating is
+  still a placeholder. Report gains `constructionUsd`, `backlogUsd`, `weightedBacklogUsd`. `valuationSplit` (in
+  `valuation.ts`) splits a report's valuation into its parts for the Company page breakdown and the sim-runner.
+  `PROJECT_SELL` (2 BW): a live shell with a tenant sells for NOI (rent less 17.5% opex) / the cap rate, less the
+  prepayment not yet set off (the buyer takes it on); the project's MW leave the site (`Site.soldKw`, subtracted from
+  capacity). Cap rates from capital_act2.json: the quarter's own key (2026Q3, 2026Q4 aftershock), else the year's,
+  else the next key (2022 → 2023's, 2026Q1–Q2 → 2026Q3's); 100 MW+ use the hyperscale rates.
+  Decisions (mine, reversible): only shells can be sold (a cloud has no tenant NOI; `error.project_not_live` already
+  said so); the buyer's price nets off the unearned prepayment; a leased site's MW can be sold too; the pivot premium
+  also applies to hosting EBITDA (it's in the mining part); a tenant's lease doesn't end at its term in Act II (every
+  term is 5+ years, past 2026Q4).
+  **Golden change (explained):** 11 goldens gain `"constructionUsd": 0`, `"backlogUsd": 0`, `"weightedBacklogUsd": 0`
+  in every report (666 added lines; nothing else changed, so Act I values are the same). Tests: 455 pass (new
+  `tests/sim/projectValue.test.ts`).
 - **M3.8** UI: the Projects page (A2-04) and the Deal builder (A2-05); dashboard hooks.
 - **M3.9** GPU know-how, terminal commands, bots and sim numbers; milestone report.
 

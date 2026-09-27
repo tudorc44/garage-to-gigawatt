@@ -19,7 +19,7 @@ import type {
   PowerContract,
 } from './state.ts'
 import { repairCostPerUnit, saleValueUsd } from './systems/machines.ts'
-import { eraMultiple } from './systems/valuation.ts'
+import { valuationSplit } from './systems/valuation.ts'
 import {
   coinPrice,
   getModel,
@@ -63,7 +63,11 @@ import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
 import { rushRepairUsd } from './systems/failureWave.ts'
-import { gpuWaitQuarters, projectEventCostUsd } from './systems/projects.ts'
+import {
+  backlogUsd,
+  gpuWaitQuarters,
+  projectEventCostUsd,
+} from './systems/projects.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import {
@@ -1112,20 +1116,26 @@ export function projectAlertView(state: GameState) {
 
 /**
  * The last report's valuation, piece by piece (review A5): run-rate EBITDA × the era multiple,
- * plus cash and treasury (pledged coins included), minus debt. null before the first report.
+ * plus cash and treasury (pledged coins included), minus debt; in Act II also the AI units at
+ * their own multiple, projects under construction and the weighted backlog (scope 0.2 §2.8).
+ * null before the first report.
  */
 export function valuationBreakdown(state: GameState) {
   const r = state.reports.at(-1)
   if (!r) return null
-  const multiple = eraMultiple(CONTENT.quarters.indexOf(r.quarter))
-  const enterpriseUsd = Math.max(0, r.ebitdaUsd * 4) * multiple
+  const v = valuationSplit(r, state.firstAiDealQuarter)
   return {
     quarter: r.quarter,
-    ebitdaUsd: r.ebitdaUsd,
-    multiple,
-    enterpriseUsd,
+    ebitdaUsd: r.ebitdaUsd - v.aiEbitdaUsd,
+    multiple: v.miningMultiple,
+    enterpriseUsd: v.miningEvUsd,
+    aiEbitdaUsd: v.aiEbitdaUsd,
+    aiMultiple: v.aiMultiple,
+    aiEnterpriseUsd: v.aiEvUsd,
+    constructionUsd: v.constructionUsd,
+    weightedBacklogUsd: v.weightedBacklogUsd,
     cashUsd: r.cash,
-    treasuryUsd: r.valuationUsd - enterpriseUsd - r.cash + r.debtUsd,
+    treasuryUsd: v.treasuryUsd,
     debtUsd: r.debtUsd,
     valuationUsd: r.valuationUsd,
   }
@@ -1231,11 +1241,12 @@ export function act2MarketView(state: GameState) {
 }
 
 /**
- * Credit rating and contracted backlog (scope 0.2 §2.2): placeholders until the credit rating and
- * tenants are built. No rating yet (null = "not rated"), and no contracts, so no backlog.
+ * Credit rating and contracted backlog (scope 0.2 §2.2). The backlog is the remaining contracted
+ * revenue, unweighted (§2.8). The rating is a placeholder until the credit rating is built (null =
+ * "not rated").
  */
-export function ratingBacklogView() {
-  return { rating: null as string | null, backlogUsd: 0 }
+export function ratingBacklogView(state: GameState) {
+  return { rating: null as string | null, backlogUsd: backlogUsd(state) }
 }
 
 /**

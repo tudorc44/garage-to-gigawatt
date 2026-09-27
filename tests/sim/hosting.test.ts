@@ -291,7 +291,7 @@ describe('Act II views for the UI (A2-03)', () => {
     expect(after.contracts[0]).toMatchObject({ live: false, endFeeUsd: 0 })
   })
 
-  it('rating and backlog are placeholders until those systems exist', () => {
-    expect(ratingBacklogView()).toEqual({ rating: null, backlogUsd: 0 })
+  it('no rating yet; no tenant contracts, so no backlog', () => {
+    expect(ratingBacklogView(act2())).toEqual({ rating: null, backlogUsd: 0 })
   })
 })

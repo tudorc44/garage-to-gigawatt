@@ -58,7 +58,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
   const heat = topHeat(s)
   const total = bandwidthTotal(s)
   const act2 = act2MarketView(s)
-  const rb = ratingBacklogView()
+  const rb = ratingBacklogView(s)
   return (
     <div class="topbar">
       <div class="brand">{t('ui.brand')}</div>

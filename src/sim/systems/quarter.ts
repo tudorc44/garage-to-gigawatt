@@ -27,8 +27,15 @@ import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
-import { endQuarterProjects, startQuarterProjects } from './projects.ts'
-import { ebitdaUsd, valuationUsd } from './valuation.ts'
+import {
+  backlogUsd,
+  constructionValueUsd,
+  endQuarterProjects,
+  pivotActive,
+  startQuarterProjects,
+  weightedBacklogUsd,
+} from './projects.ts'
+import { aiEbitdaUsd, ebitdaUsd, valuationUsd } from './valuation.ts'
 
 /**
  * Runs after week 13. If cash is below zero: sell treasury coins, then machines
@@ -80,6 +87,8 @@ function buildReport(
     st.coinsMined[c] > 0 ? st.powerByCoin[c] / st.coinsMined[c] : null
   const ebitda = ebitdaUsd(st)
   const treasuryUsd = treasuryValueUsd(state, w)
+  const constructionUsd = constructionValueUsd(state)
+  const weightedBacklog = weightedBacklogUsd(state)
   return {
     quarter: CONTENT.quarters[state.quarter],
     hashrate: hashrate(state),
@@ -102,6 +111,12 @@ function buildReport(
       // Pledged coins are still yours: they count, and the loan counts as debt.
       treasuryUsd + collateralValueUsd(state, w),
       debtUsd(state),
+      {
+        aiEbitdaUsd: aiEbitdaUsd(st),
+        pivot: pivotActive(state),
+        constructionUsd,
+        weightedBacklogUsd: weightedBacklog,
+      },
     ),
     priceAlerts: st.priceAlerts,
     marginCalls: st.marginCalls,
@@ -116,6 +131,9 @@ function buildReport(
     aiRevenueUsd: st.aiRevenueUsd,
     aiCostUsd: st.aiCostUsd,
     lateDamagesUsd: st.lateDamagesUsd,
+    constructionUsd,
+    backlogUsd: backlogUsd(state),
+    weightedBacklogUsd: weightedBacklog,
     rateHikeUsd: st.rateHikeUsd,
     stormChargeUsd: st.stormChargeUsd,
     salariesUsd: st.salariesUsd,

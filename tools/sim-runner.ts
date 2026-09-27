@@ -16,7 +16,7 @@ import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
-import { eraMultiple } from '../src/sim/systems/valuation.ts'
+import { valuationSplit } from '../src/sim/systems/valuation.ts'
 import { BOTS, PROBES } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -262,13 +262,16 @@ function waveStats(runs: Run[]) {
   }
 }
 
-/** A quarter's valuation split: operations (EBITDA × 4 × the era multiple), cash, coins, debt. */
-function valuationSplit(r: QuarterReport) {
-  const multiple = eraMultiple(CONTENT.quarters.indexOf(r.quarter))
-  const ops = Math.max(0, r.ebitdaUsd * 4) * multiple
+/**
+ * A quarter's valuation split: operations (each unit's EBITDA × 4 × its multiple, plus projects
+ * under construction and the weighted backlog), cash, coins, debt.
+ */
+function valuationParts(r: QuarterReport, firstAiDealQuarter: number | null) {
+  const v = valuationSplit(r, firstAiDealQuarter)
+  const ops =
+    v.miningEvUsd + v.aiEvUsd + v.constructionUsd + v.weightedBacklogUsd
   // Coins include pledged collateral, as in the valuation itself.
-  const coins = r.valuationUsd - ops - r.cash + r.debtUsd
-  return { ops, cash: r.cash, coins, debt: r.debtUsd }
+  return { ops, cash: r.cash, coins: v.treasuryUsd, debt: r.debtUsd }
 }
 
 /**
@@ -321,13 +324,16 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
   // Runs that reached the Merge: drawdown from peak, and the valuation splits.
   const merged = runs.filter((r) => r.state.phase !== 'gameover')
   const peakSplits = merged.map((r) =>
-    valuationSplit(
+    valuationParts(
       r.state.reports.reduce((a, b) =>
         b.valuationUsd > a.valuationUsd ? b : a,
       ),
+      r.state.firstAiDealQuarter,
     ),
   )
-  const mergeSplits = merged.map((r) => valuationSplit(r.state.reports.at(-1)!))
+  const mergeSplits = merged.map((r) =>
+    valuationParts(r.state.reports.at(-1)!, r.state.firstAiDealQuarter),
+  )
   // Texas's share of EBITDA in the peak quarter (runs that built Texas; design thread check 3).
   const texasShares = runs
     .filter((r) => r.state.sites.some((x) => x.tier === 'texas_site'))
@@ -345,7 +351,7 @@ const summaryRows = summaries.map(({ strategy, runs }) => {
   })
   const idle = runs.map(idleShare).filter((x): x is number => x !== null)
   const floors = runs.map(seedCashFloor).filter((x): x is number => x !== null)
-  const splitMedians = (xs: ReturnType<typeof valuationSplit>[]) => ({
+  const splitMedians = (xs: ReturnType<typeof valuationParts>[]) => ({
     ops: median(xs.map((x) => x.ops)),
     cash: median(xs.map((x) => x.cash)),
     coins: median(xs.map((x) => x.coins)),

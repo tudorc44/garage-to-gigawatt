@@ -732,3 +732,115 @@ export function resolveProjectEvent(
   state.interrupt = null
   return undefined
 }
+
+// ---------- valuation parts and selling (scope 0.2 §2.5, §2.8; doc 18 §7.3, §8) ----------
+
+/** A tenant contract's revenue still to come: the annual rent × the years left of its term. */
+export function remainingContractUsd(p: Project): number {
+  if (!p.tenant || p.stage === 'sold') return 0
+  const card = tenantCard(p.tenant.card)!
+  const quartersLeft = Math.max(0, card.termYears * 4 - p.tenant.servedQuarters)
+  return (annualRentUsd(card, p.kw) * quartersLeft) / 4
+}
+
+/** The backlog weight by tenant credit (doc 18 §8): A/AA, BBB, or below (AI labs, B/BB). */
+export function backlogWeight(rating: string): number {
+  const w = P().backlogWeights
+  if (rating.startsWith('A')) return w.a
+  if (rating.startsWith('BBB')) return w.bbb
+  return w.below
+}
+
+/** The backlog on the top bar and dashboard: remaining contracted revenue, unweighted. */
+export function backlogUsd(state: GameState): number {
+  return state.projects.reduce((sum, p) => sum + remainingContractUsd(p), 0)
+}
+
+/** The backlog as the valuation counts it: each contract × its tenant's weight (spot counts 0). */
+export function weightedBacklogUsd(state: GameState): number {
+  return state.projects.reduce(
+    (sum, p) =>
+      p.tenant
+        ? sum +
+          remainingContractUsd(p) *
+            backlogWeight(tenantCard(p.tenant.card)!.rating)
+        : sum,
+    0,
+  )
+}
+
+/** Projects under construction count at the capex spent so far (owner decision, 27 Sep 2026). */
+export function constructionValueUsd(state: GameState): number {
+  return state.projects
+    .filter((p) => p.stage === 'building')
+    .reduce((sum, p) => sum + p.capexUsd, 0)
+}
+
+/** The pivot premium applies from the quarter the first AI deal is signed. */
+export function pivotActive(state: GameState): boolean {
+  return (
+    state.firstAiDealQuarter !== null &&
+    state.quarter >= state.firstAiDealQuarter
+  )
+}
+
+/**
+ * The cap rate (a fraction) for a stabilized shell in a quarter (capital_act2.json): its own
+ * quarter's value (2026Q3, the 2026Q4 aftershock), else its year's, else the next one given
+ * (2022 → 2023's, 2026Q1–Q2 → 2026Q3's). 100 MW and up use the hyperscale rates.
+ */
+export function capRate(quarter: number, kw: number): number {
+  const rates =
+    kw >= BALANCE.projects.hyperscaleKw
+      ? P().capRates.hyperscale
+      : P().capRates.shell
+  const label = CONTENT.quarters[quarter]
+  const year = label.slice(0, 4)
+  const keys = Object.keys(rates).sort()
+  const key =
+    keys.find((k) => k === label || k === `${label}_aftershock`) ??
+    keys.find((k) => k === year) ??
+    keys.find((k) => k.slice(0, 4) >= year) ??
+    keys.at(-1)!
+  return rates[key] / 100
+}
+
+/** What a buyer pays for a live shell: its net operating income / the cap rate, less the prepayment it takes on. */
+export function saleValueUsd(state: GameState, p: Project): number {
+  if (!p.tenant) return 0
+  const noi =
+    annualRentUsd(tenantCard(p.tenant.card)!, p.kw) *
+    (1 - BALANCE.projects.shellOpexShare)
+  return noi / capRate(state.quarter, p.kw) - p.tenant.prepaymentLeftUsd
+}
+
+/** Why a project can't be sold now, or undefined if it can. */
+export function sellBlocker(
+  state: GameState,
+  projectId: string,
+): Message | undefined {
+  const p = getProject(state, projectId)
+  if (!p) return { key: 'error.unknown_project' }
+  if (p.stage !== 'live' || p.kind !== 'shell' || !p.tenant)
+    return { key: 'error.project_not_live' }
+  const need = BALANCE.projects.bandwidth.sell
+  if (state.bandwidth < need)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: need, have: state.bandwidth },
+    }
+  return undefined
+}
+
+/** Sells a live shell (2 Bandwidth; assumes sellBlocker passed): its MW leave the site with it. */
+export function sellProject(state: GameState, projectId: string): void {
+  const p = getProject(state, projectId)!
+  const priceUsd = Math.round(saleValueUsd(state, p))
+  const site = state.sites.find((s) => s.id === p.siteId)!
+  site.soldKw = (site.soldKw ?? 0) + p.kw
+  state.cash += priceUsd
+  state.bandwidth -= BALANCE.projects.bandwidth.sell
+  p.stage = 'sold'
+  p.soldQuarter = state.quarter
+  logEntry(state, 'log.project_sold', { n: p.n, priceUsd })
+}

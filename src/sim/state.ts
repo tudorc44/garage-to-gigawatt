@@ -46,6 +46,8 @@ export interface Site {
   region?: string
   /** Act II: kW left idle by a defaulted hosting client, which can be re-let with no conversion cost. */
   hostingReletKw?: number
+  /** Act II: kW sold with a live project (they belong to the buyer and leave the site's capacity). */
+  soldKw?: number
 }
 
 export type ContractType = 'fixed' | 'index'
@@ -434,6 +436,11 @@ export interface QuarterReport {
   aiRevenueUsd: number
   aiCostUsd: number
   lateDamagesUsd: number
+  /** The valuation's Act II parts at quarter end: projects under construction (capex spent), the
+   *  remaining contracted revenue (unweighted, as the top bar shows it) and its credit-weighted value. */
+  constructionUsd: number
+  backlogUsd: number
+  weightedBacklogUsd: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */

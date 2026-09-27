@@ -98,6 +98,8 @@ import {
   planProjectEvents,
   signTenant,
   buildBlocker,
+  sellBlocker,
+  sellProject,
   startBuild,
   useSpot,
 } from './systems/projects.ts'
@@ -167,6 +169,8 @@ export type Action =
   | { type: 'PROJECT_CANCEL'; projectId: string }
   /** Act II: every slot filled, start the build (1 Bandwidth, the capex paid now). */
   | { type: 'PROJECT_START'; projectId: string }
+  /** Act II: sell a live AI shell at its cap rate (2 Bandwidth); its MW go with it. */
+  | { type: 'PROJECT_SELL'; projectId: string }
   /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
   | { type: 'SELL_TREASURY'; coin: Coin; pct: number }
   /** Talk to the neighbours at a site: cash + 1 Bandwidth for goodwill (heat.json outreach). */
@@ -733,6 +737,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocker = buildBlocker(s, a.projectId)
       if (blocker) return blocker
       startBuild(s, a.projectId)
+      return
+    }
+
+    case 'PROJECT_SELL': {
+      const blocker = sellBlocker(s, a.projectId)
+      if (blocker) return blocker
+      sellProject(s, a.projectId)
       return
     }
 
