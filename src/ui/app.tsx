@@ -5,7 +5,7 @@ import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from '../sim/actions.ts'
 import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
-import { quarterName } from '../sim/selectors.ts'
+import { bandwidthMax, quarterName } from '../sim/selectors.ts'
 import { newGame, type GameState } from '../sim/state.ts'
 import { presetGame } from '../sim/preset.ts'
 import { restoreSave } from '../sim/save.ts'
@@ -71,13 +71,30 @@ export function App() {
 
   // Testing helpers for the browser console, in every build (dev, staging and the GitHub Pages
   // production build, at the owner's request):
-  //   g2g.setCash(500000)   g2g.state()   g2g.load(savedState)
+  //   g2g.setCash(500000)   g2g.state()   g2g.load(savedState)   g2g.bandwidth(8)   g2g.help()
   {
     window.g2g = {
       state: () => ref.current,
       setCash: (usd: number) => {
         if (ref.current) commit({ ...ref.current, cash: usd })
         return ref.current?.cash
+      },
+      bandwidth: (n?: number) => {
+        const s = ref.current
+        if (!s) return undefined
+        commit({ ...s, bandwidth: n ?? bandwidthMax(s) })
+        return ref.current?.bandwidth
+      },
+      help: () => {
+        const lines = [
+          'g2g.state()          the current game state',
+          'g2g.setCash(usd)     set cash, e.g. g2g.setCash(500000)',
+          "g2g.bandwidth(n?)    set this quarter's Bandwidth to n, or to the full maximum with no argument",
+          'g2g.load(state)      load a state (through the save loader)',
+          'g2g.help()           this list',
+        ]
+        console.log(lines.join('\n'))
+        return lines
       },
       load: (state: GameState) => {
         // Through the save loader, so older or hand-edited states get any missing fields.

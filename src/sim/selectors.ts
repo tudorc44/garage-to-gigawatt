@@ -22,7 +22,11 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { repairCostPerUnit, saleValueUsd } from './systems/machines.ts'
+import {
+  repairAllCost,
+  repairCostPerUnit,
+  saleValueUsd,
+} from './systems/machines.ts'
 import { valuationSplit } from './systems/valuation.ts'
 import {
   coinPrice,
@@ -453,6 +457,22 @@ export const MAX_INTERRUPTS = CONTENT.interrupts.maxPerQuarter
 
 export function getTierInfo(id: string) {
   return getTier(id)
+}
+
+/**
+ * "Fix all (N machines · $X)" on the Dashboard (M6.1): shown whenever a machine is broken; null
+ * otherwise. `blocker` says why it can't be done now (not enough cash: no partial repair).
+ */
+export function repairAllView(state: GameState) {
+  const v = repairAllCost(state)
+  if (v.units === 0) return null
+  const r = applyAction(state, { type: 'REPAIR_ALL' })
+  return { ...v, cashUsd: state.cash, blocker: r.ok ? null : r.error }
+}
+
+/** The full Bandwidth for this quarter (what a new quarter starts with; the console's g2g.bandwidth()). */
+export function bandwidthMax(state: GameState): number {
+  return bandwidthForQuarter(state)
 }
 
 /** Bandwidth this quarter started with (for "2 of 3 left" pips). */

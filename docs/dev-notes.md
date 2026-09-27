@@ -230,3 +230,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   next (mine: "2 quarters" counted from the audit's). SB6 per site on energized MW. SVB: arranged debt exempt (moot: project debt opens 2023Q3).
 - M6.0l: seed round `requires.min_quarters_operated: 1` (a report with mining revenue, any site incl. the garage). Goldens unchanged: every
   bot that raises the seed has mined a quarter first, so no Act I game changes.
+- M6.1: "Fix all (N machines · $X)" on the Dashboard to-do list (REPAIR_ALL, 0 BW like one repair, all or nothing; disabled "Need $X ·
+  you have $Y"); `g2g.bandwidth(n?)` and a new `g2g.help()` (every build, like the other helpers). Checked in the browser.

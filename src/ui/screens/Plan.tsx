@@ -9,6 +9,7 @@ import {
   SELL_TREASURY_BANDWIDTH,
   act2MarketView,
   fleetOfferView,
+  repairAllView,
   projectsView,
   auctionView,
   communityView,
@@ -748,6 +749,7 @@ function TodoPanel({
         }
         onClick={() => open('buy')}
       />
+      <FixAllRow state={state} act={act} />
       {state.machines.length > 0 ? (
         <ActionRow
           icon={broken > 0 ? 'failure' : 'sell'}
@@ -1001,6 +1003,35 @@ function HostingRow({
             : t('ui.plan.hosting_none')
       }
       onClick={() => open('hosting')}
+    />
+  )
+}
+
+/**
+ * "Fix all (N machines · $X)" (M6.1, both acts): whenever a machine is broken. Short of cash, it
+ * stays visible but disabled, with the reason as its subtitle (no partial repair).
+ */
+function FixAllRow({ state, act }: ScreenProps) {
+  const v = repairAllView(state)
+  if (!v) return null
+  const short = v.costUsd > v.cashUsd
+  return (
+    <ActionRow
+      icon="failure"
+      name={t('ui.fleet.fix_all', {
+        count: v.units,
+        cost: fmt.money(v.costUsd),
+      })}
+      price={
+        short
+          ? t('ui.fleet.fix_all_short', {
+              cost: fmt.money(v.costUsd),
+              cash: fmt.money(v.cashUsd),
+            })
+          : undefined
+      }
+      disabledReason={v.blocker ? say(v.blocker) : undefined}
+      onClick={() => act({ type: 'REPAIR_ALL' })}
     />
   )
 }

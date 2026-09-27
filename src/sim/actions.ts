@@ -28,6 +28,7 @@ import {
 import {
   addMachines,
   removeMachines,
+  repairAllCost,
   repairCostPerUnit,
 } from './systems/machines.ts'
 import { bidBlocker, closeAuction, placeBid } from './systems/auctions.ts'
@@ -296,6 +297,8 @@ export type Action =
   | { type: 'START_ACT_2'; lifeline?: 'take' | 'pass' }
   /** Act II: pay the lifeline's bridge loan off early (Plan phase). */
   | { type: 'REPAY_BRIDGE_LOAN' }
+  /** Repair every broken machine at once (M6.1; both acts): the sum of the normal repair costs. */
+  | { type: 'REPAIR_ALL' }
   /** sell_gpus_keep_btc's 2023Q1 distressed fleet, into this site's free power (1 Bandwidth). */
   | { type: 'BUY_DISTRESSED_FLEET'; siteId: string }
   /** Act II: bargain over a project's tenant offer or one of its lenders (2 Bandwidth, 3 rounds). */
@@ -477,6 +480,19 @@ function run(s: GameState, a: Action): Message | undefined {
         costUsd: cost,
       })
       lot.failed = 0
+      return
+    }
+
+    case 'REPAIR_ALL': {
+      // Every broken unit at once, at each one's normal repair cost; no Bandwidth, like one repair.
+      // All or nothing: no partial repair when cash is short.
+      const v = repairAllCost(s)
+      if (v.units === 0) return fail('error.nothing_to_repair')
+      if (v.costUsd > s.cash)
+        return fail('error.no_cash', { costUsd: v.costUsd, cashUsd: s.cash })
+      s.cash -= v.costUsd
+      for (const lot of s.machines) lot.failed = 0
+      logEntry(s, 'log.repaired_all', { count: v.units, costUsd: v.costUsd })
       return
     }
 

@@ -7,6 +7,20 @@ export function repairCostPerUnit(modelId: string): number {
   return CONTENT.interrupts.byId.failure_wave?.repair_cost_usd?.[modelId] ?? 0
 }
 
+/** "Fix all" (M6.1): every broken unit across your lots, and the sum of their normal repair costs. */
+export function repairAllCost(state: GameState): {
+  units: number
+  costUsd: number
+} {
+  let units = 0
+  let costUsd = 0
+  for (const lot of state.machines) {
+    units += lot.failed
+    costUsd += lot.failed * repairCostPerUnit(lot.model)
+  }
+  return { units, costUsd }
+}
+
 /** Adds bought units, merging into an identical lot if there is one. */
 export function addMachines(
   state: GameState,
