@@ -108,6 +108,13 @@ import {
 } from './systems/projects.ts'
 import { endQuarter, startNextQuarter } from './systems/quarter.ts'
 import {
+  dealAccept,
+  dealCounter,
+  dealNegotiationBlocker,
+  dealWalk,
+  startDealNegotiation,
+} from './systems/dealNegotiation.ts'
+import {
   applyHeadStart,
   buyFleet,
   fleetBlocker,
@@ -291,6 +298,17 @@ export type Action =
   | { type: 'REPAY_BRIDGE_LOAN' }
   /** sell_gpus_keep_btc's 2023Q1 distressed fleet, into this site's free power (1 Bandwidth). */
   | { type: 'BUY_DISTRESSED_FLEET'; siteId: string }
+  /** Act II: bargain over a project's tenant offer or one of its lenders (2 Bandwidth, 3 rounds). */
+  | {
+      type: 'DEAL_NEGOTIATE_START'
+      projectId: string
+      offerId?: string
+      debt?: 'project_debt' | 'ddtl'
+    }
+  /** Your ask: a tenant's price multiple (1.05 = 5% over the card) or a lender's rate cut (0.005). */
+  | { type: 'DEAL_COUNTER'; ask: number }
+  | { type: 'DEAL_ACCEPT' }
+  | { type: 'DEAL_WALK' }
 
 export type ActionResult =
   { ok: true; state: GameState } | { ok: false; error: Message }
@@ -311,7 +329,8 @@ function run(s: GameState, a: Action): Message | undefined {
   switch (a.type) {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
-      if (s.negotiation) return fail('error.negotiation_open')
+      if (s.negotiation || s.dealNegotiation)
+        return fail('error.negotiation_open')
       if (s.pitch) return fail('error.pitch_open')
       closeAuction(s)
       autoRenew(s)
@@ -766,6 +785,23 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'REPAY_BRIDGE_LOAN':
       return repayBridgeLoan(s)
+
+    case 'DEAL_NEGOTIATE_START': {
+      const target = { offerId: a.offerId, debt: a.debt }
+      const blocked = dealNegotiationBlocker(s, a.projectId, target)
+      if (blocked) return blocked
+      startDealNegotiation(s, a.projectId, target)
+      return
+    }
+
+    case 'DEAL_COUNTER':
+      return dealCounter(s, a.ask)
+
+    case 'DEAL_ACCEPT':
+      return dealAccept(s)
+
+    case 'DEAL_WALK':
+      return dealWalk(s)
 
     case 'BUY_DISTRESSED_FLEET': {
       const blocked = fleetBlocker(s, a.siteId)

@@ -166,6 +166,24 @@ export const BALANCE = {
     backstopWarrantValueShare: 0.4,
     /** Bandwidth: an equity raise 2 (scope §2.7); a JV or backstop deal 2 (mine, like negotiating). */
     bandwidth: { equity: 2, jv: 2, backstop: 2 },
+    /**
+     * Tenant and lender negotiation (A2-05 "Negotiate · 2 BW"; owner, 28 Sep 2026, M5 answer 8): 3
+     * rounds from the card's terms. A tenant's hidden limit is its card price + a share by type; a
+     * lender's is its rate − 0.75 point, never below SOFR + 1.5%. Asking past the limit in round 3:
+     * 15% the other side walks (the offer is gone this quarter).
+     */
+    dealNegotiation: {
+      bandwidth: 2,
+      rounds: 3,
+      tenantLimitByType: {
+        hyperscaler: 0.05,
+        neocloud_sub_tenant: 0.08,
+        ai_lab: 0.12,
+      } as Readonly<Record<string, number>>,
+      lenderCut: 0.0075,
+      lenderFloorOverSofr: 0.015,
+      walkChanceLastRound: 0.15,
+    },
     /** Foreclosure: this many quarters in a row of missed debt service on a project (scope §2.7). */
     foreclosureMissedQuarters: 2,
     /**

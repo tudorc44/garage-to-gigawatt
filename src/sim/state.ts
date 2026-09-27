@@ -4,6 +4,7 @@ import { BALANCE, CONTENT } from '../content/index.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
+import type { DealNegotiation } from './systems/dealNegotiation.ts'
 import type { InvestorPitch, PitchWalkaway } from './systems/pitch.ts'
 import type { MarketRead } from './systems/readMarket.ts'
 import { emptyEventState, type EventState } from './systems/eventEffects.ts'
@@ -191,6 +192,10 @@ export interface TenantOffer {
   readyByQuarters: number
   /** A GPU contract offer (an AI cloud): its term, and the ready-by buffer after the planned go-live. */
   gpu?: { termYears: number; bufferQuarters: number }
+  /** Its price × this, once negotiated up (M6.0i); missing = the card's price. */
+  priceMult?: number
+  /** The quarter it was negotiated and not signed (no second try that quarter). */
+  negotiatedQuarter?: number
 }
 
 /**
@@ -210,6 +215,8 @@ export interface ProjectTenant {
   prepaymentLeftUsd: number
   /** Quarters of the term already served (live). */
   servedQuarters: number
+  /** A shell lease's rent × this, negotiated before signing (M6.0i); missing = the card's rent. */
+  priceMult?: number
 }
 
 /**
@@ -247,7 +254,16 @@ export interface Project {
   /** The capital slot: closed with own cash covering whatever the chosen debt doesn't. */
   capital: 'cash' | null
   /** Debt chosen for the build (Act II capital, M4): drawn when it starts. Missing = none. */
-  debt?: { projectDebt: boolean; ddtl: boolean }
+  debt?: {
+    projectDebt: boolean
+    ddtl: boolean
+    /** A lender's rate cut won by negotiating (M6.0i), a fraction a year, by kind. */
+    aprCut?: Partial<Record<'project_debt' | 'ddtl', number>>
+    /** The quarter a lender walked away from a negotiation, or you did (no second try then), by kind. */
+    negotiatedQuarter?: Partial<Record<'project_debt' | 'ddtl', number>>
+    /** The quarter a lender walked away (that debt is off for the quarter), by kind. */
+    walkedQuarter?: Partial<Record<'project_debt' | 'ddtl', number>>
+  }
   /** A big-tech backstop on the lease (M4.6): the share it guarantees and the warrants it took. */
   backstop?: { leaseShare: number; warrantsShare: number; quarter: number }
   /**
@@ -383,6 +399,8 @@ export interface GameState {
   siteHeat: Record<string, SiteHeat>
   /** A power contract negotiation in progress (Plan phase only), or null. */
   negotiation: PowerNegotiation | null
+  /** Act II: a tenant or lender negotiation in progress (Plan phase only); missing = none (M6.0i). */
+  dealNegotiation?: DealNegotiation | null
   /** An investor pitch in progress (Plan phase only), or null. */
   pitch: InvestorPitch | null
   /** Funding rounds an investor walked away from (or you did): opening discount and lockout. */

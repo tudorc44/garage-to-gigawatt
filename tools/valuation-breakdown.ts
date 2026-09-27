@@ -12,7 +12,6 @@ import {
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import {
   annualContractUsd,
-  annualRentUsd,
   contractWeight,
   floorEligible,
   ownedShareOut,
@@ -68,11 +67,7 @@ function projectEbitdaYrUsd(state: GameState, p: Project): number {
   const ours = 1 - ownedShareOut(p)
   if (p.kind === 'shell') {
     if (!p.tenant) return 0
-    return (
-      annualRentUsd(tenantCard(p.tenant.card)!, p.kw) *
-      (1 - BALANCE.projects.shellOpexShare) *
-      ours
-    )
+    return annualContractUsd(p) * (1 - BALANCE.projects.shellOpexShare) * ours
   }
   const site = state.sites.find((s) => s.id === p.siteId)
   const power = site

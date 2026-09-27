@@ -210,3 +210,5 @@ None open (all 19 answered 28 Sep 2026). New ones from M6 will go in the M6 repo
   2026Q2, the angriest region ≥ 50): wait = 4-quarter regional moratorium on opening/starting projects, lobby = −2 BW next and 2 quarters (mine).
 - M6.0h: regions.json effects: Georgia +$0.005 (2026Q1); Ohio +$0.005 and `project_reservation_share` 0.85 (building MW of projects started
   from 2026Q2; mine: not idle MW, not grid/gas-powered builds); Arizona `project_capex_mult` 1.05 (all of capex). ec10 hits Virginia + Ohio only.
+- M6.0i: `dealNegotiation.ts` (DEAL_NEGOTIATE_START/COUNTER/ACCEPT/WALK; "Negotiate · 2 BW" on Deal-builder offers and debt rows + panel).
+  Mine: fixed limits (no random draw); a GPU contract's $/GPU-hr × the won multiple; lender walk = that debt off this quarter.

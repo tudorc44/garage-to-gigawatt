@@ -7,6 +7,7 @@ import type { Action } from '../../sim/actions.ts'
 import {
   PROJECT_COLUMNS,
   dealCapitalView,
+  dealNegotiationView,
   dealView,
   openProjectView,
   projectsView,
@@ -519,22 +520,35 @@ function CapitalRows(
       </td>
       <td class="r">
         {!row.blocker && (
-          <button
-            type="button"
-            class="btn"
-            disabled={!!row.toggle}
-            title={row.toggle ? say(row.toggle) : undefined}
-            onClick={() =>
-              act({
-                type: 'PROJECT_DEBT',
+          <span class="raise-options">
+            <BwButton
+              label={t('ui.deal.negotiate')}
+              bw={2}
+              action={{
+                type: 'DEAL_NEGOTIATE_START',
                 projectId: p.id,
                 debt: row.kind,
-                on: !row.on,
-              })
-            }
-          >
-            {row.on ? t('ui.deal.cap.remove') : t('ui.deal.cap.use')}
-          </button>
+              }}
+              state={state}
+              act={act}
+            />
+            <button
+              type="button"
+              class="btn"
+              disabled={!!row.toggle}
+              title={row.toggle ? say(row.toggle) : undefined}
+              onClick={() =>
+                act({
+                  type: 'PROJECT_DEBT',
+                  projectId: p.id,
+                  debt: row.kind,
+                  on: !row.on,
+                })
+              }
+            >
+              {row.on ? t('ui.deal.cap.remove') : t('ui.deal.cap.use')}
+            </button>
+          </span>
         )}
       </td>
     </tr>
@@ -678,6 +692,108 @@ function CapitalRows(
   )
 }
 
+/**
+ * A tenant or lender negotiation in progress on this project (M6.0i): the card's terms, their
+ * current offer, the rounds so far, and your next ask (as % over the card's price, or points off
+ * the rate), accept or walk away. Hidden when there's none.
+ */
+function NegotiationPanel(props: ScreenProps & { projectId: string }) {
+  const { state, act } = props
+  const v = dealNegotiationView(state)
+  const tenant = v?.side === 'tenant'
+  // The ask as the player types it: % over the card (tenant) or points off (lender).
+  const step = tenant ? 1 : 0.05
+  const [ask, setAsk] = useState(tenant ? 6 : 0.5)
+  if (!v || v.projectId !== props.projectId) return null
+  const shown = (x: number) =>
+    tenant
+      ? fmt.pct(x - 1, 1)
+      : t('ui.deal.neg.points', { n: (x * 100).toFixed(2) })
+  const value = tenant ? 1 + ask / 100 : ask / 100
+  return (
+    <div class="deal-panel">
+      <div class="label">
+        {t('ui.deal.neg.title', {
+          who: v.card ? tenantName(v.card) : t(`ui.deal.cap.${v.debt!}`),
+          round: Math.min(v.round + 1, v.rounds),
+          rounds: v.rounds,
+        })}
+      </div>
+      <div class="num-s">
+        {tenant
+          ? t('ui.deal.neg.tenant_offer', {
+              base: fmt.money(v.baseAnnualUsd ?? 0),
+              offer: shown(v.offer),
+              annual: fmt.money((v.baseAnnualUsd ?? 0) * v.offer),
+            })
+          : t('ui.deal.neg.lender_offer', {
+              base: fmt.pct(v.baseApr ?? 0, 2),
+              offer: shown(v.offer),
+              rate: fmt.pct((v.baseApr ?? 0) - v.offer, 2),
+            })}
+      </div>
+      {v.history.map((h, i) => (
+        <div class="num-s muted" key={i}>
+          {t('ui.deal.neg.history', {
+            n: i + 1,
+            ask: shown(h.ask),
+            reply: t(`ui.deal.neg.reply.${h.reply}`),
+          })}
+        </div>
+      ))}
+      <div class="row-between">
+        {!v.final ? (
+          <span class="raise-options">
+            <label class="num-s">
+              {tenant
+                ? t('ui.deal.neg.ask_tenant')
+                : t('ui.deal.neg.ask_lender')}{' '}
+              <input
+                type="number"
+                min={0}
+                step={step}
+                value={ask}
+                style={{ width: '5em' }}
+                onInput={(e) =>
+                  setAsk(Number((e.target as HTMLInputElement).value))
+                }
+              />
+            </label>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={() => act({ type: 'DEAL_COUNTER', ask: value })}
+            >
+              {t('ui.deal.neg.counter')}
+            </button>
+          </span>
+        ) : (
+          <span class="num-s muted">{t('ui.deal.neg.final')}</span>
+        )}
+        <span class="raise-options">
+          <button
+            type="button"
+            class="btn"
+            onClick={() => act({ type: 'DEAL_ACCEPT' })}
+          >
+            {t('ui.deal.neg.accept')}
+          </button>
+          <button
+            type="button"
+            class="btn"
+            onClick={() => act({ type: 'DEAL_WALK' })}
+          >
+            {t('ui.deal.neg.walk')}
+          </button>
+        </span>
+      </div>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.deal.neg.rules')}
+      </p>
+    </div>
+  )
+}
+
 // ---------- the Deal builder (A2-05) ----------
 
 function DealBuilder(
@@ -707,6 +823,8 @@ function DealBuilder(
         </span>
         <SlotChips card={card} />
       </div>
+
+      <NegotiationPanel state={state} act={act} projectId={p.id} />
 
       <div class="deal-panel">
         <div class="label">{t('ui.deal.power')} ✓</div>
@@ -766,17 +884,30 @@ function DealBuilder(
                       <span class="tag">{o.rating}</span>{' '}
                       <span class="num-s muted">{tenantType(o.type)}</span>
                     </strong>
-                    <BwButton
-                      label={t('ui.deal.accept')}
-                      bw={0}
-                      action={{
-                        type: 'PROJECT_SIGN_TENANT',
-                        projectId: p.id,
-                        offerId: o.offer.id,
-                      }}
-                      state={state}
-                      act={act}
-                    />
+                    <span class="raise-options">
+                      <BwButton
+                        label={t('ui.deal.negotiate')}
+                        bw={2}
+                        action={{
+                          type: 'DEAL_NEGOTIATE_START',
+                          projectId: p.id,
+                          offerId: o.offer.id,
+                        }}
+                        state={state}
+                        act={act}
+                      />
+                      <BwButton
+                        label={t('ui.deal.accept')}
+                        bw={0}
+                        action={{
+                          type: 'PROJECT_SIGN_TENANT',
+                          projectId: p.id,
+                          offerId: o.offer.id,
+                        }}
+                        state={state}
+                        act={act}
+                      />
+                    </span>
                   </div>
                   <div class="num-s">
                     {o.gpuUsdHr === null

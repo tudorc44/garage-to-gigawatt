@@ -77,6 +77,12 @@ import { eventBodyKey } from './systems/events.ts'
 import { lifelineTerms } from './systems/lifeline.ts'
 import { angerHeat, regionAnger, regionMoratoriumOn } from './systems/anger.ts'
 import {
+  DEAL_NEGOTIATION,
+  dealNegotiationCard,
+} from './systems/dealNegotiation.ts'
+import { debtOffer } from './systems/facilities.ts'
+import { dealView as dealViewOf } from './projectViews.ts'
+import {
   fleetBlocker,
   fleetOffer,
   fleetUnitsFor,
@@ -977,6 +983,41 @@ export function carryOver(state: GameState) {
       premiumFrom: BALANCE.headStarts.holdAndWait.premiumQuarters[0],
       premiumTo: BALANCE.headStarts.holdAndWait.premiumQuarters[1],
     },
+  }
+}
+
+/**
+ * A tenant or lender negotiation in progress (M6.0i) as the Deal builder shows it, or null: what is
+ * being bargained over, the card's terms, their current offer and your asks so far. Never the limit.
+ * A tenant's values are price multiples of the card (1.05 = +5%); a lender's are rate cuts (0.005).
+ */
+export function dealNegotiationView(state: GameState) {
+  const n = state.dealNegotiation
+  if (!n) return null
+  const p = state.projects.find((x) => x.id === n.projectId)
+  if (!p) return null
+  const card = dealNegotiationCard(state)
+  const offer = card ? p.offers.find((o) => o.id === n.offerId) : undefined
+  const offerView = offer
+    ? dealViewOf(state, p.id)?.offers.find((o) => o.offer.id === offer.id)
+    : undefined
+  const debtApr =
+    n.side === 'lender' && n.debt
+      ? debtOffer(state, p, n.debt).apr + (p.debt?.aprCut?.[n.debt] ?? 0)
+      : null
+  return {
+    projectId: p.id,
+    side: n.side,
+    card,
+    debt: n.debt ?? null,
+    /** The card's yearly contract (tenant) or rate (lender), before negotiating. */
+    baseAnnualUsd: offerView?.annualUsd ?? null,
+    baseApr: debtApr,
+    offer: n.offer,
+    round: n.round,
+    rounds: DEAL_NEGOTIATION.rounds,
+    final: n.final,
+    history: n.history,
   }
 }
 

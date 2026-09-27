@@ -176,7 +176,7 @@ export function annualContractUsd(p: Project): number {
   const t = p.tenant
   if (!t) return 0
   if (t.gpu) return t.gpu.gpus * t.gpu.priceUsdHr * 24 * 365
-  return annualRentUsd(tenantCard(t.card)!, p.kw)
+  return annualRentUsd(tenantCard(t.card)!, p.kw) * (t.priceMult ?? 1)
 }
 
 /** A signed tenant's term in quarters. */
@@ -500,7 +500,8 @@ export function signTenant(
   const card = offer && tenantCard(offer.card)
   if (!offer || !card) return { key: 'error.unknown_offer' }
   if (offer.gpu) return signGpuContract(state, p, offer, card)
-  const contractUsd = annualRentUsd(card, p.kw) * card.termYears
+  const mult = offer.priceMult ?? 1
+  const contractUsd = annualRentUsd(card, p.kw) * mult * card.termYears
   const prepaymentUsd = Math.round(contractUsd * card.prepaymentShare)
   p.tenant = {
     card: card.id,
@@ -510,6 +511,7 @@ export function signTenant(
     walkRolled: false,
     prepaymentLeftUsd: prepaymentUsd,
     servedQuarters: 0,
+    ...(mult !== 1 ? { priceMult: mult } : {}),
   }
   p.offers = []
   state.cash += prepaymentUsd
@@ -518,7 +520,7 @@ export function signTenant(
   logEntry(state, 'log.tenant_signed', {
     n: p.n,
     tenant: card.id,
-    rentUsd: annualRentUsd(card, p.kw),
+    rentUsd: annualRentUsd(card, p.kw) * mult,
     years: card.termYears,
     quarter: CONTENT.quarters[p.tenant.readyByQuarter] ?? '—',
     prepaymentUsd,
@@ -540,8 +542,9 @@ function signGpuContract(
   card: TenantCard,
 ): Message | undefined {
   const terms = offer.gpu!
-  const priceUsdHr = gpuContractUsdHr(p.gpu!, terms.termYears, state.quarter)
-  if (priceUsdHr === undefined) return { key: 'error.unknown_offer' }
+  const cardUsdHr = gpuContractUsdHr(p.gpu!, terms.termYears, state.quarter)
+  if (cardUsdHr === undefined) return { key: 'error.unknown_offer' }
+  const priceUsdHr = cardUsdHr * (offer.priceMult ?? 1)
   const gpus =
     p.stage === 'proposed' ? projectCapex(state, p).gpuCount : p.gpuCount
   p.tenant = {
@@ -824,7 +827,7 @@ export function settleProjectsWeek(
         : 1
     if (p.kind === 'shell') {
       if (!p.tenant) continue
-      rev = (annualRentUsd(tenantCard(p.tenant.card)!, p.kw) / 52) * labMult
+      rev = (annualContractUsd(p) / 52) * labMult
       cost = rev * b.shellOpexShare
       const setOff = Math.min(p.tenant.prepaymentLeftUsd, rev)
       p.tenant.prepaymentLeftUsd -= setOff
@@ -1110,7 +1113,7 @@ export function projectedReturn(state: GameState, p: Project) {
   if (p.kind === 'shell') {
     if (p.tenant) {
       const card = tenantCard(p.tenant.card)!
-      revenueUsd = annualRentUsd(card, p.kw)
+      revenueUsd = annualContractUsd(p)
       ebitdaUsd = revenueUsd * (1 - b.shellOpexShare)
       quarters = Array<number>(card.termYears * 4).fill(ebitdaUsd / 4)
     }
@@ -1324,9 +1327,7 @@ export function capRate(quarter: number, kw: number): number {
 /** What a buyer pays for a live shell: its net operating income / the cap rate, less the prepayment it takes on. */
 export function saleValueUsd(state: GameState, p: Project): number {
   if (!p.tenant) return 0
-  const noi =
-    annualRentUsd(tenantCard(p.tenant.card)!, p.kw) *
-    (1 - BALANCE.projects.shellOpexShare)
+  const noi = annualContractUsd(p) * (1 - BALANCE.projects.shellOpexShare)
   return (
     (noi / capRate(state.quarter, p.kw)) * (1 - ownedShareOut(p)) -
     p.tenant.prepaymentLeftUsd

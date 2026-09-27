@@ -49,6 +49,8 @@ export function debtBlocker(
     return { key: 'error.debt_early', params: { quarter: from } }
   if (debtFrozen(state)) return { key: 'error.debt_frozen' }
   if (p.stage !== 'proposed') return { key: 'error.project_started' }
+  if (p.debt?.walkedQuarter?.[kind] === state.quarter)
+    return { key: 'error.lender_walked' }
   const rating = tenantRating(p)
   if (kind === 'project_debt') {
     if (p.kind === 'pilot') return { key: 'error.debt_no_tenant' }
@@ -78,6 +80,26 @@ export interface DebtOffer {
   rating: string
 }
 
+/**
+ * A kind of debt's rate before any negotiation: project debt at the quarter's rate; a DDTL at its
+ * spread by tenant credit, less the Capital Markets Lead's cut (M5.7), plus a card's widening (M5.8).
+ */
+export function lenderAprUsual(
+  state: GameState,
+  kind: DebtKind,
+  ig: boolean,
+): number {
+  if (kind === 'project_debt') return projectDebtRate(state.quarter)
+  return (
+    ddtlRate(state.quarter, ig) -
+    Math.min(
+      spreadCut(state),
+      ddtlRate(state.quarter, ig) - sofr(state.quarter),
+    ) +
+    state.events.spreadAddBps / 10_000
+  )
+}
+
 /** What each kind of debt would lend on this project (before the DSCR trim). */
 export function debtOffer(
   state: GameState,
@@ -105,16 +127,7 @@ export function debtOffer(
     blocker: debtBlocker(state, p, kind) ?? null,
     capUsd: base * share,
     share,
-    apr:
-      kind === 'project_debt'
-        ? projectDebtRate(state.quarter)
-        : // The Capital Markets Lead cuts the DDTL's spread (M5.7); a card can widen it (M5.8).
-          ddtlRate(state.quarter, ig) -
-          Math.min(
-            spreadCut(state),
-            ddtlRate(state.quarter, ig) - sofr(state.quarter),
-          ) +
-          state.events.spreadAddBps / 10_000,
+    apr: lenderAprUsual(state, kind, ig) - (p.debt?.aprCut?.[kind] ?? 0),
     tenorQuarters: Math.max(1, contractQuarters(p)),
     // Secured debt on a strong tenant rates A even when the company doesn't (doc 18 §7.2).
     rating: strong ? 'A' : (rating.split(/[\s/(]/)[0] ?? ''),
