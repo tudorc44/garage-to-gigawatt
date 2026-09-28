@@ -1400,6 +1400,145 @@ td.wrap {
   gap: var(--space-2);
 }
 
+/* The prologue's Plan screen (P0-03): three columns. */
+.p0-plan {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  min-height: 0;
+  align-items: start;
+  overflow: auto;
+}
+.p0-plan .col,
+.p0-dash .col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.p0-plan .panel {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.p0-two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+.p0-two > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.p0-tile {
+  padding: var(--space-2) var(--space-3);
+  gap: 2px;
+}
+.p0-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.p0-table th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--ink-muted);
+  border-bottom: var(--border-hair) solid var(--line);
+}
+.p0-table td {
+  padding: 2px 0;
+}
+.p0-bar {
+  height: 8px;
+  background: var(--panel-sunk);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.p0-bar i {
+  display: block;
+  height: 100%;
+  background: var(--ink);
+}
+.p0-bar i.danger {
+  background: repeating-linear-gradient(
+    135deg,
+    var(--heat-3) 0 4px,
+    transparent 4px 7px
+  );
+}
+.p0-chart {
+  width: 100%;
+  height: auto;
+}
+.p0-chart .axis {
+  font: var(--text-num-s, 10px monospace);
+  font-size: 9px;
+  fill: var(--ink-muted);
+}
+.p0-chart .s-wallet {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.75;
+}
+.p0-chart .s-exchange {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 1.5;
+  stroke-dasharray: 4 3;
+}
+/* Pre-order odds (P0-06): light (good) to dark (bad), never red / green. */
+.p0-odds {
+  display: flex;
+  height: 12px;
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-1);
+  overflow: hidden;
+}
+.p0-odds i {
+  display: block;
+  height: 100%;
+}
+.o-on_time {
+  background: var(--panel-sunk);
+}
+.o-late {
+  background: var(--line);
+}
+.o-very_late {
+  background: var(--ink-muted);
+}
+.o-never {
+  background: var(--ink);
+}
+.p0-odds-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.p0-odds-legend .sw {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 4px;
+  border: var(--border-hair) solid var(--line);
+  vertical-align: middle;
+}
+.p0-preorders {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+.p0-card {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.chapter-card.p0-wide {
+  width: min(1120px, 100%);
+}
+
 /* The prologue's intro (P0-02): the PC drawing beside the story. */
 .p0-intro {
   display: grid;

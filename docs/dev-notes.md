@@ -414,6 +414,11 @@ nav Dashboard · Machines & Rooms · Coins · Log, sinks in "This quarter") · P
 · P6.4 timed auto-play (P0-04) · P6.5 chapter report (P0-07) + handover (P0-08) · P6.6 the P6 report.
 - P6.1: title (Continue with its tag, New career ▾ opening the 2009 / 2017 cards, Act II's preset kept as a third
   line, saved careers with Prologue / Act I / Act II tags incl. the Start of Act II slot); intro (date, PC drawing).
+- P6.2–P6.3: screens split into src/ui/screens/prologue/ (common, Plan, Machines, Coins, Preorders, Live, End). Plan in
+  three columns (rig table, household bars hatched in danger, solo / pool odds, market sparklines, coins tiles with the
+  backup on the wallet, keep / sell + the selling-limit sentence, "This quarter" with all sinks, offers ≤ 2); the Life
+  section is gone; Coins & custody (history chart, move / sell, backup status, risks, lost-coins ledger); the pre-order
+  dialog (cards, odds bars light → dark). New read-only views: market, pool week, coins history, lost ledger.
 
 ## Combined report: M7.0 (act2) + P5.0 (prologue), 28 Sep 2026
 

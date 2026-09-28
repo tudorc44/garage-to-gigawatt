@@ -2,7 +2,7 @@
 // dispatches actions; it works out no rules of its own.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import type { GameState } from '../state.ts'
+import type { Coin, GameState } from '../state.ts'
 import { buyPrice, getModel, marketWeek } from '../systems/market.ts'
 import { saleValueUsd } from '../systems/machines.ts'
 import { movable, openOffers, sellable } from './custody.ts'
@@ -71,6 +71,48 @@ export function soloOdds(state: GameState): {
       params: { n: Math.max(1, Math.round(1 / lambda / 52)) },
     }
   return { blocksPerWeek: lambda, words }
+}
+
+/**
+ * The Plan screen's market panel (wireframe P0-03): BTC's price and the difficulty at the end of each of
+ * the last 4 quarters and now, with this week's change on the quarter before.
+ */
+export function prologueMarketView(state: GameState) {
+  const now = nowWeek(state)
+  const first = CONTENT.acts.find((a) => a.act === 0)!.firstQuarter
+  const points: { btcUsd: number; difficulty: number }[] = []
+  for (let k = 4; k >= 1; k--) {
+    const q = state.quarter - k
+    if (q < first) continue
+    const w = marketWeek(q, BALANCE.weeksPerQuarter - 1)
+    points.push({ btcUsd: w.btc_usd, difficulty: w.btc_difficulty_T * 1e12 })
+  }
+  points.push({ btcUsd: now.btc_usd, difficulty: now.btc_difficulty_T * 1e12 })
+  const before = points.length > 1 ? points[points.length - 2] : null
+  const change = (a: number, b: number | undefined) =>
+    b !== undefined && b > 0 ? a / b - 1 : null
+  return {
+    points,
+    btcUsd: now.btc_usd,
+    /** The network's hashrate this week, in TH/s (what solo odds and pool shares are against). */
+    networkTh: now.btc_hashrate_EHs * 1e6,
+    difficulty: now.btc_difficulty_T * 1e12,
+    btcChange: change(now.btc_usd, before?.btcUsd),
+    difficultyChange: change(now.btc_difficulty_T * 1e12, before?.difficulty),
+  }
+}
+
+/** What a pool would pay you a week at this week's network (BTC, after the fee), and a block's worth. */
+export function poolWeekBtc(state: GameState): {
+  btc: number
+  perBlock: number
+} {
+  const w = nowWeek(state)
+  const perBlock = w.btc_block_subsidy / Math.max(0.01, 1 - w.btc_fee_share)
+  return {
+    btc: soloOdds(state).blocksPerWeek * perBlock * (1 - poolFee(state.quarter)),
+    perBlock,
+  }
 }
 
 /** Everything the prologue's screens show about the company now. */
@@ -321,6 +363,45 @@ export function prologueChapterView(state: GameState) {
     vanity: [...p.vanity],
     preorders: p.preorders.map((o) => ({ vendor: o.vendor, outcome: o.outcome })),
     machines: state.machines.map((l) => ({ model: l.model, count: l.count })),
+  }
+}
+
+/** Coins & custody's history (wireframe P0-05): BTC in the wallet and on the exchange at each quarter end. */
+export function prologueCoinsHistory(state: GameState) {
+  return state.prologue!.reports.map((r) => ({
+    quarter: r.quarter,
+    wallet: Math.max(0, r.treasury.BTC - r.onExchange.BTC),
+    exchange: r.onExchange.BTC,
+  }))
+}
+
+/**
+ * The lost-coins ledger (wireframe P0-05): every loss with its quarter, coins, cause and value at the
+ * time (from the log: lost wallets, the Mt Gox collapse, the Bitfinex hack).
+ */
+export function prologueLostLedger(state: GameState) {
+  const causes: Record<string, 'wallet' | 'gox' | 'bitfinex'> = {
+    'log.p0_wallet_lost': 'wallet',
+    'log.p0_gox_collapse': 'gox',
+    'log.p0_bitfinex': 'bitfinex',
+  }
+  const rows = state.log
+    .filter((e) => e.key in causes)
+    .map((e) => {
+      const coin = (e.params?.coin as Coin) ?? 'BTC'
+      const amount = Number(e.params?.amount ?? 0)
+      const w = marketWeek(e.quarter, Math.max(0, (e.week ?? 1) - 1))
+      return {
+        quarter: label(e.quarter),
+        coin,
+        amount,
+        cause: causes[e.key],
+        valueUsd: amount * (coin === 'BTC' ? w.btc_usd : w.eth_usd),
+      }
+    })
+  return {
+    rows,
+    totalBtc: rows.filter((r) => r.coin === 'BTC').reduce((n, r) => n + r.amount, 0),
   }
 }
 
