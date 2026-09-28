@@ -85,7 +85,9 @@ export function restoreSave(raw: unknown): Loaded {
     !Array.isArray(data.machines) ||
     !Array.isArray(data.reports) ||
     !Array.isArray(data.log) ||
-    !actFitsQuarter(data.act, data.quarter)
+    !actFitsQuarter(data.act, data.quarter) ||
+    // A prologue game carries its own state (Alpha 0.3).
+    (data.act === 0 && !isObject(data.prologue))
   )
     return bad
   const fresh = newGame(data.seed)

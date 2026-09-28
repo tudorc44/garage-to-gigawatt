@@ -1,7 +1,8 @@
 // The prologue's screens (Alpha 0.3 §2.13; Act 0): the intro, the Plan phase, the live quarter
 // (auto-played quarters run by themselves), the quarter report or its one-card summary, and the
 // prologue's chapter report before Act I. Functional first (P1); the full screens follow in P3.
-import { useEffect } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
+import { SaveDialog } from '../components/saves.tsx'
 import { hasText, t, tDynamic } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import { prologueCard } from '../../sim/prologue/events.ts'
@@ -57,11 +58,25 @@ function Intro({ act }: PrologueProps) {
   )
 }
 
+/** Save / load / export / import, as in Act I. */
+function SaveButton() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <button type="button" class="btn" onClick={() => setOpen(true)}>
+        {t('ui.save.title')}
+      </button>
+      {open && <SaveDialog onClose={() => setOpen(false)} />}
+    </>
+  )
+}
+
 /** The company at a glance: the quarter, cash, coins and where they are, the price. */
 function Header({ state }: { state: GameState }) {
   const v = prologueView(state)
   return (
     <div class="row-between">
+      <SaveButton />
       <span class="num-s">
         {t('ui.p0.header', {
           quarter: fmt.quarter(v.quarter),

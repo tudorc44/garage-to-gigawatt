@@ -4,6 +4,7 @@ import { applyAction } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { playFrom, playGame, replay } from '../../src/sim/replay.ts'
 import { SAVE_VERSION, restoreSave } from '../../src/sim/save.ts'
+import { newPrologueGame } from '../../src/sim/prologue/setup.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import {
@@ -227,7 +228,7 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
   })
 
   it('accepts an act-0 (prologue) save only inside the prologue’s quarters', () => {
-    const p = { ...newGame(7), act: 0 as const, quarter: -20 }
+    const p = { ...newPrologueGame(7), quarter: -20 }
     expect(restoreSave(p).ok).toBe(true)
     expect(restoreSave({ ...p, quarter: 3 }).ok).toBe(false)
     expect(restoreSave({ ...p, quarter: -40 }).ok).toBe(false)

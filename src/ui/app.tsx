@@ -61,7 +61,9 @@ export function App() {
     )
       writeSlot('autosave', s)
     // "Start of Act II": its own slot, saved when the game reaches the Act II intro (scope 0.2 §2.1).
-    if (s?.phase === 'intro' && before?.phase !== 'intro') writeSlot('act2', s)
+    // (The prologue's intro is act 0's: not this slot.)
+    if (s?.phase === 'intro' && s.act === 2 && before?.phase !== 'intro')
+      writeSlot('act2', s)
   }
   const saves: SaveApi = {
     current: () => ref.current,
