@@ -166,3 +166,8 @@ log text and docs only). `m8` had been deleted after the M8 merge and was recrea
   `m8`), so nothing is left on act2 and there is no question to ask.
 - M8.7b: the stabilized-IG EV/MW band is $18–28M (was $27M): tools/sim-runner.ts, tools/valuation-breakdown.ts comment, both scope
   0.2 copies (with the reason: asic-retirer's $27.1M is a 0.4% measurement edge). Announced-AI ($3–15M) and mining ($0.4–1.2M) unchanged.
+- M8.7c: the hosting bot keeps a reserve of one quarter of costs (`quarterCostsUsd` in tools/bots.ts: salaries, power reservation and loan
+  service from the sim's own weekly functions on a copy of the state, ×13, plus rent). The Merge's conversion spends all cash (a game rule,
+  unchanged), so the bot rebuilds the reserve in its first Plan phases with an equity raise, "at least the reserve" because a raise is ≥ 8%
+  (mine, reversible). 20 runs: busts 4 → 2 (1 inside 2022Q4–2023Q1), median $474.5M; full sim: matching bot $469M (others' median $375.3M,
+  within 30%), 3/4 distinct best openings, no other bot changed. A human can choose the same reserve or go all-in (a legitimate risk: rule stays).

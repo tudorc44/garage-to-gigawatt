@@ -11,7 +11,13 @@ import {
   siteHeatValue,
   underMoratorium,
 } from '../src/sim/systems/heat.ts'
-import { collateralUsd, maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
+import {
+  collateralUsd,
+  maxEquipmentLoanUsd,
+  payLoanWeek,
+} from '../src/sim/systems/loans.ts'
+import { paySalariesWeek } from '../src/sim/systems/hires.ts'
+import { payReservationWeek } from '../src/sim/systems/mwUse.ts'
 import { repairCostPerUnit, saleValueUsd } from '../src/sim/systems/machines.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { buyCapKw, hostingView } from '../src/sim/selectors.ts'
@@ -1355,6 +1361,25 @@ function opening(
   }
 }
 
+/**
+ * One quarter of costs, read from the game rather than typed in: a week of salaries, of the power
+ * reservation on idle and building MW, and of loan service (equipment, construction, bridge), each
+ * taken from the sim's own weekly functions on a copy of the state and times the weeks in a quarter,
+ * plus the sites' rent for the quarter. (Debt service on project facilities isn't in it: they only
+ * exist once a project is built.)
+ */
+export function quarterCostsUsd(state: GameState): number {
+  const weekly = <T>(pay: (s: GameState) => T): T => pay(structuredClone(state))
+  const loans = weekly(payLoanWeek)
+  const perWeek =
+    weekly(paySalariesWeek) +
+    weekly(payReservationWeek) +
+    loans.interestUsd +
+    loans.principalUsd
+  const rent = state.sites.reduce((sum, s) => sum + s.rentUsdQ, 0)
+  return perWeek * BALANCE.weeksPerQuarter + rent
+}
+
 export const HEAD_START_OPENINGS: Record<string, Strategy> = {
   'open-pilot': opening('gpu_cloud', '2023Q3', (now, run) => {
     const s0 = now()
@@ -1401,6 +1426,10 @@ export const HEAD_START_OPENINGS: Record<string, Strategy> = {
   // Before 2023Q3 it re-lets any MW a winter client defaulted on (free, else the company sits at $0 with
   // idle MW and busts); from 2023Q3 it ends hosting contracts when ending is free (a renewed term's first
   // quarter) so the shells the guaranteed AA offer waits for have room.
+  // M8.7c: it also keeps a cash reserve of one quarter of costs (quarterCostsUsd). The Merge's conversion
+  // is a game rule that spends every dollar of cash on hosting halls, so the bot rebuilds the reserve in
+  // its first Plan phases with an equity raise (mine, reversible: at least the reserve, since a raise is
+  // 8% or more). A player can do the same, or go all-in and carry the risk.
   'open-shell': opening('hosting', '2023Q3', (now, run) => {
     const label = CONTENT.quarters[now().quarter]
     if (label < '2023Q3') {
@@ -1408,6 +1437,16 @@ export const HEAD_START_OPENINGS: Record<string, Strategy> = {
         const kw = Math.floor(reletKw(now(), site.id))
         if (kw > 0) run({ type: 'HOST_START', siteId: site.id, kw })
       }
+      const need = quarterCostsUsd(now()) - now().cash
+      const pre = equityPreMoneyUsd(now())
+      if (need > 0 && pre > 0)
+        run({
+          type: 'RAISE_EQUITY',
+          dilution: Math.min(
+            dilutionRange()[1],
+            Math.max(dilutionRange()[0], need / (pre + need)),
+          ),
+        })
       return
     }
     for (const h of [...now().hosting])
