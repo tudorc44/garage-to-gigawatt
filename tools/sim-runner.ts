@@ -41,10 +41,11 @@ const argValue = (flag: string, fallback: string) => {
 const SEEDS = Number(argValue('--seeds', '50'))
 /**
  * Scope 0.2 §5 good path at 2026Q4 (also the preset's yardstick, owner M7.0 answer A6), and the great
- * path's 2025 peak band.
+ * path's 2025 peak band. Revised by the owner's A1 rule (M7.0): sign-then-raise ended at $412M, under
+ * $700M, so good $1–3B → $0.5–2B and great $10B+ → $4–8B.
  */
-const GOOD_BAND: [number, number] = [1e9, 3e9]
-const GREAT_PEAK_MIN = 10e9
+const GOOD_BAND: [number, number] = [0.5e9, 2e9]
+const GREAT_PEAK: [number, number] = [4e9, 8e9]
 const OUT = argValue('--out', 'sim-output')
 /** Target B1: the cash a small unit needs. */
 const B1_CASH = 35_000
@@ -897,8 +898,8 @@ if (args.includes('--act2')) {
       `  Hosting vs staying in mining (hosting-switcher vs raise-climb, same seeds, value at 2026Q4): hosting ahead in ${wins}/${pairs.length} runs (scope 0.2 §5: should be ≤ ~60%)`,
     )
   }
-  // Scope 0.2 §5 good and great paths: the good path ends 2026Q4 at ~$1–3B; the great path peaks at
-  // $10B+ in 2025 and survives 2026 with ≥ 12 months (4 quarters) of runway.
+  // Scope 0.2 §5 good and great paths (bands revised in M7.0, see GOOD_BAND): the good path's 2026Q4
+  // value; the great path's 2025 peak, surviving 2026 with ≥ 12 months (4 quarters) of runway.
   for (const name of ['shell-capital', 'sign-then-raise']) {
     const runs = runsOf(name)
     if (!runs) continue
@@ -940,14 +941,16 @@ if (args.includes('--act2')) {
     }).length
     if (name === 'asic-retirer')
       s5.push({
-        target: `Great path peaks ${usd(GREAT_PEAK_MIN)}+ in 2025, survives 2026 with ≥ 12 months runway`,
+        target: `Great path peaks ${usd(GREAT_PEAK[0])}–${usd(GREAT_PEAK[1])} in 2025, survives 2026 with ≥ 12 months runway`,
         result: verdict(
-          median(peak2025) >= GREAT_PEAK_MIN && survivors >= runs.length / 2,
+          median(peak2025) >= GREAT_PEAK[0] &&
+            median(peak2025) <= GREAT_PEAK[1] &&
+            survivors >= runs.length / 2,
         ),
         numbers: `${name}: 2025 peak median ${usd(median(peak2025))}; ≥ 4 q runway at 2026Q4 in ${survivors}/${runs.length}`,
       })
     console.log(
-      `  Great path (${name}): 2025 peak median ${usd(median(peak2025))} (target $10B+); alive at 2026Q4 with ≥ 4 quarters of runway in ${survivors}/${runs.length} runs`,
+      `  Great path (${name}): 2025 peak median ${usd(median(peak2025))} (target ${usd(GREAT_PEAK[0])}–${usd(GREAT_PEAK[1])}); alive at 2026Q4 with ≥ 4 quarters of runway in ${survivors}/${runs.length} runs`,
     )
   }
   // The valuation breakdown (medians of each part over the runs that have that point), for the

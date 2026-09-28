@@ -405,7 +405,10 @@ function makeBot(settings: BotSettings): Strategy {
         nextOpen &&
         topIsFull &&
         bandwidth >= 1 &&
-        !(settings.phasedTexas && next.phases)
+        !(settings.phasedTexas && next.phases) &&
+        // A phased tier (Texas) needs its funding round first (M7.0: a lifeline bot with cash to
+        // spare in 2025 tried to build it without the IPO).
+        !(next.phases && phaseStartBlocker(s, next.id))
       ) {
         const direct = (
           BALANCE.sites.noScoutingNeeded as readonly string[]

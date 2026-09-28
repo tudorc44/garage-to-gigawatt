@@ -216,6 +216,16 @@ target · M7.0d A4 GPU-heavy head-start check · M7.0e sims, A1 decision, scope 
   only if ≤ 30% cures it); overleveraged target as A3; the Projects card shows distress and "Let it go and re-let".
 - M7.0d: head-start openings play a GPU-heavy Act I (`gpuFirst`: raise-climb buying the best GPU rig first; 2022Q3
   GPU share 100% on 6 seeds); the sim-runner reports that share with the head-start check.
+- M7.0e: `npm run sim -- --act2`, 50 seeds. A1: sign-then-raise $412M (< $700M) → targets revised to good $0.5–2B,
+  great $4–8B peak; tuning stopped. Bot fix: the Act I base bot no longer builds a phased tier without its round
+  (lifeline-shell crashed on it in 2025). Scope §2.2/§2.7/§2.10/§5 and §8 item 12 updated (both scope copies).
+
+M7.0 §5 (new targets; old-target verdict in brackets): pilot PASS 1.79× vs 1.35× · hosting PASS 17/42 · good MISS
+$412M, bust 4/50 [MISS] · great PASS 2025 peak $4.6B, runway 47/50 [MISS] · lifeline MISS 61/120 (M6: 38/120) · pure
+miner PASS $300M, 50/50 alive · overleveraged MISS 0/50 (2025Q4 debt/EBITDA 5.2×, > 4× in 26/46, distress in 35/50;
+A8's rescue and 2 raises a quarter keep it alive) · delay PASS 207% · IRR PASS 48% vs 13% · EV/MW MISS (mining $0/MW:
+the good and great bots' last miners are worth nothing at 2026Q4; announced AI $13M and stabilized $27M in band) ·
+head starts MISS (4/4 distinct, but hosting's matching bot $37.6M vs $332–432M) · preset MISS $181.9M.
 
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 
