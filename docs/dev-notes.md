@@ -405,6 +405,16 @@ P5.0d merge act2 (M7.0), sims, scope 0.3 §7, the combined report.
   isn't capped (mine). All 11 Act I goldens unchanged (the proof); the prologue → Act I golden updated.
 - P5.0d: act2 merged in (no conflicts); prologue sims; scope 0.3 §7; the combined report below.
 
+### P6: the Prologue wireframe pass (docs/wireframes/prologue, owner's queued instruction)
+
+P6.0 = `e48f066` (the wireframes, committed earlier at the owner's request). Rules: layout from the wireframes, look
+from the design system (ink primary), mechanics from the scope and the built rules, the README's 7 conflicts as decided,
+no sim changes, every golden unchanged. Split: P6.1 title (P0-01) + intro (P0-02) · P6.2 Plan (P0-03: three columns,
+nav Dashboard · Machines & Rooms · Coins · Log, sinks in "This quarter") · P6.3 Coins (P0-05) + pre-order dialog (P0-06)
+· P6.4 timed auto-play (P0-04) · P6.5 chapter report (P0-07) + handover (P0-08) · P6.6 the P6 report.
+- P6.1: title (Continue with its tag, New career ▾ opening the 2009 / 2017 cards, Act II's preset kept as a third
+  line, saved careers with Prologue / Act I / Act II tags incl. the Start of Act II slot); intro (date, PC drawing).
+
 ## Combined report: M7.0 (act2) + P5.0 (prologue), 28 Sep 2026
 
 ```

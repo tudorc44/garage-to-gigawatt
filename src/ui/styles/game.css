@@ -1365,6 +1365,49 @@ td.wrap {
   gap: 4px;
 }
 
+/* The title screen (wireframe P0-01): the menu card left, the new-career choice and saves right. */
+.title-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 480px) minmax(0, 620px);
+  gap: var(--space-6);
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-8);
+}
+.title-grid .title-card {
+  width: auto;
+}
+.title-nav {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+}
+.title-side {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.start-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+.start-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* The prologue's intro (P0-02): the PC drawing beside the story. */
+.p0-intro {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: var(--space-5);
+  align-items: start;
+}
+
 /* The prologue's Plan sections (Alpha 0.3): two equal columns. */
 .dash.p0-dash {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);

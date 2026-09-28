@@ -95,13 +95,25 @@ function CenterCard(props: { children: preact.ComponentChildren }) {
   )
 }
 
+/** The intro (wireframe P0-02): the label and date, the PC on the desk, the story, one way on. */
 function Intro({ act }: PrologueProps) {
   return (
     <CenterCard>
-      <div class="label">{t('ui.p0.intro_label')}</div>
+      <div class="row-between">
+        <span class="label">{t('ui.p0.intro_label')}</span>
+        <span class="num-s">{t('ui.p0.intro_date')}</span>
+      </div>
       <h1 class="screen-title">{t('ui.p0.intro_title')}</h1>
-      <p class="pitch">{tDynamic('p0.intro', '')}</p>
-      <div>
+      <div class="p0-intro">
+        <MachineCard
+          drawing="pc-tower-2009"
+          caption={t('ui.p0.intro_pc')}
+          era="2009"
+        />
+        <p class="pitch">{tDynamic('p0.intro', '')}</p>
+      </div>
+      <div class="row-between">
+        <span />
         <button
           type="button"
           class="btn btn-primary"

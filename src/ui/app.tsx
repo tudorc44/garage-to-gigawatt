@@ -156,6 +156,7 @@ export function App() {
         saves={{
           autosave: readSlot('autosave'),
           manual: readSlot('manual'),
+          act2: readSlot('act2'),
         }}
         onLoad={saves.load}
       />
