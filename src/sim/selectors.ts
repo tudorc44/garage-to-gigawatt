@@ -71,6 +71,7 @@ import { availableChoices, defaultChoice } from './systems/interrupts.ts'
 import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
 import { rushRepairUsd } from './systems/failureWave.ts'
+import { waveCostUsd } from './systems/gpuWave.ts'
 import {
   backlogUsd,
   gpuWaitQuarters,
@@ -1474,6 +1475,25 @@ export function failureWaveView(state: GameState) {
     units: (a.wave ?? []).reduce((n, d) => n + d.units, 0),
     rushUsd: rushRepairUsd(state),
     rushMult: CONTENT.failureWave.rushCostMult,
+  }
+}
+
+/** The GPU failure-wave alert (M8.4): which project, how many GPUs failed, and the price of each choice. */
+export function gpuWaveView(state: GameState) {
+  const a = state.interrupt
+  if (a?.id !== 'gpu_failure_wave') return null
+  const p = state.projects.find((x) => x.id === a.projectId)
+  if (!p) return null
+  const gpus = a.gpus ?? 0
+  return {
+    week: a.week,
+    n: p.n,
+    tier: state.sites.find((x) => x.id === p.siteId)?.tier ?? '',
+    gpus,
+    clusterGpus: p.gpuCount,
+    replaceUsd: waveCostUsd(gpus),
+    contracted: !!p.tenant?.gpu,
+    slaMult: CONTENT.projects.gpuWave.slaCreditMult,
   }
 }
 

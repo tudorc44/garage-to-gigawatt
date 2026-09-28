@@ -35,6 +35,7 @@ function alertSound(s: GameState): SoundName {
     case 'margin_call':
       return 'margin-call'
     case 'failure_wave':
+    case 'gpu_failure_wave':
       return 'failure'
     case 'neighbour_complaint':
       return 'complaint'

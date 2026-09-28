@@ -32,6 +32,7 @@ import { serviceFacilities } from './facilities.ts'
 import { rescueBeforeGameOver } from './rescue.ts'
 import { ratingInputs } from './rating.ts'
 import { mwByUse } from './mwUse.ts'
+import { endQuarterGpuWaves } from './gpuWave.ts'
 import {
   backlogUsd,
   constructionValueUsd,
@@ -51,6 +52,7 @@ import { depreciationAudit, lasting } from './eventEffects.ts'
 export function endQuarter(state: GameState): void {
   const w = marketWeek(state.quarter, BALANCE.weeksPerQuarter - 1)
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
+  endQuarterGpuWaves(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
   state.quarterStats.interestUsd += service.interestUsd

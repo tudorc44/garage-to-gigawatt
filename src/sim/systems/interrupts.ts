@@ -14,6 +14,12 @@ import { resolveCurtailment } from './curtailment.ts'
 import { defaultEventChoice, eventChoices, resolveEvent } from './events.ts'
 import { failureWaveChoices, resolveFailureWave } from './failureWave.ts'
 import {
+  gpuWaveChoices,
+  gpuWaveDefault,
+  isGpuWave,
+  resolveGpuWave,
+} from './gpuWave.ts'
+import {
   projectEventChoices,
   projectEventDefault,
   resolveProjectEvent,
@@ -73,6 +79,7 @@ export function resolveInterrupt(
     return resolveMarginWarning(state, choiceId)
   if (active.id === 'event') return resolveEvent(state, choiceId)
   if (active.id === 'failure_wave') return resolveFailureWave(state, choiceId)
+  if (isGpuWave(active.id)) return resolveGpuWave(state, choiceId)
   if (isProjectEvent(active.id)) return resolveProjectEvent(state, choiceId)
   if (isSpotAlert(active.id)) return resolveSpotAlert(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
@@ -170,6 +177,7 @@ export function availableChoices(state: GameState): string[] {
   if (active.id === 'neighbour_complaint') return complaintChoices(state)
   if (active.id === 'event') return eventChoices(state)
   if (active.id === 'failure_wave') return failureWaveChoices(state)
+  if (isGpuWave(active.id)) return gpuWaveChoices(state)
   if (isProjectEvent(active.id)) return projectEventChoices(state)
   if (isSpotAlert(active.id)) return spotAlertChoices()
   // SB6: the grid curtails big ERCOT sites directly, so there's nothing to refuse.
@@ -192,6 +200,7 @@ export function availableChoices(state: GameState): string[] {
  */
 export function defaultChoice(state: GameState): string {
   if (state.interrupt!.id === 'event') return defaultEventChoice(state)
+  if (isGpuWave(state.interrupt!.id)) return gpuWaveDefault(state)
   if (isProjectEvent(state.interrupt!.id)) return projectEventDefault(state)
   if (isSpotAlert(state.interrupt!.id)) return spotAlertDefault(state)
   if (state.interrupt!.id === 'curtailment' && state.interrupt!.curtail?.forced)

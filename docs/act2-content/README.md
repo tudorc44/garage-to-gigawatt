@@ -133,6 +133,11 @@ and the existing text is otherwise left as the pack wrote it.
     peak, the H200 announcement, Core Scientific leaving Chapter 11, the Aug 2024 yen unwind, the Apr 2025 tariff low,
     ETH's Aug 2025 high, the Feb 2026 hashrate peak, the Sep 2026 hike, and a speculative 2026Q4 aftershock line.
 
+### M8.4 (GPU failure wave, 29 Sep 2026)
+- **`interrupts_act2.json` › `updated_interrupts` › `gpu_failure_wave`:** `chance_pct` null → 10 (mine, from the pack's "random"),
+  plus `min_gpus` 10,000, `failed_share_range` [0.005, 0.01], `replace_cost_usd_per_gpu` 30,000, `sla_credit_mult` 2 and a
+  `game_note`. The game copy in `src/content/` is identical.
+
 ### Open points found while applying the fixes
 - **Pilot cost:** the pack's own prices give **$30.75M/MW** in 2023Q3 (750 × $32,000 + $6.75M retrofit) and $30.25M in 2023Q4,
   just under the scope's $31–33M. Recorded in `pilot_cluster.capex_usd_mw.check_note`; not forced to match.

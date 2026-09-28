@@ -39,6 +39,7 @@ import {
   conversionsFileSchema,
   flatCapexSchema,
   gpuAllocationSchema,
+  gpuFailureWaveSchema,
   gpusFileSchema,
   interruptsAct2FileSchema,
   lendersFileSchema,
@@ -221,6 +222,14 @@ export interface ProjectRules {
   spotShockChance: number
   /** An AI site's SLA credit when it curtails, as a share of a month's charge. */
   slaPenaltyShareMonth: number
+  /** The GPU failure wave (interrupts_act2.json › gpu_failure_wave, M8.4). */
+  gpuWave: {
+    chance: number
+    minGpus: number
+    failedShareRange: readonly [number, number]
+    replaceUsdPerGpu: number
+    slaCreditMult: number
+  }
 }
 
 /** The six Act II region tags' power price columns (market_quarterly_act2). */
@@ -620,6 +629,13 @@ export function parseContent(raw: RawContent): Content {
       (i) => i.id === 'curtailment_ai_sites',
     ),
   )
+  const gpuWaveRules = check(
+    'interrupts_act2.json › gpu_failure_wave',
+    gpuFailureWaveSchema,
+    interruptsAct2File?.updated_interrupts.find(
+      (i) => i.id === 'gpu_failure_wave',
+    ),
+  )
   const rivalsFile = check('rivals.json', rivalsFileSchema, raw.rivals)
   const rivalsAct2File = check(
     'rivals_act2.json',
@@ -694,6 +710,7 @@ export function parseContent(raw: RawContent): Content {
     !allocationRules ||
     !spotShockRules ||
     !curtailAiRules ||
+    !gpuWaveRules ||
     !rivalsFile ||
     !rivalsAct2File ||
     !machinesPrologueFile ||
@@ -1204,6 +1221,13 @@ export function parseContent(raw: RawContent): Content {
     allocationChance: allocationRules.chance_pct / 100,
     spotShockChance: spotShockRules.chance_pct_random / 100,
     slaPenaltyShareMonth: curtailAiRules.sla_penalty_pct_mrc.value / 100,
+    gpuWave: {
+      chance: gpuWaveRules.chance_pct / 100,
+      minGpus: gpuWaveRules.min_gpus,
+      failedShareRange: gpuWaveRules.failed_share_range,
+      replaceUsdPerGpu: gpuWaveRules.replace_cost_usd_per_gpu,
+      slaCreditMult: gpuWaveRules.sla_credit_mult,
+    },
   }
   if (!gpus.some((g) => g.id === projects.pilot.gpu))
     problems.push(

@@ -19,6 +19,7 @@ import {
 import { checkComplaint, rateHikeUsd, updateHeatWeek } from './systems/heat.ts'
 import { checkEvents } from './systems/events.ts'
 import { checkFailureWaves } from './systems/failureWave.ts'
+import { checkGpuWaves } from './systems/gpuWave.ts'
 import { paySalariesWeek } from './systems/hires.ts'
 import { payLoanWeek } from './systems/loans.ts'
 import { settleWeek } from './systems/treasury.ts'
@@ -124,6 +125,7 @@ export function advance(state: GameState): GameState {
   checkUri(s)
   checkFailureWaves(s)
   checkProjectEvents(s)
+  checkGpuWaves(s)
   checkSpotAlerts(s, w)
   checkComplaint(s)
   checkEvents(s)

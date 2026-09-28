@@ -442,6 +442,15 @@ export const constructionDelaySchema = z.looseObject({
   default: z.string(),
 })
 
+/** interrupts_act2.json › gpu_failure_wave (M8.4; the pack's numbers plus the owner's chance). */
+export const gpuFailureWaveSchema = z.looseObject({
+  chance_pct: nonNeg,
+  min_gpus: nonNeg,
+  failed_share_range: z.tuple([nonNeg, nonNeg]),
+  replace_cost_usd_per_gpu: nonNeg,
+  sla_credit_mult: nonNeg,
+})
+
 /** interrupts_act2.json › gpu_allocation (scope §2.9). */
 export const gpuAllocationSchema = z.looseObject({
   chance_pct: nonNeg,

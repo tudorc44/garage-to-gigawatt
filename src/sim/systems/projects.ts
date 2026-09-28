@@ -40,6 +40,7 @@ import {
   powerCostUsd,
 } from './power.ts'
 import { isHired } from './hires.ts'
+import { gpuOutShare } from './gpuWave.ts'
 import { regionMoratoriumOn } from './anger.ts'
 import { projectPolicy } from './regions.ts'
 import { convertibleKw } from './hosting.ts'
@@ -970,6 +971,14 @@ export function settleProjectsWeek(
       cost =
         p.kw * b.cloudPue * hours * up * powerPriceUsdKwh(site, state.quarter) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
+      // GPUs out after a failure wave you ran short on (M8.4) earn nothing; a contracted tenant is
+      // credited 2× what they would have earned.
+      const outShare = gpuOutShare(state, p)
+      if (outShare > 0) {
+        const lost = rev * outShare
+        rev -= lost
+        if (contract) cost += lost * CONTENT.projects.gpuWave.slaCreditMult
+      }
     }
     // A JV partner takes its share of the project's earnings (M4.6).
     const ours = 1 - ownedShareOut(p)

@@ -12,6 +12,7 @@ import {
   URI_STORM_PRICE,
   eventCardView,
   failureWaveView,
+  gpuWaveView,
   projectAlertView,
   interruptChoices,
   lotViews,
@@ -53,6 +54,11 @@ const NOTE_KEYS: Partial<Record<MessageKey, MessageKey>> = {
   'log.failure_wave_repaired': 'ui.live.note.failure',
   'log.failure_wave_degraded': 'ui.live.note.failure',
   'log.failure_wave_silent': 'ui.live.note.failure',
+  'log.gpu_wave_replaced': 'ui.live.note.failure',
+  'log.gpu_wave_silent': 'ui.live.note.failure',
+  'log.gpu_wave_short': 'ui.live.note.failure',
+  'log.gpu_wave_short_silent': 'ui.live.note.failure',
+  'log.gpu_wave_repaired': 'ui.live.note.failure',
   'log.event_choice_cash': 'ui.live.note.event',
 }
 
@@ -159,6 +165,9 @@ export function LiveScreen(
       {(state.interrupt?.id === 'construction_delay' ||
         state.interrupt?.id === 'gpu_allocation') && (
         <ProjectAlertCard state={state} act={act} />
+      )}
+      {state.interrupt?.id === 'gpu_failure_wave' && (
+        <GpuWaveCard state={state} act={act} />
       )}
       {(state.interrupt?.id === 'spot_price_shock' ||
         state.interrupt?.id === 'gpu_spot_alert') && (
@@ -979,6 +988,86 @@ function SpotAlertCard({ state, act }: ScreenProps) {
             </span>
             <span class="num-s">
               {tDynamic(`ui.spot_alert.${kind}.effect.${c.id}`, '', params)}
+            </span>
+          </button>
+        ))}
+      </article>
+    </div>
+  )
+}
+
+function GpuWaveCard({ state, act }: ScreenProps) {
+  const v = gpuWaveView(state)
+  if (!v) return null
+  const params = {
+    n: v.n,
+    gpus: v.gpus.toLocaleString('en-US'),
+    cluster: v.clusterGpus.toLocaleString('en-US'),
+    tier: tierName(v.tier),
+  }
+  return (
+    <div class="scrim">
+      <article
+        class="event"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="gpu-wave-title"
+      >
+        <div class="row-between">
+          <span class="label">
+            {t('ui.event.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: v.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', {
+              n: state.interruptsThisQuarter,
+              max: MAX_INTERRUPTS,
+            })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="warning" />
+          <span class="num-xl loss">{params.gpus}</span>
+          <span class="num-s">{t('ui.gpuwave.units')}</span>
+        </div>
+        <h2 class="event-title" id="gpu-wave-title">
+          {t('ui.gpuwave.title', params)}
+        </h2>
+        <p class="event-body">{t('ui.gpuwave.body', params)}</p>
+        <p class="event-body muted">{t('ui.gpuwave.cause')}</p>
+        <p class="event-body muted">{t('ui.gpuwave.basis')}</p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">
+                {tDynamic(`interrupt.gpu_failure_wave.${c.id}`, c.id)}
+              </span>
+              {c.isDefault && (
+                <span class="default-tag">{t('ui.alert.default')}</span>
+              )}
+            </span>
+            <span class="num-s">
+              {c.id === 'replace_now'
+                ? t('ui.gpuwave.effect_replace', {
+                    cash: fmt.signed(-v.replaceUsd),
+                  })
+                : t(
+                    v.contracted
+                      ? 'ui.gpuwave.effect_short_contract'
+                      : 'ui.gpuwave.effect_short',
+                    {
+                      mult: `${v.slaMult}×`,
+                      cost: fmt.money(v.replaceUsd),
+                    },
+                  )}
             </span>
           </button>
         ))}

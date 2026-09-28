@@ -255,6 +255,11 @@ export interface Project {
   /** Cloud projects: sell capacity on the spot market (the only tenant option so far). */
   spot: boolean
   /**
+   * GPUs out after a failure wave you ran short on (M8.4): they earn nothing through `untilQuarter`
+   * (a contracted tenant gets an SLA credit), and `costUsd` to replace them is paid at that quarter's end.
+   */
+  gpuOut?: { gpus: number; untilQuarter: number; costUsd: number }
+  /**
    * A spot cluster's capacity locked at a price after a spot price shock (M5.8): every GPU earns
    * usdHr until (and including) that quarter, whatever the utilisation.
    */
@@ -491,8 +496,10 @@ export interface ActiveInterrupt {
   event?: string
   /** Failure wave only: the units it broke, per batch. */
   wave?: WaveDamage
-  /** Construction delay and GPU allocation (Act II): the project it's about. */
+  /** Construction delay, GPU allocation and the GPU failure wave (Act II): the project it's about. */
   projectId?: string
+  /** GPU failure wave only: how many GPUs failed. */
+  gpus?: number
 }
 
 /** What curtailing the Texas site for one week pays (review A8), fixed when the grid asks. */
