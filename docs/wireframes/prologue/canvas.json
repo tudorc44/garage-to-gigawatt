@@ -1,0 +1,220 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Components.dc.html": {
+      "h": 1300,
+      "title": "Component sheet · new Prologue components",
+      "w": 2640,
+      "x": 0,
+      "y": 2360
+    },
+    "Flow.dc.html": {
+      "h": 320,
+      "title": "Flow · Prologue (Act 0)",
+      "w": 5360,
+      "x": 0,
+      "y": -560
+    },
+    "Main.dc.html": {
+      "h": 720,
+      "title": "P0-01 Title",
+      "w": 1280,
+      "x": 0,
+      "y": 0
+    },
+    "P0-02-Intro.dc.html": {
+      "h": 720,
+      "title": "P0-02 Prologue intro",
+      "w": 1280,
+      "x": 1360,
+      "y": 0
+    },
+    "P0-03-Plan.dc.html": {
+      "h": 720,
+      "title": "P0-03 Plan dashboard (Q2 2011)",
+      "w": 1280,
+      "x": 2720,
+      "y": 0
+    },
+    "P0-04-Autoplay.dc.html": {
+      "h": 720,
+      "title": "P0-04 Auto-played quarters",
+      "w": 1280,
+      "x": 4080,
+      "y": 0
+    },
+    "P0-05-Coins.dc.html": {
+      "h": 720,
+      "title": "P0-05 Coins & custody",
+      "w": 1280,
+      "x": 0,
+      "y": 1160
+    },
+    "P0-06-Preorder.dc.html": {
+      "h": 720,
+      "title": "P0-06 Pre-order and group buy",
+      "w": 1280,
+      "x": 1360,
+      "y": 1160
+    },
+    "P0-07-Report.dc.html": {
+      "h": 720,
+      "title": "P0-07 Prologue chapter report",
+      "w": 1280,
+      "x": 2720,
+      "y": 1160
+    },
+    "P0-08-Handover.dc.html": {
+      "h": 720,
+      "title": "P0-08 Handover to Act I",
+      "w": 1280,
+      "x": 4080,
+      "y": 1160
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-28T01:05:00+03:00",
+    "v": 1
+  },
+  "designSystems": [],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "n01": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "New career expands in place into two choices. 'Start in 2017' is today's Act I start ($10K, empty garage). Prologue saves carry a 'Prologue' tag in the load list.",
+      "w": 300,
+      "x": 0,
+      "y": 760
+    },
+    "n02": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Copy is a 3-line placeholder paraphrase; the final text comes from text_prologue.en.json. The button is the only way on, so there is no skip.",
+      "w": 300,
+      "x": 1360,
+      "y": 760
+    },
+    "n03a": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Solo odds = your share of network hashrate × blocks per week: 784 MH/s ÷ 494 GH/s ≈ 0.16% × 1,008 ≈ 1.6 blocks. Pool ≈ 0.16% × 1,008 × 50 BTC ≈ 80, less the 2% fee ≈ 78 BTC.",
+      "w": 300,
+      "x": 2720,
+      "y": 760
+    },
+    "n03b": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Household meter: load against the 1.44 kW cap of living at home. Patience falls while load stays high; low patience triggers household cards (the bill, heat, noise). Moving out ends the cap and the free power.",
+      "w": 300,
+      "x": 3040,
+      "y": 760
+    },
+    "n03c": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Offers tray: at most 2 waiting cards. Proposal to confirm: unanswered offers expire at quarter end. The Coins panel's Move takes one week, since coins must sit on an exchange to be sold.",
+      "w": 300,
+      "x": 3360,
+      "y": 760
+    },
+    "n03d": {
+      "fill": "orange",
+      "maxH": 260,
+      "text": "Conflict to settle: the brief's sample offer is a 'Conference invitation (2011)', but life.json only has conferences in 2013Q2 and 2014Q2. Drawn as the brief says; either add a 2011 event to life.json or change the sample offer.",
+      "w": 300,
+      "x": 3680,
+      "y": 760
+    },
+    "n04a": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Each card shows ~2 s per skipped quarter. Prices and difficulty changes come from market_quarterly_prologue.csv; the 'mined' figures for Q1 and Q2 2012 are illustrative (Q3 2012 is the brief's example). The Q4 2012 halving and pre-order window make it the natural interrupt.",
+      "w": 300,
+      "x": 4080,
+      "y": 760
+    },
+    "n04b": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Interrupt: when an event fires during auto-play, the card stops and the event card opens over it. 'Pause here' turns the next quarter into a full Plan phase.",
+      "w": 300,
+      "x": 4400,
+      "y": 760
+    },
+    "n05a": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Selling limit: a share of real exchange volume that quarter (doc 23). The 1,850 BTC figure is the brief's sample. Proposal: the price-impact warning appears as the sell amount nears the limit.",
+      "w": 300,
+      "x": 0,
+      "y": 1920
+    },
+    "n05b": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "The lost-coins row is an illustrative example (a pre-backup key loss). No scripted exchange loss has happened by Q2 2011; the Jun 2011 hack and the Feb 2014 collapse would add rows here.",
+      "w": 300,
+      "x": 320,
+      "y": 1920
+    },
+    "n06a": {
+      "fill": "orange",
+      "maxH": 260,
+      "text": "Conflict, source wins: the brief says 'promised delivery Q1 2013', but preorders.json opens the group buy only in 2013Q1 and promises delivery 1 quarter after ordering. Both cards can only sit side by side in Q1 2013, so both promise Q2 2013 here.",
+      "w": 300,
+      "x": 1360,
+      "y": 1920
+    },
+    "n06b": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Odds from preorders.json: Summit Silicon 45/35/15/5 (never = 50% refund); group buy 40/35/18/7 (never = 40% refund). Going to a conference first moves 10 points into 'on time'.",
+      "w": 300,
+      "x": 1680,
+      "y": 1920
+    },
+    "n07": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Net worth ≈ $3.9M per the brief: 3,900 BTC × $960 = $3.74M + $120K cash + machines ≈ $6K (3 ASICs and a GPU rig: what a 5 kW garage can hold). Mined = kept + sold + lost = 5,400 BTC. The career line's shape and the title 'The careful holder' are samples; the 2010-coins teaser figures are placeholders until the 2010 mining total is known.",
+      "w": 300,
+      "x": 2720,
+      "y": 1920
+    },
+    "n08": {
+      "fill": "gray",
+      "maxH": 260,
+      "text": "Everything carries over as it is. Sample machines and site match the chapter report. Prologue starts are ranked in Act I by growth multiple from this snapshot, not by absolute net worth.",
+      "w": 300,
+      "x": 4080,
+      "y": 1920
+    },
+    "t1": {
+      "kind": "title1",
+      "maxW": 5360,
+      "text": "Prologue (Act 0) · Bedroom to Garage · wireframes",
+      "w": 240,
+      "x": 0,
+      "y": -880
+    }
+  },
+  "order": [
+    "Flow.dc.html",
+    "Main.dc.html",
+    "P0-02-Intro.dc.html",
+    "P0-03-Plan.dc.html",
+    "P0-04-Autoplay.dc.html",
+    "P0-05-Coins.dc.html",
+    "P0-06-Preorder.dc.html",
+    "P0-07-Report.dc.html",
+    "P0-08-Handover.dc.html",
+    "Components.dc.html"
+  ],
+  "pages": [],
+  "title": "G2G Prologue – Wireframes"
+}

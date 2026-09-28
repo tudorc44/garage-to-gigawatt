@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P0-01 Title</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:13px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 14px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#1f5fbf;border-color:#1f5fbf;color:#fff;font-weight:600}
+.mut{color:#666}.sm{font-size:11px}
+.ph{border:1px dashed #999;background:#e9e9e9;position:relative;display:flex;align-items:center;justify-content:center;color:#666;font-size:11px;overflow:hidden}
+.ph .x{position:absolute;left:0;top:0;width:100%;height:100%}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid #777;border-radius:3px;padding:1px 6px;color:#444}
+</style>
+</helmet>
+<div class="s" style="padding: 48px 64px; flex-direction: row; gap: 48px">
+<div style="width: 380px; display: flex; flex-direction: column; gap: 24px">
+<div class="ph" style="height: 150px"><svg class="x" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0L100 100M100 0L0 100" stroke="#aaa" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"></path></svg><span style="position: relative; background: #e9e9e9; padding: 2px 6px">Logo lockup</span></div>
+<nav style="display: flex; flex-direction: column; gap: 8px">
+<a class="btn" href="#" style="justify-content: flex-start">Continue · Q2 2011 (Prologue)</a>
+<a class="btn" href="#" style="justify-content: flex-start; border-width: 2px; border-color: #222; font-weight: 600">New career ▾</a>
+<a class="btn" href="#" style="justify-content: flex-start">Load</a>
+<a class="btn" href="#" style="justify-content: flex-start">Settings</a>
+</nav>
+<span class="sm mut">v0.3 alpha</span>
+</div>
+
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 16px">
+<div class="p" style="padding: 16px; gap: 14px">
+<span class="lab">New career · choose where to start</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+<div class="p" style="border: 2px solid #222; padding: 16px; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: baseline"><span class="h" style="font-size: 16px">Start in 2009 (prologue)</span><span class="tag">New</span></div>
+<span>Mine from the genesis block. 10–15 minutes.</span>
+<span class="sm mut">A student, a gaming PC, $2K savings. Ends in the garage in Q1 2017 and carries everything into Act I.</span>
+<a class="btn pri" href="#" style="align-self: flex-start">Start in 2009 →</a>
+</div>
+<div class="p" style="padding: 16px; gap: 10px">
+<span class="h" style="font-size: 16px">Start in 2017</span>
+<span>Start in the garage with $10K.</span>
+<span class="sm mut">Act I as it is today: an empty garage, Q1 2017.</span>
+<a class="btn" href="#" style="align-self: flex-start">Start in 2017 →</a>
+</div>
+</div>
+</div>
+
+<div class="p" style="padding: 14px 16px">
+<span class="lab">Saved careers</span>
+<table style="border-collapse: collapse; width: 100%">
+<tbody>
+<tr><td style="padding: 8px 6px; border-bottom: 1px dashed #ddd">Career 2</td><td style="padding: 8px 6px; border-bottom: 1px dashed #ddd"><span class="tag">Prologue</span></td><td class="m" style="padding: 8px 6px; border-bottom: 1px dashed #ddd">Q2 2011</td><td class="m" style="padding: 8px 6px; border-bottom: 1px dashed #ddd; text-align: right">$1,150 · 4,500 BTC</td><td style="padding: 8px 6px; border-bottom: 1px dashed #ddd; text-align: right"><a class="btn" href="#" style="height: 26px">Load</a></td></tr>
+<tr><td style="padding: 8px 6px">Career 1</td><td style="padding: 8px 6px"><span class="tag" style="border-color: #ccc; color: #666">Act I</span></td><td class="m" style="padding: 8px 6px">Q3 2018</td><td class="m" style="padding: 8px 6px; text-align: right">$84.0K</td><td style="padding: 8px 6px; text-align: right"><a class="btn" href="#" style="height: 26px">Load</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

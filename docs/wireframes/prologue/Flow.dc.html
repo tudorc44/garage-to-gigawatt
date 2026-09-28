@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prologue flow</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.lab{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.b{width:420px;height:150px;box-sizing:border-box;border:2px solid #333;border-radius:6px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.b.re{border-style:dashed;border-color:#888;background:#f7f7f7}
+.t{font-weight:600;font-size:22px}
+.d{font-size:15px;color:#555}
+.a{width:60px;flex-shrink:0;text-align:center;font-size:30px;color:#444}
+</style>
+</helmet>
+<div style="width: 5360px; height: 320px; box-sizing: border-box; padding: 30px 40px; background: #f2f2f2; font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, sans-serif; color: #222; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center">
+<div class="b"><span class="lab">P0-01</span><span class="t">Title</span><span class="d">New career → Start in 2009</span></div>
+<span class="a">→</span>
+<div class="b"><span class="lab">P0-02</span><span class="t">Prologue intro</span><span class="d">3 Jan 2009 · Start mining</span></div>
+<span class="a">→</span>
+<div class="b" style="border-width: 3px"><span class="lab">P0-03 · ×13 decision quarters</span><span class="t">Plan (decision quarter)</span><span class="d">Rig, coins, keep / sell, offers</span></div>
+<span class="a">→</span>
+<div class="b re"><span class="lab">Act I screen, reused</span><span class="t">Live quarter</span><span class="d">Weeks tick; interrupts can fire</span></div>
+<span class="a">→</span>
+<div class="b re"><span class="lab">Act I screen, reused</span><span class="t">Quarter report</span><span class="d">Mined, sold, prices, events</span></div>
+<span class="a">→</span>
+<div class="b"><span class="lab">P0-04</span><span class="t">Auto-play cards</span><span class="d">One card per skipped quarter; an event stops them</span></div>
+<span class="a">→</span>
+<div class="b re" style="width: 200px; align-items: center; justify-content: center"><span class="t">…</span><span class="d">to Q4 2016</span></div>
+<span class="a">→</span>
+<div class="b"><span class="lab">P0-07</span><span class="t">Prologue chapter report</span><span class="d">Net worth, coins, career graph</span></div>
+<span class="a">→</span>
+<div class="b"><span class="lab">P0-08</span><span class="t">Handover</span><span class="d">What carries into Act I</span></div>
+<span class="a">→</span>
+<div class="b re"><span class="lab">Act I, reused</span><span class="t">Act I Plan (2017Q1)</span><span class="d">In the garage, scored by growth</span></div>
+</div>
+<div style="display: flex; gap: 40px; font-size: 16px; color: #444; padding-left: 960px">
+<span>↺ Auto-play cards loop back to the next Plan quarter until Dec 2016.</span>
+<span>Side trips from Plan: P0-05 Coins &amp; custody (nav) · P0-06 Pre-order / group buy (offer or event, 2012–13).</span>
+</div>
+<div style="display: flex; gap: 24px; font-size: 14px; color: #666"><span>Solid box: new Prologue screen</span><span>Dashed box: Act I screen reused unchanged</span></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":5360,"height":320}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

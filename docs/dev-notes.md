@@ -197,6 +197,11 @@ The M6 report's questions 1–9 (below), and the Prologue report's questions 1�
 
 The owner reviews the `prologue` branch (play it: `npm run dev`, "Start in 2009 (prologue)"; numbers:
 `npm run sim -- --prologue`) and brings the design thread's answers to the M6 and Prologue questions.
+Then the Prologue wireframe pass (`docs/wireframes/prologue/`, P0-01…P0-08, arrived 28 Sep 2026; its README lists
+7 settled conflicts): a restyle of the built screens: nav Dashboard · Machines & Rooms · Coins · Log (sinks move
+into "This quarter"); a three-column Plan; auto-play cards (~2 s, 1×/2×/4×, Pause here); a Coins page with history
+and a lost-coins ledger; side-by-side pre-order cards; a handover screen (vs a 2017 start); offers expire at
+quarter end (today they last to the next decision quarter: a rule change).
 
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 

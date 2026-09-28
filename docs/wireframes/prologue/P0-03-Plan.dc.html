@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P0-03 Prologue Plan dashboard</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.top{height:48px;flex-shrink:0;display:flex;align-items:center;gap:20px;padding:0 16px;background:#fff;border-bottom:1px solid #bbb}
+.st{display:flex;flex-direction:column;gap:1px}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.nav{width:168px;flex-shrink:0;background:#fff;border-right:1px solid #bbb;padding:10px 0;display:flex;flex-direction:column}
+.nav a{padding:9px 16px;color:#444;text-decoration:none}
+.nav a.on{background:#e4e4e4;color:#111;font-weight:600}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:9px 11px;display:flex;flex-direction:column;gap:7px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.row{display:flex;align-items:center;gap:8px}
+.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:26px;padding:0 10px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#1f5fbf;border-color:#1f5fbf;color:#fff;font-weight:600;height:40px;font-size:14px;padding:0 18px}
+.up{color:#1a7f37}.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.pip{width:9px;height:9px;border-radius:50%;background:#444;display:inline-block}
+.pip.o{background:#fff;border:1.5px solid #444;box-sizing:border-box}
+.bar{height:8px;background:#e2e2e2;border-radius:4px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%;background:#555}
+.seg{display:inline-flex;border:1px solid #777;border-radius:4px;overflow:hidden}
+.seg span{padding:4px 12px;font-size:12px}
+.seg .on{background:#333;color:#fff}
+.act{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px dashed #ddd}
+.act .n{flex-grow:1}
+.dis{color:#999}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid #777;border-radius:3px;padding:1px 6px;color:#444}
+.offer{border:1px solid #999;border-radius:4px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;background:#fafafa}
+table{border-collapse:collapse;width:100%}
+td,th{padding:4px 4px;border-bottom:1px dashed #ddd;text-align:left;font-weight:400}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#666}
+.r{text-align:right}
+</style>
+</helmet>
+<div class="s">
+<header class="top">
+<div class="st"><span class="lab">Date</span><span class="m">Q2 2011 · Plan</span></div>
+<span class="tag">Prologue</span>
+<div class="st"><span class="lab">Cash</span><span class="m" style="font-weight: 600">$1,150</span></div>
+<div class="st"><span class="lab">Coins</span><span class="m">Wallet 4,200 BTC · Exchange 300 BTC</span></div>
+<div class="st"><span class="lab">BTC</span><span class="m">$0.75 <span class="up">▲150%</span></span></div>
+<div class="st"><span class="lab">Difficulty</span><span class="m">68,978</span></div>
+<div class="st"><span class="lab">Bandwidth</span><span class="row" style="gap: 4px; padding-top: 3px"><span class="pip"></span><span class="pip"></span></span></div>
+<div style="flex-grow: 1"></div>
+<a class="btn" href="#">Settings</a>
+</header>
+
+<div style="flex-grow: 1; display: flex; min-height: 0">
+<nav class="nav">
+<a class="on" href="#">Dashboard</a>
+<a href="#">Machines &amp; Rooms</a>
+<a href="#">Coins</a>
+<a href="#">Log</a>
+</nav>
+
+<main style="flex-grow: 1; padding: 10px; display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<div class="row sb"><span class="h">Your rig</span><span class="m sm mut">784 MH/s ≈ 0.16% of 494 GH/s</span></div>
+<table>
+<thead><tr><th>Machine</th><th class="r">Hashrate</th><th class="r">Power</th></tr></thead>
+<tbody>
+<tr><td>Your PC's CPU</td><td class="m r">4 MH/s</td><td class="m r">90 W</td></tr>
+<tr><td>Gaming GPU × 2</td><td class="m r">780 MH/s</td><td class="m r">400 W</td></tr>
+<tr><td style="font-weight: 600">Total</td><td class="m r" style="font-weight: 600">784 MH/s</td><td class="m r" style="font-weight: 600">490 W</td></tr>
+</tbody>
+</table>
+<div class="row sb"><span class="h" style="font-size: 12.5px">Your room · living at home</span><span class="sm mut">power: parents pay</span></div>
+<div class="row sb sm"><span class="lab">Household load</span><span class="m">0.6 of 1.44 kW</span></div>
+<div class="bar"><i style="width: 42%"></i></div>
+<div class="row sb sm"><span class="lab">Parents' patience</span><span class="m">72%</span></div>
+<div class="bar"><i style="width: 72%; background: #888"></i></div>
+<span class="sm mut">Low patience triggers household cards: the bill, the heat, the noise.</span>
+</section>
+
+<section class="p">
+<div class="row sb"><span class="h">Mining mode</span><div class="seg" role="group" aria-label="Mining mode"><span class="on">Solo</span><span>Pool</span></div></div>
+<div class="row" style="align-items: flex-start; gap: 10px">
+<div style="flex: 1; border: 2px solid #222; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px">
+<span class="lab">Solo · selected</span>
+<span>About 1–2 blocks a week at your share</span>
+<span class="m sm mut">50 BTC a block · some weeks nothing</span>
+</div>
+<div style="flex: 1; border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px">
+<span class="lab">Pool</span>
+<span>≈ 78 BTC a week, steady</span>
+<span class="m sm mut">−2% fee</span>
+</div>
+</div>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<div class="row sb"><span class="h">Market</span><span class="sm mut">last 4 quarters</span></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lab">BTC price</span><svg viewBox="0 0 150 40" width="100%" height="40" aria-label="BTC price rising from cents to 75 cents"><path d="M2 38 L20 37 L38 36 L56 33 L74 30 L92 28 L110 26 L128 14 L148 8" fill="none" stroke="#333" stroke-width="1.5"></path></svg><span class="m sm">$0.75 <span class="up">▲150%</span></span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lab">Difficulty</span><svg viewBox="0 0 150 40" width="100%" height="40" aria-label="Difficulty rising steeply"><path d="M2 38 L20 36 L38 31 L56 27 L74 22 L92 20 L110 17 L128 13 L148 6" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="4 3"></path></svg><span class="m sm">68,978 <span class="mut">+376%</span></span></div>
+</div>
+</section>
+
+<section class="p">
+<div class="row sb"><span class="h">Coins</span><a class="btn" href="#">Move…</a></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Wallet</span><span class="m" style="font-size: 15px">4,200 BTC</span><span class="m sm mut">$3.2K</span><span class="sm">Backup ✓</span></div>
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Exchange</span><span class="m" style="font-size: 15px">300 BTC</span><span class="m sm mut">$225</span><span class="sm">Ready to sell</span></div>
+</div>
+<span class="sm"><strong>Exchange:</strong> hack and collapse risk</span>
+<span class="sm"><strong>Wallet:</strong> 3%/yr lost-key risk, ≈0.5% with a backup</span>
+</section>
+
+<section class="p">
+<div class="row sb"><label class="h" for="keep">Keep / sell mined BTC this quarter</label><span class="m">sell 10%</span></div>
+<input id="keep" type="range" min="0" max="100" value="10" style="width: 100%; accent-color: #444">
+<div class="row sb sm mut"><span>Keep all</span><span class="m">≈ 100 of ~1,000 BTC → $75</span><span>Sell all</span></div>
+<span class="sm mut">ETH appears here from Aug 2015.</span>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<div class="row sb"><span class="h">This quarter</span><span class="m sm mut">2 of 2 Bandwidth</span></div>
+<div class="act"><span class="n">Buy a gaming GPU</span><span class="m sm">$399</span><span class="pip"></span></div>
+<div class="act"><span class="n">Back up the wallet</span><span class="sm mut">done ✓</span><span class="pip o"></span></div>
+<div class="act"><span class="n">Move out</span><span class="m sm">$900 + $2,790/q</span><span class="row" style="gap: 3px"><span class="pip"></span><span class="pip"></span></span></div>
+<div class="act dis"><span class="n">Go to a conference</span><span class="sm">from 2013</span><span class="pip o"></span></div>
+<div class="act dis" style="border-bottom: 0"><span class="n">Pre-order / group buy</span><span class="sm">opens Q4 2012</span><span class="pip o"></span></div>
+</section>
+
+<section class="p" style="flex-grow: 1">
+<div class="row sb"><span class="h">Offers</span><span class="m sm mut">2 waiting</span></div>
+<div class="offer">
+<span class="lab">Forum · buyer</span>
+<span>A forum buyer offers <span class="m">$0.70</span>/BTC for <span class="m">500 BTC</span></span>
+<span class="m sm mut">= $350 · below market by 7% · needs coins on exchange</span>
+<div class="row"><a class="btn" href="#">Accept</a><a class="btn" href="#">Decline</a></div>
+</div>
+<div class="offer">
+<span class="lab">Invitation</span>
+<span>Conference invitation (2011)</span>
+<span class="sm mut">Travel costs cash and 1 Bandwidth; you come back with a contact.</span>
+<div class="row"><a class="btn" href="#">Details</a><a class="btn" href="#">Decline</a></div>
+</div>
+</section>
+</div>
+</div>
+
+<div class="row" style="gap: 12px">
+<div class="row" style="flex-grow: 1; background: #fff; border: 1px solid #bbb; border-radius: 4px; padding: 0 10px; height: 40px"><span class="lab">News</span><span>Mt Gox passes $1 again · A forum thread asks: is $10 possible?</span></div>
+<a class="btn pri" href="#">End Quarter →</a>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

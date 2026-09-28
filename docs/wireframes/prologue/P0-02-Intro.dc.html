@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P0-02 Prologue intro</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:13px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:15px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#1f5fbf;border-color:#1f5fbf;color:#fff;font-weight:600}
+.mut{color:#666}.sm{font-size:11px}
+.ph{border:1px dashed #999;background:#e9e9e9;position:relative;display:flex;align-items:center;justify-content:center;color:#666;font-size:11px;overflow:hidden}
+.ph .x{position:absolute;left:0;top:0;width:100%;height:100%}
+</style>
+</helmet>
+<div class="s" style="align-items: center; justify-content: center">
+<div style="width: 720px; background: #fff; border: 1px solid #bbb; border-radius: 6px; padding: 32px 40px; display: flex; flex-direction: column; gap: 20px">
+<span class="lab">Prologue · Bedroom to Garage</span>
+<span class="m" style="font-size: 22px">3 Jan 2009</span>
+<div class="ph" style="height: 180px"><svg class="x" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0L100 100M100 0L0 100" stroke="#aaa" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"></path></svg><span style="position: relative; background: #e9e9e9; padding: 2px 6px">Illustration · gaming PC on a student desk (machine card later)</span></div>
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 15px; line-height: 1.5">
+<p style="margin: 0">Someone has just mined the first block of a new kind of money, and almost nobody has noticed.</p>
+<p style="margin: 0">You have a gaming PC in your bedroom, <span class="m">$2K</span> in savings and a part-time job.</p>
+<p style="margin: 0">Mining costs nothing but electricity, and for now your parents pay the bill.</p>
+</div>
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span class="sm mut">Placeholder copy · final text from text_prologue.en.json</span>
+<a class="btn pri" href="#">Start mining →</a>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

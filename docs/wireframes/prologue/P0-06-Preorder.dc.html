@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P0-06 Pre-order and group buy</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.blk{background:#e3e3e3;border:1px solid #ccc;border-radius:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:36px;padding:0 14px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.mut{color:#666}.sm{font-size:11px}
+.ph{border:1px dashed #999;background:#e9e9e9;position:relative;display:flex;align-items:center;justify-content:center;color:#666;font-size:11px;overflow:hidden}
+.ph .x{position:absolute;left:0;top:0;width:100%;height:100%}
+.card{background:#fff;border:1px solid #888;border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:10px}
+.odds{display:flex;height:14px;border:1px solid #777;border-radius:3px;overflow:hidden}
+.odds i{display:block;height:100%}
+.leg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;font-size:11px}
+.sw{display:inline-block;width:9px;height:9px;border:1px solid #777;margin-right:4px;vertical-align:middle}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #ddd;padding:3px 0}
+</style>
+</helmet>
+<div class="s">
+<div style="height: 48px; background: #fff; border-bottom: 1px solid #bbb"></div>
+<div style="flex-grow: 1; display: flex">
+<div style="width: 168px; background: #fff; border-right: 1px solid #bbb"></div>
+<div style="flex-grow: 1; padding: 10px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px"><div class="blk"></div><div class="blk"></div><div class="blk"></div></div>
+</div>
+<div style="position: absolute; left: 0; top: 0; width: 1280px; height: 720px; background: rgba(40,40,40,.45)"></div>
+
+<div role="dialog" aria-label="Early ASIC orders" style="position: absolute; left: 120px; top: 36px; width: 1040px; height: 648px; box-sizing: border-box; background: #f7f7f7; border: 1px solid #777; border-radius: 8px; padding: 20px 24px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: baseline">
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lab">Q1 2013 · offers</span><span style="font-weight: 600; font-size: 20px">Early ASIC orders</span></div>
+<a class="btn" href="#" aria-label="Close" style="height: 30px">Close ×</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; flex-grow: 1; min-height: 0">
+<div class="card">
+<div style="display: flex; justify-content: space-between"><span class="lab">Pre-order</span><span class="m sm mut">1 unit</span></div>
+<span style="font-weight: 600; font-size: 16px">Summit Silicon · early ASIC</span>
+<div class="ph" style="height: 110px"><svg class="x" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0L100 100M100 0L0 100" stroke="#aaa" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"></path></svg><span style="position: relative; background: #e9e9e9; padding: 2px 6px">Machine card · asic-preorder-2013</span></div>
+<div class="kv"><span>Price</span><span class="m" style="font-weight: 600">$1,300</span></div>
+<div class="kv"><span>Promised delivery</span><span class="m">Q2 2013</span></div>
+<div class="kv"><span>If never delivered</span><span class="m">50% refund</span></div>
+<span class="lab">Delivery odds</span>
+<div class="odds" aria-label="45% on time, 35% 2 to 3 quarters late, 15% 4 or more late, 5% never"><i style="width: 45%; background: #f2f2f2"></i><i style="width: 35%; background: #bdbdbd"></i><i style="width: 15%; background: #7a7a7a"></i><i style="width: 5%; background: #2b2b2b"></i></div>
+<div class="leg"><span><span class="sw" style="background: #f2f2f2"></span>45% on time</span><span><span class="sw" style="background: #bdbdbd"></span>35% 2–3 Q late</span><span><span class="sw" style="background: #7a7a7a"></span>15% 4+ late</span><span><span class="sw" style="background: #2b2b2b"></span>5% never</span></div>
+<span style="font-weight: 600">Paid upfront. Late delivery usually means a loss.</span>
+<div style="display: flex; gap: 8px; margin-top: auto"><a class="btn" href="#" style="border-width: 2px; border-color: #222; font-weight: 600">Order (0 BW)</a><a class="btn" href="#">Pass</a></div>
+</div>
+
+<div class="card">
+<div style="display: flex; justify-content: space-between"><span class="lab">Group buy</span><span class="m sm mut">½ unit</span></div>
+<span style="font-weight: 600; font-size: 16px">Forum group buy · half a unit</span>
+<div class="ph" style="height: 110px"><svg class="x" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0L100 100M100 0L0 100" stroke="#aaa" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"></path></svg><span style="position: relative; background: #e9e9e9; padding: 2px 6px">Machine card · asic-preorder-2013, shared</span></div>
+<div class="kv"><span>Price</span><span class="m" style="font-weight: 600">$650</span></div>
+<div class="kv"><span>Your share</span><span class="m">½ the hashrate</span></div>
+<div class="kv"><span>Promised delivery</span><span class="m">Q2 2013</span></div>
+<div class="kv"><span>If never delivered</span><span class="m">40% refund</span></div>
+<span class="lab">Delivery odds · slightly worse</span>
+<div class="odds" aria-label="40% on time, 35% 2 to 3 quarters late, 18% 4 or more late, 7% never"><i style="width: 40%; background: #f2f2f2"></i><i style="width: 35%; background: #bdbdbd"></i><i style="width: 18%; background: #7a7a7a"></i><i style="width: 7%; background: #2b2b2b"></i></div>
+<div class="leg"><span><span class="sw" style="background: #f2f2f2"></span>40% on time</span><span><span class="sw" style="background: #bdbdbd"></span>35% 2–3 Q late</span><span><span class="sw" style="background: #7a7a7a"></span>18% 4+ late</span><span><span class="sw" style="background: #2b2b2b"></span>7% never</span></div>
+<span class="sm">Shared with forum friends. The organiser runs the machine and pays out your half: a second thing that can go wrong.</span>
+<div style="display: flex; gap: 8px; margin-top: auto"><a class="btn" href="#" style="border-width: 2px; border-color: #222; font-weight: 600">Order (0 BW)</a><a class="btn" href="#">Pass</a></div>
+</div>
+</div>
+<span class="sm mut">Went to a conference first? Your contact moves 10 points of the odds into "on time".</span>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

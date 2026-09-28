@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P0-07 Prologue chapter report</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#1f5fbf;border-color:#1f5fbf;color:#fff;font-weight:600}
+.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #ddd;padding:4px 0}
+</style>
+</helmet>
+<div class="s" style="padding: 20px 28px; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #222; padding-bottom: 10px">
+<div style="display: flex; flex-direction: column; gap: 3px"><span class="lab">Prologue complete · Jan 2009 → Dec 2016</span><span style="font-weight: 700; font-size: 28px">Bedroom to Garage</span></div>
+<div style="border: 1px solid #777; border-radius: 4px; padding: 6px 14px; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; background: #fff"><span class="lab">Your title</span><span style="font-weight: 600; font-size: 16px">The careful holder</span></div>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 14px">
+<div style="display: flex; flex-direction: column; gap: 12px; min-height: 0">
+<section class="p">
+<span class="lab">Net worth, Dec 2016</span>
+<span class="m" style="font-size: 30px; font-weight: 600">≈ $3.9M</span>
+<div class="kv"><span>BTC · 3,900 × $960</span><span class="m">$3.74M</span></div>
+<div class="kv"><span>ETH</span><span class="m">$0</span></div>
+<div class="kv"><span>Cash</span><span class="m">$120K</span></div>
+<div class="kv" style="border-bottom: 0"><span>Machines · 3 ASICs + 1 GPU rig</span><span class="m">≈ $6K</span></div>
+</section>
+<section class="p">
+<span class="lab">Coins over the prologue</span>
+<div class="kv"><span>Mined</span><span class="m">5,400 BTC</span></div>
+<div class="kv"><span>Sold over the years</span><span class="m">1,200 BTC</span></div>
+<div class="kv"><span>Lost</span><span class="m dn">−300 BTC</span></div>
+<span class="sm">300 BTC lost in the Mt Gox collapse, Feb 2014</span>
+<div class="kv" style="border-bottom: 0; font-weight: 600"><span>Kept</span><span class="m">3,900 BTC</span></div>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px; min-height: 0">
+<section class="p" style="flex-grow: 1">
+<div style="display: flex; justify-content: space-between"><span class="h">Your career, 2009 → 2016</span><span class="sm mut">net worth · log scale</span></div>
+<svg viewBox="0 0 720 230" width="100%" height="100%" preserveAspectRatio="xMidYMid meet" aria-label="Net worth on a log scale from about 2 thousand dollars in 2009 to about 3.9 million in 2016, with markers for the bubbles, the halvings and Mt Gox">
+<g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#666">
+<text x="0" y="204">$1K</text><text x="0" y="159">$10K</text><text x="0" y="114">$100K</text><text x="0" y="69">$1M</text><text x="0" y="24">$10M</text>
+<text x="34" y="222">2009</text><text x="114" y="222">2010</text><text x="194" y="222">2011</text><text x="274" y="222">2012</text><text x="354" y="222">2013</text><text x="434" y="222">2014</text><text x="514" y="222">2015</text><text x="594" y="222">2016</text>
+</g>
+<path d="M40 200H700M40 155H700M40 110H700M40 65H700M40 20H700" stroke="#e2e2e2"></path>
+<g stroke="#999" stroke-dasharray="3 3">
+<path d="M236 20V200"></path><path d="M350 20V200"></path><path d="M432 20V200"></path><path d="M449 20V200"></path><path d="M642 20V200"></path>
+</g>
+<g font-size="10" fill="#444" font-family="system-ui,sans-serif">
+<text x="240" y="196">2011 bubble</text><text x="354" y="186">halving</text><text x="398" y="14">2013 bubble</text><text x="453" y="186">Mt Gox</text><text x="646" y="186">halving</text>
+</g>
+<path d="M40 186 L120 182 L200 170 L236 117 L280 141 L360 118 L400 85 L432 36 L449 50 L480 60 L520 68 L600 58 L676 38" fill="none" stroke="#222" stroke-width="2.5"></path>
+<circle cx="676" cy="38" r="4" fill="#222"></circle>
+</svg>
+</section>
+<section class="p" style="flex-direction: row; align-items: center; gap: 14px">
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 3px"><span class="lab">What your 2010 coins would be worth in 2021</span><span><span class="m">[N] BTC</span> mined in 2010 would be worth <span class="m">$[X]</span> at the Nov 2021 peak.</span></div>
+<a class="btn pri" href="#">Continue to Act I (2017) →</a>
+</section>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

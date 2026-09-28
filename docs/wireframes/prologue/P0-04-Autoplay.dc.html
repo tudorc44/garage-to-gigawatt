@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P0-04 Auto-played quarters</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.blk{background:#e3e3e3;border:1px solid #ccc;border-radius:4px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#1f5fbf;border-color:#1f5fbf;color:#fff;font-weight:600}
+.up{color:#1a7f37}.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.seg{display:inline-flex;border:1px solid #777;border-radius:4px;overflow:hidden}
+.seg span{padding:4px 9px;font-size:11px}
+.seg .on{background:#333;color:#fff}
+.card{width:260px;background:#fff;border:1px solid #888;border-radius:6px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.ph{border:1px dashed #999;background:#e9e9e9;position:relative;display:flex;align-items:center;justify-content:center;color:#666;font-size:11px;overflow:hidden}
+.ph .x{position:absolute;left:0;top:0;width:100%;height:100%}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid #777;border-radius:3px;padding:1px 6px;color:#444}
+</style>
+</helmet>
+<div class="s">
+<div style="height: 48px; background: #fff; border-bottom: 1px solid #bbb"></div>
+<div style="flex-grow: 1; display: flex">
+<div style="width: 168px; background: #fff; border-right: 1px solid #bbb"></div>
+<div style="flex-grow: 1; padding: 10px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div class="blk"></div><div class="blk"></div><div class="blk"></div>
+</div>
+</div>
+<div style="position: absolute; left: 0; top: 0; width: 1280px; height: 720px; background: rgba(40,40,40,.45)"></div>
+
+<div style="position: absolute; left: 0; top: 0; width: 1280px; height: 720px; box-sizing: border-box; padding: 40px 48px; display: flex; flex-direction: column; gap: 28px">
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span class="lab" style="color: #fff">Sequence · one card per skipped quarter, ~2 s each</span>
+<div style="display: flex; align-items: center; gap: 16px">
+<div class="card" style="opacity: .6">
+<div style="display: flex; justify-content: space-between"><span class="m" style="font-weight: 600">Q1 2012</span><span class="tag">Auto-played</span></div>
+<span class="m">mined 62 BTC · BTC $5.77 <span class="up">▲27%</span> · difficulty −3%</span>
+<div style="display: flex; justify-content: space-between; align-items: center"><a class="btn" href="#">Pause here</a><div class="seg" role="group" aria-label="Speed"><span class="on">1×</span><span>2×</span><span>4×</span></div></div>
+</div>
+<span style="color: #fff; font-size: 20px">→</span>
+<div class="card" style="opacity: .8">
+<div style="display: flex; justify-content: space-between"><span class="m" style="font-weight: 600">Q2 2012</span><span class="tag">Auto-played</span></div>
+<span class="m">mined 48 BTC · BTC $7.34 <span class="up">▲27%</span> · difficulty +40%</span>
+<div style="display: flex; justify-content: space-between; align-items: center"><a class="btn" href="#">Pause here</a><div class="seg" role="group" aria-label="Speed"><span class="on">1×</span><span>2×</span><span>4×</span></div></div>
+</div>
+<span style="color: #fff; font-size: 20px">→</span>
+<div class="card" style="border: 2px solid #222">
+<div style="display: flex; justify-content: space-between"><span class="m" style="font-weight: 600">Q3 2012</span><span class="tag">Now</span></div>
+<span class="m">mined 41 BTC · BTC $11 <span class="up">▲55%</span> · difficulty +39%</span>
+<div style="height: 4px; background: #e2e2e2; border-radius: 2px"><div style="width: 60%; height: 4px; background: #555; border-radius: 2px"></div></div>
+<div style="display: flex; justify-content: space-between; align-items: center"><a class="btn" href="#">Pause here</a><div class="seg" role="group" aria-label="Speed"><span class="on">1×</span><span>2×</span><span>4×</span></div></div>
+</div>
+</div>
+<span class="sm" style="color: #eee">Older cards fade and stack; the bar shows the 2-second timer. Difficulty is shown as a plain change, not red/green (a rise is not a gain or a loss).</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 12px">
+<span class="lab" style="color: #fff">Interrupted · an event fires during auto-play</span>
+<div style="display: flex; align-items: flex-start; gap: 24px">
+<div class="card">
+<div style="display: flex; justify-content: space-between"><span class="m" style="font-weight: 600">Q4 2012</span><span class="tag">Paused · event</span></div>
+<span class="m">BTC $13 · halving: block reward 50 → 25 BTC</span>
+<span class="sm mut">Auto-play resumes after you decide.</span>
+</div>
+<div style="width: 560px; background: #fff; border: 1px solid #888; border-radius: 6px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.18)">
+<div style="display: flex; justify-content: space-between"><span class="lab">Event · Q4 2012</span><span class="m sm mut">0 BW</span></div>
+<span style="font-weight: 600; font-size: 18px">Pre-orders open for bitcoin-only machines</span>
+<div class="ph" style="height: 90px"><svg class="x" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0 0L100 100M100 0L0 100" stroke="#aaa" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"></path></svg><span style="position: relative; background: #e9e9e9; padding: 2px 6px">Machine card · asic-preorder-2013</span></div>
+<span>A new company is taking orders for mining machines built only for bitcoin. Pay now; delivery is promised for next quarter.</span>
+<div style="display: flex; gap: 10px"><a class="btn pri" href="#" style="height: 36px">See the offer →</a><a class="btn" href="#" style="height: 36px">Not now, keep playing</a></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

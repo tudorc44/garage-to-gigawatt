@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>P0-05 Coins and custody</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.top{height:48px;flex-shrink:0;display:flex;align-items:center;gap:20px;padding:0 16px;background:#fff;border-bottom:1px solid #bbb}
+.st{display:flex;flex-direction:column;gap:1px}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.nav{width:168px;flex-shrink:0;background:#fff;border-right:1px solid #bbb;padding:10px 0;display:flex;flex-direction:column}
+.nav a{padding:9px 16px;color:#444;text-decoration:none}
+.nav a.on{background:#e4e4e4;color:#111;font-weight:600}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.row{display:flex;align-items:center;gap:8px}
+.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#1f5fbf;border-color:#1f5fbf;color:#fff;font-weight:600}
+.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.pip{width:9px;height:9px;border-radius:50%;background:#444;display:inline-block}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid #777;border-radius:3px;padding:1px 6px;color:#444}
+table{border-collapse:collapse;width:100%}
+td,th{padding:6px 6px;border-bottom:1px dashed #ddd;text-align:left;font-weight:400;vertical-align:top}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#666}
+.r{text-align:right}
+input,select{font:inherit;font-size:12px;height:28px;box-sizing:border-box;border:1px solid #999;border-radius:4px;padding:0 6px;background:#fff}
+</style>
+</helmet>
+<div class="s">
+<header class="top">
+<div class="st"><span class="lab">Date</span><span class="m">Q2 2011 · Plan</span></div>
+<span class="tag">Prologue</span>
+<div class="st"><span class="lab">Cash</span><span class="m" style="font-weight: 600">$1,150</span></div>
+<div class="st"><span class="lab">Coins</span><span class="m">Wallet 4,200 BTC · Exchange 300 BTC</span></div>
+<div class="st"><span class="lab">BTC</span><span class="m">$0.75</span></div>
+<div class="st"><span class="lab">Difficulty</span><span class="m">68,978</span></div>
+<div class="st"><span class="lab">Bandwidth</span><span class="row" style="gap: 4px; padding-top: 3px"><span class="pip"></span><span class="pip"></span></span></div>
+<div style="flex-grow: 1"></div>
+<a class="btn" href="#">Settings</a>
+</header>
+<div style="flex-grow: 1; display: flex; min-height: 0">
+<nav class="nav">
+<a href="#">Dashboard</a>
+<a href="#">Machines &amp; Rooms</a>
+<a class="on" href="#">Coins</a>
+<a href="#">Log</a>
+</nav>
+<main style="flex-grow: 1; padding: 10px; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 10px; min-width: 0">
+
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<div class="row sb"><span class="h">Where your coins are</span><span class="m sm mut">4,500 BTC · $3.4K</span></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Your wallet</span><span class="m" style="font-size: 18px">4,200 BTC</span><span class="m sm mut">$3.2K · 93%</span></div>
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px"><span class="lab">On the exchange</span><span class="m" style="font-size: 18px">300 BTC</span><span class="m sm mut">$225 · 7%</span></div>
+</div>
+<span class="lab">History · BTC by location</span>
+<svg viewBox="0 0 560 130" width="100%" height="130" aria-label="Wallet balance growing to 4,200 BTC; exchange balance small">
+<path d="M30 10H555M30 60H555M30 110H555" stroke="#ddd" stroke-dasharray="2 3"></path>
+<text x="0" y="14" font-size="10" fill="#666" font-family="ui-monospace,Menlo,monospace">4K</text>
+<text x="0" y="64" font-size="10" fill="#666" font-family="ui-monospace,Menlo,monospace">2K</text>
+<text x="0" y="114" font-size="10" fill="#666" font-family="ui-monospace,Menlo,monospace">0</text>
+<path d="M30 110 L88 108 L146 104 L204 97 L262 88 L320 76 L378 62 L436 46 L494 28 L552 14" fill="none" stroke="#333" stroke-width="2"></path>
+<path d="M30 110 L88 110 L146 110 L204 109 L262 108 L320 106 L378 104 L436 107 L494 104 L552 103" fill="none" stroke="#333" stroke-width="1.5" stroke-dasharray="5 3"></path>
+<text x="30" y="128" font-size="10" fill="#666" font-family="ui-monospace,Menlo,monospace">Q1 2009</text>
+<text x="496" y="128" font-size="10" fill="#666" font-family="ui-monospace,Menlo,monospace">Q2 2011</text>
+</svg>
+<div class="row sm mut"><span>━ wallet</span><span>╌ exchange</span><span>(illustrative history)</span></div>
+</section>
+
+<section class="p">
+<span class="h">Move coins</span>
+<div class="row">
+<label class="sm" for="amt">Move</label><input id="amt" class="m" value="500" style="width: 80px"><span class="m sm">BTC</span>
+<label class="sm" for="dir">from</label>
+<select id="dir"><option>Wallet → Exchange</option><option>Exchange → Wallet</option></select>
+<a class="btn" href="#">Move</a>
+</div>
+<span class="sm mut">Takes 1 week · 0 Bandwidth. You can only sell coins that sit on an exchange.</span>
+<div style="border: 1px dashed #777; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px">
+<span class="lab">Selling limit</span>
+<span>You can sell up to <span class="m" style="font-weight: 600">1,850 BTC</span> this quarter (share of real exchange volume); big sales push the price down.</span>
+</div>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<div class="row sb"><span class="h">Backup</span><span class="tag">✓ Backed up</span></div>
+<span>A copy of your wallet keys on a USB stick in a drawer.</span>
+<span class="sm mut">Protects the 4,200 BTC in your wallet if your PC's drive dies or the laptop is wiped. Does nothing for coins on the exchange.</span>
+<span class="sm mut">Backing up is a 1 BW action on the Plan screen; this panel shows its status.</span>
+</section>
+
+<section class="p">
+<span class="h">The risks, in plain words</span>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">On the exchange</span><span class="sm">Someone else holds your coins. Exchanges get hacked and some close for good. If that happens, coins there may be gone.</span></div>
+<div style="display: flex; flex-direction: column; gap: 2px"><span style="font-weight: 600">In your wallet</span><span class="sm">You hold the keys. Lose them and the coins are gone: about <span class="m">3%</span> a year without a backup, about <span class="m">0.5%</span> with one.</span></div>
+</section>
+
+<section class="p" style="flex-grow: 1">
+<div class="row sb"><span class="h">Lost coins</span><span class="m sm mut">120 BTC so far</span></div>
+<table>
+<thead><tr><th>When</th><th class="r">Coins</th><th>What happened</th></tr></thead>
+<tbody>
+<tr><td class="m">Q3 2010</td><td class="m r dn">−120 BTC</td><td>Lost key: old laptop wiped before your first backup</td></tr>
+</tbody>
+</table>
+<span class="sm mut">Exchange hacks and lost keys land here, with the date and the value at the time.</span>
+</section>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Prologue component sheet</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.cell{background:#fff;border:1px solid #bbb;border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:12px}
+.ct{font-weight:600;font-size:15px}
+.spec{font-size:11.5px;color:#555;line-height:1.45}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:9px 11px;display:flex;flex-direction:column;gap:7px}
+.row{display:flex;align-items:center;gap:8px}
+.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:26px;padding:0 10px;border:1px solid #777;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.up{color:#1a7f37}.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.bar{height:8px;background:#e2e2e2;border-radius:4px;overflow:hidden;display:flex}
+.bar i{display:block;height:100%;background:#555}
+.seg{display:inline-flex;border:1px solid #777;border-radius:4px;overflow:hidden}
+.seg span{padding:4px 12px;font-size:12px}
+.seg .on{background:#333;color:#fff}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid #777;border-radius:3px;padding:1px 6px;color:#444}
+.odds{display:flex;height:12px;border:1px solid #777;border-radius:3px;overflow:hidden}
+.odds i{display:block;height:100%}
+.offer{border:1px solid #999;border-radius:4px;padding:8px 10px;display:flex;flex-direction:column;gap:6px;background:#fafafa}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #ddd;padding:3px 0;font-size:12px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:6px 6px;border-bottom:1px dashed #ddd;text-align:left;font-weight:400;vertical-align:top;font-size:12px}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#666}
+.r{text-align:right}
+</style>
+</helmet>
+<div style="width: 2640px; height: 1300px; box-sizing: border-box; padding: 32px; background: #f2f2f2; font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, sans-serif; font-size: 12.5px; color: #222; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 20px">
+
+<div class="cell">
+<span class="ct">Solo / pool toggle with odds</span>
+<div class="p">
+<div class="row sb"><span style="font-weight: 600">Mining mode</span><div class="seg"><span class="on">Solo</span><span>Pool</span></div></div>
+<div class="row" style="align-items: stretch">
+<div style="flex: 1; border: 2px solid #222; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Solo · selected</span><span>About 1–2 blocks a week at your share</span><span class="m sm mut">50 BTC a block · some weeks nothing</span></div>
+<div style="flex: 1; border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Pool</span><span>≈ 78 BTC a week, steady</span><span class="m sm mut">−2% fee</span></div>
+</div>
+</div>
+<div class="p">
+<div class="row sb"><span style="font-weight: 600">Mining mode · 2013</span><div class="seg"><span>Solo</span><span class="on">Pool</span></div></div>
+<div class="row" style="align-items: stretch">
+<div style="flex: 1; border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Solo</span><span>About 1 block every [N] years</span><span class="m sm mut">a lottery ticket</span></div>
+<div style="flex: 1; border: 2px solid #222; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Pool · selected</span><span>≈ [N] BTC a week, steady</span><span class="m sm mut">−2% fee</span></div>
+</div>
+</div>
+<span class="spec">Odds always in plain words: blocks per week (or years per block) for solo, BTC per week after the fee for pool. The choice fades by itself as difficulty rises; there is no forced switch.</span>
+</div>
+
+<div class="cell">
+<span class="ct">Custody panel (wallet / exchange / backup)</span>
+<div class="p">
+<div class="row sb"><span style="font-weight: 600">Coins</span><a class="btn" href="#">Move…</a></div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Wallet</span><span class="m" style="font-size: 15px">4,200 BTC</span><span class="sm">Backup ✓</span></div>
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Exchange</span><span class="m" style="font-size: 15px">300 BTC</span><span class="sm">Ready to sell</span></div>
+</div>
+<span class="sm"><strong>Exchange:</strong> hack and collapse risk</span>
+<span class="sm"><strong>Wallet:</strong> 3%/yr lost-key risk, ≈0.5% with a backup</span>
+</div>
+<div class="p">
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 7px 8px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Wallet · no backup</span><span class="m" style="font-size: 15px">4,200 BTC</span><span class="row sm"><span>Backup ✗</span><a class="btn" href="#">Back up · 1 BW</a></span></div>
+</div>
+<span class="spec">Two balances, one risk line each. Backup state lives on the wallet tile; without one, the tile carries the 1 BW action.</span>
+</div>
+
+<div class="cell">
+<span class="ct">Selling-limit line</span>
+<div style="border: 1px dashed #777; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Selling limit</span><span>You can sell up to <span class="m" style="font-weight: 600">1,850 BTC</span> this quarter (share of real exchange volume); big sales push the price down.</span></div>
+<div style="border: 1.5px dashed #222; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px"><span class="lab">Selling limit · near it</span><span>Selling <span class="m">1,700</span> of <span class="m">1,850 BTC</span>. Expect a lower price on the last part.</span></div>
+<span class="spec">Sits under the keep / sell slider and inside Coins. It is a sentence, not a meter: the limit changes every quarter with real exchange volume.</span>
+<span class="ct" style="margin-top: 8px">Household meter</span>
+<div class="p">
+<div class="row sb sm"><span class="lab">Household load</span><span class="m">0.6 of 1.44 kW</span></div>
+<div class="bar"><i style="width: 42%"></i></div>
+<div class="row sb sm"><span class="lab">Parents' patience</span><span class="m">72%</span></div>
+<div class="bar"><i style="width: 72%; background: #888"></i></div>
+</div>
+<div class="p">
+<div class="row sb sm"><span class="lab">Household load · near the cap</span><span class="m">1.3 of 1.44 kW</span></div>
+<div class="bar"><i style="width: 90%; background: repeating-linear-gradient(45deg, #555 0 4px, #999 4px 8px)"></i></div>
+<div class="row sb sm"><span class="lab">Parents' patience</span><span class="m">24%</span></div>
+<div class="bar"><i style="width: 24%; background: repeating-linear-gradient(45deg, #555 0 4px, #999 4px 8px)"></i></div>
+</div>
+<span class="spec">Hatched fill = danger, as in Acts I–II. Gone once you move out.</span>
+</div>
+
+<div class="cell">
+<span class="ct">Auto-play card (+ interrupted)</span>
+<div style="border: 2px solid #222; border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<div class="row sb"><span class="m" style="font-weight: 600">Q3 2012</span><span class="tag">Auto-played</span></div>
+<span class="m">mined 41 BTC · BTC $11 <span class="up">▲55%</span> · difficulty +39%</span>
+<div style="height: 4px; background: #e2e2e2; border-radius: 2px"><div style="width: 60%; height: 4px; background: #555; border-radius: 2px"></div></div>
+<div class="row sb"><a class="btn" href="#">Pause here</a><div class="seg"><span class="on">1×</span><span>2×</span><span>4×</span></div></div>
+</div>
+<div style="border: 1px solid #888; border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; background: #fafafa">
+<div class="row sb"><span class="m" style="font-weight: 600">Q4 2012</span><span class="tag">Paused · event</span></div>
+<span class="m">BTC $13 · halving: block reward 50 → 25 BTC</span>
+<span class="sm mut">The event card opens above; auto-play resumes after you decide.</span>
+</div>
+<span class="spec">~2 s per card with a timer bar; older cards fade and stack. Price change is red/green; difficulty change stays neutral.</span>
+</div>
+
+<div class="cell">
+<span class="ct">Pre-order card</span>
+<div style="border: 1px solid #888; border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<div class="row sb"><span class="lab">Pre-order</span><span class="m sm mut">1 unit</span></div>
+<span style="font-weight: 600">Summit Silicon · early ASIC</span>
+<div class="kv"><span>Price</span><span class="m">$1,300</span></div>
+<div class="kv"><span>Promised delivery</span><span class="m">Q2 2013</span></div>
+<div class="odds"><i style="width: 45%; background: #f2f2f2"></i><i style="width: 35%; background: #bdbdbd"></i><i style="width: 15%; background: #7a7a7a"></i><i style="width: 5%; background: #2b2b2b"></i></div>
+<span class="sm">45% on time · 35% 2–3 Q late · 15% 4+ late · 5% never</span>
+<span style="font-weight: 600; font-size: 12px">Paid upfront. Late delivery usually means a loss.</span>
+<div class="row"><a class="btn" href="#">Order (0 BW)</a><a class="btn" href="#">Pass</a></div>
+</div>
+<span class="spec">Odds bar runs light (good) to dark (bad), with the percentages written out: never colour-coded red/green. The roll is seeded at order time.</span>
+</div>
+
+<div class="cell">
+<span class="ct">Group-buy card</span>
+<div style="border: 1px solid #888; border-radius: 6px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+<div class="row sb"><span class="lab">Group buy</span><span class="m sm mut">½ unit</span></div>
+<span style="font-weight: 600">Forum group buy · half a unit</span>
+<div class="kv"><span>Price</span><span class="m">$650</span></div>
+<div class="kv"><span>Your share</span><span class="m">½ the hashrate</span></div>
+<div class="odds"><i style="width: 40%; background: #f2f2f2"></i><i style="width: 35%; background: #bdbdbd"></i><i style="width: 18%; background: #7a7a7a"></i><i style="width: 7%; background: #2b2b2b"></i></div>
+<span class="sm">40% on time · 35% 2–3 Q late · 18% 4+ late · 7% never</span>
+<span class="sm">The organiser runs the machine and pays out your half.</span>
+<div class="row"><a class="btn" href="#">Order (0 BW)</a><a class="btn" href="#">Pass</a></div>
+</div>
+<span class="spec">Same card as the pre-order plus a share row and the organiser line; the odds are slightly worse.</span>
+</div>
+
+<div class="cell">
+<span class="ct">Offer card</span>
+<div class="offer">
+<span class="lab">Forum · buyer</span>
+<span>A forum buyer offers <span class="m">$0.70</span>/BTC for <span class="m">500 BTC</span></span>
+<span class="m sm mut">= $350 · below market by 7%</span>
+<div class="row"><a class="btn" href="#">Accept</a><a class="btn" href="#">Decline</a></div>
+</div>
+<div class="offer">
+<span class="lab">No-price era · forum (illustrative)</span>
+<span>Someone offers <span class="m">$5</span> for <span class="m">1,000 BTC</span> "to try it out"</span>
+<span class="m sm mut">no market price yet</span>
+<div class="row"><a class="btn" href="#">Accept</a><a class="btn" href="#">Decline</a></div>
+</div>
+<div class="offer">
+<span class="lab">Pre-order · Q4 2012</span>
+<span>Summit Silicon is taking orders</span>
+<div class="row"><a class="btn" href="#">See the offer</a><a class="btn" href="#">Dismiss</a></div>
+</div>
+<span class="spec">At most 2 in the tray. Each shows who, what and the price against the market in one line.</span>
+</div>
+
+<div class="cell">
+<span class="ct">Lost-coins ledger row</span>
+<table>
+<thead><tr><th>When</th><th class="r">Coins</th><th>What happened</th></tr></thead>
+<tbody>
+<tr><td class="m">Q3 2010</td><td class="m r dn">−120 BTC</td><td>Lost key: old laptop wiped before your first backup</td></tr>
+<tr><td class="m">Feb 2014</td><td class="m r dn">−300 BTC</td><td>Exchange collapse: Mt Gox stops withdrawals</td></tr>
+</tbody>
+</table>
+<span class="spec">Date, coins (red, with −) and a plain cause. Value at the time can sit in a hover.</span>
+</div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":2640,"height":1300}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
