@@ -33,6 +33,8 @@
 | Ratepayer Anger (new, per region) | Rises with MW built in the region; feeds Heat and moratorium cards |
 | Valuation | Σ(unit EBITDA × 4 × unit multiple) + cash + treasury − debt + **projects under construction at capex spent so far** (owner decision 27 Sep 2026; they stop counting at cost once live and earning) + credit-weighted backlog (tenant A/AA 20%, backstopped 20%, BBB 15%, AI lab 8%, spot 0%; raised from 15/10/10/5 by the owner, 28 Sep 2026; A/AA was set to 25% and cut to 20% by the owner's EV/MW rule). Contracted AI EBITDA with an A/AA or backstopped tenant and ≥ 5 years left is valued at max(era AI multiple, 15×) (M7.0; was 18×). The backlog shown on the top bar and dashboard is the **remaining contracted revenue, unweighted**; only the valuation applies the weights. Era multiples: doc 18 §8 table (AI infra 2026: 24 → 20 → 18 → 15). Pivot premium: mining multiple +2 from the quarter the first AI deal is signed |
 
+The 15× contracted-AI floor stays as it is (owner, 28 Sep 2026): it doesn't bind at 2026Q4, where the era AI multiple is itself 15×, and that is fine; it only matters in the years when the era multiple is above it.
+
 ### 2.3 Market (scripted, from `docs/act2-content/` market files)
 - **BTC:** weekly price, difficulty, hashrate, fee share and hashprice. **Hashprice is derived** from price, subsidy, fees and hashrate, as in Act I. The halving is on **20 Apr 2024** (subsidy 3.125 from the week of 22 Apr).
 - **ETH:** weekly price 2022Q4 → 2026Q4 from real month-end closes (it values the ETH treasury and ETH-backed loans; no ETH mining after the Merge).
@@ -182,17 +184,17 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
 - [ ] Save, reload and export/import work in Act II, including mid-quarter and across the act boundary
 
 **Balance**
-- [ ] Good path (20–40 MW entry) ends Act II at **~$0.5–2B** (M7.0, revised by the owner's A1 rule; was $1–3B), with **≤ 10% of runs going bust in Act II** (added 28 Sep 2026); the top half of the band needs at least one sold or stabilized project. Judged by the 20–40 MW entry bots, not the overleveraged one. The preset is judged against the same band.
+- [ ] Good path (20–40 MW entry) ends Act II at **~$0.5–2B** (M7.0, revised by the owner's A1 rule; was $1–3B), with **≤ 10% of runs going bust in Act II** (added 28 Sep 2026); the top half of the band needs at least one sold or stabilized project. Judged by the 20–40 MW entry bots, not the overleveraged one. The preset is judged against the same band. **Accepted MISS (owner, 28 Sep 2026):** the good path stands at $412M (M7.0 sims), the preset's best bot at $181.9M; no tuning, and lever (c) (JV / backstop for 20–100 MW builds) is not tried.
 - [ ] Great path (100+ MW entry) peaks at **$4–8B** in 2025 (M7.0; was $10B+) and survives 2026 with ≥ 12 months of runway
 - [ ] Pure miner ends at **~$100–400M**, alive
-- [ ] Overleveraged full stack (> 4× debt/EBITDA, AI-lab tenant, no backstop): **≥ 40% of runs end in foreclosure or a forced sale** in 2026 (M7.0; was > 6× and ≥ 50% foreclosure)
+- [ ] Overleveraged full stack (> 4× debt/EBITDA, AI-lab tenant, no backstop): **≥ 40% of runs end in foreclosure, a forced sale or an emergency equity raise** in 2026 (M7.0; was > 6× and ≥ 50% foreclosure; the emergency raise, the A8 rescue's second step, counts as a hit from M8.1, owner 28 Sep 2026; no game rule changed)
 - [ ] A 2-quarter delay costs **≥ 80%** of a full-stack project's profit
 - [ ] A 2024 full-stack contract beats a post-Jun-2025 one by **≥ 30%** IRR (a floor, not a target)
 - [ ] **Pilot timing:** a 1 MW pilot started in 2023Q3 returns **≥ 1.7×** its cost by 2026Q4 (operating margin + GPU resale on the residual curve), and at least 0.4× more than the same pilot started in 2025Q2 (revised 27 Sep 2026: the M4 sim gives 1.89× vs 1.39×)
 - [ ] **Hosting isn't a free win:** switching mining MW to hosting doesn't beat staying in mining at 2026Q4 in more than ~60% of bot runs (hosting is meant to pay early and carry its risk over the full act; revised 27 Sep 2026 after the M3/M4 sims)
-- [ ] A lifeline run (weak Act I) reaches at least one live AI project by 2024Q4 in ≥ 70% of runs (via the 5 MW shell path)
+- [ ] A lifeline run (weak Act I) reaches at least one live AI project by 2024Q4 in ≥ 70% of runs (via the 5 MW shell path). **Accepted MISS (owner, 28 Sep 2026):** 61/120 in the M7.0 sims (66/120 after the M8.1 bridge-payment bot fix); not tuned
 - [ ] Each Merge head start produces a different best opening strategy (checked by bot comparisons)
-- [ ] **EV/MW sanity check:** pure mining ~$0.4–1.2M/MW, announced AI $3–15M/MW (M7.0; was $3–12M), stabilized IG-backed $18–27M/MW
+- [ ] **EV/MW sanity check:** pure mining ~$0.4–1.2M/MW, announced AI $3–15M/MW (M7.0; was $3–12M), stabilized IG-backed $18–27M/MW. A category with no mining EBITDA left (a mining EV/MW of $0 because the last miners are worth nothing) isn't judged against the pure-mining band: the sim prints "n/a (no mining left)" (M8.1, owner 28 Sep 2026)
 
 **Quality**
 - [ ] Golden replays pass for Act I, Act II alone and Act I → II

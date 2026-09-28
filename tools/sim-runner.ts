@@ -728,6 +728,9 @@ if (args.includes('--act2')) {
   const s5: { target: string; result: string; numbers: string }[] = []
   const verdict = (pass: boolean | null) =>
     pass === null ? '—' : pass ? 'PASS' : 'MISS'
+  // Misses the owner accepted as they stand (28 Sep 2026, M8.1a): good path, lifeline, preset.
+  const acceptedVerdict = (pass: boolean) =>
+    pass ? 'PASS' : 'MISS (accepted, owner 28 Sep 2026)'
   // The breakdown at 2026Q4 and at the run's 2025 peak, one row per run, in act2-valuation.csv.
   const pointsOf = (name: string, r: Run) => {
     const seen = breakdowns.get(`${name}:${r.seed}`)!
@@ -916,7 +919,7 @@ if (args.includes('--act2')) {
     if (name === 'sign-then-raise')
       s5.push({
         target: `Good path ~${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])} at 2026Q4, ≤ 10% bust in Act II`,
-        result: verdict(
+        result: acceptedVerdict(
           median(ends) >= GOOD_BAND[0] &&
             median(ends) <= GOOD_BAND[1] &&
             busts <= runs.length * 0.1,
@@ -1029,7 +1032,7 @@ if (args.includes('--act2')) {
   s5.push({
     target: 'Lifeline runs have a live AI project by 2024Q4 in ≥ 70%',
     result: botCounts
-      ? verdict(liveBy >= lifelineRuns.length * 0.7)
+      ? acceptedVerdict(liveBy >= lifelineRuns.length * 0.7)
       : 'not counted',
     numbers: `${liveBy}/${lifelineRuns.length}; lifeline-shell alive at 2026Q4 in ${lifelineAlive}/${lifelineBot?.length ?? 0}`,
   })
@@ -1049,7 +1052,8 @@ if (args.includes('--act2')) {
   }
   // Overleveraged full stack (owner, M7.0 answer A3): debt/EBITDA > 4×, AI-lab tenant, no backstop →
   // ≥ 40% of runs end in a foreclosure or a forced sale (coins / machines, or the A8 project sale) in
-  // 2026, or a game over then.
+  // 2026, or a game over then. M8.1b (owner, 28 Sep 2026): an emergency equity raise (the A8
+  // rescue's second step) counts as a hit too.
   const lev = runsOf('overleveraged')
   if (lev) {
     const from2026 = CONTENT.quarters.indexOf('2026Q1')
@@ -1057,6 +1061,7 @@ if (args.includes('--act2')) {
       'log.project_foreclosed',
       'log.forced_sale',
       'log.rescue_sale',
+      'log.rescue_equity',
     ]
     const hit = lev.filter(
       (r) =>
@@ -1074,7 +1079,7 @@ if (args.includes('--act2')) {
     ).length
     s5.push({
       target:
-        'Overleveraged (> 4× debt/EBITDA, AI lab, no backstop): ≥ 40% foreclosure or forced sale in 2026',
+        'Overleveraged (> 4× debt/EBITDA, AI lab, no backstop): ≥ 40% foreclosure, forced sale or emergency raise in 2026',
       result: verdict(hit >= lev.length * 0.4),
       numbers: `${hit}/${lev.length} runs; debt/EBITDA at 2025Q4 median ${median(leverage).toFixed(1)}× (> 4× in ${leverage.filter((x) => x > 4).length}/${leverage.length}); a tenant in distress in ${distressed}/${lev.length}; earlier busts ${lev.filter((r) => r.state.phase === 'gameover' && r.state.quarter < from2026).length}`,
     })
@@ -1112,14 +1117,17 @@ if (args.includes('--act2')) {
     ]
     const inBand = (x: number, lo: number, hi: number) =>
       Number.isNaN(x) || (x >= lo && x <= hi)
+    // M8.1c (owner, 28 Sep 2026): no mining EBITDA left (mining EV/MW of $0) is not judged against the
+    // pure-mining band.
+    const noMining = Number.isNaN(mine) || mine === 0
     s5.push({
       target: `EV/MW sanity at 2026Q4 (${name})`,
       result: verdict(
-        inBand(mine, 0.4e6, 1.2e6) &&
+        (noMining || inBand(mine, 0.4e6, 1.2e6)) &&
           inBand(ann, 3e6, 15e6) &&
           inBand(stab, 18e6, 27e6),
       ),
-      numbers: `mining ${usd(mine)} · announced AI ${usd(ann)} · stabilized IG ${usd(stab)} per MW`,
+      numbers: `mining ${noMining ? 'n/a (no mining left)' : usd(mine)} · announced AI ${usd(ann)} · stabilized IG ${usd(stab)} per MW`,
     })
   }
   // Act II alone from the standalone preset (scope 0.2 §2.15).
@@ -1209,7 +1217,7 @@ if (args.includes('--act2')) {
       .reduce((a, b) => Math.max(a, b), 0)
     s5.push({
       target: `Preset (40 MW) best bot reaches the good band (${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])})`,
-      result: verdict(presetBest >= GOOD_BAND[0]),
+      result: acceptedVerdict(presetBest >= GOOD_BAND[0]),
       numbers: `best preset bot median ${usd(presetBest)}`,
     })
   }

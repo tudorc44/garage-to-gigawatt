@@ -827,6 +827,26 @@ function aiProjects(
         if (s.cash >= bridge.balanceUsd * 1.05)
           run({ type: 'REPAY_BRIDGE_LOAN' })
       }
+      // M8.1e: since M7.0 (A5) the bridge also amortises (interest only 4 quarters, then equal slices), so
+      // the bot no longer waits for one payment: from the quarter before the slices start it keeps the
+      // next quarter's service (a slice + the interest) in cash, raising equity for any shortfall. The
+      // lifeline companies bust in 2025 otherwise (a $40K start, cash spent on machines, EBITDA after the halving).
+      if (
+        bridge &&
+        !bridgeSoon &&
+        s.quarter >=
+          bridge.takenQuarter + BALANCE.lifeline.bridgeInterestOnlyQuarters - 1
+      ) {
+        const slices =
+          bridge.dueQuarter -
+          bridge.takenQuarter +
+          1 -
+          BALANCE.lifeline.bridgeInterestOnlyQuarters
+        const serviceUsd =
+          bridge.amountUsd / slices + (bridge.balanceUsd * bridge.apr) / 4
+        const shortUsd = serviceUsd * 1.1 - s.cash
+        if (shortUsd > 0) raiseFor(shortUsd, true)
+      }
       const bridgeOpen = s.bridgeLoan !== null && bridgeSoon
       // A Head of Development first (1 Bandwidth now, +1 every quarter after): Act II Bandwidth is tight.
       if (opts.hireHod && s.staff.head_of_development === undefined)

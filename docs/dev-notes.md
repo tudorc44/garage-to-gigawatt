@@ -226,6 +226,9 @@ additions · M8.4 GPU failure wave interrupt · M8.5 GPU know-how display · M8.
   only on the local `prologue`, and `act2` had 2 commits `main` lacks (the Act II report panel 10f233f, the JV net
   return ef6c43e). So `m8` = local `prologue` (fast-forward of `main`) + those 2 cherry-picked (mine, reversible).
   CLAUDE.md: milestone-branch wording, alpha-0.3 scope in Key docs, the summary updated.
+- M8.1: accepted MISS (good, lifeline, preset), overleveraged counts `log.rescue_equity` (still 0/50), EV/MW mining "n/a" when $0,
+  15× floor sentence in scope §2.2. Sell-as-mined bust: NOT an AI build: all 6 are lifeline takers; A5's amortising bridge
+  ($1.37M/q from 2023Q4) vs a bot written for a bullet. Bot fix (tools/bots.ts, raise equity for next quarter's bridge service): 6 → 0 busts.
 
 ## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
 
