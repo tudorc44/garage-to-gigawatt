@@ -59,8 +59,9 @@ describe('the Capital screen', () => {
     expect(b.rows[0]).toMatchObject({ rating: 'AA', weight: 0.2 })
     expect(b.countedUsd).toBeCloseTo(b.totalUsd * 0.2, 4)
     const e = equityView(s)
-    expect(e.options.map((o) => o.dilution)).toEqual([0.08, 0.12, 0.16, 0.2])
+    expect(e.options.map((o) => o.dilution)).toEqual([0.08, 0.15, 0.2, 0.3])
     expect(e.options[0].blocker).toBeNull()
+    expect(e.raisesLeft).toBe(2)
   })
 
   it('not rated before the first Act II quarter end', () => {

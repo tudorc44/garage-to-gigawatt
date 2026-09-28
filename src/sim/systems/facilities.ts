@@ -1,9 +1,10 @@
 // Act II debt secured on a project (scope 0.2 §2.7; doc 18 §7.1, §7.4): project debt and the
 // GPU-backed DDTL. The player switches each on in the Deal builder before the build starts; it
 // then takes the most the lender allows (its share of cost, trimmed so the projected DSCR stays at
-// 1.12× or more), drawn when the build starts. Interest only while building, then equal principal
-// each quarter over the contract's term; paid at quarter end. Two quarters in a row unpaid: the
-// lender forecloses on the project (it and its MW go).
+// 1.12× or more), drawn when the build starts. While building, the interest is capitalised: added
+// to the loan, with no cash paid (owner, M7.0 answer A1b); once live, equal principal each quarter
+// over the contract's term (capitalised interest included) plus interest, paid at quarter end. Two
+// quarters in a row unpaid: the lender forecloses on the project (it and its MW go).
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
@@ -259,15 +260,21 @@ export function drawFacilities(
   }
 }
 
-/** This quarter's debt service on a facility: interest, plus principal once its project is live. */
+/**
+ * This quarter's debt service on a facility, in cash: once its project is live, interest plus
+ * principal; while it builds, nothing (the interest is capitalised: `capitalisedUsd`).
+ */
 export function serviceDueUsd(state: GameState, f: Facility) {
   const p = getProject(state, f.projectId)
-  const interestUsd = (f.balanceUsd * f.apr) / 4
-  const principalUsd =
-    p?.stage === 'live'
+  const live = p?.stage === 'live'
+  const interest = (f.balanceUsd * f.apr) / 4
+  return {
+    interestUsd: live ? interest : 0,
+    principalUsd: live
       ? Math.min(f.balanceUsd, f.amountUsd / f.tenorQuarters)
-      : 0
-  return { interestUsd, principalUsd }
+      : 0,
+    capitalisedUsd: live ? 0 : interest,
+  }
 }
 
 /**
@@ -282,6 +289,12 @@ export function serviceFacilities(state: GameState): {
   const paid = { interestUsd: 0, principalUsd: 0 }
   for (const f of [...state.facilities]) {
     const due = serviceDueUsd(state, f)
+    // Interest during construction joins the loan (and its principal, repaid once live).
+    if (due.capitalisedUsd > 0) {
+      f.balanceUsd += due.capitalisedUsd
+      f.amountUsd += due.capitalisedUsd
+      continue
+    }
     const total = due.interestUsd + due.principalUsd
     if (state.cash >= total) {
       state.cash -= total

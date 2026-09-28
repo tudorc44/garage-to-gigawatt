@@ -209,6 +209,8 @@ target · M7.0d A4 GPU-heavy head-start check · M7.0e sims, A1 decision, scope 
 - M7.0a: bridge 12 q (interest only 4, then eighths; balance.ts overrides capital_act2.json's 8, which must match
   the docs copy); sub-BBB AI labs 50% at +3 pts (a BBB AI lab keeps 65%); floor 15× (note: 2026Q4's era multiple is
   15×, so the floor never binds now); announced-AI band $3–15M; one GOOD_BAND for the good path and the preset.
+- M7.0b: equity 8–30%, 1 BW, 2 a quarter, both at the same pre-money (the second doesn't count the first's cash:
+  "priced as today", mine); IDC added to the loan and its amortising principal. Bots raise twice when one won't do.
 
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 

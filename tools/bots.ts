@@ -18,7 +18,11 @@ import { buyCapKw, hostingView } from '../src/sim/selectors.ts'
 import { convertibleKw } from '../src/sim/systems/hosting.ts'
 import { projectCapex, tenantCard } from '../src/sim/systems/projects.ts'
 import { debtPlan } from '../src/sim/systems/facilities.ts'
-import { equityPreMoneyUsd } from '../src/sim/systems/equity.ts'
+import {
+  dilutionRange,
+  equityPreMoneyUsd,
+  raisesThisQuarter,
+} from '../src/sim/systems/equity.ts'
 import { fleetOffer } from '../src/sim/systems/headStarts.ts'
 import {
   constructionLoanBlocker,
@@ -687,6 +691,26 @@ function aiProjects(
         }
         return r.ok
       }
+      /**
+       * Raises `needUsd` of equity: one raise if it fits under the cap, two if two do (each priced at
+       * the same pre-money), none if even two can't cover it. With `partial`, raises what it can.
+       */
+      const raiseFor = (needUsd: number, partial = false) => {
+        const [lo, hi] = dilutionRange()
+        const left =
+          BALANCE.finance.equity.raisesPerQuarter - raisesThisQuarter(s)
+        const pre = equityPreMoneyUsd(s)
+        if (left <= 0 || pre <= 0) return
+        const maxOne = (pre * hi) / (1 - hi)
+        if (!partial && needUsd > maxOne * left) return
+        let need = needUsd
+        for (let i = 0; i < left && need > 0; i++) {
+          const d = Math.min(hi, Math.max(lo, need / (pre + need)))
+          const cash = s.cash
+          if (!run({ type: 'RAISE_EQUITY', dilution: d })) return
+          need -= s.cash - cash
+        }
+      }
       const finish = () => {
         for (const p of s.projects.filter((x) => x.stage === 'proposed')) {
           // Relying on project debt: only a tenant rated BBB or better will do; without one, drop
@@ -733,19 +757,12 @@ function aiProjects(
             for (const debt of ['project_debt', 'ddtl'] as const)
               run({ type: 'PROJECT_DEBT', projectId: p.id, debt, on: true })
           run({ type: 'PROJECT_FUND_CASH', projectId: p.id })
-          // Short of cash for the part the debt doesn't cover: sell 8–20% of the company for it.
+          // Short of cash for the part the debt doesn't cover: sell 8–30% of the company for it, twice
+          // in a quarter if one raise isn't enough (M7.0, A1a); not at all if two can't cover it.
           const q = s.projects.find((x) => x.id === p.id)!
           const needUsd =
             projectCapex(s, q).totalUsd - debtPlan(s, q).totalUsd - s.cash
-          const preUsd = equityPreMoneyUsd(s)
-          if (opts.capital && needUsd > 0 && preUsd > 0) {
-            const d = needUsd / (preUsd + needUsd)
-            if (d <= CONTENT.finance.equity.dilution[1])
-              run({
-                type: 'RAISE_EQUITY',
-                dilution: Math.max(CONTENT.finance.equity.dilution[0], d),
-              })
-          }
+          if (opts.capital && needUsd > 0) raiseFor(needUsd)
           run({ type: 'PROJECT_START', projectId: p.id })
         }
       }
@@ -792,18 +809,7 @@ function aiProjects(
       const bridgeSoon = bridge !== null && s.quarter >= bridge.dueQuarter - 1
       if (bridge && bridgeSoon) {
         const needUsd = bridge.balanceUsd * 1.05 - s.cash
-        const preUsd = equityPreMoneyUsd(s)
-        if (needUsd > 0 && preUsd > 0)
-          run({
-            type: 'RAISE_EQUITY',
-            dilution: Math.min(
-              CONTENT.finance.equity.dilution[1],
-              Math.max(
-                CONTENT.finance.equity.dilution[0],
-                needUsd / (preUsd + needUsd),
-              ),
-            ),
-          })
+        if (needUsd > 0) raiseFor(needUsd, true)
         if (s.cash >= bridge.balanceUsd * 1.05)
           run({ type: 'REPAY_BRIDGE_LOAN' })
       }
@@ -1325,8 +1331,8 @@ export const HEAD_START_OPENINGS: Record<string, Strategy> = {
       run({
         type: 'RAISE_EQUITY',
         dilution: Math.min(
-          CONTENT.finance.equity.dilution[1],
-          Math.max(CONTENT.finance.equity.dilution[0], need / (pre + need)),
+          dilutionRange()[1],
+          Math.max(dilutionRange()[0], need / (pre + need)),
         ),
       })
     if (now().cash < cost) return

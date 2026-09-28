@@ -166,8 +166,16 @@ export const BALANCE = {
     aiLabProjectDebtSpreadAdd: 0.03,
     /** Warrants worth this × the guaranteed dollars (lenders.json: 0.3–0.5×; mine: the middle), within 3–6%. */
     backstopWarrantValueShare: 0.4,
-    /** Bandwidth: an equity raise 2 (scope §2.7); a JV or backstop deal 2 (mine, like negotiating). */
-    bandwidth: { equity: 2, jv: 2, backstop: 2 },
+    /**
+     * Bandwidth: an equity raise 1 (owner, M7.0 answer A1; was 2); a JV or backstop deal 2 (mine,
+     * like negotiating).
+     */
+    bandwidth: { equity: 1, jv: 2, backstop: 2 },
+    /**
+     * At-the-market equity (owner, M7.0 answer A1a): up to 2 raises a quarter, each diluting at most
+     * 30% (overrides lenders.json's 20% top; its 8% bottom stays), priced as before.
+     */
+    equity: { raisesPerQuarter: 2, maxDilution: 0.3 },
     /**
      * Tenant and lender negotiation (A2-05 "Negotiate · 2 BW"; owner, 28 Sep 2026, M5 answer 8): 3
      * rounds from the card's terms. A tenant's hidden limit is its card price + a share by type; a

@@ -12,10 +12,12 @@ import {
   type DebtKind,
 } from './systems/facilities.ts'
 import {
+  dilutionRange,
   equityBlocker,
   equityPreMoneyUsd,
   equityRaiseUsd,
   isPublic,
+  raisesThisQuarter,
   signedThisQuarterUsd,
 } from './systems/equity.ts'
 import { equipmentTerms, ratingLoanBand } from './systems/loans.ts'
@@ -251,8 +253,8 @@ export function backlogView(state: GameState) {
 /** The equity panel (A2-07): the cap table, and the raise at a few dilutions, priced now. */
 export function equityView(state: GameState) {
   const pre = equityPreMoneyUsd(state)
-  const [lo, hi] = CONTENT.finance.equity.dilution
-  const options = [lo, 0.12, 0.16, hi].map((dilution) => ({
+  const [lo, hi] = dilutionRange()
+  const options = [lo, 0.15, 0.2, hi].map((dilution) => ({
     dilution,
     amountUsd: equityRaiseUsd(state, dilution),
     stakeAfter: state.founderStake * (1 - dilution),
@@ -267,6 +269,11 @@ export function equityView(state: GameState) {
     signedUsd: signed.backlogUsd + signed.pivotUsd,
     public: isPublic(state),
     bandwidth: BALANCE.finance.bandwidth.equity,
+    /** Raises left this quarter (up to 2, owner M7.0 answer A1a). */
+    raisesLeft: Math.max(
+      0,
+      BALANCE.finance.equity.raisesPerQuarter - raisesThisQuarter(state),
+    ),
     options,
   }
 }
