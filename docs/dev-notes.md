@@ -214,6 +214,8 @@ target · M7.0d A4 GPU-heavy head-start check · M7.0e sims, A1 decision, scope 
 - M7.0c: AI-lab distress (all AI-lab contracts, any rating; backstopped spared, mine) halves rent / GPU-hours in cash,
   backlog and sale value; PROJECT_RELET (prepayment kept, mine); rescue.ts (sale of live shells only; emergency raise
   only if ≤ 30% cures it); overleveraged target as A3; the Projects card shows distress and "Let it go and re-let".
+- M7.0d: head-start openings play a GPU-heavy Act I (`gpuFirst`: raise-climb buying the best GPU rig first; 2022Q3
+  GPU share 100% on 6 seeds); the sim-runner reports that share with the head-start check.
 
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 

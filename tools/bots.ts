@@ -108,6 +108,11 @@ interface BotSettings {
   upgradeAfterRound?: string
   /** Once upgrading has started (upgradeAfterRound), smartFill and upgrades pick BTC machines only. */
   asicOnly?: boolean
+  /**
+   * A GPU-heavy Act I (owner, M7.0 answer A4): buy the best-paying GPU rig whenever one pays back
+   * in time, an ASIC only when no rig does.
+   */
+  gpuFirst?: boolean
   /** Also buy machines for a site that powers on next quarter, so they earn from its first quarter. */
   prebuy?: boolean
   /**
@@ -505,6 +510,12 @@ function makeBot(settings: BotSettings): Strategy {
           )
           let best = [...viable].sort((a, b) => a.payback - b.payback)[0]
           if (!best) break
+          if (settings.gpuFirst) {
+            const rig = viable
+              .filter((o) => o.m.coin === 'ETH')
+              .sort((a, b) => a.payback - b.payback)[0]
+            if (rig) best = rig
+          }
           // With cash to spare, power is the scarce thing: take the most profit per kW.
           const upgrading =
             !settings.upgradeAfterRound ||
@@ -514,7 +525,7 @@ function makeBot(settings: BotSettings): Strategy {
             settings.asicOnly && upgrading
               ? viable.filter((o) => o.m.coin === 'BTC')
               : viable
-          if (settings.smartFill && candidates.length > 0) {
+          if (settings.smartFill && candidates.length > 0 && !settings.gpuFirst) {
             const perKw = [...candidates].sort(
               (a, b) =>
                 b.dailyProfit / b.m.power_kw - a.dailyProfit / a.m.power_kw ||
@@ -1253,6 +1264,22 @@ export const BOTS: Record<string, Strategy> = {
  * (a full garage), sells every coin and never spends again: the best case for garage-only cash.
  */
 /** sign-then-raise's Act II settings (the shell path every opening ends up on). */
+/** The good path's Act I, GPU-heavy (M7.0, A4): raise-climb buying GPU rigs first. */
+const GPU_HEAVY: BotSettings = { ...RAISE_CLIMB, gpuFirst: true }
+
+/**
+ * A GPU-heavy Act I company (the A4 test: ≥ 30%): the share of its 2022Q3 mining revenue from GPUs,
+ * from that quarter's report (coins mined, at mid-quarter prices).
+ */
+export function gpuRevenueShare(state: GameState): number | null {
+  const r = state.reports.find((x) => x.quarter === '2022Q3')
+  if (!r) return null
+  const w = marketWeek(CONTENT.quarters.indexOf('2022Q3'), 6)
+  const eth = r.coinsMined.ETH * w.eth_usd
+  const all = eth + r.coinsMined.BTC * w.btc_usd
+  return all > 0 ? eth / all : null
+}
+
 const SHELL_PATH = {
   kind: 'shell' as const,
   freeUp: true,
@@ -1262,8 +1289,9 @@ const SHELL_PATH = {
 }
 
 /**
- * Each Merge head start's intended opening (owner, 28 Sep 2026; M5 answer 2), on the good path's
- * Act I (raise-climb), each making its own Merge choice. All end up on sign-then-raise's shells:
+ * Each Merge head start's intended opening (owner, 28 Sep 2026; M5 answer 2), on a GPU-heavy good
+ * path Act I (raise-climb buying GPU rigs first: M7.0 answer A4), each making its own Merge choice.
+ * All end up on sign-then-raise's shells:
  * - open-pilot (gpu_cloud): a 0.5 MW pilot in 2023Q2, the gap raised as equity; shells from 2023Q3.
  * - open-shell (hosting): shells from 2023Q3 (where the guaranteed AA offer waits).
  * - open-fleet (sell_gpus_keep_btc): frees a site's S9s and buys the distressed fleet in 2023Q1;
@@ -1275,7 +1303,7 @@ function opening(
   shellsFrom: string,
   before?: (now: () => GameState, run: (a: Action) => boolean) => void,
 ): Strategy {
-  const shells = aiProjects(makeBot(RAISE_CLIMB), {
+  const shells = aiProjects(makeBot(GPU_HEAVY), {
     ...SHELL_PATH,
     from: shellsFrom,
   })

@@ -20,7 +20,12 @@ import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
-import { BOTS, HEAD_START_OPENINGS, PROBES } from './bots.ts'
+import {
+  BOTS,
+  HEAD_START_OPENINGS,
+  PROBES,
+  gpuRevenueShare,
+} from './bots.ts'
 import { contractIrrs, delayCost } from './section5.ts'
 import {
   BREAKDOWN_COLUMNS,
@@ -1128,7 +1133,7 @@ if (args.includes('--act2')) {
       )
     }
     // Scope 0.2 §5 (owner, 28 Sep 2026): each Merge head start has its own intended-opening bot.
-    // On the good path's Act I (the openings play raise-climb), every opening under every head start;
+    // On a GPU-heavy good-path Act I (raise-climb buying GPU rigs first), every opening under every head start;
     // passes when ≥ 3 of the 4 head starts have a different best opening and the four matching bots'
     // 2026Q4 medians are within ±30% of their average.
     const hsSeeds = Math.min(SEEDS, 20)
@@ -1144,11 +1149,16 @@ if (args.includes('--act2')) {
     )
     const bests: string[] = []
     const own: number[] = []
+    // The openings play a GPU-heavy Act I (owner, M7.0 answer A4: ≥ 30% of 2022Q3 mining revenue
+    // from GPUs); the share is measured on every run.
+    const gpuShares: number[] = []
     for (const choice of CONTENT.merge.choices.map((c) => c.id)) {
       const row = names.map((name) => {
         const bot = { ...HEAD_START_OPENINGS[name], merge: () => choice }
         const vals = Array.from({ length: hsSeeds }, (_, i) => {
           const end = playGame(i + 1, bot, { through: 2 }).state
+          const share = gpuRevenueShare(end)
+          if (share !== null) gpuShares.push(share)
           return end.phase === 'chapter' ? end.reports.at(-1)!.valuationUsd : 0
         })
         return { name, value: median(vals) }
@@ -1166,11 +1176,12 @@ if (args.includes('--act2')) {
     console.log(
       `  Head-start check: ${distinct}/4 different best openings (≥ 3); matching bots ${own.map(usd).join(' / ')}, within ±30% of their average: ${within ? 'yes' : 'no'} → ${distinct >= 3 && within ? 'pass' : 'miss'}`,
     )
+    const heavy = gpuShares.filter((x) => x >= 0.3).length
     s5.push({
       target:
-        'Each Merge head start makes a different opening best (≥ 3 of 4; matching bots ±30%)',
+        'Each Merge head start makes a different opening best (≥ 3 of 4; matching bots ±30%), on a GPU-heavy Act I',
       result: verdict(distinct >= 3 && within),
-      numbers: `${distinct}/4 different best (${bests.join(', ')}); matching ${own.map(usd).join(' / ')}`,
+      numbers: `${distinct}/4 different best (${bests.join(', ')}); matching ${own.map(usd).join(' / ')}; GPU share of 2022Q3 mining revenue median ${(median(gpuShares) * 100).toFixed(0)}% (≥ 30% in ${heavy}/${gpuShares.length})`,
     })
     // The owner's M5 answer 3 and M7.0 answer A6: the preset is judged with the good path, against
     // whatever the good band is.
