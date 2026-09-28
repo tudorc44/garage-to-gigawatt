@@ -11,7 +11,7 @@ import {
   type PowerRegion,
   type RegionPolicy,
 } from '../content/index.ts'
-import type { Message } from '../i18n/t.ts'
+import type { Message, MessageKey } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import type {
   QuarterReport,
@@ -1525,6 +1525,49 @@ export function valuationBreakdown(state: GameState) {
 export function leagueScaleView(state: GameState) {
   const u = mwByUseOf(state, state.quarter)
   return { aiKw: u.aiShell + u.aiCloud, miningKw: u.mining + u.hosting }
+}
+
+/** Log lines that are project milestones (scope 0.2 §2.14 item 9). */
+const MILESTONE_KEYS: MessageKey[] = [
+  'log.project_started',
+  'log.project_live',
+  'log.tenant_signed',
+  'log.tenant_walked',
+  'log.tenant_distress',
+  'log.tenant_terminated',
+  'log.project_late',
+  'log.project_slipped',
+  'log.project_slipped_event',
+  'log.project_slipped_silent',
+  'log.project_slipped_contractor',
+  'log.project_gpu_wait',
+  'log.project_gpu_wait_silent',
+  'log.project_sold',
+  'log.project_foreclosed',
+  'log.rating_changed',
+]
+
+/**
+ * What the Act II quarter report adds (scope 0.2 §2.14 item 9): MW by use (with last quarter's
+ * for the change), the backlog, the credit rating with last quarter's, and the project
+ * milestones from this quarter's log. null in Act I, or for a report saved before these existed.
+ */
+export function act2ReportView(state: GameState) {
+  const r = state.reports.at(-1)
+  if (state.act !== 2 || !r?.mwByUseKw) return null
+  const prev = state.reports.at(-2)
+  return {
+    use: r.mwByUseKw,
+    prevUse: prev?.mwByUseKw ?? null,
+    backlogUsd: r.backlogUsd,
+    weightedBacklogUsd: r.weightedBacklogUsd,
+    prevBacklogUsd: prev?.backlogUsd ?? null,
+    rating: r.creditRating ?? null,
+    prevRating: prev?.creditRating ?? null,
+    milestones: state.log.filter(
+      (e) => e.quarter === state.quarter && MILESTONE_KEYS.includes(e.key),
+    ),
+  }
 }
 
 /** The Act II rivals' key moves in a quarter, for the quarter report (M6.2). */

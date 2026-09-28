@@ -77,8 +77,13 @@ publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now inc
 the §5 bots and checks, the owner's P1–P7 answers (P5.0) and the wireframe pass P0-01…P0-08 (P6: title, intro, Plan,
 auto-play, Coins, pre-orders, chapter report with the career graph, handover to Act I).
 
-**Not built yet in Act II:** the GPU failure wave's interrupt form, GPU know-how display beyond the Projects header,
-the Act II quarter report additions (MW by use, rating change, project milestones: A2-08 beyond the league).
+**Act II quarter report additions (29 Sep 2026, on `act2`, fast-forwarded to `prologue`):** the report has an "Act II ·
+the quarter's shape" panel: MW by use (bar, legend, change since last quarter), backlog, credit rating (with last
+quarter's) and the project milestones from the quarter's log (`act2ReportView` in selectors; the report stores
+`mwByUseKw`; older saves' reports lack it, so no panel there).
+
+**Not built yet in Act II:** the GPU failure wave's interrupt form (STOPPED: needs numbers, see below), GPU know-how
+display beyond the Projects header.
 
 ## Rules and decisions in force
 
@@ -184,7 +189,13 @@ Still open: the combined report's questions 1–10 (M7.0 + P5.0, below) and the 
 
 ## STOPPED
 
-Nothing. (Balance tuning stays stopped by the owner's A1 answer: the targets were revised instead.)
+- **GPU failure wave (scope 0.2 §2.9 "failure wave + GPU clusters"):** the pack gives only "clusters ≥ 10,000 GPUs,
+  0.5–1% of the cluster per wave, ~$30K per replaced GPU, most incidents short" (`interrupts_act2.json`, chance null).
+  Missing for the design thread: the chance per quarter, the choices, and the threshold (10,000 GPUs = ~13 MW at 750
+  GPUs/MW, so it would only ever hit the biggest clouds). Proposal: a cloud/pilot with ≥ 10,000 GPUs rolls once a
+  quarter; hit = 0.5–1% of its GPUs down; "Replace now" ($30K each, back next week) / "Run short" (default: that share
+  of GPU-hours lost until the next quarter).
+- Balance tuning stays stopped by the owner's A1 answer (targets revised instead).
 
 ## Small follow-ups
 

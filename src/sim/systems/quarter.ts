@@ -31,6 +31,7 @@ import { renewHosting } from './hosting.ts'
 import { serviceFacilities } from './facilities.ts'
 import { rescueBeforeGameOver } from './rescue.ts'
 import { ratingInputs } from './rating.ts'
+import { mwByUse } from './mwUse.ts'
 import {
   backlogUsd,
   constructionValueUsd,
@@ -175,6 +176,9 @@ function buildReport(
     debtUsd: debtUsd(state),
     heat: hottestSite(state).value,
     heatTier: hottestSite(state).site.tier,
+    ...(state.act === 2
+      ? { mwByUseKw: mwByUse(state, state.quarter) }
+      : {}),
     forcedSale,
   }
 }

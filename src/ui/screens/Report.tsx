@@ -1,6 +1,9 @@
 // Quarter report: headline tiles, cost per coin vs price, league table, notes.
 import { t, tDynamic, type MessageKey } from '../../i18n/t.ts'
+import { MwBar, MwLegend, useName } from '../components/mwbar.tsx'
 import {
+  MW_USES,
+  act2ReportView,
   actTurn,
   averagePrice,
   gameOverView,
@@ -176,6 +179,8 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
             }
           />
         </div>
+
+        <Act2Panel state={state} />
 
         <div class="report-grid">
           <CostChart state={state} coin={coin} />
@@ -511,7 +516,80 @@ function rivalScale(r: RivalSnapshot): string | null {
   return parts.length ? parts.join(' · ') : null
 }
 
-const END_KEYS: MessageKey[] = ['log.forced_sale', 'log.game_over']
+/** Act II's additions to the report: MW by use, backlog, rating and the project milestones. */
+function Act2Panel({ state }: { state: GameState }) {
+  const v = act2ReportView(state)
+  if (!v) return null
+  const moved = MW_USES.filter(
+    (u) => v.prevUse && Math.round(v.use[u]) !== Math.round(v.prevUse[u]),
+  )
+  return (
+    <div class="panel p a2-report">
+      <h2 class="panel-title">{t('ui.report.a2_title')}</h2>
+      <div class="a2-report-cols">
+        <div>
+          <span class="label">{t('ui.report.a2_mw')}</span>
+          <MwBar use={v.use} />
+          <MwLegend use={v.use} />
+          {moved.length > 0 && (
+            <p class="num-s muted" style={{ margin: 0 }}>
+              {moved
+                .map((u) =>
+                  t('ui.report.a2_mw_change', {
+                    use: useName(u),
+                    delta: `${v.use[u] > v.prevUse![u] ? '▲' : '▼'}${fmt.power(Math.abs(v.use[u] - v.prevUse![u]))}`,
+                  }),
+                )
+                .join(' · ')}
+            </p>
+          )}
+        </div>
+        <div>
+          <div class="stat">
+            <span class="label">{t('ui.report.a2_backlog')}</span>
+            <span class="num-kpi">{fmt.money(v.backlogUsd)}</span>
+            <span class="num-s muted">
+              {v.prevBacklogUsd === null
+                ? t('ui.report.a2_backlog_sub_first', {
+                    weighted: fmt.money(v.weightedBacklogUsd),
+                  })
+                : t('ui.report.a2_backlog_sub', {
+                    weighted: fmt.money(v.weightedBacklogUsd),
+                    delta: fmt.delta(v.backlogUsd - v.prevBacklogUsd, 'money'),
+                  })}
+            </span>
+          </div>
+          <div class="stat">
+            <span class="label">{t('ui.report.a2_rating')}</span>
+            <span class="num-kpi">
+              {v.rating ?? t('ui.report.a2_rating_none')}
+            </span>
+            <span class="num-s muted">
+              {v.prevRating === null
+                ? ''
+                : v.prevRating !== v.rating
+                  ? t('ui.report.a2_rating_from', { rating: v.prevRating })
+                  : t('ui.report.a2_rating_same')}
+            </span>
+          </div>
+        </div>
+        <div>
+          <span class="label">{t('ui.report.a2_milestones')}</span>
+          <div class="log">
+            {v.milestones.length === 0 && (
+              <div class="muted">{t('ui.report.a2_no_milestones')}</div>
+            )}
+            {v.milestones.map((e, i) => (
+              <div key={i}>{say(e)}</div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+const END_KEYS: MessageKey[] =['log.forced_sale', 'log.game_over']
 
 function Notes({ state }: { state: GameState }) {
   const entries = state.log.filter((e) => e.quarter === state.quarter)

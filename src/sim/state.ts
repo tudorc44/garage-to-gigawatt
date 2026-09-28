@@ -10,6 +10,7 @@ import type { InvestorPitch, PitchWalkaway } from './systems/pitch.ts'
 import type { MarketRead } from './systems/readMarket.ts'
 import { emptyEventState, type EventState } from './systems/eventEffects.ts'
 import type { PlannedWave, WaveDamage } from './systems/failureWave.ts'
+import type { MwByUse } from './systems/mwUse.ts'
 
 /**
  * plan → live → report, each quarter. After 2022Q3's report: merge (the Merge decision) →
@@ -636,6 +637,8 @@ export interface QuarterReport {
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
   /** Act II: the credit rating at quarter end (absent in Act I). */
   creditRating?: string
+  /** Act II: kW by use at quarter end (absent in Act I and in older saves). */
+  mwByUseKw?: MwByUse
   /** Act II: a card's premium on the operating value that quarter (absent when there's none). */
   evMult?: number
 }
