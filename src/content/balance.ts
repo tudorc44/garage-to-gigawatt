@@ -177,6 +177,11 @@ export const BALANCE = {
      */
     equity: { raisesPerQuarter: 2, maxDilution: 0.3 },
     /**
+     * Before an Act II game over (owner, M7.0 answer A8): sell the smallest project that cures the
+     * shortfall at cap-rate value × 0.85; else raise equity at half the valuation, at most 30%.
+     */
+    rescue: { saleMult: 0.85, equityPriceMult: 0.5, maxDilution: 0.3 },
+    /**
      * Tenant and lender negotiation (A2-05 "Negotiate · 2 BW"; owner, 28 Sep 2026, M5 answer 8): 3
      * rounds from the card's terms. A tenant's hidden limit is its card price + a share by type; a
      * lender's is its rate − 0.75 point, never below SOFR + 1.5%. Asking past the limit in round 3:
@@ -412,6 +417,20 @@ export const BALANCE = {
     tenantsFrom: '2023Q3',
     /** Offers per shell project (like scouting, 2–3; +1 with the BD Lead, scope §2.8). */
     offers: { min: 2, max: 3 },
+    /**
+     * The 2026 AI-lab stress (owner, M7.0 answer A3): from 2026Q2, each signed AI-lab contract rolls
+     * this chance a quarter of tenant distress; its payments then drop to `paymentMult` for the rest of
+     * the term. The player may terminate it and re-let (1 BW; no offers for `emptyQuarters`). A
+     * backstopped lease is spared (the guarantor stands behind it, as with walk-aways; mine). ec23's
+     * one-quarter haircut applies on top.
+     */
+    aiLabDistress: {
+      from: '2026Q2',
+      chancePerQuarter: 0.12,
+      paymentMult: 0.5,
+      reletBandwidth: 1,
+      emptyQuarters: 2,
+    },
     /** AI shell lease: the host's costs are 15–20% of rent (doc 18 §4: an 80–85% margin); the tenant pays its power. */
     shellOpexShare: 0.175,
     /** AI cloud: power at a liquid-cooled AI hall's PUE (hires_act2.json operating_costs_ai_sites: 1.15). */

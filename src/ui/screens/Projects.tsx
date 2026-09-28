@@ -11,9 +11,11 @@ import {
   dealView,
   openProjectView,
   projectsView,
+  quarterName,
   whyNot,
   type ProjectCardView,
 } from '../../sim/selectors.ts'
+import { BALANCE } from '../../content/index.ts'
 import type { PowerSource, ProjectKind } from '../../sim/state.ts'
 import { Dialog, Icon, Pips, Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
@@ -273,6 +275,27 @@ function ProjectCardEl(
           })}
         </div>
       )}
+      {p.tenant?.distressedQuarter !== undefined && (
+        <>
+          <div class="num-s loss">{t('ui.projects.distress_line')}</div>
+          <BwButton
+            label={t('ui.projects.relet')}
+            bw={BALANCE.projects.aiLabDistress.reletBandwidth}
+            action={{ type: 'PROJECT_RELET', projectId: p.id }}
+            state={state}
+            act={act}
+          />
+        </>
+      )}
+      {p.emptyUntil !== undefined &&
+        !p.tenant &&
+        state.quarter <= p.emptyUntil && (
+          <div class="num-s muted">
+            {t('ui.projects.empty_until', {
+              quarter: fmt.quarter(quarterName(p.emptyUntil + 1)),
+            })}
+          </div>
+        )}
       {p.stage === 'proposed' && (
         <button type="button" class="btn" onClick={props.onDeal}>
           {t('ui.projects.deal')}

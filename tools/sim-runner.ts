@@ -1034,14 +1034,21 @@ if (args.includes('--act2')) {
       numbers: `texas-ipo: median ${usd(end)}; alive ${alive.length}/${reached.length}`,
     })
   }
-  // Overleveraged full stack: ≥ 50% of runs see a foreclosure (or a debt bust) in 2026.
+  // Overleveraged full stack (owner, M7.0 answer A3): debt/EBITDA > 4×, AI-lab tenant, no backstop →
+  // ≥ 40% of runs end in a foreclosure or a forced sale (coins / machines, or the A8 project sale) in
+  // 2026, or a game over then.
   const lev = runsOf('overleveraged')
   if (lev) {
     const from2026 = CONTENT.quarters.indexOf('2026Q1')
+    const hitKeys = [
+      'log.project_foreclosed',
+      'log.forced_sale',
+      'log.rescue_sale',
+    ]
     const hit = lev.filter(
       (r) =>
         r.state.log.some(
-          (e) => e.key === 'log.project_foreclosed' && e.quarter >= from2026,
+          (e) => hitKeys.includes(e.key) && e.quarter >= from2026,
         ) ||
         (r.state.phase === 'gameover' && r.state.quarter >= from2026),
     ).length
@@ -1049,10 +1056,14 @@ if (args.includes('--act2')) {
       .map((r) => r.state.reports.find((x) => x.quarter === '2025Q4'))
       .filter((x): x is QuarterReport => !!x && x.ebitdaUsd > 0)
       .map((x) => x.debtUsd / (x.ebitdaUsd * 4))
+    const distressed = lev.filter((r) =>
+      r.state.log.some((e) => e.key === 'log.tenant_distress'),
+    ).length
     s5.push({
-      target: 'Overleveraged full stack: ≥ 50% foreclosure in 2026',
-      result: verdict(hit >= lev.length / 2),
-      numbers: `${hit}/${lev.length} runs; debt/EBITDA at 2025Q4 median ${median(leverage).toFixed(1)}×; earlier busts ${lev.filter((r) => r.state.phase === 'gameover').length}`,
+      target:
+        'Overleveraged (> 4× debt/EBITDA, AI lab, no backstop): ≥ 40% foreclosure or forced sale in 2026',
+      result: verdict(hit >= lev.length * 0.4),
+      numbers: `${hit}/${lev.length} runs; debt/EBITDA at 2025Q4 median ${median(leverage).toFixed(1)}× (> 4× in ${leverage.filter((x) => x > 4).length}/${leverage.length}); a tenant in distress in ${distressed}/${lev.length}; earlier busts ${lev.filter((r) => r.state.phase === 'gameover' && r.state.quarter < from2026).length}`,
     })
   }
   // One-project checks (tools/section5.ts): a 2-quarter delay, and 2024 vs post-reset contracts.

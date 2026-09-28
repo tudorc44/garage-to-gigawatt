@@ -211,6 +211,9 @@ target · M7.0d A4 GPU-heavy head-start check · M7.0e sims, A1 decision, scope 
   15×, so the floor never binds now); announced-AI band $3–15M; one GOOD_BAND for the good path and the preset.
 - M7.0b: equity 8–30%, 1 BW, 2 a quarter, both at the same pre-money (the second doesn't count the first's cash:
   "priced as today", mine); IDC added to the loan and its amortising principal. Bots raise twice when one won't do.
+- M7.0c: AI-lab distress (all AI-lab contracts, any rating; backstopped spared, mine) halves rent / GPU-hours in cash,
+  backlog and sale value; PROJECT_RELET (prepayment kept, mine); rescue.ts (sale of live shells only; emergency raise
+  only if ≤ 30% cures it); overleveraged target as A3; the Projects card shows distress and "Let it go and re-let".
 
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 
