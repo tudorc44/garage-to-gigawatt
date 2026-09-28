@@ -204,7 +204,9 @@ Still open: the combined report's questions 1–10 (M7.0 + P5.0, below) and the 
 - The ASIC $/TH tiers, SOFR and spread series are estimates (doc 18 §15): pull real data before final balance.
 - Backlog idea (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing EBITDA,
   clamped to ±30% of the `capital.json` terms).
-- The Deal builder's projected return doesn't net out a JV partner's share yet.
+- (Done, 29 Sep 2026) The Deal builder's projected return is net of a JV partner's share: capex, revenue and EBITDA
+  show yours (whole-project capex in a note); payback and IRR (before debt) are unchanged by the scaling (mine,
+  reversible). Debt sizing still uses the whole project.
 
 ## Next
 

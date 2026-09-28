@@ -1,6 +1,7 @@
 // The big-tech backstop and the JV partner (M4.6; scope 0.2 §2.7, doc 18 §7.1).
 import { describe, expect, it } from 'vitest'
 import { advance } from '../../src/sim/advance.ts'
+import { dealView } from '../../src/sim/projectViews.ts'
 import type { GameState } from '../../src/sim/state.ts'
 import { debtBlocker, debtOffer } from '../../src/sim/systems/facilities.ts'
 import {
@@ -118,6 +119,20 @@ describe('the JV partner', () => {
       (1_800_000 * 100) / 52 / 2,
       2,
     )
+  })
+
+  it('the Deal builder’s return is net of the partner: your capex, revenue and EBITDA shrink, the IRR stays', () => {
+    const s = bigShell()
+    const whole = dealView(s, 'project-1')!.projected
+    expect(dealView(s, 'project-1')!.partnerShare).toBe(0)
+    const j = ok(s, { type: 'PROJECT_JV', projectId: 'project-1', share: 0.65 })
+    const v = dealView(j, 'project-1')!
+    expect(v.partnerShare).toBe(0.65)
+    expect(v.wholeCapexUsd).toBeCloseTo(whole.capexUsd, 2)
+    expect(v.projected.capexUsd).toBeCloseTo(whole.capexUsd * 0.35, 2)
+    expect(v.projected.revenueUsd!).toBeCloseTo(whole.revenueUsd! * 0.35, 2)
+    expect(v.projected.ebitdaUsd!).toBeCloseTo(whole.ebitdaUsd! * 0.35, 2)
+    expect(v.projected.irr).toBeCloseTo(whole.irr!, 6)
   })
 
   it('only 100 MW+ projects, from 2025Q1, for 50–80%', () => {

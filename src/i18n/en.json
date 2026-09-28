@@ -1035,6 +1035,7 @@
   "ui.deal.cap.rating_effect": "Rating {from} → {to} while it builds.",
   "ui.deal.return": "Projected return · project level, before debt, at today's prices",
   "ui.deal.capex": "Capex",
+  "ui.deal.partner_share": "Your share after the partner's {partner} (whole project {whole}). ",
   "ui.deal.capex_split": "GPUs {gpus} + retrofit {retrofit}",
   "ui.deal.revenue": "Revenue / yr",
   "ui.deal.ebitda": "EBITDA / yr",

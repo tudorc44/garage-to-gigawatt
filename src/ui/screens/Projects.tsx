@@ -998,6 +998,11 @@ function DealBuilder(
               <td>{t('ui.deal.capex')}</td>
               <td class="num r">{fmt.money(ret.capexUsd)}</td>
               <td class="num-s muted">
+                {v.partnerShare > 0 &&
+                  t('ui.deal.partner_share', {
+                    partner: fmt.pct(v.partnerShare),
+                    whole: fmt.money(v.wholeCapexUsd),
+                  })}
                 {v.cost.gpuUsd > 0 &&
                   t('ui.deal.capex_split', {
                     gpus: fmt.money(v.cost.gpuUsd),

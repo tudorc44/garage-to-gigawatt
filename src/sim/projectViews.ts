@@ -37,6 +37,25 @@ const P = () => CONTENT.projects
 const label = (q: number | null) =>
   q === null ? '' : (CONTENT.quarters[q] ?? '')
 
+/**
+ * A projected return net of a JV partner (M4.6): the partner funds its share of the build and takes
+ * the same share of the earnings, so capex, revenue and EBITDA shrink to yours while the payback
+ * and the IRR (before debt) stay as they are. Without a partner it is the whole project's.
+ */
+function yourShareOfReturn(
+  ret: ReturnType<typeof projectedReturn>,
+  p: Project,
+) {
+  const mine = 1 - (p.jv?.share ?? 0)
+  const scale = (v: number | null) => (v === null ? null : v * mine)
+  return {
+    ...ret,
+    capexUsd: ret.capexUsd * mine,
+    revenueUsd: scale(ret.revenueUsd),
+    ebitdaUsd: scale(ret.ebitdaUsd),
+  }
+}
+
 /** The kanban column a project sits in (A2-04). */
 export type ProjectColumn =
   'proposed' | 'filling' | 'building' | 'live' | 'sold'
@@ -267,7 +286,10 @@ export function dealView(state: GameState, projectId: string) {
       blocker: whyNot(state, { type: 'PROJECT_FUND_CASH', projectId: p.id }),
     },
     cost,
-    projected: projectedReturn(state, p),
+    projected: yourShareOfReturn(projectedReturn(state, p), p),
+    /** The JV partner's share of the project (0 without one): the return above is net of it. */
+    partnerShare: p.jv?.share ?? 0,
+    wholeCapexUsd: projectedReturn(state, p).capexUsd,
     projectionYears: BALANCE.projects.cloudProjectionYears,
     residualShareAtEnd: gpuResidualShare(BALANCE.projects.cloudProjectionYears),
     capRate: p.kind === 'shell' ? capRate(state.quarter, p.kw) : null,
