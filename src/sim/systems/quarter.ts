@@ -29,6 +29,7 @@ import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
 import { serviceFacilities } from './facilities.ts'
+import { rescueBeforeGameOver } from './rescue.ts'
 import { ratingInputs } from './rating.ts'
 import {
   backlogUsd,
@@ -54,6 +55,8 @@ export function endQuarter(state: GameState): void {
   state.quarterStats.interestUsd += service.interestUsd
   state.quarterStats.principalUsd += service.principalUsd
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
+  // Act II's last resorts before a game over: a project sale, then emergency equity (M7.0, A8).
+  rescueBeforeGameOver(state)
   state.cash = roundCents(state.cash)
   // Aggressive depreciation's Q4 audit (card ec18): a restatement shows in this quarter's report.
   if (act2Quarter(state.quarter)) depreciationAudit(state)

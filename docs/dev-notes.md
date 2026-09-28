@@ -203,6 +203,39 @@ into "This quarter"); a three-column Plan; auto-play cards (~2 s, 1×/2×/4×, P
 and a lost-coins ledger; side-by-side pre-order cards; a handover screen (vs a 2017 start); offers expire at
 quarter end (today they last to the next decision quarter: a rule change).
 
+## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
+
+A1 ATM equity (2 raises a quarter, ≤ 30% each, 1 BW) + interest during construction capitalised; then re-run: keep
+targets if sign-then-raise ≥ $700M at 2026Q4, else good $0.5–2B / great $4–8B peak (report both). A2 floor 15×, A/AA
+20%, announced AI band $3–15M/MW. A3 AI-lab project debt 50% + 2026 AI-lab distress (12%/q from 2026Q2, −50% rent,
+terminate & re-let 1 BW / 2 q empty) + target (> 4×, AI lab, no backstop → ≥ 40% foreclosure or forced sale in 2026).
+A4 head starts judged on a GPU-heavy Act I bot. A5 bridge 12 q, interest-only 4. A6 preset judged vs the good band.
+A7 AI labs below BBB: project debt 50% LTC at the BBB rate + 3 pts. A8 before a debt game over: sell the smallest
+curing project at cap-rate × 0.85, else emergency equity at −50%, ≤ 30%. A9 accept. MY CHOICES confirmed (Arizona:
+already only Arizona projects started from 2026Q2).
+Split: M7.0a A5, A7, A2, A6 · M7.0b A1 (equity, IDC; bots) · M7.0c A3 distress + re-let, A8 rescue, overleveraged
+target · M7.0d A4 GPU-heavy head-start check · M7.0e sims, A1 decision, scope §8, report.
+- M7.0a: bridge 12 q (interest only 4, then eighths; balance.ts overrides capital_act2.json's 8, which must match
+  the docs copy); sub-BBB AI labs 50% at +3 pts (a BBB AI lab keeps 65%); floor 15× (note: 2026Q4's era multiple is
+  15×, so the floor never binds now); announced-AI band $3–15M; one GOOD_BAND for the good path and the preset.
+- M7.0b: equity 8–30%, 1 BW, 2 a quarter, both at the same pre-money (the second doesn't count the first's cash:
+  "priced as today", mine); IDC added to the loan and its amortising principal. Bots raise twice when one won't do.
+- M7.0c: AI-lab distress (all AI-lab contracts, any rating; backstopped spared, mine) halves rent / GPU-hours in cash,
+  backlog and sale value; PROJECT_RELET (prepayment kept, mine); rescue.ts (sale of live shells only; emergency raise
+  only if ≤ 30% cures it); overleveraged target as A3; the Projects card shows distress and "Let it go and re-let".
+- M7.0d: head-start openings play a GPU-heavy Act I (`gpuFirst`: raise-climb buying the best GPU rig first; 2022Q3
+  GPU share 100% on 6 seeds); the sim-runner reports that share with the head-start check.
+- M7.0e: `npm run sim -- --act2`, 50 seeds. A1: sign-then-raise $412M (< $700M) → targets revised to good $0.5–2B,
+  great $4–8B peak; tuning stopped. Bot fix: the Act I base bot no longer builds a phased tier without its round
+  (lifeline-shell crashed on it in 2025). Scope §2.2/§2.7/§2.10/§5 and §8 item 12 updated (both scope copies).
+
+M7.0 §5 (new targets; old-target verdict in brackets): pilot PASS 1.79× vs 1.35× · hosting PASS 17/42 · good MISS
+$412M, bust 4/50 [MISS] · great PASS 2025 peak $4.6B, runway 47/50 [MISS] · lifeline MISS 61/120 (M6: 38/120) · pure
+miner PASS $300M, 50/50 alive · overleveraged MISS 0/50 (2025Q4 debt/EBITDA 5.2×, > 4× in 26/46, distress in 35/50;
+A8's rescue and 2 raises a quarter keep it alive) · delay PASS 207% · IRR PASS 48% vs 13% · EV/MW MISS (mining $0/MW:
+the good and great bots' last miners are worth nothing at 2026Q4; announced AI $13M and stabilized $27M in band) ·
+head starts MISS (4/4 distinct, but hosting's matching bot $37.6M vs $332–432M) · preset MISS $181.9M.
+
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 
 ```text

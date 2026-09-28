@@ -60,7 +60,7 @@ export function ebitdaUsd(q: {
 /**
  * The AI units' enterprise value: run-rate EBITDA × the AI multiple, except the part earned under
  * long A/AA or backstopped contracts (`floorUsd`), valued at no less than the contracted floor
- * (18×, owner 28 Sep 2026). A loss-making AI business adds nothing.
+ * (15×: owner, M7.0 answer A2; was 18×). A loss-making AI business adds nothing.
  */
 export function aiEnterpriseUsd(
   quarter: number,
@@ -78,7 +78,7 @@ export function aiEnterpriseUsd(
 export interface ValuationParts {
   /** The quarter's EBITDA from AI shell and AI cloud units (part of the total EBITDA). */
   aiEbitdaUsd?: number
-  /** Its part under long A/AA or backstopped contracts (the 18× floor). */
+  /** Its part under long A/AA or backstopped contracts (the contracted multiple floor). */
   aiFloorEbitdaUsd?: number
   /** The pivot premium on the mining multiple (from the first AI deal). */
   pivot?: boolean

@@ -100,6 +100,8 @@ import {
   planProjectEvents,
   signTenant,
   buildBlocker,
+  reletBlocker,
+  reletProject,
   sellBlocker,
   sellGpus,
   sellGpusBlocker,
@@ -232,6 +234,8 @@ export type Action =
   | { type: 'PROJECT_DEBT'; projectId: string; debt: DebtKind; on: boolean }
   /** Act II: sell a live cloud's or pilot's GPUs at their residual value (1 Bandwidth); it ends. */
   | { type: 'PROJECT_SELL_GPUS'; projectId: string }
+  /** Act II: let a distressed AI-lab tenant go to re-let (1 BW; 2 quarters empty; M7.0, A3). */
+  | { type: 'PROJECT_RELET'; projectId: string }
   /** Sell a share (0–1) of one coin in the treasury at this week's price (Plan phase, 1 Bandwidth). */
   | { type: 'SELL_TREASURY'; coin: Coin; pct: number }
   /** Talk to the neighbours at a site: cash + 1 Bandwidth for goodwill (heat.json outreach). */
@@ -959,6 +963,13 @@ function run(s: GameState, a: Action): Message | undefined {
       if (blocker) return blocker
       sellProject(s, a.projectId)
       repayProjectFacilities(s, a.projectId)
+      return
+    }
+
+    case 'PROJECT_RELET': {
+      const blocker = reletBlocker(s, a.projectId)
+      if (blocker) return blocker
+      reletProject(s, a.projectId)
       return
     }
 

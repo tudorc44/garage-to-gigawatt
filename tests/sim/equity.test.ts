@@ -1,6 +1,6 @@
 // Act II equity raise / at-the-market offering (M4.5; scope 0.2 §2.7, doc 18 §7.1): priced at the
-// valuation now (the last report's plus this quarter's signings, M5.0d), dilution 8–20%, 2 Bandwidth,
-// once a quarter.
+// valuation now (the last report's plus this quarter's signings, M5.0d), dilution 8–30%, 1 Bandwidth,
+// up to twice a quarter (M7.0, A1a).
 import { describe, expect, it } from 'vitest'
 import type { GameState } from '../../src/sim/state.ts'
 import {
@@ -28,20 +28,24 @@ describe('the equity raise', () => {
     const r = ok(s, { type: 'RAISE_EQUITY', dilution: 0.1 })
     expect(r.cash).toBe(s.cash + equityRaiseUsd(s, 0.1))
     expect(r.founderStake).toBeCloseTo(s.founderStake * 0.9, 12)
-    expect(r.bandwidth).toBe(s.bandwidth - 2)
+    expect(r.bandwidth).toBe(s.bandwidth - 1)
     expect(r.log.at(-1)!.key).toBe('log.equity_raised')
   })
 
-  it('dilution only 8–20%; once a quarter; public companies do it at the market', () => {
-    const s = valued()
+  it('dilution only 8–30%; twice a quarter at the same price; public companies do it at the market', () => {
+    const s = { ...valued(), bandwidth: 4 }
     expect(() => ok(s, { type: 'RAISE_EQUITY', dilution: 0.05 })).toThrow(
       'error.equity_dilution',
     )
-    expect(() => ok(s, { type: 'RAISE_EQUITY', dilution: 0.25 })).toThrow(
+    expect(() => ok(s, { type: 'RAISE_EQUITY', dilution: 0.31 })).toThrow(
       'error.equity_dilution',
     )
-    const once = ok(s, { type: 'RAISE_EQUITY', dilution: 0.08 })
-    expect(() => ok(once, { type: 'RAISE_EQUITY', dilution: 0.08 })).toThrow(
+    const first = ok(s, { type: 'RAISE_EQUITY', dilution: 0.3 })
+    const second = ok(first, { type: 'RAISE_EQUITY', dilution: 0.3 })
+    // Both priced at the same pre-money (the last report's valuation).
+    expect(second.cash - first.cash).toBeCloseTo(first.cash - s.cash, 2)
+    expect(second.founderStake).toBeCloseTo(s.founderStake * 0.7 * 0.7, 12)
+    expect(() => ok(second, { type: 'RAISE_EQUITY', dilution: 0.08 })).toThrow(
       'error.equity_once',
     )
     const pub = ok(

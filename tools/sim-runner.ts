@@ -20,7 +20,12 @@ import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
-import { BOTS, HEAD_START_OPENINGS, PROBES } from './bots.ts'
+import {
+  BOTS,
+  HEAD_START_OPENINGS,
+  PROBES,
+  gpuRevenueShare,
+} from './bots.ts'
 import { contractIrrs, delayCost } from './section5.ts'
 import {
   BREAKDOWN_COLUMNS,
@@ -39,6 +44,13 @@ const argValue = (flag: string, fallback: string) => {
   return i >= 0 ? args[i + 1] : fallback
 }
 const SEEDS = Number(argValue('--seeds', '50'))
+/**
+ * Scope 0.2 §5 good path at 2026Q4 (also the preset's yardstick, owner M7.0 answer A6), and the great
+ * path's 2025 peak band. Revised by the owner's A1 rule (M7.0): sign-then-raise ended at $412M, under
+ * $700M, so good $1–3B → $0.5–2B and great $10B+ → $4–8B.
+ */
+const GOOD_BAND: [number, number] = [0.5e9, 2e9]
+const GREAT_PEAK: [number, number] = [4e9, 8e9]
 const OUT = argValue('--out', 'sim-output')
 /** Target B1: the cash a small unit needs. */
 const B1_CASH = 35_000
@@ -891,28 +903,28 @@ if (args.includes('--act2')) {
       `  Hosting vs staying in mining (hosting-switcher vs raise-climb, same seeds, value at 2026Q4): hosting ahead in ${wins}/${pairs.length} runs (scope 0.2 §5: should be ≤ ~60%)`,
     )
   }
-  // Scope 0.2 §5 good and great paths: the good path ends 2026Q4 at ~$1–3B; the great path peaks at
-  // $10B+ in 2025 and survives 2026 with ≥ 12 months (4 quarters) of runway.
+  // Scope 0.2 §5 good and great paths (bands revised in M7.0, see GOOD_BAND): the good path's 2026Q4
+  // value; the great path's 2025 peak, surviving 2026 with ≥ 12 months (4 quarters) of runway.
   for (const name of ['shell-capital', 'sign-then-raise']) {
     const runs = runsOf(name)
     if (!runs) continue
     const ends = runs.map((r) => at(r, '2026Q4') ?? 0)
-    const inBand = ends.filter((v) => v >= 1e9).length
+    const inBand = ends.filter((v) => v >= GOOD_BAND[0]).length
     const busts = runs.filter(
       (r) => at(r, '2022Q3') !== undefined && r.state.phase === 'gameover',
     ).length
     if (name === 'sign-then-raise')
       s5.push({
-        target: 'Good path ~$1–3B at 2026Q4, ≤ 10% bust in Act II',
+        target: `Good path ~${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])} at 2026Q4, ≤ 10% bust in Act II`,
         result: verdict(
-          median(ends) >= 1e9 &&
-            median(ends) <= 3e9 &&
+          median(ends) >= GOOD_BAND[0] &&
+            median(ends) <= GOOD_BAND[1] &&
             busts <= runs.length * 0.1,
         ),
-        numbers: `${name}: median ${usd(median(ends))} (all runs), $1B+ in ${inBand}/${ends.length}, bust ${busts}/${runs.length}`,
+        numbers: `${name}: median ${usd(median(ends))} (all runs), ${usd(GOOD_BAND[0])}+ in ${inBand}/${ends.length}, bust ${busts}/${runs.length}`,
       })
     console.log(
-      `  Good path (${name}): 2026Q4 median ${usd(median(ends))}; at $1B+ in ${inBand}/${ends.length} runs (target ~$1–3B); bust in Act II ${busts}/${runs.length} (target ≤ 10%)`,
+      `  Good path (${name}): 2026Q4 median ${usd(median(ends))}; at ${usd(GOOD_BAND[0])}+ in ${inBand}/${ends.length} runs (target ${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])}); bust in Act II ${busts}/${runs.length} (target ≤ 10%)`,
     )
   }
   for (const name of ['texas-capital', 'asic-retirer']) {
@@ -934,21 +946,22 @@ if (args.includes('--act2')) {
     }).length
     if (name === 'asic-retirer')
       s5.push({
-        target:
-          'Great path peaks $10B+ in 2025, survives 2026 with ≥ 12 months runway',
+        target: `Great path peaks ${usd(GREAT_PEAK[0])}–${usd(GREAT_PEAK[1])} in 2025, survives 2026 with ≥ 12 months runway`,
         result: verdict(
-          median(peak2025) >= 10e9 && survivors >= runs.length / 2,
+          median(peak2025) >= GREAT_PEAK[0] &&
+            median(peak2025) <= GREAT_PEAK[1] &&
+            survivors >= runs.length / 2,
         ),
         numbers: `${name}: 2025 peak median ${usd(median(peak2025))}; ≥ 4 q runway at 2026Q4 in ${survivors}/${runs.length}`,
       })
     console.log(
-      `  Great path (${name}): 2025 peak median ${usd(median(peak2025))} (target $10B+); alive at 2026Q4 with ≥ 4 quarters of runway in ${survivors}/${runs.length} runs`,
+      `  Great path (${name}): 2025 peak median ${usd(median(peak2025))} (target ${usd(GREAT_PEAK[0])}–${usd(GREAT_PEAK[1])}); alive at 2026Q4 with ≥ 4 quarters of runway in ${survivors}/${runs.length} runs`,
     )
   }
   // The valuation breakdown (medians of each part over the runs that have that point), for the
   // good and great bots, and EV per MW against the §5 sanity bands.
   console.log(
-    '\n  Valuation breakdown (medians; EV/MW bands: mining $0.4–1.2M, announced AI $3–12M, stabilized IG $18–27M):',
+    '\n  Valuation breakdown (medians; EV/MW bands: mining $0.4–1.2M, announced AI $3–15M, stabilized IG $18–27M):',
   )
   const medOrDash = (xs: (number | null)[]) => {
     const v = xs.filter((x): x is number => x !== null)
@@ -1034,14 +1047,21 @@ if (args.includes('--act2')) {
       numbers: `texas-ipo: median ${usd(end)}; alive ${alive.length}/${reached.length}`,
     })
   }
-  // Overleveraged full stack: ≥ 50% of runs see a foreclosure (or a debt bust) in 2026.
+  // Overleveraged full stack (owner, M7.0 answer A3): debt/EBITDA > 4×, AI-lab tenant, no backstop →
+  // ≥ 40% of runs end in a foreclosure or a forced sale (coins / machines, or the A8 project sale) in
+  // 2026, or a game over then.
   const lev = runsOf('overleveraged')
   if (lev) {
     const from2026 = CONTENT.quarters.indexOf('2026Q1')
+    const hitKeys = [
+      'log.project_foreclosed',
+      'log.forced_sale',
+      'log.rescue_sale',
+    ]
     const hit = lev.filter(
       (r) =>
         r.state.log.some(
-          (e) => e.key === 'log.project_foreclosed' && e.quarter >= from2026,
+          (e) => hitKeys.includes(e.key) && e.quarter >= from2026,
         ) ||
         (r.state.phase === 'gameover' && r.state.quarter >= from2026),
     ).length
@@ -1049,10 +1069,14 @@ if (args.includes('--act2')) {
       .map((r) => r.state.reports.find((x) => x.quarter === '2025Q4'))
       .filter((x): x is QuarterReport => !!x && x.ebitdaUsd > 0)
       .map((x) => x.debtUsd / (x.ebitdaUsd * 4))
+    const distressed = lev.filter((r) =>
+      r.state.log.some((e) => e.key === 'log.tenant_distress'),
+    ).length
     s5.push({
-      target: 'Overleveraged full stack: ≥ 50% foreclosure in 2026',
-      result: verdict(hit >= lev.length / 2),
-      numbers: `${hit}/${lev.length} runs; debt/EBITDA at 2025Q4 median ${median(leverage).toFixed(1)}×; earlier busts ${lev.filter((r) => r.state.phase === 'gameover').length}`,
+      target:
+        'Overleveraged (> 4× debt/EBITDA, AI lab, no backstop): ≥ 40% foreclosure or forced sale in 2026',
+      result: verdict(hit >= lev.length * 0.4),
+      numbers: `${hit}/${lev.length} runs; debt/EBITDA at 2025Q4 median ${median(leverage).toFixed(1)}× (> 4× in ${leverage.filter((x) => x > 4).length}/${leverage.length}); a tenant in distress in ${distressed}/${lev.length}; earlier busts ${lev.filter((r) => r.state.phase === 'gameover' && r.state.quarter < from2026).length}`,
     })
   }
   // One-project checks (tools/section5.ts): a 2-quarter delay, and 2024 vs post-reset contracts.
@@ -1092,7 +1116,7 @@ if (args.includes('--act2')) {
       target: `EV/MW sanity at 2026Q4 (${name})`,
       result: verdict(
         inBand(mine, 0.4e6, 1.2e6) &&
-          inBand(ann, 3e6, 12e6) &&
+          inBand(ann, 3e6, 15e6) &&
           inBand(stab, 18e6, 27e6),
       ),
       numbers: `mining ${usd(mine)} · announced AI ${usd(ann)} · stabilized IG ${usd(stab)} per MW`,
@@ -1117,7 +1141,7 @@ if (args.includes('--act2')) {
       )
     }
     // Scope 0.2 §5 (owner, 28 Sep 2026): each Merge head start has its own intended-opening bot.
-    // On the good path's Act I (the openings play raise-climb), every opening under every head start;
+    // On a GPU-heavy good-path Act I (raise-climb buying GPU rigs first), every opening under every head start;
     // passes when ≥ 3 of the 4 head starts have a different best opening and the four matching bots'
     // 2026Q4 medians are within ±30% of their average.
     const hsSeeds = Math.min(SEEDS, 20)
@@ -1133,11 +1157,16 @@ if (args.includes('--act2')) {
     )
     const bests: string[] = []
     const own: number[] = []
+    // The openings play a GPU-heavy Act I (owner, M7.0 answer A4: ≥ 30% of 2022Q3 mining revenue
+    // from GPUs); the share is measured on every run.
+    const gpuShares: number[] = []
     for (const choice of CONTENT.merge.choices.map((c) => c.id)) {
       const row = names.map((name) => {
         const bot = { ...HEAD_START_OPENINGS[name], merge: () => choice }
         const vals = Array.from({ length: hsSeeds }, (_, i) => {
           const end = playGame(i + 1, bot, { through: 2 }).state
+          const share = gpuRevenueShare(end)
+          if (share !== null) gpuShares.push(share)
           return end.phase === 'chapter' ? end.reports.at(-1)!.valuationUsd : 0
         })
         return { name, value: median(vals) }
@@ -1155,13 +1184,15 @@ if (args.includes('--act2')) {
     console.log(
       `  Head-start check: ${distinct}/4 different best openings (≥ 3); matching bots ${own.map(usd).join(' / ')}, within ±30% of their average: ${within ? 'yes' : 'no'} → ${distinct >= 3 && within ? 'pass' : 'miss'}`,
     )
+    const heavy = gpuShares.filter((x) => x >= 0.3).length
     s5.push({
       target:
-        'Each Merge head start makes a different opening best (≥ 3 of 4; matching bots ±30%)',
+        'Each Merge head start makes a different opening best (≥ 3 of 4; matching bots ±30%), on a GPU-heavy Act I',
       result: verdict(distinct >= 3 && within),
-      numbers: `${distinct}/4 different best (${bests.join(', ')}); matching ${own.map(usd).join(' / ')}`,
+      numbers: `${distinct}/4 different best (${bests.join(', ')}); matching ${own.map(usd).join(' / ')}; GPU share of 2022Q3 mining revenue median ${(median(gpuShares) * 100).toFixed(0)}% (≥ 30% in ${heavy}/${gpuShares.length})`,
     })
-    // The owner's M5 answer 3: the preset is a good-path entry; its best bot should reach the good band.
+    // The owner's M5 answer 3 and M7.0 answer A6: the preset is judged with the good path, against
+    // whatever the good band is.
     const presetBest = presetBots
       .map((name) =>
         median(
@@ -1177,8 +1208,8 @@ if (args.includes('--act2')) {
       )
       .reduce((a, b) => Math.max(a, b), 0)
     s5.push({
-      target: 'Preset (40 MW) best bot reaches the good band (~$1–3B)',
-      result: verdict(presetBest >= 1e9),
+      target: `Preset (40 MW) best bot reaches the good band (${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])})`,
+      result: verdict(presetBest >= GOOD_BAND[0]),
       numbers: `best preset bot median ${usd(presetBest)}`,
     })
   }

@@ -61,12 +61,30 @@ const debt = (s: GameState, d: 'project_debt' | 'ddtl', on = true) =>
   ok(s, { type: 'PROJECT_DEBT', projectId: 'project-1', debt: d, on })
 
 describe('who can borrow', () => {
-  it('project debt needs a tenant rated BBB or better', () => {
-    expect(() => debt(shellWith('tc_meridian_labs'), 'project_debt')).toThrow(
-      'error.debt_needs_bbb',
-    ) // BB
+  it('project debt needs a tenant rated BBB or better, or an AI lab (M7.0, A7)', () => {
+    expect(() =>
+      debt(shellWith('tc_realname_coreweave_style'), 'project_debt'),
+    ).toThrow('error.debt_needs_bbb') // a B+ neocloud
+    debt(shellWith('tc_meridian_labs'), 'project_debt') // a BB AI lab
     debt(shellWith('tc_enterprise_render'), 'project_debt') // BBB
     debt(shellWith('tc_north_azure_cloud'), 'project_debt') // AA
+  })
+
+  it('an AI lab below BBB: 50% of cost at the project-debt rate + 3 points; a BBB AI lab keeps 65%', () => {
+    const lab = shellWith('tc_meridian_labs')
+    const o = debtOffer(lab, lab.projects[0], 'project_debt')
+    expect(o.capUsd).toBeCloseTo(
+      projectCapex(lab, lab.projects[0]).totalUsd * 0.5,
+      4,
+    )
+    expect(o.apr).toBeCloseTo(projectDebtRate(lab.quarter) + 0.03, 9)
+    const bbb = shellWith('tc_enterprise_render')
+    const b = debtOffer(bbb, bbb.projects[0], 'project_debt')
+    expect(b.capUsd).toBeCloseTo(
+      projectCapex(bbb, bbb.projects[0]).totalUsd * 0.65,
+      4,
+    )
+    expect(b.apr).toBeCloseTo(projectDebtRate(bbb.quarter), 9)
   })
 
   it('a DDTL needs a GPU contract', () => {
@@ -112,7 +130,7 @@ describe('how much', () => {
 })
 
 describe('drawing and servicing', () => {
-  it('draws at the start (the cash only covers the rest), pays interest only while building', () => {
+  it('draws at the start (the cash only covers the rest); while building the interest is capitalised (M7.0, A1b)', () => {
     const s = debt(shellWith('tc_north_azure_cloud'), 'project_debt')
     const plan = debtPlan(s, s.projects[0])
     const capex = projectCapex(s, s.projects[0]).totalUsd
@@ -122,13 +140,15 @@ describe('drawing and servicing', () => {
     const f = r.facilities[0]
     expect(f).toMatchObject({ kind: 'project_debt', amountUsd: plan.totalUsd })
     expect(debtUsd(r)).toBeCloseTo(plan.totalUsd, 6)
-    expect(serviceDueUsd(r, f).principalUsd).toBe(0) // building
+    expect(serviceDueUsd(r, f)).toMatchObject({
+      principalUsd: 0,
+      interestUsd: 0,
+    }) // building: no cash due
     const next = playQuarter(r)
-    expect(next.facilities[0].balanceUsd).toBeCloseTo(plan.totalUsd, 6)
-    expect(next.reports.at(-1)!.interestUsd).toBeCloseTo(
-      (plan.totalUsd * f.apr) / 4,
-      2,
-    )
+    const idc = (plan.totalUsd * f.apr) / 4
+    expect(next.facilities[0].balanceUsd).toBeCloseTo(plan.totalUsd + idc, 2)
+    expect(next.facilities[0].amountUsd).toBeCloseTo(plan.totalUsd + idc, 2)
+    expect(next.reports.at(-1)!.interestUsd).toBe(0)
   })
 
   it('once live it amortises; selling the project repays what it still owes', () => {
@@ -148,7 +168,9 @@ describe('drawing and servicing', () => {
     let s = debt(shellWith('tc_north_azure_cloud'), 'project_debt')
     s = ok(s, { type: 'PROJECT_START', projectId: 'project-1' })
     const owed = s.facilities[0].balanceUsd
-    // No cash for the debt service at two quarter ends in a row.
+    // Live (a building project owes no cash: its interest is capitalised), and no cash for the debt
+    // service at two quarter ends in a row.
+    s.projects[0].stage = 'live'
     s.cash = 0
     expect(serviceFacilities(s)).toEqual({ interestUsd: 0, principalUsd: 0 })
     expect(s.facilities[0].missedQuarters).toBe(1)

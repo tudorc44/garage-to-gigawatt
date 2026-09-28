@@ -155,17 +155,32 @@ export const BALANCE = {
      * Contracted AI EBITDA with an A/AA or backstopped tenant and at least `minQuartersLeft` of the
      * contract to run is valued at no less than this multiple (owner, 28 Sep 2026).
      */
-    contractedAiMultipleFloor: { multiple: 18, minQuartersLeft: 20 },
+    /** M7.0 (owner, answer A2): 15×, the bottom of the accepted 15–18× range (was 18×). */
+    contractedAiMultipleFloor: { multiple: 15, minQuartersLeft: 20 },
     /**
      * Project debt's loan-to-cost by tenant band (owner, 28 Sep 2026, answer 1 step 3; lenders.json's
-     * 60–75% where higher): A/AA or backstopped 75%, BBB 65%. The AI-lab band (50%) is recorded, but
-     * project debt still needs a tenant rated BBB or better (scope §2.7), so it lends nothing yet.
+     * 60–75% where higher): A/AA or backstopped 75%, BBB 65%. AI labs rated below BBB borrow 50% at
+     * the project-debt rate + 3 points (owner, M7.0 answer A7); BBB+ tenants keep their bands.
      */
     projectDebtLtc: { strong: 0.75, bbb: 0.65, aiLab: 0.5 },
+    aiLabProjectDebtSpreadAdd: 0.03,
     /** Warrants worth this × the guaranteed dollars (lenders.json: 0.3–0.5×; mine: the middle), within 3–6%. */
     backstopWarrantValueShare: 0.4,
-    /** Bandwidth: an equity raise 2 (scope §2.7); a JV or backstop deal 2 (mine, like negotiating). */
-    bandwidth: { equity: 2, jv: 2, backstop: 2 },
+    /**
+     * Bandwidth: an equity raise 1 (owner, M7.0 answer A1; was 2); a JV or backstop deal 2 (mine,
+     * like negotiating).
+     */
+    bandwidth: { equity: 1, jv: 2, backstop: 2 },
+    /**
+     * At-the-market equity (owner, M7.0 answer A1a): up to 2 raises a quarter, each diluting at most
+     * 30% (overrides lenders.json's 20% top; its 8% bottom stays), priced as before.
+     */
+    equity: { raisesPerQuarter: 2, maxDilution: 0.3 },
+    /**
+     * Before an Act II game over (owner, M7.0 answer A8): sell the smallest project that cures the
+     * shortfall at cap-rate value × 0.85; else raise equity at half the valuation, at most 30%.
+     */
+    rescue: { saleMult: 0.85, equityPriceMult: 0.5, maxDilution: 0.3 },
     /**
      * Tenant and lender negotiation (A2-05 "Negotiate · 2 BW"; owner, 28 Sep 2026, M5 answer 8): 3
      * rounds from the card's terms. A tenant's hidden limit is its card price + a share by type; a
@@ -394,6 +409,12 @@ export const BALANCE = {
     floorKw: 20_000,
     siteTier: 'own_site',
     region: 'ercot',
+    /**
+     * The bridge (owner, M7.0 answer A5; overrides capital_act2.json's 8 quarters): 12 quarters,
+     * interest only for the first 4, then equal principal each quarter; same 14% and size.
+     */
+    bridgeTenorQuarters: 12,
+    bridgeInterestOnlyQuarters: 4,
   },
 
   /**
@@ -417,6 +438,20 @@ export const BALANCE = {
     tenantsFrom: '2023Q3',
     /** Offers per shell project (like scouting, 2–3; +1 with the BD Lead, scope §2.8). */
     offers: { min: 2, max: 3 },
+    /**
+     * The 2026 AI-lab stress (owner, M7.0 answer A3): from 2026Q2, each signed AI-lab contract rolls
+     * this chance a quarter of tenant distress; its payments then drop to `paymentMult` for the rest of
+     * the term. The player may terminate it and re-let (1 BW; no offers for `emptyQuarters`). A
+     * backstopped lease is spared (the guarantor stands behind it, as with walk-aways; mine). ec23's
+     * one-quarter haircut applies on top.
+     */
+    aiLabDistress: {
+      from: '2026Q2',
+      chancePerQuarter: 0.12,
+      paymentMult: 0.5,
+      reletBandwidth: 1,
+      emptyQuarters: 2,
+    },
     /** AI shell lease: the host's costs are 15–20% of rent (doc 18 §4: an 80–85% margin); the tenant pays its power. */
     shellOpexShare: 0.175,
     /** AI cloud: power at a liquid-cooled AI hall's PUE (hires_act2.json operating_costs_ai_sites: 1.15). */

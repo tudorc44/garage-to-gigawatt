@@ -18,7 +18,11 @@ import { buyCapKw, hostingView } from '../src/sim/selectors.ts'
 import { convertibleKw } from '../src/sim/systems/hosting.ts'
 import { projectCapex, tenantCard } from '../src/sim/systems/projects.ts'
 import { debtPlan } from '../src/sim/systems/facilities.ts'
-import { equityPreMoneyUsd } from '../src/sim/systems/equity.ts'
+import {
+  dilutionRange,
+  equityPreMoneyUsd,
+  raisesThisQuarter,
+} from '../src/sim/systems/equity.ts'
 import { fleetOffer } from '../src/sim/systems/headStarts.ts'
 import {
   constructionLoanBlocker,
@@ -104,6 +108,11 @@ interface BotSettings {
   upgradeAfterRound?: string
   /** Once upgrading has started (upgradeAfterRound), smartFill and upgrades pick BTC machines only. */
   asicOnly?: boolean
+  /**
+   * A GPU-heavy Act I (owner, M7.0 answer A4): buy the best-paying GPU rig whenever one pays back
+   * in time, an ASIC only when no rig does.
+   */
+  gpuFirst?: boolean
   /** Also buy machines for a site that powers on next quarter, so they earn from its first quarter. */
   prebuy?: boolean
   /**
@@ -396,7 +405,10 @@ function makeBot(settings: BotSettings): Strategy {
         nextOpen &&
         topIsFull &&
         bandwidth >= 1 &&
-        !(settings.phasedTexas && next.phases)
+        !(settings.phasedTexas && next.phases) &&
+        // A phased tier (Texas) needs its funding round first (M7.0: a lifeline bot with cash to
+        // spare in 2025 tried to build it without the IPO).
+        !(next.phases && phaseStartBlocker(s, next.id))
       ) {
         const direct = (
           BALANCE.sites.noScoutingNeeded as readonly string[]
@@ -501,6 +513,12 @@ function makeBot(settings: BotSettings): Strategy {
           )
           let best = [...viable].sort((a, b) => a.payback - b.payback)[0]
           if (!best) break
+          if (settings.gpuFirst) {
+            const rig = viable
+              .filter((o) => o.m.coin === 'ETH')
+              .sort((a, b) => a.payback - b.payback)[0]
+            if (rig) best = rig
+          }
           // With cash to spare, power is the scarce thing: take the most profit per kW.
           const upgrading =
             !settings.upgradeAfterRound ||
@@ -510,7 +528,7 @@ function makeBot(settings: BotSettings): Strategy {
             settings.asicOnly && upgrading
               ? viable.filter((o) => o.m.coin === 'BTC')
               : viable
-          if (settings.smartFill && candidates.length > 0) {
+          if (settings.smartFill && candidates.length > 0 && !settings.gpuFirst) {
             const perKw = [...candidates].sort(
               (a, b) =>
                 b.dailyProfit / b.m.power_kw - a.dailyProfit / a.m.power_kw ||
@@ -687,6 +705,26 @@ function aiProjects(
         }
         return r.ok
       }
+      /**
+       * Raises `needUsd` of equity: one raise if it fits under the cap, two if two do (each priced at
+       * the same pre-money), none if even two can't cover it. With `partial`, raises what it can.
+       */
+      const raiseFor = (needUsd: number, partial = false) => {
+        const [lo, hi] = dilutionRange()
+        const left =
+          BALANCE.finance.equity.raisesPerQuarter - raisesThisQuarter(s)
+        const pre = equityPreMoneyUsd(s)
+        if (left <= 0 || pre <= 0) return
+        const maxOne = (pre * hi) / (1 - hi)
+        if (!partial && needUsd > maxOne * left) return
+        let need = needUsd
+        for (let i = 0; i < left && need > 0; i++) {
+          const d = Math.min(hi, Math.max(lo, need / (pre + need)))
+          const cash = s.cash
+          if (!run({ type: 'RAISE_EQUITY', dilution: d })) return
+          need -= s.cash - cash
+        }
+      }
       const finish = () => {
         for (const p of s.projects.filter((x) => x.stage === 'proposed')) {
           // Relying on project debt: only a tenant rated BBB or better will do; without one, drop
@@ -733,19 +771,12 @@ function aiProjects(
             for (const debt of ['project_debt', 'ddtl'] as const)
               run({ type: 'PROJECT_DEBT', projectId: p.id, debt, on: true })
           run({ type: 'PROJECT_FUND_CASH', projectId: p.id })
-          // Short of cash for the part the debt doesn't cover: sell 8–20% of the company for it.
+          // Short of cash for the part the debt doesn't cover: sell 8–30% of the company for it, twice
+          // in a quarter if one raise isn't enough (M7.0, A1a); not at all if two can't cover it.
           const q = s.projects.find((x) => x.id === p.id)!
           const needUsd =
             projectCapex(s, q).totalUsd - debtPlan(s, q).totalUsd - s.cash
-          const preUsd = equityPreMoneyUsd(s)
-          if (opts.capital && needUsd > 0 && preUsd > 0) {
-            const d = needUsd / (preUsd + needUsd)
-            if (d <= CONTENT.finance.equity.dilution[1])
-              run({
-                type: 'RAISE_EQUITY',
-                dilution: Math.max(CONTENT.finance.equity.dilution[0], d),
-              })
-          }
+          if (opts.capital && needUsd > 0) raiseFor(needUsd)
           run({ type: 'PROJECT_START', projectId: p.id })
         }
       }
@@ -792,18 +823,7 @@ function aiProjects(
       const bridgeSoon = bridge !== null && s.quarter >= bridge.dueQuarter - 1
       if (bridge && bridgeSoon) {
         const needUsd = bridge.balanceUsd * 1.05 - s.cash
-        const preUsd = equityPreMoneyUsd(s)
-        if (needUsd > 0 && preUsd > 0)
-          run({
-            type: 'RAISE_EQUITY',
-            dilution: Math.min(
-              CONTENT.finance.equity.dilution[1],
-              Math.max(
-                CONTENT.finance.equity.dilution[0],
-                needUsd / (preUsd + needUsd),
-              ),
-            ),
-          })
+        if (needUsd > 0) raiseFor(needUsd, true)
         if (s.cash >= bridge.balanceUsd * 1.05)
           run({ type: 'REPAY_BRIDGE_LOAN' })
       }
@@ -1247,6 +1267,22 @@ export const BOTS: Record<string, Strategy> = {
  * (a full garage), sells every coin and never spends again: the best case for garage-only cash.
  */
 /** sign-then-raise's Act II settings (the shell path every opening ends up on). */
+/** The good path's Act I, GPU-heavy (M7.0, A4): raise-climb buying GPU rigs first. */
+const GPU_HEAVY: BotSettings = { ...RAISE_CLIMB, gpuFirst: true }
+
+/**
+ * A GPU-heavy Act I company (the A4 test: ≥ 30%): the share of its 2022Q3 mining revenue from GPUs,
+ * from that quarter's report (coins mined, at mid-quarter prices).
+ */
+export function gpuRevenueShare(state: GameState): number | null {
+  const r = state.reports.find((x) => x.quarter === '2022Q3')
+  if (!r) return null
+  const w = marketWeek(CONTENT.quarters.indexOf('2022Q3'), 6)
+  const eth = r.coinsMined.ETH * w.eth_usd
+  const all = eth + r.coinsMined.BTC * w.btc_usd
+  return all > 0 ? eth / all : null
+}
+
 const SHELL_PATH = {
   kind: 'shell' as const,
   freeUp: true,
@@ -1256,8 +1292,9 @@ const SHELL_PATH = {
 }
 
 /**
- * Each Merge head start's intended opening (owner, 28 Sep 2026; M5 answer 2), on the good path's
- * Act I (raise-climb), each making its own Merge choice. All end up on sign-then-raise's shells:
+ * Each Merge head start's intended opening (owner, 28 Sep 2026; M5 answer 2), on a GPU-heavy good
+ * path Act I (raise-climb buying GPU rigs first: M7.0 answer A4), each making its own Merge choice.
+ * All end up on sign-then-raise's shells:
  * - open-pilot (gpu_cloud): a 0.5 MW pilot in 2023Q2, the gap raised as equity; shells from 2023Q3.
  * - open-shell (hosting): shells from 2023Q3 (where the guaranteed AA offer waits).
  * - open-fleet (sell_gpus_keep_btc): frees a site's S9s and buys the distressed fleet in 2023Q1;
@@ -1269,7 +1306,7 @@ function opening(
   shellsFrom: string,
   before?: (now: () => GameState, run: (a: Action) => boolean) => void,
 ): Strategy {
-  const shells = aiProjects(makeBot(RAISE_CLIMB), {
+  const shells = aiProjects(makeBot(GPU_HEAVY), {
     ...SHELL_PATH,
     from: shellsFrom,
   })
@@ -1325,8 +1362,8 @@ export const HEAD_START_OPENINGS: Record<string, Strategy> = {
       run({
         type: 'RAISE_EQUITY',
         dilution: Math.min(
-          CONTENT.finance.equity.dilution[1],
-          Math.max(CONTENT.finance.equity.dilution[0], need / (pre + need)),
+          dilutionRange()[1],
+          Math.max(dilutionRange()[0], need / (pre + need)),
         ),
       })
     if (now().cash < cost) return

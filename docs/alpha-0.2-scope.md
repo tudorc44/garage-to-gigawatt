@@ -31,7 +31,7 @@
 | GPU know-how (new) | 0–3 (doc 18 §5.4) |
 | Community Heat | Carried over per site; grievance resets at the act boundary. AI-project thresholds from 05 §3 (delays, lawsuits, moratoriums) |
 | Ratepayer Anger (new, per region) | Rises with MW built in the region; feeds Heat and moratorium cards |
-| Valuation | Σ(unit EBITDA × 4 × unit multiple) + cash + treasury − debt + **projects under construction at capex spent so far** (owner decision 27 Sep 2026; they stop counting at cost once live and earning) + credit-weighted backlog (tenant A/AA 20%, backstopped 20%, BBB 15%, AI lab 8%, spot 0%; raised from 15/10/10/5 by the owner, 28 Sep 2026; A/AA was set to 25% and cut to 20% by the owner's EV/MW rule). Contracted AI EBITDA with an A/AA or backstopped tenant and ≥ 5 years left is valued at max(era AI multiple, 18×). The backlog shown on the top bar and dashboard is the **remaining contracted revenue, unweighted**; only the valuation applies the weights. Era multiples: doc 18 §8 table (AI infra 2026: 24 → 20 → 18 → 15). Pivot premium: mining multiple +2 from the quarter the first AI deal is signed |
+| Valuation | Σ(unit EBITDA × 4 × unit multiple) + cash + treasury − debt + **projects under construction at capex spent so far** (owner decision 27 Sep 2026; they stop counting at cost once live and earning) + credit-weighted backlog (tenant A/AA 20%, backstopped 20%, BBB 15%, AI lab 8%, spot 0%; raised from 15/10/10/5 by the owner, 28 Sep 2026; A/AA was set to 25% and cut to 20% by the owner's EV/MW rule). Contracted AI EBITDA with an A/AA or backstopped tenant and ≥ 5 years left is valued at max(era AI multiple, 15×) (M7.0; was 18×). The backlog shown on the top bar and dashboard is the **remaining contracted revenue, unweighted**; only the valuation applies the weights. Era multiples: doc 18 §8 table (AI infra 2026: 24 → 20 → 18 → 15). Pivot premium: mining multiple +2 from the quarter the first AI deal is signed |
 
 ### 2.3 Market (scripted, from `docs/act2-content/` market files)
 - **BTC:** weekly price, difficulty, hashrate, fee share and hashprice. **Hashprice is derived** from price, subsidy, fees and hashrate, as in Act I. The halving is on **20 Apr 2024** (subsidy 3.125 from the week of 22 Apr).
@@ -72,14 +72,15 @@
 | Instrument | Unlock | In alpha |
 |---|---|---|
 | Act I loans: equipment (now also secured on GPUs), crypto-backed | Equipment always; crypto-backed unavailable 2022Q4–2023Q2 (FTX) | ✅ |
-| Project debt | 2023Q3, needs a tenant rated ≥ BBB | ✅ |
+| Project debt | 2023Q3, needs a tenant rated ≥ BBB, or an AI lab below BBB at 50% LTC and the BBB rate + 3 pts (M7.0); interest during construction is capitalised into the loan | ✅ |
 | GPU-backed DDTL | 2023Q3, needs a GPU contract with a rated tenant; spread by tenant credit and era | ✅ |
-| Equity raise / at-the-market offering (if public) | Any quarter, 2 BW | ✅ |
+| Equity raise / at-the-market offering (if public) | Any quarter, up to 2 raises a quarter, each ≤ 30% dilution, 1 BW each (M7.0) | ✅ |
 | JV partner | 2025Q1, 100 MW+ projects | ✅ (**first to cut**) |
 | Big-tech backstop | 2025Q3, tenants rated ≤ BB | ✅ (**second to cut**) |
 | Refinancing | — | ❌ backlog |
 
-- **Lose rule:** cash < 0 → forced sales → bust (as in Act I). **Added:** 2 quarters of missed debt service → foreclosure on that project's collateral.
+- **Lose rule:** cash < 0 → forced sales → bust (as in Act I). **Added:** 2 quarters of missed debt service → foreclosure on that project's collateral. **Before a bust (M7.0):** a forced sale of the smallest project whose proceeds cure the shortfall (cap-rate value × 0.85), else an emergency equity raise at −50% to the current valuation, ≤ 30% dilution; bust only if both fail.
+- **2026 AI-lab stress (M7.0):** from 2026Q2, each AI-lab contract rolls 12% a quarter of tenant distress (payments −50% for the rest of the term); the player may terminate and re-let (1 BW, 2 quarters empty). `ec23` applies on top.
 
 ### 2.8 People
 - Keep the 5 Act I hires, with 2022–26 salaries (`hires_act2.json`).
@@ -96,13 +97,13 @@
 
 ### 2.10 Entry into Act II
 - **Carry-over** per doc 18 §2.1 (cash, debt, BTC and ETH treasury, sites, MW, power contracts, Heat base + load, ASICs, founder stake, cap table, IPO status, hires at Act II salaries).
-- **Floor:** under 20 MW energized **and** under $5M cash (owner, 28 Sep 2026: both; a cash-short company at 20 MW+ uses the normal capital tools) → the **distressed lifeline card** (`ec03`): a bankrupt miner's **20 MW site for $6.5M**, bought with a **bridge loan at 14% for 8 quarters**, sized so the player also reaches $5M cash.
+- **Floor:** under 20 MW energized **and** under $5M cash (owner, 28 Sep 2026: both; a cash-short company at 20 MW+ uses the normal capital tools) → the **distressed lifeline card** (`ec03`): a bankrupt miner's **20 MW site for $6.5M**, bought with a **bridge loan at 14% for 12 quarters, interest only for the first 4** (M7.0; was 8 quarters), sized so the player also reaches $5M cash.
 - **Merge head starts** per doc 18 §2.3, each with its own intended opening (owner, 28 Sep 2026):
   - **gpu_cloud:** $0.15/GPU-hr at 40%, know-how 1; plus a guaranteed neocloud offer in 2023Q2 scouting, and the first pilot skips the GPU allocation interrupt. Opening: an early pilot.
   - **hosting:** $0.075/kWh, shell-ready −25% capex / −1 quarter; plus a guaranteed A/AA hyperscaler shell-lease offer in 2023Q3 scouting. Opening: a shell lease.
   - **sell_gpus:** the GPUs' cash at the game's used price; plus a one-off distressed ASIC fleet offer in 2023Q1 (up to 10 MW of S19j Pro-class machines at 60% of that quarter's ASIC price). Opening: cheap mining expansion, pivot later.
   - **hold_and_wait:** GPUs parked (no power cost, no revenue, resale value keeps decaying on the normal curve), sellable at any later Plan phase with a +25% scarcity premium in 2023Q2–2023Q4; +1 Bandwidth in 2022Q4 and 2023Q1. Opening: keep focus and optionality.
-  - Check: at least 3 of the 4 head starts have a different best bot, and the matching bots' 2026Q4 medians are within ±30% of each other.
+  - Check: at least 3 of the 4 head starts have a different best bot, and the matching bots' 2026Q4 medians are within ±30% of each other, judged on a GPU-heavy Act I bot (≥ 30% of 2022Q3 mining revenue from GPUs; M7.0). For mostly-ASIC companies the Merge choice matters little, as in reality.
 - **Standalone preset:** "Q4 2022: a mid-size miner": 40 MW across 2 sites (20 MW owned + 20 MW Texas lease on fixed power), S19-class fleet at 70% of capacity, $12M cash, $25M equipment debt, 45% stake, no IPO. The player picks a Merge choice on the first screen. A "New career → Start at Act II" option on the title screen.
 
 ### 2.11 Rivals
@@ -181,17 +182,17 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
 - [ ] Save, reload and export/import work in Act II, including mid-quarter and across the act boundary
 
 **Balance**
-- [ ] Good path (20–40 MW entry) ends Act II at **~$1–3B**, with **≤ 10% of runs going bust in Act II** (added 28 Sep 2026); the top half of the band needs at least one sold or stabilized project
-- [ ] Great path (100+ MW entry) peaks at **$10B+** in 2025 and survives 2026 with ≥ 12 months of runway
+- [ ] Good path (20–40 MW entry) ends Act II at **~$0.5–2B** (M7.0, revised by the owner's A1 rule; was $1–3B), with **≤ 10% of runs going bust in Act II** (added 28 Sep 2026); the top half of the band needs at least one sold or stabilized project. Judged by the 20–40 MW entry bots, not the overleveraged one. The preset is judged against the same band.
+- [ ] Great path (100+ MW entry) peaks at **$4–8B** in 2025 (M7.0; was $10B+) and survives 2026 with ≥ 12 months of runway
 - [ ] Pure miner ends at **~$100–400M**, alive
-- [ ] Overleveraged full stack (> 6× debt/EBITDA, AI-lab tenant, no backstop): **≥ 50% foreclosure** in 2026
+- [ ] Overleveraged full stack (> 4× debt/EBITDA, AI-lab tenant, no backstop): **≥ 40% of runs end in foreclosure or a forced sale** in 2026 (M7.0; was > 6× and ≥ 50% foreclosure)
 - [ ] A 2-quarter delay costs **≥ 80%** of a full-stack project's profit
 - [ ] A 2024 full-stack contract beats a post-Jun-2025 one by **≥ 30%** IRR (a floor, not a target)
 - [ ] **Pilot timing:** a 1 MW pilot started in 2023Q3 returns **≥ 1.7×** its cost by 2026Q4 (operating margin + GPU resale on the residual curve), and at least 0.4× more than the same pilot started in 2025Q2 (revised 27 Sep 2026: the M4 sim gives 1.89× vs 1.39×)
 - [ ] **Hosting isn't a free win:** switching mining MW to hosting doesn't beat staying in mining at 2026Q4 in more than ~60% of bot runs (hosting is meant to pay early and carry its risk over the full act; revised 27 Sep 2026 after the M3/M4 sims)
 - [ ] A lifeline run (weak Act I) reaches at least one live AI project by 2024Q4 in ≥ 70% of runs (via the 5 MW shell path)
 - [ ] Each Merge head start produces a different best opening strategy (checked by bot comparisons)
-- [ ] **EV/MW sanity check:** pure mining ~$0.4–1.2M/MW, announced AI $3–12M/MW, stabilized IG-backed $18–27M/MW
+- [ ] **EV/MW sanity check:** pure mining ~$0.4–1.2M/MW, announced AI $3–15M/MW (M7.0; was $3–12M), stabilized IG-backed $18–27M/MW
 
 **Quality**
 - [ ] Golden replays pass for Act I, Act II alone and Act I → II
@@ -246,3 +247,4 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
 9. §2.2 credit rating: sets the spread over SOFR and the max LTV of the equipment loan (the only corporate debt); no general corporate term loan (owner decision 27 Sep 2026).
 10. §5 targets revised after the M3/M4 sims: hosting check judged at 2026Q4; pilot target as a margin over the 2025Q2 pilot. The switched-off-MW power reservation was tried and reverted (reservation applies to idle and under-construction MW only).
 11. Owner answers to the M5 questions (28 Sep 2026): Act II Bandwidth base 4, an Act I Chief of Staff carries (§2.2); the lifeline floor needs both conditions (§2.10); each Merge head start gets its own mechanic and intended opening, and hold_and_wait parks the GPUs (§2.10, replacing doc 18 §2.3's "switched off, full burn on idle MW"); the §5 targets stay, and the good path also needs ≤ 10% of runs going bust in Act II.
+12. Owner answers to the M6 questions (28 Sep 2026, M7.0; asked as "item 10", numbered after the existing 10 and 11): at-the-market equity up to 2 raises a quarter, ≤ 30% each, 1 BW; interest during construction capitalised into project debt (§2.7); the A1 rule re-ran the bots and, with the good path at $412M (< $700M), revised the targets to good $0.5–2B and great $4–8B and stopped tuning (§5); contracted-AI floor 15× and announced-AI EV/MW band $3–15M (§2.2, §5); AI labs below BBB get project debt at 50% LTC (BBB rate + 3 pts) and a 2026 AI-lab stress (§2.7); overleveraged target > 4× / ≥ 40% foreclosure or forced sale (§5); head starts judged on a GPU-heavy Act I (§2.10); bridge 12 quarters, interest only for 4 (§2.10); the preset judged with the good path; a forced project sale then an emergency raise before a bust (§2.7); the pure miner's 1/50 bust accepted.

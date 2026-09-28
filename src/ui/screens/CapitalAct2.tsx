@@ -287,6 +287,7 @@ function Backlog({ state }: { state: ScreenProps['state'] }) {
           bbbPct: v.weights.bbb,
           backstopPct: v.weights.backstop,
           belowPct: v.weights.below,
+          floor: v.floorMultiple,
         })}
       </p>
     </section>
@@ -372,7 +373,10 @@ function Equity({ state, act }: ScreenProps) {
         {v.public ? t('ui.cap2.atm') : t('ui.cap2.raise')}
       </div>
       <p class="num-s muted" style={{ margin: 0 }}>
-        {t('ui.cap2.raise_note', { pre: fmt.money(v.preMoneyUsd) })}
+        {t('ui.cap2.raise_note', {
+          pre: fmt.money(v.preMoneyUsd),
+          left: v.raisesLeft,
+        })}
       </p>
       {v.signedUsd > 0 && (
         <p class="num-s gain" style={{ margin: 0 }}>

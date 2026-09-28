@@ -171,12 +171,89 @@ export function gpuContractUsdHr(
   )
 }
 
-/** A signed tenant's contract value over a year: a shell's rent, or a cloud's GPUs × price × hours. */
+/** What a tenant in distress still pays (M7.0, A3): half; 1 otherwise. */
+export function distressMult(p: Project): number {
+  return p.tenant?.distressedQuarter !== undefined
+    ? BALANCE.projects.aiLabDistress.paymentMult
+    : 1
+}
+
+/**
+ * A signed tenant's contract value over a year: a shell's rent, or a cloud's GPUs × price × hours;
+ * halved for a tenant in distress.
+ */
 export function annualContractUsd(p: Project): number {
   const t = p.tenant
   if (!t) return 0
-  if (t.gpu) return t.gpu.gpus * t.gpu.priceUsdHr * 24 * 365
-  return annualRentUsd(tenantCard(t.card)!, p.kw) * (t.priceMult ?? 1)
+  if (t.gpu) return t.gpu.gpus * t.gpu.priceUsdHr * 24 * 365 * distressMult(p)
+  return (
+    annualRentUsd(tenantCard(t.card)!, p.kw) *
+    (t.priceMult ?? 1) *
+    distressMult(p)
+  )
+}
+
+/**
+ * At the start of a quarter from 2026Q2 (M7.0, A3): each signed AI-lab contract without a backstop,
+ * not yet in distress, rolls the distress chance on its own stream.
+ */
+function rollAiLabDistress(state: GameState): void {
+  const d = BALANCE.projects.aiLabDistress
+  const label = CONTENT.quarters[state.quarter]
+  if (label < d.from) return
+  for (const p of state.projects) {
+    const t = p.tenant
+    if (!t || p.backstop || projectGone(p) || t.distressedQuarter !== undefined)
+      continue
+    if (tenantCard(t.card)?.type !== 'ai_lab') continue
+    if (
+      !chance(
+        substream(state.seed, `lab_distress:${label}:${p.id}`),
+        d.chancePerQuarter,
+      )
+    )
+      continue
+    t.distressedQuarter = state.quarter
+    logEntry(state, 'log.tenant_distress', { n: p.n, tenant: t.card })
+  }
+}
+
+/** Why a distressed tenant can't be let go now, or undefined. */
+export function reletBlocker(
+  state: GameState,
+  projectId: string,
+): Message | undefined {
+  const p = getProject(state, projectId)
+  if (!p) return { key: 'error.unknown_project' }
+  if (p.tenant?.distressedQuarter === undefined || projectGone(p))
+    return { key: 'error.not_distressed' }
+  const need = BALANCE.projects.aiLabDistress.reletBandwidth
+  if (state.bandwidth < need)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: need, have: state.bandwidth },
+    }
+  return undefined
+}
+
+/**
+ * Terminates a distressed tenant's contract to re-let (1 BW; assumes reletBlocker passed): the
+ * project stands empty for 2 quarters, then gets offers again. The defaulted tenant's unused
+ * prepayment is kept (mine).
+ */
+export function reletProject(state: GameState, projectId: string): void {
+  const p = getProject(state, projectId)!
+  const t = p.tenant!
+  state.bandwidth -= BALANCE.projects.aiLabDistress.reletBandwidth
+  p.tenant = null
+  p.offers = []
+  p.emptyUntil =
+    state.quarter + BALANCE.projects.aiLabDistress.emptyQuarters - 1
+  logEntry(state, 'log.tenant_terminated', {
+    n: p.n,
+    tenant: t.card,
+    quarter: CONTENT.quarters[p.emptyUntil + 1] ?? '—',
+  })
 }
 
 /** A signed tenant's term in quarters. */
@@ -746,6 +823,7 @@ function gasLawsuits(state: GameState): void {
 /** At the start of a quarter: finished builds go live; shells and clouds without a tenant get offers. */
 export function startQuarterProjects(state: GameState): void {
   gasLawsuits(state)
+  rollAiLabDistress(state)
   for (const p of state.projects) {
     if (
       p.stage === 'building' &&
@@ -761,6 +839,7 @@ export function startQuarterProjects(state: GameState): void {
       p.kind !== 'pilot' &&
       !projectGone(p) &&
       !p.tenant &&
+      (p.emptyUntil === undefined || state.quarter > p.emptyUntil) &&
       (p.offers.length === 0 || (rfp && p.stage !== 'live'))
     )
       drawOffers(state, p)
@@ -872,7 +951,12 @@ export function settleProjectsWeek(
       const lock =
         p.spotLock && state.quarter <= p.spotLock.until ? p.spotLock : null
       rev = contract
-        ? contract.gpus * contract.priceUsdHr * hours * up * labMult
+        ? contract.gpus *
+          contract.priceUsdHr *
+          hours *
+          up *
+          labMult *
+          distressMult(p)
         : lock
           ? p.gpuCount * lock.usdHr * hours * up
           : p.gpuCount *
@@ -1169,7 +1253,7 @@ export function projectedReturn(state: GameState, p: Project) {
       up
     const contract = p.tenant?.gpu
     const contractRevenueUsd = contract
-      ? contract.gpus * contract.priceUsdHr * hoursYr * up
+      ? contract.gpus * contract.priceUsdHr * hoursYr * up * distressMult(p)
       : 0
     const contractLeft = contract
       ? Math.max(0, contract.termQuarters - p.tenant!.servedQuarters)

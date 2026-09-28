@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { advance } from '../../src/sim/advance.ts'
 import type { GameState } from '../../src/sim/state.ts'
-import { debtBlocker } from '../../src/sim/systems/facilities.ts'
+import { debtBlocker, debtOffer } from '../../src/sim/systems/facilities.ts'
 import {
   projectCapex,
   remainingContractUsd,
@@ -25,10 +25,8 @@ function shellWith(card: string, label = '2025Q3'): GameState {
 
 describe('the big-tech backstop', () => {
   it('on a BB tenant’s lease: warrants of 3–6%, backlog weight 20%, strong backlog, bankable for project debt', () => {
-    const s = shellWith('tc_meridian_labs') // BB
-    expect(debtBlocker(s, s.projects[0], 'project_debt')?.key).toBe(
-      'error.debt_needs_bbb',
-    )
+    const s = shellWith('tc_meridian_labs') // a BB AI lab: 50% project debt (M7.0, A7)
+    expect(debtOffer(s, s.projects[0], 'project_debt').share).toBe(0.5)
     const r = ok(s, { type: 'PROJECT_BACKSTOP', projectId: 'project-1' })
     const b = r.projects[0].backstop!
     expect(b.warrantsShare).toBeGreaterThanOrEqual(0.03)
@@ -44,6 +42,7 @@ describe('the big-tech backstop', () => {
     )
     expect(backlogQuality(r).quality).toBe('strong')
     expect(debtBlocker(r, r.projects[0], 'project_debt')).toBeUndefined()
+    expect(debtOffer(r, r.projects[0], 'project_debt').share).toBe(0.75)
   })
 
   it('not for an investment-grade tenant, not before 2025Q3, once per lease', () => {

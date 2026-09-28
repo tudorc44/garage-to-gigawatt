@@ -1,8 +1,9 @@
 // Act II equity (scope 0.2 §2.7; doc 18 §7.1): a private equity raise, or an at-the-market offering
 // once the company is public. Priced at the valuation now (the pre-money): the last quarter report's,
 // plus what this quarter's signed contracts add at once (owner decision on the M4 questions). The
-// player picks the dilution within lenders.json's 8–20% and raises pre-money × d ÷ (1 − d), so the
-// new shares are exactly d of the company after the raise. 2 Bandwidth; once a quarter (mine).
+// player picks the dilution between lenders.json's 8% and 30% (owner, M7.0 answer A1a) and raises
+// pre-money × d ÷ (1 − d), so the new shares are exactly d of the company after the raise. 1 Bandwidth
+// each; up to 2 a quarter, both priced the same way.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type GameState } from '../state.ts'
@@ -10,8 +11,20 @@ import { contractWeight, remainingContractUsd } from './projects.ts'
 import { aiEbitdaUsd } from './valuation.ts'
 import { auditEquityMult } from './eventEffects.ts'
 
-/** The raisesDone entry that marks this quarter's equity raise (one a quarter). */
+/** The raisesDone entries that mark this quarter's equity raises ("equity-2024Q1", "equity-2024Q1#2"). */
 const marker = (quarter: number) => `equity-${CONTENT.quarters[quarter]}`
+
+/** Equity raises done this quarter. */
+export function raisesThisQuarter(state: GameState): number {
+  const m = marker(state.quarter)
+  return state.raisesDone.filter((x) => x === m || x.startsWith(`${m}#`))
+    .length
+}
+
+/** The dilution range of one raise: lenders.json's bottom, the owner's 30% top. */
+export function dilutionRange(): [number, number] {
+  return [CONTENT.finance.equity.dilution[0], BALANCE.finance.equity.maxDilution]
+}
 
 /** Public once the IPO / SPAC round is done: the raise is an at-the-market offering. */
 export function isPublic(state: GameState): boolean {
@@ -62,15 +75,18 @@ export function equityBlocker(
   dilution: number,
 ): Message | undefined {
   if (state.act !== 2) return { key: 'error.act2_only' }
-  const [lo, hi] = CONTENT.finance.equity.dilution
+  const [lo, hi] = dilutionRange()
   if (!(dilution >= lo - 1e-9 && dilution <= hi + 1e-9))
     return {
       key: 'error.equity_dilution',
       params: { minPct: lo, maxPct: hi },
     }
   if (equityPreMoneyUsd(state) <= 0) return { key: 'error.equity_no_value' }
-  if (state.raisesDone.includes(marker(state.quarter)))
-    return { key: 'error.equity_once' }
+  if (raisesThisQuarter(state) >= BALANCE.finance.equity.raisesPerQuarter)
+    return {
+      key: 'error.equity_once',
+      params: { n: BALANCE.finance.equity.raisesPerQuarter },
+    }
   const need = BALANCE.finance.bandwidth.equity
   if (state.bandwidth < need)
     return {
@@ -86,7 +102,10 @@ export function raiseEquity(state: GameState, dilution: number): void {
   state.cash += amountUsd
   state.founderStake *= 1 - dilution
   state.bandwidth -= BALANCE.finance.bandwidth.equity
-  state.raisesDone.push(marker(state.quarter))
+  const done = raisesThisQuarter(state)
+  state.raisesDone.push(
+    done === 0 ? marker(state.quarter) : `${marker(state.quarter)}#${done + 1}`,
+  )
   logEntry(state, isPublic(state) ? 'log.atm_raised' : 'log.equity_raised', {
     amountUsd,
     dilutionPct: dilution,

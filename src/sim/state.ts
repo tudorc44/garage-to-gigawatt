@@ -220,6 +220,8 @@ export interface ProjectTenant {
   servedQuarters: number
   /** A shell lease's rent × this, negotiated before signing (M6.0i); missing = the card's rent. */
   priceMult?: number
+  /** An AI-lab tenant in distress from this quarter (M7.0, A3): it pays half for the rest of the term. */
+  distressedQuarter?: number
 }
 
 /**
@@ -247,6 +249,8 @@ export interface Project {
   /** Tenant offers (shell projects). */
   offers: TenantOffer[]
   tenant: ProjectTenant | null
+  /** A distressed tenant was let go (M7.0, A3): no new offers until after this quarter. */
+  emptyUntil?: number
   /** Cloud projects: sell capacity on the spot market (the only tenant option so far). */
   spot: boolean
   /**
