@@ -5,8 +5,15 @@
 import { describe, expect, it } from 'vitest'
 import { CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
-import { playGame, replay, type Strategy } from '../src/sim/replay.ts'
+import {
+  playGame,
+  playPrologue,
+  replay,
+  replayPrologue,
+  type Strategy,
+} from '../src/sim/replay.ts'
 import { BOTS } from '../tools/bots.ts'
+import { PROLOGUE_BOTS } from '../tools/prologueBots.ts'
 import type { GameState } from '../src/sim/state.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
@@ -322,6 +329,34 @@ describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
     await expect(
       JSON.stringify({ ...run.state, version: 2 }, null, 2) + '\n',
     ).toMatchFileSnapshot(`./golden/${name}-seed-${SEED}.json`)
+  })
+})
+
+/** Prologue starts (Alpha 0.3): the Act 0 golden and the Act 0 → I golden. */
+const PROLOGUE_SEED = 2009
+describe.each([
+  ['prologue-careful-hodler', 0],
+  ['prologue-to-act1', 1],
+] as const)('golden replay: %s', (name, through) => {
+  const bot = PROLOGUE_BOTS['careful-hodler']
+  const run = playPrologue(PROLOGUE_SEED, bot, { through })
+
+  it('plays to its chapter report (or game over) without errors', () => {
+    expect(['chapter', 'gameover']).toContain(run.state.phase)
+    expect(run.state.act).toBe(through)
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playPrologue(PROLOGUE_SEED, bot, { through }).state).toEqual(
+      run.state,
+    )
+    expect(replayPrologue(PROLOGUE_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(
+      JSON.stringify(run.state, null, 2) + '\n',
+    ).toMatchFileSnapshot(`./golden/${name}-seed-${PROLOGUE_SEED}.json`)
   })
 })
 

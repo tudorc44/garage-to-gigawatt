@@ -1,0 +1,5733 @@
+{
+  "version": 3,
+  "act": 1,
+  "seed": 2009,
+  "rng": -1631974636,
+  "phase": "chapter",
+  "quarter": 22,
+  "week": 13,
+  "cash": 721779.14,
+  "bandwidth": 3,
+  "hodlPct": {
+    "BTC": 0,
+    "ETH": 0
+  },
+  "treasury": {
+    "BTC": 1242791.983325776,
+    "ETH": 0
+  },
+  "founderStake": 0.7200000000000001,
+  "raisesDone": [
+    "friends_family",
+    "seed"
+  ],
+  "sites": [
+    {
+      "id": "site-9",
+      "tier": "garage",
+      "readyQuarter": -12,
+      "rentUsdQ": 0,
+      "powerPriceMult": 1,
+      "flaw": null
+    },
+    {
+      "id": "site-13",
+      "tier": "small_unit",
+      "readyQuarter": 3,
+      "rentUsdQ": 6000,
+      "powerPriceMult": 1,
+      "flaw": null,
+      "contract": {
+        "type": "fixed",
+        "price": 0.09350000000000001,
+        "startQuarter": 19,
+        "endQuarter": 23
+      }
+    },
+    {
+      "id": "site-17",
+      "tier": "warehouse",
+      "readyQuarter": 6,
+      "rentUsdQ": 26635,
+      "powerPriceMult": 1.103,
+      "flaw": "undersized_transformer",
+      "contract": {
+        "type": "fixed",
+        "price": 0.0909975,
+        "startQuarter": 22,
+        "endQuarter": 26
+      }
+    }
+  ],
+  "machines": [
+    {
+      "id": "lot-11",
+      "model": "s9",
+      "siteId": "site-9",
+      "condition": "new",
+      "count": 3,
+      "failed": 0,
+      "earnsFromQuarter": -1
+    },
+    {
+      "id": "lot-12",
+      "model": "gpu_gen1",
+      "siteId": "site-9",
+      "condition": "used",
+      "count": 1,
+      "failed": 0,
+      "earnsFromQuarter": 2
+    },
+    {
+      "id": "lot-14",
+      "model": "s9",
+      "siteId": "site-13",
+      "condition": "new",
+      "count": 75,
+      "failed": 5,
+      "earnsFromQuarter": 5
+    },
+    {
+      "id": "lot-18",
+      "model": "s9",
+      "siteId": "site-17",
+      "condition": "used",
+      "count": 454,
+      "failed": 20,
+      "earnsFromQuarter": 7
+    },
+    {
+      "id": "lot-19",
+      "model": "gpu_gen1",
+      "siteId": "site-13",
+      "condition": "used",
+      "count": 1,
+      "failed": 0,
+      "earnsFromQuarter": 9
+    }
+  ],
+  "siteOffers": [
+    {
+      "id": "offer-15",
+      "tier": "warehouse",
+      "rentUsdQ": 27616,
+      "capexUsd": 408372,
+      "powerPriceMult": 0.851,
+      "flaw": "undersized_transformer"
+    }
+  ],
+  "equipmentLoan": null,
+  "constructionLoans": [],
+  "bridgeLoan": null,
+  "hosting": [],
+  "projects": [],
+  "projectEvents": [],
+  "spotShock": null,
+  "firstAiDealQuarter": null,
+  "facilities": [],
+  "creditRating": null,
+  "cryptoLoan": null,
+  "auction": null,
+  "curtailment": null,
+  "complaint": null,
+  "negotiation": null,
+  "pitch": null,
+  "pitchWalkaways": {},
+  "staff": {},
+  "firedQuarter": {},
+  "marketRead": null,
+  "mergeChoice": "hold_and_wait",
+  "act2Entry": null,
+  "preset": false,
+  "events": {
+    "queue": [],
+    "deferred": null,
+    "fired": [
+      "heat_wave"
+    ],
+    "flags": [
+      "cloud_insight"
+    ],
+    "eligibleQuarters": 20,
+    "modifiers": [
+      {
+        "kind": "hashrate",
+        "siteIds": [
+          "site-17"
+        ],
+        "mult": 0.85,
+        "from": 289,
+        "to": 298
+      }
+    ],
+    "plan": null,
+    "gpuLockQuarter": 2,
+    "bandwidthNext": 0,
+    "ipoBandwidth": null,
+    "marginStress": {
+      "quarter": 21,
+      "callLtv": 0.6,
+      "liquidationLtv": 0.7
+    },
+    "taxPlan": null,
+    "runHotQuarter": null,
+    "moratoriumWaiver": {},
+    "creditNotch": null,
+    "valuationMult": null,
+    "ebitdaMult": null,
+    "spreadAddBps": 0,
+    "aiLabRevenueMult": 1,
+    "extraOffers": null
+  },
+  "failureWaves": [
+    {
+      "siteId": "site-9",
+      "week": 12,
+      "roll": 0.847223422722891,
+      "size": 0.0540686161024496
+    },
+    {
+      "siteId": "site-13",
+      "week": 7,
+      "roll": 0.907115041045472,
+      "size": 0.08784453861881047
+    },
+    {
+      "siteId": "site-17",
+      "week": 4,
+      "roll": 0.715133233461529,
+      "size": 0.0655760407447815
+    }
+  ],
+  "siteHeat": {
+    "site-1": {
+      "value": 5,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false,
+      "outreachQuarter": null,
+      "shutdownSince": null
+    },
+    "site-9": {
+      "value": 5,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false,
+      "outreachQuarter": null,
+      "shutdownSince": null
+    },
+    "site-13": {
+      "value": 10,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false,
+      "outreachQuarter": null,
+      "shutdownSince": null
+    },
+    "site-17": {
+      "value": 20,
+      "load": 0,
+      "grievance": 5,
+      "mitigated": false,
+      "outreachQuarter": null,
+      "shutdownSince": null
+    }
+  },
+  "loansLockedUntil": null,
+  "nextId": 20,
+  "interrupt": null,
+  "interruptsThisQuarter": 1,
+  "quarterStats": {
+    "revenueUsd": 475.6878,
+    "powerCostUsd": 316.8059999999999,
+    "rentUsd": 32635.000000000007,
+    "coinsMined": {
+      "BTC": 0,
+      "ETH": 0.29164156544110087
+    },
+    "powerByCoin": {
+      "BTC": 0,
+      "ETH": 316.8059999999999
+    },
+    "marginByTier": {
+      "garage": 39.52620000000003,
+      "small_unit": 119.3556,
+      "warehouse": 0
+    },
+    "failures": 25,
+    "treasurySoldUsd": 0,
+    "priceAlerts": 0,
+    "marginCalls": 0,
+    "soldUsd": 475.6878,
+    "gridCreditsUsd": 0,
+    "hostingFeesUsd": 0,
+    "reservationUsd": 0,
+    "aiRevenueUsd": 0,
+    "aiCostUsd": 0,
+    "lateDamagesUsd": 0,
+    "rateHikeUsd": 0,
+    "stormChargeUsd": 0,
+    "salariesUsd": 0,
+    "interestUsd": 0,
+    "principalUsd": 0,
+    "startCash": 754255.23,
+    "startTreasuryUsd": 25240073664.000347,
+    "weeks": [
+      {
+        "week": 1,
+        "date": "2022-07-04",
+        "btcUsd": 20309.17,
+        "ethUsd": 1134.13,
+        "revenueUsd": 18.156599999999997,
+        "powerCostUsd": 14.9226,
+        "rentUsd": 2510.3846153846152,
+        "failures": 2,
+        "batchesOff": 4,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.016009275832576508
+        },
+        "priceAlert": false,
+        "cash": 751748.08
+      },
+      {
+        "week": 2,
+        "date": "2022-07-11",
+        "btcUsd": 21045.56,
+        "ethUsd": 1255.76,
+        "revenueUsd": 20.3994,
+        "powerCostUsd": 14.9226,
+        "rentUsd": 2510.3846153846152,
+        "failures": 0,
+        "batchesOff": 4,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.016244664585589604
+        },
+        "priceAlert": false,
+        "cash": 749243.17
+      },
+      {
+        "week": 3,
+        "date": "2022-07-18",
+        "btcUsd": 21808.66,
+        "ethUsd": 1390.42,
+        "revenueUsd": 22.919400000000003,
+        "powerCostUsd": 14.9226,
+        "rentUsd": 2510.3846153846152,
+        "failures": 3,
+        "batchesOff": 4,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.01648379626299967
+        },
+        "priceAlert": true,
+        "cash": 746740.78
+      },
+      {
+        "week": 4,
+        "date": "2022-07-25",
+        "btcUsd": 22599.42,
+        "ethUsd": 1539.53,
+        "revenueUsd": 51.4836,
+        "powerCostUsd": 38.86259999999999,
+        "rentUsd": 2510.3846153846152,
+        "failures": 3,
+        "batchesOff": 3,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.03344111514553143
+        },
+        "priceAlert": false,
+        "cash": 744243.02
+      },
+      {
+        "week": 5,
+        "date": "2022-08-01",
+        "btcUsd": 23187.36,
+        "ethUsd": 1700.44,
+        "revenueUsd": 57.68280000000001,
+        "powerCostUsd": 38.86259999999999,
+        "rentUsd": 2510.3846153846152,
+        "failures": 1,
+        "batchesOff": 3,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.03392227893956858
+        },
+        "priceAlert": false,
+        "cash": 741751.46
+      },
+      {
+        "week": 6,
+        "date": "2022-08-08",
+        "btcUsd": 22414,
+        "ethUsd": 1850.69,
+        "revenueUsd": 63.50399999999999,
+        "powerCostUsd": 38.86259999999999,
+        "rentUsd": 2510.3846153846152,
+        "failures": 3,
+        "batchesOff": 3,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.03431368840810724
+        },
+        "priceAlert": false,
+        "cash": 739265.72
+      },
+      {
+        "week": 7,
+        "date": "2022-08-15",
+        "btcUsd": 21666.43,
+        "ethUsd": 1960.96,
+        "revenueUsd": 68.0904,
+        "powerCostUsd": 38.86259999999999,
+        "rentUsd": 2510.3846153846152,
+        "failures": 0,
+        "batchesOff": 3,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.03472299281984334
+        },
+        "priceAlert": false,
+        "cash": 736784.56
+      },
+      {
+        "week": 8,
+        "date": "2022-08-22",
+        "btcUsd": 20943.8,
+        "ethUsd": 1769.23,
+        "revenueUsd": 62.14320000000001,
+        "powerCostUsd": 38.86259999999999,
+        "rentUsd": 2510.3846153846152,
+        "failures": 3,
+        "batchesOff": 3,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.035124432662796815
+        },
+        "priceAlert": false,
+        "cash": 734297.46
+      },
+      {
+        "week": 9,
+        "date": "2022-08-29",
+        "btcUsd": 20245.27,
+        "ethUsd": 1596.24,
+        "revenueUsd": 56.7252,
+        "powerCostUsd": 38.86259999999999,
+        "rentUsd": 2510.3846153846152,
+        "failures": 1,
+        "batchesOff": 3,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.03553676138926477
+        },
+        "priceAlert": false,
+        "cash": 731804.94
+      },
+      {
+        "week": 10,
+        "date": "2022-09-05",
+        "btcUsd": 19932.65,
+        "ethUsd": 1522.86,
+        "revenueUsd": 54.58319999999999,
+        "powerCostUsd": 38.86259999999999,
+        "rentUsd": 2510.3846153846152,
+        "failures": 2,
+        "batchesOff": 3,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0.03584255939482289
+        },
+        "priceAlert": false,
+        "cash": 729310.28
+      },
+      {
+        "week": 11,
+        "date": "2022-09-12",
+        "btcUsd": 19769.51,
+        "ethUsd": 1485.66,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 2510.3846153846152,
+        "failures": 1,
+        "batchesOff": 5,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 726799.9
+      },
+      {
+        "week": 12,
+        "date": "2022-09-19",
+        "btcUsd": 19619.55,
+        "ethUsd": 1431.29,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 2510.3846153846152,
+        "failures": 4,
+        "batchesOff": 5,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 724289.52
+      },
+      {
+        "week": 13,
+        "date": "2022-09-26",
+        "btcUsd": 19479.55,
+        "ethUsd": 1365.97,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
+        "rentUsd": 2510.3846153846152,
+        "failures": 2,
+        "batchesOff": 5,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "priceAlert": false,
+        "cash": 721779.14
+      }
+    ]
+  },
+  "reports": [
+    {
+      "quarter": "2017Q1",
+      "hashrate": {
+        "BTC": 40.5,
+        "ETH": 0
+      },
+      "revenueUsd": 2713.74705,
+      "powerCostUsd": 1037.8367999999996,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 2.5938989834609862,
+        "ETH": 0
+      },
+      "costPerCoinUsd": {
+        "BTC": 400.1068687012766,
+        "ETH": null
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 1359117312.9650686,
+      "cash": 41675.91,
+      "ebitdaUsd": 1675.9102500000004,
+      "marginByTier": {
+        "garage": 1675.9102500000004
+      },
+      "valuationUsd": 1359199210.7210686,
+      "priceAlerts": 3,
+      "marginCalls": 0,
+      "founderStake": 0.9,
+      "startCash": 40000,
+      "startTreasuryUsd": 1198536160.799545,
+      "soldUsd": 2713.7470500000004,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 29,
+      "heatTier": "garage",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2017Q2",
+      "hashrate": {
+        "BTC": 27,
+        "ETH": 0
+      },
+      "revenueUsd": 3046.0657499999998,
+      "powerCostUsd": 984.6143999999997,
+      "rentUsd": 0,
+      "coinsMined": {
+        "BTC": 1.7831040403639968,
+        "ETH": 0
+      },
+      "costPerCoinUsd": {
+        "BTC": 552.1912225598478,
+        "ETH": null
+      },
+      "failures": 1,
+      "brokenUnits": 1,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 3051315305.3812785,
+      "cash": 41237.36,
+      "ebitdaUsd": 2061.4513500000003,
+      "marginByTier": {
+        "garage": 2061.4513500000003
+      },
+      "valuationUsd": 3051406017.5736785,
+      "priceAlerts": 3,
+      "marginCalls": 0,
+      "founderStake": 0.9,
+      "startCash": 39175.91,
+      "startTreasuryUsd": 1372502182.625487,
+      "soldUsd": 3046.0657499999998,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 21,
+      "heatTier": "garage",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2017Q3",
+      "hashrate": {
+        "BTC": 40.5,
+        "ETH": 180
+      },
+      "revenueUsd": 5713.218,
+      "powerCostUsd": 1286.8127999999997,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 1.153202431584546,
+        "ETH": 6.01237726629663
+      },
+      "costPerCoinUsd": {
+        "BTC": 899.9606414061845,
+        "ETH": 41.410575047523345
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 5465836426.426262,
+      "cash": 4543.78,
+      "ebitdaUsd": -1573.5948000000008,
+      "marginByTier": {
+        "garage": 4426.405200000001
+      },
+      "valuationUsd": 5465840970.206262,
+      "priceAlerts": 3,
+      "marginCalls": 0,
+      "founderStake": 0.9,
+      "startCash": 6117.360000000001,
+      "startTreasuryUsd": 3126529076.2121544,
+      "soldUsd": 5713.218,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 30,
+      "heatTier": "garage",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2017Q4",
+      "hashrate": {
+        "BTC": 40.5,
+        "ETH": 180
+      },
+      "revenueUsd": 8047.487700000001,
+      "powerCostUsd": 1286.8127999999997,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 0.7761647289554411,
+        "ETH": 2.4344985625765005
+      },
+      "costPerCoinUsd": {
+        "BTC": 1337.1347103039784,
+        "ETH": 102.26993099412691
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 19762815979.247322,
+      "cash": 1332804.45,
+      "ebitdaUsd": 760.6749,
+      "marginByTier": {
+        "garage": 6760.6749
+      },
+      "valuationUsd": 19764167039.89492,
+      "priceAlerts": 2,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 1332043.78,
+      "startTreasuryUsd": 5534475827.665345,
+      "soldUsd": 8047.487700000001,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 30,
+      "heatTier": "garage",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q1",
+      "hashrate": {
+        "BTC": 40.5,
+        "ETH": 180
+      },
+      "revenueUsd": 5672.031750000001,
+      "powerCostUsd": 1286.8127999999997,
+      "rentUsd": 6000.000000000001,
+      "coinsMined": {
+        "BTC": 0.40749757321615016,
+        "ETH": 1.547213542512818
+      },
+      "costPerCoinUsd": {
+        "BTC": 2546.8539402797787,
+        "ETH": 160.918963775123
+      },
+      "failures": 0,
+      "brokenUnits": 0,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 9239822842.191647,
+      "cash": 1331189.66,
+      "ebitdaUsd": -1614.7810499999996,
+      "marginByTier": {
+        "garage": 4385.218950000001
+      },
+      "valuationUsd": 9241154031.851646,
+      "priceAlerts": 2,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 1332804.45,
+      "startTreasuryUsd": 17056636435.555447,
+      "soldUsd": 5672.031750000001,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 40,
+      "heatTier": "garage",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q2",
+      "hashrate": {
+        "BTC": 1039.5,
+        "ETH": 180
+      },
+      "revenueUsd": 48375.117,
+      "powerCostUsd": 18477.648,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 6.08383572162521,
+        "ETH": 1.1865938993308751
+      },
+      "costPerCoinUsd": {
+        "BTC": 2996.246584240521,
+        "ETH": 209.82410253448833
+      },
+      "failures": 1,
+      "brokenUnits": 1,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 8166920522.986505,
+      "cash": 977576.13,
+      "ebitdaUsd": -2737.53100000001,
+      "marginByTier": {
+        "garage": 1214.1013500000001,
+        "small_unit": 28683.36764999999
+      },
+      "valuationUsd": 8167898099.116505,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 980313.6599999999,
+      "startTreasuryUsd": 8826606935.655659,
+      "soldUsd": 48375.117,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 35,
+      "heatTier": "garage",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q3",
+      "hashrate": {
+        "BTC": 1026,
+        "ETH": 180
+      },
+      "revenueUsd": 29282.085000000003,
+      "powerCostUsd": 17945.424000000003,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 4.0705469252479896,
+        "ETH": 1.1020541297818338
+      },
+      "costPerCoinUsd": {
+        "BTC": 4347.437414426044,
+        "ETH": 225.91993738936213
+      },
+      "failures": 2,
+      "brokenUnits": 2,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 8336822615.026971,
+      "cash": 774557.8,
+      "ebitdaUsd": -21298.339000000007,
+      "marginByTier": {
+        "garage": 275.1052500000002,
+        "small_unit": 11061.555749999998
+      },
+      "valuationUsd": 8337597172.826971,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 795856.13,
+      "startTreasuryUsd": 8051353296.45704,
+      "soldUsd": 29282.085000000003,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 24.454,
+      "heatTier": "small_unit",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2018Q4",
+      "hashrate": {
+        "BTC": 6871.5,
+        "ETH": 180
+      },
+      "revenueUsd": 118268.68725,
+      "powerCostUsd": 92912.83142400002,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 23.37949577675664,
+        "ETH": 0.4700557218678606
+      },
+      "costPerCoinUsd": {
+        "BTC": 3970.0202395415486,
+        "ETH": 203.7205283226389
+      },
+      "failures": 23,
+      "brokenUnits": 23,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 4365182562.233456,
+      "cash": 767038.66,
+      "ebitdaUsd": -7279.144174000023,
+      "marginByTier": {
+        "garage": 5.392800000000033,
+        "small_unit": 847.0904399999986,
+        "warehouse": 24503.37258599999
+      },
+      "valuationUsd": 4365949600.8934555,
+      "priceAlerts": 1,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 774317.8,
+      "startTreasuryUsd": 8226997087.460472,
+      "soldUsd": 118268.68725,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 38.870000000000005,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q1",
+      "hashrate": {
+        "BTC": 7033.5,
+        "ETH": 180
+      },
+      "revenueUsd": 91825.47045,
+      "powerCostUsd": 85370.73874559999,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 24.482129053252727,
+        "ETH": 0
+      },
+      "costPerCoinUsd": {
+        "BTC": 3487.0635049714974,
+        "ETH": null
+      },
+      "failures": 11,
+      "brokenUnits": 11,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 5033779793.423057,
+      "cash": 737498.38,
+      "ebitdaUsd": -26180.2682956,
+      "marginByTier": {
+        "garage": 0,
+        "small_unit": 0,
+        "warehouse": 6454.731704399992
+      },
+      "valuationUsd": 5034517291.803057,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 763678.66,
+      "startTreasuryUsd": 4567086547.844562,
+      "soldUsd": 91825.47045,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 39.474999999999994,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q2",
+      "hashrate": {
+        "BTC": 6520.5,
+        "ETH": 360
+      },
+      "revenueUsd": 153133.92990000002,
+      "powerCostUsd": 94532.86456320001,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 21.764706196666204,
+        "ETH": 2.2104830456094757
+      },
+      "costPerCoinUsd": {
+        "BTC": 4327.973247699001,
+        "ETH": 151.91177361299933
+      },
+      "failures": 49,
+      "brokenUnits": 49,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 15535521187.563862,
+      "cash": 762144.46,
+      "ebitdaUsd": 25966.0653368,
+      "marginByTier": {
+        "garage": 101.30400000000012,
+        "small_unit": 5348.65758,
+        "warehouse": 53151.10375679998
+      },
+      "valuationUsd": 15537010381.853292,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 736178.38,
+      "startTreasuryUsd": 5139876945.0395775,
+      "soldUsd": 153133.9299,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 37.495000000000005,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q3",
+      "hashrate": {
+        "BTC": 6858,
+        "ETH": 180
+      },
+      "revenueUsd": 157344.23565,
+      "powerCostUsd": 101649.08908224,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 15.810311610441328,
+        "ETH": 1.5855353886431844
+      },
+      "costPerCoinUsd": {
+        "BTC": 6412.816165829502,
+        "ETH": 164.27712800714826
+      },
+      "failures": 25,
+      "brokenUnits": 25,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 10669307037.25262,
+      "cash": 779324.61,
+      "ebitdaUsd": 23060.146567759984,
+      "marginByTier": {
+        "garage": 49.423500000000054,
+        "small_unit": 4223.540159999997,
+        "warehouse": 51422.182907759976
+      },
+      "valuationUsd": 10670732045.966518,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 756264.46,
+      "startTreasuryUsd": 13416312297.596748,
+      "soldUsd": 157344.23565,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 39.09,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2019Q4",
+      "hashrate": {
+        "BTC": 7020,
+        "ETH": 360
+      },
+      "revenueUsd": 51344.943300000006,
+      "powerCostUsd": 46609.613893919995,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 5.889543791053106,
+        "ETH": 0.632055215897652
+      },
+      "costPerCoinUsd": {
+        "BTC": 7897.267079425747,
+        "ETH": 155.54590410328927
+      },
+      "failures": 12,
+      "brokenUnits": 12,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 8962580806.551332,
+      "cash": 748394.99,
+      "ebitdaUsd": -27899.670593919996,
+      "marginByTier": {
+        "garage": 0,
+        "small_unit": 13.322400000000012,
+        "warehouse": 4722.007006079997
+      },
+      "valuationUsd": 8963329201.541332,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 776294.61,
+      "startTreasuryUsd": 10547923544.241192,
+      "soldUsd": 51344.943300000006,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 15,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q1",
+      "hashrate": {
+        "BTC": 6912,
+        "ETH": 360
+      },
+      "revenueUsd": 13802.06205,
+      "powerCostUsd": 13484.75405088,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 1.4894971850305092,
+        "ETH": 0.8744487482938397
+      },
+      "costPerCoinUsd": {
+        "BTC": 8961.504986400221,
+        "ETH": 156.23282698563892
+      },
+      "failures": 20,
+      "brokenUnits": 20,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 7869669536.414645,
+      "cash": 714637.32,
+      "ebitdaUsd": -32317.692000880008,
+      "marginByTier": {
+        "garage": 1.8900000000000148,
+        "small_unit": 29.576400000000017,
+        "warehouse": 285.84159911999814
+      },
+      "valuationUsd": 7870384173.734645,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 746954.99,
+      "startTreasuryUsd": 9412272657.79793,
+      "soldUsd": 13802.06205,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 15,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q2",
+      "hashrate": {
+        "BTC": 6912,
+        "ETH": 360
+      },
+      "revenueUsd": 496.8306,
+      "powerCostUsd": 374.10239999999993,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 2.324824050496242
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 160.91643577076144
+      },
+      "failures": 20,
+      "brokenUnits": 20,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 11372155615.50268,
+      "cash": 679725.05,
+      "ebitdaUsd": -32512.271800000006,
+      "marginByTier": {
+        "garage": 32.81040000000007,
+        "small_unit": 89.91780000000003,
+        "warehouse": 0
+      },
+      "valuationUsd": 11372835340.55268,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 712237.32,
+      "startTreasuryUsd": 8492010049.98486,
+      "soldUsd": 496.8306,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 15,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q3",
+      "hashrate": {
+        "BTC": 6885,
+        "ETH": 360
+      },
+      "revenueUsd": 987.8148000000001,
+      "powerCostUsd": 431.55839999999995,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 2.74211532336416
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 157.38156463475912
+      },
+      "failures": 22,
+      "brokenUnits": 22,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 13466794507.959442,
+      "cash": 645246.31,
+      "ebitdaUsd": -32078.74360000001,
+      "marginByTier": {
+        "garage": 244.9314000000001,
+        "small_unit": 311.325,
+        "warehouse": 0
+      },
+      "valuationUsd": 13467439754.269442,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 677325.05,
+      "startTreasuryUsd": 11845348663.153969,
+      "soldUsd": 987.8148000000001,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 15,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2020Q4",
+      "hashrate": {
+        "BTC": 6831,
+        "ETH": 360
+      },
+      "revenueUsd": 31465.885500000004,
+      "powerCostUsd": 26136.34001328,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 1.2401079160733057,
+        "ETH": 1.9959649894563702
+      },
+      "costPerCoinUsd": {
+        "BTC": 20727.858664649095,
+        "ETH": 216.2154157411053
+      },
+      "failures": 26,
+      "brokenUnits": 26,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 34717220063.32789,
+      "cash": 615300.84,
+      "ebitdaUsd": -27305.454513280005,
+      "marginByTier": {
+        "garage": 256.1706000000002,
+        "small_unit": 322.56419999999997,
+        "warehouse": 4750.81068672
+      },
+      "valuationUsd": 34717835364.167885,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 642606.31,
+      "startTreasuryUsd": 13941752320.227055,
+      "soldUsd": 31465.885500000004,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 38.760000000000005,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q1",
+      "hashrate": {
+        "BTC": 6966,
+        "ETH": 360
+      },
+      "revenueUsd": 180062.07975000003,
+      "powerCostUsd": 105367.1935848,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 4.38366814877262,
+        "ETH": 1.5114025859911695
+      },
+      "costPerCoinUsd": {
+        "BTC": 23933.12714927453,
+        "ETH": 299.2626876467728
+      },
+      "failures": 16,
+      "brokenUnits": 16,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 71950497352.73846,
+      "cash": 654240.71,
+      "ebitdaUsd": 42059.88616520003,
+      "marginByTier": {
+        "garage": 780.8293499999999,
+        "small_unit": 7373.953229999999,
+        "warehouse": 66540.1035852
+      },
+      "valuationUsd": 71957039977.5116,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 612180.84,
+      "startTreasuryUsd": 36661207711.565895,
+      "soldUsd": 180062.07975000003,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 39.144999999999996,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q2",
+      "hashrate": {
+        "BTC": 6885,
+        "ETH": 360
+      },
+      "revenueUsd": 192694.2444,
+      "powerCostUsd": 103494.40554768001,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 3.9203352657608646,
+        "ETH": 0.9454690141438545
+      },
+      "costPerCoinUsd": {
+        "BTC": 26284.00179128084,
+        "ETH": 478.39367893994347
+      },
+      "failures": 22,
+      "brokenUnits": 22,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 43682671719.3607,
+      "cash": 708885.55,
+      "ebitdaUsd": 56564.838852319976,
+      "marginByTier": {
+        "garage": 1173.5713499999993,
+        "small_unit": 9703.6926,
+        "warehouse": 78322.57490232002
+      },
+      "valuationUsd": 43688358310.729706,
+      "priceAlerts": 2,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 652320.71,
+      "startTreasuryUsd": 75193003776.8346,
+      "soldUsd": 192694.2444,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 48.760000000000005,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q3",
+      "hashrate": {
+        "BTC": 6858,
+        "ETH": 360
+      },
+      "revenueUsd": 206197.00920000003,
+      "powerCostUsd": 113052.11241408001,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 5.061008413224121,
+        "ETH": 0.7299597170161805
+      },
+      "costPerCoinUsd": {
+        "BTC": 22248.49216212786,
+        "ETH": 619.6320008573488
+      },
+      "failures": 24,
+      "brokenUnits": 24,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 54831137205.78458,
+      "cash": 766755.45,
+      "ebitdaUsd": 60509.89678592001,
+      "marginByTier": {
+        "garage": 839.2208999999998,
+        "small_unit": 11083.69752,
+        "warehouse": 81221.97836591999
+      },
+      "valuationUsd": 54837228832.15174,
+      "priceAlerts": 2,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 706245.55,
+      "startTreasuryUsd": 41783374870.84309,
+      "soldUsd": 206197.0092,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 53.815,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2021Q4",
+      "hashrate": {
+        "BTC": 6939,
+        "ETH": 360
+      },
+      "revenueUsd": 209801.94794999994,
+      "powerCostUsd": 133293.91786502404,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 3.7409318370929396,
+        "ETH": 0.5295900924069615
+      },
+      "costPerCoinUsd": {
+        "BTC": 35507.24949007512,
+        "ETH": 875.616456290609
+      },
+      "failures": 18,
+      "brokenUnits": 18,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 59105819655.792244,
+      "cash": 807748.48,
+      "ebitdaUsd": 43873.0300849759,
+      "marginByTier": {
+        "garage": 923.8456499999998,
+        "small_unit": 10536.06351,
+        "warehouse": 65048.12092497596
+      },
+      "valuationUsd": 59110137246.67904,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 763875.45,
+      "startTreasuryUsd": 56847256500.73481,
+      "soldUsd": 209801.94794999994,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 18642.726837504,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 49.035,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2022Q1",
+      "hashrate": {
+        "BTC": 6844.5,
+        "ETH": 360
+      },
+      "revenueUsd": 114831.3474,
+      "powerCostUsd": 96264.00303072002,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 2.6638272563508347,
+        "ETH": 0.4464970896992952
+      },
+      "costPerCoinUsd": {
+        "BTC": 35947.82244322388,
+        "ETH": 1131.505247526359
+      },
+      "failures": 25,
+      "brokenUnits": 25,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 56263889943.76169,
+      "cash": 791520.83,
+      "ebitdaUsd": -14067.65563072003,
+      "marginByTier": {
+        "garage": 365.99219999999997,
+        "small_unit": 643.9156499999995,
+        "warehouse": 17557.436519279974
+      },
+      "valuationUsd": 56264681464.59169,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 805588.48,
+      "startTreasuryUsd": 56523086639.80412,
+      "soldUsd": 114831.3474,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 53.760000000000005,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2022Q2",
+      "hashrate": {
+        "BTC": 6952.5,
+        "ETH": 360
+      },
+      "revenueUsd": 842.7887999999999,
+      "powerCostUsd": 433.3937999999999,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0.36182659615305
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 1197.7942047595568
+      },
+      "failures": 17,
+      "brokenUnits": 17,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 24447060527.36001,
+      "cash": 756295.23,
+      "ebitdaUsd": -32225.605000000007,
+      "marginByTier": {
+        "garage": 156.49200000000005,
+        "small_unit": 252.90300000000013,
+        "warehouse": 0
+      },
+      "valuationUsd": 24447816822.590008,
+      "priceAlerts": 2,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 788520.83,
+      "startTreasuryUsd": 55146818797.469154,
+      "soldUsd": 842.7887999999999,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 25,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    },
+    {
+      "quarter": "2022Q3",
+      "hashrate": {
+        "BTC": 6844.5,
+        "ETH": 360
+      },
+      "revenueUsd": 475.6878,
+      "powerCostUsd": 316.8059999999999,
+      "rentUsd": 32635.000000000007,
+      "coinsMined": {
+        "BTC": 0,
+        "ETH": 0.29164156544110087
+      },
+      "costPerCoinUsd": {
+        "BTC": null,
+        "ETH": 1086.2854871898608
+      },
+      "failures": 25,
+      "brokenUnits": 25,
+      "treasury": {
+        "BTC": 1242791.983325776,
+        "ETH": 0
+      },
+      "treasuryValueUsd": 24209028578.793617,
+      "cash": 721779.14,
+      "ebitdaUsd": -32476.118200000008,
+      "marginByTier": {
+        "garage": 39.52620000000003,
+        "small_unit": 119.3556,
+        "warehouse": 0
+      },
+      "valuationUsd": 24209750357.933617,
+      "priceAlerts": 0,
+      "marginCalls": 0,
+      "founderStake": 0.7200000000000001,
+      "startCash": 754255.23,
+      "startTreasuryUsd": 25240073664.000347,
+      "soldUsd": 475.6878,
+      "treasurySoldUsd": 0,
+      "gridCreditsUsd": 0,
+      "hostingFeesUsd": 0,
+      "reservationUsd": 0,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
+      "lateDamagesUsd": 0,
+      "constructionUsd": 0,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
+      "rateHikeUsd": 0,
+      "stormChargeUsd": 0,
+      "salariesUsd": 0,
+      "interestUsd": 0,
+      "principalUsd": 0,
+      "debtUsd": 0,
+      "heat": 20,
+      "heatTier": "warehouse",
+      "forcedSale": null
+    }
+  ],
+  "log": [
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -32,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 365,
+        "coins": 18259.12956478239
+      }
+    },
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "genesis_block.title",
+        "p0Choice": "genesis_block.choice.let_it_run"
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 388,
+        "coins": 19409.704852426214
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 381,
+        "coins": 19059.52976488244
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 381,
+        "coins": 19059.52976488244
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 357,
+        "coins": 17858.929464732366
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 365,
+        "coins": 18259.12956478239
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 392,
+        "coins": 19609.804902451226
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 393,
+        "coins": 19659.829914957478
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 376,
+        "coins": 18809.404702351174
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 389,
+        "coins": 19459.729864932466
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 377,
+        "coins": 18859.42971485743
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 376,
+        "coins": 18809.404702351174
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 370,
+        "coins": 18509.254627313658
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 409,
+        "coins": 20460.23011505753
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 356,
+        "coins": 17808.904452226114
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 350,
+        "coins": 17508.754377188594
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 383,
+        "coins": 19159.579789894946
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 360,
+        "coins": 18009.004502251126
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 373,
+        "coins": 18659.329664832418
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 353,
+        "coins": 17658.829414707354
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 388,
+        "coins": 19409.704852426214
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 341,
+        "coins": 17058.529264632318
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 344,
+        "coins": 17208.604302151074
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 364,
+        "coins": 18209.104552276138
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 359,
+        "coins": 17958.979489744874
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 385,
+        "coins": 19259.629814907454
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 352,
+        "coins": 17608.8044022011
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 339,
+        "coins": 16958.47923961981
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 387,
+        "coins": 19359.67983991996
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 370,
+        "coins": 18509.254627313658
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 358,
+        "coins": 17908.954477238618
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 346,
+        "coins": 17308.654327163582
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 372,
+        "coins": 18609.304652326162
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 383,
+        "coins": 19159.579789894946
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 379,
+        "coins": 18959.479739869934
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 379,
+        "coins": 18959.479739869934
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 396,
+        "coins": 19809.904952476238
+      }
+    },
+    {
+      "quarter": -29,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "first_exchange_rate.title",
+        "p0Choice": "first_exchange_rate.choice.note"
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 392,
+        "coins": 19609.804902451226
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 367,
+        "coins": 18359.179589794898
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 363,
+        "coins": 18159.079539769886
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 326,
+        "coins": 16308.15407703852
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 377,
+        "coins": 18859.42971485743
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 339,
+        "coins": 16958.47923961981
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 364,
+        "coins": 18209.104552276138
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 359,
+        "coins": 17958.979489744874
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 368,
+        "coins": 18409.20460230115
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 364,
+        "coins": 18209.104552276138
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 350,
+        "coins": 17508.754377188594
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 323,
+        "coins": 16158.07903951976
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 304,
+        "coins": 15207.60380190095
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 314,
+        "coins": 15707.853926963482
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 285,
+        "coins": 14257.12856428214
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 301,
+        "coins": 15057.52876438219
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 303,
+        "coins": 15157.578789394698
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 283,
+        "coins": 14157.078539269634
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 315,
+        "coins": 15757.878939469734
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 234,
+        "coins": 11705.852926463233
+      }
+    },
+    {
+      "quarter": -28,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "pc_overheats.title",
+        "p0Choice": "pc_overheats.choice.underclock"
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 196,
+        "coins": 9804.902451225613
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 200,
+        "coins": 10005.002501250625
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 214,
+        "coins": 10705.352676338169
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 207,
+        "coins": 10355.177588794397
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 84,
+        "coins": 4202.1010505252625
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 91,
+        "coins": 4552.2761380690345
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 96,
+        "coins": 4802.4012006003
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 108,
+        "coins": 5402.701350675337
+      }
+    },
+    {
+      "quarter": -27,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "friend_wants_coins.title",
+        "p0Choice": "friend_wants_coins.choice.decline"
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 42,
+        "coins": 2101.0505252626313
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 35,
+        "coins": 1750.8754377188595
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 37,
+        "coins": 1850.9254627313658
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 35,
+        "coins": 1750.8754377188595
+      }
+    },
+    {
+      "quarter": -27,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "pizza_day.title",
+        "p0Choice": "pizza_day.choice.hold"
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 41,
+        "coins": 2051.0255127563782
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 30,
+        "coins": 1500.7503751875938
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 36,
+        "coins": 1800.9004502251125
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 33,
+        "coins": 1650.8254127063533
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 23,
+        "coins": 1150.5752876438219
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_home_rig",
+      "params": {
+        "costUsd": 300
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 1,
+        "model": "pc_cpu",
+        "valueUsd": 0
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 1596
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "mtgox_opens.title",
+        "p0Choice": "mtgox_opens.choice.keep_wallet"
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 194,
+        "coins": 9704.852426213107
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 183,
+        "coins": 9154.577288644323
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 179,
+        "coins": 8954.477238619309
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 202,
+        "coins": 10105.05252626313
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 113,
+        "coins": 5652.826413206603
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 80,
+        "coins": 4002.00100050025
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 92,
+        "coins": 4602.3011505752875
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 94,
+        "coins": 4702.3511755877935
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 95,
+        "coins": 4752.376188094047
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 26,
+        "coins": 1300.6503251625813
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 23,
+        "coins": 1150.5752876438219
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 33,
+        "coins": 1650.8254127063533
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 32,
+        "coins": 1600.8004002001
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 9,
+        "coins": 450.22511255627813
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 12,
+        "coins": 600.3001500750375
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 15,
+        "coins": 750.3751875937969
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 13,
+        "coins": 650.3251625812907
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 14,
+        "coins": 700.3501750875438
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 11,
+        "coins": 550.2751375687844
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 10,
+        "coins": 500.25012506253125
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 12,
+        "coins": 600.3001500750375
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 9,
+        "coins": 450.22511255627813
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 7,
+        "coins": 350.1750875437719
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 8,
+        "coins": 400.200100050025
+      }
+    },
+    {
+      "quarter": -24,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "power_bill.title",
+        "p0Choice": "power_bill.choice.say_nothing"
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 4,
+        "coins": 200.1000500250125
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 15,
+        "coins": 750.3751875937969
+      }
+    },
+    {
+      "quarter": -23,
+      "week": null,
+      "key": "log.p0_pool_on"
+    },
+    {
+      "quarter": -23,
+      "week": 11,
+      "key": "log.p0_gox_hack",
+      "params": {}
+    },
+    {
+      "quarter": -23,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "bubble_and_hack_2011.title",
+        "p0Choice": "bubble_and_hack_2011.choice.nothing"
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 720
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 1036
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "crash_bottom_2011.title",
+        "p0Choice": "crash_bottom_2011.choice.keep_gpus"
+      }
+    },
+    {
+      "quarter": -20,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "job_offer.title",
+        "p0Choice": "job_offer.choice.decline"
+      }
+    },
+    {
+      "quarter": -19,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "household.title",
+        "p0Choice": "household.choice.cut_load"
+      }
+    },
+    {
+      "quarter": -19,
+      "week": null,
+      "key": "log.p0_household_cut"
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 596
+      }
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "first_halving.title",
+        "p0Choice": "first_halving.choice.keep_fleet"
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 596
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "asic_preorders_open.title",
+        "p0Choice": "asic_preorders_open.choice.skip"
+      }
+    },
+    {
+      "quarter": -15,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "conference_invitation.title",
+        "p0Choice": "conference_invitation.choice.skip"
+      }
+    },
+    {
+      "quarter": -14,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "household.title",
+        "p0Choice": "household.choice.cut_load"
+      }
+    },
+    {
+      "quarter": -14,
+      "week": null,
+      "key": "log.p0_household_cut"
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "antminer_s1",
+        "condition": "new",
+        "costUsd": 1400
+      }
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "peak_and_silk_road.title",
+        "p0Choice": "peak_and_silk_road.choice.hodl"
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_moved_out",
+      "params": {
+        "costUsd": 940
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 9,
+        "model": "antminer_s1",
+        "condition": "new",
+        "costUsd": 2700
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "mtgox_collapse.title",
+        "p0Choice": "mtgox_collapse.choice.accept"
+      }
+    },
+    {
+      "quarter": -7,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": -6,
+      "week": null,
+      "key": "log.p0_sell_order",
+      "params": {
+        "coin": "BTC",
+        "amount": 87.17738997559725
+      }
+    },
+    {
+      "quarter": -6,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "eth_launch.title",
+        "p0Choice": "eth_launch.choice.stay_btc"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "antminer_s1",
+        "valueUsd": 480
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 9,
+        "model": "antminer_s1",
+        "valueUsd": 1080
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 3,
+        "model": "antminer_s9_early",
+        "condition": "new",
+        "costUsd": 7200
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "second_halving_s9.title",
+        "p0Choice": "second_halving_s9.choice.wait"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "bitfinex_hack_news.title",
+        "p0Choice": "bitfinex_hack_news.choice.stay"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_sell_order",
+      "params": {
+        "coin": "BTC",
+        "amount": 6.07416493173334
+      }
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "handover.title",
+        "p0Choice": "handover.choice.carry"
+      }
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.p0_handover",
+      "params": {
+        "valueUsd": 1193080303.992745
+      }
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.raised",
+      "params": {
+        "round": "friends_family",
+        "amountUsd": 40000,
+        "dilutionPct": 0.1,
+        "stakePct": 0.9
+      }
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.hodl",
+      "params": {
+        "sellPct": 1,
+        "coin": "BTC"
+      }
+    },
+    {
+      "quarter": 0,
+      "week": null,
+      "key": "log.hodl",
+      "params": {
+        "sellPct": 1,
+        "coin": "ETH"
+      }
+    },
+    {
+      "quarter": 0,
+      "week": 10,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.2650602409638554
+      }
+    },
+    {
+      "quarter": 0,
+      "week": 11,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.29323308270676707
+      }
+    },
+    {
+      "quarter": 0,
+      "week": 12,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.29341085271317824
+      }
+    },
+    {
+      "quarter": 1,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 1,
+        "model": "gpu_gen1",
+        "condition": "used",
+        "costUsd": 2500
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 1,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.21431881371640404
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 6,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.26930047118521205
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 7,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.26936988387588046
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 11,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "gpu_shortage_2017.title",
+        "eventChoice": "gpu_shortage_2017.choice.wait",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 1,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 2,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "s9",
+        "costUsd": 120
+      }
+    },
+    {
+      "quarter": 2,
+      "week": null,
+      "key": "log.site_built",
+      "params": {
+        "tier": "small_unit",
+        "costUsd": 35000,
+        "quarter": "2017Q4"
+      }
+    },
+    {
+      "quarter": 2,
+      "week": 6,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.1594
+      }
+    },
+    {
+      "quarter": 2,
+      "week": 7,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.15934966361911318
+      }
+    },
+    {
+      "quarter": 2,
+      "week": 8,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.15939441282594968
+      }
+    },
+    {
+      "quarter": 3,
+      "week": null,
+      "key": "log.site_ready",
+      "params": {
+        "tier": "small_unit"
+      }
+    },
+    {
+      "quarter": 3,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "small_unit",
+        "contract": "fixed",
+        "price": "8.00¢",
+        "quarter": "2018Q4"
+      }
+    },
+    {
+      "quarter": 3,
+      "week": null,
+      "key": "log.raised",
+      "params": {
+        "round": "seed",
+        "amountUsd": 1500000,
+        "dilutionPct": 0.2,
+        "stakePct": 0.7200000000000001
+      }
+    },
+    {
+      "quarter": 3,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 75,
+        "model": "s9",
+        "condition": "new",
+        "costUsd": 172500
+      }
+    },
+    {
+      "quarter": 3,
+      "week": 10,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.21303004589532826
+      }
+    },
+    {
+      "quarter": 3,
+      "week": 11,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.2947277602496976
+      }
+    },
+    {
+      "quarter": 3,
+      "week": 12,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "btc_peak_2017.title",
+        "eventChoice": "btc_peak_2017.choice.hodl",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 4,
+      "week": null,
+      "key": "log.scouted",
+      "params": {
+        "count": 2,
+        "tier": "warehouse"
+      }
+    },
+    {
+      "quarter": 4,
+      "week": 1,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.16162683216690876
+      }
+    },
+    {
+      "quarter": 4,
+      "week": 2,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "garage",
+        "heat": 40
+      }
+    },
+    {
+      "quarter": 4,
+      "week": 3,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.23703160240210863
+      }
+    },
+    {
+      "quarter": 5,
+      "week": null,
+      "key": "log.site_built",
+      "params": {
+        "tier": "warehouse",
+        "costUsd": 350876,
+        "quarter": "2018Q3"
+      }
+    },
+    {
+      "quarter": 5,
+      "week": null,
+      "key": "log.site_flaw",
+      "params": {
+        "tier": "warehouse",
+        "flaw": "undersized_transformer"
+      }
+    },
+    {
+      "quarter": 5,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.site_ready",
+      "params": {
+        "tier": "warehouse"
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "warehouse",
+        "contract": "fixed",
+        "price": "6.62¢",
+        "quarter": "2019Q3"
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "s9",
+        "costUsd": 120
+      }
+    },
+    {
+      "quarter": 6,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 454,
+        "model": "s9",
+        "condition": "used",
+        "costUsd": 181600
+      }
+    },
+    {
+      "quarter": 6,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 6,
+      "week": 9,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "garage",
+        "heat": 40
+      }
+    },
+    {
+      "quarter": 6,
+      "week": 10,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 70,
+        "model": "s9",
+        "listUsd": 150,
+        "reserveUsd": 5800
+      }
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 2,
+        "model": "s9",
+        "costUsd": 240
+      }
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "riot",
+        "count": 70,
+        "model": "s9",
+        "rivalUsd": 8600
+      }
+    },
+    {
+      "quarter": 7,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "small_unit",
+        "contract": "fixed",
+        "price": "8.80¢",
+        "quarter": "2019Q4"
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 7,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 4
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 4
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 11,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "winter_bottom_2018.title",
+        "eventChoice": "winter_bottom_2018.choice.keep_running",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 7,
+      "week": 13,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.2024133057941082
+      }
+    },
+    {
+      "quarter": 8,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 3,
+        "model": "s9",
+        "costUsd": 360
+      }
+    },
+    {
+      "quarter": 8,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 20,
+        "model": "s9",
+        "costUsd": 2400
+      }
+    },
+    {
+      "quarter": 8,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 1,
+        "model": "gpu_gen1",
+        "condition": "used",
+        "costUsd": 600
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 8,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 8,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 9,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 180,
+        "model": "s9",
+        "listUsd": 250,
+        "reserveUsd": 22500
+      }
+    },
+    {
+      "quarter": 9,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 2,
+        "model": "s9",
+        "costUsd": 240
+      }
+    },
+    {
+      "quarter": 9,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 9,
+        "model": "s9",
+        "costUsd": 1080
+      }
+    },
+    {
+      "quarter": 9,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "core",
+        "count": 180,
+        "model": "s9",
+        "rivalUsd": 28800
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 9,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 4,
+      "key": "log.failure_wave_degraded",
+      "params": {
+        "units": 29,
+        "tier": "warehouse"
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 9,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 10,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "s9",
+        "costUsd": 120
+      }
+    },
+    {
+      "quarter": 10,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 3,
+        "model": "s9",
+        "costUsd": 360
+      }
+    },
+    {
+      "quarter": 10,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 45,
+        "model": "s9",
+        "costUsd": 5400
+      }
+    },
+    {
+      "quarter": 10,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "warehouse",
+        "contract": "fixed",
+        "price": "6.67¢",
+        "quarter": "2020Q3"
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 4,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 10,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 6,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "gpu_cloud_rumour_2019.title",
+        "eventChoice": "gpu_cloud_rumour_2019.choice.note",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 9,
+      "key": "log.failure_wave_degraded",
+      "params": {
+        "units": 6,
+        "tier": "small_unit"
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 10,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 11,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 8,
+        "model": "s9",
+        "costUsd": 960
+      }
+    },
+    {
+      "quarter": 11,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 16,
+        "model": "s9",
+        "costUsd": 1920
+      }
+    },
+    {
+      "quarter": 11,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "gpu_gen1",
+        "costUsd": 150
+      }
+    },
+    {
+      "quarter": 11,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "small_unit",
+        "contract": "fixed",
+        "price": "8.80¢",
+        "quarter": "2020Q4"
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 11,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 11,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 12,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 12,
+        "model": "s9",
+        "costUsd": 1440
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 12,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 10,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "covid_crash_2020.title",
+        "eventChoice": "covid_crash_2020.choice.hold",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 12,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.auction_open",
+      "params": {
+        "count": 180,
+        "model": "s9",
+        "listUsd": 50,
+        "reserveUsd": 4200
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "s9",
+        "costUsd": 120
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 19,
+        "model": "s9",
+        "costUsd": 2280
+      }
+    },
+    {
+      "quarter": 13,
+      "week": null,
+      "key": "log.auction_passed",
+      "params": {
+        "rival": "core",
+        "count": 180,
+        "model": "s9",
+        "rivalUsd": 7400
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 13,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 4
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 6,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "halving_2020.title",
+        "eventChoice": "halving_2020.choice.keep",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 13,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 14,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 4,
+        "model": "s9",
+        "costUsd": 480
+      }
+    },
+    {
+      "quarter": 14,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 16,
+        "model": "s9",
+        "costUsd": 1920
+      }
+    },
+    {
+      "quarter": 14,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "warehouse",
+        "contract": "fixed",
+        "price": "6.67¢",
+        "quarter": "2021Q3"
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 14,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 14,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 15,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 5,
+        "model": "s9",
+        "costUsd": 600
+      }
+    },
+    {
+      "quarter": 15,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 17,
+        "model": "s9",
+        "costUsd": 2040
+      }
+    },
+    {
+      "quarter": 15,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "small_unit",
+        "contract": "fixed",
+        "price": "8.80¢",
+        "quarter": "2021Q4"
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 15,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 4
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 15,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 16,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 4,
+        "model": "s9",
+        "costUsd": 480
+      }
+    },
+    {
+      "quarter": 16,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 22,
+        "model": "s9",
+        "costUsd": 2640
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 16,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 10,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "spac_mania_2021.title",
+        "eventChoice": "spac_mania_2021.choice.ok",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 16,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 17,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "s9",
+        "costUsd": 120
+      }
+    },
+    {
+      "quarter": 17,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 15,
+        "model": "s9",
+        "costUsd": 1800
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 5,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.1631710726176996
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 6,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 17,
+      "week": 6,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": 0.26870221052768684
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 12,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "warehouse",
+        "heat": 49
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 17,
+      "week": 13,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "china_ban_2021.title",
+        "eventChoice": "china_ban_2021.choice.nothing",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 18,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 22,
+        "model": "s9",
+        "costUsd": 2640
+      }
+    },
+    {
+      "quarter": 18,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "warehouse",
+        "contract": "fixed",
+        "price": "7.28¢",
+        "quarter": "2022Q3"
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 2,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 18,
+      "week": 4,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.18839591193523986
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 5,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "BTC",
+        "changeDelta": 0.1719919944313959
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 5
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 7,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "warehouse",
+        "heat": 54
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 18,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 19,
+      "week": null,
+      "key": "log.rate_hike",
+      "params": {
+        "tier": "warehouse",
+        "heat": 54,
+        "surchargePct": 0.19999999999999996
+      }
+    },
+    {
+      "quarter": 19,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 3,
+        "model": "s9",
+        "costUsd": 360
+      }
+    },
+    {
+      "quarter": 19,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 21,
+        "model": "s9",
+        "costUsd": 2520
+      }
+    },
+    {
+      "quarter": 19,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "small_unit",
+        "contract": "fixed",
+        "price": "9.35¢",
+        "quarter": "2022Q4"
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 19,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 19,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 20,
+      "week": null,
+      "key": "log.rate_hike_ends",
+      "params": {
+        "tier": "warehouse"
+      }
+    },
+    {
+      "quarter": 20,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "s9",
+        "costUsd": 120
+      }
+    },
+    {
+      "quarter": 20,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 17,
+        "model": "s9",
+        "costUsd": 2040
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 20,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 5
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 2,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "warehouse",
+        "heat": 55
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 20,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": null,
+      "key": "log.rate_hike",
+      "params": {
+        "tier": "warehouse",
+        "heat": 54,
+        "surchargePct": 0.19999999999999996
+      }
+    },
+    {
+      "quarter": 21,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 3,
+        "model": "s9",
+        "costUsd": 360
+      }
+    },
+    {
+      "quarter": 21,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 22,
+        "model": "s9",
+        "costUsd": 2640
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 21,
+      "week": 2,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 7,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 10,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": -0.20964058118786644
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 11,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "luna_celsius_2022.title",
+        "eventChoice": "luna_celsius_2022.choice.ride",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 21,
+      "week": 12,
+      "key": "log.alert_held",
+      "params": {
+        "coin": "ETH",
+        "changeDelta": -0.15963365789076778
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.rate_hike_ends",
+      "params": {
+        "tier": "warehouse"
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 1,
+        "model": "s9",
+        "costUsd": 120
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.repaired",
+      "params": {
+        "count": 16,
+        "model": "s9",
+        "costUsd": 1920
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.contract_signed",
+      "params": {
+        "tier": "warehouse",
+        "contract": "fixed",
+        "price": "9.10¢",
+        "quarter": "2023Q3"
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 1,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 22,
+      "week": 3,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 3,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "heat_wave.title",
+        "eventChoice": "heat_wave.choice.underclock",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 4,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 5,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 6,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 8,
+      "key": "log.failures",
+      "params": {
+        "count": 3
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 9,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 10,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 11,
+      "key": "log.failures",
+      "params": {
+        "count": 1
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 12,
+      "key": "log.failures",
+      "params": {
+        "count": 4
+      }
+    },
+    {
+      "quarter": 22,
+      "week": 12,
+      "key": "log.eth_mining_ends",
+      "params": {}
+    },
+    {
+      "quarter": 22,
+      "week": 13,
+      "key": "log.failures",
+      "params": {
+        "count": 2
+      }
+    },
+    {
+      "quarter": 22,
+      "week": null,
+      "key": "log.merge_choice",
+      "params": {
+        "mergeChoice": "hold_and_wait"
+      }
+    }
+  ],
+  "prologueCarry": {
+    "startNetWorthUsd": 1193080303.992745,
+    "onExchange": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "lost": {
+      "exchange": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "wallet": {
+        "BTC": 0,
+        "ETH": 0
+      }
+    }
+  }
+}

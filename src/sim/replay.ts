@@ -26,6 +26,11 @@ export function replay(seed: number, log: Step[]): GameState {
   return log.reduce(applyStep, newGame(seed))
 }
 
+/** Rebuilds a prologue start (2009) from its seed and step log. */
+export function replayPrologue(seed: number, log: Step[]): GameState {
+  return log.reduce(applyStep, newPrologueGame(seed))
+}
+
 export interface Strategy {
   /** Actions to take in a Plan phase (END_PLAN is added automatically). */
   plan(state: GameState): Action[]

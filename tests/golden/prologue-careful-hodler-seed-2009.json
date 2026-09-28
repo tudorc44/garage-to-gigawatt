@@ -1,0 +1,2616 @@
+{
+  "version": 3,
+  "act": 0,
+  "seed": 2009,
+  "rng": -1490958331,
+  "phase": "chapter",
+  "quarter": -1,
+  "week": 13,
+  "cash": 0,
+  "bandwidth": 2,
+  "hodlPct": {
+    "BTC": 1,
+    "ETH": 1
+  },
+  "treasury": {
+    "BTC": 1242791.983325776,
+    "ETH": 0
+  },
+  "founderStake": 1,
+  "raisesDone": [],
+  "sites": [
+    {
+      "id": "site-9",
+      "tier": "garage",
+      "readyQuarter": -12,
+      "rentUsdQ": 0,
+      "powerPriceMult": 1,
+      "flaw": null
+    }
+  ],
+  "machines": [
+    {
+      "id": "lot-11",
+      "model": "antminer_s9_early",
+      "siteId": "site-9",
+      "condition": "new",
+      "count": 3,
+      "failed": 0,
+      "earnsFromQuarter": -1
+    }
+  ],
+  "siteOffers": [],
+  "equipmentLoan": null,
+  "constructionLoans": [],
+  "bridgeLoan": null,
+  "hosting": [],
+  "projects": [],
+  "projectEvents": [],
+  "spotShock": null,
+  "firstAiDealQuarter": null,
+  "facilities": [],
+  "creditRating": null,
+  "cryptoLoan": null,
+  "auction": null,
+  "curtailment": null,
+  "complaint": null,
+  "negotiation": null,
+  "pitch": null,
+  "pitchWalkaways": {},
+  "staff": {},
+  "firedQuarter": {},
+  "marketRead": null,
+  "mergeChoice": null,
+  "act2Entry": null,
+  "preset": false,
+  "events": {
+    "queue": [],
+    "deferred": null,
+    "fired": [],
+    "flags": [],
+    "eligibleQuarters": 0,
+    "modifiers": [],
+    "plan": null,
+    "gpuLockQuarter": null,
+    "bandwidthNext": 0,
+    "ipoBandwidth": null,
+    "marginStress": null,
+    "taxPlan": null,
+    "runHotQuarter": null,
+    "moratoriumWaiver": {},
+    "creditNotch": null,
+    "valuationMult": null,
+    "ebitdaMult": null,
+    "spreadAddBps": 0,
+    "aiLabRevenueMult": 1,
+    "extraOffers": null
+  },
+  "failureWaves": [],
+  "siteHeat": {
+    "site-1": {
+      "value": 5,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false,
+      "outreachQuarter": null,
+      "shutdownSince": null
+    }
+  },
+  "loansLockedUntil": null,
+  "nextId": 12,
+  "interrupt": null,
+  "interruptsThisQuarter": 0,
+  "quarterStats": {
+    "revenueUsd": 0,
+    "powerCostUsd": 0,
+    "rentUsd": 0,
+    "coinsMined": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "powerByCoin": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "marginByTier": {},
+    "failures": 0,
+    "treasurySoldUsd": 0,
+    "priceAlerts": 0,
+    "marginCalls": 0,
+    "soldUsd": 0,
+    "gridCreditsUsd": 0,
+    "hostingFeesUsd": 0,
+    "reservationUsd": 0,
+    "aiRevenueUsd": 0,
+    "aiCostUsd": 0,
+    "lateDamagesUsd": 0,
+    "rateHikeUsd": 0,
+    "stormChargeUsd": 0,
+    "salariesUsd": 0,
+    "interestUsd": 0,
+    "principalUsd": 0,
+    "startCash": 0,
+    "startTreasuryUsd": 0,
+    "weeks": []
+  },
+  "reports": [],
+  "log": [
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -32,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 365,
+        "coins": 18259.12956478239
+      }
+    },
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "genesis_block.title",
+        "p0Choice": "genesis_block.choice.let_it_run"
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 388,
+        "coins": 19409.704852426214
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 381,
+        "coins": 19059.52976488244
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 381,
+        "coins": 19059.52976488244
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 357,
+        "coins": 17858.929464732366
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 365,
+        "coins": 18259.12956478239
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 392,
+        "coins": 19609.804902451226
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 393,
+        "coins": 19659.829914957478
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 376,
+        "coins": 18809.404702351174
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 389,
+        "coins": 19459.729864932466
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 377,
+        "coins": 18859.42971485743
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 376,
+        "coins": 18809.404702351174
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 370,
+        "coins": 18509.254627313658
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 409,
+        "coins": 20460.23011505753
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 356,
+        "coins": 17808.904452226114
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 350,
+        "coins": 17508.754377188594
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 383,
+        "coins": 19159.579789894946
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 360,
+        "coins": 18009.004502251126
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 373,
+        "coins": 18659.329664832418
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 353,
+        "coins": 17658.829414707354
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 388,
+        "coins": 19409.704852426214
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 341,
+        "coins": 17058.529264632318
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 344,
+        "coins": 17208.604302151074
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 364,
+        "coins": 18209.104552276138
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 359,
+        "coins": 17958.979489744874
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 385,
+        "coins": 19259.629814907454
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 352,
+        "coins": 17608.8044022011
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 339,
+        "coins": 16958.47923961981
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 387,
+        "coins": 19359.67983991996
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 370,
+        "coins": 18509.254627313658
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 358,
+        "coins": 17908.954477238618
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 346,
+        "coins": 17308.654327163582
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 372,
+        "coins": 18609.304652326162
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 383,
+        "coins": 19159.579789894946
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 379,
+        "coins": 18959.479739869934
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 379,
+        "coins": 18959.479739869934
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 396,
+        "coins": 19809.904952476238
+      }
+    },
+    {
+      "quarter": -29,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "first_exchange_rate.title",
+        "p0Choice": "first_exchange_rate.choice.note"
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 392,
+        "coins": 19609.804902451226
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 367,
+        "coins": 18359.179589794898
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 363,
+        "coins": 18159.079539769886
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 326,
+        "coins": 16308.15407703852
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 377,
+        "coins": 18859.42971485743
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 339,
+        "coins": 16958.47923961981
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 364,
+        "coins": 18209.104552276138
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 359,
+        "coins": 17958.979489744874
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 368,
+        "coins": 18409.20460230115
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 364,
+        "coins": 18209.104552276138
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 350,
+        "coins": 17508.754377188594
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 323,
+        "coins": 16158.07903951976
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 304,
+        "coins": 15207.60380190095
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 314,
+        "coins": 15707.853926963482
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 285,
+        "coins": 14257.12856428214
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 301,
+        "coins": 15057.52876438219
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 303,
+        "coins": 15157.578789394698
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 283,
+        "coins": 14157.078539269634
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 315,
+        "coins": 15757.878939469734
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 234,
+        "coins": 11705.852926463233
+      }
+    },
+    {
+      "quarter": -28,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "pc_overheats.title",
+        "p0Choice": "pc_overheats.choice.underclock"
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 196,
+        "coins": 9804.902451225613
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 200,
+        "coins": 10005.002501250625
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 214,
+        "coins": 10705.352676338169
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 207,
+        "coins": 10355.177588794397
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 84,
+        "coins": 4202.1010505252625
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 91,
+        "coins": 4552.2761380690345
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 96,
+        "coins": 4802.4012006003
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 108,
+        "coins": 5402.701350675337
+      }
+    },
+    {
+      "quarter": -27,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "friend_wants_coins.title",
+        "p0Choice": "friend_wants_coins.choice.decline"
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 42,
+        "coins": 2101.0505252626313
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 35,
+        "coins": 1750.8754377188595
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 37,
+        "coins": 1850.9254627313658
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 35,
+        "coins": 1750.8754377188595
+      }
+    },
+    {
+      "quarter": -27,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "pizza_day.title",
+        "p0Choice": "pizza_day.choice.hold"
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 41,
+        "coins": 2051.0255127563782
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 30,
+        "coins": 1500.7503751875938
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 36,
+        "coins": 1800.9004502251125
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 33,
+        "coins": 1650.8254127063533
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 23,
+        "coins": 1150.5752876438219
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_home_rig",
+      "params": {
+        "costUsd": 300
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 1,
+        "model": "pc_cpu",
+        "valueUsd": 0
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 1596
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "mtgox_opens.title",
+        "p0Choice": "mtgox_opens.choice.keep_wallet"
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 194,
+        "coins": 9704.852426213107
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 183,
+        "coins": 9154.577288644323
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 179,
+        "coins": 8954.477238619309
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 202,
+        "coins": 10105.05252626313
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 113,
+        "coins": 5652.826413206603
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 80,
+        "coins": 4002.00100050025
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 92,
+        "coins": 4602.3011505752875
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 94,
+        "coins": 4702.3511755877935
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 95,
+        "coins": 4752.376188094047
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 26,
+        "coins": 1300.6503251625813
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 23,
+        "coins": 1150.5752876438219
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 33,
+        "coins": 1650.8254127063533
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 32,
+        "coins": 1600.8004002001
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 9,
+        "coins": 450.22511255627813
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 12,
+        "coins": 600.3001500750375
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 15,
+        "coins": 750.3751875937969
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 13,
+        "coins": 650.3251625812907
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 14,
+        "coins": 700.3501750875438
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 11,
+        "coins": 550.2751375687844
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 10,
+        "coins": 500.25012506253125
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 12,
+        "coins": 600.3001500750375
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 9,
+        "coins": 450.22511255627813
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 7,
+        "coins": 350.1750875437719
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 8,
+        "coins": 400.200100050025
+      }
+    },
+    {
+      "quarter": -24,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "power_bill.title",
+        "p0Choice": "power_bill.choice.say_nothing"
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 4,
+        "coins": 200.1000500250125
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 15,
+        "coins": 750.3751875937969
+      }
+    },
+    {
+      "quarter": -23,
+      "week": null,
+      "key": "log.p0_pool_on"
+    },
+    {
+      "quarter": -23,
+      "week": 11,
+      "key": "log.p0_gox_hack",
+      "params": {}
+    },
+    {
+      "quarter": -23,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "bubble_and_hack_2011.title",
+        "p0Choice": "bubble_and_hack_2011.choice.nothing"
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 720
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 1036
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "crash_bottom_2011.title",
+        "p0Choice": "crash_bottom_2011.choice.keep_gpus"
+      }
+    },
+    {
+      "quarter": -20,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "job_offer.title",
+        "p0Choice": "job_offer.choice.decline"
+      }
+    },
+    {
+      "quarter": -19,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "household.title",
+        "p0Choice": "household.choice.cut_load"
+      }
+    },
+    {
+      "quarter": -19,
+      "week": null,
+      "key": "log.p0_household_cut"
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 596
+      }
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "first_halving.title",
+        "p0Choice": "first_halving.choice.keep_fleet"
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.p0_backup_lapsed"
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 596
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "asic_preorders_open.title",
+        "p0Choice": "asic_preorders_open.choice.skip"
+      }
+    },
+    {
+      "quarter": -15,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "conference_invitation.title",
+        "p0Choice": "conference_invitation.choice.skip"
+      }
+    },
+    {
+      "quarter": -14,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "household.title",
+        "p0Choice": "household.choice.cut_load"
+      }
+    },
+    {
+      "quarter": -14,
+      "week": null,
+      "key": "log.p0_household_cut"
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "antminer_s1",
+        "condition": "new",
+        "costUsd": 1400
+      }
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "peak_and_silk_road.title",
+        "p0Choice": "peak_and_silk_road.choice.hodl"
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_moved_out",
+      "params": {
+        "costUsd": 940
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 9,
+        "model": "antminer_s1",
+        "condition": "new",
+        "costUsd": 2700
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "mtgox_collapse.title",
+        "p0Choice": "mtgox_collapse.choice.accept"
+      }
+    },
+    {
+      "quarter": -7,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": -6,
+      "week": null,
+      "key": "log.p0_sell_order",
+      "params": {
+        "coin": "BTC",
+        "amount": 87.17738997559725
+      }
+    },
+    {
+      "quarter": -6,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "eth_launch.title",
+        "p0Choice": "eth_launch.choice.stay_btc"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "antminer_s1",
+        "valueUsd": 480
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 9,
+        "model": "antminer_s1",
+        "valueUsd": 1080
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 3,
+        "model": "antminer_s9_early",
+        "condition": "new",
+        "costUsd": 7200
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "second_halving_s9.title",
+        "p0Choice": "second_halving_s9.choice.wait"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "bitfinex_hack_news.title",
+        "p0Choice": "bitfinex_hack_news.choice.stay"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_sell_order",
+      "params": {
+        "coin": "BTC",
+        "amount": 6.07416493173334
+      }
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "handover.title",
+        "p0Choice": "handover.choice.carry"
+      }
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    }
+  ],
+  "prologue": {
+    "livingAtHome": false,
+    "patience": 35,
+    "cutLoadUntil": null,
+    "householdCard": false,
+    "pool": true,
+    "onExchange": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "minedTo": "wallet",
+    "moves": [],
+    "sellQueue": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "noSellingUntil": -289,
+    "backup": true,
+    "preorders": [],
+    "offersTaken": [],
+    "offersIgnored": [
+      "offer_forum_buyer_1",
+      "offer_forum_buyer_2",
+      "offer_local_trade",
+      "offer_forum_buyer_3",
+      "offer_forum_buyer_4",
+      "offer_final_hobby_offer"
+    ],
+    "conferences": [],
+    "usedOffer": null,
+    "vanity": [],
+    "lost": {
+      "exchange": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "wallet": {
+        "BTC": 0,
+        "ETH": 0
+      }
+    },
+    "mined": {
+      "BTC": 1242899.9622212173,
+      "ETH": 0
+    },
+    "blocksFound": 24808,
+    "stopNext": false,
+    "flags": [
+      "moved_out",
+      "exchange_custody_opened"
+    ],
+    "cardQueue": [],
+    "cardsFired": [
+      "pc_overheats",
+      "friend_wants_coins",
+      "power_bill",
+      "job_offer",
+      "conference_invitation",
+      "bitfinex_hack_news"
+    ],
+    "cardsShown": 17,
+    "slowdown": {
+      "mult": 0.5,
+      "until": -302
+    },
+    "openPanel": null,
+    "reports": [
+      {
+        "quarter": "2009Q1",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 245222.6113056528,
+          "ETH": 0
+        },
+        "blocksFound": 4902,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 3200.03,
+        "treasury": {
+          "BTC": 245222.6113056528,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 3200.03,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "genesis_block",
+            "choice": "let_it_run"
+          }
+        ]
+      },
+      {
+        "quarter": "2009Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 237618.80940470236,
+          "ETH": 0
+        },
+        "blocksFound": 4750,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 4400.06,
+        "treasury": {
+          "BTC": 482841.4207103551,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 4400.06,
+        "patience": 100,
+        "cards": []
+      },
+      {
+        "quarter": "2009Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 238819.4097048524,
+          "ETH": 0
+        },
+        "blocksFound": 4774,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 5600.09,
+        "treasury": {
+          "BTC": 721660.8304152077,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 5600.09,
+        "patience": 100,
+        "cards": []
+      },
+      {
+        "quarter": "2009Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 236468.23411705854,
+          "ETH": 0
+        },
+        "blocksFound": 4727,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 6800.12,
+        "treasury": {
+          "BTC": 958129.0645322662,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 6800.12,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "first_exchange_rate",
+            "choice": "note"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 174037.01850925462,
+          "ETH": 0
+        },
+        "blocksFound": 3479,
+        "btcUsd": 0.003302,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.5374497016789208,
+        "cash": 8000.15,
+        "treasury": {
+          "BTC": 1132166.083041521,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 11738.562406203102,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "pc_overheats",
+            "choice": "underclock"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q2",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 34567.28364182091,
+          "ETH": 0
+        },
+        "blocksFound": 691,
+        "btcUsd": 0.019392,
+        "ethUsd": 0,
+        "difficultyChangePct": 2.807419034002608,
+        "cash": 9200.18,
+        "treasury": {
+          "BTC": 1166733.3666833418,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 31825.473446723365,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "friend_wants_coins",
+            "choice": "decline"
+          },
+          {
+            "id": "pizza_day",
+            "choice": "hold"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q3",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 0.165096,
+        "ethUsd": 0,
+        "difficultyChangePct": 31.125405972807783,
+        "cash": 8504.21,
+        "treasury": {
+          "BTC": 1166733.3666833418,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 202407.221905953,
+        "patience": 85,
+        "cards": [
+          {
+            "id": "mtgox_opens",
+            "choice": "keep_wallet"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q4",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 67333.6668334167,
+          "ETH": 0
+        },
+        "blocksFound": 1346,
+        "btcUsd": 0.3,
+        "ethUsd": 0,
+        "difficultyChangePct": 6.481661203933165,
+        "cash": 9704.24,
+        "treasury": {
+          "BTC": 1234067.0335167584,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 381124.35005502746,
+        "patience": 70,
+        "cards": []
+      },
+      {
+        "quarter": "2011Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 6953.476738369185,
+          "ETH": 0
+        },
+        "blocksFound": 139,
+        "btcUsd": 0.777461,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.519755218770662,
+        "cash": 10904.27,
+        "treasury": {
+          "BTC": 1241020.5102551272,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 976869.3169234614,
+        "patience": 55,
+        "cards": [
+          {
+            "id": "power_bill",
+            "choice": "say_nothing"
+          }
+        ]
+      },
+      {
+        "quarter": "2011Q2",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 1474.7839487397837,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 14.73092,
+        "ethUsd": 0,
+        "difficultyChangePct": 11.713578700952723,
+        "cash": 12104.3,
+        "treasury": {
+          "BTC": 1242495.2942038672,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 18316243.07929363,
+        "patience": 35,
+        "cards": [
+          {
+            "id": "bubble_and_hack_2011",
+            "choice": "nothing"
+          }
+        ]
+      },
+      {
+        "quarter": "2011Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 100.41909977454497,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 5.280024,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.1538024142912886,
+        "cash": 13304.33,
+        "treasury": {
+          "BTC": 1242595.7133036412,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 6575119.518540345,
+        "patience": 20,
+        "cards": []
+      },
+      {
+        "quarter": "2011Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 4.53748,
+        "ethUsd": 0,
+        "difficultyChangePct": -0.2941020162471111,
+        "cash": 14188.36,
+        "treasury": {
+          "BTC": 1242595.7133036412,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 5653161.557201006,
+        "patience": 5,
+        "cards": [
+          {
+            "id": "crash_bottom_2011",
+            "choice": "keep_gpus"
+          }
+        ]
+      },
+      {
+        "quarter": "2012Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 120.67574048925148,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 5.769271,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 15388.39,
+        "treasury": {
+          "BTC": 1242716.3890441312,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 7185556.014537023,
+        "patience": 0,
+        "cards": [
+          {
+            "id": "job_offer",
+            "choice": "decline"
+          }
+        ]
+      },
+      {
+        "quarter": "2012Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 52.01752454458391,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 7.339042,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 16588.42,
+        "treasury": {
+          "BTC": 1242768.4065686744,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 9137797.952080578,
+        "patience": 50,
+        "cards": [
+          {
+            "id": "household",
+            "choice": "cut_load"
+          }
+        ]
+      },
+      {
+        "quarter": "2012Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 72.9808476867134,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 11.357219,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.3934946969326978,
+        "cash": 17788.45,
+        "treasury": {
+          "BTC": 1242841.3874163618,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 14133410.269151466,
+        "patience": 35,
+        "cards": []
+      },
+      {
+        "quarter": "2012Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 13.15808,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.3802787556797491,
+        "cash": 18752.48,
+        "treasury": {
+          "BTC": 1242841.3874163618,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 16372518.882935483,
+        "patience": 20,
+        "cards": [
+          {
+            "id": "first_halving",
+            "choice": "keep_fleet"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q1",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 103.97115,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 19716.51,
+        "treasury": {
+          "BTC": 1242841.3874163618,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 129239724.82727467,
+        "patience": 5,
+        "cards": [
+          {
+            "id": "asic_preorders_open",
+            "choice": "skip"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 7.700697653199191,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 99.04675,
+        "ethUsd": 0,
+        "difficultyChangePct": 2.907340868530637,
+        "cash": 20916.54,
+        "treasury": {
+          "BTC": 1242849.0881140146,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 123121439.45815678,
+        "patience": 0,
+        "cards": [
+          {
+            "id": "conference_invitation",
+            "choice": "skip"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0.9074060766887213,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 127.402655,
+        "ethUsd": 0,
+        "difficultyChangePct": 3.304899432036893,
+        "cash": 22116.57,
+        "treasury": {
+          "BTC": 1242849.9955200911,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 158364865.7659977,
+        "patience": 50,
+        "cards": [
+          {
+            "id": "household",
+            "choice": "cut_load"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 784.184177,
+        "ethUsd": 0,
+        "difficultyChangePct": 5.238986691738487,
+        "cash": 22276.6,
+        "treasury": {
+          "BTC": 1242849.9955200911,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 974646697.4713764,
+        "patience": 35,
+        "cards": [
+          {
+            "id": "peak_and_silk_road",
+            "choice": "hodl"
+          }
+        ]
+      },
+      {
+        "quarter": "2014Q1",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 14.729118402902545,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 528.851164,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.6900062359369885,
+        "cash": 15379.19,
+        "treasury": {
+          "BTC": 1242864.7246384942,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 377.3951999999999,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 657308435.5096072,
+        "patience": null,
+        "cards": [
+          {
+            "id": "mtgox_collapse",
+            "choice": "accept"
+          }
+        ]
+      },
+      {
+        "quarter": "2014Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 20.33519601426201,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 560.186689,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.7401669223964267,
+        "cash": 11316.18,
+        "treasury": {
+          "BTC": 1242885.0598345082,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1182.9887999999999,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 696260542.65626,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2014Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 7.267804064489222,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 446.707765,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.280538281720001,
+        "cash": 7303.99,
+        "treasury": {
+          "BTC": 1242892.3276385716,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1132.1855999999998,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 555218517.8050741,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2014Q4",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 4.064765517571206,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 320,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 3291.8,
+        "treasury": {
+          "BTC": 1242896.3924040878,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1132.1855999999998,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 397731697.3693081,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2015Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 243.667609,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.1831508239184818,
+        "cash": 321.82,
+        "treasury": {
+          "BTC": 1242896.3924040878,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 302855473.9918298,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2015Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 223.130183,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.019390102387901287,
+        "cash": 0,
+        "treasury": {
+          "BTC": 1242884.5241755748,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 277326611.32716393,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2015Q3",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 259.229628,
+        "ethUsd": 1.1236,
+        "difficultyChangePct": 0.24681363709113247,
+        "cash": 16042.39,
+        "treasury": {
+          "BTC": 1242797.3467855991,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 19012.37251132243,
+        "netWorthUsd": 322187496.2766178,
+        "patience": null,
+        "cards": [
+          {
+            "id": "eth_launch",
+            "choice": "stay_btc"
+          }
+        ]
+      },
+      {
+        "quarter": "2015Q4",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 416.112581,
+        "ethUsd": 0.9,
+        "difficultyChangePct": 0,
+        "cash": 13072.41,
+        "treasury": {
+          "BTC": 1242797.3467855991,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 517158244.0409077,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2016Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 467.00693,
+        "ethUsd": 13.5999,
+        "difficultyChangePct": 0.770991857966081,
+        "cash": 9985.43,
+        "treasury": {
+          "BTC": 1242797.3467855991,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 580406518.964488,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2016Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 679.422809,
+        "ethUsd": 10.9325,
+        "difficultyChangePct": 0.2656021998587401,
+        "cash": 6898.45,
+        "treasury": {
+          "BTC": 1242797.3467855991,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 844393322.820819,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2016Q3",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 647.630823,
+        "ethUsd": 11.7942,
+        "difficultyChangePct": 0.03782384670225314,
+        "cash": 0,
+        "treasury": {
+          "BTC": 1242794.5233714948,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 804878039.990974,
+        "patience": null,
+        "cards": [
+          {
+            "id": "second_halving_s9",
+            "choice": "wait"
+          },
+          {
+            "id": "bitfinex_hack_news",
+            "choice": "stay"
+          }
+        ]
+      },
+      {
+        "quarter": "2016Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 3.569817129762937,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 960,
+        "ethUsd": 8,
+        "difficultyChangePct": 0.5498524880637721,
+        "cash": 0,
+        "treasury": {
+          "BTC": 1242791.983325776,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1037.8367999999996,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 4090.62934170052,
+        "netWorthUsd": 1193084503.992745,
+        "patience": null,
+        "cards": [
+          {
+            "id": "handover",
+            "choice": "carry"
+          }
+        ]
+      }
+    ],
+    "quarter": {
+      "coinsMined": {
+        "BTC": 3.569817129762937,
+        "ETH": 0
+      },
+      "blocksFound": 0,
+      "powerCostUsd": 1037.8367999999996,
+      "incomeUsd": 0,
+      "rentUsd": 3087.000000000001,
+      "soldUsd": 4090.62934170052,
+      "cards": [
+        {
+          "id": "handover",
+          "choice": "carry"
+        }
+      ]
+    }
+  }
+}

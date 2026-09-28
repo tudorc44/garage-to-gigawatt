@@ -342,6 +342,8 @@ balance → **P3** events, theme, screens → the Prologue report.
   `rollStream` (a mixed substream: plain ones clumped for seeds 1–50); TUNING (designed value) pre-orders: on time
   ships 2013Q3 for every order (before: promised quarter after the order → on time 7.9–34×, average 3.1–16×; after:
   on time 2.9–3.2×, 2–3Q late 0.26–0.29×, average 1.30–1.59×).
+- P4.2: goldens `prologue-careful-hodler-seed-2009` (Act 0) and `prologue-to-act1-seed-2009` (Act 0 → I), with the
+  same-seed and replay-the-log checks (`replayPrologue`); every Act I golden unchanged.
 - P2.5: `playPrologue` / `through: 0` in replay.ts (act 0 only; Act I/II paths unchanged); `tools/prologueBots.ts`
   (settings-driven prologue bot, hands over to `shell-climb`); whole-run tests to the handover and to 2026Q4.
 
