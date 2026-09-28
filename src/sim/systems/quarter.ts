@@ -3,7 +3,7 @@
 import {
   BALANCE,
   CONTENT,
-  act2Quarter,
+  isActIIQuarter,
   actLastQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
@@ -16,6 +16,7 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
+import { inActII } from '../state.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -62,9 +63,9 @@ export function endQuarter(state: GameState): void {
   rescueBeforeGameOver(state)
   state.cash = roundCents(state.cash)
   // Aggressive depreciation's Q4 audit (card ec18): a restatement shows in this quarter's report.
-  if (act2Quarter(state.quarter)) depreciationAudit(state)
+  if (isActIIQuarter(state.quarter)) depreciationAudit(state)
   const report = buildReport(state, w, forcedSale)
-  if (act2Quarter(state.quarter)) {
+  if (isActIIQuarter(state.quarter)) {
     const previous = state.creditRating
     const inputs = ratingInputs(state, report)
     state.creditRating = inputs.rating
@@ -186,7 +187,7 @@ function buildReport(
     debtUsd: debtUsd(state),
     heat: hottestSite(state).value,
     heatTier: hottestSite(state).site.tier,
-    ...(state.act === 2
+    ...(inActII(state)
       ? { mwByUseKw: mwByUse(state, state.quarter) }
       : {}),
     forcedSale,

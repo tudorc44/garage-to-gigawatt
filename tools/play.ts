@@ -7,7 +7,7 @@ import { fmt } from '../src/ui/format.ts'
 import { t, tDynamic, type MessageKey } from '../src/i18n/t.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { advance } from '../src/sim/advance.ts'
-import { newGame, type GameState } from '../src/sim/state.ts'
+import { inActII, newGame, type GameState } from '../src/sim/state.ts'
 import {
   dealView,
   failureWaveView,
@@ -189,7 +189,7 @@ function showPlan(s: GameState) {
     )
   })
   // Act II: the credit rating and the debt secured on projects.
-  if (s.act === 2) {
+  if (inActII(s)) {
     say('play.rating_line', { rating: s.creditRating ?? '—' })
     for (const f of s.facilities)
       say('play.facility_line', {
@@ -201,7 +201,7 @@ function showPlan(s: GameState) {
       })
   }
   // Act II: projects, with their slots and (for a shell still looking) its tenant offers.
-  if (s.act === 2) {
+  if (inActII(s)) {
     const pv = projectsView(s)
     s.projects.forEach((p, i) => {
       const c = pv.cards[i]
@@ -387,7 +387,7 @@ function parse(
       }
     case 'scout':
       // Act II: "scout" alone looks for distressed, greenfield and energized sites (M5.5).
-      return s.act === 2 && !rest[0]
+      return inActII(s) && !rest[0]
         ? { type: 'SCOUT_SITES_ACT2' }
         : { type: 'SCOUT_SITES', tier: rest[0] ?? '' }
     case 'build': {

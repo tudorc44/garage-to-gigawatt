@@ -18,6 +18,7 @@ import {
   type Site,
   type SiteOffer,
 } from '../state.ts'
+import { inActII } from '../state.ts'
 import { recalcHeat } from './heat.ts'
 import { extraScoutOffers } from './hires.ts'
 import { extraQueueQuarters, getRegion } from './regions.ts'
@@ -36,7 +37,7 @@ export function openCategories(quarter: number) {
 
 /** Why Act II scouting can't happen now, or undefined if it can. */
 export function scoutAct2Blocker(state: GameState): Message | undefined {
-  if (state.act !== 2) return { key: 'error.act2_only' }
+  if (!inActII(state)) return { key: 'error.act2_only' }
   if (openCategories(state.quarter).length === 0)
     return { key: 'error.no_sites_to_scout' }
   if (state.bandwidth < S.bandwidth)

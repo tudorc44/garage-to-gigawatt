@@ -1655,6 +1655,14 @@ export function act2Quarter(quarter: number): Act2Quarter | undefined {
   return CONTENT.act2Market[quarter - CONTENT.acts[1].firstQuarter]
 }
 
+/**
+ * Whether a quarter is an Act II quarter (M9.1): the yes/no form of act2Quarter(), for the checks that
+ * only ask "is this Act II?" and read none of its data.
+ */
+export function isActIIQuarter(quarter: number): boolean {
+  return act2Quarter(quarter) !== undefined
+}
+
 /** The act a quarter index belongs to (quarters past the end count as the last act). */
 export function actOfQuarter(quarter: number): ActSpan['act'] {
   if (quarter < 0) return 0

@@ -7,7 +7,7 @@ import { applyAction, type Action } from '../sim/actions.ts'
 import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
 import { bandwidthMax, quarterName } from '../sim/selectors.ts'
-import { newGame, type GameState } from '../sim/state.ts'
+import { inActII, newGame, type GameState } from '../sim/state.ts'
 import { presetGame } from '../sim/preset.ts'
 import { newPrologueGame } from '../sim/prologue/setup.ts'
 import type { PrologueProps } from './screens/Prologue.tsx'
@@ -68,7 +68,7 @@ function toSeed(text: string): number {
 const themeOf = (s: GameState | null) =>
   s?.act === 0
     ? 'bedroom'
-    : s?.act === 2
+    : inActII(s)
       ? 'campus'
       : s && quarterName(s.quarter) >= '2020Q1'
         ? 'industrial'
@@ -94,7 +94,7 @@ export function App() {
       writeSlot('autosave', s)
     // "Start of Act II": its own slot, saved when the game reaches the Act II intro (scope 0.2 §2.1).
     // (The prologue's intro is act 0's: not this slot.)
-    if (s?.phase === 'intro' && s.act === 2 && before?.phase !== 'intro')
+    if (s?.phase === 'intro' && inActII(s) && before?.phase !== 'intro')
       writeSlot('act2', s)
   }
   const saves: SaveApi = {

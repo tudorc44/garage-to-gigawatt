@@ -7,7 +7,12 @@
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
-import { logEntry, type GameState, type HostingContract } from '../state.ts'
+import {
+  inActII,
+  logEntry,
+  type GameState,
+  type HostingContract,
+} from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import { poweredKw, powerPriceUsdKwh, uptime, usedKw } from './sites.ts'
 
@@ -70,7 +75,7 @@ export function hostingBlocker(
   siteId: string,
   kw: number,
 ): Message | undefined {
-  if (state.act !== 2) return { key: 'error.act2_only' }
+  if (!inActII(state)) return { key: 'error.act2_only' }
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.hosting_garage' }
@@ -160,7 +165,7 @@ export function startHosting(
  * ready to re-let with no conversion cost.
  */
 export function rollHostingDefaults(state: GameState): void {
-  if (state.act !== 2) return
+  if (!inActII(state)) return
   const label = CONTENT.quarters[state.quarter]
   const rules = BALANCE.hosting.defaults
   if (!rules.winterQuarters.includes(Number(label.slice(5)))) return

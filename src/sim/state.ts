@@ -318,6 +318,17 @@ export interface Facility {
   rating: string
 }
 
+/**
+ * Whether an act number is Act II. Every "is this Act II?" check goes through here (M9.1), so a later
+ * act can extend the rule in one place. Today it is exactly `act === 2`: no behaviour change.
+ */
+export const isActII = (act: unknown): boolean => act === 2
+
+/** Whether a game (or none: null) is in Act II. */
+export const inActII = (
+  state: Pick<GameState, 'act'> | null | undefined,
+): boolean => isActII(state?.act)
+
 /** A project that no longer holds its MW or earns: sold, or ended by selling its GPUs. */
 export const projectGone = (p: Project) =>
   p.stage === 'sold' || p.stage === 'ended' || p.stage === 'foreclosed'

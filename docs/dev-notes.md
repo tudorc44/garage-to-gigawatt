@@ -200,6 +200,13 @@ Act II sim output (`npm run sim -- --act2`, same seeds) and the Act I sim output
 yes or no for Act III (for example "does this rule still apply in Act III"), do NOT decide it: list each one in the report as a question
 with a recommended answer, and keep today's behaviour. See `docs/act3-carryover-audit.md` §4 and §10 for where the checks are.
 
+**M9.1 DONE (branch `m9`, commit prefix `M9.k`).** `isActII(act)` / `inActII(state)` in `src/sim/state.ts` and `isActIIQuarter(quarter)` in
+`src/content/index.ts` (the yes/no form of `act2Quarter`). All 46 `act === 2` / `!== 2` checks (sim, UI, tools) and the 16 yes/no
+`act2Quarter` checks go through them (46, not the audit's 38: newer code added some). The other 14 `act2Quarter` calls READ Act II's
+data (`?.field ?? default`), so they stay as they are (mine, reversible); Act III will need a scenario-aware accessor for those.
+Proof: 725 tests (11 Act I goldens and both prologue goldens included) pass, and `npm run sim -- --act2` (same seeds) printed
+output and all 1,302 CSVs are byte-identical before and after. `tests/sim/inActII.test.ts` checks the helpers against the old checks.
+
 ## Milestone M8.8 (branch `m9`, from `main` at a37ef1e; docs only)
 
 - M8.8a: the runway answer recorded and queued as M9.0 above; "Next" and "Open questions" updated; the M8 / M8.7 logs moved to the archive.

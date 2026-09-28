@@ -2,7 +2,11 @@
 // miners to switch off for a week and pays them for it. The alert comes at the end of a
 // week; if you agree, the Texas machines sit out the next week and the credit is paid then.
 // The rolls use their own stream (substream), so they don't change the rest of the game.
-import { CONTENT, act2Quarter, type MarketWeek } from '../../content/index.ts'
+import {
+  CONTENT,
+  isActIIQuarter,
+  type MarketWeek,
+} from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
 import {
@@ -36,7 +40,7 @@ export function curtailmentAlertWeek(state: GameState): number | null {
  */
 export function isGridSite(state: GameState, site: Site): boolean {
   if (site.tier === CONTENT.curtailment.siteTier) return true
-  return !!act2Quarter(state.quarter) && regionOf(site) === 'ercot'
+  return isActIIQuarter(state.quarter) && regionOf(site) === 'ercot'
 }
 
 /** True for a machine batch on a site the grid can curtail. */
@@ -99,7 +103,7 @@ export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
   // Act II: AI halls there go dark too, and owe their tenants an SLA credit (a share of a month's
   // charge); SB6 lets ERCOT curtail sites of 75 MW and up directly from 2026Q1.
   const ai = curtailedProjects(state)
-  if (ai.length === 0 && !act2Quarter(state.quarter))
+  if (ai.length === 0 && !isActIIQuarter(state.quarter))
     return { mw, forgoneUsd, creditUsd }
   const slaUsd = ai.reduce(
     (sum, p) =>

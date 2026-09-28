@@ -27,7 +27,7 @@ import {
   ratingBacklogView,
   topHeat,
 } from '../../sim/selectors.ts'
-import type { GameState } from '../../sim/state.ts'
+import { isActII, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { tierName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
@@ -203,7 +203,7 @@ export function Nav(props: { seed: number; plan: boolean; act: number }) {
   const current = props.plan ? (nav?.section ?? 'dashboard') : 'dashboard'
   return (
     <nav class="nav" aria-label={t('ui.nav.label')}>
-      {NAV.filter((item) => !item.act2 || props.act === 2).map((item) => (
+      {NAV.filter((item) => !item.act2 || isActII(props.act)).map((item) => (
         <button
           key={item.key}
           type="button"

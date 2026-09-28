@@ -17,7 +17,7 @@
 import { BALANCE } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { substream, uniform } from '../rng.ts'
-import { logEntry, type GameState, type Project } from '../state.ts'
+import { inActII, logEntry, type GameState, type Project } from '../state.ts'
 import {
   debtBlocker,
   debtOffer,
@@ -82,7 +82,7 @@ export function dealNegotiationBlocker(
   projectId: string,
   target: { offerId?: string; debt?: DebtKind },
 ): Message | undefined {
-  if (state.act !== 2) return { key: 'error.act2_only' }
+  if (!inActII(state)) return { key: 'error.act2_only' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (state.negotiation || state.dealNegotiation)
     return { key: 'error.negotiation_open' }

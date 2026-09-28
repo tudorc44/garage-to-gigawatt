@@ -22,6 +22,7 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
+import { inActII } from './state.ts'
 import {
   repairAllCost,
   repairCostPerUnit,
@@ -901,7 +902,7 @@ export const URI_STORM_PRICE =
 /** The hires as the People dialog shows them (Act II adds two): on staff or not, pay, and what's blocking. */
 export function hireViews(state: GameState) {
   return allHires()
-    .filter((h) => state.act === 2 || !isAct2Hire(h.id))
+    .filter((h) => inActII(state) || !isAct2Hire(h.id))
     .map((h) => ({
       id: h.id,
       name: h.name,
@@ -1310,7 +1311,7 @@ export function chapterReport(state: GameState) {
  * service went unpaid in the final quarter; otherwise 'cash' (below zero after every forced sale).
  */
 export function gameOverView(state: GameState) {
-  if (state.phase !== 'gameover' || state.act !== 2) return null
+  if (state.phase !== 'gameover' || !inActII(state)) return null
   const recent = state.quarter - 3
   const foreclosed = state.log
     .filter((e) => e.key === 'log.project_foreclosed' && e.quarter >= recent)
@@ -1488,7 +1489,7 @@ export function failureWaveView(state: GameState) {
  * handicap (balance). null in Act I.
  */
 export function knowHowView(state: GameState) {
-  if (state.act !== 2) return null
+  if (!inActII(state)) return null
   const b = BALANCE.projects
   const pilot = CONTENT.projects.pilot
   const levels = [0, 1, 2, 3].map((level) => ({
@@ -1642,7 +1643,7 @@ const TENANT_EVENT_KEYS: MessageKey[] = [
  */
 export function act2ReportView(state: GameState) {
   const r = state.reports.at(-1)
-  if (state.act !== 2 || !r?.mwByUseKw) return null
+  if (!inActII(state) || !r?.mwByUseKw) return null
   const prev = state.reports.at(-2)
   const inQuarter = (keys: MessageKey[]) =>
     state.log.filter((e) => e.quarter === state.quarter && keys.includes(e.key))

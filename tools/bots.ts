@@ -3,7 +3,7 @@
 import { BALANCE, CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import type { Strategy } from '../src/sim/replay.ts'
-import type { Condition, GameState } from '../src/sim/state.ts'
+import { inActII, type Condition, type GameState } from '../src/sim/state.ts'
 import { renewalDue } from '../src/sim/systems/contracts.ts'
 import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
 import {
@@ -637,7 +637,7 @@ function hostingSwitcher(base: Strategy): Strategy {
   return {
     ...base,
     plan(state) {
-      if (state.act !== 2) return base.plan(state)
+      if (!inActII(state)) return base.plan(state)
       const actions: Action[] = []
       let s = state
       const run = (a: Action) => {
@@ -704,7 +704,7 @@ function aiProjects(
   return {
     ...base,
     plan(state) {
-      if (state.act !== 2) return base.plan(state)
+      if (!inActII(state)) return base.plan(state)
       const actions: Action[] = []
       let s = state
       const run = (a: Action) => {
@@ -1344,7 +1344,7 @@ function opening(
     ...shells,
     merge: () => choice,
     plan(state) {
-      if (state.act !== 2 || !before) return shells.plan(state)
+      if (!inActII(state) || !before) return shells.plan(state)
       let s = state
       const actions: Action[] = []
       const run = (a: Action) => {

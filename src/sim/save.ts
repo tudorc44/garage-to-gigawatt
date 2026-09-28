@@ -12,6 +12,7 @@ import {
   type GameState,
   type Phase,
 } from './state.ts'
+import { isActII } from './state.ts'
 
 const PHASES: Phase[] = [
   'plan',
@@ -60,7 +61,7 @@ function actFitsQuarter(act: unknown, quarter: number): boolean {
   // The prologue: 2009Q1–2016Q4; its chapter report hands over at 2016Q4 (still −1).
   if (act === 0) return quarter >= actFirstQuarter(0) && quarter < 0
   if (act === 1) return quarter <= boundary && quarter >= 0
-  if (act === 2) return quarter >= boundary
+  if (isActII(act)) return quarter >= boundary
   return false
 }
 

@@ -5,7 +5,7 @@
 import {
   BALANCE,
   CONTENT,
-  act2Quarter,
+  isActIIQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
 import { debtFrozen } from './eventEffects.ts'
@@ -23,7 +23,7 @@ import { cryptoLoanCapUsd } from './liquidity.ts'
 export function cryptoLoanOffered(quarter: number): boolean {
   const q = CONTENT.quarters[quarter]
   const [from, to] = CONTENT.cryptoLoan.available
-  if (act2Quarter(quarter)) return q >= BALANCE.act2CryptoLoansFrom
+  if (isActIIQuarter(quarter)) return q >= BALANCE.act2CryptoLoansFrom
   return q >= from && q <= to
 }
 

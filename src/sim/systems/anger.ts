@@ -7,6 +7,7 @@ import {
   BALANCE,
   POWER_REGIONS,
   act2Quarter,
+  isActIIQuarter,
   type PowerRegion,
 } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
@@ -21,7 +22,7 @@ export function regionAnger(
   region: PowerRegion | undefined,
   quarter = state.quarter,
 ): number {
-  if (!region || !act2Quarter(quarter)) return 0
+  if (!region || !isActIIQuarter(quarter)) return 0
   const kw = state.sites
     .filter((s) => regionOf(s) === region)
     .reduce((sum, s) => sum + poweredKw(s, quarter), 0)

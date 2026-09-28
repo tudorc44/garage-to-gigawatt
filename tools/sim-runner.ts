@@ -15,6 +15,7 @@ import type {
   GameState,
   QuarterReport,
 } from '../src/sim/state.ts'
+import { inActII } from '../src/sim/state.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
@@ -701,7 +702,7 @@ if (args.includes('--act2')) {
       ...bot,
       plan(state) {
         const r = state.reports.at(-1)
-        if (state.act === 2 && r && !seen.has(r.quarter))
+        if (inActII(state) && r && !seen.has(r.quarter))
           seen.set(r.quarter, breakdown(state, r))
         return bot.plan(state)
       },
@@ -835,7 +836,7 @@ if (args.includes('--act2')) {
       ...inner,
       plan(state) {
         if (
-          state.act === 2 &&
+          inActII(state) &&
           CONTENT.quarters[state.quarter] === from &&
           !state.projects.some((p) => p.kind === 'pilot')
         )

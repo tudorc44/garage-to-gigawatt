@@ -19,7 +19,12 @@ import {
   yourRank,
   type RivalSnapshot,
 } from '../../sim/systems/rivals.ts'
-import type { Coin, GameState, QuarterReport } from '../../sim/state.ts'
+import {
+  inActII,
+  type Coin,
+  type GameState,
+  type QuarterReport,
+} from '../../sim/state.ts'
 import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
@@ -409,7 +414,7 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
   const moved = before ? before.rank - now.rank : 0
   const coming = upcomingRivals(state.quarter)
   // Act II (M6.2): your AI and mining MW for the scale column, and the rivals' moves this quarter.
-  const act2 = state.act === 2 ? leagueScaleView(state) : null
+  const act2 = inActII(state) ? leagueScaleView(state) : null
   const moves = rivalMovesView(state.quarter)
   return (
     <div class="panel p">

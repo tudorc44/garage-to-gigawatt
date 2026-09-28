@@ -13,7 +13,7 @@ import {
   type SiteTier,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { logEntry, type GameState } from '../state.ts'
+import { inActII, logEntry, type GameState } from '../state.ts'
 
 /** Every hire the game knows: Act I's five, then Act II's new ones (hires_act2.json). */
 export function allHires(): Hire[] {
@@ -168,7 +168,7 @@ export function hireBlocker(state: GameState, id: string): Message | undefined {
   const hire = getHire(id)
   if (!hire) return { key: 'error.unknown_hire' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
-  if (isAct2Hire(id) && state.act !== 2) return { key: 'error.act2_only' }
+  if (isAct2Hire(id) && !inActII(state)) return { key: 'error.act2_only' }
   if (isHired(state, id))
     return { key: 'error.already_hired', params: { hire: id } }
   if (

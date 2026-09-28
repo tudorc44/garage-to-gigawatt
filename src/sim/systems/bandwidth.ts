@@ -1,6 +1,6 @@
 // Bandwidth: the founder's attention. Refilled each quarter; unused points are lost.
 import { BALANCE } from '../../content/index.ts'
-import type { GameState } from '../state.ts'
+import { inActII, type GameState } from '../state.ts'
 import { holdBandwidthBonus } from './headStarts.ts'
 import { bandwidthBonus } from './hires.ts'
 import { isReady, poweredKw } from './sites.ts'
@@ -11,7 +11,7 @@ import { isReady, poweredKw } from './sites.ts'
  * the Chief of Staff (one hired in Act I carries over) and the Head of Development, capped at 8.
  */
 export function bandwidthForQuarter(state: GameState): number {
-  if (state.act === 2) {
+  if (inActII(state)) {
     const a = BALANCE.act2Bandwidth
     const kw = state.sites.reduce(
       (sum, s) => sum + poweredKw(s, state.quarter),

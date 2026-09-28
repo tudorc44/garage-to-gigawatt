@@ -10,7 +10,7 @@ import {
   gameOverView,
   mergeView,
 } from '../../sim/selectors.ts'
-import type { GameState } from '../../sim/state.ts'
+import { inActII, type GameState } from '../../sim/state.ts'
 import { gameOverText, momentLines, runSummaryText } from '../chapter.ts'
 import { fmt } from '../format.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -342,7 +342,7 @@ export function ChapterScreen(props: {
 }) {
   const s = props.state
   const [exported, setExported] = useState<string | null>(null)
-  if (s.act === 2) return <Act2Chapter {...props} />
+  if (inActII(s)) return <Act2Chapter {...props} />
   const c = chapterReport(s)
   const exportRun = () => {
     const text = runSummaryText(s)

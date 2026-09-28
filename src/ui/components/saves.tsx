@@ -17,7 +17,7 @@ import {
 } from '../../platform/settings.ts'
 import { quarterName } from '../../sim/selectors.ts'
 import { setSfxSettings } from '../audio/sfx.ts'
-import type { GameState } from '../../sim/state.ts'
+import { inActII, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { Dialog } from './basics.tsx'
@@ -34,7 +34,7 @@ export const SaveContext = createContext<SaveApi | null>(null)
 /** "Q2 2019 · week 5 · cash $1.2M" */
 export function saveLabel(s: GameState): string {
   // The "Start of Act II" save sits on the Act II intro, still dated 2022Q3.
-  if (s.phase === 'intro' && s.act === 2)
+  if (s.phase === 'intro' && inActII(s))
     return t('ui.save.label_act2', { cash: fmt.money(s.cash) })
   const label = t(s.phase === 'live' ? 'ui.save.label_live' : 'ui.save.label', {
     quarter: fmt.quarter(quarterName(s.quarter)),
@@ -42,7 +42,7 @@ export function saveLabel(s: GameState): string {
     cash: fmt.money(s.cash),
   })
   // Saves in Act II carry an "Act II" tag (A2-01).
-  return s.act === 2 ? t('ui.save.act2_tag', { label }) : label
+  return inActII(s) ? t('ui.save.act2_tag', { label }) : label
 }
 
 /** Paste-a-save box: decodes the text and hands the game over, or shows what's wrong. */

@@ -4,7 +4,7 @@
 import { useState } from 'preact/hooks'
 import { t } from '../../i18n/t.ts'
 import { quarterName } from '../../sim/selectors.ts'
-import type { GameState } from '../../sim/state.ts'
+import { inActII, type GameState } from '../../sim/state.ts'
 import { ImportBox, saveLabel } from '../components/saves.tsx'
 import { fmt } from '../format.ts'
 
@@ -13,7 +13,7 @@ export function actTag(s: GameState): string {
   return t(
     s.act === 0
       ? 'ui.title.tag_prologue'
-      : s.act === 2
+      : inActII(s)
         ? 'ui.title.tag_act2'
         : 'ui.title.tag_act1',
   )

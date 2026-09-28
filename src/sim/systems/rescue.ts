@@ -5,7 +5,7 @@
 // 2. if none cures it, an emergency equity raise at half the current valuation, diluting at most 30%.
 // Game over only if both fail. The log says which one fired.
 import { BALANCE } from '../../content/index.ts'
-import { logEntry, type GameState } from '../state.ts'
+import { inActII, logEntry, type GameState } from '../state.ts'
 import { equityPreMoneyUsd } from './equity.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import { saleValueUsd } from './projects.ts'
@@ -23,7 +23,7 @@ function forcedSaleNetUsd(state: GameState, projectId: string): number {
 export function rescueBeforeGameOver(
   state: GameState,
 ): 'sale' | 'equity' | null {
-  if (state.act !== 2 || state.cash >= 0) return null
+  if (!inActII(state) || state.cash >= 0) return null
   const r = BALANCE.finance.rescue
   const shortUsd = -state.cash
   // 1. The smallest live project (by MW) whose net proceeds cure the shortfall.

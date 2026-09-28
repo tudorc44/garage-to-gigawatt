@@ -41,7 +41,7 @@ import {
   whyNot,
   type LotView,
 } from '../../sim/selectors.ts'
-import type { Coin, GameState } from '../../sim/state.ts'
+import { inActII, type Coin, type GameState } from '../../sim/state.ts'
 import { ActionRow, Icon, Sparkline, Tip } from '../components/basics.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
@@ -104,7 +104,7 @@ export function PlanScreen({ state, act }: ScreenProps) {
     <div class="screen">
       <Shell state={state}>
         <main class="main">
-          {state.act === 2 && <MwPanel state={state} />}
+          {inActII(state) && <MwPanel state={state} />}
           <div class="dash">
             <div class="col">
               <MarketPanel state={state} />
@@ -447,7 +447,7 @@ export function FleetPanel({ state }: { state: GameState }) {
                     cap: fmt.power(sv.capacityKw),
                   })}
                 </div>
-                {state.act === 2 && (
+                {inActII(state) && (
                   <MwBar
                     use={siteMwByUse(state, sv.site, state.quarter)}
                     compact
@@ -685,7 +685,7 @@ function TodoPanel({
 
   const ladderRows = []
   // Act II scouting (M5.5): distressed sites, greenfield and energized land, any region.
-  if (state.act === 2) {
+  if (inActII(state)) {
     const offers = state.siteOffers.filter((o) => o.category).length
     if (offers > 0)
       ladderRows.push(
@@ -838,8 +838,8 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.sites')}</div>
       {ladderRows}
-      {state.act === 2 && <HostingRow state={state} open={open} />}
-      {state.act === 2 && <FleetRow state={state} act={act} />}
+      {inActII(state) && <HostingRow state={state} open={open} />}
+      {inActII(state) && <FleetRow state={state} act={act} />}
       {phaseViews(state).flatMap((p) => {
         if (!p.next) return []
         const plain: Action = { type: 'BUILD_PHASE', siteId: p.site.id }
@@ -1485,7 +1485,7 @@ function SignalsPanel({ state, news }: { state: GameState; news: string[] }) {
           </div>
         ))}
       {/* Act II's first two quarters (2022Q4–2023Q1): what a megawatt does now, and projects. */}
-      {state.act === 2 && actTurn(state).turn <= 2 && (
+      {inActII(state) && actTurn(state).turn <= 2 && (
         <>
           <Tip id="mw_uses" />
           <Tip id="projects" />

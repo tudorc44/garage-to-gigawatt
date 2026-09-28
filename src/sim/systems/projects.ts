@@ -23,6 +23,7 @@ import {
   type ProjectKind,
   type TenantOffer,
 } from '../state.ts'
+import { inActII } from '../state.ts'
 import { gpuPriceMultNow, modifierMult } from './eventEffects.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import {
@@ -438,7 +439,7 @@ export function openBlocker(
     power?: PowerSource
   },
 ): Message | undefined {
-  if (state.act !== 2) return { key: 'error.act2_only' }
+  if (!inActII(state)) return { key: 'error.act2_only' }
   const site = state.sites.find((s) => s.id === a.siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.project_garage' }

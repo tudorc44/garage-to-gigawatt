@@ -4,7 +4,7 @@
 import {
   CONTENT,
   act1ValueQuarter,
-  act2Quarter,
+  isActIIQuarter,
   type Rival,
   type RivalAct2,
 } from '../../content/index.ts'
@@ -83,7 +83,7 @@ export function act2RivalSnapshot(
  * §2.11: Core Scientific, IREN, Hut 8, Cipher, CoreWeave), from 2022Q4.
  */
 export function activeRivals(quarter: number): RivalSnapshot[] {
-  if (act2Quarter(quarter))
+  if (isActIIQuarter(quarter))
     return CONTENT.act2Rivals.map((r) => act2RivalSnapshot(r, quarter))
   return CONTENT.rivals
     .map((r) => rivalSnapshot(r, quarter))
@@ -92,7 +92,7 @@ export function activeRivals(quarter: number): RivalSnapshot[] {
 
 /** The Act II rivals' key moves in a quarter (the quarter report shows them; texts in en.json). */
 export function rivalMoves(quarter: number): { rival: string; key: string }[] {
-  if (!act2Quarter(quarter)) return []
+  if (!isActIIQuarter(quarter)) return []
   const label = CONTENT.quarters[quarter]
   return CONTENT.act2Rivals
     .filter((r) => r.moves.includes(label))

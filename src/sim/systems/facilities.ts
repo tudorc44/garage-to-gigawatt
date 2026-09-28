@@ -13,6 +13,7 @@ import {
   type GameState,
   type Project,
 } from '../state.ts'
+import { inActII } from '../state.ts'
 import {
   ddtlRate,
   isInvestmentGrade,
@@ -57,7 +58,7 @@ export function debtBlocker(
   p: Project,
   kind: DebtKind,
 ): Message | undefined {
-  if (state.act !== 2) return { key: 'error.act2_only' }
+  if (!inActII(state)) return { key: 'error.act2_only' }
   const f = CONTENT.finance
   const from = kind === 'project_debt' ? f.projectDebt.from : f.ddtl.from
   if (CONTENT.quarters[state.quarter] < from)

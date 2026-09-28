@@ -12,7 +12,13 @@
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream, uniform } from '../rng.ts'
-import { logEntry, projectGone, type GameState, type Project } from '../state.ts'
+import {
+  inActII,
+  logEntry,
+  projectGone,
+  type GameState,
+  type Project,
+} from '../state.ts'
 
 const G = () => CONTENT.projects.gpuWave
 /** The wave falls in a random week of this range, like the Act I failure wave. */
@@ -22,7 +28,7 @@ export const isGpuWave = (id: string) => id === 'gpu_failure_wave'
 
 /** Live full-stack clouds big enough to fail in waves. */
 export function waveClusters(state: GameState): Project[] {
-  if (state.act !== 2) return []
+  if (!inActII(state)) return []
   return state.projects.filter(
     (p) => p.stage === 'live' && p.kind === 'cloud' && p.gpuCount >= G().minGpus,
   )

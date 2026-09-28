@@ -9,6 +9,7 @@ import {
   type GameState,
   type Project,
 } from '../state.ts'
+import { inActII } from '../state.ts'
 import { ratingRank } from './finance.ts'
 import { getProject, remainingContractUsd, tenantCard } from './projects.ts'
 
@@ -31,7 +32,7 @@ export function backstopBlocker(
   state: GameState,
   projectId: string,
 ): Message | undefined {
-  if (state.act !== 2) return { key: 'error.act2_only' }
+  if (!inActII(state)) return { key: 'error.act2_only' }
   const from = BALANCE.finance.backstopFrom
   if (CONTENT.quarters[state.quarter] < from)
     return { key: 'error.debt_early', params: { quarter: from } }
@@ -83,7 +84,7 @@ export function jvBlocker(
   projectId: string,
   share: number,
 ): Message | undefined {
-  if (state.act !== 2) return { key: 'error.act2_only' }
+  if (!inActII(state)) return { key: 'error.act2_only' }
   const jv = CONTENT.finance.jv
   if (CONTENT.quarters[state.quarter] < jv.from)
     return { key: 'error.debt_early', params: { quarter: jv.from } }

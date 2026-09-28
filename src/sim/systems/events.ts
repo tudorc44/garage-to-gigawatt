@@ -24,6 +24,7 @@ import {
   type GameState,
   type Site,
 } from '../state.ts'
+import { inActII } from '../state.ts'
 import { getStep, unmetRequirement } from './capital.ts'
 import { absWeek, aiDemandDelta } from './eventEffects.ts'
 import type { ScheduledEvent } from './eventEffects.ts'
@@ -284,7 +285,7 @@ export function scheduleEvents(state: GameState): void {
     if (!holds(state, card.requires, card)) continue
     schedule(state, card, card.weekIndex! + 1, false)
   }
-  const rules = state.act === 2 ? CONTENT.events.act2 : CONTENT.events
+  const rules = inActII(state) ? CONTENT.events.act2 : CONTENT.events
   if (state.quarter < rules.randomStart) return
   const r = substream(state.seed, `events:${state.quarter}`)
   const [w0, w1] = rules.randomWeeks

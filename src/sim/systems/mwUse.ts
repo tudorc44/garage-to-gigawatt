@@ -1,7 +1,7 @@
 // MW by use (Act II, scope 0.2 §2.2 and §2.4; wireframes A2-03, A2-06): every kW at a site is in
 // exactly one use. Mining = your machines; hosting = rented to another miner's ASICs; AI shell and
 // AI cloud come with projects (M3); building = not energized yet, or being converted; idle = the rest.
-import { BALANCE, act2Quarter } from '../../content/index.ts'
+import { BALANCE, isActIIQuarter } from '../../content/index.ts'
 import { projectGone, type GameState, type Site } from '../state.ts'
 import {
   capacityKw,
@@ -95,7 +95,7 @@ function pendingPower(site: Site, projectId: string, quarter: number): boolean {
  * dollars are returned.
  */
 export function payReservationWeek(state: GameState): number {
-  if (!act2Quarter(state.quarter)) return 0
+  if (!isActIIQuarter(state.quarter)) return 0
   const { share, hoursPerQuarter } = BALANCE.powerReservation
   const hours = hoursPerQuarter / BALANCE.weeksPerQuarter
   let usd = 0

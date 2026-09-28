@@ -10,7 +10,7 @@
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream } from '../rng.ts'
-import { logEntry, type GameState, type Project } from '../state.ts'
+import { inActII, logEntry, type GameState, type Project } from '../state.ts'
 import { absWeek } from './eventEffects.ts'
 import { previousMarketWeek } from './market.ts'
 import { neocloudUsdHr } from './projects.ts'
@@ -29,7 +29,7 @@ export function spotClusters(state: GameState): Project[] {
 export function planSpotShock(state: GameState): void {
   state.spotShock = null
   const label = CONTENT.quarters[state.quarter]
-  if (state.act !== 2 || label < S.shockFrom) return
+  if (!inActII(state) || label < S.shockFrom) return
   const r = substream(state.seed, `spot_shock:${label}`)
   if (!chance(r, CONTENT.projects.spotShockChance)) return
   state.spotShock = { week: randomInt(r, S.weeks[0], S.weeks[1]) }

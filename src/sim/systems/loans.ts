@@ -2,7 +2,7 @@
 // what your machines would sell for, one loan at a time, repaid over the era's term in
 // equal weekly slices of principal plus interest on what's still owed. In Act II its terms
 // come from the credit rating (balance.ts › finance.equipmentLoan).
-import { BALANCE, CONTENT, act2Quarter } from '../../content/index.ts'
+import { BALANCE, CONTENT, isActIIQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   logEntry,
@@ -64,7 +64,7 @@ export function ratingLoanBand(rating: string) {
  * its LTV, for 8 quarters.
  */
 export function equipmentTerms(state: GameState): LoanTerms | undefined {
-  if (!act2Quarter(state.quarter)) return eraTerms(state.quarter)
+  if (!isActIIQuarter(state.quarter)) return eraTerms(state.quarter)
   const rating = loanRating(state)
   const band = ratingLoanBand(rating)
   return {
