@@ -58,9 +58,10 @@ See `CLAUDE.md` for the full list. The main ones:
   know-how N of 3" on the Dashboard with a tooltip built from the rules, and the utilisation in use in the Deal builder;
   the Deal builder's return net of a JV partner; prologue auto-play starts at 2×; measurement decisions (below).
 
-**Numbers (end of M8):** 707 tests pass; lint and build pass; the 11 Act I goldens and both prologue goldens unchanged.
-Act II §5 (50 seeds): 6 PASS, 3 accepted MISS, 2 MISS (overleveraged, EV/MW asic-retirer band edge). Prologue §5: all PASS
-(296/300 runs reach 2026Q4; the other 4 end in the prologue). Tables: `npm run sim -- --act2` / `--prologue`, and the M8 report below.
+**Numbers (end of M8.7):** 721 tests pass; lint and build pass; the 11 Act I goldens and both prologue goldens unchanged.
+Act II §5 (50 seeds): 9 PASS, 3 accepted MISS (good path, lifeline, preset), 1 MISS (overleveraged, accepted as a known design risk).
+Prologue §5 (last run in M8, no prologue bot or content changed since): all PASS (296/300 runs reach 2026Q4; the other 4 end in the
+prologue). Tables: `npm run sim -- --act2` / `--prologue`.
 
 ## Rules and decisions in force
 
@@ -108,6 +109,12 @@ Act II §5 (50 seeds): 6 PASS, 3 accepted MISS, 2 MISS (overleveraged, EV/MW asi
 - Head starts each have their own opening (guaranteed offers, distressed fleet, parked GPUs); the head-start check is judged on a
   GPU-heavy Act I. Act II Bandwidth base 4 (+1 Chief of Staff carries). Anger, regional policies, negotiation limits, the
   air-permit lawsuit, aggressive depreciation: as in the archive (M5 answers 1–19).
+- **Design thread's answers to the M8 questions (M8.7):** head starts 3/4 distinct accepted; the hosting head start's cash reserve is bot
+  behaviour, not a rule (a player may go all-in: a legitimate risk); the overleveraged target stays an accepted MISS with the scope §5
+  note "known design risk: the most leveraged bot is also the best performer, so leverage may not bite enough; revisit after the owner
+  has played Act II, not in bots"; other lifeline-taking bots' medians moving 10–16% (busts becoming small survivors) accepted; the GPU
+  failure wave numbers confirmed (10% a quarter per qualifying project, 10,000-GPU threshold, run-short bill at the end of the next
+  quarter; a silent resolve = replace now if the cash covers it, else run short); stabilized-IG EV/MW band $18–28M.
 - **M8 answers (28 Sep 2026):** accepted MISSes (no tuning, no JV lever): good path $412M, lifeline 61/120, preset $181.9M;
   the overleveraged target counts an emergency raise; EV/MW skips "no mining left"; 15× floor stays; prologue: sale cap for prologue
   starts only, loan cap for all, automatic move back home (4 prologue busts left), offers stay until the next decision quarter,
@@ -119,7 +126,10 @@ Act II §5 (50 seeds): 6 PASS, 3 accepted MISS, 2 MISS (overleveraged, EV/MW asi
 
 ## Open questions for the design thread
 
-The M8 questions (with recommended answers) are in the M8 report below.
+- **Rating and runway:** the credit rating drops one notch when the cash runway is under 4 quarters (rating.ts), and the runway is
+  worked out from LAST quarter's flows, so it counts a bridge payment already paid but not the coming step from interest-only to
+  amortising (M8.7f). Should the runway look one quarter ahead? It is a rating-rule change, so it was not made. Recommended: yes, look
+  ahead one quarter (the display and the rule then agree with what the player sees).
 
 ## STOPPED
 
@@ -137,8 +147,9 @@ Nothing. (Balance tuning stays stopped by the owner's A1 answer.)
 
 ## Next
 
-The owner reviews `m8` (npm run dev → Start at Act II; the sims), pushes it and merges it into `main`. Then: the design thread's
-answers to the M8 questions; the Act I playtests (postponed until after Act II); Act III is not started.
+The owner reviews `m8` (npm run dev → Start at Act II; the sims), pushes it and merges it into `main` (a fast-forward), runs
+`npm run staging:build` for a playtest snapshot, plays Act II, and brings the results back. **Act III design is next, in the design
+thread.** The Act I playtests stay postponed until after Act II; Act III is not started in the repo.
 
 ## Milestone M8: finish Act II (branch `m8`, batch mode, 29 Sep 2026)
 
@@ -184,3 +195,5 @@ log text and docs only). `m8` had been deleted after the M8 merge and was recrea
   when cash < next quarter's payment; a tooltip says the payment turns amortising after the first 4 quarters (read from balance.ts).
   Runway (rating.ts) already counts the bridge as PAID LAST QUARTER (report interest + principal) but not the coming step-up, and the
   RATING rule uses runway (−1 notch under 4 quarters): not changed, reported as a question.
+- M8.7g: the design thread's answers recorded (rules above, scope §5 notes in both scope copies). `npm run sim -- --act2` final: identical to the
+  M8.7c run; its Act I part is identical to before M8; the prologue sim wasn't re-run (no prologue bot or content changed).
