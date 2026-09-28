@@ -425,6 +425,16 @@ nav Dashboard · Machines & Rooms · Coins · Log, sinks in "This quarter") · P
   markers from prologue.json `career_markers`) → Handover (a read-only preview: the real handover run on a copy; how
   Act I scores you; vs a 2017 start; Back / Start Act I). "Sold or spent" = mined − lost − kept (mine, reversible).
 
+**P6 report (28 Sep 2026).** Screens done: P0-01 title, P0-02 intro, P0-03 Plan, P0-04 auto-play, P0-05 Coins &
+custody, P0-06 pre-order cards, P0-07 chapter report, P0-08 handover. No sim or balance changes; every golden
+unchanged; 690 tests pass. Didn't fit / not done: offers expiring at quarter end (README conflict 7) would change the
+sim and the goldens, so offers still stay until the next decision quarter; the component sheet's failure pop-ups aren't
+built (no such rule in the prologue); Act II's preset stays on the title screen as a third line (not in P0-01).
+Open questions:
+1. Offers: make unanswered offers expire at quarter end (README 7)? It changes the prologue goldens and sims.
+2. Auto-play: 2 s a card at 1× means about a minute for the ~20 auto quarters. Right pace, or start at 2×?
+3. The handover's "Empty garage" for a 2017 start: Act I's real start has no machines too; fine as worded?
+
 ## Combined report: M7.0 (act2) + P5.0 (prologue), 28 Sep 2026
 
 ```
