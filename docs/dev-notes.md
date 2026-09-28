@@ -178,3 +178,5 @@ principal); `bridgeSchedule` in `src/sim/systems/lifeline.ts` already gives the 
 
 - M8.8a: the runway answer recorded and queued as M9.0 above; "Next" and "Open questions" updated; the M8 / M8.7 logs moved to the archive.
 - M8.8b: read-only audit of what Act III could carry over: `docs/act3-carryover-audit.md` (no game code, content or test changed).
+  Summary: a hidden-scenario draw, a contract calendar, a nuclear PPA Power-slot option and wildcards are cheap; the scenario-dependent
+  market, Signals panel, renewals, density retrofit, political capital and presets are medium; extending the timeline is expensive.
