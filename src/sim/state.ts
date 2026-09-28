@@ -362,6 +362,11 @@ export interface GameState {
   prologue?: PrologueState
   /** What a prologue start brought into Act I (its net worth for the growth multiple, custody). */
   prologueCarry?: PrologueCarry
+  /**
+   * Act I's liquidity brake for a prologue start (P5.0, P1): this week's coin sales so far and the
+   * coins still waiting to sell (unfilled orders carry over). Only prologue starts have it.
+   */
+  act1Liquidity?: { week: number; soldUsd: number; queue: Record<Coin, number> }
   seed: number
   /** Current position of the seeded RNG (see rng.ts). */
   rng: number

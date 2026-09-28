@@ -367,6 +367,9 @@ P5.0d merge act2 (M7.0), sims, scope 0.3 §7, the combined report.
 - P5.0b: P0_MOVE_BACK (1 BW): new bedroom + home rig (the garage / small unit given up), machines fill them biggest room
   first, the rest sold at the used price (mine: sold, not switched off); `movedBack` keeps the income off. At quarter
   end a moved-out player still short after coins moves back automatically, before machines are sold.
+- P5.0c: `liquidity.ts`: Act I's sale cap + impact apply to prologue starts only (mine: for a $10K start the impact
+  term alone would change every golden; the cap itself never binds); the loan cap for all; the quarter-end forced sale
+  isn't capped (mine). All 11 Act I goldens unchanged (the proof); the prologue → Act I golden updated.
 
 ## Prologue report (28 Sep 2026, owner's unattended run; the step log is in the archive › "The Prologue")
 

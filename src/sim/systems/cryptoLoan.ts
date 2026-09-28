@@ -14,6 +14,7 @@ import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines, saleValueUsd } from './machines.ts'
 import { coinPrice, marketWeek } from './market.ts'
+import { cryptoLoanCapUsd } from './liquidity.ts'
 
 /**
  * Whether lenders offer crypto-backed loans in a quarter: Act I's window (capital.json), and in Act
@@ -44,7 +45,13 @@ export function ltv(state: GameState, w: MarketWeek): number {
 export function maxCryptoLoanUsd(state: GameState, coin: Coin): number {
   if (!cryptoLoanOffered(state.quarter)) return 0
   const price = coinPrice(marketWeek(state.quarter, 0), coin)
-  return Math.floor(CONTENT.cryptoLoan.ltvMax * state.treasury[coin] * price)
+  // Act I's liquidity brake (P5.0, P1): at most 4 weeks of the year's sell cap, for every game.
+  return Math.floor(
+    Math.min(
+      CONTENT.cryptoLoan.ltvMax * state.treasury[coin] * price,
+      cryptoLoanCapUsd(state.quarter),
+    ),
+  )
 }
 
 /** Why this loan can't be taken now, or undefined if it can. Checks, doesn't change anything. */

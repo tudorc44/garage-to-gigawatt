@@ -369,6 +369,27 @@ export const BALANCE = {
    * Compute North / Helios pattern; mine), energized from 2022Q4. The bridge pays interest weekly and
    * its principal at the end of its term (a bullet, as bridges are; mine, reversible).
    */
+  /**
+   * Act I's liquidity brake (owner, P5.0 answer P1; designed): a weekly USD cap on coin sales by year,
+   * the prologue's price impact (realised = market × (1 − impact × sale ÷ cap)), unfilled orders carry
+   * to the next week; a crypto-backed loan's principal is capped at `loanWeeks` of that year's cap.
+   * The cap never binds for a $10K start; the sale cap and impact apply to prologue starts only (so
+   * every $10K-start golden stays exactly as it was: mine, see dev-notes), the loan cap to all.
+   */
+  act1Liquidity: {
+    designed: true,
+    sellCapUsdWeekByYear: {
+      2017: 20_000_000,
+      2018: 50_000_000,
+      2019: 50_000_000,
+      2020: 100_000_000,
+      2021: 250_000_000,
+      2022: 250_000_000,
+    } as Readonly<Record<string, number>>,
+    impact: 0.2,
+    loanWeeks: 4,
+  },
+
   lifeline: {
     floorKw: 20_000,
     siteTier: 'own_site',

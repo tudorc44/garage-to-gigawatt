@@ -2,6 +2,7 @@
 // treasury, the rest is sold at this week's price. Power and rent are paid weekly.
 import { BALANCE, type MarketWeek } from '../../content/index.ts'
 import { modifierMult } from './eventEffects.ts'
+import { brakeApplies, sellFromTreasury, sellQueued } from './liquidity.ts'
 import type { Coin, GameState } from '../state.ts'
 import { coinPrice } from './market.ts'
 import type { LotWeek } from './mining.ts'
@@ -45,11 +46,24 @@ export function settleWeek(
     revenueUsd += lot.revenueUsd
   }
   let soldUsd = 0
-  for (const coin of COINS) {
-    const held = coinsMined[coin] * state.hodlPct[coin]
-    state.treasury[coin] += held
-    soldUsd += (coinsMined[coin] - held) * coinPrice(w, coin)
-  }
+  if (brakeApplies(state)) {
+    // A prologue start (P5.0, P1): coins waiting from earlier weeks sell first, then the sell share
+    // of this week's coins, all under the weekly cap; the rest waits in the treasury.
+    soldUsd += sellQueued(state, {
+      BTC: coinPrice(w, 'BTC'),
+      ETH: coinPrice(w, 'ETH'),
+    })
+    for (const coin of COINS) {
+      state.treasury[coin] += coinsMined[coin]
+      const toSell = coinsMined[coin] * (1 - state.hodlPct[coin])
+      soldUsd += sellFromTreasury(state, coin, toSell, coinPrice(w, coin))
+    }
+  } else
+    for (const coin of COINS) {
+      const held = coinsMined[coin] * state.hodlPct[coin]
+      state.treasury[coin] += held
+      soldUsd += (coinsMined[coin] - held) * coinPrice(w, coin)
+    }
   const powerCostUsd = powerByCoin.BTC + powerByCoin.ETH
   const rentUsd = weeklyRentUsd(state)
   state.cash += soldUsd - powerCostUsd - rentUsd
@@ -69,6 +83,11 @@ export function sellTreasury(
   let usd = 0
   for (const coin of only ? [only] : COINS) {
     const coins = state.treasury[coin] * share
+    // A prologue start sells under Act I's weekly cap; the rest waits (P5.0, P1).
+    if (brakeApplies(state)) {
+      usd += sellFromTreasury(state, coin, coins, coinPrice(w, coin))
+      continue
+    }
     state.treasury[coin] -= coins
     usd += coins * coinPrice(w, coin)
   }
