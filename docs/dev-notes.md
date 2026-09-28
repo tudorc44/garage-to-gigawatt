@@ -421,6 +421,9 @@ nav Dashboard · Machines & Rooms · Coins · Log, sinks in "This quarter") · P
   dialog (cards, odds bars light → dark). New read-only views: market, pool week, coins history, lost ledger.
 - P6.4: timed auto-play: one card per auto quarter (2 s ÷ speed, timer bar), older cards fade and stack (last 3),
   Pause here (= stop here), 1×/2×/4× kept across quarters (UI state only, mine); an event shows "Paused · event".
+- P6.5: chapter report (net worth breakdown, mined / sold or spent / lost with causes / kept, log-scale career graph with
+  markers from prologue.json `career_markers`) → Handover (a read-only preview: the real handover run on a copy; how
+  Act I scores you; vs a 2017 start; Back / Start Act I). "Sold or spent" = mined − lost − kept (mine, reversible).
 
 ## Combined report: M7.0 (act2) + P5.0 (prologue), 28 Sep 2026
 

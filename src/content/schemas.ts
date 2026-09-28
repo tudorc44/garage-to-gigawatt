@@ -1511,6 +1511,7 @@ export const prologueFileSchema = z.object({
     model_map: z.record(z.string(), z.string()),
     home_tiers_to: z.string(),
   }),
+  career_markers: z.array(z.object({ id: z.string(), quarter: quarterId })),
 })
 export type PrologueRules = z.output<typeof prologueFileSchema>
 

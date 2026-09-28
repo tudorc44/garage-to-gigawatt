@@ -6,6 +6,10 @@ import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { prologueDefaultChoice } from '../../src/sim/prologue/events.ts'
 import { newPrologueGame } from '../../src/sim/prologue/setup.ts'
+import {
+  prologueChapterView,
+  prologueHandoverView,
+} from '../../src/sim/prologue/views.ts'
 import { restoreSave } from '../../src/sim/save.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 
@@ -85,7 +89,20 @@ describe('a prologue start (scope §2.3)', () => {
     }
     expect(s.quarter).toBe(-1)
     const btc = s.treasury.BTC
+    // The chapter report's numbers add up, and the handover screen previews Act I exactly.
+    const c = prologueChapterView(s)
+    const b = c.breakdown
+    expect(b.btcUsd + b.ethUsd + b.cash + b.machinesUsd).toBeCloseTo(
+      c.netWorthUsd,
+      2,
+    )
+    expect(c.career).toHaveLength(32)
+    const h = prologueHandoverView(s)
+    expect('prologue' in s).toBe(true) // the preview leaves the real state alone
     const a1 = ok(s, { type: 'CONTINUE_TO_ACT_1' })
+    expect(h.cash).toBe(a1.cash)
+    expect(h.sites.map((x) => x.tier)).toEqual(a1.sites.map((x) => x.tier))
+    expect(h.startNetWorthUsd).toBe(a1.prologueCarry!.startNetWorthUsd)
     expect(a1.act).toBe(1)
     expect(a1.quarter).toBe(0)
     expect(a1.phase).toBe('plan')

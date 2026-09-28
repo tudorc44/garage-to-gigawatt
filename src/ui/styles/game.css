@@ -1608,3 +1608,40 @@ td.wrap {
   flex-wrap: wrap;
   gap: var(--space-3);
 }
+
+/* The prologue's chapter report and handover (P0-07, P0-08). */
+.p0-kv {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: 4px 0;
+  border-bottom: var(--border-hair) dashed var(--line-soft);
+}
+.p0-career .grid {
+  stroke: var(--line-soft);
+  stroke-width: 1;
+}
+.p0-career .marker {
+  stroke: var(--ink-muted);
+  stroke-width: 1;
+  stroke-dasharray: 3 3;
+}
+.p0-handover {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  gap: var(--space-4);
+}
+.p0-item {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-hair) dashed var(--line-soft);
+}
+@media (max-width: 760px) {
+  .p0-handover,
+  .p0-two {
+    grid-template-columns: 1fr;
+  }
+}

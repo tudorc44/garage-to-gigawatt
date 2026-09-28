@@ -91,5 +91,13 @@
  ],
  "offer_note": "An offer opens in its quarter (from its date) and stays in the tray until the end of the next decision quarter at or after it (a Prologue choice: most offer quarters auto-play).",
  "not_for_sale": ["pc_cpu", "asic_preorder_early", "asic_preorder_group"],
- "handover": {"model_map": {"antminer_s9_early": "s9"}, "home_tiers_to": "garage"}
+ "handover": {"model_map": {"antminer_s9_early": "s9"}, "home_tiers_to": "garage"},
+ "career_markers_note": "The chapter report's career graph (wireframe P0-07): labelled quarters, display only.",
+ "career_markers": [
+  {"id": "bubble_2011", "quarter": "2011Q2"},
+  {"id": "halving", "quarter": "2012Q4"},
+  {"id": "bubble_2013", "quarter": "2013Q4"},
+  {"id": "gox", "quarter": "2014Q1"},
+  {"id": "halving", "quarter": "2016Q3"}
+ ]
 }

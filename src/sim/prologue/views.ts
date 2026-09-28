@@ -1,10 +1,12 @@
 // Read-only views of the prologue for the screens (Alpha 0.3 §2.13). The UI shows these and
 // dispatches actions; it works out no rules of its own.
-import { BALANCE, CONTENT } from '../../content/index.ts'
+import { BALANCE, CONTENT, actLastQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import type { Coin, GameState } from '../state.ts'
 import { buyPrice, getModel, marketWeek } from '../systems/market.ts'
 import { saleValueUsd } from '../systems/machines.ts'
+import { capacityKw, powerPriceUsdKwh, usedKw } from '../systems/sites.ts'
+import { handOverToAct1 } from './handover.ts'
 import { movable, openOffers, sellable } from './custody.ts'
 import { prologueNetWorth, walletCoins } from './engine.ts'
 import {
@@ -110,7 +112,8 @@ export function poolWeekBtc(state: GameState): {
   const w = nowWeek(state)
   const perBlock = w.btc_block_subsidy / Math.max(0.01, 1 - w.btc_fee_share)
   return {
-    btc: soloOdds(state).blocksPerWeek * perBlock * (1 - poolFee(state.quarter)),
+    btc:
+      soloOdds(state).blocksPerWeek * perBlock * (1 - poolFee(state.quarter)),
     perBlock,
   }
 }
@@ -213,7 +216,9 @@ export function prologueLifeView(state: GameState) {
     homeRig: {
       built: state.sites.some((s) => s.tier === 'home_rig'),
       costUsd: householdTier('home_rig')!.capex_usd,
-      blocker: p.livingAtHome ? null : ({ key: 'error.p0_moved_out' } as Message),
+      blocker: p.livingAtHome
+        ? null
+        : ({ key: 'error.p0_moved_out' } as Message),
     },
     moveOut: {
       depositUsd: depositUsd(state.quarter),
@@ -228,8 +233,10 @@ export function prologueLifeView(state: GameState) {
     movedBack: p.movedBack === true,
     smallUnit: {
       built: state.sites.some((s) => s.tier === 'small_unit'),
-      capexUsd: typeof smallUnit.capex_usd === 'number' ? smallUnit.capex_usd : 0,
-      rentUsdQ: typeof smallUnit.rent_usd_q === 'number' ? smallUnit.rent_usd_q : 0,
+      capexUsd:
+        typeof smallUnit.capex_usd === 'number' ? smallUnit.capex_usd : 0,
+      rentUsdQ:
+        typeof smallUnit.rent_usd_q === 'number' ? smallUnit.rent_usd_q : 0,
       blocker: smallUnitBlocker(state) ?? null,
     },
     conference: conference
@@ -334,7 +341,8 @@ export function prologueChapterView(state: GameState) {
   let peak2021 = 0
   for (let q = 0; CONTENT.quarters[q] !== undefined; q++)
     if (CONTENT.quarters[q].startsWith('2021'))
-      for (const w of CONTENT.market[q]) peak2021 = Math.max(peak2021, w.btc_usd)
+      for (const w of CONTENT.market[q])
+        peak2021 = Math.max(peak2021, w.btc_usd)
   const sold = reports.reduce((n, r) => n + r.soldUsd, 0)
   const lostGox = p.lost.exchange.BTC
   const lostWallet = p.lost.wallet.BTC
@@ -348,9 +356,42 @@ export function prologueChapterView(state: GameState) {
           : p.backup
             ? 'careful_hodler'
             : 'default'
+  // The chapter report's breakdown (wireframe P0-07), at the prologue's last week like the net worth.
+  const end = marketWeek(actLastQuarter(0), BALANCE.weeksPerQuarter - 1)
+  const machinesUsd = state.machines.reduce(
+    (usd, l) => usd + saleValueUsd(l, l.count, state.quarter),
+    0,
+  )
+  const ledger = prologueLostLedger(state)
+  const inRange = new Set(reports.map((r) => r.quarter))
   return {
     title,
     netWorthUsd: prologueNetWorth(state),
+    breakdown: {
+      btcPrice: end.btc_usd,
+      btcUsd: state.treasury.BTC * end.btc_usd,
+      ethUsd: state.treasury.ETH * end.eth_usd,
+      cash: state.cash,
+      machinesUsd,
+      units: state.machines.reduce((n, l) => n + l.count, 0),
+    },
+    /** BTC mined, lost (each loss with its cause), kept; sold or spent is what's left of mined. */
+    coinsFlow: {
+      mined: p.mined.BTC,
+      lost: ledger.totalBtc,
+      losses: ledger.rows.filter((r) => r.coin === 'BTC'),
+      kept: state.treasury.BTC,
+      soldOrSpent: Math.max(
+        0,
+        p.mined.BTC - ledger.totalBtc - state.treasury.BTC,
+      ),
+    },
+    /** Net worth at each quarter's end, for the log-scale career graph. */
+    career: reports.map((r) => ({
+      quarter: r.quarter,
+      netWorthUsd: r.netWorthUsd,
+    })),
+    markers: P().career_markers.filter((m) => inRange.has(m.quarter)),
     cash: state.cash,
     treasury: { ...state.treasury },
     mined: { ...p.mined },
@@ -361,8 +402,42 @@ export function prologueChapterView(state: GameState) {
     peak2021Usd: peak2021,
     worth2021Usd: mined2010 * peak2021,
     vanity: [...p.vanity],
-    preorders: p.preorders.map((o) => ({ vendor: o.vendor, outcome: o.outcome })),
+    preorders: p.preorders.map((o) => ({
+      vendor: o.vendor,
+      outcome: o.outcome,
+    })),
     machines: state.machines.map((l) => ({ model: l.model, count: l.count })),
+  }
+}
+
+/**
+ * The handover (wireframe P0-08): what Act I starts with, previewed by running the handover on a
+ * copy of the state (the real one runs on CONTINUE_TO_ACT_1), and a 2017 start to compare with.
+ */
+export function prologueHandoverView(state: GameState) {
+  const s = structuredClone(state)
+  handOverToAct1(s)
+  const carry = s.prologueCarry!
+  return {
+    sites: s.sites.map((site) => ({
+      tier: site.tier,
+      capacityKw: capacityKw(site),
+      usedKw: usedKw(s, site.id),
+      powerUsdKwh: powerPriceUsdKwh(site, s.quarter),
+    })),
+    machines: s.machines.map((l) => ({ model: l.model, count: l.count })),
+    machinesUsd: s.machines.reduce(
+      (usd, l) => usd + saleValueUsd(l, l.count, s.quarter),
+      0,
+    ),
+    cash: s.cash,
+    treasury: { ...s.treasury },
+    onExchange: { ...carry.onExchange },
+    coinsUsd:
+      s.treasury.BTC * marketWeek(0, 0).btc_usd +
+      s.treasury.ETH * marketWeek(0, 0).eth_usd,
+    startNetWorthUsd: carry.startNetWorthUsd,
+    fresh: { cash: BALANCE.startCash, tier: P().handover.home_tiers_to },
   }
 }
 
@@ -401,7 +476,9 @@ export function prologueLostLedger(state: GameState) {
     })
   return {
     rows,
-    totalBtc: rows.filter((r) => r.coin === 'BTC').reduce((n, r) => n + r.amount, 0),
+    totalBtc: rows
+      .filter((r) => r.coin === 'BTC')
+      .reduce((n, r) => n + r.amount, 0),
   }
 }
 
