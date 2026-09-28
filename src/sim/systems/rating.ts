@@ -13,6 +13,7 @@ import { eventRatingNotches } from './eventEffects.ts'
 import { isInvestmentGrade } from './finance.ts'
 import { debtUsd } from './loans.ts'
 import { remainingContractUsd, tenantCard } from './projects.ts'
+import { runway } from './runway.ts'
 
 /** Share of the remaining contracted backlog above which it counts as strong / at least mixed (mine). */
 const STRONG_SHARE = 2 / 3
@@ -72,9 +73,9 @@ export function ratingInputs(state: GameState, report: QuarterReport) {
   const yearlyEbitda = report.ebitdaUsd * 4
   const band = leverageBand(debt, yearlyEbitda)
   const { quality, strongShare } = backlogQuality(state)
-  // Runway: quarters the cash lasts at this quarter's burn (EBITDA less debt service), if burning.
-  const flow = report.ebitdaUsd - report.interestUsd - report.principalUsd
-  const runwayQuarters = flow < 0 ? state.cash / -flow : null
+  // Runway (M9.0): quarters the cash lasts at last quarter's EBITDA less the debt payments already fixed
+  // for the coming quarter (runway.ts), if burning. The rule below is unchanged: under r.runwayQuarters, one notch.
+  const runwayQuarters = runway(state, report).quarters
   const shortRunway =
     runwayQuarters !== null && runwayQuarters < r.runwayQuarters
   const base = r.matrix[band][quality]

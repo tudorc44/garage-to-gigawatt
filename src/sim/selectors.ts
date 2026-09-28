@@ -74,6 +74,7 @@ import { readMarketBlocker } from './systems/readMarket.ts'
 import { rushRepairUsd } from './systems/failureWave.ts'
 import { waveCostUsd } from './systems/gpuWave.ts'
 import { bridgeSchedule } from './systems/lifeline.ts'
+import { runway } from './systems/runway.ts'
 import {
   backlogUsd,
   gpuWaitQuarters,
@@ -1527,6 +1528,24 @@ export function bridgePaymentView(state: GameState) {
     coversNext: s.next === null || state.cash >= s.next.totalUsd,
     /** Next quarter's payment is bigger than this one's (interest-only turning to amortising). */
     stepsUp: s.next !== null && s.next.totalUsd > s.now.totalUsd,
+  }
+}
+
+/**
+ * The cash runway for the Dashboard, the Plan screen and the Capital screen (M9.0): quarters of cash at
+ * last quarter's EBITDA less the debt payments already fixed for the coming quarter, with the items
+ * for the tooltip. The rating's "short runway" rule reads the same number. null before the first
+ * Act II report.
+ */
+export function runwayView(state: GameState) {
+  const report = state.reports.at(-1)
+  if (!inActII(state) || !report) return null
+  const r = runway(state, report)
+  const shortBelow = CONTENT.finance.rating.runwayQuarters
+  return {
+    ...r,
+    shortBelow,
+    short: r.quarters !== null && r.quarters < shortBelow,
   }
 }
 

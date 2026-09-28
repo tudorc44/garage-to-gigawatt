@@ -46,6 +46,7 @@ import { ActionRow, Icon, Sparkline, Tip } from '../components/basics.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
+import { Runway } from '../components/runway.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -257,6 +258,7 @@ function MwPanel({ state }: { state: GameState }) {
       </div>
       <MwBar use={use} />
       <KnowHow state={state} />
+      <Runway state={state} />
       <div class="row-between">
         <span class="num-s muted">
           {use.idle > 0 && t('ui.mw.idle_hint', { value: fmt.power(use.idle) })}
@@ -963,6 +965,7 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.capital')}</div>
       <BridgePayment state={state} />
+      <Runway state={state} />
       <RaiseRow state={state} act={act} open={open} round="friends_family" />
       <EquipmentLoanRow state={state} act={act} open={open} />
       <ConstructionLoanRow state={state} act={act} />

@@ -13,6 +13,7 @@ import {
 } from '../../sim/selectors.ts'
 import { Tip } from '../components/basics.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
+import { runwayTip } from '../components/runway.tsx'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { LoanDialog } from './dialogs.tsx'
@@ -87,7 +88,7 @@ function RatingCard({ state }: { state: ScreenProps['state'] }) {
               </span>
             </span>
           </div>
-          <div class="cap-input">
+          <div class="cap-input" title={runwayTip(state)}>
             <span>{t('ui.cap2.runway')}</span>
             <span class="r">
               <strong>
