@@ -5,9 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
-Last updated: 29 Sep 2026. **Milestone M8 (finish Act II) is done on branch `m8`** (made from `main`'s line: `main` +
-the prologue dev-notes refresh + two Act II commits that were only on `act2`). Act I, Act II and the Prologue are all
-built. **Next: the owner reviews `m8`, pushes it and merges it into `main`** (`act2` is stale and can be dropped).
+Last updated: 29 Sep 2026. Act I, Act II and the Prologue are all built and are in `main` (`a37ef1e`, through M8.7). The owner is
+playing Act II on a staging snapshot, so **no game behaviour changes until the owner brings the playtest notes.** M8.8 (this branch,
+`m9`) is docs only: the runway answer is queued as M9.0, and `docs/act3-carryover-audit.md` says what Act III could reuse.
 
 ## How the owner works
 
@@ -126,10 +126,7 @@ prologue). Tables: `npm run sim -- --act2` / `--prologue`.
 
 ## Open questions for the design thread
 
-- **Rating and runway:** the credit rating drops one notch when the cash runway is under 4 quarters (rating.ts), and the runway is
-  worked out from LAST quarter's flows, so it counts a bridge payment already paid but not the coming step from interest-only to
-  amortising (M8.7f). Should the runway look one quarter ahead? It is a rating-rule change, so it was not made. Recommended: yes, look
-  ahead one quarter (the display and the rule then agree with what the player sees).
+None open. (The runway question was answered: yes, look ahead, queued as M9.0 below and not started.)
 
 ## STOPPED
 
@@ -147,53 +144,37 @@ Nothing. (Balance tuning stays stopped by the owner's A1 answer.)
 
 ## Next
 
-The owner reviews `m8` (npm run dev → Start at Act II; the sims), pushes it and merges it into `main` (a fast-forward), runs
-`npm run staging:build` for a playtest snapshot, plays Act II, and brings the results back. **Act III design is next, in the design
-thread.** The Act I playtests stay postponed until after Act II; Act III is not started in the repo.
+The owner plays Act II on the staging snapshot (built from `main` at `a37ef1e`) and brings back playtest notes. **M9.0 (the runway
+look-ahead, below) and any playtest fixes are bundled into one milestone after that**, started only when the owner asks. Act III
+design is in progress in the design thread (doc 27, draft v0.1, kept in the design project; the owner will add it to
+`docs/game-project-files/` when it is frozen). **Act III is NOT started in the code.** The Act I playtests stay postponed.
 
-## Milestone M8: finish Act II (branch `m8`, batch mode, 29 Sep 2026)
+## Milestones M8 and M8.7 (finished; the step logs are in the archive › "Milestones M8 and M8.7")
 
-Split: M8.0 setup · M8.1 measurement decisions + the sell-as-mined bust · M8.2 the hosting head start · M8.3 quarter report
-additions · M8.4 GPU failure wave · M8.5 GPU know-how display · M8.6 auto-play default, sims, scope docs, report.
-- M8.0: the prompt said `main` = `prologue` (6131d17): it wasn't (`main` 96fd44a; 6131d17 only on the local `prologue`; `act2` had two
-  commits `main` lacked). So `m8` = local `prologue` + those two cherry-picked (mine, reversible). CLAUDE.md updated.
-- M8.1: accepted MISSes; overleveraged counts `log.rescue_equity` (still 0/50); EV/MW "n/a"; 15× sentence. Sell-as-mined bust = A5's
-  amortising bridge vs a bot written for a bullet (all 6 were lifeline takers), NOT an AI build; bot fix raises equity for the next
-  quarter's bridge service: busts 6 → 0. Other lifeline-taking bots also bust less (shell-climb 7 → 0, shell-capital 8 → 1); their
-  medians moved 10–16% only because those runs now finish as small survivors. Bots that never take the lifeline are unchanged.
-- M8.2: hosting head start $37.6M → $461.8M by a bot fix only (re-let MW after a winter client default; end free-to-end hosting from
-  2023Q3 so shells get room). No data or rule change. The conversion still spends all cash (4/20 runs bust in 2022Q4–2023Q1).
-- M8.3: the report panel reads the previous report for "before" (no extra snapshot field); the rating's reason is stored in the report.
-- M8.4 / M8.5: see "Where the build stands" and the rules above. M8.6: auto-play 2×; scope 0.2 §8 item 13 and scope 0.3 §7 updated.
+M8 finished Act II (the report additions, the GPU failure wave, the know-how display, measurement decisions, the hosting head start,
+the sell-as-mined bust). M8.7 did the follow-ups (EV/MW band $18–28M, the hosting bot's cost reserve, slot log lines, one report panel,
+the bridge payment on the Plan and Capital screens). Both are in `main`.
 
-The full M8 report (built, commits, how to see it, §5 tables, questions) is the last message of the M8 run; the design thread has it.
+## Queued: M9.0 runway look-ahead (DO NOT START until the owner asks)
 
-## Milestone M8.7: the small follow-ups from the M8 report (branch `m8`, from `main` at bf316f6, batch mode)
+The design thread's answer to the runway question is **yes, the runway looks one quarter ahead, but only at contractual amounts**, made
+AFTER the owner's playtest notes so the owner's numbers stay stable while playing. Spec:
+1. **Runway** = cash ÷ the average quarterly burn, where the burn is last quarter's operating burn plus next quarter's contractually
+   scheduled obligations that are already fixed: the lifeline bridge payment (including its step from interest-only to amortising),
+   project-debt amortisation (including the principal added by capitalised interest during construction), the equipment-loan
+   schedule, and any scheduled DDTL payments. **No revenue forecast**, and **no** events that may or may not happen (take-or-pay
+   damages, delays, distress).
+2. **The rating rule stays as it is:** a runway under 4 quarters lowers the rating one notch (`rating.ts`). Only the runway figure changes.
+3. **One figure on the Dashboard, the Plan screen and the Capital screen**, with a tooltip listing which scheduled items are included
+   this quarter (read-only, text through `t()`).
+4. **Acceptance:** run `npm run sim -- --act2` before and after and print both §5 tables; the 11 Act I goldens and both prologue goldens
+   stay unchanged; the Act I sim output is identical; expect some lifeline and leveraged bots to drop a notch one quarter earlier and
+   report by how much; a §5 result that moves from PASS to MISS is a question for the design thread, not a reason to change the rule.
+Where the code stands today: `ratingInputs` in `src/sim/systems/rating.ts` takes last quarter's report flow (EBITDA − interest −
+principal); `bridgeSchedule` in `src/sim/systems/lifeline.ts` already gives the bridge's next-quarter payment; `serviceDueUsd` in
+`facilities.ts` and the equipment-loan weekly payment (`loans.ts`) give the others.
 
-Split: M8.7a the act2 check · M8.7b the EV/MW band · M8.7c the hosting bot's reserve · M8.7d slot log lines · M8.7e one report
-panel · M8.7f the bridge payment on the Plan screen · M8.7g docs, sims, report. No game rule changes (bots, tools, read-only UI,
-log text and docs only). `m8` had been deleted after the M8 merge and was recreated from `main`.
-- M8.7a: `git cherry m8 ef6c43e` (act2's old tip; the branch itself was already deleted by the owner): both commits `-` (already in
-  `m8`), so nothing is left on act2 and there is no question to ask.
-- M8.7b: the stabilized-IG EV/MW band is $18–28M (was $27M): tools/sim-runner.ts, tools/valuation-breakdown.ts comment, both scope
-  0.2 copies (with the reason: asic-retirer's $27.1M is a 0.4% measurement edge). Announced-AI ($3–15M) and mining ($0.4–1.2M) unchanged.
-- M8.7c: the hosting bot keeps a reserve of one quarter of costs (`quarterCostsUsd` in tools/bots.ts: salaries, power reservation and loan
-  service from the sim's own weekly functions on a copy of the state, ×13, plus rent). The Merge's conversion spends all cash (a game rule,
-  unchanged), so the bot rebuilds the reserve in its first Plan phases with an equity raise, "at least the reserve" because a raise is ≥ 8%
-  (mine, reversible). 20 runs: busts 4 → 2 (1 inside 2022Q4–2023Q1), median $474.5M; full sim: matching bot $469M (others' median $375.3M,
-  within 30%), 3/4 distinct best openings, no other bot changed. A human can choose the same reserve or go all-in (a legitimate risk: rule stays).
-- M8.7d: log lines when the Power slot is filled (`log.project_power_existing/grid/gas`, written as the project opens) and the Capital slot
-  (`log.project_capital_cash/project_debt/ddtl/jv/backstop`, written in the reducer via `logProjectCapital` with the amount from `debtPlan`);
-  equity is the company's raise, so `log.equity_raised` joins the milestones (no project name) (mine, reversible). Read-only; text via t().
-  `tests/sim/slotLog.test.ts` covers the three power and all capital types.
-- M8.7e: only one `Act2Panel` ever existed (M8.3 edited 7eda74e's panel in place), one block each. One real duplicate: a signed tenant showed under
-  both "milestones" and "tenants signed or lost"; it is now under tenants only. A test checks each block once and no line in two blocks.
-- M8.7f: a lifeline taker did NOT see the bridge payment coming (the Capital screen had a generic note, the Plan screen nothing). Added
-  `bridgeSchedule` (`systems/lifeline.ts`, pure, a test plays `payBridgeWeek` and matches it every quarter) → `bridgePaymentView`
-  → `BridgePayment` (`ui/components/bridge.tsx`) on the Plan screen's Capital group and in the Capital screen's debt stack: this
-  quarter's and next quarter's payment, interest only vs amortising, quarters left, "the payment steps up", "raise cash a quarter early"
-  when cash < next quarter's payment; a tooltip says the payment turns amortising after the first 4 quarters (read from balance.ts).
-  Runway (rating.ts) already counts the bridge as PAID LAST QUARTER (report interest + principal) but not the coming step-up, and the
-  RATING rule uses runway (−1 notch under 4 quarters): not changed, reported as a question.
-- M8.7g: the design thread's answers recorded (rules above, scope §5 notes in both scope copies). `npm run sim -- --act2` final: identical to the
-  M8.7c run; its Act I part is identical to before M8; the prologue sim wasn't re-run (no prologue bot or content changed).
+## Milestone M8.8 (branch `m9`, from `main` at a37ef1e; docs only)
+
+- M8.8a: the runway answer recorded and queued as M9.0 above; "Next" and "Open questions" updated; the M8 / M8.7 logs moved to the archive.
+- M8.8b: read-only audit of what Act III could carry over: `docs/act3-carryover-audit.md` (no game code, content or test changed).
