@@ -95,7 +95,10 @@ export function moveOut(s: GameState): Message | undefined {
   return undefined
 }
 
-/** The household's card (patience at 0): move out now, or cut the load to the threshold this quarter. */
+/**
+ * The household's card (patience at 0, shown in week 1): move out now, or cut the load to the
+ * threshold for the rest of this quarter.
+ */
 export function answerHousehold(
   s: GameState,
   choice: 'move_out' | 'cut_load',
@@ -108,7 +111,9 @@ export function answerHousehold(
     if (s.cash < deposit)
       return fail('error.no_cash', { costUsd: deposit, cashUsd: s.cash })
     s.bandwidth += P().bandwidth_costs.build
-    return moveOut(s)
+    const refused = moveOut(s)
+    if (refused) s.bandwidth -= P().bandwidth_costs.build
+    return refused
   }
   p.householdCard = false
   p.cutLoadUntil = s.quarter

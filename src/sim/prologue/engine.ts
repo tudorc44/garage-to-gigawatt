@@ -10,7 +10,7 @@ import {
   actLastQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
-import { binomial, substream } from '../rng.ts'
+import { binomial } from '../rng.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines } from '../systems/machines.ts'
 import { getModel, marketWeek } from '../systems/market.ts'
@@ -31,6 +31,7 @@ import {
   poolFee,
   prologueBandwidth,
   rentUsdQ,
+  rollStream,
   sellCapUsdWeek,
   siteLoadKw,
   sitePowerUsdKwh,
@@ -130,7 +131,7 @@ export function prologueWeek(s: GameState): void {
   let blocks = 0
   if (p.pool) btcCoins = lambda * perBlock * (1 - poolFee(s.quarter))
   else if (myTh > 0) {
-    const r = substream(s.seed, `solo:${s.quarter}:${s.week}`)
+    const r = rollStream(s.seed, `solo:${s.quarter}:${s.week}`)
     blocks = poisson(r, lambda)
     btcCoins = blocks * perBlock
   }
@@ -220,12 +221,9 @@ export function prologueEndQuarter(s: GameState): void {
         0,
         p.patience - P().household.drain_per_quarter.value,
       )
-    // At 0 the household steps in: its card waits in next quarter's Plan phase (move out now, or
-    // cut the load to the threshold for that quarter: the default).
-    if (p.patience <= 0 && s.quarter < actLastQuarter(0)) {
-      p.householdCard = true
-      p.stopNext = true
-    }
+    // At 0 the household steps in: its card comes in week 1 of next quarter (move out now, or cut
+    // the load to the threshold for that quarter: the default).
+    if (p.patience <= 0 && s.quarter < actLastQuarter(0)) p.householdCard = true
   }
   if (s.cash < 0) forcedSale(s, w)
   // A sell order can't outgrow the coins that are (or are heading) on the exchange.

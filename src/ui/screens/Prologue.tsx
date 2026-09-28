@@ -100,18 +100,6 @@ function PlanP0({ state, act }: PrologueProps) {
     <Page>
       <Header state={state} />
       <h1 class="screen-title">{fmt.quarter(v.quarter)}</h1>
-      {state.prologue!.householdCard && (
-        <Card
-          id="household"
-          choices={['move_out', 'cut_load']}
-          onChoose={(choice) =>
-            act({
-              type: 'P0_HOUSEHOLD',
-              choice: choice as 'move_out' | 'cut_load',
-            })
-          }
-        />
-      )}
       <News state={state} />
       <p class="num-s">{say(v.solo.words)}</p>
       <div>

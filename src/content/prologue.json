@@ -68,6 +68,7 @@
   "impact": 0.2
  },
  "preorders": {
+  "ships_quarter": {"value": "2013Q3", "designed": true, "note": "P4 tuning (designed value): an on-time unit, whenever it was ordered, arrives in 2013Q3 and mines from 2013Q4 (the pack's balance anchor: on time = 7 Oct 2013, ≈3.3× its cost sold weekly). Late and very late count their quarters from it. Before: on time = promised_quarters after the order, which gave 7.9× (2013Q1 order) to 34× (2012Q4 order) on time and a 3.1–16× average, against the scope's 1.2–1.8×."},
   "vendors": [
    {"id": "preorder_summit_silicon", "window": ["2012Q4", "2013Q1"], "model": "asic_preorder_early", "price_usd": 1300, "unit_share": 1, "promised_quarters": 1,
     "odds": {"on_time": 0.45, "moderate": 0.35, "severe": 0.15, "never": 0.05}, "moderate_quarters": [2, 3], "severe_quarters": [4, 6], "refund_share": 0.5},

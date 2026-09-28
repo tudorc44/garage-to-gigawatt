@@ -1472,6 +1472,7 @@ export const prologueFileSchema = z.object({
     impact: z.number().min(0).max(1),
   }),
   preorders: z.object({
+    ships_quarter: z.object({ value: quarterId, designed: z.literal(true) }),
     vendors: z.array(
       z.object({
         id: z.string(),
@@ -1535,6 +1536,7 @@ const prologueEffects = z
     wallet_loss: z.number().min(0).max(1),
     conference: z.literal(true),
     gox_collapse: z.object({ withdraw: z.boolean() }),
+    household: z.enum(['move_out', 'cut_load']),
   })
   .partial()
   .strict()

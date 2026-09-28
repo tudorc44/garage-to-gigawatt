@@ -17,7 +17,6 @@ import {
   setPool,
 } from './custody.ts'
 import {
-  answerHousehold,
   attendConference,
   backUpWallet,
   buildHomeRig,
@@ -40,7 +39,6 @@ export type PrologueAction =
     }
   | { type: 'P0_BUILD_HOME_RIG' }
   | { type: 'P0_MOVE_OUT' }
-  | { type: 'P0_HOUSEHOLD'; choice: 'move_out' | 'cut_load' }
   | { type: 'P0_BUILD_SMALL_UNIT' }
   | { type: 'P0_SET_POOL'; pool: boolean }
   | {
@@ -87,8 +85,6 @@ export function runPrologue(
   switch (a.type) {
     case 'END_PLAN':
       if (s.phase !== 'plan') return fail('error.wrong_phase')
-      // The household's card unanswered: its default (cut the load this quarter).
-      if (s.prologue!.householdCard) answerHousehold(s, 'cut_load')
       beginPrologueLive(s)
       return undefined
     case 'RESOLVE_INTERRUPT':
@@ -154,8 +150,6 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       return buildHomeRig(s)
     case 'P0_MOVE_OUT':
       return moveOut(s)
-    case 'P0_HOUSEHOLD':
-      return answerHousehold(s, a.choice)
     case 'P0_BUILD_SMALL_UNIT':
       return buildSmallUnit(s)
     case 'P0_BACKUP':

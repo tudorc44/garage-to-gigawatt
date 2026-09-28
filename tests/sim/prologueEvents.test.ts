@@ -3,6 +3,7 @@
 // wallet-loss roll and its card.
 import { describe, expect, it } from 'vitest'
 import { CONTENT, quarterIndex } from '../../src/content/index.ts'
+import { hasText } from '../../src/i18n/t.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import {
@@ -36,7 +37,11 @@ function untilCard(s: GameState): GameState {
 
 describe('cards (scope §2.10)', () => {
   it('the 24 cards are all there, with text', () => {
-    expect(CONTENT.prologue.events.cards).toHaveLength(24)
+    // The pack's 24, plus the household's forced card (scope §2.3).
+    const ids = CONTENT.prologue.events.cards.map((c) => c.id)
+    expect(ids.filter((id) => id !== 'household')).toHaveLength(24)
+    for (const id of ids)
+      expect(hasText(`p0.event.${id}.title`), id).toBe(true)
   })
 
   it('a scripted card pauses in its week; answering it plays on', () => {

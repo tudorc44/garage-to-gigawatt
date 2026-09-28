@@ -4,13 +4,13 @@
 // at the end of the very-late range: Prologue choice). A conference contact moves 10 points into
 // on time, taken from very late first, then never. The unit arrives at the start of its quarter and,
 // like any machine, earns from the next one; with no site room it waits in its box.
-import { CONTENT } from '../../content/index.ts'
+import { CONTENT, quarterIndex } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { randomInt, substream, uniform } from '../rng.ts'
+import { randomInt, uniform } from '../rng.ts'
 import { logEntry, roundCents, type GameState } from '../state.ts'
 import { addMachines } from '../systems/machines.ts'
 import { getModel } from '../systems/market.ts'
-import { P, siteCapacityKw, siteLoadKw } from './setup.ts'
+import { P, rollStream, siteCapacityKw, siteLoadKw } from './setup.ts'
 import type { Preorder } from './types.ts'
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
@@ -66,9 +66,9 @@ export function placePreorder(
   if (blocked) return blocked
   const v = vendor(vendorId)!
   const id = `po-${s.nextId++}`
-  const r = substream(s.seed, `preorder:${id}`)
+  const r = rollStream(s.seed, `preorder:${id}`)
   const odds = preorderOdds(s, vendorId)
-  const due = s.quarter + v.promised_quarters
+  const due = shipsQuarter()
   let roll = uniform(r, 0, 1)
   let order: Pick<Preorder, 'outcome' | 'deliverQuarter'>
   if ((roll -= odds.on_time) < 0)
@@ -98,10 +98,13 @@ export function placePreorder(
   return undefined
 }
 
+/** The quarter an on-time unit arrives, whenever it was ordered (a designed value, P4). */
+export const shipsQuarter = () =>
+  quarterIndex(P().preorders.ships_quarter.value)!
+
 /** When a vendor that never delivers folds (and refunds a share). */
 export function refundQuarter(o: Preorder): number {
-  const v = vendor(o.vendor)!
-  return o.orderedQuarter + v.promised_quarters + v.severe_quarters[1]
+  return shipsQuarter() + vendor(o.vendor)!.severe_quarters[1]
 }
 
 /** At the start of a quarter: units due arrive (into a site with room), folded vendors refund. */
@@ -136,7 +139,7 @@ export function deliverPreorders(s: GameState): void {
     o.delivered = true
     logEntry(s, 'log.p0_preorder_arrived', {
       vendor: v.id,
-      late: o.deliverQuarter - (o.orderedQuarter + v.promised_quarters),
+      late: o.deliverQuarter - shipsQuarter(),
     })
   }
 }

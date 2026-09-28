@@ -52,7 +52,7 @@ describe('whole prologue runs', () => {
     const p = state.prologue!
     expect(p.livingAtHome).toBe(false)
     expect(p.preorders).toHaveLength(1)
-    expect(state.machines.length).toBeGreaterThan(1)
+    expect(state.machines.some((l) => l.model !== 'pc_cpu')).toBe(true)
   })
 
   it('prologue starts play on to 2026Q4 through Act I and Act II', () => {

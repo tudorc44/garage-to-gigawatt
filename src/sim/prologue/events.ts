@@ -17,14 +17,14 @@ import {
   type PrologueCard,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { randomInt, substream, uniform } from '../rng.ts'
+import { randomInt, uniform } from '../rng.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { getModel } from '../systems/market.ts'
 import { orderSale, withdrawAll } from './custody.ts'
 import { prologueEndQuarter } from './engine.ts'
-import { attendConference, conferenceNow } from './life.ts'
+import { answerHousehold, attendConference, conferenceNow } from './life.ts'
 import { placePreorder } from './preorders.ts'
-import { P, householdTier, isDecisionQuarter } from './setup.ts'
+import { P, householdTier, isDecisionQuarter, rollStream } from './setup.ts'
 
 const W = () => BALANCE.weeksPerQuarter
 const COINS: Coin[] = ['BTC', 'ETH']
@@ -81,18 +81,20 @@ export function schedulePrologueEvents(s: GameState): void {
   const p = s.prologue!
   const rules = deck()
   p.cardQueue = []
+  // The household's card (patience ran out last quarter) comes first.
+  if (p.householdCard) p.cardQueue.push({ id: 'household', week: 1 })
   for (const c of rules.cards)
     if (c.type === 'scripted' && c.quarterIndex === s.quarter)
       p.cardQueue.push({ id: c.id, week: c.weekIndex! + 1 })
   if (label(s.quarter) < rules.random_start) return
-  const r = substream(s.seed, `p0events:${s.quarter}`)
+  const r = rollStream(s.seed, `p0events:${s.quarter}`)
   const [w0, w1] = rules.random_week_range
   // The wallet-loss roll: a dead hard drive takes the quarter's random slot.
   const wl = P().wallet_loss
   if (COINS.some((c) => walletCoins(s, c) > 0)) {
     const chance =
       wl.chance_per_quarter.value * (p.backup ? wl.backup_mult : 1)
-    if (uniform(substream(s.seed, `wallet_loss:${s.quarter}`), 0, 1) < chance) {
+    if (uniform(rollStream(s.seed, `wallet_loss:${s.quarter}`), 0, 1) < chance) {
       p.cardQueue.push({ id: 'dead_hard_drive', week: randomInt(r, w0, w1) })
       return
     }
@@ -133,7 +135,7 @@ export function prologueExchangeWeek(s: GameState, w: MarketWeek): void {
     logEntry(s, 'log.p0_gox_hack', {}, s.week + 1)
   }
   if (w.week === ex.bitfinex.week_of && COINS.some((c) => p.onExchange[c] > 0)) {
-    if (uniform(substream(s.seed, 'bitfinex'), 0, 1) < ex.bitfinex.chance.value)
+    if (uniform(rollStream(s.seed, 'bitfinex'), 0, 1) < ex.bitfinex.chance.value)
       loseOnExchange(s, ex.bitfinex.loss_share, 'log.p0_bitfinex')
   }
 }
@@ -222,7 +224,7 @@ export function prologueDefaultChoice(s: GameState): string {
 function applyChoice(s: GameState, card: PrologueCard, choiceId: string): void {
   const p = s.prologue!
   const fx = card.choices.find((c) => c.id === choiceId)!.effects
-  const r = substream(s.seed, `p0card:${s.quarter}:${card.id}`)
+  const r = rollStream(s.seed, `p0card:${s.quarter}:${card.id}`)
   p.quarter.cards.push({ id: card.id, choice: choiceId })
   logEntry(s, 'log.p0_card', {
     p0Card: `${card.id}.title`,
@@ -271,6 +273,9 @@ function applyChoice(s: GameState, card: PrologueCard, choiceId: string): void {
     else loseWallet(s, 1)
   }
   if (fx.wallet_loss) loseWallet(s, fx.wallet_loss)
+  // Moving out when you can't pay the deposit falls back to cutting the load.
+  if (fx.household && answerHousehold(s, fx.household))
+    answerHousehold(s, 'cut_load')
   if (fx.gox_collapse) {
     const g = P().exchange.gox_collapse
     if (fx.gox_collapse.withdraw && uniform(r, 0, 1) < g.withdraw_success) {

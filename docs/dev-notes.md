@@ -337,6 +337,11 @@ balance → **P3** events, theme, screens → the Prologue report.
   answer; the dead drive is the wallet-loss roll's card (takes the random slot, may repeat, pauses auto-play); Bitfinex
   is a roll in its week, separate from its news card; card sales of wallet coins move them to the exchange first.
   Note: the conference card's quarters (2013Q2, 2014Q2) auto-play, so it takes "skip" unless you stopped there.
+- P4 split: P4.1 bots, runner (`npm run sim -- --prologue`), tuning · P4.2 Act 0 and Act 0 → I goldens. P3 after.
+- P4.1: the household card is a week-1 card of the next quarter (not an extra Plan phase: pacing); prologue rolls use
+  `rollStream` (a mixed substream: plain ones clumped for seeds 1–50); TUNING (designed value) pre-orders: on time
+  ships 2013Q3 for every order (before: promised quarter after the order → on time 7.9–34×, average 3.1–16×; after:
+  on time 2.9–3.2×, 2–3Q late 0.26–0.29×, average 1.30–1.59×).
 - P2.5: `playPrologue` / `through: 0` in replay.ts (act 0 only; Act I/II paths unchanged); `tools/prologueBots.ts`
   (settings-driven prologue bot, hands over to `shell-climb`); whole-run tests to the handover and to 2026Q4.
 

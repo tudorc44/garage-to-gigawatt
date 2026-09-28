@@ -49,7 +49,7 @@ describe('the household (scope §2.3, §2.4)', () => {
     expect(refused(s, { type: 'P0_BUILD_HOME_RIG' })).toBe('error.p0_have_site')
   })
 
-  it('patience drains 15 a quarter over the threshold; at 0 the card waits in the Plan phase; its default cuts the load', () => {
+  it('patience drains 15 a quarter over the threshold; at 0 the card comes in week 1 of next quarter; its default cuts the load', () => {
     let s = planAt('2010Q3')
     s = ok(s, { type: 'P0_BUILD_HOME_RIG' })
     const rig = s.sites[1].id
@@ -58,9 +58,12 @@ describe('the household (scope §2.3, §2.4)', () => {
     s = playQuarter(s)
     expect(s.prologue!.patience).toBe(0)
     expect(s.prologue!.householdCard).toBe(true)
-    s = ok(s, { type: 'NEXT_QUARTER' })
-    expect(s.phase).toBe('plan') // 2010Q4 would auto-play
-    s = ok(s, { type: 'END_PLAN' })
+    s = ok(s, { type: 'NEXT_QUARTER' }) // 2010Q4 auto-plays, the card stops it
+    expect(s.phase).toBe('live')
+    s = advance(s)
+    expect(s.interrupt?.event).toBe('household')
+    expect(prologueDefaultChoice(s)).toBe('cut_load')
+    s = ok(s, { type: 'RESOLVE_INTERRUPT', choice: 'cut_load' })
     expect(s.prologue!.householdCard).toBe(false)
     expect(s.prologue!.cutLoadUntil).toBe(s.quarter)
     expect(s.prologue!.patience).toBe(

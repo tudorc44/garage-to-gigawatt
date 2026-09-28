@@ -29,6 +29,11 @@ import {
 } from './valuation-breakdown.ts'
 
 const args = process.argv.slice(2)
+// The prologue's runs and checks (Alpha 0.3 §5) have their own runner.
+if (args.includes('--prologue')) {
+  await import('./prologue-runner.ts')
+  process.exit(0)
+}
 const argValue = (flag: string, fallback: string) => {
   const i = args.indexOf(flag)
   return i >= 0 ? args[i + 1] : fallback

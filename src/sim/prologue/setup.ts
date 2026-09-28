@@ -6,7 +6,7 @@ import {
   actFirstQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
-import { random, type RngHolder } from '../rng.ts'
+import { random, substream, type RngHolder } from '../rng.ts'
 import {
   emptyQuarterStats,
   newGame,
@@ -102,6 +102,17 @@ export function netWorthUsd(state: GameState, w: MarketWeek): number {
     0,
   )
   return state.cash + coins + machines
+}
+
+/**
+ * The prologue's roll streams: a substream whose first draw becomes its starting point. Plain
+ * per-quarter substreams ("wallet_loss:-13") clumped for low seeds (22 draws under 0.75% where 12
+ * were expected, seeds 1–50); mixing once fixes that. Act I and II keep their plain substreams.
+ */
+export function rollStream(seed: number, label: string): RngHolder {
+  const r = substream(seed, label)
+  r.rng = (random(r) * 4294967296) | 0
+  return r
 }
 
 /** A Poisson draw (solo blocks found in a week, scope §2.6), on the given random stream. */
