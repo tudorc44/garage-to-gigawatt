@@ -15,7 +15,11 @@ import { collateralUsd, maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { repairCostPerUnit, saleValueUsd } from '../src/sim/systems/machines.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { buyCapKw, hostingView } from '../src/sim/selectors.ts'
-import { convertibleKw } from '../src/sim/systems/hosting.ts'
+import {
+  convertibleKw,
+  endHostingFeeUsd,
+  reletKw,
+} from '../src/sim/systems/hosting.ts'
 import { projectCapex, tenantCard } from '../src/sim/systems/projects.ts'
 import { debtPlan } from '../src/sim/systems/facilities.ts'
 import {
@@ -1393,7 +1397,23 @@ export const HEAD_START_OPENINGS: Record<string, Strategy> = {
     run({ type: 'PROJECT_FUND_CASH', projectId: p.id })
     run({ type: 'PROJECT_START', projectId: p.id })
   }),
-  'open-shell': opening('hosting', '2023Q3'),
+  // M8.2 (lever 1, a bot fix): the hosting head start's own bot now plays hosting the way a player would.
+  // Before 2023Q3 it re-lets any MW a winter client defaulted on (free, else the company sits at $0 with
+  // idle MW and busts); from 2023Q3 it ends hosting contracts when ending is free (a renewed term's first
+  // quarter) so the shells the guaranteed AA offer waits for have room.
+  'open-shell': opening('hosting', '2023Q3', (now, run) => {
+    const label = CONTENT.quarters[now().quarter]
+    if (label < '2023Q3') {
+      for (const site of now().sites) {
+        const kw = Math.floor(reletKw(now(), site.id))
+        if (kw > 0) run({ type: 'HOST_START', siteId: site.id, kw })
+      }
+      return
+    }
+    for (const h of [...now().hosting])
+      if (endHostingFeeUsd(now(), h) === 0)
+        run({ type: 'HOST_END', contractId: h.id })
+  }),
   'open-fleet': opening('sell_gpus_keep_btc', '2024Q1', (now, run) => {
     const s0 = now()
     if (!fleetOffer(s0)) return

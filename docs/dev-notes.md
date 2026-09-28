@@ -229,6 +229,9 @@ additions · M8.4 GPU failure wave interrupt · M8.5 GPU know-how display · M8.
 - M8.1: accepted MISS (good, lifeline, preset), overleveraged counts `log.rescue_equity` (still 0/50), EV/MW mining "n/a" when $0,
   15× floor sentence in scope §2.2. Sell-as-mined bust: NOT an AI build: all 6 are lifeline takers; A5's amortising bridge
   ($1.37M/q from 2023Q4) vs a bot written for a bullet. Bot fix (tools/bots.ts, raise equity for next quarter's bridge service): 6 → 0 busts.
+- M8.2: hosting head start ($37.6M): the opening bot never re-let MW after a winter client default (busts 7/20) nor freed hosted MW for
+  shells. Lever 1 (bot only; no data or rule change): re-let before 2023Q3, end free-to-end contracts from 2023Q3. Now $461.8M, busts
+  4/20 (the conversion still spends all cash: the remaining busts). Check 3/4 distinct (hosting best = open-shell = gpu_cloud's best by 2%).
 
 ## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
 
