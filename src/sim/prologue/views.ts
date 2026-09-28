@@ -9,6 +9,7 @@ import { movable, openOffers, sellable } from './custody.ts'
 import { prologueNetWorth, walletCoins } from './engine.ts'
 import {
   conferenceNow,
+  moveBackBlocker,
   moveOutBlocker,
   smallUnitBlocker,
   usedOfferPrice,
@@ -177,6 +178,12 @@ export function prologueLifeView(state: GameState) {
       rentUsdQ: rentUsdQ(state.quarter),
       blocker: moveOutBlocker(state) ?? null,
     },
+    /** Moving back home (P5.0, P6): 1 BW; the income doesn't come back. */
+    moveBack: {
+      bandwidth: P().move_back.bandwidth,
+      blocker: moveBackBlocker(state) ?? null,
+    },
+    movedBack: p.movedBack === true,
     smallUnit: {
       built: state.sites.some((s) => s.tier === 'small_unit'),
       capexUsd: typeof smallUnit.capex_usd === 'number' ? smallUnit.capex_usd : 0,

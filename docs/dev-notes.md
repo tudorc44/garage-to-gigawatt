@@ -364,6 +364,9 @@ P5.0d merge act2 (M7.0), sims, scope 0.3 §7, the combined report.
 - P5.0a: conference card pauses auto-play; pc_class = the PC only (moving out is the only lapse today); no-backup
   judged on 1,000 prologue runs (≥ 18%); a prologue start's Q1 tips: its own welcome (real cash, machines, BTC), the
   welcome and buy-rig tips hidden. Prologue goldens updated (the backup change); Act I goldens unchanged.
+- P5.0b: P0_MOVE_BACK (1 BW): new bedroom + home rig (the garage / small unit given up), machines fill them biggest room
+  first, the rest sold at the used price (mine: sold, not switched off); `movedBack` keeps the income off. At quarter
+  end a moved-out player still short after coins moves back automatically, before machines are sold.
 
 ## Prologue report (28 Sep 2026, owner's unattended run; the step log is in the archive › "The Prologue")
 

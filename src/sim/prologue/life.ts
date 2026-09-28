@@ -95,6 +95,65 @@ export function moveOut(s: GameState): Message | undefined {
   return undefined
 }
 
+export function moveBackBlocker(s: GameState): Message | undefined {
+  if (s.prologue!.livingAtHome) return fail('error.p0_at_home_already')
+  return needBandwidth(s, P().move_back.bandwidth)
+}
+
+/**
+ * Moving back home (owner, P5.0 answer P6): rent stops, household power returns, patience starts again
+ * at 50; the part-time income doesn't come back. The sites go back to the bedroom and the home rig
+ * (the garage and any small unit are given up); machines move in as far as they fit, the rest are
+ * sold at the used price. `auto`: the quarter end's last resort before a bust (no Bandwidth).
+ */
+export function moveBackHome(s: GameState, auto = false): Message | undefined {
+  const p = s.prologue!
+  if (!auto) {
+    const blocked = moveBackBlocker(s)
+    if (blocked) return blocked
+    s.bandwidth -= P().move_back.bandwidth
+  }
+  const home = P()
+    .site_tiers.filter((t) => t.id === 'bedroom' || t.id === 'home_rig')
+    .map(
+      (t): Site => ({
+        id: `site-${s.nextId++}`,
+        tier: t.id,
+        readyQuarter: s.quarter,
+        rentUsdQ: 0,
+        powerPriceMult: 1,
+        flaw: null,
+      }),
+    )
+  s.sites = home
+  // The machines fill the home sites, the biggest first room-wise; what doesn't fit is sold.
+  const room = new Map(home.map((x) => [x.id, siteCapacityKw(x)]))
+  let soldUsd = 0
+  for (const lot of [...s.machines]) {
+    const kw = getModel(lot.model)!.power_kw
+    const target = [...home]
+      .sort((a, b) => room.get(b.id)! - room.get(a.id)!)
+      .find((x) => room.get(x.id)! >= kw - 1e-9)
+    const fit = target
+      ? Math.min(lot.count, Math.floor((room.get(target.id)! + 1e-9) / kw))
+      : 0
+    if (fit < lot.count) soldUsd += removeMachines(s, lot, lot.count - fit)
+    if (fit > 0) {
+      lot.siteId = target!.id
+      room.set(target!.id, room.get(target!.id)! - fit * kw)
+    }
+  }
+  s.cash = roundCents(s.cash + soldUsd)
+  p.livingAtHome = true
+  p.movedBack = true
+  p.patience = P().move_back.patience
+  p.cutLoadUntil = null
+  logEntry(s, auto ? 'log.p0_moved_back_forced' : 'log.p0_moved_back', {
+    valueUsd: soldUsd,
+  })
+  return undefined
+}
+
 /**
  * The household's card (patience at 0, shown in week 1): move out now, or cut the load to the
  * threshold for the rest of this quarter.

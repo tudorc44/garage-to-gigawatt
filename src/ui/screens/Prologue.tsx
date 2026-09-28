@@ -956,9 +956,20 @@ function Life({ state, act }: PrologueProps) {
               <p class="num-s muted">{t('ui.p0.move_out_note')}</p>
             </>
           ) : (
-            <p class="num-s">
-              {t('ui.p0.moved_out', { rent: fmt.money(v.moveOut.rentUsdQ) })}
-            </p>
+            <>
+              <p class="num-s">
+                {t('ui.p0.moved_out', { rent: fmt.money(v.moveOut.rentUsdQ) })}
+              </p>
+              <ActionRow
+                icon="household"
+                name={t('ui.p0.move_back')}
+                bandwidth={v.moveBack.bandwidth}
+                bandwidthLeft={state.bandwidth}
+                disabledReason={blockerText(v.moveBack.blocker)}
+                onClick={() => e.run({ type: 'P0_MOVE_BACK' })}
+              />
+              <p class="num-s muted">{t('ui.p0.move_back_note')}</p>
+            </>
           )}
           {!v.livingAtHome && !v.smallUnit.built && (
             <ActionRow

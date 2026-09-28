@@ -15,6 +15,7 @@ import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines } from '../systems/machines.ts'
 import { getModel, marketWeek } from '../systems/market.ts'
 import { expireOffers, orderSale } from './custody.ts'
+import { moveBackHome } from './life.ts'
 import {
   checkPrologueEvents,
   prologueExchangeWeek,
@@ -155,7 +156,8 @@ export function prologueWeek(s: GameState): void {
   const soldUsd = sellWeek(s, w)
 
   // 6. Income while at home; rent once you've moved out; power.
-  const incomeUsd = p.livingAtHome ? P().start.income_usd_q / WEEKS() : 0
+  const incomeUsd =
+    p.livingAtHome && !p.movedBack ? P().start.income_usd_q / WEEKS() : 0
   const rentUsd = p.livingAtHome ? 0 : rentUsdQ(s.quarter) / WEEKS()
   s.cash = roundCents(s.cash + incomeUsd - rentUsd - powerUsd)
   p.quarter.incomeUsd += incomeUsd
@@ -282,6 +284,8 @@ function forcedSale(s: GameState, w: MarketWeek): void {
       s.treasury[coin] -= coins
       if (where === 'exchange') p.onExchange[coin] -= coins
     }
+  // Still short and paying rent: move back home first (P5.0, P6), then sell machines.
+  if (s.cash < 0 && !p.livingAtHome) moveBackHome(s, true)
   for (const lot of [...s.machines]) {
     if (s.cash >= 0) break
     s.cash += removeMachines(s, lot, lot.count)

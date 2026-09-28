@@ -90,6 +90,39 @@ describe('the household (scope §2.3, §2.4)', () => {
     expect(s.bandwidth).toBe(3)
   })
 
+  it('moving back home (P5.0): 1 BW; no rent, free power, patience 50, no income; bedroom + home rig, the overflow sold', () => {
+    let s = planAt('2012Q2', 10_000)
+    expect(refused(s, { type: 'P0_MOVE_BACK' })).toBe(
+      'error.p0_at_home_already',
+    )
+    s = ok(s, { type: 'P0_MOVE_OUT' })
+    addMachines(s, 'gpu_gaming_2010', 'used', 10, s.sites[0].id) // 3.5 kW in the garage
+    s.bandwidth = 2
+    const machinesBefore = s.machines.reduce((n, l) => n + l.count, 0)
+    s = ok(s, { type: 'P0_MOVE_BACK' })
+    expect(s.bandwidth).toBe(1)
+    expect(s.sites.map((x) => x.tier)).toEqual(['bedroom', 'home_rig'])
+    expect(s.prologue!.livingAtHome).toBe(true)
+    expect(s.prologue!.patience).toBe(50)
+    // The PC fits the bedroom and 4 GPUs (1.4 kW) the home rig; the other 6 are sold.
+    expect(s.machines.reduce((n, l) => n + l.count, 0)).toBe(machinesBefore - 6)
+    s = playQuarter(s)
+    const r = s.prologue!.reports.at(-1)!
+    expect(r.rentUsd).toBe(0)
+    expect(r.incomeUsd).toBe(0)
+    expect(r.powerCostUsd).toBe(0)
+  })
+
+  it('out of cash while renting: the quarter end moves you back home before selling machines', () => {
+    let s = planAt('2012Q2', 10_000)
+    s = ok(s, { type: 'P0_MOVE_OUT' })
+    s.cash = 100 // the rent will take it below zero
+    s.treasury.BTC = 0
+    s = playQuarter(s)
+    expect(s.prologue!.livingAtHome).toBe(true)
+    expect(s.log.some((e) => e.key === 'log.p0_moved_back_forced')).toBe(true)
+  })
+
   it('the small unit: after moving out, from 2014Q1, at Act I cost', () => {
     let s = planAt('2013Q4', 100_000)
     expect(refused(s, { type: 'P0_BUILD_SMALL_UNIT' })).toBe('error.p0_at_home')

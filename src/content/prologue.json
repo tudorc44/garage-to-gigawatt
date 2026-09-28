@@ -30,6 +30,7 @@
   "rent_usd_q_by_year": {"2010": 2685, "2011": 2790, "2012": 2820, "2013": 2811, "2014": 2880, "2015": 2970, "2016": 3087},
   "rent_note": "Years before the first listed use the first listed value; others the latest listed at or before (the pack's national averages; a college town would be 10–20% lower: a tuning lever, scope P4)."
  },
+ "move_back": {"bandwidth": 1, "patience": 50, "note": "Owner (P5.0, P6): moving back home costs 1 Bandwidth; rent stops, household power returns, patience resets to 50, the income doesn't return; the sites go back to the bedroom + home rig and machines that don't fit are sold at the used price. At quarter end, still short of cash after selling coins, a moved-out player moves back home before machines are sold or the game ends."},
  "conferences": [
   {"id": "bitcoin2013", "quarter": "2013Q2", "cost_usd": 900},
   {"id": "bitcoin2014", "quarter": "2014Q2", "cost_usd": 1400}

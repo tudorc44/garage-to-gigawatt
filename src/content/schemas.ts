@@ -1425,6 +1425,10 @@ export const prologueFileSchema = z.object({
     deposit_usd_by_year: yearValues,
     rent_usd_q_by_year: yearValues,
   }),
+  move_back: z.object({
+    bandwidth: z.number().int().min(0),
+    patience: nonNeg,
+  }),
   conferences: z.array(
     z.object({ id: z.string(), quarter: quarterId, cost_usd: nonNeg }),
   ),

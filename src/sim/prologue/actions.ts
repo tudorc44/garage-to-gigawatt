@@ -22,6 +22,7 @@ import {
   buildHomeRig,
   buildSmallUnit,
   buyVanity,
+  moveBackHome,
   moveOut,
   onMachineBought,
   takeUsedOffer,
@@ -39,6 +40,7 @@ export type PrologueAction =
     }
   | { type: 'P0_BUILD_HOME_RIG' }
   | { type: 'P0_MOVE_OUT' }
+  | { type: 'P0_MOVE_BACK' }
   | { type: 'P0_BUILD_SMALL_UNIT' }
   | { type: 'P0_SET_POOL'; pool: boolean }
   | {
@@ -150,6 +152,8 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       return buildHomeRig(s)
     case 'P0_MOVE_OUT':
       return moveOut(s)
+    case 'P0_MOVE_BACK':
+      return moveBackHome(s)
     case 'P0_BUILD_SMALL_UNIT':
       return buildSmallUnit(s)
     case 'P0_BACKUP':

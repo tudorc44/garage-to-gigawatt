@@ -60,6 +60,8 @@ export interface PrologueState {
   cutLoadUntil: number | null
   /** Patience hit 0: the household's card waits in the Plan phase (move out, or cut the load). */
   householdCard: boolean
+  /** Moved back home after moving out (P5.0, P6): the part-time income doesn't come back. */
+  movedBack?: boolean
   /** Mine in a pool (from 2010Q4) instead of solo. */
   pool: boolean
   /** The part of the treasury that sits on an exchange (the rest is in your wallet). */
