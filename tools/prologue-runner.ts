@@ -291,10 +291,23 @@ for (let seed = 1; seed <= 5000; seed++) {
     }
   }
 }
+// Owner (P5.0, P3): judged on 1,000 seeds of the prologue alone, target ≥ 18% (the designed rate gives ~20%).
+const NB_SEEDS = 1000
+let nbLost1000 = 0
+for (let seed = 1; seed <= NB_SEEDS; seed++) {
+  const end = playPrologue(seed, PROLOGUE_BOTS['no-backup'], { through: 0 }).state
+  if (
+    end.log.some(
+      (e) =>
+        e.key === 'log.p0_wallet_lost' && e.quarter < quarterIndex('2016Q4')!,
+    )
+  )
+    nbLost1000++
+}
 check(
-  nbLost / nb.length >= 0.2,
-  'no-backup loses its wallet before 2016Q4 in ≥ 20% of runs',
-  `${nbLost}/${nb.length} (${((nbLost / nb.length) * 100).toFixed(0)}%); the roll alone over 5,000 seeds: ${((rolled / 5000) * 100).toFixed(1)}% (1 − (1 − ${P().wallet_loss.chance_per_quarter.value})^30 = ${((1 - (1 - P().wallet_loss.chance_per_quarter.value) ** 30) * 100).toFixed(1)}%)`,
+  nbLost1000 / NB_SEEDS >= 0.18,
+  `no-backup loses its wallet before 2016Q4 in ≥ 18% of runs (${NB_SEEDS} seeds)`,
+  `${nbLost1000}/${NB_SEEDS} (${((nbLost1000 / NB_SEEDS) * 100).toFixed(1)}%); in the ${nb.length}-seed run ${nbLost}/${nb.length}; the roll alone over 5,000 seeds: ${((rolled / 5000) * 100).toFixed(1)}% (1 − (1 − ${P().wallet_loss.chance_per_quarter.value})^30 = ${((1 - (1 - P().wallet_loss.chance_per_quarter.value) ** 30) * 100).toFixed(1)}%)`,
 )
 const fade = soloFade()
 const at = (q: string) => fade.find((f) => f.quarter === q)!.chance

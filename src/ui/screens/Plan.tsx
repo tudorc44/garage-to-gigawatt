@@ -1394,6 +1394,8 @@ function RaiseRow({
 }
 
 const Q1_TIPS = ['welcome', 'buy_rig', 'bandwidth', 'hodl'] as const
+/** The first-quarter tips written for a $10K start, hidden after a prologue (P5.0, P7). */
+const PROLOGUE_HIDDEN_TIPS: readonly string[] = ['welcome', 'buy_rig']
 
 function SignalsPanel({ state, news }: { state: GameState; news: string[] }) {
   const q = quarterName(state.quarter)
@@ -1411,8 +1413,26 @@ function SignalsPanel({ state, news }: { state: GameState; news: string[] }) {
           </div>
         </div>
       ))}
+      {/* A prologue start (P5.0, P7): its own welcome, with what it brought; no $10K-start tips. */}
+      {state.quarter === 0 && state.prologueCarry && (
+        <div class="signal">
+          <Icon name="info" />
+          <div>
+            <span class="label">{t('ui.signals.tip')}</span>
+            {t('ui.tip.q1_welcome_prologue', {
+              cashUsd: state.cash,
+              machines: state.machines.reduce((n, l) => n + l.count, 0),
+              btc: fmt.crypto(state.treasury.BTC, 'BTC'),
+            })}
+          </div>
+        </div>
+      )}
       {state.quarter === 0 &&
-        Q1_TIPS.filter((k) => hasText(`tooltip.q1.${k}`)).map((k) => (
+        Q1_TIPS.filter(
+          (k) =>
+            hasText(`tooltip.q1.${k}`) &&
+            !(state.prologueCarry && PROLOGUE_HIDDEN_TIPS.includes(k)),
+        ).map((k) => (
           <div class="signal" key={k}>
             <Icon name="info" />
             <div>

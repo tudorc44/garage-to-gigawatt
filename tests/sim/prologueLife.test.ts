@@ -103,7 +103,7 @@ describe('the household (scope §2.3, §2.4)', () => {
 })
 
 describe('the wallet backup (scope §2.7)', () => {
-  it('1 Bandwidth; a new PC-class machine lapses it; moving out lapses it', () => {
+  it('1 Bandwidth; buying a GPU keeps it (owner, P5.0); moving out lapses it', () => {
     let s = planAt('2010Q3')
     s = ok(s, { type: 'P0_BACKUP' })
     expect(s.prologue!.backup).toBe(true)
@@ -117,6 +117,9 @@ describe('the wallet backup (scope §2.7)', () => {
       count: 1,
       siteId: s.sites[1].id,
     })
+    expect(s.prologue!.backup).toBe(true)
+    s.bandwidth = 2
+    s = ok(s, { type: 'P0_MOVE_OUT' })
     expect(s.prologue!.backup).toBe(false)
   })
 })

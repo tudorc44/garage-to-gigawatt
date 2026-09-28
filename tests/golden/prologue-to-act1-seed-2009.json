@@ -2594,11 +2594,6 @@
     {
       "quarter": -26,
       "week": null,
-      "key": "log.p0_backup_lapsed"
-    },
-    {
-      "quarter": -26,
-      "week": null,
       "key": "log.bought",
       "params": {
         "count": 4,
@@ -2606,11 +2601,6 @@
         "condition": "new",
         "costUsd": 1596
       }
-    },
-    {
-      "quarter": -26,
-      "week": null,
-      "key": "log.p0_backup"
     },
     {
       "quarter": -26,
@@ -2897,11 +2887,6 @@
     {
       "quarter": -21,
       "week": null,
-      "key": "log.p0_backup_lapsed"
-    },
-    {
-      "quarter": -21,
-      "week": null,
       "key": "log.bought",
       "params": {
         "count": 4,
@@ -2909,11 +2894,6 @@
         "condition": "new",
         "costUsd": 1036
       }
-    },
-    {
-      "quarter": -21,
-      "week": null,
-      "key": "log.p0_backup"
     },
     {
       "quarter": -21,
@@ -2960,11 +2940,6 @@
     {
       "quarter": -17,
       "week": null,
-      "key": "log.p0_backup_lapsed"
-    },
-    {
-      "quarter": -17,
-      "week": null,
       "key": "log.bought",
       "params": {
         "count": 4,
@@ -2972,11 +2947,6 @@
         "condition": "new",
         "costUsd": 596
       }
-    },
-    {
-      "quarter": -17,
-      "week": null,
-      "key": "log.p0_backup"
     },
     {
       "quarter": -17,
@@ -3000,11 +2970,6 @@
     {
       "quarter": -16,
       "week": null,
-      "key": "log.p0_backup_lapsed"
-    },
-    {
-      "quarter": -16,
-      "week": null,
       "key": "log.bought",
       "params": {
         "count": 4,
@@ -3012,11 +2977,6 @@
         "condition": "new",
         "costUsd": 596
       }
-    },
-    {
-      "quarter": -16,
-      "week": null,
-      "key": "log.p0_backup"
     },
     {
       "quarter": -16,

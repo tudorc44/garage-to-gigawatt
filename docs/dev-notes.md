@@ -353,6 +353,18 @@ balance → **P3** events, theme, screens → the Prologue report.
   that scaled value with the rivals' values.
 - Bots: `tools/prologueBots.ts`; after the handover every prologue bot plays Act I and II as `shell-climb`.
 
+### P5.0: owner answers P1–P7 (28 Sep 2026)
+
+P1 keep literal CPU mining + an Act I liquidity brake (weekly sell cap $20M 2017 / $50M 2018–19 / $100M 2020 / $250M
+2021–22, the prologue's price impact, unfilled orders carry; crypto-backed loan ≤ 4 weeks of the cap; "designed";
+$10K-start goldens unchanged). P2 OK. P3 judge on 1,000 seeds, ≥ 18%. P4 keep. P5 the conference card pauses
+auto-play. P6 "Move back home" (1 BW). P7 hide the $10K tips for prologue starts; the first tip uses the real start.
+Backup lapses only on a new PC or moving out (not a GPU). Split: P5.0a P3, P5, backup, P7 · P5.0b P6 · P5.0c P1 ·
+P5.0d merge act2 (M7.0), sims, scope 0.3 §7, the combined report.
+- P5.0a: conference card pauses auto-play; pc_class = the PC only (moving out is the only lapse today); no-backup
+  judged on 1,000 prologue runs (≥ 18%); a prologue start's Q1 tips: its own welcome (real cash, machines, BTC), the
+  welcome and buy-rig tips hidden. Prologue goldens updated (the backup change); Act I goldens unchanged.
+
 ## Prologue report (28 Sep 2026, owner's unattended run; the step log is in the archive › "The Prologue")
 
 ```

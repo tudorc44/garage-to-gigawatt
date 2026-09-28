@@ -58,8 +58,8 @@
   "backup_mult": 0.15,
   "backup_bandwidth": 1,
   "backup_cash_usd": 0,
-  "pc_class": ["pc_cpu", "gpu_gaming_2010", "gpu_eth_2015"],
-  "pc_class_note": "Prologue choice: a backup lasts until you buy a new PC-class machine (a PC, or a GPU that goes in one) or move out."
+  "pc_class": ["pc_cpu"],
+  "pc_class_note": "Owner (P5.0): a backup lasts until you buy a new PC or move out (scope §2.7), not on buying a GPU. The PC isn't for sale in the prologue, so today only moving out lapses it."
  },
  "sell_caps_usd_week": {
   "designed": true,

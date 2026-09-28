@@ -55,7 +55,7 @@
    "choices": [{"id": "move_out", "effects": {"household": "move_out"}}, {"id": "cut_load", "effects": {"household": "cut_load"}}]},
   {"id": "job_offer", "type": "random", "from": "2012Q1", "requires": ["at_home"], "weight": 1, "default": "decline",
    "choices": [{"id": "take", "effects": {"cash": 300, "bandwidth_next": -1}}, {"id": "decline", "effects": {}}]},
-  {"id": "conference_invitation", "type": "random", "quarters": ["2013Q2", "2014Q2"], "weight": 1, "default": "skip",
+  {"id": "conference_invitation", "type": "random", "quarters": ["2013Q2", "2014Q2"], "weight": 1, "pauses_autoplay": true, "default": "skip",
    "choices": [{"id": "go", "effects": {"conference": true}}, {"id": "skip", "effects": {}}]}
  ]
 }
