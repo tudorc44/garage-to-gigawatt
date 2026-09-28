@@ -96,3 +96,19 @@
   --series-eth: #5b6b66;
   --shadow-card: 0 1px 0 #d1d7cf, 0 16px 36px rgba(21, 48, 42, 0.18);
 }
+/* The Prologue (2009–16), from docs/design-system/tokens.css. Heat 3 is set here: inherited, it
+   would be the garage accent (the bedroom's accent is green). */
+[data-theme='bedroom'] {
+  --paper: #f0e8d2;
+  --paper-grid: #d9ddc0;
+  --panel: #faf5e6;
+  --panel-sunk: #e9dfc3;
+  --line: #c9bd98;
+  --line-soft: #d5caa8;
+  --ink-disabled: #74777f;
+  --on-action: #faf5e6;
+  --accent: #46602a;
+  --tape: #edd894;
+  --heat-3: #9a4e1c;
+  --shadow-card: 0 2px 0 #c9bd98, 0 18px 40px rgba(30, 42, 68, 0.25);
+}

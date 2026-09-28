@@ -5,6 +5,42 @@ import { useEffect, useState } from 'preact/hooks'
 import { hasText, t, tDynamic } from '../../i18n/t.ts'
 import { dismissTip, readDismissedTips } from '../../platform/tips.ts'
 import { ICONS, type IconName } from '../icons.ts'
+import { MACHINE_DRAWINGS, type MachineDrawing } from '../machineDrawings.ts'
+
+/**
+ * MachineCard (design system): a 240×160 line drawing of a machine class on the era's paper, with
+ * a caption strip (the model name, and an era figure). `compact`: the drawing only, 120px wide.
+ */
+export function MachineCard(props: {
+  drawing: MachineDrawing
+  caption: string
+  era?: string
+  compact?: boolean
+}) {
+  return (
+    <figure class={props.compact ? 'g-mc is-compact' : 'g-mc'}>
+      <svg
+        class="g-mc-draw"
+        viewBox="0 0 240 160"
+        fill="none"
+        stroke="currentColor"
+        stroke-width={1.75}
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        role="img"
+        aria-label={props.caption}
+        focusable="false"
+        dangerouslySetInnerHTML={{ __html: MACHINE_DRAWINGS[props.drawing] }}
+      />
+      {!props.compact && (
+        <figcaption class="g-mc-cap">
+          <span class="g-mc-name">{props.caption}</span>
+          {props.era && <span class="g-mc-era">{props.era}</span>}
+        </figcaption>
+      )}
+    </figure>
+  )
+}
 
 export function Icon(props: {
   name: IconName

@@ -80,6 +80,39 @@ export const ICONS = {
   check: '<path d="M4 10.5l4 4 8-8"/>',
   'chevron-right': '<path d="M8 4.5l5.5 5.5L8 15.5"/>',
   play: '<path d="M6 4.5l9 5.5-9 5.5z"/>',
+  // The Prologue's 17 (design system, 28 Sep 2026).
+  'pc-tower':
+    '<rect x="6" y="2.5" width="8" height="15" rx="1"/><path d="M8 5.5h4M8 7.5h4M8 9.5h4"/><circle cx="10" cy="14" r=".9" fill="currentColor" stroke="none"/>',
+  'gpu-card':
+    '<path d="M2.5 4.5v12"/><path d="M2.5 6.5h15v6h-15"/><circle cx="7.5" cy="9.5" r="2"/><path d="M11.5 8.5h4M11.5 10.5h4M8 12.5v2.5h7v-2.5"/>',
+  'fpga-board':
+    '<rect x="2.5" y="3" width="15" height="14" rx="1"/><rect x="7.5" y="6.5" width="5" height="5"/><path d="M7.5 8H6M7.5 10H6M12.5 8H14M12.5 10H14"/><path d="M5.5 14.5h0M8 14.5h0M10.5 14.5h0M13 14.5h0M15.5 14.5h0"/>',
+  'asic-early':
+    '<rect x="2.5" y="8" width="10.5" height="7" rx="1"/><path d="M13 9.5h3.5v4H13"/><path d="M5 8V5M7.5 8V5M10 8V5"/>',
+  solo: '<rect x="2.5" y="7.5" width="10" height="10" rx="1"/><path d="M15 2.2l.9 1.9 2 .3-1.45 1.4.35 2-1.8-.95-1.8.95.35-2-1.45-1.4 2-.3z"/>',
+  pool: '<circle cx="4" cy="4" r="1.5"/><circle cx="10" cy="3.5" r="1.5"/><circle cx="16" cy="4" r="1.5"/><path d="M5 5.2l4 6.3M10 5v6.5M15 5.2l-4 6.3"/><rect x="6.5" y="11.5" width="7" height="6" rx="1"/>',
+  wallet:
+    '<rect x="2.5" y="5.5" width="12.5" height="11" rx="1.5"/><path d="M15 9h-3.5a1.75 1.75 0 0 0 0 3.5H15"/><circle cx="11.8" cy="10.75" r=".5" fill="currentColor" stroke="none"/><path d="M14 5.5l2-2"/><circle cx="17" cy="2.8" r="1.1"/>',
+  exchange:
+    '<path d="M3 4.5h12M12.5 2l2.5 2.5-2.5 2.5"/><path d="M17 9.5H5M7.5 7 5 9.5 7.5 12"/><path d="M3 14.5h14M3 17h9"/>',
+  backup:
+    '<circle cx="9" cy="9" r="6.5"/><circle cx="9" cy="9" r="1.5"/><path d="M12.5 15.2l1.8 1.8 3.5-3.8"/>',
+  'lost-key':
+    '<circle cx="5.5" cy="10" r="3"/><path d="M8.5 10H11M13.5 10h4M16 10v2.5M17.5 10v2"/><path d="M11.5 8l.8 1.2M12.5 12l.8-1.2"/>',
+  'pre-order':
+    '<path d="M2.5 10.5 9.5 3.5H16a1 1 0 0 1 1 1v6.5l-7 7z"/><circle cx="14.2" cy="6.3" r=".8" fill="currentColor" stroke="none"/><circle cx="10.8" cy="11" r="2.6"/><path d="M10.8 9.6V11l.9.7"/>',
+  'group-buy':
+    '<circle cx="4" cy="4.5" r="1.5"/><circle cx="10" cy="3.5" r="1.5"/><circle cx="16" cy="4.5" r="1.5"/><path d="M1.8 9.5a2.2 2.2 0 0 1 4.4 0M7.8 8.5a2.2 2.2 0 0 1 4.4 0M13.8 9.5a2.2 2.2 0 0 1 4.4 0"/><rect x="5.5" y="11.5" width="9" height="6" rx=".5"/><path d="M5.5 13.5h9"/>',
+  'move-out':
+    '<path d="M2.5 17.5v-15h6v15"/><circle cx="7" cy="10" r=".6" fill="currentColor" stroke="none"/><path d="M5 6h12M14.5 3.5 17 6l-2.5 2.5"/><rect x="11" y="11.5" width="6.5" height="6" rx=".5"/><path d="M11 13.5h6.5"/>',
+  conference:
+    '<path d="M6.5 2.5c0 3 1.2 5 3.5 6.5 2.3-1.5 3.5-3.5 3.5-6.5"/><rect x="5.5" y="9" width="9" height="8.5" rx="1.5"/><path d="M8 12.5h4M8 14.8h2.5"/>',
+  vanity:
+    '<circle cx="10" cy="10" r="4.5"/><path d="M7.5 6.2 8 2.5h4l.5 3.7M7.5 13.8 8 17.5h4l.5-3.7"/><path d="M10 8v2l1.5 1"/>',
+  household:
+    '<path d="M2 9l6-5.5L14 9v8.5H2z"/><path d="M6.8 9.5V11M9.2 9.5V11M5.8 11h4.4v1.5a2.2 2.2 0 0 1-4.4 0zM8 14.7v2.8"/><circle cx="16" cy="13" r="2.3"/><path d="M16 13l1-1"/>',
+  'auto-play':
+    '<path d="M2.5 17.5v-15a15 15 0 0 1 15 15z"/><path d="M5.5 9.5l3 3-3 3M9.5 9.5l3 3-3 3"/>',
 } as const
 
 export type IconName = keyof typeof ICONS

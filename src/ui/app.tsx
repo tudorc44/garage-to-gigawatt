@@ -34,13 +34,18 @@ function toSeed(text: string): number {
   return /^\d+$/.test(text) ? Number(text) : seedFromString(text)
 }
 
-/** Era theme (design system): garage until 2019, industrial from 2020Q1, campus in Act II. */
+/**
+ * Era theme (design system): bedroom in the prologue, garage until 2019, industrial from 2020Q1,
+ * campus in Act II.
+ */
 const themeOf = (s: GameState | null) =>
-  s?.act === 2
-    ? 'campus'
-    : s && quarterName(s.quarter) >= '2020Q1'
-      ? 'industrial'
-      : 'garage'
+  s?.act === 0
+    ? 'bedroom'
+    : s?.act === 2
+      ? 'campus'
+      : s && quarterName(s.quarter) >= '2020Q1'
+        ? 'industrial'
+        : 'garage'
 
 export function App() {
   const [game, setGame] = useState<GameState | null>(null)

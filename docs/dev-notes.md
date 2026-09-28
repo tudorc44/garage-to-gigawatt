@@ -347,6 +347,8 @@ balance → **P3** events, theme, screens → the Prologue report.
 - P4.3: save checks (export → import at every kind of moment in Act 0 and after the handover; a mid-prologue load plays
   on identically); an act-0 save needs its prologue state; the "Start of Act II" slot and label only for act 2; a
   Save button on the prologue screens.
+- P3.1: the bedroom theme (tokens incl. heat-3 #9A4E1C, half-pitch grid, dashed panels, lighter titles), the 17
+  prologue icons, `MachineCard` + its 10 drawings (`src/ui/machineDrawings.ts`, prologue model map); act 0 → bedroom.
 - P2.5: `playPrologue` / `through: 0` in replay.ts (act 0 only; Act I/II paths unchanged); `tools/prologueBots.ts`
   (settings-driven prologue bot, hands over to `shell-climb`); whole-run tests to the handover and to 2026Q4.
 
