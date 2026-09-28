@@ -149,6 +149,7 @@ import {
 import {
   debtPlan,
   drawFacilities,
+  logProjectCapital,
   repayProjectFacilities,
   setProjectDebt,
   type DebtKind,
@@ -903,14 +904,22 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'PROJECT_SPOT':
       return useSpot(s, a.projectId)
 
-    case 'PROJECT_FUND_CASH':
-      return fundWithCash(s, a.projectId)
+    case 'PROJECT_FUND_CASH': {
+      const err = fundWithCash(s, a.projectId)
+      const p = s.projects.find((x) => x.id === a.projectId)
+      if (!err && p) logProjectCapital(s, p, 'cash')
+      return err
+    }
 
     case 'PROJECT_CANCEL':
       return cancelProject(s, a.projectId)
 
-    case 'PROJECT_DEBT':
-      return setProjectDebt(s, a.projectId, a.debt, a.on)
+    case 'PROJECT_DEBT': {
+      const err = setProjectDebt(s, a.projectId, a.debt, a.on)
+      const p = s.projects.find((x) => x.id === a.projectId)
+      if (!err && a.on && p) logProjectCapital(s, p, a.debt)
+      return err
+    }
 
     case 'RAISE_EQUITY': {
       const blocker = equityBlocker(s, a.dilution)
@@ -940,6 +949,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocker = backstopBlocker(s, a.projectId)
       if (blocker) return blocker
       takeBackstop(s, a.projectId)
+      logProjectCapital(s, s.projects.find((x) => x.id === a.projectId)!, 'backstop')
       return
     }
 
@@ -947,6 +957,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocker = jvBlocker(s, a.projectId, a.share)
       if (blocker) return blocker
       setJv(s, a.projectId, a.share)
+      logProjectCapital(s, s.projects.find((x) => x.id === a.projectId)!, 'jv')
       return
     }
 

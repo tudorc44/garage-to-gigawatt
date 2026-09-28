@@ -550,6 +550,12 @@ export function openProject(
     projectKw: a.kw,
     kind: a.kind,
   })
+  // The Power slot is filled as the project opens (M8.7d): the site's existing MW, a grid upgrade or a gas plant.
+  logEntry(state, `log.project_power_${a.power ?? 'existing'}`, {
+    n,
+    tier: site.tier,
+    projectKw: a.kw,
+  })
   return p
 }
 

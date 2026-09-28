@@ -27,6 +27,7 @@ import {
   getProject,
   projectCapex,
   projectedReturn,
+  remainingContractUsd,
   tenantCard,
 } from './projects.ts'
 
@@ -201,6 +202,34 @@ export function debtPlan(state: GameState, p: Project) {
     /** Projected DSCR, or null with no debt. */
     dscr: serviceUsd > 0 ? ebitda / serviceUsd : null,
   }
+}
+
+/** How a project's capital slot was just filled (M8.7d): own cash, one of the two debts, a JV partner, a backstop. */
+export type CapitalKind = 'cash' | DebtKind | 'jv' | 'backstop'
+
+/**
+ * Writes the quarter report's "capital slot filled" line for a project (read-only: it only reads the
+ * project and the debt plan). The amount is what the choice means now: own cash = the equity the build
+ * still needs after debt and any JV share; a debt = what it would draw; a JV = its share of that
+ * equity; a backstop = the lease share it guarantees. Equity raises are company-level and have their
+ * own line (`log.equity_raised`).
+ */
+export function logProjectCapital(
+  state: GameState,
+  p: Project,
+  kind: CapitalKind,
+): void {
+  const plan = debtPlan(state, p)
+  const jvShare = p.jv?.share ?? 0
+  const amountUsd =
+    kind === 'cash'
+      ? plan.equityUsd * (1 - jvShare)
+      : kind === 'jv'
+        ? plan.equityUsd * jvShare
+        : kind === 'backstop'
+          ? (p.backstop?.leaseShare ?? 0) * remainingContractUsd(p)
+          : (plan.draws.find((d) => d.offer.kind === kind)?.amountUsd ?? 0)
+  logEntry(state, `log.project_capital_${kind}`, { n: p.n, amountUsd })
 }
 
 /** Switches one kind of debt on or off for a proposed project (0 Bandwidth). */

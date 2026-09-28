@@ -1577,12 +1577,21 @@ export function leagueScaleView(state: GameState) {
   return { aiKw: u.aiShell + u.aiCloud, miningKw: u.mining + u.hosting }
 }
 
-/** Log lines that are project milestones: started, slot filled (the tenant), delayed, live, sold, foreclosed. */
+/** Log lines that are project milestones: started, a slot filled (power, tenant, capital), delayed, live, sold, foreclosed. */
 const PROJECT_MILESTONE_KEYS: MessageKey[] = [
+  // The Power and Capital slots (M8.7d); equity is raised by the company, so its line has no project name.
+  'log.project_power_existing',
+  'log.project_power_grid',
+  'log.project_power_gas',
+  'log.project_capital_cash',
+  'log.project_capital_project_debt',
+  'log.project_capital_ddtl',
+  'log.project_capital_jv',
+  'log.project_capital_backstop',
+  'log.equity_raised',
   'log.project_started',
   'log.project_live',
-  'log.tenant_signed',
-  'log.gpu_contract_signed',
+  // (A tenant signing fills the Tenant slot, but it is listed once, under "tenants signed or lost".)
   'log.project_late',
   'log.project_slipped',
   'log.project_slipped_event',

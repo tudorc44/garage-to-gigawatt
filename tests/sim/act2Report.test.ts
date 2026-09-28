@@ -70,7 +70,53 @@ describe('the Act II quarter report', () => {
     })
     const view = act2ReportView(toReport(s))!
     expect(view.tenants.map((e) => e.key)).toEqual(['log.tenant_signed'])
-    expect(view.milestones.map((e) => e.key)).toContain('log.tenant_signed')
+    // Listed once: under the tenants block, not also under the project milestones.
+    expect(view.milestones.map((e) => e.key)).not.toContain('log.tenant_signed')
+  })
+
+  it('has each block exactly once, and no log line in two blocks (M8.7e)', () => {
+    let s = ok(act2Company('2025Q3'), {
+      type: 'PROJECT_OPEN',
+      siteId: 'site-2',
+      kw: 5000,
+      kind: 'shell',
+    })
+    s.projects[0].offers = [
+      { id: 'o1', card: 'tc_north_azure_cloud', readyByQuarters: 5 },
+    ]
+    s = ok(s, {
+      type: 'PROJECT_SIGN_TENANT',
+      projectId: 'project-1',
+      offerId: 'o1',
+    })
+    s = ok(s, { type: 'PROJECT_FUND_CASH', projectId: 'project-1' })
+    s = ok(s, { type: 'PROJECT_START', projectId: 'project-1' })
+    const view = act2ReportView(toReport(s))!
+    // The blocks: MW by use (now and before), backlog, rating, milestones, tenants: each key once.
+    expect(Object.keys(view).sort()).toEqual(
+      [
+        'backlogUsd',
+        'milestones',
+        'prevBacklogUsd',
+        'prevRating',
+        'prevUse',
+        'rating',
+        'ratingWhy',
+        'tenants',
+        'use',
+        'weightedBacklogUsd',
+      ].sort(),
+    )
+    // A line is in at most one block, and the block lists have no repeated line.
+    const all = [...view.milestones, ...view.tenants]
+    expect(new Set(all).size).toBe(all.length)
+    const keys = all.map((e) => e.key)
+    expect(keys.filter((k) => k === 'log.tenant_signed')).toHaveLength(1)
+    expect(keys.filter((k) => k === 'log.project_started')).toHaveLength(1)
+    expect(keys.filter((k) => k === 'log.project_power_existing')).toHaveLength(
+      1,
+    )
+    expect(keys.filter((k) => k === 'log.project_capital_cash')).toHaveLength(1)
   })
 
   it('a quarter with no projects has no milestones', () => {

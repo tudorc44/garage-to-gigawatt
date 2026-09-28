@@ -171,3 +171,9 @@ log text and docs only). `m8` had been deleted after the M8 merge and was recrea
   unchanged), so the bot rebuilds the reserve in its first Plan phases with an equity raise, "at least the reserve" because a raise is ≥ 8%
   (mine, reversible). 20 runs: busts 4 → 2 (1 inside 2022Q4–2023Q1), median $474.5M; full sim: matching bot $469M (others' median $375.3M,
   within 30%), 3/4 distinct best openings, no other bot changed. A human can choose the same reserve or go all-in (a legitimate risk: rule stays).
+- M8.7d: log lines when the Power slot is filled (`log.project_power_existing/grid/gas`, written as the project opens) and the Capital slot
+  (`log.project_capital_cash/project_debt/ddtl/jv/backstop`, written in the reducer via `logProjectCapital` with the amount from `debtPlan`);
+  equity is the company's raise, so `log.equity_raised` joins the milestones (no project name) (mine, reversible). Read-only; text via t().
+  `tests/sim/slotLog.test.ts` covers the three power and all capital types.
+- M8.7e: only one `Act2Panel` ever existed (M8.3 edited 7eda74e's panel in place), one block each. One real duplicate: a signed tenant showed under
+  both "milestones" and "tenants signed or lost"; it is now under tenants only. A test checks each block once and no line in two blocks.
