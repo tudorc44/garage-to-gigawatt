@@ -161,3 +161,40 @@ scenario with a `rivals_act3.json` keyed by scenario then quarter, and `activeRi
 | Wildcards | cheap | event cards are data (`events_act2.json`) on an engine that already schedules scripted and random cards |
 | Extending the timeline (quarters 40–55) | expensive | touches the act union, ~40 `act === 2` checks, 32 `act2Quarter` calls, 40 `marketWeek` calls, the chapter report, the save loader, sims and goldens |
 | Presets (start Act III without playing Acts I–II) | medium | the Act II preset (`preset.ts`) is a hand-built state; an Act III one needs a full 2026Q4 company, best made by a bot run and stored as a fixture |
+
+## Design thread decisions (M8.9, 29 Sep 2026)
+
+The design thread's reply to this audit (it changed the Act III design: doc 27 is now v0.2, kept in the design project; the owner will
+add it to `docs/game-project-files/` when it is frozen). The repo does not copy doc 27.
+
+1. **An `inActII` helper: yes.** It is the first Act III step and a pure refactor: `inActII(state)` (and later `inActIII`) replaces the 38
+   `act === 2` / `!== 2` checks and the 32 `act2Quarter` calls, with no behaviour change. Proof: all 11 Act I goldens, both prologue goldens, the
+   Act II sim output and the Act I sim output identical before and after. A check that needs a real yes or no for Act III is listed as a
+   question with a recommended answer, and today's behaviour is kept. Queued as M9.1, in the same milestone as M9.0 and the playtest fixes.
+2. **Build order.** After M9.1, a walking skeleton first (the act 3 boundary, the save step 3 → 4, quarters 40–41 of a stub scenario, act 3
+   in the sim's `through` option, a new Act III golden): the timeline extension is the expensive, riskiest part and nothing can be played or
+   tested without it. Then the scenario data engine and Signals → the contract calendar and renewals → density and retrofit → nuclear,
+   political capital and wildcards → presets, bots and full balance. Nothing starts yet.
+3. **Bots and the scenario.** Player-like bots never receive the scenario id or read future weeks; they read only what a player sees (the
+   Signals as displayed). Separate "oracle" bots may know the scenario id, for balance ceilings only: they live in `tools/`, are named as
+   oracles, and are never used in game code.
+4. **Shell-lease end of term: Act III only** (M9.0 stays a display change). "Read the market" is not reused for Signals: in Act III it
+   becomes a new action that reveals an authored range for one chosen indicator from the scenario file, and it must never read the market file.
+
+### Open design decisions still waiting for the owner (doc 27 v0.2)
+
+These are decisions, not code tasks. The numbering D1–D17 belongs to doc 27; the list below names the topics given to the code thread.
+- scenario pool and weights (which scenarios exist and how likely each is)
+- the trigger window (when in Act III the hidden scenario starts to show)
+- the Signals design (which indicators, what range the reveal shows, what it costs)
+- renewal repricing (what a lease or GPU contract renews at, and the tenant's side of it)
+- the density cliff (when high-density GPUs stop fitting older halls)
+- the nuclear PPA (as a Power-slot option: cost, queue, risk)
+- political capital (the meter, what earns it, what it buys)
+- wildcards (the event cards that cut across scenarios)
+- the rivals' fates (scripted per scenario)
+- presets (whether and how to start Act III without playing Acts I–II)
+- scoring (how Act III ends and how the whole career is scored)
+- real names (whether Act III uses real company and place names)
+- build order (answer 2 above is the code thread's proposal; the owner decides)
+- what state carries over at the boundary (Heat and the lasting effects: see §1)

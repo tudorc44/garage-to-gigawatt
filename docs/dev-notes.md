@@ -6,8 +6,9 @@ file.** The full history (every finished step, balance review, milestone and rep
 is in `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
 Last updated: 29 Sep 2026. Act I, Act II and the Prologue are all built and are in `main` (`a37ef1e`, through M8.7). The owner is
-playing Act II on a staging snapshot, so **no game behaviour changes until the owner brings the playtest notes.** M8.8 (this branch,
-`m9`) is docs only: the runway answer is queued as M9.0, and `docs/act3-carryover-audit.md` says what Act III could reuse.
+playing Act II on a staging snapshot, so **no game behaviour changes until the owner brings the playtest notes.** M8.8 and M8.9
+(branch `m9`) are docs only: the runway answer and the `inActII` refactor are queued as one milestone "M9", and
+`docs/act3-carryover-audit.md` says what Act III could reuse and records the design thread's decisions.
 
 ## How the owner works
 
@@ -145,9 +146,23 @@ Nothing. (Balance tuning stays stopped by the owner's A1 answer.)
 ## Next
 
 The owner plays Act II on the staging snapshot (built from `main` at `a37ef1e`) and brings back playtest notes. **M9.0 (the runway
-look-ahead, below) and any playtest fixes are bundled into one milestone after that**, started only when the owner asks. Act III
-design is in progress in the design thread (doc 27, draft v0.1, kept in the design project; the owner will add it to
+look-ahead), M9.1 (the `inActII` refactor) and any playtest fixes are ONE milestone after that** ("M9", below), started only when the
+owner asks. Act III design is in progress in the design thread (doc 27, now v0.2, kept in the design project; the owner will add it to
 `docs/game-project-files/` when it is frozen). **Act III is NOT started in the code.** The Act I playtests stay postponed.
+
+The design thread's answers to the M8.8 audit questions (29 Sep 2026):
+1. **`inActII` helper: yes**, the first Act III step, and a pure refactor (see M9.1 below).
+2. **Order of the Act III build** (nothing of it starts yet): after M9.1, a **walking skeleton first**: the act 3 boundary, the save step
+   3 → 4, quarters 40–41 of a stub scenario, act 3 in the sim's `through` option, and a new Act III golden. The timeline extension is
+   the expensive and riskiest part and nothing can be played or tested without it, so it is NOT last. Then: the scenario data engine and
+   Signals → the contract calendar and renewals → density and retrofit → nuclear, political capital and wildcards → presets, bots and
+   full balance.
+3. **Bots and the scenario:** player-like bots never receive the scenario id or read future weeks; they read only what a player sees
+   (the Signals as displayed). Separate **"oracle" bots** may know the scenario id, for balance ceilings only: they live in `tools/`,
+   are named as oracles, and are never used in game code.
+4. **Shell-lease end of term is Act III only** (M9.0 stays a display change). **"Read the market" is NOT reused for Signals:** in
+   Act III it becomes a new action that reveals an authored range for one chosen indicator from the scenario file; it must never read
+   the market file.
 
 ## Milestones M8 and M8.7 (finished; the step logs are in the archive › "Milestones M8 and M8.7")
 
@@ -155,10 +170,13 @@ M8 finished Act II (the report additions, the GPU failure wave, the know-how dis
 the sell-as-mined bust). M8.7 did the follow-ups (EV/MW band $18–28M, the hosting bot's cost reserve, slot log lines, one report panel,
 the bridge payment on the Plan and Capital screens). Both are in `main`.
 
-## Queued: M9.0 runway look-ahead (DO NOT START until the owner asks)
+## Queued: M9 (after the owner's playtest): M9.0 runway look-ahead + M9.1 inActII refactor + the playtest fixes, one milestone; do not start until the owner asks
+
+### M9.0 runway look-ahead
 
 The design thread's answer to the runway question is **yes, the runway looks one quarter ahead, but only at contractual amounts**, made
-AFTER the owner's playtest notes so the owner's numbers stay stable while playing. Spec:
+AFTER the owner's playtest notes so the owner's numbers stay stable while playing. Shell-lease end of term stays out of it (Act III
+only): M9.0 is a display change. Spec:
 1. **Runway** = cash ÷ the average quarterly burn, where the burn is last quarter's operating burn plus next quarter's contractually
    scheduled obligations that are already fixed: the lifeline bridge payment (including its step from interest-only to amortising),
    project-debt amortisation (including the principal added by capitalised interest during construction), the equipment-loan
@@ -174,9 +192,23 @@ Where the code stands today: `ratingInputs` in `src/sim/systems/rating.ts` takes
 principal); `bridgeSchedule` in `src/sim/systems/lifeline.ts` already gives the bridge's next-quarter payment; `serviceDueUsd` in
 `facilities.ts` and the equipment-loan weekly payment (`loans.ts`) give the others.
 
+### M9.1 inActII refactor (the first step towards Act III)
+
+A **pure refactor**: add `inActII(state)` (and later `inActIII`) and change the 38 `state.act === 2` / `!== 2` checks and the 32
+`act2Quarter` calls to go through it, with **no behaviour change**. Proof required: all 11 Act I goldens, both prologue goldens, the
+Act II sim output (`npm run sim -- --act2`, same seeds) and the Act I sim output identical before and after. Where a check needs a real
+yes or no for Act III (for example "does this rule still apply in Act III"), do NOT decide it: list each one in the report as a question
+with a recommended answer, and keep today's behaviour. See `docs/act3-carryover-audit.md` §4 and §10 for where the checks are.
+
 ## Milestone M8.8 (branch `m9`, from `main` at a37ef1e; docs only)
 
 - M8.8a: the runway answer recorded and queued as M9.0 above; "Next" and "Open questions" updated; the M8 / M8.7 logs moved to the archive.
 - M8.8b: read-only audit of what Act III could carry over: `docs/act3-carryover-audit.md` (no game code, content or test changed).
   Summary: a hidden-scenario draw, a contract calendar, a nuclear PPA Power-slot option and wildcards are cheap; the scenario-dependent
   market, Signals panel, renewals, density retrofit, political capital and presets are medium; extending the timeline is expensive.
+
+## Milestone M8.9 (branch `m9`, from `main` at effe2d4; docs only)
+
+- M8.9a: the design thread's answers 1–4 recorded under "Next"; the queued entry renamed "M9 (after the owner's playtest)" with M9.0 and a
+  new M9.1 (the `inActII` refactor). M8.9b: a "Design thread decisions" section in `docs/act3-carryover-audit.md` with the answers and the
+  open Act III design decisions waiting for the owner (doc 27 v0.2). No game code, content or test changed.
