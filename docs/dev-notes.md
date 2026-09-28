@@ -68,6 +68,10 @@ publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now inc
 **Numbers (M6):** 627 tests pass; lint and build pass; the 11 Act I goldens unchanged. Act II §5: 4 PASS, 9 MISS
 (table in the M6 report below).
 
+**The Prologue (Alpha 0.3): built on `prologue`** (branched from `act2` after M6; not merged): Act 0, 2009–2016,
+opt-in from the title screen; the whole scope §2 plus the §5 bots and checks (13 PASS, 1 MISS). See the Prologue
+report at the end.
+
 **Not built yet in Act II:** the GPU failure wave's interrupt form, GPU know-how display beyond the Projects header,
 the Act II quarter report additions (MW by use, rating change, project milestones: A2-08 beyond the league).
 
@@ -170,7 +174,7 @@ the Act II quarter report additions (MW by use, rating change, project milestone
 
 ## Open questions for the design thread
 
-The M6 report's questions 1–9 (below).
+The M6 report's questions 1–9 (below), and the Prologue report's questions 1–7 (at the end).
 
 ## STOPPED
 
@@ -191,8 +195,8 @@ The M6 report's questions 1–9 (below).
 
 ## Next
 
-The design thread's answers to the M6 report's questions (as M7.0), when the owner brings them. Meanwhile the
-Prologue (Alpha 0.3) is being built on the `prologue` branch (owner's queued instruction, 28 Sep 2026).
+The owner reviews the `prologue` branch (play it: `npm run dev`, "Start in 2009 (prologue)"; numbers:
+`npm run sim -- --prologue`) and brings the design thread's answers to the M6 and Prologue questions.
 
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 
@@ -328,43 +332,92 @@ balance → **P3** events, theme, screens → the Prologue report.
   model sold used that quarter.
 - Custody: a sell order (Plan screen, keep/sell %, or a card) moves what it needs from the wallet first (a week);
   the keep/sell % orders the sell share even before there's a price (it waits, as unfilled orders do); a prologue
-  start keeps 100% by default; offers are taken
-  from the wallet first, then the exchange.
+  start keeps 100% by default; offers are taken from the wallet first, then the exchange.
 - Pre-orders: the group buy's half unit is its own model (`asic_preorder_group`, half hashrate / power / prices);
-  a unit arrives at the start of promised + delay quarters after the order and earns from the next (as Act I); on
-  time = 0 delay; a "never" vendor refunds at the end of the very-late range; units with no room wait (sold at handover).
+  a unit arrives at the start of the ship quarter + its delay (P4 tuning: 2013Q3 on time) and earns from the next
+  (as Act I); a "never" vendor refunds at the end of the very-late range; units with no room wait (sold at handover).
 - Cards (events_prologue.json notes): Act I's engine (35% a quarter, weeks 2–12, once a game); defaults = the passive
   answer; the dead drive is the wallet-loss roll's card (takes the random slot, may repeat, pauses auto-play); Bitfinex
   is a roll in its week, separate from its news card; card sales of wallet coins move them to the exchange first.
   Note: the conference card's quarters (2013Q2, 2014Q2) auto-play, so it takes "skip" unless you stopped there.
-- P4 split: P4.1 bots, runner (`npm run sim -- --prologue`), tuning · P4.2 Act 0 and Act 0 → I goldens. P3 after.
-- P4.1: the household card is a week-1 card of the next quarter (not an extra Plan phase: pacing); prologue rolls use
-  `rollStream` (a mixed substream: plain ones clumped for seeds 1–50); TUNING (designed value) pre-orders: on time
-  ships 2013Q3 for every order (before: promised quarter after the order → on time 7.9–34×, average 3.1–16×; after:
-  on time 2.9–3.2×, 2–3Q late 0.26–0.29×, average 1.30–1.59×).
-- P4.2: goldens `prologue-careful-hodler-seed-2009` (Act 0) and `prologue-to-act1-seed-2009` (Act 0 → I), with the
-  same-seed and replay-the-log checks (`replayPrologue`); every Act I golden unchanged.
-- P4.3: save checks (export → import at every kind of moment in Act 0 and after the handover; a mid-prologue load plays
-  on identically); an act-0 save needs its prologue state; the "Start of Act II" slot and label only for act 2; a
-  Save button on the prologue screens.
-- P3.1: the bedroom theme (tokens incl. heat-3 #9A4E1C, half-pitch grid, dashed panels, lighter titles), the 17
-  prologue icons, `MachineCard` + its 10 drawings (`src/ui/machineDrawings.ts`, prologue model map); act 0 → bedroom.
-- P3.2: the prologue screens: top bar, nav Dashboard / Rig / Wallet / Life / Log, KPI tiles, buy menu with MachineCards,
-  wallet (moves, sell, keep/sell %, mined-to, backup), offers tray, pre-order cards, life (household, move out, small
-  unit, conference, used offer, vanity), live + card dialog, quarter report / auto summary, the chapter report.
-- P3.3: Act I scoring for prologue starts: title and rank by the growth multiple (as a $10K start with the same
-  multiple); the Act I chapter shows the multiple next to the absolute net worth.
-- P2.5: `playPrologue` / `through: 0` in replay.ts (act 0 only; Act I/II paths unchanged); `tools/prologueBots.ts`
-  (settings-driven prologue bot, hands over to `shell-climb`); whole-run tests to the handover and to 2026Q4.
+- The household's forced card (patience 0) comes in week 1 of the next quarter as a card (not an extra Plan phase,
+  which broke the 13-Plan-phase pacing); its move-out needs no Bandwidth; a failed move-out falls back to cutting back.
+- Prologue rolls use `rollStream` (a substream mixed once): plain per-quarter substreams clumped for seeds 1–50
+  (22 draws under 0.75% where 12 were expected). Act I and II keep their plain substreams (goldens).
+- Scoring (P0-17): title and rank use the growth multiple as "what a $10K start would have reached"; the rank compares
+  that scaled value with the rivals' values.
+- Bots: `tools/prologueBots.ts`; after the handover every prologue bot plays Act I and II as `shell-climb`.
 
-### Prologue progress
-- P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.
-- P1.1: the prologue market (−32 … −1), act 0 in the act list, `quarterLabel` / `quarterIndex`.
-- P1.2: `src/content/machines_prologue.json` + `prologue.json` (game copies, schemas; getModel finds prologue machines,
-  Act I lists don't); state `act: 0`, `prologue?` / `prologueCarry?`; save format 3 (2 → 3 changes nothing) + tests;
-  `src/sim/prologue/` (setup, engine: week / quarter end / auto-play / Stop here; handover; actions router).
-- P1.3: title buttons (Start in 2017 → / Start in 2009 / Start at Act II); `src/ui/screens/Prologue.tsx` (intro, a
-  basic Plan, live, auto-play summary card with Stop here, chapter → Act I); `prologue/views.ts` (odds in words).
-- P2 split: P2.1 life (move out, household card, home rig / small unit, backup, conferences, vanity) · P2.2 custody
-  and selling (moves, mined-to, sell queue, pool, offers tray) · P2.3 pre-orders · P2.4 the 24 cards (game copy,
-  scheduler, exchange events, wallet-loss roll, resolver, a basic card screen) · P2.5 a full-run test.
+## Prologue report (28 Sep 2026, owner's unattended run; the step log is in the archive › "The Prologue")
+
+```
+WHAT WAS BUILT (branch prologue; npm test 677 pass; lint and build pass; the 11 Act I goldens unchanged)
+- Act 0: 2009Q1–2016Q4 at quarter indices −32…−1 (Act I/II indices, saves and goldens untouched), save format 3,
+  "Start in 2009 (prologue)" on the title screen; "Start in 2017" is today's start (goldens prove it).
+- Economy: bedroom / home rig / garage / small unit, household patience and its card, moving out, solo (Poisson) vs
+  pool from 2010Q4, wallet vs exchange with week-long moves, sell orders under the designed weekly cap with price
+  impact, keep/sell %, the six forum offers, three pre-order vendors, conferences, vanity, the backup.
+- The 24 cards + the household card; Mt Gox hack (2011) and collapse (2014, "try to withdraw"), Bitfinex (2016), the
+  wallet-loss roll; 13 decision quarters, 19 auto-played ones with "Stop here"; the handover into Act I.
+- Screens: bedroom theme, 17 icons, MachineCard (10 drawings); Plan screen (Dashboard, Rig, Wallet, Life, Log), the
+  card dialog, quarter report / auto summary, pre-order cards, the prologue chapter report; Act I scored by the growth
+  multiple for prologue starts. No wireframes existed: every prologue screen is built from scope §2.13 + PlanEras.
+- Tools: npm run sim -- --prologue (6 bots × 50 seeds to 2026Q4, CSV, §5 table); goldens prologue-careful-hodler and
+  prologue-to-act1 (seed 2009).
+
+COMMITS  dd27b98 P0 · f7f50a9 P1.1 · 9cbc7cf P1.2 · 1cc59a1 P1.3 · 15f4d15 P2.1 · 21cbbea P2.2 · 638c2fe P2.3 ·
+28d2336 P2.3b · d0324da P2.4 · 9375e97 P2.5 · 38a1736 P4.1 · 4ba0544 P4.2 · 3fcc666 P4.3 · 6be1b53 P3.1 ·
+d8c5ba7 P3.2–3.3 (+ this report)
+
+SCOPE §5 (50 seeds per bot, npm run sim -- --prologue)
+PASS  full prologue run with no crash or stuck state; 300/300 prologue → Act I → Act II runs ran (296 reach 2026Q4,
+      4 end in a prologue game over: 3 no-backup, 1 preorder-summit, all after a lost wallet with rent to pay)
+PASS  13 decision quarters, ≤ 19 auto cards; pacing proxy: Plan phases max 13, cards needing a choice median 18, max 21
+PASS  save / reload / export / import in Act 0 and across the Act 0 → I boundary (tests/sim/prologueSave.test.ts)
+PASS  sell-as-mined: 2016Q4 net worth median $40.3K (p10 $36.3K, p90 $41.4K)
+PASS  gox-hodler loses ≥ 70% in 2014Q1: 80% in every run
+PASS  careful-hodler ≥ $1M: median $1.2B, p10 $1.1B (see question 1: every careful run is "Satoshi-scale")
+MISS  no-backup loses its wallet before 2016Q4 in ≥ 20%: 7/50 = 14%. The designed 0.75%/quarter gives 20.2% over
+      the 30 quarters with coins, so 50 seeds land either side of the line (question 3). Not tuned.
+PASS  solo fades: one gaming GPU ≥ 1 block 100% in 2010Q4, 36% in 2012Q2; crosses 50% in 2011Q3
+PASS  pre-orders (value by 2016Q4 ÷ price, coins sold weekly): on time 2.9–3.2×, 2–3Q late 0.26–0.29×, 4+Q 0.07×,
+      average 1.30× (Northgate) / 1.43× (group buy) / 1.59× (Summit)   [held to 2016Q4 instead: 5.7–6.4× on time]
+PASS  every prologue bot reaches 2026Q4 through Act I and II (or a prologue game over); Act I growth multiples:
+      hodlers ≈ 11.7× (BTC's own 2017→2022 rise), sell-as-mined ≈ 245×
+PASS  Act I, II and I → II goldens unchanged (only Act I goldens exist); new Act 0 and Act 0 → I goldens
+PASS  content passes schema validation; the 2 → 3 migration test passes
+PASS  1,000 prologue runs: 105 s, CSV out (sim-output/prologue-runs.csv)
+
+TUNING (designed values only)
+- Pre-orders: an on-time unit arrives in 2013Q3 for every vendor (mines from 2013Q4: the pack's own anchor, 7 Oct
+  2013). Before: on time = the promised quarter after the order → on time 7.9× (2013Q1 order) to 34× (2012Q4), average
+  3.1–16×. After: the PASS line above. (prologue.json › preorders.ships_quarter, "designed")
+- Nothing else was tuned (the selling caps and wallet-loss rate are as the scope set them).
+
+STOPPED: none.
+
+NOT BUILT / PARTLY
+- MachineCard on failure pop-ups: the prologue has no failure pop-up (failures only reach the log).
+- Vanity "news mention": the purchase shows in the log and the chapter report, not in the news ticker.
+- Act I's onboarding tips assume the $10K start ("You have $10,000") and show for prologue starts too.
+
+INCIDENTS
+- One command (`npx tsx`, a debug script) downloaded tsx into npm's cache; package.json and the project are unchanged.
+  Debug scripts ran with `node` afterwards.
+- P2.3 was committed with a lint error; fixed in P2.3b (no history rewritten).
+```
+
+**Questions for the design thread (Prologue):**
+1. **Literal CPU mining makes every run Satoshi-scale.** The 2009 network is about 7 MH/s and the player's PC is 4 MH/s,
+   so one PC mines about a third of all 2009 blocks: every player who leaves it running ends 2016 with ≈1.2M BTC
+   (≈$1.2B), unless they sell (sell-as-mined $40K) or lose it (Mt Gox, a dead drive). P0-13 says "do not cap it"; is
+   a billionaire at every careful handover what the design wants, given Act I's systems don't change for rich starts?
+2. Save format 3 vs "goldens unchanged": the golden test compares Act I goldens with `version` set back to 2. OK?
+3. no-backup's ≥ 20% sits on the designed 0.75%/quarter (20.2% expected): lower the bar to ≥ 15%, or 1%/quarter?
+4. Pre-order timing: a single on-time ship quarter (2013Q3) for every order, as tuned: keep it, or a different anchor?
+5. The conference card's quarters (2013Q2, 2014Q2) auto-play, so the card takes "skip" unless the player stopped there.
+   Make them decision quarters, or let the conference card pause auto-play?
+6. A lost wallet after moving out ends the whole game in the prologue (rent, no coins). Keep the bust, or add a way
+   back home?
+7. Act I for prologue starts: hide or reword the $10K onboarding tips? (Early funding rounds are tiny for a rich
+   start; the scope accepts that.)

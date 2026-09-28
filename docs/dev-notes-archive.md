@@ -1659,3 +1659,33 @@ before 2023Q3 although the pilot opens in 2023Q1; GB200 NVL72 has no GPUs-per-MW
 scope's 6. The market loader should trim 2024Q3 (14 weeks) by keeping its last week (the real quarter close).
 Backlog (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing
 EBITDA, clamped to ±30% of the capital.json terms).
+
+## The Prologue (Alpha 0.3): step log (branch `prologue`, 28 Sep 2026)
+
+- P0 `dd27b98`: the design thread's scope, content pack and design-system files committed.
+- P1.1: the prologue market (−32 … −1), act 0 in the act list, `quarterLabel` / `quarterIndex`.
+- P1.2: `src/content/machines_prologue.json` + `prologue.json` (game copies, schemas; getModel finds prologue machines,
+  Act I lists don't); state `act: 0`, `prologue?` / `prologueCarry?`; save format 3 (2 → 3 changes nothing) + tests;
+  `src/sim/prologue/` (setup, engine: week / quarter end / auto-play / Stop here; handover; actions router).
+- P1.3: title buttons (Start in 2017 → / Start in 2009 / Start at Act II); `src/ui/screens/Prologue.tsx` (intro, a
+  basic Plan, live, auto-play summary card with Stop here, chapter → Act I); `prologue/views.ts` (odds in words).
+- P2 split: P2.1 life (move out, household card, home rig / small unit, backup, conferences, vanity) · P2.2 custody
+  and selling (moves, mined-to, sell queue, pool, offers tray) · P2.3 pre-orders · P2.4 the 24 cards (game copy,
+  scheduler, exchange events, wallet-loss roll, resolver, a basic card screen) · P2.5 a full-run test.
+- P2.5: `playPrologue` / `through: 0` in replay.ts (act 0 only; Act I/II paths unchanged); `tools/prologueBots.ts`
+  (settings-driven prologue bot, hands over to `shell-climb`); whole-run tests to the handover and to 2026Q4.
+- P4 split: P4.1 bots, runner (`npm run sim -- --prologue`), tuning · P4.2 Act 0 and Act 0 → I goldens · P4.3 saves.
+- P4.1: the household card is a week-1 card of the next quarter (not an extra Plan phase: pacing); prologue rolls use
+  `rollStream`; the pre-order ship-quarter tuning.
+- P4.2: goldens `prologue-careful-hodler-seed-2009` (Act 0) and `prologue-to-act1-seed-2009` (Act 0 → I), with the
+  same-seed and replay-the-log checks (`replayPrologue`); every Act I golden unchanged.
+- P4.3: save checks (export → import at every kind of moment in Act 0 and after the handover; a mid-prologue load plays
+  on identically); an act-0 save needs its prologue state; the "Start of Act II" slot and label only for act 2; a
+  Save button on the prologue screens.
+- P3.1: the bedroom theme (tokens incl. heat-3 #9A4E1C, half-pitch grid, dashed panels, lighter titles), the 17
+  prologue icons, `MachineCard` + its 10 drawings (`src/ui/machineDrawings.ts`, prologue model map); act 0 → bedroom.
+- P3.2: the prologue screens: top bar, nav Dashboard / Rig / Wallet / Life / Log, KPI tiles, buy menu with MachineCards,
+  wallet (moves, sell, keep/sell %, mined-to, backup), offers tray, pre-order cards, life (household, move out, small
+  unit, conference, used offer, vanity), live + card dialog, quarter report / auto summary, the chapter report.
+- P3.3: Act I scoring for prologue starts: title and rank by the growth multiple (as a $10K start with the same
+  multiple); the Act I chapter shows the multiple next to the absolute net worth.
