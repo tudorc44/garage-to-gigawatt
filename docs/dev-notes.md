@@ -128,7 +128,9 @@ Nothing. (Balance tuning stays stopped by the owner's A1 answer.)
 ## Small follow-ups
 
 - An ear test of the sounds; the 4 sample fallbacks if a synth sound is wrong.
-- The main JS chunk is over Vite's 500 KB warning (card text): split it later.
+- (Done, 29 Sep 2026) The big JS chunk is split: `vite.config.ts` puts the market data, card text, other content JSON and
+  libraries in their own files, and the prologue screens load only when a prologue game starts (`LazyPrologue` in `app.tsx`).
+  Every file is under 500 KB (main 444 KB) and the Vite warning is gone.
 - The ASIC $/TH tiers, SOFR and spread series are estimates (doc 18 §15): pull real data before final balance.
 - Backlog idea (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing EBITDA, ±30%).
 - Power and capital project slots have no log line, so the report's "milestones" only show the tenant slot (mine, reversible).

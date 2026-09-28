@@ -1,7 +1,8 @@
 // The game shell: holds the GameState, sends actions to the sim, and picks the screen
 // from the phase (plan → live → report → next plan … → Merge → chapter report). No game rules here.
-import { useCallback, useRef, useState } from 'preact/hooks'
-import type { Message } from '../i18n/t.ts'
+import type { ComponentType } from 'preact'
+import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
+import { t, type Message } from '../i18n/t.ts'
 import { applyAction, type Action } from '../sim/actions.ts'
 import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
@@ -9,7 +10,7 @@ import { bandwidthMax, quarterName } from '../sim/selectors.ts'
 import { newGame, type GameState } from '../sim/state.ts'
 import { presetGame } from '../sim/preset.ts'
 import { newPrologueGame } from '../sim/prologue/setup.ts'
-import { PrologueScreen } from './screens/Prologue.tsx'
+import type { PrologueProps } from './screens/Prologue.tsx'
 import { restoreSave } from '../sim/save.ts'
 import { LiveScreen } from './screens/Live.tsx'
 import { PlanScreen } from './screens/Plan.tsx'
@@ -27,6 +28,32 @@ import { soundsFor } from './audio/director.ts'
 
 // Sound follows the player's setting from the start (Settings changes it live).
 setSfxSettings({ enabled: readSettings().sound })
+
+/**
+ * The prologue's screens are a separate file the browser fetches only when a prologue game is on
+ * screen (most of that UI code is used by nobody else); it stays loaded for the rest of the session.
+ */
+function LazyPrologue(props: PrologueProps) {
+  const [Screen, setScreen] = useState<ComponentType<PrologueProps> | null>(
+    null,
+  )
+  useEffect(() => {
+    let live = true
+    void import('./screens/Prologue.tsx').then((m) => {
+      if (live) setScreen(() => m.PrologueScreen)
+    })
+    return () => {
+      live = false
+    }
+  }, [])
+  return Screen ? (
+    <Screen {...props} />
+  ) : (
+    <p class="num-s muted" role="status">
+      {t('ui.loading')}
+    </p>
+  )
+}
 
 /** Numbers are used as-is; any other text is hashed; empty picks a random seed. */
 function toSeed(text: string): number {
@@ -164,7 +191,7 @@ export function App() {
   } else if (game.act === 0) {
     // The prologue (Alpha 0.3) has its own screens for every phase.
     screen = (
-      <PrologueScreen
+      <LazyPrologue
         state={game}
         act={act}
         tick={tick}
