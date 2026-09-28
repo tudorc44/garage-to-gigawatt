@@ -232,6 +232,9 @@ additions · M8.4 GPU failure wave interrupt · M8.5 GPU know-how display · M8.
 - M8.2: hosting head start ($37.6M): the opening bot never re-let MW after a winter client default (busts 7/20) nor freed hosted MW for
   shells. Lever 1 (bot only; no data or rule change): re-let before 2023Q3, end free-to-end contracts from 2023Q3. Now $461.8M, busts
   4/20 (the conversion still spends all cash: the remaining busts). Check 3/4 distinct (hosting best = open-shell = gpu_cloud's best by 2%).
+- M8.3: the Act II report panel is now MW before → after (table + total), backlog Δ, rating old → new with its reason (`ratingWhy` stored in the
+  report), project milestones and tenants signed/lost (`act2ReportView`). "Before" = the previous report (reports already keep every quarter,
+  so no extra snapshot field; the first Act II quarter shows "—"); power/capital slots have no log line, so only the tenant slot shows (mine, reversible).
 
 ## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
 

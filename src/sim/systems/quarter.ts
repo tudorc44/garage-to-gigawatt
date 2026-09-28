@@ -64,8 +64,16 @@ export function endQuarter(state: GameState): void {
   const report = buildReport(state, w, forcedSale)
   if (act2Quarter(state.quarter)) {
     const previous = state.creditRating
-    state.creditRating = ratingInputs(state, report).rating
+    const inputs = ratingInputs(state, report)
+    state.creditRating = inputs.rating
     report.creditRating = state.creditRating
+    report.ratingWhy = {
+      debtToEbitda: inputs.debtToEbitda,
+      band: inputs.band,
+      quality: inputs.quality,
+      shortRunway: inputs.shortRunway,
+      eventNotches: inputs.eventNotches,
+    }
     if (previous !== null && previous !== state.creditRating)
       logEntry(state, 'log.rating_changed', {
         from: previous,

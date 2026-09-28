@@ -1,8 +1,9 @@
 // Quarter report: headline tiles, cost per coin vs price, league table, notes.
 import { t, tDynamic, type MessageKey } from '../../i18n/t.ts'
-import { MwBar, MwLegend, useName } from '../components/mwbar.tsx'
+import { MwBar, useName } from '../components/mwbar.tsx'
 import {
   MW_USES,
+  type MwUse,
   act2ReportView,
   actTurn,
   averagePrice,
@@ -520,9 +521,12 @@ function rivalScale(r: RivalSnapshot): string | null {
 function Act2Panel({ state }: { state: GameState }) {
   const v = act2ReportView(state)
   if (!v) return null
-  const moved = MW_USES.filter(
-    (u) => v.prevUse && Math.round(v.use[u]) !== Math.round(v.prevUse[u]),
-  )
+  const total = (u: Record<MwUse, number>) =>
+    MW_USES.reduce((sum, use) => sum + u[use], 0)
+  const change = (now: number, before: number) =>
+    Math.round(now) === Math.round(before)
+      ? '—'
+      : `${now > before ? '▲' : '▼'}${fmt.power(Math.abs(now - before))}`
   return (
     <div class="panel p a2-report">
       <h2 class="panel-title">{t('ui.report.a2_title')}</h2>
@@ -530,19 +534,40 @@ function Act2Panel({ state }: { state: GameState }) {
         <div>
           <span class="label">{t('ui.report.a2_mw')}</span>
           <MwBar use={v.use} />
-          <MwLegend use={v.use} />
-          {moved.length > 0 && (
-            <p class="num-s muted" style={{ margin: 0 }}>
-              {moved
-                .map((u) =>
-                  t('ui.report.a2_mw_change', {
-                    use: useName(u),
-                    delta: `${v.use[u] > v.prevUse![u] ? '▲' : '▼'}${fmt.power(Math.abs(v.use[u] - v.prevUse![u]))}`,
-                  }),
-                )
-                .join(' · ')}
-            </p>
-          )}
+          <table class="a2-mw-table">
+            <thead>
+              <tr>
+                <th />
+                <th class="r">{t('ui.report.a2_before')}</th>
+                <th class="r">{t('ui.report.a2_after')}</th>
+                <th class="r">{t('ui.report.a2_change')}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {MW_USES.map((u) => (
+                <tr key={u}>
+                  <td>{useName(u)}</td>
+                  <td class="num r">
+                    {v.prevUse ? fmt.power(v.prevUse[u]) : '—'}
+                  </td>
+                  <td class="num r">{fmt.power(v.use[u])}</td>
+                  <td class="num-s r muted">
+                    {v.prevUse ? change(v.use[u], v.prevUse[u]) : '—'}
+                  </td>
+                </tr>
+              ))}
+              <tr class="a2-total">
+                <td>{t('ui.report.a2_total')}</td>
+                <td class="num r">
+                  {v.prevUse ? fmt.power(total(v.prevUse)) : '—'}
+                </td>
+                <td class="num r">{fmt.power(total(v.use))}</td>
+                <td class="num-s r muted">
+                  {v.prevUse ? change(total(v.use), total(v.prevUse)) : '—'}
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <div>
           <div class="stat">
@@ -562,15 +587,41 @@ function Act2Panel({ state }: { state: GameState }) {
           <div class="stat">
             <span class="label">{t('ui.report.a2_rating')}</span>
             <span class="num-kpi">
-              {v.rating ?? t('ui.report.a2_rating_none')}
+              {v.prevRating !== null && v.prevRating !== v.rating
+                ? `${v.prevRating} → ${v.rating}`
+                : (v.rating ?? t('ui.report.a2_rating_none'))}
             </span>
             <span class="num-s muted">
               {v.prevRating === null
                 ? ''
                 : v.prevRating !== v.rating
-                  ? t('ui.report.a2_rating_from', { rating: v.prevRating })
+                  ? t('ui.report.a2_rating_moved')
                   : t('ui.report.a2_rating_same')}
             </span>
+            {v.ratingWhy && (
+              <span class="num-s muted">
+                {[
+                  v.ratingWhy.debtToEbitda === null
+                    ? t('ui.report.a2_why_debt_none')
+                    : t('ui.report.a2_why_debt', {
+                        x: v.ratingWhy.debtToEbitda.toFixed(1),
+                      }),
+                  t('ui.report.a2_why_quality', {
+                    quality: tDynamic(
+                      `ui.report.a2_quality.${v.ratingWhy.quality}`,
+                      v.ratingWhy.quality,
+                    ),
+                  }),
+                  v.ratingWhy.shortRunway && t('ui.report.a2_why_runway'),
+                  v.ratingWhy.eventNotches !== 0 &&
+                    t('ui.report.a2_why_event', {
+                      n: v.ratingWhy.eventNotches,
+                    }),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </span>
+            )}
           </div>
         </div>
         <div>
@@ -583,13 +634,22 @@ function Act2Panel({ state }: { state: GameState }) {
               <div key={i}>{say(e)}</div>
             ))}
           </div>
+          <span class="label">{t('ui.report.a2_tenants')}</span>
+          <div class="log">
+            {v.tenants.length === 0 && (
+              <div class="muted">{t('ui.report.a2_no_tenants')}</div>
+            )}
+            {v.tenants.map((e, i) => (
+              <div key={i}>{say(e)}</div>
+            ))}
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-const END_KEYS: MessageKey[] =['log.forced_sale', 'log.game_over']
+const END_KEYS: MessageKey[] = ['log.forced_sale', 'log.game_over']
 
 function Notes({ state }: { state: GameState }) {
   const entries = state.log.filter((e) => e.quarter === state.quarter)

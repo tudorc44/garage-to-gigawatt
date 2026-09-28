@@ -637,6 +637,14 @@ export interface QuarterReport {
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
   /** Act II: the credit rating at quarter end (absent in Act I). */
   creditRating?: string
+  /** Act II: what the rating rests on (M8.3): debt ÷ yearly EBITDA, its band, backlog quality, runway, card notches. */
+  ratingWhy?: {
+    debtToEbitda: number | null
+    band: string
+    quality: string
+    shortRunway: boolean
+    eventNotches: number
+  }
   /** Act II: kW by use at quarter end (absent in Act I and in older saves). */
   mwByUseKw?: MwByUse
   /** Act II: a card's premium on the operating value that quarter (absent when there's none). */
