@@ -34,6 +34,12 @@ const argValue = (flag: string, fallback: string) => {
   return i >= 0 ? args[i + 1] : fallback
 }
 const SEEDS = Number(argValue('--seeds', '50'))
+/**
+ * Scope 0.2 §5 good path at 2026Q4 (also the preset's yardstick, owner M7.0 answer A6), and the great
+ * path's 2025 peak band.
+ */
+const GOOD_BAND: [number, number] = [1e9, 3e9]
+const GREAT_PEAK_MIN = 10e9
 const OUT = argValue('--out', 'sim-output')
 /** Target B1: the cash a small unit needs. */
 const B1_CASH = 35_000
@@ -892,22 +898,22 @@ if (args.includes('--act2')) {
     const runs = runsOf(name)
     if (!runs) continue
     const ends = runs.map((r) => at(r, '2026Q4') ?? 0)
-    const inBand = ends.filter((v) => v >= 1e9).length
+    const inBand = ends.filter((v) => v >= GOOD_BAND[0]).length
     const busts = runs.filter(
       (r) => at(r, '2022Q3') !== undefined && r.state.phase === 'gameover',
     ).length
     if (name === 'sign-then-raise')
       s5.push({
-        target: 'Good path ~$1–3B at 2026Q4, ≤ 10% bust in Act II',
+        target: `Good path ~${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])} at 2026Q4, ≤ 10% bust in Act II`,
         result: verdict(
-          median(ends) >= 1e9 &&
-            median(ends) <= 3e9 &&
+          median(ends) >= GOOD_BAND[0] &&
+            median(ends) <= GOOD_BAND[1] &&
             busts <= runs.length * 0.1,
         ),
-        numbers: `${name}: median ${usd(median(ends))} (all runs), $1B+ in ${inBand}/${ends.length}, bust ${busts}/${runs.length}`,
+        numbers: `${name}: median ${usd(median(ends))} (all runs), ${usd(GOOD_BAND[0])}+ in ${inBand}/${ends.length}, bust ${busts}/${runs.length}`,
       })
     console.log(
-      `  Good path (${name}): 2026Q4 median ${usd(median(ends))}; at $1B+ in ${inBand}/${ends.length} runs (target ~$1–3B); bust in Act II ${busts}/${runs.length} (target ≤ 10%)`,
+      `  Good path (${name}): 2026Q4 median ${usd(median(ends))}; at ${usd(GOOD_BAND[0])}+ in ${inBand}/${ends.length} runs (target ${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])}); bust in Act II ${busts}/${runs.length} (target ≤ 10%)`,
     )
   }
   for (const name of ['texas-capital', 'asic-retirer']) {
@@ -929,10 +935,9 @@ if (args.includes('--act2')) {
     }).length
     if (name === 'asic-retirer')
       s5.push({
-        target:
-          'Great path peaks $10B+ in 2025, survives 2026 with ≥ 12 months runway',
+        target: `Great path peaks ${usd(GREAT_PEAK_MIN)}+ in 2025, survives 2026 with ≥ 12 months runway`,
         result: verdict(
-          median(peak2025) >= 10e9 && survivors >= runs.length / 2,
+          median(peak2025) >= GREAT_PEAK_MIN && survivors >= runs.length / 2,
         ),
         numbers: `${name}: 2025 peak median ${usd(median(peak2025))}; ≥ 4 q runway at 2026Q4 in ${survivors}/${runs.length}`,
       })
@@ -943,7 +948,7 @@ if (args.includes('--act2')) {
   // The valuation breakdown (medians of each part over the runs that have that point), for the
   // good and great bots, and EV per MW against the §5 sanity bands.
   console.log(
-    '\n  Valuation breakdown (medians; EV/MW bands: mining $0.4–1.2M, announced AI $3–12M, stabilized IG $18–27M):',
+    '\n  Valuation breakdown (medians; EV/MW bands: mining $0.4–1.2M, announced AI $3–15M, stabilized IG $18–27M):',
   )
   const medOrDash = (xs: (number | null)[]) => {
     const v = xs.filter((x): x is number => x !== null)
@@ -1087,7 +1092,7 @@ if (args.includes('--act2')) {
       target: `EV/MW sanity at 2026Q4 (${name})`,
       result: verdict(
         inBand(mine, 0.4e6, 1.2e6) &&
-          inBand(ann, 3e6, 12e6) &&
+          inBand(ann, 3e6, 15e6) &&
           inBand(stab, 18e6, 27e6),
       ),
       numbers: `mining ${usd(mine)} · announced AI ${usd(ann)} · stabilized IG ${usd(stab)} per MW`,
@@ -1156,7 +1161,8 @@ if (args.includes('--act2')) {
       result: verdict(distinct >= 3 && within),
       numbers: `${distinct}/4 different best (${bests.join(', ')}); matching ${own.map(usd).join(' / ')}`,
     })
-    // The owner's M5 answer 3: the preset is a good-path entry; its best bot should reach the good band.
+    // The owner's M5 answer 3 and M7.0 answer A6: the preset is judged with the good path, against
+    // whatever the good band is.
     const presetBest = presetBots
       .map((name) =>
         median(
@@ -1172,8 +1178,8 @@ if (args.includes('--act2')) {
       )
       .reduce((a, b) => Math.max(a, b), 0)
     s5.push({
-      target: 'Preset (40 MW) best bot reaches the good band (~$1–3B)',
-      result: verdict(presetBest >= 1e9),
+      target: `Preset (40 MW) best bot reaches the good band (${usd(GOOD_BAND[0])}–${usd(GOOD_BAND[1])})`,
+      result: verdict(presetBest >= GOOD_BAND[0]),
       numbers: `best preset bot median ${usd(presetBest)}`,
     })
   }

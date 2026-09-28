@@ -243,6 +243,8 @@ export function backlogView(state: GameState) {
       backstop: BALANCE.finance.backstopBacklogWeight,
       below: backlogWeight('B'),
     },
+    /** The EBITDA multiple floor on long A/AA or backstopped contracts. */
+    floorMultiple: BALANCE.finance.contractedAiMultipleFloor.multiple,
   }
 }
 

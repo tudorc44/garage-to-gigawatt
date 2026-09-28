@@ -194,6 +194,22 @@ The M6 report's questions 1–9 (below).
 The design thread's answers to the M6 report's questions (as M7.0), when the owner brings them. Meanwhile the
 Prologue (Alpha 0.3) is being built on the `prologue` branch (owner's queued instruction, 28 Sep 2026).
 
+## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
+
+A1 ATM equity (2 raises a quarter, ≤ 30% each, 1 BW) + interest during construction capitalised; then re-run: keep
+targets if sign-then-raise ≥ $700M at 2026Q4, else good $0.5–2B / great $4–8B peak (report both). A2 floor 15×, A/AA
+20%, announced AI band $3–15M/MW. A3 AI-lab project debt 50% + 2026 AI-lab distress (12%/q from 2026Q2, −50% rent,
+terminate & re-let 1 BW / 2 q empty) + target (> 4×, AI lab, no backstop → ≥ 40% foreclosure or forced sale in 2026).
+A4 head starts judged on a GPU-heavy Act I bot. A5 bridge 12 q, interest-only 4. A6 preset judged vs the good band.
+A7 AI labs below BBB: project debt 50% LTC at the BBB rate + 3 pts. A8 before a debt game over: sell the smallest
+curing project at cap-rate × 0.85, else emergency equity at −50%, ≤ 30%. A9 accept. MY CHOICES confirmed (Arizona:
+already only Arizona projects started from 2026Q2).
+Split: M7.0a A5, A7, A2, A6 · M7.0b A1 (equity, IDC; bots) · M7.0c A3 distress + re-let, A8 rescue, overleveraged
+target · M7.0d A4 GPU-heavy head-start check · M7.0e sims, A1 decision, scope §8, report.
+- M7.0a: bridge 12 q (interest only 4, then eighths; balance.ts overrides capital_act2.json's 8, which must match
+  the docs copy); sub-BBB AI labs 50% at +3 pts (a BBB AI lab keeps 65%); floor 15× (note: 2026Q4's era multiple is
+  15×, so the floor never binds now); announced-AI band $3–15M; one GOOD_BAND for the good path and the preset.
+
 ## M6 report (28 Sep 2026; the step log is in the archive › "Milestone M6")
 
 ```text

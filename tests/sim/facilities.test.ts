@@ -61,12 +61,30 @@ const debt = (s: GameState, d: 'project_debt' | 'ddtl', on = true) =>
   ok(s, { type: 'PROJECT_DEBT', projectId: 'project-1', debt: d, on })
 
 describe('who can borrow', () => {
-  it('project debt needs a tenant rated BBB or better', () => {
-    expect(() => debt(shellWith('tc_meridian_labs'), 'project_debt')).toThrow(
-      'error.debt_needs_bbb',
-    ) // BB
+  it('project debt needs a tenant rated BBB or better, or an AI lab (M7.0, A7)', () => {
+    expect(() =>
+      debt(shellWith('tc_realname_coreweave_style'), 'project_debt'),
+    ).toThrow('error.debt_needs_bbb') // a B+ neocloud
+    debt(shellWith('tc_meridian_labs'), 'project_debt') // a BB AI lab
     debt(shellWith('tc_enterprise_render'), 'project_debt') // BBB
     debt(shellWith('tc_north_azure_cloud'), 'project_debt') // AA
+  })
+
+  it('an AI lab below BBB: 50% of cost at the project-debt rate + 3 points; a BBB AI lab keeps 65%', () => {
+    const lab = shellWith('tc_meridian_labs')
+    const o = debtOffer(lab, lab.projects[0], 'project_debt')
+    expect(o.capUsd).toBeCloseTo(
+      projectCapex(lab, lab.projects[0]).totalUsd * 0.5,
+      4,
+    )
+    expect(o.apr).toBeCloseTo(projectDebtRate(lab.quarter) + 0.03, 9)
+    const bbb = shellWith('tc_enterprise_render')
+    const b = debtOffer(bbb, bbb.projects[0], 'project_debt')
+    expect(b.capUsd).toBeCloseTo(
+      projectCapex(bbb, bbb.projects[0]).totalUsd * 0.65,
+      4,
+    )
+    expect(b.apr).toBeCloseTo(projectDebtRate(bbb.quarter), 9)
   })
 
   it('a DDTL needs a GPU contract', () => {

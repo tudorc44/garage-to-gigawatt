@@ -1,8 +1,9 @@
 // The distressed lifeline (Act II entry, scope 0.2 §2.10; doc 18 §2.2; event card ec03). A company
 // below the floor at the act boundary (under 20 MW energized and under $5M cash) is offered a
-// bankrupt miner's 20 MW site for $6.5M, bought with a bridge loan at 14% for 8 quarters, sized so
+// bankrupt miner's 20 MW site for $6.5M, bought with a bridge loan at 14% for 12 quarters, sized so
 // its cash also reaches $5M. The card's default is to take it; the player can pass. The bridge
-// pays interest every week and its principal at the end of its last quarter.
+// pays interest every week; interest only for its first 4 quarters (owner, M7.0 answer A5), then
+// equal principal at the end of each remaining quarter.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
@@ -45,14 +46,14 @@ export function lifelineTerms(state: GameState) {
     priceUsd: L().priceUsd,
     loanUsd,
     apr: L().apr,
-    tenorQuarters: L().tenorQuarters,
+    tenorQuarters: BALANCE.lifeline.bridgeTenorQuarters,
     cashAfterUsd: state.cash + loanUsd - L().priceUsd,
   }
 }
 
 /**
  * Takes the lifeline (as Act II begins): the site, energized from the first Act II quarter, and the
- * bridge loan, due at the end of its 8th quarter.
+ * bridge loan, paid off by the end of its 12th quarter.
  */
 export function takeLifeline(state: GameState): void {
   const terms = lifelineTerms(state)
@@ -87,7 +88,10 @@ export function takeLifeline(state: GameState): void {
   })
 }
 
-/** One week of the bridge: interest on the balance; in the last week of its due quarter, the principal. */
+/**
+ * One week of the bridge: interest on the balance; in the last week of each quarter after the
+ * interest-only ones, an equal slice of the principal (all of what's left in its last quarter).
+ */
 export function payBridgeWeek(state: GameState): {
   interestUsd: number
   principalUsd: number
@@ -97,11 +101,22 @@ export function payBridgeWeek(state: GameState): {
   const interestUsd = roundCents(
     (loan.balanceUsd * loan.apr) / (4 * BALANCE.weeksPerQuarter),
   )
-  const due =
-    state.quarter >= loan.dueQuarter &&
-    state.week === BALANCE.weeksPerQuarter - 1
-  const principalUsd = due ? loan.balanceUsd : 0
+  const lastWeek = state.week === BALANCE.weeksPerQuarter - 1
+  const amortizing =
+    state.quarter >= loan.takenQuarter + BALANCE.lifeline.bridgeInterestOnlyQuarters
+  const slices =
+    loan.dueQuarter - loan.takenQuarter + 1 -
+    BALANCE.lifeline.bridgeInterestOnlyQuarters
+  const principalUsd = !lastWeek
+    ? 0
+    : state.quarter >= loan.dueQuarter
+      ? loan.balanceUsd
+      : amortizing
+        ? Math.min(loan.balanceUsd, roundCents(loan.amountUsd / slices))
+        : 0
   state.cash -= interestUsd + principalUsd
+  loan.balanceUsd = roundCents(loan.balanceUsd - principalUsd)
+  const due = loan.balanceUsd <= 0.005
   if (due) {
     state.bridgeLoan = null
     logEntry(

@@ -36,6 +36,19 @@ function tenantRating(p: Project): string | null {
   return p.tenant ? tenantCard(p.tenant.card)!.rating : null
 }
 
+/**
+ * An AI-lab tenant rated below BBB with no backstop (owner, M7.0 answer A7): project debt at 50% of
+ * cost, at the project-debt rate + 3 points. AI labs rated BBB or better keep the normal bands.
+ */
+export function subBbbAiLab(p: Project): boolean {
+  if (!p.tenant || p.backstop) return false
+  const card = tenantCard(p.tenant.card)
+  return (
+    card?.type === 'ai_lab' &&
+    ratingRank(card.rating) < ratingRank(BALANCE.finance.projectDebtMinRating)
+  )
+}
+
 /** Why this kind of debt can't go on this project (now), or undefined if it can. */
 export function debtBlocker(
   state: GameState,
@@ -57,10 +70,11 @@ export function debtBlocker(
   const rating = tenantRating(p)
   if (kind === 'project_debt') {
     if (p.kind === 'pilot') return { key: 'error.debt_no_tenant' }
-    // A backstopped tenant is bankable (M4.6, mine).
+    // A backstopped tenant is bankable (M4.6, mine); so is an AI lab below BBB, at 50% (M7.0, A7).
     if (
       rating === null ||
       (!p.backstop &&
+        !subBbbAiLab(p) &&
         ratingRank(rating) < ratingRank(BALANCE.finance.projectDebtMinRating))
     )
       return { key: 'error.debt_needs_bbb' }
@@ -116,11 +130,14 @@ export function debtOffer(
   const f = CONTENT.finance
   // Project debt's loan-to-cost by tenant band (owner, 28 Sep 2026), never below lenders.json's.
   const ltc = BALANCE.finance.projectDebtLtc
+  const aiLab = kind === 'project_debt' && subBbbAiLab(p)
   const share =
     kind === 'project_debt'
       ? strong
         ? Math.max(f.projectDebt.ltv[1], ltc.strong)
-        : Math.max(f.projectDebt.ltv[0], ltc.bbb)
+        : aiLab
+          ? ltc.aiLab
+          : Math.max(f.projectDebt.ltv[0], ltc.bbb)
       : ig
         ? BALANCE.finance.ddtl.advance.ig
         : BALANCE.finance.ddtl.advance.other
@@ -130,7 +147,10 @@ export function debtOffer(
     blocker: debtBlocker(state, p, kind) ?? null,
     capUsd: base * share,
     share,
-    apr: lenderAprUsual(state, kind, ig) - (p.debt?.aprCut?.[kind] ?? 0),
+    apr:
+      lenderAprUsual(state, kind, ig) +
+      (aiLab ? BALANCE.finance.aiLabProjectDebtSpreadAdd : 0) -
+      (p.debt?.aprCut?.[kind] ?? 0),
     tenorQuarters: Math.max(1, contractQuarters(p)),
     // Secured debt on a strong tenant rates A even when the company doesn't (doc 18 §7.2).
     rating: strong ? 'A' : (rating.split(/[\s/(]/)[0] ?? ''),

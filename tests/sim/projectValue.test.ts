@@ -48,17 +48,20 @@ describe('the sum of the parts', () => {
     )
   })
 
-  it('long A/AA or backstopped contracts: at least 18× (owner, 28 Sep 2026); the rest at the era multiple', () => {
-    const late = q('2026Q4') // AI infra 15×
+  it('long A/AA or backstopped contracts: at least 15× (M7.0, A2); the rest at the era multiple', () => {
+    const floor = BALANCE.finance.contractedAiMultipleFloor.multiple
+    expect(floor).toBe(15)
+    // 2026Q4's AI infra multiple is 15×, the floor itself: both parts at 15×.
+    const late = q('2026Q4')
     expect(aiEnterpriseUsd(late, 1_000_000, 600_000)).toBe(
-      600_000 * 4 * 18 + 400_000 * 4 * 15,
+      600_000 * 4 * floor + 400_000 * 4 * 15,
     )
     // The floor never lowers a higher era multiple (2025Q4: 30×).
     expect(aiEnterpriseUsd(q('2025Q4'), 1_000_000, 600_000)).toBe(
       1_000_000 * 4 * 30,
     )
     // The floored part can't exceed the AI EBITDA, and losses add nothing.
-    expect(aiEnterpriseUsd(late, 500_000, 900_000)).toBe(500_000 * 4 * 18)
+    expect(aiEnterpriseUsd(late, 500_000, 900_000)).toBe(500_000 * 4 * floor)
     expect(aiEnterpriseUsd(late, -100_000, 50_000)).toBe(0)
   })
 

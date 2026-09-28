@@ -287,6 +287,7 @@ function Backlog({ state }: { state: ScreenProps['state'] }) {
           bbbPct: v.weights.bbb,
           backstopPct: v.weights.backstop,
           belowPct: v.weights.below,
+          floor: v.floorMultiple,
         })}
       </p>
     </section>

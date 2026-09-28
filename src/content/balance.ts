@@ -155,13 +155,15 @@ export const BALANCE = {
      * Contracted AI EBITDA with an A/AA or backstopped tenant and at least `minQuartersLeft` of the
      * contract to run is valued at no less than this multiple (owner, 28 Sep 2026).
      */
-    contractedAiMultipleFloor: { multiple: 18, minQuartersLeft: 20 },
+    /** M7.0 (owner, answer A2): 15×, the bottom of the accepted 15–18× range (was 18×). */
+    contractedAiMultipleFloor: { multiple: 15, minQuartersLeft: 20 },
     /**
      * Project debt's loan-to-cost by tenant band (owner, 28 Sep 2026, answer 1 step 3; lenders.json's
-     * 60–75% where higher): A/AA or backstopped 75%, BBB 65%. The AI-lab band (50%) is recorded, but
-     * project debt still needs a tenant rated BBB or better (scope §2.7), so it lends nothing yet.
+     * 60–75% where higher): A/AA or backstopped 75%, BBB 65%. AI labs rated below BBB borrow 50% at
+     * the project-debt rate + 3 points (owner, M7.0 answer A7); BBB+ tenants keep their bands.
      */
     projectDebtLtc: { strong: 0.75, bbb: 0.65, aiLab: 0.5 },
+    aiLabProjectDebtSpreadAdd: 0.03,
     /** Warrants worth this × the guaranteed dollars (lenders.json: 0.3–0.5×; mine: the middle), within 3–6%. */
     backstopWarrantValueShare: 0.4,
     /** Bandwidth: an equity raise 2 (scope §2.7); a JV or backstop deal 2 (mine, like negotiating). */
@@ -373,6 +375,12 @@ export const BALANCE = {
     floorKw: 20_000,
     siteTier: 'own_site',
     region: 'ercot',
+    /**
+     * The bridge (owner, M7.0 answer A5; overrides capital_act2.json's 8 quarters): 12 quarters,
+     * interest only for the first 4, then equal principal each quarter; same 14% and size.
+     */
+    bridgeTenorQuarters: 12,
+    bridgeInterestOnlyQuarters: 4,
   },
 
   /**

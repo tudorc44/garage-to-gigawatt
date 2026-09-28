@@ -74,24 +74,35 @@ describe('taking it (the default)', () => {
       balanceUsd: 10_500_000,
       apr: 0.14,
       takenQuarter: q('2022Q4'),
-      dueQuarter: q('2024Q3'),
+      dueQuarter: q('2025Q3'), // 12 quarters (M7.0, A5)
     })
     expect(s.act2Entry!.lifeline).toBe('taken')
     expect(debtUsd(s)).toBe(10_500_000)
     expect(debtStackView(s).rows).toContainEqual(
-      expect.objectContaining({ kind: 'bridge', maturity: '2024Q3' }),
+      expect.objectContaining({ kind: 'bridge', maturity: '2025Q3' }),
     )
   })
 
-  it('pays 14% interest weekly, and the whole principal at the end of 2024Q3', () => {
+  it('pays 14% interest weekly; interest only for 4 quarters, then an eighth of the principal each quarter to 2025Q3', () => {
     let s = taken()
     const r = playQuarter(s).reports.at(-1)!
     expect(r.interestUsd).toBeCloseTo((10_500_000 * 0.14) / 4, -1)
     expect(r.principalUsd).toBe(0)
-    s = { ...s, quarter: q('2024Q3'), cash: 50_000_000 }
-    const due = playQuarter(s)
-    expect(due.bridgeLoan).toBeNull()
-    expect(due.reports.at(-1)!.principalUsd).toBe(10_500_000)
+    // 2023Q3 is the 4th quarter: still interest only.
+    s = { ...s, quarter: q('2023Q3'), cash: 50_000_000 }
+    expect(playQuarter(s).reports.at(-1)!.principalUsd).toBe(0)
+    // 2023Q4, the 5th: the first eighth.
+    s = { ...s, quarter: q('2023Q4') }
+    const first = playQuarter(s)
+    expect(first.reports.at(-1)!.principalUsd).toBeCloseTo(10_500_000 / 8, 2)
+    expect(first.bridgeLoan!.balanceUsd).toBeCloseTo(10_500_000 * (7 / 8), 2)
+    // The last quarter takes whatever is left.
+    const last = playQuarter({ ...first, quarter: q('2025Q3') })
+    expect(last.bridgeLoan).toBeNull()
+    expect(last.reports.at(-1)!.principalUsd).toBeCloseTo(
+      10_500_000 * (7 / 8),
+      2,
+    )
   })
 
   it('can be repaid early from the Plan phase', () => {
