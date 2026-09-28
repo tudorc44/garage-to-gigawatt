@@ -349,6 +349,11 @@ balance → **P3** events, theme, screens → the Prologue report.
   Save button on the prologue screens.
 - P3.1: the bedroom theme (tokens incl. heat-3 #9A4E1C, half-pitch grid, dashed panels, lighter titles), the 17
   prologue icons, `MachineCard` + its 10 drawings (`src/ui/machineDrawings.ts`, prologue model map); act 0 → bedroom.
+- P3.2: the prologue screens: top bar, nav Dashboard / Rig / Wallet / Life / Log, KPI tiles, buy menu with MachineCards,
+  wallet (moves, sell, keep/sell %, mined-to, backup), offers tray, pre-order cards, life (household, move out, small
+  unit, conference, used offer, vanity), live + card dialog, quarter report / auto summary, the chapter report.
+- P3.3: Act I scoring for prologue starts: title and rank by the growth multiple (as a $10K start with the same
+  multiple); the Act I chapter shows the multiple next to the absolute net worth.
 - P2.5: `playPrologue` / `through: 0` in replay.ts (act 0 only; Act I/II paths unchanged); `tools/prologueBots.ts`
   (settings-driven prologue bot, hands over to `shell-climb`); whole-run tests to the handover and to 2026Q4.
 

@@ -379,6 +379,23 @@ export function ChapterScreen(props: {
                 })}
               </span>
             </div>
+            {c.growth && (
+              <div class="panel tile">
+                <span class="label">{t('ui.chapter.growth')}</span>
+                <span class="num-xl">
+                  {t('ui.chapter.growth_value', {
+                    multiple: c.growth.multiple.toLocaleString('en-US', {
+                      maximumFractionDigits: 1,
+                    }),
+                  })}
+                </span>
+                <span class="num-s muted">
+                  {t('ui.chapter.growth_sub', {
+                    start: fmt.money(c.growth.startUsd),
+                  })}
+                </span>
+              </div>
+            )}
             <div class="panel tile">
               <span class="label">{t('ui.end.peak')}</span>
               <span class="num-xl">{fmt.money(c.peak?.valuationUsd ?? 0)}</span>

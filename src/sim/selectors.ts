@@ -106,6 +106,7 @@ import {
 } from './systems/construction.ts'
 import {
   activeRivals,
+  leagueTable,
   rivalMoves,
   rivalSnapshot,
   upcomingRivals,
@@ -1173,6 +1174,22 @@ export function mergeView(state: GameState) {
   }
 }
 
+/** Your league rank with your value scaled (a prologue start ranked by its growth multiple). */
+function scaledRank(
+  state: GameState,
+  reportIndex: number,
+  scale: number,
+): { rank: number; of: number } {
+  const rows = leagueTable(state, reportIndex)
+    .filter((r) => r.valueUsd !== null)
+    .map((r) => ({
+      id: r.id,
+      value: r.id === 'you' ? r.valueUsd! * scale : r.valueUsd!,
+    }))
+    .sort((a, b) => b.value - a.value)
+  return { rank: rows.findIndex((r) => r.id === 'you') + 1, of: rows.length }
+}
+
 /**
  * The chapter report (end of Act I, or a bust): the score (founder net worth = stake × the last
  * valuation, the peak, the league rank) with its title, the career curve, and the raw facts for
@@ -1184,9 +1201,17 @@ export function chapterReport(state: GameState) {
   const last = reports.at(-1)
   const finalValuationUsd = last?.valuationUsd ?? state.cash
   const netWorthUsd = Math.max(0, state.founderStake * finalValuationUsd)
+  // A prologue start (Alpha 0.3 §2.12, P0-17) is scored by its growth multiple: title and rank
+  // go by what a $10K start would have reached with the same multiple.
+  const startUsd = state.prologueCarry?.startNetWorthUsd
+  const growthMultiple =
+    startUsd !== undefined && startUsd > 0 ? netWorthUsd / startUsd : null
+  const scale =
+    growthMultiple !== null ? BALANCE.startCash / startUsd! : 1
+  const scoredUsd = netWorthUsd * scale
   const title = bust
     ? CONTENT.merge.bustTitle
-    : (CONTENT.merge.titleBands.find((b) => netWorthUsd >= b.min)?.title ??
+    : (CONTENT.merge.titleBands.find((b) => scoredUsd >= b.min)?.title ??
       CONTENT.merge.titleBands.at(-1)!.title)
   const peak = reports.reduce<QuarterReport | undefined>(
     (a, b) => (!a || b.valuationUsd > a.valuationUsd ? b : a),
@@ -1223,7 +1248,17 @@ export function chapterReport(state: GameState) {
     peak: peak
       ? { valuationUsd: peak.valuationUsd, quarter: peak.quarter }
       : null,
-    rank: reports.length > 0 ? yourRank(state, reports.length - 1) : null,
+    rank:
+      reports.length === 0
+        ? null
+        : growthMultiple === null
+          ? yourRank(state, reports.length - 1)
+          : scaledRank(state, reports.length - 1, scale),
+    /** A prologue start: the start wealth and the growth multiple on it (else null). */
+    growth:
+      growthMultiple === null
+        ? null
+        : { startUsd: startUsd!, multiple: growthMultiple },
     curve: reports.map((r) => ({
       quarter: r.quarter,
       valuationUsd: r.valuationUsd,

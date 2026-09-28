@@ -80,6 +80,7 @@ export const ICONS = {
   check: '<path d="M4 10.5l4 4 8-8"/>',
   'chevron-right': '<path d="M8 4.5l5.5 5.5L8 15.5"/>',
   play: '<path d="M6 4.5l9 5.5-9 5.5z"/>',
+  save: '<path d="M4 3.5h9.5l3 3v10H4z"/><path d="M7 3.5v4h6v-4"/><path d="M7 16.5V12h6v4.5"/>',
   // The Prologue's 17 (design system, 28 Sep 2026).
   'pc-tower':
     '<rect x="6" y="2.5" width="8" height="15" rx="1"/><path d="M8 5.5h4M8 7.5h4M8 9.5h4"/><circle cx="10" cy="14" r=".9" fill="currentColor" stroke="none"/>',

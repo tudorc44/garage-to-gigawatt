@@ -1364,3 +1364,26 @@ td.wrap {
   flex-direction: column;
   gap: 4px;
 }
+
+/* The prologue's Plan sections (Alpha 0.3): two equal columns. */
+.dash.p0-dash {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  overflow: auto;
+}
+.p0-dash .panel {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.p0-dash .fleet-row {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: center;
+}
+.p0-machines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
