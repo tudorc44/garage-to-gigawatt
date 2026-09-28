@@ -403,6 +403,58 @@ P5.0d merge act2 (M7.0), sims, scope 0.3 §7, the combined report.
 - P5.0c: `liquidity.ts`: Act I's sale cap + impact apply to prologue starts only (mine: for a $10K start the impact
   term alone would change every golden; the cap itself never binds); the loan cap for all; the quarter-end forced sale
   isn't capped (mine). All 11 Act I goldens unchanged (the proof); the prologue → Act I golden updated.
+- P5.0d: act2 merged in (no conflicts); prologue sims; scope 0.3 §7; the combined report below.
+
+## Combined report: M7.0 (act2) + P5.0 (prologue), 28 Sep 2026
+
+```
+BUILT
+- act2, M7.0a–e: bridge 12 q (IO 4); sub-BBB AI labs 50% project debt (+3 pts); floor 15×; announced-AI band $3–15M;
+  ATM equity 2 a quarter ≤ 30% (1 BW); IDC capitalised; the 2026 AI-lab stress + "Let it go and re-let"; rescue
+  before an Act II game over (project sale ×0.85, then emergency equity at −50%, ≤ 30%); overleveraged target;
+  head starts on a GPU-heavy Act I; A1 → targets revised; scope 0.2 §8 item 12. Commits 8e724e1 0b2f158 6b4c0b3
+  b2b6d4c 8a83107.
+- prologue, P5.0a–d: conference card pauses auto-play; backup lapses only on a new PC / moving out; no-backup judged
+  on 1,000 seeds; prologue starts' own Q1 welcome tip; Move back home (and automatic before a prologue bust); Act I
+  liquidity brake; merge of act2; scope 0.3 §7. Commits 6552ca7 b33194f e05ecc7 0c0a7c1 (+ this report).
+- 690 tests pass; lint and build pass; all 11 Act I goldens unchanged; prologue goldens updated where intended
+  (P5.0a backup rule, P5.0c the brake in Act I).
+
+A1 OUTCOME: sign-then-raise 2026Q4 median $412M (< $700M) → targets revised to good $0.5–2B, great $4–8B peak; tuning
+stopped. Both paths: good MISS under old and new targets; great MISS under old ($10B+), PASS under new ($4.6B).
+
+ACT II §5 (npm run sim -- --act2, 50 seeds, new targets)
+PASS pilot 2023Q3 1.79× vs 2025Q2 1.35× · PASS hosting ahead in 17/42 · MISS good path $412M (bust 4/50) ·
+PASS great path peak $4.6B, runway 47/50 · MISS lifeline 61/120 live AI by 2024Q4 (M6: 38/120) · PASS pure miner
+$300M, 50/50 alive · MISS overleveraged 0/50 in 2026 (debt/EBITDA 5.2×, > 4× in 26/46, a tenant in distress in
+35/50) · PASS delay 207% · PASS IRR 48% vs 13% · MISS EV/MW (mining $0/MW; announced AI $13M ✓, stabilized $27M ✓) ·
+MISS head starts (4/4 distinct openings, but hosting's $37.6M breaks ±30%; GPU share 100%) · MISS preset $181.9M.
+
+PROLOGUE §5 (npm run sim -- --prologue, 6 bots × 50 seeds to 2026Q4)
+PASS no crash 300/300 · PASS reach 2026Q4 or game over (290 / 10) · PASS pacing (13 Plan phases, cards max 21) ·
+PASS sell-as-mined $40.3K · PASS gox-hodler −80% · PASS careful-hodler $1.2B · PASS no-backup 197/1,000 (19.7%, ≥ 18%)
+· PASS solo fade (crosses 50% in 2011Q3) · PASS pre-orders (on time 2.9–3.2×, late 0.26–0.29×, average 1.30–1.59×) ·
+PASS 1,000 runs in 100 s · PASS saves (tests) · PASS goldens. Act I growth multiples: hodlers 11.7× median (the brake
+keeps the coins on paper; their value still counts), sell-as-mined 245×.
+```
+
+**Open questions (combined):**
+1. Good path: $412M against the new $0.5–2B band (A1 said stop tuning). Accept the MISS, or try lever (c) (JV /
+   backstop for 20–100 MW builds)?
+2. Overleveraged 0/50: the A8 rescue and 2 raises a quarter keep it alive, and the target counts foreclosures and
+   forced sales, not emergency raises. Count an emergency raise as a hit, or keep the rescue away from it?
+3. Lifeline 61/120 (target 70%): accept, or a smaller first shell for the lifeline path?
+4. EV/MW "mining $0/MW" at 2026Q4: the good and great bots' last miners are worth nothing then. Exclude MW with no
+   mining EBITDA from the band, or is it a real balance problem?
+5. Head starts on a GPU-heavy Act I: 4/4 distinct openings, but the hosting head start's matching bot ends at $37.6M
+   (the others $332–432M). Is hosting at $0.075/kWh meant to be that weak for a GPU-heavy company?
+6. Preset best bot $181.9M vs the good band's $0.5B: accept, or a stronger preset?
+7. The 15× floor never applies now (2026Q4's era multiple is 15×): intended?
+8. P1: the sale cap and price impact apply to prologue starts only (the impact alone would move every $10K-start
+   sale a little and every golden); the loan cap applies to all. OK?
+9. Since M7.0, sell-as-mined (a $40K start, played on by shell-climb) goes bust in Act II in 6/50 runs (2025Q2; 0/50
+   before): its small company's AI build fails, one emergency raise, then a bust. Look into it, or accept?
+10. P6: moving back home happens automatically, but 4 prologue runs still bust (cash still short after it). Keep?
 
 ## Prologue report (28 Sep 2026, owner's unattended run; the step log is in the archive › "The Prologue")
 

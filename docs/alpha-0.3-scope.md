@@ -107,7 +107,7 @@ Rivals and league; loans and investors; Heat beyond household patience; other co
 - [ ] `sell-as-mined` (pool from 2010Q4, sells 100%): ends 2016Q4 with $10K–$100K net worth
 - [ ] `gox-hodler` (keeps coins on the exchange): loses ≥ 70% of its coin stack in 2014Q1
 - [ ] `careful-hodler` (wallet + backup, mines from 2009): ≥ $1M net worth at 2016Q4 (paper); report the median and the Satoshi-scale tail honestly
-- [ ] `no-backup` (wallet, never backs up): in ≥ 20% of runs loses its wallet before 2016Q4
+- [ ] `no-backup` (wallet, never backs up): in ≥ 18% of runs loses its wallet before 2016Q4, judged on 1,000 seeds (§7, P3; was ≥ 20% on 50)
 - [ ] Solo fades by itself: for one gaming GPU, the chance of finding ≥ 1 block in a quarter is ≥ 90% in 2010Q4 and ≤ 50% by 2012Q2 (report the quarter it crosses 50%)
 - [ ] Pre-orders: on-time ≥ 2.5× cost by 2016Q4; 2+ quarters late < 1× cost; average across the odds ≈ 1.2–1.8×
 - [ ] Every prologue bot reaches 2026Q4 through Act I and Act II without a crash; report Act I growth multiples
@@ -124,3 +124,13 @@ Rivals and league; loans and investors; Heat beyond household patience; other co
 - Wallet loss per quarter 0.75% (from 3%/year); backup lifetime.
 - Handover auto-move to the garage if still at home.
 - Solo share formula uses player ÷ (player + network).
+
+## 7. Owner answers after the first build (28 Sep 2026, P5.0)
+- **P1 Literal CPU mining stays** (owner choice): a careful 2009 player reaches Act I with ≈ 1.2M BTC. **Act I liquidity brake** (designed): a weekly BTC/ETH sell cap of $20M (2017), $50M (2018–19), $100M (2020), $250M (2021–22), with the §2.8 price impact; unfilled orders carry over; a crypto-backed loan's principal is capped at 4 weeks of that year's cap. The caps never bind for a $10K start and every existing Act I, Act II and Act I → II golden stays unchanged (as built, the sale cap and impact apply to prologue starts only, since the impact term alone would move every $10K-start sale slightly; the loan cap applies to all; the quarter-end forced sale isn't capped).
+- **P2** Save format 3, with the goldens compared at format 2: accepted.
+- **P3** `no-backup` is judged on 1,000 seeds with the target ≥ 18% (§5); the 0.75% a quarter stays.
+- **P4** Pre-orders: an on-time unit ships in 2013Q3 and mines from 2013Q4, whatever its order quarter (kept).
+- **P5** The conference card pauses auto-play (`pauses_autoplay: true`, like Cyprus); no new decision quarters.
+- **P6** **Move back home** (1 BW, after moving out): rent stops, household power returns, patience resets to 50, the income doesn't return; the sites go back to the bedroom + home rig and machines over that capacity are sold at the used price. A bust happens only if cash is still < 0 after that (at quarter end a moved-out player short of cash moves back home automatically).
+- **P7** Act I's $10K-specific onboarding tips are hidden for prologue starts; the first-quarter tip uses the real start ("You have $X, N machines, B BTC…").
+- **Backup:** it lapses only on buying a new PC or moving out (§2.7), not on buying a GPU.
