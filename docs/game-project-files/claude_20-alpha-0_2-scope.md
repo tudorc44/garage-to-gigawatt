@@ -27,7 +27,7 @@
 | Cash, debt, coin treasury (BTC and ETH) | Carried over from Act I as is. ETH keeps a market price all act (§2.3) |
 | Bandwidth | **Base 4** (owner, 28 Sep 2026; was 3); +1 Chief of Staff (one hired in Act I carries over; no other Act I bonus carries); +1 at 50 MW energized; +1 at 200 MW; +1 Head of Development. **Max 8** |
 | MW by use | Each site's MW split into mining / hosting / AI shell / AI cloud / idle |
-| **Credit rating (new)** | **Corporate ratings run CCC− to BBB** [P4], recalculated each quarter from debt/EBITDA × backlog quality (doc 18 §7.2 matrix). A cash runway under 4 quarters lowers it one notch. Sets the rate and max leverage of new corporate debt. **"A" exists only on secured project debt with a strong backlog** (the CoreWeave B+ / A3 pattern). A rating never forecloses by itself (§2.7) |
+| **Credit rating (new)** | **Corporate ratings run CCC− to BBB** [P4], recalculated each quarter from debt/EBITDA × backlog quality (doc 18 §7.2 matrix). A cash runway under 4 quarters lowers it one notch (M9.0, owner 28 Sep 2026: the runway used is cash divided by the coming quarter's scheduled fixed obligations — loan and bridge payments, project debt and DDTL amortisation on live projects — minus last quarter's EBITDA; it does not forecast revenue). Sets the rate and max leverage of new corporate debt. **"A" exists only on secured project debt with a strong backlog** (the CoreWeave B+ / A3 pattern). A rating never forecloses by itself (§2.7) |
 | GPU know-how (new) | 0–3 (doc 18 §5.4) |
 | Community Heat | Carried over per site; grievance resets at the act boundary. AI-project thresholds from 05 §3 (delays, lawsuits, moratoriums) |
 | Ratepayer Anger (new, per region) | Rises with MW built in the region; feeds Heat and moratorium cards |

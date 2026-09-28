@@ -16,6 +16,7 @@ import type {
   QuarterReport,
 } from '../src/sim/state.ts'
 import { inActII } from '../src/sim/state.ts'
+import { runway } from '../src/sim/systems/runway.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
@@ -945,8 +946,8 @@ if (args.includes('--act2')) {
     const survivors = runs.filter((r) => {
       if (r.state.phase !== 'chapter') return false
       const last = r.state.reports.at(-1)!
-      const burn = last.ebitdaUsd - last.interestUsd - last.principalUsd
-      return burn >= 0 || last.cash / -burn >= 4
+      const q = runway(r.state, last).quarters
+      return q === null || q >= 4
     }).length
     if (name === 'asic-retirer')
       s5.push({

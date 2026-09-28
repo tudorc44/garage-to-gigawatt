@@ -2099,3 +2099,86 @@ log text and docs only). `m8` had been deleted after the M8 merge and was recrea
   RATING rule uses runway (−1 notch under 4 quarters): not changed, reported as a question.
 - M8.7g: the design thread's answers recorded (rules above, scope §5 notes in both scope copies). `npm run sim -- --act2` final: identical to the
   M8.7c run; its Act I part is identical to before M8; the prologue sim wasn't re-run (no prologue bot or content changed).
+
+## Milestones M8.8, M8.9 and M9 (moved from dev-notes, 29 Sep 2026)
+
+### Milestone M8.8 (branch `m9`, from `main` at a37ef1e; docs only)
+
+- M8.8a: the runway answer recorded and queued as M9.0; "Next" and "Open questions" updated; the M8 / M8.7 logs moved to the archive.
+- M8.8b: read-only audit of what Act III could carry over: `docs/act3-carryover-audit.md` (no game code, content or test changed).
+  Summary: a hidden-scenario draw, a contract calendar, a nuclear PPA Power-slot option and wildcards are cheap; the scenario-dependent
+  market, Signals panel, renewals, density retrofit, political capital and presets are medium; extending the timeline is expensive.
+
+### Milestone M8.9 (branch `m9`, from `main` at effe2d4; docs only)
+
+- M8.9a: the design thread's answers 1–4 recorded under "Next"; the queued entry renamed "M9 (after the owner's playtest)" with M9.0 and a
+  new M9.1 (the `inActII` refactor). M8.9b: a "Design thread decisions" section in `docs/act3-carryover-audit.md` with the answers and the
+  open Act III design decisions waiting for the owner (doc 27 v0.2). No game code, content or test changed.
+
+### Milestone M9 (branch `m9`, commit prefix `M9.k`)
+
+#### M9.0 runway look-ahead
+
+The design thread's answer to the runway question is **yes, the runway looks one quarter ahead, but only at contractual amounts**, made
+AFTER the owner's playtest notes so the owner's numbers stay stable while playing. Shell-lease end of term stays out of it (Act III
+only): M9.0 is a display change. Spec:
+1. **Runway** = cash ÷ the average quarterly burn, where the burn is last quarter's operating burn plus next quarter's contractually
+   scheduled obligations that are already fixed: the lifeline bridge payment (including its step from interest-only to amortising),
+   project-debt amortisation (including the principal added by capitalised interest during construction), the equipment-loan
+   schedule, and any scheduled DDTL payments. **No revenue forecast**, and **no** events that may or may not happen (take-or-pay
+   damages, delays, distress).
+2. **The rating rule stays as it is:** a runway under 4 quarters lowers the rating one notch (`rating.ts`). Only the runway figure changes.
+3. **One figure on the Dashboard, the Plan screen and the Capital screen**, with a tooltip listing which scheduled items are included
+   this quarter (read-only, text through `t()`).
+4. **Acceptance:** run `npm run sim -- --act2` before and after and print both §5 tables; the 11 Act I goldens and both prologue goldens
+   stay unchanged; the Act I sim output is identical; expect some lifeline and leveraged bots to drop a notch one quarter earlier and
+   report by how much; a §5 result that moves from PASS to MISS is a question for the design thread, not a reason to change the rule.
+
+**DONE.** `src/sim/systems/runway.ts` (`scheduledObligations`, `runway`): the runway is cash ÷ (the coming quarter's fixed debt payments
+− last quarter's EBITDA) when that is a burn. The coming quarter is the one after the report's: the equipment and construction loans'
+weekly schedule simulated from today's balances (exactly like `payLoanWeek`), the bridge's `now` / `next` payment from `bridgeSchedule`
+(the step from interest-only to amortising), and project debt and DDTLs of projects live by then (interest + the equal principal slice on
+the balance that already includes capitalised interest; nothing while a project still builds). `ratingInputs` now reads it; its rule is unchanged
+(under `runwayQuarters`, one notch). Shown by `Runway` (`ui/components/runway.tsx`) on the Dashboard, the Plan screen's Capital group and the
+Capital screen's rating card, with a tooltip listing the included items and what is not counted. "Average quarterly burn" is read as the
+burn of the coming quarter, not a two-quarter average (mine, reversible). `tests/sim/runway.test.ts` (6 tests).
+Result (50 seeds, `npm run sim -- --act2`, before vs after): every printed table (§5 included) and all 1,302 CSVs are IDENTICAL, because nothing
+in the bots reads the corporate rating. The ratings themselves DID move (30 seeds × 11 bots, one notch at most, never more): short-runway
+quarters lifeline-shell 154 → 221 (60 quarters end one notch lower, all 30 runs), asic-retirer 17 → 47 (31, 27 runs), sign-then-raise 34 → 62
+(28, 24 runs), texas-capital 43 → 70 (31, 25 runs), overleveraged 54 → 85 (20, 20 runs), shell-capital 38 → 54 (17, 17 runs), raise-climb 40 → 46 (6);
+the runway got LONGER for hosting-switcher 49 → 40 short quarters, texas-ipo 32 → 24, shell-climb 28 → 25, texas-shell 72 → 68.
+
+Design thread's answers (accepted as decisions): (1) accept the runway change, keep the rating rule; (2) update the sim's great-path
+runway check to the new definition, in M9.2; (3) add a one-sentence definition to scope 0.2 §2.2 (both copies), in M9.2.
+
+#### M9.1 inActII refactor (the first step towards Act III)
+
+A **pure refactor**: add `inActII(state)` (and later `inActIII`) and change the 38 `state.act === 2` / `!== 2` checks and the 32
+`act2Quarter` calls to go through it, with **no behaviour change**. Proof required: all 11 Act I goldens, both prologue goldens, the
+Act II sim output (`npm run sim -- --act2`, same seeds) and the Act I sim output identical before and after. Where a check needs a real
+yes or no for Act III (for example "does this rule still apply in Act III"), do NOT decide it: list each one in the report as a question
+with a recommended answer, and keep today's behaviour. See `docs/act3-carryover-audit.md` §4 and §10 for where the checks are.
+
+**DONE.** `isActII(act)` / `inActII(state)` in `src/sim/state.ts` and `isActIIQuarter(quarter)` in
+`src/content/index.ts` (the yes/no form of `act2Quarter`). All 46 `act === 2` / `!== 2` checks (sim, UI, tools) and the 16 yes/no
+`act2Quarter` checks go through them (46, not the audit's 38: newer code added some). The other 14 `act2Quarter` calls READ Act II's
+data (`?.field ?? default`), so they stay as they are (mine, reversible); Act III will need a scenario-aware accessor for those.
+Proof: 725 tests (11 Act I goldens and both prologue goldens included) pass, and `npm run sim -- --act2` (same seeds) printed
+output and all 1,302 CSVs are byte-identical before and after. `tests/sim/inActII.test.ts` checks the helpers against the old checks.
+
+Design thread's answers to the 7 M9.1 questions: all 7 recommendations **accepted as design decisions** (not just recommendations):
+Act II hires carry into Act III; a separate Act III event deck; Bandwidth base 4 carries; rescue, equity/ATM, hosting, scouting,
+project opening, debt, JV/backstop, negotiation, the GPU failure wave and spot shocks all continue in Act III; the save-loader act-3
+branch is due in the walking skeleton; the chapter report must stop ending the game and the campus theme stays until Act III has its own.
+
+#### M9.2: the great-path runway check, the scope sentence, the merge
+
+- The great-path runway check (`tools/sim-runner.ts`, the "survivors" count in the `texas-capital` / `asic-retirer` loop) now calls
+  `runway(state, report)` from `src/sim/systems/runway.ts` instead of `last.ebitdaUsd − last.interestUsd − last.principalUsd`.
+- One sentence added to `docs/alpha-0.2-scope.md` §2.2's credit-rating row (and the identical `docs/game-project-files/claude_20-alpha-0_2-scope.md`
+  copy), defining the runway exactly as built.
+- `m9` (`6407289`, `42bdec2`) was already fast-forwarded into `main` by the owner before this reply arrived; M9.2's commit(s) continue that line.
+
+Result (50 seeds, `npm run sim -- --act2`, before vs after the check change): only the great-path runway numbers moved — asic-retirer
+47/50 → 46/50, texas-capital 47/50 → 44/50 (this one isn't in the §5 table; it's the second great-path bot). The §5 table's PASS for
+"Great path … survives 2026 with ≥ 12 months runway" is unchanged, and every other row is byte-identical.
