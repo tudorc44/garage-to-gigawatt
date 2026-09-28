@@ -216,6 +216,17 @@ those questions; the Act II items not built yet (GPU failure wave's interrupt fo
 additions); the small follow-ups (e.g. splitting the large JS chunk); the Act I playtests (postponed until after
 Act II). First decide the branch (`act2` is behind `main` / `prologue`).
 
+## Milestone M8: finish Act II (branch `m8`, batch mode, 29 Sep 2026)
+
+Owner's M8 prompt = the design thread's answers to the combined-report Q1–10 and P6 Q1–3, plus the Act II items not
+built. Branch `m8` (commit prefix `M8.<k>:`), never pushed, `main`, `act2`, `staging/` untouched.
+M8.0 setup · M8.1 measurement decisions + the sell-as-mined bust · M8.2 the hosting head start · M8.3 quarter report
+additions · M8.4 GPU failure wave interrupt · M8.5 GPU know-how display · M8.6 auto-play default, sims, scope docs, report.
+- M8.0: the prompt said `main` = `prologue` (6131d17): it isn't. `main` is 96fd44a; 6131d17 (dev-notes refresh) exists
+  only on the local `prologue`, and `act2` had 2 commits `main` lacks (the Act II report panel 10f233f, the JV net
+  return ef6c43e). So `m8` = local `prologue` (fast-forward of `main`) + those 2 cherry-picked (mine, reversible).
+  CLAUDE.md: milestone-branch wording, alpha-0.3 scope in Key docs, the summary updated.
+
 ## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
 
 A1 ATM equity (2 raises a quarter, ≤ 30% each, 1 BW) + interest during construction capitalised; then re-run: keep

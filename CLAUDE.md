@@ -11,11 +11,14 @@ margin-call), hires staff, manages community Heat and raises money, all against 
 → Quarter report. The act ends at the Merge decision screen and a chapter report. The alpha must answer one
 question: *is Act I a fun 40-minute run where decisions, not luck, decide whether you survive?*
 
-**Act II is in scope and being built (owner, 27 Sep 2026):** Alpha 0.2, "The Pivot and the Boom", 17 quarterly turns
-(2022Q4 → 2026Q4), continuing from an Act I save or a standalone preset. The miner turns its energized MW into
-AI data-center capacity through projects (power, tenant and capital slots), a credit rating and five MW uses.
-Its scope is **frozen (v1.0)** in `docs/alpha-0.2-scope.md`, and Act II building starts now (the Act I playtests
-are postponed until after Act II).
+**Act I, Act II and the Prologue are all built; Act III is not started.**
+- **Act II** (Alpha 0.2, "The Pivot and the Boom"): 17 quarterly turns (2022Q4 → 2026Q4), continuing from an Act I
+  save or a standalone preset. The miner turns its energized MW into AI data-center capacity through projects
+  (power, tenant and capital slots), a credit rating and five MW uses. Scope **frozen (v1.0)** in
+  `docs/alpha-0.2-scope.md`.
+- **The Prologue** (Alpha 0.3, Act 0, "Bedroom to Garage"): 32 quarters, 2009 → 2016, optional from the title screen,
+  handing over to Act I. Scope in `docs/alpha-0.3-scope.md`.
+- The Act I playtests are postponed until after Act II. The current work (milestone M8) finishes Act II.
 
 ## Commands
 
@@ -50,6 +53,8 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
   screens (open it in a browser). Match its layout and style.
 - `src/ui/audio/` holds the sound code (moved from `docs/audio/`, where `audio-notes.md` stays as the reference).
 - `docs/alpha-0.2-scope.md`: **source of truth for Act II scope** (v1.0, frozen). Its §8 lists where it corrects doc 18.
+- `docs/alpha-0.3-scope.md`: **source of truth for the Prologue (Act 0) scope**, with the content pack in
+  `docs/prologue-content/` and the screen wireframes in `docs/wireframes/prologue/`.
 - **Act II** (reference copies in `docs/game-project-files/`, read-only; the game will read `src/content/`):
   `claude_18-act-ii-design.md` (the design and its decisions, incl. §16 "Decisions from the content pack"),
   `claude_20-alpha-0_2-scope.md` (the same scope text, kept in sync with the design project),
@@ -129,18 +134,18 @@ folders only as a task needs them.
 ## Branches
 
 - **`main`** is the stable, deployable version (GitHub Pages publishes it). Don't commit to it.
-- **`act2`** is where the Act II build happens. Work only there. The owner merges `act2` into `main` after
-  reviewing a milestone.
+- **The current milestone branch** (now `m8`, made from `main`) is where the build happens. Work only there. The owner
+  merges it into `main` after reviewing the milestone. Never push; the owner pushes.
 
-## Batch mode (Act II milestones)
+## Batch mode (milestones)
 
-While the owner's milestone prompt is running (e.g. "Milestone M2: …"), these rules **override rules 1, 2 and 7**.
+While the owner's milestone prompt is running (e.g. "Milestone M8: …"), these rules **override rules 1, 2 and 7**.
 All other rules still apply.
 
 - **Work through the whole milestone without pausing between sub-steps.** Split it into sub-steps yourself
-  (M2.1, M2.2 …) and write the split into `docs/dev-notes.md` before starting.
+  (M8.1, M8.2 …) and write the split into `docs/dev-notes.md` before starting.
 - **After each sub-step:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes with **at
-  most 3 lines** and commit on `act2` with the prefix `M<n>.<k>: `. Never push, never force-push, never rewrite
+  most 3 lines** and commit on the milestone branch (`m8`) with the prefix `M<n>.<k>: `. Never push, never force-push, never rewrite
   history, never commit to `main`, never touch `staging/`.
 - **Run the sims only at the end of a milestone,** unless the sub-step exists to check balance.
 - **Read `docs/dev-notes-archive.md` only when a task needs the history** (finished steps, old balance reviews,
