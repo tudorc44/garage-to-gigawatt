@@ -286,6 +286,21 @@ export function dealView(state: GameState, projectId: string) {
       blocker: whyNot(state, { type: 'PROJECT_FUND_CASH', projectId: p.id }),
     },
     cost,
+    /**
+     * The spot utilisation the projection uses (M8.5), for a pilot and a cloud: the pilot's base plus its
+     * know-how bonus. A cloud under a GPU contract earns the contract price whatever the utilisation.
+     */
+    utilisation:
+      p.kind === 'shell'
+        ? null
+        : {
+            value: spotUtilisation(state),
+            base: P().pilot.utilisationBase,
+            knowHow: knowHow(state),
+            bonus:
+              P().pilot.utilisationBonusByKnowHow[String(knowHow(state))] ?? 0,
+            contracted: !!p.tenant?.gpu,
+          },
     projected: yourShareOfReturn(projectedReturn(state, p), p),
     /** The JV partner's share of the project (0 without one): the return above is net of it. */
     partnerShare: p.jv?.share ?? 0,

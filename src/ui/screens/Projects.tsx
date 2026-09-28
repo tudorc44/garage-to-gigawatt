@@ -1026,6 +1026,21 @@ function DealBuilder(
               </td>
               <td />
             </tr>
+            {v.utilisation && (
+              <tr>
+                <td>{t('ui.deal.utilisation')}</td>
+                <td class="num r">{fmt.pct(v.utilisation.value)}</td>
+                <td class="num-s muted">
+                  {t('ui.deal.utilisation_note', {
+                    base: fmt.pct(v.utilisation.base),
+                    points: Math.round(v.utilisation.bonus * 100),
+                    level: v.utilisation.knowHow,
+                  })}
+                  {v.utilisation.contracted &&
+                    ` ${t('ui.deal.utilisation_contract')}`}
+                </td>
+              </tr>
+            )}
             <tr>
               <td>{t('ui.deal.payback')}</td>
               <td class="num r">

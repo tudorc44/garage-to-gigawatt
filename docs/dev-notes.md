@@ -238,6 +238,8 @@ additions · M8.4 GPU failure wave interrupt · M8.5 GPU know-how display · M8.
 - M8.4: GPU failure wave (`systems/gpuWave.ts`, numbers in interrupts_act2.json, both copies): live cloud ≥ 10,000 GPUs, 10%/quarter, 0.5–1% of the GPUs
   (rounded up), replace now $30K each (default) / run short (out this + next quarter, tenant SLA credit 2×, bill at next quarter's end). The roll is a pure
   function of seed, quarter and project id (substream `gpu_wave:…`), so no new saved-state field. Seen with: seed 14, project-1, 2025Q1, alert after week 2.
+- M8.5: "GPU know-how N of 3" on the Act II Dashboard (under the MW bar) with a tooltip built from `knowHowView` (thresholds, the pilot's +5/+10 points from
+  conversions.json, overflow cards from tenants.json, level 0's +10% GPU cost / +1 quarter wait from balance); the Deal builder shows the spot utilisation in use.
 
 ## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
 

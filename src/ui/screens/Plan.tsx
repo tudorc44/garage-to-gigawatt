@@ -18,6 +18,7 @@ import {
   equipmentLoanView,
   constructionLoanView,
   transformerViews,
+  knowHowView,
   phaseViews,
   fundingRound,
   hireViews,
@@ -200,6 +201,45 @@ export function PlanScreen({ state, act }: ScreenProps) {
   )
 }
 
+/**
+ * Act II: "GPU know-how N of 3" with a tooltip on how it rises and what each level does (M8.5).
+ * Every number comes from knowHowView (the code and content), so the text can't disagree with the rules.
+ */
+function KnowHow({ state }: { state: GameState }) {
+  const v = knowHowView(state)
+  if (!v) return null
+  const tip = [
+    t('ui.knowhow.rise', { power: fmt.power(v.threeKw) }),
+    ...v.levels.map((l) => {
+      if (l.level === 0)
+        return t('ui.knowhow.level0', {
+          more: fmt.pct(l.costMult - 1, 0),
+          quarters: l.extraWaitQuarters,
+        })
+      const parts = [
+        l.utilisationBonus > 0 &&
+          t('ui.knowhow.part_util', {
+            points: Math.round(l.utilisationBonus * 100),
+          }),
+        l.overflowCards > 0 &&
+          t('ui.knowhow.part_overflow', { count: l.overflowCards }),
+      ].filter(Boolean)
+      return t('ui.knowhow.level', {
+        level: l.level,
+        what: parts.length ? parts.join(', ') : t('ui.knowhow.part_none'),
+      })
+    }),
+    t('ui.knowhow.base', { base: fmt.pct(v.utilisationBase, 0) }),
+  ].join('\n')
+  return (
+    <div class="num-s muted know-how" title={tip}>
+      <strong>{t('ui.knowhow.label', { level: v.level, max: v.max })}</strong>
+      {' · '}
+      {t('ui.knowhow.hint')}
+    </div>
+  )
+}
+
 /** Act II (A2-03): where the company's megawatts go, with the key and a hint when some sit idle. */
 function MwPanel({ state }: { state: GameState }) {
   const use = mwByUse(state, state.quarter)
@@ -215,6 +255,7 @@ function MwPanel({ state }: { state: GameState }) {
         <MwLegend use={use} />
       </div>
       <MwBar use={use} />
+      <KnowHow state={state} />
       <div class="row-between">
         <span class="num-s muted">
           {use.idle > 0 && t('ui.mw.idle_hint', { value: fmt.power(use.idle) })}

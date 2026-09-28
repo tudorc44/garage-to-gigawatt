@@ -75,6 +75,7 @@ import { waveCostUsd } from './systems/gpuWave.ts'
 import {
   backlogUsd,
   gpuWaitQuarters,
+  knowHow,
   projectEventCostUsd,
 } from './systems/projects.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
@@ -1475,6 +1476,35 @@ export function failureWaveView(state: GameState) {
     units: (a.wave ?? []).reduce((n, d) => n + d.units, 0),
     rushUsd: rushRepairUsd(state),
     rushMult: CONTENT.failureWave.rushCostMult,
+  }
+}
+
+/**
+ * GPU know-how for the Act II dashboard (M8.5): the level (0–3), how it rises and what each level
+ * does, all read from the code and content so a tooltip can't disagree with the rules: the
+ * thresholds (a live cluster, two, `knowHowThreeKw` of live full stack), a pilot's utilisation
+ * bonus (conversions.json), the cards that open at a level (tenants.json), and know-how 0's
+ * handicap (balance). null in Act I.
+ */
+export function knowHowView(state: GameState) {
+  if (state.act !== 2) return null
+  const b = BALANCE.projects
+  const pilot = CONTENT.projects.pilot
+  const levels = [0, 1, 2, 3].map((level) => ({
+    level,
+    utilisationBonus: pilot.utilisationBonusByKnowHow[String(level)] ?? 0,
+    overflowCards: CONTENT.projects.tenantCards.filter(
+      (c) => (c.needsKnowHow ?? 0) === level && level > 0,
+    ).length,
+    costMult: level === 0 ? b.knowHowZero.costMult : 1,
+    extraWaitQuarters: level === 0 ? b.knowHowZero.extraWaitQuarters : 0,
+  }))
+  return {
+    level: knowHow(state),
+    max: 3,
+    threeKw: b.knowHowThreeKw,
+    utilisationBase: pilot.utilisationBase,
+    levels,
   }
 }
 
