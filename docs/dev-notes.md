@@ -5,7 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review and milestone, with the decisions in detail) is in
 `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
-Last updated: 28 Sep 2026, milestone M6 in progress on `act2` (M5 merged into `main`; the owner pushes).
+Last updated: 28 Sep 2026. M7.0 (Act II) and the Prologue with its wireframe pass (P6) are done; `prologue` was merged
+into `main` (fast-forward, `96fd44a`), so `main` = `prologue` = Act I + Act II to M7.0 + the Prologue. **`act2` is
+behind** (it lacks the prologue work): before the next Act II step, ask the owner which branch to work on.
 
 ## How the owner works
 
@@ -44,7 +46,7 @@ See `CLAUDE.md` for the full list. The main ones:
 
 **Act I (Alpha 0.1): complete.** Every system in its scope is built and the balance pass is DONE (every scope §5
 anchor passes in the sim). The Act I playtests are **postponed until after Act II** (owner). GitHub Pages
-publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now includes Act II up to M5.
+publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now includes Act II to M7.0 and the Prologue.
 
 **Act II (Alpha 0.2, scope frozen v1.0): built on `act2`, milestones M2–M6 done** (details in the archive):
 - **Step 1, the act boundary:** one 40-quarter timeline (Act I = quarters 0–22, Act II = 23–39); `act` field;
@@ -65,12 +67,15 @@ publishes `main` (https://tudorc44.github.io/garage-to-gigawatt/), which now inc
   Anger, policies, tenant / lender negotiation, lawsuit, audit, seed condition…); Fix all; Act II rivals and the
   league; the Act II chapter report; the game-over cause; onboarding tips; the scope's bots and a §5 PASS/MISS table.
 
-**Numbers (M6):** 627 tests pass; lint and build pass; the 11 Act I goldens unchanged. Act II §5: 4 PASS, 9 MISS
-(table in the M6 report below).
+- **M7.0, owner answers A1–A9:** ATM equity, capitalised interest, the 2026 AI-lab stress, the rescue before a game
+  over, the 12-quarter bridge; targets revised (good $0.5–2B, great $4–8B peak); tuning stopped (A1).
 
-**The Prologue (Alpha 0.3): built on `prologue`** (branched from `act2` after M6; not merged): Act 0, 2009–2016,
-opt-in from the title screen; the whole scope §2 plus the §5 bots and checks (13 PASS, 1 MISS). See the Prologue
-report at the end.
+**Numbers (M7.0 + P6):** 690 tests pass; lint and build pass; the 11 Act I goldens unchanged. Act II §5: 6 PASS,
+6 MISS; Prologue §5: all PASS (tables in the combined report below).
+
+**The Prologue (Alpha 0.3): done and in `main`:** Act 0, 2009–2016, opt-in from the title screen; the whole scope §2,
+the §5 bots and checks, the owner's P1–P7 answers (P5.0) and the wireframe pass P0-01…P0-08 (P6: title, intro, Plan,
+auto-play, Coins, pre-orders, chapter report with the career graph, handover to Act I).
 
 **Not built yet in Act II:** the GPU failure wave's interrupt form, GPU know-how display beyond the Projects header,
 the Act II quarter report additions (MW by use, rating change, project milestones: A2-08 beyond the league).
@@ -174,15 +179,12 @@ the Act II quarter report additions (MW by use, rating change, project milestone
 
 ## Open questions for the design thread
 
-The M6 report's questions 1–9 (below), and the Prologue report's questions 1–7 (at the end).
+Still open: the combined report's questions 1–10 (M7.0 + P5.0, below) and the P6 report's questions 1–3 (under P6).
+(The M6 questions were answered as A1–A9 and the Prologue's as P1–P7; both are built.)
 
 ## STOPPED
 
-- **Balance tuning (M6.0c, answer 1's stop rule):** after steps (a)–(c) the good path is ~5× short (`sign-then-raise`
-  2026Q4 median $198M, 17/50 bust) and the great path ~3× short (`asic-retirer` 2025 peak $3.5B). Step (c) raised busts
-  (more leverage, bigger builds). No further tuning until the design thread decides; the breakdown goes in the M6 report.
-
-(M5's four STOPPED items were answered: 6, 7, 8, 9 above, built in M6.0.)
+Nothing. (Balance tuning stays stopped by the owner's A1 answer: the targets were revised instead.)
 
 ## Small follow-ups
 
@@ -195,13 +197,11 @@ The M6 report's questions 1–9 (below), and the Prologue report's questions 1�
 
 ## Next
 
-The owner reviews the `prologue` branch (play it: `npm run dev`, "Start in 2009 (prologue)"; numbers:
-`npm run sim -- --prologue`) and brings the design thread's answers to the M6 and Prologue questions.
-Then the Prologue wireframe pass (`docs/wireframes/prologue/`, P0-01…P0-08, arrived 28 Sep 2026; its README lists
-7 settled conflicts): a restyle of the built screens: nav Dashboard · Machines & Rooms · Coins · Log (sinks move
-into "This quarter"); a three-column Plan; auto-play cards (~2 s, 1×/2×/4×, Pause here); a Coins page with history
-and a lost-coins ledger; side-by-side pre-order cards; a handover screen (vs a 2017 start); offers expire at
-quarter end (today they last to the next decision quarter: a rule change).
+The owner playtests the Prologue (staging, or `npm run dev` → New career → Start in 2009) and brings the design
+thread's answers to the open questions above. Candidates for the next work, for the owner to pick: the answers to
+those questions; the Act II items not built yet (GPU failure wave's interrupt form, the Act II quarter report
+additions); the small follow-ups (e.g. splitting the large JS chunk); the Act I playtests (postponed until after
+Act II). First decide the branch (`act2` is behind `main` / `prologue`).
 
 ## M7.0: owner answers A1–A9 to the M6 questions (28 Sep 2026)
 
