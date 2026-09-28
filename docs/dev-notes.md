@@ -156,3 +156,11 @@ additions · M8.4 GPU failure wave · M8.5 GPU know-how display · M8.6 auto-pla
 - M8.4 / M8.5: see "Where the build stands" and the rules above. M8.6: auto-play 2×; scope 0.2 §8 item 13 and scope 0.3 §7 updated.
 
 The full M8 report (built, commits, how to see it, §5 tables, questions) is the last message of the M8 run; the design thread has it.
+
+## Milestone M8.7: the small follow-ups from the M8 report (branch `m8`, from `main` at bf316f6, batch mode)
+
+Split: M8.7a the act2 check · M8.7b the EV/MW band · M8.7c the hosting bot's reserve · M8.7d slot log lines · M8.7e one report
+panel · M8.7f the bridge payment on the Plan screen · M8.7g docs, sims, report. No game rule changes (bots, tools, read-only UI,
+log text and docs only). `m8` had been deleted after the M8 merge and was recreated from `main`.
+- M8.7a: `git cherry m8 ef6c43e` (act2's old tip; the branch itself was already deleted by the owner): both commits `-` (already in
+  `m8`), so nothing is left on act2 and there is no question to ask.
