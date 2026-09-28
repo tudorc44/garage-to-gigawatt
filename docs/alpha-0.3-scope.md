@@ -134,3 +134,9 @@ Rivals and league; loans and investors; Heat beyond household patience; other co
 - **P6** **Move back home** (1 BW, after moving out): rent stops, household power returns, patience resets to 50, the income doesn't return; the sites go back to the bedroom + home rig and machines over that capacity are sold at the used price. A bust happens only if cash is still < 0 after that (at quarter end a moved-out player short of cash moves back home automatically).
 - **P7** Act I's $10K-specific onboarding tips are hidden for prologue starts; the first-quarter tip uses the real start ("You have $X, N machines, B BTC…").
 - **Backup:** it lapses only on buying a new PC or moving out (§2.7), not on buying a GPU.
+
+### Added to §7 in M8: owner answers after the wireframe pass and the M7.0 report (28 Sep 2026)
+- **Kept as built, accepted:** the sale cap and price impact apply to prologue starts only and the loan cap to all (P1, above); the automatic move back home before a prologue bust stays. 4 of 300 prologue → Act I → Act II runs still end in a prologue game over (3 no-backup, 1 preorder-summit, after a lost wallet with rent to pay).
+- **Auto-play** starts at 2× (was 1×; 1× and 4× stay, and the choice still carries between quarters, UI only).
+- **Kept:** unanswered offers stay until the next decision quarter (no expiry); the handover's "Empty garage" wording for a 2017 start.
+- The M8 sims: 300/300 prologue → Act I → Act II runs ran with no crash and every §5 line passes (the prologue's sell-as-mined bot ends Act II alive in 50/50).

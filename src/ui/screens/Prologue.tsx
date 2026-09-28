@@ -14,8 +14,8 @@ export type { PrologueProps }
 
 export function PrologueScreen(props: PrologueProps) {
   const { state } = props
-  // Auto-play's speed (P0-04) lasts across quarters; UI only.
-  const [speed, setSpeed] = useState<Speed>(1)
+  // Auto-play's speed (P0-04) lasts across quarters; UI only. It starts at 2× (owner, 28 Sep 2026: about half a minute for the auto quarters).
+  const [speed, setSpeed] = useState<Speed>(2)
   if (state.phase === 'intro') return <Intro {...props} />
   if (state.phase === 'chapter') return <Chapter {...props} />
   if (state.phase === 'report' && state.prologue!.reports.at(-1)?.auto)
