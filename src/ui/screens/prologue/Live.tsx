@@ -3,12 +3,17 @@
 import { useEffect } from 'preact/hooks'
 import { t, tDynamic } from '../../../i18n/t.ts'
 import { prologueCard } from '../../../sim/prologue/events.ts'
-import { prologueView } from '../../../sim/prologue/views.ts'
+import type { PrologueReport } from '../../../sim/prologue/types.ts'
+import {
+  prologueMarketView,
+  prologueView,
+} from '../../../sim/prologue/views.ts'
 import type { GameState } from '../../../sim/state.ts'
 import { Icon } from '../../components/basics.tsx'
 import { fmt } from '../../format.ts'
 import {
   CenterCard,
+  Change,
   coins,
   price,
   type PrologueProps,
@@ -68,13 +73,180 @@ export function EventDialog({
   )
 }
 
+// ---------- timed auto-play (wireframe P0-04) ----------
+
+/** Auto-play speed: 1×, 2× or 4× (a card lasts 2 s at 1×). UI only: bots never see it. */
+export type Speed = 1 | 2 | 4
+const CARD_MS = 2000
+
+/** One auto-played quarter's line: mined, BTC and its change (red / green), difficulty (neutral). */
+function AutoCardBody({ r, prevBtc }: { r: PrologueReport; prevBtc: number | null }) {
+  const change = prevBtc && prevBtc > 0 ? r.btcUsd / prevBtc - 1 : null
+  return (
+    <span class="num-s">
+      {t('ui.p0.auto_mined', { btc: coins(r.coinsMined.BTC, 'BTC') })} · BTC{' '}
+      {price(r.btcUsd)} <Change value={change} /> ·{' '}
+      {t('ui.p0.auto_difficulty')}{' '}
+      <Change value={r.difficultyChangePct} neutral />
+    </span>
+  )
+}
+
+/** The speed buttons and Pause here, on every auto-play card. */
+function AutoControls(props: {
+  speed: Speed
+  setSpeed: (s: Speed) => void
+  onPause?: () => void
+}) {
+  return (
+    <div class="row-between">
+      {props.onPause ? (
+        <button type="button" class="btn" onClick={props.onPause}>
+          <Icon name="pause" size={16} />
+          {t('ui.p0.pause_here')}
+        </button>
+      ) : (
+        <span />
+      )}
+      <span class="seg" role="group" aria-label={t('ui.p0.speed')}>
+        {([1, 2, 4] as const).map((s) => (
+          <button
+            key={s}
+            type="button"
+            class="btn"
+            aria-pressed={props.speed === s}
+            onClick={() => props.setSpeed(s)}
+          >
+            {s}×
+          </button>
+        ))}
+      </span>
+    </div>
+  )
+}
+
+/** The auto-played quarters so far in this run of them (the last 3), newest last. */
+function recentAuto(state: GameState): PrologueReport[] {
+  const reports = state.prologue!.reports
+  const run: PrologueReport[] = []
+  for (let i = reports.length - 1; i >= 0 && reports[i].auto; i--)
+    run.unshift(reports[i])
+  return run.slice(-3)
+}
+
+function prevBtcOf(state: GameState, r: PrologueReport): number | null {
+  const reports = state.prologue!.reports
+  const i = reports.indexOf(r)
+  return i > 0 ? reports[i - 1].btcUsd : null
+}
+
+/**
+ * An auto-played quarter's card (P0-04): older cards fade and stack above it; a timer bar runs for
+ * 2 s (÷ the speed), then the next quarter plays. Pause here makes the next quarter a Plan phase.
+ */
+export function AutoPlay(
+  props: PrologueProps & { speed: Speed; setSpeed: (s: Speed) => void },
+) {
+  const { state, act, speed } = props
+  const stack = recentAuto(state)
+  const now = stack.at(-1)!
+  const ms = CARD_MS / speed
+  useEffect(() => {
+    const id = window.setTimeout(() => act({ type: 'NEXT_QUARTER' }), ms)
+    return () => window.clearTimeout(id)
+  }, [now.quarter, ms])
+  return (
+    <div class="screen g-paper">
+      <div class="center-page">
+        <div class="p0-autoplay">
+          <span class="label">{t('ui.p0.auto_sequence')}</span>
+          {stack.slice(0, -1).map((r, i) => (
+            <div
+              class="panel p0-autocard old"
+              key={r.quarter}
+              style={{ opacity: 0.35 + 0.2 * i }}
+            >
+              <div class="row-between">
+                <strong>{fmt.quarter(r.quarter)}</strong>
+                <span class="label">{t('ui.p0.auto_played')}</span>
+              </div>
+              <AutoCardBody r={r} prevBtc={prevBtcOf(state, r)} />
+            </div>
+          ))}
+          <div class="panel p0-autocard" key={now.quarter}>
+            <div class="row-between">
+              <strong>{fmt.quarter(now.quarter)}</strong>
+              <span class="label">
+                <Icon name="auto-play" size={16} /> {t('ui.p0.auto_now')}
+              </span>
+            </div>
+            <AutoCardBody r={now} prevBtc={prevBtcOf(state, now)} />
+            {now.cards.length > 0 && (
+              <span class="num-s muted">
+                {now.cards
+                  .map(
+                    (c) =>
+                      `${tDynamic(`p0.event.${c.id}.title`, c.id)}: ${tDynamic(`p0.event.${c.id}.choice.${c.choice}`, c.choice)}`,
+                  )
+                  .join(' · ')}
+              </span>
+            )}
+            <div class="p0-timer">
+              <i
+                key={`${now.quarter}:${speed}`}
+                style={{ animationDuration: `${ms}ms` }}
+              />
+            </div>
+            <AutoControls
+              speed={speed}
+              setSpeed={props.setSpeed}
+              onPause={() => act({ type: 'NEXT_QUARTER', stopHere: true })}
+            />
+          </div>
+          <span class="num-s muted">{t('ui.p0.auto_note')}</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/** An event fired during auto-play (P0-04): the quarter's card shows "Paused · event", the card opens above. */
+function AutoPaused(
+  props: PrologueProps & { speed: Speed; setSpeed: (s: Speed) => void },
+) {
+  const { state, act } = props
+  const v = prologueView(state)
+  const w = prologueMarketView(state)
+  return (
+    <div class="p0-autoplay">
+      <div class="panel p0-autocard">
+        <div class="row-between">
+          <strong>{fmt.quarter(v.quarter)}</strong>
+          <span class="label">
+            <Icon name="pause" size={16} /> {t('ui.p0.auto_paused')}
+          </span>
+        </div>
+        <span class="num-s">
+          BTC {price(w.btcUsd)} · {t('ui.p0.auto_resumes')}
+        </span>
+        <AutoControls speed={props.speed} setSpeed={props.setSpeed} />
+      </div>
+      <EventDialog state={state} act={act} />
+    </div>
+  )
+}
+
 /** The live quarter: an auto-played quarter runs by itself; a card stops it. */
-export function LiveQuarter({ state, act, skip, tick }: PrologueProps) {
+export function LiveQuarter(
+  props: PrologueProps & { speed: Speed; setSpeed: (s: Speed) => void },
+) {
+  const { state, act, skip, tick } = props
   const v = prologueView(state)
   const card = state.interrupt?.event
   useEffect(() => {
     if (v.autoPlay && !state.interrupt) skip()
   }, [state.quarter, state.week, state.interrupt, v.autoPlay])
+  if (v.autoPlay && card) return <AutoPaused {...props} />
   return (
     <>
       <div class="panel">

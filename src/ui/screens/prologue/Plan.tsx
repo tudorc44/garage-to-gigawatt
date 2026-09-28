@@ -40,7 +40,7 @@ import {
   watts,
   type PrologueProps,
 } from './common.tsx'
-import { LiveQuarter } from './Live.tsx'
+import { LiveQuarter, type Speed } from './Live.tsx'
 import { Machines } from './Machines.tsx'
 import { PreorderDialog } from './Preorders.tsx'
 
@@ -132,7 +132,9 @@ function TopBar({ state }: { state: GameState }) {
 }
 
 /** The Plan screen and the live quarter, in one frame. */
-export function PlanOrLive(props: PrologueProps) {
+export function PlanOrLive(
+  props: PrologueProps & { speed: Speed; setSpeed: (s: Speed) => void },
+) {
   const { state } = props
   const plan = state.phase === 'plan'
   const [section, setSection] = useState<Section>(firstSection(state))

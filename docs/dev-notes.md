@@ -419,6 +419,8 @@ nav Dashboard · Machines & Rooms · Coins · Log, sinks in "This quarter") · P
   backup on the wallet, keep / sell + the selling-limit sentence, "This quarter" with all sinks, offers ≤ 2); the Life
   section is gone; Coins & custody (history chart, move / sell, backup status, risks, lost-coins ledger); the pre-order
   dialog (cards, odds bars light → dark). New read-only views: market, pool week, coins history, lost ledger.
+- P6.4: timed auto-play: one card per auto quarter (2 s ÷ speed, timer bar), older cards fade and stack (last 3),
+  Pause here (= stop here), 1×/2×/4× kept across quarters (UI state only, mine); an event shows "Paused · event".
 
 ## Combined report: M7.0 (act2) + P5.0 (prologue), 28 Sep 2026
 

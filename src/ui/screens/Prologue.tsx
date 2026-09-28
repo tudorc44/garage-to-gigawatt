@@ -2,22 +2,27 @@
 // the intro (P0-02) here; the Plan screen and its sections (P0-03, P0-05, P0-06), the live quarter,
 // the reports and auto-play (P0-04), the chapter report and the handover (P0-07, P0-08) in
 // ./prologue/. Layout from the wireframes, look from the design system.
+import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
 import { MachineCard } from '../components/basics.tsx'
 import { CenterCard, type PrologueProps } from './prologue/common.tsx'
 import { Chapter } from './prologue/End.tsx'
-import { QuarterReport } from './prologue/Live.tsx'
+import { AutoPlay, QuarterReport, type Speed } from './prologue/Live.tsx'
 import { PlanOrLive } from './prologue/Plan.tsx'
 
 export type { PrologueProps }
 
 export function PrologueScreen(props: PrologueProps) {
   const { state } = props
+  // Auto-play's speed (P0-04) lasts across quarters; UI only.
+  const [speed, setSpeed] = useState<Speed>(1)
   if (state.phase === 'intro') return <Intro {...props} />
   if (state.phase === 'chapter') return <Chapter {...props} />
+  if (state.phase === 'report' && state.prologue!.reports.at(-1)?.auto)
+    return <AutoPlay {...props} speed={speed} setSpeed={setSpeed} />
   if (state.phase === 'report' || state.phase === 'gameover')
     return <QuarterReport {...props} />
-  return <PlanOrLive {...props} />
+  return <PlanOrLive {...props} speed={speed} setSpeed={setSpeed} />
 }
 
 /** The intro (wireframe P0-02): the label and date, the PC on the desk, the story, one way on. */

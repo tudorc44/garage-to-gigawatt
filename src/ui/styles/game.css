@@ -1535,6 +1535,45 @@ td.wrap {
   flex-direction: column;
   gap: var(--space-2);
 }
+/* Timed auto-play (P0-04): older cards fade and stack; the timer bar fills in the card's time. */
+.p0-autoplay {
+  width: min(560px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.p0-autocard {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.p0-autocard.old {
+  transform: scale(0.97);
+}
+.p0-timer {
+  height: 4px;
+  background: var(--panel-sunk);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.p0-timer i {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--ink);
+  animation-name: p0-timer;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+@keyframes p0-timer {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
 .chapter-card.p0-wide {
   width: min(1120px, 100%);
 }
