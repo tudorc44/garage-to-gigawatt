@@ -164,3 +164,5 @@ panel · M8.7f the bridge payment on the Plan screen · M8.7g docs, sims, report
 log text and docs only). `m8` had been deleted after the M8 merge and was recreated from `main`.
 - M8.7a: `git cherry m8 ef6c43e` (act2's old tip; the branch itself was already deleted by the owner): both commits `-` (already in
   `m8`), so nothing is left on act2 and there is no question to ask.
+- M8.7b: the stabilized-IG EV/MW band is $18–28M (was $27M): tools/sim-runner.ts, tools/valuation-breakdown.ts comment, both scope
+  0.2 copies (with the reason: asic-retirer's $27.1M is a 0.4% measurement edge). Announced-AI ($3–15M) and mining ($0.4–1.2M) unchanged.

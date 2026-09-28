@@ -964,7 +964,7 @@ if (args.includes('--act2')) {
   // The valuation breakdown (medians of each part over the runs that have that point), for the
   // good and great bots, and EV per MW against the §5 sanity bands.
   console.log(
-    '\n  Valuation breakdown (medians; EV/MW bands: mining $0.4–1.2M, announced AI $3–15M, stabilized IG $18–27M):',
+    '\n  Valuation breakdown (medians; EV/MW bands: mining $0.4–1.2M, announced AI $3–15M, stabilized IG $18–28M):',
   )
   const medOrDash = (xs: (number | null)[]) => {
     const v = xs.filter((x): x is number => x !== null)
@@ -1125,7 +1125,7 @@ if (args.includes('--act2')) {
       result: verdict(
         (noMining || inBand(mine, 0.4e6, 1.2e6)) &&
           inBand(ann, 3e6, 15e6) &&
-          inBand(stab, 18e6, 27e6),
+          inBand(stab, 18e6, 28e6),
       ),
       numbers: `mining ${noMining ? 'n/a (no mining left)' : usd(mine)} · announced AI ${usd(ann)} · stabilized IG ${usd(stab)} per MW`,
     })

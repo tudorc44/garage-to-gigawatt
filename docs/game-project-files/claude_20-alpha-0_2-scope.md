@@ -194,7 +194,7 @@ Layout source: the Act II wireframes (`21-act-ii-wireframe-prompt.md` v1.0 → C
 - [ ] **Hosting isn't a free win:** switching mining MW to hosting doesn't beat staying in mining at 2026Q4 in more than ~60% of bot runs (hosting is meant to pay early and carry its risk over the full act; revised 27 Sep 2026 after the M3/M4 sims)
 - [ ] A lifeline run (weak Act I) reaches at least one live AI project by 2024Q4 in ≥ 70% of runs (via the 5 MW shell path). **Accepted MISS (owner, 28 Sep 2026):** 61/120 in the M7.0 sims (66/120 after the M8.1 bridge-payment bot fix); not tuned
 - [ ] Each Merge head start produces a different best opening strategy (checked by bot comparisons)
-- [ ] **EV/MW sanity check:** pure mining ~$0.4–1.2M/MW, announced AI $3–15M/MW (M7.0; was $3–12M), stabilized IG-backed $18–27M/MW. A category with no mining EBITDA left (a mining EV/MW of $0 because the last miners are worth nothing) isn't judged against the pure-mining band: the sim prints "n/a (no mining left)" (M8.1, owner 28 Sep 2026)
+- [ ] **EV/MW sanity check:** pure mining ~$0.4–1.2M/MW, announced AI $3–15M/MW (M7.0; was $3–12M), stabilized IG-backed $18–28M/MW (M8.7, owner 28 Sep 2026; was $18–27M: asic-retirer's $27.1M is a 0.4% overshoot, a measurement edge, not a balance problem). A category with no mining EBITDA left (a mining EV/MW of $0 because the last miners are worth nothing) isn't judged against the pure-mining band: the sim prints "n/a (no mining left)" (M8.1, owner 28 Sep 2026)
 
 **Quality**
 - [ ] Golden replays pass for Act I, Act II alone and Act I → II

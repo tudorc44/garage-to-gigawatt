@@ -1,7 +1,7 @@
 // The valuation breakdown for the Act II balance tuning (owner, 28 Sep 2026, answer 1 step 1): a
 // quarter's valuation split into its parts, and EV per MW for three kinds of MW to check against
 // scope 0.2 §5's sanity bands (pure mining $0.4–1.2M/MW, announced AI $3–15M/MW (M7.0 answer A2), stabilized
-// investment-grade-backed AI $18–27M/MW). For the sim-runner only.
+// investment-grade-backed AI $18–28M/MW). For the sim-runner only.
 import { BALANCE, CONTENT } from '../src/content/index.ts'
 import {
   projectGone,
