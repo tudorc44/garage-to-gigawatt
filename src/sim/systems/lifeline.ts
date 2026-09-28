@@ -129,6 +129,70 @@ export function payBridgeWeek(state: GameState): {
   return { interestUsd, principalUsd }
 }
 
+/** What the bridge costs in one quarter: its weekly interest, and the principal slice paid in the quarter's last week. */
+export interface BridgeQuarter {
+  quarter: number
+  interestUsd: number
+  principalUsd: number
+  totalUsd: number
+  /** Interest only, equal repayments, or the last quarter (everything left). */
+  phase: 'interest_only' | 'amortising' | 'final'
+}
+
+/**
+ * The bridge's payments as the player should see them (M8.7f, read-only): this quarter's and next
+ * quarter's, whether each is interest-only or amortising, and the quarters left. It works out the
+ * same sums payBridgeWeek pays (a test plays the weeks and compares), without touching the state.
+ * null without a bridge.
+ */
+export function bridgeSchedule(state: GameState) {
+  const loan = state.bridgeLoan
+  if (!loan) return null
+  const weeks = BALANCE.weeksPerQuarter
+  const interestOnly = BALANCE.lifeline.bridgeInterestOnlyQuarters
+  const slices = loan.dueQuarter - loan.takenQuarter + 1 - interestOnly
+  const inQuarter = (quarter: number, balanceUsd: number): BridgeQuarter => {
+    const interestUsd =
+      weeks * roundCents((balanceUsd * loan.apr) / (4 * weeks))
+    const last = quarter >= loan.dueQuarter
+    const amortising = quarter >= loan.takenQuarter + interestOnly
+    const principalUsd = last
+      ? balanceUsd
+      : amortising
+        ? Math.min(balanceUsd, roundCents(loan.amountUsd / slices))
+        : 0
+    return {
+      quarter,
+      interestUsd,
+      principalUsd,
+      totalUsd: interestUsd + principalUsd,
+      phase: last ? 'final' : amortising ? 'amortising' : 'interest_only',
+    }
+  }
+  const now = inQuarter(state.quarter, loan.balanceUsd)
+  const next =
+    state.quarter < loan.dueQuarter
+      ? inQuarter(
+          state.quarter + 1,
+          roundCents(loan.balanceUsd - now.principalUsd),
+        )
+      : null
+  return {
+    balanceUsd: loan.balanceUsd,
+    apr: loan.apr,
+    dueQuarter: loan.dueQuarter,
+    /** Including this one. */
+    quartersLeft: loan.dueQuarter - state.quarter + 1,
+    /** Interest-only quarters still to come after this one (0 once amortising). */
+    interestOnlyAfterThis: Math.max(
+      0,
+      loan.takenQuarter + interestOnly - state.quarter - 1,
+    ),
+    now,
+    next,
+  }
+}
+
 /** Pays the bridge off early, in the Plan phase (no penalty). */
 export function repayBridgeLoan(state: GameState): Message | undefined {
   const loan = state.bridgeLoan

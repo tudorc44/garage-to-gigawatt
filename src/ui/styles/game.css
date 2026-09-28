@@ -894,6 +894,12 @@ tr.locked td {
   gap: var(--space-4);
   align-items: start;
 }
+.bridge-payment {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2) 0;
+}
 .a2-mw-table {
   width: 100%;
   border-collapse: collapse;

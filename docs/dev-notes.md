@@ -177,3 +177,10 @@ log text and docs only). `m8` had been deleted after the M8 merge and was recrea
   `tests/sim/slotLog.test.ts` covers the three power and all capital types.
 - M8.7e: only one `Act2Panel` ever existed (M8.3 edited 7eda74e's panel in place), one block each. One real duplicate: a signed tenant showed under
   both "milestones" and "tenants signed or lost"; it is now under tenants only. A test checks each block once and no line in two blocks.
+- M8.7f: a lifeline taker did NOT see the bridge payment coming (the Capital screen had a generic note, the Plan screen nothing). Added
+  `bridgeSchedule` (`systems/lifeline.ts`, pure, a test plays `payBridgeWeek` and matches it every quarter) → `bridgePaymentView`
+  → `BridgePayment` (`ui/components/bridge.tsx`) on the Plan screen's Capital group and in the Capital screen's debt stack: this
+  quarter's and next quarter's payment, interest only vs amortising, quarters left, "the payment steps up", "raise cash a quarter early"
+  when cash < next quarter's payment; a tooltip says the payment turns amortising after the first 4 quarters (read from balance.ts).
+  Runway (rating.ts) already counts the bridge as PAID LAST QUARTER (report interest + principal) but not the coming step-up, and the
+  RATING rule uses runway (−1 notch under 4 quarters): not changed, reported as a question.

@@ -72,6 +72,7 @@ import { counterRisk } from './systems/negotiation.ts'
 import { readMarketBlocker } from './systems/readMarket.ts'
 import { rushRepairUsd } from './systems/failureWave.ts'
 import { waveCostUsd } from './systems/gpuWave.ts'
+import { bridgeSchedule } from './systems/lifeline.ts'
 import {
   backlogUsd,
   gpuWaitQuarters,
@@ -1505,6 +1506,26 @@ export function knowHowView(state: GameState) {
     threeKw: b.knowHowThreeKw,
     utilisationBase: pilot.utilisationBase,
     levels,
+  }
+}
+
+/**
+ * The lifeline bridge's payments for the Plan and Capital screens (M8.7f): this quarter's and next
+ * quarter's, interest-only or amortising, the quarters left, and whether your cash covers each.
+ * null without a bridge.
+ */
+export function bridgePaymentView(state: GameState) {
+  const s = bridgeSchedule(state)
+  if (!s) return null
+  return {
+    ...s,
+    /** How many quarters the bridge is interest only (for the tooltip), from the balance file. */
+    interestOnlyQuarters: BALANCE.lifeline.bridgeInterestOnlyQuarters,
+    cashUsd: state.cash,
+    coversNow: state.cash >= s.now.totalUsd,
+    coversNext: s.next === null || state.cash >= s.next.totalUsd,
+    /** Next quarter's payment is bigger than this one's (interest-only turning to amortising). */
+    stepsUp: s.next !== null && s.next.totalUsd > s.now.totalUsd,
   }
 }
 

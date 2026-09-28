@@ -12,6 +12,7 @@ import {
   valuationBreakdown,
 } from '../../sim/selectors.ts'
 import { Tip } from '../components/basics.tsx'
+import { BridgePayment } from '../components/bridge.tsx'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { LoanDialog } from './dialogs.tsx'
@@ -206,6 +207,9 @@ function DebtStack({ state, act }: ScreenProps) {
             ))}
           </tbody>
         </table>
+      )}
+      {v.rows.some((r) => r.kind === 'bridge') && (
+        <BridgePayment state={state} />
       )}
       {v.rows.some((r) => r.kind === 'bridge') && (
         <div class="row-between">

@@ -45,6 +45,7 @@ import type { Coin, GameState } from '../../sim/state.ts'
 import { ActionRow, Icon, Sparkline, Tip } from '../components/basics.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
+import { BridgePayment } from '../components/bridge.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -961,6 +962,7 @@ function TodoPanel({
       )}
 
       <div class="label group">{t('ui.plan.group.capital')}</div>
+      <BridgePayment state={state} />
       <RaiseRow state={state} act={act} open={open} round="friends_family" />
       <EquipmentLoanRow state={state} act={act} open={open} />
       <ConstructionLoanRow state={state} act={act} />
