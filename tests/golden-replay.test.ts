@@ -6,12 +6,15 @@ import { describe, expect, it } from 'vitest'
 import { CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import {
+  applyStep,
+  playFrom,
   playGame,
   playPrologue,
   replay,
   replayPrologue,
   type Strategy,
 } from '../src/sim/replay.ts'
+import { act3StubCompany } from './sim/act3Helpers.ts'
 import { BOTS } from '../tools/bots.ts'
 import { PROLOGUE_BOTS } from '../tools/prologueBots.ts'
 import type { GameState } from '../src/sim/state.ts'
@@ -359,6 +362,46 @@ describe.each([
     await expect(
       JSON.stringify({ ...run.state, version: 3 }, null, 2) + '\n',
     ).toMatchFileSnapshot(`./golden/${name}-seed-${PROLOGUE_SEED}.json`)
+  })
+})
+
+/**
+ * The Act III walking skeleton (M10): a STUB, not real content — no scenarios, no Signals, no
+ * decisions. Plays a fixed seed through both stub quarters (2027Q1, 2027Q2) with a "do nothing"
+ * plan and snapshots the end state, named `act3-stub-golden` so it's never mistaken for real Act
+ * III content. This state is unreachable from play (see tests/sim/act3Helpers.ts).
+ */
+const ACT3_STUB_SEED = 1
+describe('golden replay: act3-stub-golden (M10 walking skeleton — not real content)', () => {
+  const doNothingInPlan: Strategy = { plan: () => [] }
+  const run = playFrom(act3StubCompany(ACT3_STUB_SEED), doNothingInPlan, {
+    through: 2,
+  })
+
+  it('plays through both stub quarters to the chapter phase without errors', () => {
+    expect(run.state.phase).toBe('chapter')
+    expect(run.state.act).toBe(3)
+    expect(run.state.reports.map((r) => r.quarter)).toEqual([
+      '2027Q1',
+      '2027Q2',
+    ])
+  })
+
+  it('same seed + the same (empty) strategy → identical game; replaying the log → identical end state', () => {
+    expect(
+      playFrom(act3StubCompany(ACT3_STUB_SEED), doNothingInPlan, {
+        through: 2,
+      }).state,
+    ).toEqual(run.state)
+    expect(
+      run.log.reduce(applyStep, act3StubCompany(ACT3_STUB_SEED)),
+    ).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state (a stub — not real Act III content)', async () => {
+    await expect(
+      JSON.stringify(run.state, null, 2) + '\n',
+    ).toMatchFileSnapshot(`./golden/act3-stub-golden-seed-${ACT3_STUB_SEED}.json`)
   })
 })
 

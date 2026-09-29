@@ -1,6 +1,6 @@
 // The whole game lives in one plain GameState object: no classes, no functions, so it
 // can be copied, compared, saved as JSON and replayed. Systems read and update it.
-import { BALANCE, CONTENT } from '../content/index.ts'
+import { BALANCE, CONTENT, actFirstQuarter } from '../content/index.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
@@ -730,6 +730,22 @@ export function logEntry(
 /** Money is kept in plain dollars and rounded to cents once per week. */
 export function roundCents(usd: number): number {
   return Math.round(usd * 100) / 100
+}
+
+/**
+ * Flips any state to the start of the Act III walking skeleton's first stub quarter (M10):
+ * mechanical only, no head start, no carry-over rule (Heat, Anger, rating, etc. are simply
+ * whatever the state already had — see dev-notes' M10.1 STUB list). Never called by the reducer
+ * or any UI; a test/sim harness is the only caller, so Act III stays unreachable from play.
+ */
+export function toAct3Stub(state: GameState): GameState {
+  return {
+    ...state,
+    act: 3,
+    quarter: actFirstQuarter(3),
+    phase: 'plan',
+    act3Stub: true,
+  }
 }
 
 export function newGame(seed: number): GameState {

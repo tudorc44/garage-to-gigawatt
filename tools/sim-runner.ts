@@ -15,7 +15,7 @@ import type {
   GameState,
   QuarterReport,
 } from '../src/sim/state.ts'
-import { inActII } from '../src/sim/state.ts'
+import { inActII, toAct3Stub } from '../src/sim/state.ts'
 import { runway } from '../src/sim/systems/runway.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
@@ -726,6 +726,34 @@ if (args.includes('--act2')) {
       return { seed: i + 1, state }
     }),
   }))
+  // The Act III walking skeleton (M10, --act3stub only): a STUB, not real content — no scenarios, no
+  // decisions. Only when the flag is passed, every run that reached 2026Q4 normally is flipped
+  // (toAct3Stub, no head start, no carry-over rule) and played 2 more stub quarters with the SAME
+  // bot; without the flag, nothing here runs and Act II's own numbers are unaffected either way.
+  if (args.includes('--act3stub')) {
+    const t3 = performance.now()
+    let extended = 0
+    let crashed = 0
+    for (const { name, runs } of byBot) {
+      for (const { seed, state } of runs) {
+        if (state.phase !== 'chapter') continue
+        try {
+          const r = playFrom(toAct3Stub(state), BOTS[name] ?? PROBES[name], {
+            through: 2,
+          })
+          if (r.state.phase === 'chapter' && r.state.act === 3) extended++
+        } catch (e) {
+          crashed++
+          console.error(
+            `  --act3stub: ${name} seed ${seed} crashed: ${(e as Error).message}`,
+          )
+        }
+      }
+    }
+    console.log(
+      `\n  Act III stub (--act3stub, M10 walking skeleton, NOT real content): ${extended} runs played through 2027Q1–2027Q2 with no crash, ${crashed} crashed (${(performance.now() - t3).toFixed(0)} ms)`,
+    )
+  }
   // Scope 0.2 §5: every balance target, PASS / MISS with its numbers, printed as one table at the end.
   const s5: { target: string; result: string; numbers: string }[] = []
   const verdict = (pass: boolean | null) =>

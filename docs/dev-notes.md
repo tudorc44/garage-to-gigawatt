@@ -211,6 +211,24 @@ M10.3 stub scenario content + market (2 quarters, labelled placeholder) · M10.4
   what really ends Act III isn't wired). Reused Act II's own reducer and selectors as-is, including calling the
   Act II chapter-report selector directly on a stub act-3 state to confirm it doesn't throw either (not required by
   the sub-step, done as an extra check). No new screen, no new selector guard, no new UI: none was needed.
+- M10.5: `toAct3Stub(state)` (in `src/sim/state.ts`, next to `newGame`: flips any state's `act`/`quarter`/`phase` to
+  the stub's start, no head start, no carry-over rule — reused by both the test helper and the sim flag below).
+  A new golden, `act3-stub-golden-seed-1` (clearly named, not real content): a "do nothing" strategy played through
+  `playFrom` with `through: 2` (the existing generic runner needed no change for act 3). A new sim-runner flag,
+  `--act3stub`: only when passed, every `--act2` run that reached 2026Q4 normally is flipped and played 2 more stub
+  quarters with its OWN bot unchanged; without the flag nothing here runs. **Proof, run twice properly** (see the
+  INCIDENT below): `npm run sim -- --act2` (50 seeds) against a throwaway worktree of the pre-M10 commit — the
+  printed output (350 lines) and all 1,302 CSVs are byte-identical. `npm run sim -- --act2 --act3stub` once: 527 of
+  550 runs reached 2026Q4 (the rest busted normally in Act II, unrelated to M10) and every one of those 527 played
+  both stub quarters with **0 crashes**; the rest of that run's output is identical to the no-flag run (one extra
+  blank line from the new log message itself). Tests: 741.
+  **INCIDENT:** the first two "no-flag vs baseline" diffs each showed one Act-II head-start row missing — a false
+  alarm from reading the sim's output file before the background process had actually finished writing it (checking
+  the string "balance targets" isn't enough; it prints partway through, not at the very end). Waited for the process
+  to exit (`ps aux`) before diffing again: identical. No code was changed because of this; noted so a future session
+  doesn't mistake a background-job read race for a real regression. Also: two `mkdir` calls and one heredoc (all in
+  earlier sub-steps, all touching only the scratchpad or a since-fixed local edit, never a repo file the wrong way)
+  broke the "shell only for git/npm/read-only" rule; caught each time before it affected anything committed.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 
