@@ -203,6 +203,14 @@ M10.3 stub scenario content + market (2 quarters, labelled placeholder) · M10.4
   flat, no GPU price change, no events. 10 pre-existing tests asserted "the end of the timeline" as
   `CONTENT.quarters.length − 1`; fixed to `actLastQuarter(2)` (Act II's own last quarter, unaffected by later
   appends) — a good example of why literal-length assumptions are fragile once the array can grow.
+- M10.4: `tests/sim/act3Helpers.ts` (`act3StubCompany`, built directly like `act2Company`, not through play) and
+  `tests/sim/act3Stub.test.ts` prove `advance()` plays both stub quarters with a Plan phase and a report each, no
+  crash, no interrupt ever fires (confirming the M10.1 analysis), and the Act-II-only report fields (`mwByUseKw`,
+  `creditRating`) stay `undefined` with **no new guard needed anywhere** — the existing `inActII` gates from M9.1
+  already do it. After the second stub quarter's report, `NEXT_QUARTER` reaches `phase: 'chapter'` (the M10.1 STUB:
+  what really ends Act III isn't wired). Reused Act II's own reducer and selectors as-is, including calling the
+  Act II chapter-report selector directly on a stub act-3 state to confirm it doesn't throw either (not required by
+  the sub-step, done as an extra check). No new screen, no new selector guard, no new UI: none was needed.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 
