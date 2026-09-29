@@ -2161,6 +2161,16 @@
   ],
   "scenarioId": "s3",
   "act3SignalReads": [],
+  "act3Entry": {
+    "quarter": "2027Q1",
+    "valuationUsd": 500000000,
+    "founderNetWorthUsd": 500000000,
+    "cashUsd": 500000000,
+    "debtUsd": 0,
+    "energizedMw": 20.005,
+    "contractedMw": 0,
+    "creditRating": null
+  },
   "act3End": {
     "scenarioId": "s3",
     "scenarioName": "Efficiency Shock",

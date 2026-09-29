@@ -4,11 +4,11 @@ import {
   BALANCE,
   CONTENT,
   SCENARIO_IDS,
-  actFirstQuarter,
   type ScenarioId,
   type SignalId,
 } from '../content/index.ts'
 import { random, substream } from './rng.ts'
+import { enterAct3 } from './systems/act3Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
@@ -112,6 +112,25 @@ export interface MachineLot {
   earnsFromQuarter: number
   /** Act II, the gpu_cloud head start: GPU rigs rented out as a legacy cloud instead of mining. */
   legacyCloud?: boolean
+}
+
+/**
+ * How the company entered Act III (M11.4b, doc 27 D17), measured at the end of 2026Q4. The chapter
+ * report's growth and the reading score use it later. It holds nothing about the scenario.
+ */
+export interface Act3Entry {
+  /** The first Act III quarter ("2027Q1"). */
+  quarter: string
+  valuationUsd: number
+  /** Founder stake × valuation (never below 0). */
+  founderNetWorthUsd: number
+  cashUsd: number
+  /** Everything owed: the equipment and construction loans, a bridge loan, a crypto loan, facilities. */
+  debtUsd: number
+  energizedMw: number
+  /** MW under contract: hosting, AI shells and AI clouds live at the end of 2026Q4. */
+  contractedMw: number
+  creditRating: string | null
 }
 
 /**
@@ -494,6 +513,8 @@ export interface GameState {
    * Absent in the prologue, Act I and Act II; toAct3() starts it empty.
    */
   act3SignalReads?: { quarter: string; indicator: SignalId }[]
+  /** Act III (M11.4b): the company as it entered Act III. Absent in every other act. */
+  act3Entry?: Act3Entry
   /**
    * Act III (M11.3): the scenario reveal, stored when the last quarter (2030Q4) is done and the game
    * reaches the chapter phase. Absent until then, and in every other act.
@@ -779,23 +800,16 @@ export function drawScenario(seed: number): ScenarioId {
 }
 
 /**
- * The Act II→III boundary (M11.1): flips a state to the start of 2027Q1 in Act III with its drawn
- * scenario. No head start or carry-over rule yet (Heat, Anger, rating etc. stay whatever the state
- * had). `options.scenario` forces a scenario: for tests and tools only. Never called by the reducer or
- * any UI (a test greps src/ for that), so Act III stays unreachable from play.
+ * The Act II→III boundary: enters Act III on the seed's drawn scenario (M11.1), applying the D17
+ * carry-over and drops (enterAct3, M11.4b). `options.scenario` forces a scenario: for tests and
+ * tools only. Never called by the reducer or any UI (a test greps src/ for that), so Act III stays
+ * unreachable from play.
  */
 export function toAct3(
   state: GameState,
   options: { scenario?: ScenarioId } = {},
 ): GameState {
-  return {
-    ...state,
-    act: 3,
-    quarter: actFirstQuarter(3),
-    phase: 'plan',
-    scenarioId: options.scenario ?? drawScenario(state.seed),
-    act3SignalReads: [],
-  }
+  return enterAct3(state, options.scenario ?? drawScenario(state.seed))
 }
 
 export function newGame(seed: number): GameState {
