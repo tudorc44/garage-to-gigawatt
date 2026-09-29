@@ -5,10 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
-Last updated: 29 Sep 2026. Act I, Act II and the Prologue are all built. **Milestone M9 is done** (M9.0 the runway look-ahead, M9.1 the
-`inActII` refactor, M9.2 the great-path runway check + the scope sentence); `main` has it. The owner rebuilt staging from it and played
-the Act II playtest: **no fixes needed** — the "playtest fixes" part of M9 is closed with nothing to do. `docs/act3-carryover-audit.md`
-says what Act III could reuse and records the design thread's decisions.
+Last updated: 29 Sep 2026. Act I, Act II and the Prologue are all built and done; M9 closed with no playtest fixes needed. **Milestone M10
+(the Act III walking skeleton) is under way on branch `m10`:** plumbing only, no Act III game rules, no menu path reaches it. See "Next"
+and the M10 section below.
 
 ## How the owner works
 
@@ -152,6 +151,33 @@ repricing, the density cliff, the nuclear PPA, political capital, wildcards, riv
 and what carries over at the act boundary. **The code thread's next Act III step, once design is frozen, is the walking skeleton** (the
 act 3 boundary, the save step, 2 stub quarters, a new Act III golden) — **do not start it until the owner brings a frozen doc 27.** The
 Act I playtests stay postponed.
+
+## Milestone M10: the Act III walking skeleton (branch `m10`, batch mode, 29 Sep 2026)
+
+Doc 27 (Act III design) is now frozen v1.0, D1–D17 accepted. This milestone builds NO Act III game system: no scenarios, Signals,
+renewals, density, nuclear, political capital or wildcards (those wait for doc 28's content pack, not yet written). It only proves the
+40-quarter timeline can extend to 2 stub quarters without breaking Act I, Act II or the Prologue, and that nothing reaches Act III from
+play. Split: M10.1 `inActIII` helper + the act boundary (mechanical, stubs logged, no real rules wired) · M10.2 save version step ·
+M10.3 stub scenario content + market (2 quarters, labelled placeholder) · M10.4 two playable stub quarters (`advance()` only, no new UI)
+· M10.5 sim harness + a new `act3-stub` golden + an opt-in `--act3stub` sim flag · M10.6 report and docs.
+
+- M10.1: `isActIII(act)` / `inActIII(state)` added next to M9.1's helpers (`src/sim/state.ts`); `GameState.act` and
+  `ActSpan.act` (`src/content/index.ts`) widened to `0 | 1 | 2 | 3`. No existing `act === 2` / `inActII` check changed.
+  `npx tsc -b` compiled clean with no exhaustiveness errors, meaning no code elsewhere assumed the old 3-value union — a
+  benefit of M9.1's single-point gates. Confirmed no code path ever sets `act` to 3 except a test/sim harness (checked:
+  the only two `.act = ` assignments in the whole codebase are `enterAct2` (`actions.ts`, sets 2) and the prologue
+  handover (`handover.ts`, sets 1)).
+  **STUB points found by inspection** (a real Act III value is not decided; each is a safe no-op for now):
+  - `bandwidthForQuarter` (`systems/bandwidth.ts`): only checks `inActII(state)`; for act 3 it falls through to the Act I
+    formula (a bonus for a 20 MW site that won't exist). Not decided: Act III's own Bandwidth rule.
+  - `startNextQuarter` (`systems/quarter.ts`): `state.phase = state.act === 1 ? 'merge' : 'chapter'` sends any non-Act-I
+    act, including 3, to `'chapter'` once its last quarter is reached. Not decided: what ends Act III (a chapter report,
+    a scenario-continue prompt, something else) — doc 27 has an answer for this that isn't wired yet.
+  - Most other Act II business systems (hosting, projects, GPU waves, spot shocks, the credit rating, Anger, regions,
+    curtailment, the equity/ATM rules, rescue, negotiation) already gate on `inActII(state)` or on `isActIIQuarter(quarter)`
+    / `act2Quarter(quarter)` (a quarter-range check). Since Act III's stub quarters are outside both Act II's act number
+    and its quarter range, ALL of these deactivate themselves automatically with no change needed — they were already
+    the right kind of gate. Confirmed instead of assumed: checked in M10.4 below.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 

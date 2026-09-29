@@ -329,6 +329,17 @@ export const inActII = (
   state: Pick<GameState, 'act'> | null | undefined,
 ): boolean => isActII(state?.act)
 
+/**
+ * Whether an act number is Act III (M10.1: the walking skeleton only, no Act III game rules yet).
+ * Every "is this Act III?" check goes through here, the same pattern as isActII.
+ */
+export const isActIII = (act: unknown): boolean => act === 3
+
+/** Whether a game (or none: null) is in Act III. */
+export const inActIII = (
+  state: Pick<GameState, 'act'> | null | undefined,
+): boolean => isActIII(state?.act)
+
 /** A project that no longer holds its MW or earns: sold, or ended by selling its GPUs. */
 export const projectGone = (p: Project) =>
   p.stage === 'sold' || p.stage === 'ended' || p.stage === 'foreclosed'
@@ -373,12 +384,13 @@ export interface Auction {
 
 export interface GameState {
   /** Save-format version (save.ts SAVE_VERSION). Older saves are migrated step by step when loaded. */
-  version: 3
+  version: 4
   /**
    * The act being played: 0 = the prologue (2009Q1–2016Q4, quarter indices −32 … −1), 1 = Act I
-   * (2017Q1–2022Q3), 2 = Act II (2022Q4–2026Q4).
+   * (2017Q1–2022Q3), 2 = Act II (2022Q4–2026Q4), 3 = Act III (M10 walking skeleton: 2 stub
+   * quarters, 2027Q1–2027Q2; unreachable from play, test/sim-harness only).
    */
-  act: 0 | 1 | 2
+  act: 0 | 1 | 2 | 3
   /** The prologue's own state: only a prologue start has it (Alpha 0.3). */
   prologue?: PrologueState
   /** What a prologue start brought into Act I (its net worth for the growth multiple, custody). */
@@ -451,6 +463,12 @@ export interface GameState {
   mergeChoice: string | null
   /** Act II: the head start (and lifeline) set at the act boundary; null in Act I. */
   act2Entry: Act2Entry | null
+  /**
+   * Act III (M10 walking skeleton): marks a stub state built directly by a test/sim harness, not
+   * through play. Absent (undefined) on every real game. A real Act III entry record (mirroring
+   * Act2Entry: which scenario, what carried over) replaces this once doc 28's content lands.
+   */
+  act3Stub?: true
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
@@ -717,7 +735,7 @@ export function roundCents(usd: number): number {
 export function newGame(seed: number): GameState {
   const start = CONTENT.siteTiers.find((t) => t.id === BALANCE.startSite)!
   return {
-    version: 3,
+    version: 4,
     act: 1,
     seed,
     rng: seed | 0,

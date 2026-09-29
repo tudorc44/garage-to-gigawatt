@@ -137,8 +137,11 @@ export type {
 
 /** Where an act sits on the game's timeline (quarter indexes, inclusive). */
 export interface ActSpan {
-  /** 0 = the prologue (Alpha 0.3, quarter indices −32 … −1), 1 = Act I, 2 = Act II. */
-  act: 0 | 1 | 2
+  /**
+   * 0 = the prologue (Alpha 0.3, quarter indices −32 … −1), 1 = Act I, 2 = Act II, 3 = Act III
+   * (M10 walking skeleton stub quarters only; no real Act III content until doc 28 lands).
+   */
+  act: 0 | 1 | 2 | 3
   firstQuarter: number
   lastQuarter: number
 }
