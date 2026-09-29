@@ -17,6 +17,29 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M11.5a, 29 Sep 2026 (design thread's answer to the M11.4c question on the BTC hashprice seam)
+
+- **`market_weekly_s0–s3.csv` › `btc_hashprice_usd_ph_day` and `btc_hashprice_usd_th_day`, and `market_s0–s3.csv` ›
+  `btc_hashprice_usd_ph_day`** were rebased with one constant per scenario, `k = Act II's last weekly hashprice ÷ that
+  scenario's first weekly hashprice`, applied to all 16 quarters and 208 weeks (ph rounded to 2 decimals in the weekly files
+  and 1 in the quarterly ones, th to 4). Act II's last week is $43.68/PH/day ($0.0437/TH/day); doc 28 assumed it ended near
+  $48.6 (the known F-10 Act II data quirk: Act II's data is not changed). Every scenario now opens on $43.68.
+
+  | scenario | first weekly ph before | k |
+  | --- | --- | --- |
+  | s0 | 49.85 | 0.87623 |
+  | s1 | 48.99 | 0.89161 |
+  | s2 | 50.35 | 0.86753 |
+  | s3 | 47.87 | 0.91247 |
+
+- **`signals_s0–s3.json` › `bitcoin_hashprice`:** the dollar figures in the 16 sharp notes ("about $N/PH/day") were scaled by
+  the same k, rounded to whole dollars (e.g. s0 2027Q1 $50 → $44), and the `higher_means` text now reads "50 = 2026Q4
+  $44/PH/day pre-halving, $21.9 post-halving" in all four files (one common rounded figure: Act II's $43.7 and half of it).
+  Displayed values and sharp low/high are relative (0–100) and did not change.
+- The game's copies in `src/content/` (CSV, JSON and the signals files) are byte-identical.
+- Not rebased, as the design thread decided: `gpu_h200_hyperscaler_usd_hr` (+18% to +26% across the seam) and
+  `hyperscaler_capex_usd_bn_q` (+11% to +15%). The game never reads either for a price it pays or earns (a test checks it).
+
 ### M11.4a, 29 Sep 2026 (design thread's decision DT 1: rebase the valuation multiples at the boundary)
 
 - **`market_s0–s3.csv` › `ai_infra_ev_ebitda_mult` and `mining_ev_ebitda_mult`** started at 20.5–21× (AI) and 4.8–5.3× (mining),

@@ -5,7 +5,6 @@ import {
   CONTENT,
   act1ValueQuarter,
   actFirstQuarter,
-  isActIIQuarter,
   isAct2RulesQuarter,
   nextQuarter,
   type Machine,
@@ -135,10 +134,12 @@ export function revenuePerUnitDay(model: Machine, w: MarketWeek): number {
 export function act2Prices(
   model: Machine,
   quarter: number,
+  scenario?: ScenarioId | null,
 ): { newUsd: number; usedUsd: number } | undefined {
   const price = model.act2_price
-  if (!price || !isActIIQuarter(quarter)) return undefined
-  const perTh = marketWeek(quarter, 0)[`asic_price_usd_th_${price.tier}`]
+  // Act II, and Act III on its scenario's weekly $/TH tiers (M11.5a, same tier mapping per model).
+  if (!price || !isAct2RulesQuarter(quarter)) return undefined
+  const perTh = marketWeek(quarter, 0, scenario)[`asic_price_usd_th_${price.tier}`]
   if (perTh === null) return undefined
   const from = getModel(price.used_ratio_from.model)!
   const q = price.used_ratio_from.quarter
@@ -159,6 +160,7 @@ export function buyPrice(
   model: Machine,
   quarter: number,
   condition: Condition,
+  scenario?: ScenarioId | null,
 ): number | undefined {
   const label = CONTENT.quarters[quarter]
   if (isPrologueModel(model)) {
@@ -169,7 +171,7 @@ export function buyPrice(
       true,
     )
   }
-  const act2 = act2Prices(model, quarter)
+  const act2 = act2Prices(model, quarter, scenario)
   if (act2) {
     if (label < model.available_from) return undefined
     if (condition === 'new')
@@ -202,12 +204,16 @@ export function buyPrice(
  * What one working unit sells for: the market's used price. In Act II, ASICs sell at their
  * tier-based used price (even before a used market opens for buyers); others at 2022Q3's.
  */
-export function sellPrice(model: Machine, quarter: number): number {
+export function sellPrice(
+  model: Machine,
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number {
   if (isPrologueModel(model))
     return (
       prologuePrice(model.price_used, CONTENT.quarters[quarter], false) ?? 0
     )
-  const act2 = act2Prices(model, quarter)
+  const act2 = act2Prices(model, quarter, scenario)
   if (act2) return act2.usedUsd
   const held = model.price_used[act1ValueQuarter(quarter)] ?? 0
   // Act II GPU rigs (parked or not) lose value on the Act II GPU resale curve from 2022Q4

@@ -479,7 +479,12 @@ export function resolveEvent(
         break
       case 'buy_machine': {
         const b = v as BuyMachine
-        const price = buyPrice(getModel(b.model)!, state.quarter, b.condition)
+        const price = buyPrice(
+          getModel(b.model)!,
+          state.quarter,
+          b.condition,
+          scenarioOf(state),
+        )
         const target = siteWithRoom(state, b.model, b.count)!
         state.cash -= (price ?? 0) * b.price_mult * b.count
         addMachines(state, b.model, b.condition, b.count, target.id)
@@ -577,7 +582,8 @@ export function resolveEvent(
       case 'fire_rebuild': {
         const x = v as { min_usd: number; fleet_used_value_pct: number }
         const fleet = state.machines.reduce(
-          (sum, l) => sum + saleValueUsd(l, l.count, state.quarter),
+          (sum, l) =>
+            sum + saleValueUsd(l, l.count, state.quarter, scenarioOf(state)),
           0,
         )
         state.cash -= Math.max(x.min_usd, x.fleet_used_value_pct * fleet)

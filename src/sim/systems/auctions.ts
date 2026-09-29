@@ -7,7 +7,7 @@ import type { Message } from '../../i18n/t.ts'
 import { pick, randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type Auction, type GameState } from '../state.ts'
 import { addMachines } from './machines.ts'
-import { getModel, sellPrice } from './market.ts'
+import { getModel, scenarioOf, sellPrice } from './market.ts'
 import { activeRivals } from './rivals.ts'
 import { underMoratorium } from './heat.ts'
 import { gpuKwLeft } from './construction.ts'
@@ -41,7 +41,7 @@ export function rollAuction(state: GameState): void {
   // Lots come in tens: "240 used Antminer S9".
   const count =
     randomInt(r, rules.lotUnits[0] / 10, rules.lotUnits[1] / 10) * 10
-  const unitListUsd = sellPrice(model, state.quarter)
+  const unitListUsd = sellPrice(model, state.quarter, scenarioOf(state))
   const value = count * unitListUsd
   const reserveUsd = roundTo100(value * uniform(r, ...rules.reserveShare))
   const rivals = activeRivals(state.quarter).map((x) => x.id)

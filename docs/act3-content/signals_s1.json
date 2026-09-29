@@ -1054,7 +1054,7 @@
   {
    "id": "bitcoin_hashprice",
    "label": "Bitcoin Hashprice",
-   "higher_means": "richer mining revenue per unit of hashrate, halving-adjusted (50 = 2026Q4 $49/PH/day pre-halving, $24.3 post-halving)",
+   "higher_means": "richer mining revenue per unit of hashrate, halving-adjusted (50 = 2026Q4 $44/PH/day pre-halving, $21.9 post-halving)",
    "role_in_scenario": "signature",
    "authoring_latent": [
     50.8,
@@ -1083,7 +1083,7 @@
      "sharp": {
       "low": 49,
       "high": 53,
-      "note": "Hashprice is about $50/PH/day, 102% of its halving-adjusted norm."
+      "note": "Hashprice is about $44/PH/day, 102% of its halving-adjusted norm."
      }
     },
     {
@@ -1094,7 +1094,7 @@
      "sharp": {
       "low": 50,
       "high": 54,
-      "note": "Hashprice is about $52/PH/day, 107% of its halving-adjusted norm."
+      "note": "Hashprice is about $46/PH/day, 107% of its halving-adjusted norm."
      }
     },
     {
@@ -1105,7 +1105,7 @@
      "sharp": {
       "low": 48,
       "high": 52,
-      "note": "Hashprice is about $49/PH/day, 100% of its halving-adjusted norm."
+      "note": "Hashprice is about $44/PH/day, 100% of its halving-adjusted norm."
      }
     },
     {
@@ -1116,7 +1116,7 @@
      "sharp": {
       "low": 41,
       "high": 45,
-      "note": "Hashprice is about $40/PH/day, 83% of its halving-adjusted norm."
+      "note": "Hashprice is about $36/PH/day, 83% of its halving-adjusted norm."
      }
     },
     {
@@ -1127,7 +1127,7 @@
      "sharp": {
       "low": 34,
       "high": 38,
-      "note": "Hashprice is about $33/PH/day, 68% of its halving-adjusted norm."
+      "note": "Hashprice is about $29/PH/day, 68% of its halving-adjusted norm."
      }
     },
     {
@@ -1138,7 +1138,7 @@
      "sharp": {
       "low": 32,
       "high": 36,
-      "note": "Hashprice is about $16/PH/day, 65% of its halving-adjusted norm."
+      "note": "Hashprice is about $14/PH/day, 65% of its halving-adjusted norm."
      }
     },
     {
@@ -1149,7 +1149,7 @@
      "sharp": {
       "low": 33,
       "high": 37,
-      "note": "Hashprice is about $16/PH/day, 65% of its halving-adjusted norm."
+      "note": "Hashprice is about $14/PH/day, 65% of its halving-adjusted norm."
      }
     },
     {
@@ -1160,7 +1160,7 @@
      "sharp": {
       "low": 34,
       "high": 38,
-      "note": "Hashprice is about $17/PH/day, 68% of its halving-adjusted norm."
+      "note": "Hashprice is about $15/PH/day, 68% of its halving-adjusted norm."
      }
     },
     {
@@ -1171,7 +1171,7 @@
      "sharp": {
       "low": 37,
       "high": 41,
-      "note": "Hashprice is about $18/PH/day, 74% of its halving-adjusted norm."
+      "note": "Hashprice is about $16/PH/day, 74% of its halving-adjusted norm."
      }
     },
     {
@@ -1182,7 +1182,7 @@
      "sharp": {
       "low": 39,
       "high": 43,
-      "note": "Hashprice is about $19/PH/day, 78% of its halving-adjusted norm."
+      "note": "Hashprice is about $17/PH/day, 78% of its halving-adjusted norm."
      }
     },
     {
@@ -1193,7 +1193,7 @@
      "sharp": {
       "low": 39,
       "high": 43,
-      "note": "Hashprice is about $19/PH/day, 78% of its halving-adjusted norm."
+      "note": "Hashprice is about $17/PH/day, 78% of its halving-adjusted norm."
      }
     },
     {
@@ -1204,7 +1204,7 @@
      "sharp": {
       "low": 40,
       "high": 44,
-      "note": "Hashprice is about $19/PH/day, 79% of its halving-adjusted norm."
+      "note": "Hashprice is about $17/PH/day, 79% of its halving-adjusted norm."
      }
     },
     {
@@ -1215,7 +1215,7 @@
      "sharp": {
       "low": 39,
       "high": 43,
-      "note": "Hashprice is about $19/PH/day, 79% of its halving-adjusted norm."
+      "note": "Hashprice is about $17/PH/day, 79% of its halving-adjusted norm."
      }
     },
     {
@@ -1226,7 +1226,7 @@
      "sharp": {
       "low": 40,
       "high": 44,
-      "note": "Hashprice is about $20/PH/day, 80% of its halving-adjusted norm."
+      "note": "Hashprice is about $17/PH/day, 80% of its halving-adjusted norm."
      }
     },
     {
@@ -1237,7 +1237,7 @@
      "sharp": {
       "low": 40,
       "high": 44,
-      "note": "Hashprice is about $20/PH/day, 81% of its halving-adjusted norm."
+      "note": "Hashprice is about $18/PH/day, 81% of its halving-adjusted norm."
      }
     },
     {
@@ -1248,7 +1248,7 @@
      "sharp": {
       "low": 41,
       "high": 45,
-      "note": "Hashprice is about $20/PH/day, 82% of its halving-adjusted norm."
+      "note": "Hashprice is about $18/PH/day, 82% of its halving-adjusted norm."
      }
     }
    ]

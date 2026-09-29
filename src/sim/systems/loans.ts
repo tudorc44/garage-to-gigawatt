@@ -87,7 +87,8 @@ export function equipmentTerms(state: GameState): LoanTerms | undefined {
  */
 export function collateralUsd(state: GameState): number {
   const machines = state.machines.reduce(
-    (sum, lot) => sum + saleValueUsd(lot, lot.count, state.quarter),
+    (sum, lot) =>
+      sum + saleValueUsd(lot, lot.count, state.quarter, scenarioOf(state)),
     0,
   )
   const pledged = new Set(

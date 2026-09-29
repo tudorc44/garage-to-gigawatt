@@ -4,6 +4,7 @@ import {
   BALANCE,
   CONTENT,
   act1ValueQuarter,
+  act2Quarter,
   quarterInputs,
   type ScenarioId,
   type PowerRegion,
@@ -21,7 +22,7 @@ import {
 import { extraScoutOffers } from './hires.ts'
 import { regionPowerAdderUsdKwh } from './regions.ts'
 import { saleValueUsd } from './machines.ts'
-import { getModel } from './market.ts'
+import { getModel, scenarioOf } from './market.ts'
 
 export function getTier(id: string): SiteTier | undefined {
   return CONTENT.siteTiers.find((t) => t.id === id)
@@ -158,7 +159,10 @@ export function normalPriceUsdKwh(
 ): number {
   const tier = getTier(site.tier)!
   // Act II's series, or Act III's scenario column (M11.4c).
-  const act2 = quarterInputs(quarter, scenario)
+  // (Without a scenario, an Act II game looking a quarter ahead across the boundary reads as before.)
+  const act2 = scenario
+    ? quarterInputs(quarter, scenario)
+    : act2Quarter(quarter)
   const region = regionOf(site)
   if (act2 && region) {
     const regional = act2.powerUsdKwh[region] + smallLoadPremiumUsdKwh(site)
@@ -251,7 +255,8 @@ export function leavingTerms(state: GameState, site: Site) {
     penaltyUsd: leaseBreakUsd(site),
     units: lots.reduce((n, l) => n + l.count, 0),
     machinesUsd: lots.reduce(
-      (sum, l) => sum + saleValueUsd(l, l.count, state.quarter),
+      (sum, l) =>
+        sum + saleValueUsd(l, l.count, state.quarter, scenarioOf(state)),
       0,
     ),
   }

@@ -7,7 +7,9 @@
 import {
   BALANCE,
   CONTENT,
+  quarterInputs,
   type PowerRegion,
+  type ScenarioId,
   POWER_REGIONS,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -18,9 +20,10 @@ import {
   type Site,
   type SiteOffer,
 } from '../state.ts'
-import { inActII } from '../state.ts'
+import { inAct2Rules } from '../state.ts'
 import { recalcHeat } from './heat.ts'
 import { extraScoutOffers } from './hires.ts'
+import { scenarioOf } from './market.ts'
 import { extraQueueQuarters, getRegion } from './regions.ts'
 import { flawEffect } from './sites.ts'
 
@@ -30,6 +33,9 @@ const label = (quarter: number) => CONTENT.quarters[quarter]
 /** The site categories open in a quarter. */
 export function openCategories(quarter: number) {
   const q = label(quarter)
+  // Act III (M11.5a, DT): every category is open; their dated windows end with Act II (2026Q4).
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  if (quarter >= act3.firstQuarter) return CONTENT.act2Sites.categories
   return CONTENT.act2Sites.categories.filter(
     (c) => c.window[0] <= q && q <= c.window[1],
   )
@@ -37,7 +43,7 @@ export function openCategories(quarter: number) {
 
 /** Why Act II scouting can't happen now, or undefined if it can. */
 export function scoutAct2Blocker(state: GameState): Message | undefined {
-  if (!inActII(state)) return { key: 'error.act2_only' }
+  if (!inAct2Rules(state)) return { key: 'error.act2_only' }
   if (openCategories(state.quarter).length === 0)
     return { key: 'error.no_sites_to_scout' }
   if (state.bandwidth < S.bandwidth)
@@ -71,7 +77,7 @@ export function scoutAct2(state: GameState): SiteOffer[] {
       randomInt(r, Math.ceil(lo / S.mwStep), Math.floor(hi / S.mwStep))
     const perMw =
       cat.id === S.energizedLand.category
-        ? landUsdMw(state.quarter, region) *
+        ? landUsdMw(state.quarter, region, scenarioOf(state)) *
           uniform(r, 1 - S.energizedLand.spread, 1 + S.energizedLand.spread)
         : uniform(r, cat.price_usd_mw[0], cat.price_usd_mw[1])
     const flaw = chance(r, S.flawChance)
@@ -97,7 +103,11 @@ export function scoutAct2(state: GameState): SiteOffer[] {
 }
 
 /** Energized land's price per MW in a quarter and region, before the offer's ±15% (owner, 28 Sep 2026). */
-export function landUsdMw(quarter: number, region: PowerRegion): number {
+export function landUsdMw(
+  quarter: number,
+  region: PowerRegion,
+  scenario?: ScenarioId | null,
+): number {
   const L = S.energizedLand
   const years = Object.keys(L.usdMwByYear).sort()
   const year = label(quarter).slice(0, 4)
@@ -106,7 +116,17 @@ export function landUsdMw(quarter: number, region: PowerRegion): number {
     : year < years[0]
       ? years[0]
       : years.at(-1)!
-  return L.usdMwByYear[key] * (L.regionMult[region] ?? 1)
+  const base = L.usdMwByYear[key] * (L.regionMult[region] ?? 1)
+  // Act III (M11.5a, DT): Act II's 2026 price (the table's last year holds) × the scenario's announced-AI
+  // EV per MW this quarter ÷ its 2027Q1 value: cheap land in S1's bust, dear in S2, from authored data.
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  if (quarter >= act3.firstQuarter) {
+    const now = quarterInputs(quarter, scenario)?.evPerMwUsdM.aiAnnounced
+    const first = quarterInputs(act3.firstQuarter, scenario)?.evPerMwUsdM
+      .aiAnnounced
+    if (now && first) return base * (now / first)
+  }
+  return base
 }
 
 /** A greenfield site's wait for power: the region's grid queue (months ÷ 3), plus policy delays. */

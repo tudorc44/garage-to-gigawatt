@@ -579,7 +579,7 @@ function makeBot(settings: BotSettings): Strategy {
               const own = perKw(m)
               if (own > 0 && own * settings.upgradeAt > bestPerKw) continue
               // Sell as many units as the cash (plus their sale value) can replace.
-              const unitSale = saleValueUsd(lot, 1, s.quarter)
+              const unitSale = saleValueUsd(lot, 1, s.quarter, scenarioOf(s))
               const netPerUnit =
                 (m.power_kw / best.m.power_kw) * best.price! - unitSale
               const k =
@@ -588,7 +588,7 @@ function makeBot(settings: BotSettings): Strategy {
                   : Math.min(lot.count, Math.floor(spendable() / netPerUnit))
               if (k < 1) continue
               actions.push({ type: 'SELL_MACHINES', lotId: lot.id, count: k })
-              cash += saleValueUsd(lot, k, s.quarter)
+              cash += saleValueUsd(lot, k, s.quarter, scenarioOf(s))
               freedKw[site.id] = (freedKw[site.id] ?? 0) + m.power_kw * k
             }
           }

@@ -1,7 +1,7 @@
 // Machines: buying, selling and repairing batches ("lots") of identical units.
-import { CONTENT } from '../../content/index.ts'
+import { CONTENT, type ScenarioId } from '../../content/index.ts'
 import type { Condition, GameState, MachineLot } from '../state.ts'
-import { getModel, leadTimeQuarters, sellPrice } from './market.ts'
+import { getModel, leadTimeQuarters, scenarioOf, sellPrice } from './market.ts'
 
 export function repairCostPerUnit(modelId: string): number {
   return CONTENT.interrupts.byId.failure_wave?.repair_cost_usd?.[modelId] ?? 0
@@ -65,8 +65,9 @@ export function saleValueUsd(
   lot: MachineLot,
   count: number,
   quarter: number,
+  scenario?: ScenarioId | null,
 ): number {
-  const price = sellPrice(getModel(lot.model)!, quarter)
+  const price = sellPrice(getModel(lot.model)!, quarter, scenario)
   const broken = Math.min(count, lot.failed)
   const brokenPrice = Math.max(0, price - repairCostPerUnit(lot.model))
   return broken * brokenPrice + (count - broken) * price
@@ -78,7 +79,7 @@ export function removeMachines(
   lot: MachineLot,
   count: number,
 ): number {
-  const value = saleValueUsd(lot, count, state.quarter)
+  const value = saleValueUsd(lot, count, state.quarter, scenarioOf(state))
   lot.failed -= Math.min(count, lot.failed)
   lot.count -= count
   if (lot.count === 0) state.machines = state.machines.filter((l) => l !== lot)

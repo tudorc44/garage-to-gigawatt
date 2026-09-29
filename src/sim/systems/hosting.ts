@@ -4,26 +4,64 @@
 // $/MW and goes live the quarter after the order. Contracts run balance.ts hosting.termQuarters
 // at the rate of the year they start, then renew at the then-current rate. Ending one mid-term
 // costs a quarter of fees (doc 18 §2.3); ending it as a term renews is free.
-import { BALANCE, CONTENT } from '../../content/index.ts'
+import {
+  BALANCE,
+  CONTENT,
+  act2Quarter,
+  quarterInputs,
+  type PowerRegion,
+  type ScenarioId,
+} from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
 import {
   inAct2Rules,
+  inActIII,
   logEntry,
   type GameState,
   type HostingContract,
 } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import { scenarioOf } from './market.ts'
-import { poweredKw, powerPriceUsdKwh, uptime, usedKw } from './sites.ts'
+import {
+  poweredKw,
+  powerPriceUsdKwh,
+  regionOf,
+  uptime,
+  usedKw,
+} from './sites.ts'
 
 const HOURS_PER_WEEK = 24 * 7
+
+/** The quarter Act II's hosting rate is anchored to for Act III's margin (see hostingRateUsdKwh). */
+const HOSTING_MARGIN_ANCHOR = '2024Q1'
 
 /**
  * The all-in hosting rate for a quarter: tenants.json's rate for its year. The file stops at
  * 2024 ($0.060); later years keep the last rate (the scope's path ends there).
  */
-export function hostingRateUsdKwh(quarter: number): number {
+export function hostingRateUsdKwh(
+  quarter: number,
+  region?: PowerRegion,
+  scenario?: ScenarioId | null,
+): number {
+  // Act III (M11.5a, DT): the all-in rate follows the region's power price in the scenario (quarterInputs)
+  // plus Act II's hosting margin. Act II's margin = the file's last-year rate ($0.060, 2024's, held
+  // ever since) minus the region's Act II power price in 2024Q1, the first quarter that rate applies.
+  // Act II itself is unchanged.
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  // (Only with a scenario: an Act II game looking a quarter ahead across the boundary keeps the file's rate.)
+  if (
+    region &&
+    scenario &&
+    quarter >= act3.firstQuarter &&
+    quarter <= act3.lastQuarter
+  ) {
+    const anchorQ = CONTENT.quarters.indexOf(HOSTING_MARGIN_ANCHOR)
+    const margin =
+      hostingRateUsdKwh(anchorQ) - act2Quarter(anchorQ)!.powerUsdKwh[region]
+    return quarterInputs(quarter, scenario)!.powerUsdKwh[region] + margin
+  }
   const year = Number(CONTENT.quarters[quarter].slice(0, 4))
   const rates = CONTENT.hosting.rateUsdKwhByYear
   const known = Object.keys(rates)
@@ -126,6 +164,8 @@ export function startHosting(
       readyQuarter,
       rateUsdKwh: hostingRateUsdKwh(
         Math.min(readyQuarter, CONTENT.quarters.length - 1),
+        regionOf(site),
+        scenarioOf(state),
       ),
       termEndQuarter: readyQuarter + BALANCE.hosting.termQuarters - 1,
     }
@@ -273,9 +313,25 @@ export function settleHostingWeek(state: GameState): {
 
 /** At the start of a quarter: contracts whose term has run out renew at the current rate. */
 export function renewHosting(state: GameState): void {
+  // Act III (M11.5a, DT): every live contract reprices each quarter to the region's current rate.
+  if (inActIII(state))
+    for (const h of state.hosting) {
+      const site = state.sites.find((s) => s.id === h.siteId)
+      if (site)
+        h.rateUsdKwh = hostingRateUsdKwh(
+          state.quarter,
+          regionOf(site),
+          scenarioOf(state),
+        )
+    }
   for (const h of state.hosting) {
     if (h.termEndQuarter >= state.quarter) continue
-    h.rateUsdKwh = hostingRateUsdKwh(state.quarter)
+    const site0 = state.sites.find((s) => s.id === h.siteId)
+    h.rateUsdKwh = hostingRateUsdKwh(
+      state.quarter,
+      site0 ? regionOf(site0) : undefined,
+      scenarioOf(state),
+    )
     h.termEndQuarter = state.quarter + BALANCE.hosting.termQuarters - 1
     const site = state.sites.find((s) => s.id === h.siteId)
     logEntry(state, 'log.hosting_renewed', {

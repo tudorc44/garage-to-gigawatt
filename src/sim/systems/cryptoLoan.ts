@@ -188,7 +188,8 @@ export function marginCallOptions(state: GameState) {
   const gapUsd = loanGapUsd(state, w)
   const coins = coinsToPost(state, w)
   const machinesUsd = state.machines.reduce(
-    (sum, lot) => sum + saleValueUsd(lot, lot.count, state.quarter),
+    (sum, lot) =>
+      sum + saleValueUsd(lot, lot.count, state.quarter, scenarioOf(state)),
     0,
   )
   return {

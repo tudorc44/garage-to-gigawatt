@@ -406,7 +406,8 @@ export function lotViews(state: GameState): LotView[] {
       dailyProfitEachUsd: profit,
       repairCostUsd: lot.failed * repairCostPerUnit(lot.model),
       sellValueUsd:
-        saleValueUsd(lot, lot.count, state.quarter) * rigResaleMult(state, lot),
+        saleValueUsd(lot, lot.count, state.quarter, scenarioOf(state)) *
+        rigResaleMult(state, lot),
     }
   })
 }
@@ -1884,7 +1885,11 @@ export function hostingView(state: GameState) {
   const sites = state.sites
     .filter((site) => site.tier !== BALANCE.startSite)
     .map((site) => {
-      const rateUsdKwh = hostingRateUsdKwh(nextQ)
+      const rateUsdKwh = hostingRateUsdKwh(
+        nextQ,
+        regionOf(site),
+        scenarioOf(state),
+      )
       const powerUsdKwh = powerPriceUsdKwh(site, nextQ, scenarioOf(state))
       const freeKw = convertibleKw(state, site.id)
       return {

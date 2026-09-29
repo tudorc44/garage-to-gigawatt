@@ -5,7 +5,7 @@
 import { BALANCE, CONTENT, type Machine } from '../../content/index.ts'
 import { chance, substream } from '../rng.ts'
 import { logEntry, type Condition, type GameState } from '../state.ts'
-import { buyPrice } from './market.ts'
+import { buyPrice, scenarioOf } from './market.ts'
 
 export interface ScheduledEvent {
   /** events.json card id. */
@@ -252,7 +252,7 @@ export function buyPriceNow(
 ): number | undefined {
   if (model.coin === 'ETH' && condition === 'new' && newGpusLocked(state))
     return undefined
-  const base = buyPrice(model, state.quarter, condition)
+  const base = buyPrice(model, state.quarter, condition, scenarioOf(state))
   return base === undefined
     ? undefined
     : base * purchasePriceMult(state, condition)

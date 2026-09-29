@@ -79,9 +79,9 @@ describe('the gates: which Act II rules run in Act III', () => {
     expect(done.reports.at(-1)!.mwByUseKw).toBeDefined()
   })
 
-  it('NO: scouting (not on the list), the spot shock and the spot alert, rivals', () => {
+  it('NO: the spot shock and the spot alert, rivals (scouting opened in M11.5a)', () => {
     const s = { ...toAct3(end, { scenario: 's1' }), bandwidth: 6 }
-    expect(scoutAct2Blocker(s)?.key).toBe('error.act2_only')
+    expect(scoutAct2Blocker(s)).toBeUndefined()
     for (let q = FIRST; q < FIRST + 16; q++) {
       const t = { ...s, quarter: q }
       planSpotShock(t)
