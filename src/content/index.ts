@@ -24,6 +24,10 @@ import prologueRaw from './prologue.json' with { type: 'json' }
 import eventsPrologueRaw from './events_prologue.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
 import act3StubRaw from './act3-stub.json' with { type: 'json' }
+import signalsS0Raw from './signals_s0.json' with { type: 'json' }
+import signalsS1Raw from './signals_s1.json' with { type: 'json' }
+import signalsS2Raw from './signals_s2.json' with { type: 'json' }
+import signalsS3Raw from './signals_s3.json' with { type: 'json' }
 import marketS0Raw from './market_s0.json' with { type: 'json' }
 import marketS1Raw from './market_s1.json' with { type: 'json' }
 import marketS2Raw from './market_s2.json' with { type: 'json' }
@@ -78,6 +82,8 @@ import {
   marketQuarterlyAct3Schema,
   marketSchema,
   SCENARIO_IDS,
+  signalsFileSchema,
+  type SignalIndicator,
   type MarketQuarterAct3Row,
   type ScenarioId,
   negotiationRulesSchema,
@@ -125,6 +131,12 @@ import {
 
 export { BALANCE }
 export { SCENARIO_IDS }
+export {
+  SIGNAL_IDS,
+  type SignalId,
+  type SignalIndicator,
+  type SignalPoint,
+} from './schemas.ts'
 export type {
   ScenarioId,
   MarketEffect,
@@ -370,6 +382,11 @@ export interface Content {
    * (marketWeek's optional argument); nothing else reads them yet.
    */
   act3Scenarios: Record<ScenarioId, Act3Scenario>
+  /**
+   * Act III's authored Signals (M11.2), by scenario: the six indicators in file order, runtime fields
+   * only. The hidden authoring fields are never loaded here (see signalsHidden.ts).
+   */
+  signals: Record<ScenarioId, SignalIndicator[]>
   /** Hosting (scope 0.2 §2.4): the same-site conversion and the all-in rate by year. */
   hosting: {
     /** conversions.json › mining_to_hosting_same_site. */
@@ -523,6 +540,8 @@ export interface RawContent {
   marketPrologue: unknown
   /** The four Act III scenarios' market files (M11.1): quarterly (market_sN) and weekly. */
   act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
+  /** The four Act III signals files (M11.2), by scenario. */
+  signals: Record<ScenarioId, unknown>
   capital: unknown
   capitalAct2: unknown
   conversions: unknown
@@ -1622,6 +1641,17 @@ export function parseContent(raw: RawContent): Content {
           )
       })
   }
+  // Act III's Signals (M11.2): runtime fields only; each file's scenario must be the one it is filed under.
+  const signals = {} as Record<ScenarioId, SignalIndicator[]>
+  for (const id of SCENARIO_IDS) {
+    const file = check(`signals_${id}.json`, signalsFileSchema, raw.signals[id])
+    if (!file) continue
+    if (file.scenario !== id)
+      problems.push(
+        `signals_${id}.json › scenario: is ${file.scenario}, expected ${id}`,
+      )
+    signals[id] = file.indicators
+  }
   // The same sequential check as above, re-run now the Act III stub is appended (it ran earlier,
   // before this addition, so it never saw quarters 40–41): catches an off-by-one in the stub's
   // own quarter labels the same way it would for Act I or Act II.
@@ -1641,6 +1671,7 @@ export function parseContent(raw: RawContent): Content {
     acts,
     act2Market,
     act3Scenarios,
+    signals,
     hosting,
     projects,
     finance,
@@ -1915,6 +1946,12 @@ export const CONTENT: Content = parseContent({
     s1: { quarterly: marketS1Raw, weekly: marketWeeklyS1Raw },
     s2: { quarterly: marketS2Raw, weekly: marketWeeklyS2Raw },
     s3: { quarterly: marketS3Raw, weekly: marketWeeklyS3Raw },
+  },
+  signals: {
+    s0: signalsS0Raw,
+    s1: signalsS1Raw,
+    s2: signalsS2Raw,
+    s3: signalsS3Raw,
   },
   capital: capitalRaw,
   capitalAct2: capitalAct2Raw,

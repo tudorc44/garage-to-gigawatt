@@ -1,6 +1,6 @@
 // Player decisions as plain action objects. applyAction checks an action against the
 // rules and returns either the new state or an error message (the old state is untouched).
-import { BALANCE, CONTENT } from '../content/index.ts'
+import { BALANCE, CONTENT, type SignalId } from '../content/index.ts'
 import {
   buildPhase,
   constructionLoanBlocker,
@@ -79,6 +79,7 @@ import { checkEvents, scheduleEvents } from './systems/events.ts'
 import { planFailureWaves } from './systems/failureWave.ts'
 import { buyPriceNow, newGpusLocked } from './systems/eventEffects.ts'
 import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
+import { readSignal, readSignalBlocker } from './systems/signals.ts'
 import {
   borrowBlocker,
   repayEquipmentLoan,
@@ -274,6 +275,8 @@ export type Action =
   | { type: 'BID_AUCTION'; bidUsd: number; siteId: string }
   /** Read the market: a hint of this quarter's BTC and ETH direction (1 Bandwidth; 0 with the Trader). */
   | { type: 'READ_MARKET' }
+  /** Act III's Read the market: the sharp range of one Signals indicator for this quarter (1 Bandwidth). */
+  | { type: 'READ_SIGNAL'; indicator: SignalId }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -545,6 +548,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = readMarketBlocker(s)
       if (blocked) return blocked
       readMarket(s)
+      return
+    }
+
+    case 'READ_SIGNAL': {
+      const blocked = readSignalBlocker(s, a.indicator)
+      if (blocked) return blocked
+      readSignal(s, a.indicator)
       return
     }
 

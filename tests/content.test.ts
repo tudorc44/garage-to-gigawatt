@@ -47,6 +47,10 @@ import marketWeeklyS0 from '../src/content/market_weekly_s0.json' with { type: '
 import marketWeeklyS1 from '../src/content/market_weekly_s1.json' with { type: 'json' }
 import marketWeeklyS2 from '../src/content/market_weekly_s2.json' with { type: 'json' }
 import marketWeeklyS3 from '../src/content/market_weekly_s3.json' with { type: 'json' }
+import signalsS0 from '../src/content/signals_s0.json' with { type: 'json' }
+import signalsS1 from '../src/content/signals_s1.json' with { type: 'json' }
+import signalsS2 from '../src/content/signals_s2.json' with { type: 'json' }
+import signalsS3 from '../src/content/signals_s3.json' with { type: 'json' }
 import { MARKET_FILES, csvToRows } from '../tools/market-csv-to-json.ts'
 import { marketWeek, previousMarketWeek } from '../src/sim/systems/market.ts'
 
@@ -65,6 +69,7 @@ const raw = (): RawContent =>
       s2: { quarterly: marketS2, weekly: marketWeeklyS2 },
       s3: { quarterly: marketS3, weekly: marketWeeklyS3 },
     },
+    signals: { s0: signalsS0, s1: signalsS1, s2: signalsS2, s3: signalsS3 },
     machinesPrologue,
     prologue,
     eventsPrologue,
@@ -272,7 +277,11 @@ describe('content loads', () => {
     const read = (path: string) =>
       readFileSync(new URL(path, import.meta.url), 'utf8')
     for (const id of ['s0', 's1', 's2', 's3'])
-      for (const name of [`market_${id}.csv`, `market_weekly_${id}.csv`])
+      for (const name of [
+        `market_${id}.csv`,
+        `market_weekly_${id}.csv`,
+        `signals_${id}.json`, // M11.2
+      ])
         expect(read(`../src/content/${name}`), name).toBe(
           read(`../docs/act3-content/${name}`),
         )

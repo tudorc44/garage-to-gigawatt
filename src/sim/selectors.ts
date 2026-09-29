@@ -22,7 +22,8 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { inActII } from './state.ts'
+import { inActII, inActIII } from './state.ts'
+import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
   repairAllCost,
   repairCostPerUnit,
@@ -942,6 +943,52 @@ export function marketReadView(state: GameState) {
     accuracy: CONTENT.readMarket.accuracy,
     upThreshold: CONTENT.readMarket.upThreshold,
     downThreshold: CONTENT.readMarket.downThreshold,
+  }
+}
+
+/**
+ * Act III's Signals panel (M11.2; no screen yet): the six indicators in file order, or null outside
+ * Act III / without a scenario. Each has its label, what a high value means, the current quarter's
+ * displayed value and arrow, the displayed history of PAST Act III quarters, and the sharp range only
+ * for quarters the player has read that indicator. Never a future quarter, never a hidden field.
+ */
+export function signalsPanel(state: GameState) {
+  if (!inActIII(state) || !state.scenarioId) return null
+  const now = CONTENT.quarters[state.quarter]
+  const reads = state.act3SignalReads ?? []
+  return {
+    quarter: now,
+    cost: SIGNAL_READ_BANDWIDTH,
+    /** The indicator read this quarter, or null. */
+    readThisQuarter: reads.find((r) => r.quarter === now)?.indicator ?? null,
+    /** Why a read is blocked right now (null when it can be made, or was already made). */
+    blocked: reads.some((r) => r.quarter === now)
+      ? null
+      : (readSignalBlocker(state, 'revenue_gap') ?? null),
+    indicators: CONTENT.signals[state.scenarioId].map((ind) => {
+      const current = ind.series.find((p) => p.quarter === now)
+      return {
+        id: ind.id,
+        label: ind.label,
+        higherMeans: ind.higher_means,
+        current: current
+          ? { displayed: current.displayed, arrow: current.arrow }
+          : null,
+        history: ind.series
+          .filter((p) => p.quarter < now)
+          .map((p) => ({
+            quarter: p.quarter,
+            displayed: p.displayed,
+            arrow: p.arrow,
+          })),
+        reads: reads
+          .filter((r) => r.indicator === ind.id)
+          .flatMap((r) => {
+            const p = ind.series.find((x) => x.quarter === r.quarter)
+            return p ? [{ quarter: p.quarter, ...p.sharp }] : []
+          }),
+      }
+    }),
   }
 }
 

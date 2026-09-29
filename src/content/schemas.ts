@@ -203,6 +203,52 @@ export const marketQuarterAct3Schema = z.object({
 export const marketQuarterlyAct3Schema = z.array(marketQuarterAct3Schema).min(1)
 export type MarketQuarterAct3Row = z.output<typeof marketQuarterAct3Schema>
 
+// ---------- signals_s0–s3.json (M11.2: Act III's authored Signals) ----------
+// The RUNTIME view only: per indicator its id, label, higher_means and a series of displayed value,
+// arrow and sharp range. zod drops every other field, so the files' hidden authoring fields
+// (authoring_latent, role_in_scenario, series[].role_tag, trigger, decoy, reasoning, scenario_name)
+// never enter CONTENT. The hidden view is src/content/signalsHidden.ts, for tests and tools/ only.
+
+export const SIGNAL_IDS = [
+  'revenue_gap',
+  'lender_spreads',
+  'chip_lead_times',
+  'grid_reserve_margin',
+  'efficiency_index',
+  'bitcoin_hashprice',
+] as const
+export type SignalId = (typeof SIGNAL_IDS)[number]
+export const signalId = z.enum(SIGNAL_IDS)
+
+const signalPoint = z.object({
+  quarter: quarterId,
+  displayed: z.number().int().min(0).max(100),
+  arrow: z.enum(['up', 'down', 'flat']),
+  sharp: z.object({
+    low: z.number().min(0).max(100),
+    high: z.number().min(0).max(100),
+    note: z.string(),
+  }),
+})
+
+export const signalsFileSchema = z.object({
+  scenario: scenarioId,
+  indicators: z
+    .array(
+      z.object({
+        id: signalId,
+        label: z.string().min(1),
+        higher_means: z.string().min(1),
+        series: z.array(signalPoint).min(1),
+      }),
+    )
+    .length(SIGNAL_IDS.length),
+})
+export type SignalPoint = z.output<typeof signalPoint>
+export type SignalIndicator = z.output<
+  typeof signalsFileSchema
+>['indicators'][number]
+
 // ---------- market_quarterly_act2.json (generated from market_quarterly_act2.csv) ----------
 // One row per Act II quarter: GPU rental and purchase prices (empty before a GPU exists, so null),
 // build costs per MW, rates and spreads, cap rates, regional power prices and the AI demand index.

@@ -6,6 +6,7 @@ import {
   SCENARIO_IDS,
   actFirstQuarter,
   type ScenarioId,
+  type SignalId,
 } from '../content/index.ts'
 import { random, substream } from './rng.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
@@ -482,6 +483,11 @@ export interface GameState {
    * keeps reading the shared market. Only marketWeek's optional argument ever reads it.
    */
   scenarioId?: ScenarioId
+  /**
+   * Act III (M11.2): the log of Read the market (Signals) reads, one indicator per quarter at most.
+   * Absent in the prologue, Act I and Act II and in the M10 stub state; toAct3() starts it empty.
+   */
+  act3SignalReads?: { quarter: string; indicator: SignalId }[]
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
@@ -783,7 +789,11 @@ export function drawScenario(seed: number): ScenarioId {
  * a test/sim harness is the only caller.
  */
 export function toAct3(state: GameState): GameState {
-  return { ...toAct3Stub(state), scenarioId: drawScenario(state.seed) }
+  return {
+    ...toAct3Stub(state),
+    scenarioId: drawScenario(state.seed),
+    act3SignalReads: [],
+  }
 }
 
 export function newGame(seed: number): GameState {
