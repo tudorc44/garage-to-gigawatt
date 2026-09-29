@@ -1,0 +1,4 @@
+{
+ "stub_notice": "STUB - not real Act III content, placeholder only. Doc 28 (the Act III content pack) is being researched and does not exist yet. This file exists only to prove the 40-quarter timeline can extend without breaking Act I, Act II or the Prologue (milestone M10, the walking skeleton). Every market value for these quarters is Act II's real last week (2026Q4's final week) repeated flat: no price movement, no GPU price changes, no new events, no scenario logic. Act III is unreachable from play; this content is read only by a test/sim harness that constructs an Act III state directly. When doc 28 lands, this whole file is replaced.",
+ "quarters": ["2027Q1", "2027Q2"]
+}

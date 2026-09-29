@@ -23,6 +23,7 @@ import machinesPrologueRaw from './machines_prologue.json' with { type: 'json' }
 import prologueRaw from './prologue.json' with { type: 'json' }
 import eventsPrologueRaw from './events_prologue.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
+import act3StubRaw from './act3-stub.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
@@ -32,6 +33,7 @@ import mergeRaw from './merge.json' with { type: 'json' }
 import eventsRaw from './events.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
+  act3StubFileSchema,
   auctionRulesSchema,
   capitalAct2FileSchema,
   capitalFileSchema,
@@ -501,6 +503,7 @@ export interface RawContent {
   sitesAct2: unknown
   hiresAct2: unknown
   eventsAct2: unknown
+  act3Stub: unknown
   rivals: unknown
   rivalsAct2: unknown
   machinesPrologue: unknown
@@ -597,6 +600,11 @@ export function parseContent(raw: RawContent): Content {
     'hires_act2.json',
     hiresAct2FileSchema,
     raw.hiresAct2,
+  )
+  const act3StubFile = check(
+    'act3-stub.json',
+    act3StubFileSchema,
+    raw.act3Stub,
   )
   const eventsAct2File = check(
     'events_act2.json',
@@ -709,6 +717,7 @@ export function parseContent(raw: RawContent): Content {
     !sitesAct2File ||
     !hiresAct2File ||
     !eventsAct2File ||
+    !act3StubFile ||
     !delayRules ||
     !allocationRules ||
     !spotShockRules ||
@@ -1489,6 +1498,31 @@ export function parseContent(raw: RawContent): Content {
     }),
   }
 
+  // Act III walking skeleton (M10): the stub file lists 2 placeholder quarters, appended last
+  // (mine, reversible — after every Act II check above that assumes exactly Act II's 17 real
+  // quarters follow acts[1].firstQuarter; appending here, not right after addAct(2, ...), is what
+  // keeps quarters 0–39 untouched: this is the lowest-risk way to extend the timeline). Every week
+  // is Act II's real last week (2026Q4's) cloned flat, only the quarter label changed: no price
+  // movement, no GPU price changes, no events, no scenario logic. Unreachable from play; doc 28's
+  // real content pack replaces this file entirely.
+  {
+    const lastReal = market[acts[1].lastQuarter].at(-1)!
+    const stubRows = act3StubFile.quarters.flatMap((quarter) =>
+      Array.from({ length: perQuarter }, () => ({ ...lastReal, quarter })),
+    )
+    addAct(3, 'act3-stub.json', stubRows, false)
+  }
+  // The same sequential check as above, re-run now the Act III stub is appended (it ran earlier,
+  // before this addition, so it never saw quarters 40–41): catches an off-by-one in the stub's
+  // own quarter labels the same way it would for Act I or Act II.
+  quarters.slice(1).forEach((q, i) => {
+    if (q !== nextQuarter(quarters[i])) {
+      problems.push(
+        `market: ${quarters[i]} is followed by ${q}, expected ${nextQuarter(quarters[i])}`,
+      )
+    }
+  })
+
   if (problems.length > 0) throw new ContentError(problems)
 
   return {
@@ -1744,6 +1778,7 @@ export const CONTENT: Content = parseContent({
   sitesAct2: sitesAct2Raw,
   hiresAct2: hiresAct2Raw,
   eventsAct2: eventsAct2Raw,
+  act3Stub: act3StubRaw,
   rivals: rivalsRaw,
   rivalsAct2: rivalsAct2Raw,
   machinesPrologue: machinesPrologueRaw,

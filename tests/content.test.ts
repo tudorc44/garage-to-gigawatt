@@ -27,6 +27,7 @@ import regions from '../src/content/regions.json' with { type: 'json' }
 import sitesAct2 from '../src/content/sites_act2.json' with { type: 'json' }
 import hiresAct2 from '../src/content/hires_act2.json' with { type: 'json' }
 import eventsAct2 from '../src/content/events_act2.json' with { type: 'json' }
+import act3Stub from '../src/content/act3-stub.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import rivalsAct2 from '../src/content/rivals_act2.json' with { type: 'json' }
 import marketPrologue from '../src/content/market_weekly_prologue.json' with { type: 'json' }
@@ -64,6 +65,7 @@ const raw = (): RawContent =>
     sitesAct2,
     hiresAct2,
     eventsAct2,
+    act3Stub,
     rivals,
     rivalsAct2,
     heat,
@@ -75,21 +77,29 @@ const raw = (): RawContent =>
 
 describe('content loads', () => {
   it('covers Act I (23 quarters, 2017Q1 → 2022Q3) then Act II (17 quarters, 2022Q4 → 2026Q4), 13 weeks each', () => {
-    expect(CONTENT.quarters).toHaveLength(40)
+    // 42, not 40: the Act III walking skeleton (M10) appends 2 stub quarters after 2026Q4.
+    expect(CONTENT.quarters).toHaveLength(42)
     expect(CONTENT.acts).toEqual([
       { act: 1, firstQuarter: 0, lastQuarter: 22 },
       { act: 2, firstQuarter: 23, lastQuarter: 39 },
       // The prologue (Alpha 0.3) sits at negative indices: Act I and II keep theirs.
       { act: 0, firstQuarter: -32, lastQuarter: -1 },
+      // The Act III walking skeleton (M10): 2 stub quarters appended after Act II, unreachable
+      // from play. `CONTENT.quarters` itself has 42 entries (real Act I/II quarters are indices
+      // 0–39, unaffected); this test's own "40" above counts only the real ones by name.
+      { act: 3, firstQuarter: 40, lastQuarter: 41 },
     ])
     expect(CONTENT.quarters[0]).toBe('2017Q1')
     expect(CONTENT.quarters[22]).toBe('2022Q3')
     expect(CONTENT.quarters[23]).toBe('2022Q4')
-    expect(CONTENT.quarters.at(-1)).toBe('2026Q4')
+    expect(CONTENT.quarters[39]).toBe('2026Q4')
+    expect(CONTENT.quarters[40]).toBe('2027Q1')
+    expect(CONTENT.quarters[41]).toBe('2027Q2')
     for (const weeks of CONTENT.market) expect(weeks).toHaveLength(13)
     expect(actOfQuarter(22)).toBe(1)
     expect(actOfQuarter(23)).toBe(2)
     expect(actLastQuarter(1)).toBe(22)
+    expect(actLastQuarter(2)).toBe(39)
   })
 
   it('trims 14-week quarters: Act I drops its last week (as before), Act II keeps it (the real quarter close)', () => {
@@ -129,7 +139,10 @@ describe('content loads', () => {
 
   it('marketWeek refuses a week outside the data instead of returning undefined', () => {
     expect(marketWeek(39, 12).week).toBe('2026-12-28')
-    expect(() => marketWeek(40, 0)).toThrow(RangeError)
+    // Quarter 40 is now the Act III stub (M10), so it no longer throws; quarter 42 (past the
+    // stub too) and an out-of-range week still do.
+    expect(marketWeek(40, 0).quarter).toBe('2027Q1')
+    expect(() => marketWeek(42, 0)).toThrow(RangeError)
     expect(() => marketWeek(0, 13)).toThrow(RangeError)
     expect(() => marketWeek(-33, 0)).toThrow(RangeError)
   })
@@ -231,6 +244,14 @@ describe('content loads', () => {
       expect(read(`../src/content/${game}`), game).toBe(
         read(`../docs/act2-content/${docs}`),
       )
+  })
+
+  it('the Act III stub file is the same copy in docs/act3-content-stub/ (M10)', () => {
+    const read = (path: string) =>
+      readFileSync(new URL(path, import.meta.url), 'utf8')
+    expect(read('../src/content/act3-stub.json')).toBe(
+      read('../docs/act3-content-stub/act3-stub.json'),
+    )
   })
 
   it('the quarterly market has no multiple columns (owner B6: capital_act2.json is the only source)', () => {
@@ -354,13 +375,18 @@ describe('bad content fails loudly', () => {
 describe("Act II's quarterly market (market_quarterly_act2, scope 0.2 §2.3)", () => {
   const q = (label: string) => act2Quarter(CONTENT.quarters.indexOf(label))!
 
-  it('has one row per Act II quarter, reached by quarter index; none in Act I', () => {
+  it('has one row per Act II quarter, reached by quarter index; none in Act I or the Act III stub', () => {
     expect(CONTENT.act2Market.map((x) => x.quarter)).toEqual(
-      CONTENT.quarters.slice(CONTENT.acts[1].firstQuarter),
+      CONTENT.quarters.slice(
+        CONTENT.acts[1].firstQuarter,
+        CONTENT.acts[1].lastQuarter + 1,
+      ),
     )
     expect(act2Quarter(23)!.quarter).toBe('2022Q4')
     expect(act2Quarter(39)!.quarter).toBe('2026Q4')
     expect(act2Quarter(22)).toBeUndefined()
+    // The Act III stub (M10) has no Act II quarterly data of its own.
+    expect(act2Quarter(40)).toBeUndefined()
   })
 
   it('has GPU rental prices from 2023Q3 (null before, never 0)', () => {

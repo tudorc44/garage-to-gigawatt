@@ -24,7 +24,10 @@ import { BOTS } from '../../tools/bots.ts'
 
 const Q3_2022 = actLastQuarter(1) // 22
 const Q4_2022 = Q3_2022 + 1
-const Q4_2026 = CONTENT.quarters.length - 1
+// Act II's own last quarter (39), not "the last index CONTENT.quarters has": since M10 the array
+// also holds 2 Act III stub quarters after 2026Q4, which this file's "Act I holds through Act II"
+// checks are not about.
+const Q4_2026 = actLastQuarter(2)
 
 describe('Act I values hold their 2022Q3 value from 2022Q4 on', () => {
   it('reads Act I content at the quarter itself in Act I, at 2022Q3 after it', () => {
@@ -115,7 +118,7 @@ describe('the Act I systems keep running through Act II', () => {
       (r) => CONTENT.quarters.indexOf(r.quarter) >= Q4_2022,
     )
     expect(act2Reports.map((r) => r.quarter)).toEqual(
-      CONTENT.quarters.slice(Q4_2022),
+      CONTENT.quarters.slice(Q4_2022, Q4_2026 + 1),
     )
     for (const r of act2Reports) {
       expect(Number.isFinite(r.valuationUsd)).toBe(true)

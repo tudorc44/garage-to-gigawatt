@@ -119,7 +119,9 @@ describe('the quarter loop', () => {
     let s: GameState = {
       ...newGame(1),
       act: 2,
-      quarter: CONTENT.quarters.length - 1,
+      // Act II's own last quarter (39), not the array's overall length: since M10 that array also
+      // holds 2 Act III stub quarters after 2026Q4.
+      quarter: actLastQuarter(2),
     }
     s = act(playQuarter(s), { type: 'NEXT_QUARTER' })
     expect(s.phase).toBe('chapter')

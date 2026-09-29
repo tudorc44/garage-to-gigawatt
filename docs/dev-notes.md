@@ -188,6 +188,21 @@ M10.3 stub scenario content + market (2 quarters, labelled placeholder) · M10.4
   **the golden FILES themselves are untouched**, only the comparison ignores the save-format number, exactly as
   it did for the 2 → 3 step. New test: a version-3 save (Act I, Act II, or a stub act-3 one) migrates to version 4
   with nothing else changed.
+- M10.3: `src/content/act3-stub.json` (+ a byte-identical `docs/act3-content-stub/` copy, tested): 2 quarter labels
+  (2027Q1, 2027Q2) and a `stub_notice` string, nothing else. **Timeline-indexing choice (mine, reversible):** appended
+  via the SAME `addAct()` function Act I and Act II already use (rather than a separate namespaced array like the
+  prologue's negative indices) — it only pushes, so quarters 0–39 are never rewritten; this is the lowest-risk option
+  the sub-step asked to weigh. **Found and fixed a real risk this way of measuring caught:** my first attempt called
+  `addAct(3, …)` right after Act II's, which runs BEFORE the loader's own Act-II-quarter-count checks (`act2Quarters
+  = quarters.slice(acts[1].firstQuarter)`, used ~10 times below that line) — since `.slice()` with no end reads
+  "everything queued so far", those checks then saw 19 quarters instead of 17 and every one of them failed. Moved the
+  Act III append to the very end of the loader (right before the final `problems.length` check), and re-ran the
+  same "quarters stay in calendar order" check a second time afterwards (it only ran once before, so it never saw
+  quarters 40–41). Confirms the appended pattern needed exactly this ordering care, not just the call itself.
+  Every week of both stub quarters is Act II's real last week (2026Q4's), cloned with only the quarter label changed:
+  flat, no GPU price change, no events. 10 pre-existing tests asserted "the end of the timeline" as
+  `CONTENT.quarters.length − 1`; fixed to `actLastQuarter(2)` (Act II's own last quarter, unaffected by later
+  appends) — a good example of why literal-length assumptions are fragile once the array can grow.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 

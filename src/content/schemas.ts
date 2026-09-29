@@ -71,6 +71,15 @@ export const marketWeekAct2Schema = z.object({
 })
 export const marketAct2Schema = z.array(marketWeekAct2Schema).min(1)
 
+// ---------- act3-stub.json (M10, the Act III walking skeleton) ----------
+// A placeholder only: it lists which quarters the stub timeline extension covers. No prices, no
+// GPU data, no events — doc 28's real Act III content pack replaces this file entirely.
+
+export const act3StubFileSchema = z.object({
+  stub_notice: z.string().min(1),
+  quarters: z.array(quarterId).min(1),
+})
+
 // ---------- market_quarterly_act2.json (generated from market_quarterly_act2.csv) ----------
 // One row per Act II quarter: GPU rental and purchase prices (empty before a GPU exists, so null),
 // build costs per MW, rates and spreads, cap rates, regional power prices and the AI demand index.
