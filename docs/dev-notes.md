@@ -6,9 +6,9 @@ file.** The full history (every finished step, balance review, milestone and rep
 is in `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
 Last updated: 29 Sep 2026. Act I, Act II and the Prologue are all built. **Milestone M9 is done** (M9.0 the runway look-ahead, M9.1 the
-`inActII` refactor, M9.2 the great-path runway check + the scope sentence); `main` has it. The owner's staging snapshot was still on the
-pre-M9 build as of the last playtest session; it's the owner's call when to rebuild it. `docs/act3-carryover-audit.md` says what Act III
-could reuse and records the design thread's decisions.
+`inActII` refactor, M9.2 the great-path runway check + the scope sentence); `main` has it. The owner rebuilt staging from it and played
+the Act II playtest: **no fixes needed** — the "playtest fixes" part of M9 is closed with nothing to do. `docs/act3-carryover-audit.md`
+says what Act III could reuse and records the design thread's decisions.
 
 ## How the owner works
 
@@ -145,11 +145,13 @@ Nothing. (Balance tuning stays stopped by the owner's A1 answer.)
 
 ## Next
 
-**The owner rebuilds staging from the new `main` when ready** and continues the Act II playtest. **After playtest notes arrive, the next
-milestone is the playtest fixes** (the rest of M9). Act III design continues in the design thread (doc 27 v0.2), with **17 open decisions
-(D1–D17) awaiting the owner** (see `docs/act3-carryover-audit.md` › "Open design decisions"). **The code thread's next Act III step, once
-design is frozen, is the walking skeleton** (the act 3 boundary, the save step, 2 stub quarters, a new Act III golden) — **do not start it
-yet.** The Act I playtests stay postponed.
+**The Act II playtest is done: no fixes needed.** M9 is fully closed. Nothing is queued in code. The only outstanding matter is the design
+thread's: Act III design continues there (doc 27 v0.2), with **17 open decisions (D1–D17) awaiting the owner** (see
+`docs/act3-carryover-audit.md` › "Open design decisions") — a scenario pool and weights, the trigger window, Signals design, renewal
+repricing, the density cliff, the nuclear PPA, political capital, wildcards, rivals' fates, presets, scoring, real names, build order,
+and what carries over at the act boundary. **The code thread's next Act III step, once design is frozen, is the walking skeleton** (the
+act 3 boundary, the save step, 2 stub quarters, a new Act III golden) — **do not start it until the owner brings a frozen doc 27.** The
+Act I playtests stay postponed.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 
