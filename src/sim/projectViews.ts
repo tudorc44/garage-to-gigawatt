@@ -6,6 +6,7 @@ import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import { projectGone, type GameState, type Project } from './state.ts'
 import { convertibleKw } from './systems/hosting.ts'
+import { scenarioOf } from './systems/market.ts'
 import { siteMwByUse } from './systems/mwUse.ts'
 import {
   annualContractUsd,
@@ -123,7 +124,9 @@ export function projectCard(state: GameState, p: Project) {
     gpuCount:
       p.stage === 'proposed' ? projectCapex(state, p).gpuCount : p.gpuCount,
     utilisation: p.kind === 'shell' ? null : spotUtilisation(state),
-    gpuUsdHr: p.gpu ? (neocloudUsdHr(p.gpu, state.quarter) ?? null) : null,
+    gpuUsdHr: p.gpu
+      ? (neocloudUsdHr(p.gpu, state.quarter, scenarioOf(state)) ?? null)
+      : null,
     irr: ret.irr,
     saleUsd:
       p.stage === 'live' && p.kind === 'shell' && p.tenant
@@ -198,7 +201,7 @@ export function openProjectView(state: GameState) {
           },
         }
       }),
-    gpus: availableGpus(state.quarter).map((g) => g.id),
+    gpus: availableGpus(state.quarter, scenarioOf(state)).map((g) => g.id),
     pilotFrom: pilot.from,
     pilotOpen: CONTENT.quarters[state.quarter] >= pilot.from,
     pilotSizes: sizes,
@@ -241,7 +244,12 @@ export function dealView(state: GameState, projectId: string) {
     offers: p.offers.map((o) => {
       const c = tenantCard(o.card)!
       const gpuUsdHr = o.gpu
-        ? (gpuContractUsdHr(p.gpu!, o.gpu.termYears, state.quarter) ?? 0)
+        ? (gpuContractUsdHr(
+            p.gpu!,
+            o.gpu.termYears,
+            state.quarter,
+            scenarioOf(state),
+          ) ?? 0)
         : null
       const gpus = p.stage === 'proposed' ? cost.gpuCount : p.gpuCount
       return {
@@ -307,7 +315,10 @@ export function dealView(state: GameState, projectId: string) {
     wholeCapexUsd: projectedReturn(state, p).capexUsd,
     projectionYears: BALANCE.projects.cloudProjectionYears,
     residualShareAtEnd: gpuResidualShare(BALANCE.projects.cloudProjectionYears),
-    capRate: p.kind === 'shell' ? capRate(state.quarter, p.kw) : null,
+    capRate:
+      p.kind === 'shell'
+        ? capRate(state.quarter, p.kw, scenarioOf(state))
+        : null,
     startBlocker:
       p.stage === 'proposed' ? (buildBlocker(state, p.id) ?? null) : null,
     startBandwidth: BALANCE.projects.bandwidth.start,

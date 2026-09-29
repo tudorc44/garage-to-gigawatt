@@ -45,7 +45,9 @@ describe('Act II multiples (capital_act2.json, doc 18 §8)', () => {
     expect(eraMultiple(q('2024Q4'))).toBe(9)
     expect(eraMultiple(q('2025Q4'))).toBe(7)
     // doc 18's table: 6, 6, 6, 5 through 2026 (the game's copy adds the Q1 and Q2 anchors)
-    expect([39 - 3, 39 - 2, 39 - 1, 39].map(eraMultiple)).toEqual([6, 6, 6, 5])
+    expect([39 - 3, 39 - 2, 39 - 1, 39].map((x) => eraMultiple(x))).toEqual([
+      6, 6, 6, 5,
+    ])
   })
 
   it('AI infrastructure: 10 → 20 → 26 → 30, then the 2026 compression 24 → 20 → 18 → 15', () => {

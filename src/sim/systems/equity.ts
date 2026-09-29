@@ -6,7 +6,7 @@
 // each; up to 2 a quarter, both priced the same way.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inActII, logEntry, type GameState } from '../state.ts'
+import { inAct2Rules, logEntry, type GameState } from '../state.ts'
 import { contractWeight, remainingContractUsd } from './projects.ts'
 import { aiEbitdaUsd } from './valuation.ts'
 import { auditEquityMult } from './eventEffects.ts'
@@ -74,7 +74,7 @@ export function equityBlocker(
   state: GameState,
   dilution: number,
 ): Message | undefined {
-  if (!inActII(state)) return { key: 'error.act2_only' }
+  if (!inAct2Rules(state)) return { key: 'error.act2_only' }
   const [lo, hi] = dilutionRange()
   if (!(dilution >= lo - 1e-9 && dilution <= hi + 1e-9))
     return {

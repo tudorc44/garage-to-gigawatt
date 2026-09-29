@@ -3,7 +3,7 @@
 import {
   BALANCE,
   CONTENT,
-  isActIIQuarter,
+  isAct2RulesQuarter,
   actLastQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
@@ -16,7 +16,7 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
-import { inActII, inActIII } from '../state.ts'
+import { inAct2Rules, inActIII } from '../state.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -68,9 +68,10 @@ export function endQuarter(state: GameState): void {
   rescueBeforeGameOver(state)
   state.cash = roundCents(state.cash)
   // Aggressive depreciation's Q4 audit (card ec18): a restatement shows in this quarter's report.
-  if (isActIIQuarter(state.quarter)) depreciationAudit(state)
+  if (isAct2RulesQuarter(state.quarter)) depreciationAudit(state)
   const report = buildReport(state, w, forcedSale)
-  if (isActIIQuarter(state.quarter)) {
+  // The credit rating is reviewed each quarter in Act III too (M11.4c: YES, same formula).
+  if (isAct2RulesQuarter(state.quarter)) {
     const previous = state.creditRating
     const inputs = ratingInputs(state, report)
     state.creditRating = inputs.rating
@@ -162,6 +163,7 @@ function buildReport(
         constructionUsd,
         weightedBacklogUsd: weightedBacklog,
         evMult,
+        scenario: scenarioOf(state),
       },
     ),
     ...(evMult !== undefined ? { evMult } : {}),
@@ -192,7 +194,7 @@ function buildReport(
     debtUsd: debtUsd(state),
     heat: hottestSite(state).value,
     heatTier: hottestSite(state).site.tier,
-    ...(inActII(state)
+    ...(inAct2Rules(state)
       ? { mwByUseKw: mwByUse(state, state.quarter) }
       : {}),
     forcedSale,

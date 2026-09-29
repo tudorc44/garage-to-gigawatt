@@ -17,7 +17,7 @@
 import { BALANCE } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { substream, uniform } from '../rng.ts'
-import { inActII, logEntry, type GameState, type Project } from '../state.ts'
+import { inAct2Rules, logEntry, type GameState, type Project } from '../state.ts'
 import {
   debtBlocker,
   debtOffer,
@@ -25,6 +25,7 @@ import {
   type DebtKind,
 } from './facilities.ts'
 import { sofr } from './finance.ts'
+import { scenarioOf } from './market.ts'
 import { getProject, signTenant, tenantCard } from './projects.ts'
 
 const N = BALANCE.finance.dealNegotiation
@@ -70,7 +71,7 @@ function terms(
     return { key: 'error.negotiated_already' }
   // The lender's usual rate for this project (before any cut already won).
   const usual = debtOffer(state, p, kind).apr + (p.debt?.aprCut?.[kind] ?? 0)
-  const room = usual - (sofr(state.quarter) + N.lenderFloorOverSofr)
+  const room = usual - (sofr(state.quarter, scenarioOf(state)) + N.lenderFloorOverSofr)
   const limit = Math.max(0, Math.min(N.lenderCut, room))
   if (limit <= 0) return { key: 'error.lender_no_room' }
   return { limit }
@@ -82,7 +83,7 @@ export function dealNegotiationBlocker(
   projectId: string,
   target: { offerId?: string; debt?: DebtKind },
 ): Message | undefined {
-  if (!inActII(state)) return { key: 'error.act2_only' }
+  if (!inAct2Rules(state)) return { key: 'error.act2_only' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (state.negotiation || state.dealNegotiation)
     return { key: 'error.negotiation_open' }

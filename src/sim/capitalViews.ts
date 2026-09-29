@@ -5,7 +5,7 @@ import { BALANCE, CONTENT, type LeverageBand } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import {
-  inActII,
+  inAct2Rules,
   projectGone,
   type GameState,
   type Project,
@@ -68,7 +68,7 @@ const BANDS: LeverageBand[] = ['lt2', 'from2to4', 'from4to6', 'gt6']
  */
 export function ratingView(state: GameState) {
   const report = state.reports.at(-1)
-  if (!inActII(state) || !report || state.creditRating === null) return null
+  if (!inAct2Rules(state) || !report || state.creditRating === null) return null
   const inputs = ratingInputs(state, report)
   const matrix = CONTENT.finance.rating.matrix
   const i = BANDS.indexOf(inputs.band)

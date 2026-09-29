@@ -369,6 +369,15 @@ export const inActII = (
 ): boolean => isActII(state?.act)
 
 /**
+ * Whether Act II's business rules apply in a game (M11.4c): Act II, and Act III, which runs the same
+ * systems on its scenario's market. The gate for every Act II system that runs on in Act III; a system
+ * that stays Act II-only keeps inActII. Each gate's answer is in dev-notes.
+ */
+export const inAct2Rules = (
+  state: Pick<GameState, 'act'> | null | undefined,
+): boolean => state?.act === 2 || state?.act === 3
+
+/**
  * Whether an act number is Act III (M10.1: the walking skeleton only, no Act III game rules yet).
  * Every "is this Act III?" check goes through here, the same pattern as isActII.
  */

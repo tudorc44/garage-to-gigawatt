@@ -15,6 +15,7 @@ import type {
   GameState,
   QuarterReport,
 } from '../src/sim/state.ts'
+import { gameOverView } from '../src/sim/selectors.ts'
 import { inActII, toAct3 } from '../src/sim/state.ts'
 import { runway } from '../src/sim/systems/runway.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
@@ -733,21 +734,45 @@ if (args.includes('--act2')) {
   // flag nothing here runs, and Act II's own numbers are unaffected either way.
   if (args.includes('--act3')) {
     const t3 = performance.now()
-    const perScenario: Record<string, number> = { s0: 0, s1: 0, s2: 0, s3: 0 }
-    let played = 0
-    let ended = 0
-    let gameOver = 0
+    interface A3Run {
+      bot: string
+      seed: number
+      scenario: string
+      end: 'chapter' | 'gameover' | 'other'
+      cause: string | null
+      entryUsd: number
+      firstUsd: number | null
+      firstEbitdaUsd: number | null
+      entryEbitdaUsd: number
+      lastUsd: number | null
+    }
+    const a3: A3Run[] = []
     let crashed = 0
     for (const { name, runs } of byBot) {
       for (const { seed, state } of runs) {
         if (state.phase !== 'chapter') continue
-        played++
         try {
           const start = toAct3(state)
-          perScenario[start.scenarioId!]++
           const r = playFrom(start, BOTS[name] ?? PROBES[name], { through: 3 })
-          if (r.state.phase === 'chapter' && r.state.act3End) ended++
-          else if (r.state.phase === 'gameover') gameOver++
+          const rep = r.state.reports.filter((x) => x.quarter >= '2027Q1')
+          a3.push({
+            bot: name,
+            seed,
+            scenario: start.scenarioId!,
+            end:
+              r.state.phase === 'chapter' && r.state.act3End
+                ? 'chapter'
+                : r.state.phase === 'gameover'
+                  ? 'gameover'
+                  : 'other',
+            cause: gameOverView(r.state)?.cause ?? null,
+            entryUsd: start.act3Entry!.valuationUsd,
+            entryEbitdaUsd: state.reports.at(-1)?.ebitdaUsd ?? 0,
+            firstUsd: rep[0]?.valuationUsd ?? null,
+            firstEbitdaUsd: rep[0]?.ebitdaUsd ?? null,
+            lastUsd:
+              r.state.phase === 'chapter' ? rep.at(-1)!.valuationUsd : null,
+          })
         } catch (e) {
           crashed++
           console.error(
@@ -756,13 +781,80 @@ if (args.includes('--act2')) {
         }
       }
     }
+    const usd = (n: number) =>
+      Number.isNaN(n) ? '—' : `$${(n / 1e6).toFixed(1)}M`
+    const summarize = (rows: A3Run[]) => {
+      const done = rows.filter((x) => x.end === 'chapter')
+      const causes: Record<string, number> = {}
+      for (const x of rows.filter((y) => y.end === 'gameover'))
+        causes[x.cause ?? '?'] = (causes[x.cause ?? '?'] ?? 0) + 1
+      return {
+        runs: rows.length,
+        crashes: 0,
+        reachedEnd: done.length,
+        gameOver: rows.length - done.length,
+        causes: Object.entries(causes)
+          .map(([k, n]) => `${k} ${n}`)
+          .join(', '),
+        median2027Q1: usd(
+          median(
+            rows.map((x) => x.firstUsd).filter((v): v is number => v !== null),
+          ),
+        ),
+        median2030Q4: usd(median(done.map((x) => x.lastUsd!))),
+        medianMultiple: (() => {
+          const m = median(
+            done
+              .filter((x) => x.firstUsd! > 0)
+              .map((x) => x.lastUsd! / x.firstUsd!),
+          )
+          return Number.isNaN(m) ? '—' : `${m.toFixed(2)}×`
+        })(),
+      }
+    }
+    const scenarios = ['s0', 's1', 's2', 's3']
     console.log(
-      `\n  Act III (--act3, M11.3 plumbing only, no Act III rules): ${played} runs played from 2027Q1 on their drawn scenario` +
-        ` (${Object.entries(perScenario)
-          .map(([id, n]) => `${id} ${n}`)
-          .join(', ')}); ${ended} reached the chapter phase with the reveal, ${gameOver} ended in game over,` +
-        ` ${crashed} crashed (${(performance.now() - t3).toFixed(0)} ms)`,
+      `\n  Act III (--act3, M11.4c: Act II's systems on the scenario market): ${a3.length} runs from 2027Q1 on their drawn scenario, ` +
+        `${crashed} crashed, ${a3.filter((x) => x.end === 'chapter').length} reached the chapter phase with the reveal, ` +
+        `${a3.filter((x) => x.end === 'gameover').length} ended in game over (${(performance.now() - t3).toFixed(0)} ms)`,
     )
+    console.log('  Act III by scenario:')
+    console.table(
+      Object.fromEntries(
+        scenarios.map((id) => [
+          id,
+          summarize(a3.filter((x) => x.scenario === id)),
+        ]),
+      ),
+    )
+    console.log('  Act III by bot:')
+    console.table(
+      Object.fromEntries(
+        [...new Set(a3.map((x) => x.bot))].map((b) => [
+          b,
+          summarize(a3.filter((x) => x.bot === b)),
+        ]),
+      ),
+    )
+    // Seam check: the 2027Q1 valuation against the end of 2026Q4 (±10%).
+    const seam = a3.filter((x) => x.firstUsd !== null && x.entryUsd > 0)
+    const out = seam.filter((x) => Math.abs(x.firstUsd! / x.entryUsd - 1) > 0.1)
+    console.log(
+      `  Act III seam: ${seam.length - out.length}/${seam.length} runs have their 2027Q1 valuation within ±10% of the end of 2026Q4; ${out.length} outliers`,
+    )
+    const byBotOut: Record<string, string> = {}
+    for (const b of new Set(out.map((x) => x.bot)))
+      byBotOut[b] =
+        `${out.filter((x) => x.bot === b).length} of ${seam.filter((x) => x.bot === b).length}` +
+        ` (${out.filter((x) => x.bot === b && x.firstUsd! > x.entryUsd).length} up)`
+    console.log(`  Act III seam outliers by bot: ${JSON.stringify(byBotOut)}`)
+    // The outliers that are not a tiny cash-dominated company (entry valuation over $50M).
+    const big = out.filter((x) => x.entryUsd > 50e6)
+    console.log(`  Act III seam outliers over $50M at entry: ${big.length}`)
+    for (const x of big.slice(0, 15))
+      console.log(
+        `    ${x.bot} seed ${x.seed} ${x.scenario}: ${usd(x.entryUsd)} → ${usd(x.firstUsd!)} (${((x.firstUsd! / x.entryUsd - 1) * 100).toFixed(1)}%); quarter EBITDA ${usd(x.entryEbitdaUsd)} → ${usd(x.firstEbitdaUsd!)}`,
+      )
   }
   // Scope 0.2 §5: every balance target, PASS / MISS with its numbers, printed as one table at the end.
   const s5: { target: string; result: string; numbers: string }[] = []

@@ -8,10 +8,15 @@ import {
   BALANCE,
   CONTENT,
   act2Quarter,
+  actFirstQuarter,
+  actLastQuarter,
+  quarterInputs,
   type Act2Quarter,
   type GpuGeneration,
+  type ScenarioId,
   type TenantCard,
 } from '../../content/index.ts'
+import { scenarioOf } from './market.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream } from '../rng.ts'
 import {
@@ -23,7 +28,7 @@ import {
   type ProjectKind,
   type TenantOffer,
 } from '../state.ts'
-import { inActII } from '../state.ts'
+import { inAct2Rules, inActIII } from '../state.ts'
 import { gpuPriceMultNow, modifierMult } from './eventEffects.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import {
@@ -53,8 +58,10 @@ const P = () => CONTENT.projects
 function heldBack<T>(
   quarter: number,
   pick: (q: Act2Quarter) => T | null,
+  scenario?: ScenarioId | null,
 ): T | undefined {
-  const own = act2Quarter(quarter)
+  // Act II's quarter, or Act III's scenario row (M11.4c).
+  const own = quarterInputs(quarter, scenario)
   const v = own ? pick(own) : null
   if (v !== null && v !== undefined) return v
   for (const q of CONTENT.act2Market) {
@@ -69,11 +76,18 @@ export function gpuGeneration(id: string): GpuGeneration | undefined {
 }
 
 /** A GPU's purchase price this quarter (market_quarterly_act2; the first known price before it). */
-export function gpuPriceUsd(gpu: string, quarter: number): number | undefined {
-  return heldBack(quarter, (q) =>
-    gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
-      ? q.gpuPurchaseUsd[gpu]
-      : null,
+export function gpuPriceUsd(
+  gpu: string,
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number | undefined {
+  return heldBack(
+    quarter,
+    (q) =>
+      gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
+        ? q.gpuPurchaseUsd[gpu]
+        : null,
+    scenario,
   )
 }
 
@@ -81,19 +95,26 @@ export function gpuPriceUsd(gpu: string, quarter: number): number | undefined {
 export function neocloudUsdHr(
   gpu: string,
   quarter: number,
+  scenario?: ScenarioId | null,
 ): number | undefined {
-  return heldBack(quarter, (q) =>
-    gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
-      ? q.gpuRentalUsdHr[gpu].neocloud
-      : null,
+  return heldBack(
+    quarter,
+    (q) =>
+      gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
+        ? q.gpuRentalUsdHr[gpu].neocloud
+        : null,
+    scenario,
   )
 }
 
 /** GPUs a full-stack project can buy this quarter (in Alpha 0.2, out, and priced). */
-export function availableGpus(quarter: number): GpuGeneration[] {
+export function availableGpus(
+  quarter: number,
+  scenario?: ScenarioId | null,
+): GpuGeneration[] {
   const label = CONTENT.quarters[quarter]
   return P().gpus.filter(
-    (g) => g.from <= label && gpuPriceUsd(g.id, quarter) !== undefined,
+    (g) => g.from <= label && gpuPriceUsd(g.id, quarter, scenario) !== undefined,
   )
 }
 
@@ -161,12 +182,13 @@ export function gpuContractUsdHr(
   gpu: string,
   termYears: number,
   quarter: number,
+  scenario?: ScenarioId | null,
 ): number | undefined {
   const c = BALANCE.projects.gpuContracts
   const base =
     gpu === 'b200'
-      ? heldBack(quarter, (q) => q.gpuRentalUsdHr.b200.neocloud)
-      : heldBack(quarter, (q) => q.gpuRentalUsdHr.h100.contract1y)
+      ? heldBack(quarter, (q) => q.gpuRentalUsdHr.b200.neocloud, scenario)
+      : heldBack(quarter, (q) => q.gpuRentalUsdHr.h100.contract1y, scenario)
   if (base === undefined) return undefined
   return (
     base * (gpu === 'h200' ? c.h200Mult : 1) * (c.termFactor[termYears] ?? 1)
@@ -195,6 +217,22 @@ export function annualContractUsd(p: Project): number {
   )
 }
 
+/** The scenario's chance this quarter that a tenant of `type` goes into distress (Act III only). */
+export function scenarioDefaultProb(
+  state: GameState,
+  type: TenantCard['type'] | undefined,
+): number {
+  const row =
+    CONTENT.act3Scenarios[state.scenarioId!].quarterly[
+      state.quarter - actFirstQuarter(3)
+    ]
+  if (type === 'ai_lab') return row.tenant_default_prob_q_ai_lab ?? 0
+  if (type === 'neocloud_sub_tenant')
+    return row.tenant_default_prob_q_neocloud_sub ?? 0
+  if (type === 'hyperscaler') return row.tenant_default_prob_q_hyperscaler ?? 0
+  return 0
+}
+
 /**
  * At the start of a quarter from 2026Q2 (M7.0, A3): each signed AI-lab contract without a backstop,
  * not yet in distress, rolls the distress chance on its own stream.
@@ -207,11 +245,19 @@ function rollAiLabDistress(state: GameState): void {
     const t = p.tenant
     if (!t || p.backstop || projectGone(p) || t.distressedQuarter !== undefined)
       continue
-    if (tenantCard(t.card)?.type !== 'ai_lab') continue
+    const type = tenantCard(t.card)?.type
+    // Act III (M11.4c, DT 3): the fixed 12% AI-lab roll is replaced by the scenario's per-quarter
+    // default probability for each of the three tenant types; the effect is Act II's distress.
+    const chancePerQuarter = inActIII(state)
+      ? scenarioDefaultProb(state, type)
+      : type === 'ai_lab'
+        ? d.chancePerQuarter
+        : 0
     if (
+      !chancePerQuarter ||
       !chance(
         substream(state.seed, `lab_distress:${label}:${p.id}`),
-        d.chancePerQuarter,
+        chancePerQuarter,
       )
     )
       continue
@@ -297,7 +343,9 @@ export function projectCapex(
   const site = p.siteId ? state.sites.find((s) => s.id === p.siteId) : undefined
   const flawUsdMw = site ? (flawEffect(site, 'capex_usd_mw_delta') ?? 0) : 0
   const retrofitUsd =
-    ((act2Quarter(quarter)?.capexUsdMw.retrofitShell ?? 0) * ready +
+    ((quarterInputs(quarter, scenarioOf(state))?.capexUsdMw.retrofitShell ??
+      0) *
+      ready +
       flawUsdMw) *
     mw
   let gpuUsd = 0
@@ -311,7 +359,7 @@ export function projectCapex(
         : 1
     gpuUsd =
       gpuCount *
-      (gpuPriceUsd(p.gpu, quarter) ?? 0) *
+      (gpuPriceUsd(p.gpu, quarter, scenarioOf(state)) ?? 0) *
       mult *
       gpuPriceMultNow(state, quarter)
   }
@@ -439,7 +487,7 @@ export function openBlocker(
     power?: PowerSource
   },
 ): Message | undefined {
-  if (!inActII(state)) return { key: 'error.act2_only' }
+  if (!inAct2Rules(state)) return { key: 'error.act2_only' }
   const site = state.sites.find((s) => s.id === a.siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.project_garage' }
@@ -467,7 +515,10 @@ export function openBlocker(
   }
   if (a.kind !== 'shell') {
     const gpu = a.kind === 'pilot' ? P().pilot.gpu : a.gpu
-    if (!gpu || !availableGpus(state.quarter).some((g) => g.id === gpu))
+    if (
+      !gpu ||
+      !availableGpus(state.quarter, scenarioOf(state)).some((g) => g.id === gpu)
+    )
       return { key: 'error.gpu_not_available', params: { gpu: gpu ?? '' } }
   }
   if (underMoratorium(state, a.siteId))
@@ -627,7 +678,12 @@ function signGpuContract(
   card: TenantCard,
 ): Message | undefined {
   const terms = offer.gpu!
-  const cardUsdHr = gpuContractUsdHr(p.gpu!, terms.termYears, state.quarter)
+  const cardUsdHr = gpuContractUsdHr(
+    p.gpu!,
+    terms.termYears,
+    state.quarter,
+    scenarioOf(state),
+  )
   if (cardUsdHr === undefined) return { key: 'error.unknown_offer' }
   const priceUsdHr = cardUsdHr * (offer.priceMult ?? 1)
   const gpus =
@@ -968,7 +1024,7 @@ export function settleProjectsWeek(
         : lock
           ? p.gpuCount * lock.usdHr * hours * up
           : p.gpuCount *
-            (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
+            (neocloudUsdHr(p.gpu!, state.quarter, scenarioOf(state)) ?? 0) *
             modifierMult(state, 'spot', null) *
             spotUtilisation(state) *
             hours *
@@ -976,7 +1032,11 @@ export function settleProjectsWeek(
       // A degraded cluster (card ec19) runs below its full rate.
       rev *= modifierMult(state, 'utilisation', null)
       cost =
-        p.kw * b.cloudPue * hours * up * powerPriceUsdKwh(site, state.quarter) +
+        p.kw *
+          b.cloudPue *
+          hours *
+          up *
+          powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
       // GPUs out after a failure wave you ran short on (M8.4) earn nothing; a contracted tenant is
       // credited 2× what they would have earned.
@@ -1259,11 +1319,15 @@ export function projectedReturn(state: GameState, p: Project) {
       p.stage === 'proposed' ? projectCapex(state, p).gpuUsd : p.gpuCapexUsd
     const up = uptime(site)
     const costUsd =
-      p.kw * b.cloudPue * hoursYr * up * powerPriceUsdKwh(site, state.quarter) +
+      p.kw *
+        b.cloudPue *
+        hoursYr *
+        up *
+        powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) +
       gpuUsd * b.cloudInsuranceShareYr
     const spotRevenueUsd =
       gpus *
-      (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) *
+      (neocloudUsdHr(p.gpu!, state.quarter, scenarioOf(state)) ?? 0) *
       spotUtilisation(state) *
       hoursYr *
       up
@@ -1442,7 +1506,21 @@ export function pivotActive(state: GameState): boolean {
  * quarter's value (2026Q3, the 2026Q4 aftershock), else its year's, else the next one given
  * (2022 → 2023's, 2026Q1–Q2 → 2026Q3's). 100 MW and up use the hyperscale rates.
  */
-export function capRate(quarter: number, kw: number): number {
+export function capRate(
+  quarter: number,
+  kw: number,
+  scenario?: ScenarioId | null,
+): number {
+  // Act III (M11.4c, mine, reversible): the scenario's hyperscale cap rate; a smaller shell keeps Act
+  // II's 2026Q4 shell rate, moved by the same change in the hyperscale rate since 2026Q4.
+  const inputs = quarterInputs(quarter, scenario)
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  if (inputs && quarter >= act3.firstQuarter) {
+    const now = inputs.capRateHyperscalePct / 100
+    if (kw >= BALANCE.projects.hyperscaleKw) return now
+    const last = act2Quarter(actLastQuarter(2))!.capRateHyperscalePct / 100
+    return capRate(actLastQuarter(2), kw) + (now - last)
+  }
   const rates =
     kw >= BALANCE.projects.hyperscaleKw
       ? P().capRates.hyperscale
@@ -1463,7 +1541,8 @@ export function saleValueUsd(state: GameState, p: Project): number {
   if (!p.tenant) return 0
   const noi = annualContractUsd(p) * (1 - BALANCE.projects.shellOpexShare)
   return (
-    (noi / capRate(state.quarter, p.kw)) * (1 - ownedShareOut(p)) -
+    (noi / capRate(state.quarter, p.kw, scenarioOf(state))) *
+      (1 - ownedShareOut(p)) -
     p.tenant.prepaymentLeftUsd
   )
 }

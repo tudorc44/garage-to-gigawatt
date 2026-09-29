@@ -7,6 +7,7 @@ import {
   POWER_REGIONS,
   act2Quarter,
   actLastQuarter,
+  quarterInputs,
   type MarketWeek,
   type PowerRegion,
   type RegionPolicy,
@@ -22,7 +23,7 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { inActII, inActIII } from './state.ts'
+import { inAct2Rules, inActIII } from './state.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
   repairAllCost,
@@ -252,7 +253,7 @@ export function dailyProfitPerUnit(
   const w = currentMarket(state)
   return (
     revenuePerUnitDay(model, w) -
-    model.power_kw * 24 * powerPriceUsdKwh(site, state.quarter)
+    model.power_kw * 24 * powerPriceUsdKwh(site, state.quarter, scenarioOf(state))
   )
 }
 
@@ -260,7 +261,8 @@ export function dailyProfitPerUnit(
 export function bestSite(state: GameState): Site {
   const ready = state.sites.filter((s) => isReady(s, state.quarter))
   return ready.reduce((a, b) =>
-    powerPriceUsdKwh(b, state.quarter) < powerPriceUsdKwh(a, state.quarter)
+    powerPriceUsdKwh(b, state.quarter, scenarioOf(state)) <
+    powerPriceUsdKwh(a, state.quarter, scenarioOf(state))
       ? b
       : a,
   )
@@ -340,7 +342,7 @@ export function siteViews(state: GameState): SiteView[] {
     rung: tierIndex(site.tier) + 1,
     capacityKw: capacityKw(site),
     usedKw: usedKw(state, site.id),
-    powerUsdKwh: powerPriceUsdKwh(site, state.quarter),
+    powerUsdKwh: powerPriceUsdKwh(site, state.quarter, scenarioOf(state)),
     ready: isReady(site, state.quarter),
     readyQuarter: quarterName(site.readyQuarter) || 'after Act I',
     leaving: tierIndex(site.tier) > 0 ? leavingTerms(state, site) : undefined,
@@ -754,8 +756,8 @@ export function auctionView(state: GameState): AuctionView {
       .filter((s) => capacityKw(s) - usedKw(state, s.id) + 1e-9 >= neededKw)
       .sort(
         (x, y) =>
-          powerPriceUsdKwh(x, state.quarter) -
-          powerPriceUsdKwh(y, state.quarter),
+          powerPriceUsdKwh(x, state.quarter, scenarioOf(state)) -
+          powerPriceUsdKwh(y, state.quarter, scenarioOf(state)),
       ),
     dailyProfitUsd: (site) =>
       a ? dailyProfitPerUnit(state, a.model, site) : 0,
@@ -837,8 +839,18 @@ export function renewalViews(state: GameState) {
       current: site.contract!,
       options: contractTypes(site).map((type) => ({
         type,
-        normalUsdKwh: normalPriceUsdKwh(site, state.quarter, type),
-        openingUsdKwh: openingOfferUsdKwh(site, state.quarter, type),
+        normalUsdKwh: normalPriceUsdKwh(
+          site,
+          state.quarter,
+          type,
+          scenarioOf(state),
+        ),
+        openingUsdKwh: openingOfferUsdKwh(
+          site,
+          state.quarter,
+          type,
+          scenarioOf(state),
+        ),
       })),
       openingMult: CONTENT.negotiation.openingMult,
       terms: CONTENT.negotiation.terms,
@@ -876,7 +888,12 @@ export function negotiationView(state: GameState) {
     final: n.final,
     openingUsdKwh: n.openingUsdKwh,
     offerUsdKwh: n.offerUsdKwh,
-    normalUsdKwh: normalPriceUsdKwh(site, state.quarter, n.contractType),
+    normalUsdKwh: normalPriceUsdKwh(
+      site,
+      state.quarter,
+      n.contractType,
+      scenarioOf(state),
+    ),
     history: n.history.map((h) => ({ counterUsdKwh: h.counterUsdKwh })),
     walkawayChance: CONTENT.negotiation.walkawayChance,
     risk: (priceUsdKwh: number) => counterRisk(state, priceUsdKwh),
@@ -909,7 +926,7 @@ export const URI_STORM_PRICE =
 /** The hires as the People dialog shows them (Act II adds two): on staff or not, pay, and what's blocking. */
 export function hireViews(state: GameState) {
   return allHires()
-    .filter((h) => inActII(state) || !isAct2Hire(h.id))
+    .filter((h) => inAct2Rules(state) || !isAct2Hire(h.id))
     .map((h) => ({
       id: h.id,
       name: h.name,
@@ -1133,7 +1150,7 @@ export function regionsView(state: GameState) {
   const now = CONTENT.quarters[q]
   const next = Math.min(q + 4, CONTENT.quarters.length - 1)
   const price = (id: PowerRegion, quarter: number) =>
-    (act2Quarter(quarter)?.powerUsdKwh[id] ?? 0) +
+    (inputsAt(state, quarter)?.powerUsdKwh[id] ?? 0) +
     regionPowerAdderUsdKwh(id, quarter)
   const policy = (p: RegionPolicy) => ({
     id: p.id,
@@ -1184,7 +1201,8 @@ export function act2OfferView(state: GameState, o: SiteOffer) {
     readyQuarter: CONTENT.quarters[ready] ?? null,
     perMwUsd: o.capexUsd / (o.kw / 1000),
     powerUsdKwh:
-      (act2Quarter(state.quarter)?.powerUsdKwh[o.region as PowerRegion] ?? 0) +
+      (inputsAt(state, state.quarter)?.powerUsdKwh[o.region as PowerRegion] ??
+        0) +
       regionPowerAdderUsdKwh(o.region as PowerRegion, state.quarter),
   }
 }
@@ -1364,7 +1382,7 @@ export function chapterReport(state: GameState) {
  * service went unpaid in the final quarter; otherwise 'cash' (below zero after every forced sale).
  */
 export function gameOverView(state: GameState) {
-  if (state.phase !== 'gameover' || !inActII(state)) return null
+  if (state.phase !== 'gameover' || !inAct2Rules(state)) return null
   const recent = state.quarter - 3
   const foreclosed = state.log
     .filter((e) => e.key === 'log.project_foreclosed' && e.quarter >= recent)
@@ -1428,7 +1446,7 @@ export function act2ChapterView(state: GameState) {
       !a || Number(b.params?.rentUsd) > Number(a.params?.rentUsd) ? b : a,
     undefined,
   )
-  const split = last ? valuationSplit(last, state.firstAiDealQuarter) : null
+  const split = last ? valuationSplit(last, state.firstAiDealQuarter, scenarioOf(state)) : null
   return {
     bust,
     title,
@@ -1542,7 +1560,7 @@ export function failureWaveView(state: GameState) {
  * handicap (balance). null in Act I.
  */
 export function knowHowView(state: GameState) {
-  if (!inActII(state)) return null
+  if (!inAct2Rules(state)) return null
   const b = BALANCE.projects
   const pilot = CONTENT.projects.pilot
   const levels = [0, 1, 2, 3].map((level) => ({
@@ -1591,7 +1609,7 @@ export function bridgePaymentView(state: GameState) {
  */
 export function runwayView(state: GameState) {
   const report = state.reports.at(-1)
-  if (!inActII(state) || !report) return null
+  if (!inAct2Rules(state) || !report) return null
   const r = runway(state, report)
   const shortBelow = CONTENT.finance.rating.runwayQuarters
   return {
@@ -1646,7 +1664,7 @@ export function projectAlertView(state: GameState) {
 export function valuationBreakdown(state: GameState) {
   const r = state.reports.at(-1)
   if (!r) return null
-  const v = valuationSplit(r, state.firstAiDealQuarter)
+  const v = valuationSplit(r, state.firstAiDealQuarter, scenarioOf(state))
   return {
     quarter: r.quarter,
     ebitdaUsd: r.ebitdaUsd - v.aiEbitdaUsd,
@@ -1714,7 +1732,7 @@ const TENANT_EVENT_KEYS: MessageKey[] = [
  */
 export function act2ReportView(state: GameState) {
   const r = state.reports.at(-1)
-  if (!inActII(state) || !r?.mwByUseKw) return null
+  if (!inAct2Rules(state) || !r?.mwByUseKw) return null
   const prev = state.reports.at(-2)
   const inQuarter = (keys: MessageKey[]) =>
     state.log.filter((e) => e.quarter === state.quarter && keys.includes(e.key))
@@ -1814,8 +1832,17 @@ export function buyCapKw(state: GameState, modelId: string): number {
  * week before (null before a GPU rental market exists, 2023Q3), the quarter's H100 1-year contract
  * and neocloud prices, and the AI demand index now and last quarter. undefined in Act I.
  */
+/**
+ * The market inputs for a quarter as this game sees them: Act II's, or (Act III) its scenario's. A
+ * quarter past the game's own act reads as undefined, as it always did in Act II (never throws).
+ */
+function inputsAt(state: GameState, quarter: number) {
+  const scenario = scenarioOf(state)
+  return scenario ? quarterInputs(quarter, scenario) : act2Quarter(quarter)
+}
+
 export function act2MarketView(state: GameState) {
-  const q = act2Quarter(state.quarter)
+  const q = inputsAt(state, state.quarter)
   if (!q) return undefined
   const w = currentMarket(state)
   const prev = previousMarketWeek(
@@ -1834,7 +1861,7 @@ export function act2MarketView(state: GameState) {
     h100Contract1yUsdHr: q.gpuRentalUsdHr.h100.contract1y,
     h100NeocloudUsdHr: q.gpuRentalUsdHr.h100.neocloud,
     aiDemandIndex: q.aiDemandIndex,
-    aiDemandPrev: act2Quarter(state.quarter - 1)?.aiDemandIndex ?? null,
+    aiDemandPrev: inputsAt(state, state.quarter - 1)?.aiDemandIndex ?? null,
   }
 }
 
@@ -1858,7 +1885,7 @@ export function hostingView(state: GameState) {
     .filter((site) => site.tier !== BALANCE.startSite)
     .map((site) => {
       const rateUsdKwh = hostingRateUsdKwh(nextQ)
-      const powerUsdKwh = powerPriceUsdKwh(site, nextQ)
+      const powerUsdKwh = powerPriceUsdKwh(site, nextQ, scenarioOf(state))
       const freeKw = convertibleKw(state, site.id)
       return {
         site,

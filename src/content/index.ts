@@ -1893,6 +1893,19 @@ export function isActIIQuarter(quarter: number): boolean {
   return act2Quarter(quarter) !== undefined
 }
 
+/**
+ * Whether Act II's business rules apply in a quarter (M11.4c): Act II's quarters and Act III's. The
+ * gate for every Act II system that runs on in Act III ("same rules where Act II is silent", doc 27
+ * §2); its data comes from quarterInputs(). Systems that stay Act II-only keep isActIIQuarter.
+ */
+export function isAct2RulesQuarter(quarter: number): boolean {
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  return (
+    isActIIQuarter(quarter) ||
+    (quarter >= act3.firstQuarter && quarter <= act3.lastQuarter)
+  )
+}
+
 /** The act a quarter index belongs to (quarters past the end count as the last act). */
 export function actOfQuarter(quarter: number): ActSpan['act'] {
   if (quarter < 0) return 0

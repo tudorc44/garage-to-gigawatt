@@ -5,9 +5,9 @@
 // the state's moratorium card (ec21) can come. It's regional: local Heat actions don't lower it.
 import {
   BALANCE,
+  CONTENT,
   POWER_REGIONS,
-  act2Quarter,
-  isActIIQuarter,
+  isAct2RulesQuarter,
   type PowerRegion,
 } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
@@ -22,11 +22,12 @@ export function regionAnger(
   region: PowerRegion | undefined,
   quarter = state.quarter,
 ): number {
-  if (!region || !isActIIQuarter(quarter)) return 0
+  // Act III too (M11.4c): worked out from energized MW, with Act II's standing policy bumps.
+  if (!region || !isAct2RulesQuarter(quarter)) return 0
   const kw = state.sites
     .filter((s) => regionOf(s) === region)
     .reduce((sum, s) => sum + poweredKw(s, quarter), 0)
-  const label = act2Quarter(quarter)!.quarter
+  const label = CONTENT.quarters[quarter]
   const bumps = A.bumps
     .filter(
       (b) =>

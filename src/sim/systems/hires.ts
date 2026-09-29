@@ -8,12 +8,12 @@
 import {
   BALANCE,
   CONTENT,
-  act2Quarter,
+  isAct2RulesQuarter,
   type Hire,
   type SiteTier,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inActII, logEntry, type GameState } from '../state.ts'
+import { inAct2Rules, logEntry, type GameState } from '../state.ts'
 
 /** Every hire the game knows: Act I's five, then Act II's new ones (hires_act2.json). */
 export function allHires(): Hire[] {
@@ -43,9 +43,14 @@ function staffHires(state: GameState): Hire[] {
  * salary for that quarter.
  */
 export function salaryUsdQ(hire: Hire, quarter: number): number {
-  const act2 = act2Quarter(quarter)
   const series = CONTENT.hiresAct2.salaryYr[hire.id]
-  if (act2 && series) return series[quarter - CONTENT.acts[1].firstQuarter] / 4
+  // Act III (M11.4c, mine, reversible): the file has no 2027+ salaries, so 2026Q4's holds.
+  if (series && isAct2RulesQuarter(quarter))
+    return (
+      series[
+        Math.min(quarter - CONTENT.acts[1].firstQuarter, series.length - 1)
+      ] / 4
+    )
   const year = Number(CONTENT.quarters[quarter].slice(0, 4))
   const { '2017': from, '2021': to } = hire.salary_usd_year
   const yearly =
@@ -168,7 +173,7 @@ export function hireBlocker(state: GameState, id: string): Message | undefined {
   const hire = getHire(id)
   if (!hire) return { key: 'error.unknown_hire' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
-  if (isAct2Hire(id) && !inActII(state)) return { key: 'error.act2_only' }
+  if (isAct2Hire(id) && !inAct2Rules(state)) return { key: 'error.act2_only' }
   if (isHired(state, id))
     return { key: 'error.already_hired', params: { hire: id } }
   if (

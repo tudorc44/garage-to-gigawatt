@@ -9,7 +9,7 @@
 // curtailment.
 import {
   CONTENT,
-  isActIIQuarter,
+  isAct2RulesQuarter,
   type PowerRegion,
   type Region,
   type RegionPolicy,
@@ -39,7 +39,7 @@ export function regionPowerAdderUsdKwh(
   region: PowerRegion | undefined,
   quarter: number,
 ): number {
-  if (!region || !isActIIQuarter(quarter)) return 0
+  if (!region || !isAct2RulesQuarter(quarter)) return 0
   return activePolicies(region, quarter).reduce(
     (sum, p) => sum + (p.effect.power_adder_usd_kwh ?? 0),
     0,
@@ -51,12 +51,12 @@ export function regionHeatMult(
   region: PowerRegion | undefined,
   quarter: number,
 ): number {
-  return region && isActIIQuarter(quarter) ?getRegion(region).heat_modifier : 1
+  return region && isAct2RulesQuarter(quarter) ?getRegion(region).heat_modifier : 1
 }
 
 /** Heat added to every site by national policies in force (Act II). */
 export function nationalHeatDelta(quarter: number): number {
-  if (!isActIIQuarter(quarter)) return 0
+  if (!isAct2RulesQuarter(quarter)) return 0
   return activeNationalPolicies(quarter).reduce(
     (sum, p) => sum + (p.effect.heat_delta ?? 0),
     0,
@@ -97,7 +97,7 @@ export function projectPolicy(
   region: PowerRegion | undefined,
   quarter: number,
 ): { reservationShare: number | null; capexMult: number } {
-  if (!region || !isActIIQuarter(quarter))
+  if (!region || !isAct2RulesQuarter(quarter))
     return { reservationShare: null, capexMult: 1 }
   const ps = activePolicies(region, quarter)
   const share = ps.find((p) => p.effect.project_reservation_share !== undefined)

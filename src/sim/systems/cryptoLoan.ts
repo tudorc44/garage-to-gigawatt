@@ -5,7 +5,7 @@
 import {
   BALANCE,
   CONTENT,
-  isActIIQuarter,
+  isAct2RulesQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
 import { debtFrozen } from './eventEffects.ts'
@@ -23,7 +23,8 @@ import { cryptoLoanCapUsd } from './liquidity.ts'
 export function cryptoLoanOffered(quarter: number): boolean {
   const q = CONTENT.quarters[quarter]
   const [from, to] = CONTENT.cryptoLoan.available
-  if (isActIIQuarter(quarter)) return q >= BALANCE.act2CryptoLoansFrom
+  // Act II's rule runs on in Act III (M11.4c).
+  if (isAct2RulesQuarter(quarter)) return q >= BALANCE.act2CryptoLoansFrom
   return q >= from && q <= to
 }
 

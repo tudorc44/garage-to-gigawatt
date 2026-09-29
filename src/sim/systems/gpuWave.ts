@@ -13,7 +13,7 @@ import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream, uniform } from '../rng.ts'
 import {
-  inActII,
+  inAct2Rules,
   logEntry,
   projectGone,
   type GameState,
@@ -28,7 +28,7 @@ export const isGpuWave = (id: string) => id === 'gpu_failure_wave'
 
 /** Live full-stack clouds big enough to fail in waves. */
 export function waveClusters(state: GameState): Project[] {
-  if (!inActII(state)) return []
+  if (!inAct2Rules(state)) return []
   return state.projects.filter(
     (p) => p.stage === 'live' && p.kind === 'cloud' && p.gpuCount >= G().minGpus,
   )

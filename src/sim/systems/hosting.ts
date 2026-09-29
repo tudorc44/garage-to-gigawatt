@@ -8,12 +8,13 @@ import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
 import {
-  inActII,
+  inAct2Rules,
   logEntry,
   type GameState,
   type HostingContract,
 } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
+import { scenarioOf } from './market.ts'
 import { poweredKw, powerPriceUsdKwh, uptime, usedKw } from './sites.ts'
 
 const HOURS_PER_WEEK = 24 * 7
@@ -75,7 +76,7 @@ export function hostingBlocker(
   siteId: string,
   kw: number,
 ): Message | undefined {
-  if (!inActII(state)) return { key: 'error.act2_only' }
+  if (!inAct2Rules(state)) return { key: 'error.act2_only' }
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.hosting_garage' }
@@ -165,7 +166,7 @@ export function startHosting(
  * ready to re-let with no conversion cost.
  */
 export function rollHostingDefaults(state: GameState): void {
-  if (!inActII(state)) return
+  if (!inAct2Rules(state)) return
   const label = CONTENT.quarters[state.quarter]
   const rules = BALANCE.hosting.defaults
   if (!rules.winterQuarters.includes(Number(label.slice(5)))) return
@@ -260,7 +261,8 @@ export function settleHostingWeek(state: GameState): {
     if (!site) continue
     const kwh = h.kw * HOURS_PER_WEEK * uptime(site)
     const fees = kwh * h.rateUsdKwh
-    const power = kwh * powerPriceUsdKwh(site, state.quarter)
+    const power =
+      kwh * powerPriceUsdKwh(site, state.quarter, scenarioOf(state))
     feesUsd += fees
     powerUsd += power
     marginByTier[site.tier] = (marginByTier[site.tier] ?? 0) + fees - power

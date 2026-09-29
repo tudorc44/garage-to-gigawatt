@@ -3,7 +3,7 @@
 // When the term ends, the next Plan phase has a renewal: negotiate it (see negotiation.ts),
 // or do nothing and the utility's opening offer (normal price × opening_mult) applies.
 // Texas can choose a fixed or an index contract; index prices move every quarter.
-import { BALANCE, CONTENT } from '../../content/index.ts'
+import { BALANCE, CONTENT, type ScenarioId } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { substream, uniform } from '../rng.ts'
 import {
@@ -12,6 +12,7 @@ import {
   type GameState,
   type Site,
 } from '../state.ts'
+import { scenarioOf } from './market.ts'
 import { getTier, isReady, normalPriceUsdKwh } from './sites.ts'
 
 /** Sites that buy power on contracts: every tier except the garage (household power). */
@@ -29,9 +30,11 @@ export function openingOfferUsdKwh(
   site: Site,
   quarter: number,
   type: ContractType,
+  scenario?: ScenarioId | null,
 ): number {
   return (
-    normalPriceUsdKwh(site, quarter, type) * CONTENT.negotiation.openingMult
+    normalPriceUsdKwh(site, quarter, type, scenario) *
+    CONTENT.negotiation.openingMult
   )
 }
 
@@ -85,7 +88,7 @@ export function startQuarterContracts(state: GameState): void {
         state,
         site,
         type,
-        normalPriceUsdKwh(site, state.quarter, type),
+        normalPriceUsdKwh(site, state.quarter, type, scenarioOf(state)),
         CONTENT.negotiation.terms[0],
       )
     } else if (site.contract.type === 'index' && !renewalDue(state, site)) {
@@ -117,7 +120,7 @@ export function acceptOpening(
     state,
     site,
     type,
-    openingOfferUsdKwh(site, state.quarter, type),
+    openingOfferUsdKwh(site, state.quarter, type, scenarioOf(state)),
     CONTENT.negotiation.terms[0],
   )
 }

@@ -1,8 +1,9 @@
 // MW by use (Act II, scope 0.2 §2.2 and §2.4; wireframes A2-03, A2-06): every kW at a site is in
 // exactly one use. Mining = your machines; hosting = rented to another miner's ASICs; AI shell and
 // AI cloud come with projects (M3); building = not energized yet, or being converted; idle = the rest.
-import { BALANCE, isActIIQuarter } from '../../content/index.ts'
+import { BALANCE, isAct2RulesQuarter } from '../../content/index.ts'
 import { projectGone, type GameState, type Site } from '../state.ts'
+import { scenarioOf } from './market.ts'
 import {
   capacityKw,
   machinesKw,
@@ -95,7 +96,7 @@ function pendingPower(site: Site, projectId: string, quarter: number): boolean {
  * dollars are returned.
  */
 export function payReservationWeek(state: GameState): number {
-  if (!isActIIQuarter(state.quarter)) return 0
+  if (!isAct2RulesQuarter(state.quarter)) return 0
   const { share, hoursPerQuarter } = BALANCE.powerReservation
   const hours = hoursPerQuarter / BALANCE.weeksPerQuarter
   let usd = 0
@@ -106,7 +107,7 @@ export function payReservationWeek(state: GameState): number {
     usd +=
       Math.max(0, u.idle + u.building - pending) *
       hours *
-      powerPriceUsdKwh(site, state.quarter) *
+      powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) *
       share
     // AEP Ohio (owner, 28 Sep 2026): a project started there from 2026Q2 pays 85% of full power on
     // its MW while building (the tariff's minimum demand), not the usual 25%.
@@ -118,7 +119,7 @@ export function payReservationWeek(state: GameState): number {
       usd +=
         p.kw *
         hours *
-        powerPriceUsdKwh(site, state.quarter) *
+        powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) *
         Math.max(0, policy.reservationShare - share)
     }
   }

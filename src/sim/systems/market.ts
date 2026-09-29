@@ -6,6 +6,7 @@ import {
   act1ValueQuarter,
   actFirstQuarter,
   isActIIQuarter,
+  isAct2RulesQuarter,
   nextQuarter,
   type Machine,
   type MarketWeek,
@@ -211,7 +212,7 @@ export function sellPrice(model: Machine, quarter: number): number {
   const held = model.price_used[act1ValueQuarter(quarter)] ?? 0
   // Act II GPU rigs (parked or not) lose value on the Act II GPU resale curve from 2022Q4
   // (owner, 28 Sep 2026: hold_and_wait's "resale keeps decaying on the normal curve").
-  if (model.coin === 'ETH' && isActIIQuarter(quarter)) {
+  if (model.coin === 'ETH' && isAct2RulesQuarter(quarter)) {
     const r = BALANCE.projects.gpuResidual
     const years = (quarter - CONTENT.acts[1].firstQuarter) / 4
     return held * Math.max(r.floor, 1 - r.declinePerYear * years)

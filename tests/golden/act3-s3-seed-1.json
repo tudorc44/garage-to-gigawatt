@@ -6,7 +6,7 @@
   "phase": "chapter",
   "quarter": 55,
   "week": 13,
-  "cash": 501691881.38,
+  "cash": 489755152.21,
   "bandwidth": 4,
   "hodlPct": {
     "BTC": 0,
@@ -36,7 +36,7 @@
       "flaw": null,
       "contract": {
         "type": "fixed",
-        "price": 0.05500000000000001,
+        "price": 0.06501,
         "startQuarter": 53,
         "endQuarter": 57
       }
@@ -63,7 +63,7 @@
   "spotShock": null,
   "firstAiDealQuarter": null,
   "facilities": [],
-  "creditRating": null,
+  "creditRating": "B+",
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
@@ -115,7 +115,7 @@
   ],
   "siteHeat": {
     "site-1": {
-      "value": 5,
+      "value": 15,
       "load": 0,
       "grievance": 0,
       "mitigated": false,
@@ -123,9 +123,9 @@
       "shutdownSince": null
     },
     "site-2": {
-      "value": 26.579375,
-      "load": 1.579375,
-      "grievance": 0,
+      "value": 47,
+      "load": 0,
+      "grievance": 10,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
@@ -134,30 +134,30 @@
   "loansLockedUntil": null,
   "nextId": 3,
   "interrupt": null,
-  "interruptsThisQuarter": 1,
+  "interruptsThisQuarter": 2,
   "quarterStats": {
-    "revenueUsd": 180522.02000000002,
-    "powerCostUsd": 161150.22,
+    "revenueUsd": 0,
+    "powerCostUsd": 699531.1687500001,
     "rentUsd": 0,
     "coinsMined": {
-      "BTC": 1.6288611697000879,
+      "BTC": 0,
       "ETH": 0
     },
     "powerByCoin": {
-      "BTC": 161150.22,
+      "BTC": 0,
       "ETH": 0
     },
     "marginByTier": {
-      "own_site": 19371.799999999985
+      "own_site": 0
     },
     "failures": 28,
     "treasurySoldUsd": 0,
     "priceAlerts": 0,
     "marginCalls": 0,
-    "soldUsd": 180522.02000000002,
+    "soldUsd": 0,
     "gridCreditsUsd": 0,
     "hostingFeesUsd": 0,
-    "reservationUsd": 0,
+    "reservationUsd": 699531.1687500001,
     "aiRevenueUsd": 0,
     "aiCostUsd": 0,
     "lateDamagesUsd": 0,
@@ -166,7 +166,7 @@
     "salariesUsd": 0,
     "interestUsd": 0,
     "principalUsd": 0,
-    "startCash": 501672509.58,
+    "startCash": 490454683.38,
     "startTreasuryUsd": 0,
     "weeks": [
       {
@@ -174,221 +174,221 @@
         "date": "2030-09-30",
         "btcUsd": 117139.64,
         "ethUsd": 2824.46,
-        "revenueUsd": 14775.039999999999,
-        "powerCostUsd": 12547.920000000002,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 1,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12613185425531442,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501674736.7
+        "cash": 490400873.29
       },
       {
         "week": 2,
         "date": "2030-10-07",
         "btcUsd": 111714.27,
         "ethUsd": 2824.46,
-        "revenueUsd": 14123.2,
-        "powerCostUsd": 12547.920000000002,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 0,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.1264225241770814,
+          "BTC": 0,
           "ETH": 0
         },
-        "priceAlert": false,
-        "cash": 501676311.98
+        "priceAlert": true,
+        "cash": 490347063.2
       },
       {
         "week": 3,
         "date": "2030-10-14",
         "btcUsd": 112015.46,
         "ethUsd": 2824.46,
-        "revenueUsd": 14158.480000000001,
-        "powerCostUsd": 12483.240000000002,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 2,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12639755262353966,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501677987.22
+        "cash": 490293253.11
       },
       {
         "week": 4,
         "date": "2030-10-21",
         "btcUsd": 108764.32,
         "ethUsd": 2824.46,
-        "revenueUsd": 13780.199999999999,
-        "powerCostUsd": 12483.240000000002,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 0,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12669779942539977,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501679284.18
+        "cash": 490239443.02
       },
       {
         "week": 5,
         "date": "2030-10-28",
         "btcUsd": 111706.06,
         "ethUsd": 2824.46,
-        "revenueUsd": 14067.900000000001,
-        "powerCostUsd": 12450.900000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 1,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12593676654605848,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501680901.18
+        "cash": 490185632.93
       },
       {
         "week": 6,
         "date": "2030-11-04",
         "btcUsd": 107924.87,
         "ethUsd": 2824.46,
-        "revenueUsd": 13636.699999999999,
-        "powerCostUsd": 12450.900000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 0,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12635363841531613,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501682086.98
+        "cash": 490131822.84
       },
       {
         "week": 7,
         "date": "2030-11-11",
         "btcUsd": 107711.16,
         "ethUsd": 2824.46,
-        "revenueUsd": 13582.800000000001,
-        "powerCostUsd": 12450.900000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 0,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.1261039246072552,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501683218.88
+        "cash": 490078012.75
       },
       {
         "week": 8,
         "date": "2030-11-18",
         "btcUsd": 107281.82,
         "ethUsd": 2824.46,
-        "revenueUsd": 13475,
-        "powerCostUsd": 12450.900000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 0,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12560376026432063,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501684242.98
+        "cash": 490024202.66
       },
       {
         "week": 9,
         "date": "2030-11-25",
         "btcUsd": 107357.62,
         "ethUsd": 2824.46,
-        "revenueUsd": 13528.900000000001,
-        "powerCostUsd": 12450.900000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 0,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12601713786129015,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501685320.98
+        "cash": 489970392.57
       },
       {
         "week": 10,
         "date": "2030-12-02",
         "btcUsd": 113790.67,
         "ethUsd": 2824.46,
-        "revenueUsd": 14353.92,
-        "powerCostUsd": 12418.560000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 1,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.12614320664427056,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501687256.34
+        "cash": 489916582.48
       },
       {
         "week": 11,
         "date": "2030-12-09",
         "btcUsd": 111326.91,
         "ethUsd": 2824.46,
-        "revenueUsd": 13941.2,
-        "powerCostUsd": 12386.220000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 1,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.1252275842381685,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501688811.32
+        "cash": 489862772.39
       },
       {
         "week": 12,
         "date": "2030-12-16",
         "btcUsd": 112114.32,
         "ethUsd": 2824.46,
-        "revenueUsd": 13958.28,
-        "powerCostUsd": 12353.880000000001,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 1,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.1245004206420732,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": true,
-        "cash": 501690415.72
+        "cash": 489808962.3
       },
       {
         "week": 13,
         "date": "2030-12-23",
         "btcUsd": 112000,
         "ethUsd": 2824.46,
-        "revenueUsd": 13140.4,
-        "powerCostUsd": 11674.740000000002,
+        "revenueUsd": 0,
+        "powerCostUsd": 0,
         "rentUsd": 0,
         "failures": 0,
-        "batchesOff": 0,
+        "batchesOff": 1,
         "coinsMined": {
-          "BTC": 0.117325,
+          "BTC": 0,
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 501691881.38
+        "cash": 489755152.21
       }
     ]
   },
@@ -400,14 +400,14 @@
         "ETH": 0
       },
       "revenueUsd": 449846.6,
-      "powerCostUsd": 189424.20000000004,
+      "powerCostUsd": 903991.5504000003,
       "rentUsd": 0,
       "coinsMined": {
         "BTC": 5.1261074388349055,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 36952.83453580005,
+        "BTC": 48482.11891096966,
         "ETH": null
       },
       "failures": 7,
@@ -417,12 +417,12 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 500260422.4,
-      "ebitdaUsd": 260422.39999999994,
+      "cash": 499545855.06,
+      "ebitdaUsd": -454144.9504000003,
       "marginByTier": {
-        "own_site": 260422.39999999997
+        "own_site": 201322.0496
       },
-      "valuationUsd": 504427180.79999995,
+      "valuationUsd": 499545855.06,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
@@ -432,7 +432,7 @@
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 655467.0000000002,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -445,9 +445,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.156875,
+      "heat": 39.156875,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2027Q2",
@@ -456,14 +472,14 @@
         "ETH": 0
       },
       "revenueUsd": 447159.86,
-      "powerCostUsd": 187630.80000000002,
+      "powerCostUsd": 909885.3041999997,
       "rentUsd": 0,
       "coinsMined": {
         "BTC": 4.9797442701501415,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 37678.802328205275,
+        "BTC": 49886.73428254377,
         "ETH": null
       },
       "failures": 6,
@@ -473,22 +489,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 500519951.46,
-      "ebitdaUsd": 259529.05999999997,
+      "cash": 499083129.61,
+      "ebitdaUsd": -462725.4441999997,
       "marginByTier": {
-        "own_site": 259529.06
+        "own_site": 198736.68080000003
       },
-      "valuationUsd": 504672416.41999996,
+      "valuationUsd": 499083129.61,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 500260422.4,
+      "startCash": 499545855.06,
       "startTreasuryUsd": 0,
       "soldUsd": 447159.86,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 661462.125,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -501,9 +517,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.130625,
+      "heat": 39.130624999999995,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2027Q3",
@@ -512,14 +544,14 @@
         "ETH": 0
       },
       "revenueUsd": 465411.1,
-      "powerCostUsd": 185220.00000000003,
+      "powerCostUsd": 906693.4049999999,
       "rentUsd": 0,
       "coinsMined": {
         "BTC": 4.817728315298121,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 38445.50540798576,
+        "BTC": 50901.84916017314,
         "ETH": null
       },
       "failures": 5,
@@ -529,22 +561,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 500800142.56,
-      "ebitdaUsd": 280191.1,
+      "cash": 498641847.29,
+      "ebitdaUsd": -441282.30499999993,
       "marginByTier": {
-        "own_site": 280191.1
+        "own_site": 220179.81999999998
       },
-      "valuationUsd": 505283200.16,
+      "valuationUsd": 498641847.29,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 500519951.46,
+      "startCash": 499083129.61,
       "startTreasuryUsd": 0,
       "soldUsd": 465411.1,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 661462.125,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -557,9 +589,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.10875,
+      "heat": 39.10875,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2027Q4",
@@ -568,14 +616,14 @@
         "ETH": 0
       },
       "revenueUsd": 419311.62000000005,
-      "powerCostUsd": 182427,
+      "powerCostUsd": 902995.4729999999,
       "rentUsd": 0,
       "coinsMined": {
         "BTC": 4.7003699416845635,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 38811.20045087772,
+        "BTC": 51386.02939696208,
         "ETH": null
       },
       "failures": 8,
@@ -585,22 +633,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501037027.18,
-      "ebitdaUsd": 236884.62000000005,
+      "cash": 498158163.44,
+      "ebitdaUsd": -483683.8529999998,
       "marginByTier": {
-        "own_site": 236884.62000000005
+        "own_site": 177778.27200000008
       },
-      "valuationUsd": 504827181.1,
+      "valuationUsd": 498158163.44,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 500800142.56,
+      "startCash": 498641847.29,
       "startTreasuryUsd": 0,
       "soldUsd": 419311.62000000005,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 661462.125,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -613,9 +661,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.07375,
+      "heat": 39.073750000000004,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2028Q1",
@@ -624,14 +688,14 @@
         "ETH": 0
       },
       "revenueUsd": 384231.68000000005,
-      "powerCostUsd": 179222.4,
+      "powerCostUsd": 898752.5825999997,
       "rentUsd": 0,
       "coinsMined": {
         "BTC": 4.610509784444939,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 38872.57773634172,
+        "BTC": 51467.29292291643,
         "ETH": null
       },
       "failures": 9,
@@ -641,22 +705,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501242036.46,
-      "ebitdaUsd": 205009.28000000006,
+      "cash": 497643642.52,
+      "ebitdaUsd": -514520.9025999997,
       "marginByTier": {
-        "own_site": 205009.27999999994
+        "own_site": 146941.2224
       },
-      "valuationUsd": 504522184.94,
+      "valuationUsd": 497643642.52,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501037027.18,
+      "startCash": 498158163.44,
       "startTreasuryUsd": 0,
       "soldUsd": 384231.68000000005,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 661462.125,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -669,9 +733,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.034375,
+      "heat": 39.034375,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2028Q2",
@@ -679,15 +759,15 @@
         "BTC": 91600,
         "ETH": 0
       },
-      "revenueUsd": 121384.34,
-      "powerCostUsd": 89290.74,
+      "revenueUsd": 57294.719999999994,
+      "powerCostUsd": 764393.0790599998,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 1.4370850862189715,
+        "BTC": 0.7027599383627279,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 62133.23125837144,
+        "BTC": 56324.30706311777,
         "ETH": null
       },
       "failures": 7,
@@ -697,22 +777,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501274130.06,
-      "ebitdaUsd": 32093.59999999999,
+      "cash": 496936544.18,
+      "ebitdaUsd": -707098.3590599998,
       "marginByTier": {
-        "own_site": 32093.599999999984
+        "own_site": 17712.253439999993
       },
-      "valuationUsd": 501787627.66,
+      "valuationUsd": 496936544.18,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501242036.46,
+      "startCash": 497643642.52,
       "startTreasuryUsd": 0,
-      "soldUsd": 121384.34,
+      "soldUsd": 57294.719999999994,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 724810.6124999998,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -725,9 +805,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.00375,
+      "heat": 47,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2028Q3",
@@ -735,15 +831,15 @@
         "BTC": 89600,
         "ETH": 0
       },
-      "revenueUsd": 218603.42,
-      "powerCostUsd": 190353.24000000002,
+      "revenueUsd": 0,
+      "powerCostUsd": 724810.6124999998,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 2.307501211954887,
+        "BTC": 0,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 82493.23511242494,
+        "BTC": null,
         "ETH": null
       },
       "failures": 10,
@@ -753,22 +849,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501302380.24,
-      "ebitdaUsd": 28250.179999999993,
+      "cash": 496211733.6,
+      "ebitdaUsd": -724810.6124999998,
       "marginByTier": {
-        "own_site": 28250.179999999964
+        "own_site": 0
       },
-      "valuationUsd": 501754383.12,
+      "valuationUsd": 496211733.6,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501274130.06,
+      "startCash": 496936544.18,
       "startTreasuryUsd": 0,
-      "soldUsd": 218603.42,
+      "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 724810.6124999998,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -781,9 +877,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.96,
+      "heat": 42,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2028Q4",
@@ -791,15 +903,15 @@
         "BTC": 87800,
         "ETH": 0
       },
-      "revenueUsd": 220872.26,
-      "powerCostUsd": 185955.00000000003,
+      "revenueUsd": 0,
+      "powerCostUsd": 724810.6124999998,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 2.1959020237346105,
+        "BTC": 0,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 84682.73993561105,
+        "BTC": null,
         "ETH": null
       },
       "failures": 9,
@@ -809,22 +921,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501337297.5,
-      "ebitdaUsd": 34917.25999999998,
+      "cash": 495486923.02,
+      "ebitdaUsd": -724810.6124999998,
       "marginByTier": {
-        "own_site": 34917.25999999997
+        "own_site": 0
       },
-      "valuationUsd": 501895973.66,
+      "valuationUsd": 495486923.02,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501302380.24,
+      "startCash": 496211733.6,
       "startTreasuryUsd": 0,
-      "soldUsd": 220872.26,
+      "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 724810.6124999998,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -837,9 +949,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.920625,
+      "heat": 37,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2029Q1",
@@ -847,15 +975,15 @@
         "BTC": 86400,
         "ETH": 0
       },
-      "revenueUsd": 236784.38,
-      "powerCostUsd": 182656.32000000004,
+      "revenueUsd": 75473.86000000002,
+      "powerCostUsd": 798985.08378,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 2.1007820668405244,
+        "BTC": 0.6484380175661322,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 86946.819892987,
+        "BTC": 114389.4547676412,
         "ETH": null
       },
       "failures": 7,
@@ -865,22 +993,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501391425.56,
-      "ebitdaUsd": 54128.05999999997,
+      "cash": 494763411.82,
+      "ebitdaUsd": -723511.22378,
       "marginByTier": {
-        "own_site": 54128.06
+        "own_site": 1299.388719999999
       },
-      "valuationUsd": 502257474.52,
+      "valuationUsd": 494763411.82,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501337297.5,
+      "startCash": 495486923.02,
       "startTreasuryUsd": 0,
-      "soldUsd": 236784.38,
+      "soldUsd": 75473.86000000002,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 724810.6124999998,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -893,9 +1021,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.89,
+      "heat": 38.89,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2029Q2",
@@ -903,15 +1047,15 @@
         "BTC": 84200,
         "ETH": 0
       },
-      "revenueUsd": 238462.28000000003,
-      "powerCostUsd": 178937.22000000003,
+      "revenueUsd": 221028.78,
+      "powerCostUsd": 915524.4505500004,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 2.0070807857643858,
+        "BTC": 1.8532648337615627,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 89152.97344738057,
+        "BTC": 114175.18583705218,
         "ETH": null
       },
       "failures": 11,
@@ -921,22 +1065,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501450950.62,
-      "ebitdaUsd": 59525.06,
+      "cash": 494068916.13,
+      "ebitdaUsd": -694495.6705500004,
       "marginByTier": {
-        "own_site": 59525.059999999954
+        "own_site": 9431.923199999947
       },
-      "valuationUsd": 502403351.58,
+      "valuationUsd": 494068916.13,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501391425.56,
+      "startCash": 494763411.82,
       "startTreasuryUsd": 0,
-      "soldUsd": 238462.28000000003,
+      "soldUsd": 221028.78,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 703927.5937500002,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -949,9 +1093,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.841875,
+      "heat": 48.841875,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2029Q3",
@@ -959,15 +1119,15 @@
         "BTC": 83000,
         "ETH": 0
       },
-      "revenueUsd": 238693.42000000004,
-      "powerCostUsd": 175573.86000000002,
+      "revenueUsd": 221406.22000000003,
+      "powerCostUsd": 911423.4151500006,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 1.9295823262164924,
+        "BTC": 1.7791086490564818,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 90990.60331064685,
+        "BTC": 116629.08924086322,
         "ETH": null
       },
       "failures": 6,
@@ -977,22 +1137,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501514070.18,
-      "ebitdaUsd": 63119.56000000003,
+      "cash": 493378898.94,
+      "ebitdaUsd": -690017.1951500005,
       "marginByTier": {
-        "own_site": 63119.55999999998
+        "own_site": 13910.39859999996
       },
-      "valuationUsd": 502523983.14,
+      "valuationUsd": 493378898.94,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501450950.62,
+      "startCash": 494068916.13,
       "startTreasuryUsd": 0,
-      "soldUsd": 238693.42000000004,
+      "soldUsd": 221406.22000000003,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 703927.5937500002,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -1005,9 +1165,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.815625,
+      "heat": 43.815625,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2029Q4",
@@ -1016,14 +1192,14 @@
         "ETH": 0
       },
       "revenueUsd": 234556.98,
-      "powerCostUsd": 173407.08000000002,
+      "powerCostUsd": 926046.2989500003,
       "rentUsd": 0,
       "coinsMined": {
         "BTC": 1.8615789766631745,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 93150.5362779865,
+        "BTC": 119317.36874153001,
         "ETH": null
       },
       "failures": 6,
@@ -1033,22 +1209,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501575220.08,
-      "ebitdaUsd": 61149.899999999994,
+      "cash": 492687409.61,
+      "ebitdaUsd": -691489.3189500003,
       "marginByTier": {
-        "own_site": 61149.89999999998
+        "own_site": 12438.274799999956
       },
-      "valuationUsd": 502553618.47999996,
+      "valuationUsd": 492687409.61,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501514070.18,
+      "startCash": 493378898.94,
       "startTreasuryUsd": 0,
       "soldUsd": 234556.98,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 703927.5937500002,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -1061,9 +1237,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.789375,
+      "heat": 48.789375,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2030Q1",
@@ -1071,15 +1263,15 @@
         "BTC": 80800,
         "ETH": 0
       },
-      "revenueUsd": 206862.87999999998,
-      "powerCostUsd": 170787.54000000007,
+      "revenueUsd": 17120.739999999998,
+      "powerCostUsd": 720870.2551500002,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 1.8099275539760555,
+        "BTC": 0.14184902149947157,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 94361.5337668148,
+        "BTC": 119441.51056454853,
         "ETH": null
       },
       "failures": 5,
@@ -1089,22 +1281,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501611295.42,
-      "ebitdaUsd": 36075.33999999991,
+      "cash": 491983660.05,
+      "ebitdaUsd": -703749.5151500002,
       "marginByTier": {
-        "own_site": 36075.33999999996
+        "own_site": 178.07859999999346
       },
-      "valuationUsd": 502188500.86,
+      "valuationUsd": 491983660.05,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501575220.08,
+      "startCash": 492687409.61,
       "startTreasuryUsd": 0,
-      "soldUsd": 206862.88,
+      "soldUsd": 17120.739999999998,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 703927.5937500002,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -1117,9 +1309,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.7675,
+      "heat": 52,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2030Q2",
@@ -1127,15 +1335,15 @@
         "BTC": 79200,
         "ETH": 0
       },
-      "revenueUsd": 199112.34000000003,
-      "powerCostUsd": 167941.62000000005,
+      "revenueUsd": 0,
+      "powerCostUsd": 829445.5275000003,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 1.7502570013765404,
+        "BTC": 0,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 95952.54860738594,
+        "BTC": null,
         "ETH": null
       },
       "failures": 8,
@@ -1145,22 +1353,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501642466.14,
-      "ebitdaUsd": 31170.719999999972,
+      "cash": 491154214.55,
+      "ebitdaUsd": -829445.5275000003,
       "marginByTier": {
-        "own_site": 31170.719999999972
+        "own_site": 0
       },
-      "valuationUsd": 502141197.65999997,
+      "valuationUsd": 491154214.55,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501611295.42,
+      "startCash": 491983660.05,
       "startTreasuryUsd": 0,
-      "soldUsd": 199112.34000000003,
+      "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 829445.5275000003,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -1173,9 +1381,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.7325,
+      "heat": 47,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2030Q3",
@@ -1183,15 +1407,15 @@
         "BTC": 77800,
         "ETH": 0
       },
-      "revenueUsd": 195042.12,
-      "powerCostUsd": 164998.68000000002,
+      "revenueUsd": 0,
+      "powerCostUsd": 699531.1687500001,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 1.6898848006466445,
+        "BTC": 0,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 97639.01062182599,
+        "BTC": null,
         "ETH": null
       },
       "failures": 7,
@@ -1201,22 +1425,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501672509.58,
-      "ebitdaUsd": 30043.439999999973,
+      "cash": 490454683.38,
+      "ebitdaUsd": -699531.1687500001,
       "marginByTier": {
-        "own_site": 30043.43999999998
+        "own_site": 0
       },
-      "valuationUsd": 502153204.62,
+      "valuationUsd": 490454683.38,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501642466.14,
+      "startCash": 491154214.55,
       "startTreasuryUsd": 0,
-      "soldUsd": 195042.11999999997,
+      "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 699531.1687500001,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -1229,9 +1453,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.701875,
+      "heat": 42,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     },
     {
       "quarter": "2030Q4",
@@ -1239,15 +1479,15 @@
         "BTC": 72200,
         "ETH": 0
       },
-      "revenueUsd": 180522.02000000002,
-      "powerCostUsd": 161150.22,
+      "revenueUsd": 0,
+      "powerCostUsd": 699531.1687500001,
       "rentUsd": 0,
       "coinsMined": {
-        "BTC": 1.6288611697000879,
+        "BTC": 0,
         "ETH": 0
       },
       "costPerCoinUsd": {
-        "BTC": 98934.2879538786,
+        "BTC": null,
         "ETH": null
       },
       "failures": 28,
@@ -1257,22 +1497,22 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 501691881.38,
-      "ebitdaUsd": 19371.800000000017,
+      "cash": 489755152.21,
+      "ebitdaUsd": -699531.1687500001,
       "marginByTier": {
-        "own_site": 19371.799999999985
+        "own_site": 0
       },
-      "valuationUsd": 502001830.18,
+      "valuationUsd": 489755152.21,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 1,
-      "startCash": 501672509.58,
+      "startCash": 490454683.38,
       "startTreasuryUsd": 0,
-      "soldUsd": 180522.02000000002,
+      "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
-      "reservationUsd": 0,
+      "reservationUsd": 699531.1687500001,
       "aiRevenueUsd": 0,
       "aiCostUsd": 0,
       "lateDamagesUsd": 0,
@@ -1285,9 +1525,25 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 26.579375,
+      "heat": 47,
       "heatTier": "own_site",
-      "forcedSale": null
+      "mwByUseKw": {
+        "mining": 1750,
+        "hosting": 0,
+        "aiShell": 0,
+        "aiCloud": 0,
+        "building": 0,
+        "idle": 18255
+      },
+      "forcedSale": null,
+      "creditRating": "B+",
+      "ratingWhy": {
+        "debtToEbitda": null,
+        "band": "lt2",
+        "quality": "weak",
+        "shortRunway": false,
+        "eventNotches": 0
+      }
     }
   ],
   "log": [
@@ -1346,7 +1602,7 @@
       "params": {
         "tier": "own_site",
         "contract": "fixed",
-        "price": "5.00¢",
+        "price": "6.12¢",
         "quarter": "2028Q2"
       }
     },
@@ -1533,7 +1789,7 @@
       "params": {
         "tier": "own_site",
         "contract": "fixed",
-        "price": "5.50¢",
+        "price": "6.75¢",
         "quarter": "2029Q2"
       }
     },
@@ -1577,6 +1833,15 @@
     },
     {
       "quarter": 45,
+      "week": 10,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "own_site",
+        "heat": 47
+      }
+    },
+    {
+      "quarter": 45,
       "week": 11,
       "key": "log.failures",
       "params": {
@@ -1590,6 +1855,12 @@
       "params": {
         "count": 1
       }
+    },
+    {
+      "quarter": 46,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
     },
     {
       "quarter": 46,
@@ -1673,6 +1944,12 @@
     },
     {
       "quarter": 47,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 47,
       "week": 2,
       "key": "log.failures",
       "params": {
@@ -1718,6 +1995,12 @@
       "params": {
         "count": 1
       }
+    },
+    {
+      "quarter": 48,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
     },
     {
       "quarter": 48,
@@ -1782,7 +2065,7 @@
       "params": {
         "tier": "own_site",
         "contract": "fixed",
-        "price": "5.50¢",
+        "price": "6.55¢",
         "quarter": "2030Q2"
       }
     },
@@ -1792,6 +2075,15 @@
       "key": "log.failures",
       "params": {
         "count": 2
+      }
+    },
+    {
+      "quarter": 49,
+      "week": 1,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "own_site",
+        "heat": 49
       }
     },
     {
@@ -1828,6 +2120,12 @@
     },
     {
       "quarter": 49,
+      "week": 7,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 49,
       "week": 8,
       "key": "log.failures",
       "params": {
@@ -1857,6 +2155,12 @@
       "params": {
         "count": 1
       }
+    },
+    {
+      "quarter": 50,
+      "week": 3,
+      "key": "log.switched_off",
+      "params": {}
     },
     {
       "quarter": 50,
@@ -1916,6 +2220,15 @@
     },
     {
       "quarter": 51,
+      "week": 8,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "own_site",
+        "heat": 49
+      }
+    },
+    {
+      "quarter": 51,
       "week": 10,
       "key": "log.failures",
       "params": {
@@ -1936,6 +2249,21 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 52,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 52,
+      "week": 2,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "own_site",
+        "heat": 54
       }
     },
     {
@@ -1981,13 +2309,29 @@
     {
       "quarter": 53,
       "week": null,
+      "key": "log.rate_hike",
+      "params": {
+        "tier": "own_site",
+        "heat": 52,
+        "surchargePct": 0.19999999999999996
+      }
+    },
+    {
+      "quarter": 53,
+      "week": null,
       "key": "log.contract_signed",
       "params": {
         "tier": "own_site",
         "contract": "fixed",
-        "price": "5.50¢",
+        "price": "6.50¢",
         "quarter": "—"
       }
+    },
+    {
+      "quarter": 53,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
     },
     {
       "quarter": 53,
@@ -2047,11 +2391,25 @@
     },
     {
       "quarter": 54,
+      "week": null,
+      "key": "log.rate_hike_ends",
+      "params": {
+        "tier": "own_site"
+      }
+    },
+    {
+      "quarter": 54,
       "week": 1,
       "key": "log.failures",
       "params": {
         "count": 1
       }
+    },
+    {
+      "quarter": 54,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
     },
     {
       "quarter": 54,
@@ -2107,6 +2465,21 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 55,
+      "week": 1,
+      "key": "log.switched_off",
+      "params": {}
+    },
+    {
+      "quarter": 55,
+      "week": 2,
+      "key": "log.complaint_ignored",
+      "params": {
+        "tier": "own_site",
+        "heat": 47
       }
     },
     {

@@ -2,7 +2,7 @@
 // what your machines would sell for, one loan at a time, repaid over the era's term in
 // equal weekly slices of principal plus interest on what's still owed. In Act II its terms
 // come from the credit rating (balance.ts › finance.equipmentLoan).
-import { BALANCE, CONTENT, isActIIQuarter } from '../../content/index.ts'
+import { BALANCE, CONTENT, isAct2RulesQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   logEntry,
@@ -16,6 +16,7 @@ import { ratingRank, sofr } from './finance.ts'
 import { spreadCut } from './hires.ts'
 import { saleValueUsd } from './machines.ts'
 import { payBridgeWeek } from './lifeline.ts'
+import { scenarioOf } from './market.ts'
 import { gpuResidualUsd } from './projects.ts'
 import { ratingInputs } from './rating.ts'
 
@@ -64,14 +65,14 @@ export function ratingLoanBand(rating: string) {
  * its LTV, for 8 quarters.
  */
 export function equipmentTerms(state: GameState): LoanTerms | undefined {
-  if (!isActIIQuarter(state.quarter)) return eraTerms(state.quarter)
+  if (!isAct2RulesQuarter(state.quarter)) return eraTerms(state.quarter)
   const rating = loanRating(state)
   const band = ratingLoanBand(rating)
   return {
     ltv: band.ltv,
     // The Capital Markets Lead cuts the spread (M5.7); a card can widen it (DDTL widening, M5.8).
     apr:
-      sofr(state.quarter) +
+      sofr(state.quarter, scenarioOf(state)) +
       Math.max(0, band.spread - spreadCut(state)) +
       state.events.spreadAddBps / 10_000,
     tenorQuarters: BALANCE.finance.equipmentLoan.tenorQuarters,

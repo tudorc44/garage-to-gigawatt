@@ -25,6 +25,7 @@ import {
   signContract,
 } from './contracts.ts'
 import { powerNegotiationShift } from './hires.ts'
+import { scenarioOf } from './market.ts'
 import { normalPriceUsdKwh } from './sites.ts'
 
 export interface PowerNegotiation {
@@ -84,11 +85,21 @@ export function startNegotiation(
   const rules = CONTENT.negotiation
   const site = state.sites.find((s) => s.id === siteId)!
   const r = substream(state.seed, `negotiation:${state.quarter}:${siteId}`)
-  const normal = normalPriceUsdKwh(site, state.quarter, type)
+  const normal = normalPriceUsdKwh(
+    site,
+    state.quarter,
+    type,
+    scenarioOf(state),
+  )
   const long = term === rules.terms[1] ? rules.longTermLimitMult : 1
   const shift = powerNegotiationShift(state)
   const limit = normal * uniform(r, ...rules.limitRange) * long * (1 - shift)
-  const opening = openingOfferUsdKwh(site, state.quarter, type)
+  const opening = openingOfferUsdKwh(
+    site,
+    state.quarter,
+    type,
+    scenarioOf(state),
+  )
   state.bandwidth -= rules.bandwidth
   state.negotiation = {
     siteId,
@@ -210,7 +221,12 @@ export function counterRisk(
   if (!n) return 'none'
   const rules = CONTENT.negotiation
   const site = siteOf(state)
-  const normal = normalPriceUsdKwh(site, state.quarter, n.contractType)
+  const normal = normalPriceUsdKwh(
+    site,
+    state.quarter,
+    n.contractType,
+    scenarioOf(state),
+  )
   const long = n.term === rules.terms[1] ? rules.longTermLimitMult : 1
   const shift = 1 - n.shift
   const edge = (m: number) =>

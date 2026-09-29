@@ -4,6 +4,7 @@
 import {
   CONTENT,
   act1ValueQuarter,
+  isAct2RulesQuarter,
   isActIIQuarter,
   type Rival,
   type RivalAct2,
@@ -83,6 +84,8 @@ export function act2RivalSnapshot(
  * §2.11: Core Scientific, IREN, Hut 8, Cipher, CoreWeave), from 2022Q4.
  */
 export function activeRivals(quarter: number): RivalSnapshot[] {
+  // Act III (M11.4c): no rivals until M11.5 loads rivals_act3.json; the league hides.
+  if (isAct2RulesQuarter(quarter) && !isActIIQuarter(quarter)) return []
   if (isActIIQuarter(quarter))
     return CONTENT.act2Rivals.map((r) => act2RivalSnapshot(r, quarter))
   return CONTENT.rivals

@@ -782,7 +782,9 @@ export function resolveEvent(
         for (const p of liveClusters(state))
           if (!p.tenant?.gpu)
             p.spotLock = {
-              usdHr: (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) * x.price_mult,
+              usdHr:
+                (neocloudUsdHr(p.gpu!, state.quarter, scenarioOf(state)) ?? 0) *
+                x.price_mult,
               until: state.quarter + x.quarters - 1,
             }
         break

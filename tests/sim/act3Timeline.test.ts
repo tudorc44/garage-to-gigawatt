@@ -108,11 +108,11 @@ describe('Act III runs its 16 quarters, then the chapter report', () => {
       expect(playAll(act3ScenarioCompany(id, 3)).state.phase).toBe('chapter')
   })
 
-  it('Act II-only report fields stay off, and the chapter-report selector does not throw', () => {
+  it('Act II’s report fields are on in Act III (M11.4c), and the chapter-report selector does not throw', () => {
     const { state } = playAll(act3ScenarioCompany('s2', 7))
     const r = state.reports.at(-1)!
-    expect(r.mwByUseKw).toBeUndefined()
-    expect(r.creditRating).toBeUndefined()
+    expect(r.mwByUseKw).toBeDefined()
+    expect(r.creditRating).toBeDefined()
     expect(() => chapterReport(state)).not.toThrow()
   })
 

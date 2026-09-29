@@ -746,7 +746,7 @@ function run(s: GameState, a: Action): Message | undefined {
           s,
           site,
           contractType,
-          normalPriceUsdKwh(site, s.quarter, contractType),
+          normalPriceUsdKwh(site, s.quarter, contractType, scenarioOf(s)),
           0,
         )
       }

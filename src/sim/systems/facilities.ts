@@ -13,7 +13,7 @@ import {
   type GameState,
   type Project,
 } from '../state.ts'
-import { inActII } from '../state.ts'
+import { inAct2Rules } from '../state.ts'
 import {
   ddtlRate,
   isInvestmentGrade,
@@ -22,6 +22,7 @@ import {
   sofr,
 } from './finance.ts'
 import { spreadCut } from './hires.ts'
+import { scenarioOf } from './market.ts'
 import { debtFrozen } from './eventEffects.ts'
 import {
   contractQuarters,
@@ -58,7 +59,7 @@ export function debtBlocker(
   p: Project,
   kind: DebtKind,
 ): Message | undefined {
-  if (!inActII(state)) return { key: 'error.act2_only' }
+  if (!inAct2Rules(state)) return { key: 'error.act2_only' }
   const f = CONTENT.finance
   const from = kind === 'project_debt' ? f.projectDebt.from : f.ddtl.from
   if (CONTENT.quarters[state.quarter] < from)
@@ -109,12 +110,13 @@ export function lenderAprUsual(
   kind: DebtKind,
   ig: boolean,
 ): number {
-  if (kind === 'project_debt') return projectDebtRate(state.quarter)
+  const sc = scenarioOf(state)
+  if (kind === 'project_debt') return projectDebtRate(state.quarter, sc)
   return (
-    ddtlRate(state.quarter, ig) -
+    ddtlRate(state.quarter, ig, sc) -
     Math.min(
       spreadCut(state),
-      ddtlRate(state.quarter, ig) - sofr(state.quarter),
+      ddtlRate(state.quarter, ig, sc) - sofr(state.quarter, sc),
     ) +
     state.events.spreadAddBps / 10_000
   )

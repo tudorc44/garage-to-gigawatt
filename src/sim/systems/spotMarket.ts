@@ -40,6 +40,9 @@ const capFull = (state: GameState) =>
 
 /** After a week is played: the planned shock, then the GPU spot alert. */
 export function checkSpotAlerts(state: GameState, w: MarketWeek): void {
+  // Act III (M11.4c, DT 2): the random spot shock and the GPU spot alert stay off. The scenario files
+  // author GPU prices already, and unauthored shocks would blur the Signals and the decoy.
+  if (!inActII(state)) return
   const weekNo = state.week + 1
   const clusters = spotClusters(state).length > 0
   if (state.spotShock?.week === weekNo) {
@@ -109,7 +112,8 @@ export function resolveSpotAlert(
     const mult = shock ? S.shockMult : 1
     for (const p of spotClusters(state))
       p.spotLock = {
-        usdHr: (neocloudUsdHr(p.gpu!, state.quarter) ?? 0) * mult,
+        usdHr:
+          (neocloudUsdHr(p.gpu!, state.quarter, scenarioOf(state)) ?? 0) * mult,
         until: state.quarter + S.lockQuarters - 1,
       }
     logEntry(

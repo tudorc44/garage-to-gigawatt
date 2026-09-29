@@ -96,7 +96,7 @@ export function mineWeek(
         up *
         powerMult *
         ((opts.ignoreStorm ? undefined : stormPrice(state, site, w)) ??
-          powerPriceUsdKwh(site, state.quarter))
+          powerPriceUsdKwh(site, state.quarter, scenarioOf(state)))
       const running =
         working > 0 && revenueUsd >= powerCostUsd && !isShutDown(state, site.id)
       return {

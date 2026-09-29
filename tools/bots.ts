@@ -3,7 +3,11 @@
 import { BALANCE, CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import type { Strategy } from '../src/sim/replay.ts'
-import { inActII, type Condition, type GameState } from '../src/sim/state.ts'
+import {
+  inAct2Rules,
+  type Condition,
+  type GameState,
+} from '../src/sim/state.ts'
 import { renewalDue } from '../src/sim/systems/contracts.ts'
 import { maxCryptoLoanUsd } from '../src/sim/systems/cryptoLoan.ts'
 import {
@@ -247,7 +251,12 @@ function makeBot(settings: BotSettings): Strategy {
               term: CONTENT.negotiation.terms[0],
             },
           ]
-          const normal = normalPriceUsdKwh(site, s.quarter, type)
+          const normal = normalPriceUsdKwh(
+            site,
+            s.quarter,
+            type,
+            scenarioOf(s),
+          )
           for (const share of settings.negotiateAt)
             moves.push({
               type: 'NEGOTIATE_COUNTER',
@@ -462,7 +471,8 @@ function makeBot(settings: BotSettings): Strategy {
           )
           .sort(
             (x, y) =>
-              powerPriceUsdKwh(x, s.quarter) - powerPriceUsdKwh(y, s.quarter),
+              powerPriceUsdKwh(x, s.quarter, scenarioOf(s)) -
+              powerPriceUsdKwh(y, s.quarter, scenarioOf(s)),
           )[0]
         if (site && bidUsd <= spendable()) {
           const bid: Action = { type: 'BID_AUCTION', bidUsd, siteId: site.id }
@@ -486,7 +496,8 @@ function makeBot(settings: BotSettings): Strategy {
         )
         .sort(
           (a, b) =>
-            powerPriceUsdKwh(a, s.quarter) - powerPriceUsdKwh(b, s.quarter),
+            powerPriceUsdKwh(a, s.quarter, scenarioOf(s)) -
+            powerPriceUsdKwh(b, s.quarter, scenarioOf(s)),
         )
       const freedKw: Record<string, number> = {}
       const addedKw: Record<string, number> = {}
@@ -501,7 +512,7 @@ function makeBot(settings: BotSettings): Strategy {
           poweredKw(site, s.quarter + (settings.prebuy ? 1 : 0)),
         )
       for (const site of ready) {
-        const power = powerPriceUsdKwh(site, s.quarter)
+        const power = powerPriceUsdKwh(site, s.quarter, scenarioOf(s))
         const options = CONTENT.machines.flatMap((m) =>
           (['new', 'used'] as Condition[]).map((condition) => {
             const price = buyPriceNow(s, m, condition)
@@ -638,7 +649,7 @@ function hostingSwitcher(base: Strategy): Strategy {
   return {
     ...base,
     plan(state) {
-      if (!inActII(state)) return base.plan(state)
+      if (!inAct2Rules(state)) return base.plan(state)
       const actions: Action[] = []
       let s = state
       const run = (a: Action) => {
@@ -705,7 +716,7 @@ function aiProjects(
   return {
     ...base,
     plan(state) {
-      if (!inActII(state)) return base.plan(state)
+      if (!inAct2Rules(state)) return base.plan(state)
       const actions: Action[] = []
       let s = state
       const run = (a: Action) => {
@@ -1345,7 +1356,7 @@ function opening(
     ...shells,
     merge: () => choice,
     plan(state) {
-      if (!inActII(state) || !before) return shells.plan(state)
+      if (!inAct2Rules(state) || !before) return shells.plan(state)
       let s = state
       const actions: Action[] = []
       const run = (a: Action) => {

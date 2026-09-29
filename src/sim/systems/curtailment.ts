@@ -4,7 +4,7 @@
 // The rolls use their own stream (substream), so they don't change the rest of the game.
 import {
   CONTENT,
-  isActIIQuarter,
+  isAct2RulesQuarter,
   type MarketWeek,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -40,7 +40,7 @@ export function curtailmentAlertWeek(state: GameState): number | null {
  */
 export function isGridSite(state: GameState, site: Site): boolean {
   if (site.tier === CONTENT.curtailment.siteTier) return true
-  return isActIIQuarter(state.quarter) && regionOf(site) === 'ercot'
+  return isAct2RulesQuarter(state.quarter) && regionOf(site) === 'ercot'
 }
 
 /** True for a machine batch on a site the grid can curtail. */
@@ -103,7 +103,7 @@ export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
   // Act II: AI halls there go dark too, and owe their tenants an SLA credit (a share of a month's
   // charge); SB6 lets ERCOT curtail sites of 75 MW and up directly from 2026Q1.
   const ai = curtailedProjects(state)
-  if (ai.length === 0 && !isActIIQuarter(state.quarter))
+  if (ai.length === 0 && !isAct2RulesQuarter(state.quarter))
     return { mw, forgoneUsd, creditUsd }
   const slaUsd = ai.reduce(
     (sum, p) =>

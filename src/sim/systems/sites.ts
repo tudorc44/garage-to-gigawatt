@@ -4,7 +4,8 @@ import {
   BALANCE,
   CONTENT,
   act1ValueQuarter,
-  act2Quarter,
+  quarterInputs,
+  type ScenarioId,
   type PowerRegion,
   type SiteTier,
 } from '../../content/index.ts'
@@ -153,9 +154,11 @@ export function normalPriceUsdKwh(
   site: Site,
   quarter: number,
   type: ContractType = BALANCE.sites.defaultPowerOption,
+  scenario?: ScenarioId | null,
 ): number {
   const tier = getTier(site.tier)!
-  const act2 = act2Quarter(quarter)
+  // Act II's series, or Act III's scenario column (M11.4c).
+  const act2 = quarterInputs(quarter, scenario)
   const region = regionOf(site)
   if (act2 && region) {
     const regional = act2.powerUsdKwh[region] + smallLoadPremiumUsdKwh(site)
@@ -175,11 +178,15 @@ export function normalPriceUsdKwh(
  * event card, until the next renewal) and the Heat 50 rate hike on top; then any regional
  * policy's per-kWh charge (Act II: Virginia's large-load tax), contract or not.
  */
-export function powerPriceUsdKwh(site: Site, quarter: number): number {
+export function powerPriceUsdKwh(
+  site: Site,
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number {
   const c = site.contract
   const base = c
     ? c.price * (c.indexMult ?? 1)
-    : normalPriceUsdKwh(site, quarter)
+    : normalPriceUsdKwh(site, quarter, undefined, scenario)
   const e = site.eventPowerMult
   const eventMult = e && quarter >= e.from && quarter <= e.until ? e.mult : 1
   return (

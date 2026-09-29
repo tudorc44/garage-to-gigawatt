@@ -5,7 +5,8 @@ import {
   BALANCE,
   CONTENT,
   act1ValueQuarter,
-  act2Quarter,
+  quarterInputs,
+  type ScenarioId,
 } from '../../content/index.ts'
 import type { QuarterReport } from '../state.ts'
 import { aiMultipleDelta } from './eventEffects.ts'
@@ -14,9 +15,13 @@ import { aiMultipleDelta } from './eventEffects.ts'
  * The era's EV/EBITDA multiple for a quarter index: Act I's from capital.json, then Act II's
  * mining multiple from capital_act2.json (doc 18 §8; mining and hosting units use it).
  */
-export function eraMultiple(quarter: number): number {
-  const act2 = act2Quarter(quarter)
-  if (act2) return act2.multiple.mining
+export function eraMultiple(
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number {
+  // Act II, and Act III on its scenario's rebased column (M11.4c).
+  const inputs = quarterInputs(quarter, scenario)
+  if (inputs) return inputs.multiple.mining
   return CONTENT.eraMultiple[act1ValueQuarter(quarter)]
 }
 
@@ -24,8 +29,11 @@ export function eraMultiple(quarter: number): number {
  * Act II's AI-infrastructure multiple (doc 18 §8), for AI shell and AI cloud units, with the
  * timeline's shocks (DeepSeek: −3 in 2025Q1–Q2). 0 in Act I.
  */
-export function aiInfraMultiple(quarter: number): number {
-  const base = act2Quarter(quarter)?.multiple.aiInfra
+export function aiInfraMultiple(
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number {
+  const base = quarterInputs(quarter, scenario)?.multiple.aiInfra
   return base === undefined ? 0 : Math.max(0, base + aiMultipleDelta(quarter))
 }
 
@@ -66,10 +74,11 @@ export function aiEnterpriseUsd(
   quarter: number,
   aiEbitdaUsd: number,
   floorUsd = 0,
+  scenario?: ScenarioId | null,
 ): number {
   const ai = Math.max(0, aiEbitdaUsd)
   const floored = Math.min(ai, Math.max(0, floorUsd))
-  const m = aiInfraMultiple(quarter)
+  const m = aiInfraMultiple(quarter, scenario)
   const floorM = Math.max(m, BALANCE.finance.contractedAiMultipleFloor.multiple)
   return floored * 4 * floorM + (ai - floored) * 4 * m
 }
@@ -88,6 +97,8 @@ export interface ValuationParts {
   weightedBacklogUsd?: number
   /** A card's premium on the operating value (the pivot premium's PR push, M5.8). */
   evMult?: number
+  /** Act III: the scenario whose multiples apply (M11.4c). Absent in Acts I and II. */
+  scenario?: ScenarioId | null
 }
 
 /**
@@ -106,10 +117,11 @@ export function valuationUsd(
 ): number {
   const ai = parts.aiEbitdaUsd ?? 0
   const mining =
-    eraMultiple(quarter) + (parts.pivot ? BALANCE.projects.pivotPremium : 0)
+    eraMultiple(quarter, parts.scenario) +
+    (parts.pivot ? BALANCE.projects.pivotPremium : 0)
   const enterprise =
     (Math.max(0, (quarterEbitdaUsd - ai) * 4) * mining +
-      aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd)) *
+      aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd, parts.scenario)) *
     (parts.evMult ?? 1)
   return (
     enterprise +
@@ -129,18 +141,20 @@ export function valuationUsd(
 export function valuationSplit(
   r: QuarterReport,
   firstAiDealQuarter: number | null,
+  scenario?: ScenarioId | null,
 ) {
   const q = CONTENT.quarters.indexOf(r.quarter)
   const ai = aiEbitdaUsd(r)
   const pivot = firstAiDealQuarter !== null && q >= firstAiDealQuarter
   const miningMultiple =
-    eraMultiple(q) + (pivot ? BALANCE.projects.pivotPremium : 0)
+    eraMultiple(q, scenario) + (pivot ? BALANCE.projects.pivotPremium : 0)
   const evMult = r.evMult ?? 1
   const miningEvUsd =
     Math.max(0, (r.ebitdaUsd - ai) * 4) * miningMultiple * evMult
-  const aiEvUsd = aiEnterpriseUsd(q, ai, r.aiFloorEbitdaUsd) * evMult
+  const aiEvUsd = aiEnterpriseUsd(q, ai, r.aiFloorEbitdaUsd, scenario) * evMult
   // The multiple the AI EBITDA earns overall (the era's, lifted by any contracted floor).
-  const aiMultiple = ai > 0 ? aiEvUsd / evMult / (ai * 4) : aiInfraMultiple(q)
+  const aiMultiple =
+    ai > 0 ? aiEvUsd / evMult / (ai * 4) : aiInfraMultiple(q, scenario)
   const constructionUsd = r.constructionUsd ?? 0
   const weightedBacklogUsd = r.weightedBacklogUsd ?? 0
   return {
