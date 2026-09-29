@@ -178,6 +178,16 @@ M10.3 stub scenario content + market (2 quarters, labelled placeholder) · M10.4
     / `act2Quarter(quarter)` (a quarter-range check). Since Act III's stub quarters are outside both Act II's act number
     and its quarter range, ALL of these deactivate themselves automatically with no change needed — they were already
     the right kind of gate. Confirmed instead of assumed: checked in M10.4 below.
+- M10.2: `SAVE_VERSION` 3 → 4 (`src/sim/save.ts`), a trivial `3: (data) => ({ ...data, version: 4 })` step next to the
+  existing ones; `actFitsQuarter` gets an act-3 branch (`quarter >= actLastQuarter(2)`, no upper bound yet — matching
+  Act II's own check). One new field, `GameState.act3Stub?: true` (optional, absent/`undefined` on every existing
+  save; a placeholder for a future Act II-entry-style record once doc 28 exists). `newGame()`'s and the type's
+  hardcoded `version: 3` both bumped to 4 (found by the tests, not by inspection: two version-3 assertions
+  elsewhere in `save.test.ts` also needed updating). The two prologue goldens' comparison now normalises
+  `version` to 3 before matching (the established pattern from the 11 Act I goldens, which already normalise to 2) —
+  **the golden FILES themselves are untouched**, only the comparison ignores the save-format number, exactly as
+  it did for the 2 → 3 step. New test: a version-3 save (Act I, Act II, or a stub act-3 one) migrates to version 4
+  with nothing else changed.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 

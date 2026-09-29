@@ -12,7 +12,7 @@ import {
   type GameState,
   type Phase,
 } from './state.ts'
-import { isActII } from './state.ts'
+import { isActII, isActIII } from './state.ts'
 
 const PHASES: Phase[] = [
   'plan',
@@ -25,7 +25,7 @@ const PHASES: Phase[] = [
 ]
 
 /** The save format this build writes (GameState.version). */
-export const SAVE_VERSION = 3
+export const SAVE_VERSION = 4
 
 type SaveData = Record<string, unknown>
 
@@ -44,6 +44,10 @@ const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
   // 2 → 3 (the prologue, Alpha 0.3): a save can now be in act 0 (quarters −32 … −1) and carry the
   // prologue's state. Nothing in a version-2 save changes: it was Act I or Act II.
   2: (data) => ({ ...data, version: 3 }),
+  // 3 → 4 (the Act III walking skeleton, M10): a save can now be in act 3 (the M10 stub quarters;
+  // unreachable from play — a test/sim harness only). Nothing in a version-3 save changes: it was
+  // act 0, 1 or 2 as before.
+  3: (data) => ({ ...data, version: 4 }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }
@@ -62,6 +66,9 @@ function actFitsQuarter(act: unknown, quarter: number): boolean {
   if (act === 0) return quarter >= actFirstQuarter(0) && quarter < 0
   if (act === 1) return quarter <= boundary && quarter >= 0
   if (isActII(act)) return quarter >= boundary
+  // Act III (M10 stub): any quarter from Act II's last quarter on. No upper bound yet, matching
+  // Act II's own check above; the real range comes with doc 28's content.
+  if (isActIII(act)) return quarter >= actLastQuarter(2)
   return false
 }
 
