@@ -1,0 +1,938 @@
+{
+ "_meta": {
+  "schema": "events_act3/1",
+  "note": "Same event-card format as events_act2.json plus scenario and role tags. Every scenario has trigger, decoy, winner cards (S1/S2/S3 winners; S0 has one gentle winner)."
+ },
+ "event_cards": [
+  {
+   "id": "s0_c1",
+   "scenario": "s0",
+   "trigger": "2027Q4 (signal window)",
+   "role": "signal",
+   "title": "A Softer Quote",
+   "body": "Your broker says two hyperscaler RFPs closed at rates a shade under last year's. Nobody is panicking; everyone is 'checking the model.'",
+   "choices": [
+    {
+     "label": "Note it, keep building",
+     "effect": {}
+    },
+    {
+     "label": "Trim one uncommitted project",
+     "effect": {
+      "delay_quarters": 1,
+      "cash": 300000
+     }
+    }
+   ],
+   "default": "Note it, keep building",
+   "basis": "Designed: GPU 1yr index drifts -8% by 2027Q4 in market_s0.csv",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s0_c2",
+   "scenario": "s0",
+   "trigger": "2027Q4 (decoy peak; window 2027Q3-2028Q1)",
+   "role": "decoy",
+   "title": "Spreads Blink",
+   "body": "A lender pulls a $600M deal, and DDTL spreads jump 200bp in a week. By Friday, two others quietly close at the old price. It looks like a signal. It may be noise.",
+   "choices": [
+    {
+     "label": "Refinance now at the wider spread",
+     "effect": {
+      "debt_spread_bps": 200
+     }
+    },
+    {
+     "label": "Wait a quarter",
+     "effect": {}
+    },
+    {
+     "label": "Draw down the revolver as insurance",
+     "effect": {
+      "cash": "+10000000",
+      "debt": 10000000
+     }
+    }
+   ],
+   "default": "Wait a quarter",
+   "basis": "Designed decoy: LS spikes to 67 latent then reverts by 2028Q2 (signals_s0.json)",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s0_c3",
+   "scenario": "s0",
+   "trigger": "2028Q2 (trigger)",
+   "role": "trigger",
+   "title": "The Digestion Quarter",
+   "body": "Two of the biggest cloud buyers say they will digest capacity already contracted. The first big neocloud master lease comes up: same tenant, same GPUs, 20-30% off shell rent and a two-year-longer ask. Not a crisis. Just the market.",
+   "choices": [
+    {
+     "label": "Renew at the offer",
+     "effect": {
+      "rent_index": 0.75,
+      "term_add_years": 2
+     }
+    },
+    {
+     "label": "Counter and risk a walk",
+     "effect": {
+      "rent_index": 0.85,
+      "walk_prob": 0.25
+     }
+    },
+    {
+     "label": "Re-let to a new tenant",
+     "effect": {
+      "rfp_weeks": 10,
+      "rent_index": 0.9
+     }
+    }
+   ],
+   "default": "Renew at the offer",
+   "basis": "D5/D6 renewal wall; market_s0.csv renewal_shell_index 0.75-0.85",
+   "grounded": false,
+   "d15_review": false,
+   "signals_card_id": "s0_04_digestion_quarter"
+  },
+  {
+   "id": "s0_c4",
+   "scenario": "s0",
+   "trigger": "2028Q2-Q3",
+   "role": "aftermath",
+   "title": "Everyone Reads the Same Report",
+   "body": "An analyst note says the reset was 'fully priced.' Your lender agrees; your tenant's CFO nods along. You feel oddly relieved.",
+   "choices": [
+    {
+     "label": "Extend a small facility now",
+     "effect": {
+      "debt": 20000000,
+      "debt_spread_bps": -25
+     }
+    },
+    {
+     "label": "Hold",
+     "effect": {}
+    }
+   ],
+   "default": "Hold",
+   "basis": "Designed: post-trigger easing (cap 6.20 -> 5.50)",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s0_c5",
+   "scenario": "s0",
+   "trigger": "2028Q3",
+   "role": "aftermath",
+   "title": "The Halving Trims the Miners",
+   "body": "Block subsidy halves again. Your older ASICs are underwater unless power is cheap. Most of the market saw it coming.",
+   "choices": [
+    {
+     "label": "Idle the old rigs",
+     "effect": {
+      "idle_mw": "+X"
+     }
+    },
+    {
+     "label": "Run through it",
+     "effect": {
+      "mining_revenue_mult": 0.9
+     }
+    }
+   ],
+   "default": "Idle the old rigs",
+   "basis": "Halving 2028-04-17, market_weekly_s0.csv week 67",
+   "grounded": true,
+   "d15_review": false
+  },
+  {
+   "id": "s0_c6",
+   "scenario": "s0",
+   "trigger": "2028Q4",
+   "role": "winner",
+   "title": "A Good Year For Boring",
+   "body": "Your hedged sites collect the same rent for the fifth quarter running. The other players are still arguing about 2027.",
+   "choices": [
+    {
+     "label": "Bank it",
+     "effect": {
+      "cash": "+revenue_this_quarter*0.02"
+     }
+    }
+   ],
+   "default": "Bank it",
+   "basis": "Designed winner card: rewards the hedged player modestly",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s0_c7",
+   "scenario": "s0",
+   "trigger": "2029Q1",
+   "role": "aftermath",
+   "title": "A Cheaper Chip for Everyone",
+   "body": "Rubin supply loosens. Hopper rent falls again. Old fleets earn less; new fleets are easier to fill.",
+   "choices": [
+    {
+     "label": "Retrofit one hall to mid-tier",
+     "effect": {
+      "retrofit": "low_to_mid",
+      "cash": "-1500000*mw"
+     }
+    },
+    {
+     "label": "Stay on Hopper",
+     "effect": {}
+    }
+   ],
+   "default": "Stay on Hopper",
+   "basis": "gpus_act3.json; market_s0.csv H100 1yr 1.59 by 2029Q1",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s0_c8",
+   "scenario": "s0",
+   "trigger": "2029Q4",
+   "role": "flavour",
+   "title": "Feynman Whispers",
+   "body": "A trade blog says the next generation is 'a step change.' Rubin resale wobbles 3%.",
+   "choices": [
+    {
+     "label": "Ignore",
+     "effect": {}
+    },
+    {
+     "label": "Sell some Blackwell now",
+     "effect": {
+      "gpu_resale_mult": 0.97
+     }
+    }
+   ],
+   "default": "Ignore",
+   "basis": "gpus_act3.json feynman flavour",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s1_c1",
+   "scenario": "s1",
+   "trigger": "2027Q2 (signal window)",
+   "role": "signal",
+   "title": "Your Lender Asks About Concentration",
+   "body": "A credit officer asks how much of your rent comes from one tenant. Politely. Twice. It is on the agenda for the annual review.",
+   "choices": [
+    {
+     "label": "Diversify the pipeline",
+     "effect": {
+      "bandwidth": -1,
+      "tenant_slots": 1
+     }
+    },
+    {
+     "label": "Answer and carry on",
+     "effect": {}
+    }
+   ],
+   "default": "Answer and carry on",
+   "basis": "Designed: DDTL 480->640bp by 2027Q4 (market_s1.csv)",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s1_c2",
+   "scenario": "s1",
+   "trigger": "2027Q4 (decoy peak; window 2027Q2-2027Q4)",
+   "role": "decoy",
+   "title": "Chips Suddenly Scarce",
+   "body": "New-generation racks are 30 weeks out and every neocloud is on the phone. You read it as demand. It could be a supply hiccup at one packager.",
+   "choices": [
+    {
+     "label": "Pre-order Rubin, pay premium",
+     "effect": {
+      "cash": "-project_capex*0.06",
+      "delay_quarters": -1
+     }
+    },
+    {
+     "label": "Wait it out",
+     "effect": {}
+    }
+   ],
+   "default": "Wait it out",
+   "basis": "Designed decoy: CLT latent 50->76 then collapses to 21-23 in 2028Q2 (signals_s1.json)",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s1_c3",
+   "scenario": "s1",
+   "trigger": "2028Q1 (trigger)",
+   "role": "trigger",
+   "title": "The Round That Didn't Close",
+   "body": "An anchor AI lab's funding round fails to close and it misses two payments, citing financing conditions. Its sub-tenants are being called by lenders. Cap rates gap 100bp in a month.",
+   "choices": [
+    {
+     "label": "Renegotiate now: take a haircut to keep the tenant",
+     "effect": {
+      "tenant_revenue_mult": 0.7
+     }
+    },
+    {
+     "label": "Hold firm on take-or-pay",
+     "effect": {
+      "tenant_walk_chance": 0.3,
+      "legal_cost": 500000
+     }
+    },
+    {
+     "label": "Buy the debt at a discount (if cash)",
+     "effect": {
+      "cash": "-20000000",
+      "debt_reduce": 30000000
+     }
+    }
+   ],
+   "default": "Renegotiate now: take a haircut to keep the tenant",
+   "basis": "Motivated by Oracle force majeure (2026-09-25, Act II) and DDTL spread widening",
+   "grounded": false,
+   "d15_review": false,
+   "signals_card_id": "s1_04_round_didnt_close"
+  },
+  {
+   "id": "s1_c4",
+   "scenario": "s1",
+   "trigger": "2028Q2",
+   "role": "aftermath",
+   "title": "Refinancing Window Closes",
+   "body": "Your DDTL matures in two quarters. New quotes are +250bp and 60% advance rate.",
+   "choices": [
+    {
+     "label": "Refinance at +250bp",
+     "effect": {
+      "debt_spread_bps": 250
+     }
+    },
+    {
+     "label": "Sell a stabilised site",
+     "effect": {
+      "cash": "+ev_stabilized*0.8",
+      "mw": "-X"
+     }
+    },
+    {
+     "label": "Ask lender for extension",
+     "effect": {
+      "debt_spread_bps": 150,
+      "credit_notch": -1
+     }
+    }
+   ],
+   "default": "Refinance at +250bp",
+   "basis": "market_s1.csv DDTL 1000bp at 2028Q2",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s1_c5",
+   "scenario": "s1",
+   "trigger": "2028Q3",
+   "role": "winner",
+   "title": "The Backstop Was Real",
+   "body": "A hyperscaler that guaranteed your tenant's lease pays out. You are made whole. The guarantee cost you 5% of the company two years ago.",
+   "choices": [
+    {
+     "label": "Collect and continue",
+     "effect": {
+      "cash": "+backstop_amount"
+     }
+    }
+   ],
+   "default": "Collect and continue",
+   "basis": "Google backstop precedent (Cipher/Fluidstack, Sep 2025)",
+   "grounded": true,
+   "d15_review": false
+  },
+  {
+   "id": "s1_c6",
+   "scenario": "s1",
+   "trigger": "2028Q3",
+   "role": "winner",
+   "title": "Distressed Sites Go To Auction",
+   "body": "A leveraged rival's 60MW site goes under the hammer at $3M/MW. Stabilised EV/MW is down 55%.",
+   "choices": [
+    {
+     "label": "Bid with cash",
+     "effect": {
+      "mw": 60,
+      "cash": "-180000000"
+     }
+    },
+    {
+     "label": "Pass",
+     "effect": {}
+    }
+   ],
+   "default": "Pass",
+   "basis": "market_s1.csv ev_per_mw_ai_stabilized 25->11.4",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s1_c7",
+   "scenario": "s1",
+   "trigger": "2029Q1",
+   "role": "aftermath",
+   "title": "Tenant Default Notice",
+   "body": "A sub-tenant defaults on 30MW. Your take-or-pay claim is only as good as its parent.",
+   "choices": [
+    {
+     "label": "Sue for the shortfall",
+     "effect": {
+      "legal_cost": 400000,
+      "recovery": 0.35
+     }
+    },
+    {
+     "label": "Re-let at spot",
+     "effect": {
+      "rent_index": 0.5
+     }
+    }
+   ],
+   "default": "Re-let at spot",
+   "basis": "market_s1.csv tenant_default_prob_q",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s1_c8",
+   "scenario": "s1",
+   "trigger": "2029Q4",
+   "role": "recovery",
+   "title": "Chips Are Cheap Now",
+   "body": "Rubin racks trade at a 40% discount to 2027 list. The survivors are buying.",
+   "choices": [
+    {
+     "label": "Buy a Rubin rack",
+     "effect": {
+      "gpu_rack": "rubin_nvl144"
+     }
+    },
+    {
+     "label": "Wait",
+     "effect": {}
+    }
+   ],
+   "default": "Wait",
+   "basis": "market_s1.csv rubin_nvl144_rack_usd 4.4M -> 2.5M",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s2_c1",
+   "scenario": "s2",
+   "trigger": "2027Q3 (signal window)",
+   "role": "signal",
+   "title": "The Grid Is Nervous",
+   "body": "The RTO's reserve-margin forecast just got worse. Load studies show your peers' interconnection requests doubling. Time to lock in energized MW.",
+   "choices": [
+    {
+     "label": "Sign a nuclear PPA now",
+     "effect": {
+      "power_option": "nuclear_ppa"
+     }
+    },
+    {
+     "label": "Wait for the queue",
+     "effect": {}
+    }
+   ],
+   "default": "Wait for the queue",
+   "basis": "market_s2.csv pjm_capacity 333->850",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s2_c2",
+   "scenario": "s2",
+   "trigger": "2028Q1 (decoy peak; window 2027Q3-2028Q2)",
+   "role": "decoy",
+   "title": "Efficiency Papers Everywhere",
+   "body": "Three labs publish 'do more with less' results in a week. Your GPU vendor's shares dip 8%. Is demand cracking?",
+   "choices": [
+    {
+     "label": "Delay a marginal project",
+     "effect": {
+      "delay_quarters": 1
+     }
+    },
+    {
+     "label": "Stay the course",
+     "effect": {}
+    }
+   ],
+   "default": "Stay the course",
+   "basis": "Designed decoy: EI peaks 78, then falls; DeepSeek precedent (Jan 2025, Act II ec13)",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s2_c3",
+   "scenario": "s2",
+   "trigger": "2028Q3 (trigger)",
+   "role": "trigger",
+   "title": "Compute Is Strategic",
+   "body": "Hyperscaler capex is guided up 35% and every energized MW is spoken for. The queue is five years. Spot prices explode; your renewals hold flat.",
+   "choices": [
+    {
+     "label": "Sign a 10-yr lock with your best tenant",
+     "effect": {
+      "term_years": 10,
+      "rent_index": 1.05
+     }
+    },
+    {
+     "label": "Go to spot on uncontracted MW",
+     "effect": {
+      "rent_index": 1.35,
+      "term": "spot"
+     }
+    }
+   ],
+   "default": "Sign a 10-yr lock with your best tenant",
+   "basis": "market_s2.csv spot H100 3.38; renewal shell 1.00-1.10",
+   "grounded": false,
+   "d15_review": false,
+   "signals_card_id": "s2_04_compute_is_strategic"
+  },
+  {
+   "id": "s2_c4",
+   "scenario": "s2",
+   "trigger": "2028Q4",
+   "role": "aftermath",
+   "title": "The Winners' Curse",
+   "body": "A rival announces a $12B campus. Analysts note that the winner of last year's bidding is now paying 40% more for turbines.",
+   "choices": [
+    {
+     "label": "Order turbines now",
+     "effect": {
+      "capex_mult": 1.15,
+      "delay_quarters": -1
+     }
+    },
+    {
+     "label": "Skip",
+     "effect": {}
+    }
+   ],
+   "default": "Skip",
+   "basis": "market_s2.csv cap rate 4.75",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s2_c5",
+   "scenario": "s2",
+   "trigger": "2029Q1",
+   "role": "winner",
+   "title": "Nuclear Restart Pays",
+   "body": "Your fixed-price PPA looks like a gift as PJM power triples.",
+   "choices": [
+    {
+     "label": "Bank the margin",
+     "effect": {
+      "cash": "+ppa_savings"
+     }
+    }
+   ],
+   "default": "Bank the margin",
+   "basis": "market_s2.csv nuclear 148 vs pjm spike",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s2_c6",
+   "scenario": "s2",
+   "trigger": "2029Q2",
+   "role": "aftermath",
+   "title": "Ratepayers Push Back",
+   "body": "Bills are up 30% in your region. A moratorium bill has 12 co-sponsors.",
+   "choices": [
+    {
+     "label": "Spend political capital",
+     "effect": {
+      "pc_cost": 30
+     }
+    },
+    {
+     "label": "Community benefits deal",
+     "effect": {
+      "cash": -2000000,
+      "ratepayer_anger": -8
+     }
+    }
+   ],
+   "default": "Community benefits deal",
+   "basis": "political_capital.json",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s2_c7",
+   "scenario": "s2",
+   "trigger": "2029Q4",
+   "role": "aftermath",
+   "title": "New-Contract Premium",
+   "body": "New RFPs are clearing at +30%. Your old locked contracts look cheap. Tenants want to renew early and stay.",
+   "choices": [
+    {
+     "label": "Reopen with tenant for +10%",
+     "effect": {
+      "rent_index": 1.1
+     }
+    },
+    {
+     "label": "Keep terms",
+     "effect": {}
+    }
+   ],
+   "default": "Keep terms",
+   "basis": "market_s2.csv rfp_new_lease_index up to 1.32",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s2_c8",
+   "scenario": "s2",
+   "trigger": "2030Q2",
+   "role": "flavour",
+   "title": "Too Good To Last?",
+   "body": "Headlines say 'no bubble.' Your lender asks what you would do if it did.",
+   "choices": [
+    {
+     "label": "Extend duration",
+     "effect": {
+      "debt_maturity_years": 3
+     }
+    },
+    {
+     "label": "Ignore",
+     "effect": {}
+    }
+   ],
+   "default": "Extend duration",
+   "basis": "Designed",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s3_c1",
+   "scenario": "s3",
+   "trigger": "2027Q2 (signal window)",
+   "role": "signal",
+   "title": "Benchmarks Look Wrong",
+   "body": "A new model matches frontier scores on one-tenth the compute. Engineers you know are quietly rewriting their capacity plans.",
+   "choices": [
+    {
+     "label": "Read the paper (Bandwidth)",
+     "effect": {
+      "bandwidth": -1,
+      "reveals": "signals"
+     }
+    },
+    {
+     "label": "Ignore",
+     "effect": {}
+    }
+   ],
+   "default": "Ignore",
+   "basis": "Designed; DeepSeek Jan 2025 analogue",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s3_c2",
+   "scenario": "s3",
+   "trigger": "2027Q3 (decoy peak; window 2027Q2-2028Q1)",
+   "role": "decoy",
+   "title": "Grid Margin Collapses",
+   "body": "A heat wave drops your reserve margin to 4%. Utilities warn of curtailment. It looks like scarcity. It is a weather week.",
+   "choices": [
+    {
+     "label": "Sign a nuclear PPA",
+     "effect": {
+      "power_option": "nuclear_ppa"
+     }
+    },
+    {
+     "label": "Wait",
+     "effect": {}
+    }
+   ],
+   "default": "Wait",
+   "basis": "Designed decoy: GRM trough 33 then reverts (signals_s3.json)",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s3_c3",
+   "scenario": "s3",
+   "trigger": "2027Q4 (trigger)",
+   "role": "trigger",
+   "title": "Open-Weights Week",
+   "body": "A lab releases open weights matching frontier scores on one-tenth the GPUs. Chip lead times collapse from 18 to 6 weeks and hyperscalers cut capex 30%.",
+   "choices": [
+    {
+     "label": "Ask tenants to reopen for shorter terms",
+     "effect": {
+      "term_years": -3,
+      "rent_index": 0.8
+     }
+    },
+    {
+     "label": "Hold: rely on contracts",
+     "effect": {}
+    },
+    {
+     "label": "Retrofit to inference-friendly mid tier",
+     "effect": {
+      "retrofit": "low_to_mid"
+     }
+    }
+   ],
+   "default": "Hold: rely on contracts",
+   "basis": "market_s3.csv ai_demand 96->68; Jevons rebound",
+   "grounded": false,
+   "d15_review": false,
+   "signals_card_id": "s3_03_open_weights_week"
+  },
+  {
+   "id": "s3_c4",
+   "scenario": "s3",
+   "trigger": "2028Q1",
+   "role": "aftermath",
+   "title": "The Reopener",
+   "body": "Your tenant's contract has a market-reopener clause. They are using it.",
+   "choices": [
+    {
+     "label": "Accept -30%",
+     "effect": {
+      "rent_index": 0.7
+     }
+    },
+    {
+     "label": "Trade term for price",
+     "effect": {
+      "rent_index": 0.8,
+      "term_years": -2
+     }
+    }
+   ],
+   "default": "Trade term for price",
+   "basis": "market_s3.csv renewal_shell 0.65-0.70",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s3_c5",
+   "scenario": "s3",
+   "trigger": "2028Q3",
+   "role": "recovery",
+   "title": "Jevons Returns",
+   "body": "Cheaper inference brings more use. AI demand index climbs 8 points in a quarter.",
+   "choices": [
+    {
+     "label": "Add a hall",
+     "effect": {
+      "capex_mw": 30
+     }
+    },
+    {
+     "label": "Wait",
+     "effect": {}
+    }
+   ],
+   "default": "Wait",
+   "basis": "market_s3.csv ai_demand rebound",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s3_c6",
+   "scenario": "s3",
+   "trigger": "2028Q4",
+   "role": "winner",
+   "title": "Flexible Is King",
+   "body": "Your short-term contracts re-let within a month at the new price; long-locked neighbours are still stuck.",
+   "choices": [
+    {
+     "label": "Roll shorter",
+     "effect": {
+      "term": "1yr"
+     }
+    }
+   ],
+   "default": "Roll shorter",
+   "basis": "Balance anchor: flexible >= long-locked",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s3_c7",
+   "scenario": "s3",
+   "trigger": "2029Q2",
+   "role": "aftermath",
+   "title": "Chip Glut",
+   "body": "Rubin racks are 30% off list. Inventories are heavy.",
+   "choices": [
+    {
+     "label": "Buy inventory",
+     "effect": {
+      "cash": "-40000000",
+      "gpu_rack": "rubin_nvl144"
+     }
+    },
+    {
+     "label": "Pass",
+     "effect": {}
+    }
+   ],
+   "default": "Pass",
+   "basis": "market_s3.csv rubin rack",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "s3_c8",
+   "scenario": "s3",
+   "trigger": "2030Q1",
+   "role": "flavour",
+   "title": "Everyone Runs Small Models",
+   "body": "Edge inference is real. Regional sites near cities gain a small edge premium.",
+   "choices": [
+    {
+     "label": "Add an edge hall",
+     "effect": {
+      "capex_mw": 10
+     }
+    }
+   ],
+   "default": "Add an edge hall",
+   "basis": "Designed",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "sh_1",
+   "scenario": "all",
+   "trigger": "2027Q1",
+   "role": "intro",
+   "title": "Act III Opens",
+   "body": "The easy money is behind you. Your tenants are asking about 2028; your lenders are asking about 2027. Nobody can tell you what the market will do. Read the signals.",
+   "choices": [
+    {
+     "label": "Open the Signals panel",
+     "effect": {}
+    }
+   ],
+   "default": "Open the Signals panel",
+   "basis": "Doc 27 D1-D17",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "sh_2",
+   "scenario": "all",
+   "trigger": "2027Q3",
+   "role": "shared",
+   "title": "Nuclear Offer",
+   "body": "A restarted reactor's owner offers a 15-year fixed PPA. No queue. Take-or-pay.",
+   "choices": [
+    {
+     "label": "Sign a 100MW PPA",
+     "effect": {
+      "power_option": "nuclear_ppa",
+      "mw": 100
+     }
+    },
+    {
+     "label": "Decline",
+     "effect": {}
+    }
+   ],
+   "default": "Decline",
+   "basis": "nuclear.json; Constellation/Meta Clinton PPA (Jun 2025)",
+   "grounded": true,
+   "d15_review": false
+  },
+  {
+   "id": "sh_3",
+   "scenario": "all",
+   "trigger": "2027Q2",
+   "role": "shared",
+   "title": "Government Affairs Recruiter Calls",
+   "body": "A seasoned former commission aide is available.",
+   "choices": [
+    {
+     "label": "Hire (450k/q)",
+     "effect": {
+      "hire": "gov_affairs_director"
+     }
+    },
+    {
+     "label": "Pass",
+     "effect": {}
+    }
+   ],
+   "default": "Pass",
+   "basis": "political_capital.json",
+   "grounded": false,
+   "d15_review": false
+  },
+  {
+   "id": "sh_4",
+   "scenario": "all",
+   "trigger": "2028Q2",
+   "role": "shared",
+   "title": "Rubin Ultra Preview",
+   "body": "The 600 kW rack is real. Existing halls cannot host it without a rebuild.",
+   "choices": [
+    {
+     "label": "Plan a top-tier hall",
+     "effect": {
+      "retrofit": "mid_to_top"
+     }
+    },
+    {
+     "label": "Ignore",
+     "effect": {}
+    }
+   ],
+   "default": "Ignore",
+   "basis": "NVIDIA GTC 2025 roadmap (Kyber 600 kW)",
+   "grounded": true,
+   "d15_review": false
+  },
+  {
+   "id": "sh_5",
+   "scenario": "all",
+   "trigger": "2030Q4",
+   "role": "shared",
+   "title": "The Reckoning Ends",
+   "body": "Four years of contracts and headlines. Time to see who read the market.",
+   "choices": [
+    {
+     "label": "Show the report",
+     "effect": {}
+    }
+   ],
+   "default": "Show the report",
+   "basis": "Ending card",
+   "grounded": false,
+   "d15_review": false
+  }
+ ]
+}

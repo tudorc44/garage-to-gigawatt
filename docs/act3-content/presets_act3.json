@@ -1,0 +1,75 @@
+{
+ "_meta": {
+  "schema": "presets/1",
+  "note": "Starting balance sheets at 2027Q1; Act II end-state grades feed these. Numbers designed, checked by balance_check.py."
+ },
+ "presets": [
+  {
+   "id": "good",
+   "label": "Good Path (~$1B)",
+   "summary": "Solid Act II finish: mixed tenants, two energized sites, modest debt.",
+   "cash_usd_m": 180,
+   "debt_usd_m": 420,
+   "net_worth_usd_m": 1000,
+   "energized_mw": 180,
+   "contracted_mw": 140,
+   "tenants": [
+    "hyperscaler x1",
+    "neocloud x2"
+   ],
+   "rating": "BB+",
+   "gpu_holdings": "H100/B200 mix",
+   "heat": 25,
+   "ratepayer_anger": 20,
+   "political_capital": 40,
+   "survival_requirement": "survives all four scenarios (balance_check)",
+   "flag": "Act II accepted good path is $412M; this preset assumes better play. See flag F-6.",
+   "grounded": false,
+   "reasoning": "Designed"
+  },
+  {
+   "id": "great",
+   "label": "Great Path (~$5B)",
+   "summary": "Scale winner: multi-region, investment-grade-adjacent, heavy Blackwell.",
+   "cash_usd_m": 600,
+   "debt_usd_m": 2400,
+   "net_worth_usd_m": 5000,
+   "energized_mw": 800,
+   "contracted_mw": 700,
+   "tenants": [
+    "hyperscaler x2",
+    "neocloud x3",
+    "ai_lab x1"
+   ],
+   "rating": "BBB-",
+   "gpu_holdings": "B200/GB200 heavy",
+   "heat": 40,
+   "ratepayer_anger": 35,
+   "political_capital": 50,
+   "note": "Highest variance: S1 is where the leverage bites.",
+   "grounded": false,
+   "reasoning": "Designed"
+  },
+  {
+   "id": "lifeline",
+   "label": "Lifeline (~$150M)",
+   "summary": "Near-failure Act II finish; one site, thin cash, one anchor tenant.",
+   "cash_usd_m": 18,
+   "debt_usd_m": 95,
+   "net_worth_usd_m": 150,
+   "energized_mw": 40,
+   "contracted_mw": 40,
+   "tenants": [
+    "neocloud x1"
+   ],
+   "rating": "B",
+   "gpu_holdings": "H100",
+   "heat": 10,
+   "ratepayer_anger": 10,
+   "political_capital": 25,
+   "note": "Not required to survive S1; the recovery path is Act III's design.",
+   "grounded": false,
+   "reasoning": "Designed"
+  }
+ ]
+}

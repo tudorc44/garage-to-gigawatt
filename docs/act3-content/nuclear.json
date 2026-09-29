@@ -1,0 +1,68 @@
+{
+ "_meta": {
+  "schema": "nuclear/1",
+  "doc27": "D7",
+  "note": "Fourth Power-slot option, unlocked 2027H2 (from 2027Q3)."
+ },
+ "option": {
+  "id": "nuclear_ppa",
+  "label": "Nuclear PPA (firm carbon-free)",
+  "unlock_quarter": "2027Q3",
+  "term_years": 15,
+  "queue_weeks": 0,
+  "price_series": "market_sX.csv nuclear_ppa_usd_mwh",
+  "take_or_pay": true,
+  "price_usd_mwh_range": [
+   98,
+   165
+  ],
+  "volume_mw_per_deal": [
+   100,
+   300
+  ],
+  "grounded": false,
+  "reasoning": "Real deals (Constellation-Microsoft Crane restart Sep 2024; Meta-Constellation Clinton Jun 2025; Talen-Amazon 2025) are undisclosed; analyst estimates ~$80-100+/MWh, restart-premium reports higher. Game uses ~$100-130 baseline with scenario shifts.",
+  "sources": [
+   "Constellation/Microsoft Crane Clean Energy Center announcement, 2024-09-20",
+   "Constellation/Meta Clinton PPA announcement, 2025-06-03",
+   "Talen/Amazon Susquehanna PPA, 2025-06"
+  ]
+ },
+ "effects": {
+  "queue_skip": "No interconnection queue: MW energized at deal signing + 8 weeks of commissioning",
+  "tenant_pull": "+1 tier of hyperscaler appetite for the site; hyperscaler lease rate +3% (designed)",
+  "heat_ratepayer": "Ratepayer Anger -5 vs grid gas expansion (firm carbon-free, no new rate-base); Heat unaffected",
+  "price_vs_grid": "Fixed, indexed 0%; a premium of ~$25-45/MWh over Act II regional grid power in S0/S1/S3; in S2 it becomes cheap vs PJM/ERCOT spikes",
+  "cost_of_lock": "take-or-pay: pay for 90% of contracted MW regardless of use for 15 years",
+  "grounded": false,
+  "reasoning": "Designed"
+ },
+ "scenario_behaviour": {
+  "s0": "Flat price; mild advantage in tenant pull; break-even vs grid over 15y.",
+  "s1": "Take-or-pay becomes a burden for leveraged single-tenant players; still cannot be defaulted on.",
+  "s2": "Best-in-class: grid prices spike, PPA fixed. Pre-trigger signing is the tell-tale winner move.",
+  "s3": "Efficiency shock lowers MW demand; oversized PPA volumes strand. Small deals fine."
+ },
+ "eligibility": {
+  "regions": [
+   "PJM",
+   "Ohio",
+   "Georgia",
+   "Nordics"
+  ],
+  "not_available": [
+   "ERCOT",
+   "Arizona"
+  ],
+  "note": "Restricted to nuclear-adjacent regions to keep it a decision.",
+  "grounded": false,
+  "reasoning": "Designed; ERCOT/Arizona have Comanche Peak/Palo Verde but merchant/utility constraints - flag F-8"
+ },
+ "events": [
+  {
+   "id": "nuc_restart_headline",
+   "text": "Restarted reactor hits capacity; hyperscalers eye next site.",
+   "d15_review": false
+  }
+ ]
+}

@@ -1,0 +1,1257 @@
+{
+ "schema_version": 1,
+ "scenario": "s1",
+ "scenario_name": "Great Repricing",
+ "grounded": false,
+ "reasoning": "Designed. Latent values for Lender Spreads, Chip Lead Times and Bitcoin Hashprice are mapped from this scenario's own market path (public quantities); Revenue Gap, Grid Reserve Margin and Efficiency Index are authored. Displayed values add observation noise; the sharp range brackets the latent value.",
+ "DO_NOT_EXPOSE": "authoring_latent must never be read by bots, the UI, or 'Read the market'. Runtime reads only series[].displayed, .arrow and .sharp.",
+ "baseline": 50,
+ "neutral_tolerance": "+-12 (structural drift: halving, efficiency trend, grid retirements)",
+ "trigger": {
+  "quarter": "2028Q1",
+  "title": "The Round That Didn't Close",
+  "card_id": "s1_04_round_didnt_close",
+  "narrative": "In February 2028 a frontier AI lab that had pre-committed to more than $100B of compute fails to close a planned mega-round; its backers, facing their own marks, decline to fund it. Within weeks lab tenants invoke force-majeure clauses, a marquee GPU-backed loan is pulled from syndication and a wave of half-built campuses stalls. Over the next two quarters GPU spot prices fall 50-70%, hyperscale exit cap rates widen by 200+ bp, DDTL spreads double and lenders stop lending to neoclouds. Hyperscalers with signed leases keep paying, but stop signing new ones.",
+  "effects": {
+   "h100_spot_change_pct": "-70% by 2028Q3",
+   "h100_1yr_change_pct": "-58% by 2028Q3",
+   "cap_rate_bps": "+190 (2028Q3)",
+   "ddtl_spread": "640 -> 1050 bp",
+   "ai_demand_index": "95 -> 44",
+   "lab_default_prob_q": "12-18% per quarter for 3 quarters",
+   "renewal_shell_index": "0.80 -> 0.50",
+   "btc": "-41% from 2027Q3 to 2028Q2",
+   "stabilized_ev_per_mw": "25 -> 11.4 ($M)"
+  },
+  "signals_start_quarter": "2027Q2",
+  "quarters_of_warning": 3
+ },
+ "decoy": {
+  "indicator": "chip_lead_times",
+  "quarters": [
+   "2027Q2",
+   "2027Q3",
+   "2027Q4"
+  ],
+  "peak_quarter": "2027Q4",
+  "peak_delta_vs_baseline": 26,
+  "reason": "A yield problem in HBM4 memory at one supplier plus a packaging-line outage stretch newest-generation lead times from 18 to 30 weeks. It is a supply-side squeeze, not a demand surge. Lab tenants quietly stop adding to their orders.",
+  "tell": "Lead times rise while the Revenue Gap is widening and Lender Spreads are drifting up - scarcity plus weakening economics is not what a demand boom looks like. Spot rents do not follow lead times up.",
+  "mistakable_for": "s2",
+  "fair_in_hindsight": "Long lead times are the classic scarcity signal, and a player who saw only that indicator would read Lift-Off. The other two indicators were telling a different story and the sharp reading spelled out the supply-side cause."
+ },
+ "indicators": [
+  {
+   "id": "revenue_gap",
+   "label": "Revenue Gap",
+   "higher_means": "a wider gap between AI capex and AI revenue (bearish for repricing risk; 50 = 2026Q4 trend)",
+   "role_in_scenario": "signature",
+   "authoring_latent": [
+    50.0,
+    52.0,
+    58.0,
+    68.0,
+    80.0,
+    86.0,
+    88.0,
+    86.0,
+    82.0,
+    78.0,
+    74.0,
+    70.0,
+    67.0,
+    65.0,
+    63.0,
+    62.0
+   ],
+   "series": [
+    {
+     "quarter": "2027Q1",
+     "displayed": 56,
+     "arrow": "up",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 47,
+      "high": 53,
+      "note": "Reported AI revenue run-rate covers about 23% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2027Q2",
+     "displayed": 48,
+     "arrow": "down",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 49,
+      "high": 55,
+      "note": "Reported AI revenue run-rate covers about 22% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2027Q3",
+     "displayed": 57,
+     "arrow": "up",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 54,
+      "high": 60,
+      "note": "Reported AI revenue run-rate covers about 20% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2027Q4",
+     "displayed": 73,
+     "arrow": "up",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 64,
+      "high": 70,
+      "note": "Reported AI revenue run-rate covers about 16% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2028Q1",
+     "displayed": 83,
+     "arrow": "up",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 77,
+      "high": 83,
+      "note": "Reported AI revenue run-rate covers about 11% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2028Q2",
+     "displayed": 91,
+     "arrow": "up",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 84,
+      "high": 90,
+      "note": "Reported AI revenue run-rate covers about 9% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2028Q3",
+     "displayed": 86,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 86,
+      "high": 92,
+      "note": "Reported AI revenue run-rate covers about 8% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2028Q4",
+     "displayed": 87,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 82,
+      "high": 88,
+      "note": "Reported AI revenue run-rate covers about 9% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2029Q1",
+     "displayed": 83,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 80,
+      "high": 86,
+      "note": "Reported AI revenue run-rate covers about 10% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2029Q2",
+     "displayed": 80,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 75,
+      "high": 81,
+      "note": "Reported AI revenue run-rate covers about 12% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2029Q3",
+     "displayed": 79,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 72,
+      "high": 78,
+      "note": "Reported AI revenue run-rate covers about 13% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2029Q4",
+     "displayed": 71,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 66,
+      "high": 72,
+      "note": "Reported AI revenue run-rate covers about 15% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2030Q1",
+     "displayed": 68,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 63,
+      "high": 69,
+      "note": "Reported AI revenue run-rate covers about 16% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2030Q2",
+     "displayed": 69,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 62,
+      "high": 68,
+      "note": "Reported AI revenue run-rate covers about 17% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2030Q3",
+     "displayed": 65,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 59,
+      "high": 65,
+      "note": "Reported AI revenue run-rate covers about 18% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    },
+    {
+     "quarter": "2030Q4",
+     "displayed": 59,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 60,
+      "high": 66,
+      "note": "Reported AI revenue run-rate covers about 18% of annualised hyperscaler AI capex (2026Q4: ~23%)."
+     }
+    }
+   ]
+  },
+  {
+   "id": "lender_spreads",
+   "label": "Lender Spreads",
+   "higher_means": "wider spreads on GPU-backed and project loans (tighter credit; 50 = SOFR+475 bp, the 2026Q4 DDTL level)",
+   "role_in_scenario": "signature",
+   "authoring_latent": [
+    50.4,
+    51.9,
+    55.4,
+    62.7,
+    78.8,
+    90.4,
+    94.2,
+    88.8,
+    82.7,
+    76.5,
+    71.9,
+    68.1,
+    65.0,
+    62.7,
+    61.2,
+    59.6
+   ],
+   "series": [
+    {
+     "quarter": "2027Q1",
+     "displayed": 49,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 48,
+      "high": 54,
+      "note": "GPU-backed loans are pricing near SOFR+475 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2027Q2",
+     "displayed": 51,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 49,
+      "high": 55,
+      "note": "GPU-backed loans are pricing near SOFR+500 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2027Q3",
+     "displayed": 54,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 53,
+      "high": 59,
+      "note": "GPU-backed loans are pricing near SOFR+550 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2027Q4",
+     "displayed": 64,
+     "arrow": "up",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 60,
+      "high": 66,
+      "note": "GPU-backed loans are pricing near SOFR+650 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2028Q1",
+     "displayed": 77,
+     "arrow": "up",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 75,
+      "high": 81,
+      "note": "GPU-backed loans are pricing near SOFR+850 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2028Q2",
+     "displayed": 95,
+     "arrow": "up",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 88,
+      "high": 94,
+      "note": "GPU-backed loans are pricing near SOFR+1000 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2028Q3",
+     "displayed": 89,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 90,
+      "high": 96,
+      "note": "GPU-backed loans are pricing near SOFR+1050 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2028Q4",
+     "displayed": 91,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 87,
+      "high": 93,
+      "note": "GPU-backed loans are pricing near SOFR+975 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2029Q1",
+     "displayed": 80,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 81,
+      "high": 87,
+      "note": "GPU-backed loans are pricing near SOFR+900 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2029Q2",
+     "displayed": 83,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 74,
+      "high": 80,
+      "note": "GPU-backed loans are pricing near SOFR+825 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2029Q3",
+     "displayed": 71,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 70,
+      "high": 76,
+      "note": "GPU-backed loans are pricing near SOFR+750 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2029Q4",
+     "displayed": 68,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 64,
+      "high": 70,
+      "note": "GPU-backed loans are pricing near SOFR+700 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2030Q1",
+     "displayed": 66,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 61,
+      "high": 67,
+      "note": "GPU-backed loans are pricing near SOFR+675 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2030Q2",
+     "displayed": 60,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 60,
+      "high": 66,
+      "note": "GPU-backed loans are pricing near SOFR+650 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2030Q3",
+     "displayed": 62,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 59,
+      "high": 65,
+      "note": "GPU-backed loans are pricing near SOFR+625 bp (2026Q4: +475)."
+     }
+    },
+    {
+     "quarter": "2030Q4",
+     "displayed": 61,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 56,
+      "high": 62,
+      "note": "GPU-backed loans are pricing near SOFR+600 bp (2026Q4: +475)."
+     }
+    }
+   ]
+  },
+  {
+   "id": "chip_lead_times",
+   "label": "Chip Lead Times",
+   "higher_means": "longer waits for the newest GPU generation (scarcity; 50 = ~18 weeks)",
+   "role_in_scenario": "decoy",
+   "authoring_latent": [
+    50.0,
+    58.8,
+    72.0,
+    76.4,
+    58.8,
+    36.8,
+    25.8,
+    23.6,
+    23.6,
+    23.6,
+    23.6,
+    23.6,
+    21.4,
+    21.4,
+    21.4,
+    21.4
+   ],
+   "series": [
+    {
+     "quarter": "2027Q1",
+     "displayed": 50,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 46,
+      "high": 52,
+      "note": "Newest-generation GPU lead times are about 18 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2027Q2",
+     "displayed": 59,
+     "arrow": "up",
+     "role_tag": "decoy",
+     "sharp": {
+      "low": 55,
+      "high": 61,
+      "note": "Newest-generation GPU lead times are about 22 weeks (2026Q4: 18). Cause: memory-yield and packaging outage on the supply side; lab orders are flat to lower."
+     }
+    },
+    {
+     "quarter": "2027Q3",
+     "displayed": 74,
+     "arrow": "up",
+     "role_tag": "decoy",
+     "sharp": {
+      "low": 70,
+      "high": 76,
+      "note": "Newest-generation GPU lead times are about 28 weeks (2026Q4: 18). Cause: memory-yield and packaging outage on the supply side; lab orders are flat to lower."
+     }
+    },
+    {
+     "quarter": "2027Q4",
+     "displayed": 77,
+     "arrow": "flat",
+     "role_tag": "decoy",
+     "sharp": {
+      "low": 73,
+      "high": 79,
+      "note": "Newest-generation GPU lead times are about 30 weeks (2026Q4: 18). Cause: memory-yield and packaging outage on the supply side; lab orders are flat to lower."
+     }
+    },
+    {
+     "quarter": "2028Q1",
+     "displayed": 62,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 56,
+      "high": 62,
+      "note": "Newest-generation GPU lead times are about 22 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2028Q2",
+     "displayed": 37,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 33,
+      "high": 39,
+      "note": "Newest-generation GPU lead times are about 12 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2028Q3",
+     "displayed": 31,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 24,
+      "high": 30,
+      "note": "Newest-generation GPU lead times are about 7 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2028Q4",
+     "displayed": 21,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 22,
+      "high": 28,
+      "note": "Newest-generation GPU lead times are about 6 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2029Q1",
+     "displayed": 17,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 20,
+      "high": 26,
+      "note": "Newest-generation GPU lead times are about 6 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2029Q2",
+     "displayed": 24,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 20,
+      "high": 26,
+      "note": "Newest-generation GPU lead times are about 6 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2029Q3",
+     "displayed": 24,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 20,
+      "high": 26,
+      "note": "Newest-generation GPU lead times are about 6 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2029Q4",
+     "displayed": 22,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 20,
+      "high": 26,
+      "note": "Newest-generation GPU lead times are about 6 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2030Q1",
+     "displayed": 24,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 17,
+      "high": 23,
+      "note": "Newest-generation GPU lead times are about 5 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2030Q2",
+     "displayed": 14,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 18,
+      "high": 24,
+      "note": "Newest-generation GPU lead times are about 5 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2030Q3",
+     "displayed": 20,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 17,
+      "high": 23,
+      "note": "Newest-generation GPU lead times are about 5 weeks (2026Q4: 18)."
+     }
+    },
+    {
+     "quarter": "2030Q4",
+     "displayed": 18,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 17,
+      "high": 23,
+      "note": "Newest-generation GPU lead times are about 5 weeks (2026Q4: 18)."
+     }
+    }
+   ]
+  },
+  {
+   "id": "grid_reserve_margin",
+   "label": "Grid Reserve Margin",
+   "higher_means": "MORE spare grid capacity in the main data-center regions (looser grid; 50 = norm). A FALLING reading means a tightening grid",
+   "role_in_scenario": "neutral",
+   "authoring_latent": [
+    50.0,
+    50.0,
+    50.0,
+    50.0,
+    52.0,
+    55.0,
+    60.0,
+    64.0,
+    66.0,
+    66.0,
+    65.0,
+    64.0,
+    63.5,
+    63.0,
+    62.5,
+    62.0
+   ],
+   "series": [
+    {
+     "quarter": "2027Q1",
+     "displayed": 52,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 46,
+      "high": 52,
+      "note": "Peak-season reserve margin in the main data-center regions is about 15.0% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2027Q2",
+     "displayed": 50,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 48,
+      "high": 54,
+      "note": "Peak-season reserve margin in the main data-center regions is about 15.0% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2027Q3",
+     "displayed": 51,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 47,
+      "high": 53,
+      "note": "Peak-season reserve margin in the main data-center regions is about 15.0% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2027Q4",
+     "displayed": 50,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 47,
+      "high": 53,
+      "note": "Peak-season reserve margin in the main data-center regions is about 15.0% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2028Q1",
+     "displayed": 57,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 48,
+      "high": 54,
+      "note": "Peak-season reserve margin in the main data-center regions is about 15.4% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2028Q2",
+     "displayed": 52,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 51,
+      "high": 57,
+      "note": "Peak-season reserve margin in the main data-center regions is about 16.0% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2028Q3",
+     "displayed": 64,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 57,
+      "high": 63,
+      "note": "Peak-season reserve margin in the main data-center regions is about 17.0% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2028Q4",
+     "displayed": 69,
+     "arrow": "up",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 60,
+      "high": 66,
+      "note": "Peak-season reserve margin in the main data-center regions is about 17.8% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2029Q1",
+     "displayed": 66,
+     "arrow": "flat",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 62,
+      "high": 68,
+      "note": "Peak-season reserve margin in the main data-center regions is about 18.2% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2029Q2",
+     "displayed": 67,
+     "arrow": "flat",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 64,
+      "high": 70,
+      "note": "Peak-season reserve margin in the main data-center regions is about 18.2% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2029Q3",
+     "displayed": 65,
+     "arrow": "flat",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 63,
+      "high": 69,
+      "note": "Peak-season reserve margin in the main data-center regions is about 18.0% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2029Q4",
+     "displayed": 64,
+     "arrow": "flat",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 60,
+      "high": 66,
+      "note": "Peak-season reserve margin in the main data-center regions is about 17.8% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2030Q1",
+     "displayed": 61,
+     "arrow": "flat",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 61,
+      "high": 67,
+      "note": "Peak-season reserve margin in the main data-center regions is about 17.7% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2030Q2",
+     "displayed": 58,
+     "arrow": "flat",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 59,
+      "high": 65,
+      "note": "Peak-season reserve margin in the main data-center regions is about 17.6% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2030Q3",
+     "displayed": 62,
+     "arrow": "up",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 60,
+      "high": 66,
+      "note": "Peak-season reserve margin in the main data-center regions is about 17.5% (norm ~15%)."
+     }
+    },
+    {
+     "quarter": "2030Q4",
+     "displayed": 62,
+     "arrow": "flat",
+     "role_tag": "echo",
+     "sharp": {
+      "low": 59,
+      "high": 65,
+      "note": "Peak-season reserve margin in the main data-center regions is about 17.4% (norm ~15%)."
+     }
+    }
+   ]
+  },
+  {
+   "id": "efficiency_index",
+   "label": "Efficiency Index",
+   "higher_means": "best-in-class AI is getting cheaper faster than the trend (50 = on trend)",
+   "role_in_scenario": "neutral",
+   "authoring_latent": [
+    50.0,
+    50.5,
+    51.0,
+    52.0,
+    53.0,
+    54.0,
+    55.0,
+    55.5,
+    56.0,
+    56.5,
+    57.0,
+    57.3,
+    57.7,
+    58.0,
+    58.0,
+    58.0
+   ],
+   "series": [
+    {
+     "quarter": "2027Q1",
+     "displayed": 53,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 48,
+      "high": 54,
+      "note": "Best-in-class cost per unit of capability is running about 1.0x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2027Q2",
+     "displayed": 50,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 48,
+      "high": 54,
+      "note": "Best-in-class cost per unit of capability is running about 1.0x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2027Q3",
+     "displayed": 44,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 48,
+      "high": 54,
+      "note": "Best-in-class cost per unit of capability is running about 1.1x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2027Q4",
+     "displayed": 56,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 49,
+      "high": 55,
+      "note": "Best-in-class cost per unit of capability is running about 1.1x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2028Q1",
+     "displayed": 51,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 49,
+      "high": 55,
+      "note": "Best-in-class cost per unit of capability is running about 1.2x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2028Q2",
+     "displayed": 52,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 50,
+      "high": 56,
+      "note": "Best-in-class cost per unit of capability is running about 1.3x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2028Q3",
+     "displayed": 61,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 52,
+      "high": 58,
+      "note": "Best-in-class cost per unit of capability is running about 1.3x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2028Q4",
+     "displayed": 54,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 54,
+      "high": 60,
+      "note": "Best-in-class cost per unit of capability is running about 1.4x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2029Q1",
+     "displayed": 55,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 52,
+      "high": 58,
+      "note": "Best-in-class cost per unit of capability is running about 1.4x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2029Q2",
+     "displayed": 57,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 53,
+      "high": 59,
+      "note": "Best-in-class cost per unit of capability is running about 1.5x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2029Q3",
+     "displayed": 58,
+     "arrow": "flat",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 55,
+      "high": 61,
+      "note": "Best-in-class cost per unit of capability is running about 1.5x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2029Q4",
+     "displayed": 64,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 55,
+      "high": 61,
+      "note": "Best-in-class cost per unit of capability is running about 1.5x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2030Q1",
+     "displayed": 58,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 54,
+      "high": 60,
+      "note": "Best-in-class cost per unit of capability is running about 1.6x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2030Q2",
+     "displayed": 63,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 56,
+      "high": 62,
+      "note": "Best-in-class cost per unit of capability is running about 1.6x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2030Q3",
+     "displayed": 54,
+     "arrow": "down",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 55,
+      "high": 61,
+      "note": "Best-in-class cost per unit of capability is running about 1.6x ahead of trend."
+     }
+    },
+    {
+     "quarter": "2030Q4",
+     "displayed": 62,
+     "arrow": "up",
+     "role_tag": "neutral",
+     "sharp": {
+      "low": 54,
+      "high": 60,
+      "note": "Best-in-class cost per unit of capability is running about 1.6x ahead of trend."
+     }
+    }
+   ]
+  },
+  {
+   "id": "bitcoin_hashprice",
+   "label": "Bitcoin Hashprice",
+   "higher_means": "richer mining revenue per unit of hashrate, halving-adjusted (50 = 2026Q4 $49/PH/day pre-halving, $24.3 post-halving)",
+   "role_in_scenario": "signature",
+   "authoring_latent": [
+    50.8,
+    52.4,
+    50.1,
+    43.1,
+    36.0,
+    34.4,
+    34.7,
+    36.2,
+    39.1,
+    41.1,
+    41.1,
+    41.7,
+    41.5,
+    42.0,
+    42.4,
+    42.8
+   ],
+   "series": [
+    {
+     "quarter": "2027Q1",
+     "displayed": 53,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 49,
+      "high": 53,
+      "note": "Hashprice is about $50/PH/day, 102% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2027Q2",
+     "displayed": 53,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 50,
+      "high": 54,
+      "note": "Hashprice is about $52/PH/day, 107% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2027Q3",
+     "displayed": 50,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 48,
+      "high": 52,
+      "note": "Hashprice is about $49/PH/day, 100% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2027Q4",
+     "displayed": 41,
+     "arrow": "down",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 41,
+      "high": 45,
+      "note": "Hashprice is about $40/PH/day, 83% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2028Q1",
+     "displayed": 37,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 34,
+      "high": 38,
+      "note": "Hashprice is about $33/PH/day, 68% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2028Q2",
+     "displayed": 31,
+     "arrow": "down",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 32,
+      "high": 36,
+      "note": "Hashprice is about $16/PH/day, 65% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2028Q3",
+     "displayed": 37,
+     "arrow": "up",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 33,
+      "high": 37,
+      "note": "Hashprice is about $16/PH/day, 65% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2028Q4",
+     "displayed": 38,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 34,
+      "high": 38,
+      "note": "Hashprice is about $17/PH/day, 68% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2029Q1",
+     "displayed": 39,
+     "arrow": "flat",
+     "role_tag": "signature",
+     "sharp": {
+      "low": 37,
+      "high": 41,
+      "note": "Hashprice is about $18/PH/day, 74% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2029Q2",
+     "displayed": 36,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 39,
+      "high": 43,
+      "note": "Hashprice is about $19/PH/day, 78% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2029Q3",
+     "displayed": 43,
+     "arrow": "up",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 39,
+      "high": 43,
+      "note": "Hashprice is about $19/PH/day, 78% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2029Q4",
+     "displayed": 43,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 40,
+      "high": 44,
+      "note": "Hashprice is about $19/PH/day, 79% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2030Q1",
+     "displayed": 39,
+     "arrow": "down",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 39,
+      "high": 43,
+      "note": "Hashprice is about $19/PH/day, 79% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2030Q2",
+     "displayed": 41,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 40,
+      "high": 44,
+      "note": "Hashprice is about $20/PH/day, 80% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2030Q3",
+     "displayed": 43,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 40,
+      "high": 44,
+      "note": "Hashprice is about $20/PH/day, 81% of its halving-adjusted norm."
+     }
+    },
+    {
+     "quarter": "2030Q4",
+     "displayed": 45,
+     "arrow": "flat",
+     "role_tag": "signature_early",
+     "sharp": {
+      "low": 41,
+      "high": 45,
+      "note": "Hashprice is about $20/PH/day, 82% of its halving-adjusted norm."
+     }
+    }
+   ]
+  }
+ ]
+}

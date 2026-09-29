@@ -1,0 +1,113 @@
+{
+ "_meta": {
+  "schema": "gpus_act3/1",
+  "note": "Extends Act II gpus.json. Density tiers per doc 27 D1-D3; prices track market_sX.csv.",
+  "conventions": "nominal USD; kW per rack; grounded flag per value"
+ },
+ "generations": [
+  {
+   "id": "hopper",
+   "name": "Hopper (H100/H200)",
+   "rack_kw": 40,
+   "tier": "low",
+   "kw_range": [
+    40,
+    60
+   ],
+   "available_from": "2023Q1",
+   "cooling": "air / rear-door",
+   "grounded": true,
+   "source": "Act II gpus.json; NVIDIA HGX H100 specs (~10.2 kW per 8-GPU server, 4-6 servers/rack air-cooled)"
+  },
+  {
+   "id": "blackwell",
+   "name": "Blackwell (B200 / GB200 NVL72)",
+   "rack_kw": 125,
+   "tier": "mid",
+   "kw_range": [
+    120,
+    130
+   ],
+   "available_from": "2025Q1",
+   "cooling": "direct-to-chip liquid",
+   "grounded": true,
+   "source": "NVIDIA GB200 NVL72 datasheet: ~120-132 kW per rack, liquid cooled"
+  },
+  {
+   "id": "rubin_nvl144",
+   "name": "Rubin (Vera Rubin NVL144)",
+   "rack_kw": 190,
+   "tier": "mid",
+   "kw_range": [
+    120,
+    190
+   ],
+   "available_from": "2027Q1",
+   "cooling": "direct-to-chip liquid",
+   "rack_usd": 4400000,
+   "unit_usd": 61000,
+   "note": "Game simplification: Rubin NVL144 is drawn as MID tier (~130 kW class) so retrofit from Blackwell is a cooling/power-trim job, not a rebuild.",
+   "grounded": false,
+   "reasoning": "NVIDIA has signalled NVL144 for H2 2026-2027 at higher rack power than NVL72; exact kW and price unpublished; rack price scaled ~2x GB200 per-rack on 2x GPU packages. Real density 190+ kW is compressed to MID for gameplay (flag F-3)."
+  },
+  {
+   "id": "rubin_ultra",
+   "name": "Rubin Ultra (NVL576)",
+   "rack_kw": 600,
+   "tier": "top",
+   "kw_range": [
+    600,
+    600
+   ],
+   "available_from": "2027Q3",
+   "cooling": "liquid + 800V DC, purpose-built halls",
+   "rack_usd": 15000000,
+   "grounded": false,
+   "reasoning": "NVIDIA roadmap (GTC 2025) shows Kyber NVL576 ~600 kW racks for 2027H2. Price is a scaled estimate, not published."
+  },
+  {
+   "id": "feynman",
+   "name": "Feynman",
+   "rack_kw": null,
+   "tier": "flavour",
+   "available_from": "2028+",
+   "note": "Flavour only. Appears in headlines/glossary and as a 'next-gen rumor' tooltip; no purchasable SKU, no market column.",
+   "grounded": false,
+   "reasoning": "Named on NVIDIA roadmap for 2028; no specs published. Kept as narrative pressure to make Rubin feel like it will age."
+  }
+ ],
+ "density_rules": {
+  "low_to_mid": {
+   "retrofit_usd_mw": 1500000,
+   "weeks": 10,
+   "grounded": false,
+   "reasoning": "Cooling/liquid loop add on an existing hall; between hosting capex and retrofit shell of Act II"
+  },
+  "mid_to_top": {
+   "retrofit_usd_mw_by_quarter": "market_sX.csv capex_retrofit_density_mid_to_top_usd_mw",
+   "weeks": 26,
+   "note": "Effectively a rebuild: 800V DC busway, 600 kW/rack liquid, structural.",
+   "grounded": false,
+   "reasoning": "Designed from D3; ~$6-9M/MW band consistent with Act II greenfield $18.5M minus shell reuse."
+  },
+  "rack_mw_capacity_effect": "MW of site power is fixed; higher tier means more GPUs per MW is NOT true - GPUs/MW rises only modestly (~1.3x per generation via efficiency); density lets fewer racks/less floor space host the same MW. Revenue per MW rises with newer gen via price/hr per GPU x GPUs/MW.",
+  "gpus_per_mw": {
+   "hopper": 650,
+   "blackwell": 760,
+   "rubin_nvl144": 900,
+   "rubin_ultra": 1050,
+   "grounded": false,
+   "reasoning": "Designed; H100 ~1.4 kW/GPU all-in incl. cooling and PUE yields ~700/MW; +15-20% per generation"
+  }
+ },
+ "depreciation_and_obsolescence": {
+  "rule": "A GPU's rent tracks its generation's column in market_sX.csv; when the next gen ships, prior gen renewal index (renewal_*_gpu_index) applies at contract end.",
+  "feynman_pressure": "On the quarter Feynman rumor fires, Hopper/Blackwell resale value -3% (flavour, D15-safe).",
+  "grounded": false,
+  "reasoning": "Designed"
+ },
+ "lead_times": {
+  "column": "newest_gen_lead_time_weeks",
+  "note": "Feeds the Chip Lead Times Signal; per scenario CSV."
+ }
+}

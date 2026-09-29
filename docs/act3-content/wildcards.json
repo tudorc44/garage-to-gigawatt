@@ -1,0 +1,103 @@
+{
+ "_meta": {
+  "schema": "wildcards/1",
+  "doc27": "D10",
+  "draw": "2 of 4 per campaign, random quarter windows"
+ },
+ "wildcards": [
+  {
+   "id": "wc_grid_event",
+   "name": "Regional grid emergency",
+   "window": "2027Q3-2029Q4",
+   "effect": {
+    "power_price_mult": 1.6,
+    "weeks": 3,
+    "curtail_pct": 0.15,
+    "tenant_sla_credits": true
+   },
+   "choices": [
+    {
+     "label": "Curtail and pay SLA credits",
+     "cost_usd": 800000
+    },
+    {
+     "label": "Run on onsite backup",
+     "cost_usd": 300000,
+     "heat": 3
+    }
+   ],
+   "scenario_independent": true,
+   "grounded": false,
+   "reasoning": "Motivated by ERCOT Winter Storm Uri (2021) and PJM winter 2025 alerts"
+  },
+  {
+   "id": "wc_export_control",
+   "name": "New chip export rule",
+   "window": "2027Q2-2029Q2",
+   "effect": {
+    "gpu_purchase_mult": 1.05,
+    "lead_time_weeks_add": 3,
+    "tenant_ai_lab_demand": -0.03,
+    "quarters": 3
+   },
+   "choices": [
+    {
+     "label": "Absorb it",
+     "cost_usd": 0
+    },
+    {
+     "label": "Pre-buy inventory",
+     "cost_usd_mult": 0.05
+    }
+   ],
+   "d15_review": false,
+   "grounded": false,
+   "reasoning": "Motivated by 2022-25 BIS rules (Oct 2022, Oct 2023, Jan 2025 diffusion rule)"
+  },
+  {
+   "id": "wc_water_moratorium",
+   "name": "Local water/land moratorium",
+   "window": "2027Q4-2029Q4",
+   "effect": {
+    "one_pipeline_project_paused_quarters": 2,
+    "ratepayer_anger": 6
+   },
+   "choices": [
+    {
+     "label": "Wait it out"
+    },
+    {
+     "label": "Spend political capital",
+     "pc_cost": 30
+    }
+   ],
+   "grounded": false,
+   "reasoning": "Motivated by 2025 local data-center moratoria and water-use ordinances"
+  },
+  {
+   "id": "wc_ai_lab_breakup",
+   "name": "Anchor AI lab restructures",
+   "window": "2028Q1-2030Q2",
+   "effect": {
+    "one_ai_lab_tenant_renegotiates": true,
+    "rent_index": -0.15,
+    "term_shortened_years": 1
+   },
+   "choices": [
+    {
+     "label": "Accept the reset",
+     "cost_usd": 0
+    },
+    {
+     "label": "Enforce take-or-pay",
+     "cost_usd": 400000,
+     "risk_rep": true
+    }
+   ],
+   "d15_review": true,
+   "note": "Fictional lab; do not name real labs.",
+   "grounded": false,
+   "reasoning": "Motivated by 2024-26 frontier-lab funding and governance turbulence"
+  }
+ ]
+}

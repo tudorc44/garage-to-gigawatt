@@ -1,0 +1,122 @@
+{
+ "s0": {
+  "ignorer": [
+   0.93,
+   false
+  ],
+  "hedged": [
+   1.07,
+   false
+  ],
+  "passive": [
+   1.07,
+   false
+  ],
+  "overreactor": [
+   1.05,
+   false
+  ],
+  "good_preset": [
+   1.09,
+   false
+  ],
+  "long_locked": [
+   1.07,
+   false
+  ],
+  "flexible": [
+   1.07,
+   false
+  ]
+ },
+ "s1": {
+  "ignorer": [
+   -0.31,
+   true
+  ],
+  "hedged": [
+   0.46,
+   false
+  ],
+  "passive": [
+   0.46,
+   false
+  ],
+  "overreactor": [
+   0.44,
+   false
+  ],
+  "good_preset": [
+   0.53,
+   false
+  ],
+  "long_locked": [
+   0.46,
+   false
+  ],
+  "flexible": [
+   0.46,
+   false
+  ]
+ },
+ "s2": {
+  "ignorer": [
+   1.9,
+   false
+  ],
+  "hedged": [
+   2.24,
+   false
+  ],
+  "passive": [
+   1.7,
+   false
+  ],
+  "overreactor": [
+   1.69,
+   false
+  ],
+  "good_preset": [
+   1.67,
+   false
+  ],
+  "long_locked": [
+   1.7,
+   false
+  ],
+  "flexible": [
+   1.7,
+   false
+  ]
+ },
+ "s3": {
+  "ignorer": [
+   0.69,
+   false
+  ],
+  "hedged": [
+   0.97,
+   false
+  ],
+  "passive": [
+   0.91,
+   false
+  ],
+  "overreactor": [
+   0.96,
+   false
+  ],
+  "good_preset": [
+   1.0,
+   false
+  ],
+  "long_locked": [
+   0.91,
+   false
+  ],
+  "flexible": [
+   0.97,
+   false
+  ]
+ }
+}

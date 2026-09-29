@@ -1,0 +1,139 @@
+{
+ "_meta": {
+  "schema": "text_act3.en/1"
+ },
+ "title_bands": [
+  {
+   "min": 0,
+   "max": 19,
+   "title": "Bagholder"
+  },
+  {
+   "min": 20,
+   "max": 39,
+   "title": "Weathervane"
+  },
+  {
+   "min": 40,
+   "max": 59,
+   "title": "Steady Hand"
+  },
+  {
+   "min": 60,
+   "max": 79,
+   "title": "Signal Reader"
+  },
+  {
+   "min": 80,
+   "max": 100,
+   "title": "Cassandra with a Balance Sheet"
+  }
+ ],
+ "reading_score": {
+  "description": "0-100: share of quarters your positioning matched the drawn scenario, minus penalties for decoy reactions.",
+  "wording": {
+   "high": "You read the market before it read you.",
+   "mid": "You heard the noise and the music; you weren't always sure which.",
+   "low": "The market surprised you. It surprises everyone once."
+  }
+ },
+ "reveal_line": "The market you played was: {scenario}.",
+ "glossary": [
+  {
+   "term": "Renewal wall",
+   "def": "The cluster of lease expiries that all reprice at once."
+  },
+  {
+   "term": "Reopener",
+   "def": "A clause letting a tenant reset rent mid-term if market rates fall."
+  },
+  {
+   "term": "Take-or-pay",
+   "def": "You pay for contracted capacity whether or not you use it."
+  },
+  {
+   "term": "Backstop",
+   "def": "A stronger party guarantees a weaker tenant's rent, usually for equity."
+  },
+  {
+   "term": "DDTL",
+   "def": "Delayed-draw term loan; a facility drawn as GPUs are delivered."
+  },
+  {
+   "term": "Cap rate",
+   "def": "Annual income divided by asset value; rises when investors get nervous."
+  },
+  {
+   "term": "Hashprice",
+   "def": "Miner revenue per petahash per day."
+  },
+  {
+   "term": "Halving",
+   "def": "The bitcoin block reward cut every four years; the next is April 2028."
+  },
+  {
+   "term": "Reserve margin",
+   "def": "Spare generating capacity as a share of peak demand; the grid's cushion."
+  },
+  {
+   "term": "Lead time",
+   "def": "Weeks between ordering a rack and receiving it."
+  },
+  {
+   "term": "Efficiency Index",
+   "def": "How much AI output per unit of compute is improving."
+  },
+  {
+   "term": "Nuclear PPA",
+   "def": "A fixed-price, long-term power purchase agreement with a nuclear plant."
+  },
+  {
+   "term": "Retrofit",
+   "def": "Rebuilding a hall to host denser racks."
+  },
+  {
+   "term": "Political capital",
+   "def": "Goodwill with regulators that you can spend on permits and tariffs."
+  },
+  {
+   "term": "Jevons rebound",
+   "def": "Cheaper compute increases total demand for it."
+  },
+  {
+   "term": "Kyber / Rubin Ultra",
+   "def": "The 600 kW-per-rack generation."
+  }
+ ],
+ "headlines": {
+  "s0": [
+   "Analysts: 'Reset was priced in'",
+   "Lease renewals dip 20-30%; no defaults reported",
+   "Halving trims miners; hashprice steady",
+   "Cap rates edge back to 5.5%",
+   "Boring is the new bull"
+  ],
+  "s1": [
+   "Anchor lab misses rent; sub-tenants scramble",
+   "GPU lenders pull term sheets",
+   "Cap rates jump 250bp in six months",
+   "Distressed 60MW site clears at $3M/MW",
+   "Survivors circle: 'Balance sheets are the moat'"
+  ],
+  "s2": [
+   "Hyperscaler capex guided up 35%",
+   "PJM capacity auction clears above $800/MW-day",
+   "Queue for grid power stretches to 2033",
+   "Nuclear PPA prices up 40%",
+   "Ratepayers demand moratoria as bills climb"
+  ],
+  "s3": [
+   "Lab matches frontier model on one-tenth the GPUs",
+   "Chip lead times collapse to six weeks",
+   "Tenants invoke reopeners; rents -30%",
+   "Jevons: usage rebounds within two quarters",
+   "Flexible leases win the year"
+  ]
+ },
+ "grounded": false,
+ "reasoning": "Authored; headlines are fictional and contain no real company claims except illustrative sector references (D15)."
+}
