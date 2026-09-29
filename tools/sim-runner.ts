@@ -15,7 +15,7 @@ import type {
   GameState,
   QuarterReport,
 } from '../src/sim/state.ts'
-import { inActII, toAct3Stub } from '../src/sim/state.ts'
+import { inActII, toAct3 } from '../src/sim/state.ts'
 import { runway } from '../src/sim/systems/runway.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
@@ -726,32 +726,42 @@ if (args.includes('--act2')) {
       return { seed: i + 1, state }
     }),
   }))
-  // The Act III walking skeleton (M10, --act3stub only): a STUB, not real content — no scenarios, no
-  // decisions. Only when the flag is passed, every run that reached 2026Q4 normally is flipped
-  // (toAct3Stub, no head start, no carry-over rule) and played 2 more stub quarters with the SAME
-  // bot; without the flag, nothing here runs and Act II's own numbers are unaffected either way.
-  if (args.includes('--act3stub')) {
+  // Act III plumbing check (--act3 only; M11.3): no Act III decisions or rules yet. Only when the flag is
+  // passed, every run that reached 2026Q4 normally is flipped (toAct3: no head start, no carry-over
+  // rule, the seed's drawn scenario) and played on through 2030Q4 with the SAME bot. Prints runs per
+  // scenario, crashes, and how many reached the chapter phase with the scenario reveal. Without the
+  // flag nothing here runs, and Act II's own numbers are unaffected either way.
+  if (args.includes('--act3')) {
     const t3 = performance.now()
-    let extended = 0
+    const perScenario: Record<string, number> = { s0: 0, s1: 0, s2: 0, s3: 0 }
+    let played = 0
+    let ended = 0
+    let gameOver = 0
     let crashed = 0
     for (const { name, runs } of byBot) {
       for (const { seed, state } of runs) {
         if (state.phase !== 'chapter') continue
+        played++
         try {
-          const r = playFrom(toAct3Stub(state), BOTS[name] ?? PROBES[name], {
-            through: 2,
-          })
-          if (r.state.phase === 'chapter' && r.state.act === 3) extended++
+          const start = toAct3(state)
+          perScenario[start.scenarioId!]++
+          const r = playFrom(start, BOTS[name] ?? PROBES[name], { through: 3 })
+          if (r.state.phase === 'chapter' && r.state.act3End) ended++
+          else if (r.state.phase === 'gameover') gameOver++
         } catch (e) {
           crashed++
           console.error(
-            `  --act3stub: ${name} seed ${seed} crashed: ${(e as Error).message}`,
+            `  --act3: ${name} seed ${seed} crashed: ${(e as Error).message}`,
           )
         }
       }
     }
     console.log(
-      `\n  Act III stub (--act3stub, M10 walking skeleton, NOT real content): ${extended} runs played through 2027Q1–2027Q2 with no crash, ${crashed} crashed (${(performance.now() - t3).toFixed(0)} ms)`,
+      `\n  Act III (--act3, M11.3 plumbing only, no Act III rules): ${played} runs played from 2027Q1 on their drawn scenario` +
+        ` (${Object.entries(perScenario)
+          .map(([id, n]) => `${id} ${n}`)
+          .join(', ')}); ${ended} reached the chapter phase with the reveal, ${gameOver} ended in game over,` +
+        ` ${crashed} crashed (${(performance.now() - t3).toFixed(0)} ms)`,
     )
   }
   // Scope 0.2 §5: every balance target, PASS / MISS with its numbers, printed as one table at the end.

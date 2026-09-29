@@ -66,9 +66,9 @@ function actFitsQuarter(act: unknown, quarter: number): boolean {
   if (act === 0) return quarter >= actFirstQuarter(0) && quarter < 0
   if (act === 1) return quarter <= boundary && quarter >= 0
   if (isActII(act)) return quarter >= boundary
-  // Act III (M10 stub): any quarter from Act II's last quarter on. No upper bound yet, matching
-  // Act II's own check above; the real range comes with doc 28's content.
-  if (isActIII(act)) return quarter >= actLastQuarter(2)
+  // Act III (M11.3): 2027Q1–2030Q4, plus Act II's last quarter for a boundary save.
+  if (isActIII(act))
+    return quarter >= actLastQuarter(2) && quarter <= actLastQuarter(3)
   return false
 }
 
@@ -123,5 +123,7 @@ export function restoreSave(raw: unknown): Loaded {
   if (!Array.isArray(data.constructionLoans))
     state.constructionLoans = old ? [structuredClone(old)] : []
   delete (state as { constructionLoan?: unknown }).constructionLoan
+  // M10's stub marker: it only ever existed in test-made saves, and the stub is gone (M11.3).
+  delete (state as { act3Stub?: unknown }).act3Stub
   return { ok: true, state }
 }

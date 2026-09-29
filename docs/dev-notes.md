@@ -144,11 +144,11 @@ Nothing. (Balance tuning stays stopped by the owner's A1 answer.)
 
 ## Next
 
-**M9 and M10 are both done and merged onto `m10`; nothing is queued in code.** The design thread's doc 28 (Act III content research —
-scenarios, Signals content, tenant/rival data for the real Act III) is in progress. **Once doc 28 lands, the code thread builds the
-scenario data engine and Signals on top of this walking skeleton, and each STUB point from M10.1 gets wired to its real, already-accepted
-answer from doc 27** (Act III's Bandwidth rule, what ends Act III, and any other gate a real scenario needs to reach). Until then: do
-not start that work. The Act I playtests stay postponed.
+**M11 is in progress on branch `m11` (M11.1 scenarios, M11.2 Signals, M11.3 the 16-quarter timeline and the end of Act III are done).**
+Planned next, for the owner's OK: **M11.4** Act II's systems run in Act III against the scenario market (each `inActII` / `isActIIQuarter`
+gate gets a deliberate yes or no; D17 boundary rules), **M11.5** the scenario event cards (`events_act3.json`, 37 cards) applying only
+effects the engine supports, then D16 step 4 (contract calendar, renewals, F-1/F-2). Later: reading score and net-worth scoring (D14),
+the Signals panel and chapter-report UI. The Act I playtests stay postponed.
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
@@ -172,6 +172,8 @@ mistaken for a regression, caught before any code changed; two shell-rule slips,
 **M11.1 done:** `scenarioId` (s0–s3, absent in Acts I/II and the M10 stub) drawn by `toAct3()` from `substream(seed, "act3_scenario")` at 25/30/25/20 (`BALANCE.act3`); `marketWeek` / `previousMarketWeek` / `trueDirection` take an optional scenario (`scenarioOf(state)`, ignored before Act III) and the 8 `market_s*` / `market_weekly_s*` CSVs are loaded into `CONTENT.act3Scenarios` (byte copies of `docs/act3-content/`, own chunks in `vite.config.ts`); 757 tests. ETH price holds at Act II's last week in scenarios (mine, reversible).
 
 **M11.2 done (Signals):** `READ_SIGNAL {indicator}` (Act III "Read the market": 1 BW flat, once a quarter, Plan phase, needs a scenario) logs to `act3SignalReads`; `signalsPanel(state)` returns label, displayed and arrow (current + past quarters) and sharp ranges only for quarters read; Act I's `READ_MARKET` is blocked in Act III (`error.market_read_act3`); Act III Bandwidth = Act II's rule (STUB 1 wired; "what ends Act III" still a STUB for M11.3). `signals_s0–s3.json` copied byte-identical (trigger `card_id`s fixed to `s{n}_c3`, see `docs/act3-content/README.md`); `CONTENT.signals` holds runtime fields only, the hidden view is `src/content/signalsHidden.ts` (tests and `tools/signals-oracle.ts` only, grep-tested). **act3-stub golden changed on purpose:** end-state `bandwidth` 3 → 4 (Act I's base 3 → Act II's base 4), nothing else. Oracle (trigger / signals start / decoy): s0 2028Q2 / 2027Q2 / lender_spreads 2027Q3–2028Q1 peak Q4; s1 2028Q1 / 2027Q2 / chip_lead_times 2027Q2–Q4 peak Q4; s2 2028Q3 / 2027Q3 / efficiency_index 2027Q3–2028Q2 peak 2028Q1; s3 2027Q4 / 2027Q1 / grid_reserve_margin 2027Q2–2028Q1 peak 2027Q3. All data checks pass; STOPPED: nothing. 776 tests.
+
+**M11.3 done (timeline, end of Act III):** the working-tree WIP was my own start (a first split); reviewed against this spec and continued, with these changes: the flat-market fallback and the stub helper/field are gone. Act III is 2027Q1–2030Q4 (indices 40–55, labels from the scenario files, `market` itself stays 40 quarters, so an Act III read without a scenario throws). `act3-stub.json` and `docs/act3-content-stub/` removed; the save loader drops an old `act3Stub` key (no version bump). `toAct3(state, {scenario})` can force a scenario (test/tools only, grep-tested). After 2030Q4 `startNextQuarter` has an explicit act-3 branch: chapter phase plus `act3End` (scenario, name, trigger quarter, decoy, signal reads), built in `systems/act3End.ts`, the only file allowed to read the hidden view. Four goldens `act3-s0…s3-seed-1` replace the stub golden. Sim `--act3` (replaces `--act3stub`): 532 runs from 2027Q1 on their drawn scenario (s0 105, s1 211, s2 99, s3 117): 491 reached the chapter phase with the reveal, 41 ended in game over (known until M11.4, Act II systems are off so a bot can go broke), 0 crashed; the `--act2` table and all 1,302 CSVs are identical to the M11.2 baseline. No new STUB points; no reading score or UI yet. 798 tests.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 

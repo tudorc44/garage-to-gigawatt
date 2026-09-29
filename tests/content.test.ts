@@ -27,7 +27,6 @@ import regions from '../src/content/regions.json' with { type: 'json' }
 import sitesAct2 from '../src/content/sites_act2.json' with { type: 'json' }
 import hiresAct2 from '../src/content/hires_act2.json' with { type: 'json' }
 import eventsAct2 from '../src/content/events_act2.json' with { type: 'json' }
-import act3Stub from '../src/content/act3-stub.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import rivalsAct2 from '../src/content/rivals_act2.json' with { type: 'json' }
 import marketPrologue from '../src/content/market_weekly_prologue.json' with { type: 'json' }
@@ -84,7 +83,6 @@ const raw = (): RawContent =>
     sitesAct2,
     hiresAct2,
     eventsAct2,
-    act3Stub,
     rivals,
     rivalsAct2,
     heat,
@@ -96,17 +94,16 @@ const raw = (): RawContent =>
 
 describe('content loads', () => {
   it('covers Act I (23 quarters, 2017Q1 → 2022Q3) then Act II (17 quarters, 2022Q4 → 2026Q4), 13 weeks each', () => {
-    // 42, not 40: the Act III walking skeleton (M10) appends 2 stub quarters after 2026Q4.
-    expect(CONTENT.quarters).toHaveLength(42)
+    // 56, not 40: Act III (M11.3) appends its 16 quarters (2027Q1–2030Q4) after 2026Q4.
+    expect(CONTENT.quarters).toHaveLength(56)
     expect(CONTENT.acts).toEqual([
       { act: 1, firstQuarter: 0, lastQuarter: 22 },
       { act: 2, firstQuarter: 23, lastQuarter: 39 },
       // The prologue (Alpha 0.3) sits at negative indices: Act I and II keep theirs.
       { act: 0, firstQuarter: -32, lastQuarter: -1 },
-      // The Act III walking skeleton (M10): 2 stub quarters appended after Act II, unreachable
-      // from play. `CONTENT.quarters` itself has 42 entries (real Act I/II quarters are indices
-      // 0–39, unaffected); this test's own "40" above counts only the real ones by name.
-      { act: 3, firstQuarter: 40, lastQuarter: 41 },
+      // Act III (M11.3): 16 quarters appended after Act II, unreachable from play. Act I and II
+      // keep indices 0–39.
+      { act: 3, firstQuarter: 40, lastQuarter: 55 },
     ])
     expect(CONTENT.quarters[0]).toBe('2017Q1')
     expect(CONTENT.quarters[22]).toBe('2022Q3')
@@ -114,6 +111,7 @@ describe('content loads', () => {
     expect(CONTENT.quarters[39]).toBe('2026Q4')
     expect(CONTENT.quarters[40]).toBe('2027Q1')
     expect(CONTENT.quarters[41]).toBe('2027Q2')
+    expect(CONTENT.quarters[55]).toBe('2030Q4')
     for (const weeks of CONTENT.market) expect(weeks).toHaveLength(13)
     expect(actOfQuarter(22)).toBe(1)
     expect(actOfQuarter(23)).toBe(2)
@@ -158,10 +156,13 @@ describe('content loads', () => {
 
   it('marketWeek refuses a week outside the data instead of returning undefined', () => {
     expect(marketWeek(39, 12).week).toBe('2026-12-28')
-    // Quarter 40 is now the Act III stub (M10), so it no longer throws; quarter 42 (past the
-    // stub too) and an out-of-range week still do.
-    expect(marketWeek(40, 0).quarter).toBe('2027Q1')
-    expect(() => marketWeek(42, 0)).toThrow(RangeError)
+    // Quarters 40–55 are Act III (M11.3), so they no longer throw; quarter 56 (past 2030Q4)
+    // and an out-of-range week still do.
+    // (only through a scenario: without one an Act III week throws, tested in act3Scenario.test.ts)
+    expect(marketWeek(40, 0, 's0').quarter).toBe('2027Q1')
+    expect(marketWeek(55, 12, 's3').quarter).toBe('2030Q4')
+    expect(() => marketWeek(56, 0)).toThrow(RangeError)
+    expect(() => marketWeek(56, 0, 's0')).toThrow(RangeError)
     expect(() => marketWeek(0, 13)).toThrow(RangeError)
     expect(() => marketWeek(-33, 0)).toThrow(RangeError)
   })
@@ -315,11 +316,15 @@ describe('content loads', () => {
     ])
   })
 
-  it('the Act III stub file is the same copy in docs/act3-content-stub/ (M10)', () => {
-    const read = (path: string) =>
-      readFileSync(new URL(path, import.meta.url), 'utf8')
-    expect(read('../src/content/act3-stub.json')).toBe(
-      read('../docs/act3-content-stub/act3-stub.json'),
+  it('Act III’s timeline is the scenario files’ 16 quarters, and a scenario with different quarters is refused (M11.3)', () => {
+    expect(CONTENT.quarters.slice(40)).toEqual(
+      CONTENT.act3Scenarios.s0.quarterly.map((r) => r.quarter),
+    )
+    const bad = raw()
+    ;(bad.act3Scenarios.s3.quarterly as { quarter: string }[]).pop()
+    ;(bad.act3Scenarios.s3.weekly as unknown[]).length -= 13
+    expect(problemsFor(bad)).toContainEqual(
+      expect.stringMatching(/^market_s3: quarters .* differ from market_s0's/),
     )
   })
 

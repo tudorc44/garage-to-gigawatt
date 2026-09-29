@@ -8,7 +8,13 @@ import { isShutDown } from './heat.ts'
 import { failureMult } from './hires.ts'
 import { modifierMult } from './eventEffects.ts'
 import { miningPowerMult } from './headStarts.ts'
-import { coinPrice, getModel, revenuePerUnitDay } from './market.ts'
+import {
+  coinPrice,
+  getModel,
+  quarterWeeks,
+  revenuePerUnitDay,
+  scenarioOf,
+} from './market.ts'
 import {
   flawEffect,
   hashrateMult,
@@ -147,7 +153,7 @@ function stormPrice(
   w: MarketWeek,
 ): number | undefined {
   if (site.contract?.type !== 'index') return
-  const weekIndex = CONTENT.market[state.quarter].indexOf(w)
+  const weekIndex = quarterWeeks(state.quarter, scenarioOf(state))!.indexOf(w)
   const shock = CONTENT.shocks.find(
     (sh) =>
       sh.quarter === state.quarter &&

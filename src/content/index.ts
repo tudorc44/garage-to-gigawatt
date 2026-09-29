@@ -23,7 +23,6 @@ import machinesPrologueRaw from './machines_prologue.json' with { type: 'json' }
 import prologueRaw from './prologue.json' with { type: 'json' }
 import eventsPrologueRaw from './events_prologue.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
-import act3StubRaw from './act3-stub.json' with { type: 'json' }
 import signalsS0Raw from './signals_s0.json' with { type: 'json' }
 import signalsS1Raw from './signals_s1.json' with { type: 'json' }
 import signalsS2Raw from './signals_s2.json' with { type: 'json' }
@@ -45,7 +44,6 @@ import mergeRaw from './merge.json' with { type: 'json' }
 import eventsRaw from './events.json' with { type: 'json' }
 import { BALANCE } from './balance.ts'
 import {
-  act3StubFileSchema,
   auctionRulesSchema,
   capitalAct2FileSchema,
   capitalFileSchema,
@@ -169,7 +167,7 @@ export type {
 export interface ActSpan {
   /**
    * 0 = the prologue (Alpha 0.3, quarter indices −32 … −1), 1 = Act I, 2 = Act II, 3 = Act III
-   * (M10 walking skeleton stub quarters only; no real Act III content until doc 28 lands).
+   * (M11.3: 2027Q1–2030Q4, indices 40–55; unreachable from play).
    */
   act: 0 | 1 | 2 | 3
   firstQuarter: number
@@ -553,7 +551,6 @@ export interface RawContent {
   sitesAct2: unknown
   hiresAct2: unknown
   eventsAct2: unknown
-  act3Stub: unknown
   rivals: unknown
   rivalsAct2: unknown
   machinesPrologue: unknown
@@ -650,11 +647,6 @@ export function parseContent(raw: RawContent): Content {
     'hires_act2.json',
     hiresAct2FileSchema,
     raw.hiresAct2,
-  )
-  const act3StubFile = check(
-    'act3-stub.json',
-    act3StubFileSchema,
-    raw.act3Stub,
   )
   const eventsAct2File = check(
     'events_act2.json',
@@ -767,7 +759,6 @@ export function parseContent(raw: RawContent): Content {
     !sitesAct2File ||
     !hiresAct2File ||
     !eventsAct2File ||
-    !act3StubFile ||
     !delayRules ||
     !allocationRules ||
     !spotShockRules ||
@@ -1548,24 +1539,10 @@ export function parseContent(raw: RawContent): Content {
     }),
   }
 
-  // Act III walking skeleton (M10): the stub file lists 2 placeholder quarters, appended last
-  // (mine, reversible — after every Act II check above that assumes exactly Act II's 17 real
-  // quarters follow acts[1].firstQuarter; appending here, not right after addAct(2, ...), is what
-  // keeps quarters 0–39 untouched: this is the lowest-risk way to extend the timeline). Every week
-  // is Act II's real last week (2026Q4's) cloned flat, only the quarter label changed: no price
-  // movement, no GPU price changes, no events, no scenario logic. Unreachable from play; doc 28's
-  // real content pack replaces this file entirely.
-  {
-    const lastReal = market[acts[1].lastQuarter].at(-1)!
-    const stubRows = act3StubFile.quarters.flatMap((quarter) =>
-      Array.from({ length: perQuarter }, () => ({ ...lastReal, quarter })),
-    )
-    addAct(3, 'act3-stub.json', stubRows, false)
-  }
   // Act III's four market scenarios (M11.1): validated like Act I/II's files, then kept apart from the
   // shared `market` array (a scenario is read only through marketWeek's optional argument, so every
   // Act I/II quarter index and read is untouched). Scenario quarter n sits at timeline index
-  // (first Act III quarter + n); the stub timeline only reaches the first 2 of the 16.
+  // (first Act III quarter + n).
   const act3Scenarios = {} as Record<ScenarioId, Act3Scenario>
   {
     const lastReal = market[acts[1].lastQuarter].at(-1)!
@@ -1628,18 +1605,26 @@ export function parseContent(raw: RawContent): Content {
         })
       act3Scenarios[id] = { quarterly, weeks }
     }
-    // The stub timeline's own labels must be the first scenario quarters (they share one calendar).
-    const stubLabels = quarters.slice(
-      acts.find((a) => a.act === 3)!.firstQuarter,
-    )
-    for (const id of SCENARIO_IDS)
-      stubLabels.forEach((label, i) => {
-        const q = act3Scenarios[id]?.quarterly[i]?.quarter
-        if (q !== undefined && q !== label)
-          problems.push(
-            `market_${id}: quarter ${i + 1} is ${q}, but the Act III timeline has ${label}`,
-          )
-      })
+    // Act III's timeline (M11.3): the scenario files' 16 quarters (2027Q1–2030Q4), appended last, after
+    // every Act II check above that assumes Act II's 17 real quarters end the timeline (mine, reversible:
+    // this keeps indices 0–39 untouched). All four scenarios share one calendar, so s0's labels are the
+    // timeline and the others must match. The timeline holds labels only: `market` has no Act III
+    // weeks, so Act III prices exist only inside a scenario (marketWeek's scenario argument; reading an
+    // Act III week without one throws).
+    const labels = act3Scenarios.s0?.quarterly.map((r) => r.quarter) ?? []
+    for (const id of SCENARIO_IDS) {
+      const own = act3Scenarios[id]?.quarterly.map((r) => r.quarter) ?? []
+      if (own.join() !== labels.join())
+        problems.push(
+          `market_${id}: quarters (${own.join(', ')}) differ from market_s0's (${labels.join(', ')})`,
+        )
+    }
+    acts.push({
+      act: 3,
+      firstQuarter: quarters.length,
+      lastQuarter: quarters.length + labels.length - 1,
+    })
+    quarters.push(...labels)
   }
   // Act III's Signals (M11.2): runtime fields only; each file's scenario must be the one it is filed under.
   const signals = {} as Record<ScenarioId, SignalIndicator[]>
@@ -1652,9 +1637,8 @@ export function parseContent(raw: RawContent): Content {
       )
     signals[id] = file.indicators
   }
-  // The same sequential check as above, re-run now the Act III stub is appended (it ran earlier,
-  // before this addition, so it never saw quarters 40–41): catches an off-by-one in the stub's
-  // own quarter labels the same way it would for Act I or Act II.
+  // The same sequential check as above, re-run now Act III is appended (it ran earlier, before this
+  // addition, so it never saw quarters 40–55): catches a gap in Act III's labels like any other act's.
   quarters.slice(1).forEach((q, i) => {
     if (q !== nextQuarter(quarters[i])) {
       problems.push(
@@ -1964,7 +1948,6 @@ export const CONTENT: Content = parseContent({
   sitesAct2: sitesAct2Raw,
   hiresAct2: hiresAct2Raw,
   eventsAct2: eventsAct2Raw,
-  act3Stub: act3StubRaw,
   rivals: rivalsRaw,
   rivalsAct2: rivalsAct2Raw,
   machinesPrologue: machinesPrologueRaw,

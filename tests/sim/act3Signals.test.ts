@@ -12,12 +12,12 @@ import {
   drawScenario,
   newGame,
   toAct3,
-  toAct3Stub,
   type GameState,
   type Site,
 } from '../../src/sim/state.ts'
 import { bandwidthForQuarter } from '../../src/sim/systems/bandwidth.ts'
 import { act2Company, ok } from './act2Helpers.ts'
+import { act3WithoutScenario } from './act3Helpers.ts'
 
 const SCENARIOS = ['s0', 's1', 's2', 's3'] as const
 
@@ -97,7 +97,7 @@ describe('READ_SIGNAL (Act III Read the market)', () => {
     expect(
       blockedKey(a2, { type: 'READ_SIGNAL', indicator: 'revenue_gap' }),
     ).toBe('error.signal_unavailable')
-    const stub = { ...toAct3Stub(newGame(1)), bandwidth: 5 }
+    const stub = { ...act3WithoutScenario(), bandwidth: 5 }
     expect(
       blockedKey(stub, { type: 'READ_SIGNAL', indicator: 'revenue_gap' }),
     ).toBe('error.signal_unavailable')
@@ -121,7 +121,7 @@ describe('Act I’s READ_MARKET in Act III', () => {
     expect(blockedKey(act3(), { type: 'READ_MARKET' })).toBe(
       'error.market_read_act3',
     )
-    const stub = { ...toAct3Stub(newGame(1)), bandwidth: 5 }
+    const stub = { ...act3WithoutScenario(), bandwidth: 5 }
     expect(blockedKey(stub, { type: 'READ_MARKET' })).toBe(
       'error.market_read_act3',
     )
@@ -142,7 +142,7 @@ describe('signalsPanel', () => {
   it('is null outside Act III and without a scenario', () => {
     expect(signalsPanel(newGame(1))).toBeNull()
     expect(signalsPanel(act2Company('2024Q1'))).toBeNull()
-    expect(signalsPanel(toAct3Stub(newGame(1)))).toBeNull()
+    expect(signalsPanel(act3WithoutScenario())).toBeNull()
   })
 
   it('lists the six indicators in file order with their current value, and never a future quarter or a hidden field', () => {
@@ -227,21 +227,43 @@ describe('the hidden signals fields never reach src/', () => {
   }
   const src = sourceFiles(new URL('../../src', import.meta.url).pathname)
   const hiddenModule = /signalsHidden\.ts$/
+  // The one function allowed to read the hidden view: the end-of-act scenario reveal (M11.3).
+  const revealModule = /systems[\\/]act3End\.ts$/
+  const code = (file: string) =>
+    // Code only: a comment may explain the rule by naming the fields.
+    readFileSync(file, 'utf8')
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/^\s*\/\/.*$/gm, '')
+  const fields = [
+    'authoring_latent',
+    'role_in_scenario',
+    'role_tag',
+    'DO_NOT_EXPOSE',
+  ]
 
-  it('nothing but tests/ and tools/ imports the hidden view or names an authoring field', () => {
+  it('nothing but tests/ and tools/ imports the hidden view or names an authoring field, except the one reveal function', () => {
     for (const file of src.filter((f) => !hiddenModule.test(f))) {
-      // Code only: a comment may explain the rule by naming the fields.
-      const text = readFileSync(file, 'utf8')
-        .replace(/\/\*[\s\S]*?\*\//g, '')
-        .replace(/^\s*\/\/.*$/gm, '')
-      for (const bad of [
-        'signalsHidden',
-        'authoring_latent',
-        'role_in_scenario',
-        'role_tag',
-        'DO_NOT_EXPOSE',
-      ])
+      const text = code(file)
+      for (const bad of fields)
         expect(text, `${file} mentions ${bad}`).not.toContain(bad)
+      if (!revealModule.test(file))
+        expect(text, `${file} imports the hidden view`).not.toContain(
+          'signalsHidden',
+        )
+    }
+    // ...and the reveal file exists and is the only importer.
+    const importers = src.filter(
+      (f) => !hiddenModule.test(f) && code(f).includes('signalsHidden'),
+    )
+    expect(importers.map((f) => f.split('/').slice(-3).join('/'))).toEqual([
+      'sim/systems/act3End.ts',
+    ])
+  })
+
+  it('nothing in src/ calls toAct3 but its own definition (Act III stays unreachable from play)', () => {
+    for (const file of src) {
+      if (/sim[\\/]state\.ts$/.test(file)) continue
+      expect(code(file), `${file} uses toAct3`).not.toMatch(/\btoAct3\b/)
     }
   })
 

@@ -10,6 +10,11 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
   series (displayed, arrow, sharp). Their hidden fields (authoring_latent, role_in_scenario, role_tag, trigger, decoy,
   reasoning, scenario_name) are for tests and `tools/signals-oracle.ts` only.
 
+## Removed
+
+- M11.3: `docs/act3-content-stub/` (the M10 placeholder `act3-stub.json`) was deleted, with its copy in
+  `src/content/`. Act III's 16 quarters (2027Q1–2030Q4) now come from the scenario market files.
+
 ## Data changes (every change to a delivered file is listed here)
 
 ### M11.2, 29 Sep 2026

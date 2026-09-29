@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CONTENT } from '../../src/content/index.ts'
+import { CONTENT, actLastQuarter } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { newGame, type GameState } from '../../src/sim/state.ts'
 import { trueDirection } from '../../src/sim/systems/readMarket.ts'
@@ -40,7 +40,8 @@ describe('Read the market (interrupts.json › read_market)', () => {
     let right = 0
     let total = 0
     for (let seed = 1; seed <= 40; seed++) {
-      for (let q = 0; q < CONTENT.quarters.length; q++) {
+      // Acts I and II (quarters 0–39): Act III has no shared market, and reads Signals instead.
+      for (let q = 0; q <= actLastQuarter(2); q++) {
         const s = ok({ ...newGame(seed), quarter: q }, read)
         for (const coin of ['BTC', 'ETH'] as const) {
           const truth = trueDirection(q, coin)

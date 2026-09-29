@@ -115,6 +115,18 @@ export interface MachineLot {
 }
 
 /**
+ * The Act III scenario reveal (M11.3), stored once when the last quarter is done: which scenario the
+ * player was in, when its trigger hit, what the decoy was, and what they read. No score yet.
+ */
+export interface Act3End {
+  scenarioId: ScenarioId
+  scenarioName: string
+  triggerQuarter: string
+  decoy: { indicator: SignalId; quarters: string[] }
+  signalReads: { quarter: string; indicator: SignalId }[]
+}
+
+/**
  * How the company entered Act II (scope 0.2 §2.10): the Merge choice's head start, applied at the
  * act boundary (doc 18 §2.3), and what it did.
  */
@@ -472,22 +484,21 @@ export interface GameState {
   /** Act II: the head start (and lifeline) set at the act boundary; null in Act I. */
   act2Entry: Act2Entry | null
   /**
-   * Act III (M10 walking skeleton): marks a stub state built directly by a test/sim harness, not
-   * through play. Absent (undefined) on every real game. A real Act III entry record (mirroring
-   * Act2Entry: which scenario, what carried over) replaces this once doc 28's content lands.
-   */
-  act3Stub?: true
-  /**
    * Act III (M11.1): which market scenario (s0–s3) this game plays, drawn once at the Act II→III
-   * boundary (drawScenario). Absent on every Act I and Act II game, and on the M10 stub state, which
-   * keeps reading the shared market. Only marketWeek's optional argument ever reads it.
+   * boundary (drawScenario). Absent on every Act I and Act II game; every Act III game has one. Only
+   * marketWeek's optional argument ever reads it.
    */
   scenarioId?: ScenarioId
   /**
    * Act III (M11.2): the log of Read the market (Signals) reads, one indicator per quarter at most.
-   * Absent in the prologue, Act I and Act II and in the M10 stub state; toAct3() starts it empty.
+   * Absent in the prologue, Act I and Act II; toAct3() starts it empty.
    */
   act3SignalReads?: { quarter: string; indicator: SignalId }[]
+  /**
+   * Act III (M11.3): the scenario reveal, stored when the last quarter (2030Q4) is done and the game
+   * reaches the chapter phase. Absent until then, and in every other act.
+   */
+  act3End?: Act3End
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
@@ -752,22 +763,6 @@ export function roundCents(usd: number): number {
 }
 
 /**
- * Flips any state to the start of the Act III walking skeleton's first stub quarter (M10):
- * mechanical only, no head start, no carry-over rule (Heat, Anger, rating, etc. are simply
- * whatever the state already had — see dev-notes' M10.1 STUB list). Never called by the reducer
- * or any UI; a test/sim harness is the only caller, so Act III stays unreachable from play.
- */
-export function toAct3Stub(state: GameState): GameState {
-  return {
-    ...state,
-    act: 3,
-    quarter: actFirstQuarter(3),
-    phase: 'plan',
-    act3Stub: true,
-  }
-}
-
-/**
  * The scenario a game gets at the Act II→III boundary (doc 27 D2: S0 25%, S1 30%, S2 25%, S3 20%).
  * Its own substream(seed, "act3_scenario"), so it never moves the main RNG and no earlier act's game
  * changes. The same seed always draws the same scenario.
@@ -784,14 +779,21 @@ export function drawScenario(seed: number): ScenarioId {
 }
 
 /**
- * The Act II→III boundary (M11.1): the same flip as toAct3Stub, plus the scenario draw. No head start
- * or carry-over rule yet. Never called by the reducer or any UI (Act III stays unreachable from play);
- * a test/sim harness is the only caller.
+ * The Act II→III boundary (M11.1): flips a state to the start of 2027Q1 in Act III with its drawn
+ * scenario. No head start or carry-over rule yet (Heat, Anger, rating etc. stay whatever the state
+ * had). `options.scenario` forces a scenario: for tests and tools only. Never called by the reducer or
+ * any UI (a test greps src/ for that), so Act III stays unreachable from play.
  */
-export function toAct3(state: GameState): GameState {
+export function toAct3(
+  state: GameState,
+  options: { scenario?: ScenarioId } = {},
+): GameState {
   return {
-    ...toAct3Stub(state),
-    scenarioId: drawScenario(state.seed),
+    ...state,
+    act: 3,
+    quarter: actFirstQuarter(3),
+    phase: 'plan',
+    scenarioId: options.scenario ?? drawScenario(state.seed),
     act3SignalReads: [],
   }
 }

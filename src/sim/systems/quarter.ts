@@ -16,10 +16,11 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
-import { inActII } from '../state.ts'
+import { inActII, inActIII } from '../state.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
+import { buildAct3End } from './act3End.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { collateralValueUsd } from './cryptoLoan.ts'
@@ -200,11 +201,18 @@ function buildReport(
 
 /**
  * From the report to the next Plan phase. At the end of an act: after 2022Q3 comes the Merge
- * decision (Act I); after 2026Q4 the chapter report (Act II, the end of the game). The Act II
- * intro calls this too (act 2, still 2022Q3) to start 2022Q4.
+ * decision (Act I); after 2026Q4 the chapter report (Act II); after 2030Q4 the Act III chapter
+ * report, the end of the game (M11.3: Act III runs its 16 quarters, and only the game-over rules
+ * above can end it early). The Act II intro calls this too (act 2, still 2022Q3) to start 2022Q4.
  */
 export function startNextQuarter(state: GameState): void {
   if (state.quarter === actLastQuarter(state.act)) {
+    if (inActIII(state) && state.scenarioId) {
+      // The end of Act III (doc 27 §2, D14): the chapter report, with the scenario reveal stored now.
+      state.act3End = buildAct3End(state)
+      state.phase = 'chapter'
+      return
+    }
     state.phase = state.act === 1 ? 'merge' : 'chapter'
     return
   }

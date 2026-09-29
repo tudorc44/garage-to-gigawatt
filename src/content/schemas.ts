@@ -71,15 +71,6 @@ export const marketWeekAct2Schema = z.object({
 })
 export const marketAct2Schema = z.array(marketWeekAct2Schema).min(1)
 
-// ---------- act3-stub.json (M10, the Act III walking skeleton) ----------
-// A placeholder only: it lists which quarters the stub timeline extension covers. No prices, no
-// GPU data, no events — doc 28's real Act III content pack replaces this file entirely.
-
-export const act3StubFileSchema = z.object({
-  stub_notice: z.string().min(1),
-  quarters: z.array(quarterId).min(1),
-})
-
 // ---------- market_weekly_s0–s3.json and market_s0–s3.json (M11.1: Act III's four scenarios) ----------
 // Each scenario has a weekly file (16 quarters × 13 weeks, 2027Q1–2030Q4) and a quarterly file
 // (one row per quarter). The columns are Act II's plus the `scenario` id (and, in the quarterly

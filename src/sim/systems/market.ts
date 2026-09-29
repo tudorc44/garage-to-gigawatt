@@ -56,16 +56,23 @@ function prologuePrice(
  * `CONTENT.market` array, exactly as before. With a scenario id, and a quarter in Act III, it is
  * that scenario's own file (M11.1): scenario quarter n sits at (first Act III quarter + n). A
  * scenario id given for a quarter before Act III is ignored, so it can never change earlier acts.
- * undefined past the end of the data.
+ * Act III quarters without a scenario throw. undefined past the end of the data.
  */
 export function quarterWeeks(
   quarter: number,
   scenario?: ScenarioId | null,
 ): MarketWeek[] | undefined {
-  if (scenario) {
-    const first = actFirstQuarter(3)
-    if (quarter >= first)
-      return CONTENT.act3Scenarios[scenario].weeks[quarter - first]
+  const first = actFirstQuarter(3)
+  if (
+    quarter >= first &&
+    quarter < first + CONTENT.act3Scenarios.s0.weeks.length
+  ) {
+    // Act III has no shared market: its prices exist only inside a scenario.
+    if (!scenario)
+      throw new RangeError(
+        `Quarter ${quarter} is in Act III, whose market is read only through a scenario (none given)`,
+      )
+    return CONTENT.act3Scenarios[scenario].weeks[quarter - first]
   }
   return CONTENT.market[quarter]
 }

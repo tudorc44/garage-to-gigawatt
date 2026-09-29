@@ -45,6 +45,7 @@ import {
   getModel,
   marketWeek,
   revenuePerUnitDay,
+  scenarioOf,
 } from '../src/sim/systems/market.ts'
 import {
   normalPriceUsdKwh,
@@ -475,7 +476,7 @@ function makeBot(settings: BotSettings): Strategy {
       }
 
       // 3. Fill free space with the best machine per dollar, cheapest power first.
-      const w = marketWeek(s.quarter, 0)
+      const w = marketWeek(s.quarter, 0, scenarioOf(s))
       const ready = s.sites
         .filter(
           (x) =>

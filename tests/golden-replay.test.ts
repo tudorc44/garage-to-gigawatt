@@ -14,7 +14,7 @@ import {
   replayPrologue,
   type Strategy,
 } from '../src/sim/replay.ts'
-import { act3StubCompany } from './sim/act3Helpers.ts'
+import { act3ScenarioCompany } from './sim/act3Helpers.ts'
 import { BOTS } from '../tools/bots.ts'
 import { PROLOGUE_BOTS } from '../tools/prologueBots.ts'
 import type { GameState } from '../src/sim/state.ts'
@@ -366,44 +366,45 @@ describe.each([
 })
 
 /**
- * The Act III walking skeleton (M10): a STUB, not real content — no scenarios, no Signals, no
- * decisions. Plays a fixed seed through both stub quarters (2027Q1, 2027Q2) with a "do nothing"
- * plan and snapshots the end state, named `act3-stub-golden` so it's never mistaken for real Act
- * III content. This state is unreachable from play (see tests/sim/act3Helpers.ts).
+ * Act III (M11.3): one golden per scenario. Each plays a fixed seed through all 16 quarters
+ * (2027Q1–2030Q4) with a "do nothing" plan, from an Act II company with a working S21 fleet (so the
+ * scenario's own market decides the numbers), and snapshots the end state. It replaces M10's
+ * two-quarter `act3-stub-golden`. Unreachable from play (see tests/sim/act3Helpers.ts).
  */
-const ACT3_STUB_SEED = 1
-describe('golden replay: act3-stub-golden (M10 walking skeleton — not real content)', () => {
-  const doNothingInPlan: Strategy = { plan: () => [] }
-  const run = playFrom(act3StubCompany(ACT3_STUB_SEED), doNothingInPlan, {
-    through: 2,
-  })
+const ACT3_SEED = 1
+describe.each(['s0', 's1', 's2', 's3'] as const)(
+  'golden replay: act3-%s (2027Q1 → the chapter phase)',
+  (scenario) => {
+    const doNothingInPlan: Strategy = { plan: () => [] }
+    const start = () => act3ScenarioCompany(scenario, ACT3_SEED)
+    const run = playFrom(start(), doNothingInPlan, { through: 3 })
 
-  it('plays through both stub quarters to the chapter phase without errors', () => {
-    expect(run.state.phase).toBe('chapter')
-    expect(run.state.act).toBe(3)
-    expect(run.state.reports.map((r) => r.quarter)).toEqual([
-      '2027Q1',
-      '2027Q2',
-    ])
-  })
+    it('plays all 16 quarters to the chapter phase without errors', () => {
+      expect(run.state.phase).toBe('chapter')
+      expect(run.state.act).toBe(3)
+      expect(run.state.scenarioId).toBe(scenario)
+      expect(run.state.reports).toHaveLength(16)
+      expect(run.state.reports[0].quarter).toBe('2027Q1')
+      expect(run.state.reports.at(-1)!.quarter).toBe('2030Q4')
+      expect(run.state.act3End?.scenarioId).toBe(scenario)
+    })
 
-  it('same seed + the same (empty) strategy → identical game; replaying the log → identical end state', () => {
-    expect(
-      playFrom(act3StubCompany(ACT3_STUB_SEED), doNothingInPlan, {
-        through: 2,
-      }).state,
-    ).toEqual(run.state)
-    expect(
-      run.log.reduce(applyStep, act3StubCompany(ACT3_STUB_SEED)),
-    ).toEqual(run.state)
-  })
+    it('same seed + the same (empty) strategy → identical game; replaying the log → identical end state', () => {
+      expect(playFrom(start(), doNothingInPlan, { through: 3 }).state).toEqual(
+        run.state,
+      )
+      expect(run.log.reduce(applyStep, start())).toEqual(run.state)
+    })
 
-  it('matches the stored golden end state (a stub — not real Act III content)', async () => {
-    await expect(
-      JSON.stringify(run.state, null, 2) + '\n',
-    ).toMatchFileSnapshot(`./golden/act3-stub-golden-seed-${ACT3_STUB_SEED}.json`)
-  })
-})
+    it('matches the stored golden end state', async () => {
+      await expect(
+        JSON.stringify(run.state, null, 2) + '\n',
+      ).toMatchFileSnapshot(
+        `./golden/act3-${scenario}-seed-${ACT3_SEED}.json`,
+      )
+    })
+  },
+)
 
 describe('balance anchors (scope §5)', () => {
   it('the steady grower survives to the Merge', () => {

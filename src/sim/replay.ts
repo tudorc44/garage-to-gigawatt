@@ -49,11 +49,11 @@ export interface Strategy {
  * the prologue's chapter report.
  */
 export interface PlayOptions {
-  through?: 0 | 1 | 2
+  through?: 0 | 1 | 2 | 3
 }
 
 /** Whether a played game stops here: game over, or the chapter report of the last act played. */
-function finished(state: GameState, through: 0 | 1 | 2): boolean {
+function finished(state: GameState, through: 0 | 1 | 2 | 3): boolean {
   if (state.phase === 'gameover') return true
   return state.phase === 'chapter' && state.act >= through
 }

@@ -5,7 +5,7 @@ import { advance } from '../../src/sim/advance.ts'
 import { playFrom, playGame, replay } from '../../src/sim/replay.ts'
 import { SAVE_VERSION, restoreSave } from '../../src/sim/save.ts'
 import { newPrologueGame } from '../../src/sim/prologue/setup.ts'
-import { newGame, type GameState } from '../../src/sim/state.ts'
+import { newGame, toAct3, type GameState } from '../../src/sim/state.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import {
   decodeSave,
@@ -227,11 +227,10 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
     }
   })
 
-  it('migrates a version-3 save (Act I, II, or a stub Act III one) to version 4 with nothing else changed (the Act III step, M10)', () => {
+  it('migrates a version-3 save (Act I or II) to version 4 with nothing else changed (the Act III step, M10)', () => {
     for (const s of [
       newGame(7),
       { ...newGame(7), act: 2 as const, quarter: 30 },
-      { ...newGame(7), act: 3 as const, quarter: 40, act3Stub: true as const },
     ]) {
       const v3 = { ...structuredClone(s), version: 3 }
       const r = restoreSave(v3)
@@ -239,6 +238,22 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       if (!r.ok) return
       expect(r.state).toEqual({ ...s, version: 4 })
     }
+  })
+
+  it('drops M10’s act3Stub key on load (it only ever existed in test-made saves), and keeps an Act III game’s scenario and reveal (M11.3)', () => {
+    const old = {
+      ...toAct3(newGame(7), { scenario: 's1' }),
+      act3Stub: true,
+    }
+    const r = restoreSave(structuredClone(old))
+    expect(r.ok).toBe(true)
+    if (!r.ok) return
+    expect('act3Stub' in r.state).toBe(false)
+    expect(r.state.scenarioId).toBe('s1')
+    expect(r.state.act3SignalReads).toEqual([])
+    // Act III's last quarter is 2030Q4: a save past it is refused.
+    expect(restoreSave({ ...toAct3(newGame(7)), quarter: 56 }).ok).toBe(false)
+    expect(restoreSave({ ...toAct3(newGame(7)), quarter: 55 }).ok).toBe(true)
   })
 
   it('accepts an act-0 (prologue) save only inside the prologue’s quarters', () => {
