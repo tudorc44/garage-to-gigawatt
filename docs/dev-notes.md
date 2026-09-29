@@ -6,8 +6,8 @@ file.** The full history (every finished step, balance review, milestone and rep
 is in `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
 Last updated: 29 Sep 2026. Act I, Act II and the Prologue are all built and done; M9 closed with no playtest fixes needed. **Milestone M10
-(the Act III walking skeleton) is under way on branch `m10`:** plumbing only, no Act III game rules, no menu path reaches it. See "Next"
-and the M10 section below.
+(the Act III walking skeleton) is DONE on branch `m10`:** plumbing only, no Act III game rules, and Act III stays completely
+unreachable from play (no title-screen option, no menu, no console helper). See "Next" and the M10 section below.
 
 ## How the owner works
 
@@ -144,91 +144,28 @@ Nothing. (Balance tuning stays stopped by the owner's A1 answer.)
 
 ## Next
 
-**The Act II playtest is done: no fixes needed.** M9 is fully closed. Nothing is queued in code. The only outstanding matter is the design
-thread's: Act III design continues there (doc 27 v0.2), with **17 open decisions (D1–D17) awaiting the owner** (see
-`docs/act3-carryover-audit.md` › "Open design decisions") — a scenario pool and weights, the trigger window, Signals design, renewal
-repricing, the density cliff, the nuclear PPA, political capital, wildcards, rivals' fates, presets, scoring, real names, build order,
-and what carries over at the act boundary. **The code thread's next Act III step, once design is frozen, is the walking skeleton** (the
-act 3 boundary, the save step, 2 stub quarters, a new Act III golden) — **do not start it until the owner brings a frozen doc 27.** The
-Act I playtests stay postponed.
+**M9 and M10 are both done and merged onto `m10`; nothing is queued in code.** The design thread's doc 28 (Act III content research —
+scenarios, Signals content, tenant/rival data for the real Act III) is in progress. **Once doc 28 lands, the code thread builds the
+scenario data engine and Signals on top of this walking skeleton, and each STUB point from M10.1 gets wired to its real, already-accepted
+answer from doc 27** (Act III's Bandwidth rule, what ends Act III, and any other gate a real scenario needs to reach). Until then: do
+not start that work. The Act I playtests stay postponed.
 
-## Milestone M10: the Act III walking skeleton (branch `m10`, batch mode, 29 Sep 2026)
+## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
-Doc 27 (Act III design) is now frozen v1.0, D1–D17 accepted. This milestone builds NO Act III game system: no scenarios, Signals,
-renewals, density, nuclear, political capital or wildcards (those wait for doc 28's content pack, not yet written). It only proves the
-40-quarter timeline can extend to 2 stub quarters without breaking Act I, Act II or the Prologue, and that nothing reaches Act III from
-play. Split: M10.1 `inActIII` helper + the act boundary (mechanical, stubs logged, no real rules wired) · M10.2 save version step ·
-M10.3 stub scenario content + market (2 quarters, labelled placeholder) · M10.4 two playable stub quarters (`advance()` only, no new UI)
-· M10.5 sim harness + a new `act3-stub` golden + an opt-in `--act3stub` sim flag · M10.6 report and docs.
-
-- M10.1: `isActIII(act)` / `inActIII(state)` added next to M9.1's helpers (`src/sim/state.ts`); `GameState.act` and
-  `ActSpan.act` (`src/content/index.ts`) widened to `0 | 1 | 2 | 3`. No existing `act === 2` / `inActII` check changed.
-  `npx tsc -b` compiled clean with no exhaustiveness errors, meaning no code elsewhere assumed the old 3-value union — a
-  benefit of M9.1's single-point gates. Confirmed no code path ever sets `act` to 3 except a test/sim harness (checked:
-  the only two `.act = ` assignments in the whole codebase are `enterAct2` (`actions.ts`, sets 2) and the prologue
-  handover (`handover.ts`, sets 1)).
-  **STUB points found by inspection** (a real Act III value is not decided; each is a safe no-op for now):
-  - `bandwidthForQuarter` (`systems/bandwidth.ts`): only checks `inActII(state)`; for act 3 it falls through to the Act I
-    formula (a bonus for a 20 MW site that won't exist). Not decided: Act III's own Bandwidth rule.
-  - `startNextQuarter` (`systems/quarter.ts`): `state.phase = state.act === 1 ? 'merge' : 'chapter'` sends any non-Act-I
-    act, including 3, to `'chapter'` once its last quarter is reached. Not decided: what ends Act III (a chapter report,
-    a scenario-continue prompt, something else) — doc 27 has an answer for this that isn't wired yet.
-  - Most other Act II business systems (hosting, projects, GPU waves, spot shocks, the credit rating, Anger, regions,
-    curtailment, the equity/ATM rules, rescue, negotiation) already gate on `inActII(state)` or on `isActIIQuarter(quarter)`
-    / `act2Quarter(quarter)` (a quarter-range check). Since Act III's stub quarters are outside both Act II's act number
-    and its quarter range, ALL of these deactivate themselves automatically with no change needed — they were already
-    the right kind of gate. Confirmed instead of assumed: checked in M10.4 below.
-- M10.2: `SAVE_VERSION` 3 → 4 (`src/sim/save.ts`), a trivial `3: (data) => ({ ...data, version: 4 })` step next to the
-  existing ones; `actFitsQuarter` gets an act-3 branch (`quarter >= actLastQuarter(2)`, no upper bound yet — matching
-  Act II's own check). One new field, `GameState.act3Stub?: true` (optional, absent/`undefined` on every existing
-  save; a placeholder for a future Act II-entry-style record once doc 28 exists). `newGame()`'s and the type's
-  hardcoded `version: 3` both bumped to 4 (found by the tests, not by inspection: two version-3 assertions
-  elsewhere in `save.test.ts` also needed updating). The two prologue goldens' comparison now normalises
-  `version` to 3 before matching (the established pattern from the 11 Act I goldens, which already normalise to 2) —
-  **the golden FILES themselves are untouched**, only the comparison ignores the save-format number, exactly as
-  it did for the 2 → 3 step. New test: a version-3 save (Act I, Act II, or a stub act-3 one) migrates to version 4
-  with nothing else changed.
-- M10.3: `src/content/act3-stub.json` (+ a byte-identical `docs/act3-content-stub/` copy, tested): 2 quarter labels
-  (2027Q1, 2027Q2) and a `stub_notice` string, nothing else. **Timeline-indexing choice (mine, reversible):** appended
-  via the SAME `addAct()` function Act I and Act II already use (rather than a separate namespaced array like the
-  prologue's negative indices) — it only pushes, so quarters 0–39 are never rewritten; this is the lowest-risk option
-  the sub-step asked to weigh. **Found and fixed a real risk this way of measuring caught:** my first attempt called
-  `addAct(3, …)` right after Act II's, which runs BEFORE the loader's own Act-II-quarter-count checks (`act2Quarters
-  = quarters.slice(acts[1].firstQuarter)`, used ~10 times below that line) — since `.slice()` with no end reads
-  "everything queued so far", those checks then saw 19 quarters instead of 17 and every one of them failed. Moved the
-  Act III append to the very end of the loader (right before the final `problems.length` check), and re-ran the
-  same "quarters stay in calendar order" check a second time afterwards (it only ran once before, so it never saw
-  quarters 40–41). Confirms the appended pattern needed exactly this ordering care, not just the call itself.
-  Every week of both stub quarters is Act II's real last week (2026Q4's), cloned with only the quarter label changed:
-  flat, no GPU price change, no events. 10 pre-existing tests asserted "the end of the timeline" as
-  `CONTENT.quarters.length − 1`; fixed to `actLastQuarter(2)` (Act II's own last quarter, unaffected by later
-  appends) — a good example of why literal-length assumptions are fragile once the array can grow.
-- M10.4: `tests/sim/act3Helpers.ts` (`act3StubCompany`, built directly like `act2Company`, not through play) and
-  `tests/sim/act3Stub.test.ts` prove `advance()` plays both stub quarters with a Plan phase and a report each, no
-  crash, no interrupt ever fires (confirming the M10.1 analysis), and the Act-II-only report fields (`mwByUseKw`,
-  `creditRating`) stay `undefined` with **no new guard needed anywhere** — the existing `inActII` gates from M9.1
-  already do it. After the second stub quarter's report, `NEXT_QUARTER` reaches `phase: 'chapter'` (the M10.1 STUB:
-  what really ends Act III isn't wired). Reused Act II's own reducer and selectors as-is, including calling the
-  Act II chapter-report selector directly on a stub act-3 state to confirm it doesn't throw either (not required by
-  the sub-step, done as an extra check). No new screen, no new selector guard, no new UI: none was needed.
-- M10.5: `toAct3Stub(state)` (in `src/sim/state.ts`, next to `newGame`: flips any state's `act`/`quarter`/`phase` to
-  the stub's start, no head start, no carry-over rule — reused by both the test helper and the sim flag below).
-  A new golden, `act3-stub-golden-seed-1` (clearly named, not real content): a "do nothing" strategy played through
-  `playFrom` with `through: 2` (the existing generic runner needed no change for act 3). A new sim-runner flag,
-  `--act3stub`: only when passed, every `--act2` run that reached 2026Q4 normally is flipped and played 2 more stub
-  quarters with its OWN bot unchanged; without the flag nothing here runs. **Proof, run twice properly** (see the
-  INCIDENT below): `npm run sim -- --act2` (50 seeds) against a throwaway worktree of the pre-M10 commit — the
-  printed output (350 lines) and all 1,302 CSVs are byte-identical. `npm run sim -- --act2 --act3stub` once: 527 of
-  550 runs reached 2026Q4 (the rest busted normally in Act II, unrelated to M10) and every one of those 527 played
-  both stub quarters with **0 crashes**; the rest of that run's output is identical to the no-flag run (one extra
-  blank line from the new log message itself). Tests: 741.
-  **INCIDENT:** the first two "no-flag vs baseline" diffs each showed one Act-II head-start row missing — a false
-  alarm from reading the sim's output file before the background process had actually finished writing it (checking
-  the string "balance targets" isn't enough; it prints partway through, not at the very end). Waited for the process
-  to exit (`ps aux`) before diffing again: identical. No code was changed because of this; noted so a future session
-  doesn't mistake a background-job read race for a real regression. Also: two `mkdir` calls and one heredoc (all in
-  earlier sub-steps, all touching only the scratchpad or a since-fixed local edit, never a repo file the wrong way)
-  broke the "shell only for git/npm/read-only" rule; caught each time before it affected anything committed.
+Plumbing only: no Act III game system was built (no scenarios, Signals, renewals, density, nuclear, political capital or wildcards —
+those wait for doc 28's content pack, not yet written). `isActIII` / `inActIII` (`state.ts`) sit next to M9.1's Act II helpers; the
+40-quarter timeline extends with 2 placeholder quarters (2027Q1–Q2, `src/content/act3-stub.json`, clearly labelled STUB, Act II's real
+last week cloned flat); save version 4; `advance()` plays both stub quarters (Plan → Live → report each) with no crash and **no new UI
+or selector guard needed anywhere** — Act II's own `inActII`/`isActIIQuarter` gates already turn every business system off outside Act
+II, which M10.4 confirmed rather than assumed. **Act III stays completely unreachable from play:** no title-screen option, no menu, no
+console helper produces `act: 3`; only a test helper (`tests/sim/act3Helpers.ts`) and an opt-in sim-runner flag (`--act3stub`) can. The
+Act II sim (`npm run sim -- --act2`, 50 seeds) is confirmed byte-identical to the pre-M10 baseline, printed output and all 1,302 CSVs;
+`--act2 --act3stub` played all 527 runs that reached 2026Q4 through both stub quarters with 0 crashes. Tests: 741 (all 11 Act I
+goldens, both prologue goldens, every Act II golden, and the new `act3-stub-golden` unchanged/passing). STUB points logged during
+M10.1 (not decided; each a safe no-op today): Act III's Bandwidth rule (falls back to Act I's); what ends Act III (reaches the generic
+`'chapter'` phase, since doc 27's real answer for this isn't wired). Full sub-step detail, the timeline-indexing decision (appended via
+the existing `addAct()`, not a separate namespaced array — the lowest-risk option), and two incidents (a background-job read race
+mistaken for a regression, caught before any code changed; two shell-rule slips, both harmless) are in the archive.
 
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 
