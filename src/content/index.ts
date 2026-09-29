@@ -176,8 +176,13 @@ export interface ActSpan {
 
 /** One Act III market scenario: 16 quarters (2027Q1–2030Q4), each with its quarterly row and 13 weeks. */
 export interface Act3Scenario {
-  /** The quarterly market file, one row per quarter (not read by the sim yet). */
+  /** The quarterly market file, one row per quarter. */
   quarterly: MarketQuarterAct3Row[]
+  /**
+   * The same rows in Act II's shape (M11.4a), with the era multiples read from the file's own
+   * mining and ai_infra columns (rebased at the boundary). Read through quarterInputs().
+   */
+  inputs: Act2Quarter[]
   /** weeks[n][week]: n = 0 is the first Act III quarter (2027Q1); exactly 13 weeks each. */
   weeks: MarketWeek[][]
 }
@@ -1603,7 +1608,16 @@ export function parseContent(raw: RawContent): Content {
               `${quarterlyFile} › ${r.quarter}: BTC close ${r.btc_usd_close} doesn't match ${weeklyFile}'s last week (${last.btc_usd})`,
             )
         })
-      act3Scenarios[id] = { quarterly, weeks }
+      act3Scenarios[id] = {
+        quarterly,
+        weeks,
+        inputs: quarterly.map((r) =>
+          act2QuarterOf(r, {
+            mining: r.mining_ev_ebitda_mult,
+            aiInfra: r.ai_infra_ev_ebitda_mult,
+          }),
+        ),
+      }
     }
     // Act III's timeline (M11.3): the scenario files' 16 quarters (2027Q1–2030Q4), appended last, after
     // every Act II check above that assumes Act II's 17 real quarters end the timeline (mine, reversible:
@@ -1784,7 +1798,8 @@ function act3Week(row: MarketWeekAct3, lastAct2: MarketWeek): MarketWeek {
 
 /** A market_quarterly_act2 row, reshaped for the sim. */
 function act2QuarterOf(
-  r: MarketQuarterAct2Row,
+  // Act II's rows and Act III's scenario rows share every column this reads (the BTC and ETH closes are not read).
+  r: Omit<MarketQuarterAct2Row, 'btc_usd_close' | 'eth_usd_close'>,
   multiple: Act2Quarter['multiple'],
 ): Act2Quarter {
   return {
@@ -1848,6 +1863,26 @@ function act2QuarterOf(
 /** Act II's market for a quarter index, or undefined in Act I. */
 export function act2Quarter(quarter: number): Act2Quarter | undefined {
   return CONTENT.act2Market[quarter - CONTENT.acts[1].firstQuarter]
+}
+
+/**
+ * A quarter's market inputs in Act II's shape, in both acts (M11.4a). In Act II (and Act I) this is
+ * exactly act2Quarter(quarter). In Act III, with the drawn scenario, it is that scenario's
+ * market_sN.csv row for the quarter (multiples from its rebased columns). An Act III quarter
+ * without a scenario throws, like marketWeek. No system reads this for Act III yet (M11.4c).
+ */
+export function quarterInputs(
+  quarter: number,
+  scenario?: ScenarioId | null,
+): Act2Quarter | undefined {
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  if (quarter < act3.firstQuarter || quarter > act3.lastQuarter)
+    return act2Quarter(quarter)
+  if (!scenario)
+    throw new RangeError(
+      `Quarter ${quarter} is in Act III, whose market inputs are read only through a scenario (none given)`,
+    )
+  return CONTENT.act3Scenarios[scenario].inputs[quarter - act3.firstQuarter]
 }
 
 /**
