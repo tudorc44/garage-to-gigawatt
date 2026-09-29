@@ -8,7 +8,8 @@ import type { Message } from '../../i18n/t.ts'
 import { random, substream } from '../rng.ts'
 import { logEntry, type Coin, type GameState } from '../state.ts'
 import { readMarketBandwidth } from './hires.ts'
-import { coinPrice } from './market.ts'
+import { coinPrice, quarterWeeks, scenarioOf } from './market.ts'
+import type { ScenarioId } from '../../content/index.ts'
 
 export type Direction = 'up' | 'flat' | 'down'
 
@@ -18,8 +19,12 @@ export interface MarketRead {
 }
 
 /** Where a coin really goes this quarter: Plan-phase price (week 1) to the last week. */
-export function trueDirection(quarter: number, coin: Coin): Direction {
-  const weeks = CONTENT.market[quarter]
+export function trueDirection(
+  quarter: number,
+  coin: Coin,
+  scenario?: ScenarioId | null,
+): Direction {
+  const weeks = quarterWeeks(quarter, scenario)!
   const change = coinPrice(weeks.at(-1)!, coin) / coinPrice(weeks[0], coin) - 1
   const r = CONTENT.readMarket
   return change > r.upThreshold
@@ -53,7 +58,7 @@ export function readMarket(state: GameState): void {
   const reads = { BTC: 'flat', ETH: 'flat' } as Record<Coin, Direction>
   for (const coin of CONTENT.readMarket.assets) {
     const r = substream(state.seed, `read_market:${state.quarter}:${coin}`)
-    const truth = trueDirection(state.quarter, coin)
+    const truth = trueDirection(state.quarter, coin, scenarioOf(state))
     const right = random(r) < CONTENT.readMarket.accuracy
     reads[coin] = right ? truth : oneStepOff(truth, random(r))
   }

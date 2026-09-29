@@ -12,7 +12,7 @@ import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream } from '../rng.ts'
 import { inActII, logEntry, type GameState, type Project } from '../state.ts'
 import { absWeek } from './eventEffects.ts'
-import { previousMarketWeek } from './market.ts'
+import { previousMarketWeek, scenarioOf } from './market.ts'
 import { neocloudUsdHr } from './projects.ts'
 
 const S = BALANCE.act2Spot
@@ -61,7 +61,7 @@ export function checkSpotAlerts(state: GameState, w: MarketWeek): void {
     }
   }
   if (state.interrupt || capFull(state) || !clusters) return
-  const prev = previousMarketWeek(state.quarter, state.week)
+  const prev = previousMarketWeek(state.quarter, state.week, scenarioOf(state))
   const now = w.gpu_h100_spot_usd_hr
   const before = prev?.gpu_h100_spot_usd_hr
   if (!now || !before) return

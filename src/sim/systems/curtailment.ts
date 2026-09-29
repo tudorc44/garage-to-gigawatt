@@ -17,7 +17,7 @@ import {
   type Site,
 } from '../state.ts'
 import { addGrievance } from './heat.ts'
-import { getModel, marketWeek } from './market.ts'
+import { getModel, marketWeek, quarterWeeks, scenarioOf } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { mineWeek } from './mining.ts'
 import { annualContractUsd } from './projects.ts'
@@ -146,8 +146,11 @@ export function checkCurtailment(state: GameState): void {
   if (state.interruptsThisQuarter >= CONTENT.interrupts.maxPerQuarter) return
   if (curtailmentAlertWeek(state) !== state.week + 1) return
   const next = state.week + 1
-  if (next >= CONTENT.market[state.quarter].length) return
-  const offer = curtailOffer(state, marketWeek(state.quarter, next))
+  if (next >= quarterWeeks(state.quarter, scenarioOf(state))!.length) return
+  const offer = curtailOffer(
+    state,
+    marketWeek(state.quarter, next, scenarioOf(state)),
+  )
   if (offer.mw <= 0 && (offer.aiMw ?? 0) <= 0) return
   state.interrupt = {
     id: 'curtailment',
@@ -251,7 +254,10 @@ export function checkUri(state: GameState): void {
   const next = state.week + 1
   const shock = shockAt(state, next)
   if (!shock || shock.week !== next) return
-  const offer = curtailOffer(state, marketWeek(state.quarter, next))
+  const offer = curtailOffer(
+    state,
+    marketWeek(state.quarter, next, scenarioOf(state)),
+  )
   offer.stormUsd = stormChargeUsd(state, next)
   if (offer.mw <= 0 && offer.stormUsd <= 0) return
   state.interrupt = {

@@ -167,6 +167,10 @@ M10.1 (not decided; each a safe no-op today): Act III's Bandwidth rule (falls ba
 the existing `addAct()`, not a separate namespaced array — the lowest-risk option), and two incidents (a background-job read race
 mistaken for a regression, caught before any code changed; two shell-rule slips, both harmless) are in the archive.
 
+## Milestone M11 (branch `m11`, from `main`): Act III scenario engine, in progress
+
+**M11.1 done:** `scenarioId` (s0–s3, absent in Acts I/II and the M10 stub) drawn by `toAct3()` from `substream(seed, "act3_scenario")` at 25/30/25/20 (`BALANCE.act3`); `marketWeek` / `previousMarketWeek` / `trueDirection` take an optional scenario (`scenarioOf(state)`, ignored before Act III) and the 8 `market_s*` / `market_weekly_s*` CSVs are loaded into `CONTENT.act3Scenarios` (byte copies of `docs/act3-content/`, own chunks in `vite.config.ts`); 757 tests. ETH price holds at Act II's last week in scenarios (mine, reversible).
+
 ## Milestones M8, M8.7, M8.8, M8.9 and M9 (finished; the step logs are in the archive)
 
 M8 finished Act II (the report additions, the GPU failure wave, the know-how display, measurement decisions, the hosting head start,

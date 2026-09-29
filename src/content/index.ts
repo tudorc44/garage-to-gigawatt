@@ -24,6 +24,14 @@ import prologueRaw from './prologue.json' with { type: 'json' }
 import eventsPrologueRaw from './events_prologue.json' with { type: 'json' }
 import hiresAct2Raw from './hires_act2.json' with { type: 'json' }
 import act3StubRaw from './act3-stub.json' with { type: 'json' }
+import marketS0Raw from './market_s0.json' with { type: 'json' }
+import marketS1Raw from './market_s1.json' with { type: 'json' }
+import marketS2Raw from './market_s2.json' with { type: 'json' }
+import marketS3Raw from './market_s3.json' with { type: 'json' }
+import marketWeeklyS0Raw from './market_weekly_s0.json' with { type: 'json' }
+import marketWeeklyS1Raw from './market_weekly_s1.json' with { type: 'json' }
+import marketWeeklyS2Raw from './market_weekly_s2.json' with { type: 'json' }
+import marketWeeklyS3Raw from './market_weekly_s3.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
@@ -65,8 +73,13 @@ import {
   interruptsFileSchema,
   machinesFileSchema,
   marketAct2Schema,
+  marketAct3Schema,
   marketQuarterlyAct2Schema,
+  marketQuarterlyAct3Schema,
   marketSchema,
+  SCENARIO_IDS,
+  type MarketQuarterAct3Row,
+  type ScenarioId,
   negotiationRulesSchema,
   rivalsFileSchema,
   rivalsAct2FileSchema,
@@ -98,6 +111,7 @@ import {
   type MarketWeek,
   type MarketWeekAct1,
   type MarketWeekAct2,
+  type MarketWeekAct3,
   type MarketQuarterAct2Row,
   type NegotiationRules,
   type PitchRules,
@@ -110,7 +124,9 @@ import {
 } from './schemas.ts'
 
 export { BALANCE }
+export { SCENARIO_IDS }
 export type {
+  ScenarioId,
   MarketEffect,
   RegionPolicy,
   SiteCategory,
@@ -146,6 +162,14 @@ export interface ActSpan {
   act: 0 | 1 | 2 | 3
   firstQuarter: number
   lastQuarter: number
+}
+
+/** One Act III market scenario: 16 quarters (2027Q1–2030Q4), each with its quarterly row and 13 weeks. */
+export interface Act3Scenario {
+  /** The quarterly market file, one row per quarter (not read by the sim yet). */
+  quarterly: MarketQuarterAct3Row[]
+  /** weeks[n][week]: n = 0 is the first Act III quarter (2027Q1); exactly 13 weeks each. */
+  weeks: MarketWeek[][]
 }
 
 /** A tenant type (tenants.json); each has its own walk-away chance at 2 quarters late. */
@@ -341,6 +365,11 @@ export interface Content {
   acts: ActSpan[]
   /** Act II's quarterly market, in quarter order (index 0 = 2022Q4). See act2Quarter(). */
   act2Market: Act2Quarter[]
+  /**
+   * Act III's four market scenarios (M11.1). Read only by a state in Act III that has a scenario id
+   * (marketWeek's optional argument); nothing else reads them yet.
+   */
+  act3Scenarios: Record<ScenarioId, Act3Scenario>
   /** Hosting (scope 0.2 §2.4): the same-site conversion and the all-in rate by year. */
   hosting: {
     /** conversions.json › mining_to_hosting_same_site. */
@@ -492,6 +521,8 @@ export interface RawContent {
   marketAct2: unknown
   marketQuarterlyAct2: unknown
   marketPrologue: unknown
+  /** The four Act III scenarios' market files (M11.1): quarterly (market_sN) and weekly. */
+  act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
   capital: unknown
   capitalAct2: unknown
   conversions: unknown
@@ -1512,6 +1543,85 @@ export function parseContent(raw: RawContent): Content {
     )
     addAct(3, 'act3-stub.json', stubRows, false)
   }
+  // Act III's four market scenarios (M11.1): validated like Act I/II's files, then kept apart from the
+  // shared `market` array (a scenario is read only through marketWeek's optional argument, so every
+  // Act I/II quarter index and read is untouched). Scenario quarter n sits at timeline index
+  // (first Act III quarter + n); the stub timeline only reaches the first 2 of the 16.
+  const act3Scenarios = {} as Record<ScenarioId, Act3Scenario>
+  {
+    const lastReal = market[acts[1].lastQuarter].at(-1)!
+    const firstLabel = nextQuarter(quarters[acts[1].lastQuarter])
+    for (const id of SCENARIO_IDS) {
+      const raw3 = raw.act3Scenarios[id]
+      const weeklyFile = `market_weekly_${id}`
+      const quarterlyFile = `market_${id}`
+      const weekly = check(weeklyFile, marketAct3Schema, raw3.weekly)
+      const quarterly = check(
+        quarterlyFile,
+        marketQuarterlyAct3Schema,
+        raw3.quarterly,
+      )
+      if (!weekly || !quarterly) continue
+      const labels: string[] = []
+      const weeks: MarketWeek[][] = []
+      for (const row of weekly) {
+        if (row.scenario !== id)
+          problems.push(
+            `${weeklyFile} › week ${row.week}: scenario is ${row.scenario}, expected ${id}`,
+          )
+        if (labels.at(-1) !== row.quarter) {
+          if (labels.includes(row.quarter))
+            problems.push(
+              `${weeklyFile} › week ${row.week}: quarter ${row.quarter} appears twice`,
+            )
+          labels.push(row.quarter)
+          weeks.push([])
+        }
+        weeks.at(-1)!.push(act3Week(row, lastReal))
+      }
+      labels.forEach((label, i) => {
+        const expected = i === 0 ? firstLabel : nextQuarter(labels[i - 1])
+        if (label !== expected)
+          problems.push(
+            `${weeklyFile} › ${label}: expected ${expected} (quarters run on from 2026Q4 with no gap)`,
+          )
+        if (weeks[i].length !== perQuarter)
+          problems.push(
+            `${weeklyFile} › ${label}: has ${weeks[i].length} weeks, expected exactly ${perQuarter}`,
+          )
+      })
+      if (quarterly.map((r) => r.quarter).join() !== labels.join())
+        problems.push(
+          `${quarterlyFile}: quarters (${quarterly.map((r) => r.quarter).join(', ')}) don't match ${weeklyFile}'s (${labels.join(', ')})`,
+        )
+      else
+        quarterly.forEach((r, i) => {
+          if (r.scenario !== id)
+            problems.push(
+              `${quarterlyFile} › ${r.quarter}: scenario is ${r.scenario}, expected ${id}`,
+            )
+          // The quarter's close is its last week's, as in Act II.
+          const last = weeks[i].at(-1)!
+          if (Math.abs(r.btc_usd_close - last.btc_usd) > 0.01)
+            problems.push(
+              `${quarterlyFile} › ${r.quarter}: BTC close ${r.btc_usd_close} doesn't match ${weeklyFile}'s last week (${last.btc_usd})`,
+            )
+        })
+      act3Scenarios[id] = { quarterly, weeks }
+    }
+    // The stub timeline's own labels must be the first scenario quarters (they share one calendar).
+    const stubLabels = quarters.slice(
+      acts.find((a) => a.act === 3)!.firstQuarter,
+    )
+    for (const id of SCENARIO_IDS)
+      stubLabels.forEach((label, i) => {
+        const q = act3Scenarios[id]?.quarterly[i]?.quarter
+        if (q !== undefined && q !== label)
+          problems.push(
+            `market_${id}: quarter ${i + 1} is ${q}, but the Act III timeline has ${label}`,
+          )
+      })
+  }
   // The same sequential check as above, re-run now the Act III stub is appended (it ran earlier,
   // before this addition, so it never saw quarters 40–41): catches an off-by-one in the stub's
   // own quarter labels the same way it would for Act I or Act II.
@@ -1530,6 +1640,7 @@ export function parseContent(raw: RawContent): Content {
     market,
     acts,
     act2Market,
+    act3Scenarios,
     hosting,
     projects,
     finance,
@@ -1621,6 +1732,38 @@ function act2Week(row: MarketWeekAct2): MarketWeek {
     eth_blocks_day: null,
     eth_block_reward: null,
     eth_rev_usd_mh_day: 0,
+  }
+}
+
+/**
+ * An Act III scenario week, shaped like Act II's: no ETH mining (revenue 0, network columns null).
+ * The scenario files carry no ETH price, so it holds at Act II's last week's (mine, reversible: keeps
+ * an ETH treasury from being valued at $0; nothing mines or buys ETH in Act III).
+ */
+function act3Week(row: MarketWeekAct3, lastAct2: MarketWeek): MarketWeek {
+  return {
+    week: row.week,
+    quarter: row.quarter,
+    btc_usd: row.btc_usd,
+    eth_usd: lastAct2.eth_usd,
+    btc_difficulty_T: row.btc_difficulty_T,
+    btc_hashrate_EHs: row.btc_hashrate_EHs,
+    btc_block_subsidy: row.btc_block_subsidy,
+    btc_fee_share: row.btc_fee_share,
+    btc_hashprice_usd_th_day: row.btc_hashprice_usd_th_day,
+    btc_hashprice_usd_ph_day: row.btc_hashprice_usd_ph_day,
+    eth_hashrate_THs: null,
+    eth_blocks_day: null,
+    eth_block_reward: null,
+    eth_rev_usd_mh_day: 0,
+    asic_price_usd_th_old: row.asic_price_usd_th_old,
+    asic_price_usd_th_mid: row.asic_price_usd_th_mid,
+    asic_price_usd_th_new: row.asic_price_usd_th_new,
+    asic_price_usd_th_latest: row.asic_price_usd_th_latest,
+    gpu_h100_hyperscaler_usd_hr: row.gpu_h100_hyperscaler_usd_hr,
+    gpu_h100_neocloud_usd_hr: row.gpu_h100_neocloud_usd_hr,
+    gpu_h100_spot_usd_hr: row.gpu_h100_spot_usd_hr,
+    estimate: row.estimate,
   }
 }
 
@@ -1767,6 +1910,12 @@ export const CONTENT: Content = parseContent({
   marketAct2: marketAct2Raw,
   marketQuarterlyAct2: marketQuarterlyAct2Raw,
   marketPrologue: marketPrologueRaw,
+  act3Scenarios: {
+    s0: { quarterly: marketS0Raw, weekly: marketWeeklyS0Raw },
+    s1: { quarterly: marketS1Raw, weekly: marketWeeklyS1Raw },
+    s2: { quarterly: marketS2Raw, weekly: marketWeeklyS2Raw },
+    s3: { quarterly: marketS3Raw, weekly: marketWeeklyS3Raw },
+  },
   capital: capitalRaw,
   capitalAct2: capitalAct2Raw,
   conversions: conversionsRaw,

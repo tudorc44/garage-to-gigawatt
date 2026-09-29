@@ -39,6 +39,14 @@ import shocks from '../src/content/shocks.json' with { type: 'json' }
 import hires from '../src/content/hires.json' with { type: 'json' }
 import merge from '../src/content/merge.json' with { type: 'json' }
 import events from '../src/content/events.json' with { type: 'json' }
+import marketS0 from '../src/content/market_s0.json' with { type: 'json' }
+import marketS1 from '../src/content/market_s1.json' with { type: 'json' }
+import marketS2 from '../src/content/market_s2.json' with { type: 'json' }
+import marketS3 from '../src/content/market_s3.json' with { type: 'json' }
+import marketWeeklyS0 from '../src/content/market_weekly_s0.json' with { type: 'json' }
+import marketWeeklyS1 from '../src/content/market_weekly_s1.json' with { type: 'json' }
+import marketWeeklyS2 from '../src/content/market_weekly_s2.json' with { type: 'json' }
+import marketWeeklyS3 from '../src/content/market_weekly_s3.json' with { type: 'json' }
 import { MARKET_FILES, csvToRows } from '../tools/market-csv-to-json.ts'
 import { marketWeek, previousMarketWeek } from '../src/sim/systems/market.ts'
 
@@ -51,6 +59,12 @@ const raw = (): RawContent =>
     marketAct2,
     marketQuarterlyAct2,
     marketPrologue,
+    act3Scenarios: {
+      s0: { quarterly: marketS0, weekly: marketWeeklyS0 },
+      s1: { quarterly: marketS1, weekly: marketWeeklyS1 },
+      s2: { quarterly: marketS2, weekly: marketWeeklyS2 },
+      s3: { quarterly: marketS3, weekly: marketWeeklyS3 },
+    },
     machinesPrologue,
     prologue,
     eventsPrologue,
@@ -216,6 +230,14 @@ describe('content loads', () => {
       'market_weekly.json': market,
       'market_weekly_act2.json': marketAct2,
       'market_quarterly_act2.json': marketQuarterlyAct2,
+      'market_s0.json': marketS0,
+      'market_s1.json': marketS1,
+      'market_s2.json': marketS2,
+      'market_s3.json': marketS3,
+      'market_weekly_s0.json': marketWeeklyS0,
+      'market_weekly_s1.json': marketWeeklyS1,
+      'market_weekly_s2.json': marketWeeklyS2,
+      'market_weekly_s3.json': marketWeeklyS3,
     }
     for (const [csvName, jsonName] of MARKET_FILES) {
       const csv = readFileSync(
@@ -244,6 +266,44 @@ describe('content loads', () => {
       expect(read(`../src/content/${game}`), game).toBe(
         read(`../docs/act2-content/${docs}`),
       )
+  })
+
+  it('the Act III market files are byte-identical copies of docs/act3-content/ (M11.1)', () => {
+    const read = (path: string) =>
+      readFileSync(new URL(path, import.meta.url), 'utf8')
+    for (const id of ['s0', 's1', 's2', 's3'])
+      for (const name of [`market_${id}.csv`, `market_weekly_${id}.csv`])
+        expect(read(`../src/content/${name}`), name).toBe(
+          read(`../docs/act3-content/${name}`),
+        )
+  })
+
+  it('the Act III scenarios load: 4 scenarios × 16 quarters × 13 weeks, from 2027Q1 to 2030Q4', () => {
+    for (const id of ['s0', 's1', 's2', 's3'] as const) {
+      const s = CONTENT.act3Scenarios[id]
+      expect(s.quarterly.map((r) => r.quarter)).toEqual(
+        s.weeks.map((w) => w[0].quarter),
+      )
+      expect(s.weeks).toHaveLength(16)
+      expect(s.weeks[0][0].quarter).toBe('2027Q1')
+      expect(s.weeks[15][0].quarter).toBe('2030Q4')
+      for (const weeks of s.weeks) expect(weeks).toHaveLength(13)
+    }
+  })
+
+  it('a scenario with a wrong id, a gap in its quarters or a broken close is refused', () => {
+    const bad = raw()
+    bad.act3Scenarios.s1 = structuredClone(bad.act3Scenarios.s0)
+    expect(problemsFor(bad)).toContainEqual(
+      expect.stringMatching(/^market_weekly_s1 › week .*scenario is s0/),
+    )
+    const closes = raw()
+    ;(
+      closes.act3Scenarios.s2.quarterly as { btc_usd_close: number }[]
+    )[3].btc_usd_close += 1000
+    expect(problemsFor(closes)).toEqual([
+      expect.stringMatching(/^market_s2 › 2027Q4: BTC close/),
+    ])
   })
 
   it('the Act III stub file is the same copy in docs/act3-content-stub/ (M10)', () => {

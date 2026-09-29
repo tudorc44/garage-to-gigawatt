@@ -15,7 +15,17 @@ export default defineConfig({
         codeSplitting: {
           groups: [
             { name: 'vendor', test: /node_modules/ },
-            { name: 'market', test: /src[\\/]content[\\/]market_[^\\/]*\.json/ },
+            // Act III's four scenarios (M11.1): one file each, so no file goes over 500 KB.
+            ...[0, 1, 2, 3].map((n) => ({
+              name: `market-s${n}`,
+              test: new RegExp(
+                String.raw`src[\\/]content[\\/]market_(weekly_)?s${n}\.json`,
+              ),
+            })),
+            {
+              name: 'market',
+              test: /src[\\/]content[\\/]market_[^\\/]*\.json/,
+            },
             { name: 'text', test: /src[\\/]i18n[\\/].*\.json/ },
             { name: 'content', test: /src[\\/]content[\\/].*\.json/ },
           ],

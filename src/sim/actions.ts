@@ -84,7 +84,7 @@ import {
   repayEquipmentLoan,
   takeEquipmentLoan,
 } from './systems/loans.ts'
-import { getModel, marketWeek } from './systems/market.ts'
+import { getModel, marketWeek, scenarioOf } from './systems/market.ts'
 import { sellTreasury, treasuryValueUsd } from './systems/treasury.ts'
 import {
   endHosting,
@@ -368,7 +368,7 @@ function run(s: GameState, a: Action): Message | undefined {
       s.quarterStats.startCash = s.cash
       s.quarterStats.startTreasuryUsd = treasuryValueUsd(
         s,
-        marketWeek(s.quarter, 0),
+        marketWeek(s.quarter, 0, scenarioOf(s)),
       )
       return
 
@@ -765,7 +765,12 @@ function run(s: GameState, a: Action): Message | undefined {
         return fail('error.no_bandwidth', { needed: bw, have: s.bandwidth })
       s.bandwidth -= bw
       const coins = s.treasury[a.coin] * a.pct
-      const valueUsd = sellTreasury(s, a.pct, marketWeek(s.quarter, 0), a.coin)
+      const valueUsd = sellTreasury(
+        s,
+        a.pct,
+        marketWeek(s.quarter, 0, scenarioOf(s)),
+        a.coin,
+      )
       logEntry(s, 'log.treasury_sold', {
         amount: `${coins.toFixed(4)} ${a.coin}`,
         sharePct: a.pct,

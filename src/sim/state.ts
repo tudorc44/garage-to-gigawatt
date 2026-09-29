@@ -1,6 +1,13 @@
 // The whole game lives in one plain GameState object: no classes, no functions, so it
 // can be copied, compared, saved as JSON and replayed. Systems read and update it.
-import { BALANCE, CONTENT, actFirstQuarter } from '../content/index.ts'
+import {
+  BALANCE,
+  CONTENT,
+  SCENARIO_IDS,
+  actFirstQuarter,
+  type ScenarioId,
+} from '../content/index.ts'
+import { random, substream } from './rng.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
@@ -469,6 +476,12 @@ export interface GameState {
    * Act2Entry: which scenario, what carried over) replaces this once doc 28's content lands.
    */
   act3Stub?: true
+  /**
+   * Act III (M11.1): which market scenario (s0–s3) this game plays, drawn once at the Act II→III
+   * boundary (drawScenario). Absent on every Act I and Act II game, and on the M10 stub state, which
+   * keeps reading the shared market. Only marketWeek's optional argument ever reads it.
+   */
+  scenarioId?: ScenarioId
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
@@ -746,6 +759,31 @@ export function toAct3Stub(state: GameState): GameState {
     phase: 'plan',
     act3Stub: true,
   }
+}
+
+/**
+ * The scenario a game gets at the Act II→III boundary (doc 27 D2: S0 25%, S1 30%, S2 25%, S3 20%).
+ * Its own substream(seed, "act3_scenario"), so it never moves the main RNG and no earlier act's game
+ * changes. The same seed always draws the same scenario.
+ */
+export function drawScenario(seed: number): ScenarioId {
+  const weights = BALANCE.act3.scenarioWeightsPct
+  const roll = random(substream(seed, 'act3_scenario')) * 100
+  let acc = 0
+  for (const id of SCENARIO_IDS) {
+    acc += weights[id]
+    if (roll < acc) return id
+  }
+  return SCENARIO_IDS[SCENARIO_IDS.length - 1]
+}
+
+/**
+ * The Act II→III boundary (M11.1): the same flip as toAct3Stub, plus the scenario draw. No head start
+ * or carry-over rule yet. Never called by the reducer or any UI (Act III stays unreachable from play);
+ * a test/sim harness is the only caller.
+ */
+export function toAct3(state: GameState): GameState {
+  return { ...toAct3Stub(state), scenarioId: drawScenario(state.seed) }
 }
 
 export function newGame(seed: number): GameState {

@@ -30,7 +30,13 @@ import { absWeek, aiDemandDelta } from './eventEffects.ts'
 import type { ScheduledEvent } from './eventEffects.ts'
 import { addGrievance, siteHeatValue } from './heat.ts'
 import { addMachines, removeMachines, saleValueUsd } from './machines.ts'
-import { buyPrice, coinPrice, getModel, marketWeek } from './market.ts'
+import {
+  buyPrice,
+  coinPrice,
+  getModel,
+  marketWeek,
+  scenarioOf,
+} from './market.ts'
 import { backstopBlocker, jvBlocker, setJv, takeBackstop } from './partners.ts'
 import {
   neocloudUsdHr,
@@ -459,7 +465,7 @@ export function resolveEvent(
   const choice = card?.choices.find((c) => c.id === choiceId)
   if (!card || !choice || !eventChoices(state).includes(choiceId))
     return { key: 'error.bad_choice' }
-  const w = marketWeek(state.quarter, active.week)
+  const w = marketWeek(state.quarter, active.week, scenarioOf(state))
   const site = state.sites.find((s) => s.id === active.siteId)
   const r = substream(state.seed, `event_roll:${state.quarter}:${card.id}`)
   const cashBefore = state.cash

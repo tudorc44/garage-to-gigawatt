@@ -4,12 +4,19 @@ import {
   BALANCE,
   CONTENT,
   act1ValueQuarter,
+  actFirstQuarter,
   isActIIQuarter,
   nextQuarter,
   type Machine,
   type MarketWeek,
+  type ScenarioId,
 } from '../../content/index.ts'
-import type { Coin, Condition } from '../state.ts'
+import {
+  inActIII,
+  type Coin,
+  type Condition,
+  type GameState,
+} from '../state.ts'
 
 export function getModel(id: string): Machine | undefined {
   return (
@@ -44,10 +51,41 @@ function prologuePrice(
   return curve[at]
 }
 
+/**
+ * The weeks of a quarter. With no `scenario` (every Act I and Act II call) this is the shared
+ * `CONTENT.market` array, exactly as before. With a scenario id, and a quarter in Act III, it is
+ * that scenario's own file (M11.1): scenario quarter n sits at (first Act III quarter + n). A
+ * scenario id given for a quarter before Act III is ignored, so it can never change earlier acts.
+ * undefined past the end of the data.
+ */
+export function quarterWeeks(
+  quarter: number,
+  scenario?: ScenarioId | null,
+): MarketWeek[] | undefined {
+  if (scenario) {
+    const first = actFirstQuarter(3)
+    if (quarter >= first)
+      return CONTENT.act3Scenarios[scenario].weeks[quarter - first]
+  }
+  return CONTENT.market[quarter]
+}
+
+/** The scenario a state's market reads use: its own in Act III, none (the shared market) otherwise. */
+export function scenarioOf(
+  state: Pick<GameState, 'act' | 'scenarioId'>,
+): ScenarioId | undefined {
+  return inActIII(state) ? state.scenarioId : undefined
+}
+
 /** Market data for a week of a quarter (week 0–12). Throws past the end of the data, so a
- * wrong index fails loudly instead of reading undefined. */
-export function marketWeek(quarter: number, week: number): MarketWeek {
-  const w = CONTENT.market[quarter]?.[week]
+ * wrong index fails loudly instead of reading undefined. Pass `scenarioOf(state)` as `scenario`
+ * to read an Act III scenario's market; leave it out for the shared Act I/II market. */
+export function marketWeek(
+  quarter: number,
+  week: number,
+  scenario?: ScenarioId | null,
+): MarketWeek {
+  const w = quarterWeeks(quarter, scenario)?.[week]
   if (!w)
     throw new RangeError(
       `No market data for quarter ${quarter}, week ${week} (the market has ${CONTENT.market.length} quarters of ${CONTENT.market[0].length} weeks)`,
@@ -59,12 +97,14 @@ export function marketWeek(quarter: number, week: number): MarketWeek {
 export function previousMarketWeek(
   quarter: number,
   week: number,
+  scenario?: ScenarioId | null,
 ): MarketWeek | undefined {
-  if (week > 0) return CONTENT.market[quarter][week - 1]
+  if (week > 0) return quarterWeeks(quarter, scenario)![week - 1]
   // Act I's first week has no week before it, as before the prologue existed (its 2016 weeks sit
   // at negative indices): a 2017 start stays exactly as it was.
   if (quarter === 0) return undefined
-  return CONTENT.market[quarter - 1]?.at(-1)
+  // A scenario's first quarter follows Act II's last: quarterWeeks falls back to the shared market there.
+  return quarterWeeks(quarter - 1, scenario)?.at(-1)
 }
 
 export function coinPrice(w: MarketWeek, coin: Coin): number {

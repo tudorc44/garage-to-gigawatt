@@ -21,7 +21,7 @@ import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { removeMachines } from './machines.ts'
-import { coinPrice, marketWeek } from './market.ts'
+import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { collateralValueUsd } from './cryptoLoan.ts'
 import { startQuarterContracts } from './contracts.ts'
 import { debtUsd } from './loans.ts'
@@ -51,7 +51,11 @@ import { depreciationAudit, lasting } from './eventEffects.ts'
  * Still negative → game over. Otherwise the quarter report is shown.
  */
 export function endQuarter(state: GameState): void {
-  const w = marketWeek(state.quarter, BALANCE.weeksPerQuarter - 1)
+  const w = marketWeek(
+    state.quarter,
+    BALANCE.weeksPerQuarter - 1,
+    scenarioOf(state),
+  )
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   endQuarterGpuWaves(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.

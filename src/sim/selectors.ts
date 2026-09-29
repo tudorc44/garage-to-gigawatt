@@ -35,6 +35,7 @@ import {
   leadTimeQuarters,
   marketWeek,
   previousMarketWeek,
+  scenarioOf,
   revenuePerUnitDay,
 } from './systems/market.ts'
 import {
@@ -203,7 +204,11 @@ export function actTurn(state: GameState): { turn: number; turns: number } {
 /** The market week the player is looking at: week 1 in the Plan phase, the last played week in the live quarter. */
 export function currentMarket(state: GameState): MarketWeek {
   const w = Math.min(Math.max(state.week - 1, 0), BALANCE.weeksPerQuarter - 1)
-  return marketWeek(state.quarter, state.phase === 'plan' ? 0 : w)
+  return marketWeek(
+    state.quarter,
+    state.phase === 'plan' ? 0 : w,
+    scenarioOf(state),
+  )
 }
 
 /** Price change of each coin vs the week before the one on screen. */
@@ -214,7 +219,7 @@ export function priceChanges(state: GameState): {
 } {
   const w = currentMarket(state)
   const weekIdx = state.phase === 'plan' ? 0 : Math.max(state.week - 1, 0)
-  const prev = previousMarketWeek(state.quarter, weekIdx)
+  const prev = previousMarketWeek(state.quarter, weekIdx, scenarioOf(state))
   if (!prev) return { btc: 0, eth: 0, since: null }
   return {
     btc: w.btc_usd / prev.btc_usd - 1,
@@ -1769,6 +1774,7 @@ export function act2MarketView(state: GameState) {
   const prev = previousMarketWeek(
     state.quarter,
     state.phase === 'plan' ? 0 : Math.max(state.week - 1, 0),
+    scenarioOf(state),
   )
   const spot = w.gpu_h100_spot_usd_hr
   const prevSpot = prev?.gpu_h100_spot_usd_hr ?? null

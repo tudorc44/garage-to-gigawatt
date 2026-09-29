@@ -80,6 +80,129 @@ export const act3StubFileSchema = z.object({
   quarters: z.array(quarterId).min(1),
 })
 
+// ---------- market_weekly_s0–s3.json and market_s0–s3.json (M11.1: Act III's four scenarios) ----------
+// Each scenario has a weekly file (16 quarters × 13 weeks, 2027Q1–2030Q4) and a quarterly file
+// (one row per quarter). The columns are Act II's plus the `scenario` id (and, in the quarterly
+// file, the phase and the Act III-only columns). Empty cells are null ("no value"), never 0.
+
+export const SCENARIO_IDS = ['s0', 's1', 's2', 's3'] as const
+export type ScenarioId = (typeof SCENARIO_IDS)[number]
+export const scenarioId = z.enum(SCENARIO_IDS)
+
+export const marketWeekAct3Schema = z.object({
+  week: isoDate,
+  quarter: quarterId,
+  btc_usd: nonNeg,
+  btc_difficulty_T: nonNeg,
+  btc_hashrate_EHs: nonNeg,
+  btc_block_subsidy: nonNeg,
+  btc_fee_share: z.number().min(0).max(1),
+  btc_hashprice_usd_th_day: nonNeg,
+  btc_hashprice_usd_ph_day: nonNeg,
+  asic_price_usd_th_old: nonNeg,
+  asic_price_usd_th_mid: nonNeg,
+  asic_price_usd_th_new: nonNeg,
+  asic_price_usd_th_latest: nonNeg,
+  gpu_h100_hyperscaler_usd_hr: nullableNonNeg,
+  gpu_h100_neocloud_usd_hr: nullableNonNeg,
+  gpu_h100_spot_usd_hr: nullableNonNeg,
+  gpu_rubin_hyperscaler_usd_hr: nullableNonNeg,
+  gpu_rubin_ultra_hyperscaler_usd_hr: nullableNonNeg,
+  scenario: scenarioId,
+  estimate: z.boolean(),
+})
+export const marketAct3Schema = z.array(marketWeekAct3Schema).min(1)
+export type MarketWeekAct3 = z.output<typeof marketWeekAct3Schema>
+
+// Every numeric column of the quarterly file, by name. All are non-negative; the ones that are empty
+// before a product exists (Rubin, nuclear, some GPUs) are null.
+const ACT3_QUARTER_REQUIRED = [
+  'btc_usd_close',
+  'btc_difficulty_T',
+  'btc_hashrate_EHs',
+  'btc_block_subsidy',
+  'btc_hashprice_usd_ph_day',
+  'capex_hosting_usd_mw',
+  'capex_retrofit_shell_usd_mw',
+  'capex_greenfield_shell_usd_mw',
+  'capex_fullstack_incremental_usd_mw',
+  'sofr_pct',
+  'hy_spread_bps',
+  'cap_rate_hyperscale_pct',
+  'mining_ev_ebitda_mult',
+  'ai_infra_ev_ebitda_mult',
+  'ev_per_mw_mining_usd_m',
+  'power_usd_kwh_ercot',
+  'power_usd_kwh_pjm',
+  'power_usd_kwh_ohio',
+  'power_usd_kwh_georgia',
+  'power_usd_kwh_arizona',
+  'power_usd_kwh_nordics',
+  'pjm_capacity_price_usd_mwday',
+  'hyperscaler_capex_usd_bn_q',
+] as const
+const ACT3_QUARTER_NULLABLE = [
+  'gpu_h100_hyperscaler_usd_hr',
+  'gpu_h100_neocloud_usd_hr',
+  'gpu_h100_spot_usd_hr',
+  'gpu_h100_1yr_contract_usd_hr',
+  'gpu_a100_hyperscaler_usd_hr',
+  'gpu_h200_hyperscaler_usd_hr',
+  'gpu_h200_neocloud_usd_hr',
+  'gpu_b200_hyperscaler_usd_hr',
+  'gpu_b200_neocloud_usd_hr',
+  'gpu_gb200nvl72_blended_usd_hr',
+  'h100_unit_purchase_usd',
+  'h100_hgx8_system_usd',
+  'h200_unit_purchase_usd',
+  'b200_unit_purchase_usd',
+  'gb200_nvl72_rack_usd',
+  'ddtl_spread_bps',
+  'ev_per_mw_ai_announced_usd_m',
+  'ev_per_mw_ai_stabilized_usd_m',
+  'gpu_rubin_hyperscaler_usd_hr',
+  'gpu_rubin_neocloud_usd_hr',
+  'gpu_rubin_ultra_hyperscaler_usd_hr',
+  'gpu_rubin_ultra_neocloud_usd_hr',
+  'rubin_unit_purchase_usd',
+  'rubin_nvl144_rack_usd',
+  'rubin_ultra_nvl576_rack_usd',
+  'newest_gen_lead_time_weeks',
+  'capex_retrofit_density_mid_to_top_usd_mw',
+  'nuclear_ppa_usd_mwh',
+  'renewal_shell_index_low',
+  'renewal_shell_index_high',
+  'renewal_h100_gpu_index_vs_2025q4',
+  'renewal_b200_gpu_index_vs_2025q4',
+  'rfp_new_lease_index_low',
+  'rfp_new_lease_index_high',
+  'renewal_offer_term_years_shell',
+  'renewal_offer_term_years_gpu',
+  'tenant_default_prob_q_ai_lab',
+  'tenant_default_prob_q_neocloud_sub',
+  'tenant_default_prob_q_hyperscaler',
+  'tenant_walk_prob_at_renewal_nonhyperscaler',
+  'tenant_walk_prob_at_renewal_hyperscaler',
+] as const
+
+export const marketQuarterAct3Schema = z.object({
+  quarter: quarterId,
+  scenario: scenarioId,
+  phase: z.string().min(1),
+  ai_demand_index_0_100: z.number().min(0).max(100),
+  estimate: z.boolean(),
+  ...(Object.fromEntries([
+    ...ACT3_QUARTER_REQUIRED.map((c) => [c, nonNeg]),
+    ...ACT3_QUARTER_NULLABLE.map((c) => [c, nullableNonNeg]),
+  ]) as Record<(typeof ACT3_QUARTER_REQUIRED)[number], z.ZodNumber> &
+    Record<
+      (typeof ACT3_QUARTER_NULLABLE)[number],
+      z.ZodNullable<z.ZodNumber>
+    >),
+})
+export const marketQuarterlyAct3Schema = z.array(marketQuarterAct3Schema).min(1)
+export type MarketQuarterAct3Row = z.output<typeof marketQuarterAct3Schema>
+
 // ---------- market_quarterly_act2.json (generated from market_quarterly_act2.csv) ----------
 // One row per Act II quarter: GPU rental and purchase prices (empty before a GPU exists, so null),
 // build costs per MW, rates and spreads, cap rates, regional power prices and the AI demand index.

@@ -13,7 +13,7 @@ import { marginWarningAlert } from './hires.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
 import { removeMachines, saleValueUsd } from './machines.ts'
-import { coinPrice, marketWeek } from './market.ts'
+import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { cryptoLoanCapUsd } from './liquidity.ts'
 
 /**
@@ -44,7 +44,7 @@ export function ltv(state: GameState, w: MarketWeek): number {
 /** The most you can borrow against `coin` now: ltv_max × the treasury's coins at the Plan-screen price. */
 export function maxCryptoLoanUsd(state: GameState, coin: Coin): number {
   if (!cryptoLoanOffered(state.quarter)) return 0
-  const price = coinPrice(marketWeek(state.quarter, 0), coin)
+  const price = coinPrice(marketWeek(state.quarter, 0, scenarioOf(state)), coin)
   // Act I's liquidity brake (P5.0, P1): at most 4 weeks of the year's sell cap, for every game.
   return Math.floor(
     Math.min(
@@ -95,7 +95,7 @@ export function collateralNeeded(
   coin: Coin,
   amountUsd: number,
 ): number {
-  const price = coinPrice(marketWeek(state.quarter, 0), coin)
+  const price = coinPrice(marketWeek(state.quarter, 0, scenarioOf(state)), coin)
   return amountUsd / CONTENT.cryptoLoan.ltvMax / price
 }
 
@@ -183,7 +183,7 @@ export function marginCallOptions(state: GameState) {
   const active = state.interrupt
   const loan = state.cryptoLoan
   if (!active || active.id !== 'margin_call' || !loan) return null
-  const w = marketWeek(state.quarter, active.week)
+  const w = marketWeek(state.quarter, active.week, scenarioOf(state))
   const gapUsd = loanGapUsd(state, w)
   const coins = coinsToPost(state, w)
   const machinesUsd = state.machines.reduce(
@@ -341,7 +341,7 @@ export function resolveMarginCall(
   if (!o || !marginCallChoices(state).includes(choiceId))
     return { key: 'error.bad_choice' }
   const loan = state.cryptoLoan!
-  const w = marketWeek(state.quarter, active.week)
+  const w = marketWeek(state.quarter, active.week, scenarioOf(state))
   const weekNo = active.week + 1
   switch (choiceId) {
     case 'post':

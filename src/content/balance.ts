@@ -571,4 +571,10 @@ export const BALANCE = {
     /** Leaving a site early (breaking the lease) costs this many months of its rent. No Bandwidth. */
     leaseBreakMonths: 1,
   },
+
+  /** Act III (M11.1). */
+  act3: {
+    /** Which market scenario a game gets at the Act II→III boundary, in percent (doc 27 D2; they add to 100). */
+    scenarioWeightsPct: { s0: 25, s1: 30, s2: 25, s3: 20 },
+  },
 } as const

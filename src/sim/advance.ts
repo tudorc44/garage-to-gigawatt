@@ -6,7 +6,7 @@
 import { BALANCE } from '../content/index.ts'
 import { logEntry, roundCents, type GameState } from './state.ts'
 import { checkPriceAlert } from './systems/interrupts.ts'
-import { marketWeek, previousMarketWeek } from './systems/market.ts'
+import { marketWeek, previousMarketWeek, scenarioOf } from './systems/market.ts'
 import { mineWeek, rollFailures } from './systems/mining.ts'
 import { endQuarter } from './systems/quarter.ts'
 import { checkMarginCall, payCryptoInterestWeek } from './systems/cryptoLoan.ts'
@@ -43,7 +43,7 @@ export function advance(state: GameState): GameState {
     prologueWeek(s)
     return s
   }
-  const w = marketWeek(s.quarter, s.week)
+  const w = marketWeek(s.quarter, s.week, scenarioOf(s))
   const weekNo = s.week + 1
 
   const failures = rollFailures(s)
@@ -115,7 +115,7 @@ export function advance(state: GameState): GameState {
   if (batchesOff > 0 && !st.weeks.some((x) => x.batchesOff > 0)) {
     logEntry(s, 'log.switched_off', {}, weekNo)
   }
-  const prev = previousMarketWeek(s.quarter, s.week)
+  const prev = previousMarketWeek(s.quarter, s.week, scenarioOf(s))
   if (w.eth_rev_usd_mh_day === 0 && prev && prev.eth_rev_usd_mh_day > 0) {
     logEntry(s, 'log.eth_mining_ends', {}, weekNo)
   }

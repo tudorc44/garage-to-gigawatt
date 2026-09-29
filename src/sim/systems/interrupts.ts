@@ -4,7 +4,12 @@ import { complaintChoices, resolveComplaint } from './heat.ts'
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type Coin, type GameState } from '../state.ts'
-import { coinPrice, marketWeek, previousMarketWeek } from './market.ts'
+import {
+  coinPrice,
+  marketWeek,
+  previousMarketWeek,
+  scenarioOf,
+} from './market.ts'
 import {
   marginCallChoices,
   repayCryptoLoan,
@@ -44,7 +49,7 @@ export function checkPriceAlert(state: GameState, w: MarketWeek): void {
   if (state.interrupt) return
   if (state.interruptsThisQuarter >= CONTENT.interrupts.maxPerQuarter) return
   if (state.treasury.BTC <= 0 && state.treasury.ETH <= 0) return
-  const prev = previousMarketWeek(state.quarter, state.week)
+  const prev = previousMarketWeek(state.quarter, state.week, scenarioOf(state))
   if (!prev) return
 
   let biggest: { coin: Coin; changePct: number } | undefined
@@ -90,7 +95,7 @@ export function resolveInterrupt(
   if (coin && state.treasury[coin] <= 0)
     return { key: 'error.nothing_to_sell', params: { coin } }
 
-  const w = marketWeek(state.quarter, active.week)
+  const w = marketWeek(state.quarter, active.week, scenarioOf(state))
   const alert = { coin: active.coin, changeDelta: active.changePct }
   let sold = false
   for (const [effect, value] of Object.entries(choice.effects ?? {})) {
@@ -149,7 +154,7 @@ export function choicePreview(
   )
   const share = Number(choice?.effects?.sell_treasury_pct ?? 0)
   if (share === 0) return none
-  const w = marketWeek(state.quarter, active.week)
+  const w = marketWeek(state.quarter, active.week, scenarioOf(state))
   const only = choiceCoin(choice?.effects)
   const coins = {
     BTC: !only || only === 'BTC' ? state.treasury.BTC * share : 0,

@@ -13,6 +13,15 @@ export const MARKET_FILES = [
   ['market_weekly.csv', 'market_weekly.json'],
   ['market_weekly_act2.csv', 'market_weekly_act2.json'],
   ['market_quarterly_act2.csv', 'market_quarterly_act2.json'],
+  // Act III's four scenarios (M11.1; docs/act3-content/ is the source, src/content/ the byte-identical copy).
+  ['market_s0.csv', 'market_s0.json'],
+  ['market_s1.csv', 'market_s1.json'],
+  ['market_s2.csv', 'market_s2.json'],
+  ['market_s3.csv', 'market_s3.json'],
+  ['market_weekly_s0.csv', 'market_weekly_s0.json'],
+  ['market_weekly_s1.csv', 'market_weekly_s1.json'],
+  ['market_weekly_s2.csv', 'market_weekly_s2.json'],
+  ['market_weekly_s3.csv', 'market_weekly_s3.json'],
 ] as const
 
 type Cell = string | number | boolean | null
@@ -27,7 +36,14 @@ export function csvToRows(csv: string): Record<string, Cell>[] {
       const cell = cells[i] ?? ''
       // `week` and `quarter` stay as text. An empty cell is "no value" (null), never 0.
       // True/False (the Act II `estimate` flag) become booleans; every other column is a number.
-      if (col === 'week' || col === 'quarter') row[col] = cell
+      // Act III's files also have the text columns `scenario` and `phase`.
+      if (
+        col === 'week' ||
+        col === 'quarter' ||
+        col === 'scenario' ||
+        col === 'phase'
+      )
+        row[col] = cell
       else if (cell === '') row[col] = null
       else if (cell === 'True' || cell === 'False') row[col] = cell === 'True'
       else row[col] = Number(cell)
