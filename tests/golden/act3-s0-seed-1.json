@@ -2562,6 +2562,33 @@
         "2028Q1"
       ]
     },
-    "signalReads": []
+    "signalReads": [],
+    "rivalFates": [
+      {
+        "rival": "core_scientific",
+        "name": "Core Scientific",
+        "fate": "Renewal wall arrives at the 2028Q2 reset: CoreWeave shell renewals reprice -20%; EBITDA turns positive by 2029 as Denton stabilises."
+      },
+      {
+        "rival": "iren",
+        "name": "IREN (Iris Energy)",
+        "fate": "Microsoft prepay smooths the reset; keeps buying MW."
+      },
+      {
+        "rival": "hut8",
+        "name": "Hut 8",
+        "fate": "Beacon Point ramps; quiet outperformer."
+      },
+      {
+        "rival": "cipher",
+        "name": "Cipher Mining",
+        "fate": "AWS lease delivered; modest reset."
+      },
+      {
+        "rival": "coreweave",
+        "name": "CoreWeave",
+        "fate": "Absorbs the reset; growth slows to ~70% of pre-reset pace."
+      }
+    ]
   }
 }

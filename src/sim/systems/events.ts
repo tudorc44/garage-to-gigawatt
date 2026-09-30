@@ -873,7 +873,7 @@ export function resolveEvent(
   // A tenant RFP you pass on goes to a rival (scope 0.2 §2.11): one of the Act II rivals, drawn on
   // the card's own stream, gets it (M6.2).
   if (BALANCE.act2Events.rfpCards.includes(card.id) && choiceId === 'pass') {
-    const rivals = activeRivals(state.quarter)
+    const rivals = activeRivals(state.quarter, scenarioOf(state))
     if (rivals.length > 0) {
       const winner = rivals[randomInt(r, 0, rivals.length - 1)]
       logEntry(state, 'log.rfp_to_rival', { rival: winner.id }, weekNo)

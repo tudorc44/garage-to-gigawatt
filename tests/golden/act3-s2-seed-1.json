@@ -2527,6 +2527,33 @@
         "2028Q2"
       ]
     },
-    "signalReads": []
+    "signalReads": [],
+    "rivalFates": [
+      {
+        "rival": "core_scientific",
+        "name": "Core Scientific",
+        "fate": "Hits 1.5 GW energized by 2030 on renewals at flat/+10%."
+      },
+      {
+        "rival": "iren",
+        "name": "IREN (Iris Energy)",
+        "fate": "Sweetwater energised early; the winner of the power squeeze."
+      },
+      {
+        "rival": "hut8",
+        "name": "Hut 8",
+        "fate": "Beacon Point expansion contracts."
+      },
+      {
+        "rival": "cipher",
+        "name": "Cipher Mining",
+        "fate": "Colchis 1GW pulled forward."
+      },
+      {
+        "rival": "coreweave",
+        "name": "CoreWeave",
+        "fate": "Backlog compounds; raises equity at a premium."
+      }
+    ]
   }
 }

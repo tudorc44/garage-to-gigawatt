@@ -19,6 +19,7 @@ import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
 import sitesAct2Raw from './sites_act2.json' with { type: 'json' }
 import rivalsAct2Raw from './rivals_act2.json' with { type: 'json' }
+import rivalsAct3Raw from './rivals_act3.json' with { type: 'json' }
 import machinesPrologueRaw from './machines_prologue.json' with { type: 'json' }
 import prologueRaw from './prologue.json' with { type: 'json' }
 import eventsPrologueRaw from './events_prologue.json' with { type: 'json' }
@@ -87,6 +88,8 @@ import {
   negotiationRulesSchema,
   rivalsFileSchema,
   rivalsAct2FileSchema,
+  rivalsAct3FileSchema,
+  type Act3RivalRuntime,
   machinesPrologueFileSchema,
   prologueFileSchema,
   eventsPrologueFileSchema,
@@ -134,6 +137,7 @@ export {
   type SignalId,
   type SignalIndicator,
   type SignalPoint,
+  type Act3RivalRuntime,
 } from './schemas.ts'
 export type {
   ScenarioId,
@@ -456,6 +460,11 @@ export interface Content {
   /** The 5 Act II rivals (rivals_act2.json), in file order: they replace Act I's from 2022Q4. */
   act2Rivals: RivalAct2[]
   /**
+   * The 5 rivals in Act III (rivals_act3.json, M11.5b), by scenario, in file order: name and the
+   * numeric series only. Their fates are hidden (rivalsHidden.ts).
+   */
+  act3Rivals: Record<ScenarioId, Act3RivalRuntime[]>
+  /**
    * The prologue (Alpha 0.3, Act 0): its machine ladder (machines_prologue.json, found by getModel
    * but not in `machines`, so Act I's lists never show them) and its rules (prologue.json).
    */
@@ -558,6 +567,7 @@ export interface RawContent {
   eventsAct2: unknown
   rivals: unknown
   rivalsAct2: unknown
+  rivalsAct3: unknown
   machinesPrologue: unknown
   prologue: unknown
   eventsPrologue: unknown
@@ -1549,6 +1559,7 @@ export function parseContent(raw: RawContent): Content {
   // Act I/II quarter index and read is untouched). Scenario quarter n sits at timeline index
   // (first Act III quarter + n).
   const act3Scenarios = {} as Record<ScenarioId, Act3Scenario>
+  const act3Rivals = {} as Record<ScenarioId, Act3RivalRuntime[]>
   {
     const lastReal = market[acts[1].lastQuarter].at(-1)!
     const firstLabel = nextQuarter(quarters[acts[1].lastQuarter])
@@ -1640,6 +1651,43 @@ export function parseContent(raw: RawContent): Content {
     })
     quarters.push(...labels)
   }
+  // Act III's rivals (M11.5b): the same five ids as Act II's, 16 quarters matching the Act III timeline
+  // and no negative MW. Only the numeric series are kept; the fates stay in rivalsHidden.ts.
+  {
+    const rivalsFile = check(
+      'rivals_act3.json',
+      rivalsAct3FileSchema,
+      raw.rivalsAct3,
+    )
+    const timeline = act3Scenarios.s0?.quarterly.map((r) => r.quarter) ?? []
+    if (rivalsFile) {
+      if (rivalsFile.quarters.join() !== timeline.join())
+        problems.push(
+          `rivals_act3.json › quarters differ from the Act III timeline (${timeline.join(', ')})`,
+        )
+      const ids = rivalsAct2File.rivals.map((r) => r.id)
+      for (const sc of SCENARIO_IDS) {
+        const rivals = rivalsFile.scenarios[sc]
+        if (Object.keys(rivals).join() !== ids.join())
+          problems.push(
+            `rivals_act3.json › ${sc}: rivals ${Object.keys(rivals).join(', ')}, expected Act II's ${ids.join(', ')}`,
+          )
+        act3Rivals[sc] = Object.entries(rivals).map(([id, r]) => ({ id, ...r }))
+        for (const r of act3Rivals[sc])
+          for (const series of [r.mw_energized, r.mw_ai_contracted] as const) {
+            if (Object.keys(series).join() !== timeline.join())
+              problems.push(
+                `rivals_act3.json › ${sc} › ${r.id}: MW quarters differ from the timeline`,
+              )
+            for (const [q, v] of Object.entries(series))
+              if (v < 0)
+                problems.push(
+                  `rivals_act3.json › ${sc} › ${r.id} › ${q}: negative MW`,
+                )
+          }
+      }
+    }
+  }
   // Act III's Signals (M11.2): runtime fields only; each file's scenario must be the one it is filed under.
   const signals = {} as Record<ScenarioId, SignalIndicator[]>
   for (const id of SCENARIO_IDS) {
@@ -1719,6 +1767,7 @@ export function parseContent(raw: RawContent): Content {
     cryptoLoan: capitalFile.loans.game_crypto_loan,
     rivals: rivalsFile.rivals,
     act2Rivals: rivalsAct2File.rivals,
+    act3Rivals,
     prologue: {
       machines: machinesPrologueFile.models,
       rules: prologueFile,
@@ -1998,6 +2047,7 @@ export const CONTENT: Content = parseContent({
   eventsAct2: eventsAct2Raw,
   rivals: rivalsRaw,
   rivalsAct2: rivalsAct2Raw,
+  rivalsAct3: rivalsAct3Raw,
   machinesPrologue: machinesPrologueRaw,
   prologue: prologueRaw,
   eventsPrologue: eventsPrologueRaw,

@@ -2563,6 +2563,33 @@
         "2028Q1"
       ]
     },
-    "signalReads": []
+    "signalReads": [],
+    "rivalFates": [
+      {
+        "rival": "core_scientific",
+        "name": "Core Scientific",
+        "fate": "Renewals reprice -30% at the reopener; sells a site."
+      },
+      {
+        "rival": "iren",
+        "name": "IREN (Iris Energy)",
+        "fate": "Pivots more MW back to mining; hashprice tailwind is small."
+      },
+      {
+        "rival": "hut8",
+        "name": "Hut 8",
+        "fate": "Tenant reopens; small haircut."
+      },
+      {
+        "rival": "cipher",
+        "name": "Cipher Mining",
+        "fate": "Fluidstack lease renegotiated with Google backstop intact."
+      },
+      {
+        "rival": "coreweave",
+        "name": "CoreWeave",
+        "fate": "Same-GPU-hour price falls, volume rises (Jevons); revenue flat, margin down."
+      }
+    ]
   }
 }

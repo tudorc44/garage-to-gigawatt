@@ -12,6 +12,7 @@ import { chapterReport } from '../../src/sim/selectors.ts'
 import type { GameState } from '../../src/sim/state.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { ok } from './act2Helpers.ts'
+import { rivalFates } from '../../src/content/rivalsHidden.ts'
 import { signalsHidden } from '../../src/content/signalsHidden.ts'
 import { act3ScenarioCompany } from './act3Helpers.ts'
 
@@ -80,6 +81,11 @@ describe('Act III runs its 16 quarters, then the chapter report', () => {
         triggerQuarter: h.trigger.quarter,
         decoy: { indicator: h.decoy.indicator, quarters: h.decoy.quarters },
         signalReads: [{ quarter: '2027Q1', indicator: 'chip_lead_times' }],
+        rivalFates: rivalFates(id).map(({ rival, name, fate }) => ({
+          rival,
+          name,
+          fate,
+        })),
       })
       expect(state.act3End!.scenarioName.length).toBeGreaterThan(0)
     },

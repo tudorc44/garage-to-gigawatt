@@ -29,6 +29,7 @@ import hiresAct2 from '../src/content/hires_act2.json' with { type: 'json' }
 import eventsAct2 from '../src/content/events_act2.json' with { type: 'json' }
 import rivals from '../src/content/rivals.json' with { type: 'json' }
 import rivalsAct2 from '../src/content/rivals_act2.json' with { type: 'json' }
+import rivalsAct3 from '../src/content/rivals_act3.json' with { type: 'json' }
 import marketPrologue from '../src/content/market_weekly_prologue.json' with { type: 'json' }
 import machinesPrologue from '../src/content/machines_prologue.json' with { type: 'json' }
 import prologue from '../src/content/prologue.json' with { type: 'json' }
@@ -85,6 +86,7 @@ const raw = (): RawContent =>
     eventsAct2,
     rivals,
     rivalsAct2,
+    rivalsAct3,
     heat,
     shocks,
     hires,
@@ -286,6 +288,10 @@ describe('content loads', () => {
         expect(read(`../src/content/${name}`), name).toBe(
           read(`../docs/act3-content/${name}`),
         )
+    // M11.5b
+    expect(read('../src/content/rivals_act3.json')).toBe(
+      read('../docs/act3-content/rivals_act3.json'),
+    )
   })
 
   it('the Act III scenarios load: 4 scenarios × 16 quarters × 13 weeks, from 2027Q1 to 2030Q4', () => {

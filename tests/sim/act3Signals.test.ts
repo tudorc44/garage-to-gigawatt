@@ -226,7 +226,7 @@ describe('the hidden signals fields never reach src/', () => {
     })
   }
   const src = sourceFiles(new URL('../../src', import.meta.url).pathname)
-  const hiddenModule = /signalsHidden\.ts$/
+  const hiddenModule = /(signals|rivals)Hidden\.ts$/
   // The one function allowed to read the hidden view: the end-of-act scenario reveal (M11.3).
   const revealModule = /systems[\\/]act3End\.ts$/
   const code = (file: string) =>
@@ -239,6 +239,7 @@ describe('the hidden signals fields never reach src/', () => {
     'role_in_scenario',
     'role_tag',
     'DO_NOT_EXPOSE',
+    'd15_review',
   ]
 
   it('nothing but tests/ and tools/ imports the hidden view or names an authoring field, except the one reveal function', () => {
@@ -247,17 +248,18 @@ describe('the hidden signals fields never reach src/', () => {
       for (const bad of fields)
         expect(text, `${file} mentions ${bad}`).not.toContain(bad)
       if (!revealModule.test(file))
-        expect(text, `${file} imports the hidden view`).not.toContain(
-          'signalsHidden',
-        )
+        for (const view of ['signalsHidden', 'rivalsHidden'])
+          expect(text, `${file} imports ${view}`).not.toContain(view)
     }
-    // ...and the reveal file exists and is the only importer.
-    const importers = src.filter(
-      (f) => !hiddenModule.test(f) && code(f).includes('signalsHidden'),
-    )
-    expect(importers.map((f) => f.split('/').slice(-3).join('/'))).toEqual([
-      'sim/systems/act3End.ts',
-    ])
+    // ...and the reveal file exists and is the only importer (of both hidden views, M11.5b).
+    for (const view of ['signalsHidden', 'rivalsHidden']) {
+      const importers = src.filter(
+        (f) => !hiddenModule.test(f) && code(f).includes(view),
+      )
+      expect(importers.map((f) => f.split('/').slice(-3).join('/'))).toEqual([
+        'sim/systems/act3End.ts',
+      ])
+    }
   })
 
   it('nothing in src/ calls toAct3 but its own definition (Act III stays unreachable from play)', () => {

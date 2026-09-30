@@ -240,6 +240,32 @@ export type SignalIndicator = z.output<
   typeof signalsFileSchema
 >['indicators'][number]
 
+// ---------- rivals_act3.json (M11.5b: the five rivals in Act III, by scenario) ----------
+// RUNTIME view: name and the six numeric series by quarter. zod drops the rest (fate, reasoning,
+// d15_review, grounded): a rival's fate is part of the end-of-act reveal, so it is read only through
+// src/content/rivalsHidden.ts (the reveal, tests and tools).
+
+const rivalSeries = z.record(quarterId, z.number())
+const rivalRuntime = z.object({
+  name: z.string().min(1),
+  mw_energized: rivalSeries,
+  mw_ai_contracted: rivalSeries,
+  revenue_usd_m_q: rivalSeries,
+  ebitda_usd_m_q: rivalSeries,
+  mcap_usd_m: rivalSeries,
+  debt_usd_m: rivalSeries,
+})
+export const rivalsAct3FileSchema = z.object({
+  quarters: z.array(quarterId).min(1),
+  scenarios: z.object({
+    s0: z.record(z.string(), rivalRuntime),
+    s1: z.record(z.string(), rivalRuntime),
+    s2: z.record(z.string(), rivalRuntime),
+    s3: z.record(z.string(), rivalRuntime),
+  }),
+})
+export type Act3RivalRuntime = z.output<typeof rivalRuntime> & { id: string }
+
 // ---------- market_quarterly_act2.json (generated from market_quarterly_act2.csv) ----------
 // One row per Act II quarter: GPU rental and purchase prices (empty before a GPU exists, so null),
 // build costs per MW, rates and spreads, cap rates, regional power prices and the AI demand index.

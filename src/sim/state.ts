@@ -143,6 +143,8 @@ export interface Act3End {
   triggerQuarter: string
   decoy: { indicator: SignalId; quarters: string[] }
   signalReads: { quarter: string; indicator: SignalId }[]
+  /** Each rival's scripted fate in this scenario (M11.5b), in file order: shown only in the reveal. */
+  rivalFates: { rival: string; name: string; fate: string }[]
 }
 
 /**

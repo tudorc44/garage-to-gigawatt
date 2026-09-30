@@ -44,7 +44,7 @@ export function rollAuction(state: GameState): void {
   const unitListUsd = sellPrice(model, state.quarter, scenarioOf(state))
   const value = count * unitListUsd
   const reserveUsd = roundTo100(value * uniform(r, ...rules.reserveShare))
-  const rivals = activeRivals(state.quarter).map((x) => x.id)
+  const rivals = activeRivals(state.quarter, scenarioOf(state)).map((x) => x.id)
   const n = Math.min(rivals.length, randomInt(r, ...rules.rivalBidders))
   const bids: Auction['bids'] = []
   for (let i = 0; i < n; i++) {

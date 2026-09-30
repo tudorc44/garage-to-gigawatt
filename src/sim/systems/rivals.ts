@@ -6,10 +6,13 @@ import {
   act1ValueQuarter,
   isAct2RulesQuarter,
   isActIIQuarter,
+  type Act3RivalRuntime,
   type Rival,
   type RivalAct2,
+  type ScenarioId,
 } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
+import { scenarioOf } from './market.ts'
 
 /** A rival's end-of-quarter numbers. Missing values are null (not mining yet, or private). */
 export interface RivalSnapshot {
@@ -80,12 +83,41 @@ export function act2RivalSnapshot(
 }
 
 /**
+ * An Act III rival's numbers at the end of a quarter (rivals_act3.json, M11.5b). Reads only that
+ * quarter's own values, never a later one (a test watches the keys). Values are $ millions in the
+ * file; mining MW is what is energized but not contracted to AI (the file has no separate column).
+ */
+export function act3RivalSnapshot(
+  rival: Act3RivalRuntime,
+  quarter: number,
+): RivalSnapshot {
+  const label = CONTENT.quarters[quarter]
+  const energized = rival.mw_energized[label]
+  const ai = rival.mw_ai_contracted[label]
+  return {
+    id: rival.id,
+    hashrateEhs: null,
+    mw: energized,
+    valueUsd: rival.mcap_usd_m[label] * 1e6,
+    btcHeld: null,
+    aiMw: ai,
+    miningMw: Math.max(0, energized - ai),
+  }
+}
+
+/**
  * Rivals that exist in this quarter (have any numbers yet). Act II has its own five (scope 0.2
  * §2.11: Core Scientific, IREN, Hut 8, Cipher, CoreWeave), from 2022Q4.
  */
-export function activeRivals(quarter: number): RivalSnapshot[] {
-  // Act III (M11.4c): no rivals until M11.5 loads rivals_act3.json; the league hides.
-  if (isAct2RulesQuarter(quarter) && !isActIIQuarter(quarter)) return []
+export function activeRivals(
+  quarter: number,
+  scenario?: ScenarioId | null,
+): RivalSnapshot[] {
+  // Act III (M11.5b): the same five, on the drawn scenario's numbers for this quarter only.
+  if (isAct2RulesQuarter(quarter) && !isActIIQuarter(quarter))
+    return scenario
+      ? CONTENT.act3Rivals[scenario].map((r) => act3RivalSnapshot(r, quarter))
+      : []
   if (isActIIQuarter(quarter))
     return CONTENT.act2Rivals.map((r) => act2RivalSnapshot(r, quarter))
   return CONTENT.rivals
@@ -123,7 +155,7 @@ export function leagueTable(
   const quarter = CONTENT.quarters.indexOf(report.quarter)
   const rows: LeagueRow[] = [
     { id: 'you', valueUsd: report.valuationUsd, rank: null, rival: null },
-    ...activeRivals(quarter).map((r) => ({
+    ...activeRivals(quarter, scenarioOf(state)).map((r) => ({
       id: r.id,
       valueUsd: r.valueUsd,
       rank: null,
