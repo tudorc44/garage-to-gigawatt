@@ -25,6 +25,9 @@ const hiddenSchema = z.object({
     indicator: z.enum(SIGNAL_IDS),
     quarters: z.array(quarter),
     peak_quarter: quarter,
+    /** Why it moved, and the tell (M13.3: shown in the chapter report's reveal). */
+    reason: z.string(),
+    tell: z.string(),
   }),
   indicators: z.array(
     z.object({

@@ -15,6 +15,7 @@ import {
   type QuickStartId,
 } from '../act3QuickStart.ts'
 import { fmt } from '../format.ts'
+import { Act3Reveal } from './Act3Reveal.tsx'
 
 /** The title screen's "Act III preview (test build)": pick a company; it plays to 2026Q4, then enters. */
 export function QuickStart(props: { onReady: (end: GameState) => void }) {
@@ -85,24 +86,9 @@ export function ContinueToAct3(props: { onClick: () => void }) {
   )
 }
 
-/** The end of Act III (2030Q4, or a game over): the chapter report. (M13.3 builds the reveal.) */
+/** The end of Act III (2030Q4, or a game over): the chapter report with the reveal (M13.3, A3-11). */
 export function Act3Chapter(props: { state: GameState; onNew: () => void }) {
-  return (
-    <div class="screen">
-      <div class="center-page">
-        <div class="panel end-card chapter-card">
-          <div class="label">{t('ui.act3.chapter.label')}</div>
-          <button
-            type="button"
-            class="btn btn-primary"
-            onClick={props.onNew}
-          >
-            {t('ui.act3.chapter.back')}
-          </button>
-        </div>
-      </div>
-    </div>
-  )
+  return <Act3Reveal {...props} />
 }
 
 /** A3-01, bare-bones: what the company carries into Act III, what's new, and "Enter 2027 →". */
