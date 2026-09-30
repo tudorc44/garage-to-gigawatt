@@ -88,6 +88,7 @@ import {
   tenantCard,
 } from './systems/projects.ts'
 import { renewalBlocker } from './systems/renewals.ts'
+import { blendAcceptBlocker } from './systems/blendExtend.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import { lifelineTerms } from './systems/lifeline.ts'
@@ -1950,6 +1951,29 @@ export function renewalsDue(state: GameState) {
           counter:
             dealNegotiationBlocker(state, p.id, { renewal: true }) ?? null,
         },
+      },
+    ]
+  })
+}
+
+/** Act III (M12.4): this Plan phase's blend-and-extend offers, with today's and the blended rent. */
+export function blendOffers(state: GameState) {
+  return (state.act3BlendOffers ?? []).flatMap((o) => {
+    const p = state.projects.find((x) => x.id === o.projectId)
+    if (!p?.tenant) return []
+    const rent =
+      annualRentUsd(tenantCard(p.tenant.card)!, p.kw) *
+      (p.tenant.priceMult ?? 1)
+    return [
+      {
+        projectId: p.id,
+        projectN: p.n,
+        card: p.tenant.card,
+        currentRentUsd: rent,
+        blendedRentUsd: rent * o.mult,
+        mult: o.mult,
+        extendYears: o.extendQuarters / 4,
+        blocked: blendAcceptBlocker(state, p.id) ?? null,
       },
     ]
   })

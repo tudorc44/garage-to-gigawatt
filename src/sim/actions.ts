@@ -87,6 +87,7 @@ import {
   renewalBlocker,
 } from './systems/renewals.ts'
 import { resumeIdle, resumeIdleBlocker } from './systems/cardContracts.ts'
+import { acceptBlend, blendAcceptBlocker } from './systems/blendExtend.ts'
 import {
   borrowBlocker,
   repayEquipmentLoan,
@@ -343,6 +344,8 @@ export type Action =
   | { type: 'REOPEN_LEASE'; projectId: string }
   /** Act III (M12.3): turn the machines a card idled back on (0 Bandwidth). */
   | { type: 'RESUME_IDLE_MACHINES' }
+  /** Act III (M12.4): accept a lease's blend-and-extend offer (0 Bandwidth; ignoring it is the default). */
+  | { type: 'BLEND_ACCEPT'; projectId: string }
   /** Your ask: a tenant's price multiple (1.05 = 5% over the card) or a lender's rate cut (0.005). */
   | { type: 'DEAL_COUNTER'; ask: number }
   | { type: 'DEAL_ACCEPT' }
@@ -885,6 +888,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = resumeIdleBlocker(s)
       if (blocked) return blocked
       resumeIdle(s)
+      return
+    }
+
+    case 'BLEND_ACCEPT': {
+      const blocked = blendAcceptBlocker(s, a.projectId)
+      if (blocked) return blocked
+      acceptBlend(s, a.projectId)
       return
     }
 

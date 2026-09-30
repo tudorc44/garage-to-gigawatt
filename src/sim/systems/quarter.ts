@@ -29,6 +29,7 @@ import {
   resolveRenewals,
 } from './renewals.ts'
 import { payAct3Payouts } from './cardContracts.ts'
+import { openBlendOffers } from './blendExtend.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { collateralValueUsd } from './cryptoLoan.ts'
@@ -252,6 +253,8 @@ export function startNextQuarter(state: GameState): void {
   openRenewals(state)
   // (M12.3) then the tenants' reopeners, when the market is 10% or more below their leases.
   openTenantReopeners(state)
+  // (M12.4) and the blend-and-extend offers of the leases in their anniversary quarter.
+  openBlendOffers(state)
   startQuarterEvents(state)
   rollAuction(state)
 }

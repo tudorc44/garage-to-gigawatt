@@ -312,6 +312,18 @@ export interface Renewal {
 }
 
 /**
+ * An Act III blend-and-extend offer (M12.4, DT): a shell tenant with more than 8 quarters left offers to
+ * add `extendQuarters` to its lease at one blended rent for the whole remaining + extended term.
+ */
+export interface BlendOffer {
+  projectId: string
+  openedQuarter: number
+  /** The new rent as a multiple of the current one: (R + E × Band mid) / (R + E). */
+  mult: number
+  extendQuarters: number
+}
+
+/**
  * A project (Act II, scope 0.2 §2.5): converts `kw` of one site to an AI shell lease, an AI
  * cloud (your GPUs, on spot) or a pilot cluster. Proposed (filling its slots) → building → live
  * → sold. Its kW are taken at the site from the moment it's opened.
@@ -578,6 +590,11 @@ export interface GameState {
   act3Entry?: Act3Entry
   /** Act III (M12.2): the renewals open this quarter. Absent in every other act. */
   act3Renewals?: Renewal[]
+  /**
+   * Act III (M12.4): this Plan phase's blend-and-extend offers (a lease's anniversary quarter). Ignored,
+   * they lapse. Absent until the first offer.
+   */
+  act3BlendOffers?: BlendOffer[]
   /**
    * Act III (M12.3): card cash paid at the end of a quarter: a fixed amount, or a share of that quarter's
    * total revenue. Absent in every other act.

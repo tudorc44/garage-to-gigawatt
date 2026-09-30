@@ -759,6 +759,9 @@ if (args.includes('--act2')) {
         /** M12.3: Act III card choices taken with a live effect, and deferred ones (logged no-ops). */
         cardsApplied: number
         cardsDeferred: number
+        /** M12.4: blend-and-extend offers made, and accepted (bots ignore them). */
+        blendOffered: number
+        blendAccepted: number
       }
       /** AI revenue (leases and GPU contracts) in 2027 and in the last 4 quarters played. */
       aiRevenue2027Usd: number
@@ -784,6 +787,8 @@ if (args.includes('--act2')) {
         else if (Object.keys(effects).length > 0) cardsApplied++
       }
       return {
+        blendOffered: n('log.blend_offer'),
+        blendAccepted: n('log.blend_signed'),
         reopenTenant: n('log.reopener_tenant'),
         reopenPlayer: n('log.reopener_player'),
         cardsApplied,
@@ -893,6 +898,8 @@ if (args.includes('--act2')) {
         reopenP: sum('reopenPlayer'),
         cardsLive: sum('cardsApplied'),
         cardsDeferred: sum('cardsDeferred'),
+        blendOffered: sum('blendOffered'),
+        blendAccepted: sum('blendAccepted'),
         aiRev2027: usd(median(rows.map((x) => x.aiRevenue2027Usd))),
         aiRevLastYear: usd(median(rows.map((x) => x.aiRevenueLastYearUsd))),
       }
