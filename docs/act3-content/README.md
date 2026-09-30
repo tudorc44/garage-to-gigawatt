@@ -17,6 +17,39 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M12.3, 30 Sep 2026 (the step-4 card effects; the design thread's answers to the M11.5c questions)
+
+No data file changed. The key → engine mapping in `src/content/act3Cards.ts` (`EFFECT_MAP`) now reads:
+
+| key | now | meaning in the engine |
+| --- | --- | --- |
+| `cash` | mapped | plain amounts; `+revenue_this_quarter*k` → k × the quarter's total revenue (mining + hosting + AI), paid at its end; `+backstop_amount` → the rent the backstopped projects' distressed tenants won't pay over 4 quarters, paid now; `+ev_stabilized*k` (with `mw` "-X") → the smallest live contracted shell sold at k × its value (the rescue sale's function). `+ppa_savings`: step 6; `-project_capex*0.06`, `-1500000*mw`: step 5 |
+| `legal_cost` | mapped: cash cost | |
+| `delay_quarters` | mapped (positive) | negative: step 5 |
+| `debt_spread_bps`, `credit_notch`, `bandwidth` | mapped | as M11.5c |
+| `rent_index` | mapped: `contract` | the target's rent × x for the rest of its term; on uncontracted MW × the new-lease reference (card rent × RFPmid); with `rfp_weeks`, on the re-let rent; s1_c7 "Re-let at spot": a new tenant of the same card now, at the old rent × x, out of distress |
+| `term` | mapped: `contract` | "spot": a rolling 1-quarter lease with the best tenant on offer, repriced each quarter at the new-lease reference (`rent_index` on its first quarter only); "1yr": 4 quarters left, rent unchanged |
+| `term_years` | mapped: `contract` | n > 0: n years left from now; n < 0: \|n\| years fewer, at least 4 quarters |
+| `term_add_years` | mapped: `contract` | n more years |
+| `walk_prob`, `tenant_walk_chance` | mapped: `contract` | one roll on the card's stream; a walk ends the target at quarter end (shell: re-let, no BW; GPU: spot); nothing else of the choice applies to it |
+| `tenant_revenue_mult` | mapped: `contract` | the target's rent × x for the rest of this term; a renewal or re-let starts from the rent before it |
+| `tenant_slots` | mapped: `extra_shell_offers` | n more shell offers in every draw for the next 4 quarters (unsigned shells redrawn in the first) |
+| `rfp_weeks` | mapped: `contract` | the target leaves at quarter end and is re-let; the gap is n weeks rounded up to whole quarters (10 weeks → 1) |
+| `recovery` | mapped: `contract` | r × the rent the target fails to pay over its next 4 quarters, paid at the end of the quarter 2 from now |
+| `idle_mw` | mapped: `idle_old_asics` | every mining machine in the `old` ASIC price tier (the S9) switches off until the player turns it back on (`RESUME_IDLE_MACHINES`) |
+| `mining_revenue_mult` | mapped: `hashrate_mult` | the fleet's mining revenue × x for 52 weeks from next week |
+| `debt_reduce` | mapped | the largest project debt or DDTL balance less the amount; the choice is disabled without the cash (or with no debt) |
+| `debt_maturity_years` | mapped | the largest project debt facility: n more years, the balance re-spread in equal payments |
+| `reveals` | mapped: `free_read` | s3_c1: a free Signals read of `efficiency_index` this quarter |
+| `debt` | deferred | step 7 (the corporate facility) |
+| `retrofit`, `gpu_rack`, `capex_mw`, `capex_mult`, `gpu_resale_mult`, `mw` (a number) | deferred | step 5 |
+| `power_option`, `pc_cost`, `hire`, `ratepayer_anger` | deferred | step 6 |
+
+Targets (`TARGETS`): s0_c3 and s3_c4 the soonest end quarter; s2_c3 the best tenant (lock) or all uncontracted shell MW (spot);
+s1_c3 and s1_c7 the distressed contract with the largest rent, else the largest AI lab, else the largest non-hyperscaler; s3_c3
+every shell lease; any other card the largest annual rent. Ties go to the larger rent. No fit: the choice changes nothing and logs it.
+A choice with any key still deferred stays deferred whole.
+
 ### M11.5c, 30 Sep 2026 (the scenario event cards)
 
 - **`events_act3.json`:** every card gained a machine-readable `"quarter"` field, right after its prose `trigger` (kept as

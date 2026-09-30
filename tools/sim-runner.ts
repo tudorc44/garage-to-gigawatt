@@ -18,6 +18,7 @@ import type {
 import { gameOverView } from '../src/sim/selectors.ts'
 import { inActII, toAct3 } from '../src/sim/state.ts'
 import { runway } from '../src/sim/systems/runway.ts'
+import { getCard } from '../src/sim/systems/events.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
@@ -752,6 +753,12 @@ if (args.includes('--act2')) {
         mults: number[]
         /** Renewals that came due after 2027Q4 (for the S3 check). */
         dueAfter2027Q4: number
+        /** M12.3: reopeners fired, by who triggered them. */
+        reopenTenant: number
+        reopenPlayer: number
+        /** M12.3: Act III card choices taken with a live effect, and deferred ones (logged no-ops). */
+        cardsApplied: number
+        cardsDeferred: number
       }
       /** AI revenue (leases and GPU contracts) in 2027 and in the last 4 quarters played. */
       aiRevenue2027Usd: number
@@ -762,7 +769,25 @@ if (args.includes('--act2')) {
       const first = CONTENT.quarters.indexOf('2027Q1')
       const log = s.log.filter((e) => e.quarter >= first)
       const n = (key: string) => log.filter((e) => e.key === key).length
+      // The Act III cards' choices: with a live effect, deferred, or empty ("Wait").
+      let cardsApplied = 0
+      let cardsDeferred = 0
+      for (const e of log) {
+        if (e.key !== 'log.event_choice' && e.key !== 'log.event_choice_cash')
+          continue
+        const [id, , choice] = String(e.params?.eventChoice).split('.')
+        if (!id.startsWith('a3_')) continue
+        const effects = getCard(id)?.choices.find((c) => c.id === choice)
+          ?.effects
+        if (!effects) continue
+        if ('deferred' in effects) cardsDeferred++
+        else if (Object.keys(effects).length > 0) cardsApplied++
+      }
       return {
+        reopenTenant: n('log.reopener_tenant'),
+        reopenPlayer: n('log.reopener_player'),
+        cardsApplied,
+        cardsDeferred,
         offers: n('log.renewal_offer'),
         walks: n('log.renewal_walk'),
         signed: n('log.renewal_signed'),
@@ -864,6 +889,10 @@ if (args.includes('--act2')) {
         relets: sum('relets'),
         gpuToSpot: sum('gpuSpot'),
         medianMult: Number.isNaN(m) ? '—' : `${m.toFixed(2)}×`,
+        reopenT: sum('reopenTenant'),
+        reopenP: sum('reopenPlayer'),
+        cardsLive: sum('cardsApplied'),
+        cardsDeferred: sum('cardsDeferred'),
         aiRev2027: usd(median(rows.map((x) => x.aiRevenue2027Usd))),
         aiRevLastYear: usd(median(rows.map((x) => x.aiRevenueLastYearUsd))),
       }

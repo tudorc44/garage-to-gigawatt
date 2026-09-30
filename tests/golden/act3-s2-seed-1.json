@@ -1933,11 +1933,8 @@
     {
       "quarter": 46,
       "week": 2,
-      "key": "log.event_effects_deferred",
-      "params": {
-        "effects": "term_years, rent_index",
-        "steps": "step 4"
-      }
+      "key": "log.card_no_target",
+      "params": {}
     },
     {
       "quarter": 46,
@@ -2099,7 +2096,7 @@
       "key": "log.event_effects_deferred",
       "params": {
         "effects": "cash",
-        "steps": "question"
+        "steps": "step 6"
       }
     },
     {
@@ -2457,11 +2454,8 @@
     {
       "quarter": 53,
       "week": 2,
-      "key": "log.event_effects_deferred",
-      "params": {
-        "effects": "debt_maturity_years",
-        "steps": "question"
-      }
+      "key": "log.card_no_target",
+      "params": {}
     },
     {
       "quarter": 53,

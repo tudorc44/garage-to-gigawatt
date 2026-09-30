@@ -1813,11 +1813,8 @@
     {
       "quarter": 44,
       "week": 2,
-      "key": "log.event_effects_deferred",
-      "params": {
-        "effects": "rent_index, term_years",
-        "steps": "step 4"
-      }
+      "key": "log.card_no_target",
+      "params": {}
     },
     {
       "quarter": 44,
@@ -2058,11 +2055,8 @@
     {
       "quarter": 47,
       "week": 2,
-      "key": "log.event_effects_deferred",
-      "params": {
-        "effects": "term",
-        "steps": "step 4"
-      }
+      "key": "log.card_no_target",
+      "params": {}
     },
     {
       "quarter": 47,

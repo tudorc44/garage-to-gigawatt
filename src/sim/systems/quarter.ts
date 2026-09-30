@@ -21,7 +21,14 @@ import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { buildAct3End } from './act3End.ts'
-import { completeRelets, openRenewals, resolveRenewals } from './renewals.ts'
+import {
+  completeRelets,
+  openRenewals,
+  openTenantReopeners,
+  repriceRolling,
+  resolveRenewals,
+} from './renewals.ts'
+import { payAct3Payouts } from './cardContracts.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { collateralValueUsd } from './cryptoLoan.ts'
@@ -61,6 +68,8 @@ export function endQuarter(state: GameState): void {
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   // Act III (M12.2): the renewals opened this quarter are settled (the new terms start next quarter).
   resolveRenewals(state)
+  // Act III (M12.3): card cash due at this quarter's end (a recovery, a share of the revenue).
+  payAct3Payouts(state)
   endQuarterGpuWaves(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
@@ -238,8 +247,11 @@ export function startNextQuarter(state: GameState): void {
   startQuarterContracts(state)
   // Act III (M12.2): re-let RFPs whose empty quarters are over sign first; then contracts due open.
   completeRelets(state)
+  repriceRolling(state)
   startQuarterProjects(state)
   openRenewals(state)
+  // (M12.3) then the tenants' reopeners, when the market is 10% or more below their leases.
+  openTenantReopeners(state)
   startQuarterEvents(state)
   rollAuction(state)
 }

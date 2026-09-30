@@ -594,5 +594,40 @@ export const BALANCE = {
       reletBandwidth: 1,
       reletEmptyQuarters: 2,
     },
+    /** The reopener clause (M12.3; F-2, doc 27 §6; the design thread's M12.3 spec). */
+    reopener: {
+      /** Eligible from the start of contract year 3: this many quarters served. */
+      fromServedQuarters: 8,
+      /** The tenant reopens when Band high(q) is below this (the market ≥10% under the lease) (DT). */
+      tenantTriggerBandHigh: 0.9,
+      /** A tenant reopens a lease at most once in this many quarters. */
+      tenantEveryQuarters: 4,
+      /** The player's reopener costs this Bandwidth. */
+      playerBandwidth: 1,
+      /** The exit fee the triggering party pays: this share of one quarter's current rent (DT). */
+      feeShareOfQuarterRent: 0.5,
+    },
+    /** The step-4 card effects (M12.3; the design thread's meanings). */
+    cards: {
+      /** tenant_slots: the extra shell offers last this many quarters. */
+      tenantSlotsQuarters: 4,
+      /** mining_revenue_mult: lasts this many quarters (DT: the halving year). */
+      miningRevenueQuarters: 4,
+      /** recovery, and backstop_amount: the shortfall counted over this many quarters. */
+      shortfallQuarters: 4,
+      /** recovery: paid at the end of the quarter this many quarters from now. */
+      recoveryPaidAfterQuarters: 2,
+      /** term "1yr" and the floor of a shortened term: quarters. */
+      minTermQuarters: 4,
+      /** The ASIC price tier idle_mw switches off (machines.json › act2_price.tier). */
+      idleTier: 'old',
+    },
+    /** Blend-and-extend offers (M12.4, approved by the owner 30 Sep 2026; DT). */
+    blendExtend: {
+      /** Offered from this quarter on. */
+      from: '2028Q1',
+      /** Only to a lease with more than this many quarters left. */
+      minQuartersLeft: 8,
+    },
   },
 } as const

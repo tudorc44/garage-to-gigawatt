@@ -425,9 +425,9 @@ export function drawOffers(state: GameState, p: Project): void {
   const { min, max } = BALANCE.projects.offers
   // A bid tenant RFP (cards ec12, ec24) brings more offers that quarter.
   const rfp =
-    state.events.extraOffers?.quarter === state.quarter
+    (state.events.extraOffers?.quarter === state.quarter
       ? state.events.extraOffers.n
-      : 0
+      : 0) + extraShellOffers(state, p)
   const n = Math.min(
     pool.length,
     randomInt(r, min, max) + (isHired(state, 'bd_lead') ? 1 : 0) + rfp,
@@ -488,6 +488,14 @@ export function drawOffers(state: GameState, p: Project): void {
     if (p.offers.length >= max) p.offers[p.offers.length - 1] = offer
     else p.offers.push(offer)
   }
+}
+
+/** An Act III card's extra shell offers (tenant_slots, M12.3) while they last; 0 otherwise. */
+function extraShellOffers(state: GameState, p: Project): number {
+  const x = state.events.extraShellOffers
+  return x && p.kind === 'shell' && state.quarter >= x.from && state.quarter <= x.until
+    ? x.n
+    : 0
 }
 
 /** Why a project can't be opened like this now, or undefined if it can. */
@@ -913,7 +921,11 @@ export function startQuarterProjects(state: GameState): void {
       logEntry(state, 'log.project_live', { n: p.n, kind: p.kind })
     }
     // A bid tenant RFP this quarter redraws unsigned projects' offers (with the extra ones).
-    const rfp = state.events.extraOffers?.quarter === state.quarter
+    // (An Act III tenant_slots card redraws them in its first quarter the same way, shells only.)
+    const rfp =
+      state.events.extraOffers?.quarter === state.quarter ||
+      (state.events.extraShellOffers?.from === state.quarter &&
+        p.kind === 'shell')
     if (
       p.kind !== 'pilot' &&
       !projectGone(p) &&

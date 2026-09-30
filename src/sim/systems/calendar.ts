@@ -14,7 +14,13 @@
 // Hosting is not in the calendar (it reprices every quarter in Act III). A GPU contract whose term has
 // run is already on spot (Act II's rule: `tenant` is null), so it isn't either. A shell lease whose term
 // ended before 2027Q1 is a holdover at its old rent; its renewal comes due in 2027Q1 (M12.2).
-import { projectGone, type GameState, type Project } from '../state.ts'
+import { BALANCE, actFirstQuarter } from '../../content/index.ts'
+import {
+  inActIII,
+  projectGone,
+  type GameState,
+  type Project,
+} from '../state.ts'
 import { rfpMid } from './leaseIndex.ts'
 import { scenarioOf } from './market.ts'
 import {
@@ -53,7 +59,7 @@ export interface CalendarEntry {
   /** Act III GPU contracts: this quarter's 1-year contract $/GPU-hr for its GPU. */
   marketUsdPerGpuHr: number | null
   distressed: boolean
-  /** The S3 reopener (M12.3): always false until it is built. */
+  /** The reopener clause applies now (M12.3; reopenerEligible). */
   reopenerEligible: boolean
 }
 
@@ -68,6 +74,21 @@ export function contractEndQuarter(
   if (p.stage === 'live') return state.quarter + term - t.servedQuarters - 1
   if (p.readyQuarter === null) return null
   return p.readyQuarter + term - 1
+}
+
+/**
+ * The reopener clause (M12.3, F-2) applies to a live shell lease signed in Act III (a renewal or a
+ * re-let there is a new signing), from contract year 3 (8 quarters served), with no renewal open. Never
+ * an Act II-signed lease, a GPU contract or a rolling spot lease.
+ */
+export function reopenerEligible(state: GameState, p: Project): boolean {
+  const t = p.tenant
+  if (!inActIII(state) || !state.scenarioId) return false
+  if (!t || t.gpu || t.rolling || p.kind !== 'shell') return false
+  if (projectGone(p) || p.stage !== 'live') return false
+  if (t.signedQuarter < actFirstQuarter(3)) return false
+  if (t.servedQuarters < BALANCE.act3.reopener.fromServedQuarters) return false
+  return !state.act3Renewals?.some((r) => r.projectId === p.id)
 }
 
 /** Every signed tenant contract, soonest end first (not yet scheduled last). */
@@ -108,7 +129,7 @@ export function buildCalendar(state: GameState): CalendarEntry[] {
           ? (gpuContractUsdHr(p.gpu, 1, state.quarter, scenario) ?? null)
           : null,
       distressed: t.distressedQuarter !== undefined,
-      reopenerEligible: false,
+      reopenerEligible: reopenerEligible(state, p),
     })
   }
   return out.sort(

@@ -1854,11 +1854,8 @@
     {
       "quarter": 45,
       "week": 2,
-      "key": "log.event_effects_deferred",
-      "params": {
-        "effects": "rent_index, term_add_years",
-        "steps": "step 4"
-      }
+      "key": "log.card_no_target",
+      "params": {}
     },
     {
       "quarter": 45,
@@ -1962,11 +1959,8 @@
     {
       "quarter": 46,
       "week": 2,
-      "key": "log.event_effects_deferred",
-      "params": {
-        "effects": "idle_mw",
-        "steps": "question"
-      }
+      "key": "log.card_no_target",
+      "params": {}
     },
     {
       "quarter": 46,
@@ -2067,15 +2061,6 @@
     {
       "quarter": 47,
       "week": 2,
-      "key": "log.event_effects_deferred",
-      "params": {
-        "effects": "cash",
-        "steps": "question"
-      }
-    },
-    {
-      "quarter": 47,
-      "week": 2,
       "key": "log.event_choice",
       "params": {
         "eventTitle": "a3_c5f70e5e.title",
@@ -2121,6 +2106,14 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 47,
+      "week": null,
+      "key": "log.card_payout_revenue_share",
+      "params": {
+        "amountUsd": 0
       }
     },
     {
@@ -2708,6 +2701,7 @@
     "creditRating": null
   },
   "act3Renewals": [],
+  "act3Payouts": [],
   "act3End": {
     "scenarioId": "s0",
     "scenarioName": "Muddle Through",

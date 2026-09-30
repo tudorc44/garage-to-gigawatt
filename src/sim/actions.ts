@@ -80,7 +80,13 @@ import { planFailureWaves } from './systems/failureWave.ts'
 import { buyPriceNow, newGpusLocked } from './systems/eventEffects.ts'
 import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import { readSignal, readSignalBlocker } from './systems/signals.ts'
-import { chooseRenewal, renewalBlocker } from './systems/renewals.ts'
+import {
+  chooseRenewal,
+  playerReopen,
+  playerReopenBlocker,
+  renewalBlocker,
+} from './systems/renewals.ts'
+import { resumeIdle, resumeIdleBlocker } from './systems/cardContracts.ts'
 import {
   borrowBlocker,
   repayEquipmentLoan,
@@ -333,6 +339,10 @@ export type Action =
   | { type: 'RENEWAL_ACCEPT'; projectId: string }
   /** Act III (M12.2): turn a renewal down: re-let a shell by RFP (1 Bandwidth), or a GPU contract to spot. */
   | { type: 'RENEWAL_RELET'; projectId: string }
+  /** Act III (M12.3): reopen an eligible Act III lease (1 Bandwidth; you pay the tenant half a quarter's rent). */
+  | { type: 'REOPEN_LEASE'; projectId: string }
+  /** Act III (M12.3): turn the machines a card idled back on (0 Bandwidth). */
+  | { type: 'RESUME_IDLE_MACHINES' }
   /** Your ask: a tenant's price multiple (1.05 = 5% over the card) or a lender's rate cut (0.005). */
   | { type: 'DEAL_COUNTER'; ask: number }
   | { type: 'DEAL_ACCEPT' }
@@ -861,6 +871,20 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = renewalBlocker(s, a.projectId, choice)
       if (blocked) return blocked
       chooseRenewal(s, a.projectId, choice)
+      return
+    }
+
+    case 'REOPEN_LEASE': {
+      const blocked = playerReopenBlocker(s, a.projectId)
+      if (blocked) return blocked
+      playerReopen(s, a.projectId)
+      return
+    }
+
+    case 'RESUME_IDLE_MACHINES': {
+      const blocked = resumeIdleBlocker(s)
+      if (blocked) return blocked
+      resumeIdle(s)
       return
     }
 

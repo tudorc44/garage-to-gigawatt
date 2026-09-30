@@ -11,6 +11,7 @@
 //   free (a refinance spread cut with no new facility). A deferred choice does nothing but log.
 // The role tag (signal, decoy, trigger …) is not kept, and the scenario stays inside the engine.
 import { z } from 'zod'
+import { BALANCE } from './balance.ts'
 import { quarterId, type EventCardRaw } from './schemas.ts'
 
 export const act3CardSchema = z.object({
@@ -69,16 +70,41 @@ export const EFFECT_MAP: Record<string, EffectRoute> = {
     map: 'bandwidth_next',
     note: 'a card plays in the live quarter, so its Bandwidth comes off next quarter, as Act II cards do (mine, reversible)',
   },
-  rent_index: { defer: 'step 4', note: 'renewal and re-let pricing' },
-  term: { defer: 'step 4', note: 'contract term' },
-  term_years: { defer: 'step 4', note: 'contract term' },
-  term_add_years: { defer: 'step 4', note: 'contract term' },
-  walk_prob: { defer: 'step 4', note: 'tenant walks at renewal' },
-  tenant_walk_chance: { defer: 'step 4', note: 'tenant walks' },
-  tenant_revenue_mult: { defer: 'step 4', note: 'a renegotiated rent' },
-  tenant_slots: { defer: 'step 4', note: 'the RFP pipeline' },
-  rfp_weeks: { defer: 'step 4', note: 'the re-let RFP' },
-  recovery: { defer: 'step 4', note: 'recovery on a defaulted lease' },
+  // M12.3 (step 4): the contract keys become one `contract` effect on the card's target (TARGETS).
+  rent_index: {
+    map: 'contract',
+    note: "the target's rent × x for the rest of its term; on uncontracted MW, × the new-lease reference; with rfp_weeks, on the re-let rent",
+  },
+  term: {
+    map: 'contract',
+    note: '"spot": a rolling 1-quarter lease at the new-lease reference (rent_index on its first quarter only); "1yr": 4 quarters left, rent unchanged',
+  },
+  term_years: {
+    map: 'contract',
+    note: 'n > 0: n years left from now; n < 0: |n| years fewer, at least 4 quarters',
+  },
+  term_add_years: { map: 'contract', note: 'n more years' },
+  walk_prob: {
+    map: 'contract',
+    note: 'one seeded roll now; a walk ends the target at quarter end (shell: re-let, no BW; GPU: spot)',
+  },
+  tenant_walk_chance: { map: 'contract', note: 'as walk_prob' },
+  tenant_revenue_mult: {
+    map: 'contract',
+    note: "the target's rent × x for the rest of its current term (not renewals)",
+  },
+  tenant_slots: {
+    map: 'extra_shell_offers',
+    note: 'n more shell offers in every draw for the next 4 quarters',
+  },
+  rfp_weeks: {
+    map: 'contract',
+    note: 'the target is re-let at quarter end with a gap of n weeks, rounded up to whole quarters',
+  },
+  recovery: {
+    map: 'contract',
+    note: 'r × the rent the target fails to pay over its next 4 quarters, paid at the end of the quarter 2 from now',
+  },
   retrofit: { defer: 'step 5', note: 'density retrofit' },
   gpu_rack: { defer: 'step 5', note: 'Rubin racks' },
   capex_mw: { defer: 'step 5', note: 'new halls' },
@@ -89,7 +115,7 @@ export const EFFECT_MAP: Record<string, EffectRoute> = {
   },
   mw: {
     defer: 'step 5',
-    note: 'buying or selling MW; the engine has no card-driven site deal',
+    note: 'buying MW (a number) is step 5; "-X" with cash "+ev_stabilized*k" is the sale of the smallest live contracted shell (M12.3)',
   },
   power_option: { defer: 'step 6', note: 'nuclear PPA' },
   pc_cost: { defer: 'step 6', note: 'political capital' },
@@ -99,29 +125,92 @@ export const EFFECT_MAP: Record<string, EffectRoute> = {
     note: 'Anger is worked out from MW and policy bumps; the engine has no Anger nudge',
   },
   idle_mw: {
-    defer: 'question',
-    note: '"+X" names no amount, and the engine has no card-driven idling',
+    map: 'idle_old_asics',
+    note: 'X = the MW of mining machines in the old ASIC price tier: off until the player turns them back on',
   },
   mining_revenue_mult: {
-    defer: 'question',
-    note: 'no duration is given (the engine modifier needs one)',
+    map: 'hashrate_mult',
+    note: 'mining revenue × x for 4 quarters (the fleet hashrate modifier, 52 weeks from next week)',
   },
   debt: {
-    defer: 'question',
-    note: 'a corporate revolver or facility: the engine has no general corporate debt',
+    defer: 'step 7',
+    note: 'a corporate draw: step 7 builds the corporate facility (owner, 27 Sep 2026)',
   },
   debt_reduce: {
-    defer: 'question',
-    note: 'buying back debt at a discount: no corporate debt to reduce',
+    map: 'debt_reduce',
+    note: 'the largest project debt or DDTL balance, less the amount (not below 0); the choice needs the cash',
   },
   debt_maturity_years: {
-    defer: 'question',
-    note: 'extending maturity: no corporate debt with a maturity',
+    map: 'debt_maturity_years',
+    note: 'the largest project debt facility: n more years, its payments re-spread over the new tenor',
   },
   reveals: {
-    defer: 'question',
-    note: 'maps to a free Signals read, but the card names no indicator ("signals")',
+    map: 'free_read',
+    note: 'a free Signals read of the indicator named in REVEALS (the choice’s bandwidth is its cost)',
   },
+}
+
+/** Which contract a card's contract effects act on (M12.3, the design thread's target rules). */
+export type ContractTarget =
+  | 'soonest' // the soonest end quarter (ties: larger rent)
+  | 'best' // the highest-credit tenant (hyperscaler > neocloud > AI lab; ties: larger rent)
+  | 'distressed' // distressed with the largest rent, else the largest AI lab, else the largest non-hyperscaler
+  | 'all_shell' // every shell lease
+  | 'uncontracted' // all uncontracted live AI shell MW
+  | 'largest' // the largest annual rent (every other card)
+
+/** Per authored card (and per choice, 1-based, where the choices differ); any other card: 'largest'. */
+const TARGETS: Record<string, ContractTarget | Record<number, ContractTarget>> =
+  {
+    s0_c3: 'soonest',
+    s3_c4: 'soonest',
+    s2_c3: { 1: 'best', 2: 'uncontracted' },
+    s1_c3: 'distressed',
+    s1_c7: 'distressed',
+    s3_c3: 'all_shell',
+  }
+
+/**
+ * Choices whose rent_index re-lets the target now to a new tenant of the same card, with no gap, at the
+ * old rent × x (s1_c7 "Re-let at spot": the defaulted tenant is replaced; mine, reversible).
+ */
+const REPLACE_TENANT = ['s1_c7.c2']
+
+/** reveals: the indicator a card's free read shows (design thread, M12.3). */
+const REVEALS: Record<string, string> = { s3_c1: 'efficiency_index' }
+
+/** The cash formulas the engine can compute now (M12.3), by pattern; the rest wait for their step. */
+const CASH_FORMULAS: {
+  re: RegExp
+  to: (k: number) => Record<string, unknown>
+}[] = [
+  {
+    re: /^\+revenue_this_quarter\*(\d+(?:\.\d+)?)$/,
+    to: (k) => ({ revenue_share_at_end: k }),
+  },
+  { re: /^\+backstop_amount$/, to: () => ({ backstop_payout: true }) },
+  {
+    re: /^\+ev_stabilized\*(\d+(?:\.\d+)?)$/,
+    to: (k) => ({ sell_smallest_shell: k }),
+  },
+]
+const CASH_FORMULA_STEPS: { re: RegExp; step: string }[] = [
+  { re: /ppa_savings/, step: 'step 6' },
+  { re: /project_capex/, step: 'step 5' },
+  { re: /\*mw$/, step: 'step 5' },
+]
+
+/** The contract keys, gathered into one `contract` effect. */
+const CONTRACT_KEYS: Record<string, string> = {
+  rent_index: 'rentIndex',
+  term: 'term',
+  term_years: 'termYears',
+  term_add_years: 'termAddYears',
+  walk_prob: 'walkProb',
+  tenant_walk_chance: 'walkProb',
+  tenant_revenue_mult: 'revenueMult',
+  rfp_weeks: 'rfpWeeks',
+  recovery: 'recovery',
 }
 
 /** The deferred-effect marker the engine logs (systems/events.ts). */
@@ -156,29 +245,101 @@ export function act3CardEngineId(authoredId: string): string {
   return `a3_${(h >>> 0).toString(16).padStart(8, '0')}`
 }
 
-/** One choice's effects in the engine's vocabulary, or the deferred marker. */
+/** A card's contract target (TARGETS), for choice `choice` (1-based). */
+function targetOf(card: string | undefined, choice: number): ContractTarget {
+  const t = card ? TARGETS[card] : undefined
+  if (t === undefined) return 'largest'
+  return typeof t === 'string' ? t : (t[choice] ?? 'largest')
+}
+
+/**
+ * One choice's effects in the engine's vocabulary, or the deferred marker. `ctx` names the authored
+ * card and the choice (1-based), for the card-specific rules (TARGETS, REPLACE_TENANT, REVEALS).
+ */
 export function translateEffects(
   effect: Record<string, unknown>,
+  ctx: { card?: string; choice?: number } = {},
 ): Record<string, unknown> {
   const out: Record<string, unknown> = {}
+  const contract: Record<string, unknown> = {}
   const deferred: DeferredEffects = { keys: [], steps: [] }
   const defer = (key: string, step: string) => {
     deferred.keys.push(key)
     if (!deferred.steps.includes(step)) deferred.steps.push(step)
   }
+  const choice = ctx.choice ?? 1
   for (const [key, value] of Object.entries(effect)) {
     const route = EFFECT_MAP[key]
     if (!route) throw new Error(`events_act3.json: unknown effect "${key}"`)
+    // "-X" MW goes with the sale of a stabilised site (cash "+ev_stabilized*k"): nothing of its own.
+    if (
+      key === 'mw' &&
+      value === '-X' &&
+      /ev_stabilized/.test(String(effect.cash))
+    )
+      continue
     if ('defer' in route) {
       defer(key, route.defer)
       continue
     }
     const n = plainNumber(value)
+    if (key in CONTRACT_KEYS) {
+      if (key === 'term') {
+        if (value === 'spot' || value === '1yr') contract.term = value
+        else defer(key, 'question')
+      } else if (n === null) defer(key, 'question')
+      else contract[CONTRACT_KEYS[key]] = n
+      continue
+    }
     switch (key) {
       case 'cash':
-        if (n === null) defer(key, 'question')
-        else out.cash = ((out.cash as number | undefined) ?? 0) + n
+        if (n !== null) {
+          out.cash = ((out.cash as number | undefined) ?? 0) + n
+          break
+        }
+        {
+          const s = String(value)
+          const known = CASH_FORMULAS.find((f) => f.re.test(s))
+          if (known)
+            Object.assign(out, known.to(Number(s.match(known.re)![1] ?? 1)))
+          else
+            defer(
+              key,
+              CASH_FORMULA_STEPS.find((f) => f.re.test(s))?.step ?? 'question',
+            )
+        }
         break
+      case 'tenant_slots':
+        if (n === null) defer(key, 'question')
+        else out.extra_shell_offers = n
+        break
+      case 'idle_mw':
+        out.idle_old_asics = true
+        break
+      case 'mining_revenue_mult':
+        if (n === null) defer(key, 'question')
+        else
+          out.hashrate_mult = {
+            mult: n,
+            scope: 'fleet',
+            weeks:
+              BALANCE.weeksPerQuarter * BALANCE.act3.cards.miningRevenueQuarters,
+          }
+        break
+      case 'debt_reduce':
+        if (n === null) defer(key, 'question')
+        else out.debt_reduce = n
+        break
+      case 'debt_maturity_years':
+        if (n === null) defer(key, 'question')
+        else out.debt_maturity_years = n
+        break
+      case 'reveals': {
+        const indicator = ctx.card ? REVEALS[ctx.card] : undefined
+        if (indicator) out.free_read = indicator
+        else defer(key, 'question')
+        break
+      }
       case 'legal_cost':
         if (n === null) defer(key, 'question')
         else out.cash = ((out.cash as number | undefined) ?? 0) - n
@@ -202,6 +363,12 @@ export function translateEffects(
         break
     }
   }
+  if (Object.keys(contract).length > 0) {
+    contract.target = targetOf(ctx.card, choice)
+    if (ctx.card && REPLACE_TENANT.includes(`${ctx.card}.c${choice}`))
+      contract.replaceTenant = true
+    out.contract = contract
+  }
   // A choice with any deferred effect is deferred whole (see the note at the top).
   if (deferred.keys.length > 0) {
     const all = Object.keys(effect)
@@ -222,7 +389,7 @@ export function toEngineCard(
 ): EventCardRaw & { scenario: Act3CardRaw['scenario'] } {
   const choices = c.choices.map((ch, i) => ({
     id: `c${i + 1}`,
-    effects: translateEffects(ch.effect),
+    effects: translateEffects(ch.effect, { card: c.id, choice: i + 1 }),
   }))
   const def = c.choices.findIndex((ch) => ch.label === c.default)
   return {

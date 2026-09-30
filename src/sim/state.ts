@@ -112,6 +112,8 @@ export interface MachineLot {
   earnsFromQuarter: number
   /** Act II, the gpu_cloud head start: GPU rigs rented out as a legacy cloud instead of mining. */
   legacyCloud?: boolean
+  /** Act III (M12.3, a card's idle_mw): switched off (no power, no revenue) until the player turns it back on. */
+  idle?: boolean
 }
 
 /**
@@ -266,6 +268,17 @@ export interface ProjectTenant {
   distressedQuarter?: number
   /** A renewed or re-let shell lease's own term in quarters (Act III, M12.2); missing = its card's. */
   termQuarters?: number
+  /**
+   * Act III (M12.3, a card's tenant_revenue_mult): a haircut on the rate for the rest of this term only.
+   * It is already in priceMult / priceUsdHr; a renewal or a re-let divides it back out.
+   */
+  revenueMult?: number
+  /** Act III (M12.3, a card's term "spot"): a rolling 1-quarter lease, repriced each quarter at the new-lease reference. */
+  rolling?: boolean
+  /** Act III (M12.3): the quarter this lease was last reopened (the tenant reopens at most once in 4 quarters). */
+  reopenedQuarter?: number
+  /** Act III (M12.4): the quarter a blend-and-extend offer was last made on this lease. */
+  blendOfferedQuarter?: number
 }
 
 /**
@@ -287,6 +300,15 @@ export interface Renewal {
   counterMult?: number
   /** Negotiated this quarter already (no second try). */
   negotiated?: boolean
+  /**
+   * Why it opened (M12.3): missing = the term ended; 'reopener' = the reopener clause, triggered `by` the
+   * tenant or the player; 'card' = an event card ended the contract at quarter end (always walked).
+   */
+  cause?: 'reopener' | 'card'
+  by?: 'tenant' | 'player'
+  /** A card's re-let (rfp_weeks, rent_index): its own empty quarters and a multiple on the re-let rent. */
+  reletEmptyQuarters?: number
+  reletRentMult?: number
 }
 
 /**
@@ -318,7 +340,7 @@ export interface Project {
    * Act III re-let by RFP (M12.2): after `emptyUntil`, a new tenant with this card signs at the lapsed
    * rent × that quarter's RFP midpoint. Missing = no RFP running.
    */
-  pendingRelet?: { card: string; lapsedRentUsd: number }
+  pendingRelet?: { card: string; lapsedRentUsd: number; rentMult?: number }
   /** A distressed tenant was let go (M7.0, A3): no new offers until after this quarter. */
   emptyUntil?: number
   /** Cloud projects: sell capacity on the spot market (the only tenant option so far). */
@@ -556,6 +578,16 @@ export interface GameState {
   act3Entry?: Act3Entry
   /** Act III (M12.2): the renewals open this quarter. Absent in every other act. */
   act3Renewals?: Renewal[]
+  /**
+   * Act III (M12.3): card cash paid at the end of a quarter: a fixed amount, or a share of that quarter's
+   * total revenue. Absent in every other act.
+   */
+  act3Payouts?: {
+    quarter: number
+    usd?: number
+    revenueShare?: number
+    reason: 'recovery' | 'revenue_share'
+  }[]
   /**
    * Act III (M11.3): the scenario reveal, stored when the last quarter (2030Q4) is done and the game
    * reaches the chapter phase. Absent until then, and in every other act.

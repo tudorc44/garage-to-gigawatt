@@ -36,10 +36,17 @@ export interface LotWeek {
   coinsMined: number
 }
 
-/** A batch earns once it's delivered (earnsFromQuarter) and its site is energized. */
+/**
+ * A batch earns once it's delivered (earnsFromQuarter) and its site is energized, unless an Act III
+ * card switched it off (idle: no power, no revenue, no failures).
+ */
 export function isEarning(state: GameState, lot: MachineLot): boolean {
   const site = state.sites.find((s) => s.id === lot.siteId)!
-  return state.quarter >= lot.earnsFromQuarter && isReady(site, state.quarter)
+  return (
+    !lot.idle &&
+    state.quarter >= lot.earnsFromQuarter &&
+    isReady(site, state.quarter)
+  )
 }
 
 /**

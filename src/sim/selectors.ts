@@ -1921,6 +1921,9 @@ export function renewalsDue(state: GameState) {
         card: t.card,
         tenantType: card.type,
         kind: r.kind,
+        /** Why it's open (M12.3): the term ended, a reopener (by the tenant or you), or an event card. */
+        cause: r.cause ?? ('term' as const),
+        by: r.by ?? null,
         walked: r.walked,
         /** The rent a year (shell) or $/GPU-hr (GPU) now. */
         currentRate: rate,

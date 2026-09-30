@@ -5,7 +5,12 @@
 // 2. if none cures it, an emergency equity raise at half the current valuation, diluting at most 30%.
 // Game over only if both fail. The log says which one fired.
 import { BALANCE } from '../../content/index.ts'
-import { inAct2Rules, logEntry, type GameState } from '../state.ts'
+import {
+  inAct2Rules,
+  logEntry,
+  type GameState,
+  type Project,
+} from '../state.ts'
 import { equityPreMoneyUsd } from './equity.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import { saleValueUsd } from './projects.ts'
@@ -17,6 +22,25 @@ function forcedSaleNetUsd(state: GameState, projectId: string): number {
     .filter((f) => f.projectId === projectId)
     .reduce((a, f) => a + f.balanceUsd, 0)
   return Math.round(saleValueUsd(state, p) * BALANCE.finance.rescue.saleMult) - owed
+}
+
+/**
+ * Sells a live shell at its cap-rate value × `mult` (the rescue's 0.85; an Act III card's 0.80): its MW
+ * leave the site, the price comes in and what it owes is repaid. Returns the price.
+ */
+export function forcedProjectSale(
+  state: GameState,
+  p: Project,
+  mult: number,
+): number {
+  const priceUsd = Math.round(saleValueUsd(state, p) * mult)
+  const site = state.sites.find((s) => s.id === p.siteId)
+  if (site) site.soldKw = (site.soldKw ?? 0) + p.kw
+  state.cash += priceUsd
+  repayProjectFacilities(state, p.id)
+  p.stage = 'sold'
+  p.soldQuarter = state.quarter
+  return priceUsd
 }
 
 /** Tries the two rescues in order; returns which one fired, or null. */
@@ -34,13 +58,7 @@ export function rescueBeforeGameOver(
     .sort((a, b) => a.p.kw - b.p.kw || a.net - b.net)[0]
   if (curing) {
     const { p } = curing
-    const priceUsd = Math.round(saleValueUsd(state, p) * r.saleMult)
-    const site = state.sites.find((s) => s.id === p.siteId)
-    if (site) site.soldKw = (site.soldKw ?? 0) + p.kw
-    state.cash += priceUsd
-    repayProjectFacilities(state, p.id)
-    p.stage = 'sold'
-    p.soldQuarter = state.quarter
+    const priceUsd = forcedProjectSale(state, p, r.saleMult)
     logEntry(state, 'log.rescue_sale', {
       n: p.n,
       priceUsd,

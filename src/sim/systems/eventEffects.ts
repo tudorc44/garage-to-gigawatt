@@ -84,6 +84,8 @@ export interface EventState {
   regionMoratorium?: { region: string; until: number } | null
   /** An audit found aggressive depreciation (M6.0k): rating notch and cheaper equity until a quarter. */
   auditPenalty?: { until: number } | null
+  /** Act III card tenant_slots (M12.3): extra shell tenant offers in every draw from `from` to `until`. */
+  extraShellOffers?: { from: number; until: number; n: number }
 }
 
 export function emptyEventState(): EventState {

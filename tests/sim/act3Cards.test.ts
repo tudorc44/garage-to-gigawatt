@@ -184,44 +184,112 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
     for (const k of used) expect(EFFECT_MAP[k], k).toBeDefined()
   })
 
-  it('the mapped choices, exactly', () => {
+  it('the mapped choices, exactly (M12.3: the step-4 keys and the answered questions are live)', () => {
     const mapped: string[] = []
     for (const c of file)
       c.choices.forEach((ch, i) => {
-        const e = translateEffects(ch.effect)
+        const e = translateEffects(ch.effect, { card: c.id, choice: i + 1 })
         if (Object.keys(e).length > 0 && !('deferred' in e))
           mapped.push(`${c.id}.c${i + 1}=${JSON.stringify(e)}`)
       })
     expect(mapped).toEqual([
       's0_c1.c2={"delay_marginal_project":1,"cash":300000}',
       's0_c2.c1={"debt_spread_add":200}',
+      's0_c3.c1={"contract":{"rentIndex":0.75,"termAddYears":2,"target":"soonest"}}',
+      's0_c3.c2={"contract":{"rentIndex":0.85,"walkProb":0.25,"target":"soonest"}}',
+      's0_c3.c3={"contract":{"rfpWeeks":10,"rentIndex":0.9,"target":"soonest"}}',
+      's0_c5.c1={"idle_old_asics":true}',
+      's0_c5.c2={"hashrate_mult":{"mult":0.9,"scope":"fleet","weeks":52}}',
+      's0_c6.c1={"revenue_share_at_end":0.02}',
+      's1_c1.c1={"bandwidth_next":-1,"extra_shell_offers":1}',
+      's1_c3.c1={"contract":{"revenueMult":0.7,"target":"distressed"}}',
+      's1_c3.c2={"cash":-500000,"contract":{"walkProb":0.3,"target":"distressed"}}',
+      's1_c3.c3={"cash":-20000000,"debt_reduce":30000000}',
       's1_c4.c1={"debt_spread_add":250}',
+      's1_c4.c2={"sell_smallest_shell":0.8}',
       's1_c4.c3={"debt_spread_add":150,"credit_notch":{"notches":-1,"quarters":2}}',
+      's1_c5.c1={"backstop_payout":true}',
+      's1_c7.c1={"cash":-400000,"contract":{"recovery":0.35,"target":"distressed"}}',
+      's1_c7.c2={"contract":{"rentIndex":0.5,"target":"distressed","replaceTenant":true}}',
       's2_c2.c1={"delay_marginal_project":1}',
+      's2_c3.c1={"contract":{"termYears":10,"rentIndex":1.05,"target":"best"}}',
+      's2_c3.c2={"contract":{"rentIndex":1.35,"term":"spot","target":"uncontracted"}}',
+      's2_c7.c1={"contract":{"rentIndex":1.1,"target":"largest"}}',
+      's2_c8.c1={"debt_maturity_years":3}',
+      's3_c1.c1={"bandwidth_next":-1,"free_read":"efficiency_index"}',
+      's3_c3.c1={"contract":{"termYears":-3,"rentIndex":0.8,"target":"all_shell"}}',
+      's3_c4.c1={"contract":{"rentIndex":0.7,"target":"soonest"}}',
+      's3_c4.c2={"contract":{"rentIndex":0.8,"termYears":-2,"target":"soonest"}}',
+      's3_c6.c1={"contract":{"term":"1yr","target":"largest"}}',
     ])
+  })
+
+  it('the choices still deferred, each with the step that owns it', () => {
+    const deferred: string[] = []
+    for (const c of file)
+      c.choices.forEach((ch, i) => {
+        const e = translateEffects(ch.effect, { card: c.id, choice: i + 1 })
+        if ('deferred' in e)
+          deferred.push(
+            `${c.id}.c${i + 1}:${(e.deferred as { steps: string[] }).steps.join('+')}`,
+          )
+      })
+    expect(deferred).toEqual([
+      's0_c2.c3:step 7',
+      's0_c4.c1:step 7',
+      's0_c7.c1:step 5',
+      's0_c8.c2:step 5',
+      's1_c2.c1:step 5',
+      's1_c6.c1:step 5', // "Bid with cash": cash is supported, mw 60 (buying MW) is step 5
+      's1_c8.c1:step 5',
+      's2_c1.c1:step 6',
+      's2_c4.c1:step 5',
+      's2_c5.c1:step 6',
+      's2_c6.c1:step 6',
+      's2_c6.c2:step 6',
+      's3_c2.c1:step 6',
+      's3_c3.c3:step 5',
+      's3_c5.c1:step 5',
+      's3_c7.c1:step 5',
+      's3_c8.c1:step 5',
+      'sh_2.c1:step 6+step 5',
+      'sh_3.c1:step 6',
+      'sh_4.c1:step 5',
+    ])
+    // Nothing is left for "question": every open question was answered (M12.3).
+    expect(deferred.some((d) => d.includes('question'))).toBe(false)
   })
 
   it('a choice with any deferred effect is deferred whole: no free cash, no cost for nothing', () => {
     expect(translateEffects({ cash: '+10000000', debt: 10000000 })).toEqual({
-      deferred: { keys: ['cash', 'debt'], steps: ['question'] },
+      deferred: { keys: ['cash', 'debt'], steps: ['step 7'] },
     })
     expect(translateEffects({ cash: -2000000, ratepayer_anger: -8 })).toEqual({
       deferred: { keys: ['cash', 'ratepayer_anger'], steps: ['step 6'] },
     })
-    expect(translateEffects({ cash: '+revenue_this_quarter*0.02' })).toEqual({
-      deferred: { keys: ['cash'], steps: ['question'] },
+    expect(translateEffects({ cash: '+ppa_savings' })).toEqual({
+      deferred: { keys: ['cash'], steps: ['step 6'] },
+    })
+    expect(
+      translateEffects({ retrofit: 'low_to_mid', cash: '-1500000*mw' }),
+    ).toEqual({
+      deferred: { keys: ['retrofit', 'cash'], steps: ['step 5'] },
     })
     expect(translateEffects({ delay_quarters: -1, capex_mult: 1.15 })).toEqual({
       deferred: { keys: ['delay_quarters', 'capex_mult'], steps: ['step 5'] },
     })
   })
 
-  it('a deferred default logs its effects and changes nothing else; s1_c4’s default adds 250 bps', () => {
+  it('a deferred default logs its keys and its step and changes nothing else; s1_c4’s default adds 250 bps', () => {
+    // s2's defaults "Bank the margin" (ppa_savings) and "Community benefits deal" wait for step 6.
+    const deferredLogs = runs
+      .get('s2')!
+      .state.log.filter((e) => e.key === 'log.event_effects_deferred')
+    expect(deferredLogs.map((e) => e.params?.steps)).toEqual([
+      'step 6',
+      'step 6',
+    ])
     const { state } = runs.get('s1')!
-    const deferredLogs = state.log.filter(
-      (e) => e.key === 'log.event_effects_deferred',
-    )
-    expect(deferredLogs.length).toBeGreaterThan(0)
     expect(state.events.spreadAddBps).toBe(250) // s1_c4 default: refinance at +250bp
     expect(runs.get('s0')!.state.events.spreadAddBps).toBe(0) // s0's defaults touch no spread
   })

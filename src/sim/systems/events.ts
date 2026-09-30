@@ -14,7 +14,20 @@ import {
   act2Quarter,
   type EventCard,
   type EventChoice,
+  type SignalId,
 } from '../../content/index.ts'
+import {
+  applyContractEffect,
+  backstopPayout,
+  extendMaturity,
+  extraShellOffers,
+  freeRead,
+  idleOldAsics,
+  reduceDebt,
+  revenueShareAtEnd,
+  sellSmallestShell,
+  type ContractEffect,
+} from './cardContracts.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, random, substream, uniform } from '../rng.ts'
 import {
@@ -390,7 +403,35 @@ function choiceOpen(state: GameState, c: EventChoice): boolean {
   if (!holds(state, c.requires)) return false
   const buy = c.effects.buy_machine as BuyMachine | undefined
   if (buy && !siteWithRoom(state, buy.model, buy.count)) return false
-  return true
+  return !eventChoiceBlocker(state, c)
+}
+
+/**
+ * Why an Act III card choice is shown disabled (M12.3), or undefined: buying debt back at a discount
+ * needs the cash it costs, and some debt to buy.
+ */
+export function eventChoiceBlocker(
+  state: GameState,
+  c: EventChoice,
+): Message | undefined {
+  if (c.effects.debt_reduce === undefined) return undefined
+  const costUsd = -Number(c.effects.cash ?? 0)
+  if (state.cash < costUsd)
+    return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
+  if (state.facilities.length === 0) return { key: 'error.card_no_debt' }
+  return undefined
+}
+
+/** The card on screen's choices that are shown disabled, with the reason (M12.3). */
+export function blockedEventChoices(
+  state: GameState,
+): { id: string; blocker: Message }[] {
+  const card = getCard(state.interrupt?.event ?? '')
+  if (!card) return []
+  return card.choices.flatMap((c) => {
+    const blocker = eventChoiceBlocker(state, c)
+    return blocker ? [{ id: c.id, blocker }] : []
+  })
 }
 
 export function eventChoices(state: GameState): string[] {
@@ -862,6 +903,34 @@ export function resolveEvent(
         break
       case 'extra_tenant_offers':
         ev.extraOffers = { quarter: state.quarter + 1, n: Number(value) }
+        break
+      // ---------- Act III, step 4 (M12.3; cardContracts.ts) ----------
+      case 'contract':
+        applyContractEffect(state, v as ContractEffect, r, weekNo)
+        break
+      case 'extra_shell_offers':
+        extraShellOffers(state, Number(value))
+        break
+      case 'idle_old_asics':
+        idleOldAsics(state, weekNo)
+        break
+      case 'debt_reduce':
+        reduceDebt(state, Number(value), weekNo)
+        break
+      case 'debt_maturity_years':
+        extendMaturity(state, Number(value), weekNo)
+        break
+      case 'free_read':
+        freeRead(state, value as SignalId, weekNo)
+        break
+      case 'revenue_share_at_end':
+        revenueShareAtEnd(state, Number(value))
+        break
+      case 'backstop_payout':
+        backstopPayout(state, weekNo)
+        break
+      case 'sell_smallest_shell':
+        sellSmallestShell(state, Number(value), weekNo)
         break
       // Act III (M11.5c): a choice whose effects a later build step wires. Nothing happens; it logs.
       case 'deferred': {

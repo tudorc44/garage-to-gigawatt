@@ -23,7 +23,7 @@ import {
   type Project,
   type Renewal,
 } from '../state.ts'
-import { contractEndQuarter } from './calendar.ts'
+import { contractEndQuarter, reopenerEligible } from './calendar.ts'
 import {
   gpuRenewalIndex,
   offeredTermYears,
@@ -89,7 +89,8 @@ export function openRenewals(state: GameState): void {
   for (const p of state.projects) {
     const t = p.tenant
     if (!t || projectGone(p) || p.stage !== 'live') continue
-    if (openRenewal(state, p.id)) continue
+    // A rolling spot lease (a card's term "spot") reprices each quarter instead (repriceRolling).
+    if (t.rolling || openRenewal(state, p.id)) continue
     const end = contractEndQuarter(state, p)
     if (end === null || end > state.quarter) continue
     const walked = chance(
@@ -125,6 +126,10 @@ export function renewalBlocker(
   if (!r) return { key: 'error.no_renewal' }
   if (r.walked) return { key: 'error.renewal_walked' }
   if (r.choice === choice) return { key: 'error.renewal_chosen' }
+  // A reopener the player started can't be turned into a re-let: the fee is paid, and backing out
+  // (a failed counter) keeps the old lease (mine, reversible).
+  if (choice === 'relet' && r.cause === 'reopener' && r.by === 'player')
+    return { key: 'error.reopener_no_relet' }
   if (
     choice === 'relet' &&
     r.kind === 'shell' &&
@@ -151,15 +156,34 @@ export function chooseRenewal(
   delete r.counterMult
 }
 
-/** Starts the re-let by RFP on a shell whose tenant leaves at the end of this quarter. */
-function startRelet(state: GameState, p: Project): void {
+/** A lease's rent a year before any card haircut on this term (tenant_revenue_mult is for this term only). */
+export function baseRentUsd(p: Project): number {
   const t = p.tenant!
-  const lapsedRentUsd =
-    annualRentUsd(tenantCard(t.card)!, p.kw) * (t.priceMult ?? 1)
+  return (
+    (annualRentUsd(tenantCard(t.card)!, p.kw) * (t.priceMult ?? 1)) /
+    (t.revenueMult ?? 1)
+  )
+}
+
+/**
+ * Starts the re-let by RFP on a shell whose tenant leaves at the end of this quarter: its MW earn
+ * nothing for 2 quarters (a card's rfp_weeks: its own count), then a tenant of the same card signs.
+ */
+function startRelet(
+  state: GameState,
+  p: Project,
+  opts: { emptyQuarters?: number; rentMult?: number } = {},
+): void {
+  const t = p.tenant!
+  const lapsedRentUsd = baseRentUsd(p)
   p.tenant = null
   p.offers = []
-  p.emptyUntil = state.quarter + R.reletEmptyQuarters
-  p.pendingRelet = { card: t.card, lapsedRentUsd }
+  p.emptyUntil = state.quarter + (opts.emptyQuarters ?? R.reletEmptyQuarters)
+  p.pendingRelet = {
+    card: t.card,
+    lapsedRentUsd,
+    ...(opts.rentMult !== undefined ? { rentMult: opts.rentMult } : {}),
+  }
   logEntry(state, 'log.renewal_relet', {
     n: p.n,
     tenant: t.card,
@@ -188,17 +212,34 @@ export function resolveRenewals(state: GameState): void {
     const p = state.projects.find((x) => x.id === r.projectId)
     if (!p || !p.tenant || projectGone(p)) continue
     const t = p.tenant
+    // A reopener the player started and then backed out of (a failed counter): the lease runs on at
+    // its old rent; the fee stays paid.
+    if (r.cause === 'reopener' && r.by === 'player' && r.walked) {
+      logEntry(state, 'log.reopener_kept', { n: p.n, tenant: t.card })
+      continue
+    }
     if (r.walked || r.choice === 'relet' || !r.offer) {
-      if (r.kind === 'shell') startRelet(state, p)
+      if (r.kind === 'shell')
+        startRelet(state, p, {
+          ...(r.reletEmptyQuarters !== undefined
+            ? { emptyQuarters: r.reletEmptyQuarters }
+            : {}),
+          ...(r.reletRentMult !== undefined
+            ? { rentMult: r.reletRentMult }
+            : {}),
+        })
       else toSpot(state, p)
       continue
     }
     const mult = r.counterMult ?? r.offer.mult
+    // A card's haircut on the old term (tenant_revenue_mult) doesn't carry into the new one.
+    const haircut = t.revenueMult ?? 1
+    delete t.revenueMult
     if (t.gpu) {
-      t.gpu.priceUsdHr *= mult
+      t.gpu.priceUsdHr *= mult / haircut
       t.gpu.termQuarters = r.offer.termQuarters
     } else {
-      t.priceMult = (t.priceMult ?? 1) * mult
+      t.priceMult = ((t.priceMult ?? 1) / haircut) * mult
       t.termQuarters = r.offer.termQuarters
     }
     t.servedQuarters = 0
@@ -228,7 +269,7 @@ export function completeRelets(state: GameState): void {
     const card = tenantCard(pending.card)!
     const mid = rfpMid(state.quarter, scenario) ?? 1
     const years = offeredTermYears(state.quarter, scenario, 'shell') ?? 1
-    const rentUsd = pending.lapsedRentUsd * mid
+    const rentUsd = pending.lapsedRentUsd * mid * (pending.rentMult ?? 1)
     p.tenant = {
       card: card.id,
       signedQuarter: state.quarter,
@@ -248,5 +289,151 @@ export function completeRelets(state: GameState): void {
       rentUsd,
       years,
     })
+  }
+}
+
+// ---------- the reopener clause (M12.3; F-2, doc 27 §6) ----------
+
+const RO = BALANCE.act3.reopener
+
+/** Half of one quarter's current rent: what the party that reopens pays the other (DT). */
+export function reopenerFeeUsd(p: Project): number {
+  const t = p.tenant!
+  return Math.round(
+    (RO.feeShareOfQuarterRent *
+      annualRentUsd(tenantCard(t.card)!, p.kw) *
+      (t.priceMult ?? 1)) /
+      4,
+  )
+}
+
+/**
+ * Reopens a lease: the fee changes hands, then M12.2's renewal runs at once in this Plan phase (the
+ * offer from Band(q) and the tenant's position, the offered shell term; no walk roll, except in a
+ * counter's round 3). It settles at the end of the quarter like any renewal.
+ */
+function openReopener(
+  state: GameState,
+  p: Project,
+  by: 'tenant' | 'player',
+): void {
+  const t = p.tenant!
+  const feeUsd = reopenerFeeUsd(p)
+  state.cash += by === 'tenant' ? feeUsd : -feeUsd
+  t.reopenedQuarter = state.quarter
+  const offer = renewalOffer(state, p)
+  ;(state.act3Renewals ??= []).push({
+    projectId: p.id,
+    kind: 'shell',
+    openedQuarter: state.quarter,
+    walked: false,
+    offer,
+    choice: null,
+    cause: 'reopener',
+    by,
+  })
+  logEntry(state, `log.reopener_${by}`, {
+    n: p.n,
+    tenant: t.card,
+    feeUsd,
+    multPct: offer ? offer.mult - 1 : 0,
+    years: offer ? offer.termQuarters / 4 : 0,
+  })
+}
+
+/**
+ * At the start of an Act III Plan phase (after the renewals open): when Band high(q) is under 0.90 (the
+ * market at least 10% below the lease), each eligible tenant reopens, at most once in 4 quarters.
+ */
+export function openTenantReopeners(state: GameState): void {
+  if (!inActIII(state) || !state.scenarioId) return
+  const band = renewalBand(state.quarter, scenarioOf(state))
+  if (!band || band.hi >= RO.tenantTriggerBandHigh) return
+  for (const p of state.projects) {
+    if (!reopenerEligible(state, p)) continue
+    const last = p.tenant!.reopenedQuarter
+    if (last !== undefined && state.quarter - last < RO.tenantEveryQuarters)
+      continue
+    openReopener(state, p, 'tenant')
+  }
+}
+
+/** Why the player can't reopen this lease now, or undefined. */
+export function playerReopenBlocker(
+  state: GameState,
+  projectId: string,
+): Message | undefined {
+  if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
+  const p = state.projects.find((x) => x.id === projectId)
+  if (!p) return { key: 'error.unknown_project' }
+  if (!reopenerEligible(state, p)) return { key: 'error.reopener_not_eligible' }
+  if (state.bandwidth < RO.playerBandwidth)
+    return {
+      key: 'error.no_bandwidth',
+      params: { needed: RO.playerBandwidth, have: state.bandwidth },
+    }
+  const feeUsd = reopenerFeeUsd(p)
+  if (state.cash < feeUsd)
+    return { key: 'error.no_cash', params: { costUsd: feeUsd, cashUsd: state.cash } }
+  return undefined
+}
+
+/** The player reopens a lease (1 BW and the fee; assumes the blocker passed). */
+export function playerReopen(state: GameState, projectId: string): void {
+  const p = state.projects.find((x) => x.id === projectId)!
+  state.bandwidth -= RO.playerBandwidth
+  openReopener(state, p, 'player')
+}
+
+// ---------- contracts an event card changes (M12.3) ----------
+
+/**
+ * A card ends a contract at the end of this quarter (a walk, or a re-let it chose): a shell goes to the
+ * re-let path at no Bandwidth (a card's rfp_weeks and rent_index can set its gap and rent); a GPU
+ * contract goes to spot. An open renewal on it becomes this.
+ */
+export function endContractAtQuarterEnd(
+  state: GameState,
+  p: Project,
+  opts: { emptyQuarters?: number; rentMult?: number } = {},
+): void {
+  const list = (state.act3Renewals ??= [])
+  let r = openRenewal(state, p.id)
+  if (!r) {
+    r = {
+      projectId: p.id,
+      kind: p.tenant!.gpu ? 'gpu' : 'shell',
+      openedQuarter: state.quarter,
+      walked: true,
+      offer: null,
+      choice: null,
+    }
+    list.push(r)
+  }
+  r.walked = true
+  r.offer = null
+  r.choice = null
+  r.cause = 'card'
+  delete r.by
+  delete r.counterMult
+  if (opts.emptyQuarters !== undefined)
+    r.reletEmptyQuarters = opts.emptyQuarters
+  if (opts.rentMult !== undefined) r.reletRentMult = opts.rentMult
+}
+
+/**
+ * At the start of a quarter: a rolling spot lease (a card's term "spot") reprices at this quarter's
+ * new-lease reference (the card rent × the RFP midpoint) for one more quarter.
+ */
+export function repriceRolling(state: GameState): void {
+  if (!inActIII(state)) return
+  const mid = rfpMid(state.quarter, scenarioOf(state))
+  if (mid === null) return
+  for (const p of state.projects) {
+    const t = p.tenant
+    if (!t?.rolling || projectGone(p)) continue
+    t.priceMult = mid
+    t.servedQuarters = 0
+    delete t.revenueMult
   }
 }
