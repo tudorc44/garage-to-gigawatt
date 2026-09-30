@@ -17,6 +17,28 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M11.5c, 30 Sep 2026 (the scenario event cards)
+
+- **`events_act3.json`:** every card gained a machine-readable `"quarter"` field, right after its prose `trigger` (kept as
+  it was): the first quarter written in the trigger text (`"2028Q2-Q3"` → `2028Q2`; decoy cards → the peak quarter,
+  written first). Nothing else changed. The copy in `src/content/` is byte-identical.
+- The game turns each card into a scripted card of Act II's engine (`src/content/act3Cards.ts`): week 2 of its quarter,
+  choice ids `c1…`, an opaque engine id (the authored id names the scenario), text in `src/i18n/en.json` under that id.
+- **Effect keys → engine** (`EFFECT_MAP`). A choice with any deferred key is deferred whole (it logs and does nothing):
+
+  | key | now | note |
+  | --- | --- | --- |
+  | `cash` | mapped: `cash` | plain amounts only; formulas ("+revenue_this_quarter*0.02", "+backstop_amount", "+ev_stabilized*0.8", "+ppa_savings", "-project_capex*0.06", "-1500000*mw") deferred: question |
+  | `legal_cost` | mapped: cash cost | |
+  | `delay_quarters` | mapped: `delay_marginal_project` (positive) | negative (a speed-up) deferred: step 5 |
+  | `debt_spread_bps` | mapped: `debt_spread_add` | new equipment loans and DDTLs, from then on |
+  | `credit_notch` | mapped: `credit_notch` | for 2 quarters, as Act II's cards |
+  | `bandwidth` | mapped: `bandwidth_next` | cards play in the live quarter |
+  | `rent_index`, `term`, `term_years`, `term_add_years`, `walk_prob`, `tenant_walk_chance`, `tenant_revenue_mult`, `tenant_slots`, `rfp_weeks`, `recovery` | deferred | step 4 |
+  | `retrofit`, `gpu_rack`, `capex_mw`, `capex_mult`, `gpu_resale_mult`, `mw` | deferred | step 5 |
+  | `power_option`, `pc_cost`, `hire`, `ratepayer_anger` | deferred | step 6 (the engine has no Anger nudge) |
+  | `idle_mw`, `mining_revenue_mult`, `debt`, `debt_reduce`, `debt_maturity_years`, `reveals` | deferred | question (see dev-notes) |
+
 ### M11.5a, 29 Sep 2026 (design thread's answer to the M11.4c question on the BTC hashprice seam)
 
 - **`market_weekly_s0–s3.csv` › `btc_hashprice_usd_ph_day` and `btc_hashprice_usd_th_day`, and `market_s0–s3.csv` ›

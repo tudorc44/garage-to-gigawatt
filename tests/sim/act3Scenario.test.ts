@@ -24,6 +24,7 @@ import {
   previousMarketWeek,
   scenarioOf,
 } from '../../src/sim/systems/market.ts'
+import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { act2Company, ok } from './act2Helpers.ts'
 import { act3WithoutScenario } from './act3Helpers.ts'
 
@@ -45,7 +46,10 @@ function act3With(id: ScenarioId, seed = 1): GameState {
 /** Plays the 13 live weeks of the first Act III quarter (default answers to any alert). */
 function playLive(s: GameState): GameState {
   s = ok(s, { type: 'END_PLAN' })
-  while (s.phase === 'live' && !s.interrupt) s = advance(s)
+  while (s.phase === 'live')
+    s = s.interrupt
+      ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: defaultChoice(s) })
+      : advance(s)
   return s
 }
 

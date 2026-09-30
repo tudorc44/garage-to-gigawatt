@@ -16,6 +16,7 @@ import {
   type Site,
 } from '../../src/sim/state.ts'
 import { bandwidthForQuarter } from '../../src/sim/systems/bandwidth.ts'
+import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { act2Company, ok } from './act2Helpers.ts'
 import { act3WithoutScenario } from './act3Helpers.ts'
 
@@ -68,7 +69,10 @@ describe('READ_SIGNAL (Act III Read the market)', () => {
   it('a read in 2027Q1 shows nothing sharp in 2027Q2, and can be made again there', () => {
     let s = ok(act3(), { type: 'READ_SIGNAL', indicator: 'revenue_gap' })
     s = ok(s, { type: 'END_PLAN' })
-    while (s.phase === 'live' && !s.interrupt) s = advance(s)
+    while (s.phase === 'live')
+      s = s.interrupt
+        ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: defaultChoice(s) })
+        : advance(s)
     s = ok(s, { type: 'NEXT_QUARTER' })
     expect(CONTENT.quarters[s.quarter]).toBe('2027Q2')
     const panel = signalsPanel(s)!
@@ -211,7 +215,10 @@ describe('Bandwidth in Act III (STUB point 1)', () => {
   it('a new Act III quarter refills Bandwidth by that rule', () => {
     let s = act3()
     s = ok(s, { type: 'END_PLAN' })
-    while (s.phase === 'live' && !s.interrupt) s = advance(s)
+    while (s.phase === 'live')
+      s = s.interrupt
+        ? ok(s, { type: 'RESOLVE_INTERRUPT', choice: defaultChoice(s) })
+        : advance(s)
     s = ok(s, { type: 'NEXT_QUARTER' })
     expect(s.bandwidth).toBe(bandwidthForQuarter(s))
   })

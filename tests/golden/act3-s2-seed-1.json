@@ -217,7 +217,7 @@
           "BTC": 0.1404477367024605,
           "ETH": 0
         },
-        "priceAlert": false,
+        "priceAlert": true,
         "cash": 488618498.16
       },
       {
@@ -1557,6 +1557,16 @@
     },
     {
       "quarter": 40,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_22b90a0c.title",
+        "eventChoice": "a3_22b90a0c.choice.c1",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 40,
       "week": 3,
       "key": "log.failures",
       "params": {
@@ -1608,6 +1618,16 @@
     },
     {
       "quarter": 41,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_c0e21850.title",
+        "eventChoice": "a3_c0e21850.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 41,
       "week": 4,
       "key": "log.failures",
       "params": {
@@ -1648,10 +1668,30 @@
     },
     {
       "quarter": 42,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_403311b7.title",
+        "eventChoice": "a3_403311b7.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 42,
       "week": 3,
       "key": "log.failures",
       "params": {
         "count": 2
+      }
+    },
+    {
+      "quarter": 42,
+      "week": 3,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_c03ea202.title",
+        "eventChoice": "a3_c03ea202.choice.c2",
+        "cashUsd": 0
       }
     },
     {
@@ -1752,6 +1792,16 @@
     },
     {
       "quarter": 44,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_67d0f5fe.title",
+        "eventChoice": "a3_67d0f5fe.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 44,
       "week": 4,
       "key": "log.failures",
       "params": {
@@ -1799,6 +1849,16 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 45,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_20531cf7.title",
+        "eventChoice": "a3_20531cf7.choice.c2",
+        "cashUsd": 0
       }
     },
     {
@@ -1872,6 +1932,25 @@
     },
     {
       "quarter": 46,
+      "week": 2,
+      "key": "log.event_effects_deferred",
+      "params": {
+        "effects": "term_years, rent_index",
+        "steps": "step 4"
+      }
+    },
+    {
+      "quarter": 46,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_eb2dad54.title",
+        "eventChoice": "a3_eb2dad54.choice.c1",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 46,
       "week": 3,
       "key": "log.failures",
       "params": {
@@ -1958,6 +2037,16 @@
     },
     {
       "quarter": 47,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_4626269a.title",
+        "eventChoice": "a3_4626269a.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 47,
       "week": 3,
       "key": "log.failures",
       "params": {
@@ -2002,6 +2091,25 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 48,
+      "week": 2,
+      "key": "log.event_effects_deferred",
+      "params": {
+        "effects": "cash",
+        "steps": "question"
+      }
+    },
+    {
+      "quarter": 48,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_35d7cfb2.title",
+        "eventChoice": "a3_35d7cfb2.choice.c1",
+        "cashUsd": 0
       }
     },
     {
@@ -2090,6 +2198,25 @@
     },
     {
       "quarter": 49,
+      "week": 2,
+      "key": "log.event_effects_deferred",
+      "params": {
+        "effects": "cash, ratepayer_anger",
+        "steps": "step 6"
+      }
+    },
+    {
+      "quarter": 49,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_4ba8a02a.title",
+        "eventChoice": "a3_4ba8a02a.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 49,
       "week": 3,
       "key": "log.failures",
       "params": {
@@ -2174,6 +2301,16 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 51,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_c7c9d54d.title",
+        "eventChoice": "a3_c7c9d54d.choice.c2",
+        "cashUsd": 0
       }
     },
     {
@@ -2319,6 +2456,25 @@
     },
     {
       "quarter": 53,
+      "week": 2,
+      "key": "log.event_effects_deferred",
+      "params": {
+        "effects": "debt_maturity_years",
+        "steps": "question"
+      }
+    },
+    {
+      "quarter": 53,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_1363a916.title",
+        "eventChoice": "a3_1363a916.choice.c1",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 53,
       "week": 3,
       "key": "log.failures",
       "params": {
@@ -2452,6 +2608,16 @@
       "key": "log.failures",
       "params": {
         "count": 2
+      }
+    },
+    {
+      "quarter": 55,
+      "week": 3,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_f73f0237.title",
+        "eventChoice": "a3_f73f0237.choice.c1",
+        "cashUsd": 0
       }
     },
     {

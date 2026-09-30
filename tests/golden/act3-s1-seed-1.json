@@ -95,7 +95,7 @@
     "creditNotch": null,
     "valuationMult": null,
     "ebitdaMult": null,
-    "spreadAddBps": 0,
+    "spreadAddBps": 250,
     "aiLabRevenueMult": 1,
     "extraOffers": null
   },
@@ -217,7 +217,7 @@
           "BTC": 0,
           "ETH": 0
         },
-        "priceAlert": false,
+        "priceAlert": true,
         "cash": 490006179.06
       },
       {
@@ -1557,6 +1557,16 @@
     },
     {
       "quarter": 40,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_22b90a0c.title",
+        "eventChoice": "a3_22b90a0c.choice.c1",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 40,
       "week": 3,
       "key": "log.failures",
       "params": {
@@ -1608,6 +1618,26 @@
     },
     {
       "quarter": 41,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_e84ea420.title",
+        "eventChoice": "a3_e84ea420.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 41,
+      "week": 3,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_c0e21850.title",
+        "eventChoice": "a3_c0e21850.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 41,
       "week": 4,
       "key": "log.failures",
       "params": {
@@ -1648,6 +1678,16 @@
     },
     {
       "quarter": 42,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_c03ea202.title",
+        "eventChoice": "a3_c03ea202.choice.c2",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 42,
       "week": 3,
       "key": "log.failures",
       "params": {
@@ -1684,6 +1724,16 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 43,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_e5723b9c.title",
+        "eventChoice": "a3_e5723b9c.choice.c2",
+        "cashUsd": 0
       }
     },
     {
@@ -1748,6 +1798,25 @@
       "key": "log.failures",
       "params": {
         "count": 2
+      }
+    },
+    {
+      "quarter": 44,
+      "week": 2,
+      "key": "log.event_effects_deferred",
+      "params": {
+        "effects": "tenant_revenue_mult",
+        "steps": "step 4"
+      }
+    },
+    {
+      "quarter": 44,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_cafecee9.title",
+        "eventChoice": "a3_cafecee9.choice.c1",
+        "cashUsd": 0
       }
     },
     {
@@ -1806,6 +1875,26 @@
       "week": 1,
       "key": "log.switched_off",
       "params": {}
+    },
+    {
+      "quarter": 45,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_cb774cd6.title",
+        "eventChoice": "a3_cb774cd6.choice.c1",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 45,
+      "week": 3,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_20531cf7.title",
+        "eventChoice": "a3_20531cf7.choice.c2",
+        "cashUsd": 0
+      }
     },
     {
       "quarter": 45,
@@ -1872,10 +1961,39 @@
     },
     {
       "quarter": 46,
+      "week": 2,
+      "key": "log.event_effects_deferred",
+      "params": {
+        "effects": "cash",
+        "steps": "question"
+      }
+    },
+    {
+      "quarter": 46,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_03c3bdf0.title",
+        "eventChoice": "a3_03c3bdf0.choice.c1",
+        "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 46,
       "week": 3,
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 46,
+      "week": 3,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_a92ada1c.title",
+        "eventChoice": "a3_a92ada1c.choice.c2",
+        "cashUsd": 0
       }
     },
     {
@@ -2008,6 +2126,25 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 48,
+      "week": 2,
+      "key": "log.event_effects_deferred",
+      "params": {
+        "effects": "rent_index",
+        "steps": "step 4"
+      }
+    },
+    {
+      "quarter": 48,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_b89ee21f.title",
+        "eventChoice": "a3_b89ee21f.choice.c2",
+        "cashUsd": 0
       }
     },
     {
@@ -2199,6 +2336,16 @@
       "week": 1,
       "key": "log.switched_off",
       "params": {}
+    },
+    {
+      "quarter": 51,
+      "week": 2,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_2d72100e.title",
+        "eventChoice": "a3_2d72100e.choice.c2",
+        "cashUsd": 0
+      }
     },
     {
       "quarter": 51,
@@ -2494,6 +2641,16 @@
       "key": "log.failures",
       "params": {
         "count": 2
+      }
+    },
+    {
+      "quarter": 55,
+      "week": 3,
+      "key": "log.event_choice",
+      "params": {
+        "eventTitle": "a3_f73f0237.title",
+        "eventChoice": "a3_f73f0237.choice.c1",
+        "cashUsd": 0
       }
     },
     {

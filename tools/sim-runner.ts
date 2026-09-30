@@ -589,7 +589,8 @@ console.table(
     for (const [id, n] of Object.entries(r.cards_seen))
       seen[id] = (seen[id] ?? 0) + n
   console.log('  Runs that saw each card (all strategies):')
-  for (const c of CONTENT.events.cards)
+  // Acts I and II only: these runs stop at 2026Q4 (Act III's cards are reported by --act3).
+  for (const c of CONTENT.events.cards.filter((x) => x.act !== 3))
     console.log(
       `    ${c.type.padEnd(8)} ${c.id.padEnd(22)} ${(((seen[c.id] ?? 0) / runsTotal) * 100).toFixed(0)}%`,
     )

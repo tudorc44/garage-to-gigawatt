@@ -37,6 +37,8 @@ import marketWeeklyS1Raw from './market_weekly_s1.json' with { type: 'json' }
 import marketWeeklyS2Raw from './market_weekly_s2.json' with { type: 'json' }
 import marketWeeklyS3Raw from './market_weekly_s3.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
+import eventsAct3Raw from './events_act3.json' with { type: 'json' }
+import { eventsAct3FileSchema, toEngineCard } from './act3Cards.ts'
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
 import shocksRaw from './shocks.json' with { type: 'json' }
@@ -501,8 +503,10 @@ export type EventCard = EventCardRaw & {
   /** Scripted cards: quarter index and week index (0–12) of the card. */
   quarterIndex?: number
   weekIndex?: number
-  /** The act whose deck it's in: events.json is Act I's, events_act2.json Act II's. */
-  act: 1 | 2
+  /** The act whose deck it's in: events.json is Act I's, events_act2.json Act II's, events_act3.json Act III's. */
+  act: 1 | 2 | 3
+  /** Act III only: the scenario whose game plays it ('all' = every scenario). Engine-only (M11.5c). */
+  scenario?: ScenarioId | 'all'
 }
 
 /** A prologue card (events_prologue.json); scripted ones carry their quarter and week index. */
@@ -565,6 +569,7 @@ export interface RawContent {
   sitesAct2: unknown
   hiresAct2: unknown
   eventsAct2: unknown
+  eventsAct3: unknown
   rivals: unknown
   rivalsAct2: unknown
   rivalsAct3: unknown
@@ -1688,6 +1693,63 @@ export function parseContent(raw: RawContent): Content {
       }
     }
   }
+  // Act III's scenario event cards (M11.5c): turned into Act II-engine scripted cards (act3Cards.ts) in
+  // Act III's deck, each in week 2 of its `quarter` (mine, reversible: the file gives no week).
+  // Checks: 8 per scenario and 5 shared, a quarter inside Act III, a default that is one of the choice
+  // labels, and opaque ids that don't collide.
+  {
+    const file = check('events_act3.json', eventsAct3FileSchema, raw.eventsAct3)
+    const timeline = act3Scenarios.s0?.quarterly.map((r) => r.quarter) ?? []
+    if (file) {
+      for (const sc of [...SCENARIO_IDS, 'all'] as const) {
+        const n = file.event_cards.filter((c) => c.scenario === sc).length
+        const want = sc === 'all' ? 5 : 8
+        if (n !== want)
+          problems.push(
+            `events_act3.json: ${n} cards for ${sc}, expected ${want}`,
+          )
+      }
+      const engineIds = new Set<string>()
+      for (const c of file.event_cards) {
+        if (!timeline.includes(c.quarter))
+          problems.push(
+            `events_act3.json › ${c.id}: quarter ${c.quarter} isn't an Act III quarter`,
+          )
+        if (!c.choices.some((ch) => ch.label === c.default))
+          problems.push(
+            `events_act3.json › ${c.id}: default "${c.default}" isn't one of its choices`,
+          )
+        if (!c.trigger.startsWith(c.quarter))
+          problems.push(
+            `events_act3.json › ${c.id}: quarter ${c.quarter} isn't the first quarter of its trigger "${c.trigger}"`,
+          )
+        const qi = quarters.indexOf(c.quarter)
+        const weekOf =
+          act3Scenarios.s0?.weeks[qi - quarters.indexOf(timeline[0])]?.[1]
+            ?.week ?? ''
+        let card
+        try {
+          card = toEngineCard(c, weekOf)
+        } catch (e) {
+          problems.push((e as Error).message)
+          continue
+        }
+        if (engineIds.has(card.id))
+          problems.push(
+            `events_act3.json › ${c.id}: engine id ${card.id} collides`,
+          )
+        engineIds.add(card.id)
+        const engineCard: EventCard = {
+          ...card,
+          act: 3,
+          quarterIndex: qi,
+          weekIndex: 1,
+        }
+        events.cards.push(engineCard)
+        events.byId[engineCard.id] = engineCard
+      }
+    }
+  }
   // Act III's Signals (M11.2): runtime fields only; each file's scenario must be the one it is filed under.
   const signals = {} as Record<ScenarioId, SignalIndicator[]>
   for (const id of SCENARIO_IDS) {
@@ -2045,6 +2107,7 @@ export const CONTENT: Content = parseContent({
   sitesAct2: sitesAct2Raw,
   hiresAct2: hiresAct2Raw,
   eventsAct2: eventsAct2Raw,
+  eventsAct3: eventsAct3Raw,
   rivals: rivalsRaw,
   rivalsAct2: rivalsAct2Raw,
   rivalsAct3: rivalsAct3Raw,

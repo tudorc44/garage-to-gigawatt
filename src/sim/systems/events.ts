@@ -24,7 +24,7 @@ import {
   type GameState,
   type Site,
 } from '../state.ts'
-import { inActII } from '../state.ts'
+import { inActII, inActIII } from '../state.ts'
 import { getStep, unmetRequirement } from './capital.ts'
 import { absWeek, aiDemandDelta } from './eventEffects.ts'
 import type { ScheduledEvent } from './eventEffects.ts'
@@ -288,9 +288,18 @@ export function scheduleEvents(state: GameState): void {
   for (const card of deck) {
     if (card.type !== 'scripted' || card.quarterIndex !== state.quarter)
       continue
+    // Act III (M11.5c): a scenario card plays only in its own scenario; 'all' in every one.
+    if (
+      card.scenario &&
+      card.scenario !== 'all' &&
+      card.scenario !== state.scenarioId
+    )
+      continue
     if (!holds(state, card.requires, card)) continue
     schedule(state, card, card.weekIndex! + 1, false)
   }
+  // Act III has no random deck: its cards are all scripted (the Act II deck stays off, M11.4c).
+  if (inActIII(state)) return
   const rules = inActII(state) ? CONTENT.events.act2 : CONTENT.events
   if (state.quarter < rules.randomStart) return
   const r = substream(state.seed, `events:${state.quarter}`)
@@ -854,6 +863,17 @@ export function resolveEvent(
       case 'extra_tenant_offers':
         ev.extraOffers = { quarter: state.quarter + 1, n: Number(value) }
         break
+      // Act III (M11.5c): a choice whose effects a later build step wires. Nothing happens; it logs.
+      case 'deferred': {
+        const x = v as { keys: string[]; steps: string[] }
+        logEntry(
+          state,
+          'log.event_effects_deferred',
+          { effects: x.keys.join(', '), steps: x.steps.join(', ') },
+          weekNo,
+        )
+        break
+      }
       default:
         throw new Error(`Event effect "${key}" is not implemented`)
     }
