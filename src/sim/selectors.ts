@@ -24,6 +24,7 @@ import type {
   PowerContract,
 } from './state.ts'
 import { inAct2Rules, inActIII } from './state.ts'
+import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
   repairAllCost,
@@ -253,7 +254,9 @@ export function dailyProfitPerUnit(
   const w = currentMarket(state)
   return (
     revenuePerUnitDay(model, w) -
-    model.power_kw * 24 * powerPriceUsdKwh(site, state.quarter, scenarioOf(state))
+    model.power_kw *
+      24 *
+      powerPriceUsdKwh(site, state.quarter, scenarioOf(state))
   )
 }
 
@@ -1203,8 +1206,7 @@ export function act2OfferView(state: GameState, o: SiteOffer) {
     perMwUsd: o.capexUsd / (o.kw / 1000),
     powerUsdKwh:
       (inputsAt(state, state.quarter)?.powerUsdKwh[o.region as PowerRegion] ??
-        0) +
-      regionPowerAdderUsdKwh(o.region as PowerRegion, state.quarter),
+        0) + regionPowerAdderUsdKwh(o.region as PowerRegion, state.quarter),
   }
 }
 
@@ -1282,8 +1284,7 @@ export function chapterReport(state: GameState) {
   const startUsd = state.prologueCarry?.startNetWorthUsd
   const growthMultiple =
     startUsd !== undefined && startUsd > 0 ? netWorthUsd / startUsd : null
-  const scale =
-    growthMultiple !== null ? BALANCE.startCash / startUsd! : 1
+  const scale = growthMultiple !== null ? BALANCE.startCash / startUsd! : 1
   const scoredUsd = netWorthUsd * scale
   const title = bust
     ? CONTENT.merge.bustTitle
@@ -1447,7 +1448,9 @@ export function act2ChapterView(state: GameState) {
       !a || Number(b.params?.rentUsd) > Number(a.params?.rentUsd) ? b : a,
     undefined,
   )
-  const split = last ? valuationSplit(last, state.firstAiDealQuarter, scenarioOf(state)) : null
+  const split = last
+    ? valuationSplit(last, state.firstAiDealQuarter, scenarioOf(state))
+    : null
   return {
     bust,
     title,
@@ -1879,6 +1882,19 @@ export function ratingBacklogView(state: GameState) {
  * clients would pay (the year they move in), the site's power price, and a quarter's margin per
  * MW at those prices; then your contracts, with what ending each would cost now.
  */
+/**
+ * The contract calendar (M12.1): every signed tenant contract with its end quarter (the last quarter
+ * served), soonest first, labelled for display. Only this quarter's market is read (the new-lease
+ * reference rent and the 1-year GPU rate); no renewal offer shows before it is made.
+ */
+export function contractCalendar(state: GameState) {
+  return buildCalendar(state).map((e) => ({
+    ...e,
+    endQuarterLabel:
+      e.endQuarter === null ? null : (CONTENT.quarters[e.endQuarter] ?? null),
+  }))
+}
+
 export function hostingView(state: GameState) {
   const nextQ = Math.min(state.quarter + 1, CONTENT.quarters.length - 1)
   const hoursQ = 24 * 7 * BALANCE.weeksPerQuarter
