@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-11 Chapter report with the reveal</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.r{text-align:right}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 18px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#222;color:#fff;font-weight:600}
+.up{color:#1a7f37}.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #ddd;padding:3px 0}
+.band{flex:1;text-align:center;font-size:10px;padding:3px 2px;border:1px solid #bbb;color:#666}
+.band.on{border:2px solid #222;color:#222;font-weight:700;background:#f4f4f4}
+</style>
+</helmet>
+<div class="s" style="padding: 16px 22px; gap: 10px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #222; padding-bottom: 8px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lab">Act III complete · 2027Q1 – 2030Q4</span><span style="font-size: 15px">The market you played was:</span><span style="font-weight: 700; font-size: 28px">The Great Repricing</span></div>
+<div style="border: 2px solid #222; border-radius: 4px; padding: 6px 14px; display: flex; flex-direction: column; align-items: flex-end; background: #fff"><span class="lab">Your title</span><span style="font-weight: 700; font-size: 18px">Signal Reader</span></div>
+</div>
+
+<div style="display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 10px">
+<section class="p">
+<span class="lab">What happened</span>
+<span style="font-size: 13.5px; line-height: 1.45">The trigger came in <span class="m">2028Q1</span> with "The Round That Didn't Close": the revenue gap and lender spreads had been widening for quarters, and when a major funding round failed, renewals repriced sharply down and credit tightened.</span>
+</section>
+<section class="p">
+<span class="lab">The false alarm · the tell</span>
+<span style="font-weight: 600">Chip Lead Times, 2027Q2–Q4</span>
+<span class="sm">An HBM4 memory yield problem: supply-side, not demand. It moved for its own reasons, not the scenario's.</span>
+</section>
+</div>
+
+<section class="p">
+<div style="display: flex; justify-content: space-between"><span class="h">Your reading · 2027Q1 → 2030Q4</span><span class="sm mut">big moves against the trigger</span></div>
+<svg viewBox="0 0 1230 128" width="100%" height="128" aria-label="Timeline with the false-alarm window 2027Q2 to Q4, trigger 2028Q1, and three moves: shortened GPU contracts 2027Q3, sold a 20 MW site 2027Q4, added debt 2028Q2">
+<rect x="96" y="30" width="190" height="44" fill="url(#hatch)"></rect>
+<defs><pattern id="hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#f2f2f2"></rect><line x1="0" y1="0" x2="0" y2="6" stroke="#bbb" stroke-width="2"></line></pattern></defs>
+<text x="100" y="26" font-size="10" fill="#666" font-family="system-ui,sans-serif">false alarm · Chip Lead Times</text>
+<line x1="20" y1="74" x2="1210" y2="74" stroke="#222" stroke-width="1.5"></line>
+<g fill="#222"><circle cx="20" cy="74" r="2.5"></circle><circle cx="96" cy="74" r="2.5"></circle><circle cx="172" cy="74" r="2.5"></circle><circle cx="248" cy="74" r="2.5"></circle><circle cx="324" cy="74" r="2.5"></circle><circle cx="400" cy="74" r="2.5"></circle><circle cx="476" cy="74" r="2.5"></circle><circle cx="552" cy="74" r="2.5"></circle><circle cx="628" cy="74" r="2.5"></circle><circle cx="704" cy="74" r="2.5"></circle><circle cx="780" cy="74" r="2.5"></circle><circle cx="856" cy="74" r="2.5"></circle><circle cx="932" cy="74" r="2.5"></circle><circle cx="1008" cy="74" r="2.5"></circle><circle cx="1084" cy="74" r="2.5"></circle><circle cx="1160" cy="74" r="2.5"></circle></g>
+<line x1="324" y1="8" x2="324" y2="96" stroke="#222" stroke-width="3"></line>
+<text x="330" y="16" font-size="11" font-weight="700" fill="#222" font-family="system-ui,sans-serif">TRIGGER · 2028Q1 · The Round That Didn't Close</text>
+<g font-family="system-ui,sans-serif" font-size="10.5" fill="#222">
+<line x1="172" y1="74" x2="172" y2="100" stroke="#222"></line><text x="118" y="112">Shortened GPU contracts</text><text x="130" y="124" fill="#666">2 quarters before</text>
+<line x1="248" y1="74" x2="248" y2="52" stroke="#222"></line><text x="206" y="48">Sold a 20 MW site</text>
+<text x="212" y="38" fill="#666" font-size="10">1 quarter before</text>
+<line x1="400" y1="74" x2="400" y2="100" stroke="#222"></line><text x="380" y="112">Added debt</text><text x="372" y="124" fill="#666">1 quarter after</text>
+</g>
+<g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#666"><text x="4" y="92">27Q1</text><text x="604" y="92">29Q1</text><text x="1136" y="92">30Q4</text></g>
+</svg>
+</section>
+
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 10px">
+<section class="p">
+<span class="lab">Reading score</span>
+<div style="display: flex; align-items: baseline; gap: 8px"><span class="m" style="font-size: 32px; font-weight: 600">64</span><span class="m mut">/ 100</span></div>
+<div style="display: flex; gap: 2px"><span class="band">Bagholder<br>0–19</span><span class="band">Weathervane<br>20–39</span><span class="band">Steady Hand<br>40–59</span><span class="band on">Signal Reader<br>60–79</span><span class="band">Cassandra with a Balance Sheet<br>80–100</span></div>
+<span style="font-style: italic">"You read the market before it read you."</span>
+</section>
+<section class="p">
+<span class="lab">Net worth · 2030Q4</span>
+<span class="m" style="font-size: 28px; font-weight: 600">$512M</span>
+<div class="kv"><span>At Act III entry</span><span class="m">$431M</span></div>
+<div class="kv"><span>Growth multiple</span><span class="m up">1.19× ▲</span></div>
+<div class="kv" style="border-bottom: 0"><span>Survival</span><span style="font-weight: 600">Survived</span></div>
+</section>
+<section class="p">
+<span class="lab">The rivals</span>
+<div class="kv" style="flex-direction: column; gap: 1px"><span style="font-weight: 600">IREN</span><span class="sm">Sells BTC and pauses Sweetwater; survives on Microsoft prepay.</span></div>
+<div class="kv" style="flex-direction: column; gap: 1px"><span style="font-weight: 600">Hut 8</span><span class="sm">Investment-grade tenant holds; equity −55% but cash-flow intact.</span></div>
+<div class="kv" style="flex-direction: column; gap: 1px; border-bottom: 0"><span style="font-weight: 600">Cipher</span><span class="sm">Backstopped Fluidstack lease holds; AWS lease unaffected.</span></div>
+</section>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span class="sm mut">The story continues in a future update.</span>
+<a class="btn pri" href="#">Continue</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-12 Title: start at Act III and Scenario Mode</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:34px;padding:0 14px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:13px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#222;color:#fff;font-weight:600}
+.dis{border-color:#bbb;color:#888;background:#eee}
+.mut{color:#666}.sm{font-size:11px}
+.ph{border:1px dashed #999;background:#e9e9e9;position:relative;display:flex;align-items:center;justify-content:center;color:#666;font-size:11px;overflow:hidden}
+.ph svg{position:absolute;left:0;top:0;width:100%;height:100%}
+.pre{border:1px solid #bbb;border-radius:4px;padding:10px;display:flex;flex-direction:column;gap:4px;background:#fff}
+.pre.on{border:2px solid #222}
+.kv{display:flex;justify-content:space-between;font-size:11.5px}
+.opt{border:1px solid #bbb;border-radius:4px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center}
+</style>
+</helmet>
+<div class="s" style="padding: 36px 44px; gap: 32px">
+<div style="width: 300px; display: flex; flex-direction: column; gap: 18px">
+<div class="ph" style="height: 130px"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M0 0L100 100M100 0L0 100" stroke="#aaa" stroke-width="1" vector-effect="non-scaling-stroke" fill="none"></path></svg><span style="position: relative; background: #e9e9e9; padding: 2px 6px">Logo lockup</span></div>
+<nav style="display: flex; flex-direction: column; gap: 8px">
+<a class="btn" href="#" style="justify-content: flex-start">Continue</a>
+<a class="btn" href="#" style="justify-content: flex-start; border-width: 2px; font-weight: 600">New career ▾</a>
+<a class="btn" href="#" style="justify-content: flex-start">Scenario Mode</a>
+<a class="btn" href="#" style="justify-content: flex-start">Load</a>
+<a class="btn" href="#" style="justify-content: flex-start">Settings</a>
+</nav>
+</div>
+
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 14px; min-width: 0">
+<section class="p">
+<span class="lab">New career · where to start</span>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div class="pre"><span style="font-weight: 600">Start in 2009</span><span class="sm mut">Prologue · the genesis block</span></div>
+<div class="pre"><span style="font-weight: 600">Start in 2017</span><span class="sm mut">Act I · the garage, $10K</span></div>
+<div class="pre on"><span style="font-weight: 600">Start at Act III (2027)</span><span class="sm mut">Pick a preset company ↓</span></div>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div class="pre on">
+<span class="lab">Good</span><span style="font-weight: 600">[Preset name]</span>
+<div class="kv"><span>Valuation</span><span class="m">~$400–450M</span></div>
+<div class="kv"><span>MW</span><span class="m">[—]</span></div>
+<div class="kv"><span>Debt</span><span class="m">[—]</span></div>
+<div class="kv"><span>Rating</span><span class="m">[—]</span></div>
+<span class="sm">[One-line summary]</span>
+</div>
+<div class="pre">
+<span class="lab">Great</span><span style="font-weight: 600">[Preset name]</span>
+<div class="kv"><span>Valuation</span><span class="m">~$4.5–5B</span></div>
+<div class="kv"><span>MW</span><span class="m">[—]</span></div>
+<div class="kv"><span>Debt</span><span class="m">[—]</span></div>
+<div class="kv"><span>Rating</span><span class="m">[—]</span></div>
+<span class="sm">[One-line summary]</span>
+</div>
+<div class="pre">
+<span class="lab">Lifeline</span><span style="font-weight: 600">[Preset name]</span>
+<div class="kv"><span>Valuation</span><span class="m">~$150M</span></div>
+<div class="kv"><span>MW</span><span class="m">[—]</span></div>
+<div class="kv"><span>Debt</span><span class="m">[—]</span></div>
+<div class="kv"><span>Rating</span><span class="m">[—]</span></div>
+<span class="sm">[One-line summary]</span>
+</div>
+</div>
+<a class="btn pri" href="#" style="align-self: flex-end">Start in 2027 →</a>
+</section>
+
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px">
+<section class="p">
+<span class="lab">Scenario Mode · locked</span>
+<span style="font-weight: 600">Replays with the market chosen openly</span>
+<span class="sm mut">Finish Act III once to unlock.</span>
+<a class="btn dis" href="#" aria-disabled="true" style="align-self: flex-start">Locked</a>
+</section>
+<section class="p">
+<span class="lab">Scenario Mode · unlocked</span>
+<div class="opt"><span>Muddle Through</span><span class="sm mut">steady, one reset</span></div>
+<div class="opt" style="border: 2px solid #222"><span style="font-weight: 600">The Great Repricing</span><span class="sm mut">capex bust</span></div>
+<div class="opt"><span>Lift-Off</span><span class="sm mut">demand explosion</span></div>
+<div class="opt"><span>Efficiency Shock</span><span class="sm mut">cheaper compute</span></div>
+</section>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

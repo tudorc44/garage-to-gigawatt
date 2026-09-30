@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-09 Government</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.r{text-align:right}
+.top{height:52px;flex-shrink:0;display:flex;align-items:center;gap:16px;padding:0 14px;background:#fff;border-bottom:2px solid #222}
+.st{display:flex;flex-direction:column;gap:1px}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.nav{width:156px;flex-shrink:0;background:#fff;border-right:1px solid #bbb;padding:8px 0;display:flex;flex-direction:column}
+.nav a{padding:8px 14px;color:#444;text-decoration:none}
+.nav a.on{background:#e4e4e4;color:#111;font-weight:600}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.row{display:flex;align-items:center;gap:8px}.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.up{color:#1a7f37}.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.pip{width:9px;height:9px;border-radius:50%;background:#222;display:inline-block}.pip.o{background:#fff;border:1.5px solid #222;box-sizing:border-box}
+.trk{position:relative;height:16px;background:#e6e6e6;border-radius:8px}
+.trk .f{position:absolute;left:0;top:0;height:16px;background:#444;border-radius:8px}
+.trk .w{position:absolute;top:-5px;width:2px;height:26px;background:#b42318}
+.act{display:grid;grid-template-columns:minmax(0,1fr) 70px 70px 60px 90px;align-items:center;gap:8px;padding:7px 0;border-bottom:1px dashed #ddd}
+.card{border:1.5px solid #222;border-radius:6px;padding:10px;display:flex;flex-direction:column;gap:5px;background:#fff}
+.card.ph{border-style:dashed;border-color:#999;color:#666}
+</style>
+</helmet>
+<div class="s">
+<header class="top">
+<div class="st"><span class="lab">Date</span><span class="m">Q4 2027 · Plan</span></div>
+<div class="st"><span class="lab">Cash</span><span class="m" style="font-weight: 600">$38M</span></div>
+<div class="st"><span class="lab">Debt</span><span class="m">$164M</span></div>
+<div class="st"><span class="lab">Valuation</span><span class="m">$431M</span></div>
+<div class="st"><span class="lab">Rating</span><span class="m">BB−</span></div>
+<div class="st"><span class="lab">Bandwidth</span><span class="row" style="gap: 3px; padding-top: 3px"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip o"></span></span></div>
+<div class="st" style="border-left: 1px solid #ccc; padding-left: 14px"><span class="lab">Signals</span><span class="m sm">RG 73▲ · LS 64▲ · CL 77▶ · GR 50▶ · EF 56▲ · HP 41▼</span></div>
+<div class="st"><span class="lab">Contracts due</span><span class="m">3 in next 4 Q</span></div>
+<div style="flex-grow: 1"></div>
+<a class="btn" href="#">Settings</a>
+</header>
+<div style="flex-grow: 1; display: flex; min-height: 0">
+<nav class="nav">
+<a href="#">Dashboard</a><a href="#">Sites &amp; Fleet</a><a href="#">Projects</a><a href="#">Contracts</a><a href="#">Capital</a><a class="on" href="#">Government</a><a href="#">League</a><a href="#">Log</a>
+</nav>
+<main style="flex-grow: 1; padding: 10px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 10px; min-width: 0">
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<div class="row sb"><span class="h">Political capital</span><span class="m sm mut">0 – 100</span></div>
+<div class="row" style="align-items: baseline; gap: 12px"><span class="m" style="font-size: 34px; font-weight: 600">34</span><span class="m dn">▼2 · was 36</span></div>
+<div class="trk"><div class="f" style="width: 34%"></div><div class="w" style="left: 15%"></div></div>
+<div class="row sb m sm mut"><span>0</span><span style="margin-left: 60px; color: #b42318">15 warning</span><span>50</span><span>100</span></div>
+<span class="sm">Falls <span class="m">2</span> a quarter without upkeep. Started Act III at <span class="m">40</span>.</span>
+<div style="border: 1px dashed #b42318; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px">
+<span class="lab" style="color: #b42318">Warning state · below 15 (example: 12)</span>
+<div class="trk"><div class="f" style="width: 12%; background: repeating-linear-gradient(135deg, #b42318 0 4px, #fff 4px 6px)"></div><div class="w" style="left: 15%"></div></div>
+<span class="sm">Penalty while below 15: [penalty from political_capital.json]</span>
+</div>
+</section>
+
+<section class="p">
+<div class="row sb"><span class="h">Hire</span><span class="sm mut">not hired</span></div>
+<div class="card">
+<div class="row sb"><span style="font-weight: 600">Government Affairs Director</span><span class="m">$450K/q</span></div>
+<span class="sm"><span class="m up">+3</span> a quarter · with the <span class="m">−2</span> decay, a net <span class="m up">+1</span> a quarter</span>
+<a class="btn" href="#" style="align-self: flex-start">Hire</a>
+</div>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<span class="h">Lobbying</span>
+<div class="act lab" style="border-bottom: 1.5px solid #222"><span>Action</span><span class="r">Cost</span><span class="r">Takes</span><span class="r">Gain</span><span></span></div>
+<div class="act"><span>Join the data-center coalition</span><span class="m r">$250K</span><span class="m r">4 weeks</span><span class="m r up">+8</span><a class="btn" href="#">Start</a></div>
+<div class="act mut"><span>[Lobbying action 2]</span><span class="m r">[—]</span><span class="m r">[—]</span><span class="m r">[—]</span><a class="btn" href="#">Start</a></div>
+<div class="act mut"><span>[Lobbying action 3]</span><span class="m r">[—]</span><span class="m r">[—]</span><span class="m r">[—]</span><a class="btn" href="#">Start</a></div>
+<div class="act mut" style="border-bottom: 0"><span>[Lobbying action 4]</span><span class="m r">[—]</span><span class="m r">[—]</span><span class="m r">[—]</span><a class="btn" href="#">Start</a></div>
+</section>
+
+<section class="p" style="flex-grow: 1">
+<div class="row sb"><span class="h">Spend political capital</span><span class="m sm mut">you have 34</span></div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+<div class="card"><span style="font-weight: 600">Moratorium override</span><span class="sm">Lift a local moratorium on one site.</span><span class="m">costs [—]</span><a class="btn" href="#" style="align-self: flex-start">Spend</a></div>
+<div class="card"><span style="font-weight: 600">Permit fast-track</span><span class="sm">Cut the permit wait on one project.</span><span class="m">costs [—]</span><a class="btn" href="#" style="align-self: flex-start">Spend</a></div>
+<div class="card ph"><span style="font-weight: 600">[Spend card 3]</span><span class="m">costs [—]</span></div>
+<div class="card ph"><span style="font-weight: 600">[Spend card 4]</span><span class="m">costs [—]</span></div>
+<div class="card ph"><span style="font-weight: 600">[Spend card 5]</span><span class="m">costs [—]</span></div>
+<div class="card ph"><span style="font-weight: 600">[Spend card 6]</span><span class="m">costs [—]</span></div>
+</div>
+</section>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

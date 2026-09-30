@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Act III flow</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.lab{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.b{width:430px;height:150px;box-sizing:border-box;border:2px solid #333;border-radius:6px;background:#fff;padding:16px 18px;display:flex;flex-direction:column;gap:6px;flex-shrink:0}
+.b.re{border-style:dashed;border-color:#888;background:#f7f7f7}
+.t{font-weight:600;font-size:22px}
+.d{font-size:15px;color:#555}
+.a{width:56px;flex-shrink:0;text-align:center;font-size:30px;color:#444}
+</style>
+</helmet>
+<div style="width: 5360px; height: 320px; box-sizing: border-box; padding: 30px 40px; background: #f2f2f2; font-family: system-ui, -apple-system, 'Segoe UI', Helvetica, sans-serif; color: #222; display: flex; flex-direction: column; gap: 16px">
+<div style="display: flex; align-items: center">
+<div class="b"><span class="lab">A3-01 · or A3-12 preset start</span><span class="t">Act III intro</span><span class="d">What carried over · what's new</span></div>
+<span class="a">→</span>
+<div class="b" style="border-width: 3px"><span class="lab">A3-02 · ×16 quarters</span><span class="t">Plan with Signals</span><span class="d">Read the market (A3-03) · Contracts (A3-04)</span></div>
+<span class="a">→</span>
+<div class="b re"><span class="lab">Act II screen, reused</span><span class="t">Live quarter</span><span class="d">Event cards fire here (A3-10)</span></div>
+<span class="a">→</span>
+<div class="b"><span class="lab">Act II report + new rows</span><span class="t">Quarter report</span><span class="d">Renewals due (A3-05 / A3-06) · signal changes</span></div>
+<span class="a">→</span>
+<div class="b re" style="width: 220px; align-items: center; justify-content: center"><span class="t">…</span><span class="d">to 2030Q4</span></div>
+<span class="a">→</span>
+<div class="b" style="border-width: 3px"><span class="lab">A3-11 · the only reveal</span><span class="t">Chapter report</span><span class="d">Scenario named · the tell · your reading</span></div>
+<span class="a">→</span>
+<div class="b re"><span class="lab">Not built yet</span><span class="t">Act IV</span><span class="d">"The story continues in a future update"</span></div>
+</div>
+<div style="display: flex; gap: 40px; font-size: 16px; color: #444">
+<span>Side trips from Plan, any quarter: Racks &amp; retrofit (A3-07) · Deal builder with a nuclear PPA (A3-08, from 2027Q3) · Government (A3-09, from 2027Q3).</span>
+<span>↺ Quarter report loops back to Plan until 2030Q4.</span>
+</div>
+<div style="display: flex; gap: 24px; font-size: 14px; color: #666"><span>Solid box: new or changed Act III screen</span><span>Dashed box: Act II screen reused unchanged</span><span>Everything before A3-11 keeps the scenario hidden.</span></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":5360,"height":320}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-06 Reopener</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.blk{background:#e3e3e3;border:1px solid #ccc;border-radius:4px}
+.md{background:#fff;border:1px solid #777;border-radius:6px;padding:18px 20px;display:flex;flex-direction:column;gap:10px;box-sizing:border-box;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #ddd;padding:4px 0}
+.fee{border:1.5px solid #222;border-radius:4px;padding:8px 10px;display:flex;justify-content:space-between;align-items:baseline}
+.ch{font:inherit;text-align:left;padding:10px 12px;min-height:44px;border:1.5px solid #222;border-radius:6px;background:#fff;color:#222;display:flex;flex-direction:column;gap:3px;cursor:pointer}
+.ch.def{background:#222;color:#fff}
+.up{color:#1a7f37}.dn{color:#b42318}
+.mut{color:#666}.sm{font-size:11px}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid currentColor;border-radius:3px;padding:0 6px;white-space:nowrap}
+</style>
+</helmet>
+<div class="s">
+<div style="height: 52px; background: #fff; border-bottom: 2px solid #222"></div>
+<div style="flex-grow: 1; display: flex"><div style="width: 156px; background: #fff; border-right: 1px solid #bbb"></div><div style="flex-grow: 1; padding: 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px"><div class="blk"></div><div class="blk"></div></div></div>
+<div style="position: absolute; left: 0; top: 0; width: 1280px; height: 720px; background: rgba(40,40,40,.45)"></div>
+
+<div style="position: absolute; left: 30px; top: 30px; width: 1220px; height: 660px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+<div role="dialog" aria-label="The tenant reopens the lease" class="md">
+<div style="display: flex; justify-content: space-between"><span class="lab">2030Q1 · Reopener</span><span class="lab" style="color: #222">Variant A · tenant triggers</span></div>
+<span style="font-weight: 700; font-size: 20px">Tallis Compute is reopening its lease</span>
+<div class="kv"><span>Lease</span><span>20 MW · signed 2027Q1 · year 4</span></div>
+<div class="kv"><span>Rent</span><span class="m">$44M/yr · $2.2M/MW-yr</span></div>
+<div class="fee"><span>Exit fee · ½ of one quarter's rent</span><span class="m" style="font-size: 15px">they pay you <span class="up">+$5.5M</span></span></div>
+<span class="sm">The lease now renews at today's band. Choose as at any renewal:</span>
+<div style="display: flex; flex-direction: column; gap: 8px">
+<button type="button" class="ch def"><span style="display: flex; justify-content: space-between"><span style="font-weight: 600; font-size: 14px">Accept their offer</span><span class="tag">Default · 0 BW</span></span><span class="sm m">$[—]/yr for [—] years</span></button>
+<button type="button" class="ch"><span style="display: flex; justify-content: space-between"><span style="font-weight: 600; font-size: 14px">Counter</span><span class="m sm">2 BW</span></span><span class="sm">Push past their limit and they can walk.</span></button>
+<button type="button" class="ch"><span style="display: flex; justify-content: space-between"><span style="font-weight: 600; font-size: 14px">Re-let</span><span class="m sm">1 BW</span></span><span class="sm">2 quarters empty, then a new tenant at today's rate</span></button>
+</div>
+</div>
+
+<div role="dialog" aria-label="You reopen the lease" class="md">
+<div style="display: flex; justify-content: space-between"><span class="lab">2030Q1 · Reopener</span><span class="lab" style="color: #222">Variant B · you trigger</span></div>
+<span style="font-weight: 700; font-size: 20px">Reopen the Tallis Compute lease?</span>
+<div class="kv"><span>Lease</span><span>20 MW · signed 2027Q1 · year 4</span></div>
+<div class="kv"><span>Rent</span><span class="m">$44M/yr · $2.2M/MW-yr</span></div>
+<div class="fee"><span>Exit fee · ½ of one quarter's rent</span><span class="m" style="font-size: 15px">you pay <span class="dn">−$5.5M</span></span></div>
+<span class="sm">You pay the fee now. The tenant then makes an offer at today's band, and you get the usual choices: accept, counter or re-let. It can come back lower than today's rent.</span>
+<div style="display: flex; flex-direction: column; gap: 8px; margin-top: auto">
+<button type="button" class="ch"><span style="display: flex; justify-content: space-between"><span style="font-weight: 600; font-size: 14px">Reopen the lease</span><span class="m sm">1 BW · −$5.5M</span></span></button>
+<button type="button" class="ch def"><span style="display: flex; justify-content: space-between"><span style="font-weight: 600; font-size: 14px">Keep the lease as it is</span><span class="tag">Default</span></span></button>
+</div>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

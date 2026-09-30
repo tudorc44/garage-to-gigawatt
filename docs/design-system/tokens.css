@@ -109,3 +109,20 @@
   --heat-3: #9A4E1C;
   --shadow-card: 0 2px 0 #C9BD98, 0 18px 40px rgba(30,42,68,0.25);
 }
+[data-theme="grid"] {
+  --paper: #ECF0F3;
+  --paper-grid: #D8E0E8;
+  --panel: #F9FAFB;
+  --panel-sunk: #E1E7EE;
+  --line: #BCC6D1;
+  --line-soft: #D4DCE4;
+  --ink: #182434;
+  --ink-muted: #465264;
+  --ink-disabled: #6C7482;
+  --on-action: #F9FAFB;
+  --accent: #5B2E8C;
+  --tape: #ECE3B5;
+  --series-eth: #5A6A8C;
+  --heat-3: #9A4E1C;
+  --shadow-card: 0 1px 0 #BCC6D1, 0 16px 36px rgba(24,36,52,0.22);
+}

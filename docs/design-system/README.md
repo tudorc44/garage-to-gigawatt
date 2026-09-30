@@ -57,8 +57,9 @@ Set the era with `data-theme` on the game root. Only a few tokens change; layout
 | Garage, 2017–19 | `garage` | Yellowed paper, rust accent, tape notes allowed (one per screen) |
 | Industrial, 2020–22 | `industrial` | Crisp white panels, steel-grey paper, safety-orange accent, fewer notes |
 | Campus, Act II (preview) | `campus` | Bound-report whites, deep green ink, ochre accent, the grid fades |
+| Grid, Act III 2027–30 | `grid` | A control-room ledger: cool blue-grey paper and panels, slate ink, one muted violet accent |
 
-Switch eras at the start of 2017Q1 (the Prologue hands over to Act I in the garage), at the start of 2020Q1 (the first quarter a Texas site can be bought) and at the Merge.
+Switch eras at the start of 2017Q1 (the Prologue hands over to Act I in the garage), at the start of 2020Q1 (the first quarter a Texas site can be bought), at the Merge, and at 2027Q1 (Act III).
 
 **Bedroom (Prologue).** A student's desk in the early-forum years: the same notebook as garage, a few years younger. It overrides colour tokens only (`paper`, `paper-grid`, `panel`, `panel-sunk`, `line`, `line-soft`, `ink-disabled`, `on-action`, `accent`, `tape`, `heat-3`, `shadow-card`). `ink`, `ink-muted`, `gain`, `loss`, `warn`, `focus` and `series-eth` keep garage's values, so numbers and deltas look identical across the handover. Three treatments that tokens cannot carry live in `bundle.css` under `[data-theme="bedroom"]`: `--grid-pitch` drops to 12px (graph paper), `g-panel` and `MachineCard` borders are dashed (pencil rules), and `screen-title`, `card-title` and Merge titles drop from 700 to 600.
 
@@ -85,6 +86,29 @@ Bedroom contrast (WCAG ratio; text needs 4.5, marks and lines 3.0):
 | `on-action` on `ink` | #FAF5E6 | | 13.11 | | Pass |
 
 In greyscale, `accent` (hashprice) and `gain` share a tone. They never need to be told apart by colour alone: the hashprice series is always labelled, and gain always carries ▲ or +.
+
+**Grid (Act III).** A control-room ledger: cooler than campus, with blue-grey paper and near-white panels, slate ink and one muted violet accent (#5B2E8C) for the era's stamp, the hashprice series and the player's line. It overrides colour tokens only, like bedroom: no stylesheet treatments, and the 24px grid stays.
+
+- Violet is the one hue family the system didn't already use. Measured with ΔE2000 in normal vision and under protan, deutan and tritan simulation, the accent stays at least 8 apart from `gain`, `loss`, `warn`, every heat step, `focus` and all four rival series; its nearest neighbour, `series-rival-1`, is also clearly lighter (Y 0.10 vs 0.06), and rivals keep their marker shapes.
+- `heat-3` is amber-brown (#9A4E1C), as in bedroom, so a violet meter never stands for Heat 50–69.
+- The primary action stays an `ink` fill.
+
+Grid contrast (WCAG ratio; text needs 4.5, marks and lines 3.0):
+
+| Token | Value | on paper | on panel | on panel-sunk | Verdict |
+|---|---|---|---|---|---|
+| `ink` | #182434 | 13.67 | 14.99 | 12.58 | Pass |
+| `ink-muted` | #465264 | 6.91 | 7.58 | 6.36 | Pass |
+| `ink-disabled` | #6C7482 | 4.11 | 4.51 | 3.78 | Pass (≥3.7 on panel) |
+| `accent` | #5B2E8C | 8.28 | 9.08 | 7.62 | Pass |
+| `gain` | #15646F | 5.94 | 6.52 | 5.47 | Pass |
+| `loss` | #A8361A | 5.71 | 6.26 | 5.26 | Pass |
+| `warn` | #7D5700 | 5.66 | 6.21 | 5.21 | Pass |
+| `focus` | #1F5FBF | 5.32 | 5.83 | 4.89 | Pass (ring ≥3) |
+| `series-eth` | #5A6A8C | 4.73 | 5.19 | 4.35 | Pass as a line |
+| `series-benchmark` | #7F848D | 3.28 | 3.60 | 3.02 | Pass (lines only, never text) |
+| `heat-3` | #9A4E1C | 5.26 | 5.77 | 4.85 | Pass as a fill |
+| `on-action` on `ink` | #F9FAFB | | 14.99 | | Pass |
 
 ### Type
 
@@ -121,7 +145,7 @@ In greyscale, `accent` (hashprice) and `gain` share a tone. They never need to b
 
 ## Iconography
 
-- **78 line icons** on a 20px grid, 1.5px stroke, round caps and joins, no fills (small dots only). Use the **Icon** component (`<Icon name="scout" />`): it draws with `currentColor`, so icons follow each era's `ink`. The same drawings are in the Icons asset group as SVGs in `#1E2A44`. Icons 62–78 were added for the Prologue.
+- **89 line icons** on a 20px grid, 1.5px stroke, round caps and joins, no fills (small dots only). Use the **Icon** component (`<Icon name="scout" />`): it draws with `currentColor`, so icons follow each era's `ink`. The same drawings are in the Icons asset group as SVGs in `#1E2A44`. Icons 62–78 were added for the Prologue, 79–89 for Act III.
 - **Where each group is used:**
 
 | Group | Icons | Used on |
@@ -136,8 +160,9 @@ In greyscale, `accent` (hashprice) and `gain` share a tone. They never need to b
 | Prologue machines | pc-tower, gpu-card, fpga-board, asic-early | Prologue Rig screen, buy dialog, machine rows, failure pop-ups |
 | Mining & custody | solo, pool, wallet, exchange, backup, lost-key | Solo/pool toggle and block-found toast (solo, pool), Wallet screen and custody split (wallet, exchange), back-up action and keys KPI (backup), dead-drive and lost-wallet events (lost-key) |
 | Prologue actions & life | pre-order, group-buy, move-out, conference, vanity, household, auto-play | Pre-order and group-buy cards, Life actions (move out, conference, vanity purchase), household power cards, the auto-play control in the top bar |
+| Act III | signals, calendar-wall, renewal, walk, reopener, retrofit, density, nuclear-ppa, political-capital, wildcard, reveal | Signals panel and top-bar strip (signals; the read action reuses `read-market`), Contracts nav and the renewal wall (calendar-wall), renewal and walked-tenant modals (renewal, walk), the reopener modal (reopener), rack tiers and the retrofit project (density, retrofit), the Power slot's nuclear PPA (nuclear-ppa), Government nav and meter (political-capital), wildcard event stamps (wildcard), the chapter report's scenario reveal (reveal) |
 
-- Pairs that must stay apart in silhouette: `gpu-card` (one slim card with a bracket and a single fan) vs `gpu-rig` (a closed frame with three fans); `asic-early` (a flat stick with a plug and fins, no fan) vs `asic` (a tall box with a fan); `wallet` (a closed billfold with a key tag) vs `exchange` (open arrows over ledger lines); `backup` (a round platter with a check) vs `save` (the square floppy); `pre-order` (a tag with a clock) vs `buy` (a tag with a plus).
+- Pairs that must stay apart in silhouette: `gpu-card` (one slim card with a bracket and a single fan) vs `gpu-rig` (a closed frame with three fans); `asic-early` (a flat stick with a plug and fins, no fan) vs `asic` (a tall box with a fan); `wallet` (a closed billfold with a key tag) vs `exchange` (open arrows over ledger lines); `backup` (a round platter with a check) vs `save` (the square floppy); `pre-order` (a tag with a clock) vs `buy` (a tag with a plus); `signals` (six bars of mixed height) vs `degraded` (rising bars, the last dashed); `density` (three racks divided into 2, 3 and 4 slots) vs `fleet` (two units with a status dot); `political-capital` (a small three-column building beside a gauge) vs `treasury` (a wide four-column bank); `reopener` (a document with an open padlock) vs `locked` (a closed padlock alone).
 
 - Use an icon next to a word. Icon-only buttons (close, pause, settings) need an `aria-label`.
 - 20px everywhere; 16px only in dense tables.

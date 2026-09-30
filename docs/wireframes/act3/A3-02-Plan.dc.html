@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-02 Plan with Signals</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.r{text-align:right}
+.top{height:52px;flex-shrink:0;display:flex;align-items:center;gap:16px;padding:0 14px;background:#fff;border-bottom:2px solid #222}
+.st{display:flex;flex-direction:column;gap:1px}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.nav{width:156px;flex-shrink:0;background:#fff;border-right:1px solid #bbb;padding:8px 0;display:flex;flex-direction:column}
+.nav a{padding:8px 14px;color:#444;text-decoration:none}
+.nav a.on{background:#e4e4e4;color:#111;font-weight:600}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:9px 11px;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.row{display:flex;align-items:center;gap:8px}.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#222;color:#fff;font-weight:600;height:40px;font-size:14px;padding:0 18px}
+.dis{border-color:#bbb;color:#888;background:#eee}
+.mut{color:#666}.sm{font-size:11px}
+.pip{width:9px;height:9px;border-radius:50%;background:#222;display:inline-block}.pip.o{background:#fff;border:1.5px solid #222;box-sizing:border-box}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid #777;border-radius:3px;padding:1px 6px;color:#444;white-space:nowrap}
+.re{border:1.5px dashed #999;border-radius:4px;background:#e9e9e9;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;text-align:center;padding:6px}
+.sig{display:grid;grid-template-columns:150px 52px 210px 64px;align-items:center;gap:10px;padding:5px 0;border-bottom:1px dashed #ddd}
+.g{position:relative;height:10px;background:#e6e6e6;border-radius:5px}
+.g i{position:absolute;top:-3px;width:2px;height:16px;background:#222}
+.g b{position:absolute;top:0;height:10px;background:repeating-linear-gradient(135deg,#888 0 3px,#cfcfcf 3px 6px);border-radius:2px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:4px 6px;border-bottom:1px dashed #ddd;text-align:left;font-weight:400}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#666;border-bottom:1.5px solid #222}
+</style>
+</helmet>
+<div class="s">
+<header class="top">
+<div class="st"><span class="lab">Date</span><span class="m">Q4 2027 · Plan</span></div>
+<div class="st"><span class="lab">Cash</span><span class="m" style="font-weight: 600">$38M</span></div>
+<div class="st"><span class="lab">Debt</span><span class="m">$164M</span></div>
+<div class="st"><span class="lab">Valuation</span><span class="m">$431M</span></div>
+<div class="st"><span class="lab">Rating</span><span class="m">BB−</span></div>
+<div class="st"><span class="lab">Bandwidth</span><span class="row" style="gap: 3px; padding-top: 3px"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip o"></span></span></div>
+<div class="st" style="border-left: 1px solid #ccc; padding-left: 14px"><span class="lab">Signals</span><span class="m sm">RG 73▲ · LS 64▲ · CL 77▶ · GR 50▶ · EF 56▲ · HP 41▼</span></div>
+<div class="st"><span class="lab">Contracts due</span><span class="m">3 in next 4 Q</span></div>
+<div style="flex-grow: 1"></div>
+<a class="btn" href="#">Settings</a>
+</header>
+
+<div style="flex-grow: 1; display: flex; min-height: 0">
+<nav class="nav">
+<a class="on" href="#">Dashboard</a>
+<a href="#">Sites &amp; Fleet</a>
+<a href="#">Projects</a>
+<a href="#">Contracts</a>
+<a href="#">Capital</a>
+<a href="#">Government</a>
+<a href="#">League</a>
+<a href="#">Log</a>
+</nav>
+
+<main style="flex-grow: 1; padding: 10px; display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<div class="re" style="height: 54px">Reused · Act II KPI row (energized 120 MW · contracted 90 MW · revenue · EBITDA · LTV · valuation)</div>
+
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 10px">
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p" style="position: relative">
+<div class="row sb"><span class="h">Signals</span><a class="btn dis" href="#" aria-disabled="true">Read the market · 1 BW · used this quarter</a></div>
+<div class="sig" style="padding-top: 0; border-bottom: 1.5px solid #222"><span class="lab">Indicator</span><span class="lab r">Now</span><span class="lab">0 ─ 100</span><span class="lab">Q3 → Q4</span></div>
+
+<div class="sig"><span>Revenue Gap</span><span class="m r">73 ▲</span><span class="g"><i style="left: 73%"></i></span><svg viewBox="0 0 64 22" width="64" height="22" aria-hidden="true"><path d="M4 9.7 L58 6.9" stroke="#222" stroke-width="1.5" fill="none"></path><circle cx="58" cy="6.9" r="2.2" fill="#222"></circle></svg></div>
+
+<div class="sig" style="background: #f4f4f4"><span style="font-weight: 600">Lender Spreads</span><span class="m r">64 ▲</span><span class="g"><b style="left: 60%; width: 6%"></b><i style="left: 64%"></i></span><svg viewBox="0 0 64 22" width="64" height="22" aria-hidden="true"><path d="M4 10.3 L58 8.5" stroke="#222" stroke-width="1.5" fill="none"></path><circle cx="58" cy="8.5" r="2.2" fill="#222"></circle></svg></div>
+<div style="margin: -2px 0 2px 160px; display: flex; flex-direction: column; gap: 2px">
+<span class="m sm">Read this quarter: 60–66</span>
+<span class="sm">"GPU-backed loans are pricing near SOFR+650 bp (2026Q4: +475)."</span>
+</div>
+
+<div class="sig"><span>Chip Lead Times</span><span class="m r">77 ▶</span><span class="g"><i style="left: 77%"></i></span><svg viewBox="0 0 64 22" width="64" height="22" aria-hidden="true"><path d="M4 6.7 L58 6.1" stroke="#222" stroke-width="1.5" fill="none"></path><circle cx="58" cy="6.1" r="2.2" fill="#222"></circle></svg></div>
+<div class="sig"><span>Grid Reserve Margin</span><span class="m r">50 ▶</span><span class="g"><i style="left: 50%"></i></span><svg viewBox="0 0 64 22" width="64" height="22" aria-hidden="true"><path d="M4 10.8 L58 11" stroke="#222" stroke-width="1.5" fill="none"></path><circle cx="58" cy="11" r="2.2" fill="#222"></circle></svg></div>
+<div class="sig"><span>Efficiency Index</span><span class="m r">56 ▲</span><span class="g"><i style="left: 56%"></i></span><svg viewBox="0 0 64 22" width="64" height="22" aria-hidden="true"><path d="M4 12.1 L58 9.9" stroke="#222" stroke-width="1.5" fill="none"></path><circle cx="58" cy="9.9" r="2.2" fill="#222"></circle></svg></div>
+<div class="sig" style="border-bottom: 0"><span>Bitcoin Hashprice</span><span class="m r">41 ▼</span><span class="g"><i style="left: 41%"></i></span><svg viewBox="0 0 64 22" width="64" height="22" aria-hidden="true"><path d="M4 11 L58 12.6" stroke="#222" stroke-width="1.5" fill="none"></path><circle cx="58" cy="12.6" r="2.2" fill="#222"></circle></svg></div>
+
+<div role="tooltip" style="position: absolute; right: 10px; top: 62px; width: 150px; background: #222; color: #fff; border-radius: 4px; padding: 8px 10px; font-size: 11px; line-height: 1.4">
+<span style="font-weight: 600">Lender Spreads · higher means</span><br>wider spreads on GPU-backed and project loans (tighter credit; 50 = SOFR+475 bp, the 2026Q4 level).
+</div>
+</section>
+
+<section class="p">
+<div class="row sb"><span class="h">Contracts due · next 4 quarters</span><a class="sm" href="#" style="color: #222">Open Contracts →</a></div>
+<table>
+<thead><tr><th>Tenant</th><th class="r">Size</th><th class="r">Ends</th></tr></thead>
+<tbody>
+<tr><td>Quill AI · H100 GPU contract</td><td class="m r">4,000 GPUs</td><td class="m r">2028Q1</td></tr>
+<tr><td>Nimbus Compute · master lease</td><td class="m r">40 MW</td><td class="m r">2028Q2</td></tr>
+<tr><td>Halden Labs · lease <span class="tag">tenant in distress</span></td><td class="m r">25 MW</td><td class="m r">2028Q4</td></tr>
+</tbody>
+</table>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<div class="re" style="flex-grow: 1">Reused · Act II site cards (Heat, capacity)</div>
+<div class="re" style="flex-grow: 1.4">Reused · Act II actions list with Bandwidth pips</div>
+<div class="re" style="height: 90px">Reused · Act II league snapshot</div>
+</div>
+</div>
+
+<div class="row" style="gap: 12px">
+<div class="re" style="flex-grow: 1; height: 40px; justify-content: flex-start; padding-left: 12px">Reused · news ticker</div>
+<a class="btn pri" href="#">End Quarter →</a>
+</div>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

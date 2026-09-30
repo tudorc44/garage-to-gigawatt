@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-01 Act III intro</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.r{text-align:right}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:12px 14px;display:flex;flex-direction:column;gap:8px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 20px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#222;color:#fff;font-weight:600}
+.mut{color:#666}.sm{font-size:11px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:7px 8px;border-bottom:1px dashed #ddd;text-align:left;font-weight:400}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#666;border-bottom:1.5px solid #222}
+.new{display:grid;grid-template-columns:150px minmax(0,1fr);gap:10px;padding:7px 0;border-bottom:1px dashed #ddd}
+</style>
+</helmet>
+<div class="s" style="padding: 32px 40px; gap: 18px">
+<div style="display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid #222; padding-bottom: 12px">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span class="lab">Act III · Reckoning · 2027Q1 – 2030Q4 · 16 quarters</span>
+<span style="font-weight: 700; font-size: 30px">2027. The build-out is priced for perfection.</span>
+</div>
+<span class="m mut">2027Q1</span>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px">
+<section class="p">
+<span class="h">What you carry in</span>
+<table>
+<thead><tr><th></th><th class="r">End of Act II · 2026Q4</th><th class="r">Act III entry · 2027Q1</th></tr></thead>
+<tbody>
+<tr><td>Valuation</td><td class="m r">[—]</td><td class="m r" style="font-weight: 600">$431M</td></tr>
+<tr><td>Founder net worth</td><td class="m r">[—]</td><td class="m r">[—]</td></tr>
+<tr><td>Cash</td><td class="m r">[—]</td><td class="m r">[—]</td></tr>
+<tr><td>Debt</td><td class="m r">[—]</td><td class="m r">[—]</td></tr>
+<tr><td>Energized</td><td class="m r">[—] MW</td><td class="m r">[—] MW</td></tr>
+<tr><td>Contracted</td><td class="m r">90 MW</td><td class="m r">90 MW</td></tr>
+<tr><td>Rating</td><td class="m r">[—]</td><td class="m r">[—]</td></tr>
+</tbody>
+</table>
+<span class="sm mut">Act III scores you on growth from the entry column.</span>
+</section>
+
+<section class="p">
+<span class="h">New in Act III</span>
+<div class="new"><span style="font-weight: 600">Signals</span><span>Six indicators on the dashboard. They move before the market does, and not every move means what it seems.</span></div>
+<div class="new"><span style="font-weight: 600">Contract calendar</span><span>Your Act II contracts come due. Each renewal is a decision: accept, counter or re-let.</span></div>
+<div class="new"><span style="font-weight: 600">Rack density</span><span>New chips need denser halls. Retrofit, or stay with older chips and their rents.</span></div>
+<div class="new"><span style="font-weight: 600">Nuclear PPAs</span><span>Fixed-price power for 15 years, no grid queue, in four regions.</span></div>
+<div class="new" style="border-bottom: 0"><span style="font-weight: 600">Political capital</span><span>Lobby, hire, and spend it on permits and moratoriums.</span></div>
+</section>
+</div>
+
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span class="sm mut">16 quarters · Act II contracts carried over</span>
+<a class="btn pri" href="#">Enter 2027 →</a>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

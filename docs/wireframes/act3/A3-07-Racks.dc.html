@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-07 Racks and retrofit</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.r{text-align:right}.c{text-align:center}
+.top{height:52px;flex-shrink:0;display:flex;align-items:center;gap:16px;padding:0 14px;background:#fff;border-bottom:2px solid #222}
+.st{display:flex;flex-direction:column;gap:1px}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.nav{width:156px;flex-shrink:0;background:#fff;border-right:1px solid #bbb;padding:8px 0;display:flex;flex-direction:column}
+.nav a{padding:8px 14px;color:#444;text-decoration:none}
+.nav a.on{background:#e4e4e4;color:#111;font-weight:600}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.row{display:flex;align-items:center;gap:8px}.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#222;color:#fff;font-weight:600;height:36px}
+.mut{color:#666}.sm{font-size:11px}
+.pip{width:9px;height:9px;border-radius:50%;background:#222;display:inline-block}.pip.o{background:#fff;border:1.5px solid #222;box-sizing:border-box}
+.den{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #222;border-radius:3px;padding:1px 7px;font-size:11px;font-weight:600;white-space:nowrap}
+.den i{display:inline-flex;gap:1.5px}.den i b{display:block;width:4px;height:10px;background:#222}.den i b.o{background:#fff;border:1px solid #222;box-sizing:border-box}
+.re{border:1.5px dashed #999;border-radius:4px;background:#e9e9e9;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;text-align:center;padding:6px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:7px 8px;border-bottom:1px dashed #ddd;text-align:left;font-weight:400;vertical-align:middle}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#666;border-bottom:1.5px solid #222}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #ddd;padding:4px 0}
+</style>
+</helmet>
+<div class="s">
+<header class="top">
+<div class="st"><span class="lab">Date</span><span class="m">Q4 2027 · Plan</span></div>
+<div class="st"><span class="lab">Cash</span><span class="m" style="font-weight: 600">$38M</span></div>
+<div class="st"><span class="lab">Debt</span><span class="m">$164M</span></div>
+<div class="st"><span class="lab">Valuation</span><span class="m">$431M</span></div>
+<div class="st"><span class="lab">Rating</span><span class="m">BB−</span></div>
+<div class="st"><span class="lab">Bandwidth</span><span class="row" style="gap: 3px; padding-top: 3px"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip o"></span></span></div>
+<div class="st" style="border-left: 1px solid #ccc; padding-left: 14px"><span class="lab">Signals</span><span class="m sm">RG 73▲ · LS 64▲ · CL 77▶ · GR 50▶ · EF 56▲ · HP 41▼</span></div>
+<div class="st"><span class="lab">Contracts due</span><span class="m">3 in next 4 Q</span></div>
+<div style="flex-grow: 1"></div>
+<a class="btn" href="#">Settings</a>
+</header>
+<div style="flex-grow: 1; display: flex; min-height: 0">
+<nav class="nav">
+<a href="#">Dashboard</a><a class="on" href="#">Sites &amp; Fleet</a><a href="#">Projects</a><a href="#">Contracts</a><a href="#">Capital</a><a href="#">Government</a><a href="#">League</a><a href="#">Log</a>
+</nav>
+<main style="flex-grow: 1; padding: 10px; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 10px; min-width: 0">
+<div style="display: flex; flex-direction: column; gap: 10px; min-height: 0">
+<section class="p">
+<div class="row sb"><span class="h">Halls and rack density</span><span class="m sm mut">120 MW energized</span></div>
+<table>
+<thead><tr><th>Site · hall</th><th class="r">MW</th><th>Density</th><th>Fits</th><th></th></tr></thead>
+<tbody>
+<tr><td>[Site A] · Hall 1</td><td class="m r">40</td><td><span class="den"><i><b></b><b class="o"></b><b class="o"></b></i>Low · 40–60 kW/rack</span></td><td>H100, H200</td><td class="r"><a class="btn" href="#">Retrofit…</a></td></tr>
+<tr><td>[Site A] · Hall 2</td><td class="m r">40</td><td><span class="den"><i><b></b><b></b><b class="o"></b></i>Mid · ~125 kW/rack</span></td><td>up to Blackwell, Rubin</td><td class="r"><a class="btn" href="#">Retrofit…</a></td></tr>
+<tr style="background: #f4f4f4"><td style="font-weight: 600">[Site B] · Hall 3</td><td class="m r">40</td><td><span class="den"><i><b></b><b class="o"></b><b class="o"></b></i>Low · 40–60 kW/rack</span></td><td>H100, H200</td><td class="r"><span class="sm">selected ↓</span></td></tr>
+</tbody>
+</table>
+</section>
+
+<section class="p">
+<div class="row sb"><span class="h">What fits where</span><span class="sm mut">GPU generation × hall tier</span></div>
+<table>
+<thead><tr><th>GPU generation</th><th class="c">Low · 40–60 kW</th><th class="c">Mid · ~125 kW</th><th class="c">Top · ~600 kW</th></tr></thead>
+<tbody>
+<tr><td>H100 / H200</td><td class="c" style="font-weight: 600">✓ fits</td><td class="c">✓</td><td class="c">✓</td></tr>
+<tr><td>Blackwell</td><td class="c mut">✗ too dense</td><td class="c" style="font-weight: 600">✓ fits</td><td class="c">✓</td></tr>
+<tr><td>Rubin</td><td class="c mut">✗ too dense</td><td class="c" style="font-weight: 600">✓ fits</td><td class="c">✓</td></tr>
+<tr><td>Rubin Ultra <span class="sm mut">from 2027Q3</span></td><td class="c mut">✗</td><td class="c mut">✗ too dense</td><td class="c" style="font-weight: 600">✓ fits</td></tr>
+</tbody>
+</table>
+<span class="sm mut">Bold = the tier each generation needs. Staying on low tier caps you to older chips and their falling rents.</span>
+</section>
+</div>
+
+<section class="p" style="border: 1.5px solid #222">
+<span class="lab">Project · retrofit</span>
+<span style="font-weight: 700; font-size: 18px">Retrofit [Site B] · Hall 3</span>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+<div style="border: 2px solid #222; border-radius: 4px; padding: 10px; display: flex; flex-direction: column; gap: 4px">
+<span class="lab">Low → mid</span>
+<span class="m" style="font-size: 16px; font-weight: 600">$1.5M/MW</span>
+<span class="m">× 40 MW = $60M</span>
+<span class="m">10 weeks</span>
+<span class="sm">Selected</span>
+</div>
+<div style="border: 1px solid #bbb; border-radius: 4px; padding: 10px; display: flex; flex-direction: column; gap: 4px">
+<span class="lab">Mid → top</span>
+<span class="m" style="font-size: 16px">$[—]M/MW</span>
+<span class="sm">priced from the market</span>
+<span class="m">26 weeks</span>
+<span class="sm mut">Needs mid tier first</span>
+</div>
+</div>
+<div class="kv"><span>Hall income while retrofitting</span><span class="m">$0 for 10 weeks</span></div>
+<div class="kv"><span>Afterwards it fits</span><span>Blackwell, Rubin</span></div>
+<div class="kv"><span>Cash now</span><span class="m">$38M</span></div>
+<span class="sm" style="border: 1px dashed #777; border-radius: 4px; padding: 6px 10px">The hall earns nothing while it's retrofitted.</span>
+<div class="re" style="height: 64px">Reused · Act II project funding (cash · debt · equity split)</div>
+<div class="row" style="margin-top: auto; justify-content: flex-end"><a class="btn" href="#">Cancel</a><a class="btn pri" href="#">Start retrofit →</a></div>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

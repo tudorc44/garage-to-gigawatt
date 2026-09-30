@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-08 Power slot with a nuclear PPA</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:7px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.row{display:flex;align-items:center;gap:8px}.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.pri{background:#222;color:#fff;font-weight:600;height:36px}
+.mut{color:#666}.sm{font-size:11px}
+.re{border:1.5px dashed #999;border-radius:4px;background:#e9e9e9;color:#666;display:flex;align-items:center;justify-content:center;font-size:11px;text-align:center;padding:6px}
+.slot{border:1px solid #bbb;border-radius:4px;background:#fff;padding:8px 10px;display:flex;flex-direction:column;gap:2px}
+.opt{border:1px solid #bbb;border-radius:4px;padding:10px 12px;display:flex;flex-direction:column;gap:5px;background:#fff}
+.opt.on{border:2px solid #222}
+.opt.off{background:#eee;color:#888;border-style:dashed}
+.kv{display:flex;justify-content:space-between;border-bottom:1px dashed #ddd;padding:3px 0}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid currentColor;border-radius:3px;padding:0 6px;white-space:nowrap}
+</style>
+</helmet>
+<div class="s" style="padding: 16px 20px; gap: 12px">
+<div class="row sb" style="border-bottom: 2px solid #222; padding-bottom: 8px">
+<div style="display: flex; flex-direction: column; gap: 2px"><span class="lab">Projects · Deal builder · Q4 2027</span><span style="font-weight: 700; font-size: 20px">New campus · [Site C], PJM · 50 MW</span></div>
+<a class="btn" href="#">Close ×</a>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px">
+<div class="slot"><span class="lab">Site</span><span>[Site C] · PJM · 50 MW</span><span class="sm mut">Reused · Act II slot</span></div>
+<div class="slot" style="border: 2px solid #222"><span class="lab">Power · open</span><span style="font-weight: 600">Nuclear PPA</span><span class="sm mut">choosing ↓</span></div>
+<div class="slot"><span class="lab">Tenant</span><span class="mut">[not chosen]</span><span class="sm mut">Reused · Act II slot</span></div>
+<div class="slot"><span class="lab">Capital</span><span class="mut">[not chosen]</span><span class="sm mut">Reused · Act II slot</span></div>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1fr); gap: 12px">
+<section class="p">
+<span class="h">Power options for this site</span>
+<div class="re" style="height: 70px">Reused · Act II grid connection (queue, capacity price)</div>
+<div class="re" style="height: 70px">Reused · Act II other power options</div>
+<div class="opt on">
+<div class="row sb"><span style="font-weight: 600">Nuclear PPA</span><span class="tag">New · from 2027Q3</span></div>
+<span class="sm">15-year fixed price · take-or-pay · no grid queue</span>
+</div>
+</section>
+
+<section class="p" style="border: 1.5px solid #222">
+<span class="lab">Nuclear PPA · details</span>
+<div class="kv"><span>Price</span><span class="m" style="font-weight: 600">$[—]/MWh</span></div>
+<div class="kv"><span>Term</span><span class="m">15 years, fixed</span></div>
+<div class="kv"><span>Contracted power</span><span class="m">50 MW</span></div>
+<div class="kv"><span>Grid queue</span><span>none</span></div>
+<div class="kv"><span>Regions</span><span>PJM · Ohio · Georgia · Nordics</span></div>
+<div style="border: 1px dashed #777; border-radius: 4px; padding: 8px 10px; display: flex; flex-direction: column; gap: 4px">
+<span class="lab">Take-or-pay</span>
+<span>You pay for all 50 MW, whether the site uses them or not.</span>
+<div class="kv" style="border-bottom: 0"><span>If the site draws 30 of 50 MW</span><span class="m">20 MW unused</span></div>
+<span class="m sm">20 MW × 8,760 h × $[—]/MWh = $[—]M a year paid for power you don't use</span>
+</div>
+<div class="row" style="margin-top: auto; justify-content: flex-end"><a class="btn" href="#">Back</a><a class="btn pri" href="#">Use this power →</a></div>
+</section>
+
+<section class="p">
+<span class="lab">Same slot, another region</span>
+<div class="slot"><span class="lab">Site</span><span>[Site D] · ERCOT · 50 MW</span></div>
+<div class="opt off">
+<div class="row sb"><span style="font-weight: 600">Nuclear PPA</span><span class="tag">Unavailable</span></div>
+<span class="sm">Nuclear PPAs are offered only in PJM, Ohio, Georgia and the Nordics.</span>
+</div>
+<div class="opt off">
+<div class="row sb"><span style="font-weight: 600">Nuclear PPA · 2027Q2</span><span class="tag">Unavailable</span></div>
+<span class="sm">Available from 2027Q3.</span>
+</div>
+</section>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>

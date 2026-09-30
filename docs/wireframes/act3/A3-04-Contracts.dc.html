@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>A3-04 Contracts calendar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.s{width:1280px;height:720px;box-sizing:border-box;font-family:system-ui,-apple-system,"Segoe UI",Helvetica,sans-serif;font-size:12.5px;color:#222;background:#f2f2f2;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.m{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums}
+.r{text-align:right}
+.top{height:52px;flex-shrink:0;display:flex;align-items:center;gap:16px;padding:0 14px;background:#fff;border-bottom:2px solid #222}
+.st{display:flex;flex-direction:column;gap:1px}
+.lab{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#666}
+.nav{width:156px;flex-shrink:0;background:#fff;border-right:1px solid #bbb;padding:8px 0;display:flex;flex-direction:column}
+.nav a{padding:8px 14px;color:#444;text-decoration:none}
+.nav a.on{background:#e4e4e4;color:#111;font-weight:600}
+.p{background:#fff;border:1px solid #bbb;border-radius:4px;padding:9px 11px;display:flex;flex-direction:column;gap:6px;min-height:0;overflow:hidden}
+.h{font-weight:600;font-size:13px}
+.row{display:flex;align-items:center;gap:8px}.sb{justify-content:space-between}
+.btn{display:inline-flex;align-items:center;justify-content:center;height:28px;padding:0 10px;border:1.5px solid #222;border-radius:4px;background:#fff;color:#222;font:inherit;font-size:12px;cursor:pointer;text-decoration:none;white-space:nowrap}
+.mut{color:#666}.sm{font-size:11px}
+.pip{width:9px;height:9px;border-radius:50%;background:#222;display:inline-block}.pip.o{background:#fff;border:1.5px solid #222;box-sizing:border-box}
+.tag{display:inline-block;font-size:10px;letter-spacing:.06em;text-transform:uppercase;border:1px solid #777;border-radius:3px;padding:1px 6px;color:#444;white-space:nowrap}
+table{border-collapse:collapse;width:100%}
+td,th{padding:6px 7px;border-bottom:1px dashed #ddd;text-align:left;font-weight:400;vertical-align:top}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:#666;border-bottom:1.5px solid #222}
+</style>
+</helmet>
+<div class="s">
+<header class="top">
+<div class="st"><span class="lab">Date</span><span class="m">Q4 2027 · Plan</span></div>
+<div class="st"><span class="lab">Cash</span><span class="m" style="font-weight: 600">$38M</span></div>
+<div class="st"><span class="lab">Debt</span><span class="m">$164M</span></div>
+<div class="st"><span class="lab">Valuation</span><span class="m">$431M</span></div>
+<div class="st"><span class="lab">Rating</span><span class="m">BB−</span></div>
+<div class="st"><span class="lab">Bandwidth</span><span class="row" style="gap: 3px; padding-top: 3px"><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip"></span><span class="pip o"></span></span></div>
+<div class="st" style="border-left: 1px solid #ccc; padding-left: 14px"><span class="lab">Signals</span><span class="m sm">RG 73▲ · LS 64▲ · CL 77▶ · GR 50▶ · EF 56▲ · HP 41▼</span></div>
+<div class="st"><span class="lab">Contracts due</span><span class="m">3 in next 4 Q</span></div>
+<div style="flex-grow: 1"></div>
+<a class="btn" href="#">Settings</a>
+</header>
+<div style="flex-grow: 1; display: flex; min-height: 0">
+<nav class="nav">
+<a href="#">Dashboard</a><a href="#">Sites &amp; Fleet</a><a href="#">Projects</a><a class="on" href="#">Contracts</a><a href="#">Capital</a><a href="#">Government</a><a href="#">League</a><a href="#">Log</a>
+</nav>
+<main style="flex-grow: 1; padding: 10px; display: flex; flex-direction: column; gap: 10px; min-width: 0">
+<section class="p">
+<div class="row sb"><span class="h">The renewal wall · MW coming due by quarter</span><span class="sm mut">from contract end dates only</span></div>
+<svg viewBox="0 0 1090 180" width="100%" height="180" aria-label="MW due per quarter 2027Q1 to 2030Q4: 40 MW in 2028Q2, 25 MW in 2028Q4, 4,000 GPUs in 2028Q1">
+<g stroke="#e0e0e0"><line x1="50" y1="30" x2="1060" y2="30"></line><line x1="50" y1="90" x2="1060" y2="90"></line></g>
+<line x1="50" y1="150" x2="1060" y2="150" stroke="#222" stroke-width="1.5"></line>
+<g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#666"><text x="10" y="34">50</text><text x="10" y="94">25</text><text x="16" y="154">0</text></g>
+<rect x="54" y="20" width="182" height="130" fill="#f2f2f2"></rect>
+<text x="60" y="40" font-size="10" fill="#666" font-family="system-ui,sans-serif">past</text>
+<rect x="240" y="16" width="56" height="134" fill="none" stroke="#222" stroke-dasharray="4 3"></rect>
+<text x="248" y="12" font-size="10" fill="#222" font-family="system-ui,sans-serif">now</text>
+<rect x="370" y="54" width="44" height="96" fill="#444"></rect>
+<text x="372" y="48" font-family="ui-monospace,Menlo,monospace" font-size="11" fill="#222">40 MW</text>
+<rect x="494" y="90" width="44" height="60" fill="#444"></rect>
+<text x="496" y="84" font-family="ui-monospace,Menlo,monospace" font-size="11" fill="#222">25 MW</text>
+<path d="M330 150 L330 118" stroke="#222" stroke-width="1.5" stroke-dasharray="3 2"></path>
+<rect x="322" y="108" width="16" height="10" fill="#fff" stroke="#222"></rect>
+<text x="300" y="100" font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#222">4,000 GPUs</text>
+<g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#444">
+<text x="58" y="168">27Q1</text><text x="120" y="168">Q2</text><text x="182" y="168">Q3</text><text x="244" y="168">Q4</text>
+<text x="306" y="168">28Q1</text><text x="368" y="168">Q2</text><text x="430" y="168">Q3</text><text x="492" y="168">Q4</text>
+<text x="554" y="168">29Q1</text><text x="616" y="168">Q2</text><text x="678" y="168">Q3</text><text x="740" y="168">Q4</text>
+<text x="802" y="168">30Q1</text><text x="864" y="168">Q2</text><text x="926" y="168">Q3</text><text x="988" y="168">Q4</text>
+</g>
+</svg>
+</section>
+
+<section class="p" style="flex-grow: 1">
+<div class="row sb"><span class="h">Every tenant contract · by end quarter</span><span class="sm mut">4 contracts · 90 MW + 4,000 GPUs</span></div>
+<table>
+<thead><tr><th>Tenant</th><th>Kind</th><th class="r">Size</th><th class="r">Current rent</th><th class="r">New contract today</th><th class="r">Quarters left</th><th>Ends</th><th>Flags</th></tr></thead>
+<tbody>
+<tr><td><span style="font-weight: 600">Quill AI</span><br><span class="sm mut">AI start-up</span></td><td>GPU contract</td><td class="m r">4,000 H100</td><td class="m r">$2.10/GPU-hr</td><td class="m r">$[—]/GPU-hr</td><td class="m r">2</td><td class="m">2028Q1</td><td></td></tr>
+<tr><td><span style="font-weight: 600">Nimbus Compute</span><br><span class="sm mut">Neocloud</span></td><td>Shell lease</td><td class="m r">40 MW</td><td class="m r">$2.6M/MW-yr<br><span class="sm mut">$104M/yr</span></td><td class="m r">$[—]M/MW-yr</td><td class="m r">3</td><td class="m">2028Q2</td><td></td></tr>
+<tr><td><span style="font-weight: 600">Halden Labs</span><br><span class="sm mut">AI lab</span></td><td>Shell lease</td><td class="m r">25 MW</td><td class="m r">$2.9M/MW-yr<br><span class="sm mut">$72.5M/yr</span></td><td class="m r">$[—]M/MW-yr</td><td class="m r">5</td><td class="m">2028Q4</td><td><span class="tag">tenant in distress</span></td></tr>
+<tr><td><span style="font-weight: 600">Northvale Cloud</span><br><span class="sm mut">Hyperscaler</span></td><td>Shell lease</td><td class="m r">25 MW</td><td class="m r">$1.8M/MW-yr<br><span class="sm mut">$45M/yr</span></td><td class="m r">$[—]M/MW-yr</td><td class="m r">45</td><td class="m">2038Q4</td><td></td></tr>
+<tr style="font-weight: 600"><td colspan="3">Annual rent coming due</td><td class="m r" colspan="5" style="text-align: left">next 4 quarters ≈ <span>$250M/yr</span> · next 8 quarters ≈ <span>$250M/yr</span> <span class="sm mut" style="font-weight: 400">(GPU contract at full use)</span></td></tr>
+</tbody>
+</table>
+<span class="sm mut">Reopener: none of these can reopen; the clause exists only on leases signed from 2027Q1, from their third year.</span>
+</section>
+</main>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":720}}'>
+class Component extends DCLogic {
+  renderVals() { return {}; }
+}
+</script>
+</body>
+</html>
