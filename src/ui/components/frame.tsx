@@ -27,7 +27,7 @@ import {
   ratingBacklogView,
   topHeat,
 } from '../../sim/selectors.ts'
-import { isActII, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, isActIII, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { tierName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
@@ -164,6 +164,11 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           <span class="stat-note">{since}</span>
         </div>
       )}
+      {s.scenarioForced && (
+        <div class="stat">
+          <span class="tag">{t('ui.act3.forced_tag')}</span>
+        </div>
+      )}
       <SettingsButton />
       {props.paused && (
         <div class="stat">
@@ -181,8 +186,10 @@ const NAV: {
   id: Section
   icon: IconName
   key: Parameters<typeof t>[0]
-  /** Only in Act II. */
+  /** Only under Act II's rules (Act II and Act III). */
   act2?: boolean
+  /** Only in Act III. */
+  act3?: boolean
 }[] = [
   { id: 'dashboard', icon: 'dashboard', key: 'ui.nav.dashboard' },
   { id: 'projects', icon: 'power', key: 'ui.nav.projects', act2: true },
@@ -203,7 +210,11 @@ export function Nav(props: { seed: number; plan: boolean; act: number }) {
   const current = props.plan ? (nav?.section ?? 'dashboard') : 'dashboard'
   return (
     <nav class="nav" aria-label={t('ui.nav.label')}>
-      {NAV.filter((item) => !item.act2 || isActII(props.act)).map((item) => (
+      {NAV.filter(
+        (item) =>
+          (!item.act2 || inAct2Rules({ act: props.act as GameState['act'] })) &&
+          (!item.act3 || isActIII(props.act)),
+      ).map((item) => (
         <button
           key={item.key}
           type="button"

@@ -7,7 +7,18 @@ import { applyAction, type Action } from '../sim/actions.ts'
 import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
 import { bandwidthMax, quarterName } from '../sim/selectors.ts'
-import { inActII, newGame, type GameState } from '../sim/state.ts'
+import {
+  inActII,
+  inActIII,
+  newGame,
+  toAct3,
+  type GameState,
+} from '../sim/state.ts'
+import {
+  ACT3_PREVIEW,
+  forcedScenario,
+  guardTestBuildSave,
+} from '../platform/preview.ts'
 import { presetGame } from '../sim/preset.ts'
 import { newPrologueGame } from '../sim/prologue/setup.ts'
 import type { PrologueProps } from './screens/Prologue.tsx'
@@ -55,6 +66,23 @@ function LazyPrologue(props: PrologueProps) {
   )
 }
 
+type PreviewModule = typeof import('./screens/Act3Preview.tsx')
+
+/**
+ * The Act III preview module (M13), loaded only in a test build: in production ACT3_PREVIEW is the
+ * constant false, so this import (and the whole file) is dropped from the bundle.
+ */
+function useAct3Preview(): PreviewModule | null {
+  const [m, setM] = useState<PreviewModule | null>(null)
+  useEffect(() => {
+    // (The gate is written out here, not read from ACT3_PREVIEW: only an inline constant lets the
+    // bundler drop the branch before it makes chunks, so no orphan preview chunk is left in dist/.)
+    if (import.meta.env.MODE !== 'production')
+      void import('./screens/Act3Preview.tsx').then(setM)
+  }, [])
+  return m
+}
+
 /** Numbers are used as-is; any other text is hashed; empty picks a random seed. */
 function toSeed(text: string): number {
   if (text === '') return Math.floor(Math.random() * 1e9)
@@ -68,15 +96,20 @@ function toSeed(text: string): number {
 const themeOf = (s: GameState | null) =>
   s?.act === 0
     ? 'bedroom'
-    : inActII(s)
-      ? 'campus'
-      : s && quarterName(s.quarter) >= '2020Q1'
-        ? 'industrial'
-        : 'garage'
+    : inActIII(s)
+      ? 'grid'
+      : inActII(s)
+        ? 'campus'
+        : s && quarterName(s.quarter) >= '2020Q1'
+          ? 'industrial'
+          : 'garage'
 
 export function App() {
   const [game, setGame] = useState<GameState | null>(null)
   const [showEnd, setShowEnd] = useState(false)
+  // Test builds (M13): the Act III preview module, and the Act III intro before 2027Q1's Plan phase.
+  const preview = useAct3Preview()
+  const [act3Intro, setAct3Intro] = useState(false)
   const [section, setSection] = useState<Section>('dashboard')
   // The latest state, so actions and timer ticks never work on a stale copy.
   const ref = useRef<GameState | null>(null)
@@ -133,8 +166,9 @@ export function App() {
         return lines
       },
       load: (state: GameState) => {
-        // Through the save loader, so older or hand-edited states get any missing fields.
-        const r = restoreSave(state)
+        // Through the save loader, so older or hand-edited states get any missing fields (and an
+        // Act III state only loads in a test build).
+        const r = guardTestBuildSave(restoreSave(state))
         if (!r.ok) throw new Error(r.error.key)
         commit(r.state)
       },
@@ -167,8 +201,41 @@ export function App() {
     commit(newGame(seed))
   }
 
+  /**
+   * Test builds: an end-of-Act II company enters Act III (the drawn scenario, or the tester's
+   * ?scenario), and the Act III intro shows first.
+   */
+  const enterAct3 = (end: GameState) => {
+    if (!ACT3_PREVIEW) return
+    const forced = forcedScenario(window.location.search)
+    setShowEnd(false)
+    commit(
+      toAct3(end, forced ? { scenario: forced, forced: true } : undefined),
+    )
+    setAct3Intro(true)
+  }
+
   let screen
-  if (!game) {
+  if (preview && game && inActIII(game) && act3Intro) {
+    screen = (
+      <preview.Act3Intro state={game} onEnter={() => setAct3Intro(false)} />
+    )
+  } else if (
+    preview &&
+    game &&
+    inActIII(game) &&
+    (game.phase === 'chapter' || (game.phase === 'gameover' && showEnd))
+  ) {
+    screen = (
+      <preview.Act3Chapter
+        state={game}
+        onNew={() => {
+          setShowEnd(false)
+          commit(null)
+        }}
+      />
+    )
+  } else if (!game) {
     screen = (
       <TitleScreen
         onStart={(text) => start(toSeed(text))}
@@ -186,6 +253,7 @@ export function App() {
           act2: readSlot('act2'),
         }}
         onLoad={saves.load}
+        preview={preview && <preview.QuickStart onReady={enterAct3} />}
       />
     )
   } else if (game.act === 0) {
@@ -218,6 +286,11 @@ export function App() {
           game.phase === 'chapter' && game.act === 1
             ? () => act({ type: 'CONTINUE_TO_ACT_2' })
             : undefined
+        }
+        extra={
+          preview && game.phase === 'chapter' && inActII(game) ? (
+            <preview.ContinueToAct3 onClick={() => enterAct3(game)} />
+          ) : undefined
         }
       />
     )

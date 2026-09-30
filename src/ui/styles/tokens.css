@@ -112,3 +112,21 @@
   --heat-3: #9a4e1c;
   --shadow-card: 0 2px 0 #c9bd98, 0 18px 40px rgba(30, 42, 68, 0.25);
 }
+/* Act III (2027–30), from docs/design-system/tokens.css (M13.1). */
+[data-theme='grid'] {
+  --paper: #ecf0f3;
+  --paper-grid: #d8e0e8;
+  --panel: #f9fafb;
+  --panel-sunk: #e1e7ee;
+  --line: #bcc6d1;
+  --line-soft: #d4dce4;
+  --ink: #182434;
+  --ink-muted: #465264;
+  --ink-disabled: #6c7482;
+  --on-action: #f9fafb;
+  --accent: #5b2e8c;
+  --tape: #ece3b5;
+  --series-eth: #5a6a8c;
+  --heat-3: #9a4e1c;
+  --shadow-card: 0 1px 0 #bcc6d1, 0 16px 36px rgba(24, 36, 52, 0.22);
+}

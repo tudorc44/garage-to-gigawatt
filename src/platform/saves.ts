@@ -4,6 +4,7 @@
 import type { Message } from '../i18n/t.ts'
 import { restoreSave } from '../sim/save.ts'
 import type { GameState } from '../sim/state.ts'
+import { guardTestBuildSave } from './preview.ts'
 
 /** act2 = "Start of Act II": saved at the act boundary, to replay Act II without Act I (scope 0.2 §2.1). */
 export type Slot = 'autosave' | 'manual' | 'act2'
@@ -39,7 +40,10 @@ export function decodeSave(
   try {
     const binary = atob(trimmed.slice(PREFIX.length))
     const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0))
-    return restoreSave(JSON.parse(new TextDecoder().decode(bytes)))
+    // (An Act III save only loads in a test build: M13.1's save guard.)
+    return guardTestBuildSave(
+      restoreSave(JSON.parse(new TextDecoder().decode(bytes))),
+    )
   } catch {
     return { ok: false, error: { key: 'error.save_invalid' } }
   }

@@ -41,7 +41,13 @@ import {
   whyNot,
   type LotView,
 } from '../../sim/selectors.ts'
-import { inActII, type Coin, type GameState } from '../../sim/state.ts'
+// (Act II's panels show in Act III too, which runs the same systems: inAct2Rules, M13.1.)
+import {
+  inActII,
+  inAct2Rules,
+  type Coin,
+  type GameState,
+} from '../../sim/state.ts'
 import { ActionRow, Icon, Sparkline, Tip } from '../components/basics.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
@@ -105,7 +111,7 @@ export function PlanScreen({ state, act }: ScreenProps) {
     <div class="screen">
       <Shell state={state}>
         <main class="main">
-          {inActII(state) && <MwPanel state={state} />}
+          {inAct2Rules(state) && <MwPanel state={state} />}
           <div class="dash">
             <div class="col">
               <MarketPanel state={state} />
@@ -449,7 +455,7 @@ export function FleetPanel({ state }: { state: GameState }) {
                     cap: fmt.power(sv.capacityKw),
                   })}
                 </div>
-                {inActII(state) && (
+                {inAct2Rules(state) && (
                   <MwBar
                     use={siteMwByUse(state, sv.site, state.quarter)}
                     compact
@@ -687,7 +693,7 @@ function TodoPanel({
 
   const ladderRows = []
   // Act II scouting (M5.5): distressed sites, greenfield and energized land, any region.
-  if (inActII(state)) {
+  if (inAct2Rules(state)) {
     const offers = state.siteOffers.filter((o) => o.category).length
     if (offers > 0)
       ladderRows.push(
@@ -840,8 +846,8 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.sites')}</div>
       {ladderRows}
-      {inActII(state) && <HostingRow state={state} open={open} />}
-      {inActII(state) && <FleetRow state={state} act={act} />}
+      {inAct2Rules(state) && <HostingRow state={state} open={open} />}
+      {inAct2Rules(state) && <FleetRow state={state} act={act} />}
       {phaseViews(state).flatMap((p) => {
         if (!p.next) return []
         const plain: Action = { type: 'BUILD_PHASE', siteId: p.site.id }

@@ -15,7 +15,7 @@ import {
   upcomingRivalsView,
   valuationBreakdown,
 } from '../../sim/selectors.ts'
-import { inActII, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, type GameState } from '../../sim/state.ts'
 import { Icon, Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import {
@@ -50,7 +50,7 @@ export function SectionView(props: ScreenProps & { section: Section }) {
     case 'fleet':
       return <FleetSection {...props} />
     case 'capital':
-      return inActII(props.state) ? (
+      return inAct2Rules(props.state) ? (
         <CapitalAct2 {...props} />
       ) : (
         <CapitalSection {...props} />
@@ -78,7 +78,7 @@ function FleetSection({ state, act }: ScreenProps) {
     <div class="section">
       <div class="col">
         <FleetPanel state={state} />
-        {inActII(state) && state.phase === 'plan' && (
+        {inAct2Rules(state) && state.phase === 'plan' && (
           <RegionPanel state={state} />
         )}
         <div class="panel p">

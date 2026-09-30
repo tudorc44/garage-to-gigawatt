@@ -581,6 +581,8 @@ export interface GameState {
    * marketWeek's optional argument ever reads it.
    */
   scenarioId?: ScenarioId
+  /** M13.1: a tester forced the scenario (test builds only); the top bar says so. Absent otherwise. */
+  scenarioForced?: true
   /**
    * Act III (M11.2): the log of Read the market (Signals) reads, one indicator per quarter at most.
    * Absent in the prologue, Act I and Act II; toAct3() starts it empty.
@@ -897,9 +899,12 @@ export function drawScenario(seed: number): ScenarioId {
  */
 export function toAct3(
   state: GameState,
-  options: { scenario?: ScenarioId } = {},
+  /** `forced`: a tester chose the scenario (a test build's ?scenario); marked on the state for the top bar. */
+  options: { scenario?: ScenarioId; forced?: boolean } = {},
 ): GameState {
-  return enterAct3(state, options.scenario ?? drawScenario(state.seed))
+  const s = enterAct3(state, options.scenario ?? drawScenario(state.seed))
+  if (options.forced && options.scenario) s.scenarioForced = true
+  return s
 }
 
 export function newGame(seed: number): GameState {

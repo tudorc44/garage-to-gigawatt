@@ -17,7 +17,7 @@ import {
 } from '../../platform/settings.ts'
 import { quarterName } from '../../sim/selectors.ts'
 import { setSfxSettings } from '../audio/sfx.ts'
-import { inActII, type GameState } from '../../sim/state.ts'
+import { inActII, inActIII, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { Dialog } from './basics.tsx'
@@ -42,6 +42,7 @@ export function saveLabel(s: GameState): string {
     cash: fmt.money(s.cash),
   })
   // Saves in Act II carry an "Act II" tag (A2-01).
+  if (inActIII(s)) return t('ui.save.act3_tag', { label })
   return inActII(s) ? t('ui.save.act2_tag', { label }) : label
 }
 

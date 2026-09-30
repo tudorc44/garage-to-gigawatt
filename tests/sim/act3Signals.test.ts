@@ -269,9 +269,19 @@ describe('the hidden signals fields never reach src/', () => {
     }
   })
 
-  it('nothing in src/ calls toAct3 but its own definition (Act III stays unreachable from play)', () => {
+  it('nothing in src/ calls toAct3 but its own definition and the test-build entry (Act III stays unreachable from play)', () => {
     for (const file of src) {
       if (/sim[\\/]state\.ts$/.test(file)) continue
+      // M13.1: the app enters Act III in one place, behind the ACT3_PREVIEW gate (test builds only).
+      if (/ui[\\/]app\.tsx$/.test(file)) {
+        const text = code(file)
+        const calls = text.match(/\btoAct3\(/g) ?? []
+        expect(calls).toHaveLength(1)
+        expect(text).toMatch(
+          /const enterAct3 = \(end: GameState\) => \{\s*if \(!ACT3_PREVIEW\) return[^}]*?\btoAct3\(/,
+        )
+        continue
+      }
       expect(code(file), `${file} uses toAct3`).not.toMatch(/\btoAct3\b/)
     }
   })

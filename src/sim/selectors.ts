@@ -11,6 +11,7 @@ import {
   type MarketWeek,
   type PowerRegion,
   type RegionPolicy,
+  type ScenarioId,
 } from '../content/index.ts'
 import type { Message, MessageKey } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
@@ -238,11 +239,16 @@ export function priceChanges(state: GameState): {
 
 /** The 13 weeks before now plus now (for "last 13 weeks" sparklines). */
 export function recentMarket(state: GameState, weeks = 13): MarketWeek[] {
-  const flat = CONTENT.market.flat()
+  const W = BALANCE.weeksPerQuarter
   const idx =
-    state.quarter * BALANCE.weeksPerQuarter +
+    state.quarter * W +
     (state.phase === 'plan' ? 0 : Math.max(state.week - 1, 0))
-  return flat.slice(Math.max(0, idx - weeks), idx + 1)
+  // Week by week through marketWeek, so Act III reads its scenario's weeks (M13.1); the same weeks as
+  // the shared market before.
+  const out: MarketWeek[] = []
+  for (let i = Math.max(0, idx - weeks); i <= idx; i++)
+    out.push(marketWeek(Math.floor(i / W), i % W, scenarioOf(state)))
+  return out
 }
 
 export function treasuryValue(state: GameState): number {
@@ -466,8 +472,17 @@ export function siteLadder(state: GameState): LadderRung[] {
 }
 
 /** Average weekly price of a coin over a quarter (for the report chart). */
-export function averagePrice(quarter: number, coin: Coin): number {
-  const weeks = CONTENT.market[quarter]
+export function averagePrice(
+  quarter: number,
+  coin: Coin,
+  /** Act III (M13.1): the game's scenario, whose weekly market has these quarters. */
+  scenario?: ScenarioId | null,
+): number {
+  const weeks =
+    CONTENT.market[quarter] ??
+    Array.from({ length: BALANCE.weeksPerQuarter }, (_, w) =>
+      marketWeek(quarter, w, scenario),
+    )
   return weeks.reduce((sum, w) => sum + coinPrice(w, coin), 0) / weeks.length
 }
 

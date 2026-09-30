@@ -20,7 +20,7 @@ import {
   type RivalSnapshot,
 } from '../../sim/systems/rivals.ts'
 import {
-  inActII,
+  inAct2Rules,
   type Coin,
   type GameState,
   type QuarterReport,
@@ -32,9 +32,10 @@ import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 /** The coin that earned more this quarter (for "cost per coin"). */
-function mainCoin(r: QuarterReport): Coin | null {
+function mainCoin(r: QuarterReport, state: GameState): Coin | null {
   const qi = CONTENT.quarters.indexOf(r.quarter)
-  const value = (c: Coin) => r.coinsMined[c] * averagePrice(qi, c)
+  const value = (c: Coin) =>
+    r.coinsMined[c] * averagePrice(qi, c, state.scenarioId)
   if (value('BTC') === 0 && value('ETH') === 0) return null
   return value('ETH') >= value('BTC') ? 'ETH' : 'BTC'
 }
@@ -78,7 +79,7 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
   const weeks = state.quarterStats.weeks
   const first = weeks[0]
   const last = weeks[weeks.length - 1]
-  const coin = mainCoin(r)
+  const coin = mainCoin(r, state)
   const cost = coin ? r.costPerCoinUsd[coin] : null
   const prevCost = coin && prev ? prev.costPerCoinUsd[coin] : null
   const isLast = state.quarter === actLastQuarter(state.act)
@@ -218,7 +219,9 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
                 ? t(
                     state.act === 1
                       ? 'ui.report.finish'
-                      : 'ui.report.finish_act2',
+                      : state.act === 3
+                        ? 'ui.report.finish_act3'
+                        : 'ui.report.finish_act2',
                   )
                 : t('ui.report.continue', {
                     quarter: fmt.quarter(quarterName(state.quarter + 1)),
@@ -249,7 +252,7 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
   const data = rows.map(({ rep, qi }) => ({
     label: rep.quarter.slice(4),
     cost: rep.costPerCoinUsd[c],
-    price: averagePrice(qi, c),
+    price: averagePrice(qi, c, state.scenarioId),
   }))
   const max =
     Math.max(1, ...data.map((d) => Math.max(d.cost ?? 0, d.price))) * 1.1
@@ -414,7 +417,7 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
   const moved = before ? before.rank - now.rank : 0
   const coming = upcomingRivals(state.quarter)
   // Act II (M6.2): your AI and mining MW for the scale column, and the rivals' moves this quarter.
-  const act2 = inActII(state) ? leagueScaleView(state) : null
+  const act2 = inAct2Rules(state) ? leagueScaleView(state) : null
   const moves = rivalMovesView(state.quarter)
   return (
     <div class="panel p">

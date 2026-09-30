@@ -1,6 +1,7 @@
 // The end of Act I: the Merge decision screen (after the 2022Q3 report), then the chapter
 // report, from where the game carries on into Act II. A bust skips the Merge and goes straight
 // to the chapter report ("Chapter ends early"), with no way on.
+import type { ComponentChildren } from 'preact'
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
 import {
@@ -103,6 +104,8 @@ function Act2Chapter(props: {
   state: GameState
   onReplay: () => void
   onNew: () => void
+  /** Test builds only (M13): "Continue to Act III (test build)". */
+  extra?: ComponentChildren
 }) {
   const s = props.state
   const c = act2ChapterView(s)
@@ -245,7 +248,12 @@ function Act2Chapter(props: {
             </p>
           </div>
           <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-            <button type="button" class="btn btn-primary" onClick={props.onNew}>
+            {props.extra}
+            <button
+              type="button"
+              class={props.extra ? 'btn' : 'btn btn-primary'}
+              onClick={props.onNew}
+            >
               {t('ui.end.new')}
             </button>
             <button type="button" class="btn" onClick={props.onReplay}>
@@ -339,6 +347,8 @@ export function ChapterScreen(props: {
   onNew: () => void
   /** The Act I chapter report after the Merge: carry on into Act II. */
   onContinue?: () => void
+  /** Test builds only (M13): extra buttons on the Act II chapter report. */
+  extra?: ComponentChildren
 }) {
   const s = props.state
   const [exported, setExported] = useState<string | null>(null)

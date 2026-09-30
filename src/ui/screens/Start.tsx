@@ -4,7 +4,8 @@
 import { useState } from 'preact/hooks'
 import { t } from '../../i18n/t.ts'
 import { quarterName } from '../../sim/selectors.ts'
-import { inActII, type GameState } from '../../sim/state.ts'
+import type { ComponentChildren } from 'preact'
+import { inActII, inActIII, type GameState } from '../../sim/state.ts'
 import { ImportBox, saveLabel } from '../components/saves.tsx'
 import { fmt } from '../format.ts'
 
@@ -13,9 +14,11 @@ export function actTag(s: GameState): string {
   return t(
     s.act === 0
       ? 'ui.title.tag_prologue'
-      : inActII(s)
-        ? 'ui.title.tag_act2'
-        : 'ui.title.tag_act1',
+      : inActIII(s)
+        ? 'ui.title.tag_act3'
+        : inActII(s)
+          ? 'ui.title.tag_act2'
+          : 'ui.title.tag_act1',
   )
 }
 
@@ -32,6 +35,8 @@ export function TitleScreen(props: {
     act2?: GameState | null
   }
   onLoad: (state: GameState) => void
+  /** Test builds only (M13): the Act III preview's quick start, under the other starts. */
+  preview?: ComponentChildren
 }) {
   const [seed, setSeed] = useState('')
   const [open, setOpen] = useState(false)
@@ -149,6 +154,7 @@ export function TitleScreen(props: {
               >
                 {t('ui.title.start_act2')}
               </button>
+              {props.preview}
             </div>
           )}
           {careers.length > 0 && (
