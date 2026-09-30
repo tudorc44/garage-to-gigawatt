@@ -140,6 +140,7 @@ export {
   type SignalIndicator,
   type SignalPoint,
   type Act3RivalRuntime,
+  type MarketQuarterAct3Row,
 } from './schemas.ts'
 export type {
   ScenarioId,

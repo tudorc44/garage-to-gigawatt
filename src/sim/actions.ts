@@ -80,6 +80,7 @@ import { planFailureWaves } from './systems/failureWave.ts'
 import { buyPriceNow, newGpusLocked } from './systems/eventEffects.ts'
 import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import { readSignal, readSignalBlocker } from './systems/signals.ts'
+import { chooseRenewal, renewalBlocker } from './systems/renewals.ts'
 import {
   borrowBlocker,
   repayEquipmentLoan,
@@ -325,7 +326,13 @@ export type Action =
       projectId: string
       offerId?: string
       debt?: 'project_debt' | 'ddtl'
+      /** Act III (M12.2): counter the project's open renewal offer. */
+      renewal?: boolean
     }
+  /** Act III (M12.2): accept a renewal offer (0 Bandwidth; also the default when undecided). */
+  | { type: 'RENEWAL_ACCEPT'; projectId: string }
+  /** Act III (M12.2): turn a renewal down: re-let a shell by RFP (1 Bandwidth), or a GPU contract to spot. */
+  | { type: 'RENEWAL_RELET'; projectId: string }
   /** Your ask: a tenant's price multiple (1.05 = 5% over the card) or a lender's rate cut (0.005). */
   | { type: 'DEAL_COUNTER'; ask: number }
   | { type: 'DEAL_ACCEPT' }
@@ -848,8 +855,17 @@ function run(s: GameState, a: Action): Message | undefined {
     case 'REPAY_BRIDGE_LOAN':
       return repayBridgeLoan(s)
 
+    case 'RENEWAL_ACCEPT':
+    case 'RENEWAL_RELET': {
+      const choice = a.type === 'RENEWAL_ACCEPT' ? 'accept' : 'relet'
+      const blocked = renewalBlocker(s, a.projectId, choice)
+      if (blocked) return blocked
+      chooseRenewal(s, a.projectId, choice)
+      return
+    }
+
     case 'DEAL_NEGOTIATE_START': {
-      const target = { offerId: a.offerId, debt: a.debt }
+      const target = { offerId: a.offerId, debt: a.debt, renewal: a.renewal }
       const blocked = dealNegotiationBlocker(s, a.projectId, target)
       if (blocked) return blocked
       startDealNegotiation(s, a.projectId, target)
@@ -964,7 +980,11 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocker = backstopBlocker(s, a.projectId)
       if (blocker) return blocker
       takeBackstop(s, a.projectId)
-      logProjectCapital(s, s.projects.find((x) => x.id === a.projectId)!, 'backstop')
+      logProjectCapital(
+        s,
+        s.projects.find((x) => x.id === a.projectId)!,
+        'backstop',
+      )
       return
     }
 
@@ -972,7 +992,11 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocker = jvBlocker(s, a.projectId, a.share)
       if (blocker) return blocker
       setJv(s, a.projectId, a.share)
-      logProjectCapital(s, s.projects.find((x) => x.id === a.projectId)!, 'jv')
+      logProjectCapital(
+        s,
+        s.projects.find((x) => x.id === a.projectId)!,
+        'jv',
+      )
       return
     }
 

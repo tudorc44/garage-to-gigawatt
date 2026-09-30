@@ -17,7 +17,12 @@
 import { BALANCE } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { substream, uniform } from '../rng.ts'
-import { inAct2Rules, logEntry, type GameState, type Project } from '../state.ts'
+import {
+  inAct2Rules,
+  logEntry,
+  type GameState,
+  type Project,
+} from '../state.ts'
 import {
   debtBlocker,
   debtOffer,
@@ -27,12 +32,15 @@ import {
 import { sofr } from './finance.ts'
 import { scenarioOf } from './market.ts'
 import { getProject, signTenant, tenantCard } from './projects.ts'
+import { renewalBand } from './leaseIndex.ts'
+import { openRenewal } from './renewals.ts'
 
 const N = BALANCE.finance.dealNegotiation
 
 export interface DealNegotiation {
   projectId: string
-  side: 'tenant' | 'lender'
+  /** 'renewal' (Act III, M12.2): a counter on a renewal offer, as a multiple of the current rate. */
+  side: 'tenant' | 'lender' | 'renewal'
   /** The tenant offer bargained over (side 'tenant'). */
   offerId?: string
   /** The debt bargained over (side 'lender'). */
@@ -52,8 +60,19 @@ export interface DealNegotiation {
 function terms(
   state: GameState,
   p: Project,
-  target: { offerId?: string; debt?: DebtKind },
-): { limit: number } | Message {
+  target: Target,
+): { limit: number; opening?: number } | Message {
+  // Act III renewal (M12.2): opening = the offer's multiple, hidden limit = Band high (both × the
+  // contract's current rate).
+  if (target.renewal) {
+    const r = openRenewal(state, p.id)
+    if (!r) return { key: 'error.no_renewal' }
+    if (r.walked || !r.offer) return { key: 'error.renewal_walked' }
+    if (r.negotiated) return { key: 'error.negotiated_already' }
+    const band = renewalBand(state.quarter, scenarioOf(state))
+    if (!band) return { key: 'error.no_renewal' }
+    return { limit: Math.max(band.hi, r.offer.mult), opening: r.offer.mult }
+  }
   if (target.offerId) {
     if (p.tenant) return { key: 'error.tenant_signed' }
     const o = p.offers.find((x) => x.id === target.offerId)
@@ -71,17 +90,25 @@ function terms(
     return { key: 'error.negotiated_already' }
   // The lender's usual rate for this project (before any cut already won).
   const usual = debtOffer(state, p, kind).apr + (p.debt?.aprCut?.[kind] ?? 0)
-  const room = usual - (sofr(state.quarter, scenarioOf(state)) + N.lenderFloorOverSofr)
+  const room =
+    usual - (sofr(state.quarter, scenarioOf(state)) + N.lenderFloorOverSofr)
   const limit = Math.max(0, Math.min(N.lenderCut, room))
   if (limit <= 0) return { key: 'error.lender_no_room' }
   return { limit }
+}
+
+/** What a negotiation is about: a tenant offer, a debt, or (Act III) the project's open renewal. */
+interface Target {
+  offerId?: string
+  debt?: DebtKind
+  renewal?: boolean
 }
 
 /** Why a negotiation can't start on this offer or debt now, or undefined if it can. */
 export function dealNegotiationBlocker(
   state: GameState,
   projectId: string,
-  target: { offerId?: string; debt?: DebtKind },
+  target: Target,
 ): Message | undefined {
   if (!inAct2Rules(state)) return { key: 'error.act2_only' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
@@ -104,12 +131,14 @@ export function dealNegotiationBlocker(
 export function startDealNegotiation(
   state: GameState,
   projectId: string,
-  target: { offerId?: string; debt?: DebtKind },
+  target: Target,
 ): void {
   const p = getProject(state, projectId)!
-  const { limit } = terms(state, p, target) as { limit: number }
-  const side = target.offerId ? 'tenant' : 'lender'
-  const opening = side === 'tenant' ? 1 : 0
+  const t = terms(state, p, target) as { limit: number; opening?: number }
+  const limit = t.limit
+  const side = target.renewal ? 'renewal' : target.offerId ? 'tenant' : 'lender'
+  const opening = t.opening ?? (side === 'tenant' ? 1 : 0)
+  if (side === 'renewal') openRenewal(state, projectId)!.negotiated = true
   state.bandwidth -= N.bandwidth
   state.dealNegotiation = {
     projectId,
@@ -124,12 +153,12 @@ export function startDealNegotiation(
     history: [],
     rng: substream(
       state.seed,
-      `deal_negotiation:${state.quarter}:${projectId}:${target.offerId ?? target.debt}`,
+      `deal_negotiation:${state.quarter}:${projectId}:${target.offerId ?? target.debt ?? 'renewal'}`,
     ).rng,
   }
   logEntry(state, 'log.deal_negotiation_started', {
     n: p.n,
-    side: side === 'tenant' ? 'tenant' : 'lender',
+    side: side === 'lender' ? 'lender' : 'tenant',
   })
 }
 
@@ -138,6 +167,17 @@ function deal(state: GameState, value: number): void {
   const n = state.dealNegotiation!
   const p = getProject(state, n.projectId)!
   state.dealNegotiation = null
+  // A renewal counter won: the tenant will sign at this multiple of its rate at quarter end.
+  if (n.side === 'renewal') {
+    const r = openRenewal(state, p.id)!
+    r.choice = 'accept'
+    r.counterMult = value
+    logEntry(state, 'log.deal_negotiation_tenant', {
+      n: p.n,
+      gainPct: value / r.offer!.mult - 1,
+    })
+    return
+  }
   if (n.side === 'tenant') {
     const o = p.offers.find((x) => x.id === n.offerId)!
     o.priceMult = value
@@ -165,7 +205,15 @@ function walkAway(state: GameState, by: 'you' | 'them'): void {
   const n = state.dealNegotiation!
   const p = getProject(state, n.projectId)!
   state.dealNegotiation = null
-  if (n.side === 'tenant') {
+  if (n.side === 'renewal') {
+    // They walked (round 3): the tenant leaves at term end. You walked: the offer stands (the default).
+    if (by === 'them') {
+      const r = openRenewal(state, p.id)!
+      r.walked = true
+      r.choice = null
+      delete r.counterMult
+    }
+  } else if (n.side === 'tenant') {
     if (by === 'them') p.offers = p.offers.filter((o) => o.id !== n.offerId)
     else {
       const o = p.offers.find((x) => x.id === n.offerId)
@@ -190,7 +238,7 @@ function walkAway(state: GameState, by: 'you' | 'them'): void {
     by === 'you'
       ? 'log.deal_negotiation_you_walked'
       : 'log.deal_negotiation_they_walked',
-    { n: p.n, side: n.side },
+    { n: p.n, side: n.side === 'lender' ? 'lender' : 'tenant' },
   )
 }
 

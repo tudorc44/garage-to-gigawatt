@@ -2680,6 +2680,7 @@
     "contractedMw": 0,
     "creditRating": null
   },
+  "act3Renewals": [],
   "act3End": {
     "scenarioId": "s2",
     "scenarioName": "Lift-Off",

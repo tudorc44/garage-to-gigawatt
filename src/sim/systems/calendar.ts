@@ -14,12 +14,8 @@
 // Hosting is not in the calendar (it reprices every quarter in Act III). A GPU contract whose term has
 // run is already on spot (Act II's rule: `tenant` is null), so it isn't either. A shell lease whose term
 // ended before 2027Q1 is a holdover at its old rent; its renewal comes due in 2027Q1 (M12.2).
-import {
-  CONTENT,
-  actFirstQuarter,
-  type ScenarioId,
-} from '../../content/index.ts'
 import { projectGone, type GameState, type Project } from '../state.ts'
+import { rfpMid } from './leaseIndex.ts'
 import { scenarioOf } from './market.ts'
 import {
   annualRentUsd,
@@ -72,20 +68,6 @@ export function contractEndQuarter(
   if (p.stage === 'live') return state.quarter + term - t.servedQuarters - 1
   if (p.readyQuarter === null) return null
   return p.readyQuarter + term - 1
-}
-
-/** This quarter's RFP midpoint in Act III (the new-lease index), or null outside Act III. */
-export function rfpMid(
-  quarter: number,
-  scenario: ScenarioId | null | undefined,
-): number | null {
-  if (!scenario) return null
-  const first = actFirstQuarter(3)
-  const row = CONTENT.act3Scenarios[scenario].quarterly[quarter - first]
-  if (!row) return null
-  const lo = row.rfp_new_lease_index_low
-  const hi = row.rfp_new_lease_index_high
-  return lo === null || hi === null ? null : (lo + hi) / 2
 }
 
 /** Every signed tenant contract, soonest end first (not yet scheduled last). */

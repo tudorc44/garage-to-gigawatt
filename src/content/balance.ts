@@ -576,5 +576,23 @@ export const BALANCE = {
   act3: {
     /** Which market scenario a game gets at the Act II→III boundary, in percent (doc 27 D2; they add to 100). */
     scenarioWeightsPct: { s0: 25, s1: 30, s2: 25, s3: 20 },
+    /** Renewals (M12.2; doc 27 §6, D5; the design thread's M12 spec). */
+    renewals: {
+      /**
+       * Where a shell tenant's offer sits in Band(q), 0 = low … 1 = high, by type (DT): stronger credit
+       * negotiates lower, mirroring Act II's negotiation limits of +5 / +8 / +12%.
+       */
+      positionByType: {
+        hyperscaler: 0,
+        neocloud_sub_tenant: 0.25,
+        ai_lab: 0.5,
+      } as Record<string, number>,
+      /** A tenant in distress is this much likelier to walk, capped (DT). */
+      distressWalkMult: 2,
+      distressWalkCap: 0.9,
+      /** Re-let by RFP: its Bandwidth when the player chooses it, and the quarters the MW earn nothing. */
+      reletBandwidth: 1,
+      reletEmptyQuarters: 2,
+    },
   },
 } as const

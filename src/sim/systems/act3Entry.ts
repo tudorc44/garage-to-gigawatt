@@ -22,6 +22,7 @@ import { emptyQuarterStats, type Act3Entry, type GameState } from '../state.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { debtUsd } from './loans.ts'
 import { mwByUse } from './mwUse.ts'
+import { openRenewals } from './renewals.ts'
 import { poweredKw } from './sites.ts'
 
 /**
@@ -113,6 +114,9 @@ export function enterAct3(state: GameState, scenario: ScenarioId): GameState {
   s.interruptsThisQuarter = 0
   s.quarterStats = emptyQuarterStats()
   s.bandwidth = bandwidthForQuarter(s)
+  // 2027Q1's Plan phase: contracts ending now, and holdovers, open their renewals (M12.2).
+  s.act3Renewals = []
+  openRenewals(s)
 
   return s
 }

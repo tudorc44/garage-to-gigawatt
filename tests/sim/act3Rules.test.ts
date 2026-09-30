@@ -208,10 +208,10 @@ describe('what reads the scenario files', () => {
       .filter((f) => /act3Scenarios/.test(strip(readFileSync(f, 'utf8'))))
       .map((f) => f.split('/').slice(-2).join('/'))
       .sort()
-    // Only the market readers (weeks), the tenant-default roll (quarterly columns) and the contract
-    // calendar (the RFP columns, M12.1).
+    // Only the market readers (weeks), the tenant-default roll (quarterly columns) and the lease index
+    // (the renewal, RFP and walk columns, M12).
     expect(users).toEqual([
-      'systems/calendar.ts',
+      'systems/leaseIndex.ts',
       'systems/market.ts',
       'systems/projects.ts',
     ])

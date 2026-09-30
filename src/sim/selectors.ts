@@ -80,17 +80,21 @@ import { waveCostUsd } from './systems/gpuWave.ts'
 import { bridgeSchedule } from './systems/lifeline.ts'
 import { runway } from './systems/runway.ts'
 import {
+  annualRentUsd,
   backlogUsd,
   gpuWaitQuarters,
   knowHow,
   projectEventCostUsd,
+  tenantCard,
 } from './systems/projects.ts'
+import { renewalBlocker } from './systems/renewals.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { eventBodyKey } from './systems/events.ts'
 import { lifelineTerms } from './systems/lifeline.ts'
 import { angerHeat, regionAnger, regionMoratoriumOn } from './systems/anger.ts'
 import {
   DEAL_NEGOTIATION,
+  dealNegotiationBlocker,
   dealNegotiationCard,
 } from './systems/dealNegotiation.ts'
 import { debtOffer } from './systems/facilities.ts'
@@ -1893,6 +1897,59 @@ export function contractCalendar(state: GameState) {
     endQuarterLabel:
       e.endQuarter === null ? null : (CONTENT.quarters[e.endQuarter] ?? null),
   }))
+}
+
+/**
+ * Renewals due (M12.2): the renewals open this quarter, each with the tenant's answer (it walks, or its
+ * offer as a multiple of the current rate and the new term), the choice that will apply (undecided =
+ * accept), and what each answer costs in Bandwidth. Only opened renewals are listed: no offer shows
+ * before its renewal opens.
+ */
+export function renewalsDue(state: GameState) {
+  return (state.act3Renewals ?? []).flatMap((r) => {
+    const p = state.projects.find((x) => x.id === r.projectId)
+    if (!p?.tenant) return []
+    const t = p.tenant
+    const card = tenantCard(t.card)!
+    const rent = annualRentUsd(card, p.kw) * (t.priceMult ?? 1)
+    const rate = t.gpu ? t.gpu.priceUsdHr : rent
+    const mult = r.counterMult ?? r.offer?.mult ?? null
+    return [
+      {
+        projectId: p.id,
+        projectN: p.n,
+        card: t.card,
+        tenantType: card.type,
+        kind: r.kind,
+        walked: r.walked,
+        /** The rent a year (shell) or $/GPU-hr (GPU) now. */
+        currentRate: rate,
+        offer: r.offer
+          ? {
+              mult: r.offer.mult,
+              rate: rate * r.offer.mult,
+              termYears: r.offer.termQuarters / 4,
+            }
+          : null,
+        /** A counter won in negotiation, as a multiple of the current rate. */
+        counterMult: r.counterMult ?? null,
+        /** What applies at quarter end if nothing else is chosen. */
+        choice: r.walked ? ('walk' as const) : (r.choice ?? 'accept'),
+        signsAt: r.walked || r.choice === 'relet' ? null : mult,
+        cost: {
+          accept: 0,
+          counter: DEAL_NEGOTIATION.bandwidth,
+          relet: r.kind === 'shell' ? BALANCE.act3.renewals.reletBandwidth : 0,
+        },
+        blocked: {
+          accept: renewalBlocker(state, p.id, 'accept') ?? null,
+          relet: renewalBlocker(state, p.id, 'relet') ?? null,
+          counter:
+            dealNegotiationBlocker(state, p.id, { renewal: true }) ?? null,
+        },
+      },
+    ]
+  })
 }
 
 export function hostingView(state: GameState) {

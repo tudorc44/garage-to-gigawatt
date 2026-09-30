@@ -14,6 +14,7 @@ import {
   availableGpus,
   contractQuarters,
   gpuContractUsdHr,
+  newLeaseIndex,
   plannedLiveQuarter,
   buildBlocker,
   capRate,
@@ -242,6 +243,7 @@ export function dealView(state: GameState, projectId: string) {
         : null,
     },
     offers: p.offers.map((o) => {
+      const leaseIndex = newLeaseIndex(state)
       const c = tenantCard(o.card)!
       const gpuUsdHr = o.gpu
         ? (gpuContractUsdHr(
@@ -256,12 +258,13 @@ export function dealView(state: GameState, projectId: string) {
         offer: o,
         type: c.type,
         rating: c.rating,
-        priceUsdMwYr: c.priceUsdMwYr,
+        // Act III (M12.2, F-2): a lease signs at the card price × the new-lease (RFP) index.
+        priceUsdMwYr: c.priceUsdMwYr * (o.gpu ? 1 : leaseIndex),
         /** A GPU contract offer's $/GPU-hr (locked if signed now), or null for a lease. */
         gpuUsdHr,
         annualUsd:
           gpuUsdHr === null
-            ? annualRentUsd(c, p.kw)
+            ? annualRentUsd(c, p.kw) * leaseIndex
             : gpus * gpuUsdHr * 24 * 365,
         termYears: o.gpu ? o.gpu.termYears : c.termYears,
         prepaymentShare: o.gpu ? 0 : c.prepaymentShare,

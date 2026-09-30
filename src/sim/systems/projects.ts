@@ -17,6 +17,7 @@ import {
   type TenantCard,
 } from '../../content/index.ts'
 import { scenarioOf } from './market.ts'
+import { rfpMid } from './leaseIndex.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream } from '../rng.ts'
 import {
@@ -114,7 +115,8 @@ export function availableGpus(
 ): GpuGeneration[] {
   const label = CONTENT.quarters[quarter]
   return P().gpus.filter(
-    (g) => g.from <= label && gpuPriceUsd(g.id, quarter, scenario) !== undefined,
+    (g) =>
+      g.from <= label && gpuPriceUsd(g.id, quarter, scenario) !== undefined,
   )
 }
 
@@ -304,11 +306,23 @@ export function reletProject(state: GameState, projectId: string): void {
   })
 }
 
+/**
+ * The new-lease index a shell tenant signs at now (M12.2, F-2): this quarter's RFP midpoint in Act III;
+ * 1 before (the Deal builder is unchanged in Act II).
+ */
+export function newLeaseIndex(state: GameState): number {
+  if (!inActIII(state)) return 1
+  return rfpMid(state.quarter, scenarioOf(state)) ?? 1
+}
+
 /** A signed tenant's term in quarters. */
 export function contractQuarters(p: Project): number {
   const t = p.tenant
   if (!t) return 0
-  return t.gpu ? t.gpu.termQuarters : tenantCard(t.card)!.termYears * 4
+  // A renewed or re-let shell lease (Act III, M12.2) has its own term; otherwise its card's.
+  return t.gpu
+    ? t.gpu.termQuarters
+    : (t.termQuarters ?? tenantCard(t.card)!.termYears * 4)
 }
 
 /**
@@ -636,7 +650,8 @@ export function signTenant(
   const card = offer && tenantCard(offer.card)
   if (!offer || !card) return { key: 'error.unknown_offer' }
   if (offer.gpu) return signGpuContract(state, p, offer, card)
-  const mult = offer.priceMult ?? 1
+  // Act III (M12.2, F-2): fresh capacity is priced at this quarter's new-lease (RFP) index.
+  const mult = (offer.priceMult ?? 1) * newLeaseIndex(state)
   const contractUsd = annualRentUsd(card, p.kw) * mult * card.termYears
   const prepaymentUsd = Math.round(contractUsd * card.prepaymentShare)
   p.tenant = {
@@ -926,7 +941,9 @@ export function endQuarterProjects(state: GameState): number {
     const card = tenantCard(t.card)!
     if (p.stage === 'live') {
       t.servedQuarters++
-      if (t.gpu && t.servedQuarters >= t.gpu.termQuarters) {
+      // Act III (M12.2): a contract with a renewal open is settled by resolveRenewals instead.
+      const renewing = state.act3Renewals?.some((r) => r.projectId === p.id)
+      if (t.gpu && t.servedQuarters >= t.gpu.termQuarters && !renewing) {
         logEntry(state, 'log.gpu_contract_ended', { n: p.n, tenant: card.id })
         p.tenant = null
         p.spot = true
@@ -1306,10 +1323,10 @@ export function projectedReturn(state: GameState, p: Project) {
   let residualUsd = 0
   if (p.kind === 'shell') {
     if (p.tenant) {
-      const card = tenantCard(p.tenant.card)!
       revenueUsd = annualContractUsd(p)
       ebitdaUsd = revenueUsd * (1 - b.shellOpexShare)
-      quarters = Array<number>(card.termYears * 4).fill(ebitdaUsd / 4)
+      // (the contract's own term: a renewed Act III lease has one; else its card's)
+      quarters = Array<number>(contractQuarters(p)).fill(ebitdaUsd / 4)
     }
   } else {
     const site = state.sites.find((s) => s.id === p.siteId)!

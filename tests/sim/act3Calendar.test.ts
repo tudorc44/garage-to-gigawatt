@@ -55,7 +55,7 @@ beforeAll(() => {
   gpuCo = playGame(1, BOTS['overleveraged'], { through: 2 }).state
   expect(shellCo.projects.some((p) => p.tenant && !p.tenant.gpu)).toBe(true)
   expect(gpuCo.projects.some((p) => p.tenant?.gpu)).toBe(true)
-})
+}, 120_000) // two whole games to 2026Q4: slow under a full parallel run
 
 describe('the calendar for an Act II company entering 2027Q1', () => {
   it('lists every signed tenant contract (no hosting), soonest end first', () => {
@@ -95,7 +95,7 @@ describe('the calendar for an Act II company entering 2027Q1', () => {
     }
   })
 
-  it('the engine agrees: a GPU contract goes to spot right after its end quarter', () => {
+  it('the engine agrees: each live GPU contract’s renewal opens exactly in its calendar end quarter', () => {
     const end = gpuCo
     let s = toAct3(end, { scenario: 's2' })
     const gpu = contractCalendar(s).filter(
@@ -109,15 +109,18 @@ describe('the calendar for an Act II company entering 2027Q1', () => {
     expect(gpu.length).toBeGreaterThan(0)
     for (const e of gpu) {
       let t = s
-      while (t.quarter <= e.endQuarter! && t.phase === 'plan') {
+      // (M12.2: at its end quarter the contract comes up for renewal, instead of lapsing to spot.)
+      while (t.quarter < e.endQuarter! && t.phase === 'plan') {
         const p = t.projects.find((x) => x.id === e.id)!
         expect(p.tenant, `${e.id} still contracted in its term`).not.toBeNull()
+        expect(t.act3Renewals?.some((r) => r.projectId === e.id)).toBe(false)
         t = quarter(t)
       }
-      if (t.phase === 'plan') {
-        const p = t.projects.find((x) => x.id === e.id)!
-        expect(p.tenant, `${e.id} on spot after its end quarter`).toBeNull()
-      }
+      if (t.phase === 'plan')
+        expect(
+          t.act3Renewals?.some((r) => r.projectId === e.id),
+          `${e.id} renewal opens in its end quarter`,
+        ).toBe(true)
     }
     s = toAct3(end, { scenario: 's2' })
     expect(s.quarter).toBe(FIRST)

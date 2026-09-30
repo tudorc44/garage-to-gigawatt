@@ -264,6 +264,29 @@ export interface ProjectTenant {
   priceMult?: number
   /** An AI-lab tenant in distress from this quarter (M7.0, A3): it pays half for the rest of the term. */
   distressedQuarter?: number
+  /** A renewed or re-let shell lease's own term in quarters (Act III, M12.2); missing = its card's. */
+  termQuarters?: number
+}
+
+/**
+ * An Act III contract renewal (M12.2, doc 27 §6): opened in the Plan phase of a contract's end quarter
+ * (a holdover's in 2027Q1), settled at the end of that quarter. The tenant may walk (rolled when it
+ * opens); otherwise it offers a multiple of its own current rate and a new term.
+ */
+export interface Renewal {
+  projectId: string
+  kind: 'shell' | 'gpu'
+  openedQuarter: number
+  /** The tenant leaves at term end (at the roll, or on a failed counter in round 3). */
+  walked: boolean
+  /** The offer: a multiple of the current rent or $/GPU-hr, and the new term. null when walked at the roll. */
+  offer: { mult: number; termQuarters: number } | null
+  /** The player's answer; null = the default (accept) at quarter end. */
+  choice: 'accept' | 'relet' | null
+  /** A counter won in negotiation: the multiple signed instead of the offer's. */
+  counterMult?: number
+  /** Negotiated this quarter already (no second try). */
+  negotiated?: boolean
 }
 
 /**
@@ -291,6 +314,11 @@ export interface Project {
   /** Tenant offers (shell projects). */
   offers: TenantOffer[]
   tenant: ProjectTenant | null
+  /**
+   * Act III re-let by RFP (M12.2): after `emptyUntil`, a new tenant with this card signs at the lapsed
+   * rent × that quarter's RFP midpoint. Missing = no RFP running.
+   */
+  pendingRelet?: { card: string; lapsedRentUsd: number }
   /** A distressed tenant was let go (M7.0, A3): no new offers until after this quarter. */
   emptyUntil?: number
   /** Cloud projects: sell capacity on the spot market (the only tenant option so far). */
@@ -526,6 +554,8 @@ export interface GameState {
   act3SignalReads?: { quarter: string; indicator: SignalId }[]
   /** Act III (M11.4b): the company as it entered Act III. Absent in every other act. */
   act3Entry?: Act3Entry
+  /** Act III (M12.2): the renewals open this quarter. Absent in every other act. */
+  act3Renewals?: Renewal[]
   /**
    * Act III (M11.3): the scenario reveal, stored when the last quarter (2030Q4) is done and the game
    * reaches the chapter phase. Absent until then, and in every other act.

@@ -23,12 +23,7 @@ import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
-import {
-  BOTS,
-  HEAD_START_OPENINGS,
-  PROBES,
-  gpuRevenueShare,
-} from './bots.ts'
+import { BOTS, HEAD_START_OPENINGS, PROBES, gpuRevenueShare } from './bots.ts'
 import { contractIrrs, delayCost } from './section5.ts'
 import {
   BREAKDOWN_COLUMNS,
@@ -746,6 +741,42 @@ if (args.includes('--act2')) {
       firstEbitdaUsd: number | null
       entryEbitdaUsd: number
       lastUsd: number | null
+      /** M12.2 renewals, from the game log: opened with an offer, walked at the roll, signed, re-let, GPU lapsed to spot. */
+      renewals: {
+        offers: number
+        walks: number
+        signed: number
+        relets: number
+        gpuSpot: number
+        /** Each signed renewal's multiple of the old rate. */
+        mults: number[]
+        /** Renewals that came due after 2027Q4 (for the S3 check). */
+        dueAfter2027Q4: number
+      }
+      /** AI revenue (leases and GPU contracts) in 2027 and in the last 4 quarters played. */
+      aiRevenue2027Usd: number
+      aiRevenueLastYearUsd: number
+    }
+    /** Renewal counts from a finished game's log (Act III quarters only). */
+    const renewalStats = (s: GameState): A3Run['renewals'] => {
+      const first = CONTENT.quarters.indexOf('2027Q1')
+      const log = s.log.filter((e) => e.quarter >= first)
+      const n = (key: string) => log.filter((e) => e.key === key).length
+      return {
+        offers: n('log.renewal_offer'),
+        walks: n('log.renewal_walk'),
+        signed: n('log.renewal_signed'),
+        relets: n('log.renewal_relet'),
+        gpuSpot: n('log.gpu_contract_ended'),
+        dueAfter2027Q4: log.filter(
+          (e) =>
+            (e.key === 'log.renewal_offer' || e.key === 'log.renewal_walk') &&
+            e.quarter > CONTENT.quarters.indexOf('2027Q4'),
+        ).length,
+        mults: log
+          .filter((e) => e.key === 'log.renewal_signed')
+          .map((e) => 1 + Number(e.params?.multPct)),
+      }
     }
     const a3: A3Run[] = []
     let crashed = 0
@@ -773,6 +804,13 @@ if (args.includes('--act2')) {
             firstEbitdaUsd: rep[0]?.ebitdaUsd ?? null,
             lastUsd:
               r.state.phase === 'chapter' ? rep.at(-1)!.valuationUsd : null,
+            renewals: renewalStats(r.state),
+            aiRevenue2027Usd: rep
+              .slice(0, 4)
+              .reduce((a, x) => a + x.aiRevenueUsd, 0),
+            aiRevenueLastYearUsd: rep
+              .slice(-4)
+              .reduce((a, x) => a + x.aiRevenueUsd, 0),
           })
         } catch (e) {
           crashed++
@@ -813,6 +851,23 @@ if (args.includes('--act2')) {
         })(),
       }
     }
+    /** The renewal wall (M12.2): totals and medians over a group of runs. */
+    const renewalSummary = (rows: A3Run[]) => {
+      const sum = (k: keyof A3Run['renewals']) =>
+        rows.reduce((a, x) => a + (x.renewals[k] as number), 0)
+      const mults = rows.flatMap((x) => x.renewals.mults)
+      const m = median(mults)
+      return {
+        renewalsDue: sum('offers') + sum('walks'),
+        walks: sum('walks'),
+        accepted: sum('signed'),
+        relets: sum('relets'),
+        gpuToSpot: sum('gpuSpot'),
+        medianMult: Number.isNaN(m) ? '—' : `${m.toFixed(2)}×`,
+        aiRev2027: usd(median(rows.map((x) => x.aiRevenue2027Usd))),
+        aiRevLastYear: usd(median(rows.map((x) => x.aiRevenueLastYearUsd))),
+      }
+    }
     const scenarios = ['s0', 's1', 's2', 's3']
     console.log(
       `\n  Act III (--act3, M11.4c: Act II's systems on the scenario market): ${a3.length} runs from 2027Q1 on their drawn scenario, ` +
@@ -836,6 +891,34 @@ if (args.includes('--act2')) {
           summarize(a3.filter((x) => x.bot === b)),
         ]),
       ),
+    )
+    // The renewal wall (M12.2): per scenario and per bot. AI revenue = leases and GPU contracts, run median.
+    console.log(
+      '  Act III renewals by scenario (AI revenue: 2027 vs the last 4 quarters played):',
+    )
+    console.table(
+      Object.fromEntries(
+        scenarios.map((id) => [
+          id,
+          renewalSummary(a3.filter((x) => x.scenario === id)),
+        ]),
+      ),
+    )
+    console.log('  Act III renewals by bot:')
+    console.table(
+      Object.fromEntries(
+        [...new Set(a3.map((x) => x.bot))].map((b) => [
+          b,
+          renewalSummary(a3.filter((x) => x.bot === b)),
+        ]),
+      ),
+    )
+    // For the scenario-order check: S3 runs with a contract coming due after 2027Q4.
+    const s3Late = a3.filter(
+      (x) => x.scenario === 's3' && x.renewals.dueAfter2027Q4 > 0,
+    ).length
+    console.log(
+      `  S3 runs with a contract coming due after 2027Q4: ${s3Late} of ${a3.filter((x) => x.scenario === 's3').length}`,
     )
     // Seam check: the 2027Q1 valuation against the end of 2026Q4 (±10%).
     const seam = a3.filter((x) => x.firstUsd !== null && x.entryUsd > 0)
