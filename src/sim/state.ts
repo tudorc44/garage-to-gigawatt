@@ -309,6 +309,8 @@ export interface Renewal {
   /** A card's re-let (rfp_weeks, rent_index): its own empty quarters and a multiple on the re-let rent. */
   reletEmptyQuarters?: number
   reletRentMult?: number
+  /** M13.2: a walked shell's MW are kept empty (no automatic re-let); the Deal builder can let them later. */
+  keepEmpty?: boolean
 }
 
 /**

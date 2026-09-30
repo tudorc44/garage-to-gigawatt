@@ -45,9 +45,11 @@ import {
 import {
   inActII,
   inAct2Rules,
+  inActIII,
   type Coin,
   type GameState,
 } from '../../sim/state.ts'
+import { Act3Panel } from '../components/act3Lazy.tsx'
 import { ActionRow, Icon, Sparkline, Tip } from '../components/basics.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
@@ -112,6 +114,9 @@ export function PlanScreen({ state, act }: ScreenProps) {
       <Shell state={state}>
         <main class="main">
           {inAct2Rules(state) && <MwPanel state={state} />}
+          {inActIII(state) && (
+            <Act3Panel name="RenewalsDuePanel" state={state} act={act} />
+          )}
           <div class="dash">
             <div class="col">
               <MarketPanel state={state} />
@@ -120,7 +125,11 @@ export function PlanScreen({ state, act }: ScreenProps) {
             </div>
             <TodoPanel state={state} act={act} open={setOpen} />
             <aside class="col" aria-label={t('ui.signals.title')}>
-              <SignalsPanel state={state} news={news} />
+              {inActIII(state) ? (
+                <Act3Panel name="Act3SignalsPanel" state={state} act={act} />
+              ) : (
+                <SignalsPanel state={state} news={news} />
+              )}
             </aside>
           </div>
           <div class="foot">
@@ -1021,7 +1030,8 @@ function TodoPanel({
       />
 
       <div class="label group">{t('ui.plan.group.intel')}</div>
-      <ReadMarketRow state={state} act={act} />
+      {/* Act III reads the market through Signals instead (M13.2). */}
+      {!inActIII(state) && <ReadMarketRow state={state} act={act} />}
       {!state.auction && <AuctionRow state={state} act={act} open={open} />}
     </div>
   )

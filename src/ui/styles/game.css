@@ -1682,3 +1682,59 @@ td.wrap {
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------- Act III bare-bones panels (M13.2) ---------- */
+.sig-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: var(--space-1) 0;
+  border-bottom: var(--border-hair) dashed var(--line-soft);
+}
+/* A plain 0–100 bar: this quarter's value as a mark, a read range as a band. Ink only, no gain/loss colours. */
+.sig-bar {
+  position: relative;
+  height: 8px;
+  background: var(--panel-sunk);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-1);
+}
+.sig-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: var(--tape);
+  border-left: 1px solid var(--ink-muted);
+  border-right: 1px solid var(--ink-muted);
+}
+.sig-mark {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 2px;
+  margin-left: -1px;
+  background: var(--ink);
+}
+.renewal-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--space-3);
+}
+.renewal-card {
+  gap: var(--space-2);
+}
+.renewal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+.renewal-actions > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 220px;
+}
+.tag.default {
+  border-color: var(--ink);
+  color: var(--ink);
+}

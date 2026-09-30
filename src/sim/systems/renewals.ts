@@ -142,6 +142,30 @@ export function renewalBlocker(
   return undefined
 }
 
+/**
+ * Why a walked shell's MW can't be kept empty now, or undefined (M13.2; the wireframe README's conflict
+ * 6): only a shell whose tenant is leaving (a walk at the roll, a failed counter, or a card), in the Plan
+ * phase, once.
+ */
+export function keepEmptyBlocker(
+  state: GameState,
+  projectId: string,
+): Message | undefined {
+  if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
+  const r = openRenewal(state, projectId)
+  if (!r) return { key: 'error.no_renewal' }
+  if (!r.walked || r.kind !== 'shell') return { key: 'error.not_walked' }
+  if (r.cause === 'reopener' && r.by === 'player')
+    return { key: 'error.not_walked' }
+  if (r.keepEmpty) return { key: 'error.renewal_chosen' }
+  return undefined
+}
+
+/** Cancels the automatic re-let of a walked shell (0 BW; assumes the blocker passed). */
+export function keepEmpty(state: GameState, projectId: string): void {
+  openRenewal(state, projectId)!.keepEmpty = true
+}
+
 /** Records the player's answer (assumes the blocker passed); a shell re-let costs its Bandwidth now. */
 export function chooseRenewal(
   state: GameState,
@@ -216,6 +240,14 @@ export function resolveRenewals(state: GameState): void {
     // its old rent; the fee stays paid.
     if (r.cause === 'reopener' && r.by === 'player' && r.walked) {
       logEntry(state, 'log.reopener_kept', { n: p.n, tenant: t.card })
+      continue
+    }
+    // A walked shell the player keeps empty (M13.2): the tenant leaves; no re-let RFP runs. Its MW are
+    // uncontracted and get fresh offers like any unsigned shell.
+    if (r.walked && r.keepEmpty && r.kind === 'shell') {
+      p.tenant = null
+      p.offers = []
+      logEntry(state, 'log.renewal_kept_empty', { n: p.n, tenant: t.card })
       continue
     }
     if (r.walked || r.choice === 'relet' || !r.offer) {

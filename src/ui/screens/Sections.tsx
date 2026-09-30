@@ -15,7 +15,7 @@ import {
   upcomingRivalsView,
   valuationBreakdown,
 } from '../../sim/selectors.ts'
-import { inAct2Rules, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, inActIII, type GameState } from '../../sim/state.ts'
 import { Icon, Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import {
@@ -38,15 +38,25 @@ import {
 import { FleetPanel, type ScreenProps } from './Plan.tsx'
 import { CapitalAct2 } from './CapitalAct2.tsx'
 import { ProjectsSection } from './Projects.tsx'
+import { Act3Panel } from '../components/act3Lazy.tsx'
 import { League } from './Report.tsx'
 
 export type Section =
-  'dashboard' | 'projects' | 'fleet' | 'capital' | 'people' | 'league' | 'log'
+  | 'dashboard'
+  | 'projects'
+  | 'contracts'
+  | 'fleet'
+  | 'capital'
+  | 'people'
+  | 'league'
+  | 'log'
 
 export function SectionView(props: ScreenProps & { section: Section }) {
   switch (props.section) {
     case 'projects':
       return <ProjectsSection {...props} />
+    case 'contracts':
+      return <Act3Panel name="ContractsSection" {...props} />
     case 'fleet':
       return <FleetSection {...props} />
     case 'capital':
@@ -78,6 +88,9 @@ function FleetSection({ state, act }: ScreenProps) {
     <div class="section">
       <div class="col">
         <FleetPanel state={state} />
+        {inActIII(state) && (
+          <Act3Panel name="IdleRigsPanel" state={state} act={act} />
+        )}
         {inAct2Rules(state) && state.phase === 'plan' && (
           <RegionPanel state={state} />
         )}

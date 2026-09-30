@@ -720,13 +720,18 @@ function CapitalRows(
  * current offer, the rounds so far, and your next ask (as % over the card's price, or points off
  * the rate), accept or walk away. Hidden when there's none.
  */
-function NegotiationPanel(props: ScreenProps & { projectId: string }) {
+export function NegotiationPanel(props: ScreenProps & { projectId: string }) {
   const { state, act } = props
   const v = dealNegotiationView(state)
-  const tenant = v?.side === 'tenant'
+  // A renewal counter (Act III, M13.2) works like a tenant's: a multiple of today's rent, which may
+  // be below it (so the ask can be negative).
+  const renewal = v?.side === 'renewal'
+  const tenant = v?.side === 'tenant' || renewal
   // The ask as the player types it: % over the card (tenant) or points off (lender).
   const step = tenant ? 1 : 0.05
-  const [ask, setAsk] = useState(tenant ? 6 : 0.5)
+  const [ask, setAsk] = useState(
+    renewal && v ? Math.round((v.offer - 1) * 100) + 5 : tenant ? 6 : 0.5,
+  )
   if (!v || v.projectId !== props.projectId) return null
   const shown = (x: number) =>
     tenant
@@ -743,7 +748,13 @@ function NegotiationPanel(props: ScreenProps & { projectId: string }) {
         })}
       </div>
       <div class="num-s">
-        {tenant
+        {renewal
+          ? t('ui.deal.neg.renewal_offer', {
+              base: fmt.money(v.baseAnnualUsd ?? 0),
+              offer: shown(v.offer),
+              annual: fmt.money((v.baseAnnualUsd ?? 0) * v.offer),
+            })
+          : tenant
           ? t('ui.deal.neg.tenant_offer', {
               base: fmt.money(v.baseAnnualUsd ?? 0),
               offer: shown(v.offer),
@@ -768,12 +779,14 @@ function NegotiationPanel(props: ScreenProps & { projectId: string }) {
         {!v.final ? (
           <span class="raise-options">
             <label class="num-s">
-              {tenant
-                ? t('ui.deal.neg.ask_tenant')
-                : t('ui.deal.neg.ask_lender')}{' '}
+              {renewal
+                ? t('ui.deal.neg.ask_renewal')
+                : tenant
+                  ? t('ui.deal.neg.ask_tenant')
+                  : t('ui.deal.neg.ask_lender')}{' '}
               <input
                 type="number"
-                min={0}
+                min={renewal ? -100 : 0}
                 step={step}
                 value={ask}
                 style={{ width: '5em' }}
@@ -811,7 +824,7 @@ function NegotiationPanel(props: ScreenProps & { projectId: string }) {
         </span>
       </div>
       <p class="num-s muted" style={{ margin: 0 }}>
-        {t('ui.deal.neg.rules')}
+        {t(renewal ? 'ui.deal.neg.rules_renewal' : 'ui.deal.neg.rules')}
       </p>
     </div>
   )

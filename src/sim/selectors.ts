@@ -11,7 +11,6 @@ import {
   type MarketWeek,
   type PowerRegion,
   type RegionPolicy,
-  type ScenarioId,
 } from '../content/index.ts'
 import type { Message, MessageKey } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
@@ -85,13 +84,22 @@ import {
   backlogUsd,
   gpuWaitQuarters,
   knowHow,
+  newLeaseIndex,
   projectEventCostUsd,
   tenantCard,
 } from './systems/projects.ts'
-import { renewalBlocker } from './systems/renewals.ts'
+import {
+  baseRentUsd,
+  keepEmptyBlocker,
+  playerReopenBlocker,
+  reopenerFeeUsd,
+  renewalBlocker,
+  renewalWalkChance,
+} from './systems/renewals.ts'
 import { blendAcceptBlocker } from './systems/blendExtend.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
-import { eventBodyKey } from './systems/events.ts'
+import { blockedEventChoices, eventBodyKey } from './systems/events.ts'
+import { resumeIdleBlocker } from './systems/cardContracts.ts'
 import { lifelineTerms } from './systems/lifeline.ts'
 import { angerHeat, regionAnger, regionMoratoriumOn } from './systems/anger.ts'
 import {
@@ -475,13 +483,13 @@ export function siteLadder(state: GameState): LadderRung[] {
 export function averagePrice(
   quarter: number,
   coin: Coin,
-  /** Act III (M13.1): the game's scenario, whose weekly market has these quarters. */
-  scenario?: ScenarioId | null,
+  /** Act III (M13.1): the game, whose scenario's weekly market has these quarters (the UI never reads the scenario). */
+  state?: Pick<GameState, 'scenarioId'> | null,
 ): number {
   const weeks =
     CONTENT.market[quarter] ??
     Array.from({ length: BALANCE.weeksPerQuarter }, (_, w) =>
-      marketWeek(quarter, w, scenario),
+      marketWeek(quarter, w, state?.scenarioId),
     )
   return weeks.reduce((sum, w) => sum + coinPrice(w, coin), 0) / weeks.length
 }
@@ -1126,13 +1134,21 @@ export function dealNegotiationView(state: GameState) {
     n.side === 'lender' && n.debt
       ? debtOffer(state, p, n.debt).apr + (p.debt?.aprCut?.[n.debt] ?? 0)
       : null
+  // A renewal counter (M12.2; shown in M13.2): the multiple is on the tenant's current yearly rent.
+  const t = p.tenant
+  const renewalBaseUsd =
+    n.side === 'renewal' && t
+      ? t.gpu
+        ? t.gpu.gpus * t.gpu.priceUsdHr * 24 * 365
+        : annualRentUsd(tenantCard(t.card)!, p.kw) * (t.priceMult ?? 1)
+      : null
   return {
     projectId: p.id,
     side: n.side,
-    card,
+    card: n.side === 'renewal' ? (t?.card ?? null) : card,
     debt: n.debt ?? null,
-    /** The card's yearly contract (tenant) or rate (lender), before negotiating. */
-    baseAnnualUsd: offerView?.annualUsd ?? null,
+    /** The card's yearly contract (tenant) or rate (lender), before negotiating; a renewal: today's rent. */
+    baseAnnualUsd: renewalBaseUsd ?? offerView?.annualUsd ?? null,
     baseApr: debtApr,
     offer: n.offer,
     round: n.round,
@@ -1908,11 +1924,84 @@ export function ratingBacklogView(state: GameState) {
  * reference rent and the 1-year GPU rate); no renewal offer shows before it is made.
  */
 export function contractCalendar(state: GameState) {
-  return buildCalendar(state).map((e) => ({
-    ...e,
-    endQuarterLabel:
-      e.endQuarter === null ? null : (CONTENT.quarters[e.endQuarter] ?? null),
-  }))
+  return buildCalendar(state).map((e) => {
+    const p = state.projects.find((x) => x.id === e.id)!
+    return {
+      ...e,
+      endQuarterLabel:
+        e.endQuarter === null ? null : (CONTENT.quarters[e.endQuarter] ?? null),
+      /** M13.2: the reopener's fee (you pay it) and why you can't reopen now; null when not eligible. */
+      reopenFeeUsd: e.reopenerEligible ? reopenerFeeUsd(p) : null,
+      reopenBlocked: e.reopenerEligible
+        ? (playerReopenBlocker(state, p.id) ?? null)
+        : null,
+    }
+  })
+}
+
+/** Log lines the Act III quarter report lists (M13.2): renewals, reopeners, blend-and-extend, card effects. */
+const ACT3_REPORT_KEYS = new Set<string>([
+  'log.renewal_offer',
+  'log.renewal_walk',
+  'log.renewal_signed',
+  'log.renewal_relet',
+  'log.renewal_kept_empty',
+  'log.relet_signed',
+  'log.gpu_contract_ended',
+  'log.reopener_tenant',
+  'log.reopener_player',
+  'log.reopener_kept',
+  'log.blend_signed',
+  'log.card_walk',
+  'log.card_relet',
+  'log.card_replaced',
+  'log.card_contract',
+  'log.card_recovery',
+  'log.card_spot_lease',
+  'log.card_idle',
+  'log.card_debt_reduced',
+  'log.card_maturity',
+  'log.card_backstop',
+  'log.card_project_sold',
+  'log.card_payout_recovery',
+  'log.card_payout_revenue_share',
+  'log.card_no_target',
+  'log.event_effects_deferred',
+  'log.machines_resumed',
+])
+
+/** The quarter report's Act III block (M13.2): this quarter's contract and card lines, in order. Null outside Act III. */
+export function act3ReportLines(state: GameState) {
+  if (!inActIII(state)) return null
+  return state.log.filter(
+    (e) => e.quarter === state.quarter && ACT3_REPORT_KEYS.has(e.key),
+  )
+}
+
+/** Machines a card idled (M13.2, Sites & Fleet): their MW and the "Turn back on" blocker; null when none. */
+export function idleRigsView(state: GameState) {
+  const lots = state.machines.filter((l) => l.idle)
+  if (lots.length === 0) return null
+  return {
+    mw:
+      lots.reduce((kw, l) => kw + l.count * getModel(l.model)!.power_kw, 0) /
+      1000,
+    units: lots.reduce((n, l) => n + l.count, 0),
+    blocked: resumeIdleBlocker(state) ?? null,
+  }
+}
+
+/** The event card on screen's choices that are shown greyed out, with the reason (M13.2, A3-10). */
+export function blockedCardChoices(state: GameState) {
+  return blockedEventChoices(state)
+}
+
+/** The top bar's Act III strip (M13.2): contracts ending in the next 4 quarters (this one included). */
+export function contractsDueSoon(state: GameState): number | null {
+  if (!inActIII(state)) return null
+  return buildCalendar(state).filter(
+    (e) => e.endQuarter !== null && e.endQuarter <= state.quarter + 3,
+  ).length
 }
 
 /**
@@ -1953,18 +2042,36 @@ export function renewalsDue(state: GameState) {
         /** A counter won in negotiation, as a multiple of the current rate. */
         counterMult: r.counterMult ?? null,
         /** What applies at quarter end if nothing else is chosen. */
-        choice: r.walked ? ('walk' as const) : (r.choice ?? 'accept'),
+        choice: r.walked
+          ? r.keepEmpty
+            ? ('keep_empty' as const)
+            : ('walk' as const)
+          : (r.choice ?? 'accept'),
         signsAt: r.walked || r.choice === 'relet' ? null : mult,
+        /** M13.2 (A3-05): the walk chance this tenant survived (a term renewal only). */
+        walkChance:
+          !r.walked && !r.cause ? renewalWalkChance(state, p) : null,
+        /** Shell MW and this quarter's new-lease reference for them (the re-let's estimate). */
+        mw: t.gpu ? null : p.kw / 1000,
+        gpus: t.gpu ? t.gpu.gpus : null,
+        reletEstimateUsd: t.gpu ? null : baseRentUsd(p) * newLeaseIndex(state),
+        /** Quarters a re-let leaves the MW empty (the player's re-let, or the automatic one). */
+        reletEmptyQuarters:
+          r.reletEmptyQuarters ?? BALANCE.act3.renewals.reletEmptyQuarters,
+        /** The quarter a new term starts (next quarter). */
+        startsQuarter: CONTENT.quarters[state.quarter + 1] ?? null,
         cost: {
           accept: 0,
           counter: DEAL_NEGOTIATION.bandwidth,
           relet: r.kind === 'shell' ? BALANCE.act3.renewals.reletBandwidth : 0,
+          keepEmpty: 0,
         },
         blocked: {
           accept: renewalBlocker(state, p.id, 'accept') ?? null,
           relet: renewalBlocker(state, p.id, 'relet') ?? null,
           counter:
             dealNegotiationBlocker(state, p.id, { renewal: true }) ?? null,
+          keepEmpty: keepEmptyBlocker(state, p.id) ?? null,
         },
       },
     ]

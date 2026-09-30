@@ -82,6 +82,8 @@ import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import { readSignal, readSignalBlocker } from './systems/signals.ts'
 import {
   chooseRenewal,
+  keepEmpty,
+  keepEmptyBlocker,
   playerReopen,
   playerReopenBlocker,
   renewalBlocker,
@@ -340,6 +342,8 @@ export type Action =
   | { type: 'RENEWAL_ACCEPT'; projectId: string }
   /** Act III (M12.2): turn a renewal down: re-let a shell by RFP (1 Bandwidth), or a GPU contract to spot. */
   | { type: 'RENEWAL_RELET'; projectId: string }
+  /** Act III (M13.2): a walked shell tenant's MW stay empty instead of the automatic re-let (0 Bandwidth). */
+  | { type: 'RENEWAL_KEEP_EMPTY'; projectId: string }
   /** Act III (M12.3): reopen an eligible Act III lease (1 Bandwidth; you pay the tenant half a quarter's rent). */
   | { type: 'REOPEN_LEASE'; projectId: string }
   /** Act III (M12.3): turn the machines a card idled back on (0 Bandwidth). */
@@ -874,6 +878,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = renewalBlocker(s, a.projectId, choice)
       if (blocked) return blocked
       chooseRenewal(s, a.projectId, choice)
+      return
+    }
+
+    case 'RENEWAL_KEEP_EMPTY': {
+      const blocked = keepEmptyBlocker(s, a.projectId)
+      if (blocked) return blocked
+      keepEmpty(s, a.projectId)
       return
     }
 

@@ -11,6 +11,7 @@ import {
   SPOT_LOCK_QUARTERS,
   URI_STORM_PRICE,
   eventCardView,
+  blockedCardChoices,
   failureWaveView,
   gpuWaveView,
   projectAlertView,
@@ -24,7 +25,7 @@ import type { GameState, WeekSummary } from '../../sim/state.ts'
 import { Icon, WeekStrip } from '../components/basics.tsx'
 import { Shell } from '../components/frame.tsx'
 import { fmt } from '../format.ts'
-import { machineName, tierName } from '../names.ts'
+import { machineName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { MarketReadText } from './Plan.tsx'
 import { readSettings } from '../../platform/settings.ts'
@@ -855,6 +856,13 @@ function EventCard({ state, act }: ScreenProps) {
               {c.unitsDelta !== 0 &&
                 ` ${t('ui.event.units', { units: fmt.signedInt(c.unitsDelta) })}`}
             </span>
+          </button>
+        ))}
+        {/* Act III (M13.2, A3-10): a choice that can't be taken now shows greyed out, with why. */}
+        {blockedCardChoices(state).map((c) => (
+          <button key={c.id} type="button" class="choice" disabled>
+            <span class="choice-label">{text(`choice.${c.id}`)}</span>
+            <span class="num-s muted">{say(c.blocker)}</span>
           </button>
         ))}
       </article>

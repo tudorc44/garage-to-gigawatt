@@ -28,6 +28,7 @@ import {
 import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
+import { Act3Panel } from '../components/act3Lazy.tsx'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
@@ -35,7 +36,7 @@ import type { ScreenProps } from './Plan.tsx'
 function mainCoin(r: QuarterReport, state: GameState): Coin | null {
   const qi = CONTENT.quarters.indexOf(r.quarter)
   const value = (c: Coin) =>
-    r.coinsMined[c] * averagePrice(qi, c, state.scenarioId)
+    r.coinsMined[c] * averagePrice(qi, c, state)
   if (value('BTC') === 0 && value('ETH') === 0) return null
   return value('ETH') >= value('BTC') ? 'ETH' : 'BTC'
 }
@@ -188,6 +189,7 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
         </div>
 
         <Act2Panel state={state} />
+        {state.act === 3 && <Act3Panel name="Act3ReportBlock" state={state} />}
 
         <div class="report-grid">
           <CostChart state={state} coin={coin} />
@@ -252,7 +254,7 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
   const data = rows.map(({ rep, qi }) => ({
     label: rep.quarter.slice(4),
     cost: rep.costPerCoinUsd[c],
-    price: averagePrice(qi, c, state.scenarioId),
+    price: averagePrice(qi, c, state),
   }))
   const max =
     Math.max(1, ...data.map((d) => Math.max(d.cost ?? 0, d.price))) * 1.1
@@ -537,7 +539,9 @@ function Act2Panel({ state }: { state: GameState }) {
       : `${now > before ? '▲' : '▼'}${fmt.power(Math.abs(now - before))}`
   return (
     <div class="panel p a2-report">
-      <h2 class="panel-title">{t('ui.report.a2_title')}</h2>
+      <h2 class="panel-title">
+        {t(state.act === 3 ? 'ui.report.a3_title' : 'ui.report.a2_title')}
+      </h2>
       <div class="a2-report-cols">
         <div>
           <span class="label">{t('ui.report.a2_mw')}</span>

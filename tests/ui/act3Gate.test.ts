@@ -69,12 +69,15 @@ describe('the gate in the builds', () => {
     expect(production.text.length).toBeGreaterThan(100_000)
     expect(production.text).not.toContain(PREVIEW_MARKER)
     expect(readdirSync(join(production.dir, 'assets')).join(' ')).not.toMatch(
-      /Act3Preview|bots-/,
+      /Act3Preview|Act3Panels|bots-/,
     )
   })
 
-  it('the staging build has it (the check can see the marker)', () => {
+  it('the staging build has it (the check can see the marker), with the Act III panels (M13.2)', () => {
     expect(staging.text).toContain(PREVIEW_MARKER)
+    expect(readdirSync(join(staging.dir, 'assets')).join(' ')).toMatch(
+      /Act3Panels/,
+    )
   })
 
   it('tests run in a test build (mode "test"): the gate is on', () => {
@@ -177,7 +180,7 @@ describe('the quick start', () => {
       if (s.phase !== 'report') break
       // the report's cost-per-coin chart
       const qi = CONTENT.quarters.indexOf(s.reports.at(-1)!.quarter)
-      expect(averagePrice(qi, 'BTC', s.scenarioId)).toBeGreaterThan(0)
+      expect(averagePrice(qi, 'BTC', s)).toBeGreaterThan(0)
       quarters++
       r = applyAction(s, { type: 'NEXT_QUARTER' })
       if (!r.ok) throw new Error(r.error.key)

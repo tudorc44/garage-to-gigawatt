@@ -7,6 +7,7 @@ import { useContext } from 'preact/hooks'
 import type { Action } from '../../sim/actions.ts'
 import type { Message } from '../../i18n/t.ts'
 import { SectionView, type Section } from '../screens/Sections.tsx'
+import { Act3Panel } from './act3Lazy.tsx'
 
 /** The left-nav section on show (Plan phase only) and the app's action function. */
 export const NavContext = createContext<{
@@ -164,6 +165,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           <span class="stat-note">{since}</span>
         </div>
       )}
+      {isActIII(s.act) && <Act3Panel name="Act3TopStrip" state={s} />}
       {s.scenarioForced && (
         <div class="stat">
           <span class="tag">{t('ui.act3.forced_tag')}</span>
@@ -193,6 +195,8 @@ const NAV: {
 }[] = [
   { id: 'dashboard', icon: 'dashboard', key: 'ui.nav.dashboard' },
   { id: 'projects', icon: 'power', key: 'ui.nav.projects', act2: true },
+  // Act III (M13.2, A3-04): every tenant contract by end quarter.
+  { id: 'contracts', icon: 'loan', key: 'ui.nav.contracts', act3: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
   { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
   { id: 'people', icon: 'people', key: 'ui.nav.people' },
