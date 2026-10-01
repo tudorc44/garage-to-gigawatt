@@ -20,6 +20,7 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
+import { companyServiceDue, isCompanyFacility } from './corporateDebt.ts'
 import { bridgeSchedule } from './lifeline.ts'
 import { getProject } from './projects.ts'
 
@@ -29,6 +30,9 @@ export type ObligationKind =
   | 'bridge'
   | 'project_debt'
   | 'ddtl'
+  // Act III (M18.1, M18.2): company facilities
+  | 'corporate'
+  | 'standby'
 
 /** One fixed payment in the coming quarter. */
 export interface Obligation {
@@ -63,6 +67,11 @@ function facilityQuarterUsd(
   f: Facility,
   quarter: number,
 ): number {
+  // (M18.1: a company facility: its interest, and the bullet in its due quarter)
+  if (isCompanyFacility(f)) {
+    const due = companyServiceDue(f, quarter)
+    return due.interestUsd + due.principalUsd
+  }
   const p = getProject(state, f.projectId)
   const live =
     p?.stage === 'live' ||

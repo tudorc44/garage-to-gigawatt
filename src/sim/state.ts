@@ -549,8 +549,14 @@ export interface Project {
  */
 export interface Facility {
   id: string
-  kind: 'project_debt' | 'ddtl'
+  /**
+   * Act III (M18.1, M18.2): 'corporate' (a card's corporate facility) and 'standby' (a draw on the standby liquidity
+   * facility) are secured on the company: no project (`projectId` ''), interest each quarter, a bullet at `dueQuarter`.
+   */
+  kind: 'project_debt' | 'ddtl' | 'corporate' | 'standby'
   projectId: string
+  /** Corporate and standby draws: the quarter the principal is due (a bullet). */
+  dueQuarter?: number
   amountUsd: number
   balanceUsd: number
   /** Yearly rate, fixed when drawn. */
@@ -768,6 +774,16 @@ export interface GameState {
   angerAdj?: number
   /** Act III (M17.3): the Government section's bookkeeping (lobbying under way, cooldowns, one-offs). */
   act3Gov?: Act3Gov
+  /**
+   * Act III (M18.2): the standby liquidity facility while it holds (systems/corporateDebt.ts): its size, spread locked
+   * at arranging, and the last quarter it can be drawn. Its draws are `facilities` of kind 'standby'. Absent otherwise.
+   */
+  act3Standby?: {
+    arrangedQuarter: number
+    sizeUsd: number
+    spreadBps: number
+    untilQuarter: number
+  }
   /** Act III (M17.4): the two wildcards drawn at entry, with the quarter each fires in. */
   act3Wildcards?: Act3Wildcard[]
   /** Act III (M17.4): a wildcard on the Plan screen waiting for an answer (its default applies at END_PLAN). */

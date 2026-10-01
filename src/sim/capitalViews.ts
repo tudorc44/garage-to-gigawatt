@@ -26,6 +26,10 @@ import {
   signedThisQuarterUsd,
 } from './systems/equity.ts'
 import { equipmentTerms, ratingLoanBand } from './systems/loans.ts'
+import {
+  companyRepayBlocker,
+  isCompanyFacility,
+} from './systems/corporateDebt.ts'
 import { backstopWarrants } from './systems/partners.ts'
 import {
   backlogWeight,
@@ -109,6 +113,8 @@ export function debtStackView(state: GameState) {
       | 'construction'
       | 'bridge'
       | 'crypto'
+      | 'corporate'
+      | 'standby'
     projectN: number | null
     balanceUsd: number
     amountUsd: number
@@ -119,8 +125,29 @@ export function debtStackView(state: GameState) {
     status: 'ok' | 'watch' | 'breach' | 'building' | null
     rating: string | null
     missed: number
+    /** M18.1: a company facility's id (it can be repaid early), and why Repay is greyed. */
+    facilityId?: string
+    repayBlocked?: Message | null
   }[] = []
   for (const f of state.facilities) {
+    // Act III (M18.1, M18.2): a corporate facility or a standby draw: its bullet's quarter, and Repay.
+    if (isCompanyFacility(f)) {
+      rows.push({
+        kind: f.kind,
+        projectN: null,
+        balanceUsd: f.balanceUsd,
+        amountUsd: f.amountUsd,
+        apr: f.apr,
+        maturity: label(f.dueQuarter ?? f.drawnQuarter + f.tenorQuarters),
+        dscr: null,
+        status: null,
+        rating: null,
+        missed: 0,
+        facilityId: f.id,
+        repayBlocked: companyRepayBlocker(state, f.id) ?? null,
+      })
+      continue
+    }
     const p = getProject(state, f.projectId)
     const live = p?.stage === 'live'
     const due = serviceDueUsd(state, f)

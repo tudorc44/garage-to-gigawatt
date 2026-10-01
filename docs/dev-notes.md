@@ -176,6 +176,9 @@ M18.6 tuning K1–K6; M18.7 the full sim proof and report.
 **M18.0 done:** spread table/test say "market − contract"; PPA power pays the regional adder (bill, savings, projection, A3-08 worked line);
 a cloud's draw counts × PUE in the PPA pool; ppa_switch targets the dearest site's project (tie: larger); the sim adds "signer, no hire" and
 "runs holding a PPA". Goldens unchanged. 1179 → 1181 tests.
+**M18.1 done:** `systems/corporateDebt.ts`: Facility kinds 'corporate'/'standby' (no project, bullet `dueQuarter`); s0_c2 c3 ($10M, cash once,
+cash_reserve) and s0_c4 c1 ($20M at −25 bp, debt_draw) draw it, no card choice stays deferred; service into negative cash → the liquidity path
+(mine); debt stack row with Repay (REPAY_COMPANY_FACILITY, debt_repay); runway item. Goldens unchanged. 1187 tests.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

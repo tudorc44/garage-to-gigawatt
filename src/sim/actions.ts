@@ -109,6 +109,10 @@ import {
 } from './systems/politics.ts'
 import { recordAct3Move } from './systems/act3Moves.ts'
 import {
+  companyRepayBlocker,
+  repayCompanyFacility,
+} from './systems/corporateDebt.ts'
+import {
   borrowBlocker,
   repayEquipmentLoan,
   takeEquipmentLoan,
@@ -345,6 +349,8 @@ export type Action =
   | { type: 'START_ACT_2'; lifeline?: 'take' | 'pass' }
   /** Act II: pay the lifeline's bridge loan off early (Plan phase). */
   | { type: 'REPAY_BRIDGE_LOAN' }
+  /** Act III (M18.1, M18.2): repay a corporate facility or a standby draw early, from cash (0 Bandwidth). */
+  | { type: 'REPAY_COMPANY_FACILITY'; facilityId: string }
   /** Repair every broken machine at once (M6.1; both acts): the sum of the normal repair costs. */
   | { type: 'REPAIR_ALL' }
   /** sell_gpus_keep_btc's 2023Q1 distressed fleet, into this site's free power (1 Bandwidth). */
@@ -906,6 +912,13 @@ function run(s: GameState, a: Action): Message | undefined {
 
     case 'REPAY_BRIDGE_LOAN':
       return repayBridgeLoan(s)
+
+    case 'REPAY_COMPANY_FACILITY': {
+      const blocked = companyRepayBlocker(s, a.facilityId)
+      if (blocked) return blocked
+      repayCompanyFacility(s, a.facilityId)
+      return
+    }
 
     case 'RENEWAL_ACCEPT':
     case 'RENEWAL_RELET': {

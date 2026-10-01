@@ -50,6 +50,7 @@ import {
   ppaSiteCard,
   ppaSwitchCard,
 } from './cardPower.ts'
+import { drawCorporate } from './corporateDebt.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, random, substream, uniform } from '../rng.ts'
 import {
@@ -448,7 +449,8 @@ export function eventChoiceBlocker(
   const costUsd = -Number(c.effects.cash ?? 0)
   if (state.cash < costUsd)
     return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
-  if (state.facilities.length === 0) return { key: 'error.card_no_debt' }
+  if (!state.facilities.some((f) => f.kind === 'project_debt' || f.kind === 'ddtl'))
+    return { key: 'error.card_no_debt' }
   return undefined
 }
 
@@ -1011,6 +1013,12 @@ export function resolveEvent(
       case 'hire_card':
         hireCard(state, String(value), weekNo)
         break
+      // ---------- Act III, step 7 (M18.1; corporateDebt.ts) ----------
+      case 'corporate_debt': {
+        const x = v as { amountUsd: number; spreadBps: number }
+        drawCorporate(state, x.amountUsd, x.spreadBps, weekNo)
+        break
+      }
       // Act III (M11.5c): a choice whose effects a later build step wires. Nothing happens; it logs.
       case 'deferred': {
         const x = v as { keys: string[]; steps: string[] }

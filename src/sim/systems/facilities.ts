@@ -22,6 +22,11 @@ import {
   sofr,
 } from './finance.ts'
 import { spreadCut } from './hires.ts'
+import {
+  companyServiceDue,
+  isCompanyFacility,
+  serviceCompanyFacility,
+} from './corporateDebt.ts'
 import { scenarioOf } from './market.ts'
 import { debtFrozen } from './eventEffects.ts'
 import {
@@ -33,7 +38,8 @@ import {
   tenantCard,
 } from './projects.ts'
 
-export type DebtKind = Facility['kind']
+/** The debt a project can carry (the company-level kinds are corporateDebt.ts's). */
+export type DebtKind = 'project_debt' | 'ddtl'
 
 /** The tenant's rating as lenders read it, or null with no tenant. */
 function tenantRating(p: Project): string | null {
@@ -297,6 +303,9 @@ export function drawFacilities(
  * principal; while it builds, nothing (the interest is capitalised: `capitalisedUsd`).
  */
 export function serviceDueUsd(state: GameState, f: Facility) {
+  // (M18.1: a company facility pays its interest each quarter and its principal as a bullet)
+  if (isCompanyFacility(f))
+    return { ...companyServiceDue(f, state.quarter), capitalisedUsd: 0 }
   const p = getProject(state, f.projectId)
   const live = p?.stage === 'live'
   const interest = (f.balanceUsd * f.apr) / 4
@@ -320,6 +329,13 @@ export function serviceFacilities(state: GameState): {
 } {
   const paid = { interestUsd: 0, principalUsd: 0 }
   for (const f of [...state.facilities]) {
+    // Act III (M18.1, M18.2): a company facility is paid even into negative cash (the liquidity path follows).
+    if (isCompanyFacility(f)) {
+      const due = serviceCompanyFacility(state, f)
+      paid.interestUsd += due.interestUsd
+      paid.principalUsd += due.principalUsd
+      continue
+    }
     const due = serviceDueUsd(state, f)
     // Interest during construction joins the loan (and its principal, repaid once live).
     if (due.capitalisedUsd > 0) {

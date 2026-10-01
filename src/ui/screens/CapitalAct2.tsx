@@ -193,7 +193,21 @@ function DebtStack({ state, act }: ScreenProps) {
                 <td
                   class={`num-s ${r.status === 'breach' || r.missed > 0 ? 'loss' : ''}`}
                 >
-                  {r.missed > 0
+                  {r.facilityId ? (
+                    // Act III (M18.1): a corporate facility or standby draw can be repaid early (0 BW).
+                    <button
+                      type="button"
+                      class="btn"
+                      disabled={!!r.repayBlocked}
+                      title={r.repayBlocked ? say(r.repayBlocked) : undefined}
+                      onClick={() =>
+                        act({ type: 'REPAY_COMPANY_FACILITY', facilityId: r.facilityId! })
+                      }
+                      data-repay={r.facilityId}
+                    >
+                      {t('ui.cap2.repay')}
+                    </button>
+                  ) : r.missed > 0
                     ? t('ui.cap2.missed', { n: r.missed })
                     : r.status === null
                       ? '—'

@@ -202,9 +202,11 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
     expect(mapped).toEqual([
       's0_c1.c2={"delay_marginal_project":1,"cash":300000}',
       's0_c2.c1={"debt_spread_add":200}',
+      's0_c2.c3={"corporate_debt":{"amountUsd":10000000,"spreadBps":0}}',
       's0_c3.c1={"contract":{"rentIndex":0.75,"termAddYears":2,"target":"soonest"}}',
       's0_c3.c2={"contract":{"rentIndex":0.85,"walkProb":0.25,"target":"soonest"}}',
       's0_c3.c3={"contract":{"rfpWeeks":10,"rentIndex":0.9,"target":"soonest"}}',
+      's0_c4.c1={"corporate_debt":{"amountUsd":20000000,"spreadBps":-25}}',
       's0_c5.c1={"idle_old_asics":true}',
       's0_c5.c2={"hashrate_mult":{"mult":0.9,"scope":"fleet","weeks":52}}',
       's0_c6.c1={"revenue_share_at_end":0.02}',
@@ -259,18 +261,19 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
             `${c.id}.c${i + 1}:${(e.deferred as { steps: string[] }).steps.join('+')}`,
           )
       })
-    // M16.4: every step-5 choice is live; M17.5: every step-6 one too. Only step 7's corporate debt waits.
-    expect(deferred).toEqual(['s0_c2.c3:step 7', 's0_c4.c1:step 7'])
+    // M16.4: every step-5 choice is live; M17.5: every step-6 one too; M18.1: step 7's corporate debt too.
+    expect(deferred).toEqual([])
     // Nothing is left for "question": every open question was answered (M12.3).
     expect(deferred.some((d) => d.includes('question'))).toBe(false)
   })
 
   it('a choice with any deferred effect is deferred whole: no free cash, no cost for nothing', () => {
+    // M18.1: a corporate draw; the matching cash isn't added again; the choice's spread is the facility's own.
     expect(translateEffects({ cash: '+10000000', debt: 10000000 })).toEqual({
-      deferred: { keys: ['cash', 'debt'], steps: ['step 7'] },
+      corporate_debt: { amountUsd: 10_000_000, spreadBps: 0 },
     })
     expect(translateEffects({ debt: 20000000, debt_spread_bps: -25 })).toEqual({
-      deferred: { keys: ['debt', 'debt_spread_bps'], steps: ['step 7'] },
+      corporate_debt: { amountUsd: 20_000_000, spreadBps: -25 },
     })
     // M17.5: the step-6 keys are live; a power option that isn't a nuclear PPA is a question.
     expect(translateEffects({ cash: -2000000, ratepayer_anger: -8 })).toEqual({

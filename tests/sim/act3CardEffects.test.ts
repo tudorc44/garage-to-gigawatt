@@ -29,6 +29,7 @@ import {
   blockedEventChoices,
   eventChoices,
 } from '../../src/sim/systems/events.ts'
+import { corporateApr } from '../../src/sim/systems/corporateDebt.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { rfpMid } from '../../src/sim/systems/leaseIndex.ts'
 import { isEarning } from '../../src/sim/systems/mining.ts'
@@ -687,13 +688,25 @@ describe('B. the other step-4 keys', () => {
     expect(t.bandwidth).toBe(s.bandwidth)
   })
 
-  it('a deferred choice stays a no-op, logged with its owning step (s0_c4 "Extend a small facility now": step 7)', () => {
+  it('M18.1: s0_c4 "Extend a small facility now": a $20M corporate facility at −25 bp; no market-wide spread change', () => {
     const { s } = company('s0', '2028Q2', [])
     const cash = s.cash
     const t = play(s, 's0_c4', 'c1')
-    expect(t.cash).toBe(cash)
+    expect(t.cash).toBeCloseTo(cash + 20_000_000, 2)
     expect(t.events.spreadAddBps).toBe(s.events.spreadAddBps)
-    const log = t.log.find((e) => e.key === 'log.event_effects_deferred')!
-    expect(log.params).toEqual({ effects: 'debt, debt_spread_bps', steps: 'step 7' })
+    const f = t.facilities.find((x) => x.kind === 'corporate')!
+    expect(f).toMatchObject({ amountUsd: 20_000_000, balanceUsd: 20_000_000, dueQuarter: t.quarter + 12, projectId: '' })
+    expect(f.apr).toBeCloseTo(corporateApr(t, -25), 9)
+    expect(t.log.some((e) => e.key === 'log.event_effects_deferred')).toBe(false)
+    expect(t.act3Moves!.at(-1)!.kind).toBe('debt_draw')
+  })
+
+  it('M18.1: s0_c2 "Draw down the revolver as insurance": $10M in once (the cash key not added again), logs cash_reserve', () => {
+    const { s } = company('s0', '2027Q2', [])
+    const cash = s.cash
+    const t = play(s, 's0_c2', 'c3')
+    expect(t.cash).toBeCloseTo(cash + 10_000_000, 2)
+    expect(t.facilities.filter((x) => x.kind === 'corporate')).toHaveLength(1)
+    expect(t.act3Moves!.at(-1)!.kind).toBe('cash_reserve')
   })
 })

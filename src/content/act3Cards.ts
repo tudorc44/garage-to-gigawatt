@@ -159,8 +159,8 @@ export const EFFECT_MAP: Record<string, EffectRoute> = {
     note: 'mining revenue × x for 4 quarters (the fleet hashrate modifier, 52 weeks from next week)',
   },
   debt: {
-    defer: 'step 7',
-    note: 'a corporate draw: step 7 builds the corporate facility (owner, 27 Sep 2026)',
+    map: 'corporate_debt',
+    note: 'a corporate facility of that amount (M18.1); a matching cash key is not added again; the choice\'s debt_spread_bps is its own spread',
   },
   debt_reduce: {
     map: 'debt_reduce',
@@ -485,6 +485,10 @@ export function translateEffects(
         if (n === null) defer(key, 'question')
         else out.debt_spread_add = n
         break
+      case 'debt':
+        if (n === null) defer(key, 'question')
+        else out.corporate_debt = { amountUsd: n, spreadBps: 0 }
+        break
       case 'credit_notch':
         if (n === null) defer(key, 'question')
         else out.credit_notch = { notches: n, quarters: 2 }
@@ -535,6 +539,16 @@ export function translateEffects(
       priceUsd: Math.max(0, -((out.cash as number | undefined) ?? 0)),
     }
     delete out.cash
+  }
+  // M18.1: a corporate facility: the cash it brings is its own (a matching cash key isn't added again), and the
+  // choice's spread is the facility's (s0_c4 "at −25 bp"), not a market-wide widening.
+  const corp = out.corporate_debt as { amountUsd: number; spreadBps: number } | undefined
+  if (corp) {
+    if (out.cash === corp.amountUsd) delete out.cash
+    if (out.debt_spread_add !== undefined) {
+      corp.spreadBps = out.debt_spread_add as number
+      delete out.debt_spread_add
+    }
   }
   // M17.5: a nuclear PPA on your largest eligible project, or (with MW) new PPA power at your largest eligible site.
   if (step5.ppa) {

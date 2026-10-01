@@ -695,6 +695,28 @@ export const BALANCE = {
       /** M17.8 (DT, designed): sh_2's 100 MW PPA needs at least this many MW energized across your sites. */
       sh2MinEnergizedMw: 200,
     },
+    /**
+     * M18.1: the corporate facility (s0_c2, s0_c4), secured on the company: SOFR + the equipment loan's spread for the
+     * company's rating + any debt_spread_add + the card's own debt_spread_bps; interest each quarter end; the principal
+     * a bullet this many quarters after the draw (designed).
+     */
+    corporate: { bulletQuarters: 12 },
+    /**
+     * M18.2 (F-7): the standby liquidity facility (designed): arranged for 1 BW at BB− or better with no payment late;
+     * size 20% of the company valuation, at most $500M; 1.0% upfront, 0.50% a year on the undrawn part; SOFR + 350 bp
+     * locked at arranging; drawable from the next quarter for 8 quarters; each draw a bullet 8 quarters on.
+     */
+    standby: {
+      bandwidth: 1,
+      minRating: 'BB-',
+      valuationShare: 0.2,
+      capUsd: 500_000_000,
+      upfrontFee: 0.01,
+      commitmentFeeYr: 0.005,
+      spreadBps: 350,
+      availableQuarters: 8,
+      drawBulletQuarters: 8,
+    },
     /** Political capital (M17.3; political_capital.json has the meter, the hire, the costs and gains). */
     politicalCapital: {
       /** Each lobbying action costs this Bandwidth (DT). */

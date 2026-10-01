@@ -210,6 +210,7 @@ export function moveOf(
     case 'REPAY_CRYPTO_LOAN':
     case 'REPAY_CONSTRUCTION_LOAN':
     case 'REPAY_BRIDGE_LOAN':
+    case 'REPAY_COMPANY_FACILITY':
       return 'debt_repay'
     case 'RAISE_EQUITY':
     case 'RAISE':

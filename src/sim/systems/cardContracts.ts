@@ -325,7 +325,10 @@ export function reduceDebt(
   amountUsd: number,
   weekNo: number,
 ): void {
-  const f = [...state.facilities].sort((a, b) => b.balanceUsd - a.balanceUsd)[0]
+  // (project debt or DDTL only: a company facility isn't a project's)
+  const f = state.facilities
+    .filter((x) => x.kind === 'project_debt' || x.kind === 'ddtl')
+    .sort((a, b) => b.balanceUsd - a.balanceUsd)[0]
   if (!f) {
     logEntry(state, 'log.card_no_target', {}, weekNo)
     return
