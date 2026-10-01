@@ -351,6 +351,11 @@ export type Act3MoveKind =
   | 'debt_repay'
   | 'card_shorten'
   | 'equity_raise'
+  // M15.0 (the design thread's A1, A3, A5)
+  | 'asic_buy'
+  | 'retrofit'
+  | 'power_lock'
+  | 'hedge'
 
 /**
  * An Act III blend-and-extend offer (M12.4, DT): a shell tenant with more than 8 quarters left offers to

@@ -169,6 +169,24 @@ its title, the career title, shown in the reveal). Next: the design thread's ans
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by
 the real scenario files in M11.3.
 
+## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — in progress
+
+Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);
+M15.2 the test dependencies (approved by the owner pasting the spec); M15.3 the reveal record additions; M15.4 the screen; M15.5 tests.
+**Design-thread answers (1 Oct 2026):** A2, A4, A6–A8 confirmed as built (deferred card choices log by their authored effect; a default
+choice the player or bot picks is logged). **D2 → step-7 checklist:** doc 28 anchor 4 (S3 flexible ≥ long-locked) must hold with the
+default card choices; if it fails, fix the reopener and re-let pricing, not the cards. **E (D15):** the owner does the editorial review
+with legal counsel before any public release of Act III; until then the two s1 fates stay withheld in every build. **Order after M15:**
+step 5, step 6, then step 7 with A3-12. **Step-5 data already in the files (owner, 1 Oct 2026):** low→mid retrofit $1.5M/MW over 10 weeks
+(`gpus_act3.json › density_rules`); mid→top per quarter and scenario in the market CSVs (`capex_retrofit_density_mid_to_top_usd_mw`,
+$6.58–7.0M/MW early), 26 weeks; rack density Hopper 40 kW (low), Blackwell 125 kW (mid), Rubin NVL144 190 kW (mid), Rubin Ultra 600 kW
+(top); GPUs per MW 650 / 760 / 900 / 1,050; Rubin NVL144 rack $4.4M at 2027Q1, $61k per unit, Rubin rent columns; Rubin Ultra rack
+$15M from 2027Q3 (blank before = not available); new-hall capex from the Act II capex columns (greenfield shell $18.7–19.0M/MW at 2027Q1).
+
+**M15.0 done (move classifications, A1/A3/A5):** new kinds `asic_buy` (+1), `retrofit` (+1), `power_lock` (+1, a nuclear or fixed
+PPA card choice), `hedge` (−1, a backstop); ASIC sales and player treasury sales → `sale_voluntary`; a won auction → `site_buy` (a lost
+bid: nothing). Labels in en.json. Goldens unchanged (the golden scripts make none of these moves). 1021 tests.
+
 ## Milestone M14 (branch `m14`, from `main` at `e364d54`; Act III scoring, doc 27 D14 + §5) — DONE
 
 Split by the design thread, run in one go: `e191adf` docs (M10–M12 step logs to the archive); M14.1 the reading_score content file and

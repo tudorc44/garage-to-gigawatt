@@ -31,6 +31,10 @@ export const ACT3_MOVE_KINDS: readonly Act3MoveKind[] = [
   'debt_repay',
   'card_shorten',
   'equity_raise',
+  'asic_buy',
+  'retrofit',
+  'power_lock',
+  'hedge',
 ]
 
 /** +1 offensive, −1 defensive. */
@@ -47,6 +51,11 @@ export const MOVE_SIGN: Record<Act3MoveKind, 1 | -1> = {
   debt_repay: -1,
   card_shorten: -1,
   equity_raise: -1,
+  // M15.0 (DT): ASIC buys, retrofits and long power locks build; a backstop hedges.
+  asic_buy: 1,
+  retrofit: 1,
+  power_lock: 1,
+  hedge: -1,
 }
 
 /** A GPU contract this long or longer is a big move (DT: 2 years). */
@@ -79,6 +88,11 @@ function cardEffectKind(
       return 'gpu_buy'
     case 'capex_mw':
       return 'project_commit'
+    case 'retrofit':
+      return 'retrofit'
+    case 'power_option':
+      // A nuclear or fixed PPA signed: locking power long.
+      return /ppa/i.test(String(value)) ? 'power_lock' : null
     case 'mw':
       // Buying MW (a number); "-X" goes with the sale above.
       return Number.isFinite(n) && n > 0
@@ -149,18 +163,25 @@ export function moveOf(
     case 'BUILD_PHASE':
       return 'site_buy'
     case 'BUY_MACHINES':
-      return getModel(a.model)?.coin === 'ETH' ? 'gpu_buy' : null
+      return getModel(a.model)?.coin === 'ETH' ? 'gpu_buy' : 'asic_buy'
+    case 'BID_AUCTION':
+      // A won auction (it settles at once); placing a bid that loses logs nothing.
+      return after.log.length > before.log.length &&
+        after.log.slice(before.log.length).some((e) => e.key === 'log.auction_won')
+        ? 'site_buy'
+        : null
+    case 'SELL_TREASURY':
+      return 'sale_voluntary'
+    case 'PROJECT_BACKSTOP':
+      return 'hedge'
     case 'BLEND_ACCEPT':
       return 'blend_extend'
     case 'PROJECT_SELL':
     case 'PROJECT_SELL_GPUS':
       return 'sale_voluntary'
-    case 'SELL_MACHINES': {
-      const lot = before.machines.find((l) => l.id === a.lotId)
-      return lot && getModel(lot.model)?.coin === 'ETH'
-        ? 'sale_voluntary'
-        : null
-    }
+    case 'SELL_MACHINES':
+      // GPU rigs or ASICs (A1): a sale raises cash.
+      return 'sale_voluntary'
     case 'REPAY_LOAN':
     case 'REPAY_CRYPTO_LOAN':
     case 'REPAY_CONSTRUCTION_LOAN':

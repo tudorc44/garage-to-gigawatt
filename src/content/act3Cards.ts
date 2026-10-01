@@ -188,6 +188,8 @@ const MOVE_EFFECT_KEYS = [
   'gpu_rack',
   'capex_mw',
   'mw',
+  'retrofit',
+  'power_option',
 ]
 
 /** The distressed purchases for the move log (M14.2: s1_c6 "Bid with cash" for a distressed 60 MW site). */

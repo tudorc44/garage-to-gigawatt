@@ -55,11 +55,11 @@ function logged(
 }
 
 describe('the kinds and their signs', () => {
-  it('8 offensive (+1) and 4 defensive (−1)', () => {
-    expect(ACT3_MOVE_KINDS).toHaveLength(12)
-    expect(ACT3_MOVE_KINDS.filter((k) => MOVE_SIGN[k] === 1)).toHaveLength(8)
+  it('11 offensive (+1) and 5 defensive (−1) (M15.0 added asic_buy, retrofit, power_lock, hedge)', () => {
+    expect(ACT3_MOVE_KINDS).toHaveLength(16)
+    expect(ACT3_MOVE_KINDS.filter((k) => MOVE_SIGN[k] === 1)).toHaveLength(11)
     expect(ACT3_MOVE_KINDS.filter((k) => MOVE_SIGN[k] === -1).sort()).toEqual(
-      ['card_shorten', 'debt_repay', 'equity_raise', 'sale_voluntary'],
+      ['card_shorten', 'debt_repay', 'equity_raise', 'hedge', 'sale_voluntary'],
     )
   })
 })
@@ -143,7 +143,7 @@ describe('one entry per big move (action in → entry out)', () => {
     ])
   })
 
-  it('gpu_buy: GPU rigs bought (ASICs are not a big move)', () => {
+  it('gpu_buy: GPU rigs bought; asic_buy: ASICs bought (M15.0, A1)', () => {
     const s = act3(shellEnd)
     const buy = (model: string) =>
       logged(s, {
@@ -154,7 +154,26 @@ describe('one entry per big move (action in → entry out)', () => {
         siteId: 'x',
       })
     expect(buy('gpu_gen2')).toEqual(['gpu_buy'])
-    expect(buy('s21')).toEqual([])
+    expect(buy('s21')).toEqual(['asic_buy'])
+  })
+
+  it('M15.0 (A5): a treasury sale the player chose is sale_voluntary; a backstop is hedge; a won auction is site_buy, a lost one nothing', () => {
+    const s = act3(shellEnd)
+    expect(logged(s, { type: 'SELL_TREASURY', coin: 'BTC', pct: 0.5 })).toEqual(['sale_voluntary'])
+    expect(logged(s, { type: 'PROJECT_BACKSTOP', projectId: 'x' })).toEqual(['hedge'])
+    const bid = { type: 'BID_AUCTION', bidUsd: 1, siteId: 'x' } as const
+    const withLog = (key: string) => (a: GameState) => {
+      a.log.push({ quarter: a.quarter, week: null, key: key as never })
+    }
+    expect(logged(s, bid, withLog('log.auction_won'))).toEqual(['site_buy'])
+    expect(logged(s, bid, withLog('log.auction_lost'))).toEqual([])
+  })
+
+  it('M15.0 (A3): a retrofit card choice is retrofit; a nuclear PPA is power_lock', () => {
+    expect(cardChoiceMove({ retrofit: 'low_to_mid' })).toBe('retrofit')
+    expect(cardChoiceMove({ retrofit: 'low_to_mid', cash: '-1500000*mw' })).toBe('retrofit')
+    expect(cardChoiceMove({ power_option: 'nuclear_ppa' })).toBe('power_lock')
+    expect(cardChoiceMove({ power_option: 'nuclear_ppa', mw: 100 })).toBe('power_lock')
   })
 
   it('blend_extend: an accepted blend-and-extend offer (through the real action)', () => {
@@ -173,7 +192,7 @@ describe('one entry per big move (action in → entry out)', () => {
       ])
   })
 
-  it('sale_voluntary: a project or its GPUs sold; GPU rigs sold (ASICs: nothing)', () => {
+  it('sale_voluntary: a project or its GPUs sold; GPU rigs or ASICs sold (M15.0, A1)', () => {
     const s = act3(gpuEnd)
     expect(logged(s, { type: 'PROJECT_SELL', projectId: 'x' })).toEqual([
       'sale_voluntary',
@@ -187,7 +206,7 @@ describe('one entry per big move (action in → entry out)', () => {
       { id: 'a', model: 's21', siteId: 'x', condition: 'used', count: 1, failed: 0, earnsFromQuarter: 0 },
     )
     expect(logged(withLots, { type: 'SELL_MACHINES', lotId: 'g', count: 1 })).toEqual(['sale_voluntary'])
-    expect(logged(withLots, { type: 'SELL_MACHINES', lotId: 'a', count: 1 })).toEqual([])
+    expect(logged(withLots, { type: 'SELL_MACHINES', lotId: 'a', count: 1 })).toEqual(['sale_voluntary'])
   })
 
   it('debt_repay: early repayments', () => {
