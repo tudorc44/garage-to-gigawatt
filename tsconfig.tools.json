@@ -2,9 +2,12 @@
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.tools.tsbuildinfo",
     "target": "es2023",
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
     "types": ["node"],
     "skipLibCheck": true,
+    /* Component tests (M15.2, happy-dom) render the game's .tsx screens */
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact",
 
     /* Node runs these .ts files directly (type stripping), so imports keep their .ts extension */
     "module": "nodenext",

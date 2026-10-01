@@ -34,7 +34,8 @@ export default defineConfig({
     },
   },
   test: {
-    include: ['tests/**/*.test.ts'],
+    // Component tests are .test.tsx and pick happy-dom per file (`// @vitest-environment happy-dom`, M15.2).
+    include: ['tests/**/*.test.ts', 'tests/**/*.test.tsx'],
     passWithNoTests: true,
   },
 })

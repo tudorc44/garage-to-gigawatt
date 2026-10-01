@@ -141,10 +141,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## STOPPED
 
-- **M13.2: the automated UI smoke test (a click-through in a DOM).** The repo has no DOM for tests; a real click test needs a new
-  dev dependency (e.g. `happy-dom` or `jsdom`, with `@testing-library/preact` or `preact-render-to-string`). Not added (new
-  dependency). Done instead: the same path at action level in `tests/ui/act3Panels.test.ts`, plus a manual run in the in-app browser
-  (dev). Owner: say yes to one of them if you want the click-through automated.
+- ~~M13.2: the automated UI smoke test~~: unblocked in M15.2 (happy-dom and @testing-library/preact approved).
 - Balance tuning stays stopped by the owner's A1 answer.
 
 ## Small follow-ups
@@ -193,6 +190,10 @@ halved toward it (s0 0.885/1.045, s1 0.85/1.01, s2 0.925/1.085, s3 0.87/1.03), d
 The 3% seam test (`tests/sim/act3Seam.test.ts`, (max − min) / mean at 2027Q1): **fails, pinned for the step-7 checklist:**
 `gpu_h200_hyperscaler_usd_hr` 5.9%, `gpu_h200_neocloud_usd_hr` 5.9%, `gpu_gb200nvl72_blended_usd_hr` 3.1% (all s2 high); everything else
 within 3% (blank columns skipped: A100, Rubin Ultra, nuclear at 2027Q1). Goldens unchanged (no golden company signs a new lease). 1023 tests.
+
+**M15.2 done (test dependencies, owner-approved):** dev dependencies `happy-dom` 20.14.5 and `@testing-library/preact` 3.2.4, nothing
+else. Component tests are `tests/**/*.test.tsx` with `// @vitest-environment happy-dom` per file (every other test keeps node);
+`tsconfig.tools.json` gains `jsx` (preact) and the DOM lib; `tests/ui/happyDom.test.tsx` proves the setup. 1025 tests.
 
 ## Milestone M14 (branch `m14`, from `main` at `e364d54`; Act III scoring, doc 27 D14 + §5) — DONE
 
