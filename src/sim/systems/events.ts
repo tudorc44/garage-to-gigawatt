@@ -446,17 +446,28 @@ export function blockedEventChoices(
 ): { id: string; blocker: Message }[] {
   const card = getCard(state.interrupt?.event ?? '')
   if (!card) return []
+  const stuck = allClosed(state)
   return card.choices.flatMap((c) => {
+    // (with every choice closed, the default stays open: see eventChoices)
+    if (stuck && c.id === card.default) return []
     const blocker = eventChoiceBlocker(state, c)
     return blocker ? [{ id: c.id, blocker }] : []
   })
 }
 
+/** Whether no choice of the card on screen can be picked. */
+function allClosed(state: GameState): boolean {
+  const card = getCard(state.interrupt?.event ?? '')
+  return !!card && !card.choices.some((c) => choiceOpen(state, c))
+}
+
 export function eventChoices(state: GameState): string[] {
   const card = getCard(state.interrupt?.event ?? '')
-  return card
-    ? card.choices.filter((c) => choiceOpen(state, c)).map((c) => c.id)
-    : []
+  if (!card) return []
+  const open = card.choices.filter((c) => choiceOpen(state, c)).map((c) => c.id)
+  // M16.6 (mine, reversible): a card whose every choice is closed (s3_c8's only choice, "Add an edge hall",
+  // with no energized site) can still be answered: its default applies, finds no target and changes nothing.
+  return open.length === 0 && card.default ? [card.default] : open
 }
 
 export function defaultEventChoice(state: GameState): string {

@@ -285,6 +285,16 @@ describe('capex_mw (s3_c5 30 MW, s3_c8 10 MW): a new hall that brings its MW', (
     expect(capacityKw(u.sites.find((x) => x.id === 'site-2')!)).toBe(withHall - 10_000)
   })
 
+  it('a card with its only choice closed (s3_c8, no energized site) is still answered: the default changes nothing (M16.6)', () => {
+    const s = co('s3', '2030Q1', [])
+    s.sites = s.sites.filter((x) => x.id !== 'site-2')
+    show(s, 's3_c8')
+    expect(blockedEventChoices(s)).toEqual([])
+    const t = play(s, 's3_c8', 'c1')
+    expect(t.projects).toEqual(s.projects)
+    expect(t.log.some((e) => e.key === 'log.card_no_target')).toBe(true)
+  })
+
   it('building it: no grid queue for its MW (they are already energized)', () => {
     const t = play(co('s3', '2028Q3', []), 's3_c5', 'c1')
     const add = t.sites.find((x) => x.id === 'site-2')!.powerAdds![0]

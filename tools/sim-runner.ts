@@ -7,13 +7,28 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
+  BALANCE,
   CONTENT,
   actLastQuarter,
+  quarterInputs,
   type ScenarioId,
 } from '../src/content/index.ts'
-import { playFrom, playGame, type Strategy } from '../src/sim/replay.ts'
+import {
+  applyStep,
+  playFrom,
+  playGame,
+  type Strategy,
+} from '../src/sim/replay.ts'
 import { presetGame } from '../src/sim/preset.ts'
-import { gpuResidualUsd, projectCapex } from '../src/sim/systems/projects.ts'
+import {
+  gpuGeneration,
+  gpuPriceUsd,
+  gpuResidualUsd,
+  neocloudUsdHr,
+  projectCapex,
+} from '../src/sim/systems/projects.ts'
+import { rfpMid } from '../src/sim/systems/leaseIndex.ts'
+import { retrofitBlocker, retrofitPlan } from '../src/sim/systems/retrofit.ts'
 import type {
   ContractType,
   GameState,
@@ -778,7 +793,33 @@ if (args.includes('--act2')) {
       /** M14.5: the reading score (null: no weighted quarter) and the number of logged moves. */
       reading: number | null
       moves: number
+      /** M16.6: the founder's net worth at the end (2030Q4; 0 after a game over). */
+      netWorthUsd: number
+      /** M16.6: retrofits started. */
+      retrofits: number
     }
+    /**
+     * M16.6, tools only: a bot plus one rule in Act III: each quarter, after its own plan, retrofit the largest
+     * low-tier hall it can if its cash is over twice the cost (its plan is played on a copy first).
+     */
+    const withRetrofits = (base: Strategy): Strategy => ({
+      ...base,
+      plan: (s) => {
+        const own = base.plan(s)
+        if (s.act !== 3) return own
+        const after = own.reduce(applyStep, s)
+        const pick = after.projects
+          .filter(
+            (p) => p.tier === 'low' && !retrofitBlocker(after, p.id),
+          )
+          .sort((a, b) => b.kw - a.kw || a.n - b.n)[0]
+        if (!pick) return own
+        const costUsd = retrofitPlan(after, pick)!.costUsd
+        return after.cash > 2 * costUsd
+          ? [...own, { type: 'RETROFIT', projectId: pick.id }]
+          : own
+      },
+    })
     /** Renewal counts from a finished game's log (Act III quarters only). */
     const renewalStats = (s: GameState): A3Run['renewals'] => {
       const first = CONTENT.quarters.indexOf('2027Q1')
@@ -821,15 +862,21 @@ if (args.includes('--act2')) {
       }
     }
     const a3: A3Run[] = []
+    /** M16.6: the same runs with the retrofit rule added (tools only). */
+    const a3r: A3Run[] = []
     let crashed = 0
     for (const { name, runs } of byBot) {
       for (const { seed, state } of runs) {
         if (state.phase !== 'chapter') continue
-        try {
+        // M16.6: each run twice, as the bot plays it and with the retrofit rule added.
+        for (const retrofitter of [false, true]) try {
           const start = toAct3(state)
-          const r = playFrom(start, BOTS[name] ?? PROBES[name], { through: 3 })
+          const bot = BOTS[name] ?? PROBES[name]
+          const r = playFrom(start, retrofitter ? withRetrofits(bot) : bot, {
+            through: 3,
+          })
           const rep = r.state.reports.filter((x) => x.quarter >= '2027Q1')
-          a3.push({
+          ;(retrofitter ? a3r : a3).push({
             bot: name,
             seed,
             scenario: start.scenarioId!,
@@ -856,11 +903,17 @@ if (args.includes('--act2')) {
             // M14.5: the reading score from the reveal record (chapter or game over), and the moves logged.
             reading: r.state.act3End?.reading.score ?? null,
             moves: (r.state.act3Moves ?? []).length,
+            netWorthUsd:
+              r.state.phase === 'chapter'
+                ? Math.max(0, r.state.founderStake * rep.at(-1)!.valuationUsd)
+                : 0,
+            retrofits: r.state.log.filter((e) => e.key === 'log.retrofit_started')
+              .length,
           })
         } catch (e) {
           crashed++
           console.error(
-            `  --act3: ${name} seed ${seed} crashed: ${(e as Error).message}`,
+            `  --act3${retrofitter ? ' (retrofitter)' : ''}: ${name} seed ${seed} crashed: ${(e as Error).message}`,
           )
         }
       }
@@ -1035,6 +1088,74 @@ if (args.includes('--act2')) {
       throw new Error(
         `Reading-score oracle self-check failed: ${JSON.stringify(oracle)}`,
       )
+    // M16.6 (report, no targets): payback in years = capex per MW ÷ revenue per MW-year, at 2027Q3 and 2028Q3.
+    // A shell: the retrofit-shell $/MW (top: + 0.6 × the mid→top $/MW) over the mean shell card rent × the RFP
+    // midpoint × the tier multiple (mine: the mean of the tenant cards). A cloud: the shell $/MW + GPUs per MW ×
+    // the unit price (Rubin Ultra builds its hall to top) over GPUs per MW × the neocloud rent × the default
+    // utilisation × 8,760 h. ⚑ = under 1.5 years.
+    const D = BALANCE.act3.density
+    const cards = CONTENT.projects.tenantCards
+    const cardRent = cards.reduce((a, c) => a + c.priceUsdMwYr, 0) / cards.length
+    const util = CONTENT.projects.pilot.utilisationBase
+    const flag = (years: number) =>
+      Number.isFinite(years)
+        ? `${years.toFixed(1)}${years < 1.5 ? ' ⚑' : ''}`
+        : '—'
+    const payback: Record<string, Record<string, string>> = {}
+    for (const id of scenarios as ScenarioId[])
+      for (const label of ['2027Q3', '2028Q3']) {
+        const q = CONTENT.quarters.indexOf(label)
+        const inp = quarterInputs(q, id)!
+        const shellMw = inp.capexUsdMw.retrofitShell
+        const topExtra = D.topNewBuildRetrofitShare * (inp.act3?.midToTopUsdMw ?? 0)
+        const rent = cardRent * (rfpMid(q, id) ?? 1)
+        const cloud = (gpu: string) => {
+          const perMw = gpuGeneration(gpu)!.gpusPerMw
+          const price = gpuPriceUsd(gpu, q, id)
+          const hr = neocloudUsdHr(gpu, q, id)
+          if (price === undefined || hr === undefined) return NaN
+          const capex =
+            shellMw + perMw * price + (gpu === 'rubin_ultra' ? topExtra : 0)
+          return capex / (perMw * hr * util * 24 * 365)
+        }
+        payback[`${id} ${label}`] = {
+          midShell: flag(shellMw / (rent * D.shellTierRentMult.mid)),
+          topShell: flag((shellMw + topExtra) / (rent * D.shellTierRentMult.top)),
+          h200: flag(cloud('h200')),
+          b200: flag(cloud('b200')),
+          rubin: flag(cloud('rubin_nvl144')),
+          rubinUltra: flag(cloud('rubin_ultra')),
+        }
+      }
+    console.log(
+      `  Step 5 payback in years (M16.6; capex per MW ÷ revenue per MW-year; utilisation ${util}; ⚑ under 1.5):`,
+    )
+    console.table(payback)
+    // M16.6: the retrofitter (each bot's runs again, plus "retrofit the largest low-tier hall when cash > 2 × cost").
+    const worthRow = (rows: A3Run[]) => {
+      const scores = rows
+        .map((x) => x.reading)
+        .filter((v): v is number => v !== null)
+      const n = (v: number) => (Number.isNaN(v) ? '—' : v)
+      return {
+        runs: rows.length,
+        gameOver: rows.filter((x) => x.end !== 'chapter').length,
+        netWorth2030Q4: usd(median(rows.map((x) => x.netWorthUsd))),
+        reading: n(median(scores)),
+        retrofits: n(median(rows.map((x) => x.retrofits))),
+      }
+    }
+    console.log(
+      '  Retrofitter (M16.6, tools only): median founder net worth at 2030Q4 (0 after a game over) and reading score, per scenario:',
+    )
+    console.table(
+      Object.fromEntries(
+        scenarios.flatMap((id) => [
+          [`${id} bots`, worthRow(a3.filter((x) => x.scenario === id))],
+          [`${id} retrofitter`, worthRow(a3r.filter((x) => x.scenario === id))],
+        ]),
+      ),
+    )
     // For the scenario-order check: S3 runs with a contract coming due after 2027Q4.
     const s3Late = a3.filter(
       (x) => x.scenario === 's3' && x.renewals.dueAfter2027Q4 > 0,

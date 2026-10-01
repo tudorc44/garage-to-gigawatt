@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs the history.
 
-Last updated: 30 Sep 2026. Act I, Act II and the Prologue are all built and done. Act III's engine is being built (M10 skeleton, M11
+Last updated: 1 Oct 2026 (M16 done). Act I, Act II and the Prologue are all built and done. Act III's engine is being built (M10 skeleton, M11
 scenario engine, M12 contracts and renewals, **M13 a test-build route in with bare-bones panels: DONE on branch `m13`**). Act III
 is reachable only in test builds (`npm run dev`, the staging build), never in the GitHub Pages build. See "Next" and the M13 section.
 
@@ -156,9 +156,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M15 is done on branch `m15`** (M14 is merged into `main`): the full A3-11 chapter report with the reveal timeline and the reading
-score, the M14 classification answers, the new-lease index seam fix, component tests. Next: the step-5 spec (the design thread writes it
-after the M15 report; the data notes are in the M15 section), the owner's staging playtest, then step 6, step 7 with A3-12, and later: steps 5–6 (density, Rubin, nuclear, political capital, wildcards), step 7
+**M16 (step 5) is done on branch `m16`** (M15 is merged into `main`): density tiers, retrofits and GPU changes, Rubin, new halls, the
+step-5 cards, the A3-07 screen. Next: the design thread answers the M16 questions and writes step 6 (nuclear A3-08, political capital
+A3-09, the step-6 cards); the owner's staging playtest; then step 7 with A3-12, and later: step 7
 (the corporate facility for `debt`, balance F-6, F-7), the reading score and net-worth scoring (D14). The Act I playtests stay postponed.
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
@@ -186,6 +186,9 @@ M16.0 sim (`--act2 --act3`, on the M16.0 commit): the M14.5 table is unchanged f
 **M16.4 done:** `systems/cardHalls.ts`: retrofit_hall (s0_c7, s3_c3, sh_4), sell_gpus_at (s0_c8), accelerate_project (s1_c2 6% capex, s2_c4 15% of power else shell build; mine: its power add keeps up), gpu_racks (s1_c8, s3_c7: a live mid Rubin pilot), new_hall_mw (s3_c5, s3_c8: proposed greenfield mid shell, its MW as a `card` power add, energized at once), distressed_campus (s1_c6: 60 MW site, category `distressed_campus`); each greyed with a reason (`hallCardBlocker`); sh_2's MW stay with step 6. **Golden:** act3-s3 only (s3_c8's only choice "Add an edge hall" now opens a 10 MW hall in 2030Q1; its idle MW pay the reservation, cash −$1.5M). 1095 tests.
 
 **M16.5 done:** A3-07 in Sites & Fleet (`screens/Act3Racks.tsx`, loaded with the Act III panels; `racksView` in `projectViews.ts`): "Halls and rack density" table (density badge with a 1-2-3 fill, fits, Retrofit… / Change GPUs… or the block reason, a running retrofit's done quarter), "What fits where" matrix, the retrofit panel (both options, income per affected quarter, what fits after, cash, tenant / earnings note, Start retrofit → RETROFIT) and the GPU change panel (REFIT_GPUS); open-project dialog: "Build to top tier" tick with its cost and quarter, the GPU list filtered by the hall's tier; Deal builder capex shows the top-tier part. Browser (dev, Growth on s0): retrofit started from the screen (cash −$1.5M, 1 BW). 1101 tests.
+
+**M16.6 done (tests and the sim proof):** `npm run sim -- --act2 --act3` adds a step-5 payback table and a tools-only retrofitter row (every Act III run played again with "retrofit the largest low-tier hall when cash > 2 × cost"; ~19 min now). The first run found a dead end: s3_c8's only choice greyed with no energized site → fix (mine): a card whose every choice is closed keeps its default open, which changes nothing. Act I/II CSVs and the §5 table identical to M16.0's; 532 Act III runs, 0 crashes, 41 game overs; reading by scenario unchanged except s3 median moves 5→6; the oracle holds. Payback (years; capex/MW ÷ revenue/MW-yr, utilisation 0.7): shells 4.6–12.9, H200 1.8–2.8, B200 1.3–2.7, Rubin 0.9–1.7, Rubin Ultra 0.7–1.3 (most Rubin cases under 1.5). Retrofitter vs bots, median net worth: s0 $157.2M vs $177.5M, s1 $81.9M vs $85.5M, s2 $135.8M vs $149.0M, s3 $98.4M vs $102.0M; reading 72/37/63/37 vs 75/50/56/53. 1102 tests.
+**M16 done:** 1041 → 1102 tests. Open questions for the design thread are in the M16 report (owner pastes it).
 
 ## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
 
