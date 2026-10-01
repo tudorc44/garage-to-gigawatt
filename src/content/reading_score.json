@@ -1,0 +1,239 @@
+{
+ "_meta": {
+  "schema": "reading_score/1",
+  "doc27": "D14 (scoring: the reading score), §5 (score for reading)",
+  "author": "design thread, 1 Oct 2026 (designed, not sourced)",
+  "DO_NOT_EXPOSE": "Hidden content: the ideal stance per quarter reveals the scenario. Read only by the act3End reveal (the chapter report) and tests/tools oracles; never by selectors, the UI during play, or player-like bots.",
+  "quarters": [
+   "2027Q1",
+   "2027Q2",
+   "2027Q3",
+   "2027Q4",
+   "2028Q1",
+   "2028Q2",
+   "2028Q3",
+   "2028Q4",
+   "2029Q1",
+   "2029Q2",
+   "2029Q3",
+   "2029Q4",
+   "2030Q1",
+   "2030Q2",
+   "2030Q3",
+   "2030Q4"
+  ],
+  "stance": "+1 = offensive (build, borrow, buy, lock long), -1 = defensive (sell, repay, raise cash, shorten, stay flexible), 0 = no clear move needed",
+  "formula": "score_q: stance == ideal != 0 -> 1.0; stance == 0 and ideal == 0 -> 0.7, or 1.0 inside the decoy window (you held your nerve); exactly one of them is 0 -> 0.5; opposite signs -> 0. Quarters with weight 0 don't count. reading = round(100 * sum(w_q * score_q) / sum(w_q)) - decoy_penalty, clamped to 0..100.",
+  "check_values": "Before decoy penalties: a player with no big move scores s0 78, s1 50, s2 50, s3 50; a perfect reader s1-s3 100 (s0's best is 78: Muddle Through has no big call, so holding your nerve through the false alarm is the whole test); doing the opposite every quarter scores s1 0."
+ },
+ "scoring": {
+  "match": 1.0,
+  "calm_and_quiet": 0.7,
+  "one_neutral": 0.5,
+  "opposite": 0.0,
+  "decoy_penalty_per_move": 10,
+  "decoy_penalty_cap": 30,
+  "calm_in_decoy_window": 1.0
+ },
+ "scenarios": {
+  "s0": {
+   "why": "Muddle Through: one price reset, nothing dramatic. Staying calm is the right read; over-reacting either way is not rewarded. Its best reading score is about 79.",
+   "ideal": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weight": [
+    1,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "decoy": {
+    "indicator": "lender_spreads",
+    "quarters": [
+     "2027Q3",
+     "2027Q4",
+     "2028Q1"
+    ],
+    "wrong_stance": -1,
+    "why": "Spreads blink as if a bust is coming; fire-selling or hoarding cash here is the over-reaction."
+   }
+  },
+  "s1": {
+   "why": "Great Repricing (trigger 2028Q1): get defensive from the first signals through the trigger, then buy distressed assets for about a year and a half.",
+   "ideal": [
+    0,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weight": [
+    0,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "decoy": {
+    "indicator": "chip_lead_times",
+    "quarters": [
+     "2027Q2",
+     "2027Q3",
+     "2027Q4"
+    ],
+    "wrong_stance": 1,
+    "why": "Lead times stretch as if demand is surging (a supply problem); building or borrowing into it is the trap."
+   }
+  },
+  "s2": {
+   "why": "Lift-Off (trigger 2028Q3): build, buy and lock long from the first signals through a year after the trigger.",
+   "ideal": [
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weight": [
+    0,
+    0,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "decoy": {
+    "indicator": "efficiency_index",
+    "quarters": [
+     "2027Q3",
+     "2027Q4",
+     "2028Q1",
+     "2028Q2"
+    ],
+    "wrong_stance": -1,
+    "why": "Efficiency jumps as if demand will collapse; selling sites or shortening contracts here throws away the boom."
+   }
+  },
+  "s3": {
+   "why": "Efficiency Shock (trigger 2027Q4): stay flexible and shorten from the start through two quarters after the trigger, then lean back in for the rebound.",
+   "ideal": [
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    -1,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "weight": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+   ],
+   "decoy": {
+    "indicator": "grid_reserve_margin",
+    "quarters": [
+     "2027Q2",
+     "2027Q3",
+     "2027Q4",
+     "2028Q1"
+    ],
+    "wrong_stance": 1,
+    "why": "Grid margins tighten as if power is the bottleneck; locking long or buying capacity here is the trap."
+   }
+  }
+ },
+ "career_title_note": "The career title stays Act II's valuation bands applied to the 2030Q4 valuation (doc 27 D14: 'title bands like Act II'). The reading title uses text_act3.en.json › title_bands on the reading score."
+}

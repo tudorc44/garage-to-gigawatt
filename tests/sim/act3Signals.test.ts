@@ -269,6 +269,31 @@ describe('the hidden signals fields never reach src/', () => {
     }
   })
 
+  it('M14.1: reading_score.json is imported only by readingScore.ts, and readingScore.ts only by act3End.ts (and tests/, tools/)', () => {
+    const importers = (pattern: RegExp) =>
+      src
+        .filter((f) => pattern.test(code(f)))
+        .map((f) => f.split('/').slice(-3).join('/'))
+    for (const f of importers(/reading_score\.json/))
+      expect(f).toBe('sim/systems/readingScore.ts')
+    for (const f of importers(/readingScore\.ts/))
+      expect(f).toBe('sim/systems/act3End.ts')
+  })
+
+  it('M14.1: the player-like bots import no hidden view and no reading score', () => {
+    const bots = code(
+      new URL('../../tools/bots.ts', import.meta.url).pathname,
+    )
+    for (const bad of [
+      'signalsHidden',
+      'rivalsHidden',
+      'readingScore',
+      'reading_score',
+      'act3End',
+    ])
+      expect(bots, bad).not.toContain(bad)
+  })
+
   it('nothing in src/ calls toAct3 but its own definition and the test-build entry (Act III stays unreachable from play)', () => {
     for (const file of src) {
       if (/sim[\\/]state\.ts$/.test(file)) continue

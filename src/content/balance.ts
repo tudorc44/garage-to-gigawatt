@@ -622,6 +622,18 @@ export const BALANCE = {
       /** The ASIC price tier idle_mw switches off (machines.json › act2_price.tier). */
       idleTier: 'old',
     },
+    /**
+     * The reading score's title bands (M14.1; docs/act3-content/text_act3.en.json › title_bands, from the top;
+     * texts: en.json › act3.reveal.title.<id>) and the wording thresholds (DT: high ≥ 70, mid 40–69, low ≤ 39).
+     */
+    readingTitles: [
+      { min: 80, id: 'cassandra' },
+      { min: 60, id: 'signal_reader' },
+      { min: 40, id: 'steady_hand' },
+      { min: 20, id: 'weathervane' },
+      { min: 0, id: 'bagholder' },
+    ] as readonly { min: number; id: string }[],
+    readingWording: { high: 70, mid: 40 },
     /** Blend-and-extend offers (M12.4, approved by the owner 30 Sep 2026; DT). */
     blendExtend: {
       /** Offered from this quarter on. */

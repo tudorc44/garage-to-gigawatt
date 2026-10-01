@@ -290,8 +290,12 @@ describe('content loads', () => {
         expect(read(`../src/content/${name}`), name).toBe(
           read(`../docs/act3-content/${name}`),
         )
-    // M11.5b, M11.5c
-    for (const name of ['rivals_act3.json', 'events_act3.json'])
+    // M11.5b, M11.5c; M14.1 (the reading score, hidden: only systems/readingScore.ts imports it)
+    for (const name of [
+      'rivals_act3.json',
+      'events_act3.json',
+      'reading_score.json',
+    ])
       expect(read(`../src/content/${name}`), name).toBe(
         read(`../docs/act3-content/${name}`),
       )
