@@ -105,7 +105,12 @@ export function endQuarter(state: GameState): void {
   state.reports.push(report)
   if (forcedSale) logEntry(state, 'log.forced_sale', { ...forcedSale })
   state.phase = state.cash < 0 ? 'gameover' : 'report'
-  if (state.phase === 'gameover') logEntry(state, 'log.game_over')
+  if (state.phase === 'gameover') {
+    logEntry(state, 'log.game_over')
+    // Act III (M14.4): a game over still gets the reveal, its reading counted up to this quarter.
+    if (inActIII(state) && state.scenarioId)
+      state.act3End = buildAct3End(state, true)
+  }
 }
 
 function forceSales(

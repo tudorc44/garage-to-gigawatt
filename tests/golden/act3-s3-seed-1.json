@@ -2720,6 +2720,7 @@
     "scenarioId": "s3",
     "scenarioName": "Efficiency Shock",
     "triggerQuarter": "2027Q4",
+    "triggerQ": 3,
     "decoy": {
       "indicator": "grid_reserve_margin",
       "quarters": [
@@ -2756,6 +2757,85 @@
         "name": "CoreWeave",
         "fate": "Same-GPU-hour price falls, volume rises (Jevons); revenue flat, margin down."
       }
-    ]
+    ],
+    "reading": {
+      "score": 53,
+      "base": 53,
+      "penalty": 0,
+      "perQuarter": [
+        {
+          "q": 0,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 1,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 2,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 3,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 4,
+          "stance": -1,
+          "ideal": -1,
+          "weight": 2,
+          "value": 1
+        },
+        {
+          "q": 5,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 6,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0.5
+        },
+        {
+          "q": 7,
+          "stance": -1,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0
+        },
+        {
+          "q": 8,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0.5
+        },
+        {
+          "q": 9,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0.5
+        }
+      ]
+    },
+    "careerTitleId": "contender",
+    "readingTitleId": "steady_hand"
   }
 }

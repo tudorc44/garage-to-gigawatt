@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import {
   CONTENT,
   SCENARIO_IDS,
+  actFirstQuarter,
   actLastQuarter,
 } from '../../src/content/index.ts'
 import { advance } from '../../src/sim/advance.ts'
@@ -75,7 +76,7 @@ describe('Act III runs its 16 quarters, then the chapter report', () => {
       const { state } = playAll(read)
       const h = signalsHidden(id)
       expect(state.phase).toBe('chapter')
-      expect(state.act3End).toEqual({
+      expect(state.act3End).toMatchObject({
         scenarioId: id,
         scenarioName: h.scenario_name,
         triggerQuarter: h.trigger.quarter,
@@ -87,6 +88,24 @@ describe('Act III runs its 16 quarters, then the chapter report', () => {
           fate,
         })),
       })
+      // M14.4: the reading block, the trigger quarter's index and the two titles.
+      expect(Object.keys(state.act3End!).sort()).toEqual(
+        [
+          'careerTitleId',
+          'decoy',
+          'reading',
+          'readingTitleId',
+          'rivalFates',
+          'scenarioId',
+          'scenarioName',
+          'signalReads',
+          'triggerQ',
+          'triggerQuarter',
+        ].sort(),
+      )
+      expect(state.act3End!.triggerQ).toBe(
+        CONTENT.quarters.indexOf(h.trigger.quarter) - actFirstQuarter(3),
+      )
       expect(state.act3End!.scenarioName.length).toBeGreaterThan(0)
     },
   )
@@ -104,9 +123,17 @@ describe('Act III runs its 16 quarters, then the chapter report', () => {
     expect(seen).toEqual([])
   })
 
-  it('a game over ends Act III early with no reveal (Act II’s systems are still off in Act III until M11.4)', () => {
+  it('a game over ends Act III early with the reveal (M14.4: decision 2 confirmed), its reading counted to that quarter', () => {
     const broke = { ...act3ScenarioCompany('s1', 7), cash: -2_000_000_000 }
-    expect(playAll(broke).state.act3End).toBeUndefined()
+    const end = playAll(broke).state
+    expect(end.phase).toBe('gameover')
+    expect(end.act3End).toBeDefined()
+    expect(end.act3End!.careerTitleId).toBe('bust')
+    expect(
+      end.act3End!.reading.perQuarter.every(
+        (x) => x.q <= end.quarter - actFirstQuarter(3),
+      ),
+    ).toBe(true)
   })
 
   it('a solvent company is never ended early: it reaches 2030Q4 in every scenario', () => {

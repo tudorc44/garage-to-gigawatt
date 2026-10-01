@@ -5,7 +5,11 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import { beforeAll, describe, expect, it } from 'vitest'
-import { SCENARIO_IDS, type ScenarioId } from '../../src/content/index.ts'
+import {
+  SCENARIO_IDS,
+  actFirstQuarter,
+  type ScenarioId,
+} from '../../src/content/index.ts'
 import { d15Items, rivalFates } from '../../src/content/rivalsHidden.ts'
 import { signalsHidden } from '../../src/content/signalsHidden.ts'
 import en from '../../src/i18n/en.json' with { type: 'json' }
@@ -69,6 +73,54 @@ describe('the chapter report with the reveal, for each scenario (forced s0–s3)
     expect(o.survived).toBe(false)
     expect(o.title).toBe('bust')
     expect(o.end.scenarioId).toBe('s1')
+  })
+})
+
+describe('M14.4: the reading in the reveal', () => {
+  it('the record carries the reading, the trigger index and both titles; the outcome adds the wording', () => {
+    for (const id of SCENARIO_IDS) {
+      const o = act3Outcome(ends.get(id)!)
+      expect(o.end.triggerQ).toBeGreaterThanOrEqual(0)
+      expect(text[`ui.chapter2.title.${o.title}`]).toBeTruthy()
+      if (o.end.reading.score === null) {
+        expect(o.readingTitle).toBeNull()
+        expect(o.wording).toBeNull()
+      } else {
+        expect(text[`act3.reveal.title.${o.readingTitle}`]).toBeTruthy()
+        const s = o.end.reading.score
+        expect(o.wording).toBe(s >= 70 ? 'high' : s >= 40 ? 'mid' : 'low')
+      }
+    }
+  })
+
+  it('the moves timeline: quarter, timing against the trigger, and the mark (✓ match, ✗ opposite, decoy, – neutral)', () => {
+    // s1: trigger 2028Q1 (q 4); the decoy window 2027Q2–Q4 (q 1–3), wrong stance +1; ideal −1 in q 1–5, +1 in q 6–10.
+    const s = structuredClone(ends.get('s1')!)
+    s.act3Moves = [
+      { q: 2, kind: 'project_commit' }, // +1 in the decoy window: reacted to the decoy
+      { q: 4, kind: 'sale_voluntary' }, // −1 in the trigger quarter: match
+      { q: 7, kind: 'sale_voluntary' }, // −1 where +1 was ideal: opposite
+      { q: 12, kind: 'debt_draw' }, // weight 0: neutral
+    ]
+    const d = act3RevealDetails(s)
+    expect(d.moves.map((m) => [m.quarter, m.fromTrigger, m.mark])).toEqual([
+      ['2027Q3', -2, 'decoy'],
+      ['2028Q1', 0, 'match'],
+      ['2028Q4', 3, 'opposite'],
+      ['2030Q1', 8, 'neutral'],
+    ])
+    for (const m of d.moves) expect(text[`act3.moves.${m.kind}`]).toBeTruthy()
+  })
+
+  it('the reading counts up to the game-over quarter, and the career title is "bust"', () => {
+    const s = structuredClone(ends.get('s2')!)
+    s.phase = 'gameover'
+    s.quarter = actFirstQuarter(3) + 1 // 2027Q2: s2 has no weighted quarter yet
+    delete s.act3End
+    const o = act3Outcome(s)
+    expect(o.title).toBe('bust')
+    expect(o.end.reading.score).toBeNull()
+    expect(o.endQuarter).toBe('2027Q2')
   })
 })
 

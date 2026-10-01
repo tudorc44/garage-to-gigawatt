@@ -147,6 +147,24 @@ export interface Act3End {
   signalReads: { quarter: string; indicator: SignalId }[]
   /** Each rival's scripted fate in this scenario (M11.5b), in file order: shown only in the reveal. */
   rivalFates: { rival: string; name: string; fate: string }[]
+  /** M14.4: the trigger quarter as an Act III quarter index (0–15). */
+  triggerQ: number
+  /** M14.4: the reading score (numbers only; readingScore.ts). score null = no weighted quarter. */
+  reading: {
+    score: number | null
+    base: number
+    penalty: number
+    perQuarter: {
+      q: number
+      stance: number
+      ideal: number
+      weight: number
+      value: number
+    }[]
+  }
+  /** M14.4: the career title (Act II's valuation bands, or "bust") and the reading title (null with no score). */
+  careerTitleId: string
+  readingTitleId: string | null
 }
 
 /**

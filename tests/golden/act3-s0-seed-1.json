@@ -2712,6 +2712,7 @@
     "scenarioId": "s0",
     "scenarioName": "Muddle Through",
     "triggerQuarter": "2028Q2",
+    "triggerQ": 5,
     "decoy": {
       "indicator": "lender_spreads",
       "quarters": [
@@ -2747,6 +2748,127 @@
         "name": "CoreWeave",
         "fate": "Absorbs the reset; growth slows to ~70% of pre-reset pace."
       }
-    ]
+    ],
+    "reading": {
+      "score": 76,
+      "base": 76,
+      "penalty": 0,
+      "perQuarter": [
+        {
+          "q": 0,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 1,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 2,
+          "value": 0.7
+        },
+        {
+          "q": 2,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 2,
+          "value": 1
+        },
+        {
+          "q": 3,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 2,
+          "value": 1
+        },
+        {
+          "q": 4,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 2,
+          "value": 1
+        },
+        {
+          "q": 5,
+          "stance": 1,
+          "ideal": 0,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 6,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 2,
+          "value": 0.7
+        },
+        {
+          "q": 7,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 2,
+          "value": 0.7
+        },
+        {
+          "q": 8,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 9,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 10,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 11,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 12,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 13,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 14,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        },
+        {
+          "q": 15,
+          "stance": 0,
+          "ideal": 0,
+          "weight": 1,
+          "value": 0.7
+        }
+      ]
+    },
+    "careerTitleId": "contender",
+    "readingTitleId": "signal_reader"
   }
 }

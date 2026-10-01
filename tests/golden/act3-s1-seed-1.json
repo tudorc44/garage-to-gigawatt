@@ -2706,6 +2706,7 @@
     "scenarioId": "s1",
     "scenarioName": "Great Repricing",
     "triggerQuarter": "2028Q1",
+    "triggerQ": 4,
     "decoy": {
       "indicator": "chip_lead_times",
       "quarters": [
@@ -2741,6 +2742,85 @@
         "name": "CoreWeave",
         "fate": "DDTL spreads gap out; suspends new-site commitments 2028Q2; asset-sale programme; survives with a recap (D15 flag)."
       }
-    ]
+    ],
+    "reading": {
+      "score": 50,
+      "base": 50,
+      "penalty": 0,
+      "perQuarter": [
+        {
+          "q": 1,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 2,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 3,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 4,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 5,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 6,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 2,
+          "value": 0.5
+        },
+        {
+          "q": 7,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0.5
+        },
+        {
+          "q": 8,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0.5
+        },
+        {
+          "q": 9,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0.5
+        },
+        {
+          "q": 10,
+          "stance": 0,
+          "ideal": 1,
+          "weight": 1,
+          "value": 0.5
+        }
+      ]
+    },
+    "careerTitleId": "contender",
+    "readingTitleId": "steady_hand"
   }
 }

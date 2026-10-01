@@ -274,10 +274,10 @@ describe('the hidden signals fields never reach src/', () => {
       src
         .filter((f) => pattern.test(code(f)))
         .map((f) => f.split('/').slice(-3).join('/'))
-    for (const f of importers(/reading_score\.json/))
-      expect(f).toBe('sim/systems/readingScore.ts')
-    for (const f of importers(/readingScore\.ts/))
-      expect(f).toBe('sim/systems/act3End.ts')
+    expect(importers(/reading_score\.json/)).toEqual([
+      'sim/systems/readingScore.ts',
+    ])
+    expect(importers(/readingScore\.ts/)).toEqual(['sim/systems/act3End.ts'])
   })
 
   it('M14.1: the player-like bots import no hidden view and no reading score', () => {

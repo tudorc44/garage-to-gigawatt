@@ -11,6 +11,101 @@ import type { GameState } from '../../sim/state.ts'
 import { act3Outcome } from '../../sim/systems/act3End.ts'
 import { fmt } from '../format.ts'
 
+const MARK = { match: '✓', opposite: '✗', decoy: '✗', neutral: '–' } as const
+
+/** The timing of a move against the trigger: "N quarters before", "In the trigger quarter", "N after". */
+function timing(fromTrigger: number): string {
+  if (fromTrigger === 0) return t('act3.reveal.timing.at')
+  const n = Math.abs(fromTrigger)
+  if (fromTrigger < 0)
+    return n === 1
+      ? t('act3.reveal.timing.before_one')
+      : t('act3.reveal.timing.before', { n })
+  return n === 1
+    ? t('act3.reveal.timing.after_one')
+    : t('act3.reveal.timing.after', { n })
+}
+
+/**
+ * The reading panel (M14.4, bare-bones; the full screen is M15): the reading score and title with its
+ * wording, the career title, the growth multiple and survival, then each big move with its timing against
+ * the trigger and its mark, and the decoy penalty.
+ */
+function ReadingPanel({ state }: { state: GameState }) {
+  const o = act3Outcome(state)
+  const r = o.end.reading
+  const moves = o.details.moves
+  return (
+    <div class="panel p">
+      <span class="label">{t('act3.reveal.reading')}</span>
+      <div class="row-between">
+        <span class="num-xl">
+          {r.score === null ? t('act3.reveal.reading_none') : r.score}
+        </span>
+        {o.readingTitle && (
+          <strong>{tDynamic(`act3.reveal.title.${o.readingTitle}`, '')}</strong>
+        )}
+      </div>
+      {o.wording && (
+        <p style={{ margin: 0 }}>
+          {tDynamic(`act3.reveal.wording.${o.wording}`, '')}
+        </p>
+      )}
+      <span class="num-s muted">{t('act3.reveal.description')}</span>
+      <table class="num-s">
+        <tbody>
+          <tr>
+            <td>{t('act3.reveal.career')}</td>
+            <td>{tDynamic(`ui.chapter2.title.${o.title}`, o.title)}</td>
+          </tr>
+          <tr>
+            <td>{t('act3.reveal.growth')}</td>
+            <td>
+              {o.growth === null
+                ? '—'
+                : t('act3.reveal.growth_value', { x: o.growth.toFixed(1) })}
+            </td>
+          </tr>
+          <tr>
+            <td colSpan={2}>
+              {o.survived
+                ? t('act3.reveal.survived')
+                : t('act3.reveal.out', { quarter: fmt.quarter(o.endQuarter) })}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <span class="label">{t('act3.reveal.moves_title')}</span>
+      {moves.length === 0 ? (
+        <p class="num-s" style={{ margin: 0 }}>
+          {t('act3.reveal.no_moves')}
+        </p>
+      ) : (
+        <table class="num-s">
+          <tbody>
+            {moves.map((m, i) => (
+              <tr key={i}>
+                <td>{fmt.quarter(m.quarter)}</td>
+                <td>{tDynamic(`act3.moves.${m.kind}`, m.kind)}</td>
+                <td class="muted">{timing(m.fromTrigger)}</td>
+                <td>
+                  {MARK[m.mark]}
+                  {m.mark === 'decoy' && ` ${t('act3.reveal.decoy_reacted')}`}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+      {r.penalty > 0 && (
+        <span class="num-s">
+          {t('act3.reveal.penalty', { penalty: r.penalty })}
+        </span>
+      )}
+    </div>
+  )
+}
+
 export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
   const s = props.state
   const o = act3Outcome(s)
@@ -32,12 +127,6 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
           <h1 class="screen-title">
             {t('ui.act3.reveal.market', { name: e.scenarioName })}
           </h1>
-          <p class="pitch">
-            {t('ui.act3.reveal.title', {
-              title: tDynamic(`ui.chapter2.title.${o.title}`, o.title),
-            })}
-          </p>
-
           <div class="panel p">
             <span class="label">{t('ui.act3.reveal.happened')}</span>
             <p style={{ margin: 0 }}>
@@ -79,7 +168,6 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
                 </div>
               ))
             )}
-            <span class="num-s muted">{t('ui.act3.reveal.score_later')}</span>
           </div>
 
           <div class="end-tiles">
@@ -95,7 +183,9 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
             <div class="panel tile">
               <span class="label">{t('ui.act3.reveal.growth')}</span>
               <span class="num-xl">
-                {o.growth === null ? '—' : `${o.growth.toFixed(2)}×`}
+                {o.growth === null
+                  ? '—'
+                  : t('act3.reveal.growth_value', { x: o.growth.toFixed(1) })}
               </span>
               <span class="num-s muted">
                 {t('ui.act3.reveal.valuation', {
@@ -106,8 +196,10 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
             </div>
             <div class="panel tile">
               <span class="label">{t('ui.act3.reveal.survival')}</span>
-              <span class="num-xl">
-                {t(o.survived ? 'ui.act3.reveal.survived' : 'ui.act3.reveal.bust')}
+              <span class="num-s">
+                {o.survived
+                  ? t('act3.reveal.survived')
+                  : t('act3.reveal.out', { quarter: fmt.quarter(o.endQuarter) })}
               </span>
             </div>
           </div>
@@ -131,6 +223,8 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
               </tbody>
             </table>
           </div>
+
+          <ReadingPanel state={s} />
 
           <p class="num-s muted">{t('ui.act3.reveal.continues')}</p>
           <button
