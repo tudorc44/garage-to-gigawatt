@@ -125,5 +125,7 @@ export function restoreSave(raw: unknown): Loaded {
   delete (state as { constructionLoan?: unknown }).constructionLoan
   // M10's stub marker: it only ever existed in test-made saves, and the stub is gone (M11.3).
   delete (state as { act3Stub?: unknown }).act3Stub
+  // M14.2: an Act III save from before the move log starts it empty (older test-build saves).
+  if (state.act === 3 && !Array.isArray(state.act3Moves)) state.act3Moves = []
   return { ok: true, state }
 }

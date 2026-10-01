@@ -90,6 +90,7 @@ import {
 } from './systems/renewals.ts'
 import { resumeIdle, resumeIdleBlocker } from './systems/cardContracts.ts'
 import { acceptBlend, blendAcceptBlocker } from './systems/blendExtend.ts'
+import { recordAct3Move } from './systems/act3Moves.ts'
 import {
   borrowBlocker,
   repayEquipmentLoan,
@@ -361,7 +362,10 @@ export type ActionResult =
 export function applyAction(state: GameState, action: Action): ActionResult {
   const next = structuredClone(state)
   const error = run(next, action)
-  return error ? { ok: false, error } : { ok: true, state: next }
+  if (error) return { ok: false, error }
+  // Act III (M14.2): a big move the player made goes into the move log.
+  recordAct3Move(state, next, action)
+  return { ok: true, state: next }
 }
 
 const COINS: Coin[] = ['BTC', 'ETH']

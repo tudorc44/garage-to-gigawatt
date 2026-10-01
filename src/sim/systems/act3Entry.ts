@@ -117,6 +117,8 @@ export function enterAct3(state: GameState, scenario: ScenarioId): GameState {
   // 2027Q1's Plan phase: contracts ending now, and holdovers, open their renewals (M12.2).
   s.act3Renewals = []
   openRenewals(s)
+  // The move log the reading score reads at the end (M14.2).
+  s.act3Moves = []
 
   return s
 }

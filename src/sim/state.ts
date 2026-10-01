@@ -313,6 +313,27 @@ export interface Renewal {
   keepEmpty?: boolean
 }
 
+/** One logged Act III move (M14.2; the kinds are in systems/act3Moves.ts). */
+export interface Act3Move {
+  /** The Act III quarter index (0 = 2027Q1 … 15 = 2030Q4) when the action applied. */
+  q: number
+  kind: Act3MoveKind
+}
+
+export type Act3MoveKind =
+  | 'project_commit'
+  | 'debt_draw'
+  | 'site_buy'
+  | 'gpu_buy'
+  | 'blend_extend'
+  | 'gpu_contract_long'
+  | 'card_lengthen'
+  | 'distressed_buy'
+  | 'sale_voluntary'
+  | 'debt_repay'
+  | 'card_shorten'
+  | 'equity_raise'
+
 /**
  * An Act III blend-and-extend offer (M12.4, DT): a shell tenant with more than 8 quarters left offers to
  * add `extendQuarters` to its lease at one blended rent for the whole remaining + extended term.
@@ -594,6 +615,11 @@ export interface GameState {
   act3Entry?: Act3Entry
   /** Act III (M12.2): the renewals open this quarter. Absent in every other act. */
   act3Renewals?: Renewal[]
+  /**
+   * Act III (M14.2): the player's big moves, one entry per action that applied in Act III (q = the Act III
+   * quarter index 0–15). It holds no scenario information; the reading score reads it at the end.
+   */
+  act3Moves?: Act3Move[]
   /**
    * Act III (M12.4): this Plan phase's blend-and-extend offers (a lease's anniversary quarter). Ignored,
    * they lapse. Absent until the first offer.

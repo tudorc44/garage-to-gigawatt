@@ -2675,6 +2675,12 @@
     "creditRating": null
   },
   "act3Renewals": [],
+  "act3Moves": [
+    {
+      "q": 6,
+      "kind": "card_lengthen"
+    }
+  ],
   "act3End": {
     "scenarioId": "s2",
     "scenarioName": "Lift-Off",

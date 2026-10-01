@@ -176,6 +176,23 @@ const TARGETS: Record<string, ContractTarget | Record<number, ContractTarget>> =
  */
 const REPLACE_TENANT = ['s1_c7.c2']
 
+/** The effect keys the move log reads (systems/act3Moves.ts); only these are copied onto a choice. */
+const MOVE_EFFECT_KEYS = [
+  'term_years',
+  'term_add_years',
+  'term',
+  'cash',
+  'gpu_resale_mult',
+  'debt_reduce',
+  'debt',
+  'gpu_rack',
+  'capex_mw',
+  'mw',
+]
+
+/** The distressed purchases for the move log (M14.2: s1_c6 "Bid with cash" for a distressed 60 MW site). */
+const DISTRESSED_BUY = ['s1_c6.c1']
+
 /** reveals: the indicator a card's free read shows (design thread, M12.3). */
 const REVEALS: Record<string, string> = { s3_c1: 'efficiency_index' }
 
@@ -390,6 +407,14 @@ export function toEngineCard(
   const choices = c.choices.map((ch, i) => ({
     id: `c${i + 1}`,
     effects: translateEffects(ch.effect, { card: c.id, choice: i + 1 }),
+    // M14.2: the authored effect as written (a deferred choice keeps its values here), which the move log
+    // classifies when the player picks it; and whether it is a distressed purchase. No scenario or role.
+    act3Effect: Object.fromEntries(
+      Object.entries(ch.effect).filter(([k]) => MOVE_EFFECT_KEYS.includes(k)),
+    ),
+    ...(DISTRESSED_BUY.includes(`${c.id}.c${i + 1}`)
+      ? { act3Distressed: true }
+      : {}),
   }))
   const def = c.choices.findIndex((ch) => ch.label === c.default)
   return {

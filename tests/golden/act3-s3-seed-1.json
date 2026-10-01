@@ -2702,6 +2702,20 @@
     "creditRating": null
   },
   "act3Renewals": [],
+  "act3Moves": [
+    {
+      "q": 4,
+      "kind": "card_shorten"
+    },
+    {
+      "q": 7,
+      "kind": "card_shorten"
+    },
+    {
+      "q": 12,
+      "kind": "project_commit"
+    }
+  ],
   "act3End": {
     "scenarioId": "s3",
     "scenarioName": "Efficiency Shock",

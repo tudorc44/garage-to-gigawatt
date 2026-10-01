@@ -2701,6 +2701,12 @@
     "creditRating": null
   },
   "act3Renewals": [],
+  "act3Moves": [
+    {
+      "q": 5,
+      "kind": "card_lengthen"
+    }
+  ],
   "act3Payouts": [],
   "act3End": {
     "scenarioId": "s0",
