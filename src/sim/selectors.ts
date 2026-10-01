@@ -146,6 +146,7 @@ import {
   allHires,
   buildQuartersFor,
   isAct2Hire,
+  isAct3Hire,
   isHired,
   readMarketBandwidth,
   revealsFlaws,
@@ -965,6 +966,8 @@ export const URI_STORM_PRICE =
 export function hireViews(state: GameState) {
   return allHires()
     .filter((h) => inAct2Rules(state) || !isAct2Hire(h.id))
+    // (M17.3: the Government Affairs Director only in Act III)
+    .filter((h) => inActIII(state) || !isAct3Hire(h.id))
     .map((h) => ({
       id: h.id,
       name: h.name,

@@ -12,6 +12,7 @@ import {
 } from '../../content/index.ts'
 import { inActIII, type GameState } from '../state.ts'
 import { ppaRegions } from './nuclear.ts'
+import { lowCapital } from './pcState.ts'
 import { getRegion } from './regions.ts'
 import { poweredKw, regionOf } from './sites.ts'
 
@@ -64,9 +65,11 @@ export function moratoriumRegion(state: GameState): PowerRegion | undefined {
   const angriest = [...mine].sort(
     (a, b) => regionAnger(state, b) - regionAnger(state, a),
   )[0]
-  return angriest && regionAnger(state, angriest) >= A.moratoriumAt
-    ? angriest
-    : undefined
+  // Act III (M17.3): with political capital under 15 the moratorium comes at Anger 40 (designed).
+  const at = lowCapital(state)
+    ? BALANCE.act3.politicalCapital.lowCapital.moratoriumAngerAt
+    : A.moratoriumAt
+  return angriest && regionAnger(state, angriest) >= at ? angriest : undefined
 }
 
 /** Whether new projects are blocked at sites in this region now (ec21's moratorium). */

@@ -195,6 +195,12 @@ at quarter end into AI costs (clouds pay the PPA price weekly, × PUE; shell ten
 isn't counted as used); tenant pull (+1 shell offer, hyperscaler × 1.03); Anger −5 per region with a PPA; a PPA outlives an ended project
 and a new project on the site takes it; it goes with a sale; `ppaRows` for Contracts. Goldens unchanged. 1125 tests.
 
+**M17.3 done:** `systems/politics.ts` + `pcState.ts`: `state.politicalCapital` (40 at entry, −2 a quarter, 0–100, in each Act III report),
+`state.angerAdj` (−20…+20, added to every region's Anger, floor 0), `state.act3Gov`; the Director (Act III hire, $450K, +3 PC and −1 Anger
+a quarter); LOBBY (1 BW, paid now, lands at quarter end; tariff backfire on substream act3_pc, rolled at Start) and PC_SPEND (the five
+cards; tariff relief not offered); low capital (< 15): moratorium at Anger 40, grid queues +1. **Goldens:** act3-s* gain only the PC
+fields, each report's PC and the PC log line (insertions only). 1140 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /

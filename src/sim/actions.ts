@@ -96,6 +96,12 @@ import {
   retrofitBlocker,
   startRetrofit,
 } from './systems/retrofit.ts'
+import {
+  lobby,
+  lobbyBlocker,
+  spendBlocker,
+  spendPc,
+} from './systems/politics.ts'
 import { recordAct3Move } from './systems/act3Moves.ts'
 import {
   borrowBlocker,
@@ -363,6 +369,10 @@ export type Action =
   | { type: 'RETROFIT'; projectId: string }
   /** Act III (M16.3): swap a live cloud's or pilot's GPUs for a generation that fits its tier (1 BW). */
   | { type: 'REFIT_GPUS'; projectId: string; gpu: string }
+  /** Act III (M17.3): start a lobbying action (1 BW, its cost now; the gain lands at the quarter's end). */
+  | { type: 'LOBBY'; id: string }
+  /** Act III (M17.3): spend political capital on a card (0 BW). */
+  | { type: 'PC_SPEND'; id: string }
   /** Your ask: a tenant's price multiple (1.05 = 5% over the card) or a lender's rate cut (0.005). */
   | { type: 'DEAL_COUNTER'; ask: number }
   | { type: 'DEAL_ACCEPT' }
@@ -936,6 +946,20 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = refitBlocker(s, a.projectId, a.gpu)
       if (blocked) return blocked
       refitGpus(s, a.projectId, a.gpu)
+      return
+    }
+
+    case 'LOBBY': {
+      const blocked = lobbyBlocker(s, a.id)
+      if (blocked) return blocked
+      lobby(s, a.id)
+      return
+    }
+
+    case 'PC_SPEND': {
+      const blocked = spendBlocker(s, a.id)
+      if (blocked) return blocked
+      spendPc(s, a.id)
       return
     }
 

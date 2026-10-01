@@ -966,6 +966,8 @@ export interface QuarterReport {
   heatTier: string
   /** Filled when cash went below zero and assets had to be sold. */
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
+  /** Act III (M17.3): political capital at the quarter's end. Absent in every other act. */
+  politicalCapital?: number
   /** Act II: the credit rating at quarter end (absent in Act I). */
   creditRating?: string
   /** Act II: what the rating rests on (M8.3): debt ÷ yearly EBITDA, its band, backlog quality, runway, card notches. */

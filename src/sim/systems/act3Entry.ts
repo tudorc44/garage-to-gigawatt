@@ -21,6 +21,7 @@ import {
 import { emptyQuarterStats, type Act3Entry, type GameState } from '../state.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { assignCarriedTiers } from './density.ts'
+import { startPolitics } from './politics.ts'
 import { debtUsd } from './loans.ts'
 import { mwByUse } from './mwUse.ts'
 import { openRenewals } from './renewals.ts'
@@ -122,6 +123,8 @@ export function enterAct3(state: GameState, scenario: ScenarioId): GameState {
   s.act3Moves = []
   // Each carried hall gets its density tier (M16.2, DT).
   assignCarriedTiers(s)
+  // Political capital starts at 40 (M17.3).
+  startPolitics(s)
 
   return s
 }

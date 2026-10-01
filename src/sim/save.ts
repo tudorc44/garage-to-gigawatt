@@ -7,6 +7,7 @@ import { actFirstQuarter, actLastQuarter } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
 import { assignCarriedTiers } from './systems/density.ts'
+import { startPolitics } from './systems/politics.ts'
 import {
   emptyQuarterStats,
   newGame,
@@ -130,5 +131,7 @@ export function restoreSave(raw: unknown): Loaded {
   if (state.act === 3 && !Array.isArray(state.act3Moves)) state.act3Moves = []
   // M16.2: an Act III save from before the density tiers gives its halls the tiers they'd have at entry.
   if (state.act === 3) assignCarriedTiers(state)
+  // M17.3: an Act III save from before political capital starts the meter at 40.
+  if (state.act === 3 && state.politicalCapital === undefined) startPolitics(state)
   return { ok: true, state }
 }

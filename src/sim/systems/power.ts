@@ -7,7 +7,7 @@
 // - on-site gas: $/MW, a 2-quarter build, and Heat at the site while it runs (more with the
 //   air-permit flaw).
 // The project goes live when both its build and its power are done.
-import { CONTENT, type PowerRegion } from '../../content/index.ts'
+import { BALANCE, CONTENT, type PowerRegion } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
 import type { GameState, PowerSource, Project, Site } from '../state.ts'
@@ -15,6 +15,7 @@ import { isHired } from './hires.ts'
 import { extraQueueQuarters, gridUpgradesHalted } from './regions.ts'
 import { flawEffect, regionOf } from './sites.ts'
 import { nuclearBlocker, nuclearPowerQuarters } from './nuclear.ts'
+import { lowCapital } from './pcState.ts'
 
 const POWER = () => CONTENT.projects.power
 /** The hire whose queue effect applies to grid upgrades (scope 0.2 §2.8), and by how much. */
@@ -35,7 +36,12 @@ export function gridQuarterRange(
   region: PowerRegion,
 ): [number, number] {
   const [lo, hi] = POWER().grid.quartersByRegion[region]
-  const shift = extraQueueQuarters(region, state.quarter) - exUtilityCut(state)
+  // Act III (M17.3): with political capital under 15, new grid upgrades queue a quarter longer (designed).
+  const lowPc = lowCapital(state)
+    ? BALANCE.act3.politicalCapital.lowCapital.gridQueueExtraQuarters
+    : 0
+  const shift =
+    extraQueueQuarters(region, state.quarter) - exUtilityCut(state) + lowPc
   return [Math.max(1, lo + shift), Math.max(1, hi + shift)]
 }
 

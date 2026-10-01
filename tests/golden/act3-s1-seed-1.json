@@ -456,6 +456,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 38,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -528,6 +529,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 36,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -600,6 +602,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 34,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -672,6 +675,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 32,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -744,6 +748,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 30,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -816,6 +821,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 28,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -888,6 +894,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 26,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -960,6 +967,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 24,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1032,6 +1040,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 22,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1104,6 +1113,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 20,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1176,6 +1186,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 18,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1248,6 +1259,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 16,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1320,6 +1332,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 14,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1392,6 +1405,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 12,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1464,6 +1478,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 10,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1536,6 +1551,7 @@
         "idle": 18255
       },
       "forcedSale": null,
+      "politicalCapital": 8,
       "creditRating": "B+",
       "ratingWhy": {
         "debtToEbitda": null,
@@ -1603,6 +1619,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 40,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 38,
+        "deltaPc": -2
       }
     },
     {
@@ -1677,6 +1702,15 @@
       }
     },
     {
+      "quarter": 41,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 36,
+        "deltaPc": -2
+      }
+    },
+    {
       "quarter": 42,
       "week": 2,
       "key": "log.event_choice",
@@ -1716,6 +1750,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 42,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 34,
+        "deltaPc": -2
       }
     },
     {
@@ -1785,6 +1828,15 @@
       }
     },
     {
+      "quarter": 43,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 32,
+        "deltaPc": -2
+      }
+    },
+    {
       "quarter": 44,
       "week": 1,
       "key": "log.failures",
@@ -1846,6 +1898,15 @@
       "key": "log.failures",
       "params": {
         "count": 2
+      }
+    },
+    {
+      "quarter": 44,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 30,
+        "deltaPc": -2
       }
     },
     {
@@ -1932,6 +1993,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 45,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 28,
+        "deltaPc": -2
       }
     },
     {
@@ -2049,6 +2119,15 @@
       }
     },
     {
+      "quarter": 46,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 26,
+        "deltaPc": -2
+      }
+    },
+    {
       "quarter": 47,
       "week": 1,
       "key": "log.failures",
@@ -2108,6 +2187,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 47,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 24,
+        "deltaPc": -2
       }
     },
     {
@@ -2186,6 +2274,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 48,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 22,
+        "deltaPc": -2
       }
     },
     {
@@ -2279,6 +2376,15 @@
       }
     },
     {
+      "quarter": 49,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 20,
+        "deltaPc": -2
+      }
+    },
+    {
       "quarter": 50,
       "week": 1,
       "key": "log.switched_off",
@@ -2322,6 +2428,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 50,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 18,
+        "deltaPc": -2
       }
     },
     {
@@ -2398,6 +2513,15 @@
       }
     },
     {
+      "quarter": 51,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 16,
+        "deltaPc": -2
+      }
+    },
+    {
       "quarter": 52,
       "week": 1,
       "key": "log.switched_off",
@@ -2450,6 +2574,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 52,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 14,
+        "deltaPc": -2
       }
     },
     {
@@ -2536,6 +2669,15 @@
       }
     },
     {
+      "quarter": 53,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 12,
+        "deltaPc": -2
+      }
+    },
+    {
       "quarter": 54,
       "week": null,
       "key": "log.rate_hike_ends",
@@ -2603,6 +2745,15 @@
       "key": "log.failures",
       "params": {
         "count": 1
+      }
+    },
+    {
+      "quarter": 54,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 10,
+        "deltaPc": -2
       }
     },
     {
@@ -2686,6 +2837,15 @@
         "units": 21,
         "tier": "own_site"
       }
+    },
+    {
+      "quarter": 55,
+      "week": null,
+      "key": "log.pc_quarter",
+      "params": {
+        "pc": 8,
+        "deltaPc": -2
+      }
     }
   ],
   "scenarioId": "s1",
@@ -2702,6 +2862,13 @@
   },
   "act3Renewals": [],
   "act3Moves": [],
+  "politicalCapital": 8,
+  "angerAdj": 0,
+  "act3Gov": {
+    "pending": [],
+    "lastUsed": {},
+    "once": []
+  },
   "act3End": {
     "scenarioId": "s1",
     "scenarioName": "Great Repricing",

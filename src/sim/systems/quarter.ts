@@ -30,6 +30,7 @@ import {
 } from './renewals.ts'
 import { payAct3Payouts } from './cardContracts.ts'
 import { settlePpas } from './nuclear.ts'
+import { endQuarterPolitics } from './politics.ts'
 import { openBlendOffers } from './blendExtend.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
@@ -85,7 +86,11 @@ export function endQuarter(state: GameState): void {
   state.cash = roundCents(state.cash)
   // Aggressive depreciation's Q4 audit (card ec18): a restatement shows in this quarter's report.
   if (isAct2RulesQuarter(state.quarter)) depreciationAudit(state)
+  // Act III (M17.3): lobbying lands, the Director's gain, the decay.
+  endQuarterPolitics(state)
   const report = buildReport(state, w, forcedSale)
+  if (inActIII(state) && state.politicalCapital !== undefined)
+    report.politicalCapital = state.politicalCapital
   // The credit rating is reviewed each quarter in Act III too (M11.4c: YES, same formula).
   if (isAct2RulesQuarter(state.quarter)) {
     const previous = state.creditRating

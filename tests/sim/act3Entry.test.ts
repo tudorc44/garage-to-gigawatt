@@ -240,8 +240,11 @@ describe('enterAct3: computed, not stored', () => {
     )
   })
 
-  it('Ratepayer Anger is not stored: it is worked out from energized MW (no state field)', () => {
-    expect(Object.keys(toAct3(end)).filter((k) => /anger/i.test(k))).toEqual([])
+  it('Ratepayer Anger is not stored: it is worked out from energized MW; M17.3 stores only the company-wide adjustment, 0 at entry', () => {
+    const s = toAct3(end)
+    expect(Object.keys(s).filter((k) => /anger/i.test(k))).toEqual(['angerAdj'])
+    expect(s.angerAdj).toBe(0)
+    expect(s.politicalCapital).toBe(40)
   })
 
   it('a company with no reports still gets an entry (valuation falls back to cash)', () => {

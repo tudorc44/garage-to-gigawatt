@@ -13,11 +13,23 @@ import {
   type SiteTier,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inAct2Rules, logEntry, type GameState } from '../state.ts'
+import { inAct2Rules, inActIII, logEntry, type GameState } from '../state.ts'
 
-/** Every hire the game knows: Act I's five, then Act II's new ones (hires_act2.json). */
+/**
+ * Every hire the game knows: Act I's five, then Act II's new ones (hires_act2.json), then Act III's
+ * Government Affairs Director (political_capital.json, M17.3).
+ */
 export function allHires(): Hire[] {
-  return [...CONTENT.hires.list, ...CONTENT.hiresAct2.newHires]
+  return [
+    ...CONTENT.hires.list,
+    ...CONTENT.hiresAct2.newHires,
+    ...CONTENT.act3Hires,
+  ]
+}
+
+/** Hires that exist only in Act III (M17.3). */
+export function isAct3Hire(id: string): boolean {
+  return CONTENT.act3Hires.some((h) => h.id === id)
 }
 
 /** Hires that exist only in Act II (the Head of Development, the Capital Markets Lead). */
@@ -43,6 +55,8 @@ function staffHires(state: GameState): Hire[] {
  * salary for that quarter.
  */
 export function salaryUsdQ(hire: Hire, quarter: number): number {
+  // Act III's Director: political_capital.json's salary a quarter (M17.3).
+  if (isAct3Hire(hire.id)) return CONTENT.politicalCapital.hire.salaryUsdQ
   const series = CONTENT.hiresAct2.salaryYr[hire.id]
   // Act III (M11.4c, mine, reversible): the file has no 2027+ salaries, so 2026Q4's holds.
   if (series && isAct2RulesQuarter(quarter))
@@ -174,6 +188,7 @@ export function hireBlocker(state: GameState, id: string): Message | undefined {
   if (!hire) return { key: 'error.unknown_hire' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (isAct2Hire(id) && !inAct2Rules(state)) return { key: 'error.act2_only' }
+  if (isAct3Hire(id) && !inActIII(state)) return { key: 'error.act3_only' }
   if (isHired(state, id))
     return { key: 'error.already_hired', params: { hire: id } }
   if (
