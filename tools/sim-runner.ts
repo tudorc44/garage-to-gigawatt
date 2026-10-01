@@ -6,7 +6,11 @@
 //   npm run sim -- --act2 --act2-bots sign-then-raise,asic-retirer   (only those, for a quick check)
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { CONTENT, actLastQuarter } from '../src/content/index.ts'
+import {
+  CONTENT,
+  actLastQuarter,
+  type ScenarioId,
+} from '../src/content/index.ts'
 import { playFrom, playGame, type Strategy } from '../src/sim/replay.ts'
 import { presetGame } from '../src/sim/preset.ts'
 import { gpuResidualUsd, projectCapex } from '../src/sim/systems/projects.ts'
@@ -19,6 +23,11 @@ import { gameOverView } from '../src/sim/selectors.ts'
 import { inActII, toAct3 } from '../src/sim/state.ts'
 import { runway } from '../src/sim/systems/runway.ts'
 import { getCard } from '../src/sim/systems/events.ts'
+// tools/ may read the hidden reading score (M14.5's oracle); the player-like bots in bots.ts may not.
+import {
+  computeReading,
+  oracleLogs,
+} from '../src/sim/systems/readingScore.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
@@ -766,6 +775,9 @@ if (args.includes('--act2')) {
       /** AI revenue (leases and GPU contracts) in 2027 and in the last 4 quarters played. */
       aiRevenue2027Usd: number
       aiRevenueLastYearUsd: number
+      /** M14.5: the reading score (null: no weighted quarter) and the number of logged moves. */
+      reading: number | null
+      moves: number
     }
     /** Renewal counts from a finished game's log (Act III quarters only). */
     const renewalStats = (s: GameState): A3Run['renewals'] => {
@@ -841,6 +853,9 @@ if (args.includes('--act2')) {
             aiRevenueLastYearUsd: rep
               .slice(-4)
               .reduce((a, x) => a + x.aiRevenueUsd, 0),
+            // M14.5: the reading score from the reveal record (chapter or game over), and the moves logged.
+            reading: r.state.act3End?.reading.score ?? null,
+            moves: (r.state.act3Moves ?? []).length,
           })
         } catch (e) {
           crashed++
@@ -949,6 +964,77 @@ if (args.includes('--act2')) {
         ]),
       ),
     )
+    // M14.5: the reading score per scenario × bot (numbers only; no balance targets in M14).
+    const pct = (xs: number[], p: number) => {
+      if (xs.length === 0) return NaN
+      const s = [...xs].sort((a, b) => a - b)
+      return s[Math.min(s.length - 1, Math.floor(p * s.length))]
+    }
+    const readingRow = (rows: A3Run[]) => {
+      const scores = rows
+        .map((x) => x.reading)
+        .filter((v): v is number => v !== null)
+      const n = (v: number) => (Number.isNaN(v) ? '—' : v)
+      return {
+        runs: rows.length,
+        median: n(median(scores)),
+        p10: n(pct(scores, 0.1)),
+        p90: n(pct(scores, 0.9)),
+        nullShare: rows.length
+          ? `${Math.round((100 * (rows.length - scores.length)) / rows.length)}%`
+          : '—',
+        medianMoves: n(median(rows.map((x) => x.moves))),
+      }
+    }
+    console.log('  Act III reading score by scenario × bot (M14.5):')
+    console.table(
+      Object.fromEntries(
+        scenarios.flatMap((id) =>
+          [...new Set(a3.map((x) => x.bot))]
+            .map((b) => [
+              `${id} ${b}`,
+              a3.filter((x) => x.scenario === id && x.bot === b),
+            ] as const)
+            .filter(([, rows]) => rows.length > 0)
+            .map(([k, rows]) => [k, readingRow(rows)]),
+        ),
+      ),
+    )
+    console.log('  Act III reading score by scenario (all bots):')
+    console.table(
+      Object.fromEntries(
+        scenarios.map((id) => [
+          id,
+          readingRow(a3.filter((x) => x.scenario === id)),
+        ]),
+      ),
+    )
+    // The oracle (tools/ may read the hidden file): a passive and a perfect log per scenario must give the
+    // M14.3 table (passive 78/50/50/50, perfect 78/100/100/100); the sim stops if they don't.
+    const oracle = Object.fromEntries(
+      scenarios.map((id) => {
+        const logs = oracleLogs(id as ScenarioId)
+        return [
+          id,
+          {
+            passive: computeReading(logs.passive, id as ScenarioId).score,
+            perfect: computeReading(logs.perfect, id as ScenarioId).score,
+          },
+        ]
+      }),
+    )
+    console.log('  Reading-score oracle (synthetic logs):')
+    console.table(oracle)
+    const want = {
+      s0: { passive: 78, perfect: 78 },
+      s1: { passive: 50, perfect: 100 },
+      s2: { passive: 50, perfect: 100 },
+      s3: { passive: 50, perfect: 100 },
+    }
+    if (JSON.stringify(oracle) !== JSON.stringify(want))
+      throw new Error(
+        `Reading-score oracle self-check failed: ${JSON.stringify(oracle)}`,
+      )
     // For the scenario-order check: S3 runs with a contract coming due after 2027Q4.
     const s3Late = a3.filter(
       (x) => x.scenario === 's3' && x.renewals.dueAfter2027Q4 > 0,
