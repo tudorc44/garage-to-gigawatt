@@ -606,9 +606,30 @@ export const gpusFileSchema = z.looseObject({
       available_from: z.string().regex(/^\d{4}Q[1-4]/),
       in_alpha_0_2: z.boolean(),
       gpus_per_mw_it_load: sourced.optional(),
+      /** Weeks from order to delivery by quarter (plus source notes); M16.1 reads the last dated one. */
+      lead_time_weeks: z.record(z.string(), z.unknown()).optional(),
     }),
   ),
 })
+
+/** gpus_act3.json (M16.1, doc 27 D1–D3): the density tiers, the retrofit rules and the Rubin GPUs per MW. */
+const densityTier = z.enum(['low', 'mid', 'top'])
+export const gpusAct3FileSchema = z.looseObject({
+  generations: z.array(
+    z.looseObject({
+      id: z.string(),
+      tier: z.union([densityTier, z.literal('flavour')]),
+      rack_kw: nonNeg.nullable(),
+      kw_range: z.tuple([nonNeg, nonNeg]).optional(),
+    }),
+  ),
+  density_rules: z.looseObject({
+    low_to_mid: z.looseObject({ retrofit_usd_mw: nonNeg, weeks: nonNeg }),
+    mid_to_top: z.looseObject({ weeks: nonNeg }),
+    gpus_per_mw: z.looseObject({ rubin_nvl144: nonNeg, rubin_ultra: nonNeg }),
+  }),
+})
+export type DensityTier = z.output<typeof densityTier>
 
 export const interruptsAct2FileSchema = z.looseObject({
   new_interrupts: z.array(z.looseObject({ id: z.string() })),

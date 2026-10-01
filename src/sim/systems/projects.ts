@@ -73,8 +73,15 @@ function heldBack<T>(
 }
 
 export function gpuGeneration(id: string): GpuGeneration | undefined {
-  return P().gpus.find((g) => g.id === id)
+  return (
+    P().gpus.find((g) => g.id === id) ??
+    CONTENT.act3Gpus.generations.find((g) => g.id === id)
+  )
 }
+
+/** Rubin and Rubin Ultra (M16.1): priced only from an Act III scenario's columns. */
+const isRubin = (gpu: string): gpu is 'rubin_nvl144' | 'rubin_ultra' =>
+  gpu === 'rubin_nvl144' || gpu === 'rubin_ultra'
 
 /** A GPU's purchase price this quarter (market_quarterly_act2; the first known price before it). */
 export function gpuPriceUsd(
@@ -84,10 +91,17 @@ export function gpuPriceUsd(
 ): number | undefined {
   return heldBack(
     quarter,
-    (q) =>
-      gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
-        ? q.gpuPurchaseUsd[gpu]
-        : null,
+    (q) => {
+      if (gpu === 'h100' || gpu === 'h200' || gpu === 'b200')
+        return q.gpuPurchaseUsd[gpu]
+      // M16.1: Rubin's unit price; Rubin Ultra's rack ÷ its GPUs per rack (designed: 144).
+      if (gpu === 'rubin_nvl144') return q.act3?.rubinUnitUsd ?? null
+      if (gpu === 'rubin_ultra') {
+        const rack = q.act3?.rubinUltraRackUsd
+        return rack ? rack / BALANCE.act3.density.gpusPerRack.rubin_ultra : null
+      }
+      return null
+    },
     scenario,
   )
 }
@@ -103,21 +117,49 @@ export function neocloudUsdHr(
     (q) =>
       gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
         ? q.gpuRentalUsdHr[gpu].neocloud
-        : null,
+        : isRubin(gpu)
+          ? (q.act3?.gpuRentalUsdHr[gpu].neocloud ?? null)
+          : null,
     scenario,
   )
 }
 
-/** GPUs a full-stack project can buy this quarter (in Alpha 0.2, out, and priced). */
+/**
+ * GPUs a full-stack project can buy this quarter (in Alpha 0.2, out, and priced). M16.1: Rubin and Rubin
+ * Ultra join in Act III, each from the first quarter its scenario prices it.
+ */
 export function availableGpus(
   quarter: number,
   scenario?: ScenarioId | null,
 ): GpuGeneration[] {
   const label = CONTENT.quarters[quarter]
-  return P().gpus.filter(
+  return [...P().gpus, ...CONTENT.act3Gpus.generations].filter(
     (g) =>
       g.from <= label && gpuPriceUsd(g.id, quarter, scenario) !== undefined,
   )
+}
+
+/**
+ * Weeks from ordering a GPU generation to having it (M16.1): the scenario's newest-generation lead time for
+ * the newest generation on sale (Rubin until Rubin Ultra is out, then Rubin Ultra); an older generation keeps
+ * Act II's last lead time. Mine, reversible: Rubin, once no longer newest, takes Blackwell's (it has none).
+ */
+export function gpuLeadTimeWeeks(
+  gpu: string,
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number {
+  const ids = availableGpus(quarter, scenario).map((g) => g.id)
+  const newest = ids.includes('rubin_ultra')
+    ? 'rubin_ultra'
+    : ids.includes('rubin_nvl144')
+      ? 'rubin_nvl144'
+      : null
+  const column = quarterInputs(quarter, scenario)?.act3?.newestGenLeadWeeks
+  if (gpu === newest && column != null) return column
+  const own = gpuGeneration(gpu)?.leadTimeWeeks
+  if (own !== undefined) return own
+  return gpuGeneration('b200')?.leadTimeWeeks ?? 0
 }
 
 /**
@@ -187,10 +229,17 @@ export function gpuContractUsdHr(
   scenario?: ScenarioId | null,
 ): number | undefined {
   const c = BALANCE.projects.gpuContracts
+  // M16.1: Rubin and Rubin Ultra price like the B200, off their own neocloud series.
   const base =
     gpu === 'b200'
       ? heldBack(quarter, (q) => q.gpuRentalUsdHr.b200.neocloud, scenario)
-      : heldBack(quarter, (q) => q.gpuRentalUsdHr.h100.contract1y, scenario)
+      : isRubin(gpu)
+        ? heldBack(
+            quarter,
+            (q) => q.act3?.gpuRentalUsdHr[gpu].neocloud ?? null,
+            scenario,
+          )
+        : heldBack(quarter, (q) => q.gpuRentalUsdHr.h100.contract1y, scenario)
   if (base === undefined) return undefined
   return (
     base * (gpu === 'h200' ? c.h200Mult : 1) * (c.termFactor[termYears] ?? 1)

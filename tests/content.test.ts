@@ -21,6 +21,7 @@ import capitalAct2 from '../src/content/capital_act2.json' with { type: 'json' }
 import conversions from '../src/content/conversions.json' with { type: 'json' }
 import tenants from '../src/content/tenants.json' with { type: 'json' }
 import gpus from '../src/content/gpus.json' with { type: 'json' }
+import gpusAct3 from '../src/content/gpus_act3.json' with { type: 'json' }
 import interruptsAct2 from '../src/content/interrupts_act2.json' with { type: 'json' }
 import lenders from '../src/content/lenders.json' with { type: 'json' }
 import regions from '../src/content/regions.json' with { type: 'json' }
@@ -79,6 +80,7 @@ const raw = (): RawContent =>
     conversions,
     tenants,
     gpus,
+    gpusAct3,
     interruptsAct2,
     lenders,
     regions,
@@ -295,6 +297,7 @@ describe('content loads', () => {
       'rivals_act3.json',
       'events_act3.json',
       'reading_score.json',
+      'gpus_act3.json', // M16.1
     ])
       expect(read(`../src/content/${name}`), name).toBe(
         read(`../docs/act3-content/${name}`),

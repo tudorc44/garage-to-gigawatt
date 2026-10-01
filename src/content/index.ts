@@ -14,6 +14,7 @@ import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
 import conversionsRaw from './conversions.json' with { type: 'json' }
 import tenantsRaw from './tenants.json' with { type: 'json' }
 import gpusRaw from './gpus.json' with { type: 'json' }
+import gpusAct3Raw from './gpus_act3.json' with { type: 'json' }
 import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
 import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
@@ -56,6 +57,8 @@ import {
   gpuAllocationSchema,
   gpuFailureWaveSchema,
   gpusFileSchema,
+  gpusAct3FileSchema,
+  type DensityTier,
   interruptsAct2FileSchema,
   lendersFileSchema,
   pilotClusterSchema,
@@ -143,6 +146,7 @@ export {
   type MarketQuarterAct3Row,
 } from './schemas.ts'
 export type {
+  DensityTier,
   ScenarioId,
   MarketEffect,
   RegionPolicy,
@@ -216,11 +220,31 @@ export interface TenantCard {
   regionLock?: string
 }
 
-/** A GPU generation a full-stack project can buy (gpus.json, per-unit GPUs in Alpha 0.2). */
+/**
+ * A GPU generation a full-stack project can buy (gpus.json, per-unit GPUs in Alpha 0.2; M16.1: Rubin and
+ * Rubin Ultra from gpus_act3.json, buyable in Act III only).
+ */
 export interface GpuGeneration {
-  id: 'h100' | 'h200' | 'b200'
+  id: 'h100' | 'h200' | 'b200' | 'rubin_nvl144' | 'rubin_ultra'
   from: string
   gpusPerMw: number
+  /** Act II's last lead time in weeks (gpus.json; the Rubin GPUs read the scenario's newest-gen column). */
+  leadTimeWeeks?: number
+}
+
+/** Act III's extra market columns for a quarter (M16.1): the Rubin GPUs, chip lead times, the mid→top retrofit. */
+export interface Act3QuarterExtras {
+  /** $ per GPU-hour, by Rubin generation. */
+  gpuRentalUsdHr: Record<
+    'rubin_nvl144' | 'rubin_ultra',
+    { hyperscaler: number | null; neocloud: number | null }
+  >
+  rubinUnitUsd: number | null
+  rubinRackUsd: number | null
+  rubinUltraRackUsd: number | null
+  newestGenLeadWeeks: number | null
+  /** capex_retrofit_density_mid_to_top_usd_mw. */
+  midToTopUsdMw: number | null
 }
 
 export interface ProjectRules {
@@ -347,6 +371,8 @@ export interface Act2Quarter {
   /** 0–100: drives RFP frequency and quality. */
   aiDemandIndex: number
   estimate: boolean
+  /** Act III scenario rows only (M16.1): the step-5 columns. Missing in Act II. */
+  act3?: Act3QuarterExtras
 }
 
 /** An Act II region (regions.json): its queue, Heat and anger modifiers and policy events, in date order. */
@@ -408,6 +434,15 @@ export interface Content {
   }
   /** Projects (Act II, scope 0.2 §2.5): what the Act II content files say about them. */
   projects: ProjectRules
+  /** Act III's hall density tiers and newest GPUs (gpus_act3.json, M16.1). */
+  act3Gpus: {
+    /** Rubin and Rubin Ultra: buyable in Act III only, priced from the scenario market. */
+    generations: GpuGeneration[]
+    /** Each tier's rack density (the first generation of that tier in the file): a typical rack and a range. */
+    tierRackKw: Record<DensityTier, { rackKw: number; range: [number, number] }>
+    lowToMid: { retrofitUsdMw: number; weeks: number }
+    midToTopWeeks: number
+  }
   /** Act II capital (scope 0.2 §2.2, §2.7; doc 18 §7): lenders.json, per Act II quarter where it varies. */
   finance: FinanceRules
   /** The distressed lifeline (capital_act2.json › lifeline_card_final_numbers; scope 0.2 §2.10). */
@@ -564,6 +599,7 @@ export interface RawContent {
   conversions: unknown
   tenants: unknown
   gpus: unknown
+  gpusAct3: unknown
   interruptsAct2: unknown
   lenders: unknown
   regions: unknown
@@ -657,6 +693,11 @@ export function parseContent(raw: RawContent): Content {
   )
   const tenantsFile = check('tenants.json', tenantsFileSchema, raw.tenants)
   const gpusFile = check('gpus.json', gpusFileSchema, raw.gpus)
+  const gpusAct3File = check(
+    'gpus_act3.json',
+    gpusAct3FileSchema,
+    raw.gpusAct3,
+  )
   const lendersFile = check('lenders.json', lendersFileSchema, raw.lenders)
   const regionsFile = check('regions.json', regionsFileSchema, raw.regions)
   const sitesAct2File = check(
@@ -1232,10 +1273,43 @@ export function parseContent(raw: RawContent): Content {
             id: g.id,
             from: g.available_from.slice(0, 6),
             gpusPerMw: g.gpus_per_mw_it_load.value,
+            ...lastLeadTime(g.lead_time_weeks),
           },
         ]
       : [],
   )
+  // Act III (M16.1): Rubin and Rubin Ultra, and each tier's rack density (gpus_act3.json).
+  const act3Gen = (id: string) =>
+    gpusAct3File?.generations.find((g) => g.id === id)
+  const act3Gpus: Content['act3Gpus'] = {
+    generations: gpusAct3File
+      ? [
+          {
+            id: 'rubin_nvl144',
+            from: String(act3Gen('rubin_nvl144')?.available_from ?? '2027Q1'),
+            gpusPerMw: gpusAct3File.density_rules.gpus_per_mw.rubin_nvl144,
+          },
+          {
+            id: 'rubin_ultra',
+            from: String(act3Gen('rubin_ultra')?.available_from ?? '2027Q3'),
+            gpusPerMw: gpusAct3File.density_rules.gpus_per_mw.rubin_ultra,
+          },
+        ]
+      : [],
+    tierRackKw: Object.fromEntries(
+      (['low', 'mid', 'top'] as const).map((tier) => {
+        const g = gpusAct3File?.generations.find((x) => x.tier === tier)
+        const kw = g?.rack_kw ?? 0
+        return [tier, { rackKw: kw, range: g?.kw_range ?? [kw, kw] }]
+      }),
+    ) as Content['act3Gpus']['tierRackKw'],
+    lowToMid: {
+      retrofitUsdMw:
+        gpusAct3File?.density_rules.low_to_mid.retrofit_usd_mw ?? 0,
+      weeks: gpusAct3File?.density_rules.low_to_mid.weeks ?? 0,
+    },
+    midToTopWeeks: gpusAct3File?.density_rules.mid_to_top.weeks ?? 0,
+  }
   const delayChoice = (id: string) =>
     delayRules.choices.find((c) => c.id === id)
   for (const id of ['accelerate', 'accept_slip', 'change_contractor'])
@@ -1628,12 +1702,30 @@ export function parseContent(raw: RawContent): Content {
       act3Scenarios[id] = {
         quarterly,
         weeks,
-        inputs: quarterly.map((r) =>
-          act2QuarterOf(r, {
+        inputs: quarterly.map((r) => ({
+          ...act2QuarterOf(r, {
             mining: r.mining_ev_ebitda_mult,
             aiInfra: r.ai_infra_ev_ebitda_mult,
           }),
-        ),
+          // M16.1: the step-5 columns (Act III rows only).
+          act3: {
+            gpuRentalUsdHr: {
+              rubin_nvl144: {
+                hyperscaler: r.gpu_rubin_hyperscaler_usd_hr,
+                neocloud: r.gpu_rubin_neocloud_usd_hr,
+              },
+              rubin_ultra: {
+                hyperscaler: r.gpu_rubin_ultra_hyperscaler_usd_hr,
+                neocloud: r.gpu_rubin_ultra_neocloud_usd_hr,
+              },
+            },
+            rubinUnitUsd: r.rubin_unit_purchase_usd,
+            rubinRackUsd: r.rubin_nvl144_rack_usd,
+            rubinUltraRackUsd: r.rubin_ultra_nvl576_rack_usd,
+            newestGenLeadWeeks: r.newest_gen_lead_time_weeks,
+            midToTopUsdMw: r.capex_retrofit_density_mid_to_top_usd_mw,
+          },
+        })),
       }
     }
     // Act III's timeline (M11.3): the scenario files' 16 quarters (2027Q1–2030Q4), appended last, after
@@ -1783,6 +1875,7 @@ export function parseContent(raw: RawContent): Content {
     signals,
     hosting,
     projects,
+    act3Gpus,
     finance,
     lifeline: {
       siteKw: capitalAct2File.lifeline_card_final_numbers.site_mw * 1000,
@@ -1906,6 +1999,17 @@ function act3Week(row: MarketWeekAct3, lastAct2: MarketWeek): MarketWeek {
     gpu_h100_spot_usd_hr: row.gpu_h100_spot_usd_hr,
     estimate: row.estimate,
   }
+}
+
+/** A gpus.json generation's last dated lead time (M16.1), as `{ leadTimeWeeks }`, or nothing. */
+function lastLeadTime(
+  table: Record<string, unknown> | undefined,
+): { leadTimeWeeks?: number } {
+  const dated = Object.entries(table ?? {})
+    .filter(([k, v]) => /^\d{4}Q[1-4]$/.test(k) && typeof v === 'number')
+    .sort(([a], [b]) => (a < b ? -1 : 1))
+  const last = dated.at(-1)
+  return last ? { leadTimeWeeks: last[1] as number } : {}
 }
 
 /** A market_quarterly_act2 row, reshaped for the sim. */
@@ -2102,6 +2206,7 @@ export const CONTENT: Content = parseContent({
   conversions: conversionsRaw,
   tenants: tenantsRaw,
   gpus: gpusRaw,
+  gpusAct3: gpusAct3Raw,
   interruptsAct2: interruptsAct2Raw,
   lenders: lendersRaw,
   regions: regionsRaw,

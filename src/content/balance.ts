@@ -641,5 +641,38 @@ export const BALANCE = {
       /** Only to a lease with more than this many quarters left. */
       minQuartersLeft: 8,
     },
+    /**
+     * Hall density tiers (M16.1; doc 27 D1–D3, the design thread's step-5 spec). The retrofit costs and weeks,
+     * the rack sizes and Rubin's GPUs per MW are in gpus_act3.json; the mid→top $/MW in the scenario CSVs.
+     */
+    density: {
+      /** The tier each GPU generation needs: it fits a hall of this tier or denser (DT). */
+      genTier: {
+        a100: 'low',
+        h100: 'low',
+        h200: 'low',
+        b200: 'mid',
+        gb200_nvl72: 'mid',
+        rubin_nvl144: 'mid',
+        rubin_ultra: 'top',
+      } as Record<string, 'low' | 'mid' | 'top'>,
+      /** GPUs in one rack: Rubin NVL144 72 (DT), Rubin Ultra 144 (designed: its unit price is the rack ÷ 144). */
+      gpusPerRack: { rubin_nvl144: 72, rubin_ultra: 144 },
+      /** A shell's new lease, re-let and renewal offer × this by its hall's tier, after the Band clamp (DT). */
+      shellTierRentMult: { low: 0.85, mid: 1.0, top: 1.1 },
+      /** …from this quarter (DT). */
+      shellTierRentFrom: '2027Q3',
+      /** "Build to top tier" on a new hall: this share of the quarter's mid→top retrofit $/MW (designed). */
+      topNewBuildRetrofitShare: 0.6,
+      /** …and this many more build quarters (designed). */
+      topNewBuildExtraQuarters: 1,
+      /** "Build to top tier" can be ticked from this quarter (DT: Rubin Ultra's first quarter). */
+      topNewBuildFrom: '2027Q3',
+      /** A shell carried into Act III is mid tier if its build started in this quarter or later, else low (DT). */
+      carriedShellMidFrom: '2025Q1',
+      /** Bandwidth: a retrofit (RETROFIT) and a GPU change (REFIT_GPUS) (DT). */
+      retrofitBw: 1,
+      refitBw: 1,
+    },
   },
 } as const

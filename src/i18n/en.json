@@ -120,6 +120,8 @@
   "gpu.h100": "H100",
   "gpu.h200": "H200",
   "gpu.b200": "B200",
+  "gpu.rubin_nvl144": "Rubin",
+  "gpu.rubin_ultra": "Rubin Ultra",
   "tenant.tc_north_azure_cloud": "Northgate Cloud",
   "tenant.tc_meridian_labs": "Meridian Labs",
   "tenant.tc_frontier_intelligence": "Frontier Intelligence",

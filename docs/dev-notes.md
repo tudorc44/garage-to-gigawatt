@@ -176,6 +176,8 @@ step-5 card effects; M16.5 the A3-07 screen; M16.6 tests and the sim proof (payb
 
 **M16.0 done:** kinds `project_delay` (−1), `project_accelerate` (+1), `cash_reserve` (−1, a card choice of only debt + the same cash: s0_c2's revolver); s2 2027Q1/Q2 H200 and GB200 rents set (the seam test passes, no pins); chapter report: reads list and description inside "How this was scored", "Not enough quarters played" headline; a D15-flagged card doesn't fire (the withheld display stays as a safety net); leak guard with played history to 2028Q2 (mine: the trigger card's title may show, nothing else). Goldens unchanged. 1049 tests.
 
+**M16.1 done:** `gpus_act3.json` copied (content test); `CONTENT.act3Gpus` (Rubin 900 / Rubin Ultra 1,050 GPUs/MW, tier rack sizes, low→mid $1.5M/MW 10 wk, mid→top 26 wk) and each scenario row's `act3` extras (Rubin prices and rents, lead time, mid→top $/MW); Rubin buyable from 2027Q1, Rubin Ultra from its first priced quarter (rack ÷ 144), rents and contracts and the renewal index on the B200's channels; `gpuLeadTimeWeeks` (mine: Rubin takes the B200's 6 weeks once Rubin Ultra is newest); `BALANCE.act3.density`. Goldens unchanged. 1055 tests.
+
 ## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
 
 Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);

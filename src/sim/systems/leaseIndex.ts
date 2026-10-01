@@ -75,7 +75,10 @@ export function walkProbAtRenewal(
   )
 }
 
-/** The GPU renewal index vs 2025Q4 for a generation: H100 for H100/H200, B200 for B200/GB200. */
+/**
+ * The GPU renewal index vs 2025Q4 for a generation: H100 for H100/H200, B200 for B200/GB200 (M16.1: and for
+ * Rubin and Rubin Ultra, which use the B200's rent channels).
+ */
 export function gpuRenewalIndex(
   quarter: number,
   scenario: ScenarioId | null | undefined,
@@ -83,7 +86,10 @@ export function gpuRenewalIndex(
 ): number | null {
   const r = row(quarter, scenario)
   if (!r) return null
-  return gpu === 'b200' || gpu === 'gb200'
+  return gpu === 'b200' ||
+    gpu === 'gb200' ||
+    gpu === 'rubin_nvl144' ||
+    gpu === 'rubin_ultra'
     ? r.renewal_b200_gpu_index_vs_2025q4
     : r.renewal_h100_gpu_index_vs_2025q4
 }

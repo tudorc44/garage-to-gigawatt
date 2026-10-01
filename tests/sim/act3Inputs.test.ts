@@ -27,6 +27,12 @@ function leaves(o: unknown, prefix = ''): Record<string, number | null> {
 const FIRST = actFirstQuarter(3)
 const LAST = actLastQuarter(3)
 
+/**
+ * The Act II-shaped part of an Act III row: M16.1 adds the step-5 columns (Rubin, lead times, the mid→top
+ * retrofit) under `act3`, kept apart on purpose; these M11.4a checks are about Act II's shape.
+ */
+const act2Shape = (i: Act2Quarter | undefined) => ({ ...i, act3: undefined })
+
 describe('quarterInputs: Act I and II are exactly act2Quarter', () => {
   it('returns act2Quarter’s own record (same object) for every quarter before Act III', () => {
     for (let q = -32; q <= actLastQuarter(2); q++)
@@ -111,7 +117,7 @@ describe('quarterInputs in Act III: the scenario row, in Act II’s shape', () =
   it('only the A100 hyperscaler rent is empty (undefined, as in Act II); every other field has a value', () => {
     for (const id of SCENARIO_IDS)
       for (let q = FIRST; q <= LAST; q++) {
-        const empty = Object.entries(leaves(quarterInputs(q, id)))
+        const empty = Object.entries(leaves(act2Shape(quarterInputs(q, id))))
           .filter(([, v]) => v === null)
           .map(([k]) => k)
         expect(empty, `${id} ${CONTENT.quarters[q]}`).toEqual([
@@ -124,9 +130,9 @@ describe('quarterInputs in Act III: the scenario row, in Act II’s shape', () =
     ).toBeNull()
   })
 
-  it('does not read the Rubin, nuclear, renewal, RFP or walk columns, nor the hidden phase and scenario', () => {
+  it('the Act II shape does not read the Rubin, nuclear, renewal, RFP or walk columns, nor the hidden phase and scenario', () => {
     for (const id of SCENARIO_IDS) {
-      const text = JSON.stringify(quarterInputs(FIRST, id))
+      const text = JSON.stringify(act2Shape(quarterInputs(FIRST, id)))
       for (const bad of [
         'rubin',
         'nuclear',
@@ -138,6 +144,10 @@ describe('quarterInputs in Act III: the scenario row, in Act II’s shape', () =
         'lead_time',
       ])
         expect(text.toLowerCase()).not.toContain(bad)
+      // M16.1: the step-5 part holds Rubin and the lead time only (no nuclear, renewal, phase or scenario).
+      const extra = JSON.stringify(quarterInputs(FIRST, id)!.act3).toLowerCase()
+      for (const bad of ['nuclear', 'renewal', 'rfp', 'walk', 'phase', 'scenario'])
+        expect(extra).not.toContain(bad)
     }
   })
 })
@@ -159,7 +169,7 @@ describe('the seam: 2027Q1 against 2026Q4', () => {
   it('every other field is within ±10% of 2026Q4, except the known outliers', () => {
     const a2 = leaves(act2Quarter(actLastQuarter(2)))
     for (const id of SCENARIO_IDS) {
-      const now = leaves(quarterInputs(FIRST, id))
+      const now = leaves(act2Shape(quarterInputs(FIRST, id)))
       const over: string[] = []
       for (const [k, v] of Object.entries(now)) {
         if (k.startsWith('multiple.')) continue
