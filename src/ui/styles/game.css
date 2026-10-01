@@ -1738,3 +1738,91 @@ td.wrap {
   border-color: var(--ink);
   color: var(--ink);
 }
+
+/* ---------- the Act III chapter report (M15.4, A3-11) ---------- */
+.chapter-card.reveal {
+  width: min(1180px, 100%);
+}
+.reveal-head {
+  align-items: flex-end;
+  gap: var(--space-4);
+}
+.reveal-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+.reveal-two {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--space-4);
+}
+.reveal-timeline {
+  margin: 0;
+}
+.reveal-timeline svg {
+  display: block;
+}
+.reveal-moves td {
+  padding: 2px var(--space-2) 2px 0;
+}
+.reveal-bands {
+  display: flex;
+  gap: 4px;
+}
+.reveal-band {
+  flex: 1;
+  text-align: center;
+  font-size: 11px;
+  padding: 4px 2px;
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-1);
+  color: var(--ink-muted);
+}
+.reveal-band.on {
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  color: var(--on-action);
+  font-weight: 700;
+}
+.reveal-how > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.reveal-strip {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 2px;
+}
+.reveal-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2px 0;
+  border: var(--border-hair) solid var(--line-soft);
+  font-size: 12px;
+  line-height: 1.2;
+}
+.reveal-cell.empty {
+  background: transparent;
+}
+.reveal-cell.pts-1 {
+  background: color-mix(in srgb, var(--gain) 45%, var(--panel));
+}
+.reveal-cell.pts-07 {
+  background: color-mix(in srgb, var(--gain) 25%, var(--panel));
+}
+.reveal-cell.pts-05 {
+  background: color-mix(in srgb, var(--gain) 12%, var(--panel));
+}
+.reveal-cell.pts-0 {
+  background: color-mix(in srgb, var(--loss) 20%, var(--panel));
+}
+@media (max-width: 760px) {
+  .reveal-two {
+    grid-template-columns: 1fr;
+  }
+}

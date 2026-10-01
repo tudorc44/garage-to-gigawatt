@@ -2721,6 +2721,10 @@
     "scenarioName": "Efficiency Shock",
     "triggerQuarter": "2027Q4",
     "triggerQ": 3,
+    "trigger": {
+      "q": 3,
+      "cardId": "a3_791a5106"
+    },
     "decoy": {
       "indicator": "grid_reserve_margin",
       "quarters": [
@@ -2728,34 +2732,41 @@
         "2027Q3",
         "2027Q4",
         "2028Q1"
-      ]
+      ],
+      "fromQ": 1,
+      "toQ": 4
     },
     "signalReads": [],
     "rivalFates": [
       {
         "rival": "core_scientific",
         "name": "Core Scientific",
-        "fate": "Renewals reprice -30% at the reopener; sells a site."
+        "fate": "Renewals reprice -30% at the reopener; sells a site.",
+        "withheld": false
       },
       {
         "rival": "iren",
         "name": "IREN (Iris Energy)",
-        "fate": "Pivots more MW back to mining; hashprice tailwind is small."
+        "fate": "Pivots more MW back to mining; hashprice tailwind is small.",
+        "withheld": false
       },
       {
         "rival": "hut8",
         "name": "Hut 8",
-        "fate": "Tenant reopens; small haircut."
+        "fate": "Tenant reopens; small haircut.",
+        "withheld": false
       },
       {
         "rival": "cipher",
         "name": "Cipher Mining",
-        "fate": "Fluidstack lease renegotiated with Google backstop intact."
+        "fate": "Fluidstack lease renegotiated with Google backstop intact.",
+        "withheld": false
       },
       {
         "rival": "coreweave",
         "name": "CoreWeave",
-        "fate": "Same-GPU-hour price falls, volume rises (Jevons); revenue flat, margin down."
+        "fate": "Same-GPU-hour price falls, volume rises (Jevons); revenue flat, margin down.",
+        "withheld": false
       }
     ],
     "reading": {
@@ -2835,6 +2846,26 @@
         }
       ]
     },
+    "moves": [
+      {
+        "q": 4,
+        "kind": "card_shorten",
+        "sign": -1,
+        "mark": "match"
+      },
+      {
+        "q": 7,
+        "kind": "card_shorten",
+        "sign": -1,
+        "mark": "opposite"
+      },
+      {
+        "q": 12,
+        "kind": "project_commit",
+        "sign": 1,
+        "mark": "neutral"
+      }
+    ],
     "careerTitleId": "contender",
     "readingTitleId": "steady_hand"
   }

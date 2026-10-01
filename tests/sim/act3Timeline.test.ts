@@ -93,6 +93,8 @@ describe('Act III runs its 16 quarters, then the chapter report', () => {
         [
           'careerTitleId',
           'decoy',
+          'moves',
+          'trigger',
           'reading',
           'readingTitleId',
           'rivalFates',

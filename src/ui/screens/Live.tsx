@@ -805,7 +805,11 @@ function MarginWarningCard({ state, act }: ScreenProps) {
 function EventCard({ state, act }: ScreenProps) {
   const v = eventCardView(state)
   if (!v) return null
-  const text = (key: string) => tDynamic(`event.${v.id}.${key}`, '')
+  // D15 (M15.5): a card waiting for the editorial review shows withheld text, choices included.
+  const text = (key: string) =>
+    v.withheld
+      ? t('ui.event.withheld')
+      : tDynamic(`event.${v.id}.${key}`, '')
   return (
     <div class="scrim">
       <article

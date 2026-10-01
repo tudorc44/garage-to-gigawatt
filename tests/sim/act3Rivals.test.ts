@@ -177,7 +177,12 @@ describe('the reveal carries each rival’s fate', () => {
     expect(s.phase).toBe('chapter')
     expect(s.act3End!.rivalFates.map((f) => f.rival)).toEqual(IDS)
     expect(s.act3End!.rivalFates).toEqual(
-      rivalFates('s1').map(({ rival, name, fate }) => ({ rival, name, fate })),
+      rivalFates('s1').map(({ rival, name, fate, withheld }) => ({
+        rival,
+        name,
+        fate,
+        withheld, // M15.3: flagged for D15 and not cleared
+      })),
     )
     // No state before the end mentioned a fate.
     expect(seenFates.every((x) => x === 0)).toBe(true)

@@ -195,6 +195,24 @@ within 3% (blank columns skipped: A100, Rubin Ultra, nuclear at 2027Q1). Goldens
 else. Component tests are `tests/**/*.test.tsx` with `// @vitest-environment happy-dom` per file (every other test keeps node);
 `tsconfig.tools.json` gains `jsx` (preact) and the DOM lib; `tests/ui/happyDom.test.tsx` proves the setup. 1025 tests.
 
+**M15.3 + M15.4 done (one commit: the screen is the record's only reader):** the reveal record gains `trigger` {q, cardId},
+`decoy.fromQ/toQ`, `moves` [{q, kind, sign, mark}] (marked in `act3End.ts` from the hidden file), and `withheld` on each rival fate
+(d15_review and not `d15_cleared`; `rivalsHidden.ts` and event cards accept an optional `d15_cleared`, none set; an event card with
+d15_review would show "Withheld pending review" in play). `act3RevealDetails` is gone: the narratives are in en.json as
+`act3.reveal.s0–s3.{trigger,decoy_reason,decoy_tell}` (a test keeps them word for word with the signals files). The chapter report
+(`Act3Reveal.tsx`) is rebuilt to A3-11: header (or "Out of the game · {quarter}") and the scenario name; the reading title as the
+headline; what happened (trigger line + narrative); the false alarm (indicator, window, reason, tell); the reveal timeline (inline SVG:
+16 ticks, labels 27Q1/28Q1/29Q1/30Q4, the trigger rule and label, the hatched decoy band, move markers stacked per quarter with ✓ / ✗ /
+hatched ✗ / – glyphs, labels only with ≤ 4 moves, a game over greys later ticks with an "Out" marker and "(after you left)" on a later
+trigger, "You made no big moves." when empty; `aria-hidden` inside a figure labelled "{n} moves; {m} matched") with the moves list under
+it; the reading score ("/ 100" or "—" with the not-enough line, the base and penalty line only with a penalty, the five band chips with
+ranges and the player's filled, the wording in quotes, the description, and the collapsed "How this was scored" 16-cell strip of
+stance over ideal shaded by points, weight-0 cells "not scored" and after a game over "not played"); the stats (net worth, at entry,
+growth ×/▲▼, survival, career title); the rivals; "The story continues…" + Continue. Mine: the M13 "your signal reads" list is not on
+the new screen (not in A3-11 or the spec). **Goldens:** the four act3-s* gain only `trigger`, `decoy.fromQ/toQ`, `moves` and the
+`withheld` flags. Component tests (`tests/ui/act3Report.test.tsx`, happy-dom): the s1 golden record, s0 with a penalty, s1 out at
+2027Q3, s2 out at 2027Q2 (null score), no moves, 12 moves, ≤ 4 moves. 1036 tests.
+
 ## Milestone M14 (branch `m14`, from `main` at `e364d54`; Act III scoring, doc 27 D14 + §5) — DONE
 
 Split by the design thread, run in one go: `e191adf` docs (M10–M12 step logs to the archive); M14.1 the reading_score content file and

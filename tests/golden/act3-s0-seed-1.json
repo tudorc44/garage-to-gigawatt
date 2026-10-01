@@ -2713,40 +2713,51 @@
     "scenarioName": "Muddle Through",
     "triggerQuarter": "2028Q2",
     "triggerQ": 5,
+    "trigger": {
+      "q": 5,
+      "cardId": "a3_eb5b36ca"
+    },
     "decoy": {
       "indicator": "lender_spreads",
       "quarters": [
         "2027Q3",
         "2027Q4",
         "2028Q1"
-      ]
+      ],
+      "fromQ": 2,
+      "toQ": 4
     },
     "signalReads": [],
     "rivalFates": [
       {
         "rival": "core_scientific",
         "name": "Core Scientific",
-        "fate": "Renewal wall arrives at the 2028Q2 reset: CoreWeave shell renewals reprice -20%; EBITDA turns positive by 2029 as Denton stabilises."
+        "fate": "Renewal wall arrives at the 2028Q2 reset: CoreWeave shell renewals reprice -20%; EBITDA turns positive by 2029 as Denton stabilises.",
+        "withheld": false
       },
       {
         "rival": "iren",
         "name": "IREN (Iris Energy)",
-        "fate": "Microsoft prepay smooths the reset; keeps buying MW."
+        "fate": "Microsoft prepay smooths the reset; keeps buying MW.",
+        "withheld": false
       },
       {
         "rival": "hut8",
         "name": "Hut 8",
-        "fate": "Beacon Point ramps; quiet outperformer."
+        "fate": "Beacon Point ramps; quiet outperformer.",
+        "withheld": false
       },
       {
         "rival": "cipher",
         "name": "Cipher Mining",
-        "fate": "AWS lease delivered; modest reset."
+        "fate": "AWS lease delivered; modest reset.",
+        "withheld": false
       },
       {
         "rival": "coreweave",
         "name": "CoreWeave",
-        "fate": "Absorbs the reset; growth slows to ~70% of pre-reset pace."
+        "fate": "Absorbs the reset; growth slows to ~70% of pre-reset pace.",
+        "withheld": false
       }
     ],
     "reading": {
@@ -2868,6 +2879,14 @@
         }
       ]
     },
+    "moves": [
+      {
+        "q": 5,
+        "kind": "card_lengthen",
+        "sign": 1,
+        "mark": "neutral"
+      }
+    ],
     "careerTitleId": "contender",
     "readingTitleId": "signal_reader"
   }

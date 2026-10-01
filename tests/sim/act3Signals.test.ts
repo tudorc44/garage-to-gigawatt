@@ -252,8 +252,13 @@ describe('the hidden signals fields never reach src/', () => {
   it('nothing but tests/ and tools/ imports the hidden view or names an authoring field, except the one reveal function', () => {
     for (const file of src.filter((f) => !hiddenModule.test(f))) {
       const text = code(file)
-      for (const bad of fields)
+      for (const bad of fields) {
+        // M15.5: an event card's own d15_review flag is read where cards are built (to withhold its text);
+        // the rivals' D15 flags stay in the hidden view.
+        if (bad === 'd15_review' && /content[\\/]act3Cards\.ts$/.test(file))
+          continue
         expect(text, `${file} mentions ${bad}`).not.toContain(bad)
+      }
       if (!revealModule.test(file))
         for (const view of ['signalsHidden', 'rivalsHidden'])
           expect(text, `${file} imports ${view}`).not.toContain(view)

@@ -1558,6 +1558,9 @@ export function eventCardView(state: GameState) {
     type: CONTENT.events.byId[alert.event]?.type ?? 'random',
     /** The card's text: its story, or its news version (events.json news_unless). */
     bodyKey: eventBodyKey(state),
+    /** D15 (M15.5): a card flagged for the editorial review and not cleared shows withheld text. */
+    withheld: !!(CONTENT.events.byId[alert.event] as { withheld?: boolean })
+      ?.withheld,
     week: alert.week,
     siteTier: state.sites.find((x) => x.id === alert.siteId)?.tier ?? null,
     choices: availableChoices(state).map((id) => {

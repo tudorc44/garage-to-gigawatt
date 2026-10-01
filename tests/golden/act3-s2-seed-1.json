@@ -2686,6 +2686,10 @@
     "scenarioName": "Lift-Off",
     "triggerQuarter": "2028Q3",
     "triggerQ": 6,
+    "trigger": {
+      "q": 6,
+      "cardId": "a3_eb2dad54"
+    },
     "decoy": {
       "indicator": "efficiency_index",
       "quarters": [
@@ -2693,34 +2697,41 @@
         "2027Q4",
         "2028Q1",
         "2028Q2"
-      ]
+      ],
+      "fromQ": 2,
+      "toQ": 5
     },
     "signalReads": [],
     "rivalFates": [
       {
         "rival": "core_scientific",
         "name": "Core Scientific",
-        "fate": "Hits 1.5 GW energized by 2030 on renewals at flat/+10%."
+        "fate": "Hits 1.5 GW energized by 2030 on renewals at flat/+10%.",
+        "withheld": false
       },
       {
         "rival": "iren",
         "name": "IREN (Iris Energy)",
-        "fate": "Sweetwater energised early; the winner of the power squeeze."
+        "fate": "Sweetwater energised early; the winner of the power squeeze.",
+        "withheld": false
       },
       {
         "rival": "hut8",
         "name": "Hut 8",
-        "fate": "Beacon Point expansion contracts."
+        "fate": "Beacon Point expansion contracts.",
+        "withheld": false
       },
       {
         "rival": "cipher",
         "name": "Cipher Mining",
-        "fate": "Colchis 1GW pulled forward."
+        "fate": "Colchis 1GW pulled forward.",
+        "withheld": false
       },
       {
         "rival": "coreweave",
         "name": "CoreWeave",
-        "fate": "Backlog compounds; raises equity at a premium."
+        "fate": "Backlog compounds; raises equity at a premium.",
+        "withheld": false
       }
     ],
     "reading": {
@@ -2793,6 +2804,14 @@
         }
       ]
     },
+    "moves": [
+      {
+        "q": 6,
+        "kind": "card_lengthen",
+        "sign": 1,
+        "mark": "match"
+      }
+    ],
     "careerTitleId": "contender",
     "readingTitleId": "steady_hand"
   }

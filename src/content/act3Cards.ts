@@ -23,6 +23,9 @@ export const act3CardSchema = z.object({
   title: z.string().min(1),
   body: z.string().min(1),
   default: z.string().min(1),
+  /** Doc 27 §15: a card flagged for the editorial review shows withheld text until cleared (M15.5). */
+  d15_review: z.boolean().optional(),
+  d15_cleared: z.boolean().optional(),
   choices: z
     .array(
       z.object({
@@ -427,5 +430,7 @@ export function toEngineCard(
     default: def < 0 ? '' : `c${def + 1}`,
     choices,
     scenario: c.scenario,
+    // D15 (M15.5): its text is withheld on screen until the owner's review clears it. None today.
+    ...(c.d15_review && c.d15_cleared !== true ? { withheld: true } : {}),
   }
 }

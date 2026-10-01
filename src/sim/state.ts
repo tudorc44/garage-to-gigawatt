@@ -143,12 +143,25 @@ export interface Act3End {
   scenarioId: ScenarioId
   scenarioName: string
   triggerQuarter: string
-  decoy: { indicator: SignalId; quarters: string[] }
+  /** The false alarm: its indicator, quarters, and (M15.3) the window as Act III quarter indices. */
+  decoy: { indicator: SignalId; quarters: string[]; fromQ: number; toQ: number }
   signalReads: { quarter: string; indicator: SignalId }[]
-  /** Each rival's scripted fate in this scenario (M11.5b), in file order: shown only in the reveal. */
-  rivalFates: { rival: string; name: string; fate: string }[]
+  /**
+   * Each rival's scripted fate in this scenario (M11.5b), in file order: shown only in the reveal. `withheld`
+   * (M15.3): flagged for the D15 review and not cleared, so the screen shows "Fate withheld pending review".
+   */
+  rivalFates: { rival: string; name: string; fate: string; withheld: boolean }[]
   /** M14.4: the trigger quarter as an Act III quarter index (0–15). */
   triggerQ: number
+  /** M15.3: the trigger as a quarter index and its card's engine id (its title is in en.json under that id). */
+  trigger: { q: number; cardId: string }
+  /** M15.3: each logged move with its sign and its mark against the scenario (hidden file read here only). */
+  moves: {
+    q: number
+    kind: Act3MoveKind
+    sign: number
+    mark: 'match' | 'opposite' | 'decoy' | 'neutral'
+  }[]
   /** M14.4: the reading score (numbers only; readingScore.ts). score null = no weighted quarter. */
   reading: {
     score: number | null

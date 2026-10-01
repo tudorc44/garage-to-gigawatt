@@ -14,6 +14,8 @@ const schema = z.object({
         name: z.string(),
         fate: z.string().min(1),
         d15_review: z.boolean(),
+        /** Set once the owner's editorial review (with counsel) clears the fate (doc 27 §15); none yet. */
+        d15_cleared: z.boolean().optional(),
       }),
     ),
   ),
@@ -25,6 +27,8 @@ export interface RivalFate {
   fate: string
   /** Doc 27 §15: needs an editorial/legal review before any public release. */
   d15Review: boolean
+  /** Shown as "Fate withheld pending review": flagged for review and not cleared (M15.5's D15 guard). */
+  withheld: boolean
 }
 
 /** The five rivals' fates in a scenario, in file order. */
@@ -35,6 +39,7 @@ export function rivalFates(id: ScenarioId): RivalFate[] {
     name: r.name,
     fate: r.fate,
     d15Review: r.d15_review,
+    withheld: r.d15_review && r.d15_cleared !== true,
   }))
 }
 

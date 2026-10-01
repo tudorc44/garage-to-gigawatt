@@ -2707,40 +2707,51 @@
     "scenarioName": "Great Repricing",
     "triggerQuarter": "2028Q1",
     "triggerQ": 4,
+    "trigger": {
+      "q": 4,
+      "cardId": "a3_cafecee9"
+    },
     "decoy": {
       "indicator": "chip_lead_times",
       "quarters": [
         "2027Q2",
         "2027Q3",
         "2027Q4"
-      ]
+      ],
+      "fromQ": 1,
+      "toQ": 3
     },
     "signalReads": [],
     "rivalFates": [
       {
         "rival": "core_scientific",
         "name": "Core Scientific",
-        "fate": "Its single anchor tenant invokes force majeure in 2028Q1 and pays only part of the rent; Core Scientific files for restructuring in 2028Q4 (SCENARIO ILLUSTRATION, D15 flag: fictional-forward, not a prediction)."
+        "fate": "Its single anchor tenant invokes force majeure in 2028Q1 and pays only part of the rent; Core Scientific files for restructuring in 2028Q4 (SCENARIO ILLUSTRATION, D15 flag: fictional-forward, not a prediction).",
+        "withheld": true
       },
       {
         "rival": "iren",
         "name": "IREN (Iris Energy)",
-        "fate": "Sells BTC and pauses Sweetwater; survives on Microsoft prepay."
+        "fate": "Sells BTC and pauses Sweetwater; survives on Microsoft prepay.",
+        "withheld": false
       },
       {
         "rival": "hut8",
         "name": "Hut 8",
-        "fate": "Investment-grade tenant holds; equity -55% but cash-flow intact."
+        "fate": "Investment-grade tenant holds; equity -55% but cash-flow intact.",
+        "withheld": false
       },
       {
         "rival": "cipher",
         "name": "Cipher Mining",
-        "fate": "Backstopped Fluidstack lease holds; AWS lease unaffected."
+        "fate": "Backstopped Fluidstack lease holds; AWS lease unaffected.",
+        "withheld": false
       },
       {
         "rival": "coreweave",
         "name": "CoreWeave",
-        "fate": "DDTL spreads gap out; suspends new-site commitments 2028Q2; asset-sale programme; survives with a recap (D15 flag)."
+        "fate": "DDTL spreads gap out; suspends new-site commitments 2028Q2; asset-sale programme; survives with a recap (D15 flag).",
+        "withheld": true
       }
     ],
     "reading": {
@@ -2820,6 +2831,7 @@
         }
       ]
     },
+    "moves": [],
     "careerTitleId": "contender",
     "readingTitleId": "steady_hand"
   }
