@@ -346,8 +346,8 @@ function NuclearDetails(props: {
   const half = Math.floor(mw / 2)
   const unused = Math.max(0, n.takeOrPay * mw - half)
   const price = n.priceUsdMwh ?? 0
-  // (M17.8 C: the unused MW are resold, so they cost the gap to the resale price)
-  const netUsd = unused * 8760 * (price - n.resaleUsdMwh)
+  // (M17.8 C: the unused MW are resold, so they cost the gap to the resale price; M18.0: the adder is paid on them)
+  const netUsd = unused * 8760 * (price + n.adderUsdMwh - n.resaleUsdMwh)
   return (
     <div class="panel p nuclear-panel" data-nuclear-details>
       <div class="row-between">

@@ -60,7 +60,8 @@ describe('A3-08: the nuclear PPA in the Power slot', () => {
     const resale = 0.9 * CONTENT.act3Scenarios.s0.quarterly[2].power_usd_kwh_pjm * 1000
     expect(container.querySelector('[data-worked]')!.textContent).toBe(
       `If the site draws 10 of 20 MW: 8 MW paid for but unused, resold at about $${resale.toFixed(0)}/MWh: ` +
-        `net ${fmt.money(8 * 8760 * (price - resale))} a year.`,
+        // (M18.0: + PJM's $11/MWh adder on PPA power)
+        `net ${fmt.money(8 * 8760 * (price + 11 - resale))} a year.`,
     )
     fireEvent.click(container.querySelector('[data-use-nuclear]')!)
     expect(container.querySelector('[data-nuclear-details]')).toBeNull()

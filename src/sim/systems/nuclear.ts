@@ -9,6 +9,8 @@
 // - every load pays the market price weekly (capacity charge included) and a shell tenant reimburses it; at the
 //   quarter's end the PPA refunds that market price on the used MW, so used MW cost the PPA price (M17.8);
 // - unused paid-for MW (0.9 × contracted − used) are resold at 0.9 × the region's energy price (M17.8 C);
+// - M18.0 (DT): PPA power also pays Act II's regional adder (PJM +$11, Ohio and Georgia +$5 per MWh), and a cloud's
+//   cooling overhead (× PUE) counts in its draw, so it's PPA power while the draw stays within the contract;
 // - tenant pull: one more shell offer, hyperscaler leases × 1.03; Ratepayer Anger −5 in each region with one;
 // - it can't be cancelled; it goes with its project when sold or foreclosed; if the project ends it stays on the
 //   site at take-or-pay until a new project there uses it. No mark-to-market in the valuation (DT).
@@ -31,6 +33,7 @@ import {
   type Site,
 } from '../state.ts'
 import { downtimeShare } from './density.ts'
+import { regionPowerAdderUsdKwh } from './regions.ts'
 import { getModel, scenarioOf } from './market.ts'
 import {
   isReady,
@@ -114,13 +117,16 @@ export function projectPowerUsdKwh(
 ): number {
   const market = powerPriceUsdKwh(site, quarter, scenarioOf(state))
   const x = ppaOf(state, p)
-  if (!x && p.power === 'nuclear') {
-    const now = nuclearPriceUsdMwh(state, quarter)
-    return now === null ? market : now / 1000
-  }
-  if (!x || p.kw <= 0) return market
-  const covered = Math.min(p.kw, x.kw) / p.kw
-  return covered * (x.priceUsdMwh / 1000) + (1 - covered) * market
+  // (M18.0: the PPA pays the region's adder on top; its MW cover the cooling overhead too, × PUE)
+  const adder = ppaAdderUsdMwh(site, quarter) / 1000
+  // a proposed project with a nuclear Power slot: priced at this quarter's PPA price on its own MW
+  const now = !x && p.power === 'nuclear' ? nuclearPriceUsdMwh(state, quarter) : null
+  const ppaKw = x?.kw ?? (now !== null ? p.kw : 0)
+  const priceUsdMwh = x?.priceUsdMwh ?? now
+  if (priceUsdMwh == null || p.kw <= 0) return market
+  const drawKw = p.kw * (p.kind === 'shell' ? 1 : BALANCE.projects.cloudPue)
+  const covered = Math.min(drawKw, ppaKw) / drawKw
+  return covered * (priceUsdMwh / 1000 + adder) + (1 - covered) * market
 }
 
 /** A quarter's label, past the game's timeline too (a PPA ends in 2042): counted on from 2027Q1. */
@@ -184,9 +190,19 @@ export function siteDrawKw(state: GameState, site: Site, quarter = state.quarter
   for (const p of state.projects) {
     if (p.siteId !== site.id || p.stage !== 'live' || projectGone(p)) continue
     if (p.kind === 'shell' && !p.tenant) continue
-    kw += p.kw * downtimeShare(p, quarter)
+    // (M18.0, DT answer 3: a cloud or pilot draws its cooling overhead too, × PUE)
+    const pue = p.kind === 'shell' ? 1 : BALANCE.projects.cloudPue
+    kw += p.kw * pue * downtimeShare(p, quarter)
   }
   return kw
+}
+
+/**
+ * Act II's regional power adder at a PPA's site, $/MWh (M18.0, DT answer 2): a policy charge on data-centre load,
+ * so PPA power pays it on top of its price (and the shell tenant's market reimbursement already includes it).
+ */
+export function ppaAdderUsdMwh(site: Site | undefined, quarter: number): number {
+  return site ? regionPowerAdderUsdKwh(regionOf(site), quarter) * 1000 : 0
 }
 
 /**
@@ -250,8 +266,9 @@ export function ppaQuarterNetUsd(
   const usedKw = ppaUsedKw(state, x, quarter)
   const usedMw = usedKw / 1000
   const floorMw = (N.takeOrPayShare * x.kw) / 1000
-  const billUsd = x.priceUsdMwh * Math.max(usedMw, floorMw) * h
   const site = state.sites.find((s) => s.id === x.siteId)
+  const billUsd =
+    (x.priceUsdMwh + ppaAdderUsdMwh(site, quarter)) * Math.max(usedMw, floorMw) * h
   const unusedMw = Math.max(0, floorMw - usedMw)
   const resoldUsd = site ? unusedMw * ppaResaleUsdMwh(state, site, quarter) * h : 0
   const paidUsd = site
@@ -323,15 +340,19 @@ export function ppaRegions(state: GameState, quarter = state.quarter): PowerRegi
   return [...out]
 }
 
-/** One quarter of the PPAs' savings against the market: Σ max(0, market − PPA) × used MW × 2,190 h (ppa_savings). */
+/**
+ * One quarter of the PPAs' savings against the market: Σ max(0, market − (PPA + the region's adder)) × used MW ×
+ * 2,190 h (ppa_savings).
+ */
 export function ppaSavingsUsd(state: GameState): number {
   return activePpas(state).reduce((sum, x) => {
     const site = state.sites.find((s) => s.id === x.siteId)
     if (!site) return sum
     const market = powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) * 1000
+    const paid = x.priceUsdMwh + ppaAdderUsdMwh(site, state.quarter)
     return (
       sum +
-      Math.max(0, market - x.priceUsdMwh) *
+      Math.max(0, market - paid) *
         (ppaUsedKw(state, x) / 1000) *
         N.hoursPerQuarter
     )

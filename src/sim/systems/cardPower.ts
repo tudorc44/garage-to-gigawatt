@@ -1,7 +1,7 @@
 // Act III's step-6 card effects (M17.5; the design thread's step-6 spec). The card engine (events.ts) hands
 // each wired effect here, and asks here why a choice is greyed:
-// - ppa_switch (s2_c1, s3_c2): your largest live or building project in an eligible region with no PPA switches
-//   its MW to a nuclear PPA at this quarter's price, take-or-pay from next quarter;
+// - ppa_switch (s2_c1, s3_c2): your live or building project in an eligible region with no PPA at the dearest site
+//   (M18.0; tie: the largest) switches its MW to a nuclear PPA at this quarter's price, take-or-pay from next quarter;
 // - ppa_site_mw (sh_2): that many MW of PPA power added to your largest site in an eligible region, energized
 //   next quarter and idle until a load uses them (take-or-pay 90% from then: the stranded-PPA test); greyed below
 //   200 MW energized (M17.8);
@@ -20,16 +20,25 @@ import {
   quarterLabelBeyond,
 } from './nuclear.ts'
 import { addPc, adjustAnger } from './pcState.ts'
-import { capacityKw, poweredKw, regionOf } from './sites.ts'
+import { scenarioOf } from './market.ts'
+import { capacityKw, poweredKw, powerPriceUsdKwh, regionOf } from './sites.ts'
 
 const regionOfSite = (state: GameState, siteId: string) => {
   const site = state.sites.find((s) => s.id === siteId)
   return site ? regionOf(site) : undefined
 }
 
-/** ppa_switch's target: the largest live or building project in an eligible region with no PPA. */
+/**
+ * ppa_switch's target (M18.0, DT answer 4): among your live or building projects in an eligible region with no PPA,
+ * the one whose site has the highest market power price this quarter (capacity charge and adders included), where
+ * a PPA can pay; tie: the larger project.
+ */
 export function ppaSwitchTarget(state: GameState): Project | undefined {
   const held = new Set(activePpas(state).map((x) => x.projectId))
+  const price = (p: Project) => {
+    const site = state.sites.find((s) => s.id === p.siteId)
+    return site ? powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) : 0
+  }
   return state.projects
     .filter(
       (p) =>
@@ -39,7 +48,7 @@ export function ppaSwitchTarget(state: GameState): Project | undefined {
         !held.has(p.id) &&
         nuclearRegion(regionOfSite(state, p.siteId)),
     )
-    .sort((a, b) => b.kw - a.kw || a.n - b.n)[0]
+    .sort((a, b) => price(b) - price(a) || b.kw - a.kw || a.n - b.n)[0]
 }
 
 /** Your MW energized now, across every site. */

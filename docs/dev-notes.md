@@ -166,6 +166,17 @@ A3-09, the step-6 cards); the owner's staging playtest; then step 7 with A3-12, 
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by
 the real scenario files in M11.3.
 
+## Milestone M18 (branch `m18`, from `m17` at `fc02dc2`, since M16/M17 aren't merged yet; Act III step 7: facilities, presets, A3-12, balance)
+
+Split by the design thread, run in one go: M18.0 the M17.8 answers 1–5 (spread label; regional adders on PPA power; PUE on PPA MW; the
+PPA cards' target by highest market price; signer ± the Director); M18.1 corporate facility (s0_c2, s0_c4); M18.2 standby liquidity
+facility (F-7); M18.3 presets (F-6) + act3Seed salt; M18.4 A3-12 + Scenario Mode; M18.5 archetypes and `--act3-anchors` (baseline);
+M18.6 tuning K1–K6; M18.7 the full sim proof and report.
+
+**M18.0 done:** spread table/test say "market − contract"; PPA power pays the regional adder (bill, savings, projection, A3-08 worked line);
+a cloud's draw counts × PUE in the PPA pool; ppa_switch targets the dearest site's project (tie: larger); the sim adds "signer, no hire" and
+"runs holding a PPA". Goldens unchanged. 1179 → 1181 tests.
+
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
 Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's

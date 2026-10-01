@@ -45,7 +45,11 @@ import {
   powerPriceUsdKwh,
   regionOf,
 } from './systems/sites.ts'
-import { nuclearPriceUsdMwh, ppaResaleUsdMwh } from './systems/nuclear.ts'
+import {
+  nuclearPriceUsdMwh,
+  ppaAdderUsdMwh,
+  ppaResaleUsdMwh,
+} from './systems/nuclear.ts'
 import { gridQuarterRange, powerBlocker } from './systems/power.ts'
 import {
   downtimeDoneQuarter,
@@ -240,6 +244,8 @@ export function openProjectView(state: GameState) {
                   capacityChargeUsdKwh(site, state.quarter, scenarioOf(state)) * 1000,
                 /** M17.8 C: what unused take-or-pay power is resold at here now. */
                 resaleUsdMwh: ppaResaleUsdMwh(state, site),
+                /** M18.0: the region's policy adder, paid on PPA power too. */
+                adderUsdMwh: ppaAdderUsdMwh(site, state.quarter),
                 termYears: CONTENT.act3Nuclear.termQuarters / 4,
                 takeOrPay: BALANCE.act3.nuclear.takeOrPayShare,
                 from: CONTENT.act3Nuclear.unlockQuarter,

@@ -819,7 +819,7 @@ if (args.includes('--act2')) {
      * M17.7, tools only: a bot that also signs every nuclear PPA card choice it can (s2_c1, s3_c2, sh_2) and hires
      * the Government Affairs Director when sh_3 offers him; every other answer is the bot's own.
      */
-    const withPpas = (base: Strategy): Strategy => ({
+    const withPpas = (base: Strategy, hire = true): Strategy => ({
       ...base,
       answer: (s) => {
         const card = s.interrupt?.id === 'event' ? getCard(s.interrupt.event ?? '') : undefined
@@ -830,7 +830,7 @@ if (args.includes('--act2')) {
               open.includes(c.id) &&
               ('ppa_switch' in c.effects ||
                 'ppa_site_mw' in c.effects ||
-                'hire_card' in c.effects),
+                (hire && 'hire_card' in c.effects)),
           )
           if (pick) return pick.id
         }
@@ -903,14 +903,16 @@ if (args.includes('--act2')) {
     const a3: A3Run[] = []
     /** M16.6: the same runs with the retrofit rule added (tools only). */
     const a3r: A3Run[] = []
-    /** M17.7: the same runs as a nuclear signer (tools only). */
+    /** M17.7: the same runs as a nuclear signer (tools only); M18.0: and as one that doesn't hire the Director. */
     const a3n: A3Run[] = []
+    const a3nn: A3Run[] = []
     let crashed = 0
     for (const { name, runs } of byBot) {
       for (const { seed, state } of runs) {
         if (state.phase !== 'chapter') continue
-        // M16.6, M17.7: each run three times: as the bot plays it, with the retrofit rule, as a nuclear signer.
-        for (const variant of ['bot', 'retrofitter', 'signer'] as const) try {
+        // M16.6, M17.7, M18.0: each run four times: as the bot plays it, with the retrofit rule, as a nuclear
+        // signer, and as a signer without the hire.
+        for (const variant of ['bot', 'retrofitter', 'signer', 'signerNoHire'] as const) try {
           const start = toAct3(state)
           const bot = BOTS[name] ?? PROBES[name]
           const strategy =
@@ -918,13 +920,22 @@ if (args.includes('--act2')) {
               ? withRetrofits(bot)
               : variant === 'signer'
                 ? withPpas(bot)
-                : bot
+                : variant === 'signerNoHire'
+                  ? withPpas(bot, false)
+                  : bot
           const r = playFrom(start, strategy, { through: 3 })
           const rep = r.state.reports.filter((x) => x.quarter >= '2027Q1')
           const pcAt = (label: string) =>
             rep.find((x) => x.quarter === label)?.politicalCapital ?? null
           const ppas = activePpas(r.state)
-          ;(variant === 'retrofitter' ? a3r : variant === 'signer' ? a3n : a3).push({
+          ;(variant === 'retrofitter'
+            ? a3r
+            : variant === 'signer'
+              ? a3n
+              : variant === 'signerNoHire'
+                ? a3nn
+                : a3
+          ).push({
             pc2028Q4: pcAt('2028Q4'),
             pc2030Q4: pcAt('2030Q4'),
             wildcards: (r.state.act3Wildcards ?? []).map((w) => ({
@@ -1255,7 +1266,7 @@ if (args.includes('--act2')) {
         spread[`${id} ${label}`] = row
       }
     console.log(
-      '  Nuclear PPA signed 2027Q3 vs market power incl. the capacity charge (M17.8; $/MWh; region columns = market − PPA):',
+      '  Nuclear PPA signed 2027Q3 vs market power incl. the capacity charge (M17.8; $/MWh; region columns = market − contract, positive = the PPA is cheaper):',
     )
     console.table(spread)
     // M17.7: the nuclear signer (the same runs, signing every PPA card it can and hiring the Director).
@@ -1271,16 +1282,19 @@ if (args.includes('--act2')) {
         reading: n(median(scores)),
         ppaMw: n(median(rows.map((x) => x.ppaMw))),
         ppaIdleMw: n(median(rows.map((x) => x.ppaIdleMw))),
+        // (M18.0: how many runs hold a PPA at the end, since the median is often 0)
+        withPpa: `${rows.filter((x) => x.ppaMw > 0).length} of ${rows.length}`,
       }
     }
     console.log(
-      '  Nuclear signer (M17.7, tools only): median founder net worth at 2030Q4, reading, game overs, PPA MW and PPA MW idle at the end:',
+      '  Nuclear signer (M17.7, M18.0 ± the Director; tools only): median founder net worth at 2030Q4, reading, game overs, PPA MW and PPA MW idle at the end, runs holding a PPA:',
     )
     console.table(
       Object.fromEntries(
         scenarios.flatMap((id) => [
           [`${id} bots`, signerRow(a3.filter((x) => x.scenario === id))],
           [`${id} signer`, signerRow(a3n.filter((x) => x.scenario === id))],
+          [`${id} signer, no hire`, signerRow(a3nn.filter((x) => x.scenario === id))],
         ]),
       ),
     )

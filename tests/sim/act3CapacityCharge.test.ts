@@ -11,7 +11,11 @@ import {
   type ScenarioId,
 } from '../../src/content/index.ts'
 import { toAct3, type GameState, type Ppa, type Project } from '../../src/sim/state.ts'
-import { lockedSpreadUsdMwh, ppaQuarterNetUsd } from '../../src/sim/systems/nuclear.ts'
+import {
+  lockedSpreadUsdMwh,
+  ppaAdderUsdMwh,
+  ppaQuarterNetUsd,
+} from '../../src/sim/systems/nuclear.ts'
 import { regionPowerAdderUsdKwh } from '../../src/sim/systems/regions.ts'
 import {
   capacityChargeUsdKwh,
@@ -118,15 +122,18 @@ describe('the capacity charge', () => {
     const market = powerPriceUsdKwh(site2(s), s.quarter, 's2') * 1000
     const charge = capacityChargeUsdKwh(site2(s), s.quarter, 's2') * 1000
     const r = ppaQuarterNetUsd(s, x)
-    // the host pays 103 × 10 MW and the tenant reimburses the market, charge included: a gain
-    expect(r.netUsd).toBeCloseTo((103 - market) * 10 * H, 2)
+    // M18.0: PPA power pays PJM's $11/MWh adder on top; the tenant's market reimbursement includes it
+    const paid = 103 + ppaAdderUsdMwh(site2(s), s.quarter)
+    expect(paid).toBeCloseTo(114, 6)
+    // the host pays (103 + 11) × 10 MW and the tenant reimburses the market, charge included: a gain
+    expect(r.netUsd).toBeCloseTo((paid - market) * 10 * H, 2)
     expect(charge).toBeGreaterThan(20) // so S2's spread comes from it
-    // the cost side: what the used MW cost the host is the PPA price, whatever the charge
-    expect(r.netUsd + market * 10 * H).toBeCloseTo(103 * 10 * H, 2)
+    // the cost side: what the used MW cost the host is the PPA price + adder, whatever the charge
+    expect(r.netUsd + market * 10 * H).toBeCloseTo(paid * 10 * H, 2)
   })
 })
 
-describe('the spread, fixed basis: a PPA signed in 2027Q3 against PJM’s market (capacity charge included)', () => {
+describe('the spread, fixed basis, market − contract: a PPA signed in 2027Q3 against PJM’s market (capacity charge included)', () => {
   // The design thread's check values (±1 for rounding), $/MWh, as market − contract (positive: the PPA wins).
   const want: Record<ScenarioId, number[]> = {
     s0: [-12, -8, -4, 0],

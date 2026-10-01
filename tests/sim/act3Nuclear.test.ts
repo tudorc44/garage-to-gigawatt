@@ -16,6 +16,7 @@ import { toAct3, type GameState, type Ppa, type Project } from '../../src/sim/st
 import { regionAnger } from '../../src/sim/systems/anger.ts'
 import {
   activePpas,
+  ppaAdderUsdMwh,
   ppaQuarterNetUsd,
   ppaResaleUsdMwh,
   ppaUsedKw,
@@ -185,34 +186,42 @@ function allPpa(s: GameState): GameState {
 }
 const site2 = (s: GameState) => s.sites.find((x) => x.id === 'site-2')!
 const market = (s: GameState) => powerPriceUsdKwh(site2(s), s.quarter, 's0') * 1000
+/** M18.0: the PPA's price plus the region's adder (PJM's large-load tax, $11/MWh), what PPA power costs. */
+const paid = (s: GameState, price = 120) => price + ppaAdderUsdMwh(site2(s), s.quarter)
+const PUE = BALANCE.projects.cloudPue
 
 describe('take-or-pay 90%, the unused power resold (M17.8 C)', () => {
   it('used 0 (an empty shell), half and full: bill on max(used, 0.9 × contracted); unused resold at 0.9 × energy', () => {
     const s = allPpa(co('2028Q1'))
     s.projects = [project({ kind: 'shell', gpu: null, tenant: null })]
     const x = ppa({}, s)
+    expect(paid(s) - 120).toBeCloseTo(11, 6) // M18.0: PJM's adder on PPA power
     const resale = ppaResaleUsdMwh(s, site2(s))
     const energy = CONTENT.act3Scenarios.s0.quarterly[q('2028Q1') - q('2027Q1')].power_usd_kwh_pjm
     expect(resale).toBeCloseTo(0.9 * energy * 1000, 6) // no capacity charge in it
     // used 0: 9 MW paid for, all resold
     let r = ppaQuarterNetUsd(s, x)
-    expect(r.billUsd).toBeCloseTo(120 * 9 * H, 4)
+    expect(r.billUsd).toBeCloseTo(paid(s) * 9 * H, 4)
     expect(r.unusedKw).toBeCloseTo(9_000, 6)
     expect(r.resoldUsd).toBeCloseTo(resale * 9 * H, 4)
-    expect(r.netUsd).toBeCloseTo((120 - resale) * 9 * H, 4)
-    // half: a 5 MW cloud on a 10 MW PPA: 4 MW resold; the 5 MW used paid the market weekly
+    expect(r.netUsd).toBeCloseTo((paid(s) - resale) * 9 * H, 4)
+    // half: a 5 MW cloud on a 10 MW PPA draws 5 × 1.15 MW with its cooling (M18.0); 9 − 5.75 MW resold
     s.projects = [project({ kw: 5_000 })]
     r = ppaQuarterNetUsd(s, x)
-    expect(r.usedKw).toBe(5_000)
-    expect(r.billUsd).toBeCloseTo(120 * 9 * H, 4)
-    expect(r.resoldUsd).toBeCloseTo(resale * 4 * H, 4)
-    expect(r.netUsd).toBeCloseTo(120 * 9 * H - market(s) * 5 * H - resale * 4 * H, 4)
-    // full: the bill on 10 MW, nothing resold; the net is the PPA price less the market already paid
+    expect(r.usedKw).toBeCloseTo(5_000 * PUE, 6)
+    expect(r.billUsd).toBeCloseTo(paid(s) * 9 * H, 4)
+    expect(r.resoldUsd).toBeCloseTo(resale * (9 - 5 * PUE) * H, 4)
+    expect(r.netUsd).toBeCloseTo(
+      paid(s) * 9 * H - market(s) * 5 * PUE * H - resale * (9 - 5 * PUE) * H,
+      4,
+    )
+    // full: a 10 MW cloud draws 11.5 MW: the PPA's 10 MW all used, nothing resold; the 1.5 MW above it at market
     s.projects = [project({})]
     r = ppaQuarterNetUsd(s, x)
-    expect(r.billUsd).toBeCloseTo(120 * 10 * H, 4)
+    expect(r.usedKw).toBe(10_000)
+    expect(r.billUsd).toBeCloseTo(paid(s) * 10 * H, 4)
     expect(r.resoldUsd).toBe(0)
-    expect(r.netUsd).toBeCloseTo((120 - market(s)) * 10 * H, 4)
+    expect(r.netUsd).toBeCloseTo((paid(s) - market(s)) * 10 * H, 4)
   })
 
   it('a hall in downtime draws only the share of the quarter it runs', () => {
@@ -221,14 +230,14 @@ describe('take-or-pay 90%, the unused power resold (M17.8 C)', () => {
     const x = ppa({}, s)
     expect(ppaQuarterNetUsd(s, x).usedKw).toBe(0)
     s.projects[0].downtime!.weeks = 10
-    expect(ppaQuarterNetUsd(s, x).usedKw).toBeCloseTo(10_000 * (3 / 13), 6)
+    expect(ppaQuarterNetUsd(s, x).usedKw).toBeCloseTo(10_000 * PUE * (3 / 13), 6)
   })
 
   it('settled at the quarter end into the AI costs (EBITDA) and cash; the resale on its own report line', () => {
     const s = allPpa(co('2028Q1'))
     s.projects = [project({ kind: 'shell', gpu: null, tenant: null })]
     ppa({}, s)
-    const net = (120 - ppaResaleUsdMwh(s, site2(s))) * 9 * H
+    const net = (paid(s) - ppaResaleUsdMwh(s, site2(s))) * 9 * H
     const cash = s.cash
     settlePpas(s)
     expect(cash - s.cash).toBeCloseTo(net, 2)
@@ -246,18 +255,34 @@ describe('who pays: every load pays the market weekly; the PPA settles the used 
     const plain = settleProjectsWeek(structuredClone(s)).costUsd
     const x = ppa({ priceUsdMwh: 200 }, s)
     expect(settleProjectsWeek(structuredClone(s)).costUsd).toBeCloseTo(plain, 6)
-    expect(ppaQuarterNetUsd(s, x).netUsd).toBeCloseTo((200 - market(s)) * 10 * H, 2)
+    expect(ppaQuarterNetUsd(s, x).netUsd).toBeCloseTo((paid(s, 200) - market(s)) * 10 * H, 2)
   })
 
-  it('a leased shell: the spread (market − PPA) × used MWh, negative when the market is cheaper', () => {
+  it('M18.0: the cooling overhead on PPA MW is at the PPA price while the draw stays within the contract', () => {
+    // a 5 MW cloud on a 10 MW PPA: its whole 5.75 MW draw (cooling included) is PPA power
+    const s = allPpa(co('2028Q1'))
+    s.projects = [project({ kw: 5_000 })]
+    const x = ppa({}, s)
+    const r = ppaQuarterNetUsd(s, x)
+    // what the 5.75 MW used cost in all: the market paid weekly, then the net: the PPA price + adder
+    const weekly = market(s) * 5 * PUE * H
+    const unused = 9 - 5 * PUE
+    expect(weekly + r.netUsd + r.resoldUsd).toBeCloseTo(
+      paid(s) * 5 * PUE * H + paid(s) * unused * H,
+      2,
+    )
+  })
+
+  it('a leased shell: the spread (market − PPA − adder) × used MWh, negative when the market is cheaper', () => {
     const s = allPpa(co('2028Q1'))
     s.projects = [project({ kind: 'shell', gpu: null, tenant: lease() })]
     const site = s.sites.find((x) => x.id === 'site-2')!
     const market = powerPriceUsdKwh(site, s.quarter, 's0') * 1000
-    const above = ppa({ priceUsdMwh: market - 20 }, s)
+    const adder = paid(s, 0)
+    const above = ppa({ priceUsdMwh: market - adder - 20 }, s)
     expect(ppaQuarterNetUsd(s, above).netUsd).toBeCloseTo(-20 * 10 * H, 2) // a gain
     s.ppas = []
-    const below = ppa({ priceUsdMwh: market + 30 }, s)
+    const below = ppa({ priceUsdMwh: market - adder + 30 }, s)
     expect(ppaQuarterNetUsd(s, below).netUsd).toBeCloseTo(30 * 10 * H, 2) // a cost
   })
 })
@@ -294,7 +319,7 @@ describe('a PPA outlives its project', () => {
     s.projects = [project({ stage: 'ended' })]
     const x = ppa({}, s)
     expect(ppaQuarterNetUsd(s, x).netUsd).toBeCloseTo(
-      (120 - ppaResaleUsdMwh(s, site2(s))) * 9 * H,
+      (paid(s) - ppaResaleUsdMwh(s, site2(s))) * 9 * H,
       4,
     )
     const t = ok(s, { type: 'PROJECT_OPEN', siteId: 'site-2', kw: 8_000, kind: 'shell' })
@@ -353,6 +378,6 @@ describe('mining on PPA MW (M17.8 E): every load uses the site’s other power f
 
   it('mining on those MW pays the PPA price: the market paid weekly is refunded on them', () => {
     const { s, x } = mining(40_000)
-    expect(ppaQuarterNetUsd(s, x).netUsd).toBeCloseTo((120 - market(s)) * 10 * H, 2)
+    expect(ppaQuarterNetUsd(s, x).netUsd).toBeCloseTo((paid(s) - market(s)) * 10 * H, 2)
   })
 })

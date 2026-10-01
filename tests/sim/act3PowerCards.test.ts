@@ -6,10 +6,12 @@ import { BALANCE, CONTENT, type PowerRegion } from '../../src/content/index.ts'
 import { act3CardEngineId } from '../../src/content/act3Cards.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { toAct3, type GameState, type Project } from '../../src/sim/state.ts'
+import { ppaSwitchTarget } from '../../src/sim/systems/cardPower.ts'
 import { blockedEventChoices, getCard } from '../../src/sim/systems/events.ts'
 import { payReservationWeek } from '../../src/sim/systems/mwUse.ts'
 import {
   activePpas,
+  ppaAdderUsdMwh,
   ppaQuarterNetUsd,
   ppaResaleUsdMwh,
 } from '../../src/sim/systems/nuclear.ts'
@@ -81,6 +83,14 @@ describe('power_option nuclear_ppa (s2_c1, s3_c2)', () => {
     expect(t.act3Moves!.map((m) => m.kind)).toEqual(['power_lock'])
   })
 
+  it('M18.0: the target is the project at the dearest site this quarter (PJM before Georgia), not the largest; tie: the larger', () => {
+    const s = co('2027Q3', 'georgia', [{ kw: 9000 }, { kw: 4000, siteId: 'site-3' }, { kw: 6000, siteId: 'site-3' }])
+    s.sites.push({ ...structuredClone(s.sites.find((x) => x.id === 'site-2')!), id: 'site-3', region: 'pjm' })
+    const price = (id: string) => powerPriceUsdKwh(s.sites.find((x) => x.id === id)!, s.quarter, 's2')
+    expect(price('site-3')).toBeGreaterThan(price('site-2'))
+    expect(ppaSwitchTarget(s)!.id).toBe('project-3') // PJM, and the larger of the two there
+  })
+
   it('no target: none in an eligible region (or all have a PPA): greyed', () => {
     expect(greyed(co('2027Q3', 'ercot', [{}]), 's2_c1', 'c1')).toBe('error.card_no_ppa_project')
     expect(greyed(co('2027Q3', 'pjm', []), 's3_c2', 'c1')).toBe('error.card_no_ppa_project')
@@ -104,7 +114,8 @@ describe('sh_2 "Sign a 100MW PPA": the stranded-PPA test', () => {
     expect(poweredKw(site, q('2027Q4')) - poweredKw(site, q('2027Q3'))).toBe(100_000)
     t.quarter = q('2027Q4')
     expect(ppaQuarterNetUsd(t, x).netUsd).toBeCloseTo(
-      (x.priceUsdMwh - ppaResaleUsdMwh(t, site)) * 90 * H,
+      // (M18.0: + Ohio's $5/MWh adder on PPA power)
+      (x.priceUsdMwh + ppaAdderUsdMwh(site, t.quarter) - ppaResaleUsdMwh(t, site)) * 90 * H,
       2,
     )
     const plain = structuredClone(s)
@@ -152,7 +163,8 @@ describe('ppa_savings (s2_c5 "Bank the margin")', () => {
         id: 'ppa-1',
         siteId: 'site-2',
         kw: 10_000,
-        priceUsdMwh: market - 25,
+        // (M18.0: the saving is against the PPA price + PJM's adder)
+        priceUsdMwh: market - ppaAdderUsdMwh(site, s.quarter) - 25,
         signedQuarter: q('2027Q3'),
         fromQuarter: q('2027Q4'),
         endQuarter: q('2027Q3') + 59,
