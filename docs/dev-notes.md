@@ -15,8 +15,9 @@ is reachable only in test builds (`npm run dev`, the staging build), never in th
 - Plans and design decisions come from a separate Claude chat (the "design thread", on the owner's personal
   Claude account, with the design docs as project files). The owner pastes tasks from there. When a task
   raises a design question, stop and give the owner a short report they can paste back into that thread.
-- One small working step = one commit. **Never push:** `git push` is denied in `.claude/settings.json`; the owner
-  pushes (Terminal panel: `git push origin m8`, and `main` after a merge).
+- One small working step = one commit. **Push only when the owner asks:** the `git push` deny rule was removed from
+  `.claude/settings.json` (owner, 1 Oct 2026, to push from a remote session); the owner still decides every push and
+  merges `main` (Terminal panel: `git push origin <branch>`, and `main` after a merge).
 - Ask before adding any dependency. Don't edit `docs/` unless asked (this file is the exception: keep it current).
 - Never touch `staging/` (the owner's playtest snapshot) or run `npm run staging:build` unless asked.
 - Only one Claude account works on the repo at a time. Start with `git pull`.
