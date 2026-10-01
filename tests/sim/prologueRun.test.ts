@@ -65,5 +65,6 @@ describe('whole prologue runs', () => {
       }
       expect(state.prologueCarry!.startNetWorthUsd).toBeGreaterThan(0)
     }
-  })
+    // (two whole games, 2009–2026: ~2.5 s alone, over 5 s while the suite's other full-game tests run; M18.7)
+  }, 30_000)
 })
