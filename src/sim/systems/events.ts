@@ -28,6 +28,19 @@ import {
   sellSmallestShell,
   type ContractEffect,
 } from './cardContracts.ts'
+import {
+  accelerateCard,
+  campusCard,
+  gpuSaleCard,
+  hallCardBlocker,
+  newHallCard,
+  rackCard,
+  retrofitCard,
+  type AccelerateCard,
+  type CampusCard,
+  type RackCard,
+  type RetrofitCard,
+} from './cardHalls.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, random, substream, uniform } from '../rng.ts'
 import {
@@ -416,6 +429,9 @@ export function eventChoiceBlocker(
   state: GameState,
   c: EventChoice,
 ): Message | undefined {
+  // M16.4: a step-5 choice needs its target (a hall, GPUs, a build, room) and the cash it costs.
+  const hall = hallCardBlocker(state, c.effects)
+  if (hall) return hall
   if (c.effects.debt_reduce === undefined) return undefined
   const costUsd = -Number(c.effects.cash ?? 0)
   if (state.cash < costUsd)
@@ -933,6 +949,25 @@ export function resolveEvent(
         break
       case 'sell_smallest_shell':
         sellSmallestShell(state, Number(value), weekNo)
+        break
+      // ---------- Act III, step 5 (M16.4; cardHalls.ts) ----------
+      case 'retrofit_hall':
+        retrofitCard(state, v as RetrofitCard, weekNo)
+        break
+      case 'sell_gpus_at':
+        gpuSaleCard(state, Number(value), weekNo)
+        break
+      case 'accelerate_project':
+        accelerateCard(state, v as AccelerateCard, weekNo)
+        break
+      case 'gpu_racks':
+        rackCard(state, v as RackCard, weekNo)
+        break
+      case 'new_hall_mw':
+        newHallCard(state, Number(value), weekNo)
+        break
+      case 'distressed_campus':
+        campusCard(state, v as CampusCard, weekNo)
         break
       // Act III (M11.5c): a choice whose effects a later build step wires. Nothing happens; it logs.
       case 'deferred': {

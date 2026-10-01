@@ -938,11 +938,12 @@ export function startBuild(state: GameState, projectId: string): void {
   p.gpuCapexUsd = Math.round(cost.gpuUsd)
   p.gpuCount = cost.gpuCount
   p.readyQuarter = state.quarter + projectBuildQuarters(state, p)
-  // New power is ordered now; the project goes live when both it and the build are done.
+  // New power is ordered now; the project goes live when both it and the build are done. (A card's new
+  // hall brought its MW already energized, M16.4.)
   const add = state.sites
     .find((s) => s.id === p.siteId)
     ?.powerAdds?.find((x) => x.projectId === p.id)
-  if (add) {
+  if (add && !add.card) {
     add.readyQuarter = state.quarter + drawPowerQuarters(state, p)
     p.readyQuarter = Math.max(p.readyQuarter, add.readyQuarter)
   }

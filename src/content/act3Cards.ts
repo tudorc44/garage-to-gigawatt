@@ -59,7 +59,7 @@ export const EFFECT_MAP: Record<string, EffectRoute> = {
   },
   delay_quarters: {
     map: 'delay_marginal_project',
-    note: 'a positive delay slips the building project with the lowest projected return (Act II ec07); a negative one (a speed-up) is deferred to step 5',
+    note: 'a positive delay slips the building project with the lowest projected return (Act II ec07); a negative one (M16.4) speeds up the building project with the latest ready quarter (accelerate_project)',
   },
   debt_spread_bps: {
     map: 'debt_spread_add',
@@ -108,17 +108,30 @@ export const EFFECT_MAP: Record<string, EffectRoute> = {
     map: 'contract',
     note: 'r × the rent the target fails to pay over its next 4 quarters, paid at the end of the quarter 2 from now',
   },
-  retrofit: { defer: 'step 5', note: 'density retrofit' },
-  gpu_rack: { defer: 'step 5', note: 'Rubin racks' },
-  capex_mw: { defer: 'step 5', note: 'new halls' },
-  capex_mult: { defer: 'step 5', note: 'turbine/equipment cost' },
+  // M16.4 (step 5): systems/cardHalls.ts.
+  retrofit: {
+    map: 'retrofit_hall',
+    note: 'the largest live hall one tier below (tie: lowest number) is retrofitted one tier up, no Bandwidth; with cash "-N*mw", N × its MW is the payment',
+  },
+  gpu_rack: {
+    map: 'gpu_racks',
+    note: 'Rubin NVL144 racks (1, or as many as the choice’s cash buys at the quarter’s rack price) open a live pilot at the site with the most free kW that fits',
+  },
+  capex_mw: {
+    map: 'new_hall_mw',
+    note: 'a proposed mid-tier shell of that many MW at the site with the most energized MW, bringing its MW, at the greenfield shell $/MW',
+  },
+  capex_mult: {
+    map: 'accelerate_project',
+    note: 'with a negative delay: cash −(x − 1) × the target’s power cost (Power slot), else its shell build cost',
+  },
   gpu_resale_mult: {
-    defer: 'step 5',
-    note: 'a GPU sale at a price; the engine has no partial GPU sale at a multiple',
+    map: 'sell_gpus_at',
+    note: 'the largest live B200 / GB200 cloud or pilot with no GPU contract sells its GPUs at the sale value × x',
   },
   mw: {
-    defer: 'step 5',
-    note: 'buying MW (a number) is step 5; "-X" with cash "+ev_stabilized*k" is the sale of the smallest live contracted shell (M12.3)',
+    map: 'distressed_campus',
+    note: 's1_c6: a new 60 MW site, energized and idle, no flaw, in the largest site’s region (the choice’s cash is its price); "-X" with cash "+ev_stabilized*k" is the sale of the smallest live contracted shell (M12.3); sh_2’s waits for step 6 with its PPA',
   },
   power_option: { defer: 'step 6', note: 'nuclear PPA' },
   pc_cost: { defer: 'step 6', note: 'political capital' },
@@ -229,12 +242,22 @@ const CASH_FORMULAS: {
     re: /^\+ev_stabilized\*(\d+(?:\.\d+)?)$/,
     to: (k) => ({ sell_smallest_shell: k }),
   },
+  // M16.4: taken up by the choice's step-5 effect (a speed-up's price, a retrofit's price per MW).
+  {
+    re: /^-project_capex\*(\d+(?:\.\d+)?)$/,
+    to: (k) => ({ accelerate_capex_share: k }),
+  },
+  {
+    re: /^-(\d+(?:\.\d+)?)\*mw$/,
+    to: (k) => ({ retrofit_usd_per_mw: k }),
+  },
 ]
 const CASH_FORMULA_STEPS: { re: RegExp; step: string }[] = [
   { re: /ppa_savings/, step: 'step 6' },
-  { re: /project_capex/, step: 'step 5' },
-  { re: /\*mw$/, step: 'step 5' },
 ]
+
+/** M16.4: the one card whose MW purchase is live (s1_c6 "Bid with cash"); sh_2's waits for step 6. */
+const DISTRESSED_CAMPUS = ['s1_c6.c1']
 
 /** The contract keys, gathered into one `contract` effect. */
 const CONTRACT_KEYS: Record<string, string> = {
@@ -304,6 +327,14 @@ export function translateEffects(
     if (!deferred.steps.includes(step)) deferred.steps.push(step)
   }
   const choice = ctx.choice ?? 1
+  // M16.4: the step-5 effects, put together once every key is read (they take their price from the cash).
+  const step5: {
+    accelerate?: number
+    capexMult?: number
+    retrofitTo?: 'mid' | 'top'
+    rackGpu?: string
+    campusMw?: number
+  } = {}
   for (const [key, value] of Object.entries(effect)) {
     const route = EFFECT_MAP[key]
     if (!route) throw new Error(`events_act3.json: unknown effect "${key}"`)
@@ -383,7 +414,40 @@ export function translateEffects(
       case 'delay_quarters':
         if (n === null) defer(key, 'question')
         else if (n > 0) out.delay_marginal_project = n
-        else defer(key, 'step 5')
+        else if (n < 0) step5.accelerate = -n
+        break
+      // M16.4 (step 5)
+      case 'retrofit':
+        if (value === 'low_to_mid') step5.retrofitTo = 'mid'
+        else if (value === 'mid_to_top') step5.retrofitTo = 'top'
+        else defer(key, 'question')
+        break
+      case 'gpu_rack':
+        if (typeof value === 'string' && value === 'rubin_nvl144')
+          step5.rackGpu = value
+        else defer(key, 'question')
+        break
+      case 'capex_mw':
+        if (n === null || n <= 0) defer(key, 'question')
+        else out.new_hall_mw = n
+        break
+      case 'capex_mult':
+        if (n === null) defer(key, 'question')
+        else step5.capexMult = n
+        break
+      case 'gpu_resale_mult':
+        if (n === null) defer(key, 'question')
+        else out.sell_gpus_at = n
+        break
+      case 'mw':
+        if (
+          n !== null &&
+          n > 0 &&
+          ctx.card &&
+          DISTRESSED_CAMPUS.includes(`${ctx.card}.c${choice}`)
+        )
+          step5.campusMw = n
+        else defer(key, 'step 6')
         break
       case 'debt_spread_bps':
         if (n === null) defer(key, 'question')
@@ -398,6 +462,47 @@ export function translateEffects(
         else out.bandwidth_next = n
         break
     }
+  }
+  // M16.4: a speed-up (its price: a share of capex, or of the power / shell cost); a retrofit (its price per
+  // MW); Rubin racks (as many as the choice's cash buys); a distressed campus (the cash is its price).
+  if (step5.accelerate !== undefined) {
+    out.accelerate_project = {
+      quarters: step5.accelerate,
+      ...(out.accelerate_capex_share !== undefined
+        ? { capexShare: out.accelerate_capex_share }
+        : {}),
+      ...(step5.capexMult !== undefined
+        ? { extraCostShare: Math.round((step5.capexMult - 1) * 1e9) / 1e9 }
+        : {}),
+    }
+    delete out.accelerate_capex_share
+  } else if (
+    step5.capexMult !== undefined ||
+    out.accelerate_capex_share !== undefined
+  )
+    defer('capex_mult', 'question')
+  if (step5.retrofitTo) {
+    out.retrofit_hall = {
+      to: step5.retrofitTo,
+      ...(out.retrofit_usd_per_mw !== undefined
+        ? { usdPerMw: out.retrofit_usd_per_mw }
+        : {}),
+    }
+    delete out.retrofit_usd_per_mw
+  } else if (out.retrofit_usd_per_mw !== undefined) defer('cash', 'question')
+  if (step5.rackGpu) {
+    out.gpu_racks = {
+      gpu: step5.rackGpu,
+      ...(out.cash !== undefined ? { budgetUsd: Math.abs(out.cash as number) } : {}),
+    }
+    delete out.cash
+  }
+  if (step5.campusMw !== undefined) {
+    out.distressed_campus = {
+      mw: step5.campusMw,
+      priceUsd: Math.max(0, -((out.cash as number | undefined) ?? 0)),
+    }
+    delete out.cash
   }
   if (Object.keys(contract).length > 0) {
     contract.target = targetOf(ctx.card, choice)

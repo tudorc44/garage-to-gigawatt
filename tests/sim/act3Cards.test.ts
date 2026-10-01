@@ -191,7 +191,7 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
     for (const k of used) expect(EFFECT_MAP[k], k).toBeDefined()
   })
 
-  it('the mapped choices, exactly (M12.3: the step-4 keys and the answered questions are live)', () => {
+  it('the mapped choices, exactly (M12.3: the step-4 keys and the answered questions are live; M16.4: the step-5 keys)', () => {
     const mapped: string[] = []
     for (const c of file)
       c.choices.forEach((ch, i) => {
@@ -208,7 +208,10 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
       's0_c5.c1={"idle_old_asics":true}',
       's0_c5.c2={"hashrate_mult":{"mult":0.9,"scope":"fleet","weeks":52}}',
       's0_c6.c1={"revenue_share_at_end":0.02}',
+      's0_c7.c1={"retrofit_hall":{"to":"mid","usdPerMw":1500000}}',
+      's0_c8.c2={"sell_gpus_at":0.97}',
       's1_c1.c1={"bandwidth_next":-1,"extra_shell_offers":1}',
+      's1_c2.c1={"accelerate_project":{"quarters":1,"capexShare":0.06}}',
       's1_c3.c1={"contract":{"revenueMult":0.7,"target":"distressed"}}',
       's1_c3.c2={"cash":-500000,"contract":{"walkProb":0.3,"target":"distressed"}}',
       's1_c3.c3={"cash":-20000000,"debt_reduce":30000000}',
@@ -216,18 +219,26 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
       's1_c4.c2={"sell_smallest_shell":0.8}',
       's1_c4.c3={"debt_spread_add":150,"credit_notch":{"notches":-1,"quarters":2}}',
       's1_c5.c1={"backstop_payout":true}',
+      's1_c6.c1={"distressed_campus":{"mw":60,"priceUsd":180000000}}',
       's1_c7.c1={"cash":-400000,"contract":{"recovery":0.35,"target":"distressed"}}',
       's1_c7.c2={"contract":{"rentIndex":0.5,"target":"distressed","replaceTenant":true}}',
+      's1_c8.c1={"gpu_racks":{"gpu":"rubin_nvl144"}}',
       's2_c2.c1={"delay_marginal_project":1}',
       's2_c3.c1={"contract":{"termYears":10,"rentIndex":1.05,"target":"best"}}',
       's2_c3.c2={"contract":{"rentIndex":1.35,"term":"spot","target":"uncontracted"}}',
+      's2_c4.c1={"accelerate_project":{"quarters":1,"extraCostShare":0.15}}',
       's2_c7.c1={"contract":{"rentIndex":1.1,"target":"largest"}}',
       's2_c8.c1={"debt_maturity_years":3}',
       's3_c1.c1={"bandwidth_next":-1,"free_read":"efficiency_index"}',
       's3_c3.c1={"contract":{"termYears":-3,"rentIndex":0.8,"target":"all_shell"}}',
+      's3_c3.c3={"retrofit_hall":{"to":"mid"}}',
       's3_c4.c1={"contract":{"rentIndex":0.7,"target":"soonest"}}',
       's3_c4.c2={"contract":{"rentIndex":0.8,"termYears":-2,"target":"soonest"}}',
+      's3_c5.c1={"new_hall_mw":30}',
       's3_c6.c1={"contract":{"term":"1yr","target":"largest"}}',
+      's3_c7.c1={"gpu_racks":{"gpu":"rubin_nvl144","budgetUsd":40000000}}',
+      's3_c8.c1={"new_hall_mw":10}',
+      'sh_4.c1={"retrofit_hall":{"to":"top"}}',
     ])
   })
 
@@ -241,27 +252,17 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
             `${c.id}.c${i + 1}:${(e.deferred as { steps: string[] }).steps.join('+')}`,
           )
       })
+    // M16.4: every step-5 choice is live; sh_2's MW wait with its PPA for step 6.
     expect(deferred).toEqual([
       's0_c2.c3:step 7',
       's0_c4.c1:step 7',
-      's0_c7.c1:step 5',
-      's0_c8.c2:step 5',
-      's1_c2.c1:step 5',
-      's1_c6.c1:step 5', // "Bid with cash": cash is supported, mw 60 (buying MW) is step 5
-      's1_c8.c1:step 5',
       's2_c1.c1:step 6',
-      's2_c4.c1:step 5',
       's2_c5.c1:step 6',
       's2_c6.c1:step 6',
       's2_c6.c2:step 6',
       's3_c2.c1:step 6',
-      's3_c3.c3:step 5',
-      's3_c5.c1:step 5',
-      's3_c7.c1:step 5',
-      's3_c8.c1:step 5',
-      'sh_2.c1:step 6+step 5',
+      'sh_2.c1:step 6',
       'sh_3.c1:step 6',
-      'sh_4.c1:step 5',
     ])
     // Nothing is left for "question": every open question was answered (M12.3).
     expect(deferred.some((d) => d.includes('question'))).toBe(false)
@@ -278,12 +279,13 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
       deferred: { keys: ['cash'], steps: ['step 6'] },
     })
     expect(
-      translateEffects({ retrofit: 'low_to_mid', cash: '-1500000*mw' }),
+      translateEffects({ power_option: 'nuclear_ppa', mw: 100 }),
     ).toEqual({
-      deferred: { keys: ['retrofit', 'cash'], steps: ['step 5'] },
+      deferred: { keys: ['power_option', 'mw'], steps: ['step 6'] },
     })
-    expect(translateEffects({ delay_quarters: -1, capex_mult: 1.15 })).toEqual({
-      deferred: { keys: ['delay_quarters', 'capex_mult'], steps: ['step 5'] },
+    // M16.4: a step-5 price with no step-5 effect to carry it is a question, never charged for nothing.
+    expect(translateEffects({ cash: '-1500000*mw' })).toEqual({
+      deferred: { keys: ['cash'], steps: ['question'] },
     })
   })
 

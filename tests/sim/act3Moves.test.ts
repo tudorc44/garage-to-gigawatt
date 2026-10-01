@@ -260,6 +260,16 @@ describe('one entry per big move (action in → entry out)', () => {
     for (const [card, choice, kind] of cases) {
       const s = act3(shellEnd)
       s.cash = 1e9
+      // M16.4: a speed-up needs a build to speed up.
+      s.projects.push({
+        ...structuredClone(s.projects[0]),
+        id: 'project-98',
+        n: 98,
+        stage: 'building',
+        tenant: null,
+        startQuarter: s.quarter,
+        readyQuarter: s.quarter + 3,
+      })
       s.facilities.push({
         id: 'facility-99', kind: 'project_debt', projectId: s.projects[0].id,
         amountUsd: 1e8, balanceUsd: 1e8, apr: 0.08, tenorQuarters: 40,

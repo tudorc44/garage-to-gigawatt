@@ -80,6 +80,11 @@ export interface PowerAdd {
   readyQuarter: number | null
   /** On-site gas at a site with the air-permit flaw: its lawsuit was rolled (M6.0j). */
   lawsuitRolled?: boolean
+  /**
+   * Act III (M16.4, a card's capex_mw): MW a card's new hall brings with it, energized at once (no queue, no
+   * power cost); they leave if the proposal is cancelled.
+   */
+  card?: boolean
 }
 
 /** Where a project's power comes from beyond the site's existing MW (scope 0.2 §2.5, A2-05). */

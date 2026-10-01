@@ -183,6 +183,8 @@ M16.0 sim (`--act2 --act3`, on the M16.0 commit): the M14.5 table is unchanged f
 
 **M16.3 done:** `systems/retrofit.ts`: RETROFIT (1 BW, one tier up, low→mid $1.5M/MW 10 wk, mid→top the quarter's CSV $/MW 26 wk, cash now; blockers: building, not live, downtime, "GPU contract until {quarter}", top, BW, cash) and REFIT_GPUS (1 BW, fitting generations, new cost − GPU sale value, lead time = downtime; mine: the new GPUs earn at once, a JV shares cost and sale); the downtime rule in `density.ts` (`downtimeShare`, `finishDowntimes`), a leased shell's tenant stays rent-free; move log retrofit / gpu_buy. Build: the sim code gets its own chunk (`vite.config.ts`, mine: main file passed 500 KB). Goldens unchanged. 1078 tests.
 
+**M16.4 done:** `systems/cardHalls.ts`: retrofit_hall (s0_c7, s3_c3, sh_4), sell_gpus_at (s0_c8), accelerate_project (s1_c2 6% capex, s2_c4 15% of power else shell build; mine: its power add keeps up), gpu_racks (s1_c8, s3_c7: a live mid Rubin pilot), new_hall_mw (s3_c5, s3_c8: proposed greenfield mid shell, its MW as a `card` power add, energized at once), distressed_campus (s1_c6: 60 MW site, category `distressed_campus`); each greyed with a reason (`hallCardBlocker`); sh_2's MW stay with step 6. **Golden:** act3-s3 only (s3_c8's only choice "Add an edge hall" now opens a 10 MW hall in 2030Q1; its idle MW pay the reservation, cash −$1.5M). 1095 tests.
+
 ## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
 
 Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);

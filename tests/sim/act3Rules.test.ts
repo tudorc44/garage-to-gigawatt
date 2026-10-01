@@ -188,7 +188,9 @@ describe('a real company plays Act III on each scenario', () => {
     // are low tier and it never retrofits, so from 2027Q3 its re-lets and renewals sign at × 0.85, and S3's
     // efficiency shock hits old halls hardest (reported to the design thread). Within 5% of each other:
     expect(Math.abs(last('s3') / last('s1') - 1)).toBeLessThan(0.05)
-    expect(runs.get('s3')!.at(-1)!.projects.every((p) => p.tier === 'low')).toBe(
+    // (its live halls; M16.4: s3_c8's default "Add an edge hall" opens a proposed mid-tier hall in 2030Q1)
+    const s3 = runs.get('s3')!.at(-1)!.projects
+    expect(s3.filter((p) => p.stage === 'live').every((p) => p.tier === 'low')).toBe(
       true,
     )
   })

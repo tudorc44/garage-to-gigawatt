@@ -687,12 +687,13 @@ describe('B. the other step-4 keys', () => {
     expect(t.bandwidth).toBe(s.bandwidth)
   })
 
-  it('a deferred choice stays a no-op, logged with its owning step (s1_c6 "Bid with cash": mw is step 5)', () => {
-    const { s } = company('s1', '2028Q3', [])
+  it('a deferred choice stays a no-op, logged with its owning step (sh_2 "Sign a 100MW PPA": step 6)', () => {
+    const { s } = company('s1', '2027Q3', [])
     const cash = s.cash
-    const t = play(s, 's1_c6', 'c1')
+    const t = play(s, 'sh_2', 'c1')
     expect(t.cash).toBe(cash)
+    expect(t.sites).toEqual(s.sites)
     const log = t.log.find((e) => e.key === 'log.event_effects_deferred')!
-    expect(log.params).toEqual({ effects: 'mw, cash', steps: 'step 5' })
+    expect(log.params).toEqual({ effects: 'power_option, mw', steps: 'step 6' })
   })
 })
