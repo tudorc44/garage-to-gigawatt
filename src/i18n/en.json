@@ -2377,7 +2377,7 @@
   "act3.reveal.title_none": "Not enough quarters played",
   "act3.reveal.reads_title": "Your signal reads",
   "act3.reveal.reads_none": "You read no signals.",
-  "act3.reveal.read_row": "{quarter} · {indicator}",
+  "act3.reveal.read_row": "{quarter} · read {indicator}",
   "act3.reveal.not_scored": "not scored",
   "act3.reveal.not_played": "not played",
   "act3.reveal.at_entry": "At Act III entry",

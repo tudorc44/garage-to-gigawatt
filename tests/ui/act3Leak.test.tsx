@@ -173,6 +173,10 @@ describe('the leak guard with played history (M16.0, DT answer 1)', () => {
         expect(body, `${id} ${where}: ${bad.slice(0, 40)}`).not.toContain(bad)
       expect(body, `${id} ${where}: "decoy"`).not.toMatch(/decoy/i)
       expect(body, `${id} ${where}: "false alarm"`).not.toMatch(/false alarm/i)
+      // DT answer 1: no role tag and no word "trigger" outside the chapter report. (The other role tags,
+      // signal / recovery / winner / intro / shared, are everyday words the game uses for other things.)
+      expect(body, `${id} ${where}: "trigger"`).not.toMatch(/trigger/i)
+      expect(body, `${id} ${where}: role tag`).not.toMatch(/aftermath|flavour/i)
     }
     const plan = render(<PlanScreen state={s} act={act} />)
     await waitFor(() =>

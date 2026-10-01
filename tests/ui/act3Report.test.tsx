@@ -113,7 +113,7 @@ describe('the s1 golden record', () => {
     const label = (id: string) =>
       CONTENT.signals.s1.find((x) => x.id === id)!.label
     expect(rows).toHaveLength(2)
-    expect(rows[0]).toContain(label('lender_spreads'))
+    expect(rows[0]).toContain(`read ${label('lender_spreads')}`)
     expect(rows[1]).toContain(label('chip_lead_times'))
   })
 
