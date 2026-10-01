@@ -191,6 +191,9 @@ on the title menu, locked until an Act III chapter report is reached (`settings.
 **M18.5 done:** `npm run sim -- --act3-anchors` (tools/act3-anchors.ts, act3Archetypes.ts, act3Payback.ts shared with --act3; ~6 min). Baseline: PASS A5 A6 A7
 F7; FAIL A1 (S2 ignorer 2.18 > hedged 1.71), A2 (S1 ignorer 0.60, 0 busts), A3, A4, C1 (S3 0.87 < S1 0.94), C2, C3. Seeds vary little (only act3_*
 streams salted). Archetypes keep the bot's upkeep only; new projects: B200 cloud (ignorer) / 2+ yr shell (builder), grid power at the largest site (mine).
+**M18.6 done** (`--knobs` sets a value for one run): K1 kept, Rubin rent × 0.55 (C2 Rubin passes), Ultra × 0.50 (floor; 1.50 yr, C2 still fails); K2 at 1.00
+no C1 fix (kept 0.85); K3 fee/trigger no effect (Act II leases never reopen); K4 not needed (A6 passes); K5 size slightly worse, spread no effect (standby
+never drawn); K6 −$5 moves C3's S3 half the wrong way (stopped). Only K1 written to BALANCE. Goldens unchanged.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

@@ -705,7 +705,9 @@ export const BALANCE = {
      * M18.6 K1 (the tuning pass, for C2: Rubin's payback ≥ 1.8 years and ≥ B200's): a factor on Rubin's and Rubin
      * Ultra's rents (their neocloud series, so spot and GPU contracts), all scenarios and quarters. 1 = the files'.
      */
-    rubinRentFactor: { rubin_nvl144: 1, rubin_ultra: 1 } as Record<string, number>,
+    // tuned M18.6: Rubin passes C2 at 0.55 (payback 1.86–1.97 years at 2027Q3, over B200's 1.34–1.40); Rubin Ultra
+    // reaches the 0.50 floor at 1.50 years, still under 1.8 (C2 fails on it, reported)
+    rubinRentFactor: { rubin_nvl144: 0.55, rubin_ultra: 0.5 } as Record<string, number>,
     /**
      * M18.2 (F-7): the standby liquidity facility (designed): arranged for 1 BW at BB− or better with no payment late;
      * size 20% of the company valuation, at most $500M; 1.0% upfront, 0.50% a year on the undrawn part; SOFR + 350 bp

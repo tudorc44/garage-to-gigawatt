@@ -74,15 +74,20 @@ describe('the Act III generations (M16.1)', () => {
   })
 
   it('rents: spot from the Rubin neocloud columns; a GPU contract off the same series × the term factor (like the B200)', () => {
-    expect(neocloudUsdHr('rubin_nvl144', q('2027Q1'), 's2')).toBe(
-      Number(csv('s2', '2027Q1', 'gpu_rubin_neocloud_usd_hr')),
+    // × the M18.6 K1 rent factors (Rubin 0.55, Rubin Ultra 0.50)
+    const k1 = BALANCE.act3.rubinRentFactor
+    expect(k1).toEqual({ rubin_nvl144: 0.55, rubin_ultra: 0.5 })
+    expect(neocloudUsdHr('rubin_nvl144', q('2027Q1'), 's2')).toBeCloseTo(
+      Number(csv('s2', '2027Q1', 'gpu_rubin_neocloud_usd_hr')) * k1.rubin_nvl144,
+      10,
     )
-    expect(neocloudUsdHr('rubin_ultra', q('2028Q1'), 's1')).toBe(
-      Number(csv('s1', '2028Q1', 'gpu_rubin_ultra_neocloud_usd_hr')),
+    expect(neocloudUsdHr('rubin_ultra', q('2028Q1'), 's1')).toBeCloseTo(
+      Number(csv('s1', '2028Q1', 'gpu_rubin_ultra_neocloud_usd_hr')) * k1.rubin_ultra,
+      10,
     )
     const factor = BALANCE.projects.gpuContracts.termFactor[3] ?? 1
     expect(gpuContractUsdHr('rubin_nvl144', 3, q('2027Q4'), 's3')).toBeCloseTo(
-      Number(csv('s3', '2027Q4', 'gpu_rubin_neocloud_usd_hr')) * factor,
+      Number(csv('s3', '2027Q4', 'gpu_rubin_neocloud_usd_hr')) * factor * k1.rubin_nvl144,
       10,
     )
     // the renewal index: the B200's
