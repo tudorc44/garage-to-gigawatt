@@ -188,6 +188,9 @@ loaded as `CONTENT.act3Presets`); summaries fitted to the facts (no GPUs anywher
 **M18.4 done:** A3-12 (test builds only, in `Act3Preview.tsx`): "Start at Act III (2027)" with the three preset cards → "Start in 2027 →"; Scenario Mode
 on the title menu, locked until an Act III chapter report is reached (`settings.act3Finished`), unlocked: a preset + 4 named scenarios →
 `state.scenarioMode` (top-bar tag, "scenario known" on the reading score). Browser-checked; stale "(Not in this test build yet.)" removed (mine). 1206 tests.
+**M18.5 done:** `npm run sim -- --act3-anchors` (tools/act3-anchors.ts, act3Archetypes.ts, act3Payback.ts shared with --act3; ~6 min). Baseline: PASS A5 A6 A7
+F7; FAIL A1 (S2 ignorer 2.18 > hedged 1.71), A2 (S1 ignorer 0.60, 0 busts), A3, A4, C1 (S3 0.87 < S1 0.94), C2, C3. Seeds vary little (only act3_*
+streams salted). Archetypes keep the bot's upkeep only; new projects: B200 cloud (ignorer) / 2+ yr shell (builder), grid power at the largest site (mine).
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

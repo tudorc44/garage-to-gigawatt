@@ -7,7 +7,6 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
-  BALANCE,
   CONTENT,
   actLastQuarter,
   quarterInputs,
@@ -20,14 +19,7 @@ import {
   type Strategy,
 } from '../src/sim/replay.ts'
 import { presetGame } from '../src/sim/preset.ts'
-import {
-  gpuGeneration,
-  gpuPriceUsd,
-  gpuResidualUsd,
-  neocloudUsdHr,
-  projectCapex,
-} from '../src/sim/systems/projects.ts'
-import { rfpMid } from '../src/sim/systems/leaseIndex.ts'
+import { gpuResidualUsd, projectCapex } from '../src/sim/systems/projects.ts'
 import { retrofitBlocker, retrofitPlan } from '../src/sim/systems/retrofit.ts'
 import type {
   ContractType,
@@ -50,14 +42,11 @@ import {
 } from '../src/sim/systems/readingScore.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
-import {
-  normalPriceUsdKwh,
-  poweredKw,
-  regionCapacityChargeUsdKwh,
-} from '../src/sim/systems/sites.ts'
+import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
 import { BOTS, HEAD_START_OPENINGS, PROBES, gpuRevenueShare } from './bots.ts'
+import { PAYBACK_UTILISATION, paybackYears } from './act3Payback.ts'
 import { contractIrrs, delayCost } from './section5.ts'
 import {
   BREAKDOWN_COLUMNS,
@@ -1161,19 +1150,10 @@ if (args.includes('--act2')) {
       throw new Error(
         `Reading-score oracle self-check failed: ${JSON.stringify(oracle)}`,
       )
-    // M16.6, M17.0 (DT answer 11; report, no targets; step 7's baseline): payback in years = capex per MW ÷
-    // EBITDA per MW-year, at 2027Q3 and 2028Q3, on the game's own project earnings (settleProjectsWeek):
-    // - a shell: the retrofit-shell $/MW (top: + 0.6 × the mid→top $/MW); the mean shell card rent × the RFP
-    //   midpoint × the tier multiple, less the shell opex share (mine: the mean of the tenant cards);
-    // - a cloud: the shell $/MW + GPUs per MW × the unit price (Rubin Ultra builds its hall to top); GPUs per MW
-    //   × the neocloud rent × utilisation 0.7 × 8,760 h, less power at the cloud PUE (mine: the mean of the six
-    //   regions' power prices that quarter) and a year's GPU insurance.
-    // ⚑ = under 1.8 years (DT: step 7's first target, no generation under 1.8 at 2027Q3).
-    const D = BALANCE.act3.density
-    const P2 = BALANCE.projects
-    const cards = CONTENT.projects.tenantCards
-    const cardRent = cards.reduce((a, c) => a + c.priceUsdMwYr, 0) / cards.length
-    const util = 0.7
+    // M16.6, M17.0 (DT answer 11; report, no targets; step 7's baseline): payback in years, the formula in
+    // tools/act3Payback.ts (M18.5: shared with the anchor harness's C2). ⚑ = under 1.8 years (DT: step 7's target).
+    // M17.8 (DT answer 10): PJM and Ohio rows too, on that region's power with the capacity charge.
+    const util = PAYBACK_UTILISATION
     const flag = (years: number) =>
       Number.isFinite(years)
         ? years < 0
@@ -1182,49 +1162,11 @@ if (args.includes('--act2')) {
         : '—'
     const payback: Record<string, Record<string, string>> = {}
     for (const id of scenarios as ScenarioId[])
-      for (const label of ['2027Q3', '2028Q3']) {
-        const q = CONTENT.quarters.indexOf(label)
-        const inp = quarterInputs(q, id)!
-        const shellMw = inp.capexUsdMw.retrofitShell
-        const topExtra = D.topNewBuildRetrofitShare * (inp.act3?.midToTopUsdMw ?? 0)
-        const rent = cardRent * (rfpMid(q, id) ?? 1)
-        const shellEbitda = (mult: number) => rent * mult * (1 - P2.shellOpexShare)
-        const powers = Object.values(inp.powerUsdKwh)
-        const meanUsdKwh = powers.reduce((a, b) => a + b, 0) / powers.length
-        const hoursYr = 24 * 365
-        const cloud = (gpu: string, powerUsdKwh: number) => {
-          const perMw = gpuGeneration(gpu)!.gpusPerMw
-          const price = gpuPriceUsd(gpu, q, id)
-          const hr = neocloudUsdHr(gpu, q, id)
-          if (price === undefined || hr === undefined) return NaN
-          const gpuUsd = perMw * price
-          const capex = shellMw + gpuUsd + (gpu === 'rubin_ultra' ? topExtra : 0)
-          const ebitda =
-            perMw * hr * util * hoursYr -
-            1000 * P2.cloudPue * hoursYr * powerUsdKwh -
-            gpuUsd * P2.cloudInsuranceShareYr
-          return ebitda > 0 ? capex / ebitda : -1
-        }
-        // M17.8 (DT answer 10): PJM and Ohio rows too, on that region's power with the capacity charge.
-        const rows: [string, number][] = [
-          ['', meanUsdKwh],
-          ...(['pjm', 'ohio'] as const).map(
-            (r): [string, number] => [
-              ` ${r}`,
-              inp.powerUsdKwh[r] + regionCapacityChargeUsdKwh(r, q, id),
-            ],
-          ),
-        ]
-        for (const [suffix, powerUsdKwh] of rows)
-          payback[`${id} ${label}${suffix}`] = {
-            midShell: flag(shellMw / shellEbitda(D.shellTierRentMult.mid)),
-            topShell: flag((shellMw + topExtra) / shellEbitda(D.shellTierRentMult.top)),
-            h200: flag(cloud('h200', powerUsdKwh)),
-            b200: flag(cloud('b200', powerUsdKwh)),
-            rubin: flag(cloud('rubin_nvl144', powerUsdKwh)),
-            rubinUltra: flag(cloud('rubin_ultra', powerUsdKwh)),
-          }
-      }
+      for (const label of ['2027Q3', '2028Q3'])
+        for (const region of [undefined, 'pjm', 'ohio'] as const)
+          payback[`${id} ${label}${region ? ` ${region}` : ''}`] = Object.fromEntries(
+            Object.entries(paybackYears(id, label, region)).map(([k, v]) => [k, flag(v)]),
+          )
     console.log(
       `  Step 5 payback in years (M17.0; capex per MW ÷ EBITDA per MW-year; utilisation ${util}; ⚑ under 1.8, step 7's target;` +
         ' rows: the mean of six regions\' power, then PJM and Ohio with the capacity charge, M17.8):',

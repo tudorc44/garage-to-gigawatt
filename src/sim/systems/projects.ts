@@ -135,10 +135,15 @@ export function neocloudUsdHr(
       gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
         ? q.gpuRentalUsdHr[gpu].neocloud
         : isRubin(gpu)
-          ? (q.act3?.gpuRentalUsdHr[gpu].neocloud ?? null)
+          ? rubinRent(q.act3?.gpuRentalUsdHr[gpu].neocloud, gpu)
           : null,
     scenario,
   )
+}
+
+/** A Rubin rent × its M18.6 K1 factor (null without a price). */
+function rubinRent(usdHr: number | null | undefined, gpu: string): number | null {
+  return usdHr == null ? null : usdHr * (BALANCE.act3.rubinRentFactor[gpu] ?? 1)
 }
 
 /**
@@ -268,7 +273,7 @@ export function gpuContractUsdHr(
       : isRubin(gpu)
         ? heldBack(
             quarter,
-            (q) => q.act3?.gpuRentalUsdHr[gpu].neocloud ?? null,
+            (q) => rubinRent(q.act3?.gpuRentalUsdHr[gpu].neocloud, gpu),
             scenario,
           )
         : heldBack(quarter, (q) => q.gpuRentalUsdHr.h100.contract1y, scenario)

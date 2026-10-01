@@ -702,6 +702,11 @@ export const BALANCE = {
      */
     corporate: { bulletQuarters: 12 },
     /**
+     * M18.6 K1 (the tuning pass, for C2: Rubin's payback ≥ 1.8 years and ≥ B200's): a factor on Rubin's and Rubin
+     * Ultra's rents (their neocloud series, so spot and GPU contracts), all scenarios and quarters. 1 = the files'.
+     */
+    rubinRentFactor: { rubin_nvl144: 1, rubin_ultra: 1 } as Record<string, number>,
+    /**
      * M18.2 (F-7): the standby liquidity facility (designed): arranged for 1 BW at BB− or better with no payment late;
      * size 20% of the company valuation, at most $500M; 1.0% upfront, 0.50% a year on the undrawn part; SOFR + 350 bp
      * locked at arranging; drawable from the next quarter for 8 quarters; each draw a bullet 8 quarters on.
