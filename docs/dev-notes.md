@@ -156,9 +156,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M14 is done on branch `m14`** (M13 is merged into `main`): Act III now scores the reading (the move log, the reading score and
-its title, the career title, shown in the reveal). Next: the design thread's answers to the M14 classification questions, then M15
-(the full A3-11 chapter-report screen), the owner's staging playtest, and later: steps 5–6 (density, Rubin, nuclear, political capital, wildcards), step 7
+**M15 is done on branch `m15`** (M14 is merged into `main`): the full A3-11 chapter report with the reveal timeline and the reading
+score, the M14 classification answers, the new-lease index seam fix, component tests. Next: the step-5 spec (the design thread writes it
+after the M15 report; the data notes are in the M15 section), the owner's staging playtest, then step 6, step 7 with A3-12, and later: steps 5–6 (density, Rubin, nuclear, political capital, wildcards), step 7
 (the corporate facility for `debt`, balance F-6, F-7), the reading score and net-worth scoring (D14). The Act I playtests stay postponed.
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
@@ -166,7 +166,7 @@ its title, the career title, shown in the reveal). Next: the design thread's ans
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by
 the real scenario files in M11.3.
 
-## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — in progress
+## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
 
 Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);
 M15.2 the test dependencies (approved by the owner pasting the spec); M15.3 the reveal record additions; M15.4 the screen; M15.5 tests.
@@ -212,6 +212,19 @@ growth ×/▲▼, survival, career title); the rivals; "The story continues…" 
 the new screen (not in A3-11 or the spec). **Goldens:** the four act3-s* gain only `trigger`, `decoy.fromQ/toQ`, `moves` and the
 `withheld` flags. Component tests (`tests/ui/act3Report.test.tsx`, happy-dom): the s1 golden record, s0 with a penalty, s1 out at
 2027Q3, s2 out at 2027Q2 (null score), no moves, 12 moves, ≤ 4 moves. 1036 tests.
+
+**M15.5 done (tests and the browser run):** the leak guard (`tests/ui/act3Leak.test.tsx`: Plan with the Act III panels, every
+left-nav section, Live, Report and the intro, at 2028Q2 in each scenario, contain no scenario name, trigger title, decoy reason or tell,
+nor "decoy" / "false alarm"; the fixture has no played history, because a trigger is also an event card the player sees when it fires)
+and the D15 guard (an event card flagged for review shows "Withheld pending review" in play; the rivals' flags are in the reveal tests;
+nothing carries `d15_cleared`). `tsconfig.tools.json` includes `src/ui/audio/zzfx.d.ts` (the tests now import the Live screen). Browser
+run (dev server, not staging: `npm run staging:build` is still denied for me; same test-build gate): Growth on s0 (76, Signal Reader,
+1 move), GPU-heavy on s1 (50, no moves, both D15 fates withheld), Shell landlord on s2 (56, a ✓ in the trigger quarter), Growth on s3
+(53, ✓ ✗ –). Two layout fixes from it (mine): unscored cells in "How this was scored" show "–" (the legend says so; "not scored" is
+the hover text) instead of overflowing, and every other timeline label sits a row higher. **Sim** (`--act2` CSVs and table identical):
+`--act3` 41 game overs (was 40: texas-capital +1 foreclosure in s1, from the new-lease index change); reading by scenario (median / p10 /
+p90 / null / median moves): s0 75 / 62 / 76 / 0% / 1; s1 50 / 24 / 50 / 1% / 1; s2 56 / 53 / 66 / 0% / 3; s3 53 / 11 / 53 / 0% / 5; the
+oracle (78/50/50/50, 78/100/100/100) holds. **M15 done:** 1025 → 1041 tests.
 
 ## Milestone M14 (branch `m14`, from `main` at `e364d54`; Act III scoring, doc 27 D14 + §5) — DONE
 

@@ -222,7 +222,8 @@ export function RevealTimeline(props: {
                 <text
                   data-move-label
                   x={x(m.q) + 12}
-                  y={cy + 4}
+                  // Every other label sits a row higher, so labels of nearby moves don't run into each other.
+                  y={cy + 4 - (i % 2) * 22}
                   font-size="11"
                   fill="var(--ink)"
                 >
@@ -308,11 +309,15 @@ function HowScored({ end, endQ }: { end: Act3End; endQ: number }) {
           <div class="reveal-strip">
             {Array.from({ length: QUARTERS }, (_, q) => {
               const p = byQ.get(q)
+              const why = q > endQ
+                ? t('act3.reveal.not_played')
+                : t('act3.reveal.not_scored')
               return (
                 <div
                   key={q}
                   class={`reveal-cell${p ? ` pts-${String(p.value).replace('.', '')}` : ' empty'}`}
-                  title={quarterOf(q)}
+                  title={p ? quarterOf(q) : `${quarterOf(q)}: ${why}`}
+                  data-not-scored={p ? undefined : why}
                 >
                   <span class="num-s muted">{shortQ(quarterOf(q))}</span>
                   {p ? (
@@ -321,10 +326,8 @@ function HowScored({ end, endQ }: { end: Act3End; endQ: number }) {
                       <span class="muted">{ARROW(p.ideal)}</span>
                     </>
                   ) : (
-                    <span class="num-s muted">
-                      {q > endQ
-                        ? t('act3.reveal.not_played')
-                        : t('act3.reveal.not_scored')}
+                    <span class="muted" aria-label={why}>
+                      –
                     </span>
                   )}
                 </div>

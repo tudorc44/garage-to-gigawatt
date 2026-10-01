@@ -2276,7 +2276,7 @@
   "act3.reveal.not_enough": "Not enough quarters played to score your reading.",
   "act3.reveal.base_penalty": "Base {base} · decoy penalty −{penalty}",
   "act3.reveal.how_title": "How this was scored",
-  "act3.reveal.how_legend": "Each quarter: your stance (top) over the ideal (bottom): ▲ offensive, ▼ defensive, · no big move. Darker cells earned more points (1.0, 0.7, 0.5, 0).",
+  "act3.reveal.how_legend": "Each quarter: your stance (top) over the ideal (bottom): ▲ offensive, ▼ defensive, · no big move. Darker cells earned more points (1.0, 0.7, 0.5, 0). Empty cells (–): not scored.",
   "act3.reveal.not_scored": "not scored",
   "act3.reveal.not_played": "not played",
   "act3.reveal.at_entry": "At Act III entry",
