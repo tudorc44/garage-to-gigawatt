@@ -156,10 +156,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M16 (step 5) is done on branch `m16`** (M15 is merged into `main`): density tiers, retrofits and GPU changes, Rubin, new halls, the
-step-5 cards, the A3-07 screen. Next: the design thread answers the M16 questions and writes step 6 (nuclear A3-08, political capital
-A3-09, the step-6 cards); the owner's staging playtest; then step 7 with A3-12, and later: step 7
-(the corporate facility for `debt`, balance F-6, F-7), the reading score and net-worth scoring (D14). The Act I playtests stay postponed.
+**M18 (step 7) is done on branch `m18`** (from `m17`; M16–M18 not merged into `main` yet): the corporate and standby facilities, the
+presets, A3-12 + Scenario Mode, the archetypes and the anchor harness, the tuning pass. Next: the design thread answers the M18 report's
+questions (7 anchors still fail); the owner's staging playtest; the D15 review before Act III ships. The Act I playtests stay postponed.
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
@@ -194,6 +193,9 @@ streams salted). Archetypes keep the bot's upkeep only; new projects: B200 cloud
 **M18.6 done** (`--knobs` sets a value for one run): K1 kept, Rubin rent × 0.55 (C2 Rubin passes), Ultra × 0.50 (floor; 1.50 yr, C2 still fails); K2 at 1.00
 no C1 fix (kept 0.85); K3 fee/trigger no effect (Act II leases never reopen); K4 not needed (A6 passes); K5 size slightly worse, spread no effect (standby
 never drawn); K6 −$5 moves C3's S3 half the wrong way (stopped). Only K1 written to BALANCE. Goldens unchanged.
+**M18.7 (proof):** `--act2 --act3`: Act I/II CSVs byte-identical (1302 files); 532 Act III runs, 0 crashes, 43 game overs; oracle passes. Final anchors =
+the M18.6 table (PASS A5 A6 A7 F7; FAIL A1 A2 A3 A4 C1 C2 C3). Signer, no hire = the bots' game overs in S0–S2 (the Director's salary causes the extra
+busts); S2 no-hire signer $123.9M vs bots $120.7M. **M18 done:** 1181 → 1206 tests. Open questions in the M18 report.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
