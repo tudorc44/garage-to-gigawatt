@@ -37,7 +37,8 @@ import type {
 import { gameOverView } from '../src/sim/selectors.ts'
 import { inActII, toAct3 } from '../src/sim/state.ts'
 import { runway } from '../src/sim/systems/runway.ts'
-import { getCard } from '../src/sim/systems/events.ts'
+import { eventChoices, getCard } from '../src/sim/systems/events.ts'
+import { activePpas, ppaUsedKw } from '../src/sim/systems/nuclear.ts'
 // tools/ may read the hidden reading score (M14.5's oracle); the player-like bots in bots.ts may not.
 import {
   computeReading,
@@ -797,7 +798,37 @@ if (args.includes('--act2')) {
       netWorthUsd: number
       /** M16.6: retrofits started. */
       retrofits: number
+      /** M17.7: political capital at the end of 2028Q4 and 2030Q4 (null when not reached). */
+      pc2028Q4: number | null
+      pc2030Q4: number | null
+      /** M17.7: the wildcards drawn and what became of them. */
+      wildcards: { id: string; status: string }[]
+      /** M17.7: PPA MW contracted and idle (unused) at the end. */
+      ppaMw: number
+      ppaIdleMw: number
     }
+    /**
+     * M17.7, tools only: a bot that also signs every nuclear PPA card choice it can (s2_c1, s3_c2, sh_2) and hires
+     * the Government Affairs Director when sh_3 offers him; every other answer is the bot's own.
+     */
+    const withPpas = (base: Strategy): Strategy => ({
+      ...base,
+      answer: (s) => {
+        const card = s.interrupt?.id === 'event' ? getCard(s.interrupt.event ?? '') : undefined
+        if (card?.act === 3) {
+          const open = eventChoices(s)
+          const pick = card.choices.find(
+            (c) =>
+              open.includes(c.id) &&
+              ('ppa_switch' in c.effects ||
+                'ppa_site_mw' in c.effects ||
+                'hire_card' in c.effects),
+          )
+          if (pick) return pick.id
+        }
+        return base.answer?.(s)
+      },
+    })
     /**
      * M16.6, tools only: a bot plus one rule in Act III: each quarter, after its own plan, retrofit the largest
      * low-tier hall it can if its cash is over twice the cost (its plan is played on a copy first).
@@ -864,19 +895,37 @@ if (args.includes('--act2')) {
     const a3: A3Run[] = []
     /** M16.6: the same runs with the retrofit rule added (tools only). */
     const a3r: A3Run[] = []
+    /** M17.7: the same runs as a nuclear signer (tools only). */
+    const a3n: A3Run[] = []
     let crashed = 0
     for (const { name, runs } of byBot) {
       for (const { seed, state } of runs) {
         if (state.phase !== 'chapter') continue
-        // M16.6: each run twice, as the bot plays it and with the retrofit rule added.
-        for (const retrofitter of [false, true]) try {
+        // M16.6, M17.7: each run three times: as the bot plays it, with the retrofit rule, as a nuclear signer.
+        for (const variant of ['bot', 'retrofitter', 'signer'] as const) try {
           const start = toAct3(state)
           const bot = BOTS[name] ?? PROBES[name]
-          const r = playFrom(start, retrofitter ? withRetrofits(bot) : bot, {
-            through: 3,
-          })
+          const strategy =
+            variant === 'retrofitter'
+              ? withRetrofits(bot)
+              : variant === 'signer'
+                ? withPpas(bot)
+                : bot
+          const r = playFrom(start, strategy, { through: 3 })
           const rep = r.state.reports.filter((x) => x.quarter >= '2027Q1')
-          ;(retrofitter ? a3r : a3).push({
+          const pcAt = (label: string) =>
+            rep.find((x) => x.quarter === label)?.politicalCapital ?? null
+          const ppas = activePpas(r.state)
+          ;(variant === 'retrofitter' ? a3r : variant === 'signer' ? a3n : a3).push({
+            pc2028Q4: pcAt('2028Q4'),
+            pc2030Q4: pcAt('2030Q4'),
+            wildcards: (r.state.act3Wildcards ?? []).map((w) => ({
+              id: w.id,
+              status: w.status,
+            })),
+            ppaMw: ppas.reduce((a, x) => a + x.kw, 0) / 1000,
+            ppaIdleMw:
+              ppas.reduce((a, x) => a + x.kw - ppaUsedKw(r.state, x), 0) / 1000,
             bot: name,
             seed,
             scenario: start.scenarioId!,
@@ -913,7 +962,7 @@ if (args.includes('--act2')) {
         } catch (e) {
           crashed++
           console.error(
-            `  --act3${retrofitter ? ' (retrofitter)' : ''}: ${name} seed ${seed} crashed: ${(e as Error).message}`,
+            `  --act3${variant === 'bot' ? '' : ` (${variant})`}: ${name} seed ${seed} crashed: ${(e as Error).message}`,
           )
         }
       }
@@ -1170,6 +1219,74 @@ if (args.includes('--act2')) {
         ]),
       ),
     )
+    // M17.7 (report, no targets): the nuclear PPA price against each eligible region's market power, $/MWh
+    // (spread = market − PPA: negative when the PPA costs more).
+    const spread: Record<string, Record<string, string>> = {}
+    for (const id of scenarios as ScenarioId[])
+      for (const label of ['2027Q3', '2028Q3', '2029Q3', '2030Q3']) {
+        const inp = quarterInputs(CONTENT.quarters.indexOf(label), id)!
+        const ppa = inp.act3?.nuclearPpaUsdMwh ?? null
+        const row: Record<string, string> = { ppa: ppa === null ? '—' : `$${ppa}` }
+        for (const region of CONTENT.act3Nuclear.regions) {
+          const market = inp.powerUsdKwh[region] * 1000
+          row[region] =
+            ppa === null ? '—' : `${market - ppa >= 0 ? '+' : ''}${(market - ppa).toFixed(0)}`
+        }
+        spread[`${id} ${label}`] = row
+      }
+    console.log(
+      '  Nuclear PPA vs market power (M17.7; $/MWh; region columns = market − PPA):',
+    )
+    console.table(spread)
+    // M17.7: the nuclear signer (the same runs, signing every PPA card it can and hiring the Director).
+    const signerRow = (rows: A3Run[]) => {
+      const scores = rows
+        .map((x) => x.reading)
+        .filter((v): v is number => v !== null)
+      const n = (v: number) => (Number.isNaN(v) ? '—' : v)
+      return {
+        runs: rows.length,
+        gameOver: rows.filter((x) => x.end !== 'chapter').length,
+        netWorth2030Q4: usd(median(rows.map((x) => x.netWorthUsd))),
+        reading: n(median(scores)),
+        ppaMw: n(median(rows.map((x) => x.ppaMw))),
+        ppaIdleMw: n(median(rows.map((x) => x.ppaIdleMw))),
+      }
+    }
+    console.log(
+      '  Nuclear signer (M17.7, tools only): median founder net worth at 2030Q4, reading, game overs, PPA MW and PPA MW idle at the end:',
+    )
+    console.table(
+      Object.fromEntries(
+        scenarios.flatMap((id) => [
+          [`${id} bots`, signerRow(a3.filter((x) => x.scenario === id))],
+          [`${id} signer`, signerRow(a3n.filter((x) => x.scenario === id))],
+        ]),
+      ),
+    )
+    // M17.7: political capital (the bots don't lobby: decay and cards only) and the wildcards.
+    console.log('  Political capital, median (the bots), at the end of 2028Q4 and 2030Q4:')
+    console.table(
+      Object.fromEntries(
+        scenarios.map((id) => {
+          const rows = a3.filter((x) => x.scenario === id)
+          const m = (k: 'pc2028Q4' | 'pc2030Q4') =>
+            median(rows.map((x) => x[k]).filter((v): v is number => v !== null))
+          return [id, { pc2028Q4: m('pc2028Q4'), pc2030Q4: m('pc2030Q4') }]
+        }),
+      ),
+    )
+    const wc: Record<string, { drawn: number; fired: number; skipped: number; notReached: number }> = {}
+    for (const x of a3)
+      for (const w of x.wildcards) {
+        wc[w.id] ??= { drawn: 0, fired: 0, skipped: 0, notReached: 0 }
+        wc[w.id].drawn++
+        if (w.status === 'fired') wc[w.id].fired++
+        else if (w.status === 'skipped') wc[w.id].skipped++
+        else wc[w.id].notReached++
+      }
+    console.log(`  Wildcards over the ${a3.length} bot runs (drawn, fired, skipped for no target, not reached):`)
+    console.table(wc)
     // For the scenario-order check: S3 runs with a contract coming due after 2027Q4.
     const s3Late = a3.filter(
       (x) => x.scenario === 's3' && x.renewals.dueAfter2027Q4 > 0,

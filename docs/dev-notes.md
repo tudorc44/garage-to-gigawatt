@@ -220,6 +220,13 @@ warning with its two lines, the Director, lobbying, five spend cards, this quart
 the Plan screen, the PPA rows on Contracts; icons nuclear-ppa / political-capital / wildcard from the design bundle. Browser (dev): the
 Government screen; one layout fix (mine): lobbying cells wrap. Leak guard covers Government. 1164 tests.
 
+**M17.7 done (the sim proof):** `--act3` adds the nuclear spread table, a tools-only nuclear signer row (every Act III run played a third
+time, signing every PPA card it can and hiring the Director; ~35 min now), median PC at 2028Q4 / 2030Q4 and the wildcard counts. Act I/II
+CSVs and §5 identical; 532 runs, 0 crashes, 43 game overs (was 41: s2 15 from 12, s3 5 from 6). Findings for the design thread (in the
+M17 report): the PPA costs $15–109/MWh more than market almost everywhere; the signer's sh_2 100 MW sits idle (no bot builds there), so
+take-or-pay (~$23M a quarter) bankrupts half its runs in every scenario; bot PC decays to 24 by 2028Q4 and 8 by 2030Q4 (low capital
+from about 2029Q4); the water moratorium skips 80% of its draws (no building project). **M17 done:** 1102 → 1164 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /
