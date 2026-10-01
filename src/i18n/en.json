@@ -976,6 +976,7 @@
   "ui.projects.top_tier": "Build to top tier",
   "ui.projects.top_tier_note": "+{usdMw}/MW ({total} for this size) and one more quarter to build. Top tier (~600 kW/rack) fits Rubin Ultra; a new hall is mid tier otherwise.",
   "ui.projects.top_tier_closed": "Top-tier halls from {quarter}.",
+  "ui.projects.top_tier_locked": "{gpu} needs a top-tier hall, so this hall is built to top tier.",
   "ui.projects.open_go": "Open project",
   "ui.cap2.rating": "Credit rating",
   "ui.cap2.not_rated": "Not rated yet: the first rating comes at the end of this quarter.",

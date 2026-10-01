@@ -166,6 +166,25 @@ A3-09, the step-6 cards); the owner's staging playtest; then step 7 with A3-12, 
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by
 the real scenario files in M11.3.
 
+## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
+
+Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's
+MW free while proposed; the delay alert's accelerate logs; payback on EBITDA; a structural no-role/scenario/phase check on UI views);
+M17.1 content (nuclear, political_capital, wildcards JSON; wc_ai_lab_breakup d15_review → false); M17.2 the nuclear PPA; M17.3
+political capital, the hire, lobbying, the spend menu, angerAdj; M17.4 wildcards; M17.5 the step-6 card effects; M17.6 A3-08 and A3-09;
+M17.7 tests and the sim proof.
+
+**Design-thread answers to M16's questions 1–12 (1 Oct 2026):** 2, 3, 4, 6, 7 OK as built. **Step-7 checklist:** (a) answer 10, the
+first balance item: no GPU generation pays back in under 1.8 years at 2027Q3 in any scenario, on the EBITDA basis (data unchanged
+until then); (b) answer 5: for the passive company, S1 must be the worst scenario at 2030Q4 (if the low-tier × 0.85 puts S3 below S1,
+that's the knob to retune; the act3Rules test stays at "within 5%" until then).
+
+**M17.0 done:** Rubin Ultra always listed from 2027Q3; picking it ticks "Build to top tier" and locks it (answer 1); a card hall's MW pay
+no reservation while proposed (answer 8: the act3-s3 golden's cash is back to its pre-M16 $489,524,300.90; the hall is still opened);
+the delay alert's "accelerate" logs project_accelerate (answer 9); the sim's payback table on EBITDA, flag under 1.8 (answer 11; numbers
+in the M17 report); `tests/ui/act3ViewFields.test.ts`: every one-argument view, and the log, on played states in all four scenarios
+carry no role / scenario / scenarioId / scenario phase (answer 12). 1111 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /

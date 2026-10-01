@@ -104,8 +104,17 @@ export function payReservationWeek(state: GameState): number {
     if (!regionOf(site)) continue
     const u = siteMwByUse(state, site, state.quarter)
     const pending = powerAddsKw(site) - powerAddsKw(site, state.quarter)
+    // Act III (M17.0, DT): a card's new-hall MW cost nothing while the shell is only proposed; the
+    // reservation starts with its build.
+    const cardFree = (site.powerAdds ?? [])
+      .filter(
+        (a) =>
+          a.card &&
+          state.projects.find((p) => p.id === a.projectId)?.stage === 'proposed',
+      )
+      .reduce((kw, a) => kw + a.kw, 0)
     usd +=
-      Math.max(0, u.idle + u.building - pending) *
+      Math.max(0, u.idle + u.building - pending - cardFree) *
       hours *
       powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) *
       share

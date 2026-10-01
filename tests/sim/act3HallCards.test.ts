@@ -12,6 +12,7 @@ import {
   projectCapex,
 } from '../../src/sim/systems/projects.ts'
 import { convertibleKw } from '../../src/sim/systems/hosting.ts'
+import { payReservationWeek } from '../../src/sim/systems/mwUse.ts'
 import { capacityKw, poweredKw, regionOf } from '../../src/sim/systems/sites.ts'
 import { act2Company } from './act2Helpers.ts'
 
@@ -274,6 +275,19 @@ describe('capex_mw (s3_c5 30 MW, s3_c8 10 MW): a new hall that brings its MW', (
       2,
     )
     expect(t.act3Moves!.map((m) => m.kind)).toEqual(['project_commit'])
+  })
+
+  it('its MW pay no power reservation while the hall is only proposed; from its build start they do (M17.0, DT answer 8)', () => {
+    const s = co('s3', '2028Q3', [])
+    const before = payReservationWeek(structuredClone(s))
+    const t = play(s, 's3_c5', 'c1')
+    expect(payReservationWeek(structuredClone(t))).toBeCloseTo(before, 6)
+    const building = structuredClone(t)
+    const p = building.projects.at(-1)!
+    p.stage = 'building'
+    p.startQuarter = building.quarter
+    p.readyQuarter = building.quarter + 2
+    expect(payReservationWeek(structuredClone(building))).toBeGreaterThan(before)
   })
 
   it('cancelling the proposal takes its MW away again', () => {

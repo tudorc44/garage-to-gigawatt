@@ -1088,18 +1088,24 @@ if (args.includes('--act2')) {
       throw new Error(
         `Reading-score oracle self-check failed: ${JSON.stringify(oracle)}`,
       )
-    // M16.6 (report, no targets): payback in years = capex per MW ÷ revenue per MW-year, at 2027Q3 and 2028Q3.
-    // A shell: the retrofit-shell $/MW (top: + 0.6 × the mid→top $/MW) over the mean shell card rent × the RFP
-    // midpoint × the tier multiple (mine: the mean of the tenant cards). A cloud: the shell $/MW + GPUs per MW ×
-    // the unit price (Rubin Ultra builds its hall to top) over GPUs per MW × the neocloud rent × the default
-    // utilisation × 8,760 h. ⚑ = under 1.5 years.
+    // M16.6, M17.0 (DT answer 11; report, no targets; step 7's baseline): payback in years = capex per MW ÷
+    // EBITDA per MW-year, at 2027Q3 and 2028Q3, on the game's own project earnings (settleProjectsWeek):
+    // - a shell: the retrofit-shell $/MW (top: + 0.6 × the mid→top $/MW); the mean shell card rent × the RFP
+    //   midpoint × the tier multiple, less the shell opex share (mine: the mean of the tenant cards);
+    // - a cloud: the shell $/MW + GPUs per MW × the unit price (Rubin Ultra builds its hall to top); GPUs per MW
+    //   × the neocloud rent × utilisation 0.7 × 8,760 h, less power at the cloud PUE (mine: the mean of the six
+    //   regions' power prices that quarter) and a year's GPU insurance.
+    // ⚑ = under 1.8 years (DT: step 7's first target, no generation under 1.8 at 2027Q3).
     const D = BALANCE.act3.density
+    const P2 = BALANCE.projects
     const cards = CONTENT.projects.tenantCards
     const cardRent = cards.reduce((a, c) => a + c.priceUsdMwYr, 0) / cards.length
-    const util = CONTENT.projects.pilot.utilisationBase
+    const util = 0.7
     const flag = (years: number) =>
       Number.isFinite(years)
-        ? `${years.toFixed(1)}${years < 1.5 ? ' ⚑' : ''}`
+        ? years < 0
+          ? 'never'
+          : `${years.toFixed(1)}${years < 1.8 ? ' ⚑' : ''}`
         : '—'
     const payback: Record<string, Record<string, string>> = {}
     for (const id of scenarios as ScenarioId[])
@@ -1109,18 +1115,26 @@ if (args.includes('--act2')) {
         const shellMw = inp.capexUsdMw.retrofitShell
         const topExtra = D.topNewBuildRetrofitShare * (inp.act3?.midToTopUsdMw ?? 0)
         const rent = cardRent * (rfpMid(q, id) ?? 1)
+        const shellEbitda = (mult: number) => rent * mult * (1 - P2.shellOpexShare)
+        const powers = Object.values(inp.powerUsdKwh)
+        const powerUsdKwh = powers.reduce((a, b) => a + b, 0) / powers.length
+        const hoursYr = 24 * 365
         const cloud = (gpu: string) => {
           const perMw = gpuGeneration(gpu)!.gpusPerMw
           const price = gpuPriceUsd(gpu, q, id)
           const hr = neocloudUsdHr(gpu, q, id)
           if (price === undefined || hr === undefined) return NaN
-          const capex =
-            shellMw + perMw * price + (gpu === 'rubin_ultra' ? topExtra : 0)
-          return capex / (perMw * hr * util * 24 * 365)
+          const gpuUsd = perMw * price
+          const capex = shellMw + gpuUsd + (gpu === 'rubin_ultra' ? topExtra : 0)
+          const ebitda =
+            perMw * hr * util * hoursYr -
+            1000 * P2.cloudPue * hoursYr * powerUsdKwh -
+            gpuUsd * P2.cloudInsuranceShareYr
+          return ebitda > 0 ? capex / ebitda : -1
         }
         payback[`${id} ${label}`] = {
-          midShell: flag(shellMw / (rent * D.shellTierRentMult.mid)),
-          topShell: flag((shellMw + topExtra) / (rent * D.shellTierRentMult.top)),
+          midShell: flag(shellMw / shellEbitda(D.shellTierRentMult.mid)),
+          topShell: flag((shellMw + topExtra) / shellEbitda(D.shellTierRentMult.top)),
           h200: flag(cloud('h200')),
           b200: flag(cloud('b200')),
           rubin: flag(cloud('rubin_nvl144')),
@@ -1128,7 +1142,7 @@ if (args.includes('--act2')) {
         }
       }
     console.log(
-      `  Step 5 payback in years (M16.6; capex per MW ÷ revenue per MW-year; utilisation ${util}; ⚑ under 1.5):`,
+      `  Step 5 payback in years (M17.0; capex per MW ÷ EBITDA per MW-year; utilisation ${util}; ⚑ under 1.8, step 7's target):`,
     )
     console.table(payback)
     // M16.6: the retrofitter (each bot's runs again, plus "retrofit the largest low-tier hall when cash > 2 × cost").

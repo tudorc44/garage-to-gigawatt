@@ -284,6 +284,22 @@ describe('one entry per big move (action in → entry out)', () => {
     }
   })
 
+  it('the construction-delay alert (M17.0, DT answer 9): "accelerate" logs project_accelerate; the slip and a new contractor log nothing', () => {
+    const s = act3(shellEnd)
+    s.interrupt = {
+      id: 'construction_delay',
+      week: 3,
+      coin: 'BTC',
+      changePct: 0,
+      projectId: s.projects[0].id,
+    }
+    const kinds = (choice: string) =>
+      logged(s, { type: 'RESOLVE_INTERRUPT', choice })
+    expect(kinds('accelerate')).toEqual(['project_accelerate'])
+    expect(kinds('accept_slip')).toEqual([])
+    expect(kinds('change_contractor')).toEqual([])
+  })
+
   it('a card choice with several effects: one entry, by the sign of the sum; a zero sum logs nothing', () => {
     expect(cardChoiceMove({ term_years: 10, rent_index: 1.05 })).toBe('card_lengthen')
     expect(cardChoiceMove({ term_years: -2, rent_index: 0.8 })).toBe('card_shorten')

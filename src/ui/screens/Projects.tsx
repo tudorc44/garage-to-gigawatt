@@ -341,15 +341,14 @@ function OpenProjectDialog(
   const site = v.sites.find((x) => x.site.id === siteId)
   const [kw, setKw] = useState(Math.floor(site?.freeKw ?? 0))
   const [power, setPower] = useState<'existing' | PowerSource>('existing')
-  // Act III (M16.5): "Build to top tier", and only the GPUs that fit the hall's tier.
+  // Act III (M16.5; M17.0, DT): "Build to top tier". Every GPU on sale is listed; one that needs a top-tier
+  // hall (Rubin Ultra) switches the tick on and locks it.
   const [top, setTop] = useState(false)
-  const topTier = !!v.act3 && top && kind !== 'pilot'
-  const gpus: string[] = v.act3
-    ? topTier
-      ? v.act3.gpusTop
-      : v.act3.gpusMid
-    : v.gpus
+  const gpus: string[] = v.act3 ? v.act3.gpusTop : v.gpus
   const gpuNow = gpus.includes(gpu) ? gpu : (gpus[0] ?? gpu)
+  const gpusMid: string[] = v.act3?.gpusMid ?? []
+  const needsTop = !!v.act3 && kind === 'cloud' && !gpusMid.includes(gpuNow)
+  const topTier = !!v.act3 && kind !== 'pilot' && (top || needsTop)
   const size =
     kind === 'pilot' ? (v.pilotSizes.includes(kw) ? kw : v.pilotSizes[0]) : kw
   const action: Action = {
@@ -458,7 +457,7 @@ function OpenProjectDialog(
             <input
               type="checkbox"
               checked={topTier}
-              disabled={!v.act3.topOpen}
+              disabled={!v.act3.topOpen || needsTop}
               onChange={(e) =>
                 setTop((e.target as HTMLInputElement).checked)
               }
@@ -466,6 +465,11 @@ function OpenProjectDialog(
             />
             {t('ui.projects.top_tier')}
           </label>
+          {needsTop && (
+            <p class="num-s" style={{ margin: 0 }} data-top-locked>
+              {t('ui.projects.top_tier_locked', { gpu: gpuName(gpuNow) })}
+            </p>
+          )}
           <p class="num-s muted" style={{ margin: 0 }}>
             {v.act3.topOpen
               ? t('ui.projects.top_tier_note', {

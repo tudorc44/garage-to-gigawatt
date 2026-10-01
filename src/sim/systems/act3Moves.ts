@@ -213,6 +213,10 @@ export function moveOf(
       return after.founderStake < before.founderStake ? 'equity_raise' : null
     case 'RESOLVE_INTERRUPT': {
       const active = before.interrupt
+      // M17.0 (DT): paying to accelerate on the construction-delay alert speeds a build up; accepting the
+      // slip and changing contractor stay unlogged.
+      if (active?.id === 'construction_delay')
+        return a.choice === 'accelerate' ? 'project_accelerate' : null
       if (active?.id !== 'event') return null
       const card = getCard(active.event ?? '')
       if (card?.act !== 3) return null
