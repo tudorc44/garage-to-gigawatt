@@ -185,7 +185,9 @@ export function moveOf(
         : null
     case 'SELL_TREASURY':
       return 'sale_voluntary'
+    // M18.2 (spec): arranging the standby hedges, like a backstop; its draws are unlogged.
     case 'PROJECT_BACKSTOP':
+    case 'STANDBY_ARRANGE':
       return 'hedge'
     case 'BLEND_ACCEPT':
       return 'blend_extend'

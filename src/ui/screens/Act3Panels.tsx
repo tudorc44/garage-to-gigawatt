@@ -32,6 +32,8 @@ export {
   WildcardPanel,
 } from './Act3Government.tsx'
 import { PpaRowsPanel as PpaRows } from './Act3Government.tsx'
+// Step 7's Capital block (M18.2).
+export { StandbyPanel } from './Act3Capital.tsx'
 
 const tenantName = (id: string) => tDynamic(`tenant.${id}`, id)
 const tenantType = (type: string) => tDynamic(`ui.tenant_type.${type}`, type)

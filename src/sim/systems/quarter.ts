@@ -43,6 +43,11 @@ import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
 import { serviceFacilities } from './facilities.ts'
+import {
+  autoDrawStandby,
+  expireStandby,
+  settleStandbyFee,
+} from './corporateDebt.ts'
 import { rescueBeforeGameOver } from './rescue.ts'
 import { ratingInputs } from './rating.ts'
 import { mwByUse } from './mwUse.ts'
@@ -81,6 +86,11 @@ export function endQuarter(state: GameState): void {
   const service = serviceFacilities(state)
   state.quarterStats.interestUsd += service.interestUsd
   state.quarterStats.principalUsd += service.principalUsd
+  // Act III (M18.2): the standby's commitment fee; then, short of cash, the standby is drawn before any forced sale.
+  if (inActIII(state)) {
+    state.quarterStats.interestUsd += settleStandbyFee(state)
+    autoDrawStandby(state)
+  }
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   // Act II's last resorts before a game over: a project sale, then emergency equity (M7.0, A8).
   rescueBeforeGameOver(state)
@@ -112,6 +122,8 @@ export function endQuarter(state: GameState): void {
       })
   }
   state.reports.push(report)
+  // Act III (M18.2): the standby lapses after its last quarter (its draws stay until their bullets).
+  if (inActIII(state)) expireStandby(state)
   if (forcedSale) logEntry(state, 'log.forced_sale', { ...forcedSale })
   state.phase = state.cash < 0 ? 'gameover' : 'report'
   if (state.phase === 'gameover') {

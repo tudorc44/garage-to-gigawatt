@@ -11,6 +11,7 @@ import {
   ratingView,
   valuationBreakdown,
 } from '../../sim/selectors.ts'
+import { Act3Panel } from '../components/act3Lazy.tsx'
 import { Tip } from '../components/basics.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
 import { runwayTip } from '../components/runway.tsx'
@@ -28,6 +29,8 @@ export function CapitalAct2({ state, act }: ScreenProps) {
     <div class="capital2">
       <RatingCard state={state} />
       <DebtStack state={state} act={act} />
+      {/* Act III (M18.2): the standby liquidity facility, from the lazily loaded Act III panels */}
+      {state.act === 3 && <Act3Panel name="StandbyPanel" state={state} act={act} />}
       <Backlog state={state} />
       <Valuation state={state} />
       <Equity state={state} act={act} />

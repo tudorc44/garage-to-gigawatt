@@ -105,6 +105,12 @@ import {
 } from './systems/nuclear.ts'
 import { lobbyBlocker, spendBlocker } from './systems/politics.ts'
 import {
+  activeStandby,
+  standbyArrangeBlocker,
+  standbyDrawnUsd,
+  standbyTerms,
+} from './systems/corporateDebt.ts'
+import {
   siteTier,
   waterVariant,
   wildcardChoiceBlocker,
@@ -2219,6 +2225,39 @@ export function wildcardView(state: GameState) {
       blocker: wildcardChoiceBlocker(state, c) ?? null,
       isDefault: c === 'c1',
     })),
+  }
+}
+
+/**
+ * The standby liquidity facility block on Capital (M18.2): its status (none, or available until a quarter with the
+ * undrawn and drawn amounts and the locked spread), what arranging it would cost or why it can't, and whether it can
+ * be drawn now. null outside Act III.
+ */
+export function standbyView(state: GameState) {
+  if (!inActIII(state)) return null
+  const s = activeStandby(state)
+  const terms = standbyTerms(state)
+  return {
+    held: s
+      ? {
+          sizeUsd: s.sizeUsd,
+          untilQuarter: CONTENT.quarters[s.untilQuarter] ?? '',
+          undrawnUsd: Math.max(0, s.sizeUsd - standbyDrawnUsd(state)),
+          spreadBps: s.spreadBps,
+          /** Drawable now (from the quarter after arranging). */
+          drawBlocked:
+            state.quarter <= s.arrangedQuarter
+              ? ({ key: 'error.standby_next_quarter' } as Message)
+              : null,
+        }
+      : null,
+    drawnUsd: standbyDrawnUsd(state),
+    arrange: {
+      sizeUsd: terms.sizeUsd,
+      feeUsd: terms.feeUsd,
+      spreadBps: BALANCE.act3.standby.spreadBps,
+      blocked: standbyArrangeBlocker(state) ?? null,
+    },
   }
 }
 

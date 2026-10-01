@@ -109,8 +109,13 @@ import {
 } from './systems/politics.ts'
 import { recordAct3Move } from './systems/act3Moves.ts'
 import {
+  arrangeStandby,
   companyRepayBlocker,
+  drawStandby,
   repayCompanyFacility,
+  standbyArrangeBlocker,
+  standbyDrawBlocker,
+  standbyUndrawnUsd,
 } from './systems/corporateDebt.ts'
 import {
   borrowBlocker,
@@ -351,6 +356,9 @@ export type Action =
   | { type: 'REPAY_BRIDGE_LOAN' }
   /** Act III (M18.1, M18.2): repay a corporate facility or a standby draw early, from cash (0 Bandwidth). */
   | { type: 'REPAY_COMPANY_FACILITY'; facilityId: string }
+  /** Act III (M18.2): arrange the standby liquidity facility (1 Bandwidth), or draw on it (0 Bandwidth). */
+  | { type: 'STANDBY_ARRANGE' }
+  | { type: 'STANDBY_DRAW'; amountUsd: number }
   /** Repair every broken machine at once (M6.1; both acts): the sum of the normal repair costs. */
   | { type: 'REPAIR_ALL' }
   /** sell_gpus_keep_btc's 2023Q1 distressed fleet, into this site's free power (1 Bandwidth). */
@@ -917,6 +925,20 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = companyRepayBlocker(s, a.facilityId)
       if (blocked) return blocked
       repayCompanyFacility(s, a.facilityId)
+      return
+    }
+
+    case 'STANDBY_ARRANGE': {
+      const blocked = standbyArrangeBlocker(s)
+      if (blocked) return blocked
+      arrangeStandby(s)
+      return
+    }
+
+    case 'STANDBY_DRAW': {
+      const blocked = standbyDrawBlocker(s, a.amountUsd)
+      if (blocked) return blocked
+      drawStandby(s, Math.min(a.amountUsd, standbyUndrawnUsd(s)))
       return
     }
 
