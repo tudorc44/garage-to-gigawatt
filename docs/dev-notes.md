@@ -187,6 +187,13 @@ $15M from 2027Q3 (blank before = not available); new-hall capex from the Act II 
 PPA card choice), `hedge` (−1, a backstop); ASIC sales and player treasury sales → `sale_voluntary`; a won auction → `site_buy` (a lost
 bid: nothing). Labels in en.json. Goldens unchanged (the golden scripts make none of these moves). 1021 tests.
 
+**M15.1 done (the new-lease index seam, data only):** `rfp_new_lease_index_low/high` 2027Q1 = 0.88 / 1.04 in all four scenarios, 2027Q2
+halved toward it (s0 0.885/1.045, s1 0.85/1.01, s2 0.925/1.085, s3 0.87/1.03), docs and src copies byte-identical, JSON regenerated
+(`npm run content:market`), provenance note, the wireframe README's conflict 2 marked fixed, `docs/act3-content/README.md` logs it.
+The 3% seam test (`tests/sim/act3Seam.test.ts`, (max − min) / mean at 2027Q1): **fails, pinned for the step-7 checklist:**
+`gpu_h200_hyperscaler_usd_hr` 5.9%, `gpu_h200_neocloud_usd_hr` 5.9%, `gpu_gb200nvl72_blended_usd_hr` 3.1% (all s2 high); everything else
+within 3% (blank columns skipped: A100, Rubin Ultra, nuclear at 2027Q1). Goldens unchanged (no golden company signs a new lease). 1023 tests.
+
 ## Milestone M14 (branch `m14`, from `main` at `e364d54`; Act III scoring, doc 27 D14 + §5) — DONE
 
 Split by the design thread, run in one go: `e191adf` docs (M10–M12 step logs to the archive); M14.1 the reading_score content file and

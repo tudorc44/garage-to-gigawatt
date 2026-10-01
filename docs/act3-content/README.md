@@ -17,6 +17,13 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M15.1, 1 Oct 2026 (the new-lease index seam; design thread, answer D1)
+
+- **`market_s0–s3.csv` › `rfp_new_lease_index_low` / `_high`:** 2027Q1 set to 0.88 / 1.04 in all four scenarios (it was s0
+  0.91/1.07, s1 0.82/0.98, s2 0.94/1.10, s3 0.87/1.03: the opening quarter gave the scenario away); 2027Q2 halved toward it:
+  s0 0.885/1.045, s1 0.85/1.01, s2 0.925/1.085, s3 0.87/1.03. 2027Q3 onward unchanged. The weekly files don't carry these columns.
+  `market_provenance.json` notes it; the src/content copies (CSV and JSON) match.
+
 ### M12.3, 30 Sep 2026 (the step-4 card effects; the design thread's answers to the M11.5c questions)
 
 No data file changed. The key → engine mapping in `src/content/act3Cards.ts` (`EFFECT_MAP`) now reads:
