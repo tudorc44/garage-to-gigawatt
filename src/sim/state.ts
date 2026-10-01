@@ -88,7 +88,7 @@ export interface PowerAdd {
 }
 
 /** Where a project's power comes from beyond the site's existing MW (scope 0.2 §2.5, A2-05). */
-export type PowerSource = 'grid' | 'gas'
+export type PowerSource = 'grid' | 'gas' | 'nuclear'
 
 export type ContractType = 'fixed' | 'index'
 
@@ -347,6 +347,50 @@ export interface Renewal {
   reletRentMult?: number
   /** M13.2: a walked shell's MW are kept empty (no automatic re-let); the Deal builder can let them later. */
   keepEmpty?: boolean
+}
+
+/**
+ * A nuclear PPA (Act III, M17.2; nuclear.json): `kw` contracted at a fixed $/MWh for 60 quarters, take-or-pay
+ * 90% from `fromQuarter`. It serves the project it's attached to; with none (a stranded PPA) it stays on the
+ * site at take-or-pay until a new project on that site uses it.
+ */
+export interface Ppa {
+  id: string
+  siteId: string
+  kw: number
+  priceUsdMwh: number
+  signedQuarter: number
+  /** Take-or-pay runs from this quarter (the project's ready quarter, or next quarter for a card's PPA). */
+  fromQuarter: number
+  /** Its last quarter (signed + 60 − 1). */
+  endQuarter: number
+  projectId: string | null
+}
+
+export type WildcardId =
+  | 'wc_grid_event'
+  | 'wc_export_control'
+  | 'wc_water_moratorium'
+  | 'wc_ai_lab_breakup'
+
+/** A wildcard drawn at the Act III boundary (M17.4): it fires in `quarter` if it has a target then. */
+export interface Act3Wildcard {
+  id: WildcardId
+  quarter: number
+  status: 'pending' | 'fired' | 'skipped'
+  choice?: 'c1' | 'c2'
+}
+
+/** The Government section's bookkeeping (M17.3). */
+export interface Act3Gov {
+  /** Lobbying started this quarter: its gain (and Anger change) lands at the quarter's end. */
+  pending: { id: string; pc: number; anger: number }[]
+  /** The quarter each lobbying action or spend card was last used. */
+  lastUsed: Record<string, number>
+  /** Once per act: the coalition membership, the grid-support grant. */
+  once: string[]
+  /** The water moratorium's pause, which "Block the moratorium" can end (project and quarters). */
+  pause?: { projectId: string; quarters: number }
 }
 
 /** One logged Act III move (M14.2; the kinds are in systems/act3Moves.ts). */
@@ -704,6 +748,20 @@ export interface GameState {
    * reaches the chapter phase. Absent until then, and in every other act.
    */
   act3End?: Act3End
+  /** Act III (M17.2): nuclear PPAs signed (systems/nuclear.ts). Absent until the first. */
+  ppas?: Ppa[]
+  /** Act III (M17.3): political capital, 0–100 (40 at entry). Absent in every other act. */
+  politicalCapital?: number
+  /** Act III (M17.3): the company-wide Anger adjustment, −20…+20, added to every region's Anger. */
+  angerAdj?: number
+  /** Act III (M17.3): the Government section's bookkeeping (lobbying under way, cooldowns, one-offs). */
+  act3Gov?: Act3Gov
+  /** Act III (M17.4): the two wildcards drawn at entry, with the quarter each fires in. */
+  act3Wildcards?: Act3Wildcard[]
+  /** Act III (M17.4): a wildcard on the Plan screen waiting for an answer (its default applies at END_PLAN). */
+  act3WildcardOpen?: { id: WildcardId; projectId?: string } | null
+  /** Act III (M17.4): the export rule wildcard's effects while they last. */
+  act3ExportRule?: { from: number; until: number; exempt: boolean }
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */

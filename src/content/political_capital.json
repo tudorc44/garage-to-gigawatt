@@ -1,0 +1,112 @@
+{
+ "_meta": {
+  "schema": "political_capital/1",
+  "doc27": "D8",
+  "meter": "0-100",
+  "start": 40,
+  "decay_per_quarter": -2,
+  "note": "Meter, not currency: spend cards draw it down; lobbying refills."
+ },
+ "hire": {
+  "id": "gov_affairs_director",
+  "label": "Government Affairs Director",
+  "salary_usd_q": 450000,
+  "effect": {
+   "pc_per_quarter": 3,
+   "unlocks_actions": true,
+   "ratepayer_anger_delta_per_quarter": -1
+  },
+  "grounded": false,
+  "reasoning": "Designed; Act II hires_act2 salary scale"
+ },
+ "lobbying_actions": [
+  {
+   "id": "trade_assoc",
+   "label": "Join the data-center coalition",
+   "cost_usd": 250000,
+   "weeks": 4,
+   "pc_gain": 8,
+   "note": "Cheap, slow, small"
+  },
+  {
+   "id": "state_delegation",
+   "label": "Brief the state delegation",
+   "cost_usd": 600000,
+   "weeks": 6,
+   "pc_gain": 15,
+   "requires": "gov_affairs_director"
+  },
+  {
+   "id": "community_benefit",
+   "label": "Community benefits agreement",
+   "cost_usd": 2000000,
+   "weeks": 8,
+   "pc_gain": 12,
+   "ratepayer_anger_delta": -8
+  },
+  {
+   "id": "tariff_intervention",
+   "label": "Intervene in the large-load tariff case",
+   "cost_usd": 1200000,
+   "weeks": 10,
+   "pc_gain": 20,
+   "risk": {
+    "backfire_prob": 0.2,
+    "backfire_pc": -10
+   },
+   "requires": "gov_affairs_director"
+  }
+ ],
+ "spend_cards": [
+  {
+   "id": "pc_fast_permit",
+   "title": "Fast-track the permit",
+   "body": "A county commissioner offers to move your hearing up a quarter.",
+   "pc_cost": 15,
+   "effect": "Project permit stage -6 weeks"
+  },
+  {
+   "id": "pc_queue_jump",
+   "title": "Queue exception",
+   "body": "The RTO grants a limited exception for load paired with new generation.",
+   "pc_cost": 25,
+   "effect": "Interconnection queue -1 quarter on one project"
+  },
+  {
+   "id": "pc_tariff_relief",
+   "title": "Hold the tariff line",
+   "body": "The commission softens the proposed large-load minimum-take.",
+   "pc_cost": 20,
+   "effect": "Power cost +0% instead of +6% for 4 quarters"
+  },
+  {
+   "id": "pc_anger_shield",
+   "title": "Call in a favour",
+   "body": "A senator's office publicly backs your ratepayer commitments.",
+   "pc_cost": 15,
+   "effect": "Ratepayer Anger -10"
+  },
+  {
+   "id": "pc_moratorium_block",
+   "title": "Block the moratorium",
+   "body": "A local moratorium vote is close. Your friends can tip it.",
+   "pc_cost": 30,
+   "effect": "Cancels one moratorium event"
+  },
+  {
+   "id": "pc_grant",
+   "title": "Grid-support grant",
+   "body": "A state program funds a share of your onsite generation.",
+   "pc_cost": 10,
+   "effect": "+$3M one-time"
+  }
+ ],
+ "low_capital_penalty": {
+  "threshold": 15,
+  "effect": "Permit and moratorium events go against you; 'grace' rule from Act II does not apply",
+  "grounded": false,
+  "reasoning": "Designed"
+ },
+ "grounded": false,
+ "reasoning": "Designed; real-world analogs are large-load tariff proceedings (e.g., AEP Ohio 2025 data-center tariff, PJM co-location dockets)."
+}

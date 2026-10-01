@@ -674,5 +674,49 @@ export const BALANCE = {
       retrofitBw: 1,
       refitBw: 1,
     },
+    /** Nuclear PPAs (M17.2; nuclear.json has the unlock, term and regions). */
+    nuclear: {
+      /** Take-or-pay: you pay for at least this share of the contracted MW (nuclear.json's effects text). */
+      takeOrPayShare: 0.9,
+      /** Commissioning: the power is energized this many weeks after the build starts (nuclear.json text). */
+      commissioningWeeks: 8,
+      /** Hours a quarter for the PPA's bill (8,760 ÷ 4). */
+      hoursPerQuarter: 2190,
+      /** Tenant pull: one more shell offer, and hyperscaler leases × this (designed, nuclear.json "+3%"). */
+      extraShellOffers: 1,
+      hyperscalerRentMult: 1.03,
+      /** Ratepayer Anger in each region where you hold an active PPA (nuclear.json "−5"), once per region. */
+      angerDelta: -5,
+    },
+    /** Political capital (M17.3; political_capital.json has the meter, the hire, the costs and gains). */
+    politicalCapital: {
+      /** Each lobbying action costs this Bandwidth (DT). */
+      lobbyBandwidth: 1,
+      /** The lobbying actions (except the coalition) and every spend card: at most once in this many quarters (DT). */
+      cooldownQuarters: 4,
+      /** Once per act: the coalition membership (DT) and the grant. */
+      oncePerAct: ['trade_assoc', 'pc_grant'] as readonly string[],
+      /** pc_grant: the cash (political_capital.json "+$3M"). */
+      grantUsd: 3_000_000,
+      /** pc_anger_shield: the Anger adjustment (political_capital.json "−10"). */
+      angerShield: -10,
+      /** Spend cards and pc cards: quarters a build or a grid queue moves up. */
+      speedUpQuarters: 1,
+      /** Below the low-capital threshold: the moratorium's Anger level for your regions (from 50), and +1 grid quarter (designed). */
+      lowCapital: { moratoriumAngerAt: 40, gridQueueExtraQuarters: 1 },
+      /** The company-wide Anger adjustment's range (DT). */
+      angerAdj: { min: -20, max: 20 },
+      /** s2_c6's community deal and "Spend political capital" choice: Anger adjustment (the card's −8). */
+      cardAngerDelta: -8,
+    },
+    /** Wildcards (M17.4; wildcards.json has the windows, effects and choices). */
+    wildcards: {
+      /** Drawn at the Act III boundary, of the four (wildcards.json "2 of 4"). */
+      draw: 2,
+      /** The AI lab restructure: at least this many quarters left after the term cut. */
+      minQuartersLeft: 4,
+      /** "Enforce take-or-pay": one fewer shell offer in every draw for this many quarters (DT). */
+      fewerOffersQuarters: 4,
+    },
   },
 } as const

@@ -631,6 +631,75 @@ export const gpusAct3FileSchema = z.looseObject({
 })
 export type DensityTier = z.output<typeof densityTier>
 
+/** nuclear.json (M17.1, doc 27 D7): the PPA's unlock quarter, term and the eligible regions. */
+export const nuclearFileSchema = z.looseObject({
+  option: z.looseObject({
+    id: z.literal('nuclear_ppa'),
+    unlock_quarter: quarterId,
+    term_years: z.number().int().positive(),
+    queue_weeks: nonNeg,
+    take_or_pay: z.boolean(),
+  }),
+  eligibility: z.looseObject({ regions: z.array(z.string()).min(1) }),
+})
+
+/** political_capital.json (M17.1, doc 27 D8). */
+export const politicalCapitalFileSchema = z.looseObject({
+  _meta: z.looseObject({ start: nonNeg, decay_per_quarter: z.number() }),
+  hire: z.looseObject({
+    id: z.string(),
+    salary_usd_q: nonNeg,
+    effect: z.looseObject({
+      pc_per_quarter: z.number(),
+      ratepayer_anger_delta_per_quarter: z.number(),
+    }),
+  }),
+  lobbying_actions: z.array(
+    z.looseObject({
+      id: z.string(),
+      cost_usd: nonNeg,
+      weeks: nonNeg,
+      pc_gain: z.number(),
+      requires: z.string().optional(),
+      ratepayer_anger_delta: z.number().optional(),
+      risk: z
+        .looseObject({ backfire_prob: z.number().min(0).max(1), backfire_pc: z.number() })
+        .optional(),
+    }),
+  ),
+  spend_cards: z.array(z.looseObject({ id: z.string(), pc_cost: nonNeg })),
+  low_capital_penalty: z.looseObject({ threshold: nonNeg }),
+})
+
+/** wildcards.json (M17.1, doc 27 D10). */
+export const wildcardsFileSchema = z.looseObject({
+  wildcards: z
+    .array(
+      z.looseObject({
+        id: z.enum([
+          'wc_grid_event',
+          'wc_export_control',
+          'wc_water_moratorium',
+          'wc_ai_lab_breakup',
+        ]),
+        window: z.string().regex(/^\d{4}Q[1-4]-\d{4}Q[1-4]$/),
+        effect: z.record(z.string(), z.unknown()),
+        choices: z
+          .array(
+            z.looseObject({
+              label: z.string(),
+              cost_usd: nonNeg.optional(),
+              cost_usd_mult: nonNeg.optional(),
+              heat: nonNeg.optional(),
+              pc_cost: nonNeg.optional(),
+            }),
+          )
+          .length(2),
+      }),
+    )
+    .length(4),
+})
+
 export const interruptsAct2FileSchema = z.looseObject({
   new_interrupts: z.array(z.looseObject({ id: z.string() })),
   updated_interrupts: z.array(z.looseObject({ id: z.string() })),

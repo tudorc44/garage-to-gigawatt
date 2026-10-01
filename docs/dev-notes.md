@@ -185,6 +185,10 @@ the delay alert's "accelerate" logs project_accelerate (answer 9); the sim's pay
 in the M17 report); `tests/ui/act3ViewFields.test.ts`: every one-argument view, and the log, on played states in all four scenarios
 carry no role / scenario / scenarioId / scenario phase (answer 12). 1111 tests.
 
+**M17.1 done:** `nuclear.json`, `political_capital.json`, `wildcards.json` copied byte-identically (wc_ai_lab_breakup d15_review → false
+with its note, logged in the act3-content README); `CONTENT.act3Nuclear / politicalCapital / wildcards / act3Hires`;
+`BALANCE.act3.nuclear / politicalCapital / wildcards` (the numbers not in the files); `PowerSource` gains 'nuclear'. 1112 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /

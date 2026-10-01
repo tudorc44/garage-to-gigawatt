@@ -15,6 +15,9 @@ import conversionsRaw from './conversions.json' with { type: 'json' }
 import tenantsRaw from './tenants.json' with { type: 'json' }
 import gpusRaw from './gpus.json' with { type: 'json' }
 import gpusAct3Raw from './gpus_act3.json' with { type: 'json' }
+import nuclearRaw from './nuclear.json' with { type: 'json' }
+import politicalCapitalRaw from './political_capital.json' with { type: 'json' }
+import wildcardsRaw from './wildcards.json' with { type: 'json' }
 import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
 import lendersRaw from './lenders.json' with { type: 'json' }
 import regionsRaw from './regions.json' with { type: 'json' }
@@ -58,6 +61,9 @@ import {
   gpuFailureWaveSchema,
   gpusFileSchema,
   gpusAct3FileSchema,
+  nuclearFileSchema,
+  politicalCapitalFileSchema,
+  wildcardsFileSchema,
   type DensityTier,
   interruptsAct2FileSchema,
   lendersFileSchema,
@@ -434,6 +440,44 @@ export interface Content {
   }
   /** Projects (Act II, scope 0.2 §2.5): what the Act II content files say about them. */
   projects: ProjectRules
+  /** Act III's nuclear PPA (nuclear.json, M17.1). */
+  act3Nuclear: { unlockQuarter: string; termQuarters: number; regions: PowerRegion[] }
+  /** Act III's political capital (political_capital.json, M17.1). */
+  politicalCapital: {
+    start: number
+    decayPerQuarter: number
+    hire: {
+      id: string
+      salaryUsdQ: number
+      pcPerQuarter: number
+      angerPerQuarter: number
+    }
+    lobbying: {
+      id: string
+      costUsd: number
+      weeks: number
+      pcGain: number
+      requires?: string
+      angerDelta?: number
+      backfire?: { chance: number; pc: number }
+    }[]
+    spend: { id: string; pcCost: number }[]
+    lowThreshold: number
+  }
+  /** Act III's wildcards (wildcards.json, M17.1): window as quarter labels, the choices' numbers. */
+  wildcards: {
+    id: 'wc_grid_event' | 'wc_export_control' | 'wc_water_moratorium' | 'wc_ai_lab_breakup'
+    window: [string, string]
+    effect: Record<string, unknown>
+    choices: {
+      costUsd?: number
+      costUsdMult?: number
+      heat?: number
+      pcCost?: number
+    }[]
+  }[]
+  /** Act III's hire (political_capital.json): the Government Affairs Director. */
+  act3Hires: Hire[]
   /** Act III's hall density tiers and newest GPUs (gpus_act3.json, M16.1). */
   act3Gpus: {
     /** Rubin and Rubin Ultra: buyable in Act III only, priced from the scenario market. */
@@ -600,6 +644,9 @@ export interface RawContent {
   tenants: unknown
   gpus: unknown
   gpusAct3: unknown
+  nuclear: unknown
+  politicalCapital: unknown
+  wildcards: unknown
   interruptsAct2: unknown
   lenders: unknown
   regions: unknown
@@ -697,6 +744,17 @@ export function parseContent(raw: RawContent): Content {
     'gpus_act3.json',
     gpusAct3FileSchema,
     raw.gpusAct3,
+  )
+  const nuclearFile = check('nuclear.json', nuclearFileSchema, raw.nuclear)
+  const pcFile = check(
+    'political_capital.json',
+    politicalCapitalFileSchema,
+    raw.politicalCapital,
+  )
+  const wildcardsFile = check(
+    'wildcards.json',
+    wildcardsFileSchema,
+    raw.wildcards,
   )
   const lendersFile = check('lenders.json', lendersFileSchema, raw.lenders)
   const regionsFile = check('regions.json', regionsFileSchema, raw.regions)
@@ -1310,6 +1368,71 @@ export function parseContent(raw: RawContent): Content {
     },
     midToTopWeeks: gpusAct3File?.density_rules.mid_to_top.weeks ?? 0,
   }
+  // Act III step 6 (M17.1): nuclear PPAs, political capital, wildcards.
+  const regionIds: Record<string, PowerRegion> = {
+    PJM: 'pjm',
+    Ohio: 'ohio',
+    Georgia: 'georgia',
+    Nordics: 'nordics',
+    ERCOT: 'ercot',
+    Arizona: 'arizona',
+  }
+  for (const r of nuclearFile?.eligibility.regions ?? [])
+    if (!regionIds[r]) problems.push(`nuclear.json › eligibility: unknown region "${r}"`)
+  const act3Nuclear: Content['act3Nuclear'] = {
+    unlockQuarter: nuclearFile?.option.unlock_quarter ?? '2027Q3',
+    termQuarters: (nuclearFile?.option.term_years ?? 15) * 4,
+    regions: (nuclearFile?.eligibility.regions ?? []).flatMap((r) =>
+      regionIds[r] ? [regionIds[r]] : [],
+    ),
+  }
+  const politicalCapital: Content['politicalCapital'] = {
+    start: pcFile?._meta.start ?? 40,
+    decayPerQuarter: -(pcFile?._meta.decay_per_quarter ?? -2),
+    hire: {
+      id: pcFile?.hire.id ?? 'gov_affairs_director',
+      salaryUsdQ: pcFile?.hire.salary_usd_q ?? 0,
+      pcPerQuarter: pcFile?.hire.effect.pc_per_quarter ?? 0,
+      angerPerQuarter: pcFile?.hire.effect.ratepayer_anger_delta_per_quarter ?? 0,
+    },
+    lobbying: (pcFile?.lobbying_actions ?? []).map((a) => ({
+      id: a.id,
+      costUsd: a.cost_usd,
+      weeks: a.weeks,
+      pcGain: a.pc_gain,
+      ...(a.requires ? { requires: a.requires } : {}),
+      ...(a.ratepayer_anger_delta !== undefined
+        ? { angerDelta: a.ratepayer_anger_delta }
+        : {}),
+      ...(a.risk
+        ? { backfire: { chance: a.risk.backfire_prob, pc: a.risk.backfire_pc } }
+        : {}),
+    })),
+    spend: (pcFile?.spend_cards ?? []).map((c) => ({ id: c.id, pcCost: c.pc_cost })),
+    lowThreshold: pcFile?.low_capital_penalty.threshold ?? 15,
+  }
+  const wildcards: Content['wildcards'] = (wildcardsFile?.wildcards ?? []).map(
+    (w) => ({
+      id: w.id,
+      window: w.window.split('-') as [string, string],
+      effect: w.effect,
+      choices: w.choices.map((c) => ({
+        ...(c.cost_usd !== undefined ? { costUsd: c.cost_usd } : {}),
+        ...(c.cost_usd_mult !== undefined ? { costUsdMult: c.cost_usd_mult } : {}),
+        ...(c.heat !== undefined ? { heat: c.heat } : {}),
+        ...(c.pc_cost !== undefined ? { pcCost: c.pc_cost } : {}),
+      })),
+    }),
+  )
+  const act3Hires: Hire[] = [
+    {
+      id: politicalCapital.hire.id,
+      name: '',
+      bio: '',
+      salary_usd_year: { '2017': 0, '2021': 0 },
+      effect: {},
+    },
+  ]
   const delayChoice = (id: string) =>
     delayRules.choices.find((c) => c.id === id)
   for (const id of ['accelerate', 'accept_slip', 'change_contractor'])
@@ -1876,6 +1999,10 @@ export function parseContent(raw: RawContent): Content {
     hosting,
     projects,
     act3Gpus,
+    act3Nuclear,
+    politicalCapital,
+    wildcards,
+    act3Hires,
     finance,
     lifeline: {
       siteKw: capitalAct2File.lifeline_card_final_numbers.site_mw * 1000,
@@ -2207,6 +2334,9 @@ export const CONTENT: Content = parseContent({
   tenants: tenantsRaw,
   gpus: gpusRaw,
   gpusAct3: gpusAct3Raw,
+  nuclear: nuclearRaw,
+  politicalCapital: politicalCapitalRaw,
+  wildcards: wildcardsRaw,
   interruptsAct2: interruptsAct2Raw,
   lenders: lendersRaw,
   regions: regionsRaw,

@@ -22,6 +22,9 @@ import conversions from '../src/content/conversions.json' with { type: 'json' }
 import tenants from '../src/content/tenants.json' with { type: 'json' }
 import gpus from '../src/content/gpus.json' with { type: 'json' }
 import gpusAct3 from '../src/content/gpus_act3.json' with { type: 'json' }
+import nuclear from '../src/content/nuclear.json' with { type: 'json' }
+import politicalCapital from '../src/content/political_capital.json' with { type: 'json' }
+import wildcards from '../src/content/wildcards.json' with { type: 'json' }
 import interruptsAct2 from '../src/content/interrupts_act2.json' with { type: 'json' }
 import lenders from '../src/content/lenders.json' with { type: 'json' }
 import regions from '../src/content/regions.json' with { type: 'json' }
@@ -81,6 +84,9 @@ const raw = (): RawContent =>
     tenants,
     gpus,
     gpusAct3,
+    nuclear,
+    politicalCapital,
+    wildcards,
     interruptsAct2,
     lenders,
     regions,
@@ -298,10 +304,37 @@ describe('content loads', () => {
       'events_act3.json',
       'reading_score.json',
       'gpus_act3.json', // M16.1
+      'nuclear.json', // M17.1
+      'political_capital.json',
+      'wildcards.json',
     ])
       expect(read(`../src/content/${name}`), name).toBe(
         read(`../docs/act3-content/${name}`),
       )
+  })
+
+  it('M17.1: no wildcard is flagged for the D15 review (wc_ai_lab_breakup cleared: a fictional lab, doc 27 §11 / D10)', () => {
+    const file = JSON.parse(
+      readFileSync(new URL('../src/content/wildcards.json', import.meta.url), 'utf8'),
+    ) as { wildcards: { id: string; d15_review?: boolean; d15_note?: string }[] }
+    expect(file.wildcards.filter((w) => w.d15_review).map((w) => w.id)).toEqual([])
+    expect(file.wildcards.find((w) => w.id === 'wc_ai_lab_breakup')!.d15_note).toMatch(
+      /fictional lab/,
+    )
+    expect(CONTENT.wildcards.map((w) => w.id)).toHaveLength(4)
+    expect(CONTENT.act3Nuclear).toEqual({
+      unlockQuarter: '2027Q3',
+      termQuarters: 60,
+      regions: ['pjm', 'ohio', 'georgia', 'nordics'],
+    })
+    expect(CONTENT.politicalCapital.start).toBe(40)
+    expect(CONTENT.politicalCapital.decayPerQuarter).toBe(2)
+    expect(CONTENT.politicalCapital.hire).toEqual({
+      id: 'gov_affairs_director',
+      salaryUsdQ: 450_000,
+      pcPerQuarter: 3,
+      angerPerQuarter: -1,
+    })
   })
 
   it('the Act III scenarios load: 4 scenarios × 16 quarters × 13 weeks, from 2027Q1 to 2030Q4', () => {

@@ -17,6 +17,12 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M17.1, 1 Oct 2026 (step 6 content; design thread, M17 spec)
+
+- **`wildcards.json` › `wc_ai_lab_breakup` › `d15_review`:** true → false, with a `d15_note`: "fictional lab, no real company named:
+  doc 27 §11 / D10 say no D15 review is needed". `nuclear.json`, `political_capital.json` and `wildcards.json` are now copied
+  byte-identically to `src/content/` (content test); the loader refuses a wildcard still flagged for review.
+
 ### M16.0, 1 Oct 2026 (the GPU-rent seam; design thread, M16 spec)
 
 - **`market_s2.csv` › `gpu_h200_hyperscaler_usd_hr` / `gpu_h200_neocloud_usd_hr` / `gpu_gb200nvl72_blended_usd_hr`:** 2027Q1
