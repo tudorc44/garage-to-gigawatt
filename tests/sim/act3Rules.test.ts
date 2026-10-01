@@ -179,12 +179,18 @@ describe('a real company plays Act III on each scenario', () => {
     }
   })
 
-  it('the scenario shapes the outcome: S2 ends highest, S1 lowest (a sanity check, not a balance target)', () => {
+  it('the scenario shapes the outcome: S2 ends highest, S1 below S0 (a sanity check, not a balance target)', () => {
     const last = (id: string) =>
       runs.get(id)!.at(-1)!.reports.at(-1)!.valuationUsd
     expect(last('s2')).toBeGreaterThan(last('s0'))
     expect(last('s0')).toBeGreaterThan(last('s1'))
-    expect(last('s3')).toBeGreaterThan(last('s1'))
+    // M16.2: "S3 ends above S1" no longer holds for this company ($347.8M vs $355.8M): its five carried shells
+    // are low tier and it never retrofits, so from 2027Q3 its re-lets and renewals sign at × 0.85, and S3's
+    // efficiency shock hits old halls hardest (reported to the design thread). Within 5% of each other:
+    expect(Math.abs(last('s3') / last('s1') - 1)).toBeLessThan(0.05)
+    expect(runs.get('s3')!.at(-1)!.projects.every((p) => p.tier === 'low')).toBe(
+      true,
+    )
   })
 
   it('projects earn revenue from the scenario’s market in Act III', () => {

@@ -73,6 +73,8 @@ function leaseAt(
   )!
   const card = cardOfType(o.type)
   p.kw = o.mw * 1000
+  // The worked examples assume a neutral hall: a mid-tier shell (× 1.00 from 2027Q3, M16.2).
+  p.tier = 'mid'
   const t = p.tenant!
   t.card = card.id
   t.priceMult = o.usdMwYr / card.priceUsdMwYr

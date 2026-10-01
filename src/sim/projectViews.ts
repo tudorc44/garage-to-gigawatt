@@ -34,6 +34,7 @@ import {
 } from './systems/projects.ts'
 import { capacityKw, regionOf } from './systems/sites.ts'
 import { gridQuarterRange, powerBlocker } from './systems/power.ts'
+import { shellTierRentMult } from './systems/density.ts'
 
 const P = () => CONTENT.projects
 const label = (q: number | null) =>
@@ -243,7 +244,8 @@ export function dealView(state: GameState, projectId: string) {
         : null,
     },
     offers: p.offers.map((o) => {
-      const leaseIndex = newLeaseIndex(state)
+      // (M16.2: × the hall's tier multiple from 2027Q3, as signTenant signs it)
+      const leaseIndex = newLeaseIndex(state) * shellTierRentMult(state, p)
       const c = tenantCard(o.card)!
       const gpuUsdHr = o.gpu
         ? (gpuContractUsdHr(

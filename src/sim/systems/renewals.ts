@@ -33,6 +33,7 @@ import {
 } from './leaseIndex.ts'
 import { scenarioOf } from './market.ts'
 import { annualRentUsd, contractQuarters, tenantCard } from './projects.ts'
+import { shellTierRentMult } from './density.ts'
 
 const R = BALANCE.act3.renewals
 
@@ -73,7 +74,9 @@ export function renewalOffer(
     return { mult, termQuarters: years * 4 }
   }
   const position = R.positionByType[tenantCard(t.card)!.type] ?? 0
-  const mult = band.lo + (band.hi - band.lo) * position
+  // M16.2 (DT): × the hall's tier multiple from 2027Q3, after the Band.
+  const mult =
+    (band.lo + (band.hi - band.lo) * position) * shellTierRentMult(state, p)
   const years = offeredTermYears(state.quarter, scenario, 'shell') ?? 1
   return { mult, termQuarters: years * 4 }
 }
@@ -301,7 +304,12 @@ export function completeRelets(state: GameState): void {
     const card = tenantCard(pending.card)!
     const mid = rfpMid(state.quarter, scenario) ?? 1
     const years = offeredTermYears(state.quarter, scenario, 'shell') ?? 1
-    const rentUsd = pending.lapsedRentUsd * mid * (pending.rentMult ?? 1)
+    // M16.2 (DT): × the hall's tier multiple from 2027Q3.
+    const rentUsd =
+      pending.lapsedRentUsd *
+      mid *
+      (pending.rentMult ?? 1) *
+      shellTierRentMult(state, p)
     p.tenant = {
       card: card.id,
       signedQuarter: state.quarter,
@@ -464,7 +472,8 @@ export function repriceRolling(state: GameState): void {
   for (const p of state.projects) {
     const t = p.tenant
     if (!t?.rolling || projectGone(p)) continue
-    t.priceMult = mid
+    // M16.2 (mine, reversible): a rolling lease is a new lease each quarter, so it takes the tier multiple too.
+    t.priceMult = mid * shellTierRentMult(state, p)
     t.servedQuarters = 0
     delete t.revenueMult
   }

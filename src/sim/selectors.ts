@@ -96,6 +96,7 @@ import {
   renewalBlocker,
   renewalWalkChance,
 } from './systems/renewals.ts'
+import { shellTierRentMult } from './systems/density.ts'
 import { blendAcceptBlocker } from './systems/blendExtend.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { blockedEventChoices, eventBodyKey } from './systems/events.ts'
@@ -2057,7 +2058,9 @@ export function renewalsDue(state: GameState) {
         /** Shell MW and this quarter's new-lease reference for them (the re-let's estimate). */
         mw: t.gpu ? null : p.kw / 1000,
         gpus: t.gpu ? t.gpu.gpus : null,
-        reletEstimateUsd: t.gpu ? null : baseRentUsd(p) * newLeaseIndex(state),
+        reletEstimateUsd: t.gpu
+          ? null
+          : baseRentUsd(p) * newLeaseIndex(state) * shellTierRentMult(state, p),
         /** Quarters a re-let leaves the MW empty (the player's re-let, or the automatic one). */
         reletEmptyQuarters:
           r.reletEmptyQuarters ?? BALANCE.act3.renewals.reletEmptyQuarters,

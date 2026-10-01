@@ -6,6 +6,7 @@
 import { actFirstQuarter, actLastQuarter } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
+import { assignCarriedTiers } from './systems/density.ts'
 import {
   emptyQuarterStats,
   newGame,
@@ -127,5 +128,7 @@ export function restoreSave(raw: unknown): Loaded {
   delete (state as { act3Stub?: unknown }).act3Stub
   // M14.2: an Act III save from before the move log starts it empty (older test-build saves).
   if (state.act === 3 && !Array.isArray(state.act3Moves)) state.act3Moves = []
+  // M16.2: an Act III save from before the density tiers gives its halls the tiers they'd have at entry.
+  if (state.act === 3) assignCarriedTiers(state)
   return { ok: true, state }
 }

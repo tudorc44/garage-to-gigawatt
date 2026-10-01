@@ -224,6 +224,8 @@ export type Action =
       gpu?: string
       /** Its Power slot: new power (a grid upgrade or on-site gas) instead of the site's free MW. */
       power?: PowerSource
+      /** Act III (M16.2): build the hall to top tier (from 2027Q3; costs more, takes a quarter longer). */
+      topTier?: boolean
     }
   /** Act II: a shell project signs one of its tenant offers (accept, 0 Bandwidth). */
   | { type: 'PROJECT_SIGN_TENANT'; projectId: string; offerId: string }

@@ -16,6 +16,13 @@ import { act2Company } from './act2Helpers.ts'
 
 const FIRST = actFirstQuarter(3)
 
+/** A carried project as Act II left it: M16.2 adds only its density tier at the boundary. */
+const withoutTier = (p: GameState['projects'][number]) => {
+  const rest = { ...p }
+  delete rest.tier
+  return rest
+}
+
 /** A real Act II game, played by a bot to the end of 2026Q4 (the chapter report). */
 let end: GameState
 beforeAll(() => {
@@ -49,7 +56,8 @@ describe('enterAct3: carried unchanged', () => {
 
   it('keeps open projects (tenants, contracts, slots) and every kind of debt', () => {
     const s = toAct3(end)
-    expect(s.projects).toEqual(end.projects)
+    // (M16.2 adds each hall's density tier; everything else is carried as it was)
+    expect(s.projects.map(withoutTier)).toEqual(end.projects)
     expect(s.facilities).toEqual(end.facilities)
     expect(s.equipmentLoan).toEqual(end.equipmentLoan)
     expect(s.constructionLoans).toEqual(end.constructionLoans)
@@ -83,7 +91,7 @@ describe('enterAct3: carried unchanged', () => {
   it('keeps the JV partner and backstops (they live on the projects) and AI-lab distress flags', () => {
     const s = toAct3(end)
     for (const [i, p] of end.projects.entries())
-      expect(s.projects[i]).toEqual(p)
+      expect(withoutTier(s.projects[i])).toEqual(p)
   })
 
   it('keeps the lasting effects that outlast 2026Q4, and the permanent ones', () => {

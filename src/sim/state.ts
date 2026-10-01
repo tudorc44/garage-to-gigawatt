@@ -450,6 +450,23 @@ export interface Project {
    * share of the project's earnings, backlog and sale proceeds. `fundedUsd` once the build starts.
    */
   jv?: { share: number; fundedUsd: number }
+  /**
+   * Act III (M16.2): the hall's density tier (systems/density.ts): which GPU generations fit, and a shell's
+   * rent multiple. Missing in Act I and II.
+   */
+  tier?: 'low' | 'mid' | 'top'
+  /**
+   * Act III (M16.3): a retrofit or GPU change under way. From `fromQuarter` the hall earns a share of each
+   * quarter (the downtime rule) for `weeks`; a retrofit's new tier applies once it's done.
+   */
+  downtime?: {
+    kind: 'retrofit' | 'refit'
+    fromQuarter: number
+    weeks: number
+    toTier?: 'low' | 'mid' | 'top'
+  }
+  /** Act III (M16.4, a card's capex_mw): a new hall on greenfield, priced at the greenfield shell $/MW. */
+  greenfield?: boolean
   /** Capex committed and paid at the start of the build (after any tenant capex credit). */
   capexUsd: number
   /** The GPUs' share of it (insured each year). */

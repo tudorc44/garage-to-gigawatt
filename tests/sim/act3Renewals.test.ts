@@ -2,6 +2,7 @@
 // roll, accept (the default) / counter / re-let, and fresh leases at the new-lease (RFP) index.
 import { beforeAll, describe, expect, it } from 'vitest'
 import {
+  BALANCE,
   CONTENT,
   SCENARIO_IDS,
   actFirstQuarter,
@@ -78,6 +79,8 @@ function dueAt(
   s.quarter = q(label)
   s.act3Renewals = []
   const p = pick(s)
+  // The worked examples assume a neutral hall: a mid-tier shell (× 1.00 from 2027Q3, M16.2).
+  p.tier = 'mid'
   tweak?.(p)
   p.tenant!.servedQuarters = contractQuarters(p) - 1
   return { s, p }
@@ -285,7 +288,12 @@ describe('the renewal’s timeline, the default and the choices', () => {
     expect(t.quarter).toBe(FIRST + 3)
     expect(p.tenant!.card).toBe(card.id)
     const rent = annualRentUsd(card, p.kw) * p.tenant!.priceMult!
-    expect(rent).toBeCloseTo(lapsed * rfpMid(FIRST + 3, 's2')!, 4)
+    // (M16.2: × the hall's tier multiple from 2027Q3; this carried shell is low tier, × 0.85)
+    expect(p.tier).toBe('low')
+    expect(rent).toBeCloseTo(
+      lapsed * rfpMid(FIRST + 3, 's2')! * BALANCE.act3.density.shellTierRentMult.low,
+      4,
+    )
     const row = CONTENT.act3Scenarios.s2.quarterly[3]
     expect(contractQuarters(p)).toBe(
       Math.round(row.renewal_offer_term_years_shell!) * 4,

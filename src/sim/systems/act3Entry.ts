@@ -20,6 +20,7 @@ import {
 } from '../../content/index.ts'
 import { emptyQuarterStats, type Act3Entry, type GameState } from '../state.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
+import { assignCarriedTiers } from './density.ts'
 import { debtUsd } from './loans.ts'
 import { mwByUse } from './mwUse.ts'
 import { openRenewals } from './renewals.ts'
@@ -119,6 +120,8 @@ export function enterAct3(state: GameState, scenario: ScenarioId): GameState {
   openRenewals(s)
   // The move log the reading score reads at the end (M14.2).
   s.act3Moves = []
+  // Each carried hall gets its density tier (M16.2, DT).
+  assignCarriedTiers(s)
 
   return s
 }

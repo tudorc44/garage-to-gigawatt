@@ -33,6 +33,7 @@ import { sofr } from './finance.ts'
 import { scenarioOf } from './market.ts'
 import { getProject, signTenant, tenantCard } from './projects.ts'
 import { renewalBand } from './leaseIndex.ts'
+import { shellTierRentMult } from './density.ts'
 import { openRenewal } from './renewals.ts'
 
 const N = BALANCE.finance.dealNegotiation
@@ -71,7 +72,9 @@ function terms(
     if (r.negotiated) return { key: 'error.negotiated_already' }
     const band = renewalBand(state.quarter, scenarioOf(state))
     if (!band) return { key: 'error.no_renewal' }
-    return { limit: Math.max(band.hi, r.offer.mult), opening: r.offer.mult }
+    // M16.2 (mine, reversible): a shell's limit takes its hall's tier multiple, like its offer.
+    const hi = band.hi * shellTierRentMult(state, p)
+    return { limit: Math.max(hi, r.offer.mult), opening: r.offer.mult }
   }
   if (target.offerId) {
     if (p.tenant) return { key: 'error.tenant_signed' }

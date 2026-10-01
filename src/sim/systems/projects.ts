@@ -52,6 +52,13 @@ import { regionMoratoriumOn } from './anger.ts'
 import { projectPolicy } from './regions.ts'
 import { convertibleKw } from './hosting.ts'
 import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
+import {
+  buildsToTop,
+  newHallTier,
+  shellTierRentMult,
+  topBuildExtraUsd,
+  topBuildOpen,
+} from './density.ts'
 
 const P = () => CONTENT.projects
 
@@ -189,12 +196,19 @@ export function buildQuarters(kind: ProjectKind): number {
   return kind === 'cloud' ? shell + P().fullStack.extraBuildQuarters : shell
 }
 
-/** This project's build quarters: its kind's, changed by the Merge head start (never under 1). */
+/**
+ * This project's build quarters: its kind's, changed by the Merge head start (never under 1); a new Act III
+ * hall built to top tier takes one more (M16.2, designed).
+ */
 export function projectBuildQuarters(
   state: GameState,
-  p: Pick<Project, 'id' | 'kind' | 'siteId'>,
+  p: Pick<Project, 'id' | 'kind' | 'siteId'> &
+    Partial<Pick<Project, 'tier' | 'stage'>>,
 ): number {
-  return Math.max(1, buildQuarters(p.kind) + headStartBuildDelta(state, p))
+  const top = buildsToTop(state, p)
+    ? BALANCE.act3.density.topNewBuildExtraQuarters
+    : 0
+  return Math.max(1, buildQuarters(p.kind) + headStartBuildDelta(state, p)) + top
 }
 
 /**
@@ -385,13 +399,15 @@ export function projectCapex(
   p: Pick<Project, 'kw' | 'kind' | 'gpu' | 'tenant'> & {
     siteId?: string
     power?: PowerSource
-  },
+  } & Partial<Pick<Project, 'tier' | 'stage' | 'greenfield'>>,
   quarter = state.quarter,
 ): {
   retrofitUsd: number
   gpuUsd: number
   powerUsd: number
   creditUsd: number
+  /** Act III (M16.2): a new hall built to top tier, 0.6 × the quarter's mid→top $/MW × MW. */
+  densityUsd: number
   totalUsd: number
   gpuCount: number
 } {
@@ -405,12 +421,11 @@ export function projectCapex(
   // An Act II site's flaw can add to the build per MW (fibre far away, poor power quality).
   const site = p.siteId ? state.sites.find((s) => s.id === p.siteId) : undefined
   const flawUsdMw = site ? (flawEffect(site, 'capex_usd_mw_delta') ?? 0) : 0
-  const retrofitUsd =
-    ((quarterInputs(quarter, scenarioOf(state))?.capexUsdMw.retrofitShell ??
-      0) *
-      ready +
-      flawUsdMw) *
-    mw
+  // Act III (M16.4): a card's new hall on greenfield costs the greenfield shell $/MW instead.
+  const capex = quarterInputs(quarter, scenarioOf(state))?.capexUsdMw
+  const shellUsdMw =
+    (p.greenfield ? capex?.greenfieldShell : capex?.retrofitShell) ?? 0
+  const retrofitUsd = (shellUsdMw * ready + flawUsdMw) * mw
   let gpuUsd = 0
   let gpuCount = 0
   if (p.kind !== 'shell' && p.gpu) {
@@ -436,12 +451,17 @@ export function projectCapex(
     retrofitUsd * policyMult,
     (card?.capexCreditUsdMw ?? 0) * mw,
   )
+  const densityUsd = buildsToTop(state, p)
+    ? topBuildExtraUsd(state, p.kw, quarter)
+    : 0
   return {
     retrofitUsd: retrofitUsd * policyMult,
     gpuUsd: gpuUsd * policyMult,
     powerUsd: powerUsd * policyMult,
     creditUsd,
-    totalUsd: (retrofitUsd + gpuUsd + powerUsd) * policyMult - creditUsd,
+    densityUsd: densityUsd * policyMult,
+    totalUsd:
+      (retrofitUsd + gpuUsd + powerUsd + densityUsd) * policyMult - creditUsd,
     gpuCount,
   }
 }
@@ -556,9 +576,16 @@ export function openBlocker(
     kind: ProjectKind
     gpu?: string
     power?: PowerSource
+    topTier?: boolean
   },
 ): Message | undefined {
   if (!inAct2Rules(state)) return { key: 'error.act2_only' }
+  // Act III (M16.2): "Build to top tier" on a new shell or cloud hall, from 2027Q3.
+  if (a.topTier && (a.kind === 'pilot' || !topBuildOpen(state)))
+    return {
+      key: 'error.top_tier_closed',
+      params: { quarter: BALANCE.act3.density.topNewBuildFrom },
+    }
   const site = state.sites.find((s) => s.id === a.siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.project_garage' }
@@ -632,6 +659,7 @@ export function openProject(
     kind: ProjectKind
     gpu?: string
     power?: PowerSource
+    topTier?: boolean
   },
 ): Project {
   const n = state.projects.reduce((m, p) => Math.max(m, p.n), 0) + 1
@@ -656,6 +684,8 @@ export function openProject(
     readyQuarter: null,
     soldQuarter: null,
   }
+  // Act III (M16.2, DT): a new hall is mid tier, or its GPU's if denser, or top when ticked.
+  if (inActIII(state)) p.tier = newHallTier(p.gpu, !!a.topTier)
   state.bandwidth -= BALANCE.projects.bandwidth.open
   state.projects.push(p)
   const site = state.sites.find((s) => s.id === a.siteId)!
@@ -707,8 +737,10 @@ export function signTenant(
   const card = offer && tenantCard(offer.card)
   if (!offer || !card) return { key: 'error.unknown_offer' }
   if (offer.gpu) return signGpuContract(state, p, offer, card)
-  // Act III (M12.2, F-2): fresh capacity is priced at this quarter's new-lease (RFP) index.
-  const mult = (offer.priceMult ?? 1) * newLeaseIndex(state)
+  // Act III (M12.2, F-2): fresh capacity is priced at this quarter's new-lease (RFP) index; from 2027Q3
+  // (M16.2, DT) × the hall's tier multiple.
+  const mult =
+    (offer.priceMult ?? 1) * newLeaseIndex(state) * shellTierRentMult(state, p)
   const contractUsd = annualRentUsd(card, p.kw) * mult * card.termYears
   const prepaymentUsd = Math.round(contractUsd * card.prepaymentShare)
   p.tenant = {

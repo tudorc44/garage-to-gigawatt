@@ -19,6 +19,7 @@ import {
   tenantCard,
 } from './projects.ts'
 import { endContractAtQuarterEnd } from './renewals.ts'
+import { shellTierRentMult } from './density.ts'
 import { forcedProjectSale } from './rescue.ts'
 
 const C = BALANCE.act3.cards
@@ -252,7 +253,8 @@ function spotLease(
     logEntry(state, 'log.card_no_target', {}, weekNo)
     return
   }
-  const priceMult = mid * (e.rentIndex ?? 1)
+  // M16.2 (mine, reversible): a new lease, so × the hall's tier multiple from 2027Q3.
+  const priceMult = mid * (e.rentIndex ?? 1) * shellTierRentMult(state, p)
   p.tenant = {
     card: card.id,
     signedQuarter: state.quarter,

@@ -120,6 +120,8 @@ function company(
       n: 90 + i,
       kw: o.mw * 1000,
       stage: 'live',
+      // a neutral hall: mid tier (× 1.00 from 2027Q3, M16.2)
+      tier: 'mid',
       soldQuarter: null,
       offers: [],
       tenant: {

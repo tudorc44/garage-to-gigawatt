@@ -6,6 +6,7 @@
   "error.unknown_site": "You don't have that site.",
   "error.no_capacity": "Not enough room: the {tier} has {freeKw} free, these need {neededKw}.",
   "error.act2_only": "That's part of Act II.",
+  "error.top_tier_closed": "Top-tier halls can be built from {quarter}, for a shell or a cloud.",
   "error.hosting_garage": "The garage can't host other people's machines.",
   "error.bad_kw": "The amount must be more than 0 kW.",
   "error.no_hosting_room": "Not enough free power: the {tier} has {freeKw} energized and unused, this needs {neededKw}. Sell machines there to free more.",

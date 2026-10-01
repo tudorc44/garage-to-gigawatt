@@ -178,6 +178,8 @@ step-5 card effects; M16.5 the A3-07 screen; M16.6 tests and the sim proof (payb
 
 **M16.1 done:** `gpus_act3.json` copied (content test); `CONTENT.act3Gpus` (Rubin 900 / Rubin Ultra 1,050 GPUs/MW, tier rack sizes, low→mid $1.5M/MW 10 wk, mid→top 26 wk) and each scenario row's `act3` extras (Rubin prices and rents, lead time, mid→top $/MW); Rubin buyable from 2027Q1, Rubin Ultra from its first priced quarter (rack ÷ 144), rents and contracts and the renewal index on the B200's channels; `gpuLeadTimeWeeks` (mine: Rubin takes the B200's 6 weeks once Rubin Ultra is newest); `BALANCE.act3.density`. Goldens unchanged. 1055 tests.
 
+**M16.2 done:** `Project.tier` (Act III only; `systems/density.ts`): carried tiers at entry and for old Act III saves, new halls mid / GPU tier / top ("Build to top tier", PROJECT_OPEN `topTier`, from 2027Q3, not pilots: + 0.6 × mid→top $/MW × MW and +1 build quarter; mine: Rubin Ultra makes a hall top by itself), the fit rule, shell rent × tier from 2027Q3 on new leases, re-lets, renewal offers (mine: also the renewal counter's limit and a card's rolling spot lease). Goldens unchanged (no golden company has a project); act3Rules' passive company now ends S3 $347.8M < S1 $355.8M (all-low shells, never retrofitted): test adjusted, reported. 1068 tests.
+
 ## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
 
 Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);
