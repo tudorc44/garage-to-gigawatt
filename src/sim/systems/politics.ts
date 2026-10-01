@@ -6,7 +6,13 @@
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
-import { inActIII, logEntry, type GameState, type Project } from '../state.ts'
+import {
+  act3SeedOf,
+  inActIII,
+  logEntry,
+  type GameState,
+  type Project,
+} from '../state.ts'
 import { accelerateTarget } from './cardHalls.ts'
 import { isHired } from './hires.ts'
 import { addPc, adjustAnger } from './pcState.ts'
@@ -76,7 +82,7 @@ export function lobby(state: GameState, id: string): void {
   const backfired =
     !!a.backfire &&
     chance(
-      substream(state.seed, `act3_pc:${CONTENT.quarters[state.quarter]}:${id}`),
+      substream(act3SeedOf(state), `act3_pc:${CONTENT.quarters[state.quarter]}:${id}`),
       a.backfire.chance,
     )
   g.pending.push({

@@ -16,6 +16,7 @@ import { BALANCE, CONTENT, actFirstQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
 import {
+  act3SeedOf,
   inActIII,
   logEntry,
   projectGone,
@@ -97,7 +98,7 @@ export function openRenewals(state: GameState): void {
     const end = contractEndQuarter(state, p)
     if (end === null || end > state.quarter) continue
     const walked = chance(
-      substream(state.seed, `act3_renewal:${label}:${p.id}`),
+      substream(act3SeedOf(state), `act3_renewal:${label}:${p.id}`),
       renewalWalkChance(state, p),
     )
     const renewal: Renewal = {

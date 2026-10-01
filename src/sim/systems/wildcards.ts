@@ -7,6 +7,7 @@ import { BALANCE, CONTENT, quarterIndex } from '../../content/index.ts'
 import type { Message, MessageKey } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
 import {
+  act3SeedOf,
   inActIII,
   logEntry,
   projectGone,
@@ -27,7 +28,7 @@ const n = (v: unknown) => Number(v ?? 0)
 
 /** Draws 2 of the 4 and their quarters (at the Act III boundary). */
 export function drawWildcards(state: GameState): void {
-  const r = substream(state.seed, 'act3_wildcards')
+  const r = substream(act3SeedOf(state), 'act3_wildcards')
   const left = [...CONTENT.wildcards]
   state.act3Wildcards = []
   for (let i = 0; i < W.draw && left.length > 0; i++) {

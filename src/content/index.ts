@@ -16,6 +16,7 @@ import tenantsRaw from './tenants.json' with { type: 'json' }
 import gpusRaw from './gpus.json' with { type: 'json' }
 import gpusAct3Raw from './gpus_act3.json' with { type: 'json' }
 import nuclearRaw from './nuclear.json' with { type: 'json' }
+import presetsAct3Raw from './presets_act3.json' with { type: 'json' }
 import politicalCapitalRaw from './political_capital.json' with { type: 'json' }
 import wildcardsRaw from './wildcards.json' with { type: 'json' }
 import interruptsAct2Raw from './interrupts_act2.json' with { type: 'json' }
@@ -62,6 +63,7 @@ import {
   gpusFileSchema,
   gpusAct3FileSchema,
   nuclearFileSchema,
+  presetsAct3FileSchema,
   politicalCapitalFileSchema,
   wildcardsFileSchema,
   type DensityTier,
@@ -444,6 +446,21 @@ export interface Content {
   projects: ProjectRules
   /** Act III's nuclear PPA (nuclear.json, M17.1). */
   act3Nuclear: { unlockQuarter: string; termQuarters: number; regions: PowerRegion[] }
+  /**
+   * Act III's presets (presets_act3.json, M18.3): each a recipe (a bot and a seed played to 2026Q4, then enterAct3)
+   * with its company's real 2026Q4 figures for the start screen.
+   */
+  act3Presets: {
+    id: 'good' | 'great' | 'lifeline'
+    label: string
+    bot: string
+    seed: number
+    summaryKey: string
+    valuationUsd: number
+    debtUsd: number
+    energizedMw: number
+    rating: string
+  }[]
   /** Act III's political capital (political_capital.json, M17.1). */
   politicalCapital: {
     start: number
@@ -647,6 +664,8 @@ export interface RawContent {
   gpus: unknown
   gpusAct3: unknown
   nuclear: unknown
+  /** M18.3: presets_act3.json. */
+  presetsAct3?: unknown
   politicalCapital: unknown
   wildcards: unknown
   interruptsAct2: unknown
@@ -748,6 +767,10 @@ export function parseContent(raw: RawContent): Content {
     raw.gpusAct3,
   )
   const nuclearFile = check('nuclear.json', nuclearFileSchema, raw.nuclear)
+  const presetsFile =
+    raw.presetsAct3 === undefined
+      ? undefined
+      : check('presets_act3.json', presetsAct3FileSchema, raw.presetsAct3)
   const pcFile = check(
     'political_capital.json',
     politicalCapitalFileSchema,
@@ -1388,6 +1411,17 @@ export function parseContent(raw: RawContent): Content {
       regionIds[r] ? [regionIds[r]] : [],
     ),
   }
+  const act3Presets: Content['act3Presets'] = (presetsFile?.presets ?? []).map((p) => ({
+    id: p.id,
+    label: p.label,
+    bot: p.bot,
+    seed: p.seed,
+    summaryKey: p.summary_key,
+    valuationUsd: p.valuation_usd_m * 1e6,
+    debtUsd: p.debt_usd_m * 1e6,
+    energizedMw: p.energized_mw,
+    rating: p.rating,
+  }))
   const politicalCapital: Content['politicalCapital'] = {
     start: pcFile?._meta.start ?? 40,
     decayPerQuarter: -(pcFile?._meta.decay_per_quarter ?? -2),
@@ -2003,6 +2037,7 @@ export function parseContent(raw: RawContent): Content {
     projects,
     act3Gpus,
     act3Nuclear,
+    act3Presets,
     politicalCapital,
     wildcards,
     act3Hires,
@@ -2338,6 +2373,7 @@ export const CONTENT: Content = parseContent({
   gpus: gpusRaw,
   gpusAct3: gpusAct3Raw,
   nuclear: nuclearRaw,
+  presetsAct3: presetsAct3Raw,
   politicalCapital: politicalCapitalRaw,
   wildcards: wildcardsRaw,
   interruptsAct2: interruptsAct2Raw,

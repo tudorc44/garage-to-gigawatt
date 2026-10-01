@@ -71,6 +71,11 @@ if (args.includes('--prologue')) {
   await import('./prologue-runner.ts')
   process.exit(0)
 }
+// Act III step 7's presets scan and anchor harness (M18.3, M18.5) have theirs.
+if (args.includes('--act3-presets') || args.includes('--act3-anchors')) {
+  await import('./act3-runner.ts')
+  process.exit(0)
+}
 const argValue = (flag: string, fallback: string) => {
   const i = args.indexOf(flag)
   return i >= 0 ? args[i + 1] : fallback

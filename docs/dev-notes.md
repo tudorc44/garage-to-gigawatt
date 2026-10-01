@@ -182,6 +182,9 @@ cash_reserve) and s0_c4 c1 ($20M at −25 bp, debt_draw) draw it, no card choice
 **M18.2 done:** standby (`state.act3Standby`; STANDBY_ARRANGE 1 BW, hedge; STANDBY_DRAW unlogged): fees, auto-draw before forced sales, expiry; the
 undrawn part revolves (repaid draws free it again; mine); each draw's rate SOFR at the draw + the locked 350 bp (mine); the Capital block
 (`Act3Capital.tsx`, lazy). Goldens unchanged. 1196 tests.
+**M18.3 done:** `npm run sim -- --act3-presets` (tools/act3Presets.ts): Good shell-capital s9 $412.6M (A7 checked in M18.5), Great asic-retirer s48
+$2.70B (none in $4.5–5.0B: closest, reported), Lifeline lifeline-shell s19 $155.7M; `presets_act3.json` rewritten (both copies, real figures,
+loaded as `CONTENT.act3Presets`); summaries fitted to the facts (no GPUs anywhere); `act3Seed` salt on act3_* streams. Goldens unchanged. 1200 tests.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

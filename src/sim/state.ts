@@ -774,6 +774,8 @@ export interface GameState {
   angerAdj?: number
   /** Act III (M17.3): the Government section's bookkeeping (lobbying under way, cooldowns, one-offs). */
   act3Gov?: Act3Gov
+  /** M18.3: the salt for Act III's own random streams (act3SeedOf); absent = the game's seed. Set by tools only. */
+  act3Seed?: number
   /**
    * Act III (M18.2): the standby liquidity facility while it holds (systems/corporateDebt.ts): its size, spread locked
    * at arranging, and the last quarter it can be drawn. Its draws are `facilities` of kind 'standby'. Absent otherwise.
@@ -1060,6 +1062,14 @@ export function roundCents(usd: number): number {
  * Its own substream(seed, "act3_scenario"), so it never moves the main RNG and no earlier act's game
  * changes. The same seed always draws the same scenario.
  */
+/**
+ * The seed every act3_* substream is keyed on (M18.3): `act3Seed` when a harness sets one (the anchor runs play one
+ * preset under many Act III seeds), else the game's seed, so existing games and goldens never change.
+ */
+export function act3SeedOf(state: Pick<GameState, 'seed' | 'act3Seed'>): number {
+  return state.act3Seed ?? state.seed
+}
+
 export function drawScenario(seed: number): ScenarioId {
   const weights = BALANCE.act3.scenarioWeightsPct
   const roll = random(substream(seed, 'act3_scenario')) * 100
@@ -1080,9 +1090,12 @@ export function drawScenario(seed: number): ScenarioId {
 export function toAct3(
   state: GameState,
   /** `forced`: a tester chose the scenario (a test build's ?scenario); marked on the state for the top bar. */
-  options: { scenario?: ScenarioId; forced?: boolean } = {},
+  options: { scenario?: ScenarioId; forced?: boolean; act3Seed?: number } = {},
 ): GameState {
-  const s = enterAct3(state, options.scenario ?? drawScenario(state.seed))
+  // (M18.3: a harness may salt Act III's own randomness; set before the entry draws the wildcards)
+  const base =
+    options.act3Seed === undefined ? state : { ...state, act3Seed: options.act3Seed }
+  const s = enterAct3(base, options.scenario ?? drawScenario(act3SeedOf(base)))
   if (options.forced && options.scenario) s.scenarioForced = true
   return s
 }

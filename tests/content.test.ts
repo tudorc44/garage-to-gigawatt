@@ -307,6 +307,7 @@ describe('content loads', () => {
       'nuclear.json', // M17.1
       'political_capital.json',
       'wildcards.json',
+      'presets_act3.json', // M18.3
     ])
       expect(read(`../src/content/${name}`), name).toBe(
         read(`../docs/act3-content/${name}`),

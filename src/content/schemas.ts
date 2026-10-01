@@ -643,6 +643,25 @@ export const nuclearFileSchema = z.looseObject({
   eligibility: z.looseObject({ regions: z.array(z.string()).min(1) }),
 })
 
+/** presets_act3.json (M18.3, F-6): each preset's recipe and its company's figures. */
+export const presetsAct3FileSchema = z.looseObject({
+  presets: z
+    .array(
+      z.looseObject({
+        id: z.enum(['good', 'great', 'lifeline']),
+        label: z.string().min(1),
+        bot: z.string().min(1),
+        seed: z.number().int().positive(),
+        summary_key: z.string().min(1),
+        valuation_usd_m: z.number().positive(),
+        debt_usd_m: nonNeg,
+        energized_mw: nonNeg,
+        rating: z.string().min(1),
+      }),
+    )
+    .length(3),
+})
+
 /** political_capital.json (M17.1, doc 27 D8). */
 export const politicalCapitalFileSchema = z.looseObject({
   _meta: z.looseObject({ start: nonNeg, decay_per_quarter: z.number() }),

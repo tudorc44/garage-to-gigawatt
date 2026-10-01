@@ -17,6 +17,14 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M18.3, 1 Oct 2026 (the presets; design thread, M18 spec, F-6)
+
+- **`presets_act3.json`** (now copied byte-identically to `src/content/`): each preset is a recipe (a bot and a seed played to 2026Q4,
+  then enterAct3) with its company's real 2026Q4 figures, from `npm run sim -- --act3-presets`. Good "Steady Builder" = shell-capital seed 9
+  ($412.6M); Great "Scale Winner" = asic-retirer seed 48 ($2.70B: no great-path company reaches $4.5–5.0B, this is the closest); Lifeline
+  "Last Site Standing" = lifeline-shell seed 19 ($155.7M, one site with power). The "~$1B" labels, the F-6 flag and the designed figures
+  are gone; political capital is 40 for all (enterAct3 sets it).
+
 ### M17.8, 1 Oct 2026 (the nuclear PPA price; design thread, M17.8 spec B)
 
 - **`market_s0–s3.csv` › `nuclear_ppa_usd_mwh`:** every quarter (2027Q3–2030Q4) lowered by $15/MWh, into
