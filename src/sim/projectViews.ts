@@ -39,12 +39,13 @@ import {
   tenantCard,
 } from './systems/projects.ts'
 import {
+  capacityChargeUsdKwh,
   capacityKw,
   poweredKw,
   powerPriceUsdKwh,
   regionOf,
 } from './systems/sites.ts'
-import { nuclearPriceUsdMwh } from './systems/nuclear.ts'
+import { nuclearPriceUsdMwh, ppaResaleUsdMwh } from './systems/nuclear.ts'
 import { gridQuarterRange, powerBlocker } from './systems/power.ts'
 import {
   downtimeDoneQuarter,
@@ -232,8 +233,13 @@ export function openProjectView(state: GameState) {
             ? {
                 blocker: powerBlocker(state, site, 'nuclear') ?? null,
                 priceUsdMwh: nuclearPriceUsdMwh(state),
+                // (M17.8: the PJM capacity charge included, shown on its own too)
                 gridUsdMwh:
                   powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) * 1000,
+                chargeUsdMwh:
+                  capacityChargeUsdKwh(site, state.quarter, scenarioOf(state)) * 1000,
+                /** M17.8 C: what unused take-or-pay power is resold at here now. */
+                resaleUsdMwh: ppaResaleUsdMwh(state, site),
                 termYears: CONTENT.act3Nuclear.termQuarters / 4,
                 takeOrPay: BALANCE.act3.nuclear.takeOrPayShare,
                 from: CONTENT.act3Nuclear.unlockQuarter,

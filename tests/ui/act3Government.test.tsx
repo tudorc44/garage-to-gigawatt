@@ -11,9 +11,11 @@ import { toAct3, type GameState } from '../../src/sim/state.ts'
 import { openNextWildcard } from '../../src/sim/systems/wildcards.ts'
 import {
   GovernmentSection,
+  PpaRowsPanel,
   WildcardPanel,
 } from '../../src/ui/screens/Act3Government.tsx'
 import { ProjectsSection } from '../../src/ui/screens/Projects.tsx'
+import { fmt } from '../../src/ui/format.ts'
 import { act2Company } from '../sim/act2Helpers.ts'
 
 const text = en as Record<string, string>
@@ -54,9 +56,11 @@ describe('A3-08: the nuclear PPA in the Power slot', () => {
     expect(container.querySelector('[data-take-or-pay]')!.textContent).toContain(
       'You pay for at least 90% of the 20 MW, whether the site uses them or not.',
     )
-    // half = 10 of 20 MW: 0.9 × 20 − 10 = 8 MW unused
-    expect(container.querySelector('[data-worked]')!.textContent).toContain(
-      `If the site draws 10 of 20 MW: 8 MW × 8,760 h × $${price}/MWh`,
+    // half = 10 of 20 MW: 0.9 × 20 − 10 = 8 MW unused, resold at 0.9 × PJM's energy price (M17.8 C)
+    const resale = 0.9 * CONTENT.act3Scenarios.s0.quarterly[2].power_usd_kwh_pjm * 1000
+    expect(container.querySelector('[data-worked]')!.textContent).toBe(
+      `If the site draws 10 of 20 MW: 8 MW paid for but unused, resold at about $${resale.toFixed(0)}/MWh: ` +
+        `net ${fmt.money(8 * 8760 * (price - resale))} a year.`,
     )
     fireEvent.click(container.querySelector('[data-use-nuclear]')!)
     expect(container.querySelector('[data-nuclear-details]')).toBeNull()
@@ -75,6 +79,40 @@ describe('A3-08: the nuclear PPA in the Power slot', () => {
     expect(early.querySelector('[data-nuclear-unavailable]')!.textContent).toContain(
       'Available from 2027Q3.',
     )
+  })
+})
+
+describe('M17.8: the capacity charge on "Grid power here now"; the resold line on Contracts', () => {
+  it('S2 PJM in 2028Q3: the grid price carries "(capacity charge +$12/MWh)"', () => {
+    const s = toAct3(act2Company('2026Q4'), { scenario: 's2' })
+    s.quarter = q('2028Q3')
+    s.bandwidth = 6
+    s.act3Renewals = []
+    s.sites.find((x) => x.id === 'site-2')!.region = 'pjm'
+    const { container } = openPower(s)
+    expect(container.querySelector('[data-capacity-charge]')!.textContent).toContain(
+      '(capacity charge +$12/MWh)',
+    )
+  })
+
+  it('an idle PPA: "Unused contract power resold" with the MW and the money back', () => {
+    const s = co('2028Q1')
+    s.ppas = [
+      {
+        id: 'ppa-1',
+        siteId: 'site-2',
+        kw: 10_000,
+        priceUsdMwh: 100,
+        signedQuarter: q('2027Q3'),
+        fromQuarter: q('2027Q4'),
+        endQuarter: q('2027Q3') + 59,
+        projectId: null,
+      },
+    ]
+    const { container } = render(<PpaRowsPanel state={s} />)
+    const line = container.querySelector('[data-ppa-resold="ppa-1"]')!.textContent!
+    expect(line).toContain('Unused contract power resold: 9 MW paid for but unused')
+    expect(line).toContain('back this quarter')
   })
 })
 

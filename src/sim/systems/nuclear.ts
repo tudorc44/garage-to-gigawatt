@@ -4,11 +4,11 @@
 //   15 years (60 quarters, past 2030Q4); no capex and no grid queue: the power is energized 8 weeks after the
 //   build starts, so it never delays the project beyond its build;
 // - take-or-pay 90%: from the project's ready quarter, each quarter the host pays price × max(used MW, 0.9 ×
-//   contracted MW) × 2,190 h. Used MW = the project's MW while it's live and earning (0 while it's empty,
-//   ended or retrofitting);
-// - a cloud's power on those MW costs the PPA price instead of the site's (× PUE, weekly, as today); a shell
-//   tenant reimburses the host at the site's market price for its used MW, so a leased PPA hall earns
-//   (market − PPA) × used MWh a quarter;
+//   contracted MW) × 2,190 h. Used MW (M17.8 E): the site's loads (miners, hosting, live projects) use its other
+//   power first and the PPA MW last;
+// - every load pays the market price weekly (capacity charge included) and a shell tenant reimburses it; at the
+//   quarter's end the PPA refunds that market price on the used MW, so used MW cost the PPA price (M17.8);
+// - unused paid-for MW (0.9 × contracted − used) are resold at 0.9 × the region's energy price (M17.8 C);
 // - tenant pull: one more shell offer, hyperscaler leases × 1.03; Ratepayer Anger −5 in each region with one;
 // - it can't be cancelled; it goes with its project when sold or foreclosed; if the project ends it stays on the
 //   site at take-or-pay until a new project there uses it. No mark-to-market in the valuation (DT).
@@ -18,19 +18,27 @@ import {
   actFirstQuarter,
   quarterInputs,
   type PowerRegion,
+  type ScenarioId,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   inActIII,
   logEntry,
+  projectGone,
   type GameState,
   type Ppa,
   type Project,
   type Site,
 } from '../state.ts'
 import { downtimeShare } from './density.ts'
-import { scenarioOf } from './market.ts'
-import { powerPriceUsdKwh, regionOf } from './sites.ts'
+import { getModel, scenarioOf } from './market.ts'
+import {
+  isReady,
+  powerPriceUsdKwh,
+  poweredKw,
+  regionCapacityChargeUsdKwh,
+  regionOf,
+} from './sites.ts'
 
 const N = BALANCE.act3.nuclear
 
@@ -94,8 +102,9 @@ export function hasPpa(state: GameState, p: Project): boolean {
 }
 
 /**
- * The power price a cloud or pilot pays, $/kWh: the PPA's price on the MW it covers from its first quarter,
- * the site's market price on the rest.
+ * The power price a cloud's or pilot's projection uses, $/kWh: the PPA's price on the MW it covers, the site's
+ * market price on the rest (a proposed project with a nuclear Power slot: this quarter's PPA price). The weekly
+ * cost itself is at the market price; the PPA settles the difference at the quarter's end (M17.8).
  */
 export function projectPowerUsdKwh(
   state: GameState,
@@ -105,12 +114,11 @@ export function projectPowerUsdKwh(
 ): number {
   const market = powerPriceUsdKwh(site, quarter, scenarioOf(state))
   const x = ppaOf(state, p)
-  // (a proposed project with a nuclear Power slot: priced at this quarter's PPA price, for its projection)
   if (!x && p.power === 'nuclear') {
     const now = nuclearPriceUsdMwh(state, quarter)
     return now === null ? market : now / 1000
   }
-  if (!x || quarter < x.fromQuarter || p.kw <= 0) return market
+  if (!x || p.kw <= 0) return market
   const covered = Math.min(p.kw, x.kw) / p.kw
   return covered * (x.priceUsdMwh / 1000) + (1 - covered) * market
 }
@@ -156,52 +164,140 @@ export function attachFreePpa(state: GameState, p: Project): void {
   if (free) free.projectId = p.id
 }
 
-/** The MW a PPA's project is using this quarter: its MW while live and earning, else 0. */
-export function ppaUsedKw(state: GameState, x: Ppa, quarter = state.quarter): number {
-  const p = x.projectId
-    ? state.projects.find((y) => y.id === x.projectId)
-    : undefined
-  if (!p || p.stage !== 'live' || downtimeShare(p, quarter) < 1) return 0
-  if (p.kind === 'shell' && !p.tenant) return 0
-  return Math.min(p.kw, x.kw)
+/**
+ * kW drawn at a site this quarter (M17.8): its earning machines, its live hosting, and its live projects (a shell
+ * only with a tenant), each × the share of the quarter it runs.
+ */
+export function siteDrawKw(state: GameState, site: Site, quarter = state.quarter): number {
+  let kw = 0
+  if (isReady(site, quarter))
+    for (const lot of state.machines)
+      if (
+        lot.siteId === site.id &&
+        !lot.idle &&
+        !lot.legacyCloud &&
+        quarter >= lot.earnsFromQuarter
+      )
+        kw += (lot.count - lot.failed) * getModel(lot.model)!.power_kw
+  for (const h of state.hosting)
+    if (h.siteId === site.id && h.readyQuarter <= quarter) kw += h.kw
+  for (const p of state.projects) {
+    if (p.siteId !== site.id || p.stage !== 'live' || projectGone(p)) continue
+    if (p.kind === 'shell' && !p.tenant) continue
+    kw += p.kw * downtimeShare(p, quarter)
+  }
+  return kw
 }
 
 /**
- * What a PPA costs the host this quarter, net: take-or-pay on max(used, 90% of contracted), less what a cloud
- * already paid weekly on its used MW, less what a shell tenant reimburses at the market price.
+ * Each PPA's kW in use at a site this quarter (M17.8 E, answer 3): every load at the site (miners included) uses
+ * the site's other power first and the PPA MW last: used PPA kW = min(contracted, max(0, drawn − non-PPA
+ * energized)), shared out in the order the PPAs were signed.
+ */
+function sitePpaUseKw(state: GameState, siteId: string, quarter: number): Map<string, number> {
+  const out = new Map<string, number>()
+  const site = state.sites.find((s) => s.id === siteId)
+  const ppas = activePpas(state, quarter).filter(
+    (x) => x.siteId === siteId && quarter >= x.fromQuarter,
+  )
+  if (!site || ppas.length === 0) return out
+  const ppaKw = ppas.reduce((kw, x) => kw + x.kw, 0)
+  const otherKw = Math.max(0, poweredKw(site, quarter) - ppaKw)
+  let spill = Math.max(0, siteDrawKw(state, site, quarter) - otherKw)
+  for (const x of ppas) {
+    const used = Math.min(x.kw, spill)
+    out.set(x.id, used)
+    spill -= used
+  }
+  return out
+}
+
+/** The kW of a PPA in use this quarter (its site's loads, after the site's other power). */
+export function ppaUsedKw(state: GameState, x: Ppa, quarter = state.quarter): number {
+  return sitePpaUseKw(state, x.siteId, quarter).get(x.id) ?? 0
+}
+
+/**
+ * The price unused take-or-pay power is resold at, $/MWh (M17.8 C, DT): 0.9 × the region's energy price that
+ * quarter (the scenario's power_usd_kwh_<region>, without the capacity charge). 0 without a region.
+ */
+export function ppaResaleUsdMwh(
+  state: GameState,
+  site: Site,
+  quarter = state.quarter,
+): number {
+  const region = regionOf(site)
+  const energy = region
+    ? quarterInputs(quarter, scenarioOf(state))?.powerUsdKwh[region]
+    : undefined
+  return energy === undefined ? 0 : N.resaleShare * energy * 1000
+}
+
+/**
+ * What a PPA costs the host this quarter, net (M17.8): take-or-pay on max(used, 90% of contracted), less the
+ * market price (capacity charge included) already paid on the used MW (every load pays the market weekly; a shell
+ * tenant reimburses it), less the unused paid-for MW resold. So used MW cost the PPA price, and unused ones the gap
+ * between it and the resale price.
  */
 export function ppaQuarterNetUsd(
   state: GameState,
   x: Ppa,
   quarter = state.quarter,
-): { netUsd: number; usedKw: number; billUsd: number } {
+): { netUsd: number; usedKw: number; billUsd: number; unusedKw: number; resoldUsd: number } {
   if (quarter < x.fromQuarter || !holds(state, x, quarter))
-    return { netUsd: 0, usedKw: 0, billUsd: 0 }
+    return { netUsd: 0, usedKw: 0, billUsd: 0, unusedKw: 0, resoldUsd: 0 }
   const h = N.hoursPerQuarter
   const usedKw = ppaUsedKw(state, x, quarter)
   const usedMw = usedKw / 1000
   const floorMw = (N.takeOrPayShare * x.kw) / 1000
   const billUsd = x.priceUsdMwh * Math.max(usedMw, floorMw) * h
-  const p = x.projectId
-    ? state.projects.find((y) => y.id === x.projectId)
-    : undefined
   const site = state.sites.find((s) => s.id === x.siteId)
-  let netUsd = billUsd
-  if (p && usedKw > 0 && p.kind !== 'shell')
-    // a cloud paid its used MW at the PPA price every week (× PUE); the top-up is the unused floor
-    netUsd = x.priceUsdMwh * Math.max(0, floorMw - usedMw) * h
-  else if (p && usedKw > 0 && site)
-    netUsd =
-      billUsd -
-      powerPriceUsdKwh(site, quarter, scenarioOf(state)) * 1000 * usedMw * h
-  return { netUsd, usedKw, billUsd }
+  const unusedMw = Math.max(0, floorMw - usedMw)
+  const resoldUsd = site ? unusedMw * ppaResaleUsdMwh(state, site, quarter) * h : 0
+  const paidUsd = site
+    ? powerPriceUsdKwh(site, quarter, scenarioOf(state)) * 1000 * usedMw * h
+    : 0
+  return {
+    netUsd: billUsd - paidUsd - resoldUsd,
+    usedKw,
+    billUsd,
+    unusedKw: unusedMw * 1000,
+    resoldUsd,
+  }
 }
 
-/** At the end of an Act III quarter: every PPA's take-or-pay is settled (in the AI costs, so in EBITDA). */
+/**
+ * A PPA signed in `signed` against a region's market at `at` (M17.8, the sim's spread table): the scenario's
+ * energy price plus the capacity charge, less the PPA price locked when signed, $/MWh. Positive: the PPA is
+ * cheaper. (Act II's regional policy adders, also in the game's market price, are left out, as in the spec.)
+ */
+export function lockedSpreadUsdMwh(
+  scenario: ScenarioId,
+  region: PowerRegion,
+  signed: number,
+  at: number,
+): number | null {
+  const locked = quarterInputs(signed, scenario)?.act3?.nuclearPpaUsdMwh
+  const energy = quarterInputs(at, scenario)?.powerUsdKwh[region]
+  if (locked == null || energy === undefined) return null
+  return (energy + regionCapacityChargeUsdKwh(region, at, scenario)) * 1000 - locked
+}
+
+/**
+ * At the end of an Act III quarter: every PPA's take-or-pay is settled (in the AI costs, so in EBITDA), the unused
+ * power's resale on its own report line.
+ */
 export function settlePpas(state: GameState): number {
   if (!state.ppas?.length) return 0
   let usd = 0
-  for (const x of activePpas(state)) usd += ppaQuarterNetUsd(state, x).netUsd
+  let resoldUsd = 0
+  let unusedKw = 0
+  for (const x of activePpas(state)) {
+    const q = ppaQuarterNetUsd(state, x)
+    usd += q.netUsd
+    resoldUsd += q.resoldUsd
+    unusedKw += q.unusedKw
+  }
   // PPAs that went with their project (sold, foreclosed) or ran out are dropped.
   state.ppas = state.ppas.filter(
     (x) => holds(state, x, state.quarter) || state.quarter < x.signedQuarter,
@@ -209,7 +305,9 @@ export function settlePpas(state: GameState): number {
   if (usd !== 0) {
     state.cash -= usd
     state.quarterStats.aiCostUsd += usd
-    logEntry(state, 'log.ppa_bill', { costUsd: usd })
+    logEntry(state, 'log.ppa_bill', { costUsd: usd + resoldUsd })
+    if (resoldUsd > 0)
+      logEntry(state, 'log.ppa_resold', { amountUsd: resoldUsd, unusedKw })
   }
   return usd
 }

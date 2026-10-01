@@ -38,7 +38,11 @@ import { gameOverView } from '../src/sim/selectors.ts'
 import { inActII, toAct3 } from '../src/sim/state.ts'
 import { runway } from '../src/sim/systems/runway.ts'
 import { eventChoices, getCard } from '../src/sim/systems/events.ts'
-import { activePpas, ppaUsedKw } from '../src/sim/systems/nuclear.ts'
+import {
+  activePpas,
+  lockedSpreadUsdMwh,
+  ppaUsedKw,
+} from '../src/sim/systems/nuclear.ts'
 // tools/ may read the hidden reading score (M14.5's oracle); the player-like bots in bots.ts may not.
 import {
   computeReading,
@@ -1219,23 +1223,23 @@ if (args.includes('--act2')) {
         ]),
       ),
     )
-    // M17.7 (report, no targets): the nuclear PPA price against each eligible region's market power, $/MWh
-    // (spread = market − PPA: negative when the PPA costs more).
+    // M17.8 (report, no targets): a PPA signed in 2027Q3, at its locked price, against each eligible region's
+    // market power (capacity charge included) at 2027Q3 … 2030Q3, $/MWh (spread = market − PPA: negative when the
+    // PPA costs more). M17.7 compared same-quarter prices, the wrong basis.
+    const signedQ = CONTENT.quarters.indexOf('2027Q3')
     const spread: Record<string, Record<string, string>> = {}
     for (const id of scenarios as ScenarioId[])
       for (const label of ['2027Q3', '2028Q3', '2029Q3', '2030Q3']) {
-        const inp = quarterInputs(CONTENT.quarters.indexOf(label), id)!
-        const ppa = inp.act3?.nuclearPpaUsdMwh ?? null
-        const row: Record<string, string> = { ppa: ppa === null ? '—' : `$${ppa}` }
+        const ppa = quarterInputs(signedQ, id)?.act3?.nuclearPpaUsdMwh ?? null
+        const row: Record<string, string> = { locked: ppa === null ? '—' : `$${ppa}` }
         for (const region of CONTENT.act3Nuclear.regions) {
-          const market = inp.powerUsdKwh[region] * 1000
-          row[region] =
-            ppa === null ? '—' : `${market - ppa >= 0 ? '+' : ''}${(market - ppa).toFixed(0)}`
+          const v = lockedSpreadUsdMwh(id, region, signedQ, CONTENT.quarters.indexOf(label))
+          row[region] = v === null ? '—' : `${v >= 0 ? '+' : ''}${v.toFixed(0)}`
         }
         spread[`${id} ${label}`] = row
       }
     console.log(
-      '  Nuclear PPA vs market power (M17.7; $/MWh; region columns = market − PPA):',
+      '  Nuclear PPA signed 2027Q3 vs market power incl. the capacity charge (M17.8; $/MWh; region columns = market − PPA):',
     )
     console.table(spread)
     // M17.7: the nuclear signer (the same runs, signing every PPA card it can and hiring the Director).
@@ -1245,8 +1249,8 @@ if (args.includes('--act2')) {
         .filter((v): v is number => v !== null)
       const n = (v: number) => (Number.isNaN(v) ? '—' : v)
       return {
-        runs: rows.length,
-        gameOver: rows.filter((x) => x.end !== 'chapter').length,
+        // (M17.8: "x of y")
+        gameOver: `${rows.filter((x) => x.end !== 'chapter').length} of ${rows.length}`,
         netWorth2030Q4: usd(median(rows.map((x) => x.netWorthUsd))),
         reading: n(median(scores)),
         ppaMw: n(median(rows.map((x) => x.ppaMw))),

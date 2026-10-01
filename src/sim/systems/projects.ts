@@ -49,9 +49,10 @@ import {
 import { isHired } from './hires.ts'
 import { gpuOutShare } from './gpuWave.ts'
 import { regionMoratoriumOn } from './anger.ts'
+import { waterPauseBlocker } from './pcState.ts'
 import { projectPolicy } from './regions.ts'
 import { convertibleKw } from './hosting.ts'
-import { flawEffect, regionOf, uptime } from './sites.ts'
+import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
 import {
   attachFreePpa,
   hasPpa,
@@ -634,6 +635,9 @@ export function openBlocker(
   if (!Number.isFinite(a.kw) || a.kw <= 0) return { key: 'error.bad_kw' }
   if (regionMoratoriumOn(state, regionOf(site)))
     return { key: 'error.region_moratorium' }
+  // Act III (M17.8): the water moratorium can hold new projects at a site.
+  const water = waterPauseBlocker(state, { siteId: site.id })
+  if (water) return water
   const label = CONTENT.quarters[state.quarter]
   if (a.kind === 'pilot') {
     const pilot = P().pilot
@@ -954,6 +958,9 @@ export function buildBlocker(
   const site = state.sites.find((s) => s.id === p.siteId)
   if (site && regionMoratoriumOn(state, regionOf(site)))
     return { key: 'error.region_moratorium' }
+  // Act III (M17.8): the water moratorium can hold this project's start.
+  const water = waterPauseBlocker(state, { projectId: p.id })
+  if (water) return water
   const missing = missingSlots(p)
   if (missing.length > 0)
     return {
@@ -1202,8 +1209,8 @@ export function settleProjectsWeek(
           hours *
           up *
           share *
-          // (M17.2: the PPA's price on the MW it covers)
-          projectPowerUsdKwh(state, p, site) +
+          // (M17.8: at the market price; a PPA settles the difference at the quarter's end)
+          powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
       // GPUs out after a failure wave you ran short on (M8.4) earn nothing; a contracted tenant is
       // credited 2× what they would have earned.

@@ -99,11 +99,16 @@ import {
 import { shellTierRentMult } from './systems/density.ts'
 import {
   activePpas,
+  ppaQuarterNetUsd,
   ppaUsedKw,
   quarterLabelBeyond,
 } from './systems/nuclear.ts'
 import { lobbyBlocker, spendBlocker } from './systems/politics.ts'
-import { wildcardChoiceBlocker } from './systems/wildcards.ts'
+import {
+  siteTier,
+  waterVariant,
+  wildcardChoiceBlocker,
+} from './systems/wildcards.ts'
 import { blendAcceptBlocker } from './systems/blendExtend.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { blockedEventChoices, eventBodyKey } from './systems/events.ts'
@@ -168,6 +173,7 @@ import { isEarning } from './systems/mining.ts'
 import {
   normalPriceUsdKwh,
   baseCapexUsd,
+  capacityChargeUsdKwh,
   capacityKw,
   getTier,
   isReady,
@@ -348,6 +354,8 @@ export interface SiteView {
   capacityKw: number
   usedKw: number
   powerUsdKwh: number
+  /** Act III (M17.8): the PJM capacity charge in that price, $/MWh this quarter (0 outside PJM and Ohio). */
+  capacityChargeUsdMwh: number
   ready: boolean
   readyQuarter: string
   /** What leaving costs (undefined for the garage, which can't be left). */
@@ -376,6 +384,8 @@ export function siteViews(state: GameState): SiteView[] {
     capacityKw: capacityKw(site),
     usedKw: usedKw(state, site.id),
     powerUsdKwh: powerPriceUsdKwh(site, state.quarter, scenarioOf(state)),
+    capacityChargeUsdMwh:
+      capacityChargeUsdKwh(site, state.quarter, scenarioOf(state)) * 1000,
     ready: isReady(site, state.quarter),
     readyQuarter: quarterName(site.readyQuarter) || 'after Act I',
     leaving: tierIndex(site.tier) > 0 ? leavingTerms(state, site) : undefined,
@@ -1961,8 +1971,13 @@ const ACT3_REPORT_KEYS = new Set<string>([
   ...['wc_grid_event', 'wc_export_control', 'wc_water_moratorium', 'wc_ai_lab_breakup'].flatMap(
     (id) => [`log.wildcard.${id}.c1`, `log.wildcard.${id}.c2`],
   ),
+  // M17.8: the water moratorium on a proposed project or a site
+  ...['c1_start', 'c2_start', 'c1_site', 'c2_site'].map(
+    (c) => `log.wildcard.wc_water_moratorium.${c}`,
+  ),
   'log.ppa_signed',
   'log.ppa_bill',
+  'log.ppa_resold',
   'log.lobby_landed',
   'log.lobby_backfired',
   'log.pc_spent',
@@ -2028,6 +2043,7 @@ export function blockedCardChoices(state: GameState) {
  */
 export function ppaRows(state: GameState) {
   return activePpas(state).map((x) => {
+    const q = ppaQuarterNetUsd(state, x)
     const p = x.projectId
       ? state.projects.find((y) => y.id === x.projectId)
       : undefined
@@ -2040,6 +2056,9 @@ export function ppaRows(state: GameState) {
       endQuarterLabel: quarterLabelBeyond(x.endQuarter),
       takeOrPayPct: BALANCE.act3.nuclear.takeOrPayShare,
       usedMw: ppaUsedKw(state, x) / 1000,
+      /** M17.8 C: this quarter's MW paid for but unused, and what reselling them brings in. */
+      unusedMw: q.unusedKw / 1000,
+      resoldUsd: q.resoldUsd,
     }
   })
 }
@@ -2192,6 +2211,9 @@ export function wildcardView(state: GameState) {
   return {
     id: open.id,
     projectN: p?.n ?? null,
+    /** M17.8 F: the water moratorium's text variant ('' a build, '_start' a proposed project, '_site' a site). */
+    variant: waterVariant(state, open),
+    tier: siteTier(state, open.siteId) ?? null,
     choices: (['c1', 'c2'] as const).map((c) => ({
       id: c,
       blocker: wildcardChoiceBlocker(state, c) ?? null,

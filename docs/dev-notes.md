@@ -227,6 +227,10 @@ M17 report): the PPA costs $15–109/MWh more than market almost everywhere; the
 take-or-pay (~$23M a quarter) bankrupts half its runs in every scenario; bot PC decays to 24 by 2028Q4 and 8 by 2030Q4 (low capital
 from about 2029Q4); the water moratorium skips 80% of its draws (no building project). **M17 done:** 1102 → 1164 tests.
 
+**M17.8 done (the DT's answers, A–F):** A PJM/Ohio capacity charge (Δ cap since 2027Q1 ÷ 24); B PPA −$15 (CSV + nuclear.json); C unused take-or-pay resold at 0.9 × energy;
+D sh_2 needs 200 MW energized; E PPA MW are a site pool used last (miners too); loads pay market weekly and the PPA settles the used MW at its price
+(mine, reversible); F water moratorium: build → proposed (no start) → most-idle site (no new project), 2 quarters. Goldens unchanged. 1164 → 1179 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /

@@ -13,8 +13,8 @@
   "price_series": "market_sX.csv nuclear_ppa_usd_mwh",
   "take_or_pay": true,
   "price_usd_mwh_range": [
-   98,
-   165
+   83,
+   150
   ],
   "volume_mw_per_deal": [
    100,

@@ -53,7 +53,7 @@
  "rubin_ultra_nvl576_rack_usd": "designed",
  "newest_gen_lead_time_weeks": "designed",
  "capex_retrofit_density_mid_to_top_usd_mw": "hand-off anchored to Act II 2026Q4 (grounded start), scenario path designed",
- "nuclear_ppa_usd_mwh": "designed",
+ "nuclear_ppa_usd_mwh": "designed; lowered $15/MWh by the design thread on 1 Oct 2026, into nuclear.json's own analyst range ($80–100+)",
  "renewal_shell_index_low": "designed",
  "renewal_shell_index_high": "designed",
  "renewal_h100_gpu_index_vs_2025q4": "designed",

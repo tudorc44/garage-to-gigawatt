@@ -467,6 +467,14 @@ export function FleetPanel({ state }: { state: GameState }) {
                     cap: fmt.power(sv.capacityKw),
                   })}
                 </div>
+                {Math.round(sv.capacityChargeUsdMwh) !== 0 && (
+                  // Act III (M17.8): the PJM capacity charge in the price above, this quarter.
+                  <div class="num-s muted" data-capacity-charge>
+                    {t('ui.fleet.capacity_charge', {
+                      usd: fmt.signedDollars(sv.capacityChargeUsdMwh),
+                    })}
+                  </div>
+                )}
                 {inAct2Rules(state) && (
                   <MwBar
                     use={siteMwByUse(state, sv.site, state.quarter)}

@@ -4,7 +4,7 @@
 // replacement). The upcoming ones are never shown. They don't depend on the scenario, so the draw is in state.
 // Undecided at END_PLAN, the first choice (the default) applies.
 import { BALANCE, CONTENT, quarterIndex } from '../../content/index.ts'
-import type { Message } from '../../i18n/t.ts'
+import type { Message, MessageKey } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
 import {
   inActIII,
@@ -12,13 +12,14 @@ import {
   projectGone,
   type GameState,
   type Project,
+  type Site,
   type WildcardId,
 } from '../state.ts'
 import { extraShellOffers } from './cardContracts.ts'
 import { addGrievance } from './heat.ts'
 import { addPc, adjustAnger } from './pcState.ts'
 import { annualContractUsd, contractQuarters, tenantCard } from './projects.ts'
-import { capacityKw } from './sites.ts'
+import { capacityKw, poweredKw, usedKw } from './sites.ts'
 
 const W = BALANCE.act3.wildcards
 const card = (id: WildcardId) => CONTENT.wildcards.find((w) => w.id === id)!
@@ -41,13 +42,30 @@ export function drawWildcards(state: GameState): void {
   }
 }
 
-/** The water moratorium's target: the building project with the latest ready quarter (tie: larger capex). */
-function pausedTarget(state: GameState): Project | undefined {
-  return state.projects
+/**
+ * The water moratorium's target (M17.8 F, in this order): the building project with the latest ready quarter (tie:
+ * larger capex); else the largest proposed project; else the site with the most idle energized MW (tie: the larger
+ * site). None only without a site.
+ */
+function waterTarget(
+  state: GameState,
+): { projectId: string } | { siteId: string } | undefined {
+  const building = state.projects
     .filter((p) => p.stage === 'building' && p.readyQuarter !== null)
     .sort(
       (a, b) => b.readyQuarter! - a.readyQuarter! || b.capexUsd - a.capexUsd,
     )[0]
+  if (building) return { projectId: building.id }
+  const proposed = state.projects
+    .filter((p) => p.stage === 'proposed')
+    .sort((a, b) => b.kw - a.kw || a.n - b.n)[0]
+  if (proposed) return { projectId: proposed.id }
+  const idle = (s: Site) =>
+    Math.max(0, poweredKw(s, state.quarter) - usedKw(state, s.id))
+  const site = [...state.sites].sort(
+    (a, b) => idle(b) - idle(a) || capacityKw(b) - capacityKw(a),
+  )[0]
+  return site ? { siteId: site.id } : undefined
 }
 
 /** The AI lab restructure's target: your largest live lease with an AI-lab tenant card. */
@@ -65,12 +83,17 @@ function labTarget(state: GameState): Project | undefined {
 }
 
 /** A wildcard's target now, or null when it has none (it doesn't fire); true when it needs none. */
-function target(state: GameState, id: WildcardId): Project | true | null {
+function target(
+  state: GameState,
+  id: WildcardId,
+): { projectId: string } | { siteId: string } | true | null {
   switch (id) {
     case 'wc_water_moratorium':
-      return pausedTarget(state) ?? null
-    case 'wc_ai_lab_breakup':
-      return labTarget(state) ?? null
+      return waterTarget(state) ?? null
+    case 'wc_ai_lab_breakup': {
+      const p = labTarget(state)
+      return p ? { projectId: p.id } : null
+    }
     default:
       return true
   }
@@ -86,7 +109,7 @@ export function openNextWildcard(state: GameState): void {
       w.status = 'skipped'
       continue
     }
-    state.act3WildcardOpen = { id: w.id, ...(t === true ? {} : { projectId: t.id }) }
+    state.act3WildcardOpen = { id: w.id, ...(t === true ? {} : t) }
     return
   }
 }
@@ -147,14 +170,18 @@ export function chooseWildcard(state: GameState, choice: 'c1' | 'c2'): void {
       break
     }
     case 'wc_water_moratorium': {
-      if (choice === 'c1' && p) {
+      if (choice === 'c1') {
         const quarters = n(e.one_pipeline_project_paused_quarters)
-        p.readyQuarter = (p.readyQuarter ?? q) + quarters
+        const g = (state.act3Gov ??= { pending: [], lastUsed: {}, once: [] })
+        // (M17.8 F) a build waits; a proposed project can't start; else no new project at the site, 2 quarters
+        if (p?.stage === 'building') {
+          p.readyQuarter = (p.readyQuarter ?? q) + quarters
+          g.pause = { projectId: p.id, quarters }
+        } else if (p)
+          g.pause = { kind: 'start', projectId: p.id, quarters, untilQuarter: q + quarters - 1 }
+        else if (open.siteId)
+          g.pause = { kind: 'site', siteId: open.siteId, quarters, untilQuarter: q + quarters - 1 }
         adjustAnger(state, n(e.ratepayer_anger))
-        ;(state.act3Gov ??= { pending: [], lastUsed: {}, once: [] }).pause = {
-          projectId: p.id,
-          quarters,
-        }
       } else addPc(state, -(c.pcCost ?? 0))
       break
     }
@@ -181,11 +208,32 @@ export function chooseWildcard(state: GameState, choice: 'c1' | 'c2'): void {
     drawn.status = 'fired'
     drawn.choice = choice
   }
-  logEntry(state, `log.wildcard.${open.id}.${choice}`, {
+  const key = `log.wildcard.${open.id}.${choice}${waterVariant(state, open)}` as const
+  logEntry(state, key as MessageKey, {
     ...(p ? { n: p.n } : {}),
+    ...(siteTier(state, open.siteId) ? { tier: siteTier(state, open.siteId)! } : {}),
   })
   state.act3WildcardOpen = null
   openNextWildcard(state)
+}
+
+/** A site's tier id (its name in text), or undefined. */
+export function siteTier(state: GameState, siteId?: string): string | undefined {
+  return siteId ? state.sites.find((s) => s.id === siteId)?.tier : undefined
+}
+
+/**
+ * The water moratorium's text variant (M17.8 F): '' for a build that waits, '_start' for a proposed project, '_site'
+ * for a site. '' for the other wildcards.
+ */
+export function waterVariant(
+  state: GameState,
+  open: NonNullable<GameState['act3WildcardOpen']>,
+): '' | '_start' | '_site' {
+  if (open.id !== 'wc_water_moratorium') return ''
+  if (open.siteId) return '_site'
+  const p = state.projects.find((x) => x.id === open.projectId)
+  return p?.stage === 'proposed' ? '_start' : ''
 }
 
 /** At END_PLAN: a wildcard still open takes its default (the first choice); so does any other due now. */

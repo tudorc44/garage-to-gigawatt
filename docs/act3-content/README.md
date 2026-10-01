@@ -17,6 +17,12 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M17.8, 1 Oct 2026 (the nuclear PPA price; design thread, M17.8 spec B)
+
+- **`market_s0–s3.csv` › `nuclear_ppa_usd_mwh`:** every quarter (2027Q3–2030Q4) lowered by $15/MWh, into
+  `nuclear.json`'s own analyst range ($80–100+). s0 2027Q3 115 → 100; s2 2030Q4 165 → 150. No other column changed.
+- **`nuclear.json` › `price_usd_mwh_range`:** [98, 165] → [83, 150], to match. `market_provenance.json` notes the change.
+
 ### M17.1, 1 Oct 2026 (step 6 content; design thread, M17 spec)
 
 - **`wildcards.json` › `wc_ai_lab_breakup` › `d15_review`:** true → false, with a `d15_note`: "fictional lab, no real company named:

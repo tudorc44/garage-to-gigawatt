@@ -2,6 +2,7 @@
 // theme): the Government section (the political-capital meter, the Director, lobbying, the spend cards, this
 // quarter's log), the top bar's "PC n", the wildcard card on the Plan screen, and the nuclear PPAs on the contract
 // calendar. Everything comes from the selectors; no rules here.
+import { Fragment } from 'preact'
 import { t, tDynamic } from '../../i18n/t.ts'
 import { governmentView, ppaRows, wildcardView } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
@@ -247,7 +248,10 @@ export function WildcardPanel({ state, act }: ScreenProps) {
       </div>
       <h2 class="panel-title">{tDynamic(`wildcard.${v.id}.title`, v.id)}</h2>
       <p class="num-s" style={{ margin: 0 }}>
-        {tDynamic(`wildcard.${v.id}.body`, '', { n: v.projectN ?? '' })}
+        {tDynamic(`wildcard.${v.id}.body${v.variant}`, '', {
+          n: v.projectN ?? '',
+          ...(v.tier ? { tier: v.tier } : {}),
+        })}
       </p>
       {v.choices.map((c) => (
         <div key={c.id} class="row-between">
@@ -294,18 +298,31 @@ export function PpaRowsPanel({ state }: { state: GameState }) {
         </thead>
         <tbody>
           {rows.map((r) => (
-            <tr key={r.id} data-ppa={r.id}>
-              <td>
-                {siteName(r.site)}
-                {r.projectN === null && (
-                  <span class="muted"> · {t('ui.ppa.idle')}</span>
-                )}
-              </td>
-              <td class="r num">{fmt.power(r.mw * 1000)}</td>
-              <td class="r num">{t('ui.ppa.usd_mwh', { usd: r.priceUsdMwh.toFixed(0) })}</td>
-              <td class="num">{fmt.quarter(r.endQuarterLabel)}</td>
-              <td>{t('ui.ppa.take_or_pay', { pct: fmt.pct(r.takeOrPayPct) })}</td>
-            </tr>
+            <Fragment key={r.id}>
+              <tr data-ppa={r.id}>
+                <td>
+                  {siteName(r.site)}
+                  {r.projectN === null && (
+                    <span class="muted"> · {t('ui.ppa.idle')}</span>
+                  )}
+                </td>
+                <td class="r num">{fmt.power(r.mw * 1000)}</td>
+                <td class="r num">{t('ui.ppa.usd_mwh', { usd: r.priceUsdMwh.toFixed(0) })}</td>
+                <td class="num">{fmt.quarter(r.endQuarterLabel)}</td>
+                <td>{t('ui.ppa.take_or_pay', { pct: fmt.pct(r.takeOrPayPct) })}</td>
+              </tr>
+              {r.resoldUsd > 0 && (
+                // M17.8 C: the paid-for MW no load used, resold this quarter.
+                <tr class="muted" data-ppa-resold={r.id}>
+                  <td colSpan={5}>
+                    {t('ui.ppa.resold', {
+                      unusedKw: r.unusedMw * 1000,
+                      amountUsd: r.resoldUsd,
+                    })}
+                  </td>
+                </tr>
+              )}
+            </Fragment>
           ))}
         </tbody>
       </table>

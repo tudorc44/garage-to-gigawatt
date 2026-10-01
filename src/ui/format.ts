@@ -106,6 +106,12 @@ function signedInt(v: number): string {
   return (n > 0 ? '+' : n < 0 ? MINUS : '') + String(Math.abs(n))
 }
 
+/** Signed whole dollars with a true minus: +$5 · −$3 (a $/MWh capacity charge). */
+function signedDollars(v: number): string {
+  const n = Math.round(v)
+  return (n > 0 ? '+' : n < 0 ? MINUS : '') + '$' + Math.abs(n).toLocaleString('en-US')
+}
+
 /** "2017Q4" → "Q4 2017"; with a week: "Q4 2017 · week 6" */
 function quarter(q: string, week?: number): string {
   const m = /^(\d{4})Q(\d)$/.exec(q)
@@ -134,6 +140,7 @@ export const fmt = {
   delta,
   signed,
   signedInt,
+  signedDollars,
   quarter,
   date,
 }

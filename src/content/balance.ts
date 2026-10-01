@@ -687,6 +687,13 @@ export const BALANCE = {
       hyperscalerRentMult: 1.03,
       /** Ratepayer Anger in each region where you hold an active PPA (nuclear.json "−5"), once per region. */
       angerDelta: -5,
+      /**
+       * M17.8 (DT, designed): take-or-pay MW paid for but not used are resold at this share of the region's energy
+       * price (power_usd_kwh_<region>, without the capacity charge).
+       */
+      resaleShare: 0.9,
+      /** M17.8 (DT, designed): sh_2's 100 MW PPA needs at least this many MW energized across your sites. */
+      sh2MinEnergizedMw: 200,
     },
     /** Political capital (M17.3; political_capital.json has the meter, the hire, the costs and gains). */
     politicalCapital: {

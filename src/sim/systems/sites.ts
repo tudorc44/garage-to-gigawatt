@@ -5,6 +5,8 @@ import {
   CONTENT,
   act1ValueQuarter,
   act2Quarter,
+  actFirstQuarter,
+  actLastQuarter,
   quarterInputs,
   type ScenarioId,
   type PowerRegion,
@@ -195,8 +197,37 @@ export function powerPriceUsdKwh(
   const eventMult = e && quarter >= e.from && quarter <= e.until ? e.mult : 1
   return (
     base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult +
-    regionPowerAdderUsdKwh(regionOf(site), quarter)
+    regionPowerAdderUsdKwh(regionOf(site), quarter) +
+    capacityChargeUsdKwh(site, quarter, scenario)
   )
+}
+
+/**
+ * The PJM capacity charge (Act III, M17.8, DT), $/kWh: at sites in PJM and Ohio, the scenario's capacity price
+ * change since 2027Q1 ($/MW-day ÷ 24 h ÷ 1,000); negative when capacity falls below 2027Q1. The change, not the
+ * level, so Act II's capacity-shock policy adder (which stays) isn't counted twice. 0 elsewhere and outside Act III.
+ */
+export function capacityChargeUsdKwh(
+  site: Site,
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number {
+  return regionCapacityChargeUsdKwh(regionOf(site), quarter, scenario)
+}
+
+/** The PJM capacity charge in a region (see capacityChargeUsdKwh), $/kWh. */
+export function regionCapacityChargeUsdKwh(
+  region: PowerRegion | undefined,
+  quarter: number,
+  scenario?: ScenarioId | null,
+): number {
+  if (!scenario || (region !== 'pjm' && region !== 'ohio')) return 0
+  const first = actFirstQuarter(3)
+  if (quarter < first || quarter > actLastQuarter(3)) return 0
+  const now = quarterInputs(quarter, scenario)?.pjmCapacityUsdMwDay
+  const base = quarterInputs(first, scenario)?.pjmCapacityUsdMwDay
+  if (now === undefined || base === undefined) return 0
+  return (now - base) / 24 / 1000
 }
 
 /** Share of the week the site actually has power (outage flaw). */

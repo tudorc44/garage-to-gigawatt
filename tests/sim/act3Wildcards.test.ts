@@ -15,6 +15,7 @@ import { gpuPriceMultNow } from '../../src/sim/systems/eventEffects.ts'
 import { exportAiLabMult } from '../../src/sim/systems/exportRule.ts'
 import { siteHeatValue } from '../../src/sim/systems/heat.ts'
 import { refitPlan } from '../../src/sim/systems/retrofit.ts'
+import { waterPauseBlocker } from '../../src/sim/systems/pcState.ts'
 import { openNextWildcard } from '../../src/sim/systems/wildcards.ts'
 import { act2Company } from './act2Helpers.ts'
 import { act3ScenarioCompany } from './act3Helpers.ts'
@@ -112,9 +113,17 @@ describe('the default and the skip', () => {
   })
 
   it('no target when it comes: it doesn’t fire (no replacement)', () => {
+    // M17.8 F: the water moratorium skips only with no site at all
     const s = due('wc_water_moratorium')
-    expect(s.act3WildcardOpen).toBeNull()
-    expect(s.act3Wildcards![0].status).toBe('skipped')
+    expect(s.act3WildcardOpen).toEqual({ id: 'wc_water_moratorium', siteId: 'site-2' })
+    const none = toAct3(act2Company('2026Q4'), { scenario: 's0' })
+    none.quarter = q('2028Q2')
+    none.sites = []
+    none.act3Wildcards = [{ id: 'wc_water_moratorium', quarter: none.quarter, status: 'pending' }]
+    none.act3WildcardOpen = null
+    openNextWildcard(none)
+    expect(none.act3WildcardOpen).toBeNull()
+    expect(none.act3Wildcards![0].status).toBe('skipped')
     const t = due('wc_ai_lab_breakup')
     expect(t.act3Wildcards![0].status).toBe('skipped')
   })
@@ -180,6 +189,65 @@ describe('each wildcard', () => {
     const r = applyAction(poor, { type: 'WILDCARD_CHOOSE', choice: 'c2' })
     expect(r.ok).toBe(false)
     if (!r.ok) expect(r.error.key).toBe('error.pc_short')
+  })
+
+  it('M17.8 F, step 2: no build: the largest proposed project can’t start for 2 quarters, Anger +6; 30 PC lifts it', () => {
+    const props = [
+      { stage: 'proposed' as const, kw: 5000, readyQuarter: null, startQuarter: null },
+      { stage: 'proposed' as const, kw: 8000, readyQuarter: null, startQuarter: null },
+    ]
+    const s = due('wc_water_moratorium', '2028Q2', props)
+    expect(s.act3WildcardOpen).toEqual({ id: 'wc_water_moratorium', projectId: 'project-2' })
+    const t = choose(s, 'c1')
+    expect(t.angerAdj).toBe(6)
+    expect(t.act3Gov!.pause).toEqual({
+      kind: 'start',
+      projectId: 'project-2',
+      quarters: 2,
+      untilQuarter: q('2028Q3'),
+    })
+    expect(t.log.at(-1)!.key).toBe('log.wildcard.wc_water_moratorium.c1_start')
+    const r = applyAction(t, { type: 'PROJECT_START', projectId: 'project-2' })
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.error).toEqual({ key: 'error.water_pause_start', params: { quarter: '2028Q4' } })
+    // the other project isn't held; from 2028Q4 the hold is gone
+    expect(waterPauseBlocker(t, { projectId: 'project-1' })).toBeUndefined()
+    t.quarter = q('2028Q4')
+    expect(waterPauseBlocker(t, { projectId: 'project-2' })).toBeUndefined()
+    // "Block the moratorium" (30 PC) lifts it while it holds
+    const u = choose(due('wc_water_moratorium', '2028Q2', props), 'c1')
+    u.politicalCapital = 40
+    const v = ok(u, { type: 'PC_SPEND', id: 'pc_moratorium_block' })
+    expect(v.act3Gov!.pause).toBeUndefined()
+    expect(waterPauseBlocker(v, { projectId: 'project-2' })).toBeUndefined()
+  })
+
+  it('M17.8 F, step 3: no build or proposal: the site with the most idle MW can’t open a project for 2 quarters, Anger +6', () => {
+    const s = due('wc_water_moratorium', '2028Q2')
+    // a second, bigger site that's fully used: site-2 (20 MW, idle) is still the target
+    s.sites.push({ ...structuredClone(s.sites.find((x) => x.id === 'site-2')!), id: 'site-3', kw: 50_000 })
+    s.projects = [
+      {
+        ...structuredClone(due('wc_water_moratorium', '2028Q2', [{}]).projects[0]),
+        siteId: 'site-3',
+        kw: 50_000,
+      },
+    ]
+    s.act3Wildcards = [{ id: 'wc_water_moratorium', quarter: s.quarter, status: 'pending' }]
+    s.act3WildcardOpen = null
+    openNextWildcard(s)
+    expect(s.act3WildcardOpen).toEqual({ id: 'wc_water_moratorium', siteId: 'site-2' })
+    const t = choose(s, 'c1')
+    expect(t.angerAdj).toBe(6)
+    expect(t.act3Gov!.pause).toMatchObject({ kind: 'site', siteId: 'site-2', untilQuarter: q('2028Q3') })
+    expect(t.log.at(-1)!.key).toBe('log.wildcard.wc_water_moratorium.c1_site')
+    const open = (x: GameState, siteId: string) =>
+      applyAction(x, { type: 'PROJECT_OPEN', siteId, kw: 1000, kind: 'shell' })
+    const r = open(t, 'site-2')
+    expect(r.ok).toBe(false)
+    if (!r.ok) expect(r.error.key).toBe('error.water_pause_site')
+    t.quarter = q('2028Q4')
+    expect(open(t, 'site-2').ok).toBe(true)
   })
 
   it('AI lab restructure: the largest AI-lab lease × 0.85 and a year shorter (at least 4 quarters left); or −$400K and one fewer shell offer for 4 quarters', () => {

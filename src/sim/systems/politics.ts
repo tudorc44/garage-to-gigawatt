@@ -111,7 +111,10 @@ function moratoriumTarget(state: GameState): 'region' | 'pause' | undefined {
   const m = state.events.regionMoratorium
   if (m && state.quarter <= m.until) return 'region'
   const pause = state.act3Gov?.pause
-  const p = pause && state.projects.find((x) => x.id === pause.projectId)
+  if (!pause) return undefined
+  // (M17.8: a held start or site, until it lifts)
+  if (pause.kind) return state.quarter <= pause.untilQuarter! ? 'pause' : undefined
+  const p = state.projects.find((x) => x.id === pause.projectId)
   return p && p.stage === 'building' ? 'pause' : undefined
 }
 
@@ -190,8 +193,10 @@ export function spendPc(state: GameState, id: string): void {
         state.events.regionMoratorium!.until = state.quarter - 1
       else {
         const pause = g.pause!
-        const p = state.projects.find((x) => x.id === pause.projectId)!
-        p.readyQuarter = Math.max(next, p.readyQuarter! - pause.quarters)
+        if (!pause.kind) {
+          const p = state.projects.find((x) => x.id === pause.projectId)!
+          p.readyQuarter = Math.max(next, p.readyQuarter! - pause.quarters)
+        }
         delete g.pause
       }
       break

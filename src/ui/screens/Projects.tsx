@@ -346,6 +346,8 @@ function NuclearDetails(props: {
   const half = Math.floor(mw / 2)
   const unused = Math.max(0, n.takeOrPay * mw - half)
   const price = n.priceUsdMwh ?? 0
+  // (M17.8 C: the unused MW are resold, so they cost the gap to the resale price)
+  const netUsd = unused * 8760 * (price - n.resaleUsdMwh)
   return (
     <div class="panel p nuclear-panel" data-nuclear-details>
       <div class="row-between">
@@ -367,7 +369,15 @@ function NuclearDetails(props: {
           </div>
           <div class="kv">
             <span>{t('ui.nuclear.grid_now')}</span>
-            <span class="num">{t('ui.ppa.usd_mwh', { usd: n.gridUsdMwh.toFixed(0) })}</span>
+            <span class="num">
+              {t('ui.ppa.usd_mwh', { usd: n.gridUsdMwh.toFixed(0) })}
+              {Math.round(n.chargeUsdMwh) !== 0 && (
+                <span class="muted" data-capacity-charge>
+                  {' '}
+                  {t('ui.nuclear.grid_charge', { usd: fmt.signedDollars(n.chargeUsdMwh) })}
+                </span>
+              )}
+            </span>
           </div>
           <div class="kv">
             <span>{t('ui.nuclear.term')}</span>
@@ -395,8 +405,8 @@ function NuclearDetails(props: {
                 half: half.toLocaleString('en-US'),
                 mw: mw.toLocaleString('en-US'),
                 unused: unused.toLocaleString('en-US', { maximumFractionDigits: 1 }),
-                usd: price.toFixed(0),
-                total: fmt.money(unused * 8760 * price),
+                resale: n.resaleUsdMwh.toFixed(0),
+                net: fmt.money(netUsd),
               })}
             </span>
           </div>

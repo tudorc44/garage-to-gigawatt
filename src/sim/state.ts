@@ -391,8 +391,18 @@ export interface Act3Gov {
   lastUsed: Record<string, number>
   /** Once per act: the coalition membership, the grid-support grant. */
   once: string[]
-  /** The water moratorium's pause, which "Block the moratorium" can end (project and quarters). */
-  pause?: { projectId: string; quarters: number }
+  /**
+   * The water moratorium's pause, which "Block the moratorium" can end. Without `kind`: a building project's ready
+   * quarter moved `quarters` later. M17.8: 'start', a proposed project can't start, or 'site', no new project can
+   * open at the site, through `untilQuarter`.
+   */
+  pause?: {
+    projectId?: string
+    siteId?: string
+    quarters: number
+    kind?: 'start' | 'site'
+    untilQuarter?: number
+  }
 }
 
 /** One logged Act III move (M14.2; the kinds are in systems/act3Moves.ts). */
@@ -761,7 +771,7 @@ export interface GameState {
   /** Act III (M17.4): the two wildcards drawn at entry, with the quarter each fires in. */
   act3Wildcards?: Act3Wildcard[]
   /** Act III (M17.4): a wildcard on the Plan screen waiting for an answer (its default applies at END_PLAN). */
-  act3WildcardOpen?: { id: WildcardId; projectId?: string } | null
+  act3WildcardOpen?: { id: WildcardId; projectId?: string; siteId?: string } | null
   /** Act III (M17.4): the export rule wildcard's effects while they last. */
   act3ExportRule?: { from: number; until: number; exempt: boolean }
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */

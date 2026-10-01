@@ -3,7 +3,8 @@
 // - ppa_switch (s2_c1, s3_c2): your largest live or building project in an eligible region with no PPA switches
 //   its MW to a nuclear PPA at this quarter's price, take-or-pay from next quarter;
 // - ppa_site_mw (sh_2): that many MW of PPA power added to your largest site in an eligible region, energized
-//   next quarter and idle until a project uses them (take-or-pay 90% from then: the stranded-PPA test);
+//   next quarter and idle until a load uses them (take-or-pay 90% from then: the stranded-PPA test); greyed below
+//   200 MW energized (M17.8);
 // - ppa_savings (s2_c5): one quarter of your PPAs' savings against the market (0 with none);
 // - pc_cost (s2_c6): political capital spent and the Anger adjustment −8; anger_adj: the adjustment alone;
 // - hire_card (sh_3): the hire through the normal path, at no Bandwidth.
@@ -19,7 +20,7 @@ import {
   quarterLabelBeyond,
 } from './nuclear.ts'
 import { addPc, adjustAnger } from './pcState.ts'
-import { capacityKw, regionOf } from './sites.ts'
+import { capacityKw, poweredKw, regionOf } from './sites.ts'
 
 const regionOfSite = (state: GameState, siteId: string) => {
   const site = state.sites.find((s) => s.id === siteId)
@@ -39,6 +40,11 @@ export function ppaSwitchTarget(state: GameState): Project | undefined {
         nuclearRegion(regionOfSite(state, p.siteId)),
     )
     .sort((a, b) => b.kw - a.kw || a.n - b.n)[0]
+}
+
+/** Your MW energized now, across every site. */
+function energizedMw(state: GameState): number {
+  return state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0) / 1000
 }
 
 /** ppa_site_mw's site: your largest site in an eligible region. */
@@ -125,8 +131,14 @@ export function powerCardBlocker(
 ): Message | undefined {
   if (effects.ppa_switch && (!ppaSwitchTarget(state) || nuclearPriceUsdMwh(state) === null))
     return { key: 'error.card_no_ppa_project' }
-  if (effects.ppa_site_mw !== undefined && (!ppaSite(state) || nuclearPriceUsdMwh(state) === null))
-    return { key: 'error.nuclear_region' }
+  if (effects.ppa_site_mw !== undefined) {
+    if (!ppaSite(state) || nuclearPriceUsdMwh(state) === null)
+      return { key: 'error.nuclear_region' }
+    // M17.8 (DT): too big for a small company, below 200 MW energized.
+    const min = BALANCE.act3.nuclear.sh2MinEnergizedMw
+    if (energizedMw(state) < min)
+      return { key: 'error.ppa_too_big', params: { mw: min } }
+  }
   const pc = effects.pc_cost as number | undefined
   if (pc !== undefined && (state.politicalCapital ?? 0) < pc)
     return { key: 'error.pc_short', params: { needed: pc, have: state.politicalCapital ?? 0 } }

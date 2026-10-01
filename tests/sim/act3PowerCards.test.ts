@@ -6,9 +6,13 @@ import { BALANCE, CONTENT, type PowerRegion } from '../../src/content/index.ts'
 import { act3CardEngineId } from '../../src/content/act3Cards.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { toAct3, type GameState, type Project } from '../../src/sim/state.ts'
-import { blockedEventChoices } from '../../src/sim/systems/events.ts'
+import { blockedEventChoices, getCard } from '../../src/sim/systems/events.ts'
 import { payReservationWeek } from '../../src/sim/systems/mwUse.ts'
-import { activePpas, ppaQuarterNetUsd } from '../../src/sim/systems/nuclear.ts'
+import {
+  activePpas,
+  ppaQuarterNetUsd,
+  ppaResaleUsdMwh,
+} from '../../src/sim/systems/nuclear.ts'
 import { powerPriceUsdKwh, poweredKw } from '../../src/sim/systems/sites.ts'
 import { act2Company } from './act2Helpers.ts'
 
@@ -84,15 +88,25 @@ describe('power_option nuclear_ppa (s2_c1, s3_c2)', () => {
 })
 
 describe('sh_2 "Sign a 100MW PPA": the stranded-PPA test', () => {
-  it('100 MW of PPA power at your largest eligible site, energized next quarter, idle: take-or-pay 90% from then, no reservation on them', () => {
-    const s = co('2027Q3', 'ohio')
+  /** M17.8 D: sh_2 needs 200 MW energized: site-2 made a 200 MW site. */
+  const big = (region: PowerRegion = 'ohio') => {
+    const s = co('2027Q3', region)
+    s.sites.find((y) => y.id === 'site-2')!.kw = 200_000
+    return s
+  }
+
+  it('100 MW of PPA power at your largest eligible site, energized next quarter, idle: take-or-pay 90% from then (resold), no reservation on them', () => {
+    const s = big()
     const t = play(s, 'sh_2', 'c1')
     const x = activePpas(t)[0]
     expect(x).toMatchObject({ projectId: null, kw: 100_000, fromQuarter: q('2027Q4') })
     const site = t.sites.find((y) => y.id === 'site-2')!
     expect(poweredKw(site, q('2027Q4')) - poweredKw(site, q('2027Q3'))).toBe(100_000)
     t.quarter = q('2027Q4')
-    expect(ppaQuarterNetUsd(t, x).netUsd).toBeCloseTo(x.priceUsdMwh * 90 * H, 2)
+    expect(ppaQuarterNetUsd(t, x).netUsd).toBeCloseTo(
+      (x.priceUsdMwh - ppaResaleUsdMwh(t, site)) * 90 * H,
+      2,
+    )
     const plain = structuredClone(s)
     plain.quarter = q('2027Q4')
     expect(payReservationWeek(structuredClone(t))).toBeCloseTo(
@@ -102,7 +116,7 @@ describe('sh_2 "Sign a 100MW PPA": the stranded-PPA test', () => {
   })
 
   it('a new project on that site uses the PPA', () => {
-    let t = play(co('2027Q3', 'ohio'), 'sh_2', 'c1')
+    let t = play(big(), 'sh_2', 'c1')
     t.phase = 'plan'
     t.quarter = q('2027Q4')
     const r = applyAction(t, { type: 'PROJECT_OPEN', siteId: 'site-2', kw: 30_000, kind: 'shell' })
@@ -112,7 +126,16 @@ describe('sh_2 "Sign a 100MW PPA": the stranded-PPA test', () => {
   })
 
   it('no eligible site: greyed', () => {
-    expect(greyed(co('2027Q3', 'arizona'), 'sh_2', 'c1')).toBe('error.nuclear_region')
+    expect(greyed(big('arizona'), 'sh_2', 'c1')).toBe('error.nuclear_region')
+  })
+
+  it('M17.8 D: below 200 MW energized: greyed, "Too big for your company"; Decline stays the default', () => {
+    const small = co('2027Q3', 'ohio') // the garage and 20 MW
+    const b = blockedEventChoices(show(small, 'sh_2')).find((x) => x.id === 'c1')!.blocker
+    expect(b).toEqual({ key: 'error.ppa_too_big', params: { mw: 200 } })
+    expect(greyed(big(), 'sh_2', 'c1')).toBeUndefined()
+    // Decline (c2) stays the default
+    expect(getCard(act3CardEngineId('sh_2'))!.default).toBe('c2')
   })
 })
 
@@ -122,6 +145,7 @@ describe('ppa_savings (s2_c5 "Bank the margin")', () => {
     expect(play(none, 's2_c5', 'c1').cash).toBe(none.cash)
     const s = co('2029Q1', 'pjm', [{ kw: 10_000 }])
     const site = s.sites.find((y) => y.id === 'site-2')!
+    site.soldKw = 10_000 // (M17.8 E: all the site's power is the PPA's, so the cloud uses it)
     const market = powerPriceUsdKwh(site, s.quarter, 's2') * 1000
     s.ppas = [
       {
