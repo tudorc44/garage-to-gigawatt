@@ -97,6 +97,11 @@ import {
   startRetrofit,
 } from './systems/retrofit.ts'
 import {
+  chooseWildcard,
+  settleWildcards,
+  wildcardChoiceBlocker,
+} from './systems/wildcards.ts'
+import {
   lobby,
   lobbyBlocker,
   spendBlocker,
@@ -369,6 +374,8 @@ export type Action =
   | { type: 'RETROFIT'; projectId: string }
   /** Act III (M16.3): swap a live cloud's or pilot's GPUs for a generation that fits its tier (1 BW). */
   | { type: 'REFIT_GPUS'; projectId: string; gpu: string }
+  /** Act III (M17.4): answer the wildcard on the Plan screen (c1 = its first choice, the default). */
+  | { type: 'WILDCARD_CHOOSE'; choice: string }
   /** Act III (M17.3): start a lobbying action (1 BW, its cost now; the gain lands at the quarter's end). */
   | { type: 'LOBBY'; id: string }
   /** Act III (M17.3): spend political capital on a card (0 BW). */
@@ -410,6 +417,8 @@ function run(s: GameState, a: Action): Message | undefined {
       if (s.pitch) return fail('error.pitch_open')
       closeAuction(s)
       autoRenew(s)
+      // Act III (M17.4): a wildcard left unanswered takes its default.
+      settleWildcards(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -946,6 +955,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = refitBlocker(s, a.projectId, a.gpu)
       if (blocked) return blocked
       refitGpus(s, a.projectId, a.gpu)
+      return
+    }
+
+    case 'WILDCARD_CHOOSE': {
+      const blocked = wildcardChoiceBlocker(s, a.choice)
+      if (blocked) return blocked
+      chooseWildcard(s, a.choice as 'c1' | 'c2')
       return
     }
 

@@ -2323,6 +2323,12 @@
     },
     {
       "quarter": 49,
+      "week": null,
+      "key": "log.wildcard.wc_export_control.c1",
+      "params": {}
+    },
+    {
+      "quarter": 49,
       "week": 1,
       "key": "log.failures",
       "params": {
@@ -2946,6 +2952,25 @@
     "pending": [],
     "lastUsed": {},
     "once": []
+  },
+  "act3Wildcards": [
+    {
+      "id": "wc_ai_lab_breakup",
+      "quarter": 48,
+      "status": "skipped"
+    },
+    {
+      "id": "wc_export_control",
+      "quarter": 49,
+      "status": "fired",
+      "choice": "c1"
+    }
+  ],
+  "act3WildcardOpen": null,
+  "act3ExportRule": {
+    "from": 49,
+    "until": 51,
+    "exempt": false
   },
   "act3End": {
     "scenarioId": "s3",

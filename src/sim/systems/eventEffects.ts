@@ -6,6 +6,7 @@ import { BALANCE, CONTENT, type Machine } from '../../content/index.ts'
 import { chance, substream } from '../rng.ts'
 import { logEntry, type Condition, type GameState } from '../state.ts'
 import { buyPrice, scenarioOf } from './market.ts'
+import { exportGpuMult } from './exportRule.ts'
 
 export interface ScheduledEvent {
   /** events.json card id. */
@@ -192,9 +193,12 @@ export function debtFrozen(state: GameState): boolean {
 /** This Plan phase's GPU price multiplier (DeepSeek's "buy the dip"), 1 normally. */
 export function gpuPriceMultNow(state: GameState, quarter: number): number {
   const p = state.events.plan
-  return p && p.quarter === state.quarter && quarter === state.quarter
-    ? (p.gpuPriceMult ?? 1)
-    : 1
+  // Act III (M17.4): × 1.05 while the export rule is on (unless you pre-bought).
+  return (
+    (p && p.quarter === state.quarter && quarter === state.quarter
+      ? (p.gpuPriceMult ?? 1)
+      : 1) * exportGpuMult(state, quarter)
+  )
 }
 
 /** The absolute week being played (or about to be): quarter × 13 + week index. */

@@ -201,6 +201,13 @@ a quarter); LOBBY (1 BW, paid now, lands at quarter end; tariff backfire on subs
 cards; tariff relief not offered); low capital (< 15): moratorium at Anger 40, grid queues +1. **Goldens:** act3-s* gain only the PC
 fields, each report's PC and the PC log line (insertions only). 1140 tests.
 
+**M17.4 done:** `systems/wildcards.ts` (+ `exportRule.ts`): 2 of 4 drawn at entry on substream act3_wildcards, a quarter in each window;
+one due opens in the Plan phase (`act3WildcardOpen`) if it has a target, else skipped; WILDCARD_CHOOSE, the default (c1) at END_PLAN;
+the four effects as specified (grid power × (1 + 0.6 × 3/13) via each site's eventPowerMult, PPA MW exempt; the export rule's × 1.05,
++3 weeks on the newest generation, AI-lab leases × 0.97; the water pause +2 quarters / Anger +6 or 30 PC; the AI-lab reset or
+−$400K and one fewer shell offer for 4 quarters); pre-buying logs gpu_buy; the report lists them. **Goldens:** act3-s* gain the draw
+(seed 1: AI-lab skipped, export rule absorbed with no effect: cash unchanged in all four). 1150 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /

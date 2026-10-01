@@ -1953,6 +1953,15 @@ export function contractCalendar(state: GameState) {
 
 /** Log lines the Act III quarter report lists (M13.2): renewals, reopeners, blend-and-extend, card effects. */
 const ACT3_REPORT_KEYS = new Set<string>([
+  // M17.4: the wildcards; M17.2 / M17.3 (mine): the PPAs and the political capital lines
+  ...['wc_grid_event', 'wc_export_control', 'wc_water_moratorium', 'wc_ai_lab_breakup'].flatMap(
+    (id) => [`log.wildcard.${id}.c1`, `log.wildcard.${id}.c2`],
+  ),
+  'log.ppa_signed',
+  'log.ppa_bill',
+  'log.lobby_landed',
+  'log.lobby_backfired',
+  'log.pc_spent',
   'log.renewal_offer',
   'log.renewal_walk',
   'log.renewal_signed',

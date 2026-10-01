@@ -30,8 +30,10 @@ import {
   gpuPriceUsd,
   gpuResidualUsd,
   knowHow,
+  newestGpu,
   ownedShareOut,
 } from './projects.ts'
+import { exportLeadWeeks } from './exportRule.ts'
 
 const D = BALANCE.act3.density
 const G = () => CONTENT.act3Gpus
@@ -154,7 +156,12 @@ export function refitPlan(
     newUsd,
     saleUsd,
     netUsd: Math.round(newUsd * ours) - saleUsd,
-    weeks: gpuLeadTimeWeeks(gpu, state.quarter, scenarioOf(state)),
+    // (M17.4: the export rule adds 3 weeks to the newest generation, unless you pre-bought)
+    weeks:
+      gpuLeadTimeWeeks(gpu, state.quarter, scenarioOf(state)) +
+      (gpu === newestGpu(state.quarter, scenarioOf(state))
+        ? exportLeadWeeks(state)
+        : 0),
   }
 }
 

@@ -22,6 +22,7 @@ import { emptyQuarterStats, type Act3Entry, type GameState } from '../state.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { assignCarriedTiers } from './density.ts'
 import { startPolitics } from './politics.ts'
+import { drawWildcards } from './wildcards.ts'
 import { debtUsd } from './loans.ts'
 import { mwByUse } from './mwUse.ts'
 import { openRenewals } from './renewals.ts'
@@ -125,6 +126,9 @@ export function enterAct3(state: GameState, scenario: ScenarioId): GameState {
   assignCarriedTiers(s)
   // Political capital starts at 40 (M17.3).
   startPolitics(s)
+  // Two of the four wildcards and their quarters, on their own stream (M17.4).
+  drawWildcards(s)
+  s.act3WildcardOpen = null
 
   return s
 }

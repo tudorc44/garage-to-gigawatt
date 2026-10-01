@@ -189,6 +189,12 @@ export function moveOf(
       return 'hedge'
     case 'BLEND_ACCEPT':
       return 'blend_extend'
+    // M17.4 (DT): pre-buying GPU inventory before the export rule buys GPUs; the other wildcard choices log nothing.
+    case 'WILDCARD_CHOOSE':
+      return before.act3WildcardOpen?.id === 'wc_export_control' &&
+        a.choice === 'c2'
+        ? 'gpu_buy'
+        : null
     // M16.3 (DT): a retrofit builds; a GPU change buys GPUs.
     case 'RETROFIT':
       return 'retrofit'

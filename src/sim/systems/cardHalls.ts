@@ -27,6 +27,7 @@ import {
   type SiteOffer,
 } from '../state.ts'
 import { repayProjectFacilities } from './facilities.ts'
+import { exportGpuMult } from './exportRule.ts'
 import { convertibleKw } from './hosting.ts'
 import { scenarioOf } from './market.ts'
 import { powerCostUsd } from './power.ts'
@@ -229,7 +230,13 @@ export function rackPlan(
     e.budgetUsd !== undefined ? Math.floor(Math.abs(e.budgetUsd) / price) : 1
   const gpus = BALANCE.act3.density.gpusPerRack.rubin_nvl144 * racks
   const perMw = gpuGeneration(e.gpu)!.gpusPerMw
-  return { racks, gpus, kw: Math.ceil((gpus / perMw) * 1000), costUsd: racks * price }
+  // (M17.4: × 1.05 while the export rule is on, unless you pre-bought)
+  return {
+    racks,
+    gpus,
+    kw: Math.ceil((gpus / perMw) * 1000),
+    costUsd: racks * price * exportGpuMult(state),
+  }
 }
 
 /** The site with the most free energized kW that fits `kw` (not the garage). */

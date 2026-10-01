@@ -8,6 +8,7 @@ import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
 import { assignCarriedTiers } from './systems/density.ts'
 import { startPolitics } from './systems/politics.ts'
+import { drawWildcards } from './systems/wildcards.ts'
 import {
   emptyQuarterStats,
   newGame,
@@ -133,5 +134,10 @@ export function restoreSave(raw: unknown): Loaded {
   if (state.act === 3) assignCarriedTiers(state)
   // M17.3: an Act III save from before political capital starts the meter at 40.
   if (state.act === 3 && state.politicalCapital === undefined) startPolitics(state)
+  // M17.4: and draws its wildcards (one whose quarter has passed never comes).
+  if (state.act === 3 && state.act3Wildcards === undefined) {
+    drawWildcards(state)
+    state.act3WildcardOpen = null
+  }
   return { ok: true, state }
 }

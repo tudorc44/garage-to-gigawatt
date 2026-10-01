@@ -155,6 +155,19 @@ export function availableGpus(
   )
 }
 
+/** The newest generation on sale (Rubin until Rubin Ultra is out, then Rubin Ultra), or null before Act III. */
+export function newestGpu(
+  quarter: number,
+  scenario?: ScenarioId | null,
+): string | null {
+  const ids = availableGpus(quarter, scenario).map((g) => g.id)
+  return ids.includes('rubin_ultra')
+    ? 'rubin_ultra'
+    : ids.includes('rubin_nvl144')
+      ? 'rubin_nvl144'
+      : null
+}
+
 /**
  * Weeks from ordering a GPU generation to having it (M16.1): the scenario's newest-generation lead time for
  * the newest generation on sale (Rubin until Rubin Ultra is out, then Rubin Ultra); an older generation keeps
@@ -165,12 +178,7 @@ export function gpuLeadTimeWeeks(
   quarter: number,
   scenario?: ScenarioId | null,
 ): number {
-  const ids = availableGpus(quarter, scenario).map((g) => g.id)
-  const newest = ids.includes('rubin_ultra')
-    ? 'rubin_ultra'
-    : ids.includes('rubin_nvl144')
-      ? 'rubin_nvl144'
-      : null
+  const newest = newestGpu(quarter, scenario)
   const column = quarterInputs(quarter, scenario)?.act3?.newestGenLeadWeeks
   if (gpu === newest && column != null) return column
   const own = gpuGeneration(gpu)?.leadTimeWeeks

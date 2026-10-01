@@ -31,6 +31,7 @@ import {
 import { payAct3Payouts } from './cardContracts.ts'
 import { settlePpas } from './nuclear.ts'
 import { endQuarterPolitics } from './politics.ts'
+import { openNextWildcard } from './wildcards.ts'
 import { openBlendOffers } from './blendExtend.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
@@ -270,4 +271,6 @@ export function startNextQuarter(state: GameState): void {
   openBlendOffers(state)
   startQuarterEvents(state)
   rollAuction(state)
+  // Act III (M17.4): a wildcard due this quarter comes in the Plan phase (if it has a target).
+  openNextWildcard(state)
 }
