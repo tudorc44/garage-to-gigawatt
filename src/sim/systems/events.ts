@@ -41,6 +41,15 @@ import {
   type RackCard,
   type RetrofitCard,
 } from './cardHalls.ts'
+import {
+  angerCard,
+  hireCard,
+  pcCostCard,
+  powerCardBlocker,
+  ppaSavingsCard,
+  ppaSiteCard,
+  ppaSwitchCard,
+} from './cardPower.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, random, substream, uniform } from '../rng.ts'
 import {
@@ -432,6 +441,9 @@ export function eventChoiceBlocker(
   // M16.4: a step-5 choice needs its target (a hall, GPUs, a build, room) and the cash it costs.
   const hall = hallCardBlocker(state, c.effects)
   if (hall) return hall
+  // M17.5: a step-6 choice needs its project or site, the political capital, or the hire's cash.
+  const power = powerCardBlocker(state, c.effects)
+  if (power) return power
   if (c.effects.debt_reduce === undefined) return undefined
   const costUsd = -Number(c.effects.cash ?? 0)
   if (state.cash < costUsd)
@@ -979,6 +991,25 @@ export function resolveEvent(
         break
       case 'distressed_campus':
         campusCard(state, v as CampusCard, weekNo)
+        break
+      // ---------- Act III, step 6 (M17.5; cardPower.ts) ----------
+      case 'ppa_switch':
+        ppaSwitchCard(state, weekNo)
+        break
+      case 'ppa_site_mw':
+        ppaSiteCard(state, Number(value), weekNo)
+        break
+      case 'ppa_savings':
+        ppaSavingsCard(state, weekNo)
+        break
+      case 'pc_cost':
+        pcCostCard(state, Number(value))
+        break
+      case 'anger_adj':
+        angerCard(state, Number(value))
+        break
+      case 'hire_card':
+        hireCard(state, String(value), weekNo)
         break
       // Act III (M11.5c): a choice whose effects a later build step wires. Nothing happens; it logs.
       case 'deferred': {

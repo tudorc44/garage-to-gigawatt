@@ -223,13 +223,18 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
       's1_c7.c1={"cash":-400000,"contract":{"recovery":0.35,"target":"distressed"}}',
       's1_c7.c2={"contract":{"rentIndex":0.5,"target":"distressed","replaceTenant":true}}',
       's1_c8.c1={"gpu_racks":{"gpu":"rubin_nvl144"}}',
+      's2_c1.c1={"ppa_switch":true}',
       's2_c2.c1={"delay_marginal_project":1}',
       's2_c3.c1={"contract":{"termYears":10,"rentIndex":1.05,"target":"best"}}',
       's2_c3.c2={"contract":{"rentIndex":1.35,"term":"spot","target":"uncontracted"}}',
       's2_c4.c1={"accelerate_project":{"quarters":1,"extraCostShare":0.15}}',
+      's2_c5.c1={"ppa_savings":true}',
+      's2_c6.c1={"pc_cost":30}',
+      's2_c6.c2={"cash":-2000000,"anger_adj":-8}',
       's2_c7.c1={"contract":{"rentIndex":1.1,"target":"largest"}}',
       's2_c8.c1={"debt_maturity_years":3}',
       's3_c1.c1={"bandwidth_next":-1,"free_read":"efficiency_index"}',
+      's3_c2.c1={"ppa_switch":true}',
       's3_c3.c1={"contract":{"termYears":-3,"rentIndex":0.8,"target":"all_shell"}}',
       's3_c3.c3={"retrofit_hall":{"to":"mid"}}',
       's3_c4.c1={"contract":{"rentIndex":0.7,"target":"soonest"}}',
@@ -238,6 +243,8 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
       's3_c6.c1={"contract":{"term":"1yr","target":"largest"}}',
       's3_c7.c1={"gpu_racks":{"gpu":"rubin_nvl144","budgetUsd":40000000}}',
       's3_c8.c1={"new_hall_mw":10}',
+      'sh_2.c1={"ppa_site_mw":100}',
+      'sh_3.c1={"hire_card":"gov_affairs_director"}',
       'sh_4.c1={"retrofit_hall":{"to":"top"}}',
     ])
   })
@@ -252,18 +259,8 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
             `${c.id}.c${i + 1}:${(e.deferred as { steps: string[] }).steps.join('+')}`,
           )
       })
-    // M16.4: every step-5 choice is live; sh_2's MW wait with its PPA for step 6.
-    expect(deferred).toEqual([
-      's0_c2.c3:step 7',
-      's0_c4.c1:step 7',
-      's2_c1.c1:step 6',
-      's2_c5.c1:step 6',
-      's2_c6.c1:step 6',
-      's2_c6.c2:step 6',
-      's3_c2.c1:step 6',
-      'sh_2.c1:step 6',
-      'sh_3.c1:step 6',
-    ])
+    // M16.4: every step-5 choice is live; M17.5: every step-6 one too. Only step 7's corporate debt waits.
+    expect(deferred).toEqual(['s0_c2.c3:step 7', 's0_c4.c1:step 7'])
     // Nothing is left for "question": every open question was answered (M12.3).
     expect(deferred.some((d) => d.includes('question'))).toBe(false)
   })
@@ -272,16 +269,16 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
     expect(translateEffects({ cash: '+10000000', debt: 10000000 })).toEqual({
       deferred: { keys: ['cash', 'debt'], steps: ['step 7'] },
     })
+    expect(translateEffects({ debt: 20000000, debt_spread_bps: -25 })).toEqual({
+      deferred: { keys: ['debt', 'debt_spread_bps'], steps: ['step 7'] },
+    })
+    // M17.5: the step-6 keys are live; a power option that isn't a nuclear PPA is a question.
     expect(translateEffects({ cash: -2000000, ratepayer_anger: -8 })).toEqual({
-      deferred: { keys: ['cash', 'ratepayer_anger'], steps: ['step 6'] },
+      cash: -2000000,
+      anger_adj: -8,
     })
-    expect(translateEffects({ cash: '+ppa_savings' })).toEqual({
-      deferred: { keys: ['cash'], steps: ['step 6'] },
-    })
-    expect(
-      translateEffects({ power_option: 'nuclear_ppa', mw: 100 }),
-    ).toEqual({
-      deferred: { keys: ['power_option', 'mw'], steps: ['step 6'] },
+    expect(translateEffects({ power_option: 'gas_peaker' })).toEqual({
+      deferred: { keys: ['power_option'], steps: ['question'] },
     })
     // M16.4: a step-5 price with no step-5 effect to carry it is a question, never charged for nothing.
     expect(translateEffects({ cash: '-1500000*mw' })).toEqual({
@@ -289,15 +286,14 @@ describe('effects: mapped where the engine has the same effect, else deferred', 
     })
   })
 
-  it('a deferred default logs its keys and its step and changes nothing else; s1_c4’s default adds 250 bps', () => {
-    // s2's defaults "Bank the margin" (ppa_savings) and "Community benefits deal" wait for step 6.
-    const deferredLogs = runs
-      .get('s2')!
-      .state.log.filter((e) => e.key === 'log.event_effects_deferred')
-    expect(deferredLogs.map((e) => e.params?.steps)).toEqual([
-      'step 6',
-      'step 6',
-    ])
+  it('no default is deferred any more (M17.5); s2’s community deal lowers the Anger adjustment; s1_c4’s default adds 250 bps', () => {
+    for (const id of SCENARIO_IDS)
+      expect(
+        runs.get(id)!.state.log.filter((e) => e.key === 'log.event_effects_deferred'),
+      ).toEqual([])
+    // s2's defaults: "Bank the margin" (no PPA: $0) and "Community benefits deal" (−$2M, Anger adjustment −8).
+    expect(runs.get('s2')!.state.log.some((e) => e.key === 'log.ppa_savings')).toBe(true)
+    expect(runs.get('s2')!.state.angerAdj).toBe(-8)
     const { state } = runs.get('s1')!
     expect(state.events.spreadAddBps).toBe(250) // s1_c4 default: refinance at +250bp
     expect(runs.get('s0')!.state.events.spreadAddBps).toBe(0) // s0's defaults touch no spread

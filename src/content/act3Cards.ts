@@ -133,12 +133,22 @@ export const EFFECT_MAP: Record<string, EffectRoute> = {
     map: 'distressed_campus',
     note: 's1_c6: a new 60 MW site, energized and idle, no flaw, in the largest site’s region (the choice’s cash is its price); "-X" with cash "+ev_stabilized*k" is the sale of the smallest live contracted shell (M12.3); sh_2’s waits for step 6 with its PPA',
   },
-  power_option: { defer: 'step 6', note: 'nuclear PPA' },
-  pc_cost: { defer: 'step 6', note: 'political capital' },
-  hire: { defer: 'step 6', note: 'the Government Affairs Lead' },
+  // M17.5 (step 6): systems/nuclear.ts, politics.ts, cardHalls.ts.
+  power_option: {
+    map: 'ppa_switch',
+    note: 'nuclear_ppa: your largest live or building project in an eligible region with no PPA switches its MW to a PPA at this quarter’s price from next quarter; with mw (sh_2): that many MW of PPA power added to your largest eligible site, idle until a project uses them',
+  },
+  pc_cost: {
+    map: 'pc_cost',
+    note: 'political capital spent (greyed if short), and the Anger adjustment −8 (s2_c6)',
+  },
+  hire: {
+    map: 'hire_card',
+    note: 'hires through the normal path, 0 BW from the card (the Government Affairs Director)',
+  },
   ratepayer_anger: {
-    defer: 'step 6',
-    note: 'Anger is worked out from MW and policy bumps; the engine has no Anger nudge',
+    map: 'anger_adj',
+    note: 'the company-wide Anger adjustment (M17.3)',
   },
   idle_mw: {
     map: 'idle_old_asics',
@@ -251,10 +261,10 @@ const CASH_FORMULAS: {
     re: /^-(\d+(?:\.\d+)?)\*mw$/,
     to: (k) => ({ retrofit_usd_per_mw: k }),
   },
+  // M17.5: one quarter of your PPAs' savings against the market.
+  { re: /^\+ppa_savings$/, to: () => ({ ppa_savings: true }) },
 ]
-const CASH_FORMULA_STEPS: { re: RegExp; step: string }[] = [
-  { re: /ppa_savings/, step: 'step 6' },
-]
+const CASH_FORMULA_STEPS: { re: RegExp; step: string }[] = []
 
 /** M16.4: the one card whose MW purchase is live (s1_c6 "Bid with cash"); sh_2's waits for step 6. */
 const DISTRESSED_CAMPUS = ['s1_c6.c1']
@@ -334,6 +344,8 @@ export function translateEffects(
     retrofitTo?: 'mid' | 'top'
     rackGpu?: string
     campusMw?: number
+    ppa?: boolean
+    ppaMw?: number
   } = {}
   for (const [key, value] of Object.entries(effect)) {
     const route = EFFECT_MAP[key]
@@ -447,7 +459,27 @@ export function translateEffects(
           DISTRESSED_CAMPUS.includes(`${ctx.card}.c${choice}`)
         )
           step5.campusMw = n
-        else defer(key, 'step 6')
+        // M17.5: MW that come with a nuclear PPA (sh_2)
+        else if (n !== null && n > 0 && effect.power_option === 'nuclear_ppa')
+          step5.ppaMw = n
+        else defer(key, 'question')
+        break
+      // M17.5 (step 6)
+      case 'power_option':
+        if (value === 'nuclear_ppa') step5.ppa = true
+        else defer(key, 'question')
+        break
+      case 'pc_cost':
+        if (n === null) defer(key, 'question')
+        else out.pc_cost = n
+        break
+      case 'hire':
+        if (typeof value === 'string') out.hire_card = value
+        else defer(key, 'question')
+        break
+      case 'ratepayer_anger':
+        if (n === null) defer(key, 'question')
+        else out.anger_adj = n
         break
       case 'debt_spread_bps':
         if (n === null) defer(key, 'question')
@@ -503,6 +535,11 @@ export function translateEffects(
       priceUsd: Math.max(0, -((out.cash as number | undefined) ?? 0)),
     }
     delete out.cash
+  }
+  // M17.5: a nuclear PPA on your largest eligible project, or (with MW) new PPA power at your largest eligible site.
+  if (step5.ppa) {
+    if (step5.ppaMw !== undefined) out.ppa_site_mw = step5.ppaMw
+    else out.ppa_switch = true
   }
   if (Object.keys(contract).length > 0) {
     contract.target = targetOf(ctx.card, choice)

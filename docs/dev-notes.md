@@ -208,6 +208,11 @@ the four effects as specified (grid power × (1 + 0.6 × 3/13) via each site's e
 −$400K and one fewer shell offer for 4 quarters); pre-buying logs gpu_buy; the report lists them. **Goldens:** act3-s* gain the draw
 (seed 1: AI-lab skipped, export rule absorbed with no effect: cash unchanged in all four). 1150 tests.
 
+**M17.5 done:** `systems/cardPower.ts`: ppa_switch (s2_c1, s3_c2), ppa_site_mw (sh_2: 100 MW at the largest eligible site, energized next
+quarter, no reservation, take-or-pay from then; a new project there takes it), ppa_savings (s2_c5), pc_cost (s2_c6: −30 PC and Anger −8),
+anger_adj (s2_c6's deal), hire_card (sh_3, 0 BW); each greyed with a reason. Only s0_c2.c3 and s0_c4.c1 stay deferred (step 7).
+**Golden:** act3-s2 only (s2_c6's default community deal now applies: cash −$2M, angerAdj −8). 1159 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /
