@@ -4,7 +4,12 @@
 import { BALANCE, CONTENT } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
-import { projectGone, type GameState, type Project } from './state.ts'
+import {
+  inActIII,
+  projectGone,
+  type GameState,
+  type Project,
+} from './state.ts'
 import { convertibleKw } from './systems/hosting.ts'
 import { scenarioOf } from './systems/market.ts'
 import { siteMwByUse } from './systems/mwUse.ts'
@@ -14,6 +19,7 @@ import {
   availableGpus,
   contractQuarters,
   gpuContractUsdHr,
+  gpuGeneration,
   newLeaseIndex,
   plannedLiveQuarter,
   buildBlocker,
@@ -32,9 +38,23 @@ import {
   spotUtilisation,
   tenantCard,
 } from './systems/projects.ts'
-import { capacityKw, regionOf } from './systems/sites.ts'
+import { capacityKw, poweredKw, regionOf } from './systems/sites.ts'
 import { gridQuarterRange, powerBlocker } from './systems/power.ts'
-import { shellTierRentMult } from './systems/density.ts'
+import {
+  downtimeDoneQuarter,
+  fits,
+  gpuTier,
+  midToTopUsdMw,
+  shellTierRentMult,
+  topBuildOpen,
+} from './systems/density.ts'
+import {
+  refitBlocker,
+  refitChoices,
+  refitPlan,
+  retrofitBlocker,
+  retrofitPlan,
+} from './systems/retrofit.ts'
 
 const P = () => CONTENT.projects
 const label = (q: number | null) =>
@@ -204,6 +224,26 @@ export function openProjectView(state: GameState) {
         }
       }),
     gpus: availableGpus(state.quarter, scenarioOf(state)).map((g) => g.id),
+    /**
+     * Act III (M16.2/M16.5): a new hall is mid tier unless built to top; the GPUs that fit each, and what the
+     * top-tier build adds. Null outside Act III.
+     */
+    act3: inActIII(state)
+      ? {
+          topOpen: topBuildOpen(state),
+          topFrom: BALANCE.act3.density.topNewBuildFrom,
+          topExtraUsdMw:
+            BALANCE.act3.density.topNewBuildRetrofitShare *
+            midToTopUsdMw(state),
+          topExtraQuarters: BALANCE.act3.density.topNewBuildExtraQuarters,
+          gpusMid: availableGpus(state.quarter, scenarioOf(state))
+            .map((g) => g.id)
+            .filter((g) => fits(g, 'mid')),
+          gpusTop: availableGpus(state.quarter, scenarioOf(state)).map(
+            (g) => g.id,
+          ),
+        }
+      : null,
     pilotFrom: pilot.from,
     pilotOpen: CONTENT.quarters[state.quarter] >= pilot.from,
     pilotSizes: sizes,
@@ -328,5 +368,127 @@ export function dealView(state: GameState, projectId: string) {
       p.stage === 'proposed' ? (buildBlocker(state, p.id) ?? null) : null,
     startBandwidth: BALANCE.projects.bandwidth.start,
     cancelBlocker: whyNot(state, { type: 'PROJECT_CANCEL', projectId: p.id }),
+  }
+}
+
+// ---------- A3-07: halls and rack density (Act III, M16.5) ----------
+
+/** The generations the fit matrix and the "fits" column name, oldest first. */
+const RACK_GENS = ['h100', 'h200', 'b200', 'rubin_nvl144', 'rubin_ultra']
+
+/** The fit matrix's rows (A3-07): H100/H200, Blackwell, Rubin, Rubin Ultra, with the tier each needs. */
+const MATRIX = [
+  { id: 'hopper', gens: ['h100', 'h200'] },
+  { id: 'blackwell', gens: ['b200'] },
+  { id: 'rubin', gens: ['rubin_nvl144'] },
+  { id: 'rubin_ultra', gens: ['rubin_ultra'] },
+] as const
+
+/** Quarter by quarter, what share of its income a hall keeps over `weeks` of work starting now. */
+function downtimeQuarters(state: GameState, weeks: number) {
+  const W = BALANCE.weeksPerQuarter
+  return Array.from({ length: Math.ceil(weeks / W) }, (_, k) => ({
+    quarter: CONTENT.quarters[state.quarter + k] ?? '—',
+    share: Math.min(1, Math.max(0, 1 - (weeks - W * k) / W)),
+  }))
+}
+
+/**
+ * The Act III "Halls and rack density" view (A3-07): one row per live, building or proposed hall with its
+ * tier, what fits, both retrofit options and (clouds and pilots) the GPU changes; the fit matrix. Null
+ * outside Act III.
+ */
+export function racksView(state: GameState) {
+  if (!inActIII(state)) return null
+  const G = CONTENT.act3Gpus
+  const label = CONTENT.quarters[state.quarter]
+  const onSale = availableGpus(state.quarter, scenarioOf(state)).map((g) => g.id)
+  const fitting = (tier: 'low' | 'mid' | 'top') =>
+    RACK_GENS.filter((g) => fits(g, tier))
+  const rows = state.projects
+    .filter((p) => !projectGone(p) && p.tier)
+    .map((p) => {
+      const tier = p.tier!
+      const site = state.sites.find((s) => s.id === p.siteId)!
+      const mw = p.kw / 1000
+      const plan = retrofitPlan(state, p)
+      const quarterIncomeUsd =
+        p.stage === 'live' ? (projectedReturn(state, p).revenueUsd ?? 0) / 4 : 0
+      const lowToMid = {
+        usdMw: G.lowToMid.retrofitUsdMw,
+        totalUsd: G.lowToMid.retrofitUsdMw * mw,
+        weeks: G.lowToMid.weeks,
+        open: tier === 'low',
+      }
+      const toTopUsdMw = midToTopUsdMw(state)
+      const midToTop = {
+        usdMw: toTopUsdMw,
+        totalUsd: toTopUsdMw * mw,
+        weeks: G.midToTopWeeks,
+        open: tier === 'mid',
+        needsMidFirst: tier === 'low',
+      }
+      const refits =
+        p.kind === 'shell'
+          ? null
+          : refitChoices(state, p).map((gpu) => ({
+              gpu,
+              plan: refitPlan(state, p, gpu)!,
+              blocker: refitBlocker(state, p.id, gpu) ?? null,
+            }))
+      return {
+        project: p,
+        site,
+        mw,
+        tier,
+        fits: fitting(tier),
+        retrofit: {
+          blocker: retrofitBlocker(state, p.id) ?? null,
+          to: plan?.to ?? null,
+          lowToMid,
+          midToTop,
+          /** The hall's income while the work runs: each quarter's share and dollars (the downtime rule). */
+          income: plan
+            ? downtimeQuarters(state, plan.weeks).map((x) => ({
+                ...x,
+                usd: x.share * quarterIncomeUsd,
+              }))
+            : [],
+          afterFits: plan ? fitting(plan.to) : [],
+          leased: p.kind === 'shell' && !!p.tenant,
+        },
+        refit: refits && {
+          choices: refits,
+          saleUsd: refits[0]?.plan.saleUsd ?? Math.round(gpuResidualUsd(p, state.quarter)),
+          /** Why no change can be made now (the first choice's reason, or none on sale that fits). */
+          blocker: refits.some((r) => !r.blocker)
+            ? null
+            : (refits[0]?.blocker ?? { key: 'error.no_refit_choice' as const }),
+        },
+        downtime: p.downtime
+          ? {
+              kind: p.downtime.kind,
+              until: CONTENT.quarters[downtimeDoneQuarter(p.downtime)] ?? '—',
+            }
+          : null,
+      }
+    })
+  return {
+    energizedMw:
+      state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0) / 1000,
+    rows,
+    tierRack: G.tierRackKw,
+    matrix: MATRIX.map((m) => ({
+      id: m.id,
+      needs: gpuTier(m.gens[0]),
+      /** Not on sale yet: the first quarter it is (Rubin Ultra: 2027Q3). */
+      from: m.gens.every((g) => !onSale.includes(g))
+        ? (gpuGeneration(m.gens[0])?.from ?? null)
+        : null,
+      fits: { low: fits(m.gens[0], 'low'), mid: fits(m.gens[0], 'mid'), top: fits(m.gens[0], 'top') },
+    })),
+    quarter: label,
+    cashUsd: state.cash,
+    bandwidth: { retrofit: BALANCE.act3.density.retrofitBw, refit: BALANCE.act3.density.refitBw },
   }
 }

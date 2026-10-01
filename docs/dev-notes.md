@@ -185,6 +185,8 @@ M16.0 sim (`--act2 --act3`, on the M16.0 commit): the M14.5 table is unchanged f
 
 **M16.4 done:** `systems/cardHalls.ts`: retrofit_hall (s0_c7, s3_c3, sh_4), sell_gpus_at (s0_c8), accelerate_project (s1_c2 6% capex, s2_c4 15% of power else shell build; mine: its power add keeps up), gpu_racks (s1_c8, s3_c7: a live mid Rubin pilot), new_hall_mw (s3_c5, s3_c8: proposed greenfield mid shell, its MW as a `card` power add, energized at once), distressed_campus (s1_c6: 60 MW site, category `distressed_campus`); each greyed with a reason (`hallCardBlocker`); sh_2's MW stay with step 6. **Golden:** act3-s3 only (s3_c8's only choice "Add an edge hall" now opens a 10 MW hall in 2030Q1; its idle MW pay the reservation, cash −$1.5M). 1095 tests.
 
+**M16.5 done:** A3-07 in Sites & Fleet (`screens/Act3Racks.tsx`, loaded with the Act III panels; `racksView` in `projectViews.ts`): "Halls and rack density" table (density badge with a 1-2-3 fill, fits, Retrofit… / Change GPUs… or the block reason, a running retrofit's done quarter), "What fits where" matrix, the retrofit panel (both options, income per affected quarter, what fits after, cash, tenant / earnings note, Start retrofit → RETROFIT) and the GPU change panel (REFIT_GPUS); open-project dialog: "Build to top tier" tick with its cost and quarter, the GPU list filtered by the hall's tier; Deal builder capex shows the top-tier part. Browser (dev, Growth on s0): retrofit started from the screen (cash −$1.5M, 1 BW). 1101 tests.
+
 ## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
 
 Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);

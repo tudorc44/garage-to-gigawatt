@@ -22,6 +22,9 @@ import { say } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { BwButton, NegotiationPanel } from './Projects.tsx'
 
+// A3-07 (M16.5) lives in its own file; exported here so it loads with the other Act III panels.
+export { RacksPanel } from './Act3Racks.tsx'
+
 const tenantName = (id: string) => tDynamic(`tenant.${id}`, id)
 const tenantType = (type: string) => tDynamic(`ui.tenant_type.${type}`, type)
 const short = (id: string) => tDynamic(`ui.act3.sig_short.${id}`, id)

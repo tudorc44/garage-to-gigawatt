@@ -1792,6 +1792,91 @@ td.wrap {
   gap: var(--space-2);
   margin-top: var(--space-2);
 }
+/* A3-07 racks and retrofit (M16.5) */
+.racks {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 8fr) minmax(0, 5fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+.racks tr.on td {
+  background: var(--panel-sunk);
+}
+.racks [data-halls] td {
+  white-space: normal;
+}
+.racks [data-halls] td.num,
+.racks [data-halls] td:nth-child(4) {
+  white-space: nowrap;
+}
+.racks-acts {
+  display: inline-flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+.racks [data-block] {
+  display: inline-block;
+  max-width: 170px;
+  white-space: normal;
+  text-align: right;
+}
+.den {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-1);
+  padding: 1px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.den i {
+  display: inline-flex;
+  gap: 1.5px;
+}
+.den i b {
+  display: block;
+  width: 4px;
+  height: 10px;
+  background: var(--ink);
+}
+.den i b.o {
+  background: var(--panel);
+  border: 1px solid var(--ink);
+  box-sizing: border-box;
+}
+.fit-matrix td.needs {
+  font-weight: 700;
+}
+.fit-matrix td[data-fit='no'] {
+  color: var(--ink-muted);
+}
+.racks-panel .opts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+.racks-panel .opt {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-1);
+}
+.racks-panel .opt.on {
+  border: 2px solid var(--accent);
+}
+.racks-panel .kv {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border-bottom: 1px dashed var(--line-soft);
+  padding: 4px 0;
+}
 .reveal-reads {
   margin: var(--space-1) 0 0;
   padding-left: var(--space-4);

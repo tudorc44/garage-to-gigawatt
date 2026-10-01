@@ -341,6 +341,15 @@ function OpenProjectDialog(
   const site = v.sites.find((x) => x.site.id === siteId)
   const [kw, setKw] = useState(Math.floor(site?.freeKw ?? 0))
   const [power, setPower] = useState<'existing' | PowerSource>('existing')
+  // Act III (M16.5): "Build to top tier", and only the GPUs that fit the hall's tier.
+  const [top, setTop] = useState(false)
+  const topTier = !!v.act3 && top && kind !== 'pilot'
+  const gpus: string[] = v.act3
+    ? topTier
+      ? v.act3.gpusTop
+      : v.act3.gpusMid
+    : v.gpus
+  const gpuNow = gpus.includes(gpu) ? gpu : (gpus[0] ?? gpu)
   const size =
     kind === 'pilot' ? (v.pilotSizes.includes(kw) ? kw : v.pilotSizes[0]) : kw
   const action: Action = {
@@ -348,8 +357,9 @@ function OpenProjectDialog(
     siteId,
     kw: size,
     kind,
-    ...(kind === 'cloud' ? { gpu } : {}),
+    ...(kind === 'cloud' ? { gpu: gpuNow } : {}),
     ...(power !== 'existing' ? { power } : {}),
+    ...(topTier ? { topTier: true } : {}),
   }
   const powerNote =
     !site || power === 'existing'
@@ -442,14 +452,40 @@ function OpenProjectDialog(
       <p class="num-s muted" style={{ margin: 0 }}>
         {powerNote}
       </p>
+      {v.act3 && kind !== 'pilot' && (
+        <>
+          <label class="form-row">
+            <input
+              type="checkbox"
+              checked={topTier}
+              disabled={!v.act3.topOpen}
+              onChange={(e) =>
+                setTop((e.target as HTMLInputElement).checked)
+              }
+              data-top-tier
+            />
+            {t('ui.projects.top_tier')}
+          </label>
+          <p class="num-s muted" style={{ margin: 0 }}>
+            {v.act3.topOpen
+              ? t('ui.projects.top_tier_note', {
+                  usdMw: fmt.money(v.act3.topExtraUsdMw),
+                  total: fmt.money((v.act3.topExtraUsdMw * size) / 1000),
+                })
+              : t('ui.projects.top_tier_closed', {
+                  quarter: fmt.quarter(v.act3.topFrom),
+                })}
+          </p>
+        </>
+      )}
       {kind === 'cloud' && (
         <label class="form-row">
           {t('ui.projects.gpu')}
           <select
-            value={gpu}
+            value={gpuNow}
             onChange={(e) => setGpu((e.target as HTMLSelectElement).value)}
           >
-            {v.gpus.map((g) => (
+            {gpus.map((g) => (
               <option key={g} value={g}>
                 {gpuName(g)}
               </option>
@@ -1023,6 +1059,8 @@ function DealBuilder(
                   })}
                 {v.cost.creditUsd > 0 &&
                   t('ui.deal.credit', { value: fmt.money(v.cost.creditUsd) })}
+                {v.cost.densityUsd > 0 &&
+                  ` ${t('ui.deal.top_tier', { value: fmt.money(v.cost.densityUsd) })}`}
               </td>
             </tr>
             <tr>
