@@ -109,6 +109,13 @@ describe('the delivered cards', () => {
     }
   })
 
+  it('D15 (M16.0, DT answer 4): no trigger or decoy card carries d15_review (a flagged card would not fire)', () => {
+    const flagged = (file as { role: string; d15_review?: boolean }[]).filter(
+      (c) => (c.role === 'trigger' || c.role === 'decoy') && c.d15_review,
+    )
+    expect(flagged).toEqual([])
+  })
+
   it('every card’s title, body and choices are in en.json, word for word', () => {
     const t = en as Record<string, string>
     for (const c of file) {

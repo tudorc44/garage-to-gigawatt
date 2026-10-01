@@ -4,7 +4,10 @@
 //   reveal: no scenario name, no trigger title, no decoy reason, and not the words "decoy" or "false alarm".
 //   (The fixture has no played history: a trigger is also an event card the player sees when it fires, by
 //   design, and the Log then lists it; the guard is about the reveal's text, not about that card.)
-// - An event card flagged for the D15 review shows "Withheld pending review" in play, not its text.
+// - M16.0 (DT answer 1): the same with real played history to 2028Q2 (the trigger card may show under its
+//   title; nothing else of the reveal may).
+// - An event card flagged for the D15 review doesn't fire (M16.0, DT answer 4); if one ever showed, its text
+//   would be withheld.
 import { cleanup, render, waitFor } from '@testing-library/preact'
 import { afterEach, describe, expect, it } from 'vitest'
 import {
@@ -17,7 +20,10 @@ import { signalsHidden } from '../../src/content/signalsHidden.ts'
 import en from '../../src/i18n/en.json' with { type: 'json' }
 import { applyAction } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
-import type { GameState } from '../../src/sim/state.ts'
+import { applyStep } from '../../src/sim/replay.ts'
+import { toAct3, type GameState } from '../../src/sim/state.ts'
+import { quickStartCompany } from '../../src/ui/act3QuickStart.ts'
+import { BOTS } from '../../tools/bots.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { LiveScreen } from '../../src/ui/screens/Live.tsx'
 import { PlanScreen } from '../../src/ui/screens/Plan.tsx'
@@ -122,8 +128,90 @@ describe('the leak guard: Act III play screens at 2028Q2 show nothing of the rev
   }, 60_000)
 })
 
+/** A Growth quick-start company on `id`, played by its bot to the Plan phase of 2028Q2 (real history). */
+async function playedTo2028Q2(id: ScenarioId): Promise<GameState> {
+  let s = toAct3(await quickStartCompany('growth'), { scenario: id, forced: true })
+  const bot = BOTS['sign-then-raise']
+  const stop = CONTENT.quarters.indexOf('2028Q2')
+  while (!(s.quarter === stop && s.phase === 'plan') && s.phase !== 'gameover') {
+    if (s.phase === 'plan') {
+      for (const a of bot.plan(s)) s = applyStep(s, a)
+      s = applyStep(s, { type: 'END_PLAN' })
+    } else if (s.phase === 'live')
+      s = applyStep(
+        s,
+        s.interrupt
+          ? { type: 'RESOLVE_INTERRUPT', choice: bot.answer?.(s) ?? defaultChoice(s) }
+          : { type: 'ADVANCE' },
+      )
+    else s = applyStep(s, { type: 'NEXT_QUARTER' })
+  }
+  return s
+}
+
+/**
+ * M16.0 (DT answer 1): with played history, the trigger card (an event the player sees when it fires) may
+ * show in the Log under its title; nothing else of the reveal may: no scenario name, no narrative, no decoy
+ * reason or tell, not the words "decoy" or "false alarm".
+ */
+const FORBIDDEN_PLAYED = SCENARIO_IDS.flatMap((id) => {
+  const h = signalsHidden(id)
+  return [
+    h.scenario_name,
+    h.decoy.reason,
+    h.decoy.tell,
+    text[`act3.reveal.${id}.trigger`],
+  ]
+})
+
+describe('the leak guard with played history (M16.0, DT answer 1)', () => {
+  it.each(SCENARIO_IDS)('%s: played to 2028Q2, the Plan and every section show no reveal text', async (id) => {
+    const s = await playedTo2028Q2(id)
+    expect(s.phase).toBe('plan')
+    const check = (where: string, body: string) => {
+      for (const bad of FORBIDDEN_PLAYED)
+        expect(body, `${id} ${where}: ${bad.slice(0, 40)}`).not.toContain(bad)
+      expect(body, `${id} ${where}: "decoy"`).not.toMatch(/decoy/i)
+      expect(body, `${id} ${where}: "false alarm"`).not.toMatch(/false alarm/i)
+    }
+    const plan = render(<PlanScreen state={s} act={act} />)
+    await waitFor(() =>
+      expect(plan.container.textContent).toContain(text['ui.act3.top.due']),
+    )
+    check('plan', plan.container.textContent ?? '')
+    plan.unmount()
+    for (const section of SECTIONS) {
+      const v = render(<SectionView state={s} act={act} section={section} />)
+      check(section, v.container.textContent ?? '')
+      v.unmount()
+    }
+  }, 120_000)
+})
+
 describe('the D15 guard', () => {
-  it('an event card flagged for the D15 review (and not cleared) shows "Withheld pending review" in play', () => {
+  it('a card flagged for the D15 review (and not cleared) does not fire (M16.0, DT answer 4)', () => {
+    const id = act3CardEngineId('s1_c3')
+    const card = CONTENT.events.byId[id] as {
+      withheld?: boolean
+      quarterIndex?: number
+    }
+    const queued = (flag: boolean) => {
+      if (flag) card.withheld = true
+      try {
+        const s = act3ScenarioCompany('s1', 1)
+        s.quarter = card.quarterIndex!
+        const r = applyAction(s, { type: 'END_PLAN' })
+        if (!r.ok) throw new Error(r.error.key)
+        return r.state.events.queue.map((e) => e.id)
+      } finally {
+        delete card.withheld
+      }
+    }
+    expect(queued(false)).toContain(id)
+    expect(queued(true)).not.toContain(id)
+  })
+
+  it('an event card flagged for the D15 review (and not cleared) shows "Withheld pending review" in play (kept as a safety net)', () => {
     const id = act3CardEngineId('s1_c3')
     const card = CONTENT.events.byId[id] as { withheld?: boolean }
     expect(card.withheld).toBeUndefined() // nothing is flagged today

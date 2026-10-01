@@ -35,6 +35,9 @@ export const ACT3_MOVE_KINDS: readonly Act3MoveKind[] = [
   'retrofit',
   'power_lock',
   'hedge',
+  'project_delay',
+  'project_accelerate',
+  'cash_reserve',
 ]
 
 /** +1 offensive, −1 defensive. */
@@ -56,6 +59,10 @@ export const MOVE_SIGN: Record<Act3MoveKind, 1 | -1> = {
   retrofit: 1,
   power_lock: 1,
   hedge: -1,
+  // M16.0 (DT): slipping a build defends, speeding one up builds; a revolver drawn as insurance defends.
+  project_delay: -1,
+  project_accelerate: 1,
+  cash_reserve: -1,
 }
 
 /** A GPU contract this long or longer is a big move (DT: 2 years). */
@@ -90,6 +97,9 @@ function cardEffectKind(
       return 'project_commit'
     case 'retrofit':
       return 'retrofit'
+    case 'delay_quarters':
+      // M16.0: a positive delay slips a build, a negative one speeds it up.
+      return n > 0 ? 'project_delay' : n < 0 ? 'project_accelerate' : null
     case 'power_option':
       // A nuclear or fixed PPA signed: locking power long.
       return /ppa/i.test(String(value)) ? 'power_lock' : null
@@ -112,7 +122,10 @@ function cardEffectKind(
 export function cardChoiceMove(
   effect: Record<string, unknown>,
   distressed = false,
+  cashReserve = false,
 ): Act3MoveKind | null {
+  // M16.0 (DT): debt drawn only to hold the same cash (a revolver "as insurance") defends.
+  if (cashReserve) return 'cash_reserve'
   const kinds = Object.entries(effect).map(([k, v]) =>
     cardEffectKind(k, v, distressed),
   )
@@ -199,10 +212,18 @@ export function moveOf(
       const card = getCard(active.event ?? '')
       if (card?.act !== 3) return null
       const choice = card.choices.find((c) => c.id === a.choice) as
-        | { act3Effect?: Record<string, unknown>; act3Distressed?: boolean }
+        | {
+            act3Effect?: Record<string, unknown>
+            act3Distressed?: boolean
+            act3CashReserve?: boolean
+          }
         | undefined
       return choice?.act3Effect
-        ? cardChoiceMove(choice.act3Effect, !!choice.act3Distressed)
+        ? cardChoiceMove(
+            choice.act3Effect,
+            !!choice.act3Distressed,
+            !!choice.act3CashReserve,
+          )
         : null
     }
     default:

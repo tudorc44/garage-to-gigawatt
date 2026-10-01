@@ -308,6 +308,8 @@ export function scheduleEvents(state: GameState): void {
       card.scenario !== state.scenarioId
     )
       continue
+    // D15 (M16.0, DT answer 4): a card flagged for the editorial review and not cleared doesn't fire.
+    if ((card as { withheld?: boolean }).withheld) continue
     if (!holds(state, card.requires, card)) continue
     schedule(state, card, card.weekIndex! + 1, false)
   }

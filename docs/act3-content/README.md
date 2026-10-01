@@ -17,6 +17,14 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M16.0, 1 Oct 2026 (the GPU-rent seam; design thread, M16 spec)
+
+- **`market_s2.csv` › `gpu_h200_hyperscaler_usd_hr` / `gpu_h200_neocloud_usd_hr` / `gpu_gb200nvl72_blended_usd_hr`:** 2027Q1
+  set to s0's values, 7.53 / 4.16 / 16.49 (it was 7.98 / 4.41 / 17.0: 3.1–5.9% above the other scenarios, so the opening
+  quarter gave s2 away); 2027Q2 set to 7.65 / 4.23 / 16.75 (it was 7.90 / 4.37 / 17.33). 2027Q3 onward unchanged. The weekly
+  file doesn't carry these columns. `market_provenance.json` notes it; the src/content copies (CSV and JSON) match. The
+  3% opening-quarter seam test now passes with no pinned failures.
+
 ### M15.1, 1 Oct 2026 (the new-lease index seam; design thread, answer D1)
 
 - **`market_s0–s3.csv` › `rfp_new_lease_index_low` / `_high`:** 2027Q1 set to 0.88 / 1.04 in all four scenarios (it was s0

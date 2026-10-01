@@ -337,6 +337,32 @@ function HowScored({ end, endQ }: { end: Act3End; endQ: number }) {
           <p class="num-s muted" style={{ margin: 0 }}>
             {t('act3.reveal.how_legend')}
           </p>
+          {/* M16.0 (DT answers 2 and 6): the description and the signal reads live in the disclosure. */}
+          <p class="num-s muted" style={{ margin: 0 }} data-description>
+            {t('act3.reveal.description')}
+          </p>
+          <div data-reads>
+            <span class="label">{t('act3.reveal.reads_title')}</span>
+            {end.signalReads.length === 0 ? (
+              <p class="num-s muted" style={{ margin: 0 }}>
+                {t('act3.reveal.reads_none')}
+              </p>
+            ) : (
+              <ul class="reveal-reads">
+                {end.signalReads.map((r, i) => (
+                  <li key={i} class="num-s" data-read-row>
+                    {t('act3.reveal.read_row', {
+                      quarter: fmt.quarter(r.quarter),
+                      indicator:
+                        CONTENT.signals[end.scenarioId].find(
+                          (x) => x.id === r.indicator,
+                        )?.label ?? r.indicator,
+                    })}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -389,7 +415,6 @@ function ReadingScore({ end, endQ }: { end: Act3End; endQ: number }) {
           “{tDynamic(`act3.reveal.wording.${wording}`, '')}”
         </p>
       )}
-      <span class="num-s muted">{t('act3.reveal.description')}</span>
       <HowScored end={end} endQ={endQ} />
     </section>
   )
@@ -424,10 +449,10 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
             </div>
             <div class="reveal-title">
               <span class="label">{t('act3.reveal.your_title')}</span>
-              <span class="screen-title">
+              <span class="screen-title" data-reading-title>
                 {e.readingTitleId
                   ? tDynamic(`act3.reveal.title.${e.readingTitleId}`, '')
-                  : t('act3.reveal.reading_none')}
+                  : t('act3.reveal.title_none')}
               </span>
             </div>
           </div>

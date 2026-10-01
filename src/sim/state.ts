@@ -369,6 +369,10 @@ export type Act3MoveKind =
   | 'retrofit'
   | 'power_lock'
   | 'hedge'
+  // M16.0 (DT): a card that slips or speeds up a build; a revolver drawn only to hold the cash
+  | 'project_delay'
+  | 'project_accelerate'
+  | 'cash_reserve'
 
 /**
  * An Act III blend-and-extend offer (M12.4, DT): a shell tenant with more than 8 quarters left offers to

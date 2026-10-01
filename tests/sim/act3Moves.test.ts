@@ -55,11 +55,19 @@ function logged(
 }
 
 describe('the kinds and their signs', () => {
-  it('11 offensive (+1) and 5 defensive (−1) (M15.0 added asic_buy, retrofit, power_lock, hedge)', () => {
-    expect(ACT3_MOVE_KINDS).toHaveLength(16)
-    expect(ACT3_MOVE_KINDS.filter((k) => MOVE_SIGN[k] === 1)).toHaveLength(11)
+  it('12 offensive (+1) and 7 defensive (−1) (M15.0 added asic_buy, retrofit, power_lock, hedge; M16.0 project_delay, project_accelerate, cash_reserve)', () => {
+    expect(ACT3_MOVE_KINDS).toHaveLength(19)
+    expect(ACT3_MOVE_KINDS.filter((k) => MOVE_SIGN[k] === 1)).toHaveLength(12)
     expect(ACT3_MOVE_KINDS.filter((k) => MOVE_SIGN[k] === -1).sort()).toEqual(
-      ['card_shorten', 'debt_repay', 'equity_raise', 'hedge', 'sale_voluntary'],
+      [
+        'card_shorten',
+        'cash_reserve',
+        'debt_repay',
+        'equity_raise',
+        'hedge',
+        'project_delay',
+        'sale_voluntary',
+      ],
     )
   })
 })
@@ -242,6 +250,12 @@ describe('one entry per big move (action in → entry out)', () => {
       ['s1_c3', 'c3', 'debt_repay'], // buy the debt at a discount
       ['s2_c7', 'c1', null], // rent_index only: no sign
       ['s0_c5', 'c1', null], // idling: neutral
+      // M16.0 (DT): slipping a build, speeding one up, and a revolver drawn only to hold the cash
+      ['s0_c1', 'c2', 'project_delay'], // "Trim one uncommitted project": delay_quarters 1, cash +300k
+      ['s2_c2', 'c1', 'project_delay'], // "Delay a marginal project": delay_quarters 1
+      ['s1_c2', 'c1', 'project_accelerate'], // "Pre-order Rubin": delay_quarters −1
+      ['s0_c2', 'c3', 'cash_reserve'], // "Draw down the revolver as insurance": cash +10M, debt 10M
+      ['s0_c4', 'c1', 'debt_draw'], // debt 20M with a spread cut: still a debt draw
     ]
     for (const [card, choice, kind] of cases) {
       const s = act3(shellEnd)

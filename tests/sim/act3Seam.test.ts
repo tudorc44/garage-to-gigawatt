@@ -1,8 +1,7 @@
 // M15.1: the opening quarter mustn't give the scenario away. Every market column the UI shows live in Act III
 // (the new-lease index midpoint, GPU rents, the mid→top retrofit cost, the nuclear PPA price where present)
-// must, at 2027Q1, differ across the four scenarios by at most 3% of its mean ((max − min) / mean). The
-// columns that fail are reported, not fixed (the design thread's answer D1): the list is pinned here and goes
-// to the step-7 checklist, so a new failure (or a fix) shows up as a test change.
+// must, at 2027Q1, differ across the four scenarios by at most 3% of its mean ((max − min) / mean). M15 pinned
+// three failing columns (all s2 high); M16.0 set s2's values to s0's, so none fail now.
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
@@ -57,16 +56,11 @@ describe('the 2027Q1 seam across scenarios (M15.1)', () => {
     expect(spread(mid)).toBe(0)
   })
 
-  it('every live column is within 3%, except the pinned list for step 7', () => {
+  it('every live column is within 3% (M16.0 fixed s2’s H200 rents and GB200 NVL72 blend: no pinned failures)', () => {
     const failing = COLUMNS.filter((c) => {
       const s = spread(rows.map((r) => r[c]))
       return s !== null && s > 0.03
     })
-    // Reported to step 7 (not fixed in M15): H200 rents 5.9% and the GB200 NVL72 blend 3.1%, all s2 high.
-    expect(failing).toEqual([
-      'gpu_h200_hyperscaler_usd_hr',
-      'gpu_h200_neocloud_usd_hr',
-      'gpu_gb200nvl72_blended_usd_hr',
-    ])
+    expect(failing).toEqual([])
   })
 })

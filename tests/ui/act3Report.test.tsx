@@ -86,10 +86,46 @@ describe('the s1 golden record', () => {
     s.act3End = buildAct3End(s)
     const { container } = show(s)
     expect(container.querySelector('[data-how-scored]')).toBeNull()
+    // M16.0 (DT answer 6): the description is inside the disclosure, not under the bands.
+    expect(container.textContent).not.toContain(text['act3.reveal.description'])
     fireEvent.click(screen.getByRole('button', { name: /How this was scored/ }))
     const how = container.querySelector('[data-how-scored]')!
     expect(how).not.toBeNull()
     expect(how.querySelectorAll('.reveal-cell')).toHaveLength(16)
+    expect(how.querySelector('[data-description]')!.textContent).toBe(
+      text['act3.reveal.description'],
+    )
+  })
+
+  it('the signal reads are listed inside "How this was scored" (M16.0, DT answer 2)', () => {
+    const s = golden()
+    s.act3SignalReads = [
+      { quarter: '2027Q2', indicator: 'lender_spreads' },
+      { quarter: '2028Q1', indicator: 'chip_lead_times' },
+    ]
+    s.act3End = buildAct3End(s)
+    const { container } = show(s)
+    expect(container.querySelector('[data-reads]')).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: /How this was scored/ }))
+    const reads = container.querySelector('[data-reads]')!
+    expect(reads.textContent).toContain(text['act3.reveal.reads_title'])
+    const rows = [...reads.querySelectorAll('[data-read-row]')].map((r) => r.textContent)
+    const label = (id: string) =>
+      CONTENT.signals.s1.find((x) => x.id === id)!.label
+    expect(rows).toHaveLength(2)
+    expect(rows[0]).toContain(label('lender_spreads'))
+    expect(rows[1]).toContain(label('chip_lead_times'))
+  })
+
+  it('no reads: "You read no signals."', () => {
+    const s = golden()
+    s.act3SignalReads = []
+    s.act3End = buildAct3End(s)
+    const { container } = show(s)
+    fireEvent.click(screen.getByRole('button', { name: /How this was scored/ }))
+    expect(container.querySelector('[data-reads]')!.textContent).toContain(
+      text['act3.reveal.reads_none'],
+    )
   })
 
   it('Continue fires its action', () => {
@@ -149,13 +185,16 @@ describe('the variants', () => {
     )
   })
 
-  it('a null score (s2 out at 2027Q2): "—" and the not-enough line, no band filled', () => {
+  it('a null score (s2 out at 2027Q2): "—" and the not-enough line, no band filled; the headline says so (M16.0, DT answer 5)', () => {
     const s = variant({ scenario: 's2', outQ: 1, moves: [] })
     expect(s.act3End!.reading.score).toBeNull()
     const { container } = show(s)
     expect(container.querySelector('[data-score]')!.textContent).toBe('—')
     expect(container.textContent).toContain(text['act3.reveal.not_enough'])
     expect(container.querySelectorAll('[data-on="true"]')).toHaveLength(0)
+    expect(container.querySelector('[data-reading-title]')!.textContent).toBe(
+      'Not enough quarters played',
+    )
   })
 
   it('no moves: the axis, trigger and decoy only, and "You made no big moves."', () => {

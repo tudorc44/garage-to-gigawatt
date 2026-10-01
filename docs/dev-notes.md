@@ -166,6 +166,16 @@ after the M15 report; the data notes are in the M15 section), the owner's stagin
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by
 the real scenario files in M11.3.
 
+## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
+
+Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /
+cash_reserve, the s2 GPU-rent seam data, the chapter-report answers 2/5/6, D15 cards don't fire, the leak-guard addition);
+M16.1 content and generations (gpus_act3.json copied, Rubin and Rubin Ultra buyable in Act III, `BALANCE.act3.density`); M16.2
+hall tiers (state, entry, new halls, fit rule, shell rent by tier); M16.3 RETROFIT and REFIT_GPUS with the downtime rule; M16.4 the
+step-5 card effects; M16.5 the A3-07 screen; M16.6 tests and the sim proof (payback table, retrofitter row).
+
+**M16.0 done:** kinds `project_delay` (−1), `project_accelerate` (+1), `cash_reserve` (−1, a card choice of only debt + the same cash: s0_c2's revolver); s2 2027Q1/Q2 H200 and GB200 rents set (the seam test passes, no pins); chapter report: reads list and description inside "How this was scored", "Not enough quarters played" headline; a D15-flagged card doesn't fire (the withheld display stays as a safety net); leak guard with played history to 2028Q2 (mine: the trigger card's title may show, nothing else). Goldens unchanged. 1049 tests.
+
 ## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
 
 Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);

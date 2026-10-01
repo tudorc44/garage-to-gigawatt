@@ -193,7 +193,21 @@ const MOVE_EFFECT_KEYS = [
   'mw',
   'retrofit',
   'power_option',
+  'delay_quarters',
 ]
+
+/**
+ * M16.0 (DT): a choice whose only effects are debt drawn and the same amount of cash (s0_c2 "Draw down the
+ * revolver as insurance") holds cash in reserve: it counts as a defensive move, not a debt draw.
+ */
+function cashReserve(effect: Record<string, unknown>): boolean {
+  const keys = Object.keys(effect).sort().join()
+  return (
+    keys === 'cash,debt' &&
+    Number(effect.cash) > 0 &&
+    Number(effect.cash) === Number(effect.debt)
+  )
+}
 
 /** The distressed purchases for the move log (M14.2: s1_c6 "Bid with cash" for a distressed 60 MW site). */
 const DISTRESSED_BUY = ['s1_c6.c1']
@@ -420,6 +434,7 @@ export function toEngineCard(
     ...(DISTRESSED_BUY.includes(`${c.id}.c${i + 1}`)
       ? { act3Distressed: true }
       : {}),
+    ...(cashReserve(ch.effect) ? { act3CashReserve: true } : {}),
   }))
   const def = c.choices.findIndex((ch) => ch.label === c.default)
   return {
