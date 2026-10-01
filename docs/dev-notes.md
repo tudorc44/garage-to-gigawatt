@@ -185,6 +185,9 @@ undrawn part revolves (repaid draws free it again; mine); each draw's rate SOFR 
 **M18.3 done:** `npm run sim -- --act3-presets` (tools/act3Presets.ts): Good shell-capital s9 $412.6M (A7 checked in M18.5), Great asic-retirer s48
 $2.70B (none in $4.5–5.0B: closest, reported), Lifeline lifeline-shell s19 $155.7M; `presets_act3.json` rewritten (both copies, real figures,
 loaded as `CONTENT.act3Presets`); summaries fitted to the facts (no GPUs anywhere); `act3Seed` salt on act3_* streams. Goldens unchanged. 1200 tests.
+**M18.4 done:** A3-12 (test builds only, in `Act3Preview.tsx`): "Start at Act III (2027)" with the three preset cards → "Start in 2027 →"; Scenario Mode
+on the title menu, locked until an Act III chapter report is reached (`settings.act3Finished`), unlocked: a preset + 4 named scenarios →
+`state.scenarioMode` (top-bar tag, "scenario known" on the reading score). Browser-checked; stale "(Not in this test build yet.)" removed (mine). 1206 tests.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

@@ -369,7 +369,16 @@ function HowScored({ end, endQ }: { end: Act3End; endQ: number }) {
   )
 }
 
-function ReadingScore({ end, endQ }: { end: Act3End; endQ: number }) {
+function ReadingScore({
+  end,
+  endQ,
+  known,
+}: {
+  end: Act3End
+  endQ: number
+  /** M18.4: a Scenario Mode run: the score is labelled "scenario known". */
+  known?: boolean
+}) {
   const r = end.reading
   const wording =
     r.score === null
@@ -381,7 +390,10 @@ function ReadingScore({ end, endQ }: { end: Act3End; endQ: number }) {
           : 'low'
   return (
     <section class="panel p reveal-score">
-      <span class="label">{t('act3.reveal.reading')}</span>
+      <span class="label">
+        {t('act3.reveal.reading')}
+        {known && <span data-scenario-known> · {t('ui.scenario_mode.known')}</span>}
+      </span>
       <div>
         <span class="num-xl" data-score>
           {r.score === null ? t('act3.reveal.reading_none') : r.score}
@@ -494,7 +506,7 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
 
           {/* 5. the reading score, and 6. the stats */}
           <div class="reveal-two">
-            <ReadingScore end={e} endQ={o.endQ} />
+            <ReadingScore end={e} endQ={o.endQ} known={!!props.state.scenarioMode} />
             <section class="panel p reveal-stats">
               <span class="label">{t('ui.act3.reveal.net_worth')}</span>
               <span class="num-xl">{fmt.money(o.netWorthUsd)}</span>

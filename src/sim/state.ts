@@ -733,6 +733,11 @@ export interface GameState {
   /** M13.1: a tester forced the scenario (test builds only); the top bar says so. Absent otherwise. */
   scenarioForced?: true
   /**
+   * M18.4: a Scenario Mode run (A3-12): the player chose the scenario openly. The top bar tags it, and the chapter
+   * report labels the reading score "scenario known". Absent otherwise.
+   */
+  scenarioMode?: true
+  /**
    * Act III (M11.2): the log of Read the market (Signals) reads, one indicator per quarter at most.
    * Absent in the prologue, Act I and Act II; toAct3() starts it empty.
    */
@@ -1090,13 +1095,20 @@ export function drawScenario(seed: number): ScenarioId {
 export function toAct3(
   state: GameState,
   /** `forced`: a tester chose the scenario (a test build's ?scenario); marked on the state for the top bar. */
-  options: { scenario?: ScenarioId; forced?: boolean; act3Seed?: number } = {},
+  options: {
+    scenario?: ScenarioId
+    forced?: boolean
+    act3Seed?: number
+    /** M18.4: Scenario Mode: the player's chosen scenario, played openly. */
+    scenarioMode?: boolean
+  } = {},
 ): GameState {
   // (M18.3: a harness may salt Act III's own randomness; set before the entry draws the wildcards)
   const base =
     options.act3Seed === undefined ? state : { ...state, act3Seed: options.act3Seed }
   const s = enterAct3(base, options.scenario ?? drawScenario(act3SeedOf(base)))
   if (options.forced && options.scenario) s.scenarioForced = true
+  if (options.scenarioMode && options.scenario) s.scenarioMode = true
   return s
 }
 

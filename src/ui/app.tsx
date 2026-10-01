@@ -6,7 +6,11 @@ import { t, type Message } from '../i18n/t.ts'
 import { applyAction, type Action } from '../sim/actions.ts'
 import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
-import { bandwidthMax, quarterName } from '../sim/selectors.ts'
+import {
+  act3Finished,
+  bandwidthMax,
+  quarterName,
+} from '../sim/selectors.ts'
 import {
   inActII,
   inActIII,
@@ -33,7 +37,8 @@ import { readSlot, writeSlot } from '../platform/saves.ts'
 import { SaveContext, type SaveApi } from './components/saves.tsx'
 import { NavContext } from './components/frame.tsx'
 import type { Section } from './screens/Sections.tsx'
-import { readSettings } from '../platform/settings.ts'
+import { readSettings, writeSettings } from '../platform/settings.ts'
+import type { ScenarioId } from '../content/index.ts'
 import { play, setSfxSettings } from './audio/sfx.ts'
 import { soundsFor } from './audio/director.ts'
 
@@ -129,6 +134,9 @@ export function App() {
     // (The prologue's intro is act 0's: not this slot.)
     if (s?.phase === 'intro' && inActII(s) && before?.phase !== 'intro')
       writeSlot('act2', s)
+    // M18.4 (DT): reaching an Act III chapter report (survived or out) unlocks Scenario Mode on this device.
+    if (s && act3Finished(s) && !readSettings().act3Finished)
+      writeSettings({ ...readSettings(), act3Finished: true })
   }
   const saves: SaveApi = {
     current: () => ref.current,
@@ -205,12 +213,20 @@ export function App() {
    * Test builds: an end-of-Act II company enters Act III (the drawn scenario, or the tester's
    * ?scenario), and the Act III intro shows first.
    */
-  const enterAct3 = (end: GameState) => {
+  const enterAct3 = (end: GameState, scenarioMode?: ScenarioId) => {
     if (!ACT3_PREVIEW) return
     const forced = forcedScenario(window.location.search)
     setShowEnd(false)
     commit(
-      toAct3(end, forced ? { scenario: forced, forced: true } : undefined),
+      toAct3(
+        end,
+        // M18.4: Scenario Mode plays the chosen scenario openly; else a tester's ?scenario, else the draw.
+        scenarioMode
+          ? { scenario: scenarioMode, scenarioMode: true }
+          : forced
+            ? { scenario: forced, forced: true }
+            : undefined,
+      ),
     )
     setAct3Intro(true)
   }
@@ -253,7 +269,16 @@ export function App() {
           act2: readSlot('act2'),
         }}
         onLoad={saves.load}
-        preview={preview && <preview.QuickStart onReady={enterAct3} />}
+        preview={preview && <preview.QuickStart onReady={(end) => enterAct3(end)} />}
+        act3Start={preview && <preview.StartAct3 onReady={(end) => enterAct3(end)} />}
+        scenarioMode={
+          preview && (
+            <preview.ScenarioMode
+              unlocked={readSettings().act3Finished}
+              onReady={(end, scenario) => enterAct3(end, scenario)}
+            />
+          )
+        }
       />
     )
   } else if (game.act === 0) {

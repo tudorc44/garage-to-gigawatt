@@ -1436,6 +1436,32 @@ td.wrap {
   flex-direction: column;
   gap: var(--space-2);
 }
+/* A3-12 (M18.4): the three preset cards and Scenario Mode's scenario options; the picked one has a heavy border. */
+.start-cards.three {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.preset-card,
+.scenario-opt {
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  gap: var(--space-1);
+}
+.scenario-opt {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-2);
+  padding: var(--space-2) var(--space-3);
+}
+.preset-card.on,
+.scenario-opt.on {
+  border: 2px solid var(--ink);
+}
+.preset-card .kv {
+  display: flex;
+  justify-content: space-between;
+}
 
 /* The prologue's Plan screen (P0-03): three columns. */
 .p0-plan {

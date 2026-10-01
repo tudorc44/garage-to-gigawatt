@@ -172,6 +172,12 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           <span class="tag">{t('ui.act3.forced_tag')}</span>
         </div>
       )}
+      {s.scenarioMode && (
+        // M18.4: a Scenario Mode run (A3-12)
+        <div class="stat" data-scenario-mode-tag>
+          <span class="tag">{t('ui.scenario_mode.tag')}</span>
+        </div>
+      )}
       <SettingsButton />
       {props.paused && (
         <div class="stat">

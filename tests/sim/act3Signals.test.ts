@@ -307,8 +307,9 @@ describe('the hidden signals fields never reach src/', () => {
         const text = code(file)
         const calls = text.match(/\btoAct3\(/g) ?? []
         expect(calls).toHaveLength(1)
+        // (M18.4: it also takes Scenario Mode's chosen scenario)
         expect(text).toMatch(
-          /const enterAct3 = \(end: GameState\) => \{\s*if \(!ACT3_PREVIEW\) return[^}]*?\btoAct3\(/,
+          /const enterAct3 = \(end: GameState(, scenarioMode\?: ScenarioId)?\) => \{\s*if \(!ACT3_PREVIEW\) return[^}]*?\btoAct3\(/,
         )
         continue
       }

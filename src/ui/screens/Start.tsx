@@ -37,9 +37,14 @@ export function TitleScreen(props: {
   onLoad: (state: GameState) => void
   /** Test builds only (M13): the Act III preview's quick start, under the other starts. */
   preview?: ComponentChildren
+  /** Test builds only (M18.4, A3-12): "Start at Act III (2027)" with the preset cards, beside the other starts. */
+  act3Start?: ComponentChildren
+  /** Test builds only (M18.4, A3-12): Scenario Mode (locked or unlocked), opened from the title menu. */
+  scenarioMode?: ComponentChildren
 }) {
   const [seed, setSeed] = useState('')
   const [open, setOpen] = useState(false)
+  const [scenarioOpen, setScenarioOpen] = useState(false)
   const [importing, setImporting] = useState(false)
   const { autosave, manual } = props.saves
   const careers = (
@@ -77,6 +82,17 @@ export function TitleScreen(props: {
             >
               {t('ui.title.new_career_menu')}
             </button>
+            {props.scenarioMode && (
+              <button
+                type="button"
+                class="btn"
+                aria-expanded={scenarioOpen}
+                onClick={() => setScenarioOpen(!scenarioOpen)}
+                data-scenario-mode-menu
+              >
+                {t('ui.scenario_mode.menu')}
+              </button>
+            )}
             {manual && (
               <button
                 type="button"
@@ -99,6 +115,7 @@ export function TitleScreen(props: {
           <span class="num-s muted">{t('ui.title.version')}</span>
         </div>
         <div class="title-side">
+          {scenarioOpen && props.scenarioMode}
           {open && (
             <div class="panel p">
               <span class="label">{t('ui.title.choose_start')}</span>
@@ -146,6 +163,7 @@ export function TitleScreen(props: {
                   </button>
                 </div>
               </div>
+              {props.act3Start}
               <button
                 type="button"
                 class="btn btn-ghost"

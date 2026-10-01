@@ -2228,6 +2228,11 @@ export function wildcardView(state: GameState) {
   }
 }
 
+/** M18.4: an Act III game has reached its chapter report (survived or out): Scenario Mode unlocks on the device. */
+export function act3Finished(state: GameState): boolean {
+  return inActIII(state) && !!state.act3End
+}
+
 /**
  * The standby liquidity facility block on Capital (M18.2): its status (none, or available until a quarter with the
  * undrawn and drawn amounts and the locked spread), what arranging it would cost or why it can't, and whether it can
