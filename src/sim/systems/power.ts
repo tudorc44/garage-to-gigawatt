@@ -14,14 +14,16 @@ import type { GameState, PowerSource, Project, Site } from '../state.ts'
 import { isHired } from './hires.ts'
 import { extraQueueQuarters, gridUpgradesHalted } from './regions.ts'
 import { flawEffect, regionOf } from './sites.ts'
+import { nuclearBlocker, nuclearPowerQuarters } from './nuclear.ts'
 
 const POWER = () => CONTENT.projects.power
 /** The hire whose queue effect applies to grid upgrades (scope 0.2 §2.8), and by how much. */
 const EX_UTILITY = 'ex_utility'
 const exUtilityCut = (state: GameState) => (isHired(state, EX_UTILITY) ? 1 : 0)
 
-/** What new power for `kw` costs. */
+/** What new power for `kw` costs (a nuclear PPA: nothing up front, M17.2). */
 export function powerCostUsd(source: PowerSource, kw: number): number {
+  if (source === 'nuclear') return 0
   const perMw =
     source === 'grid' ? POWER().grid.capexUsdMw : POWER().gas.capexUsdMw
   return (perMw * kw) / 1000
@@ -43,6 +45,7 @@ export function powerBlocker(
   site: Site,
   source: PowerSource,
 ): Message | undefined {
+  if (source === 'nuclear') return nuclearBlocker(state, site)
   const region = regionOf(site)
   if (!region) return { key: 'error.power_no_region' }
   if (source === 'grid' && gridUpgradesHalted(region, state.quarter))
@@ -54,6 +57,7 @@ export function powerBlocker(
 export function drawPowerQuarters(state: GameState, p: Project): number {
   const site = state.sites.find((s) => s.id === p.siteId)!
   if (p.power === 'gas') return POWER().gas.buildQuarters
+  if (p.power === 'nuclear') return nuclearPowerQuarters()
   const [lo, hi] = gridQuarterRange(state, regionOf(site)!)
   const r = substream(
     state.seed,
@@ -66,6 +70,7 @@ export function drawPowerQuarters(state: GameState, p: Project): number {
 export function expectedPowerQuarters(state: GameState, p: Project): number {
   if (!p.power) return 0
   if (p.power === 'gas') return POWER().gas.buildQuarters
+  if (p.power === 'nuclear') return nuclearPowerQuarters()
   const site = state.sites.find((s) => s.id === p.siteId)!
   return gridQuarterRange(state, regionOf(site)!)[0]
 }

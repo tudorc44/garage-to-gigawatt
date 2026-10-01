@@ -51,7 +51,14 @@ import { gpuOutShare } from './gpuWave.ts'
 import { regionMoratoriumOn } from './anger.ts'
 import { projectPolicy } from './regions.ts'
 import { convertibleKw } from './hosting.ts'
-import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
+import { flawEffect, regionOf, uptime } from './sites.ts'
+import {
+  attachFreePpa,
+  hasPpa,
+  projectPowerUsdKwh,
+  signProjectPpa,
+} from './nuclear.ts'
+import { exportAiLabMult } from './exportRule.ts'
 import {
   buildsToTop,
   downtimeShare,
@@ -380,6 +387,23 @@ export function newLeaseIndex(state: GameState): number {
   return rfpMid(state.quarter, scenarioOf(state)) ?? 1
 }
 
+/**
+ * Act III's other pulls on a new shell lease (1 elsewhere): a hyperscaler on nuclear PPA power × 1.03 (M17.2,
+ * designed); an AI-lab tenant while the export-rule wildcard lasts × 0.97 (M17.4).
+ */
+export function act3LeaseMult(
+  state: GameState,
+  p: Project,
+  card: TenantCard,
+): number {
+  if (!inActIII(state)) return 1
+  let m = 1
+  if (card.type === 'hyperscaler' && hasPpa(state, p))
+    m *= BALANCE.act3.nuclear.hyperscalerRentMult
+  if (card.type === 'ai_lab') m *= exportAiLabMult(state)
+  return m
+}
+
 /** A signed tenant's term in quarters. */
 export function contractQuarters(p: Project): number {
   const t = p.tenant
@@ -499,9 +523,17 @@ export function drawOffers(state: GameState, p: Project): void {
     (state.events.extraOffers?.quarter === state.quarter
       ? state.events.extraOffers.n
       : 0) + extraShellOffers(state, p)
-  const n = Math.min(
-    pool.length,
-    randomInt(r, min, max) + (isHired(state, 'bd_lead') ? 1 : 0) + rfp,
+  // Act III (M17.2): a shell on nuclear PPA power draws one more offer (tenant pull).
+  const pull =
+    p.kind === 'shell' && hasPpa(state, p)
+      ? BALANCE.act3.nuclear.extraShellOffers
+      : 0
+  const n = Math.max(
+    0,
+    Math.min(
+      pool.length,
+      randomInt(r, min, max) + (isHired(state, 'bd_lead') ? 1 : 0) + rfp + pull,
+    ),
   )
   const left = [...pool]
   p.offers = []
@@ -628,7 +660,7 @@ export function openBlocker(
     }
   if (a.power) {
     // New power (a grid upgrade or on-site gas) brings its own MW.
-    if (a.power !== 'grid' && a.power !== 'gas')
+    if (a.power !== 'grid' && a.power !== 'gas' && a.power !== 'nuclear')
       return { key: 'error.bad_choice' }
     const blocked = powerBlocker(state, site, a.power)
     if (blocked) return blocked
@@ -688,6 +720,8 @@ export function openProject(
   }
   // Act III (M16.2, DT): a new hall is mid tier, or its GPU's if denser, or top when ticked.
   if (inActIII(state)) p.tier = newHallTier(p.gpu, !!a.topTier)
+  // Act III (M17.2): on existing MW at a site with a free PPA, the new project takes it.
+  if (inActIII(state)) attachFreePpa(state, p)
   state.bandwidth -= BALANCE.projects.bandwidth.open
   state.projects.push(p)
   const site = state.sites.find((s) => s.id === a.siteId)!
@@ -742,7 +776,10 @@ export function signTenant(
   // Act III (M12.2, F-2): fresh capacity is priced at this quarter's new-lease (RFP) index; from 2027Q3
   // (M16.2, DT) × the hall's tier multiple.
   const mult =
-    (offer.priceMult ?? 1) * newLeaseIndex(state) * shellTierRentMult(state, p)
+    (offer.priceMult ?? 1) *
+    newLeaseIndex(state) *
+    shellTierRentMult(state, p) *
+    act3LeaseMult(state, p, card)
   const contractUsd = annualRentUsd(card, p.kw) * mult * card.termYears
   const prepaymentUsd = Math.round(contractUsd * card.prepaymentShare)
   p.tenant = {
@@ -949,6 +986,8 @@ export function startBuild(state: GameState, projectId: string): void {
   }
   p.startQuarter = state.quarter
   p.stage = 'building'
+  // Act III (M17.2): a nuclear Power slot signs its PPA now, at this quarter's price.
+  if (p.power === 'nuclear') signProjectPpa(state, p)
   state.cash -= p.capexUsd
   state.bandwidth -= BALANCE.projects.bandwidth.start
   logEntry(state, 'log.project_started', {
@@ -1155,7 +1194,8 @@ export function settleProjectsWeek(
           hours *
           up *
           share *
-          powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) +
+          // (M17.2: the PPA's price on the MW it covers)
+          projectPowerUsdKwh(state, p, site) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
       // GPUs out after a failure wave you ran short on (M8.4) earn nothing; a contracted tenant is
       // credited 2× what they would have earned.
@@ -1442,7 +1482,7 @@ export function projectedReturn(state: GameState, p: Project) {
         b.cloudPue *
         hoursYr *
         up *
-        powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) +
+        projectPowerUsdKwh(state, p, site) +
       gpuUsd * b.cloudInsuranceShareYr
     const spotRevenueUsd =
       gpus *

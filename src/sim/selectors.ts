@@ -97,6 +97,11 @@ import {
   renewalWalkChance,
 } from './systems/renewals.ts'
 import { shellTierRentMult } from './systems/density.ts'
+import {
+  activePpas,
+  ppaUsedKw,
+  quarterLabelBeyond,
+} from './systems/nuclear.ts'
 import { blendAcceptBlocker } from './systems/blendExtend.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { blockedEventChoices, eventBodyKey } from './systems/events.ts'
@@ -2001,6 +2006,28 @@ export function blockedCardChoices(state: GameState) {
 }
 
 /** The top bar's Act III strip (M13.2): contracts ending in the next 4 quarters (this one included). */
+/**
+ * The nuclear PPAs on the contract calendar (M17.2, A3-04): one row each, with its site, MW, price, end quarter
+ * and the take-or-pay share. Empty without any.
+ */
+export function ppaRows(state: GameState) {
+  return activePpas(state).map((x) => {
+    const p = x.projectId
+      ? state.projects.find((y) => y.id === x.projectId)
+      : undefined
+    return {
+      id: x.id,
+      site: state.sites.find((s) => s.id === x.siteId)!,
+      projectN: p && p.stage !== 'ended' ? p.n : null,
+      mw: x.kw / 1000,
+      priceUsdMwh: x.priceUsdMwh,
+      endQuarterLabel: quarterLabelBeyond(x.endQuarter),
+      takeOrPayPct: BALANCE.act3.nuclear.takeOrPayShare,
+      usedMw: ppaUsedKw(state, x) / 1000,
+    }
+  })
+}
+
 export function contractsDueSoon(state: GameState): number | null {
   if (!inActIII(state)) return null
   return buildCalendar(state).filter(

@@ -106,11 +106,14 @@ export function payReservationWeek(state: GameState): number {
     const pending = powerAddsKw(site) - powerAddsKw(site, state.quarter)
     // Act III (M17.0, DT): a card's new-hall MW cost nothing while the shell is only proposed; the
     // reservation starts with its build.
+    // (M17.5) A card's PPA MW (sh_2) pay their take-or-pay instead.
     const cardFree = (site.powerAdds ?? [])
       .filter(
         (a) =>
-          a.card &&
-          state.projects.find((p) => p.id === a.projectId)?.stage === 'proposed',
+          (a.card &&
+            state.projects.find((p) => p.id === a.projectId)?.stage ===
+              'proposed') ||
+          (a.ppaId && a.readyQuarter !== null && a.readyQuarter <= state.quarter),
       )
       .reduce((kw, a) => kw + a.kw, 0)
     usd +=

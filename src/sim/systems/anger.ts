@@ -10,7 +10,8 @@ import {
   isAct2RulesQuarter,
   type PowerRegion,
 } from '../../content/index.ts'
-import type { GameState } from '../state.ts'
+import { inActIII, type GameState } from '../state.ts'
+import { ppaRegions } from './nuclear.ts'
 import { getRegion } from './regions.ts'
 import { poweredKw, regionOf } from './sites.ts'
 
@@ -37,7 +38,14 @@ export function regionAnger(
   const fromMw = Math.floor(
     (kw / 1000 / A.mwPerPoint) * getRegion(region).anger_modifier,
   )
-  return Math.min(A.max, fromMw + bumps)
+  // Act III (M17.2, M17.3): −5 where you hold a nuclear PPA (once per region), and the company-wide
+  // adjustment (the hire, lobbying, spends, cards, a wildcard); floor 0.
+  const adj = inActIII(state)
+    ? (ppaRegions(state, quarter).includes(region)
+        ? BALANCE.act3.nuclear.angerDelta
+        : 0) + (state.angerAdj ?? 0)
+    : 0
+  return Math.max(0, Math.min(A.max, fromMw + bumps + adj))
 }
 
 /** Heat Anger adds at a site in that region: floor(Anger ÷ 5). */

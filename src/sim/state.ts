@@ -85,6 +85,8 @@ export interface PowerAdd {
    * power cost); they leave if the proposal is cancelled.
    */
   card?: boolean
+  /** Act III (M17.5): MW a card's PPA brought to the site (sh_2), held by that PPA, not a project. */
+  ppaId?: string
 }
 
 /** Where a project's power comes from beyond the site's existing MW (scope 0.2 §2.5, A2-05). */

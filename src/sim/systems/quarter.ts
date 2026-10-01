@@ -29,6 +29,7 @@ import {
   resolveRenewals,
 } from './renewals.ts'
 import { payAct3Payouts } from './cardContracts.ts'
+import { settlePpas } from './nuclear.ts'
 import { openBlendOffers } from './blendExtend.ts'
 import { removeMachines } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
@@ -67,6 +68,8 @@ export function endQuarter(state: GameState): void {
     scenarioOf(state),
   )
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
+  // Act III (M17.2): the nuclear PPAs' take-or-pay for the quarter.
+  settlePpas(state)
   // Act III (M12.2): the renewals opened this quarter are settled (the new terms start next quarter).
   resolveRenewals(state)
   // Act III (M12.3): card cash due at this quarter's end (a recovery, a share of the revenue).

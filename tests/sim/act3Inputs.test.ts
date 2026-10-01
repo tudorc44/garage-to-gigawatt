@@ -144,9 +144,10 @@ describe('quarterInputs in Act III: the scenario row, in Act II’s shape', () =
         'lead_time',
       ])
         expect(text.toLowerCase()).not.toContain(bad)
-      // M16.1: the step-5 part holds Rubin and the lead time only (no nuclear, renewal, phase or scenario).
+      // M16.1: the step-5 part holds Rubin and the lead time (M17.2: and the nuclear PPA price); no renewal,
+      // phase or scenario.
       const extra = JSON.stringify(quarterInputs(FIRST, id)!.act3).toLowerCase()
-      for (const bad of ['nuclear', 'renewal', 'rfp', 'walk', 'phase', 'scenario'])
+      for (const bad of ['renewal', 'rfp', 'walk', 'phase', 'scenario'])
         expect(extra).not.toContain(bad)
     }
   })

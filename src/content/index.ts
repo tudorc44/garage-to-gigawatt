@@ -251,6 +251,8 @@ export interface Act3QuarterExtras {
   newestGenLeadWeeks: number | null
   /** capex_retrofit_density_mid_to_top_usd_mw. */
   midToTopUsdMw: number | null
+  /** M17.2: nuclear_ppa_usd_mwh (blank before PPAs are offered). */
+  nuclearPpaUsdMwh: number | null
 }
 
 export interface ProjectRules {
@@ -1847,6 +1849,7 @@ export function parseContent(raw: RawContent): Content {
             rubinUltraRackUsd: r.rubin_ultra_nvl576_rack_usd,
             newestGenLeadWeeks: r.newest_gen_lead_time_weeks,
             midToTopUsdMw: r.capex_retrofit_density_mid_to_top_usd_mw,
+            nuclearPpaUsdMwh: r.nuclear_ppa_usd_mwh,
           },
         })),
       }
