@@ -230,6 +230,8 @@ from about 2029Q4); the water moratorium skips 80% of its draws (no building pro
 **M17.8 done (the DT's answers, A–F):** A PJM/Ohio capacity charge (Δ cap since 2027Q1 ÷ 24); B PPA −$15 (CSV + nuclear.json); C unused take-or-pay resold at 0.9 × energy;
 D sh_2 needs 200 MW energized; E PPA MW are a site pool used last (miners too); loads pay market weekly and the PPA settles the used MW at its price
 (mine, reversible); F water moratorium: build → proposed (no start) → most-idle site (no new project), 2 quarters. Goldens unchanged. 1164 → 1179 tests.
+**M17.8 sims:** Act I/II CSVs identical; 532 runs, 0 crashes, 43 game overs (unchanged). Signer game overs 12/105, 35/211, 23/99, 11/117 (was 56, 142, 62,
+73; bots 4, 19, 15, 5); water moratorium 308 fired of 317, 0 skipped (was 254 skipped); payback gains PJM/Ohio rows (≤ +0.1 year).
 
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 

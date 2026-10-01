@@ -50,7 +50,11 @@ import {
 } from '../src/sim/systems/readingScore.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
-import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
+import {
+  normalPriceUsdKwh,
+  poweredKw,
+  regionCapacityChargeUsdKwh,
+} from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
 import { BOTS, HEAD_START_OPENINGS, PROBES, gpuRevenueShare } from './bots.ts'
@@ -1170,9 +1174,9 @@ if (args.includes('--act2')) {
         const rent = cardRent * (rfpMid(q, id) ?? 1)
         const shellEbitda = (mult: number) => rent * mult * (1 - P2.shellOpexShare)
         const powers = Object.values(inp.powerUsdKwh)
-        const powerUsdKwh = powers.reduce((a, b) => a + b, 0) / powers.length
+        const meanUsdKwh = powers.reduce((a, b) => a + b, 0) / powers.length
         const hoursYr = 24 * 365
-        const cloud = (gpu: string) => {
+        const cloud = (gpu: string, powerUsdKwh: number) => {
           const perMw = gpuGeneration(gpu)!.gpusPerMw
           const price = gpuPriceUsd(gpu, q, id)
           const hr = neocloudUsdHr(gpu, q, id)
@@ -1185,17 +1189,29 @@ if (args.includes('--act2')) {
             gpuUsd * P2.cloudInsuranceShareYr
           return ebitda > 0 ? capex / ebitda : -1
         }
-        payback[`${id} ${label}`] = {
-          midShell: flag(shellMw / shellEbitda(D.shellTierRentMult.mid)),
-          topShell: flag((shellMw + topExtra) / shellEbitda(D.shellTierRentMult.top)),
-          h200: flag(cloud('h200')),
-          b200: flag(cloud('b200')),
-          rubin: flag(cloud('rubin_nvl144')),
-          rubinUltra: flag(cloud('rubin_ultra')),
-        }
+        // M17.8 (DT answer 10): PJM and Ohio rows too, on that region's power with the capacity charge.
+        const rows: [string, number][] = [
+          ['', meanUsdKwh],
+          ...(['pjm', 'ohio'] as const).map(
+            (r): [string, number] => [
+              ` ${r}`,
+              inp.powerUsdKwh[r] + regionCapacityChargeUsdKwh(r, q, id),
+            ],
+          ),
+        ]
+        for (const [suffix, powerUsdKwh] of rows)
+          payback[`${id} ${label}${suffix}`] = {
+            midShell: flag(shellMw / shellEbitda(D.shellTierRentMult.mid)),
+            topShell: flag((shellMw + topExtra) / shellEbitda(D.shellTierRentMult.top)),
+            h200: flag(cloud('h200', powerUsdKwh)),
+            b200: flag(cloud('b200', powerUsdKwh)),
+            rubin: flag(cloud('rubin_nvl144', powerUsdKwh)),
+            rubinUltra: flag(cloud('rubin_ultra', powerUsdKwh)),
+          }
       }
     console.log(
-      `  Step 5 payback in years (M17.0; capex per MW ÷ EBITDA per MW-year; utilisation ${util}; ⚑ under 1.8, step 7's target):`,
+      `  Step 5 payback in years (M17.0; capex per MW ÷ EBITDA per MW-year; utilisation ${util}; ⚑ under 1.8, step 7's target;` +
+        ' rows: the mean of six regions\' power, then PJM and Ohio with the capacity charge, M17.8):',
     )
     console.table(payback)
     // M16.6: the retrofitter (each bot's runs again, plus "retrofit the largest low-tier hall when cash > 2 × cost").
