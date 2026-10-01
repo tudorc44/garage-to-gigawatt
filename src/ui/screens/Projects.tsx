@@ -327,6 +327,99 @@ function ProjectCardEl(
 
 // ---------- opening a project ----------
 
+type NuclearOption = NonNullable<
+  ReturnType<typeof openProjectView>['sites'][number]['nuclear']
+>
+
+/**
+ * A3-08 (Act III, M17.6): the nuclear PPA's details in the Power slot: the price now, the grid price here now,
+ * the term, the contracted MW, no grid queue, the regions, the take-or-pay block with a worked line; or why it
+ * isn't offered here (the region, or before 2027Q3).
+ */
+function NuclearDetails(props: {
+  n: NuclearOption
+  mw: number
+  onBack: () => void
+  onUse: () => void
+}) {
+  const { n, mw } = props
+  const half = Math.floor(mw / 2)
+  const unused = Math.max(0, n.takeOrPay * mw - half)
+  const price = n.priceUsdMwh ?? 0
+  return (
+    <div class="panel p nuclear-panel" data-nuclear-details>
+      <div class="row-between">
+        <strong>
+          <Icon name="nuclear-ppa" size={16} /> {t('ui.nuclear.title')}
+        </strong>
+        <span class="tag">{t('ui.nuclear.new', { quarter: n.from })}</span>
+      </div>
+      <span class="num-s muted">{t('ui.nuclear.tagline')}</span>
+      {n.blocker ? (
+        <p class="num-s" style={{ margin: 0 }} data-nuclear-unavailable>
+          <strong>{t('ui.nuclear.unavailable')}</strong> · {say(n.blocker)}
+        </p>
+      ) : (
+        <>
+          <div class="kv">
+            <span>{t('ui.nuclear.price')}</span>
+            <span class="num">{t('ui.ppa.usd_mwh', { usd: price.toFixed(0) })}</span>
+          </div>
+          <div class="kv">
+            <span>{t('ui.nuclear.grid_now')}</span>
+            <span class="num">{t('ui.ppa.usd_mwh', { usd: n.gridUsdMwh.toFixed(0) })}</span>
+          </div>
+          <div class="kv">
+            <span>{t('ui.nuclear.term')}</span>
+            <span>{t('ui.nuclear.term_value', { years: n.termYears })}</span>
+          </div>
+          <div class="kv">
+            <span>{t('ui.nuclear.contracted')}</span>
+            <span class="num">{fmt.power(mw * 1000)}</span>
+          </div>
+          <div class="kv">
+            <span>{t('ui.nuclear.queue')}</span>
+            <span>{t('ui.nuclear.queue_none')}</span>
+          </div>
+          <div class="kv">
+            <span>{t('ui.nuclear.regions')}</span>
+            <span>{t('ui.nuclear.regions_value')}</span>
+          </div>
+          <div class="take-or-pay" data-take-or-pay>
+            <strong>{t('ui.nuclear.top_title')}</strong>
+            <span class="num-s">
+              {t('ui.nuclear.top_body', { pct: fmt.pct(n.takeOrPay), mw: mw.toLocaleString('en-US') })}
+            </span>
+            <span class="num-s" data-worked>
+              {t('ui.nuclear.top_worked', {
+                half: half.toLocaleString('en-US'),
+                mw: mw.toLocaleString('en-US'),
+                unused: unused.toLocaleString('en-US', { maximumFractionDigits: 1 }),
+                usd: price.toFixed(0),
+                total: fmt.money(unused * 8760 * price),
+              })}
+            </span>
+          </div>
+        </>
+      )}
+      <div class="row-between">
+        <button type="button" class="btn" onClick={props.onBack}>
+          {t('ui.nuclear.back')}
+        </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          disabled={!!n.blocker}
+          onClick={props.onUse}
+          data-use-nuclear
+        >
+          {t('ui.nuclear.use')}
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function OpenProjectDialog(
   props: ScreenProps & {
     onClose: () => void
@@ -341,6 +434,7 @@ function OpenProjectDialog(
   const site = v.sites.find((x) => x.site.id === siteId)
   const [kw, setKw] = useState(Math.floor(site?.freeKw ?? 0))
   const [power, setPower] = useState<'existing' | PowerSource>('existing')
+  const [nuclearOpen, setNuclearOpen] = useState(false)
   // Act III (M16.5; M17.0, DT): "Build to top tier". Every GPU on sale is listed; one that needs a top-tier
   // hall (Rubin Ultra) switches the tick on and locks it.
   const [top, setTop] = useState(false)
@@ -371,11 +465,16 @@ function OpenProjectDialog(
             from: site.grid.quarters?.[0] ?? 0,
             to: site.grid.quarters?.[1] ?? 0,
           })
-        : t('ui.projects.power_note.gas', {
-            usd: fmt.money(site.gas.usdMw),
-            quarters: site.gas.quarters,
-            heat: site.gas.heat,
-          })
+        : power === 'nuclear'
+          ? t('ui.projects.power_note.nuclear', {
+              usd: (site.nuclear?.priceUsdMwh ?? 0).toFixed(0),
+              years: site.nuclear?.termYears ?? 15,
+            })
+          : t('ui.projects.power_note.gas', {
+              usd: fmt.money(site.gas.usdMw),
+              quarters: site.gas.quarters,
+              heat: site.gas.heat,
+            })
   const why = whyNot(state, action)
   const kinds: ProjectKind[] = ['shell', 'cloud', 'pilot']
   return (
@@ -442,15 +541,41 @@ function OpenProjectDialog(
             type="button"
             key={k}
             aria-pressed={power === k}
-            onClick={() => setPower(k)}
+            onClick={() => {
+              setPower(k)
+              setNuclearOpen(false)
+            }}
           >
             {t(`ui.projects.power.${k}`)}
           </button>
         ))}
+        {site?.nuclear && (
+          // Act III (M17.6, A3-08): the nuclear PPA opens its details first.
+          <button
+            type="button"
+            aria-pressed={power === 'nuclear' || nuclearOpen}
+            onClick={() => setNuclearOpen(true)}
+            data-power-nuclear
+          >
+            {t('ui.projects.power.nuclear')}
+          </button>
+        )}
       </div>
-      <p class="num-s muted" style={{ margin: 0 }}>
-        {powerNote}
-      </p>
+      {nuclearOpen && site?.nuclear ? (
+        <NuclearDetails
+          n={site.nuclear}
+          mw={size / 1000}
+          onBack={() => setNuclearOpen(false)}
+          onUse={() => {
+            setPower('nuclear')
+            setNuclearOpen(false)
+          }}
+        />
+      ) : (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {powerNote}
+        </p>
+      )}
       {v.act3 && kind !== 'pilot' && (
         <>
           <label class="form-row">

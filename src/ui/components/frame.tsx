@@ -99,6 +99,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           />
         </span>
       </div>
+      {isActIII(s.act) && <Act3Panel name="PcStat" state={s} />}
       <div class="stat">
         <span class="label">
           {t('ui.top.heat', { tier: tierName(heat.tier).toLowerCase() })}
@@ -199,6 +200,13 @@ const NAV: {
   { id: 'contracts', icon: 'loan', key: 'ui.nav.contracts', act3: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
   { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
+  // Act III (M17.6, A3-09): political capital, the Director, lobbying, the spend cards.
+  {
+    id: 'government',
+    icon: 'political-capital',
+    key: 'ui.nav.government',
+    act3: true,
+  },
   { id: 'people', icon: 'people', key: 'ui.nav.people' },
   { id: 'league', icon: 'league', key: 'ui.nav.league' },
   { id: 'log', icon: 'log', key: 'ui.nav.log' },

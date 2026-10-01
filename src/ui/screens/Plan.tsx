@@ -115,6 +115,9 @@ export function PlanScreen({ state, act }: ScreenProps) {
         <main class="main">
           {inAct2Rules(state) && <MwPanel state={state} />}
           {inActIII(state) && (
+            <Act3Panel name="WildcardPanel" state={state} act={act} />
+          )}
+          {inActIII(state) && (
             <Act3Panel name="RenewalsDuePanel" state={state} act={act} />
           )}
           <div class="dash">

@@ -213,6 +213,13 @@ quarter, no reservation, take-or-pay from then; a new project there takes it), p
 anger_adj (s2_c6's deal), hire_card (sh_3, 0 BW); each greyed with a reason. Only s0_c2.c3 and s0_c4.c1 stay deferred (step 7).
 **Golden:** act3-s2 only (s2_c6's default community deal now applies: cash −$2M, angerAdj −8). 1159 tests.
 
+**M17.6 done:** A3-08 in the open-project dialog's Power slot (a Nuclear PPA option opens its details: price now, grid power here now, 15
+years, contracted MW, no queue, regions, the 90% take-or-pay copy and worked line, Back / Use this power →; both unavailable states);
+`screens/Act3Government.tsx` (lazy, with the Act III panels): the Government section (meter with the 15 tick and ▲▼ vs the quarter before,
+warning with its two lines, the Director, lobbying, five spend cards, this quarter's PC lines), "PC n" next to Bandwidth, the wildcard card on
+the Plan screen, the PPA rows on Contracts; icons nuclear-ppa / political-capital / wildcard from the design bundle. Browser (dev): the
+Government screen; one layout fix (mine): lobbying cells wrap. Leak guard covers Government. 1164 tests.
+
 ## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
 
 Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /

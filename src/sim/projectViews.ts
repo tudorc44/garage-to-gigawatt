@@ -38,7 +38,13 @@ import {
   spotUtilisation,
   tenantCard,
 } from './systems/projects.ts'
-import { capacityKw, poweredKw, regionOf } from './systems/sites.ts'
+import {
+  capacityKw,
+  poweredKw,
+  powerPriceUsdKwh,
+  regionOf,
+} from './systems/sites.ts'
+import { nuclearPriceUsdMwh } from './systems/nuclear.ts'
 import { gridQuarterRange, powerBlocker } from './systems/power.ts'
 import {
   downtimeDoneQuarter,
@@ -221,6 +227,18 @@ export function openProjectView(state: GameState) {
             heat: P().power.gas.heatDelta,
             blocker: powerBlocker(state, site, 'gas') ?? null,
           },
+          /** Act III (M17.6, A3-08): the nuclear PPA here: its price now, the grid price here now, why not. */
+          nuclear: inActIII(state)
+            ? {
+                blocker: powerBlocker(state, site, 'nuclear') ?? null,
+                priceUsdMwh: nuclearPriceUsdMwh(state),
+                gridUsdMwh:
+                  powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) * 1000,
+                termYears: CONTENT.act3Nuclear.termQuarters / 4,
+                takeOrPay: BALANCE.act3.nuclear.takeOrPayShare,
+                from: CONTENT.act3Nuclear.unlockQuarter,
+              }
+            : null,
         }
       }),
     gpus: availableGpus(state.quarter, scenarioOf(state)).map((g) => g.id),

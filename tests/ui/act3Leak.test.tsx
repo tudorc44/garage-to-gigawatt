@@ -76,6 +76,7 @@ function expectNoLeak(where: string, body: string) {
 const SECTIONS: Section[] = [
   'projects',
   'contracts',
+  'government',
   'fleet',
   'capital',
   'people',

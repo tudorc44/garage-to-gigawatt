@@ -102,6 +102,8 @@ import {
   ppaUsedKw,
   quarterLabelBeyond,
 } from './systems/nuclear.ts'
+import { lobbyBlocker, spendBlocker } from './systems/politics.ts'
+import { wildcardChoiceBlocker } from './systems/wildcards.ts'
 import { blendAcceptBlocker } from './systems/blendExtend.ts'
 import { buyPriceNow } from './systems/eventEffects.ts'
 import { blockedEventChoices, eventBodyKey } from './systems/events.ts'
@@ -145,6 +147,8 @@ import { mwByUse as mwByUseOf } from './systems/mwUse.ts'
 import {
   allHires,
   buildQuartersFor,
+  getHire,
+  hireBlocker,
   isAct2Hire,
   isAct3Hire,
   isHired,
@@ -2124,6 +2128,78 @@ export function renewalsDue(state: GameState) {
 }
 
 /** Act III (M12.4): this Plan phase's blend-and-extend offers, with today's and the blended rent. */
+/**
+ * The Government section (A3-09, M17.6): the meter (now, last quarter's, the warning), the Director, the four
+ * lobbying actions and the five spend cards (each with its reason when it can't be used), and this quarter's
+ * political-capital log. Null outside Act III.
+ */
+export function governmentView(state: GameState) {
+  if (!inActIII(state) || state.politicalCapital === undefined) return null
+  const C = CONTENT.politicalCapital
+  const reports = state.reports.filter((r) => r.politicalCapital !== undefined)
+  const now = state.politicalCapital
+  const director = getHire(C.hire.id)!
+  return {
+    pc: now,
+    /**
+     * The value a quarter before (the ▲▼ compares with it): in a Plan phase "now" is last quarter's closing
+     * value, so this is the one before it; 40 (the start) until there are two Act III reports.
+     */
+    lastPc: reports.at(-2)?.politicalCapital ?? C.start,
+    start: C.start,
+    decay: C.decayPerQuarter,
+    threshold: C.lowThreshold,
+    low: now < C.lowThreshold,
+    lowPenalty: BALANCE.act3.politicalCapital.lowCapital,
+    hire: {
+      id: C.hire.id,
+      hired: isHired(state, C.hire.id),
+      salaryUsdQ: salaryUsdQ(director, state.quarter),
+      pcPerQuarter: C.hire.pcPerQuarter,
+      netPerQuarter: C.hire.pcPerQuarter - C.decayPerQuarter,
+      blocker: isHired(state, C.hire.id) ? null : (hireBlocker(state, C.hire.id) ?? null),
+      bandwidth: CONTENT.hires.bandwidth,
+    },
+    lobbying: C.lobbying.map((a) => ({
+      id: a.id,
+      costUsd: a.costUsd,
+      weeks: a.weeks,
+      pcGain: a.pcGain,
+      backfire: a.backfire ?? null,
+      angerDelta: a.angerDelta ?? null,
+      blocker: lobbyBlocker(state, a.id) ?? null,
+    })),
+    lobbyBandwidth: BALANCE.act3.politicalCapital.lobbyBandwidth,
+    spend: C.spend
+      .filter((x) => x.id !== 'pc_tariff_relief')
+      .map((x) => ({ id: x.id, pcCost: x.pcCost, blocker: spendBlocker(state, x.id) ?? null })),
+    /** This quarter's political-capital lines (lobbying started or landed, spends). */
+    log: state.log.filter(
+      (e) =>
+        e.quarter === state.quarter &&
+        /^log\.(lobby_|pc_spent|pc_quarter)/.test(e.key),
+    ),
+  }
+}
+
+/** The wildcard on the Plan screen (M17.6): its id, its target's number, and each choice's reason when greyed. */
+export function wildcardView(state: GameState) {
+  const open = state.act3WildcardOpen
+  if (!inActIII(state) || !open) return null
+  const p = open.projectId
+    ? state.projects.find((x) => x.id === open.projectId)
+    : undefined
+  return {
+    id: open.id,
+    projectN: p?.n ?? null,
+    choices: (['c1', 'c2'] as const).map((c) => ({
+      id: c,
+      blocker: wildcardChoiceBlocker(state, c) ?? null,
+      isDefault: c === 'c1',
+    })),
+  }
+}
+
 export function blendOffers(state: GameState) {
   return (state.act3BlendOffers ?? []).flatMap((o) => {
     const p = state.projects.find((x) => x.id === o.projectId)

@@ -1792,6 +1792,89 @@ td.wrap {
   gap: var(--space-2);
   margin-top: var(--space-2);
 }
+/* A3-08 nuclear PPA, A3-09 Government, wildcards (M17.6) */
+.pc-meter .pc-bar {
+  position: relative;
+  height: 10px;
+  border: var(--border-hair) solid var(--ink);
+  border-radius: var(--radius-1);
+  background: var(--panel);
+}
+.pc-meter .pc-fill {
+  height: 100%;
+  background: var(--ink);
+}
+.pc-meter.low .pc-fill {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--loss),
+    var(--loss) 3px,
+    var(--panel) 3px,
+    var(--panel) 6px
+  );
+}
+.pc-meter .pc-tick {
+  position: absolute;
+  top: -3px;
+  bottom: -3px;
+  width: 2px;
+  background: var(--loss);
+}
+.pc-meter .pc-scale {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+}
+.pc-meter .pc-scale span[style] {
+  position: absolute;
+  transform: translateX(-50%);
+}
+.pc-warning {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  border: 1.5px solid var(--loss);
+  border-radius: var(--radius-1);
+}
+.spend-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-2);
+}
+.spend-card,
+.take-or-pay {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-2);
+  border: var(--border-hair) solid var(--line);
+  border-radius: var(--radius-1);
+}
+.wildcard-card {
+  border: 2px solid var(--ink);
+}
+[data-lobbying] td {
+  white-space: normal;
+}
+[data-lobbying] td.num {
+  white-space: nowrap;
+}
+[data-lobbying] [data-block],
+[data-spend] [data-block] {
+  display: inline-block;
+  max-width: 150px;
+  white-space: normal;
+  text-align: right;
+}
+.nuclear-panel .kv {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border-bottom: 1px dashed var(--line-soft);
+  padding: 3px 0;
+}
+
 /* A3-07 racks and retrofit (M16.5) */
 .racks {
   grid-column: 1 / -1;

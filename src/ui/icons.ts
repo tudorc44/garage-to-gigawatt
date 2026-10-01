@@ -2,7 +2,14 @@
 // 1.5px stroke, drawn with currentColor. Only the icons the game uses; "play" comes from the mockup.
 // Generated: to add one, copy its entry from bundle.js.
 export const ICONS = {
-  cash: '<rect x="2.5" y="5.5" width="15" height="9" rx="1.5"/><circle cx="10" cy="10" r="2.2"/><path d="M5 8v4M15 8v4"/>',
+  // M17.6 (Act III step 6), from bundle.js
+  'nuclear-ppa':
+    '<path d="M5.5 17.5c1.3-3 1.3-7.5 0-11.5h9c-1.3 4-1.3 8.5 0 11.5z"/><path d="M7.8 4.5c0-.9.9-1 .9-2M10 4.5c0-.9.9-1 .9-2M12.2 4.5c0-.9.9-1 .9-2"/><path d="M2.5 17.5h15"/>',
+  'political-capital':
+    '<path d="M2.5 8 6.75 5 11 8"/><path d="M4 8.5v5M6.75 8.5v5M9.5 8.5v5M2.5 14h8.5"/><path d="M12 15a3 3 0 0 1 6 0"/><path d="M15 15l1.6-1.9"/><path d="M2 17.5h16"/>',
+  wildcard:
+    '<rect x="5" y="2.5" width="10" height="15" rx="1.5"/><path d="M10 6.5l1 2.1 2.3.3-1.65 1.6.4 2.3L10 11.7l-2.05 1.1.4-2.3L6.7 8.9 9 8.6z"/>',
+  cash:'<rect x="2.5" y="5.5" width="15" height="9" rx="1.5"/><circle cx="10" cy="10" r="2.2"/><path d="M5 8v4M15 8v4"/>',
   treasury:
     '<path d="M3 8.5 10 4l7 4.5"/><path d="M4.5 9v6M8 9v6M12 9v6M15.5 9v6"/><path d="M3 16h14"/>',
   bandwidth:

@@ -24,6 +24,14 @@ import { BwButton, NegotiationPanel } from './Projects.tsx'
 
 // A3-07 (M16.5) lives in its own file; exported here so it loads with the other Act III panels.
 export { RacksPanel } from './Act3Racks.tsx'
+// A3-09 and the step-6 pieces (M17.6), the same way.
+export {
+  GovernmentSection,
+  PcStat,
+  PpaRowsPanel,
+  WildcardPanel,
+} from './Act3Government.tsx'
+import { PpaRowsPanel as PpaRows } from './Act3Government.tsx'
 
 const tenantName = (id: string) => tDynamic(`tenant.${id}`, id)
 const tenantType = (type: string) => tDynamic(`ui.tenant_type.${type}`, type)
@@ -503,6 +511,7 @@ export function ContractsSection({ state, act }: ScreenProps) {
         )}
         <p class="num-s muted">{t('ui.act3.contracts.reopen_rule')}</p>
       </div>
+      <PpaRows state={state} />
       {blends.length > 0 && (
         <div class="panel p">
           <h2 class="panel-title">{t('ui.act3.blend.title')}</h2>
