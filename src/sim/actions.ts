@@ -90,6 +90,12 @@ import {
 } from './systems/renewals.ts'
 import { resumeIdle, resumeIdleBlocker } from './systems/cardContracts.ts'
 import { acceptBlend, blendAcceptBlocker } from './systems/blendExtend.ts'
+import {
+  refitBlocker,
+  refitGpus,
+  retrofitBlocker,
+  startRetrofit,
+} from './systems/retrofit.ts'
 import { recordAct3Move } from './systems/act3Moves.ts'
 import {
   borrowBlocker,
@@ -353,6 +359,10 @@ export type Action =
   | { type: 'RESUME_IDLE_MACHINES' }
   /** Act III (M12.4): accept a lease's blend-and-extend offer (0 Bandwidth; ignoring it is the default). */
   | { type: 'BLEND_ACCEPT'; projectId: string }
+  /** Act III (M16.3): retrofit a live hall one density tier up (1 BW, the cost now, a downtime). */
+  | { type: 'RETROFIT'; projectId: string }
+  /** Act III (M16.3): swap a live cloud's or pilot's GPUs for a generation that fits its tier (1 BW). */
+  | { type: 'REFIT_GPUS'; projectId: string; gpu: string }
   /** Your ask: a tenant's price multiple (1.05 = 5% over the card) or a lender's rate cut (0.005). */
   | { type: 'DEAL_COUNTER'; ask: number }
   | { type: 'DEAL_ACCEPT' }
@@ -912,6 +922,20 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = blendAcceptBlocker(s, a.projectId)
       if (blocked) return blocked
       acceptBlend(s, a.projectId)
+      return
+    }
+
+    case 'RETROFIT': {
+      const blocked = retrofitBlocker(s, a.projectId)
+      if (blocked) return blocked
+      startRetrofit(s, a.projectId)
+      return
+    }
+
+    case 'REFIT_GPUS': {
+      const blocked = refitBlocker(s, a.projectId, a.gpu)
+      if (blocked) return blocked
+      refitGpus(s, a.projectId, a.gpu)
       return
     }
 

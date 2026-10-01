@@ -28,6 +28,8 @@ export default defineConfig({
             },
             { name: 'text', test: /src[\\/]i18n[\\/].*\.json/ },
             { name: 'content', test: /src[\\/]content[\\/].*\.json/ },
+            // The game's rules (M16.3: the main file passed 500 KB with step 5's systems).
+            { name: 'sim', test: /src[\\/]sim[\\/]/ },
           ],
         },
       },

@@ -9,7 +9,13 @@ import {
   quarterInputs,
   type DensityTier,
 } from '../../content/index.ts'
-import { inActIII, projectGone, type GameState, type Project } from '../state.ts'
+import {
+  inActIII,
+  logEntry,
+  projectGone,
+  type GameState,
+  type Project,
+} from '../state.ts'
 import { scenarioOf } from './market.ts'
 
 const D = BALANCE.act3.density
@@ -96,6 +102,41 @@ export function buildsToTop(
   p: Pick<Project, 'tier'> & { stage?: Project['stage'] },
 ): boolean {
   return inActIII(state) && p.tier === 'top' && p.stage !== 'live'
+}
+
+// ---------- downtime (M16.3: a retrofit or a GPU change) ----------
+
+/**
+ * The share of `quarter` a hall in downtime earns (DT): with w weeks counted from the start of the quarter
+ * the work began, quarter k = 0, 1, 2 … earns clamp(1 − (w − 13k) / 13, 0, 1). 1 with no downtime.
+ */
+export function downtimeShare(p: Project, quarter: number): number {
+  const d = p.downtime
+  if (!d) return 1
+  const k = quarter - d.fromQuarter
+  if (k < 0) return 1
+  const W = BALANCE.weeksPerQuarter
+  return Math.min(1, Math.max(0, 1 - (d.weeks - W * k) / W))
+}
+
+/** The first quarter after the last one a downtime touches: the change applies from then. */
+export function downtimeDoneQuarter(d: NonNullable<Project['downtime']>): number {
+  return d.fromQuarter + Math.ceil(d.weeks / BALANCE.weeksPerQuarter)
+}
+
+/** At the start of a quarter: a finished retrofit's hall takes its new tier; any finished downtime ends. */
+export function finishDowntimes(state: GameState): void {
+  for (const p of state.projects) {
+    const d = p.downtime
+    if (!d || state.quarter < downtimeDoneQuarter(d)) continue
+    if (d.toTier) p.tier = d.toTier
+    delete p.downtime
+    logEntry(state, `log.${d.kind}_done`, {
+      n: p.n,
+      density: p.tier ?? '',
+      gpu: p.gpu ?? '',
+    })
+  }
 }
 
 /**

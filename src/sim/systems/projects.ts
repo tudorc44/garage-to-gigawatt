@@ -54,6 +54,8 @@ import { convertibleKw } from './hosting.ts'
 import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
 import {
   buildsToTop,
+  downtimeShare,
+  finishDowntimes,
   newHallTier,
   shellTierRentMult,
   topBuildExtraUsd,
@@ -992,6 +994,8 @@ function gasLawsuits(state: GameState): void {
 export function startQuarterProjects(state: GameState): void {
   gasLawsuits(state)
   rollAiLabDistress(state)
+  // Act III (M16.3): finished retrofits and GPU changes.
+  finishDowntimes(state)
   for (const p of state.projects) {
     if (
       p.stage === 'building' &&
@@ -1112,9 +1116,11 @@ export function settleProjectsWeek(
       p.tenant && tenantCard(p.tenant.card)?.type === 'ai_lab'
         ? state.events.aiLabRevenueMult
         : 1
+    // Act III (M16.3): a hall in a retrofit or GPU change earns only its share of the quarter.
+    const share = downtimeShare(p, state.quarter)
     if (p.kind === 'shell') {
       if (!p.tenant) continue
-      rev = (annualContractUsd(p) / 52) * labMult
+      rev = (annualContractUsd(p) / 52) * labMult * share
       cost = rev * b.shellOpexShare
       const setOff = Math.min(p.tenant.prepaymentLeftUsd, rev)
       p.tenant.prepaymentLeftUsd -= setOff
@@ -1140,12 +1146,14 @@ export function settleProjectsWeek(
             hours *
             up
       // A degraded cluster (card ec19) runs below its full rate.
-      rev *= modifierMult(state, 'utilisation', null)
+      rev *= modifierMult(state, 'utilisation', null) * share
+      // (in downtime the hall draws power only for the share it runs; the GPUs stay insured)
       cost =
         p.kw *
           b.cloudPue *
           hours *
           up *
+          share *
           powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) +
         (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
       // GPUs out after a failure wave you ran short on (M8.4) earn nothing; a contracted tenant is
@@ -1504,7 +1512,9 @@ export function gpuResidualShare(years: number): number {
 export function gpuResidualUsd(p: Project, quarter: number): number {
   if (p.kind === 'shell' || p.stage !== 'live' || p.readyQuarter === null)
     return 0
-  return p.gpuCapexUsd * gpuResidualShare((quarter - p.readyQuarter) / 4)
+  // (M16.3: GPUs changed in Act III age from their own delivery)
+  const from = p.gpuDeliveredQuarter ?? p.readyQuarter
+  return p.gpuCapexUsd * gpuResidualShare((quarter - from) / 4)
 }
 
 /** Why a project's GPUs can't be sold now, or undefined if they can. */

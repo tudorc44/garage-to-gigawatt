@@ -189,6 +189,11 @@ export function moveOf(
       return 'hedge'
     case 'BLEND_ACCEPT':
       return 'blend_extend'
+    // M16.3 (DT): a retrofit builds; a GPU change buys GPUs.
+    case 'RETROFIT':
+      return 'retrofit'
+    case 'REFIT_GPUS':
+      return 'gpu_buy'
     case 'PROJECT_SELL':
     case 'PROJECT_SELL_GPUS':
       return 'sale_voluntary'

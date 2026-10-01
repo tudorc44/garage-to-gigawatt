@@ -38,6 +38,7 @@ const ID_PARAMS: Record<string, string> = {
   tenant: 'tenant.',
   kind: 'project_kind.',
   gpu: 'gpu.',
+  density: 'density.',
   debt: 'debt_kind.',
   category: 'site_category.',
   region: 'ui.region.',

@@ -467,6 +467,8 @@ export interface Project {
   }
   /** Act III (M16.4, a card's capex_mw): a new hall on greenfield, priced at the greenfield shell $/MW. */
   greenfield?: boolean
+  /** Act III (M16.3): the quarter its GPUs were last changed (their resale ages from then); missing = readyQuarter. */
+  gpuDeliveredQuarter?: number
   /** Capex committed and paid at the start of the build (after any tenant capex credit). */
   capexUsd: number
   /** The GPUs' share of it (insured each year). */
