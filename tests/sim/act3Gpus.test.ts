@@ -56,7 +56,7 @@ describe('the Act III generations (M16.1)', () => {
     }
   })
 
-  it('prices: Rubin’s unit price from the CSV; Rubin Ultra’s rack ÷ 144 (≈ $104,167 at $15M)', () => {
+  it('prices: Rubin’s unit price from the CSV; Rubin Ultra’s rack ÷ 144 (≈ $131,944 at $19M: M18.8 raised it $4M)', () => {
     for (const id of SCENARIO_IDS)
       for (const label of ['2027Q1', '2028Q3', '2030Q4']) {
         expect(gpuPriceUsd('rubin_nvl144', q(label), id)).toBe(
@@ -64,7 +64,7 @@ describe('the Act III generations (M16.1)', () => {
         )
       }
     expect(gpuPriceUsd('rubin_ultra', q('2027Q3'), 's0')).toBeCloseTo(
-      15_000_000 / 144,
+      19_000_000 / 144,
       6,
     )
     expect(BALANCE.act3.density.gpusPerRack).toEqual({

@@ -22,6 +22,9 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 - **`market_s3.csv` › `renewal_shell_index_low/high`:** 2029Q1 0.62/0.74, Q2 0.66/0.78, Q3 0.70/0.84, Q4 0.74/0.88, 2030Q1
   0.78/0.92, Q2 0.80/0.95, Q3 0.82/0.97, Q4 0.84/0.98 (was 0.60/0.70 flat). **`rfp_new_lease_index_low/high`** move by the same
   per-quarter increase over their 2028Q4 values (0.54/0.70 → 2030Q4 0.78/0.98). 2028Q4 and earlier unchanged; no other column.
+- **`market_s0–s3.csv` › `rubin_ultra_nvl576_rack_usd`** (answer 6, tuned M18.8): +$4M in every quarter of all four scenarios ($1M steps,
+  the 2027Q3 rack ≤ $20M, until the 2027Q3 payback is ≥ 1.8 years everywhere): 2027Q3 $15M → $19M, payback 1.50 → 1.86 years
+  (Rubin Ultra's rent factor stays 0.50). Later quarters keep their path + $4M (S2 peaks at $22.37M in 2029Q2–Q3).
 
 ### M18.3, 1 Oct 2026 (the presets; design thread, M18 spec, F-6)
 

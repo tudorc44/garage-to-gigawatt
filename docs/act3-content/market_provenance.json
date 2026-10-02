@@ -50,7 +50,7 @@
  "gpu_rubin_ultra_neocloud_usd_hr": "designed",
  "rubin_unit_purchase_usd": "designed",
  "rubin_nvl144_rack_usd": "designed",
- "rubin_ultra_nvl576_rack_usd": "designed",
+ "rubin_ultra_nvl576_rack_usd": "designed; raised $4M in every quarter of all four scenarios by the design thread on 2 Oct 2026 (tuned M18.8: $1M steps, capped at $20M in 2027Q3, until the 2027Q3 payback is ≥ 1.8 years everywhere: $19M, 1.86 years), with Rubin Ultra's rent factor at 0.50",
  "newest_gen_lead_time_weeks": "designed",
  "capex_retrofit_density_mid_to_top_usd_mw": "hand-off anchored to Act II 2026Q4 (grounded start), scenario path designed",
  "nuclear_ppa_usd_mwh": "designed; lowered $15/MWh by the design thread on 1 Oct 2026, into nuclear.json's own analyst range ($80–100+)",
