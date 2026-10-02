@@ -808,6 +808,9 @@ if (args.includes('--act2')) {
       /** M17.7: PPA MW contracted and idle (unused) at the end. */
       ppaMw: number
       ppaIdleMw: number
+      /** M18.10: GPU contracts that walked after 2 quarters in distress, and how many of those had a DDTL. */
+      gpuWalks: number
+      gpuWalksDdtl: number
     }
     /**
      * M17.7, tools only: a bot that also signs every nuclear PPA card choice it can (s2_c1, s3_c2, sh_2) and hires
@@ -936,6 +939,10 @@ if (args.includes('--act2')) {
               id: w.id,
               status: w.status,
             })),
+            gpuWalks: r.state.log.filter((e) => e.key === 'log.gpu_contract_walked').length,
+            gpuWalksDdtl: r.state.log.filter(
+              (e) => e.key === 'log.gpu_contract_walked' && e.params?.ddtl === 1,
+            ).length,
             ppaMw: ppas.reduce((a, x) => a + x.kw, 0) / 1000,
             ppaIdleMw:
               ppas.reduce((a, x) => a + x.kw - ppaUsedKw(r.state, x), 0) / 1000,
@@ -1061,6 +1068,18 @@ if (args.includes('--act2')) {
       const ok = scenarios.every((id) => id === 's1' || ms.s1 < ms[id])
       console.log(
         `  C1 (population): S1 lowest median growth multiple: ${ok ? 'PASS' : 'FAIL'} (${scenarios.map((id) => `${id} ${ms[id].toFixed(2)}×`).join(', ')})`,
+      )
+      // M18.10: GPU contracts that walked after 2 quarters in distress (the bots' runs).
+      console.log(
+        `  GPU contract walks (M18.10): ${scenarios
+          .map((id) => {
+            const rows = a3.filter((x) => x.scenario === id)
+            const walks = rows.reduce((a, x) => a + x.gpuWalks, 0)
+            const ddtl = rows.reduce((a, x) => a + x.gpuWalksDdtl, 0)
+            const runs = rows.filter((x) => x.gpuWalks > 0).length
+            return `${id} ${walks} (${ddtl} with a DDTL; in ${runs} of ${rows.length} runs)`
+          })
+          .join(', ')}`,
       )
     }
     console.log('  Act III by bot:')

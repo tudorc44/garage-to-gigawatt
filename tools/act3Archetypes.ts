@@ -12,8 +12,9 @@ import { cardChoiceMove } from '../src/sim/systems/act3Moves.ts'
 import { standbyArrangeBlocker } from '../src/sim/systems/corporateDebt.ts'
 import { eventChoices, getCard } from '../src/sim/systems/events.ts'
 import { debtUsd } from '../src/sim/systems/loans.ts'
-import { playerReopenBlocker } from '../src/sim/systems/renewals.ts'
-import { tenantCard } from '../src/sim/systems/projects.ts'
+import { playerReopenBlocker, renewalOffer } from '../src/sim/systems/renewals.ts'
+import { gpuContractUsdHr, tenantCard } from '../src/sim/systems/projects.ts'
+import { scenarioOf } from '../src/sim/systems/market.ts'
 import { convertibleKw } from '../src/sim/systems/hosting.ts'
 import { capacityKw, poweredKw } from '../src/sim/systems/sites.ts'
 
@@ -157,9 +158,15 @@ function commitProject(
     if (p) {
       const longEnough = (o: (typeof p.offers)[number]) =>
         (o.gpu ? o.gpu.termYears : tenantCard(o.card)!.termYears) * 4 >= (opts.minTermQuarters ?? 0)
+      // (M18.10, DT: a cloud takes the highest-priced GPU contract, whatever the tenant type: chasing yield)
+      const gpuUsdHr = (o: (typeof p.offers)[number]) =>
+        (gpuContractUsdHr(p.gpu!, o.gpu!.termYears, r.get().quarter, scenarioOf(r.get())) ?? 0) *
+        (o.priceMult ?? 1)
+      const price = (o: (typeof p.offers)[number]) =>
+        kind === 'cloud' ? gpuUsdHr(o) : tenantCard(o.card)!.priceUsdMwYr
       const best = [...p.offers]
         .filter((o) => (kind === 'cloud' ? !!o.gpu : true) && longEnough(o))
-        .sort((x, y) => tenantCard(y.card)!.priceUsdMwYr - tenantCard(x.card)!.priceUsdMwYr)[0]
+        .sort((x, y) => price(y) - price(x))[0]
       // a shell signs its best lease; a cloud its GPU contract if offered (a DDTL needs one), else spot
       if (best) r.run({ type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: best.id })
       else if (kind === 'cloud' && !opts.needContract) r.run({ type: 'PROJECT_SPOT', projectId: p.id })
@@ -233,8 +240,10 @@ export function archetype(base: Strategy, a: Archetype, opts: { signOnly?: strin
           for (const o of blendOffers(s())) r.run({ type: 'BLEND_ACCEPT', projectId: o.projectId })
           break
         case 'flexible':
+          // M18.10 (DT): reopens a lease only when the new rent would be higher than the current one
           for (const p of s().projects as Project[])
-            if (!playerReopenBlocker(s(), p.id)) r.run({ type: 'REOPEN_LEASE', projectId: p.id })
+            if (!playerReopenBlocker(s(), p.id) && (renewalOffer(s(), p)?.mult ?? 0) > 1)
+              r.run({ type: 'REOPEN_LEASE', projectId: p.id })
           break
       }
       return r.done

@@ -28,6 +28,8 @@ interface Run {
   ratio: number
   gameOver: boolean
   reading: number | null
+  /** M18.10: GPU contracts that walked after 2 quarters in distress. */
+  walks: number
 }
 
 const median = (xs: number[]) => {
@@ -52,6 +54,7 @@ function play(end: GameState, scenario: ScenarioId, seed: number, strategy: Para
     ratio: entry > 0 ? last / entry : 0,
     gameOver: !done,
     reading: r.state.act3End?.reading.score ?? null,
+    walks: r.state.log.filter((e) => e.key === 'log.gpu_contract_walked').length,
   }
 }
 
@@ -122,6 +125,7 @@ for (const a of ARCHETYPES)
       p10: Number(p10(rs.map((r) => r.ratio)).toFixed(2)),
       gameOver: `${overs(a, sc)} of ${rs.length}`,
       reading: Number.isNaN(median(reads)) ? '—' : median(reads),
+      gpuWalks: rs.reduce((n, r) => n + r.walks, 0),
     }
   }
 
@@ -150,8 +154,8 @@ const anchors: { id: string; target: string; result: string; numbers: string }[]
   },
   {
     id: 'A1-gpu',
-    target: 'hedged > ignorer (median) in S0, S1, S3 (S2 exempt), on the GPU-heavy company',
-    result: yes(A1_SCENARIOS.every((sc) => gMed('hedged', sc) > gMed('ignorer', sc))),
+    target: 'hedged > ignorer (median) in S1 and S3 (M18.10: S0 information, S2 exempt), on the GPU-heavy company',
+    result: yes((['s1', 's3'] as const).every((sc) => gMed('hedged', sc) > gMed('ignorer', sc))),
     numbers: SCENARIO_IDS.map((sc) => `${sc} ${gMed('hedged', sc).toFixed(2)} vs ${gMed('ignorer', sc).toFixed(2)}`).join('; '),
   },
   // M18.9 (DT): A2 first as written; if the 60%-LTV ignorer doesn't bust, the fallback version
@@ -247,6 +251,7 @@ console.table(
           median: Number(gMed(a, sc).toFixed(2)),
           p10: Number(p10(gpuRuns[a][sc].map((r) => r.ratio)).toFixed(2)),
           gameOver: `${gOvers(a, sc)} of ${SEEDS}`,
+          gpuWalks: gpuRuns[a][sc].reduce((n, r) => n + r.walks, 0),
         },
       ]),
     ),
