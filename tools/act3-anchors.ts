@@ -30,6 +30,8 @@ interface Run {
   reading: number | null
   /** M18.10: GPU contracts that walked after 2 quarters in distress. */
   walks: number
+  /** M18.11: a foreclosure, a rescue sale or a forced sale happened in Act III. */
+  distressSale: boolean
 }
 
 const median = (xs: number[]) => {
@@ -55,6 +57,11 @@ function play(end: GameState, scenario: ScenarioId, seed: number, strategy: Para
     gameOver: !done,
     reading: r.state.act3End?.reading.score ?? null,
     walks: r.state.log.filter((e) => e.key === 'log.gpu_contract_walked').length,
+    distressSale: r.state.log.some(
+      (e) =>
+        e.quarter >= start.quarter &&
+        (e.key === 'log.project_foreclosed' || e.key === 'log.rescue_sale' || e.key === 'log.forced_sale'),
+    ),
   }
 }
 
@@ -126,6 +133,7 @@ for (const a of ARCHETYPES)
       gameOver: `${overs(a, sc)} of ${rs.length}`,
       reading: Number.isNaN(median(reads)) ? '—' : median(reads),
       gpuWalks: rs.reduce((n, r) => n + r.walks, 0),
+      distressSales: rs.filter((r) => r.distressSale).length,
     }
   }
 
@@ -160,18 +168,19 @@ const anchors: { id: string; target: string; result: string; numbers: string }[]
   },
   // M18.9 (DT): A2 first as written; if the 60%-LTV ignorer doesn't bust, the fallback version
   (() => {
-    const primary =
-      gMed('ignorer', 's1') < 0.5 && gOvers('ignorer', 's1') >= Math.ceil((9 / 30) * SEEDS)
+    // M18.11 (DT): the game-over half replaced by a foreclosure, rescue sale or forced sale in ≥ 9 of 30 runs
+    const sales = gpuRuns.ignorer.s1.filter((r) => r.distressSale).length
+    const primary = gMed('ignorer', 's1') <= 0.5 && sales >= Math.ceil((9 / 30) * SEEDS)
     const fallback =
       gMed('ignorer', 's1') <= 0.6 * gMed('ignorer', 's0') &&
       gMed('ignorer', 's1') < gMed('hedged', 's1')
     return {
       id: 'A2',
       target: primary
-        ? 'S1 ignorer (GPU-heavy): median < 0.5 and ≥ 9 of 30 game overs'
+        ? 'S1 ignorer (GPU-heavy): median ≤ 0.5 and a foreclosure / rescue / forced sale in ≥ 9 of 30 (M18.11)'
         : 'fallback: S1 ignorer (GPU-heavy) median ≤ 0.6 × its S0 median, and below hedged',
       result: primary ? 'PASS (as written)' : fallback ? 'PASS (fallback)' : 'FAIL (both versions)',
-      numbers: `S1 median ${gMed('ignorer', 's1').toFixed(2)}, game over ${gOvers('ignorer', 's1')} of ${SEEDS}; S0 median ${gMed('ignorer', 's0').toFixed(2)} (× 0.6 = ${(0.6 * gMed('ignorer', 's0')).toFixed(2)}); hedged S1 ${gMed('hedged', 's1').toFixed(2)}`,
+      numbers: `S1 median ${gMed('ignorer', 's1').toFixed(2)}, distress sales in ${sales} of ${SEEDS}, game over ${gOvers('ignorer', 's1')}; S0 median ${gMed('ignorer', 's0').toFixed(2)} (× 0.6 = ${(0.6 * gMed('ignorer', 's0')).toFixed(2)}); hedged S1 ${gMed('hedged', 's1').toFixed(2)}`,
     }
   })(),
   {
@@ -252,6 +261,7 @@ console.table(
           p10: Number(p10(gpuRuns[a][sc].map((r) => r.ratio)).toFixed(2)),
           gameOver: `${gOvers(a, sc)} of ${SEEDS}`,
           gpuWalks: gpuRuns[a][sc].reduce((n, r) => n + r.walks, 0),
+          distressSales: gpuRuns[a][sc].filter((r) => r.distressSale).length,
         },
       ]),
     ),

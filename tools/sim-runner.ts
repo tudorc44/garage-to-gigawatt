@@ -811,6 +811,9 @@ if (args.includes('--act2')) {
       /** M18.10: GPU contracts that walked after 2 quarters in distress, and how many of those had a DDTL. */
       gpuWalks: number
       gpuWalksDdtl: number
+      /** M18.11: of those, contracts carried in from Act II; and the lender cures: opened, cured, foreclosed. */
+      gpuWalksCarried: number
+      cures: { started: number; done: number; foreclosed: number }
     }
     /**
      * M17.7, tools only: a bot that also signs every nuclear PPA card choice it can (s2_c1, s3_c2, sh_2) and hires
@@ -943,6 +946,14 @@ if (args.includes('--act2')) {
             gpuWalksDdtl: r.state.log.filter(
               (e) => e.key === 'log.gpu_contract_walked' && e.params?.ddtl === 1,
             ).length,
+            gpuWalksCarried: r.state.log.filter(
+              (e) => e.key === 'log.gpu_contract_walked' && e.params?.carried === 1,
+            ).length,
+            cures: {
+              started: r.state.log.filter((e) => e.key === 'log.lender_cure_started').length,
+              done: r.state.log.filter((e) => e.key === 'log.lender_cure_done').length,
+              foreclosed: r.state.log.filter((e) => e.key === 'log.lender_cure_foreclosed').length,
+            },
             ppaMw: ppas.reduce((a, x) => a + x.kw, 0) / 1000,
             ppaIdleMw:
               ppas.reduce((a, x) => a + x.kw - ppaUsedKw(r.state, x), 0) / 1000,
@@ -1074,10 +1085,11 @@ if (args.includes('--act2')) {
         `  GPU contract walks (M18.10): ${scenarios
           .map((id) => {
             const rows = a3.filter((x) => x.scenario === id)
-            const walks = rows.reduce((a, x) => a + x.gpuWalks, 0)
-            const ddtl = rows.reduce((a, x) => a + x.gpuWalksDdtl, 0)
+            const sum = (f: (x: A3Run) => number) => rows.reduce((a, x) => a + f(x), 0)
+            const walks = sum((x) => x.gpuWalks)
             const runs = rows.filter((x) => x.gpuWalks > 0).length
-            return `${id} ${walks} (${ddtl} with a DDTL; in ${runs} of ${rows.length} runs)`
+            // (M18.11: carried vs new, and the lender cures)
+            return `${id} ${walks} (${sum((x) => x.gpuWalksCarried)} carried, ${walks - sum((x) => x.gpuWalksCarried)} new; ${sum((x) => x.gpuWalksDdtl)} with a DDTL; in ${runs} of ${rows.length} runs; cures ${sum((x) => x.cures.started)} opened, ${sum((x) => x.cures.done)} cured, ${sum((x) => x.cures.foreclosed)} foreclosed)`
           })
           .join(', ')}`,
       )
