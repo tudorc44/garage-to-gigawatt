@@ -186,6 +186,10 @@
   },
   "s3": {
    "why": "Efficiency Shock (trigger 2027Q4): stay flexible and shorten from the start through two quarters after the trigger, then lean back in for the rebound.",
+   "neutral_kinds": [
+    "card_shorten"
+   ],
+   "neutral_kinds_note": "Design thread, 2 Oct 2026 (M18.9): S3's term-shortening card choices carry an immediate rent cut and the trough lasts five quarters, so in the game locked leases beat shortened ones; they count 0 here. Defensive in S3 still means repaying, selling, hedging, holding cash and not building.",
    "ideal": [
     -1,
     -1,

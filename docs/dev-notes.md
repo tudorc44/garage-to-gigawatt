@@ -219,6 +219,8 @@ long-locked ≥ 1.15 × passive, A4 retired, C1 on the population, game-over cou
 WHY: M18.8's carried-lease reopeners repriced whole books in S0 too (population 1.01× → 0.66×); narrow them to bust conditions and weaker tenants.
 **M18.9a done:** `carriedTenantTriggerBandHigh` 0.75, `carriedTenantTypes` ai_lab / neocloud_sub_tenant; player reopeners on carried leases unchanged.
 act3Rules' company back to S3 within 5% of S1 (its carried tenants are hyperscalers). Goldens unchanged.
+**M18.9c done:** reading_score.json s3 `neutral_kinds: ["card_shorten"]` (both copies); stance, decoy count and marks use it. **Golden act3-s3:** its two
+card_shorten defaults now count 0 (marks neutral, not match/opposite): reading 53 → 50 (the intended effect). Oracle unchanged (stance logs).
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

@@ -17,6 +17,13 @@ type ScenarioReading = {
   ideal: number[]
   weight: number[]
   decoy: { quarters: string[]; wrong_stance: number }
+  /** M18.9 (DT): move kinds that count 0 in this scenario (S3: card_shorten). */
+  neutral_kinds?: string[]
+}
+
+/** A move's sign in a scenario: its MOVE_SIGN, or 0 for the scenario's neutral kinds. */
+function moveSign(sc: ScenarioReading, kind: Act3MoveKind): number {
+  return sc.neutral_kinds?.includes(kind) ? 0 : MOVE_SIGN[kind]
 }
 
 const FILE = raw as unknown as {
@@ -80,7 +87,7 @@ export function computeReading(
     const weight = sc.weight[q]
     if (weight === 0) continue
     const stance = sign(
-      moves.filter((m) => m.q === q).reduce((s, m) => s + MOVE_SIGN[m.kind], 0),
+      moves.filter((m) => m.q === q).reduce((s, m) => s + moveSign(sc, m.kind), 0),
     )
     const ideal = sc.ideal[q]
     const value =
@@ -101,7 +108,7 @@ export function computeReading(
     (m) =>
       m.q <= lastQ &&
       decoy.includes(m.q) &&
-      MOVE_SIGN[m.kind] === sc.decoy.wrong_stance,
+      moveSign(sc, m.kind) === sc.decoy.wrong_stance,
   ).length
   const penalty = Math.min(
     S.decoy_penalty_cap,
@@ -128,11 +135,11 @@ export function markMoves(
   const sc = FILE.scenarios[scenarioId]
   const decoy = decoyQuarters(scenarioId)
   return moves.map((m) => {
-    const s = MOVE_SIGN[m.kind]
+    const s = moveSign(sc, m.kind)
     const mark =
       decoy.includes(m.q) && s === sc.decoy.wrong_stance
         ? 'decoy'
-        : sc.weight[m.q] === 0 || sc.ideal[m.q] === 0
+        : s === 0 || sc.weight[m.q] === 0 || sc.ideal[m.q] === 0
           ? 'neutral'
           : s === sc.ideal[m.q]
             ? 'match'

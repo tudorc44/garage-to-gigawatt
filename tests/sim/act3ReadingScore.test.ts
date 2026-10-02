@@ -4,6 +4,7 @@ import type { ScenarioId } from '../../src/content/index.ts'
 import type { Act3Move } from '../../src/sim/state.ts'
 import {
   computeReading,
+  markMoves,
   oracleLogs,
 } from '../../src/sim/systems/readingScore.ts'
 
@@ -76,6 +77,16 @@ describe('the rules', () => {
     expect(tie.perQuarter.find((x) => x.q === Q('2027Q3'))!.stance).toBe(0)
     const two = computeReading([plus('2028Q3'), plus('2028Q3'), minus('2028Q3')], 's1')
     expect(two.perQuarter.find((x) => x.q === Q('2028Q3'))!.stance).toBe(1)
+  })
+
+  it('M18.9 (DT): in S3 a card_shorten move counts 0 (marked neutral); elsewhere it stays defensive', () => {
+    const shorten: Act3Move = { q: Q('2027Q2'), kind: 'card_shorten' }
+    expect(computeReading([shorten], 's3').perQuarter.find((x) => x.q === Q('2027Q2'))!.stance).toBe(0)
+    expect(score([shorten], 's3')).toBe(score([], 's3'))
+    expect(markMoves([shorten], 's3')[0].mark).toBe('neutral')
+    // a sale is still defensive in S3, and card_shorten still defensive in S1
+    expect(computeReading([minus('2027Q2')], 's3').perQuarter.find((x) => x.q === Q('2027Q2'))!.stance).toBe(-1)
+    expect(computeReading([{ ...shorten }], 's1').perQuarter.find((x) => x.q === Q('2027Q2'))!.stance).toBe(-1)
   })
 
   it('quarters after lastQ and weight-0 quarters are not counted; moves after lastQ add no penalty', () => {

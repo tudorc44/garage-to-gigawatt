@@ -3026,8 +3026,8 @@
       }
     ],
     "reading": {
-      "score": 53,
-      "base": 53,
+      "score": 50,
+      "base": 50,
       "penalty": 0,
       "perQuarter": [
         {
@@ -3060,10 +3060,10 @@
         },
         {
           "q": 4,
-          "stance": -1,
+          "stance": 0,
           "ideal": -1,
           "weight": 2,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 5,
@@ -3081,10 +3081,10 @@
         },
         {
           "q": 7,
-          "stance": -1,
+          "stance": 0,
           "ideal": 1,
           "weight": 1,
-          "value": 0
+          "value": 0.5
         },
         {
           "q": 8,
@@ -3107,13 +3107,13 @@
         "q": 4,
         "kind": "card_shorten",
         "sign": -1,
-        "mark": "match"
+        "mark": "neutral"
       },
       {
         "q": 7,
         "kind": "card_shorten",
         "sign": -1,
-        "mark": "opposite"
+        "mark": "neutral"
       },
       {
         "q": 12,
