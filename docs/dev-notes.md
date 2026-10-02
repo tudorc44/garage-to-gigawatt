@@ -209,6 +209,9 @@ the S3 reopener worked example moved to 2028Q3 (same band and term; 2030Q1's ban
 everywhere (C2 passes on the formula). Both copies, JSON, provenance, README. Goldens unchanged.
 **M18.8f done:** Great = "the best great-path company at 2026Q4", ~$2.7B; A3-12 cards show "~" + the valuation (all three, mine); presets_act3.json
 (both copies) and the wireframe README record it.
+**M18.8e/g done:** harness per answers 2/3/7. Anchors (30 seeds): PASS A1 (Good), A6, A7, C1, C2, C3; FAIL A1-gpu, A2 (GPU ignorer S1 0.58, 0 busts), A3, A4,
+A5 (S0 passive 0.63), F7 (0.22): carried-lease reopeners reprice the Good book in S0 too (S0 band 0.70–0.80 from 2028Q2). Full sim: Act I/II byte-identical;
+Act III 48 game overs (was 43), multiples S0 0.66× (1.01), S1 0.29× (0.89), S2 1.82×, S3 0.86× (0.95); reading medians 76/50/56/53. Goldens unchanged.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
