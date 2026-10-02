@@ -225,6 +225,11 @@ card_shorten defaults now count 0 (marks neutral, not match/opposite): reading 5
 companies and A2 both versions (the 60%-LTV ignorer's B200 clouds win everywhere: Good S0 2.31, S3 2.52; GPU S1 0.85, 0 busts), A5 (flexible 0.62 in S0:
 its own reopeners on carried leases). Full sim: Act I/II byte-identical; Act III 41 game overs; multiples 1.01/0.85/1.82/1.04×; reading 75/50/56/50.
 
+**M18.10 (the DT's answers to the M18.9 questions, 2 Oct 2026), split:** a AI-lab / neocloud GPU contracts walk after 2 full quarters in distress;
+b the ignorer takes the highest-priced GPU contract, flexible reopens only upward, A1-gpu judged in S1/S3; c re-run (walk counts per scenario).
+**M18.10a done:** `gpuDistressWalk` (2 quarters, ai_lab / neocloud_sub_tenant) in endQuarterProjects: GPUs to spot, `log.gpu_contract_walked` (ddtl flag),
+DDTL unchanged. The calendar test stops following a contract that walked. Goldens unchanged.
+
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
 Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's

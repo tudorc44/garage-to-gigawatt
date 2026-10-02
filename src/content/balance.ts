@@ -710,6 +710,14 @@ export const BALANCE = {
      */
     corporate: { bulletQuarters: 12 },
     /**
+     * M18.10 (DT, designed): a GPU contract whose tenant is an AI lab or a neocloud, in distress for this many full
+     * quarters, walks at the end of the last one (its GPUs to spot). Hyperscalers and shell leases keep half pay.
+     */
+    gpuDistressWalk: {
+      quarters: 2,
+      tenantTypes: ['ai_lab', 'neocloud_sub_tenant'] as readonly string[],
+    },
+    /**
      * M18.6 K1 (the tuning pass, for C2: Rubin's payback ≥ 1.8 years and ≥ B200's): a factor on Rubin's and Rubin
      * Ultra's rents (their neocloud series, so spot and GPU contracts), all scenarios and quarters. 1 = the files'.
      */

@@ -1794,6 +1794,7 @@ const TENANT_EVENT_KEYS: MessageKey[] = [
   'log.tenant_distress',
   'log.tenant_terminated',
   'log.gpu_contract_ended',
+  'log.gpu_contract_walked',
 ]
 
 /**
@@ -1994,6 +1995,7 @@ const ACT3_REPORT_KEYS = new Set<string>([
   'log.renewal_kept_empty',
   'log.relet_signed',
   'log.gpu_contract_ended',
+  'log.gpu_contract_walked',
   'log.reopener_tenant',
   'log.reopener_player',
   'log.reopener_kept',

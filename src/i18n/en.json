@@ -393,6 +393,7 @@
   "log.project_sold": "Sold project {n} with its tenant for {priceUsd}: its power goes with it.",
   "log.gpu_contract_signed": "Project {n}: signed {tenant} for {count} {gpu}s at {priceUsd}/GPU-hr for {years} years, take-or-pay. Live by {quarter}, or pay damages.",
   "log.gpu_contract_ended": "Project {n}: the GPU contract with {tenant} ended. The GPUs sell on spot until you sign a new one.",
+  "log.gpu_contract_walked": "Project {n}: {tenant} walked away from its GPU contract after two quarters in distress. The GPUs sell on spot; any GPU-backed loan keeps its schedule.",
   "log.renewal_offer": "Project {n}: {tenant}'s contract is up for renewal. They offer {multPct} on the current rate for {years} years.",
   "log.renewal_walk": "Project {n}: {tenant} won't renew. They leave when the term ends this quarter.",
   "log.renewal_signed": "Project {n}: {tenant} renewed at {multPct} on the old rate, for {years} years.",

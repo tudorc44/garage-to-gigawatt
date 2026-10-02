@@ -109,14 +109,17 @@ describe('the calendar for an Act II company entering 2027Q1', () => {
     expect(gpu.length).toBeGreaterThan(0)
     for (const e of gpu) {
       let t = s
+      // M18.10: an AI-lab or neocloud contract 2 quarters in distress may walk before its end (followed no further)
+      const walked = (x: GameState) =>
+        x.log.some((l) => l.key === 'log.gpu_contract_walked' && l.params?.n === x.projects.find((p) => p.id === e.id)!.n)
       // (M12.2: at its end quarter the contract comes up for renewal, instead of lapsing to spot.)
-      while (t.quarter < e.endQuarter! && t.phase === 'plan') {
+      while (t.quarter < e.endQuarter! && t.phase === 'plan' && !walked(t)) {
         const p = t.projects.find((x) => x.id === e.id)!
         expect(p.tenant, `${e.id} still contracted in its term`).not.toBeNull()
         expect(t.act3Renewals?.some((r) => r.projectId === e.id)).toBe(false)
         t = quarter(t)
       }
-      if (t.phase === 'plan')
+      if (t.phase === 'plan' && !walked(t))
         expect(
           t.act3Renewals?.some((r) => r.projectId === e.id),
           `${e.id} renewal opens in its end quarter`,

@@ -1104,6 +1104,23 @@ export function endQuarterProjects(state: GameState): number {
         logEntry(state, 'log.gpu_contract_ended', { n: p.n, tenant: card.id })
         p.tenant = null
         p.spot = true
+      } else if (
+        // Act III (M18.10, DT): an AI-lab or neocloud GPU contract in distress for 2 full quarters walks at the end of
+        // the second; its GPUs go to spot, any DDTL keeps its schedule (served from spot revenue)
+        inActIII(state) &&
+        t.gpu &&
+        !renewing &&
+        t.distressedQuarter !== undefined &&
+        BALANCE.act3.gpuDistressWalk.tenantTypes.includes(card.type) &&
+        state.quarter >= t.distressedQuarter + BALANCE.act3.gpuDistressWalk.quarters - 1
+      ) {
+        logEntry(state, 'log.gpu_contract_walked', {
+          n: p.n,
+          tenant: card.id,
+          ddtl: state.facilities.some((f) => f.projectId === p.id && f.kind === 'ddtl') ? 1 : 0,
+        })
+        p.tenant = null
+        p.spot = true
       }
       continue
     }
