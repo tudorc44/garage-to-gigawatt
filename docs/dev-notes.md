@@ -203,6 +203,8 @@ S2, A2/A1 on the GPU-heavy quick start, the larger builder, C3 ±2%); f Great "~
 shell landlord on long Act II leases that the scenarios barely touch; reopeners skipped the Act II book and S3's band never rebounded.
 **M18.8a/b done:** act3Seed ≠ seed re-seeds `state.rng` (substream act3_main); carried Act II shell leases reopen from 12 quarters served ("3 years
 into its term", mine; Act III leases keep 8). act3Rules' company: S3 now ends above S1 again (test restored). Goldens unchanged. 1207 tests.
+**M18.8c done:** S3 renewal band 0.62/0.74 (2029Q1) → 0.84/0.98 (2030Q4), RFP index by the same increase (both copies, JSON, provenance, README);
+the S3 reopener worked example moved to 2028Q3 (same band and term; 2030Q1's band is now above the trigger). Goldens unchanged.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

@@ -87,9 +87,11 @@ function leaseAt(
   return { s, p }
 }
 
+// (M18.8: S3's band rebounds from 2029Q1, so the worked example moved from 2030Q1 to 2028Q3: the same band
+// 0.60–0.70 and the same 3.5-year offered term; its card defaults to "Wait", unlike 2028Q4's "Roll shorter".)
 describe('the tenant reopens (S3 worked example)', () => {
-  it('20 MW neocloud at $2.2M/MW-yr in 2030Q1: it pays $5.5M; offer 0.625 → $27.5M/yr; term 3.5 → 4 years', () => {
-    const { s, p } = leaseAt('s3', '2030Q1', {
+  it('20 MW neocloud at $2.2M/MW-yr in 2028Q3: it pays $5.5M; offer 0.625 → $27.5M/yr; term 3.5 → 4 years', () => {
+    const { s, p } = leaseAt('s3', '2028Q3', {
       type: 'neocloud_sub_tenant',
       mw: 20,
       usdMwYr: 2.2e6,
@@ -132,18 +134,18 @@ describe('the tenant reopens (S3 worked example)', () => {
       usdMwYr: 2e6,
       served: 12,
     }
-    const recent = leaseAt('s3', '2030Q1', opts)
+    const recent = leaseAt('s3', '2028Q3', opts)
     recent.p.tenant!.reopenedQuarter = recent.s.quarter - 3
     openTenantReopeners(recent.s)
     expect(recent.s.act3Renewals).toEqual([])
-    const due = leaseAt('s3', '2030Q1', opts)
+    const due = leaseAt('s3', '2028Q3', opts)
     due.p.tenant!.reopenedQuarter = due.s.quarter - 4
     openTenantReopeners(due.s)
     expect(due.s.act3Renewals).toHaveLength(1)
   })
 
   it('refused through re-let (1 BW): the tenant leaves at quarter end, the re-let runs, the fee stays paid', () => {
-    const { s, p } = leaseAt('s3', '2030Q1', {
+    const { s, p } = leaseAt('s3', '2028Q3', {
       type: 'neocloud_sub_tenant',
       mw: 20,
       usdMwYr: 2.2e6,
@@ -160,15 +162,15 @@ describe('the tenant reopens (S3 worked example)', () => {
   })
 
   it('the tenant reopener fires in play: at the start of a Plan phase, after the renewals open', () => {
-    const { s, p } = leaseAt('s3', '2029Q4', {
+    const { s, p } = leaseAt('s3', '2028Q2', {
       type: 'neocloud_sub_tenant',
       mw: 20,
       usdMwYr: 2.2e6,
       served: 11,
     })
-    // 2030Q1 (band high 0.70): the lease has served 12 quarters by then.
+    // 2028Q3 (band high 0.70): the lease has served 12 quarters by then.
     const t = quarter(s)
-    expect(CONTENT.quarters[t.quarter]).toBe('2030Q1')
+    expect(CONTENT.quarters[t.quarter]).toBe('2028Q3')
     const r = t.act3Renewals!.find((x) => x.projectId === p.id)
     expect(r).toMatchObject({ cause: 'reopener', by: 'tenant' })
   })
