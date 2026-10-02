@@ -128,6 +128,8 @@ export function debtStackView(state: GameState) {
     /** M18.1: a company facility's id (it can be repaid early), and why Repay is greyed. */
     facilityId?: string
     repayBlocked?: Message | null
+    /** M18.11: a DDTL under a lender cure: the quarter it must be cured by. */
+    lenderCure?: string
   }[] = []
   for (const f of state.facilities) {
     // Act III (M18.1, M18.2): a corporate facility or a standby draw: its bullet's quarter, and Repay.
@@ -150,6 +152,8 @@ export function debtStackView(state: GameState) {
     }
     const p = getProject(state, f.projectId)
     const live = p?.stage === 'live'
+    // Act III (M18.11): a DDTL under a lender cure shows its deadline
+    const cure = f.kind === 'ddtl' && p?.lenderCure ? label(p.lenderCure.untilQuarter) : undefined
     const due = serviceDueUsd(state, f)
     const yearly = (due.interestUsd + due.principalUsd) * 4
     const ebitda = p ? (projectedReturn(state, p).ebitdaUsd ?? 0) : 0
@@ -174,6 +178,7 @@ export function debtStackView(state: GameState) {
               : 'ok',
       rating: f.rating,
       missed: f.missedQuarters,
+      ...(cure ? { lenderCure: cure } : {}),
     })
   }
   const eq = state.equipmentLoan

@@ -196,7 +196,12 @@ function DebtStack({ state, act }: ScreenProps) {
                 <td
                   class={`num-s ${r.status === 'breach' || r.missed > 0 ? 'loss' : ''}`}
                 >
-                  {r.facilityId ? (
+                  {r.lenderCure ? (
+                    // Act III (M18.11): the lender's cure on a DDTL
+                    <span class="loss" data-lender-cure>
+                      {t('ui.projects.lender_cure', { quarter: fmt.quarter(r.lenderCure) })}
+                    </span>
+                  ) : r.facilityId ? (
                     // Act III (M18.1): a corporate facility or standby draw can be repaid early (0 BW).
                     <button
                       type="button"

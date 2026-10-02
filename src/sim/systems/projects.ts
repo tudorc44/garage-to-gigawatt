@@ -18,6 +18,7 @@ import {
 } from '../../content/index.ts'
 import { scenarioOf } from './market.ts'
 import { rfpMid } from './leaseIndex.ts'
+import { startLenderCure } from './facilities.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream } from '../rng.ts'
 import {
@@ -1106,21 +1107,27 @@ export function endQuarterProjects(state: GameState): number {
         p.spot = true
       } else if (
         // Act III (M18.10, DT): an AI-lab or neocloud GPU contract in distress for 2 full quarters walks at the end of
-        // the second; its GPUs go to spot, any DDTL keeps its schedule (served from spot revenue)
+        // the second; M18.11 (DT): only if spot for its generation is below its distressed pay (0.5 × its rate), else it
+        // stays at half pay, re-checked each quarter end. Its GPUs go to spot; a DDTL on it opens a lender cure.
         inActIII(state) &&
         t.gpu &&
         !renewing &&
         t.distressedQuarter !== undefined &&
         BALANCE.act3.gpuDistressWalk.tenantTypes.includes(card.type) &&
-        state.quarter >= t.distressedQuarter + BALANCE.act3.gpuDistressWalk.quarters - 1
+        state.quarter >= t.distressedQuarter + BALANCE.act3.gpuDistressWalk.quarters - 1 &&
+        (neocloudUsdHr(p.gpu!, state.quarter, scenarioOf(state)) ?? Infinity) <
+          t.gpu.priceUsdHr * BALANCE.projects.aiLabDistress.paymentMult
       ) {
+        const ddtl = state.facilities.some((f) => f.projectId === p.id && f.kind === 'ddtl')
         logEntry(state, 'log.gpu_contract_walked', {
           n: p.n,
           tenant: card.id,
-          ddtl: state.facilities.some((f) => f.projectId === p.id && f.kind === 'ddtl') ? 1 : 0,
+          ddtl: ddtl ? 1 : 0,
+          carried: t.signedQuarter < actFirstQuarter(3) ? 1 : 0,
         })
         p.tenant = null
         p.spot = true
+        if (ddtl) startLenderCure(state, p)
       }
       continue
     }

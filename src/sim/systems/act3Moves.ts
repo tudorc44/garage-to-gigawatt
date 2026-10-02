@@ -213,6 +213,7 @@ export function moveOf(
     case 'REPAY_CONSTRUCTION_LOAN':
     case 'REPAY_BRIDGE_LOAN':
     case 'REPAY_COMPANY_FACILITY':
+    case 'REPAY_CURE_DDTL':
       return 'debt_repay'
     case 'RAISE_EQUITY':
     case 'RAISE':

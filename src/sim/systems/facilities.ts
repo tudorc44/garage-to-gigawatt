@@ -9,6 +9,7 @@ import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   logEntry,
+  projectGone,
   type Facility,
   type GameState,
   type Project,
@@ -372,6 +373,66 @@ export function serviceFacilities(state: GameState): {
       foreclose(state, p)
   }
   return paid
+}
+
+// ---------- the lender cure (Act III, M18.11, DT) ----------
+
+/**
+ * A GPU contract walked on a project with a DDTL: the lender gives 2 quarters (designed) to sign a new GPU contract on
+ * the project or repay the DDTL in full, by the end of the 2nd quarter after the walk. Debt service goes on meanwhile.
+ */
+export function startLenderCure(state: GameState, p: Project): void {
+  const untilQuarter = state.quarter + BALANCE.act3.lenderCure.quarters
+  p.lenderCure = { untilQuarter }
+  logEntry(state, 'log.lender_cure_started', {
+    n: p.n,
+    quarter: CONTENT.quarters[untilQuarter] ?? '—',
+  })
+}
+
+/** At a quarter's end: each open cure is cured (a new GPU contract, or no DDTL left), or at its deadline forecloses. */
+export function settleLenderCures(state: GameState): void {
+  for (const p of state.projects) {
+    if (!p.lenderCure) continue
+    const ddtl = state.facilities.some((f) => f.projectId === p.id && f.kind === 'ddtl')
+    if (projectGone(p) || !ddtl || p.tenant?.gpu) {
+      delete p.lenderCure
+      if (!projectGone(p)) logEntry(state, 'log.lender_cure_done', { n: p.n })
+      continue
+    }
+    if (state.quarter >= p.lenderCure.untilQuarter) {
+      delete p.lenderCure
+      logEntry(state, 'log.lender_cure_foreclosed', { n: p.n })
+      foreclose(state, p)
+    }
+  }
+}
+
+/** Why the DDTL under a lender cure can't be repaid now, or undefined. */
+export function cureRepayBlocker(
+  state: GameState,
+  projectId: string,
+): Message | undefined {
+  const p = getProject(state, projectId)
+  if (!p?.lenderCure) return { key: 'error.no_lender_cure' }
+  const owed = state.facilities
+    .filter((f) => f.projectId === projectId && f.kind === 'ddtl')
+    .reduce((a, f) => a + f.balanceUsd, 0)
+  if (state.cash < owed)
+    return { key: 'error.no_cash', params: { costUsd: owed, cashUsd: state.cash } }
+  return undefined
+}
+
+/** Repays the DDTL under a lender cure in full (0 Bandwidth; assumes the blocker passed). */
+export function repayCureDdtl(state: GameState, projectId: string): void {
+  const owed = state.facilities
+    .filter((f) => f.projectId === projectId && f.kind === 'ddtl')
+    .reduce((a, f) => a + f.balanceUsd, 0)
+  state.facilities = state.facilities.filter(
+    (f) => !(f.projectId === projectId && f.kind === 'ddtl'),
+  )
+  state.cash -= owed
+  logEntry(state, 'log.debt_paid_off', { n: getProject(state, projectId)!.n, debt: 'ddtl' })
 }
 
 /** The lender takes the project: it, its MW and its debt leave the company. */

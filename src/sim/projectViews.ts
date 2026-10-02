@@ -51,6 +51,7 @@ import {
   ppaResaleUsdMwh,
 } from './systems/nuclear.ts'
 import { gridQuarterRange, powerBlocker } from './systems/power.ts'
+import { cureRepayBlocker } from './systems/facilities.ts'
 import {
   downtimeDoneQuarter,
   fits,
@@ -180,6 +181,13 @@ export function projectCard(state: GameState, p: Project) {
             }),
           }
         : null,
+    /** Act III (M18.11): an open lender cure: re-contract or repay by this quarter, and why repaying is greyed. */
+    lenderCure: p.lenderCure
+      ? {
+          quarter: CONTENT.quarters[p.lenderCure.untilQuarter] ?? '—',
+          repayBlocked: cureRepayBlocker(state, p.id) ?? null,
+        }
+      : null,
   }
 }
 

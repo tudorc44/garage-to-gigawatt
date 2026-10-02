@@ -42,7 +42,7 @@ import { endQuarterHeat, hottestSite, startQuarterHeat } from './heat.ts'
 import { hashrate } from './mining.ts'
 import { treasuryValueUsd } from './treasury.ts'
 import { renewHosting } from './hosting.ts'
-import { serviceFacilities } from './facilities.ts'
+import { serviceFacilities, settleLenderCures } from './facilities.ts'
 import {
   autoDrawStandby,
   expireStandby,
@@ -74,6 +74,8 @@ export function endQuarter(state: GameState): void {
     BALANCE.weeksPerQuarter - 1,
     scenarioOf(state),
   )
+  // Act III (M18.11): open lender cures are cured or, at their deadline, foreclose (before this quarter's walks).
+  if (inActIII(state)) settleLenderCures(state)
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   // Act III (M17.2): the nuclear PPAs' take-or-pay for the quarter.
   settlePpas(state)

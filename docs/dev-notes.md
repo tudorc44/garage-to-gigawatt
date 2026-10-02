@@ -233,6 +233,12 @@ DDTL unchanged. The calendar test stops following a contract that walked. Golden
 F7, C1 (population 1.03/0.87/1.82/1.04×), C2, C3; FAIL A1 both, A2 both versions: the walk RAISES the ignorer's S1 (Good 0.97 → 1.26, GPU 0.85 → 1.10):
 half-pay distress → full spot after the walk. Walks (population): s0 21, s1 74, s2 6, s3 18. Full sim: Act I/II byte-identical; 41 game overs.
 
+**M18.11 (the DT's answers to the M18.10 questions, 2 Oct 2026), split:** a the walk only when spot < the distressed pay (0.5 × rate), re-checked each
+quarter end; a walk on a DDTL project opens a 2-quarter lender cure (re-contract or repay, else foreclosure); b A2 = S1 ignorer (GPU) median ≤ 0.5 and a
+foreclosure / rescue / forced sale in ≥ 9 of 30 (fallback unchanged); walks carried vs new and cure outcomes counted; c re-run.
+**M18.11a done:** the walk test against spot; `lenderCure` (2 quarters), `settleLenderCures` before the quarter's walks, REPAY_CURE_DDTL (debt_repay),
+the card's and Capital's "Lender cure: re-contract or repay by {quarter}", three log lines in the report. Goldens unchanged.
+
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
 Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's

@@ -9,6 +9,7 @@ import { toAct3, type GameState, type QuarterReport } from '../../src/sim/state.
 import { drawCorporate } from '../../src/sim/systems/corporateDebt.ts'
 import { StandbyPanel } from '../../src/ui/screens/Act3Capital.tsx'
 import { CapitalAct2 } from '../../src/ui/screens/CapitalAct2.tsx'
+import { ProjectsSection } from '../../src/ui/screens/Projects.tsx'
 import { act2Company } from '../sim/act2Helpers.ts'
 
 afterEach(cleanup)
@@ -51,6 +52,62 @@ describe('the standby block', () => {
     fireEvent.input(container.querySelector('[data-standby-amount]')!, { target: { value: '25' } })
     fireEvent.click([...container.querySelectorAll('button')].find((b) => b.textContent === 'Draw')!)
     expect(a).toHaveBeenCalledWith({ type: 'STANDBY_DRAW', amountUsd: 25_000_000 })
+  })
+})
+
+describe('M18.11: a lender cure on the project card and in Capital', () => {
+  it('"Lender cure: re-contract or repay by Q1 2029" on both; the card’s Repay sends REPAY_CURE_DDTL', () => {
+    const s = co()
+    s.quarter = q('2028Q3')
+    s.projects = [
+      {
+        id: 'project-1',
+        n: 1,
+        siteId: 'site-2',
+        kw: 5000,
+        kind: 'cloud',
+        gpu: 'b200',
+        tier: 'mid',
+        openedQuarter: q('2027Q1'),
+        stage: 'live',
+        offers: [],
+        tenant: null,
+        spot: true,
+        capital: 'cash',
+        capexUsd: 0,
+        gpuCapexUsd: 0,
+        gpuCount: 3000,
+        startQuarter: q('2027Q1'),
+        readyQuarter: q('2027Q2'),
+        soldQuarter: null,
+        lenderCure: { untilQuarter: q('2029Q1') },
+      },
+    ]
+    s.facilities = [
+      {
+        id: 'facility-1',
+        kind: 'ddtl',
+        projectId: 'project-1',
+        amountUsd: 1e7,
+        balanceUsd: 1e7,
+        apr: 0.1,
+        tenorQuarters: 12,
+        drawnQuarter: q('2027Q1'),
+        missedQuarters: 0,
+        rating: 'BBB',
+      },
+    ]
+    const cap = render(<CapitalAct2 state={s} act={act()} />).container
+    expect(cap.querySelector('[data-lender-cure]')!.textContent).toBe(
+      'Lender cure: re-contract or repay by Q1 2029',
+    )
+    cleanup()
+    const a = act()
+    const proj = render(<ProjectsSection state={s} act={a} />).container
+    const line = proj.querySelector('[data-lender-cure]')!
+    expect(line.textContent).toContain('Lender cure: re-contract or repay by Q1 2029')
+    fireEvent.click(line.querySelector('button')!)
+    expect(a).toHaveBeenCalledWith({ type: 'REPAY_CURE_DDTL', projectId: 'project-1' })
   })
 })
 

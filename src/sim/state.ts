@@ -530,6 +530,11 @@ export interface Project {
   greenfield?: boolean
   /** Act III (M16.3): the quarter its GPUs were last changed (their resale ages from then); missing = readyQuarter. */
   gpuDeliveredQuarter?: number
+  /**
+   * Act III (M18.11): its GPU contract walked with a DDTL on it: re-contract or repay the DDTL by the end of
+   * `untilQuarter`, else the lender forecloses. Absent otherwise.
+   */
+  lenderCure?: { untilQuarter: number }
   /** Capex committed and paid at the start of the build (after any tenant capex credit). */
   capexUsd: number
   /** The GPUs' share of it (insured each year). */

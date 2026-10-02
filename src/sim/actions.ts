@@ -185,9 +185,11 @@ import {
   takeBackstop,
 } from './systems/partners.ts'
 import {
+  cureRepayBlocker,
   debtPlan,
   drawFacilities,
   logProjectCapital,
+  repayCureDdtl,
   repayProjectFacilities,
   setProjectDebt,
   type DebtKind,
@@ -356,6 +358,8 @@ export type Action =
   | { type: 'REPAY_BRIDGE_LOAN' }
   /** Act III (M18.1, M18.2): repay a corporate facility or a standby draw early, from cash (0 Bandwidth). */
   | { type: 'REPAY_COMPANY_FACILITY'; facilityId: string }
+  /** Act III (M18.11): repay the DDTL under a lender cure in full, from cash (0 Bandwidth). */
+  | { type: 'REPAY_CURE_DDTL'; projectId: string }
   /** Act III (M18.2): arrange the standby liquidity facility (1 Bandwidth), or draw on it (0 Bandwidth). */
   | { type: 'STANDBY_ARRANGE' }
   | { type: 'STANDBY_DRAW'; amountUsd: number }
@@ -925,6 +929,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = companyRepayBlocker(s, a.facilityId)
       if (blocked) return blocked
       repayCompanyFacility(s, a.facilityId)
+      return
+    }
+
+    case 'REPAY_CURE_DDTL': {
+      const blocked = cureRepayBlocker(s, a.projectId)
+      if (blocked) return blocked
+      repayCureDdtl(s, a.projectId)
       return
     }
 

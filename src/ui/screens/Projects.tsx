@@ -215,6 +215,23 @@ function ProjectCardEl(
             t('ui.projects.irr', { irr: fmt.pct(card.irr) })}
         </span>
       </div>
+      {card.lenderCure && (
+        // Act III (M18.11): the GPU-backed lender's cure after a walk
+        <div class="row-between" data-lender-cure>
+          <span class="tag danger">
+            {t('ui.projects.lender_cure', { quarter: fmt.quarter(card.lenderCure.quarter) })}
+          </span>
+          <button
+            type="button"
+            class="btn"
+            disabled={!!card.lenderCure.repayBlocked}
+            title={card.lenderCure.repayBlocked ? say(card.lenderCure.repayBlocked) : undefined}
+            onClick={() => act({ type: 'REPAY_CURE_DDTL', projectId: p.id })}
+          >
+            {t('ui.projects.lender_cure_repay')}
+          </button>
+        </div>
+      )}
       <div class="num-s muted">
         {card.region && <span class="tag">{regionName(card.region)}</span>}{' '}
         {t('ui.projects.what', {

@@ -717,6 +717,8 @@ export const BALANCE = {
       quarters: 2,
       tenantTypes: ['ai_lab', 'neocloud_sub_tenant'] as readonly string[],
     },
+    /** M18.11 (DT, designed): a walk on a DDTL project gives this many quarters to re-contract or repay, else foreclosure. */
+    lenderCure: { quarters: 2 },
     /**
      * M18.6 K1 (the tuning pass, for C2: Rubin's payback ≥ 1.8 years and ≥ B200's): a factor on Rubin's and Rubin
      * Ultra's rents (their neocloud series, so spot and GPU contracts), all scenarios and quarters. 1 = the files'.
