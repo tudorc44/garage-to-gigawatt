@@ -392,6 +392,14 @@ export function openTenantReopeners(state: GameState): void {
   if (!band || band.hi >= RO.tenantTriggerBandHigh) return
   for (const p of state.projects) {
     if (!reopenerEligible(state, p)) continue
+    // M18.9 (DT): a lease carried in from Act II is reopened by its tenant only in a bust (Band high < 0.75) and only
+    // by a weaker tenant (an AI lab or a neocloud, never a hyperscaler)
+    if (
+      p.tenant!.signedQuarter < actFirstQuarter(3) &&
+      (band.hi >= RO.carriedTenantTriggerBandHigh ||
+        !RO.carriedTenantTypes.includes(tenantCard(p.tenant!.card)?.type ?? ''))
+    )
+      continue
     const last = p.tenant!.reopenedQuarter
     if (last !== undefined && state.quarter - last < RO.tenantEveryQuarters)
       continue

@@ -185,8 +185,9 @@ describe('a real company plays Act III on each scenario', () => {
     expect(last('s2')).toBeGreaterThan(last('s0'))
     expect(last('s0')).toBeGreaterThan(last('s1'))
     // M16.2: "S3 ends above S1" stopped holding for this company (its low-tier carried shells, S3's efficiency shock);
-    // M18.8: with reopeners on its carried Act II leases, S1's bust reprices them and S3 ends above S1 again.
-    expect(last('s3')).toBeGreaterThan(last('s1'))
+    // M18.8 restored it (carried-lease reopeners); M18.9 narrows those to AI labs and neoclouds in a bust, and its
+    // carried tenants are hyperscalers, so it's back to within 5% of each other ($318.2M vs $334.5M):
+    expect(Math.abs(last('s3') / last('s1') - 1)).toBeLessThan(0.05)
     // (its live halls; M16.4: s3_c8's default "Add an edge hall" opens a proposed mid-tier hall in 2030Q1)
     const s3 = runs.get('s3')!.at(-1)!.projects
     expect(s3.filter((p) => p.stage === 'live').every((p) => p.tier === 'low')).toBe(

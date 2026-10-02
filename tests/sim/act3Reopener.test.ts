@@ -87,6 +87,33 @@ function leaseAt(
   return { s, p }
 }
 
+describe('M18.9 (DT): a carried Act II lease is reopened by its tenant only in a bust, and only by a weaker tenant', () => {
+  const carried = (id: ScenarioId, label: string, type: string) => {
+    const x = leaseAt(id, label, { type, mw: 10, usdMwYr: 2e6, served: 12 })
+    x.p.tenant!.signedQuarter = FIRST - 1
+    openTenantReopeners(x.s)
+    return x.s.act3Renewals!.length
+  }
+  it('S1 2028Q3 (band high 0.60): an AI lab or a neocloud reopens; a hyperscaler never', () => {
+    expect(renewalBand(q('2028Q3'), 's1')!.hi).toBeLessThan(0.75)
+    expect(carried('s1', '2028Q3', 'ai_lab')).toBe(1)
+    expect(carried('s1', '2028Q3', 'neocloud_sub_tenant')).toBe(1)
+    expect(carried('s1', '2028Q3', 'hyperscaler')).toBe(0)
+  })
+  it('S0 2029Q1 (band high 0.80, under 0.90 but over 0.75): no carried lease reopens; an Act III lease still does', () => {
+    expect(carried('s0', '2029Q1', 'ai_lab')).toBe(0)
+    const own = leaseAt('s0', '2029Q1', { type: 'ai_lab', mw: 10, usdMwYr: 2e6, served: 8 })
+    own.p.tenant!.signedQuarter = FIRST
+    openTenantReopeners(own.s)
+    expect(own.s.act3Renewals).toHaveLength(1)
+  })
+  it('the player may still reopen a carried hyperscaler lease (12 quarters served, the fee)', () => {
+    const x = leaseAt('s0', '2029Q1', { type: 'hyperscaler', mw: 10, usdMwYr: 2e6, served: 12 })
+    x.p.tenant!.signedQuarter = FIRST - 1
+    expect(playerReopenBlocker(x.s, x.p.id)).toBeUndefined()
+  })
+})
+
 // (M18.8: S3's band rebounds from 2029Q1, so the worked example moved from 2030Q1 to 2028Q3: the same band
 // 0.60–0.70 and the same 3.5-year offered term; its card defaults to "Wait", unlike 2028Q4's "Roll shorter".)
 describe('the tenant reopens (S3 worked example)', () => {

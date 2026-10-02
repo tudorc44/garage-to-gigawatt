@@ -600,6 +600,12 @@ export const BALANCE = {
       fromServedQuarters: 8,
       /** M18.8 (DT): a lease carried in from Act II, at least 3 years into its term. */
       carriedFromServedQuarters: 12,
+      /**
+       * M18.9 (DT, designed): a carried lease's TENANT reopens it only while Band high < this (S1 from 2028Q2, S3 2027Q4–
+       * 2029Q2, never S0), and only an AI lab or a neocloud. The player's reopener on a carried lease stays as built.
+       */
+      carriedTenantTriggerBandHigh: 0.75,
+      carriedTenantTypes: ['ai_lab', 'neocloud_sub_tenant'] as readonly string[],
       /** The tenant reopens when Band high(q) is below this (the market ≥10% under the lease) (DT). */
       tenantTriggerBandHigh: 0.9,
       /** A tenant reopens a lease at most once in this many quarters. */

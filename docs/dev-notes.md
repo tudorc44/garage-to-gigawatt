@@ -213,6 +213,13 @@ everywhere (C2 passes on the formula). Both copies, JSON, provenance, README. Go
 A5 (S0 passive 0.63), F7 (0.22): carried-lease reopeners reprice the Good book in S0 too (S0 band 0.70–0.80 from 2028Q2). Full sim: Act I/II byte-identical;
 Act III 48 game overs (was 43), multiples S0 0.66× (1.01), S1 0.29× (0.89), S2 1.82×, S3 0.86× (0.95); reading medians 76/50/56/53. Goldens unchanged.
 
+**M18.9 (the DT's answers to the M18.8 questions, 2 Oct 2026), split:** a carried-lease tenant reopeners only at Band high < 0.75 and only AI labs and
+neoclouds; b the ignorer (60% LTV, B200 clouds in 2027) and hedged (standby, LTV ≤ 40%, default cards) redefined, A2 with its fallback, A3 = S2
+long-locked ≥ 1.15 × passive, A4 retired, C1 on the population, game-over counts with medians; c S3 card_shorten neutral in the reading score; d re-run.
+WHY: M18.8's carried-lease reopeners repriced whole books in S0 too (population 1.01× → 0.66×); narrow them to bust conditions and weaker tenants.
+**M18.9a done:** `carriedTenantTriggerBandHigh` 0.75, `carriedTenantTypes` ai_lab / neocloud_sub_tenant; player reopeners on carried leases unchanged.
+act3Rules' company back to S3 within 5% of S1 (its carried tenants are hyperscalers). Goldens unchanged.
+
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
 Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's
