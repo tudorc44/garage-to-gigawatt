@@ -229,6 +229,9 @@ its own reopeners on carried leases). Full sim: Act I/II byte-identical; Act III
 b the ignorer takes the highest-priced GPU contract, flexible reopens only upward, A1-gpu judged in S1/S3; c re-run (walk counts per scenario).
 **M18.10a done:** `gpuDistressWalk` (2 quarters, ai_lab / neocloud_sub_tenant) in endQuarterProjects: GPUs to spot, `log.gpu_contract_walked` (ddtl flag),
 DDTL unchanged. The calendar test stops following a contract that walked. Goldens unchanged.
+**M18.10b/c done:** ignorer takes the dearest GPU contract; flexible reopens only upward; A1-gpu in S1/S3. Anchors: PASS A3, A5 (flexible S0 now 1.08), A6, A7,
+F7, C1 (population 1.03/0.87/1.82/1.04×), C2, C3; FAIL A1 both, A2 both versions: the walk RAISES the ignorer's S1 (Good 0.97 → 1.26, GPU 0.85 → 1.10):
+half-pay distress → full spot after the walk. Walks (population): s0 21, s1 74, s2 6, s3 18. Full sim: Act I/II byte-identical; 41 game overs.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
