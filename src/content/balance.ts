@@ -598,6 +598,8 @@ export const BALANCE = {
     reopener: {
       /** Eligible from the start of contract year 3: this many quarters served. */
       fromServedQuarters: 8,
+      /** M18.8 (DT): a lease carried in from Act II, at least 3 years into its term. */
+      carriedFromServedQuarters: 12,
       /** The tenant reopens when Band high(q) is below this (the market ≥10% under the lease) (DT). */
       tenantTriggerBandHigh: 0.9,
       /** A tenant reopens a lease at most once in this many quarters. */

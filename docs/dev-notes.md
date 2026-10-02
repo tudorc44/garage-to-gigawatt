@@ -201,6 +201,8 @@ busts); S2 no-hire signer $123.9M vs bots $120.7M. **M18 done:** 1181 → 1206 t
 shell leases; c S3's renewal/RFP rebound from 2029Q1 (data); d Rubin Ultra's rack price ($1M steps to ≤ $20M); e the harness (A1 exempts
 S2, A2/A1 on the GPU-heavy quick start, the larger builder, C3 ±2%); f Great "~$2.7B"; g the re-run and report. WHY: the Good preset is a
 shell landlord on long Act II leases that the scenarios barely touch; reopeners skipped the Act II book and S3's band never rebounded.
+**M18.8a/b done:** act3Seed ≠ seed re-seeds `state.rng` (substream act3_main); carried Act II shell leases reopen from 12 quarters served ("3 years
+into its term", mine; Act III leases keep 8). act3Rules' company: S3 now ends above S1 again (test restored). Goldens unchanged. 1207 tests.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 

@@ -148,10 +148,16 @@ describe('who gets one', () => {
     const quarters: string[] = []
     for (let i = 0; i < 6; i++) {
       s = quarter(s)
-      if ((s.act3BlendOffers ?? []).length > 0)
-        quarters.push(CONTENT.quarters[s.quarter])
+      const label = CONTENT.quarters[s.quarter]
+      if ((s.act3BlendOffers ?? []).length > 0) quarters.push(label)
+      // M18.8: this carried Act II lease is reopenable from 12 quarters served (2029Q2); a tenant reopener opens a
+      // renewal, which takes the place of that quarter's blend-and-extend offer
+      else if (s.log.some((e) => e.key === 'log.reopener_tenant' && CONTENT.quarters[e.quarter] === label))
+        quarters.push(`${label} reopened`)
     }
-    expect(quarters).toEqual(['2028Q2', '2029Q2'])
+    expect(quarters[0]).toBe('2028Q2')
+    expect(['2029Q2', '2029Q2 reopened']).toContain(quarters[1])
+    expect(quarters).toHaveLength(2)
   })
 
   it('never a GPU contract, a lease with a renewal open, or outside Act III', () => {

@@ -77,17 +77,22 @@ export function contractEndQuarter(
 }
 
 /**
- * The reopener clause (M12.3, F-2) applies to a live shell lease signed in Act III (a renewal or a
- * re-let there is a new signing), from contract year 3 (8 quarters served), with no renewal open. Never
- * an Act II-signed lease, a GPU contract or a rolling spot lease.
+ * The reopener clause (M12.3, F-2) applies to a live shell lease, with no renewal open: one signed in Act III
+ * (a renewal or a re-let there is a new signing) from contract year 3 (8 quarters served); M18.8 (DT, doc 27 §6's
+ * intent): a lease carried in from Act II too, once it's at least 3 years into its term (12 quarters served). Never a
+ * GPU contract or a rolling spot lease.
  */
 export function reopenerEligible(state: GameState, p: Project): boolean {
   const t = p.tenant
   if (!inActIII(state) || !state.scenarioId) return false
   if (!t || t.gpu || t.rolling || p.kind !== 'shell') return false
   if (projectGone(p) || p.stage !== 'live') return false
-  if (t.signedQuarter < actFirstQuarter(3)) return false
-  if (t.servedQuarters < BALANCE.act3.reopener.fromServedQuarters) return false
+  const R = BALANCE.act3.reopener
+  const from =
+    t.signedQuarter < actFirstQuarter(3)
+      ? R.carriedFromServedQuarters
+      : R.fromServedQuarters
+  if (t.servedQuarters < from) return false
   return !state.act3Renewals?.some((r) => r.projectId === p.id)
 }
 

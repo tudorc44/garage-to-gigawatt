@@ -224,7 +224,7 @@ describe('the player reopens (S2 worked example)', () => {
 })
 
 describe('eligibility', () => {
-  it('an Act II-signed lease, a lease before year 3 and a GPU contract are never eligible', () => {
+  it('M18.8: an Act II-signed lease from 12 quarters served (not before); an Act III one from 8; a GPU contract never', () => {
     const { s, p } = leaseAt('s3', '2030Q1', {
       type: 'ai_lab',
       mw: 10,
@@ -234,10 +234,13 @@ describe('eligibility', () => {
     expect(contractCalendar(s).find((e) => e.id === p.id)!.reopenerEligible).toBe(
       true,
     )
-    p.tenant!.signedQuarter = FIRST - 1 // signed in Act II
+    p.tenant!.signedQuarter = FIRST - 1 // signed in Act II: eligible at 12 served (M18.8, DT)
+    expect(playerReopenBlocker(s, p.id)).toBeUndefined()
+    p.tenant!.servedQuarters = 11
     expect(playerReopenBlocker(s, p.id)?.key).toBe('error.reopener_not_eligible')
     openTenantReopeners(s)
     expect(s.act3Renewals).toEqual([])
+    p.tenant!.servedQuarters = 12
     p.tenant!.signedQuarter = FIRST
     p.tenant!.servedQuarters = 7 // still in year 2
     expect(playerReopenBlocker(s, p.id)?.key).toBe('error.reopener_not_eligible')
