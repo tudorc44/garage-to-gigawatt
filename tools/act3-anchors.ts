@@ -96,6 +96,21 @@ for (const a of ARCHETYPES)
 const med = (a: Archetype, sc: ScenarioId) => median(runs[a][sc].map((r) => r.ratio))
 const overs = (a: Archetype, sc: ScenarioId) => runs[a][sc].filter((r) => r.gameOver).length
 
+// M18.8 (DT answer 2): A2, and A1 again, on the GPU-heavy quick-start company (the overleveraged bot, seed 1).
+const gpuBot = 'overleveraged'
+const gpuEnd = presetCompany(gpuBot, 1)!
+const gpuRuns = Object.fromEntries(
+  (['ignorer', 'hedged'] as const).map((a) => [
+    a,
+    Object.fromEntries(
+      SCENARIO_IDS.map((sc) => [sc, seeds.map((n) => play(gpuEnd, sc, n, archetype(BOTS[gpuBot], a)))]),
+    ),
+  ]),
+) as Record<'ignorer' | 'hedged', Record<ScenarioId, Run[]>>
+const gMed = (a: 'ignorer' | 'hedged', sc: ScenarioId) => median(gpuRuns[a][sc].map((r) => r.ratio))
+const gOvers = (a: 'ignorer' | 'hedged', sc: ScenarioId) => gpuRuns[a][sc].filter((r) => r.gameOver).length
+const A1_SCENARIOS = ['s0', 's1', 's3'] as const // M18.8 (DT answer 3): S2 exempt
+
 const table: Record<string, Record<string, string | number>> = {}
 for (const a of ARCHETYPES)
   for (const sc of SCENARIO_IDS) {
@@ -128,15 +143,21 @@ const yes = (b: boolean) => (b ? 'PASS' : 'FAIL')
 const anchors: { id: string; target: string; result: string; numbers: string }[] = [
   {
     id: 'A1',
-    target: 'hedged > ignorer (median) in all four scenarios',
-    result: yes(SCENARIO_IDS.every((sc) => med('hedged', sc) > med('ignorer', sc))),
+    target: 'hedged > ignorer (median) in S0, S1, S3 (S2 exempt), on the Good preset',
+    result: yes(A1_SCENARIOS.every((sc) => med('hedged', sc) > med('ignorer', sc))),
     numbers: SCENARIO_IDS.map((sc) => `${sc} ${med('hedged', sc).toFixed(2)} vs ${med('ignorer', sc).toFixed(2)}`).join('; '),
   },
   {
+    id: 'A1-gpu',
+    target: 'hedged > ignorer (median) in S0, S1, S3 (S2 exempt), on the GPU-heavy company',
+    result: yes(A1_SCENARIOS.every((sc) => gMed('hedged', sc) > gMed('ignorer', sc))),
+    numbers: SCENARIO_IDS.map((sc) => `${sc} ${gMed('hedged', sc).toFixed(2)} vs ${gMed('ignorer', sc).toFixed(2)}`).join('; '),
+  },
+  {
     id: 'A2',
-    target: 'S1 ignorer: median < 0.5 and game over in ≥ 9 of 30',
-    result: yes(med('ignorer', 's1') < 0.5 && overs('ignorer', 's1') >= Math.ceil((9 / 30) * SEEDS)),
-    numbers: `median ${med('ignorer', 's1').toFixed(2)}, game over ${overs('ignorer', 's1')} of ${SEEDS}`,
+    target: 'S1 ignorer on the GPU-heavy company: median < 0.5 and game over in ≥ 9 of 30',
+    result: yes(gMed('ignorer', 's1') < 0.5 && gOvers('ignorer', 's1') >= Math.ceil((9 / 30) * SEEDS)),
+    numbers: `median ${gMed('ignorer', 's1').toFixed(2)}, game over ${gOvers('ignorer', 's1')} of ${SEEDS} (Good preset: ${med('ignorer', 's1').toFixed(2)}, ${overs('ignorer', 's1')})`,
   },
   {
     id: 'A3',
@@ -192,8 +213,8 @@ const anchors: { id: string; target: string; result: string; numbers: string }[]
   },
   {
     id: 'C3',
-    target: 'paired seeds (no hire): S2 signing s2_c1 ahead; S3 signing s3_c2 behind (medians)',
-    result: yes(c3s2.signed > c3s2.not && c3s3.signed < c3s3.not),
+    target: 'paired seeds (no hire): S2 signing s2_c1 ahead; S3 signing s3_c2 within ±2% of not signing (M18.8)',
+    result: yes(c3s2.signed > c3s2.not && Math.abs(c3s3.signed / c3s3.not - 1) <= 0.02),
     numbers: `S2 ${c3s2.signed.toFixed(3)} vs ${c3s2.not.toFixed(3)}; S3 ${c3s3.signed.toFixed(3)} vs ${c3s3.not.toFixed(3)}`,
   },
   {
@@ -210,6 +231,21 @@ console.log(
     `\n  Founder net worth at 2030Q4 ÷ at act3Entry (0 after a game over):`,
 )
 console.table(table)
+console.log(`  GPU-heavy company (${gpuBot} seed 1), ignorer and hedged:`)
+console.table(
+  Object.fromEntries(
+    (['ignorer', 'hedged'] as const).flatMap((a) =>
+      SCENARIO_IDS.map((sc) => [
+        `${a} ${sc}`,
+        {
+          median: Number(gMed(a, sc).toFixed(2)),
+          p10: Number(p10(gpuRuns[a][sc].map((r) => r.ratio)).toFixed(2)),
+          gameOver: `${gOvers(a, sc)} of ${SEEDS}`,
+        },
+      ]),
+    ),
+  ),
+)
 console.table(Object.fromEntries(anchors.map((a) => [a.id, { result: a.result, target: a.target, numbers: a.numbers }])))
 mkdirSync(OUT, { recursive: true })
 writeFileSync(

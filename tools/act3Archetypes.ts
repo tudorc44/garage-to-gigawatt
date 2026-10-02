@@ -15,7 +15,7 @@ import { debtUsd, maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
 import { playerReopenBlocker } from '../src/sim/systems/renewals.ts'
 import { tenantCard } from '../src/sim/systems/projects.ts'
 import { convertibleKw } from '../src/sim/systems/hosting.ts'
-import { capacityKw } from '../src/sim/systems/sites.ts'
+import { capacityKw, poweredKw } from '../src/sim/systems/sites.ts'
 
 export const ARCHETYPES = [
   'passive',
@@ -131,15 +131,21 @@ function runner(state: GameState) {
 function commitProject(
   r: ReturnType<typeof runner>,
   kind: 'shell' | 'cloud',
-  opts: { debt: boolean; minTermQuarters?: number },
+  opts: {
+    debt: boolean
+    minTermQuarters?: number
+    /** M18.8 (DT): this size only, on new grid power at the largest site (the builder). */
+    sizeMw?: number
+  },
 ): boolean {
   const sites = r.get().sites.filter((x) => x.tier !== CONTENT.siteTiers[0].id)
   if (sites.length === 0) return false
   // free MW where there are most; else new grid power at the largest site (mine)
   const byRoom = [...sites].sort((a, b) => convertibleKw(r.get(), b.id) - convertibleKw(r.get(), a.id))[0]
   const largest = [...sites].sort((a, b) => capacityKw(b) - capacityKw(a))[0]
-  for (const mw of [40, 30, 20, 15, 10, 8, 5, 3, 2, 1]) {
-    const room = convertibleKw(r.get(), byRoom.id) >= mw * 1000
+  const sizes = opts.sizeMw ? [opts.sizeMw] : [40, 30, 20, 15, 10, 8, 5, 3, 2, 1]
+  for (const mw of sizes) {
+    const room = !opts.sizeMw && convertibleKw(r.get(), byRoom.id) >= mw * 1000
     const saved = r.get()
     const n = r.done.length
     const opened = r.run({
@@ -213,8 +219,17 @@ export function archetype(base: Strategy, a: Archetype, opts: { signOnly?: strin
           break
         }
         case 'builder':
-          if (quarter >= q('2027Q2') && quarter <= q('2027Q4') && !committedBy)
-            commitProject(r, 'shell', { debt: true, minTermQuarters: 8 })
+          // M18.8 (DT): one shell of max(5 MW, 50% of its energized MW) on new grid power at its largest site, a 2+ year
+          // lease, project debt where the tenant qualifies
+          if (quarter >= q('2027Q2') && quarter <= q('2027Q4') && !committedBy) {
+            const energizedMw =
+              s().sites.reduce((kw, x) => kw + poweredKw(x, quarter), 0) / 1000
+            commitProject(r, 'shell', {
+              debt: true,
+              minTermQuarters: 8,
+              sizeMw: Math.max(5, Math.round(0.5 * energizedMw)),
+            })
+          }
           break
         case 'long-locked':
           for (const o of blendOffers(s())) r.run({ type: 'BLEND_ACCEPT', projectId: o.projectId })
