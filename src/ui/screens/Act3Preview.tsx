@@ -97,7 +97,8 @@ function PresetCards(props: { pick: PresetId; onPick: (id: PresetId) => void }) 
           <strong>{p.label}</strong>
           <span class="kv num-s">
             <span>{t('ui.preset.valuation')}</span>
-            <span class="num">{fmt.money(p.valuationUsd)}</span>
+            {/* (M18.8: "~$2.7B": a preset's value is its 2026Q4 company's, rounded) */}
+            <span class="num">~{fmt.money(p.valuationUsd)}</span>
           </span>
           <span class="kv num-s">
             <span>{t('ui.preset.mw')}</span>

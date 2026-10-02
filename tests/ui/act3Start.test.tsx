@@ -34,7 +34,9 @@ describe('A3-12: start at Act III', () => {
     expect(cards).toHaveLength(3)
     const good = container.querySelector('[data-preset="good"]')!.textContent!
     expect(good).toContain('Steady Builder')
-    expect(good).toContain('$412.6M')
+    expect(good).toContain('~$412.6M')
+    // M18.8: Great is the best great-path company at 2026Q4, shown as "~$2.7B"
+    expect(container.querySelector('[data-preset="great"]')!.textContent).toContain('~$2.7B')
     expect(good).toContain('BB+')
     expect(good).toContain('A solid Act II finish: mixed tenants, modest debt.')
     expect(container.querySelector('[data-preset="lifeline"]')!.textContent).toContain('Last Site Standing')

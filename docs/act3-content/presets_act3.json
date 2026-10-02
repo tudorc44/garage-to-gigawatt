@@ -47,9 +47,9 @@
    "ratepayer_anger": 20,
    "political_capital": 40,
    "band_usd_m": [4500, 5000],
-   "note": "No great-path company (texas-capital, asic-retirer × seeds 1–50) reaches the $4.5–5.0B band at 2026Q4; this is the closest.",
+   "note": "The best great-path company at 2026Q4 (design thread, 2 Oct 2026): the $4.5–5.0B band was the great path's 2025 peak, not a 2026Q4 value; no great-path company (texas-capital, asic-retirer × seeds 1–50) reaches it at 2026Q4. Shown as ~$2.7B.",
    "grounded": false,
-   "reasoning": "The great-path company closest to the doc 27 v1.1 §8 band"
+   "reasoning": "The best great-path company at 2026Q4"
   },
   {
    "id": "lifeline",

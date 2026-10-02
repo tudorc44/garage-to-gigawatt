@@ -207,6 +207,8 @@ into its term", mine; Act III leases keep 8). act3Rules' company: S3 now ends ab
 the S3 reopener worked example moved to 2028Q3 (same band and term; 2030Q1's band is now above the trigger). Goldens unchanged.
 **M18.8d done:** Rubin Ultra rack +$4M in every quarter, all scenarios (2027Q3 $15M → $19M; the $20M cap read as 2027Q3's, mine): payback 1.86 yr
 everywhere (C2 passes on the formula). Both copies, JSON, provenance, README. Goldens unchanged.
+**M18.8f done:** Great = "the best great-path company at 2026Q4", ~$2.7B; A3-12 cards show "~" + the valuation (all three, mine); presets_act3.json
+(both copies) and the wireframe README record it.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
