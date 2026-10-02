@@ -11,7 +11,7 @@ import type { GameState, Project } from '../src/sim/state.ts'
 import { cardChoiceMove } from '../src/sim/systems/act3Moves.ts'
 import { standbyArrangeBlocker } from '../src/sim/systems/corporateDebt.ts'
 import { eventChoices, getCard } from '../src/sim/systems/events.ts'
-import { debtUsd, maxEquipmentLoanUsd } from '../src/sim/systems/loans.ts'
+import { debtUsd } from '../src/sim/systems/loans.ts'
 import { playerReopenBlocker } from '../src/sim/systems/renewals.ts'
 import { tenantCard } from '../src/sim/systems/projects.ts'
 import { convertibleKw } from '../src/sim/systems/hosting.ts'
@@ -29,7 +29,6 @@ export const ARCHETYPES = [
 export type Archetype = (typeof ARCHETYPES)[number]
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
-const DIRECTOR = CONTENT.politicalCapital.hire.id
 
 /** The base bot's actions an archetype keeps in Act III: upkeep, not decisions. */
 const UPKEEP = new Set<Action['type']>([
@@ -63,11 +62,7 @@ const kindOf = (c: CardChoice) => (c.act3Effect ? cardChoiceMove(c.act3Effect) :
 const lengthens = (c: CardChoice) => kindOf(c) === 'card_lengthen'
 const shortens = (c: CardChoice) => kindOf(c) === 'card_shorten'
 const drawsDebt = (c: CardChoice) => !!c.act3Effect && 'debt' in c.act3Effect
-/** How many years a choice adds to a term (0 if none). */
-const termGain = (c: CardChoice) =>
-  Math.max(0, Number(c.act3Effect?.term_years ?? 0), Number(c.act3Effect?.term_add_years ?? 0))
 const signsPpa = (c: CardChoice) => 'ppa_switch' in c.effects || 'ppa_site_mw' in c.effects
-const hires = (c: CardChoice) => 'hire_card' in c.effects
 
 /** An archetype's answer to an Act III card (undefined: the default). */
 function cardAnswer(a: Archetype, s: GameState): string | undefined {
@@ -78,21 +73,12 @@ function cardAnswer(a: Archetype, s: GameState): string | undefined {
   switch (a) {
     case 'passive':
       return undefined
-    case 'ignorer': {
-      if (s.quarter <= q('2027Q2')) {
-        const debt = first(drawsDebt)
-        if (debt) return debt
-      }
-      const longest = [...cs].filter(lengthens).sort((x, y) => termGain(y) - termGain(x))[0]
-      return longest?.id
-    }
+    case 'ignorer':
+      // M18.9 (DT): every card's debt choice in 2027; otherwise the default
+      return s.quarter <= q('2027Q4') ? first(drawsDebt) : undefined
     case 'hedged': {
-      const short = first(shortens)
-      if (short) return short
-      const hire = first(hires)
-      if (hire) return hire
+      // M18.9 (DT): the default choices, but never a debt-drawing one
       const def = cs.find((c) => c.id === card.def)
-      // never a debt-drawing choice: the first open one that draws none
       if (def && drawsDebt(def)) return first((c) => !drawsDebt(c))
       return undefined
     }
@@ -108,6 +94,13 @@ function cardAnswer(a: Archetype, s: GameState): string | undefined {
       return first(shortens)
   }
 }
+
+/** LTV: everything owed ÷ the last reported valuation. */
+export function ltvOf(s: GameState): number {
+  return debtUsd(s) / Math.max(1, s.reports.at(-1)?.valuationUsd ?? 1)
+}
+/** M18.9 (DT): the ignorer borrows up to this LTV. */
+const IGNORER_LTV = 0.6
 
 /** Plays `actions` on a copy; keeps the ones the game accepts. */
 function runner(state: GameState) {
@@ -136,6 +129,10 @@ function commitProject(
     minTermQuarters?: number
     /** M18.8 (DT): this size only, on new grid power at the largest site (the builder). */
     sizeMw?: number
+    /** M18.9 (DT): a cloud must sign a GPU contract (so a DDTL funds it); otherwise nothing is committed. */
+    needContract?: boolean
+    /** M18.9: keep a size only if the company after its start passes this (the ignorer: LTV ≤ 60%). */
+    accept?: (s: GameState) => boolean
   },
 ): boolean {
   const sites = r.get().sites.filter((x) => x.tier !== CONTENT.siteTiers[0].id)
@@ -165,12 +162,13 @@ function commitProject(
         .sort((x, y) => tenantCard(y.card)!.priceUsdMwYr - tenantCard(x.card)!.priceUsdMwYr)[0]
       // a shell signs its best lease; a cloud its GPU contract if offered (a DDTL needs one), else spot
       if (best) r.run({ type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: best.id })
-      else if (kind === 'cloud') r.run({ type: 'PROJECT_SPOT', projectId: p.id })
+      else if (kind === 'cloud' && !opts.needContract) r.run({ type: 'PROJECT_SPOT', projectId: p.id })
       if (opts.debt)
         for (const debt of ['project_debt', 'ddtl'] as const)
           r.run({ type: 'PROJECT_DEBT', projectId: p.id, debt, on: true })
       r.run({ type: 'PROJECT_FUND_CASH', projectId: p.id })
-      if (r.run({ type: 'PROJECT_START', projectId: p.id })) return true
+      if (r.run({ type: 'PROJECT_START', projectId: p.id }) && (!opts.accept || opts.accept(r.get())))
+        return true
     }
     r.set(saved)
     r.done.length = n
@@ -199,20 +197,20 @@ export function archetype(base: Strategy, a: Archetype, opts: { signOnly?: strin
       const committedBy = (s().act3Moves ?? []).some((m) => m.kind === 'project_commit')
       switch (a) {
         case 'ignorer':
-          if (quarter <= q('2027Q2')) {
-            if (!s().equipmentLoan) {
-              const amountUsd = Math.floor(maxEquipmentLoanUsd(s()))
-              if (amountUsd >= 1) r.run({ type: 'TAKE_LOAN', amountUsd })
-            }
-            if (!committedBy) commitProject(r, 'cloud', { debt: true })
-          }
-          for (const o of blendOffers(s())) r.run({ type: 'BLEND_ACCEPT', projectId: o.projectId })
+          // M18.9 (DT): each 2027 quarter with LTV under 60%, one new B200 cloud (a 2+ year GPU contract and its DDTL,
+          // new grid power at the largest site without spare MW), the largest that keeps LTV at 60% or under
+          if (quarter <= q('2027Q4') && ltvOf(s()) < IGNORER_LTV)
+            commitProject(r, 'cloud', {
+              debt: true,
+              minTermQuarters: 8,
+              needContract: true,
+              accept: (x) => ltvOf(x) <= IGNORER_LTV,
+            })
           break
         case 'hedged': {
+          // M18.9 (DT): the standby in 2027Q1 and at each expiry; LTV ≤ 40% (repays when above); default cards
           if (!standbyArrangeBlocker(s())) r.run({ type: 'STANDBY_ARRANGE' })
-          if (s().staff[DIRECTOR] === undefined) r.run({ type: 'HIRE', hire: DIRECTOR })
-          // keep LTV (debt ÷ the last valuation) at 40% or under: repay what can be repaid early
-          const ltv = () => debtUsd(s()) / Math.max(1, s().reports.at(-1)?.valuationUsd ?? 1)
+          const ltv = () => ltvOf(s())
           for (const f of [...s().facilities].filter((x) => x.kind === 'corporate' || x.kind === 'standby'))
             if (ltv() > 0.4) r.run({ type: 'REPAY_COMPANY_FACILITY', facilityId: f.id })
           if (ltv() > 0.4 && s().equipmentLoan) r.run({ type: 'REPAY_LOAN' })

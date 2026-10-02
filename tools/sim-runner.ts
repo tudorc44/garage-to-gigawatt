@@ -1049,6 +1049,20 @@ if (args.includes('--act2')) {
         ]),
       ),
     )
+    // M18.9 (DT): anchor C1 on the population: S1 has the lowest median growth multiple at 2030Q4 (runs reaching it).
+    {
+      const multiple = (id: string) =>
+        median(
+          a3
+            .filter((x) => x.scenario === id && x.end === 'chapter' && x.firstUsd! > 0)
+            .map((x) => x.lastUsd! / x.firstUsd!),
+        )
+      const ms = Object.fromEntries(scenarios.map((id) => [id, multiple(id)]))
+      const ok = scenarios.every((id) => id === 's1' || ms.s1 < ms[id])
+      console.log(
+        `  C1 (population): S1 lowest median growth multiple: ${ok ? 'PASS' : 'FAIL'} (${scenarios.map((id) => `${id} ${ms[id].toFixed(2)}×`).join(', ')})`,
+      )
+    }
     console.log('  Act III by bot:')
     console.table(
       Object.fromEntries(

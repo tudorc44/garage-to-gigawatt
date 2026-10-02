@@ -99,16 +99,17 @@ const overs = (a: Archetype, sc: ScenarioId) => runs[a][sc].filter((r) => r.game
 // M18.8 (DT answer 2): A2, and A1 again, on the GPU-heavy quick-start company (the overleveraged bot, seed 1).
 const gpuBot = 'overleveraged'
 const gpuEnd = presetCompany(gpuBot, 1)!
+// (M18.9: every archetype on it, for the report)
 const gpuRuns = Object.fromEntries(
-  (['ignorer', 'hedged'] as const).map((a) => [
+  ARCHETYPES.map((a) => [
     a,
     Object.fromEntries(
       SCENARIO_IDS.map((sc) => [sc, seeds.map((n) => play(gpuEnd, sc, n, archetype(BOTS[gpuBot], a)))]),
     ),
   ]),
-) as Record<'ignorer' | 'hedged', Record<ScenarioId, Run[]>>
-const gMed = (a: 'ignorer' | 'hedged', sc: ScenarioId) => median(gpuRuns[a][sc].map((r) => r.ratio))
-const gOvers = (a: 'ignorer' | 'hedged', sc: ScenarioId) => gpuRuns[a][sc].filter((r) => r.gameOver).length
+) as Record<Archetype, Record<ScenarioId, Run[]>>
+const gMed = (a: Archetype, sc: ScenarioId) => median(gpuRuns[a][sc].map((r) => r.ratio))
+const gOvers = (a: Archetype, sc: ScenarioId) => gpuRuns[a][sc].filter((r) => r.gameOver).length
 const A1_SCENARIOS = ['s0', 's1', 's3'] as const // M18.8 (DT answer 3): S2 exempt
 
 const table: Record<string, Record<string, string | number>> = {}
@@ -153,24 +154,29 @@ const anchors: { id: string; target: string; result: string; numbers: string }[]
     result: yes(A1_SCENARIOS.every((sc) => gMed('hedged', sc) > gMed('ignorer', sc))),
     numbers: SCENARIO_IDS.map((sc) => `${sc} ${gMed('hedged', sc).toFixed(2)} vs ${gMed('ignorer', sc).toFixed(2)}`).join('; '),
   },
-  {
-    id: 'A2',
-    target: 'S1 ignorer on the GPU-heavy company: median < 0.5 and game over in ≥ 9 of 30',
-    result: yes(gMed('ignorer', 's1') < 0.5 && gOvers('ignorer', 's1') >= Math.ceil((9 / 30) * SEEDS)),
-    numbers: `median ${gMed('ignorer', 's1').toFixed(2)}, game over ${gOvers('ignorer', 's1')} of ${SEEDS} (Good preset: ${med('ignorer', 's1').toFixed(2)}, ${overs('ignorer', 's1')})`,
-  },
+  // M18.9 (DT): A2 first as written; if the 60%-LTV ignorer doesn't bust, the fallback version
+  (() => {
+    const primary =
+      gMed('ignorer', 's1') < 0.5 && gOvers('ignorer', 's1') >= Math.ceil((9 / 30) * SEEDS)
+    const fallback =
+      gMed('ignorer', 's1') <= 0.6 * gMed('ignorer', 's0') &&
+      gMed('ignorer', 's1') < gMed('hedged', 's1')
+    return {
+      id: 'A2',
+      target: primary
+        ? 'S1 ignorer (GPU-heavy): median < 0.5 and ≥ 9 of 30 game overs'
+        : 'fallback: S1 ignorer (GPU-heavy) median ≤ 0.6 × its S0 median, and below hedged',
+      result: primary ? 'PASS (as written)' : fallback ? 'PASS (fallback)' : 'FAIL (both versions)',
+      numbers: `S1 median ${gMed('ignorer', 's1').toFixed(2)}, game over ${gOvers('ignorer', 's1')} of ${SEEDS}; S0 median ${gMed('ignorer', 's0').toFixed(2)} (× 0.6 = ${(0.6 * gMed('ignorer', 's0')).toFixed(2)}); hedged S1 ${gMed('hedged', 's1').toFixed(2)}`,
+    }
+  })(),
   {
     id: 'A3',
-    target: 'S2 builder ≥ 1.15 × passive',
-    result: yes(med('builder', 's2') >= 1.15 * med('passive', 's2')),
-    numbers: `${med('builder', 's2').toFixed(2)} vs 1.15 × ${med('passive', 's2').toFixed(2)}`,
+    target: 'S2: long-locked ≥ 1.15 × passive (M18.9; the builder row is information)',
+    result: yes(med('long-locked', 's2') >= 1.15 * med('passive', 's2')),
+    numbers: `${med('long-locked', 's2').toFixed(2)} vs 1.15 × ${med('passive', 's2').toFixed(2)}; builder ${med('builder', 's2').toFixed(2)}`,
   },
-  {
-    id: 'A4',
-    target: 'S3 flexible ≥ long-locked',
-    result: yes(med('flexible', 's3') >= med('long-locked', 's3')),
-    numbers: `${med('flexible', 's3').toFixed(2)} vs ${med('long-locked', 's3').toFixed(2)}`,
-  },
+  // (A4 retired, M18.9: the flexible and long-locked rows are information.)
   {
     id: 'A5',
     target: "S0: every archetype's median ≥ 0.85",
@@ -199,9 +205,9 @@ const anchors: { id: string; target: string; result: string; numbers: string }[]
   },
   {
     id: 'C1',
-    target: 'passive: S1 is its lowest median of the four',
-    result: yes(SCENARIO_IDS.every((sc) => sc === 's1' || med('passive', 's1') < med('passive', sc))),
-    numbers: SCENARIO_IDS.map((sc) => `${sc} ${med('passive', sc).toFixed(2)}`).join('; '),
+    target: "the full sim's bot runs: S1 has the lowest median growth multiple at 2030Q4 (M18.9; see --act3)",
+    result: 'see the full sim',
+    numbers: `(Good preset passive, information: ${SCENARIO_IDS.map((sc) => `${sc} ${med('passive', sc).toFixed(2)}`).join('; ')})`,
   },
   {
     id: 'C2',
@@ -231,10 +237,10 @@ console.log(
     `\n  Founder net worth at 2030Q4 ÷ at act3Entry (0 after a game over):`,
 )
 console.table(table)
-console.log(`  GPU-heavy company (${gpuBot} seed 1), ignorer and hedged:`)
+console.log(`  GPU-heavy company (${gpuBot} seed 1), every archetype:`)
 console.table(
   Object.fromEntries(
-    (['ignorer', 'hedged'] as const).flatMap((a) =>
+    ARCHETYPES.flatMap((a) =>
       SCENARIO_IDS.map((sc) => [
         `${a} ${sc}`,
         {
