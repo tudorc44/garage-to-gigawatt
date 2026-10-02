@@ -45,4 +45,13 @@ describe('the act3Seed salt (M18.3)', () => {
     const draws = new Set([1, 2, 3, 4, 5, 6].map((n) => JSON.stringify(salted(n))))
     expect(draws.size).toBeGreaterThan(1)
   })
+
+  it('M18.8 (DT): a different act3Seed also re-seeds the main RNG; the game’s own seed leaves it as it was', () => {
+    const base = act2Company('2026Q4', 7)
+    const plain = toAct3(base, { scenario: 's0' })
+    expect(toAct3(base, { scenario: 's0', act3Seed: 7 }).rng).toBe(plain.rng)
+    const rngs = new Set([1, 2, 3].map((n) => toAct3(base, { scenario: 's0', act3Seed: n }).rng))
+    expect(rngs.size).toBe(3)
+    expect(rngs.has(plain.rng)).toBe(false)
+  })
 })

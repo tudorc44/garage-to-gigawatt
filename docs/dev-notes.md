@@ -197,6 +197,11 @@ never drawn); K6 −$5 moves C3's S3 half the wrong way (stopped). Only K1 writt
 the M18.6 table (PASS A5 A6 A7 F7; FAIL A1 A2 A3 A4 C1 C2 C3). Signer, no hire = the bots' game overs in S0–S2 (the Director's salary causes the extra
 busts); S2 no-hire signer $123.9M vs bots $120.7M. **M18 done:** 1181 → 1206 tests. Open questions in the M18 report.
 
+**M18.8 (the DT's answers to the M18 questions, 2 Oct 2026), split:** a act3Seed re-seeds the main RNG; b reopeners cover carried Act II
+shell leases; c S3's renewal/RFP rebound from 2029Q1 (data); d Rubin Ultra's rack price ($1M steps to ≤ $20M); e the harness (A1 exempts
+S2, A2/A1 on the GPU-heavy quick start, the larger builder, C3 ±2%); f Great "~$2.7B"; g the re-run and report. WHY: the Good preset is a
+shell landlord on long Act II leases that the scenarios barely touch; reopeners skipped the Act II book and S3's band never rebounded.
+
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
 Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's

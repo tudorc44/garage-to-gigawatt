@@ -1107,6 +1107,10 @@ export function toAct3(
   const base =
     options.act3Seed === undefined ? state : { ...state, act3Seed: options.act3Seed }
   const s = enterAct3(base, options.scenario ?? drawScenario(act3SeedOf(base)))
+  // M18.8 (DT): a different act3Seed also re-seeds the main RNG, so a harness's runs from one company truly differ;
+  // with the default (act3Seed = the game's seed) nothing changes.
+  if (options.act3Seed !== undefined && options.act3Seed !== state.seed)
+    s.rng = substream(options.act3Seed, 'act3_main').rng
   if (options.forced && options.scenario) s.scenarioForced = true
   if (options.scenarioMode && options.scenario) s.scenarioMode = true
   return s
