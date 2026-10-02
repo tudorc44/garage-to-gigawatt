@@ -221,6 +221,9 @@ WHY: M18.8's carried-lease reopeners repriced whole books in S0 too (population 
 act3Rules' company back to S3 within 5% of S1 (its carried tenants are hyperscalers). Goldens unchanged.
 **M18.9c done:** reading_score.json s3 `neutral_kinds: ["card_shorten"]` (both copies); stance, decoy count and marks use it. **Golden act3-s3:** its two
 card_shorten defaults now count 0 (marks neutral, not match/opposite): reading 53 → 50 (the intended effect). Oracle unchanged (stance logs).
+**M18.9b/d done:** anchors (30 seeds): PASS A3 (long-locked 2.41 ≥ 1.15 × 1.76), A6, A7, F7 (0.91), C1 (population S1 0.85× lowest), C2, C3; FAIL A1 both
+companies and A2 both versions (the 60%-LTV ignorer's B200 clouds win everywhere: Good S0 2.31, S3 2.52; GPU S1 0.85, 0 busts), A5 (flexible 0.62 in S0:
+its own reopeners on carried leases). Full sim: Act I/II byte-identical; Act III 41 game overs; multiples 1.01/0.85/1.82/1.04×; reading 75/50/56/50.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
