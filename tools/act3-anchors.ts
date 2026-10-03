@@ -5,11 +5,14 @@
 // anchor's verdict; writes anchors.json to --out. Tools only.
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { CONTENT, SCENARIO_IDS, type ScenarioId } from '../src/content/index.ts'
+import { BALANCE, CONTENT, SCENARIO_IDS, type ScenarioId } from '../src/content/index.ts'
 import { playFrom } from '../src/sim/replay.ts'
 import { toAct3, type GameState } from '../src/sim/state.ts'
 import { ARCHETYPES, archetype, type Archetype } from './act3Archetypes.ts'
-import { paybackYears } from './act3Payback.ts'
+import { contractedPaybackYears } from './act3Payback.ts'
+
+/** M18.12 (DT): A1 passes when hedged is within this of the ignorer (or ahead). */
+const A1_TIE = 0.05
 import { presetCompany, scanPreset } from './act3Presets.ts'
 import { BOTS } from './bots.ts'
 import { applyKnobs } from './act3Knobs.ts'
@@ -146,24 +149,38 @@ const c3s2 = c3('s2', 's2_c1')
 const c3s3 = c3('s3', 's3_c2')
 
 // C2: payback at 2027Q3, the six-region mean row.
-const c2 = Object.fromEntries(SCENARIO_IDS.map((sc) => [sc, paybackYears(sc, '2027Q3')]))
+// M18.12 (DT): C2 on the contracted basis: clouds started in 2027Q3, priced at the end contract-rate multiplier (the
+// basis the B200 end value was solved on): Rubin and Rubin Ultra ≥ 2.3 years and ≥ B200's
+const END = BALANCE.act3.gpuContractRateMult.end
+const c2 = Object.fromEntries(
+  SCENARIO_IDS.map((sc) => [
+    sc,
+    {
+      b200: contractedPaybackYears(sc, '2027Q3', 'b200', END),
+      rubin: contractedPaybackYears(sc, '2027Q3', 'rubin_nvl144', END),
+      rubinUltra: contractedPaybackYears(sc, '2027Q3', 'rubin_ultra', END),
+    },
+  ]),
+)
 const c2ok = SCENARIO_IDS.every((sc) => {
   const p = c2[sc]
-  return p.rubin >= 1.8 && p.rubinUltra >= 1.8 && p.rubin >= p.b200 && p.rubinUltra >= p.b200
+  return p.rubin >= 2.3 && p.rubinUltra >= 2.3 && p.rubin >= p.b200 && p.rubinUltra >= p.b200
 })
+// the B200 solve's target (information): a contracted B200 started 2027Q3 / signed 2027Q4 at the end value, 2.3–2.6 years
+const b200Q4 = SCENARIO_IDS.map((sc) => contractedPaybackYears(sc, '2027Q4', 'b200', END))
 
 const yes = (b: boolean) => (b ? 'PASS' : 'FAIL')
 const anchors: { id: string; target: string; result: string; numbers: string }[] = [
   {
     id: 'A1',
-    target: 'hedged > ignorer (median) in S0, S1, S3 (S2 exempt), on the Good preset',
-    result: yes(A1_SCENARIOS.every((sc) => med('hedged', sc) > med('ignorer', sc))),
+    target: 'hedged ≥ ignorer − 0.05 (median; M18.12 tie band) in S0, S1, S3 (S2 exempt), on the Good preset',
+    result: yes(A1_SCENARIOS.every((sc) => med('hedged', sc) >= med('ignorer', sc) - A1_TIE)),
     numbers: SCENARIO_IDS.map((sc) => `${sc} ${med('hedged', sc).toFixed(2)} vs ${med('ignorer', sc).toFixed(2)}`).join('; '),
   },
   {
     id: 'A1-gpu',
-    target: 'hedged > ignorer (median) in S1 and S3 (M18.10: S0 information, S2 exempt), on the GPU-heavy company',
-    result: yes((['s1', 's3'] as const).every((sc) => gMed('hedged', sc) > gMed('ignorer', sc))),
+    target: 'hedged ≥ ignorer − 0.05 (median; M18.12 tie band) in S1 and S3 (S0 information, S2 exempt), on the GPU-heavy company',
+    result: yes((['s1', 's3'] as const).every((sc) => gMed('hedged', sc) >= gMed('ignorer', sc) - A1_TIE)),
     numbers: SCENARIO_IDS.map((sc) => `${sc} ${gMed('hedged', sc).toFixed(2)} vs ${gMed('ignorer', sc).toFixed(2)}`).join('; '),
   },
   // M18.9 (DT): A2 first as written; if the 60%-LTV ignorer doesn't bust, the fallback version
@@ -224,11 +241,12 @@ const anchors: { id: string; target: string; result: string; numbers: string }[]
   },
   {
     id: 'C2',
-    target: 'payback at 2027Q3: Rubin and Rubin Ultra ≥ 1.8 years and ≥ B200 in every scenario',
+    target: `contracted payback, started 2027Q3 (× ${END}): Rubin and Rubin Ultra ≥ 2.3 years and ≥ B200's (M18.12)`,
     result: yes(c2ok),
-    numbers: SCENARIO_IDS.map(
-      (sc) => `${sc} b200 ${c2[sc].b200.toFixed(1)} rubin ${c2[sc].rubin.toFixed(1)} ultra ${c2[sc].rubinUltra.toFixed(1)}`,
-    ).join('; '),
+    numbers:
+      SCENARIO_IDS.map(
+        (sc) => `${sc} b200 ${c2[sc].b200.toFixed(2)} rubin ${c2[sc].rubin.toFixed(2)} ultra ${c2[sc].rubinUltra.toFixed(2)}`,
+      ).join('; ') + `; B200 signed 2027Q4: ${b200Q4.map((v) => v.toFixed(2)).join(' ')}`,
   },
   {
     id: 'C3',

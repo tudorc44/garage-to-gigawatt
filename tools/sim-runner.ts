@@ -46,7 +46,11 @@ import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
 import { BOTS, HEAD_START_OPENINGS, PROBES, gpuRevenueShare } from './bots.ts'
-import { PAYBACK_UTILISATION, paybackYears } from './act3Payback.ts'
+import {
+  PAYBACK_UTILISATION,
+  contractedPaybackYears,
+  paybackYears,
+} from './act3Payback.ts'
 import { contractIrrs, delayCost } from './section5.ts'
 import {
   BREAKDOWN_COLUMNS,
@@ -1209,9 +1213,20 @@ if (args.includes('--act2')) {
     for (const id of scenarios as ScenarioId[])
       for (const label of ['2027Q3', '2028Q3'])
         for (const region of [undefined, 'pjm', 'ohio'] as const)
-          payback[`${id} ${label}${region ? ` ${region}` : ''}`] = Object.fromEntries(
-            Object.entries(paybackYears(id, label, region)).map(([k, v]) => [k, flag(v)]),
-          )
+          payback[`${id} ${label}${region ? ` ${region}` : ''}`] = {
+            ...Object.fromEntries(
+              Object.entries(paybackYears(id, label, region)).map(([k, v]) => [k, flag(v)]),
+            ),
+            // M18.12 (DT): the contracted basis (all GPUs × a 2-year contract signed then, the six-region power mean)
+            ...(region
+              ? {}
+              : Object.fromEntries(
+                  (['b200', 'rubin_nvl144', 'rubin_ultra'] as const).map((g) => [
+                    `${g === 'rubin_nvl144' ? 'rubin' : g === 'rubin_ultra' ? 'ultra' : g}·contract`,
+                    contractedPaybackYears(id, label, g).toFixed(1),
+                  ]),
+                )),
+          }
     console.log(
       `  Step 5 payback in years (M17.0; capex per MW ÷ EBITDA per MW-year; utilisation ${util}; ⚑ under 1.8, step 7's target;` +
         ' rows: the mean of six regions\' power, then PJM and Ohio with the capacity charge, M17.8):',
