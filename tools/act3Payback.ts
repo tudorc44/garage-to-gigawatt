@@ -7,10 +7,51 @@
 //   mean of the six regions' prices that quarter (mine), or one region's with the PJM capacity charge (M17.8).
 import { BALANCE, CONTENT, quarterInputs, type PowerRegion, type ScenarioId } from '../src/content/index.ts'
 import { rfpMid } from '../src/sim/systems/leaseIndex.ts'
-import { gpuGeneration, gpuPriceUsd, neocloudUsdHr } from '../src/sim/systems/projects.ts'
+import {
+  gpuContractRateMult,
+  gpuContractUsdHr,
+  gpuGeneration,
+  gpuPriceUsd,
+  neocloudUsdHr,
+} from '../src/sim/systems/projects.ts'
 import { regionCapacityChargeUsdKwh } from '../src/sim/systems/sites.ts'
 
 export const PAYBACK_UTILISATION = 0.7
+/** M18.12: the contracted basis's term (the shortest the ignorer signs; mine). */
+export const CONTRACT_TERM_YEARS = 2
+
+/**
+ * M18.12 (DT): a contracted cloud's payback in years at `label`: capex per MW ÷ (all GPUs billed at the contract rate
+ * (take-or-pay) × 8,760 h, less power at the cloud PUE (the six regions' mean) and a year's insurance). `mult` is the
+ * Act III contract-rate multiplier to price at (default: the one for a contract signed at `label`).
+ */
+export function contractedPaybackYears(
+  id: ScenarioId,
+  label: string,
+  gpu: string,
+  mult?: number,
+): number {
+  const D = BALANCE.act3.density
+  const P2 = BALANCE.projects
+  const q = CONTENT.quarters.indexOf(label)
+  const inp = quarterInputs(q, id)!
+  const perMw = gpuGeneration(gpu)!.gpusPerMw
+  const price = gpuPriceUsd(gpu, q, id)
+  const signed = gpuContractUsdHr(gpu, CONTRACT_TERM_YEARS, q, id)
+  if (price === undefined || signed === undefined) return NaN
+  const rate = mult === undefined ? signed : (signed / gpuContractRateMult(q)) * mult
+  const topExtra = D.topNewBuildRetrofitShare * (inp.act3?.midToTopUsdMw ?? 0)
+  const gpuUsd = perMw * price
+  const capex = inp.capexUsdMw.retrofitShell + gpuUsd + (gpu === 'rubin_ultra' ? topExtra : 0)
+  const powers = Object.values(inp.powerUsdKwh)
+  const powerUsdKwh = powers.reduce((a, b) => a + b, 0) / powers.length
+  const hoursYr = 24 * 365
+  const ebitda =
+    perMw * rate * hoursYr -
+    1000 * P2.cloudPue * hoursYr * powerUsdKwh -
+    gpuUsd * P2.cloudInsuranceShareYr
+  return ebitda > 0 ? capex / ebitda : -1
+}
 
 export interface Payback {
   midShell: number

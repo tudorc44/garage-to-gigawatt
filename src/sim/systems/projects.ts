@@ -280,8 +280,22 @@ export function gpuContractUsdHr(
         : heldBack(quarter, (q) => q.gpuRentalUsdHr.h100.contract1y, scenario)
   if (base === undefined) return undefined
   return (
-    base * (gpu === 'h200' ? c.h200Mult : 1) * (c.termFactor[termYears] ?? 1)
+    base *
+    (gpu === 'h200' ? c.h200Mult : 1) *
+    (c.termFactor[termYears] ?? 1) *
+    gpuContractRateMult(quarter)
   )
+}
+
+/**
+ * M18.12 (DT): GPU contracts signed in Act III are priced below the on-demand neocloud rate: × 1.00 in 2027Q1 (the
+ * seam), 0.90 in 2027Q2, 0.80 in 2027Q3, then the tuned end value. 1 outside Act III.
+ */
+export function gpuContractRateMult(quarter: number): number {
+  const first = actFirstQuarter(3)
+  if (quarter < first || quarter > actLastQuarter(3)) return 1
+  const m = BALANCE.act3.gpuContractRateMult
+  return m.glide[quarter - first] ?? m.end
 }
 
 /** What a tenant in distress still pays (M7.0, A3): half; 1 otherwise. */

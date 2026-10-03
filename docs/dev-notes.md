@@ -242,6 +242,13 @@ the card's and Capital's "Lender cure: re-contract or repay by {quarter}", three
 FAIL A1 both, A2 both: GPU ignorer S1 median 0.99 with distress sales in 30 of 30 (walks 30, all cured or sold through), hedged 0.50; Good ignorer S1 0.97.
 Full sim: Act I/II byte-identical; 41 game overs; reading 75/50/56/50; oracle unchanged.
 
+**M18.12 (the DT's answers to the M18.11 questions, 3 Oct 2026), split:** a the Act III GPU contract-rate multiplier and the K1 relax; b the payback
+table's contracted column, C2 on the contracted basis, A1's tie band (−0.05); c re-run. WHY: the 60%-LTV ignorer dominated because Act III GPU
+contracts were priced at the on-demand neocloud rate × term factor (B200 contracted payback ≈1.4 yr); fix the economics in Act III only.
+**M18.12a done:** `gpuContractRateMult` glide 1.00/0.90/0.80, end **0.55** (the search never reaches a 2.3-yr contracted B200 payback at 2027Q3:
+2.03–2.12 yr at 0.55 on a 2-yr contract, my basis; reported); Act II contracts renewing in Act III get it on their base (mine). K1 relaxed: Rubin
+0.65, Rubin Ultra 0.60 (C2 contracted ≥ 2.3 yr and ≥ B200's). Goldens unchanged.
+
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
 Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's

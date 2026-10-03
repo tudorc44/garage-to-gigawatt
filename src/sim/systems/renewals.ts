@@ -33,7 +33,12 @@ import {
   walkProbAtRenewal,
 } from './leaseIndex.ts'
 import { scenarioOf } from './market.ts'
-import { annualRentUsd, contractQuarters, tenantCard } from './projects.ts'
+import {
+  annualRentUsd,
+  contractQuarters,
+  gpuContractRateMult,
+  tenantCard,
+} from './projects.ts'
 import { shellTierRentMult } from './density.ts'
 
 const R = BALANCE.act3.renewals
@@ -272,7 +277,10 @@ export function resolveRenewals(state: GameState): void {
     const haircut = t.revenueMult ?? 1
     delete t.revenueMult
     if (t.gpu) {
-      t.gpu.priceUsdHr *= mult / haircut
+      // M18.12 (DT): a GPU contract first signed in Act II renews in Act III off a base × the Act III contract-rate
+      // multiplier (one signed in Act III already carries it)
+      const base = t.signedQuarter < actFirstQuarter(3) ? gpuContractRateMult(state.quarter) : 1
+      t.gpu.priceUsdHr *= (base * mult) / haircut
       t.gpu.termQuarters = r.offer.termQuarters
     } else {
       t.priceMult = ((t.priceMult ?? 1) / haircut) * mult

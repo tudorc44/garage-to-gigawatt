@@ -717,15 +717,22 @@ export const BALANCE = {
       quarters: 2,
       tenantTypes: ['ai_lab', 'neocloud_sub_tenant'] as readonly string[],
     },
+    /**
+     * M18.12 (DT, designed): GPU contracts signed in Act III × this (all generations, all scenarios): the glide from
+     * 2027Q1 (1.00, the seam with Act II), then `end` from 2027Q4. Contracts already signed keep their rates; spot is
+     * unchanged. `end` tuned M18.12: the search 0.85 → 0.55 never reaches a 2.3-year contracted B200 payback at 2027Q3
+     * (0.55: 2.03–2.12 years on a 2-year contract), so the range's end, 0.55 (reported).
+     */
+    gpuContractRateMult: { glide: [1, 0.9, 0.8] as readonly number[], end: 0.55 },
     /** M18.11 (DT, designed): a walk on a DDTL project gives this many quarters to re-contract or repay, else foreclosure. */
     lenderCure: { quarters: 2 },
     /**
      * M18.6 K1 (the tuning pass, for C2: Rubin's payback ≥ 1.8 years and ≥ B200's): a factor on Rubin's and Rubin
      * Ultra's rents (their neocloud series, so spot and GPU contracts), all scenarios and quarters. 1 = the files'.
      */
-    // tuned M18.6: Rubin passes C2 at 0.55 (payback 1.86–1.97 years at 2027Q3, over B200's 1.34–1.40); Rubin Ultra
-    // reaches the 0.50 floor at 1.50 years, still under 1.8 (C2 fails on it, reported)
-    rubinRentFactor: { rubin_nvl144: 0.55, rubin_ultra: 0.5 } as Record<string, number>,
+    // tuned M18.6 (0.55 / 0.50); relaxed M18.12 with the contract-rate multiplier, keeping C2 on the contracted basis
+    // (≥ 2.3 years and ≥ B200's at 2027Q3): Rubin 0.65 (2.38–2.52 yr), Rubin Ultra 0.60 (2.32–2.33 yr)
+    rubinRentFactor: { rubin_nvl144: 0.65, rubin_ultra: 0.6 } as Record<string, number>,
     /**
      * M18.2 (F-7): the standby liquidity facility (designed): arranged for 1 BW at BB− or better with no payment late;
      * size 20% of the company valuation, at most $500M; 1.0% upfront, 0.50% a year on the undrawn part; SOFR + 350 bp
