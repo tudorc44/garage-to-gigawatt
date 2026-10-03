@@ -238,6 +238,9 @@ quarter end; a walk on a DDTL project opens a 2-quarter lender cure (re-contract
 foreclosure / rescue / forced sale in ≥ 9 of 30 (fallback unchanged); walks carried vs new and cure outcomes counted; c re-run.
 **M18.11a done:** the walk test against spot; `lenderCure` (2 quarters), `settleLenderCures` before the quarter's walks, REPAY_CURE_DDTL (debt_repay),
 the card's and Capital's "Lender cure: re-contract or repay by {quarter}", three log lines in the report. Goldens unchanged.
+**M18.11b/c done:** walks (population) s0 0, s1 5 (1 carried, 4 new; 1 cure, cured), s2 0, s3 0. Anchors: PASS A3 A5 A6 A7 F7 C1 (1.01/0.85/1.82/1.04×) C2 C3;
+FAIL A1 both, A2 both: GPU ignorer S1 median 0.99 with distress sales in 30 of 30 (walks 30, all cured or sold through), hedged 0.50; Good ignorer S1 0.97.
+Full sim: Act I/II byte-identical; 41 game overs; reading 75/50/56/50; oracle unchanged.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
