@@ -248,6 +248,9 @@ contracts were priced at the on-demand neocloud rate × term factor (B200 contra
 **M18.12a done:** `gpuContractRateMult` glide 1.00/0.90/0.80, end **0.55** (the search never reaches a 2.3-yr contracted B200 payback at 2027Q3:
 2.03–2.12 yr at 0.55 on a 2-yr contract, my basis; reported); Act II contracts renewing in Act III get it on their base (mine). K1 relaxed: Rubin
 0.65, Rubin Ultra 0.60 (C2 contracted ≥ 2.3 yr and ≥ B200's). Goldens unchanged.
+**M18.12b/c done:** PASS A3 A5 A6 A7 F7 C1 (1.01/0.85/1.80/1.02×) C2 (Rubin 2.38–2.52, Ultra 2.32–2.33, B200 2.03–2.12) C3; FAIL A1 both (Good S1 0.91 vs 1.01,
+GPU S1 0.50 vs 0.98), A2 both: GPU ignorer S1 0.98 with 0 walks / 0 distress sales (was 30/30: cheaper contracts never fall below half of spot). Walks
+(population) s1 3 (1 carried, 2 new; 1 cure, cured), else 0. Full sim: Act I/II byte-identical; 41 game overs; reading 75/50/56/50; oracle unchanged.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
