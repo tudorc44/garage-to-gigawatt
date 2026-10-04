@@ -264,6 +264,9 @@ equipment loan, paid from cash, then the rescue and game-over rules (mine). Capi
 report log lines. Goldens: act3-s0..s3 gain `report.covenant` only (no breach in them). BlendExtend fixture repays the debt of projects it marks sold.
 **M18.13b done:** anchors: A1 and A1-gpu judged in S1 only (others information); A2's distress count includes covenant forced sales; both
 tables gain breaches / cures / covSales / called. `--act3` prints a "Leverage covenant" line per scenario (breaches, runs, cured, sales, called).
+**M18.13c done:** PASS A1 (Good S1 0.91 vs 0.85; ignorer breached 30/30, all cured) A3 A5 A6 A7 F7 C1 (1.01/0.84/1.80/1.01×) C2 C3; FAIL A1-gpu
+(0.50 vs 0.98) and A2 both (GPU ignorer never breaches: 0/30). Population covenant: s0 5 breaches/4 runs, s1 26/22 (28 sales, 8 called), s2 20/14,
+s3 9/8. Full sim: Act I/II byte-identical; game overs 43 (s1 18, s3 6); reading 75/50/56/50; oracle unchanged. Stop rule: no more mechanics.
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
