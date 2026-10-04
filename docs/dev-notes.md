@@ -6,7 +6,7 @@ file.** The full history (every finished step, balance review, milestone and rep
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
 Last updated: 4 Oct 2026 (M18 closed; the Act III balance pass closed by the design thread). Act I, Act II and the Prologue are
-built and done. Act III (M10–M18) is built on branches m16 → m17 → m18, not yet merged into `main`. Act III is reachable only in
+built and done. Act III (M10–M18) is built and merged into `main` (fast-forward to `e0846d3`, pushed 4 Oct 2026). Act III is reachable only in
 test builds (`npm run dev`, the staging build), never in the GitHub Pages build. See "Next" and "Milestone M18 close-out".
 
 ## How the owner works
@@ -157,8 +157,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M18 is closed and the Act III balance pass is closed** (design thread, 4 Oct 2026). Nothing else to build. The owner decides the
-branch merges (m16 → m17 → m18 into `main`); Act III stays behind the test-build gate. Still open, all owner decisions or side work:
+**M18 is closed and the Act III balance pass is closed** (design thread, 4 Oct 2026). Nothing else to build. The owner merged
+m16 → m17 → m18 into `main` (4 Oct 2026; `main` = `e0846d3`, pushed, GitHub Pages publishes it); Act III stays behind the test-build
+gate, so the public build has no Act III. The next milestone branch starts from `main`. Still open, all owner decisions or side work:
 the owner's staging playtest of Act III; the D15 editorial review before any public release of Act III; the Act I playtests (postponed).
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
