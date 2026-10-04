@@ -147,13 +147,13 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Small follow-ups
 
-- An ear test of the sounds; the 4 sample fallbacks if a synth sound is wrong.
+- An ear test of the sounds; the 4 sample fallbacks if a synth sound is wrong (owner task, DT C3 after M20).
 - (Done, 29 Sep 2026) The big JS chunk is split: `vite.config.ts` puts the market data, card text, other content JSON and
   libraries in their own files, and the prologue screens load only when a prologue game starts (`LazyPrologue` in `app.tsx`).
   Every file is under 500 KB (main 444 KB) and the Vite warning is gone.
 - The ASIC $/TH tiers, SOFR and spread series are estimates (doc 18 §15): pull real data before final balance.
-- Backlog idea (design thread): the pitch opening reacts to company performance (era EV/EBITDA × trailing EBITDA, ±30%).
-- Power and capital project slots have no log line, so the report's "milestones" only show the tenant slot (mine, reversible).
+- Backlog (deferred, DT C1 after M20): the pitch opening reacts to company performance (era EV/EBITDA × trailing EBITDA, ±30%).
+- (Done, M8.7d and M21.3) Power and Capital slot log lines: in the report's milestones, nuclear included; card-bought rack pilots log both.
 
 ## Next
 
@@ -197,6 +197,8 @@ too-wide table scrolls it (`:has`), chapter-report stat rows and rival fates wra
 and in the Community dialog (replacing M19's two lines), the Plan meter's hover tooltip (mine: a tooltip, so the Plan stays compact); region shown as
 "Region (×m)" with its ± effect; gas and the hire listed at face value (the region part carries their scaling, mine). Test: parts sum to the pre-clamp
 Heat in Acts I–III, order, clamp, thresholds, read-only. Goldens unchanged.
+**M21.3 done:** the slot lines already existed (M8.7d: `log.project_power_*`, `log.project_capital_*`); two gaps fixed: `log.project_power_nuclear` was
+missing from the report's milestone keys, and a rack card's pilot (born live) logged neither slot, now both. Goldens unchanged (no golden plays a rack card).
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 

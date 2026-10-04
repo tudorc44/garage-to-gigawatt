@@ -1823,6 +1823,8 @@ const PROJECT_MILESTONE_KEYS: MessageKey[] = [
   'log.project_power_existing',
   'log.project_power_grid',
   'log.project_power_gas',
+  // (M21.3: Act III's nuclear PPA Power slot, logged since M17.2, was missing here)
+  'log.project_power_nuclear',
   'log.project_capital_cash',
   'log.project_capital_project_debt',
   'log.project_capital_ddtl',

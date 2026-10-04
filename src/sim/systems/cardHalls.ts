@@ -284,6 +284,19 @@ export function rackCard(state: GameState, e: RackCard, weekNo: number): void {
     { n, count: plan.racks, gpus: plan.gpus, costUsd: plan.costUsd },
     weekNo,
   )
+  // M21.3 (DT): the card fills the pilot's Power and Capital slots at once; log them like a project the player opens
+  logEntry(
+    state,
+    'log.project_power_existing',
+    { n, tier: site.tier, projectKw: plan.kw },
+    weekNo,
+  )
+  logEntry(
+    state,
+    'log.project_capital_cash',
+    { n, amountUsd: plan.costUsd },
+    weekNo,
+  )
 }
 
 // ---------- a new hall ----------

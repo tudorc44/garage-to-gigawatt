@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { CONTENT, type ScenarioId } from '../../src/content/index.ts'
 import { act3CardEngineId } from '../../src/content/act3Cards.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
+import { act2ReportView } from '../../src/sim/selectors.ts'
 import { toAct3, type GameState, type Project } from '../../src/sim/state.ts'
 import { rackPriceUsd } from '../../src/sim/systems/cardHalls.ts'
 import { blockedEventChoices } from '../../src/sim/systems/events.ts'
@@ -233,6 +234,24 @@ describe('gpu_rack (s1_c8 one Rubin rack; s3_c7 "Buy inventory", −$40M)', () =
     })
     expect(s.cash - t.cash).toBe(price)
     expect(t.act3Moves!.map((m) => m.kind)).toEqual(['gpu_buy'])
+    // M21.3 (DT): the card's pilot logs its Power and Capital slots, so the report's milestones list them
+    const keys = t.log.filter((e) => e.params?.n === p.n).map((e) => e.key)
+    expect(keys).toEqual(
+      expect.arrayContaining(['log.project_power_existing', 'log.project_capital_cash']),
+    )
+    // (and the report's milestones list them, with a nuclear Power slot too)
+    t.log.push({ quarter: t.quarter, week: null, key: 'log.project_power_nuclear', params: { n: p.n } })
+    // (this fixture's last report predates the MW-by-use field the view needs)
+    t.reports.push({ ...t.reports.at(-1)!, mwByUseKw: t.reports.at(-1)?.mwByUseKw ?? {} } as (typeof t.reports)[number])
+    const report = act2ReportView(t)
+    expect(report).not.toBeNull()
+    expect(report!.milestones.map((e) => e.key)).toEqual(
+      expect.arrayContaining([
+        'log.project_power_existing',
+        'log.project_capital_cash',
+        'log.project_power_nuclear',
+      ]),
+    )
   })
 
   it('s3_c7: as many racks as $40M buys at the quarter’s price, charged racks × price (not the $40M)', () => {
