@@ -202,6 +202,9 @@ missing from the report's milestone keys, and a rack card's pilot (born live) lo
 **M21.4 done:** CLAUDE.md rewritten: all four acts' status (Act IV not designed), the current docs (27 v1.2, 28, 30, act3-content README, dev-notes),
 the Act III rules (hidden files, leak guard, D15 guard, test-only forcing / quick starts, the gate test), the standing invariants, the 1024 px layout
 rule, one-key-once text rule, and branches (one per milestone from main; the owner merges; done branches tagged `m<n>-done`).
+**M21.5 done:** tags m11-done … m20-done (annotated, at each branch tip, verified on the remote) pushed; remote branches m11 … m20 deleted (each
+fully merged into main first). m10 skipped: no branch exists locally or remotely. Left alone (not in the spec): remote `m9` and `prologue`, and the
+local copies of m11 … m20.
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 
