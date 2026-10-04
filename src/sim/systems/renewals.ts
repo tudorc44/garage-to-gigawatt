@@ -132,7 +132,7 @@ export function renewalBlocker(
 ): Message | undefined {
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const r = openRenewal(state, projectId)
-  if (!r) return { key: 'error.no_renewal' }
+  if (!r) return { key: 'error.no_tenant_renewal' }
   if (r.walked) return { key: 'error.renewal_walked' }
   if (r.choice === choice) return { key: 'error.renewal_chosen' }
   // A reopener the player started can't be turned into a re-let: the fee is paid, and backing out
@@ -162,7 +162,7 @@ export function keepEmptyBlocker(
 ): Message | undefined {
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const r = openRenewal(state, projectId)
-  if (!r) return { key: 'error.no_renewal' }
+  if (!r) return { key: 'error.no_tenant_renewal' }
   if (!r.walked || r.kind !== 'shell') return { key: 'error.not_walked' }
   if (r.cause === 'reopener' && r.by === 'player')
     return { key: 'error.not_walked' }

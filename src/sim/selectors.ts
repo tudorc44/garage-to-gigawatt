@@ -890,6 +890,8 @@ export function communityDealView(state: GameState) {
     tier: site.tier,
     heat: siteHeatValue(state, site.id),
     costUsd: offer.costUsd,
+    // M21.0 (DT A2): the card's "Leaves you $X"; below 0 the sign button is greyed ("Not enough cash", the blocker)
+    cashAfterUsd: state.cash - offer.costUsd,
     targetHeat: d.targetHeat,
     fade: d.fadePerQuarter,
     bandwidth: d.bandwidth,

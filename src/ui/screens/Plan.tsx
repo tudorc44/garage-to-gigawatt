@@ -112,17 +112,25 @@ function CommunityDealCard({ state, act }: ScreenProps) {
   return (
     <div class="panel p wildcard-card" data-community-deal>
       <span class="label">
-        <Icon name="outreach" size={16} /> {t('ui.deal.label')}
+        <Icon name="outreach" size={16} /> {t('ui.cdeal.label')}
       </span>
-      <h2 class="panel-title">{t('ui.deal.title')}</h2>
+      <h2 class="panel-title">{t('ui.cdeal.title')}</h2>
       <p class="num-s" style={{ margin: 0 }}>
-        {t('ui.deal.body', {
+        {t('ui.cdeal.body', {
           name: v.name,
           tier: v.tier,
           target: v.targetHeat,
           heat: Math.round(v.heat),
           fade: v.fade,
         })}
+      </p>
+      {/* M21.0 (DT A2): what signing leaves in cash; the loss colour when it would go below 0 */}
+      <p
+        class={`num-s${v.cashAfterUsd < 0 ? ' loss' : ''}`}
+        style={{ margin: 0 }}
+        data-deal-leaves
+      >
+        {t('ui.cdeal.leaves', { cashUsd: v.cashAfterUsd })}
       </p>
       <div class="row-between">
         <button
@@ -133,7 +141,7 @@ function CommunityDealCard({ state, act }: ScreenProps) {
           onClick={() => act({ type: 'COMMUNITY_DEAL_SIGN' })}
           data-deal-sign
         >
-          {t('ui.deal.sign', { costUsd: v.costUsd })}
+          {t('ui.cdeal.sign', { costUsd: v.costUsd })}
           <Pips
             total={v.bandwidth}
             filled={v.bandwidth}
@@ -141,14 +149,14 @@ function CommunityDealCard({ state, act }: ScreenProps) {
           />
         </button>
         <span>
-          <span class="tag default">{t('ui.deal.default')}</span>{' '}
+          <span class="tag default">{t('ui.cdeal.default')}</span>{' '}
           <button
             type="button"
             class="btn"
             onClick={() => act({ type: 'COMMUNITY_DEAL_DECLINE' })}
             data-deal-decline
           >
-            {t('ui.deal.decline')}
+            {t('ui.cdeal.decline')}
           </button>
         </span>
       </div>
@@ -1176,7 +1184,7 @@ function FleetRow({ state, act }: ScreenProps) {
   return (
     <ActionRow
       icon="asic"
-      name={t('ui.plan.fleet', {
+      name={t('ui.plan.distressed_fleet', {
         count: best.units,
         model: machineName(v.model),
         tier: tierName(best.tier),

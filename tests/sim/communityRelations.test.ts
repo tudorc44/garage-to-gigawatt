@@ -42,10 +42,10 @@ const heat = (s: GameState, id = 'site-2') => heatOf(s, id).value
 const hire: Action = { type: 'HIRE', hire: ID }
 
 describe('the Community Relations Manager (M19.1)', () => {
-  it('is an Act I hire: Rosa Delgado, $95K (2017) → $140K (2021), × 1.08 from 2022 and on into Acts II and III', () => {
+  it('is an Act I hire: Mae Holloway (M21.0, DT A1), $95K (2017) → $140K (2021), × 1.08 from 2022 and on into Acts II and III', () => {
     const h = getHire(ID)!
     expect(CONTENT.hires.list.map((x) => x.id)).toContain(ID)
-    expect(h.name).toBe('Rosa Delgado')
+    expect(h.name).toBe('Mae Holloway')
     expect(salaryUsdQ(h, q('2017Q1'))).toBe(23_750)
     expect(salaryUsdQ(h, q('2021Q1'))).toBe(35_000)
     expect(salaryUsdQ(h, q('2022Q1'))).toBeCloseTo(37_800, 6)

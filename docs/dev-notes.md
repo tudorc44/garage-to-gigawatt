@@ -178,6 +178,18 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
 
+## Milestone M21 (branch `m21`, from `main` at `dceb047`; the design thread's answers after M20)
+
+Split (run in one go): M21.0 A1 the M19 hire renamed Mae Holloway; A2 the deal card's "Leaves you $X" line and the cash check; M21.1 layout
+from 1024 px (no sideways page scroll; the Plan screen reflows below 1280; the Act III chapter stats wrap); M21.2 the full Heat breakdown
+(sums to the value; the thresholds line); M21.3 Power and Capital slot log lines; M21.4 CLAUDE.md brought up to date; M21.5 tags m10-done …
+m20-done pushed, the merged remote branches m10 … m20 deleted (owner's go-ahead in the spec). Invariants: goldens and `--act2 --act3`
+byte-identical (no rule changes), main bundle under 500 KB.
+**M21.0 done:** hire renamed Mae Holloway; the deal card's "Leaves you $X" (loss colour below 0; the existing no-cash blocker greys Sign). Bug found and
+fixed: en.json had repeated keys, the later silently winning: `ui.deal.title` (M19's card overwrote the Deal builder's title) → card keys now
+`ui.cdeal.*`; `ui.plan.fleet` (the "Sell or repair" row showed the distressed-fleet text) → `ui.plan.distressed_fleet`; `error.no_renewal` (Act III
+tenant renewals showed the power-contract text) → `error.no_tenant_renewal`. New test: no repeated keys in either string table. Goldens unchanged.
+
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 
 Owner, 4 Oct 2026: release without waiting for the playtest; run unattended after M19. Split by the design thread: M20.1 D15 resolved by the

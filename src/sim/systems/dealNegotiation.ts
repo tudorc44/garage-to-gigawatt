@@ -67,11 +67,11 @@ function terms(
   // contract's current rate).
   if (target.renewal) {
     const r = openRenewal(state, p.id)
-    if (!r) return { key: 'error.no_renewal' }
+    if (!r) return { key: 'error.no_tenant_renewal' }
     if (r.walked || !r.offer) return { key: 'error.renewal_walked' }
     if (r.negotiated) return { key: 'error.negotiated_already' }
     const band = renewalBand(state.quarter, scenarioOf(state))
-    if (!band) return { key: 'error.no_renewal' }
+    if (!band) return { key: 'error.no_tenant_renewal' }
     // M16.2 (mine, reversible): a shell's limit takes its hall's tier multiple, like its offer.
     const hi = band.hi * shellTierRentMult(state, p)
     return { limit: Math.max(hi, r.offer.mult), opening: r.offer.mult }

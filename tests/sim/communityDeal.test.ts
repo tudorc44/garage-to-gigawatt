@@ -4,6 +4,7 @@
 import { describe, expect, it } from 'vitest'
 import { CONTENT } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
+import { communityDealView } from '../../src/sim/selectors.ts'
 import { newGame, type GameState, type Site } from '../../src/sim/state.ts'
 import {
   communityDealCostUsd,
@@ -128,6 +129,18 @@ describe('the Community Deal offer (M19.2)', () => {
       ok: false,
       error: { key: 'error.no_community_deal' },
     })
+  })
+})
+
+describe('the card’s cash line (M21.0, DT A2)', () => {
+  it('"Leaves you" = cash − cost; below 0 the sign is blocked with "Not enough cash"', () => {
+    const s = company()
+    nextQuarter(s)
+    expect(communityDealView(s)!.cashAfterUsd).toBe(s.cash - 100_000)
+    expect(communityDealView(s)!.signBlocker).toBeNull()
+    s.cash = 60_000
+    expect(communityDealView(s)!.cashAfterUsd).toBe(-40_000)
+    expect(communityDealView(s)!.signBlocker?.key).toBe('error.no_cash')
   })
 })
 
