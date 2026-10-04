@@ -209,6 +209,12 @@ local copies of m11 … m20.
 **M21 report (5 Oct 2026):** commits `79d07a7` `5906943` `8ef6e79` `1e41f00` `a23993a` `35dd8c4`; tests 1247 → 1254; goldens all unchanged; `--act2
 --act3`: all 1302 CSVs and the log byte-identical to M20 (timings aside; 43 game overs; C1 1.01/0.84/1.80/1.01×); main bundle 207 KB. Branch m21
 not pushed (owner's call). Questions for the design thread: in the final report.
+**M21.6 (housekeeping, DT 5 Oct 2026; branch `m21.6` from main):** (1) remote m9 and prologue both fully merged: tagged m9-done (42bdec2) and
+prologue-done (fc8ce72), pushed, verified, remote branches deleted: the remote now holds only main. (2) local m11–m20 and prologue deleted with
+`git branch -d` after their remote tags checked (local prologue was one commit, 6131d17, past its tag; that commit is in main, so -d allowed it).
+(3) m10-done = 5af442f "M10.6: M10 report", the last of M10.1–M10.6 (the next commit, 96c1adf, is M11 groundwork), pushed. (4) Top bar at 1024:
+it did switch during play (Act I 56 → 108 ↔ 118 px); below 1280 it now keeps room for two lines (min-height 118 px, CSS only): 79 Plan quarters
+of Acts I–III measured, all 118 px. Tests 1254, lint and build pass.
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 

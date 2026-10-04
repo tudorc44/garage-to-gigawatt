@@ -1012,6 +1012,10 @@ tr.locked td {
   .topbar {
     gap: var(--space-2) 12px;
     padding: var(--space-2) 12px;
+    /* M21.6 (DT): at these widths the stats can need a second line, and need it or not as values grow (Act I swung
+       between 56, 108 and 118 px), so the bar keeps room for two lines and the page below doesn't jump */
+    min-height: 118px;
+    align-content: flex-start;
   }
   .brand {
     width: auto;
