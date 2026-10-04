@@ -464,6 +464,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -537,6 +542,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -610,6 +620,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -683,6 +698,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -756,6 +776,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -829,6 +854,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -902,6 +932,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -975,6 +1010,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1048,6 +1088,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1121,6 +1166,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1194,6 +1244,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1267,6 +1322,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1340,6 +1400,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1413,6 +1478,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1486,6 +1556,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     },
     {
@@ -1559,6 +1634,11 @@
         "quality": "weak",
         "shortRunway": false,
         "eventNotches": 0
+      },
+      "covenant": {
+        "ltv": 0,
+        "limit": 0.75,
+        "cureLtv": 0.65
       }
     }
   ],

@@ -727,6 +727,19 @@ export const BALANCE = {
     /** M18.11 (DT, designed): a walk on a DDTL project gives this many quarters to re-contract or repay, else foreclosure. */
     lenderCure: { quarters: 2 },
     /**
+     * M18.13 (DT, designed): the leverage covenant. Each Act III quarter end, company LTV (debt ÷ valuation) is tested
+     * against the limit max(floorLtv, entry LTV + entryHeadroom). A breach stops new debt and sweeps sweepShare of the
+     * quarter's positive operating cash flow to prepay debt (highest rate first); it must reach the limit − cureMargin
+     * by the end of the cureQuarters-th quarter after, else forced sales (the rescue's × 0.85) run until it does.
+     */
+    covenant: {
+      floorLtv: 0.75,
+      entryHeadroom: 0.05,
+      cureMargin: 0.1,
+      cureQuarters: 2,
+      sweepShare: 0.5,
+    },
+    /**
      * M18.6 K1 (the tuning pass, for C2: Rubin's payback ≥ 1.8 years and ≥ B200's): a factor on Rubin's and Rubin
      * Ultra's rents (their neocloud series, so spot and GPU contracts), all scenarios and quarters. 1 = the files'.
      */

@@ -68,6 +68,11 @@ function leaseAt(
     (x) => x.tenant && !x.tenant.gpu && x.stage === 'live',
   )!
   for (const x of s.projects) if (x !== p && x.tenant) x.stage = 'sold'
+  // (M18.13: a sale repays its project's debt; left owing, the leverage covenant would call it)
+  s.facilities = s.facilities.filter((f) => {
+    const x = s.projects.find((y) => y.id === f.projectId)
+    return !x || x.stage !== 'sold'
+  })
   const t = p.tenant!
   t.servedQuarters = served
   t.termQuarters = served + quartersLeft

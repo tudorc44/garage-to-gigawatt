@@ -12,6 +12,7 @@
 import { BALANCE, actFirstQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
+  covenantBreached,
   inActIII,
   logEntry,
   type Facility,
@@ -54,6 +55,11 @@ export function drawCorporate(
   spreadBps: number,
   weekNo?: number,
 ): void {
+  // M18.13: no new debt under a covenant breach; the card's facility isn't offered
+  if (covenantBreached(state)) {
+    logEntry(state, 'log.covenant_no_debt', {}, weekNo)
+    return
+  }
   const apr = corporateApr(state, spreadBps)
   const due = state.quarter + CORP.bulletQuarters
   state.facilities.push({

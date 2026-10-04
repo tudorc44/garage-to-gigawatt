@@ -606,6 +606,11 @@ export const inActIII = (
   state: Pick<GameState, 'act'> | null | undefined,
 ): boolean => isActIII(state?.act)
 
+/** Act III (M18.13): whether a leverage-covenant breach is open, which bars new debt (systems/covenant.ts). */
+export const covenantBreached = (
+  state: Pick<GameState, 'act' | 'covenantBreach'>,
+): boolean => inActIII(state) && state.covenantBreach !== undefined
+
 /** A project that no longer holds its MW or earns: sold, or ended by selling its GPUs. */
 export const projectGone = (p: Project) =>
   p.stage === 'sold' || p.stage === 'ended' || p.stage === 'foreclosed'
@@ -796,6 +801,11 @@ export interface GameState {
     spreadBps: number
     untilQuarter: number
   }
+  /**
+   * Act III (M18.13): an open leverage-covenant breach (systems/covenant.ts): the quarter it was found and the last
+   * quarter end by which LTV must be back to the cure level. Absent when there is none.
+   */
+  covenantBreach?: { fromQuarter: number; untilQuarter: number }
   /** Act III (M17.4): the two wildcards drawn at entry, with the quarter each fires in. */
   act3Wildcards?: Act3Wildcard[]
   /** Act III (M17.4): a wildcard on the Plan screen waiting for an answer (its default applies at END_PLAN). */
@@ -1006,6 +1016,11 @@ export interface QuarterReport {
   forcedSale: { treasuryUsd: number; machinesUsd: number; units: number } | null
   /** Act III (M17.3): political capital at the quarter's end. Absent in every other act. */
   politicalCapital?: number
+  /**
+   * Act III (M18.13): the leverage covenant at quarter end: LTV (debt ÷ valuation), the limit, the cure level, and the
+   * breach's deadline when one is open. Absent in every other act.
+   */
+  covenant?: { ltv: number; limit: number; cureLtv: number; untilQuarter?: number }
   /** Act II: the credit rating at quarter end (absent in Act I). */
   creditRating?: string
   /** Act II: what the rating rests on (M8.3): debt ÷ yearly EBITDA, its band, backlog quality, runway, card notches. */

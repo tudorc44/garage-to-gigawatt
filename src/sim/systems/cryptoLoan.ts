@@ -11,7 +11,13 @@ import {
 import { debtFrozen } from './eventEffects.ts'
 import { marginWarningAlert } from './hires.ts'
 import type { Message } from '../../i18n/t.ts'
-import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
+import {
+  covenantBreached,
+  logEntry,
+  roundCents,
+  type Coin,
+  type GameState,
+} from '../state.ts'
 import { removeMachines, saleValueUsd } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { cryptoLoanCapUsd } from './liquidity.ts'
@@ -69,6 +75,7 @@ export function cryptoBorrowBlocker(
     return { key: 'error.crypto_loan_window', params: { from, to } }
   }
   if (debtFrozen(state)) return { key: 'error.debt_frozen' }
+  if (covenantBreached(state)) return { key: 'error.covenant_breach' }
   if (coin !== 'BTC' && coin !== 'ETH') return { key: 'error.bad_choice' }
   if (!Number.isInteger(amountUsd) || amountUsd < 1)
     return { key: 'error.bad_amount' }

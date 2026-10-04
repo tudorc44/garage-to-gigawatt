@@ -111,6 +111,11 @@ import {
   standbyTerms,
 } from './systems/corporateDebt.ts'
 import {
+  companyLtv,
+  covenantCureLtv,
+  covenantLimit,
+} from './systems/covenant.ts'
+import {
   siteTier,
   waterVariant,
   wildcardChoiceBlocker,
@@ -1999,6 +2004,13 @@ const ACT3_REPORT_KEYS = new Set<string>([
   'log.lender_cure_started',
   'log.lender_cure_done',
   'log.lender_cure_foreclosed',
+  // M18.13: the leverage covenant
+  'log.covenant_breach',
+  'log.covenant_sweep',
+  'log.covenant_cured',
+  'log.covenant_forced_sale',
+  'log.covenant_called',
+  'log.covenant_no_debt',
   'log.reopener_tenant',
   'log.reopener_player',
   'log.reopener_kept',
@@ -2268,6 +2280,18 @@ export function standbyView(state: GameState) {
       spreadBps: BALANCE.act3.standby.spreadBps,
       blocked: standbyArrangeBlocker(state) ?? null,
     },
+  }
+}
+
+/** Act III (M18.13): the leverage covenant for the Capital screen: LTV now, the limit, and an open breach. */
+export function covenantView(state: GameState) {
+  if (!inActIII(state)) return null
+  const b = state.covenantBreach
+  return {
+    ltv: companyLtv(state),
+    limit: covenantLimit(state),
+    cureLtv: covenantCureLtv(state),
+    breach: b ? { untilQuarter: CONTENT.quarters[b.untilQuarter] ?? '' } : null,
   }
 }
 

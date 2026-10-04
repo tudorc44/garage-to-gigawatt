@@ -252,6 +252,17 @@ contracts were priced at the on-demand neocloud rate × term factor (B200 contra
 GPU S1 0.50 vs 0.98), A2 both: GPU ignorer S1 0.98 with 0 walks / 0 distress sales (was 30/30: cheaper contracts never fall below half of spot). Walks
 (population) s1 3 (1 carried, 2 new; 1 cure, cured), else 0. Full sim: Act I/II byte-identical; 41 game overs; reading 75/50/56/50; oracle unchanged.
 
+**M18.13 (the DT's answers to the M18.12 questions, 4 Oct 2026; the last balance mechanic for Act III), split:** a the leverage covenant;
+b the anchors (A1 judged in S1 only; A2's distress count with covenant forced sales) and the sim's covenant counts; c re-run. WHY: with contracts
+near market, tenants rarely walk, so leverage risk comes from lender covenants that bite when valuations fall. Walk test kept (answer 1); 0.55 kept (4).
+**M18.13a done:** `covenant.ts`: LTV = debt ÷ the quarter report's valuation (the archetypes' `ltvOf`; the UI showed none, so Capital now does: mine);
+limit max(75%, entry LTV + 5); a breach bars new debt (project debt/DDTL not yet arranged, equipment and crypto loans, a card's corporate facility,
+which logs and isn't drawn), the standby still draws; from the next quarter end 50% of (EBITDA − interest) prepays debt, highest rate first; cure
+≤ limit − 10 by the end of the 2nd quarter after; missed: forced sales × 0.85, shells (cap-rate value) then clouds/pilots (GPU residual; mine),
+smallest first, proceeds repay debt, valuation estimated as less (fair − price) (mine); still short: the lenders call the facilities and the
+equipment loan, paid from cash, then the rescue and game-over rules (mine). Capital: "Covenant: LTV ≤ x%", the breach line, the sweep note; six
+report log lines. Goldens: act3-s0..s3 gain `report.covenant` only (no breach in them). BlendExtend fixture repays the debt of projects it marks sold.
+
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
 Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's

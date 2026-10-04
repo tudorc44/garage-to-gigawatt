@@ -14,7 +14,7 @@ import {
   type GameState,
   type Project,
 } from '../state.ts'
-import { inAct2Rules } from '../state.ts'
+import { covenantBreached, inAct2Rules } from '../state.ts'
 import {
   ddtlRate,
   isInvestmentGrade,
@@ -75,6 +75,9 @@ export function debtBlocker(
   // 28 Sep 2026).
   const arranged = kind === 'project_debt' ? p.debt?.projectDebt : p.debt?.ddtl
   if (debtFrozen(state) && !arranged) return { key: 'error.debt_frozen' }
+  // Act III (M18.13): a covenant breach bars new debt (arranged debt still draws).
+  if (covenantBreached(state) && !arranged)
+    return { key: 'error.covenant_breach' }
   if (p.stage !== 'proposed') return { key: 'error.project_started' }
   if (p.debt?.walkedQuarter?.[kind] === state.quarter)
     return { key: 'error.lender_walked' }

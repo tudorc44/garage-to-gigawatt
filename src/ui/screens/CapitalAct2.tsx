@@ -28,6 +28,8 @@ export function CapitalAct2({ state, act }: ScreenProps) {
   return (
     <div class="capital2">
       <RatingCard state={state} />
+      {/* Act III (M18.13): the leverage covenant */}
+      {state.act === 3 && <Act3Panel name="CovenantPanel" state={state} />}
       <DebtStack state={state} act={act} />
       {/* Act III (M18.2): the standby liquidity facility, from the lazily loaded Act III panels */}
       {state.act === 3 && <Act3Panel name="StandbyPanel" state={state} act={act} />}

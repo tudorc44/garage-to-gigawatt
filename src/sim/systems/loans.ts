@@ -5,6 +5,7 @@
 import { BALANCE, CONTENT, isAct2RulesQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
+  covenantBreached,
   logEntry,
   roundCents,
   type EquipmentLoan,
@@ -117,6 +118,7 @@ export function borrowBlocker(
   const locked = loansLocked(state)
   if (locked) return locked
   if (debtFrozen(state)) return { key: 'error.debt_frozen' }
+  if (covenantBreached(state)) return { key: 'error.covenant_breach' }
   const terms = equipmentTerms(state)
   if (!terms) return { key: 'error.loan_not_offered' }
   if (!Number.isInteger(amountUsd) || amountUsd < 1)

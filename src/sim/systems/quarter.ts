@@ -49,6 +49,7 @@ import {
   settleStandbyFee,
 } from './corporateDebt.ts'
 import { rescueBeforeGameOver } from './rescue.ts'
+import { covenantSweep, testCovenant } from './covenant.ts'
 import { ratingInputs } from './rating.ts'
 import { mwByUse } from './mwUse.ts'
 import { endQuarterGpuWaves } from './gpuWave.ts'
@@ -96,6 +97,8 @@ export function endQuarter(state: GameState): void {
   const forcedSale = state.cash < 0 ? forceSales(state, w) : null
   // Act II's last resorts before a game over: a project sale, then emergency equity (M7.0, A8).
   rescueBeforeGameOver(state)
+  // Act III (M18.13): an open covenant breach sweeps half the quarter's operating cash flow into debt.
+  covenantSweep(state)
   state.cash = roundCents(state.cash)
   // Aggressive depreciation's Q4 audit (card ec18): a restatement shows in this quarter's report.
   if (isAct2RulesQuarter(state.quarter)) depreciationAudit(state)
@@ -124,6 +127,15 @@ export function endQuarter(state: GameState): void {
       })
   }
   state.reports.push(report)
+  // Act III (M18.13): the leverage covenant test; debt the lenders call short of cash goes to the rescue.
+  if (inActIII(state)) {
+    testCovenant(state, report)
+    if (state.cash < 0) {
+      rescueBeforeGameOver(state)
+      state.cash = roundCents(state.cash)
+      report.cash = state.cash
+    }
+  }
   // Act III (M18.2): the standby lapses after its last quarter (its draws stay until their bullets).
   if (inActIII(state)) expireStandby(state)
   if (forcedSale) logEntry(state, 'log.forced_sale', { ...forcedSale })
