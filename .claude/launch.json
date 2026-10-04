@@ -12,6 +12,12 @@
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "staging"],
       "port": 4173
+    },
+    {
+      "name": "prod-preview",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "preview", "--", "--port", "4174", "--strictPort"],
+      "port": 4174
     }
   ]
 }
