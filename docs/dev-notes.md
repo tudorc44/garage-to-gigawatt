@@ -189,6 +189,10 @@ byte-identical (no rule changes), main bundle under 500 KB.
 fixed: en.json had repeated keys, the later silently winning: `ui.deal.title` (M19's card overwrote the Deal builder's title) → card keys now
 `ui.cdeal.*`; `ui.plan.fleet` (the "Sell or repair" row showed the distressed-fleet text) → `ui.plan.distressed_fleet`; `error.no_renewal` (Act III
 tenant renewals showed the power-contract text) → `error.no_tenant_renewal`. New test: no repeated keys in either string table. Goldens unchanged.
+**M21.1 done (CSS only, game.css):** screen min-width 1280 → 1024; below 1280 the page scrolls down (not across), the Plan to-do spans the top with the
+two side columns under it, the top bar packs tighter, sections / Capital / report / tiles / racks / prologue Plan reflow; every width: a panel holding a
+too-wide table scrolls it (`:has`), chapter-report stat rows and rival fates wrap, the Act III intro's lines wrap. Browser sweep (dev) at 1024 / 1280 /
+1440 over every screen and section of every act: no sideways page scroll, nothing truncated; only the fleet table scrolls inside its panel.
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 

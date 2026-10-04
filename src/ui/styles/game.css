@@ -986,10 +986,37 @@ tr.locked td {
 
 /* ===== Fit to the window: panels scroll inside, never the page (wireframes spec) ===== */
 .screen {
-  /* 1280 wide minus room for a scrollbar */
-  min-width: calc(var(--screen-min-w) - var(--space-6));
+  /* M21.1 (DT): no sideways page scroll from 1024 px up (was 1280 minus room for a scrollbar) */
+  min-width: 1024px;
   height: max(100vh, var(--screen-min-h));
   min-height: 0;
+}
+/* M21.1 (DT): below 1280 px the Plan dashboard reflows: the to-do column spans the width on top, the market /
+   fleet column and the signals column sit side by side under it, and the page scrolls down instead of across. */
+@media (max-width: 1279px) {
+  .screen {
+    height: auto;
+    min-height: max(100vh, var(--screen-min-h));
+  }
+  .dash {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .dash > :nth-child(2) {
+    order: -1;
+    grid-column: 1 / -1;
+  }
+  .dash > * {
+    max-height: none;
+  }
+  /* the top bar packs tighter, so its stats stay on one line where they can (they wrap, never cut, if not) */
+  .topbar {
+    gap: var(--space-2) 12px;
+    padding: var(--space-2) 12px;
+  }
+  .brand {
+    width: auto;
+    font-size: 16px;
+  }
 }
 .body {
   overflow: hidden;
@@ -1154,7 +1181,9 @@ td.wrap {
   flex-direction: column;
   gap: 6px;
 }
-.act-intro-box td.r {
+.act-intro-box td.r,
+.act-intro-box td.num-s {
+  /* (M21.1: the "what's new" lines wrap too) */
   white-space: normal;
 }
 
@@ -1784,6 +1813,18 @@ td.wrap {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: var(--space-4);
 }
+/* M21.1 (DT): the chapter report's stat rows wrap rather than cut a value off; rival fates wrap in their cell */
+.reveal-stats .row-between {
+  flex-wrap: wrap;
+  gap: 2px 12px;
+}
+[data-rival] td {
+  white-space: normal;
+}
+[data-rival] td:first-child {
+  white-space: nowrap;
+  vertical-align: top;
+}
 .reveal-timeline {
   margin: 0;
 }
@@ -2022,5 +2063,37 @@ td.wrap {
 @media (max-width: 760px) {
   .reveal-two {
     grid-template-columns: 1fr;
+  }
+}
+
+/* M21.1 (DT), every width: a panel holding a table wider than itself scrolls sideways, so the table never pushes
+   its section or the page wider (the table keeps its own layout; nothing pops out of a panel to be clipped). */
+.panel:has(> table) {
+  overflow-x: auto;
+}
+
+/* ===== M21.1 (DT): smaller laptops, 1024–1279 px. Kept last so it wins over every rule above. =====
+   The page scrolls down, never across (the Plan reflow and the narrower top bar are with the "Fit to the window"
+   rules); a table wider than its panel scrolls sideways inside the panel; the wide grids reflow. */
+@media (max-width: 1279px) {
+  .body {
+    overflow: visible;
+  }
+  .section {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .report-grid,
+  .capital2,
+  .a2-report-cols {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .tiles {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .racks {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .p0-plan {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
