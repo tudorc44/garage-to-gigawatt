@@ -299,18 +299,16 @@ describe('the hidden signals fields never reach src/', () => {
       expect(bots, bad).not.toContain(bad)
   })
 
-  it('nothing in src/ calls toAct3 but its own definition and the test-build entry (Act III stays unreachable from play)', () => {
+  it('nothing in src/ calls toAct3 but its own definition and the app’s one entry (enterAct3)', () => {
     for (const file of src) {
       if (/sim[\\/]state\.ts$/.test(file)) continue
-      // M13.1: the app enters Act III in one place, behind the ACT3_PREVIEW gate (test builds only).
+      // M13.1: the app enters Act III in one place (M20.2: in every build; the gate is gone, the one entry stays).
       if (/ui[\\/]app\.tsx$/.test(file)) {
         const text = code(file)
         const calls = text.match(/\btoAct3\(/g) ?? []
         expect(calls).toHaveLength(1)
-        // (M18.4: it also takes Scenario Mode's chosen scenario)
-        expect(text).toMatch(
-          /const enterAct3 = \(end: GameState(, scenarioMode\?: ScenarioId)?\) => \{\s*if \(!ACT3_PREVIEW\) return[^}]*?\btoAct3\(/,
-        )
+        // (M18.4: it also takes Scenario Mode's chosen scenario; M20.2: and the quick-start mark)
+        expect(text).toMatch(/const enterAct3 = \([^)]*\) => \{[\s\S]*?\btoAct3\(/)
         continue
       }
       expect(code(file), `${file} uses toAct3`).not.toMatch(/\btoAct3\b/)

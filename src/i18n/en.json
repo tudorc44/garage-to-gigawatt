@@ -2364,7 +2364,7 @@
   "ui.act3.quick.shell_note": "Texas shell leases, one due in 2030 (texas-shell, seed 3).",
   "ui.act3.quick.go": "Play to 2026 and enter",
   "ui.act3.quick.playing": "Playing 2017–2026…",
-  "ui.act3.continue": "Continue to Act III (test build)",
+  "ui.act3.continue": "Continue to Act III",
   "ui.act3.forced_tag": "Scenario forced (test)",
   "ui.act3.sig_short.revenue_gap": "RG",
   "ui.act3.sig_short.lender_spreads": "LS",

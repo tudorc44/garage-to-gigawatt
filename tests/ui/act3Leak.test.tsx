@@ -29,7 +29,7 @@ import { LiveScreen } from '../../src/ui/screens/Live.tsx'
 import { PlanScreen } from '../../src/ui/screens/Plan.tsx'
 import { ReportScreen } from '../../src/ui/screens/Report.tsx'
 import { SectionView, type Section } from '../../src/ui/screens/Sections.tsx'
-import { Act3Intro } from '../../src/ui/screens/Act3Preview.tsx'
+import { Act3Intro } from '../../src/ui/screens/Act3Entry.tsx'
 import { act3ScenarioCompany } from '../sim/act3Helpers.ts'
 
 const text = en as Record<string, string>

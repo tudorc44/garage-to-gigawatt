@@ -1,7 +1,7 @@
 // The Act III preview's quick-start companies (M13.1; the design thread's M13 answer 2b). Test builds
-// only: imported by screens/Act3Preview.tsx, which the app loads behind ACT3_PREVIEW, so neither file
-// (nor the bots they load) is in the production build (tests/ui/act3Gate.test.ts builds and checks).
-import { CONTENT } from '../content/index.ts'
+// only (M20.2 keeps them so): imported by screens/Act3Preview.tsx, which the app loads behind an inline
+// mode check, so neither file is in the production build (tests/ui/act3Gate.test.ts builds and checks).
+// (The bots themselves ship since M20.2: the presets play them.)
 import type { MessageKey } from '../i18n/t.ts'
 import type { GameState } from '../sim/state.ts'
 
@@ -41,20 +41,7 @@ export const QUICK_STARTS: {
   },
 ]
 
-/**
- * A preset company at the end of Act II (M18.3, A3-12): its recipe's bot plays its seed from 2017 to 2026Q4. The
- * recipes are presets_act3.json's; the bots load only here.
- */
-export async function presetAct3Company(
-  id: 'good' | 'great' | 'lifeline',
-): Promise<GameState> {
-  const p = CONTENT.act3Presets.find((x) => x.id === id)!
-  const [{ BOTS }, { playGame }] = await Promise.all([
-    import('../../tools/bots.ts'),
-    import('../sim/replay.ts'),
-  ])
-  return playGame(p.seed, BOTS[p.bot], { through: 2 }).state
-}
+// (M20.2: the presets moved to act3PresetStart.ts: they ship in every build.)
 
 /**
  * A quick-start company at the end of Act II (the 2026Q4 chapter phase): the sim bot plays its seed from

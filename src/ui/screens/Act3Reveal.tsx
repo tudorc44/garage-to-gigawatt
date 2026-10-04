@@ -3,7 +3,7 @@
 // Act III, when the scenario is no longer a secret (a grep test whitelists exactly this file). Everything
 // comes from the reveal record (act3End, through act3Outcome): numbers and ids; the text is in en.json
 // (act3.reveal.<scenario>.*, the trigger card's title under its engine id, the move labels). It never imports
-// a hidden content file. Part of the test-build preview module (loaded behind ACT3_PREVIEW).
+// a hidden content file. Loaded with the Act III entry screens (Act3Entry.tsx, a lazy chunk; every build since M20.2).
 import { useState } from 'preact/hooks'
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import { t, tDynamic } from '../../i18n/t.ts'

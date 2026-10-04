@@ -742,6 +742,8 @@ export interface GameState {
   scenarioId?: ScenarioId
   /** M13.1: a tester forced the scenario (test builds only); the top bar says so. Absent otherwise. */
   scenarioForced?: true
+  /** M20.2: entered from a test build's quick-start company; the production build refuses its saves. Absent otherwise. */
+  act3QuickStart?: true
   /**
    * M18.4: a Scenario Mode run (A3-12): the player chose the scenario openly. The top bar tags it, and the chapter
    * report labels the reading score "scenario known". Absent otherwise.
@@ -1129,6 +1131,8 @@ export function toAct3(
     act3Seed?: number
     /** M18.4: Scenario Mode: the player's chosen scenario, played openly. */
     scenarioMode?: boolean
+    /** M20.2: a test build's quick-start company (marked so production refuses its saves). */
+    quickStart?: boolean
   } = {},
 ): GameState {
   // (M18.3: a harness may salt Act III's own randomness; set before the entry draws the wildcards)
@@ -1141,6 +1145,7 @@ export function toAct3(
     s.rng = substream(options.act3Seed, 'act3_main').rng
   if (options.forced && options.scenario) s.scenarioForced = true
   if (options.scenarioMode && options.scenario) s.scenarioMode = true
+  if (options.quickStart) s.act3QuickStart = true
   return s
 }
 

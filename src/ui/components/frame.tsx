@@ -167,7 +167,8 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
         </div>
       )}
       {isActIII(s.act) && <Act3Panel name="Act3TopStrip" state={s} />}
-      {s.scenarioForced && (
+      {/* (M20.2: the forcing tag is test-build only; production refuses forced saves anyway) */}
+      {import.meta.env.MODE !== 'production' && s.scenarioForced && (
         <div class="stat">
           <span class="tag">{t('ui.act3.forced_tag')}</span>
         </div>

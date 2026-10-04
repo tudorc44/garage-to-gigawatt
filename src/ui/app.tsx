@@ -18,11 +18,7 @@ import {
   toAct3,
   type GameState,
 } from '../sim/state.ts'
-import {
-  ACT3_PREVIEW,
-  forcedScenario,
-  guardTestBuildSave,
-} from '../platform/preview.ts'
+import { forcedScenario, guardTestBuildSave } from '../platform/preview.ts'
 import { presetGame } from '../sim/preset.ts'
 import { newPrologueGame } from '../sim/prologue/setup.ts'
 import type { PrologueProps } from './screens/Prologue.tsx'
@@ -71,11 +67,24 @@ function LazyPrologue(props: PrologueProps) {
   )
 }
 
+type EntryModule = typeof import('./screens/Act3Entry.tsx')
 type PreviewModule = typeof import('./screens/Act3Preview.tsx')
 
 /**
- * The Act III preview module (M13), loaded only in a test build: in production ACT3_PREVIEW is the
- * constant false, so this import (and the whole file) is dropped from the bundle.
+ * The ways into Act III, its intro and chapter report (M20.2: every build), loaded lazily so they stay out of
+ * the main bundle.
+ */
+function useAct3Entry(): EntryModule | null {
+  const [m, setM] = useState<EntryModule | null>(null)
+  useEffect(() => {
+    void import('./screens/Act3Entry.tsx').then(setM)
+  }, [])
+  return m
+}
+
+/**
+ * The test-build preview module (M13; since M20.2 only the quick-start companies), loaded only in a test
+ * build: in production the inline check is the constant false, so this import (and the file) is dropped.
  */
 function useAct3Preview(): PreviewModule | null {
   const [m, setM] = useState<PreviewModule | null>(null)
@@ -112,7 +121,8 @@ const themeOf = (s: GameState | null) =>
 export function App() {
   const [game, setGame] = useState<GameState | null>(null)
   const [showEnd, setShowEnd] = useState(false)
-  // Test builds (M13): the Act III preview module, and the Act III intro before 2027Q1's Plan phase.
+  // Act III's entry screens (every build, M20.2); the test-build quick starts; the intro before 2027Q1's Plan.
+  const entry = useAct3Entry()
   const preview = useAct3Preview()
   const [act3Intro, setAct3Intro] = useState(false)
   const [section, setSection] = useState<Section>('dashboard')
@@ -210,40 +220,47 @@ export function App() {
   }
 
   /**
-   * Test builds: an end-of-Act II company enters Act III (the drawn scenario, or the tester's
-   * ?scenario), and the Act III intro shows first.
+   * An end-of-Act II company enters Act III (the drawn scenario; Scenario Mode's choice; in a test build only,
+   * the tester's ?scenario), and the Act III intro shows first. `quickStart` marks a test build's quick-start company.
    */
-  const enterAct3 = (end: GameState, scenarioMode?: ScenarioId) => {
-    if (!ACT3_PREVIEW) return
-    const forced = forcedScenario(window.location.search)
+  const enterAct3 = (
+    end: GameState,
+    scenarioMode?: ScenarioId,
+    quickStart = false,
+  ) => {
+    // (M20.2: the forcing is test-build only, written inline so production drops it)
+    const forced =
+      import.meta.env.MODE !== 'production'
+        ? forcedScenario(window.location.search)
+        : null
     setShowEnd(false)
     commit(
-      toAct3(
-        end,
+      toAct3(end, {
         // M18.4: Scenario Mode plays the chosen scenario openly; else a tester's ?scenario, else the draw.
-        scenarioMode
+        ...(scenarioMode
           ? { scenario: scenarioMode, scenarioMode: true }
           : forced
             ? { scenario: forced, forced: true }
-            : undefined,
-      ),
+            : {}),
+        ...(quickStart ? { quickStart: true } : {}),
+      }),
     )
     setAct3Intro(true)
   }
 
   let screen
-  if (preview && game && inActIII(game) && act3Intro) {
+  if (entry && game && inActIII(game) && act3Intro) {
     screen = (
-      <preview.Act3Intro state={game} onEnter={() => setAct3Intro(false)} />
+      <entry.Act3Intro state={game} onEnter={() => setAct3Intro(false)} />
     )
   } else if (
-    preview &&
+    entry &&
     game &&
     inActIII(game) &&
     (game.phase === 'chapter' || (game.phase === 'gameover' && showEnd))
   ) {
     screen = (
-      <preview.Act3Chapter
+      <entry.Act3Chapter
         state={game}
         onNew={() => {
           setShowEnd(false)
@@ -269,11 +286,17 @@ export function App() {
           act2: readSlot('act2'),
         }}
         onLoad={saves.load}
-        preview={preview && <preview.QuickStart onReady={(end) => enterAct3(end)} />}
-        act3Start={preview && <preview.StartAct3 onReady={(end) => enterAct3(end)} />}
-        scenarioMode={
+        preview={
           preview && (
-            <preview.ScenarioMode
+            <preview.QuickStart
+              onReady={(end) => enterAct3(end, undefined, true)}
+            />
+          )
+        }
+        act3Start={entry && <entry.StartAct3 onReady={(end) => enterAct3(end)} />}
+        scenarioMode={
+          entry && (
+            <entry.ScenarioMode
               unlocked={readSettings().act3Finished}
               onReady={(end, scenario) => enterAct3(end, scenario)}
             />
@@ -313,8 +336,8 @@ export function App() {
             : undefined
         }
         extra={
-          preview && game.phase === 'chapter' && inActII(game) ? (
-            <preview.ContinueToAct3 onClick={() => enterAct3(game)} />
+          entry && game.phase === 'chapter' && inActII(game) ? (
+            <entry.ContinueToAct3 onClick={() => enterAct3(game)} />
           ) : undefined
         }
       />

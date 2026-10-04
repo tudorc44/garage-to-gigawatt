@@ -1,7 +1,8 @@
-// M13.1: the Act III preview gate. Act III is a test-build feature: on in `npm run dev` and the staging
-// build, absent from the production build (GitHub Pages). This file builds the game twice (production and
-// staging modes, into temp folders) and checks the preview's marker is only in the staging build; it also
-// covers the save guard, the forced scenario and the quick-start entry.
+// M13.1: the Act III preview gate, redefined in M20.2 (the Act III public release). Act III is in every build;
+// the ?scenario= forcing and the quick-start companies stay test-build only (`npm run dev`, staging). This file
+// builds the game twice (production and staging modes, into temp folders) and checks: production has the Act
+// III chunks but neither marker, staging has both; the main bundle stays under 500 KB. It also covers the save
+// guard, the forced scenario and the quick-start entry.
 import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -13,6 +14,7 @@ import { advance } from '../../src/sim/advance.ts'
 import { encodeSave, decodeSave } from '../../src/platform/saves.ts'
 import {
   ACT3_PREVIEW,
+  FORCING_MARKER,
   forcedScenario,
   guardTestBuildSave,
 } from '../../src/platform/preview.ts'
@@ -65,16 +67,30 @@ describe('the gate in the builds', () => {
       if (b) rmSync(b.dir, { recursive: true, force: true })
   })
 
-  it('the production build (GitHub Pages) has no Act III preview: no marker, no preview chunk, no bots', () => {
+  // M20.2 (the Act III public release): production carries Act III in its own lazy chunks, but no quick starts
+  // and no scenario forcing; staging carries both.
+  it('the production build (GitHub Pages) has Act III’s chunks, but no quick starts and no forcing code', () => {
     expect(production.text.length).toBeGreaterThan(100_000)
+    const assets = readdirSync(join(production.dir, 'assets')).join(' ')
+    expect(assets).toMatch(/Act3Entry/)
+    expect(assets).toMatch(/Act3Panels/)
+    expect(assets).not.toMatch(/Act3Preview/)
     expect(production.text).not.toContain(PREVIEW_MARKER)
-    expect(readdirSync(join(production.dir, 'assets')).join(' ')).not.toMatch(
-      /Act3Preview|Act3Panels|bots-/,
-    )
+    expect(production.text).not.toContain(FORCING_MARKER)
   })
 
-  it('the staging build has it (the check can see the marker), with the Act III panels (M13.2)', () => {
+  it('the main bundle stays under the 500 KB warning in production (Act III stays out of it)', () => {
+    const assets = join(production.dir, 'assets')
+    const main = readdirSync(assets).filter((f) => /^index-.*\.js$/.test(f))
+    expect(main.length).toBe(1)
+    const main0 = readFileSync(join(assets, main[0]), 'utf8')
+    expect(main0.length).toBeLessThan(500_000)
+    expect(main0).not.toContain('data-start-act3')
+  })
+
+  it('the staging build has both: the quick starts (the marker) and the forcing code, with the Act III chunks', () => {
     expect(staging.text).toContain(PREVIEW_MARKER)
+    expect(staging.text).toContain(FORCING_MARKER)
     expect(readdirSync(join(staging.dir, 'assets')).join(' ')).toMatch(
       /Act3Panels/,
     )
@@ -92,13 +108,19 @@ describe('the save guard', () => {
     end = await quickStartCompany('growth')
   }, 60_000)
 
-  it('an Act III save is rejected outside a test build, accepted in one', () => {
+  it('M20.2: production loads an Act III save (play, presets, Scenario Mode) but not a forced or quick-start one', () => {
+    const refused = { ok: false, error: { key: 'error.save_test_build' } }
     const r = { ok: true as const, state: act3() }
-    expect(guardTestBuildSave(r, false)).toEqual({
-      ok: false,
-      error: { key: 'error.save_test_build' },
-    })
-    expect(guardTestBuildSave(r, true)).toBe(r)
+    expect(guardTestBuildSave(r, false)).toBe(r)
+    const mode = { ok: true as const, state: toAct3(end, { scenario: 's1', scenarioMode: true }) }
+    expect(guardTestBuildSave(mode, false)).toBe(mode)
+    const forced = { ok: true as const, state: toAct3(end, { scenario: 's1', forced: true }) }
+    expect(guardTestBuildSave(forced, false)).toEqual(refused)
+    const quick = { ok: true as const, state: toAct3(end, { quickStart: true }) }
+    expect(quick.state.act3QuickStart).toBe(true)
+    expect(guardTestBuildSave(quick, false)).toEqual(refused)
+    // a test build loads them all
+    for (const x of [r, mode, forced, quick]) expect(guardTestBuildSave(x, true)).toBe(x)
     // An Act II save loads either way.
     const a2 = { ok: true as const, state: end }
     expect(guardTestBuildSave(a2, false)).toBe(a2)

@@ -186,6 +186,10 @@ the save guard and the gate test redefined); M20.3 checks (goldens, `--act2 --ac
 **M20.1 done:** `d15_cleared` + `d15_note` on s1 core_scientific and coreweave (both copies; fates unchanged; `d15_review` kept); the reveal's
 "Rival fates are scenario illustrations, not predictions." line; `d15Withheld` guard kept and tested; a content test (every flagged fate or card is
 cleared). **Golden act3-s1:** only its two rival fates' `withheld` true → false (the expected change). act3-content README logs it.
+**M20.2 done:** `screens/Act3Entry.tsx` (lazy, every build: presets, Scenario Mode, Continue to Act III, intro, chapter report); Act3Preview.tsx keeps
+only the quick starts (inline mode check); `act3PresetStart.ts` (the bots chunk ships: presets play them, mine); forcing + its top-bar tag inline-gated
+(FORCING_MARKER); `act3QuickStart` save mark; save guard refuses forced/quick-start saves only; "Continue to Act III" in every build (mine); gate test
+redefined; the toAct3 grep test keeps "one entry" without the gate (mine). Production: main 206 KB, Act3Entry 15.9, Act3Panels 28.2, bots 19.7.
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
