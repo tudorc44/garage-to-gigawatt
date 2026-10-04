@@ -157,7 +157,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M19 (Heat relief) and M20 (the Act III public release) are done and merged** (the owner fast-forwarded m19 → m20 into `main` at
+**M21 (layout from 1024 px, the Heat breakdown, CLAUDE.md, branch tags) is done on `m21`** (5 Oct 2026; not merged: the owner reviews and
+merges, `git checkout main`, `git merge --ff-only m21`, `git push origin main`). **M19 and M20 are done and merged** (the owner fast-forwarded m19 → m20 into `main` at
 `7804dd0` and pushed, 4 Oct 2026: GitHub Pages now publishes Act III). The next milestone branch starts from `main`. Next: the design
 thread answers the M19 + M20 questions. Still open: the owner's playtest of Act III; the Act I playtests (postponed). (M18 and the Act III
 balance pass closed 4 Oct 2026; m16 → m18 merged at `e0846d3`. D15 resolved by the owner in M20.1.)
@@ -205,6 +206,9 @@ rule, one-key-once text rule, and branches (one per milestone from main; the own
 **M21.5 done:** tags m11-done … m20-done (annotated, at each branch tip, verified on the remote) pushed; remote branches m11 … m20 deleted (each
 fully merged into main first). m10 skipped: no branch exists locally or remotely. Left alone (not in the spec): remote `m9` and `prologue`, and the
 local copies of m11 … m20.
+**M21 report (5 Oct 2026):** commits `79d07a7` `5906943` `8ef6e79` `1e41f00` `a23993a` `35dd8c4`; tests 1247 → 1254; goldens all unchanged; `--act2
+--act3`: all 1302 CSVs and the log byte-identical to M20 (timings aside; 43 game overs; C1 1.01/0.84/1.80/1.01×); main bundle 207 KB. Branch m21
+not pushed (owner's call). Questions for the design thread: in the final report.
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 
