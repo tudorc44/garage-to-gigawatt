@@ -50,6 +50,7 @@ import {
 } from './corporateDebt.ts'
 import { rescueBeforeGameOver } from './rescue.ts'
 import { covenantSweep, testCovenant } from './covenant.ts'
+import { openCommunityDeal } from './communityDeal.ts'
 import { ratingInputs } from './rating.ts'
 import { mwByUse } from './mwUse.ts'
 import { endQuarterGpuWaves } from './gpuWave.ts'
@@ -299,4 +300,6 @@ export function startNextQuarter(state: GameState): void {
   rollAuction(state)
   // Act III (M17.4): a wildcard due this quarter comes in the Plan phase (if it has a target).
   openNextWildcard(state)
+  // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
+  openCommunityDeal(state)
 }

@@ -126,6 +126,14 @@ export function loadHeat(
  */
 export function recalcHeat(state: GameState, site: Site): void {
   const h = heatOf(state, site.id)
+  // M19: a Community Deal's goodwill, added after the region's scaling so Heat lands on the deal's target
+  const total = heatBeforeDeal(state, site) + (h.dealOffset ?? 0)
+  h.value = Math.min(100, Math.max(0, total))
+}
+
+/** A site's Heat from its parts, before any Community Deal and before the 0–100 clamp (M19). */
+export function heatBeforeDeal(state: GameState, site: Site): number {
+  const h = heatOf(state, site.id)
   const parts =
     baseHeat(state, site) +
     h.load +
@@ -133,13 +141,11 @@ export function recalcHeat(state: GameState, site: Site): void {
     eraHeat(state, site) +
     gasHeat(site, state.quarter)
   // Ratepayer Anger adds floor(Anger ÷ 5) at every site in its region (owner, 28 Sep 2026).
-  const total =
+  return (
     parts * regionHeatMult(regionOf(site), state.quarter) +
     nationalHeatDelta(state.quarter) +
-    angerHeat(state, regionOf(site)) +
-    // M19: a Community Deal's goodwill, added after the region's scaling so Heat lands on the deal's target
-    (h.dealOffset ?? 0)
-  h.value = Math.min(100, Math.max(0, total))
+    angerHeat(state, regionOf(site))
+  )
 }
 
 /** After a week is mined: new load from what actually ran, then Heat. At 90: shutdown order. */
@@ -208,6 +214,15 @@ export function endQuarterHeat(state: GameState): void {
         tier: site.tier,
         heat: Math.round(h.value),
       })
+    }
+    // M19: a Community Deal's goodwill fades toward 0 at each quarter end
+    if (h.dealOffset !== undefined) {
+      const fade = CONTENT.heat.communityDeal.fadePerQuarter
+      const left = Math.min(0, h.dealOffset + fade)
+      if (left === 0) {
+        delete h.dealOffset
+        logEntry(state, 'log.community_deal_faded', { tier: site.tier })
+      } else h.dealOffset = left
     }
   }
 }

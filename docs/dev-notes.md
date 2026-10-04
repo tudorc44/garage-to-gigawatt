@@ -171,6 +171,9 @@ bot hires her, so every golden and the `--act2 --act3` sim stay byte-identical.
 **M19.1 done:** hires.json `community_relations` (effects heat_base −5, outreach_bw 0, community_deal, needs_site_beyond_garage); heat.json `community_deal`
 block (schema); her −5 in base Heat, recalculated on hiring/firing her only; Acts II–III salary = 2021 × 1.08 (hires_act2.json is a frozen copy:
 `BALANCE.act2Hires.act1FormulaOnly`, mine). Goldens unchanged. 1229 → 1234 tests.
+**M19.2 done:** `systems/communityDeal.ts` (offer at the new quarter's start, END_PLAN lapses it; COMMUNITY_DEAL_SIGN / _DECLINE, unlogged moves);
+`SiteHeat.dealOffset` added after the region scaling so Heat lands on 12 exactly, never raises Heat (mine); the fade in endQuarterHeat; two log
+lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 tests.
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 

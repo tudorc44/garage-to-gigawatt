@@ -75,6 +75,11 @@ import {
   hire,
   hireBlocker,
 } from './systems/hires.ts'
+import {
+  communityDealBlocker,
+  declineCommunityDeal,
+  signCommunityDeal,
+} from './systems/communityDeal.ts'
 import { resolveInterrupt } from './systems/interrupts.ts'
 import { checkEvents, scheduleEvents } from './systems/events.ts'
 import { planFailureWaves } from './systems/failureWave.ts'
@@ -395,6 +400,10 @@ export type Action =
   | { type: 'REFIT_GPUS'; projectId: string; gpu: string }
   /** Act III (M17.4): answer the wildcard on the Plan screen (c1 = its first choice, the default). */
   | { type: 'WILDCARD_CHOOSE'; choice: string }
+  /** M19: sign the Community Relations Manager's yearly Community Deal (1 BW, its cost now). */
+  | { type: 'COMMUNITY_DEAL_SIGN' }
+  /** M19: "Not this year" (the default; an offer left at END_PLAN lapses the same way). */
+  | { type: 'COMMUNITY_DEAL_DECLINE' }
   /** Act III (M17.3): start a lobbying action (1 BW, its cost now; the gain lands at the quarter's end). */
   | { type: 'LOBBY'; id: string }
   /** Act III (M17.3): spend political capital on a card (0 BW). */
@@ -438,6 +447,8 @@ function run(s: GameState, a: Action): Message | undefined {
       autoRenew(s)
       // Act III (M17.4): a wildcard left unanswered takes its default.
       settleWildcards(s)
+      // M19: a Community Deal left unsigned lapses ("Not this year").
+      declineCommunityDeal(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -1006,6 +1017,18 @@ function run(s: GameState, a: Action): Message | undefined {
       refitGpus(s, a.projectId, a.gpu)
       return
     }
+
+    case 'COMMUNITY_DEAL_SIGN': {
+      const blocked = communityDealBlocker(s)
+      if (blocked) return blocked
+      signCommunityDeal(s)
+      return
+    }
+
+    case 'COMMUNITY_DEAL_DECLINE':
+      if (!s.communityDeal?.offer) return fail('error.no_community_deal')
+      declineCommunityDeal(s)
+      return
 
     case 'WILDCARD_CHOOSE': {
       const blocked = wildcardChoiceBlocker(s, a.choice)
