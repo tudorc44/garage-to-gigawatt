@@ -2,69 +2,70 @@
 
 ## Project summary
 
-Garage to Gigawatt is a turn-based, finance-first business sim played in a desktop browser. We are building
-**Alpha 0.1: Act I, "Garage to Hashrate"**: 23 quarterly turns (Q1 2017 → Q3 2022, about 40 minutes).
-The player starts with $10k and an empty garage (no rigs), then buys machines, climbs a site ladder
-(garage → 100 kW → 1 MW → 20 MW → Texas 100 MW), picks a HODL/sell %, takes loans (crypto-backed ones can
-margin-call), hires staff, manages community Heat and raises money, all against scripted BTC/ETH prices and
-4 scripted rivals. Each turn is Plan phase → Live quarter (13 weekly ticks, pausable, up to 3 interrupts)
-→ Quarter report. The act ends at the Merge decision screen and a chapter report. The alpha must answer one
-question: *is Act I a fun 40-minute run where decisions, not luck, decide whether you survive?*
+Garage to Gigawatt is a turn-based, finance-first business sim played in a desktop browser (1024 px wide and up).
+A career runs from a bedroom in 2009 to an AI-campus operator in 2030, in acts of quarterly turns. Each turn is
+Plan phase → Live quarter (13 weekly ticks, pausable, up to 3 interrupts) → Quarter report; each act ends in a
+chapter report. Money, debt, power, Heat and rivals are simulated; prices and events follow scripted data.
 
-**Act I, Act II and the Prologue are all built; Act III is not started.**
-- **Act II** (Alpha 0.2, "The Pivot and the Boom"): 17 quarterly turns (2022Q4 → 2026Q4), continuing from an Act I
-  save or a standalone preset. The miner turns its energized MW into AI data-center capacity through projects
-  (power, tenant and capital slots), a credit rating and five MW uses. Scope **frozen (v1.0)** in
-  `docs/alpha-0.2-scope.md`.
+**Status (4 Oct 2026): the Prologue, Act I, Act II and Act III are built and public on GitHub Pages. Act IV is not
+designed.**
 - **The Prologue** (Alpha 0.3, Act 0, "Bedroom to Garage"): 32 quarters, 2009 → 2016, optional from the title screen,
   handing over to Act I. Scope in `docs/alpha-0.3-scope.md`.
-- The Act I playtests are postponed until after Act II. The current work (milestone M8) finishes Act II.
+- **Act I** (Alpha 0.1, "Garage to Hashrate"): 23 quarters, 2017Q1 → 2022Q3. $10k and an empty garage; machines,
+  a site ladder (garage → 100 kW → 1 MW → 20 MW → Texas 100 MW), HODL/sell, loans (crypto-backed ones can
+  margin-call), hires, community Heat, fundraising, 4 scripted rivals; ends at the Merge decision.
+- **Act II** (Alpha 0.2, "The Pivot and the Boom"): 17 quarters, 2022Q4 → 2026Q4, from an Act I save or a preset. The
+  miner turns its energized MW into AI data-center capacity through projects (power, tenant and capital slots), a credit
+  rating and five MW uses. Scope **frozen (v1.0)** in `docs/alpha-0.2-scope.md`.
+- **Act III** ("Reckoning"): 16 quarters, 2027Q1 → 2030Q4, from a finished Act II or one of three preset companies,
+  on one of four hidden market scenarios; scored on net worth and a reading score, revealed in the chapter report;
+  Scenario Mode unlocks after one finish. Design: doc 27 v1.2 (its §17 records every change from the build); balance
+  pass closed (4 Oct 2026); public since M20.
+- Playtests: the owner's Act III playtest and the Act I playtests are still to come.
 
 ## Commands
 
 ```bash
 npm run dev       # play in the browser: start the dev server and open the printed localhost URL
-npm run build     # type-check (tsc -b) and build to dist/
+npm run build     # type-check (tsc -b) and build to dist/ (the production build GitHub Pages serves)
 npm run preview   # serve the built dist/ locally
 npm run staging:build  # the owner's snapshot: build the game into staging/ (only the owner runs this); keeps g2g
 npm run staging   # play the staging snapshot at http://localhost:4173 (unaffected by later edits)
-npm test          # Vitest: unit tests per system + golden-replay test
+npm test          # Vitest: unit tests per system, component tests, golden replays
 npm run lint      # ESLint (also enforces the pure-sim rules below)
-npm run play      # the terminal version of Act I (options: -- --seed 42 --fast)
-npm run sim       # sim-runner: 3 bot strategies × 50 seeds → CSVs + summary in sim-output/
-npm run content:market  # regenerate src/content/market_weekly.json after editing the CSV
+npm run play      # the terminal game (Act I, then Act II; options: -- --seed 42 --fast)
+npm run sim       # sim-runner: bots × 50 seeds → CSVs + summary in sim-output/; add --out <dir>
+npm run sim -- --act2 --act3   # also Act II to 2026Q4 and every Act III run (~55 min); the byte-identity check
+npm run sim -- --act3-anchors  # Act III archetypes × scenarios × 30 seeds, the anchor table (~15 min)
+npm run sim -- --prologue      # the prologue bots and the scope 0.3 §5 table
+npm run content:market  # regenerate the market JSON files after editing a market CSV
 ```
 
 ## Key docs (read before bigger tasks)
 
 - `docs/dev-notes.md`: **read this first in a new session.** Where the build stands, the rules and decisions in
-  force, open questions, STOPPED items and what's next (kept under ~250 lines). The finished history (every step,
-  balance review and milestone in detail) is in `docs/dev-notes-archive.md`: read it only when a task needs it.
-- `docs/alpha-0.1-scope.md`: **source of truth for scope.** What's in, what's out, cut order, exit checklist.
-- `docs/content-pack-review.md`: its §4 amendments (A1–A9) **override** the scope doc where they differ.
-- `docs/player-actions-and-pacing.md` (build order in §7) and `docs/act-i-content-pack.md` (content and data notes).
-- `docs/act1-content/`: the original content pack. The game's live copies are in `src/content/`.
-- `docs/tech-stack.md`: architecture, repo layout, libraries.
-- `docs/design-brief.md`: game vision and the 4-act campaign (background only; Acts II–IV are out of scope).
-- `docs/design-system/README.md` and `docs/design-system/tokens.css`: **source of truth for UI style**
-  (tokens, era themes, fonts, colours, components). `docs/design-system.md` records how those decisions were made.
-- `docs/wireframes-spec.md`: **source of truth for screen layout and flow.**
-- `docs/mockups/q4-2017.html`: the approved **visual target** for the Plan, Live quarter and Quarter report
-  screens (open it in a browser). Match its layout and style.
-- `src/ui/audio/` holds the sound code (moved from `docs/audio/`, where `audio-notes.md` stays as the reference).
-- `docs/alpha-0.2-scope.md`: **source of truth for Act II scope** (v1.0, frozen). Its §8 lists where it corrects doc 18.
-- `docs/alpha-0.3-scope.md`: **source of truth for the Prologue (Act 0) scope**, with the content pack in
-  `docs/prologue-content/` and the screen wireframes in `docs/wireframes/prologue/`.
-- **Act II** (reference copies in `docs/game-project-files/`, read-only; the game will read `src/content/`):
-  `claude_18-act-ii-design.md` (the design and its decisions, incl. §16 "Decisions from the content pack"),
-  `claude_20-alpha-0_2-scope.md` (the same scope text, kept in sync with the design project),
-  `claude_21-act-ii-wireframe-prompt.md` (the Claude Design prompt, v1.0), `claude_act2-content_*` (the Act II
-  content pack: report plus data files). The `campus` era theme for Act II already exists in
-  `docs/design-system/tokens.css`.
-  Act II wireframes: https://claude.ai/artifact/LVnSiEH9RRHtU16Ld4C59S (the source of truth for Act II screen
-  layout; doc 21 v1.0 has their example data).
-  Corrected Act II data lives in `docs/act2-content/`; where a file exists there, it replaces the
-  `docs/game-project-files/` copy (see its README).
+  force, open questions, STOPPED items and what's next. The finished history (every step, balance review and
+  milestone in detail) is in `docs/dev-notes-archive.md`: read it only when a task needs it.
+- **Act I:** `docs/alpha-0.1-scope.md` (scope), `docs/content-pack-review.md` (its §4 amendments A1–A9 override the
+  scope doc where they differ), `docs/player-actions-and-pacing.md`, `docs/act-i-content-pack.md`, `docs/act1-content/`
+  (the original pack; the game's live copies are in `src/content/`).
+- **Act II:** `docs/alpha-0.2-scope.md` (scope, v1.0 frozen; its §8 lists where it corrects doc 18). Reference copies in
+  `docs/game-project-files/` (read-only): `claude_18-act-ii-design.md`, `claude_20-alpha-0_2-scope.md` (kept identical to
+  the scope doc), `claude_21-act-ii-wireframe-prompt.md`, `claude_act2-content_*`. Corrected data in `docs/act2-content/`
+  (it replaces the game-project-files copy where a file exists; see its README). Wireframes:
+  https://claude.ai/artifact/LVnSiEH9RRHtU16Ld4C59S.
+- **Act III:** `docs/game-project-files/claude_27-act-iii-design.md` (doc 27 v1.2: the design, decisions D1–D17, §17
+  the build's changes), `claude_28-act-iii-content-pack.md` (doc 28), `claude_30-act-iii-wireframe-prompt.md` (doc 30),
+  `docs/act3-content/` and its **README** (the source files; every data change is logged there), `docs/wireframes/act3/`
+  (A3-01 … A3-12), `docs/act3-carryover-audit.md`.
+- **The Prologue:** `docs/alpha-0.3-scope.md` (wins over `claude_26-alpha-0_3-scope.md`), `docs/prologue-content/`,
+  `docs/wireframes/prologue/`.
+- **Architecture and style:** `docs/tech-stack.md`; `docs/design-system/README.md` and `docs/design-system/tokens.css`
+  (**source of truth for UI style**: tokens, era themes, fonts, colours, components; `docs/design-system.md` records
+  the decisions); `docs/wireframes-spec.md` (**source of truth for screen layout and flow**); `docs/mockups/q4-2017.html`
+  (the approved visual target for the Plan, Live and Report screens); `docs/design-brief.md` (vision and the four acts,
+  background only).
+- `src/ui/audio/` holds the sound code (`docs/audio/audio-notes.md` stays as the reference).
 
 ## Architecture rules (non-negotiable)
 
@@ -72,40 +73,63 @@ npm run content:market  # regenerate src/content/market_weekly.json after editin
 - **Pure TypeScript.** No DOM, no `window`/`document`, no timers (`setTimeout`, `setInterval`,
   `requestAnimationFrame`), no `Date.now()`, no `Math.random`.
 - **Never imports from `src/ui/`** (or `src/platform/`). Dependencies only point inward: ui → sim, never sim → ui.
-- **All randomness comes from a seeded RNG stored in the game state** (e.g. mulberry32/sfc32 in `src/sim/rng.ts`).
-  Same seed + same actions must always produce the same game.
+- **All randomness comes from a seeded RNG stored in the game state** (`src/sim/rng.ts`; new randomness gets its own
+  `substream(seed, label)` so older games never change). Same seed + same actions must always produce the same game.
 - State is one plain, serializable `GameState` object. Player decisions are action objects applied by a reducer.
   Time advances via `advance(state) → state` (one week per call, 13 per quarter).
 - Money is plain numbers in dollars. Formatting ("$1.24B") belongs in the UI, not the sim.
-- Must be runnable in Node (for tests and the future sim-runner).
+- Must be runnable in Node (tests, the sim-runner, the terminal game).
 
 ### Content: `src/content/`
 - **All game content is data**: machines, sites, events, hires, rivals, price paths, balance constants.
   Don't hardcode numbers or event text in sim or UI logic; read them from content files.
-- Content files are validated against schemas (Zod, planned; ask before adding it).
+- Content files are validated against Zod schemas (`src/content/schemas.ts`) when the game loads.
+- Copies that must stay byte-identical (a test checks): the Act II files in `src/content/` and `docs/act2-content/`, the
+  Act III files and `docs/act3-content/`. Edit both, and log data changes in that folder's README.
 
 ### UI: `src/ui/`
-- Preact components. The UI reads state and dispatches actions; it never computes game rules itself.
+- Preact components. The UI reads state and dispatches actions; it never computes game rules itself
+  (`src/sim/selectors.ts` holds the read-only views it uses).
 - Styling uses CSS custom properties (design tokens), with no CSS framework. Era themes via `data-theme`.
+- From 1024 px wide up: no sideways page scroll, no value cut off (M21.1); wide tables scroll inside their panel.
+- Act III's screens load lazily in their own chunks; the main bundle stays under Vite's 500 KB warning.
 
 ### Text: `src/i18n/`
 - **All player-facing text goes through `t('key')`** backed by a string table (`en.json`). No raw English
   strings in components or sim output. English only for the alpha.
+- Every key appears once (a test checks: a repeated JSON key silently overwrites the first).
 - Numbers and dates are formatted with `Intl`.
 
-### Planned layout (from `docs/tech-stack.md`)
+### Act III rules that must hold
+- **Hidden files:** the scenario's secrets (`signalsHidden.ts`, `rivalsHidden.ts`, `reading_score.json`) are read only by
+  `src/sim/systems/act3End.ts` (the reveal) and `readingScore.ts`, by tests and by `tools/`. A grep test enforces it.
+- **The leak guard:** no screen during play shows a scenario name, trigger, decoy reason or tell, or a role tag; only
+  the chapter report (`Act3Reveal.tsx`) shows the scenario (tests in `tests/ui/act3Leak.test.tsx` and friends).
+- **The D15 guard:** a rival fate or card flagged `d15_review: true` shows only with `d15_cleared: true`; every shipped
+  flag must be cleared (a content test). The owner cleared both s1 fates on 4 Oct 2026 (M20.1); fate texts are kept as
+  authored, under the line "Rival fates are scenario illustrations, not predictions."
+- **Test-build only:** the `?scenario=` forcing and its top-bar tag, and the quick-start companies ("Act III preview
+  (test build)"), behind an inline `import.meta.env.MODE !== 'production'` check. Production refuses a save marked
+  forced or quick-start. **The gate test** (`tests/ui/act3Gate.test.ts`) builds production and staging: production has
+  the Act III chunks but neither marker, staging has both, and the main bundle stays under 500 KB.
+
+### Standing invariants (check them at every milestone)
+- **Goldens:** Act I ×11, the prologue ×2, Act II and act3-s0…s3 (`tests/golden/`). A golden change must be the intended
+  effect of the sub-step and be explained; accept it with `npm test -- -u tests/golden-replay.test.ts`.
+- **Byte-identity:** `npm run sim -- --act2 --act3` CSVs stay byte-identical across changes that add no rule.
+- Saves: `tests/fixtures/saves/v1-*.json` are real old saves: keep them, never reformat them.
+
+### Layout
 ```
-src/sim/        state.ts, actions.ts, advance.ts, rng.ts, systems/*.ts
-src/content/    events/*.json, machines.json, sites.json, balance.ts, schemas.ts
-src/ui/         app.tsx, screens/, components/, styles/
-src/platform/   storage and platform adapters
-src/i18n/       en.json, t.ts
-tools/          sim-runner.ts, validate-content.ts
-tests/          unit, golden-replay, smoke
+src/sim/        state.ts, actions.ts, advance.ts, rng.ts, selectors.ts, replay.ts, systems/*.ts
+src/content/    *.json, *.csv, balance.ts, schemas.ts, index.ts (loads and validates everything as CONTENT)
+src/ui/         app.tsx, screens/, components/, styles/, audio/
+src/platform/   browser storage (saves, settings) and the build gate (preview.ts)
+src/i18n/       en.json, content.en.json, t.ts
+tools/          sim-runner.ts, bots.ts, play.ts, the Act III harnesses
+tests/          sim/, ui/, golden/, fixtures/
 ```
-`src/sim`, `src/content`, `src/i18n`, `src/ui`, `src/platform` (browser storage: saves, settings) and `tools/`
-exist. `src/sim/selectors.ts` holds read-only views the UI uses instead of computing rules itself. Create new
-folders only as a task needs them.
+Create new folders only as a task needs them.
 
 ## Working rules for Claude
 
@@ -116,13 +140,12 @@ folders only as a task needs them.
    (e.g. "run `npm run dev` and click End Quarter").
 3. **Ask before adding any dependency** (npm package, CDN script, tool). Say what it's for and whether there's a
    no-dependency option.
-4. **Scope guard.** `docs/alpha-0.1-scope.md` decides what gets built for Act I, and `docs/alpha-0.2-scope.md`
-   (frozen v1.0) for Act II. If a request falls outside it
-   (see its §3 "Not in the alpha"), say so and push back politely. Offer to add it to the backlog, or to swap
-   it for something of similar size per the scope doc's change rule. Don't quietly build it.
+4. **Scope guard.** The scope docs (`alpha-0.1`, `alpha-0.2` frozen v1.0, `alpha-0.3`) and doc 27 decide what gets built.
+   If a request falls outside them, say so and push back politely. Offer to add it to the backlog, or to swap it for
+   something of similar size per the scope doc's change rule. Don't quietly build it.
 5. **Respect the architecture rules above.** If a task seems to need breaking one, stop and explain instead.
-6. **Verify before saying done.** At minimum run `npm run build` (and tests, once they exist) and report the
-   result honestly, including failures.
+6. **Verify before saying done.** At minimum run `npm run lint`, `npm test` and `npm run build`, and report the
+   result honestly, including failures. Check UI changes in a browser.
 7. **Commits:** only commit when asked. One small working step = one commit.
 8. Don't edit the files in `docs/` unless asked. Exception: `docs/dev-notes.md`, which rule 10 keeps current.
 9. **Never touch `staging/`.** It is the owner's stable snapshot for playtesting. Don't run `npm run staging:build`
@@ -134,31 +157,34 @@ folders only as a task needs them.
 ## Branches
 
 - **`main`** is the stable, deployable version (GitHub Pages publishes it). Don't commit to it.
-- **The current milestone branch** (now `m8`, made from `main`) is where the build happens. Work only there. The owner
-  merges it into `main` after reviewing the milestone. Never push; the owner pushes.
+- **Each milestone gets its own branch made from `main`** (`m21`, `m22` …; from the previous milestone's branch only if
+  that one isn't merged yet). Work only there. Push the milestone branch when the owner asks. **The owner merges into
+  `main` and pushes `main`** (that publishes the game). Finished milestone branches are tagged `m<n>-done` and deleted
+  from the remote once merged.
 
 ## Batch mode (milestones)
 
-While the owner's milestone prompt is running (e.g. "Milestone M8: …"), these rules **override rules 1, 2 and 7**.
+While the owner's milestone prompt is running (e.g. "M21 — …"), these rules **override rules 1, 2 and 7**.
 All other rules still apply.
 
 - **Work through the whole milestone without pausing between sub-steps.** Split it into sub-steps yourself
-  (M8.1, M8.2 …) and write the split into `docs/dev-notes.md` before starting.
+  (M21.1, M21.2 …) and write the split into `docs/dev-notes.md` before starting.
 - **After each sub-step:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes with **at
-  most 3 lines** and commit on the milestone branch (`m8`) with the prefix `M<n>.<k>: `. Never push, never force-push, never rewrite
+  most 3 lines** and commit on the milestone branch with the prefix `M<n>.<k>: `. Never force-push, never rewrite
   history, never commit to `main`, never touch `staging/`.
-- **Run the sims only at the end of a milestone,** unless the sub-step exists to check balance.
+- **Run the sims only at the end of a milestone,** unless the sub-step exists to check balance. Start long runs detached
+  so a session's time limit doesn't kill them; a sleeping laptop pauses them.
 - **Read `docs/dev-notes-archive.md` only when a task needs the history** (finished steps, old balance reviews,
   sub-step details); `docs/dev-notes.md` has where the build stands and the rules in force.
 - **Change files only with the Edit and Write tools,** never with `python3`, `node`, `sed` or heredoc scripts (those
   need an approval every time and stop batch mode). Use the shell only for `npm`, `git` and read-only commands.
 - **Decide small things yourself:** file layout, naming, extra tests, UI details within the wireframes, and values
-  that are already in `docs/alpha-0.2-scope.md` or `docs/act2-content/`. Label each such decision
-  **"(mine, reversible)"** in dev-notes.
+  that are already in the scope docs or the content folders. Label each such decision **"(mine, reversible)"** in
+  dev-notes.
 - **STOP only for:**
   - a new dependency;
-  - anything that would break an architecture rule;
-  - a scope question: not covered by `alpha-0.2-scope.md`, or it needs a number that isn't in the content files;
+  - anything that would break an architecture rule or an Act III rule above;
+  - a scope question the scope docs don't answer, or a number that isn't in the content files;
   - a golden-replay change you can't explain as the intended effect of the sub-step;
   - tests still failing after 3 honest attempts.
 

@@ -199,6 +199,9 @@ and in the Community dialog (replacing M19's two lines), the Plan meter's hover 
 Heat in Acts I–III, order, clamp, thresholds, read-only. Goldens unchanged.
 **M21.3 done:** the slot lines already existed (M8.7d: `log.project_power_*`, `log.project_capital_*`); two gaps fixed: `log.project_power_nuclear` was
 missing from the report's milestone keys, and a rack card's pilot (born live) logged neither slot, now both. Goldens unchanged (no golden plays a rack card).
+**M21.4 done:** CLAUDE.md rewritten: all four acts' status (Act IV not designed), the current docs (27 v1.2, 28, 30, act3-content README, dev-notes),
+the Act III rules (hidden files, leak guard, D15 guard, test-only forcing / quick starts, the gate test), the standing invariants, the 1024 px layout
+rule, one-key-once text rule, and branches (one per milestone from main; the owner merges; done branches tagged `m<n>-done`).
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 
