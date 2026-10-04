@@ -214,7 +214,7 @@ prologue-done (fc8ce72), pushed, verified, remote branches deleted: the remote n
 `git branch -d` after their remote tags checked (local prologue was one commit, 6131d17, past its tag; that commit is in main, so -d allowed it).
 (3) m10-done = 5af442f "M10.6: M10 report", the last of M10.1–M10.6 (the next commit, 96c1adf, is M11 groundwork), pushed. (4) Top bar at 1024:
 it did switch during play (Act I 56 → 108 ↔ 118 px); below 1280 it now keeps room for two lines (min-height 118 px, CSS only): 79 Plan quarters
-of Acts I–III measured, all 118 px. Tests 1254, lint and build pass.
+of Acts I–III measured, all 118 px. Tests 1254, lint and build pass; `--act2 --act3` byte-identical to M21 (all 1302 CSVs and the log).
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 
