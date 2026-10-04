@@ -115,6 +115,7 @@ import {
   covenantCureLtv,
   covenantLimit,
 } from './systems/covenant.ts'
+import { communityDealBlocker } from './systems/communityDeal.ts'
 import {
   siteTier,
   waterVariant,
@@ -171,6 +172,7 @@ import {
   outreachBandwidth,
   readMarketBandwidth,
   revealsFlaws,
+  staffHeatBase,
   salaryUsdQ,
   severanceUsd,
 } from './systems/hires.ts'
@@ -868,8 +870,30 @@ export function communityView(state: GameState) {
         outreachDone: h?.outreachQuarter === state.quarter,
         mitigationUsd: mitigationCostUsd(site),
         mitigated: h?.mitigated ?? false,
+        // M19: the Heat breakdown's two lines (the Community Relations Manager, a Community Deal's goodwill)
+        relationsPts: staffHeatBase(state),
+        dealPts: h?.dealOffset ?? 0,
       }
     }),
+    dealFade: rules.communityDeal.fadePerQuarter,
+  }
+}
+
+/** M19: the Community Deal on offer this Plan phase (the card), or null. */
+export function communityDealView(state: GameState) {
+  const offer = state.communityDeal?.offer
+  const site = offer && state.sites.find((s) => s.id === offer.siteId)
+  if (!offer || !site) return null
+  const d = CONTENT.heat.communityDeal
+  return {
+    name: allHires().find((h) => h.effect.community_deal === true)?.name ?? '',
+    tier: site.tier,
+    heat: siteHeatValue(state, site.id),
+    costUsd: offer.costUsd,
+    targetHeat: d.targetHeat,
+    fade: d.fadePerQuarter,
+    bandwidth: d.bandwidth,
+    signBlocker: communityDealBlocker(state) ?? null,
   }
 }
 

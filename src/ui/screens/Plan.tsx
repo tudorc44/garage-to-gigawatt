@@ -9,6 +9,7 @@ import {
   SELL_TREASURY_BANDWIDTH,
   act2MarketView,
   actTurn,
+  communityDealView,
   fleetOfferView,
   repairAllView,
   projectsView,
@@ -50,7 +51,7 @@ import {
   type GameState,
 } from '../../sim/state.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
-import { ActionRow, Icon, Sparkline, Tip } from '../components/basics.tsx'
+import { ActionRow, Icon, Pips, Sparkline, Tip } from '../components/basics.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
@@ -104,6 +105,57 @@ type Open =
   | 'hires'
   | null
 
+/** M19: the Community Relations Manager's yearly deal, on the Plan screen while it's on offer (card like the wildcard's). */
+function CommunityDealCard({ state, act }: ScreenProps) {
+  const v = communityDealView(state)
+  if (!v) return null
+  return (
+    <div class="panel p wildcard-card" data-community-deal>
+      <span class="label">
+        <Icon name="outreach" size={16} /> {t('ui.deal.label')}
+      </span>
+      <h2 class="panel-title">{t('ui.deal.title')}</h2>
+      <p class="num-s" style={{ margin: 0 }}>
+        {t('ui.deal.body', {
+          name: v.name,
+          tier: v.tier,
+          target: v.targetHeat,
+          heat: Math.round(v.heat),
+          fade: v.fade,
+        })}
+      </p>
+      <div class="row-between">
+        <button
+          type="button"
+          class="btn btn-primary"
+          disabled={!!v.signBlocker}
+          title={v.signBlocker ? say(v.signBlocker) : undefined}
+          onClick={() => act({ type: 'COMMUNITY_DEAL_SIGN' })}
+          data-deal-sign
+        >
+          {t('ui.deal.sign', { costUsd: v.costUsd })}
+          <Pips
+            total={v.bandwidth}
+            filled={v.bandwidth}
+            label={t('ui.plan.costs_bandwidth', { n: v.bandwidth })}
+          />
+        </button>
+        <span>
+          <span class="tag default">{t('ui.deal.default')}</span>{' '}
+          <button
+            type="button"
+            class="btn"
+            onClick={() => act({ type: 'COMMUNITY_DEAL_DECLINE' })}
+            data-deal-decline
+          >
+            {t('ui.deal.decline')}
+          </button>
+        </span>
+      </div>
+    </div>
+  )
+}
+
 export function PlanScreen({ state, act }: ScreenProps) {
   // An event card last quarter may ask to start this Plan phase on the Buy dialog.
   const [open, setOpen] = useState<Open>(planOpensOnBuy(state) ? 'buy' : null)
@@ -117,6 +169,8 @@ export function PlanScreen({ state, act }: ScreenProps) {
           {inActIII(state) && (
             <Act3Panel name="WildcardPanel" state={state} act={act} />
           )}
+          <CommunityDealCard state={state} act={act} />
+
           {inActIII(state) && (
             <Act3Panel name="RenewalsDuePanel" state={state} act={act} />
           )}
