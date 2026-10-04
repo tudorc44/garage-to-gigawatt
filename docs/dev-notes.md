@@ -5,9 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 4 Oct 2026 (M18 closed; the Act III balance pass closed by the design thread). Act I, Act II and the Prologue are
-built and done. Act III (M10–M18) is built and merged into `main` (fast-forward to `e0846d3`, pushed 4 Oct 2026). Act III is reachable only in
-test builds (`npm run dev`, the staging build), never in the GitHub Pages build. See "Next" and "Milestone M18 close-out".
+Last updated: 4 Oct 2026 (M19 and M20 done on `m19` / `m20`, not merged). Act I, Act II and the Prologue are built and done. Act III
+(M10–M18) is built and in `main` (`e0846d3`); on `m20` it is in every build (M20.2), while `main`'s GitHub Pages build still has no Act III
+until the owner merges. See "Next", "Milestone M20" and "Milestone M18 close-out".
 
 ## How the owner works
 
@@ -157,10 +157,10 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M18 is closed and the Act III balance pass is closed** (design thread, 4 Oct 2026). Nothing else to build. The owner merged
-m16 → m17 → m18 into `main` (4 Oct 2026; `main` = `e0846d3`, pushed, GitHub Pages publishes it); Act III stays behind the test-build
-gate, so the public build has no Act III. The next milestone branch starts from `main`. Still open, all owner decisions or side work:
-the owner's staging playtest of Act III; the D15 editorial review before any public release of Act III; the Act I playtests (postponed).
+**M19 (Heat relief) and M20 (the Act III public release) are done on `m19` and `m20`** (4 Oct 2026, unattended; not merged). Next: the
+owner reviews and merges (commands in the M20 section: merging publishes GitHub Pages with Act III); the design thread answers the M19 + M20
+questions. Still open: the owner's playtest of Act III; the Act I playtests (postponed). (M18 and the Act III balance pass closed 4 Oct 2026;
+m16 → m18 merged into `main` at `e0846d3`. D15 resolved by the owner in M20.1.)
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 
@@ -190,6 +190,16 @@ cleared). **Golden act3-s1:** only its two rival fates' `withheld` true → fals
 only the quick starts (inline mode check); `act3PresetStart.ts` (the bots chunk ships: presets play them, mine); forcing + its top-bar tag inline-gated
 (FORCING_MARKER); `act3QuickStart` save mark; save guard refuses forced/quick-start saves only; "Continue to Act III" in every build (mine); gate test
 redefined; the toAct3 grep test keeps "one entry" without the gate (mine). Production: main 206 KB, Act3Entry 15.9, Act3Panels 28.2, bots 19.7.
+**M20.3 done:** save/title labels "Act III" (no "(test)"); `.claude/launch.json` prod-preview (port 4174). Browser (production preview, `?scenario=s1`
+ignored): New career → Start at Act III → Good → intro → 2 quarters → reload → autosave loads (Q3 2027); no forcing tag, no quick starts, no errors.
+Test build: GPU-heavy quick start forced to s1, played to the end: both cleared s1 fates in full under the illustration line, nothing withheld.
+
+**M19 + M20 report (4 Oct 2026, run unattended):** commits M19 `1e1fc84` `42fc002` `a4dd432`; M20 `83ffc65` `7b96386` `f4ba669`; branches m19, m20
+pushed, main untouched. Tests 1229 → 1247, lint and build pass. Invariants: goldens unchanged except act3-s1's two `withheld` flags (M20.1, expected);
+`--act2 --act3` on m19 and m20: all 1302 CSVs byte-identical to M18.13 and the log identical but for timings (43 game overs, C1 1.01/0.84/1.80/1.01×);
+leak guard and hidden-file tests unchanged. "Mine" decisions: in the M19.1–M20.3 lines above. Questions for the design thread: in the final report.
+Merge (owner, when approved; m20 contains m19, both fast-forward): `git checkout main`, `git merge --ff-only m19`, `git merge --ff-only m20`,
+`git push origin main`, `git checkout m20`.
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
