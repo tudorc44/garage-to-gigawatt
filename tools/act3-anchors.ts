@@ -33,8 +33,13 @@ interface Run {
   reading: number | null
   /** M18.10: GPU contracts that walked after 2 quarters in distress. */
   walks: number
-  /** M18.11: a foreclosure, a rescue sale or a forced sale happened in Act III. */
+  /** M18.11: a foreclosure, a rescue sale or a forced sale happened in Act III (M18.13: or a covenant forced sale). */
   distressSale: boolean
+  /** M18.13: covenant breaches opened, cured, forced sales, and debt called. */
+  breaches: number
+  cures: number
+  covenantSales: number
+  called: number
 }
 
 const median = (xs: number[]) => {
@@ -55,6 +60,7 @@ function play(end: GameState, scenario: ScenarioId, seed: number, strategy: Para
   const entry = start.act3Entry!.founderNetWorthUsd
   const done = r.state.phase === 'chapter'
   const last = done ? Math.max(0, r.state.founderStake * r.state.reports.at(-1)!.valuationUsd) : 0
+  const count = (key: string) => r.state.log.filter((e) => e.key === key).length
   return {
     ratio: entry > 0 ? last / entry : 0,
     gameOver: !done,
@@ -63,8 +69,15 @@ function play(end: GameState, scenario: ScenarioId, seed: number, strategy: Para
     distressSale: r.state.log.some(
       (e) =>
         e.quarter >= start.quarter &&
-        (e.key === 'log.project_foreclosed' || e.key === 'log.rescue_sale' || e.key === 'log.forced_sale'),
+        (e.key === 'log.project_foreclosed' ||
+          e.key === 'log.rescue_sale' ||
+          e.key === 'log.forced_sale' ||
+          e.key === 'log.covenant_forced_sale'),
     ),
+    breaches: count('log.covenant_breach'),
+    cures: count('log.covenant_cured'),
+    covenantSales: count('log.covenant_forced_sale'),
+    called: count('log.covenant_called'),
   }
 }
 
@@ -123,7 +136,13 @@ const gpuRuns = Object.fromEntries(
 ) as Record<Archetype, Record<ScenarioId, Run[]>>
 const gMed = (a: Archetype, sc: ScenarioId) => median(gpuRuns[a][sc].map((r) => r.ratio))
 const gOvers = (a: Archetype, sc: ScenarioId) => gpuRuns[a][sc].filter((r) => r.gameOver).length
-const A1_SCENARIOS = ['s0', 's1', 's3'] as const // M18.8 (DT answer 3): S2 exempt
+/** M18.13: the covenant's columns (breaches / cures / forced sales / debt called, summed over the runs). */
+const covenantCols = (rs: Run[]) => ({
+  breaches: rs.reduce((n, r) => n + r.breaches, 0),
+  cures: rs.reduce((n, r) => n + r.cures, 0),
+  covSales: rs.reduce((n, r) => n + r.covenantSales, 0),
+  called: rs.reduce((n, r) => n + r.called, 0),
+})
 
 const table: Record<string, Record<string, string | number>> = {}
 for (const a of ARCHETYPES)
@@ -137,6 +156,7 @@ for (const a of ARCHETYPES)
       reading: Number.isNaN(median(reads)) ? '—' : median(reads),
       gpuWalks: rs.reduce((n, r) => n + r.walks, 0),
       distressSales: rs.filter((r) => r.distressSale).length,
+      ...covenantCols(rs),
     }
   }
 
@@ -171,16 +191,17 @@ const b200Q4 = SCENARIO_IDS.map((sc) => contractedPaybackYears(sc, '2027Q4', 'b2
 
 const yes = (b: boolean) => (b ? 'PASS' : 'FAIL')
 const anchors: { id: string; target: string; result: string; numbers: string }[] = [
+  // M18.13 (DT answer 3): A1 is judged in S1 only, on both companies; S0, S2 and S3 are information
   {
     id: 'A1',
-    target: 'hedged ≥ ignorer − 0.05 (median; M18.12 tie band) in S0, S1, S3 (S2 exempt), on the Good preset',
-    result: yes(A1_SCENARIOS.every((sc) => med('hedged', sc) >= med('ignorer', sc) - A1_TIE)),
+    target: 'hedged ≥ ignorer − 0.05 (median; M18.12 tie band) in S1 (M18.13; the others information), on the Good preset',
+    result: yes(med('hedged', 's1') >= med('ignorer', 's1') - A1_TIE),
     numbers: SCENARIO_IDS.map((sc) => `${sc} ${med('hedged', sc).toFixed(2)} vs ${med('ignorer', sc).toFixed(2)}`).join('; '),
   },
   {
     id: 'A1-gpu',
-    target: 'hedged ≥ ignorer − 0.05 (median; M18.12 tie band) in S1 and S3 (S0 information, S2 exempt), on the GPU-heavy company',
-    result: yes((['s1', 's3'] as const).every((sc) => gMed('hedged', sc) >= gMed('ignorer', sc) - A1_TIE)),
+    target: 'hedged ≥ ignorer − 0.05 (median; M18.12 tie band) in S1 (M18.13; the others information), on the GPU-heavy company',
+    result: yes(gMed('hedged', 's1') >= gMed('ignorer', 's1') - A1_TIE),
     numbers: SCENARIO_IDS.map((sc) => `${sc} ${gMed('hedged', sc).toFixed(2)} vs ${gMed('ignorer', sc).toFixed(2)}`).join('; '),
   },
   // M18.9 (DT): A2 first as written; if the 60%-LTV ignorer doesn't bust, the fallback version
@@ -194,7 +215,7 @@ const anchors: { id: string; target: string; result: string; numbers: string }[]
     return {
       id: 'A2',
       target: primary
-        ? 'S1 ignorer (GPU-heavy): median ≤ 0.5 and a foreclosure / rescue / forced sale in ≥ 9 of 30 (M18.11)'
+        ? 'S1 ignorer (GPU-heavy): median ≤ 0.5 and a foreclosure / rescue / forced sale (M18.13: covenant ones too) in ≥ 9 of 30 (M18.11)'
         : 'fallback: S1 ignorer (GPU-heavy) median ≤ 0.6 × its S0 median, and below hedged',
       result: primary ? 'PASS (as written)' : fallback ? 'PASS (fallback)' : 'FAIL (both versions)',
       numbers: `S1 median ${gMed('ignorer', 's1').toFixed(2)}, distress sales in ${sales} of ${SEEDS}, game over ${gOvers('ignorer', 's1')}; S0 median ${gMed('ignorer', 's0').toFixed(2)} (× 0.6 = ${(0.6 * gMed('ignorer', 's0')).toFixed(2)}); hedged S1 ${gMed('hedged', 's1').toFixed(2)}`,
@@ -280,6 +301,7 @@ console.table(
           gameOver: `${gOvers(a, sc)} of ${SEEDS}`,
           gpuWalks: gpuRuns[a][sc].reduce((n, r) => n + r.walks, 0),
           distressSales: gpuRuns[a][sc].filter((r) => r.distressSale).length,
+          ...covenantCols(gpuRuns[a][sc]),
         },
       ]),
     ),

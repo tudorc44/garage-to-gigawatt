@@ -818,6 +818,8 @@ if (args.includes('--act2')) {
       /** M18.11: of those, contracts carried in from Act II; and the lender cures: opened, cured, foreclosed. */
       gpuWalksCarried: number
       cures: { started: number; done: number; foreclosed: number }
+      /** M18.13: the leverage covenant: breaches opened, cured, forced sales, debt called. */
+      covenant: { breaches: number; cured: number; sales: number; called: number }
     }
     /**
      * M17.7, tools only: a bot that also signs every nuclear PPA card choice it can (s2_c1, s3_c2, sh_2) and hires
@@ -958,6 +960,12 @@ if (args.includes('--act2')) {
               done: r.state.log.filter((e) => e.key === 'log.lender_cure_done').length,
               foreclosed: r.state.log.filter((e) => e.key === 'log.lender_cure_foreclosed').length,
             },
+            covenant: {
+              breaches: r.state.log.filter((e) => e.key === 'log.covenant_breach').length,
+              cured: r.state.log.filter((e) => e.key === 'log.covenant_cured').length,
+              sales: r.state.log.filter((e) => e.key === 'log.covenant_forced_sale').length,
+              called: r.state.log.filter((e) => e.key === 'log.covenant_called').length,
+            },
             ppaMw: ppas.reduce((a, x) => a + x.kw, 0) / 1000,
             ppaIdleMw:
               ppas.reduce((a, x) => a + x.kw - ppaUsedKw(r.state, x), 0) / 1000,
@@ -1094,6 +1102,17 @@ if (args.includes('--act2')) {
             const runs = rows.filter((x) => x.gpuWalks > 0).length
             // (M18.11: carried vs new, and the lender cures)
             return `${id} ${walks} (${sum((x) => x.gpuWalksCarried)} carried, ${walks - sum((x) => x.gpuWalksCarried)} new; ${sum((x) => x.gpuWalksDdtl)} with a DDTL; in ${runs} of ${rows.length} runs; cures ${sum((x) => x.cures.started)} opened, ${sum((x) => x.cures.done)} cured, ${sum((x) => x.cures.foreclosed)} foreclosed)`
+          })
+          .join(', ')}`,
+      )
+      // M18.13: the leverage covenant (the bots' runs).
+      console.log(
+        `  Leverage covenant (M18.13): ${scenarios
+          .map((id) => {
+            const rows = a3.filter((x) => x.scenario === id)
+            const sum = (f: (x: A3Run) => number) => rows.reduce((a, x) => a + f(x), 0)
+            const runs = rows.filter((x) => x.covenant.breaches > 0).length
+            return `${id} ${sum((x) => x.covenant.breaches)} breaches in ${runs} of ${rows.length} runs (${sum((x) => x.covenant.cured)} cured, ${sum((x) => x.covenant.sales)} forced sales, ${sum((x) => x.covenant.called)} called)`
           })
           .join(', ')}`,
       )

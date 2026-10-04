@@ -262,6 +262,8 @@ which logs and isn't drawn), the standby still draws; from the next quarter end 
 smallest first, proceeds repay debt, valuation estimated as less (fair − price) (mine); still short: the lenders call the facilities and the
 equipment loan, paid from cash, then the rescue and game-over rules (mine). Capital: "Covenant: LTV ≤ x%", the breach line, the sweep note; six
 report log lines. Goldens: act3-s0..s3 gain `report.covenant` only (no breach in them). BlendExtend fixture repays the debt of projects it marks sold.
+**M18.13b done:** anchors: A1 and A1-gpu judged in S1 only (others information); A2's distress count includes covenant forced sales; both
+tables gain breaches / cures / covSales / called. `--act3` prints a "Leverage covenant" line per scenario (breaches, runs, cured, sales, called).
 
 ## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
 
