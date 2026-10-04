@@ -3,11 +3,11 @@
 The running record of where the build stands, the rules in force, open questions and what's next. It exists so
 any Claude account or machine can pick up the work with no chat history. **Read `CLAUDE.md` first, then this
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
-is in `docs/dev-notes-archive.md`: read it only when a task needs the history.
+is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 1 Oct 2026 (M16 done). Act I, Act II and the Prologue are all built and done. Act III's engine is being built (M10 skeleton, M11
-scenario engine, M12 contracts and renewals, **M13 a test-build route in with bare-bones panels: DONE on branch `m13`**). Act III
-is reachable only in test builds (`npm run dev`, the staging build), never in the GitHub Pages build. See "Next" and the M13 section.
+Last updated: 4 Oct 2026 (M18 closed; the Act III balance pass closed by the design thread). Act I, Act II and the Prologue are
+built and done. Act III (M10–M18) is built on branches m16 → m17 → m18, not yet merged into `main`. Act III is reachable only in
+test builds (`npm run dev`, the staging build), never in the GitHub Pages build. See "Next" and "Milestone M18 close-out".
 
 ## How the owner works
 
@@ -41,6 +41,7 @@ See `CLAUDE.md` for the full list. The main ones:
 - `npm run play`: the terminal game (Act I, then Act II). `npm run sim`: bots × 50 seeds → `sim-output/`;
   `npm run sim -- --act2` also plays the Act II bots to 2026Q4 and prints the scope 0.2 §5 table (~5 min);
   `npm run sim -- --prologue` plays the 6 prologue bots and prints the scope 0.3 §5 table (~8 min). Add `--out <dir>`.
+  Act III: `--act3` (the bots' Act III runs, ~55 min with `--act2`), `--act3-anchors` (~15 min), `--act3-presets`.
 - `npm run content:market`: regenerate the market JSON files after editing a market CSV.
 - Golden replays: accept intended changes with `npm test -- -u tests/golden-replay.test.ts`, and explain every one.
 
@@ -58,11 +59,13 @@ See `CLAUDE.md` for the full list. The main ones:
   with its reason, project milestones, tenants signed or lost); the GPU failure wave interrupt (`systems/gpuWave.ts`); "GPU
   know-how N of 3" on the Dashboard with a tooltip built from the rules, and the utilisation in use in the Deal builder;
   the Deal builder's return net of a JV partner; prologue auto-play starts at 2×; measurement decisions (below).
+**Act III (doc 27 v1.2): built, balance pass closed** (M10–M18; D16 steps 1–7, scoring and the chapter report). The design record of
+every change from the real sim is doc 27 §17 (`docs/game-project-files/claude_27-act-iii-design.md`).
 
 **Numbers (end of M8.7):** 721 tests pass; lint and build pass; the 11 Act I goldens and both prologue goldens unchanged.
 Act II §5 (50 seeds): 9 PASS, 3 accepted MISS (good path, lifeline, preset), 1 MISS (overleveraged, accepted as a known design risk).
 Prologue §5 (last run in M8, no prologue bot or content changed since): all PASS (296/300 runs reach 2026Q4; the other 4 end in the
-prologue). Tables: `npm run sim -- --act2` / `--prologue`.
+prologue). Tables: `npm run sim -- --act2` / `--prologue`. **End of M18:** 1,229 tests; Act I/II sim output byte-identical through M18.
 
 ## Rules and decisions in force
 
@@ -127,9 +130,7 @@ prologue). Tables: `npm run sim -- --act2` / `--prologue`.
 
 ## Open questions for the design thread
 
-None open. The five M11.5c card questions (reveals, corporate debt, idle_mw / mining_revenue_mult, the cash formulas,
-whole-choice deferral) were answered by the design thread in the M12.3 spec and built in M12.3 (`debt` waits for step 7's
-corporate facility; `ppa_savings` step 6; the capex formulas step 5; the mapping table is in `docs/act3-content/README.md`).
+None open. The Act III balance pass is closed (design thread, 4 Oct 2026): no more mechanics rounds unless the owner asks.
 
 None open from before: all five M11.4c questions below were answered by the design thread and built in M11.5a (1 scouting open, 2 ASIC prices from the scenario weekly files, 3 hashprice rebased, 4 hosting rate = region power price + Act II's margin, 5 accepted); kept here for the record:
 1. **Scouting and site offers in Act III** (`scouting.ts`, `sites.ts`): Act II's site categories are dated windows; with scouting off a company can't buy new sites in 2027–2030 (the bots can't grow by sites). Open it, or does Act III use other content?
@@ -156,269 +157,55 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M18 (step 7) is done on branch `m18`** (from `m17`; M16–M18 not merged into `main` yet): the corporate and standby facilities, the
-presets, A3-12 + Scenario Mode, the archetypes and the anchor harness, the tuning pass. Next: the design thread answers the M18 report's
-questions (7 anchors still fail); the owner's staging playtest; the D15 review before Act III ships. The Act I playtests stay postponed.
+**M18 is closed and the Act III balance pass is closed** (design thread, 4 Oct 2026). Nothing else to build. The owner decides the
+branch merges (m16 → m17 → m18 into `main`); Act III stays behind the test-build gate. Still open, all owner decisions or side work:
+the owner's staging playtest of Act III; the D15 editorial review before any public release of Act III; the Act I playtests (postponed).
 
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by
 the real scenario files in M11.3.
 
-## Milestone M18 (branch `m18`, from `m17` at `fc02dc2`, since M16/M17 aren't merged yet; Act III step 7: facilities, presets, A3-12, balance)
+## Milestone M18 close-out (branch `m18`; Act III step 7 and the balance pass) — DONE
 
-Split by the design thread, run in one go: M18.0 the M17.8 answers 1–5 (spread label; regional adders on PPA power; PUE on PPA MW; the
-PPA cards' target by highest market price; signer ± the Director); M18.1 corporate facility (s0_c2, s0_c4); M18.2 standby liquidity
-facility (F-7); M18.3 presets (F-6) + act3Seed salt; M18.4 A3-12 + Scenario Mode; M18.5 archetypes and `--act3-anchors` (baseline);
-M18.6 tuning K1–K6; M18.7 the full sim proof and report.
+**Act III balance pass closed (design thread, 4 Oct 2026).** The M15–M18 step logs are in the archive › "Milestones M15–M18"; every
+change from M11–M18.13 is recorded in doc 27 v1.2 §17. M18 built: the corporate and standby facilities, the presets (real Act II
+companies), A3-12 + Scenario Mode, the archetypes and the anchor harness (`--act3-anchors`), the tuning pass, then six rounds of design-thread
+answers (M18.8–M18.13): carried-lease reopeners, S3's rebound, GPU contract walks and the lender cure, the contract-rate multiplier, the
+leverage covenant.
 
-**M18.0 done:** spread table/test say "market − contract"; PPA power pays the regional adder (bill, savings, projection, A3-08 worked line);
-a cloud's draw counts × PUE in the PPA pool; ppa_switch targets the dearest site's project (tie: larger); the sim adds "signer, no hire" and
-"runs holding a PPA". Goldens unchanged. 1179 → 1181 tests.
-**M18.1 done:** `systems/corporateDebt.ts`: Facility kinds 'corporate'/'standby' (no project, bullet `dueQuarter`); s0_c2 c3 ($10M, cash once,
-cash_reserve) and s0_c4 c1 ($20M at −25 bp, debt_draw) draw it, no card choice stays deferred; service into negative cash → the liquidity path
-(mine); debt stack row with Repay (REPAY_COMPANY_FACILITY, debt_repay); runway item. Goldens unchanged. 1187 tests.
-**M18.2 done:** standby (`state.act3Standby`; STANDBY_ARRANGE 1 BW, hedge; STANDBY_DRAW unlogged): fees, auto-draw before forced sales, expiry; the
-undrawn part revolves (repaid draws free it again; mine); each draw's rate SOFR at the draw + the locked 350 bp (mine); the Capital block
-(`Act3Capital.tsx`, lazy). Goldens unchanged. 1196 tests.
-**M18.3 done:** `npm run sim -- --act3-presets` (tools/act3Presets.ts): Good shell-capital s9 $412.6M (A7 checked in M18.5), Great asic-retirer s48
-$2.70B (none in $4.5–5.0B: closest, reported), Lifeline lifeline-shell s19 $155.7M; `presets_act3.json` rewritten (both copies, real figures,
-loaded as `CONTENT.act3Presets`); summaries fitted to the facts (no GPUs anywhere); `act3Seed` salt on act3_* streams. Goldens unchanged. 1200 tests.
-**M18.4 done:** A3-12 (test builds only, in `Act3Preview.tsx`): "Start at Act III (2027)" with the three preset cards → "Start in 2027 →"; Scenario Mode
-on the title menu, locked until an Act III chapter report is reached (`settings.act3Finished`), unlocked: a preset + 4 named scenarios →
-`state.scenarioMode` (top-bar tag, "scenario known" on the reading score). Browser-checked; stale "(Not in this test build yet.)" removed (mine). 1206 tests.
-**M18.5 done:** `npm run sim -- --act3-anchors` (tools/act3-anchors.ts, act3Archetypes.ts, act3Payback.ts shared with --act3; ~6 min). Baseline: PASS A5 A6 A7
-F7; FAIL A1 (S2 ignorer 2.18 > hedged 1.71), A2 (S1 ignorer 0.60, 0 busts), A3, A4, C1 (S3 0.87 < S1 0.94), C2, C3. Seeds vary little (only act3_*
-streams salted). Archetypes keep the bot's upkeep only; new projects: B200 cloud (ignorer) / 2+ yr shell (builder), grid power at the largest site (mine).
-**M18.6 done** (`--knobs` sets a value for one run): K1 kept, Rubin rent × 0.55 (C2 Rubin passes), Ultra × 0.50 (floor; 1.50 yr, C2 still fails); K2 at 1.00
-no C1 fix (kept 0.85); K3 fee/trigger no effect (Act II leases never reopen); K4 not needed (A6 passes); K5 size slightly worse, spread no effect (standby
-never drawn); K6 −$5 moves C3's S3 half the wrong way (stopped). Only K1 written to BALANCE. Goldens unchanged.
-**M18.7 (proof):** `--act2 --act3`: Act I/II CSVs byte-identical (1302 files); 532 Act III runs, 0 crashes, 43 game overs; oracle passes. Final anchors =
-the M18.6 table (PASS A5 A6 A7 F7; FAIL A1 A2 A3 A4 C1 C2 C3). Signer, no hire = the bots' game overs in S0–S2 (the Director's salary causes the extra
-busts); S2 no-hire signer $123.9M vs bots $120.7M. **M18 done:** 1181 → 1206 tests. Open questions in the M18 report.
+**Final values** (`BALANCE.act3` and the content files):
+- GPU contracts signed in Act III: × the contract-rate multiplier, glide 1.00 / 0.90 / 0.80 (2027Q1–Q3), then 0.55; Act II contracts
+  renewing in Act III take it on their base. Contracted payback at 2027Q3: B200 2.03–2.12 yr, Rubin 2.38–2.52, Rubin Ultra 2.32–2.33.
+- Rubin rents × 0.65, Rubin Ultra × 0.60 (K1); the Rubin Ultra rack +$4M in every quarter, all scenarios (2027Q3 $19M).
+- Leverage covenant: LTV = debt ÷ the quarter report's valuation; limit max(75%, entry LTV + 5 points); a breach bars new debt and sweeps
+  50% of (EBITDA − interest) into debt, highest rate first; cure to the limit − 10 points by the end of the 2nd quarter after; missed:
+  forced sales × 0.85 (shells, then clouds/pilots at GPU residual), then the lenders call the rest, then the rescue and game-over rules.
+- Standby liquidity facility: 1 Bandwidth, rating BB− or better, 20% of valuation capped at $500M, 1% upfront, 0.5% a year on the
+  undrawn part, draws at SOFR + 350 bp, available 8 quarters, each draw an 8-quarter bullet.
+- GPU contract walk: AI-lab / neocloud contracts in distress ≥ 2 quarters walk only when spot < half their pay; a walk on a DDTL project
+  opens a 2-quarter lender cure. Carried Act II leases are reopenable from 12 quarters served; tenant reopeners on them only by AI labs and
+  neoclouds at Band high < 0.75. S3 rents rebound from 2029Q1. Presets: Good $412.6M, Great ~$2.7B, Lifeline $155.7M.
 
-**M18.8 (the DT's answers to the M18 questions, 2 Oct 2026), split:** a act3Seed re-seeds the main RNG; b reopeners cover carried Act II
-shell leases; c S3's renewal/RFP rebound from 2029Q1 (data); d Rubin Ultra's rack price ($1M steps to ≤ $20M); e the harness (A1 exempts
-S2, A2/A1 on the GPU-heavy quick start, the larger builder, C3 ±2%); f Great "~$2.7B"; g the re-run and report. WHY: the Good preset is a
-shell landlord on long Act II leases that the scenarios barely touch; reopeners skipped the Act II book and S3's band never rebounded.
-**M18.8a/b done:** act3Seed ≠ seed re-seeds `state.rng` (substream act3_main); carried Act II shell leases reopen from 12 quarters served ("3 years
-into its term", mine; Act III leases keep 8). act3Rules' company: S3 now ends above S1 again (test restored). Goldens unchanged. 1207 tests.
-**M18.8c done:** S3 renewal band 0.62/0.74 (2029Q1) → 0.84/0.98 (2030Q4), RFP index by the same increase (both copies, JSON, provenance, README);
-the S3 reopener worked example moved to 2028Q3 (same band and term; 2030Q1's band is now above the trigger). Goldens unchanged.
-**M18.8d done:** Rubin Ultra rack +$4M in every quarter, all scenarios (2027Q3 $15M → $19M; the $20M cap read as 2027Q3's, mine): payback 1.86 yr
-everywhere (C2 passes on the formula). Both copies, JSON, provenance, README. Goldens unchanged.
-**M18.8f done:** Great = "the best great-path company at 2026Q4", ~$2.7B; A3-12 cards show "~" + the valuation (all three, mine); presets_act3.json
-(both copies) and the wireframe README record it.
-**M18.8e/g done:** harness per answers 2/3/7. Anchors (30 seeds): PASS A1 (Good), A6, A7, C1, C2, C3; FAIL A1-gpu, A2 (GPU ignorer S1 0.58, 0 busts), A3, A4,
-A5 (S0 passive 0.63), F7 (0.22): carried-lease reopeners reprice the Good book in S0 too (S0 band 0.70–0.80 from 2028Q2). Full sim: Act I/II byte-identical;
-Act III 48 game overs (was 43), multiples S0 0.66× (1.01), S1 0.29× (0.89), S2 1.82×, S3 0.86× (0.95); reading medians 76/50/56/53. Goldens unchanged.
+**Final anchor table** (M18.13c, 30 seeds; Good preset shell-capital s9 and the GPU-heavy overleveraged s1):
 
-**M18.9 (the DT's answers to the M18.8 questions, 2 Oct 2026), split:** a carried-lease tenant reopeners only at Band high < 0.75 and only AI labs and
-neoclouds; b the ignorer (60% LTV, B200 clouds in 2027) and hedged (standby, LTV ≤ 40%, default cards) redefined, A2 with its fallback, A3 = S2
-long-locked ≥ 1.15 × passive, A4 retired, C1 on the population, game-over counts with medians; c S3 card_shorten neutral in the reading score; d re-run.
-WHY: M18.8's carried-lease reopeners repriced whole books in S0 too (population 1.01× → 0.66×); narrow them to bust conditions and weaker tenants.
-**M18.9a done:** `carriedTenantTriggerBandHigh` 0.75, `carriedTenantTypes` ai_lab / neocloud_sub_tenant; player reopeners on carried leases unchanged.
-act3Rules' company back to S3 within 5% of S1 (its carried tenants are hyperscalers). Goldens unchanged.
-**M18.9c done:** reading_score.json s3 `neutral_kinds: ["card_shorten"]` (both copies); stance, decoy count and marks use it. **Golden act3-s3:** its two
-card_shorten defaults now count 0 (marks neutral, not match/opposite): reading 53 → 50 (the intended effect). Oracle unchanged (stance logs).
-**M18.9b/d done:** anchors (30 seeds): PASS A3 (long-locked 2.41 ≥ 1.15 × 1.76), A6, A7, F7 (0.91), C1 (population S1 0.85× lowest), C2, C3; FAIL A1 both
-companies and A2 both versions (the 60%-LTV ignorer's B200 clouds win everywhere: Good S0 2.31, S3 2.52; GPU S1 0.85, 0 busts), A5 (flexible 0.62 in S0:
-its own reopeners on carried leases). Full sim: Act I/II byte-identical; Act III 41 game overs; multiples 1.01/0.85/1.82/1.04×; reading 75/50/56/50.
+| Anchor | Result | Numbers |
+|---|---|---|
+| A1 (Good, S1) hedged ≥ ignorer − 0.05 | PASS | 0.91 vs 0.85 (ignorer breached 30/30, all cured) |
+| A1-gpu (GPU-heavy, S1) | information (DT) | 0.50 vs 0.98; no breach |
+| A2 GPU-heavy ignorer punished in S1 | information (DT) | 0.98, 0 distress sales |
+| A3 S2 long-locked ≥ 1.15 × passive | PASS | 2.41 vs 1.15 × 1.76 |
+| A4 S3 flexible ≥ long-locked | retired (M18.9) | — |
+| A5 S0 every archetype ≥ 0.85 | PASS | lowest over-reactor 0.94 |
+| A6 over-reactor ≤ 0.97 × passive (S0–S2) | PASS | 0.94 / 0.74 / 1.63 vs 1.05 / 0.89 / 1.71 |
+| A7 Good passive: no game over | PASS | 0 in every scenario |
+| F7 hedged S1 ≥ 0.75 | PASS | 0.91 |
+| C1 S1 lowest (population) | PASS | 1.01 / 0.84 / 1.80 / 1.01× |
+| C2 Rubin, Ultra ≥ 2.3 yr and ≥ B200 (contracted) | PASS | see above |
+| C3 S2 signing ahead; S3 within ±2% | PASS | 1.787 vs 1.759; 0.930 vs 0.922 |
 
-**M18.10 (the DT's answers to the M18.9 questions, 2 Oct 2026), split:** a AI-lab / neocloud GPU contracts walk after 2 full quarters in distress;
-b the ignorer takes the highest-priced GPU contract, flexible reopens only upward, A1-gpu judged in S1/S3; c re-run (walk counts per scenario).
-**M18.10a done:** `gpuDistressWalk` (2 quarters, ai_lab / neocloud_sub_tenant) in endQuarterProjects: GPUs to spot, `log.gpu_contract_walked` (ddtl flag),
-DDTL unchanged. The calendar test stops following a contract that walked. Goldens unchanged.
-**M18.10b/c done:** ignorer takes the dearest GPU contract; flexible reopens only upward; A1-gpu in S1/S3. Anchors: PASS A3, A5 (flexible S0 now 1.08), A6, A7,
-F7, C1 (population 1.03/0.87/1.82/1.04×), C2, C3; FAIL A1 both, A2 both versions: the walk RAISES the ignorer's S1 (Good 0.97 → 1.26, GPU 0.85 → 1.10):
-half-pay distress → full spot after the walk. Walks (population): s0 21, s1 74, s2 6, s3 18. Full sim: Act I/II byte-identical; 41 game overs.
-
-**M18.11 (the DT's answers to the M18.10 questions, 2 Oct 2026), split:** a the walk only when spot < the distressed pay (0.5 × rate), re-checked each
-quarter end; a walk on a DDTL project opens a 2-quarter lender cure (re-contract or repay, else foreclosure); b A2 = S1 ignorer (GPU) median ≤ 0.5 and a
-foreclosure / rescue / forced sale in ≥ 9 of 30 (fallback unchanged); walks carried vs new and cure outcomes counted; c re-run.
-**M18.11a done:** the walk test against spot; `lenderCure` (2 quarters), `settleLenderCures` before the quarter's walks, REPAY_CURE_DDTL (debt_repay),
-the card's and Capital's "Lender cure: re-contract or repay by {quarter}", three log lines in the report. Goldens unchanged.
-**M18.11b/c done:** walks (population) s0 0, s1 5 (1 carried, 4 new; 1 cure, cured), s2 0, s3 0. Anchors: PASS A3 A5 A6 A7 F7 C1 (1.01/0.85/1.82/1.04×) C2 C3;
-FAIL A1 both, A2 both: GPU ignorer S1 median 0.99 with distress sales in 30 of 30 (walks 30, all cured or sold through), hedged 0.50; Good ignorer S1 0.97.
-Full sim: Act I/II byte-identical; 41 game overs; reading 75/50/56/50; oracle unchanged.
-
-**M18.12 (the DT's answers to the M18.11 questions, 3 Oct 2026), split:** a the Act III GPU contract-rate multiplier and the K1 relax; b the payback
-table's contracted column, C2 on the contracted basis, A1's tie band (−0.05); c re-run. WHY: the 60%-LTV ignorer dominated because Act III GPU
-contracts were priced at the on-demand neocloud rate × term factor (B200 contracted payback ≈1.4 yr); fix the economics in Act III only.
-**M18.12a done:** `gpuContractRateMult` glide 1.00/0.90/0.80, end **0.55** (the search never reaches a 2.3-yr contracted B200 payback at 2027Q3:
-2.03–2.12 yr at 0.55 on a 2-yr contract, my basis; reported); Act II contracts renewing in Act III get it on their base (mine). K1 relaxed: Rubin
-0.65, Rubin Ultra 0.60 (C2 contracted ≥ 2.3 yr and ≥ B200's). Goldens unchanged.
-**M18.12b/c done:** PASS A3 A5 A6 A7 F7 C1 (1.01/0.85/1.80/1.02×) C2 (Rubin 2.38–2.52, Ultra 2.32–2.33, B200 2.03–2.12) C3; FAIL A1 both (Good S1 0.91 vs 1.01,
-GPU S1 0.50 vs 0.98), A2 both: GPU ignorer S1 0.98 with 0 walks / 0 distress sales (was 30/30: cheaper contracts never fall below half of spot). Walks
-(population) s1 3 (1 carried, 2 new; 1 cure, cured), else 0. Full sim: Act I/II byte-identical; 41 game overs; reading 75/50/56/50; oracle unchanged.
-
-**M18.13 (the DT's answers to the M18.12 questions, 4 Oct 2026; the last balance mechanic for Act III), split:** a the leverage covenant;
-b the anchors (A1 judged in S1 only; A2's distress count with covenant forced sales) and the sim's covenant counts; c re-run. WHY: with contracts
-near market, tenants rarely walk, so leverage risk comes from lender covenants that bite when valuations fall. Walk test kept (answer 1); 0.55 kept (4).
-**M18.13a done:** `covenant.ts`: LTV = debt ÷ the quarter report's valuation (the archetypes' `ltvOf`; the UI showed none, so Capital now does: mine);
-limit max(75%, entry LTV + 5); a breach bars new debt (project debt/DDTL not yet arranged, equipment and crypto loans, a card's corporate facility,
-which logs and isn't drawn), the standby still draws; from the next quarter end 50% of (EBITDA − interest) prepays debt, highest rate first; cure
-≤ limit − 10 by the end of the 2nd quarter after; missed: forced sales × 0.85, shells (cap-rate value) then clouds/pilots (GPU residual; mine),
-smallest first, proceeds repay debt, valuation estimated as less (fair − price) (mine); still short: the lenders call the facilities and the
-equipment loan, paid from cash, then the rescue and game-over rules (mine). Capital: "Covenant: LTV ≤ x%", the breach line, the sweep note; six
-report log lines. Goldens: act3-s0..s3 gain `report.covenant` only (no breach in them). BlendExtend fixture repays the debt of projects it marks sold.
-**M18.13b done:** anchors: A1 and A1-gpu judged in S1 only (others information); A2's distress count includes covenant forced sales; both
-tables gain breaches / cures / covSales / called. `--act3` prints a "Leverage covenant" line per scenario (breaches, runs, cured, sales, called).
-**M18.13c done:** PASS A1 (Good S1 0.91 vs 0.85; ignorer breached 30/30, all cured) A3 A5 A6 A7 F7 C1 (1.01/0.84/1.80/1.01×) C2 C3; FAIL A1-gpu
-(0.50 vs 0.98) and A2 both (GPU ignorer never breaches: 0/30). Population covenant: s0 5 breaches/4 runs, s1 26/22 (28 sales, 8 called), s2 20/14,
-s3 9/8. Full sim: Act I/II byte-identical; game overs 43 (s1 18, s3 6); reading 75/50/56/50; oracle unchanged. Stop rule: no more mechanics.
-
-## Milestone M17 (branch `m17`, from `m16` at `e27f8d2`, since M16 isn't merged yet; Act III step 6: nuclear PPAs, political capital, wildcards)
-
-Split by the design thread, run in one go: M17.0 the M16 answers 1–12 (Rubin Ultra always listed and locking the top tick; a card hall's
-MW free while proposed; the delay alert's accelerate logs; payback on EBITDA; a structural no-role/scenario/phase check on UI views);
-M17.1 content (nuclear, political_capital, wildcards JSON; wc_ai_lab_breakup d15_review → false); M17.2 the nuclear PPA; M17.3
-political capital, the hire, lobbying, the spend menu, angerAdj; M17.4 wildcards; M17.5 the step-6 card effects; M17.6 A3-08 and A3-09;
-M17.7 tests and the sim proof.
-
-**Design-thread answers to M16's questions 1–12 (1 Oct 2026):** 2, 3, 4, 6, 7 OK as built. **Step-7 checklist:** (a) answer 10, the
-first balance item: no GPU generation pays back in under 1.8 years at 2027Q3 in any scenario, on the EBITDA basis (data unchanged
-until then); (b) answer 5: for the passive company, S1 must be the worst scenario at 2030Q4 (if the low-tier × 0.85 puts S3 below S1,
-that's the knob to retune; the act3Rules test stays at "within 5%" until then).
-
-**M17.0 done:** Rubin Ultra always listed from 2027Q3; picking it ticks "Build to top tier" and locks it (answer 1); a card hall's MW pay
-no reservation while proposed (answer 8: the act3-s3 golden's cash is back to its pre-M16 $489,524,300.90; the hall is still opened);
-the delay alert's "accelerate" logs project_accelerate (answer 9); the sim's payback table on EBITDA, flag under 1.8 (answer 11; numbers
-in the M17 report); `tests/ui/act3ViewFields.test.ts`: every one-argument view, and the log, on played states in all four scenarios
-carry no role / scenario / scenarioId / scenario phase (answer 12). 1111 tests.
-
-**M17.1 done:** `nuclear.json`, `political_capital.json`, `wildcards.json` copied byte-identically (wc_ai_lab_breakup d15_review → false
-with its note, logged in the act3-content README); `CONTENT.act3Nuclear / politicalCapital / wildcards / act3Hires`;
-`BALANCE.act3.nuclear / politicalCapital / wildcards` (the numbers not in the files); `PowerSource` gains 'nuclear'. 1112 tests.
-
-**M17.2 done:** `systems/nuclear.ts` + `state.ppas`: the nuclear Power slot (Act III, from 2027Q3, PJM/Ohio/Georgia/Nordics, with the
-two reasons), signed at the build start at the quarter's price for 60 quarters, no capex, energized next quarter; take-or-pay 90% settled
-at quarter end into AI costs (clouds pay the PPA price weekly, × PUE; shell tenants reimburse the market price; mine: mining on PPA MW
-isn't counted as used); tenant pull (+1 shell offer, hyperscaler × 1.03); Anger −5 per region with a PPA; a PPA outlives an ended project
-and a new project on the site takes it; it goes with a sale; `ppaRows` for Contracts. Goldens unchanged. 1125 tests.
-
-**M17.3 done:** `systems/politics.ts` + `pcState.ts`: `state.politicalCapital` (40 at entry, −2 a quarter, 0–100, in each Act III report),
-`state.angerAdj` (−20…+20, added to every region's Anger, floor 0), `state.act3Gov`; the Director (Act III hire, $450K, +3 PC and −1 Anger
-a quarter); LOBBY (1 BW, paid now, lands at quarter end; tariff backfire on substream act3_pc, rolled at Start) and PC_SPEND (the five
-cards; tariff relief not offered); low capital (< 15): moratorium at Anger 40, grid queues +1. **Goldens:** act3-s* gain only the PC
-fields, each report's PC and the PC log line (insertions only). 1140 tests.
-
-**M17.4 done:** `systems/wildcards.ts` (+ `exportRule.ts`): 2 of 4 drawn at entry on substream act3_wildcards, a quarter in each window;
-one due opens in the Plan phase (`act3WildcardOpen`) if it has a target, else skipped; WILDCARD_CHOOSE, the default (c1) at END_PLAN;
-the four effects as specified (grid power × (1 + 0.6 × 3/13) via each site's eventPowerMult, PPA MW exempt; the export rule's × 1.05,
-+3 weeks on the newest generation, AI-lab leases × 0.97; the water pause +2 quarters / Anger +6 or 30 PC; the AI-lab reset or
-−$400K and one fewer shell offer for 4 quarters); pre-buying logs gpu_buy; the report lists them. **Goldens:** act3-s* gain the draw
-(seed 1: AI-lab skipped, export rule absorbed with no effect: cash unchanged in all four). 1150 tests.
-
-**M17.5 done:** `systems/cardPower.ts`: ppa_switch (s2_c1, s3_c2), ppa_site_mw (sh_2: 100 MW at the largest eligible site, energized next
-quarter, no reservation, take-or-pay from then; a new project there takes it), ppa_savings (s2_c5), pc_cost (s2_c6: −30 PC and Anger −8),
-anger_adj (s2_c6's deal), hire_card (sh_3, 0 BW); each greyed with a reason. Only s0_c2.c3 and s0_c4.c1 stay deferred (step 7).
-**Golden:** act3-s2 only (s2_c6's default community deal now applies: cash −$2M, angerAdj −8). 1159 tests.
-
-**M17.6 done:** A3-08 in the open-project dialog's Power slot (a Nuclear PPA option opens its details: price now, grid power here now, 15
-years, contracted MW, no queue, regions, the 90% take-or-pay copy and worked line, Back / Use this power →; both unavailable states);
-`screens/Act3Government.tsx` (lazy, with the Act III panels): the Government section (meter with the 15 tick and ▲▼ vs the quarter before,
-warning with its two lines, the Director, lobbying, five spend cards, this quarter's PC lines), "PC n" next to Bandwidth, the wildcard card on
-the Plan screen, the PPA rows on Contracts; icons nuclear-ppa / political-capital / wildcard from the design bundle. Browser (dev): the
-Government screen; one layout fix (mine): lobbying cells wrap. Leak guard covers Government. 1164 tests.
-
-**M17.7 done (the sim proof):** `--act3` adds the nuclear spread table, a tools-only nuclear signer row (every Act III run played a third
-time, signing every PPA card it can and hiring the Director; ~35 min now), median PC at 2028Q4 / 2030Q4 and the wildcard counts. Act I/II
-CSVs and §5 identical; 532 runs, 0 crashes, 43 game overs (was 41: s2 15 from 12, s3 5 from 6). Findings for the design thread (in the
-M17 report): the PPA costs $15–109/MWh more than market almost everywhere; the signer's sh_2 100 MW sits idle (no bot builds there), so
-take-or-pay (~$23M a quarter) bankrupts half its runs in every scenario; bot PC decays to 24 by 2028Q4 and 8 by 2030Q4 (low capital
-from about 2029Q4); the water moratorium skips 80% of its draws (no building project). **M17 done:** 1102 → 1164 tests.
-
-**M17.8 done (the DT's answers, A–F):** A PJM/Ohio capacity charge (Δ cap since 2027Q1 ÷ 24); B PPA −$15 (CSV + nuclear.json); C unused take-or-pay resold at 0.9 × energy;
-D sh_2 needs 200 MW energized; E PPA MW are a site pool used last (miners too); loads pay market weekly and the PPA settles the used MW at its price
-(mine, reversible); F water moratorium: build → proposed (no start) → most-idle site (no new project), 2 quarters. Goldens unchanged. 1164 → 1179 tests.
-**M17.8 sims:** Act I/II CSVs identical; 532 runs, 0 crashes, 43 game overs (unchanged). Signer game overs 12/105, 35/211, 23/99, 11/117 (was 56, 142, 62,
-73; bots 4, 19, 15, 5); water moratorium 308 fired of 317, 0 skipped (was 254 skipped); payback gains PJM/Ohio rows (≤ +0.1 year).
-
-## Milestone M16 (branch `m16`, from `main` at `d5a753f`; Act III step 5: density tiers, retrofits, Rubin, new halls, A3-07)
-
-Split by the design thread, run in one go: M16.0 fixes before step 5 (move-log kinds project_delay / project_accelerate /
-cash_reserve, the s2 GPU-rent seam data, the chapter-report answers 2/5/6, D15 cards don't fire, the leak-guard addition);
-M16.1 content and generations (gpus_act3.json copied, Rubin and Rubin Ultra buyable in Act III, `BALANCE.act3.density`); M16.2
-hall tiers (state, entry, new halls, fit rule, shell rent by tier); M16.3 RETROFIT and REFIT_GPUS with the downtime rule; M16.4 the
-step-5 card effects; M16.5 the A3-07 screen; M16.6 tests and the sim proof (payback table, retrofitter row).
-
-**M16.0 done:** kinds `project_delay` (−1), `project_accelerate` (+1), `cash_reserve` (−1, a card choice of only debt + the same cash: s0_c2's revolver); s2 2027Q1/Q2 H200 and GB200 rents set (the seam test passes, no pins); chapter report: reads list and description inside "How this was scored", "Not enough quarters played" headline; a D15-flagged card doesn't fire (the withheld display stays as a safety net); leak guard with played history to 2028Q2 (mine: the trigger card's title may show, nothing else). Goldens unchanged. 1049 tests.
-
-**M16.1 done:** `gpus_act3.json` copied (content test); `CONTENT.act3Gpus` (Rubin 900 / Rubin Ultra 1,050 GPUs/MW, tier rack sizes, low→mid $1.5M/MW 10 wk, mid→top 26 wk) and each scenario row's `act3` extras (Rubin prices and rents, lead time, mid→top $/MW); Rubin buyable from 2027Q1, Rubin Ultra from its first priced quarter (rack ÷ 144), rents and contracts and the renewal index on the B200's channels; `gpuLeadTimeWeeks` (mine: Rubin takes the B200's 6 weeks once Rubin Ultra is newest); `BALANCE.act3.density`. Goldens unchanged. 1055 tests.
-
-**M16.2 done:** `Project.tier` (Act III only; `systems/density.ts`): carried tiers at entry and for old Act III saves, new halls mid / GPU tier / top ("Build to top tier", PROJECT_OPEN `topTier`, from 2027Q3, not pilots: + 0.6 × mid→top $/MW × MW and +1 build quarter; mine: Rubin Ultra makes a hall top by itself), the fit rule, shell rent × tier from 2027Q3 on new leases, re-lets, renewal offers (mine: also the renewal counter's limit and a card's rolling spot lease). Goldens unchanged (no golden company has a project); act3Rules' passive company now ends S3 $347.8M < S1 $355.8M (all-low shells, never retrofitted): test adjusted, reported. 1068 tests.
-M16.0 sim (`--act2 --act3`, on the M16.0 commit): the M14.5 table is unchanged from M15 (s0 75/62/76/0%/1, s1 50/24/50/1%/1, s2 56/53/66/0%/3, s3 53/11/53/0%/5), 41 game overs, the oracle holds.
-
-**M16.3 done:** `systems/retrofit.ts`: RETROFIT (1 BW, one tier up, low→mid $1.5M/MW 10 wk, mid→top the quarter's CSV $/MW 26 wk, cash now; blockers: building, not live, downtime, "GPU contract until {quarter}", top, BW, cash) and REFIT_GPUS (1 BW, fitting generations, new cost − GPU sale value, lead time = downtime; mine: the new GPUs earn at once, a JV shares cost and sale); the downtime rule in `density.ts` (`downtimeShare`, `finishDowntimes`), a leased shell's tenant stays rent-free; move log retrofit / gpu_buy. Build: the sim code gets its own chunk (`vite.config.ts`, mine: main file passed 500 KB). Goldens unchanged. 1078 tests.
-
-**M16.4 done:** `systems/cardHalls.ts`: retrofit_hall (s0_c7, s3_c3, sh_4), sell_gpus_at (s0_c8), accelerate_project (s1_c2 6% capex, s2_c4 15% of power else shell build; mine: its power add keeps up), gpu_racks (s1_c8, s3_c7: a live mid Rubin pilot), new_hall_mw (s3_c5, s3_c8: proposed greenfield mid shell, its MW as a `card` power add, energized at once), distressed_campus (s1_c6: 60 MW site, category `distressed_campus`); each greyed with a reason (`hallCardBlocker`); sh_2's MW stay with step 6. **Golden:** act3-s3 only (s3_c8's only choice "Add an edge hall" now opens a 10 MW hall in 2030Q1; its idle MW pay the reservation, cash −$1.5M). 1095 tests.
-
-**M16.5 done:** A3-07 in Sites & Fleet (`screens/Act3Racks.tsx`, loaded with the Act III panels; `racksView` in `projectViews.ts`): "Halls and rack density" table (density badge with a 1-2-3 fill, fits, Retrofit… / Change GPUs… or the block reason, a running retrofit's done quarter), "What fits where" matrix, the retrofit panel (both options, income per affected quarter, what fits after, cash, tenant / earnings note, Start retrofit → RETROFIT) and the GPU change panel (REFIT_GPUS); open-project dialog: "Build to top tier" tick with its cost and quarter, the GPU list filtered by the hall's tier; Deal builder capex shows the top-tier part. Browser (dev, Growth on s0): retrofit started from the screen (cash −$1.5M, 1 BW). 1101 tests.
-
-**M16.6 done (tests and the sim proof):** `npm run sim -- --act2 --act3` adds a step-5 payback table and a tools-only retrofitter row (every Act III run played again with "retrofit the largest low-tier hall when cash > 2 × cost"; ~19 min now). The first run found a dead end: s3_c8's only choice greyed with no energized site → fix (mine): a card whose every choice is closed keeps its default open, which changes nothing. Act I/II CSVs and the §5 table identical to M16.0's; 532 Act III runs, 0 crashes, 41 game overs; reading by scenario unchanged except s3 median moves 5→6; the oracle holds. Payback (years; capex/MW ÷ revenue/MW-yr, utilisation 0.7): shells 4.6–12.9, H200 1.8–2.8, B200 1.3–2.7, Rubin 0.9–1.7, Rubin Ultra 0.7–1.3 (most Rubin cases under 1.5). Retrofitter vs bots, median net worth: s0 $157.2M vs $177.5M, s1 $81.9M vs $85.5M, s2 $135.8M vs $149.0M, s3 $98.4M vs $102.0M; reading 72/37/63/37 vs 75/50/56/53. 1102 tests.
-**M16.7 (the design thread's M15 answers, 1 Oct 2026, pasted with the M16 spec):** 1 keep titles the same; the played-history guard now also checks no word "trigger" and no role tag (aftermath, flavour; the other tags are everyday words) outside the chapter report; 2 reads read "{quarter} · read {indicator}"; 3 staging:build for Claude Code is the owner's call (recommended: allow); 4–6 as built in M16.0; 7 auctions stay dormant in Act III.
-**M16 done:** 1041 → 1102 tests. Open questions for the design thread are in the M16 report (owner pastes it).
-
-## Milestone M15 (branch `m15`, from `main` at `baf9dd3`; the Act III chapter report, full screen A3-11) — DONE
-
-Split by the design thread, run in one go: M15.0 the A1/A3/A5 move classifications; M15.1 the new-lease index seam fix (data);
-M15.2 the test dependencies (approved by the owner pasting the spec); M15.3 the reveal record additions; M15.4 the screen; M15.5 tests.
-**Design-thread answers (1 Oct 2026):** A2, A4, A6–A8 confirmed as built (deferred card choices log by their authored effect; a default
-choice the player or bot picks is logged). **D2 → step-7 checklist:** doc 28 anchor 4 (S3 flexible ≥ long-locked) must hold with the
-default card choices; if it fails, fix the reopener and re-let pricing, not the cards. **E (D15):** the owner does the editorial review
-with legal counsel before any public release of Act III; until then the two s1 fates stay withheld in every build. **Order after M15:**
-step 5, step 6, then step 7 with A3-12. **Step-5 data already in the files (owner, 1 Oct 2026):** low→mid retrofit $1.5M/MW over 10 weeks
-(`gpus_act3.json › density_rules`); mid→top per quarter and scenario in the market CSVs (`capex_retrofit_density_mid_to_top_usd_mw`,
-$6.58–7.0M/MW early), 26 weeks; rack density Hopper 40 kW (low), Blackwell 125 kW (mid), Rubin NVL144 190 kW (mid), Rubin Ultra 600 kW
-(top); GPUs per MW 650 / 760 / 900 / 1,050; Rubin NVL144 rack $4.4M at 2027Q1, $61k per unit, Rubin rent columns; Rubin Ultra rack
-$15M from 2027Q3 (blank before = not available); new-hall capex from the Act II capex columns (greenfield shell $18.7–19.0M/MW at 2027Q1).
-
-**M15.0 done (move classifications, A1/A3/A5):** new kinds `asic_buy` (+1), `retrofit` (+1), `power_lock` (+1, a nuclear or fixed
-PPA card choice), `hedge` (−1, a backstop); ASIC sales and player treasury sales → `sale_voluntary`; a won auction → `site_buy` (a lost
-bid: nothing). Labels in en.json. Goldens unchanged (the golden scripts make none of these moves). 1021 tests.
-
-**M15.1 done (the new-lease index seam, data only):** `rfp_new_lease_index_low/high` 2027Q1 = 0.88 / 1.04 in all four scenarios, 2027Q2
-halved toward it (s0 0.885/1.045, s1 0.85/1.01, s2 0.925/1.085, s3 0.87/1.03), docs and src copies byte-identical, JSON regenerated
-(`npm run content:market`), provenance note, the wireframe README's conflict 2 marked fixed, `docs/act3-content/README.md` logs it.
-The 3% seam test (`tests/sim/act3Seam.test.ts`, (max − min) / mean at 2027Q1): **fails, pinned for the step-7 checklist:**
-`gpu_h200_hyperscaler_usd_hr` 5.9%, `gpu_h200_neocloud_usd_hr` 5.9%, `gpu_gb200nvl72_blended_usd_hr` 3.1% (all s2 high); everything else
-within 3% (blank columns skipped: A100, Rubin Ultra, nuclear at 2027Q1). Goldens unchanged (no golden company signs a new lease). 1023 tests.
-
-**M15.2 done (test dependencies, owner-approved):** dev dependencies `happy-dom` 20.14.5 and `@testing-library/preact` 3.2.4, nothing
-else. Component tests are `tests/**/*.test.tsx` with `// @vitest-environment happy-dom` per file (every other test keeps node);
-`tsconfig.tools.json` gains `jsx` (preact) and the DOM lib; `tests/ui/happyDom.test.tsx` proves the setup. 1025 tests.
-
-**M15.3 + M15.4 done (one commit: the screen is the record's only reader):** the reveal record gains `trigger` {q, cardId},
-`decoy.fromQ/toQ`, `moves` [{q, kind, sign, mark}] (marked in `act3End.ts` from the hidden file), and `withheld` on each rival fate
-(d15_review and not `d15_cleared`; `rivalsHidden.ts` and event cards accept an optional `d15_cleared`, none set; an event card with
-d15_review would show "Withheld pending review" in play). `act3RevealDetails` is gone: the narratives are in en.json as
-`act3.reveal.s0–s3.{trigger,decoy_reason,decoy_tell}` (a test keeps them word for word with the signals files). The chapter report
-(`Act3Reveal.tsx`) is rebuilt to A3-11: header (or "Out of the game · {quarter}") and the scenario name; the reading title as the
-headline; what happened (trigger line + narrative); the false alarm (indicator, window, reason, tell); the reveal timeline (inline SVG:
-16 ticks, labels 27Q1/28Q1/29Q1/30Q4, the trigger rule and label, the hatched decoy band, move markers stacked per quarter with ✓ / ✗ /
-hatched ✗ / – glyphs, labels only with ≤ 4 moves, a game over greys later ticks with an "Out" marker and "(after you left)" on a later
-trigger, "You made no big moves." when empty; `aria-hidden` inside a figure labelled "{n} moves; {m} matched") with the moves list under
-it; the reading score ("/ 100" or "—" with the not-enough line, the base and penalty line only with a penalty, the five band chips with
-ranges and the player's filled, the wording in quotes, the description, and the collapsed "How this was scored" 16-cell strip of
-stance over ideal shaded by points, weight-0 cells "not scored" and after a game over "not played"); the stats (net worth, at entry,
-growth ×/▲▼, survival, career title); the rivals; "The story continues…" + Continue. Mine: the M13 "your signal reads" list is not on
-the new screen (not in A3-11 or the spec). **Goldens:** the four act3-s* gain only `trigger`, `decoy.fromQ/toQ`, `moves` and the
-`withheld` flags. Component tests (`tests/ui/act3Report.test.tsx`, happy-dom): the s1 golden record, s0 with a penalty, s1 out at
-2027Q3, s2 out at 2027Q2 (null score), no moves, 12 moves, ≤ 4 moves. 1036 tests.
-
-**M15.5 done (tests and the browser run):** the leak guard (`tests/ui/act3Leak.test.tsx`: Plan with the Act III panels, every
-left-nav section, Live, Report and the intro, at 2028Q2 in each scenario, contain no scenario name, trigger title, decoy reason or tell,
-nor "decoy" / "false alarm"; the fixture has no played history, because a trigger is also an event card the player sees when it fires)
-and the D15 guard (an event card flagged for review shows "Withheld pending review" in play; the rivals' flags are in the reveal tests;
-nothing carries `d15_cleared`). `tsconfig.tools.json` includes `src/ui/audio/zzfx.d.ts` (the tests now import the Live screen). Browser
-run (dev server, not staging: `npm run staging:build` is still denied for me; same test-build gate): Growth on s0 (76, Signal Reader,
-1 move), GPU-heavy on s1 (50, no moves, both D15 fates withheld), Shell landlord on s2 (56, a ✓ in the trigger quarter), Growth on s3
-(53, ✓ ✗ –). Two layout fixes from it (mine): unscored cells in "How this was scored" show "–" (the legend says so; "not scored" is
-the hover text) instead of overflowing, and every other timeline label sits a row higher. **Sim** (`--act2` CSVs and table identical):
-`--act3` 41 game overs (was 40: texas-capital +1 foreclosure in s1, from the new-lease index change); reading by scenario (median / p10 /
-p90 / null / median moves): s0 75 / 62 / 76 / 0% / 1; s1 50 / 24 / 50 / 1% / 1; s2 56 / 53 / 66 / 0% / 3; s3 53 / 11 / 53 / 0% / 5; the
-oracle (78/50/50/50, 78/100/100/100) holds. **M15 done:** 1025 → 1041 tests.
+Full sim (532 Act III runs, 0 crashes): 43 game overs (S1 18, S3 6); covenant breaches S0 5, S1 26, S2 20, S3 9; reading medians
+75 / 50 / 56 / 50; the oracle unchanged; Act I/II byte-identical.
 
 ## Milestone M14 (branch `m14`, from `main` at `e364d54`; Act III scoring, doc 27 D14 + §5) — DONE
 
