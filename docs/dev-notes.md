@@ -5,9 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 4 Oct 2026 (M19 and M20 done on `m19` / `m20`, not merged). Act I, Act II and the Prologue are built and done. Act III
-(M10–M18) is built and in `main` (`e0846d3`); on `m20` it is in every build (M20.2), while `main`'s GitHub Pages build still has no Act III
-until the owner merges. See "Next", "Milestone M20" and "Milestone M18 close-out".
+Last updated: 4 Oct 2026 (M19 and M20 merged into `main` at `7804dd0` and pushed). Act I, Act II and the Prologue are built and done.
+Act III (M10–M18) is built and, since M20, public: in every build, the GitHub Pages one included. See "Next", "Milestone M20" and
+"Milestone M18 close-out".
 
 ## How the owner works
 
@@ -157,10 +157,10 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M19 (Heat relief) and M20 (the Act III public release) are done on `m19` and `m20`** (4 Oct 2026, unattended; not merged). Next: the
-owner reviews and merges (commands in the M20 section: merging publishes GitHub Pages with Act III); the design thread answers the M19 + M20
-questions. Still open: the owner's playtest of Act III; the Act I playtests (postponed). (M18 and the Act III balance pass closed 4 Oct 2026;
-m16 → m18 merged into `main` at `e0846d3`. D15 resolved by the owner in M20.1.)
+**M19 (Heat relief) and M20 (the Act III public release) are done and merged** (the owner fast-forwarded m19 → m20 into `main` at
+`7804dd0` and pushed, 4 Oct 2026: GitHub Pages now publishes Act III). The next milestone branch starts from `main`. Next: the design
+thread answers the M19 + M20 questions. Still open: the owner's playtest of Act III; the Act I playtests (postponed). (M18 and the Act III
+balance pass closed 4 Oct 2026; m16 → m18 merged at `e0846d3`. D15 resolved by the owner in M20.1.)
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 
