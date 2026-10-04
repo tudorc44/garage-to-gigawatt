@@ -13,5 +13,16 @@
   "shutdown": { "at": 90, "until_below": 60, "min_quarters": 1 },
   "complaint_at": 30,
   "complaint_chance_offset": 20,
-  "complaints_per_quarter": 1
+  "complaints_per_quarter": 1,
+  "community_deal": {
+    "note": "M19 (design thread 4 Oct 2026, designed): the Community Relations Manager's yearly deal. Offered every every_quarters quarters on the hottest site at min_heat or more (tie: the larger; garage excluded); signing sets Heat to target_heat now through an offset that moves fade_per_quarter toward 0 at each quarter end. Cost per_mw x the site's MW, between min and max.",
+    "every_quarters": 4,
+    "min_heat": 30,
+    "target_heat": 12,
+    "fade_per_quarter": 5,
+    "bw": 1,
+    "per_mw": 100000,
+    "min": 100000,
+    "max": 20000000
+  }
 }

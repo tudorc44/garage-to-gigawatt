@@ -293,6 +293,11 @@ export const BALANCE = {
       head_of_development: { bandwidth: 1 },
       capital_markets_lead: { spread_cut: 0.0075 },
     } as Readonly<Record<string, Record<string, number>>>,
+    /**
+     * M19 (mine, reversible): Act I hires with no Act II salary series in hires_act2.json (a frozen copy of the Act II
+     * pack): they keep Act I's formula in Acts II and III (the 2021 salary × salary_2022_mult).
+     */
+    act1FormulaOnly: ['community_relations'] as readonly string[],
   },
 
   /**

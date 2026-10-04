@@ -74,6 +74,23 @@
    },
    "real_role": "CoS: runs the founder's calendar, reporting, hiring. ≈ $90–150k",
    "estimate": true
+  },
+  {
+   "id": "community_relations",
+   "name": "Rosa Delgado",
+   "bio": "Twenty years of town halls, zoning boards and potluck dinners; knows which neighbour to call first.",
+   "salary_usd_year": {
+    "2017": 95000,
+    "2021": 140000
+   },
+   "effect": {
+    "heat_base": -5,
+    "outreach_bw": 0,
+    "community_deal": true,
+    "needs_site_beyond_garage": true
+   },
+   "real_role": "Community relations / public affairs manager: neighbours, councils, benefits agreements. Designed (M19, design thread 4 Oct 2026), on the Act I hire scale",
+   "estimate": true
   }
  ],
  "salary_note": "Game quarterly salary = year value/4, linearly interpolated 2017→2021, +8% in 2022 (≈ wage inflation)",

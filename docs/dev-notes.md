@@ -162,6 +162,16 @@ m16 → m17 → m18 into `main` (4 Oct 2026; `main` = `e0846d3`, pushed, GitHub 
 gate, so the public build has no Act III. The next milestone branch starts from `main`. Still open, all owner decisions or side work:
 the owner's staging playtest of Act III; the D15 editorial review before any public release of Act III; the Act I playtests (postponed).
 
+## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
+
+Owner request via the design thread (4 Oct 2026), run in one go: M19.1 the hire (hires.json; −5 Heat at every site, outreach 0 BW, needs a
+site beyond the garage); M19.2 the yearly Community Deal (Plan-phase offer every 4 quarters on the hottest site ≥ 30, Heat to 12, fades 5 a
+quarter); M19.3 screens (Hires card, Heat breakdown lines, the Plan deal card), tests, the forced-hire run, a browser check. Invariants: no
+bot hires her, so every golden and the `--act2 --act3` sim stay byte-identical.
+**M19.1 done:** hires.json `community_relations` (effects heat_base −5, outreach_bw 0, community_deal, needs_site_beyond_garage); heat.json `community_deal`
+block (schema); her −5 in base Heat, recalculated on hiring/firing her only; Acts II–III salary = 2021 × 1.08 (hires_act2.json is a frozen copy:
+`BALANCE.act2Hires.act1FormulaOnly`, mine). Goldens unchanged. 1229 → 1234 tests.
+
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by

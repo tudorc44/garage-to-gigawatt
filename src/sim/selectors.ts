@@ -168,6 +168,7 @@ import {
   isAct2Hire,
   isAct3Hire,
   isHired,
+  outreachBandwidth,
   readMarketBandwidth,
   revealsFlaws,
   salaryUsdQ,
@@ -853,7 +854,8 @@ export function topHeat(state: GameState): { tier: string; heat: number } {
 export function communityView(state: GameState) {
   const rules = CONTENT.heat
   return {
-    outreachBandwidth: rules.outreach.bandwidth,
+    // (M19: 0 with the Community Relations Manager)
+    outreachBandwidth: outreachBandwidth(state),
     outreachGrievance: rules.outreach.grievance,
     mitigationBandwidth: rules.mitigation.bandwidth,
     mitigationBase: rules.mitigation.heatBase,

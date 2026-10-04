@@ -1260,6 +1260,14 @@ export const heatFileSchema = z
     complaint_at: nonNeg,
     complaint_chance_offset: nonNeg,
     complaints_per_quarter: z.number().int().min(0),
+    /** M19: the Community Relations Manager's yearly Community Deal. */
+    community_deal: moneyRule.extend({
+      note: z.string().optional(),
+      every_quarters: z.number().int().min(1),
+      min_heat: nonNeg,
+      target_heat: nonNeg,
+      fade_per_quarter: nonNeg,
+    }),
   })
   .transform((h) => ({
     grievanceDecay: h.grievance_decay,
@@ -1296,6 +1304,16 @@ export const heatFileSchema = z
     complaintAt: h.complaint_at,
     complaintChanceOffset: h.complaint_chance_offset,
     complaintsPerQuarter: h.complaints_per_quarter,
+    communityDeal: {
+      everyQuarters: h.community_deal.every_quarters,
+      minHeat: h.community_deal.min_heat,
+      targetHeat: h.community_deal.target_heat,
+      fadePerQuarter: h.community_deal.fade_per_quarter,
+      bandwidth: h.community_deal.bw,
+      perMwUsd: h.community_deal.per_mw,
+      minUsd: h.community_deal.min,
+      maxUsd: h.community_deal.max,
+    },
   }))
 
 export type HeatRules = z.output<typeof heatFileSchema>

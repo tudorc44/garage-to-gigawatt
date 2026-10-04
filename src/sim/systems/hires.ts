@@ -173,6 +173,28 @@ export function spreadCut(state: GameState): number {
   )
 }
 
+/** Community Relations Manager (M19): the standing change to every site's base Heat (0 with nobody on staff). */
+export function staffHeatBase(state: GameState): number {
+  return staffHires(state).reduce(
+    (n, h) => n + (numberEffect(h, 'heat_base') ?? 0),
+    0,
+  )
+}
+
+/** Community Relations Manager (M19): "Talk to the neighbours" costs this much Bandwidth. */
+export function outreachBandwidth(state: GameState): number {
+  for (const h of staffHires(state)) {
+    const bw = numberEffect(h, 'outreach_bw')
+    if (bw !== undefined) return bw
+  }
+  return CONTENT.heat.outreach.bandwidth
+}
+
+/** Community Relations Manager (M19): someone on staff brings the yearly Community Deal. */
+export function bringsCommunityDeal(state: GameState): boolean {
+  return staffHires(state).some((h) => h.effect.community_deal === true)
+}
+
 /** Trader: the LTV warning becomes an alert that pauses the live quarter. */
 export function marginWarningAlert(state: GameState): boolean {
   return staffHires(state).some(
@@ -196,6 +218,12 @@ export function hireBlocker(state: GameState, id: string): Message | undefined {
     state.firedQuarter[id] === state.quarter
   )
     return { key: 'error.rehire_same_quarter', params: { hire: id } }
+  // M19: the Community Relations Manager needs a site beyond the garage
+  if (
+    hire.effect.needs_site_beyond_garage === true &&
+    !state.sites.some((s) => s.tier !== 'garage')
+  )
+    return { key: 'error.hire_needs_site', params: { hire: id } }
   const bw = CONTENT.hires.bandwidth
   if (state.bandwidth < bw)
     return {
@@ -215,6 +243,9 @@ export function hire(state: GameState, id: string): void {
   const h = getHire(id)!
   state.bandwidth -= CONTENT.hires.bandwidth
   state.staff[id] = state.quarter
+  // M19: her yearly Community Deal is first offered the quarter after hiring
+  if (h.effect.community_deal === true)
+    state.communityDeal = { nextQuarter: state.quarter + 1 }
   logEntry(state, 'log.hired', {
     hire: id,
     salaryUsd: salaryUsdQ(h, state.quarter),
@@ -239,5 +270,7 @@ export function fire(state: GameState, id: string): void {
   state.cash -= severance
   delete state.staff[id]
   state.firedQuarter[id] = state.quarter
+  // M19: no more Community Deal offers (an offset already paid for stays and fades)
+  if (h.effect.community_deal === true) delete state.communityDeal
   logEntry(state, 'log.fired', { hire: id, severanceUsd: severance })
 }

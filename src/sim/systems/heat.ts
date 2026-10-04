@@ -19,6 +19,7 @@ import { gasHeat } from './power.ts'
 import { nationalHeatDelta, regionHeatMult } from './regions.ts'
 import { angerHeat } from './anger.ts'
 import { capacityKw, flawEffect, getTier, regionOf } from './sites.ts'
+import { outreachBandwidth, staffHeatBase } from './hires.ts'
 
 export interface SiteHeat {
   /** Heat now (0–100), recalculated every week and after anything that changes it. */
@@ -33,6 +34,11 @@ export interface SiteHeat {
   outreachQuarter: number | null
   /** Heat 90 shutdown order: the quarter it started, or null. Machines here don't mine. */
   shutdownSince: number | null
+  /**
+   * M19: a Community Deal's goodwill (negative), added to Heat; it moves fade_per_quarter toward 0 at each quarter end.
+   * Absent without a deal.
+   */
+  dealOffset?: number
 }
 
 export function newSiteHeat(): SiteHeat {
@@ -62,12 +68,13 @@ export function growthMult(site: Site): number {
   return flawEffect(site, 'heat_growth_mult') ?? 1
 }
 
-/** Base Heat: tier, noise_ordinance flaw and noise mitigation. */
+/** Base Heat: tier, noise_ordinance flaw, noise mitigation and (M19) the Community Relations Manager. */
 export function baseHeat(state: GameState, site: Site): number {
   return (
     getTier(site.tier)!.heat_base +
     (flawEffect(site, 'heat_base') ?? 0) +
-    (heatOf(state, site.id).mitigated ? CONTENT.heat.mitigation.heatBase : 0)
+    (heatOf(state, site.id).mitigated ? CONTENT.heat.mitigation.heatBase : 0) +
+    staffHeatBase(state)
   )
 }
 
@@ -129,7 +136,9 @@ export function recalcHeat(state: GameState, site: Site): void {
   const total =
     parts * regionHeatMult(regionOf(site), state.quarter) +
     nationalHeatDelta(state.quarter) +
-    angerHeat(state, regionOf(site))
+    angerHeat(state, regionOf(site)) +
+    // M19: a Community Deal's goodwill, added after the region's scaling so Heat lands on the deal's target
+    (h.dealOffset ?? 0)
   h.value = Math.min(100, Math.max(0, total))
 }
 
@@ -271,7 +280,7 @@ export function outreachBlocker(
   if (!site) return { key: 'error.unknown_site' }
   if (heatOf(state, siteId).outreachQuarter === state.quarter)
     return { key: 'error.outreach_done', params: { tier: site.tier } }
-  const bw = CONTENT.heat.outreach.bandwidth
+  const bw = outreachBandwidth(state)
   if (state.bandwidth < bw)
     return {
       key: 'error.no_bandwidth',
@@ -286,7 +295,7 @@ export function outreachBlocker(
 export function doOutreach(state: GameState, siteId: string): void {
   const site = state.sites.find((s) => s.id === siteId)!
   const costUsd = outreachCostUsd(site)
-  state.bandwidth -= CONTENT.heat.outreach.bandwidth
+  state.bandwidth -= outreachBandwidth(state)
   state.cash -= costUsd
   heatOf(state, siteId).outreachQuarter = state.quarter
   addGrievance(state, siteId, CONTENT.heat.outreach.grievance)

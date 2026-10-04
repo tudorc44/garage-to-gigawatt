@@ -71,6 +71,7 @@ import {
   buildQuartersFor,
   fire,
   fireBlocker,
+  getHire,
   hire,
   hireBlocker,
 } from './systems/hires.ts'
@@ -639,6 +640,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = hireBlocker(s, a.hire)
       if (blocked) return blocked
       hire(s, a.hire)
+      recalcHeatForHire(s, a.hire)
       return
     }
 
@@ -646,6 +648,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = fireBlocker(s, a.hire)
       if (blocked) return blocked
       fire(s, a.hire)
+      recalcHeatForHire(s, a.hire)
       return
     }
 
@@ -1213,6 +1216,12 @@ function run(s: GameState, a: Action): Message | undefined {
 }
 
 /** The act boundary: Act II starts at its intro, with the Merge head start and (below the floor) the lifeline. */
+/** M19: a hire that changes base Heat (the Community Relations Manager) shows at every site at once. */
+function recalcHeatForHire(s: GameState, id: string): void {
+  if (getHire(id)?.effect.heat_base === undefined) return
+  for (const site of s.sites) recalcHeat(s, site)
+}
+
 function enterAct2(s: GameState): void {
   s.act = 2
   s.phase = 'intro'

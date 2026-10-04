@@ -806,6 +806,14 @@ export interface GameState {
    * quarter end by which LTV must be back to the cure level. Absent when there is none.
    */
   covenantBreach?: { fromQuarter: number; untilQuarter: number }
+  /**
+   * M19: the Community Relations Manager's yearly Community Deal (systems/communityDeal.ts): the first quarter the next
+   * offer may come, and this Plan phase's offer (its site and cost). Absent while she isn't on staff.
+   */
+  communityDeal?: {
+    nextQuarter: number
+    offer?: { siteId: string; costUsd: number }
+  }
   /** Act III (M17.4): the two wildcards drawn at entry, with the quarter each fires in. */
   act3Wildcards?: Act3Wildcard[]
   /** Act III (M17.4): a wildcard on the Plan screen waiting for an answer (its default applies at END_PLAN). */

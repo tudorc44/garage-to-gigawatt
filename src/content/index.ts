@@ -1241,7 +1241,7 @@ export function parseContent(raw: RawContent): Content {
     })
   }
   for (const id of act1HireIds)
-    if (!salaryYr[id])
+    if (!salaryYr[id] && !BALANCE.act2Hires.act1FormulaOnly.includes(id))
       problems.push(
         `hires_act2.json: no Act II salary for the Act I hire "${id}"`,
       )
