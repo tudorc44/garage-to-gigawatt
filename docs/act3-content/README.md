@@ -17,6 +17,14 @@ Source of truth for the Act III content pack (doc 28). The game reads byte-ident
 
 ## Data changes (every change to a delivered file is listed here)
 
+### M20.1, 4 Oct 2026 (D15 resolved by the owner's decision; design thread, M20 spec)
+
+- **`rivals_act3.json` › `s1` › `core_scientific` and `coreweave`:** gain `d15_cleared: true` and `d15_note`: "Cleared by the owner on 4
+  Oct 2026 after legal advice; the owner accepts responsibility." `d15_review: true` stays as the record of the flag. The fate texts
+  are unchanged, word for word (every fate, including s1 hut8). Both copies byte-identical. The reveal shows both fates in full in every
+  build, under the line "Rival fates are scenario illustrations, not predictions." The D15 guard stays (a flagged fate or card without
+  `d15_cleared` is withheld), and a content test now checks every shipped flagged fate or card is cleared.
+
 ### M18.8, 2 Oct 2026 (S3's rebound; design thread, answer 5 to the M18 questions)
 
 - **`market_s3.csv` › `renewal_shell_index_low/high`:** 2029Q1 0.62/0.74, Q2 0.66/0.78, Q3 0.70/0.84, Q4 0.74/0.88, 2030Q1

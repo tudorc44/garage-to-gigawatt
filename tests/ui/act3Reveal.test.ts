@@ -11,7 +11,11 @@ import {
   actFirstQuarter,
   type ScenarioId,
 } from '../../src/content/index.ts'
-import { d15Items, rivalFates } from '../../src/content/rivalsHidden.ts'
+import {
+  d15Items,
+  d15Withheld,
+  rivalFates,
+} from '../../src/content/rivalsHidden.ts'
 import { signalsHidden } from '../../src/content/signalsHidden.ts'
 import en from '../../src/i18n/en.json' with { type: 'json' }
 import { playFrom } from '../../src/sim/replay.ts'
@@ -141,22 +145,49 @@ describe('the reading in the record', () => {
   })
 })
 
-describe('D15: fates waiting for the editorial review are withheld', () => {
-  it('every flagged fate is withheld in the record; nothing carries d15_cleared yet', () => {
+describe('D15: flagged fates show only once cleared (M20.1: both s1 flags cleared by the owner)', () => {
+  it('the two flagged fates are cleared and shown in full; none is withheld in any scenario', () => {
     const items = d15Items()
     expect(items.length).toBe(2)
+    expect(items.every((f) => !f.withheld)).toBe(true)
     for (const id of SCENARIO_IDS) {
-      const flagged = items.filter((f) => f.scenario === id).map((f) => f.rival)
       const e = act3Outcome(ends.get(id)!).end
-      expect(
-        e.rivalFates.filter((r) => r.withheld).map((r) => r.rival).sort(),
-      ).toEqual(flagged.sort())
+      expect(e.rivalFates.filter((r) => r.withheld)).toEqual([])
     }
-    for (const name of ['rivals_act3.json', 'events_act3.json'])
-      expect(
-        readFileSync(new URL(`../../src/content/${name}`, import.meta.url), 'utf8'),
-      ).not.toContain('d15_cleared')
     expect(text['ui.act3.reveal.withheld']).toBe('Fate withheld pending review')
+    expect(text['ui.act3.reveal.rivals_note']).toBe(
+      'Rival fates are scenario illustrations, not predictions.',
+    )
+  })
+
+  it('the guard stays: a flagged fate without d15_cleared is withheld', () => {
+    expect(d15Withheld(true)).toBe(true)
+    expect(d15Withheld(true, false)).toBe(true)
+    expect(d15Withheld(true, true)).toBe(false)
+    expect(d15Withheld(false)).toBe(false)
+  })
+
+  it('every shipped fate or card with d15_review: true also has d15_cleared: true (content check)', () => {
+    type Flagged = { d15_review?: boolean; d15_cleared?: boolean }
+    const rivals = JSON.parse(
+      readFileSync(new URL('../../src/content/rivals_act3.json', import.meta.url), 'utf8'),
+    ) as { scenarios: Record<string, Record<string, Flagged>> }
+    const fates = Object.values(rivals.scenarios).flatMap((s) => Object.values(s))
+    const events = JSON.parse(
+      readFileSync(new URL('../../src/content/events_act3.json', import.meta.url), 'utf8'),
+    ) as unknown
+    const cards: Flagged[] = []
+    const walk = (x: unknown) => {
+      if (Array.isArray(x)) x.forEach(walk)
+      else if (x && typeof x === 'object') {
+        if ('d15_review' in x) cards.push(x as Flagged)
+        Object.values(x).forEach(walk)
+      }
+    }
+    walk(events)
+    expect(fates.length).toBe(20)
+    for (const f of [...fates, ...cards])
+      if (f.d15_review) expect(f.d15_cleared).toBe(true)
   })
 })
 

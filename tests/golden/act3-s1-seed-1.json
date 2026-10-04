@@ -2999,7 +2999,7 @@
         "rival": "core_scientific",
         "name": "Core Scientific",
         "fate": "Its single anchor tenant invokes force majeure in 2028Q1 and pays only part of the rent; Core Scientific files for restructuring in 2028Q4 (SCENARIO ILLUSTRATION, D15 flag: fictional-forward, not a prediction).",
-        "withheld": true
+        "withheld": false
       },
       {
         "rival": "iren",
@@ -3023,7 +3023,7 @@
         "rival": "coreweave",
         "name": "CoreWeave",
         "fate": "DDTL spreads gap out; suspends new-site commitments 2028Q2; asset-sale programme; survives with a recap (D15 flag).",
-        "withheld": true
+        "withheld": false
       }
     ],
     "reading": {

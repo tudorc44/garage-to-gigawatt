@@ -713,6 +713,8 @@
     },
     "fate": "Its single anchor tenant invokes force majeure in 2028Q1 and pays only part of the rent; Core Scientific files for restructuring in 2028Q4 (SCENARIO ILLUSTRATION, D15 flag: fictional-forward, not a prediction).",
     "d15_review": true,
+    "d15_cleared": true,
+    "d15_note": "Cleared by the owner on 4 Oct 2026 after legal advice; the owner accepts responsibility.",
     "grounded": false,
     "reasoning": "Trend extrapolation from rivals_act2.json 2026Q3 anchors (+1 quarter to 2026Q4 hand-off) then scenario multipliers; illustrative game fate, not a forecast."
    },
@@ -1173,6 +1175,8 @@
     },
     "fate": "DDTL spreads gap out; suspends new-site commitments 2028Q2; asset-sale programme; survives with a recap (D15 flag).",
     "d15_review": true,
+    "d15_cleared": true,
+    "d15_note": "Cleared by the owner on 4 Oct 2026 after legal advice; the owner accepts responsibility.",
     "grounded": false,
     "reasoning": "Trend extrapolation from rivals_act2.json 2026Q3 anchors (+1 quarter to 2026Q4 hand-off) then scenario multipliers; illustrative game fate, not a forecast."
    }

@@ -74,11 +74,15 @@ describe('the s1 golden record', () => {
     const on = container.querySelectorAll('[data-on="true"]')
     expect(on).toHaveLength(1)
     expect(on[0].getAttribute('data-band')).toBe(e.readingTitleId)
-    // the rivals: the two D15 fates are withheld
+    // the rivals: M20.1 cleared the two D15 fates, so they show in full, under the illustration line
     expect(
       container.querySelectorAll('[data-rival]').length,
     ).toBe(e.rivalFates.length)
-    expect(body.split(text['ui.act3.reveal.withheld']).length - 1).toBe(2)
+    expect(body).not.toContain(text['ui.act3.reveal.withheld'])
+    for (const r of e.rivalFates) expect(body).toContain(r.fate)
+    expect(container.querySelector('[data-rivals-note]')?.textContent).toBe(
+      text['ui.act3.reveal.rivals_note'],
+    )
   })
 
   it('the "How this was scored" disclosure is collapsed by default and opens on click', () => {

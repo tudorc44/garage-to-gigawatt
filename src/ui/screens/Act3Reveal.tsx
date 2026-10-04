@@ -544,6 +544,10 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
           {/* 7. the rivals */}
           <section class="panel p">
             <span class="label">{t('ui.act3.reveal.rivals')}</span>
+            {/* M20.1: under the heading, in every build */}
+            <p class="num-s muted" style={{ margin: 0 }} data-rivals-note>
+              {t('ui.act3.reveal.rivals_note')}
+            </p>
             <table class="num-s">
               <tbody>
                 {e.rivalFates.map((r) => (

@@ -181,7 +181,7 @@ describe('the reveal carries each rival’s fate', () => {
         rival,
         name,
         fate,
-        withheld, // M15.3: flagged for D15 and not cleared
+        withheld, // M15.3: flagged for D15 and not cleared (M20.1: both cleared, so false)
       })),
     )
     // No state before the end mentioned a fate.

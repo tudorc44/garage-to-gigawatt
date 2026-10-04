@@ -14,8 +14,10 @@ const schema = z.object({
         name: z.string(),
         fate: z.string().min(1),
         d15_review: z.boolean(),
-        /** Set once the owner's editorial review (with counsel) clears the fate (doc 27 §15); none yet. */
+        /** Set once the owner's editorial review (with counsel) clears the fate (doc 27 §15; M20.1: both s1 flags). */
         d15_cleared: z.boolean().optional(),
+        /** M20.1: who cleared it, when, and on what basis. */
+        d15_note: z.string().optional(),
       }),
     ),
   ),
@@ -39,8 +41,13 @@ export function rivalFates(id: ScenarioId): RivalFate[] {
     name: r.name,
     fate: r.fate,
     d15Review: r.d15_review,
-    withheld: r.d15_review && r.d15_cleared !== true,
+    withheld: d15Withheld(r.d15_review, r.d15_cleared),
   }))
+}
+
+/** The D15 guard (M15.5, kept in M20.1): a flagged fate shows only once cleared. */
+export function d15Withheld(review: boolean, cleared?: boolean): boolean {
+  return review && cleared !== true
 }
 
 /** Every scenario's fates flagged for D15 review (for the release check). */

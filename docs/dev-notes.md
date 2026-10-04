@@ -178,6 +178,15 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
 
+## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
+
+Owner, 4 Oct 2026: release without waiting for the playtest; run unattended after M19. Split by the design thread: M20.1 D15 resolved by the
+owner's decision (both s1 fates cleared, unchanged); M20.2 open the gate (production gets Act III; forcing and quick starts stay test-only;
+the save guard and the gate test redefined); M20.3 checks (goldens, `--act2 --act3`, bundle sizes, a production browser check).
+**M20.1 done:** `d15_cleared` + `d15_note` on s1 core_scientific and coreweave (both copies; fates unchanged; `d15_review` kept); the reveal's
+"Rival fates are scenario illustrations, not predictions." line; `d15Withheld` guard kept and tested; a content test (every flagged fate or card is
+cleared). **Golden act3-s1:** only its two rival fates' `withheld` true → false (the expected change). act3-content README logs it.
+
 ## Milestone M10: the Act III walking skeleton — DONE (branch `m10`; the step log is in the archive › "Milestone M10")
 
 Plumbing only (`isActIII` / `inActIII`, save version 4, the timeline extended past 2026Q4); the stub content it used was replaced by
