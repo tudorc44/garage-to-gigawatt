@@ -2066,6 +2066,23 @@ td.wrap {
   }
 }
 
+/* M21.2 (DT): a site's Heat breakdown (Sites screen, Community dialog) */
+.heat-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 4px;
+  min-width: 200px;
+}
+.heat-breakdown .heat-total {
+  border-top: var(--border-hair) solid var(--line);
+  padding-top: 2px;
+}
+.heat-breakdown p {
+  margin: 2px 0 0;
+  white-space: normal;
+}
+
 /* M21.1 (DT), every width: a panel holding a table wider than itself scrolls sideways, so the table never pushes
    its section or the page wider (the table keeps its own layout; nothing pops out of a panel to be clipped). */
 .panel:has(> table) {

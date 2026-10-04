@@ -92,7 +92,7 @@ function FleetSection({ state, act }: ScreenProps) {
       {/* Act III (M16.5, A3-07): halls and rack density, across the section */}
       {inActIII(state) && <Act3Panel name="RacksPanel" state={state} act={act} />}
       <div class="col">
-        <FleetPanel state={state} />
+        <FleetPanel state={state} breakdown />
         {inActIII(state) && (
           <Act3Panel name="IdleRigsPanel" state={state} act={act} />
         )}

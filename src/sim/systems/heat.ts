@@ -131,6 +131,60 @@ export function recalcHeat(state: GameState, site: Site): void {
   h.value = Math.min(100, Math.max(0, total))
 }
 
+export type HeatPartId =
+  | 'tier'
+  | 'flaw'
+  | 'mitigation'
+  | 'load'
+  | 'grievance'
+  | 'goodwill'
+  | 'era'
+  | 'region'
+  | 'anger'
+  | 'national'
+  | 'gas'
+  | 'relations'
+  | 'deal'
+
+/**
+ * M21.2 (DT): a site's Heat as its parts, in display order, each only when non-zero. They add up to the Heat before
+ * the 0–100 clamp: the in-region parts (tier, flaw, mitigation, the hire, load, grievance, era, gas) are scaled by the
+ * region's modifier, shown as its own ± part; national policy, Anger and a Community Deal are added after it.
+ */
+export function heatParts(
+  state: GameState,
+  site: Site,
+): { parts: { id: HeatPartId; pts: number }[]; raw: number; mult: number } {
+  // (read-only: a site without a Heat record yet reads as a fresh one, none is created)
+  const h = state.siteHeat[site.id] ?? newSiteHeat()
+  const region = regionOf(site)
+  const mult = regionHeatMult(region, state.quarter)
+  const inRegion: [HeatPartId, number][] = [
+    ['tier', getTier(site.tier)!.heat_base],
+    ['flaw', flawEffect(site, 'heat_base') ?? 0],
+    ['mitigation', h.mitigated ? CONTENT.heat.mitigation.heatBase : 0],
+    ['load', h.load],
+    [h.grievance >= 0 ? 'grievance' : 'goodwill', h.grievance],
+    ['era', eraHeat(state, site)],
+    ['gas', gasHeat(site, state.quarter)],
+    ['relations', staffHeatBase(state)],
+  ]
+  const sum = inRegion.reduce((a, [, v]) => a + v, 0)
+  const all: [HeatPartId, number][] = [
+    ...inRegion.filter(([id]) => id !== 'gas' && id !== 'relations'),
+    ['region', sum * (mult - 1)],
+    ['anger', angerHeat(state, region)],
+    ['national', nationalHeatDelta(state.quarter)],
+    ['gas', gasHeat(site, state.quarter)],
+    ['relations', staffHeatBase(state)],
+    ['deal', h.dealOffset ?? 0],
+  ]
+  const parts = all
+    .filter(([, v]) => Math.abs(v) > 1e-9)
+    .map(([id, pts]) => ({ id, pts }))
+  return { parts, raw: parts.reduce((a, p) => a + p.pts, 0), mult }
+}
+
 /** A site's Heat from its parts, before any Community Deal and before the 0–100 clamp (M19). */
 export function heatBeforeDeal(state: GameState, site: Site): number {
   const h = heatOf(state, site.id)

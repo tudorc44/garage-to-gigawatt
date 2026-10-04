@@ -60,6 +60,7 @@ import {
   complaintPayGrievance,
   complaintPayUsd,
   growthMult,
+  heatParts,
   hottestSite,
   isShutDown,
   mitigationCostUsd,
@@ -172,7 +173,6 @@ import {
   outreachBandwidth,
   readMarketBandwidth,
   revealsFlaws,
-  staffHeatBase,
   salaryUsdQ,
   severanceUsd,
 } from './systems/hires.ts'
@@ -870,12 +870,36 @@ export function communityView(state: GameState) {
         outreachDone: h?.outreachQuarter === state.quarter,
         mitigationUsd: mitigationCostUsd(site),
         mitigated: h?.mitigated ?? false,
-        // M19: the Heat breakdown's two lines (the Community Relations Manager, a Community Deal's goodwill)
-        relationsPts: staffHeatBase(state),
-        dealPts: h?.dealOffset ?? 0,
       }
     }),
-    dealFade: rules.communityDeal.fadePerQuarter,
+  }
+}
+
+/**
+ * M21.2 (DT): a site's Heat breakdown: its parts in order (each non-zero), the region's modifier, the shown value, and
+ * whether the 0–100 clamp bit; `thresholds` asks for the line naming the 30 / 50 / 70 / 90 thresholds (Heat ≥ 30).
+ */
+export function heatBreakdownView(state: GameState, siteId: string) {
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return null
+  const { parts, raw, mult } = heatParts(state, site)
+  const value = siteHeatValue(state, siteId)
+  const rules = CONTENT.heat
+  return {
+    parts,
+    mult,
+    value,
+    clamped: raw < 0 ? ('low' as const) : raw > 100 ? ('high' as const) : null,
+    fade: rules.communityDeal.fadePerQuarter,
+    thresholds:
+      value >= rules.complaintAt
+        ? {
+            complaint: rules.complaintAt,
+            hike: rules.rateHike.at,
+            moratorium: rules.moratoriumAt,
+            shutdown: rules.shutdown.at,
+          }
+        : null,
   }
 }
 

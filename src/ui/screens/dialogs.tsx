@@ -37,6 +37,7 @@ import type {
   ContractType,
 } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
+import { HeatBreakdown } from '../components/heatBreakdown.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -1102,22 +1103,8 @@ export function CommunityDialog({ state, act, onClose }: DialogProps) {
                   <Icon name={tierIcon(x.site.tier)} size={16} />
                   {tierName(x.site.tier)}
                 </span>
-                {/* M19: the Heat breakdown's lines for the Community Relations Manager and a Community Deal */}
-                {x.relationsPts !== 0 && (
-                  <div class="num-s muted" data-heat-relations>
-                    {t('ui.community.relations', {
-                      pts: fmt.signedInt(x.relationsPts),
-                    })}
-                  </div>
-                )}
-                {x.dealPts !== 0 && (
-                  <div class="num-s muted" data-heat-deal>
-                    {t('ui.community.deal_line', {
-                      pts: fmt.signedInt(Math.round(x.dealPts)),
-                      fade: v.dealFade,
-                    })}
-                  </div>
-                )}
+                {/* M21.2 (DT): the site's full Heat breakdown */}
+                <HeatBreakdown state={state} siteId={x.site.id} />
               </td>
               <td class="num r">{Math.round(x.heat)}</td>
               <td class="r">

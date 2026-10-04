@@ -52,6 +52,7 @@ import {
 } from '../../sim/state.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
 import { ActionRow, Icon, Pips, Sparkline, Tip } from '../components/basics.tsx'
+import { HeatBreakdown, heatTooltip } from '../components/heatBreakdown.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
@@ -501,7 +502,14 @@ function lotStatus(v: LotView) {
   )
 }
 
-export function FleetPanel({ state }: { state: GameState }) {
+/** The sites and machines panel; `breakdown` (the Sites screen, M21.2) lists each site's Heat parts under its meter. */
+export function FleetPanel({
+  state,
+  breakdown = false,
+}: {
+  state: GameState
+  breakdown?: boolean
+}) {
   const sites = siteViews(state)
   const lots = lotViews(state)
   const readySites = sites.filter((s) => s.ready)
@@ -604,7 +612,12 @@ export function FleetPanel({ state }: { state: GameState }) {
                 }}
               />
             </div>
-            <HeatMeter tier={sv.site.tier} heat={sv.heat} />
+            <HeatMeter
+              tier={sv.site.tier}
+              heat={sv.heat}
+              tooltip={heatTooltip(state, sv.site.id)}
+            />
+            {breakdown && <HeatBreakdown state={state} siteId={sv.site.id} />}
             {(sv.rateHike || sv.moratorium || sv.shutDown) && (
               <div
                 class="row-between"
@@ -664,12 +677,21 @@ export function FleetPanel({ state }: { state: GameState }) {
 }
 
 /** A site's Heat, 0–100, with marks at the thresholds (danger from the moratorium up). */
-function HeatMeter({ tier, heat }: { tier: string; heat: number }) {
+function HeatMeter({
+  tier,
+  heat,
+  tooltip,
+}: {
+  tier: string
+  heat: number
+  /** M21.2: the site's Heat breakdown, one line each (hover) */
+  tooltip?: string
+}) {
   const band = heatBand(heat)
   const next = HEAT_MARKS[band - 1]
   const shown = Math.round(heat)
   return (
-    <div class="heat-meter">
+    <div class="heat-meter" title={tooltip}>
       <div class="row-between" style={{ marginBottom: '4px' }}>
         <span class="label">{t('ui.fleet.heat', { heat: shown })}</span>
         <span class={`num-s ${band >= 4 ? 'loss' : 'muted'}`}>

@@ -193,6 +193,10 @@ tenant renewals showed the power-contract text) → `error.no_tenant_renewal`. N
 two side columns under it, the top bar packs tighter, sections / Capital / report / tiles / racks / prologue Plan reflow; every width: a panel holding a
 too-wide table scrolls it (`:has`), chapter-report stat rows and rival fates wrap, the Act III intro's lines wrap. Browser sweep (dev) at 1024 / 1280 /
 1440 over every screen and section of every act: no sideways page scroll, nothing truncated; only the fleet table scrolls inside its panel.
+**M21.2 done:** `heatParts` (heat.ts, read-only) + `heatBreakdownView`; `components/heatBreakdown.tsx`: the list on the Sites screen (under each meter)
+and in the Community dialog (replacing M19's two lines), the Plan meter's hover tooltip (mine: a tooltip, so the Plan stays compact); region shown as
+"Region (×m)" with its ± effect; gas and the hire listed at face value (the region part carries their scaling, mine). Test: parts sum to the pre-clamp
+Heat in Acts I–III, order, clamp, thresholds, read-only. Goldens unchanged.
 
 ## Milestone M20 (branch `m20`, from `m19` at `a4dd432`, since M19 isn't merged yet; the Act III public release)
 
