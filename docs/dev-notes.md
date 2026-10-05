@@ -187,6 +187,12 @@ the sim against the M21 baseline, no retuning; M22.3 the goldens the data touche
 `tools/data/README.md`. SOFR real 2022Q4–2026Q3, HY 2023Q4–2026Q3 (FRED shows 3 years of the ICE series); a quarter is real only if fully covered
 (mine); per-series flags `sofr_estimate` / `hy_spread_estimate` (schema); DDTL spread and ASIC tiers stay estimates (Luxor: Premium / paid API, no
 workaround). Doc 18 §15 and the act2-content README updated. Two tests that pinned old SOFR values updated; new test recomputes from raw. 1257 tests.
+**M22.2 (sim vs M21, no retuning):** Act I CSVs identical (1301 files); only `act2-valuation.csv` changed. Act III game overs 43 → 43 (s0 4 → 5, s1
+18 → 17); C1 1.01/0.84/1.80/1.01× → 1.01/0.84/1.80/**0.97×** (still PASS); covenant s0 breaches in 4 → 5 runs (1 called), s1 26 → 24; Act II
+texas-capital 2030Q4 median $1090.5M → $1052.0M, overleveraged 2026Q4 debt cost +$10M. Cause: SOFR alone (Act II prices equipment loans and DDTLs
+at SOFR + spread; the HY spread is read only in Act III, from the unchanged scenario files): lower 2022Q4–23Q3, higher 2025Q3–Q4 shift the
+debt-carrying bots' 2026Q4 cash and debt slightly, which moves marginal Act III runs. **M22.3:** no golden changed (Act I / prologue never read
+these rates; the act3-s* companies hold no debt; Act II has no golden).
 
 ## Milestone M21 (branch `m21`, from `main` at `dceb047`; the design thread's answers after M20)
 
