@@ -7,6 +7,7 @@ import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
 import type { Message } from '../../i18n/t.ts'
 import { orbitBoardView, type BlockView, type OrbitBoardView } from '../../sim/orbitViews.ts'
+import { orreryAuctionView } from '../../sim/selectors.ts'
 import { Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import { say, tierName } from '../names.ts'
@@ -100,6 +101,7 @@ export function OrbitSection({ state, act }: ScreenProps) {
         <OpenBlockForm v={v} act={act} state={state} />
       </div>
       {v.exposures.length > 0 && <OrbitExposurePanel state={state} act={act} />}
+      <OrreryAuction state={state} act={act} />
       {[...v.underway, ...v.live].map((b) => (
         <BlockCard key={b.id} b={b} act={act} />
       ))}
@@ -114,6 +116,31 @@ export function OrbitSection({ state, act }: ScreenProps) {
           </p>
         </div>
       )}
+    </div>
+  )
+}
+
+/** Orrery Compute's auction (M31.5): its live blocks for sale for two quarters after it fails. */
+function OrreryAuction({ state, act }: ScreenProps) {
+  const a = orreryAuctionView(state)
+  if (!a.open) return null
+  return (
+    <div class="panel p" data-orrery>
+      <h2 class="panel-title">{t('ui.orbit.orrery.title')}</h2>
+      <p class="num-s">
+        {t('ui.orbit.orrery.lead', {
+          mw: fmt.power(a.mw * 1000),
+          price: fmt.money(a.priceUsd),
+          quarters: a.lifeLeftQuarters,
+        })}
+      </p>
+      <OrbitButton
+        label={t('ui.orbit.orrery.buy')}
+        why={a.why}
+        bw={1}
+        primary
+        onClick={() => act({ type: 'BUY_ORRERY_BLOCKS' })}
+      />
     </div>
   )
 }

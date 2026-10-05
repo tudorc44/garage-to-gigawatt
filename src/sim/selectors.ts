@@ -234,6 +234,7 @@ import {
 import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
 import { landingChance } from './systems/moon.ts'
 import { lunarKwe } from './systems/moonOps.ts'
+import { buyOrreryBlocker, orreryAuction } from './systems/rivalsIv.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {
@@ -1899,6 +1900,20 @@ export function valuationBreakdown(state: GameState) {
 export function leagueScaleView(state: GameState) {
   const u = mwByUseOf(state, state.quarter)
   return { aiKw: u.aiShell + u.aiCloud, miningKw: u.mining + u.hosting }
+}
+
+/** Act IV (M31.5): your league columns: ground MW, orbital MW and lunar sites held. Null outside Act IV. */
+export function leagueScaleIv(state: GameState) {
+  const mw = act4MwColumns(state)
+  if (!mw) return null
+  const sites = (state.act4Moon?.claims ?? []).filter((c) => c.status === 'held').length
+  return { groundMw: mw.groundMw, orbitMw: mw.orbitMw, sites }
+}
+
+/** Act IV (M31.5): Orrery Compute's auction, for the Orbit board. */
+export const orreryAuctionView = (state: GameState) => {
+  const a = orreryAuction(state)
+  return { ...a, why: buyOrreryBlocker(state) ?? null }
 }
 
 /** Log lines that are project milestones: started, a slot filled (power, tenant, capital), delayed, live, sold, foreclosed. */

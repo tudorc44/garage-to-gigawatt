@@ -24,6 +24,7 @@ import { serviceOrbitalDebt } from './orbitCapital.ts'
 import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
 import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
 import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.ts'
+import { startQuarterRivalsIv } from './rivalsIv.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -365,6 +366,8 @@ export function startNextQuarter(state: GameState): void {
   startQuarterMoonClaims(state)
   // (M30.4) lunar offtake offers; the Flag on the Pole's freeze.
   startQuarterMoonOps(state)
+  // (M31.5) a rival's failure makes the news.
+  startQuarterRivalsIv(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

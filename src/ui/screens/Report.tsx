@@ -9,6 +9,7 @@ import {
   averagePrice,
   gameOverView,
   leagueScaleView,
+  leagueScaleIv,
   quarterName,
   rivalMovesView,
   siteViews,
@@ -423,6 +424,8 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
   const coming = upcomingRivals(state.quarter)
   // Act II (M6.2): your AI and mining MW for the scale column, and the rivals' moves this quarter.
   const act2 = inAct2Rules(state) ? leagueScaleView(state) : null
+  // Act IV (M31.5): ground, orbit and lunar sites.
+  const iv = leagueScaleIv(state)
   const moves = rivalMovesView(state.quarter)
   return (
     <div class="panel p">
@@ -458,7 +461,13 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
                   {t('ui.report.you')}
                 </td>
                 <td class="num">
-                  {act2
+                  {iv
+                    ? t('ui.report.scale_act4', {
+                        ground: fmt.power(iv.groundMw * 1000),
+                        orbit: fmt.power(iv.orbitMw * 1000),
+                        sites: iv.sites,
+                      })
+                    : act2
                     ? t('ui.report.scale_act2', {
                         ai: fmt.power(act2.aiKw),
                         mining: fmt.power(act2.miningKw),
@@ -518,6 +527,12 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
 
 /** "16 MW · 0.07 EH/s", or null before the rival mines. Act II: "AI 590 MW · mining 560 MW". */
 function rivalScale(r: RivalSnapshot): string | null {
+  // Act IV (M31.5): orbital MW and lunar sites.
+  if (r.orbitMw !== undefined)
+    return t('ui.report.scale_act4_rival', {
+      orbit: fmt.power((r.orbitMw ?? 0) * 1000),
+      sites: r.lunarSites ?? 0,
+    })
   if (r.aiMw !== undefined || r.miningMw !== undefined)
     return t('ui.report.scale_act2', {
       ai: fmt.power((r.aiMw ?? 0) * 1000),

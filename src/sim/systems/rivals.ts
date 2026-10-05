@@ -13,7 +13,9 @@ import {
   isAct4MarketKey,
 } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
+import type { FutureId } from '../../content/schemas.ts'
 import { scenarioOf } from './market.ts'
+import { act4Rivals } from './rivalsIv.ts'
 
 /** A rival's end-of-quarter numbers. Missing values are null (not mining yet, or private). */
 export interface RivalSnapshot {
@@ -26,6 +28,9 @@ export interface RivalSnapshot {
   /** Act II: MW contracted to AI tenants and MW mining (the league's scale column). */
   aiMw?: number | null
   miningMw?: number | null
+  /** Act IV (M31.5): orbital MW and lunar sites (the league's columns, doc 33 §12.1). */
+  orbitMw?: number | null
+  lunarSites?: number
 }
 
 export function getRival(id: string): Rival | undefined {
@@ -114,8 +119,8 @@ export function activeRivals(
   quarter: number,
   scenario?: MarketKey | null,
 ): RivalSnapshot[] {
-  // Act IV (M27.3, doc 33 §12.1): Act III's rivals retire at the boundary; Act IV's own five come in M31.
-  if (isAct4MarketKey(scenario)) return []
+  // Act IV (doc 33 §12.1): Act III's rivals retire at the boundary; Act IV's own five (M31.5), on the game's future.
+  if (isAct4MarketKey(scenario)) return act4Rivals(scenario.split('.')[1] as FutureId, quarter)
   // Act III (M11.5b): the same five, on the drawn scenario's numbers for this quarter only.
   if (isAct2RulesQuarter(quarter) && !isActIIQuarter(quarter))
     return scenario

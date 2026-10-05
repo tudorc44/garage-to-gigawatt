@@ -116,6 +116,7 @@ import {
 } from './systems/orbit.ts'
 import type { ProviderId, RegistryId, ShellId } from '../content/orbitContent.ts'
 import type { CapitalKind } from './systems/orbitCapital.ts'
+import { buyOrrery, buyOrreryBlocker } from './systems/rivalsIv.ts'
 import {
   bookLaunch,
   bookLaunchBlocker,
@@ -444,6 +445,8 @@ export type Action =
   | { type: 'SIGN_LUNAR_OFFTAKE'; offer: number }
   /** Act IV (M31.3): accept this quarter's agency task order (0 BW): it part-funds your next mission. */
   | { type: 'ACCEPT_TASK_ORDER' }
+  /** Act IV (M31.5): buy Orrery Compute's live blocks at its auction (1 BW; two quarters after its failure). */
+  | { type: 'BUY_ORRERY_BLOCKS' }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -945,6 +948,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = taskOrderBlocker(s)
       if (blocked) return blocked
       acceptTaskOrder(s)
+      return
+    }
+
+    case 'BUY_ORRERY_BLOCKS': {
+      const blocked = buyOrreryBlocker(s)
+      if (blocked) return blocked
+      buyOrrery(s)
       return
     }
 

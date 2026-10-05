@@ -248,6 +248,8 @@ export interface Act4Orbit {
   nextN: number
   /** M31.2: loans on orbital blocks (export credit, project debt). */
   debts?: OrbitalDebt[]
+  /** M31.5: you bought Orrery Compute's blocks at its auction. */
+  orreryBought?: boolean
 }
 
 /** Act IV (M31.2): a loan on an orbital block (doc 33 §11.1). Interest joins it during the build; repaid once live. */
