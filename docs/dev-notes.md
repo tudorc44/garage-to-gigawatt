@@ -163,9 +163,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The Act IV run (M27–M32) is under way, now on `m28`** (see "The Act IV run"). M27.7's byte-identity runs were started
-detached (scratchpad `sim-main/` from `main` and `sim-m27/` from `m27`); their result is recorded under M28. Next sub-step:
-**M28.1** (the Signals data). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+**The Act IV run (M27–M32) is under way, now on `m29`** (see "The Act IV run"). M27.7's byte-identity runs were started
+detached (scratchpad `sim-main/` from `main` and `sim-m27/` from `m27`); compare them with `cmp` when they finish and record
+the result under M29. Next sub-step: **M29.1** (the orbit content). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -207,6 +207,19 @@ A4-01, the test-build quick starts and `?future=`); M27.7 the byte-identity chec
 - **M27.4 done.** `systems/act4Entry.ts` (`buildAct4Entry`, `enterAct4`: doc 33 §3.1 carries, §3.2 open renewals resolve by default, blend offers lapse, Act III-only state drops) and `toAct4`/`drawFuture` in state.ts (future on substream `act4_future`, weights in `BALANCE.act4`); needs an Act III scenario (the seam reads it). Tests: `act4Entry.test.ts`, helpers `act4Helpers.ts`.
 - **M27.5 done.** Act IV plays 2031Q1–2035Q4 to the chapter phase (`act4End` stub, `systems/act4End.ts`; replay `through: 4`). **Gate review** (doc 33 §3.1): run on in Act IV via `inAct3Rules` — renewals, reopeners, blend-and-extend, the calendar and renewal wall (now the current act's span), density and retrofits, nuclear PPAs, political capital and lobbying, Anger, Act III hires, the covenant, the standby facility, lender cures, card payouts, capacity charges, hosting repricing, lab distress, "no random cards", "no Read the market" (Signals instead); **stay Act III-only** (`inActIII`) — Act III's wildcards, Signals panel and reads, move log, `act3End`/reveal, `act3Finished`. Act III spans extended to Act IV with an Act IV key: capacity charge, hosting rate, SOFR/HY project-debt and DDTL rates, the facility label; GPU contract rate × Act III's end value in Act IV (mine, reversible). An Act IV quarter read without an Act IV key finds nothing (Act III's behaviour kept). Goldens unchanged.
 - **M27.6 done** (`M27.6a` + this): Act III panels that run on show in Act IV; `screens/Act4Entry.tsx` (lazy: A4-01 intro, chapter stub); test-build quick starts `act4QuickStart.ts` + `Act4Preview.tsx` (designed recipes, mine, reversible: fortress texas-shell 3/s0, neocloud sign-then-raise 1/s3, ridge lifeline-shell 19/s0; all survive Act III) and `?future=` with its tag and save guard; "Continue to Act IV" on the Act III chapter report; the light `orbit` theme; `averagePrice` reads the market key (an Act IV report crashed without it); intro boxes no longer squeeze (`flex: none`). Tests: gate, grep (`toAct4`, `futureId`), screens; layout notes in `docs/wireframes/act4/README.md`. Browser-checked at 1024 px: quick start → intro → 2031Q1 Plan → report, no sideways scroll.
+
+### Milestone M29 (branch `m29`, from `m28`; orbit)
+
+Split: M29.0 branch and split; M29.1 the orbit content (`launch_providers.json`, `satellites_iv.json`, `shells_iv.json`,
+`insurance_iv.json`, `licences_iv.json`, `tenants_iv.json`: schemas, loader, README); M29.2 orbital blocks and their
+slots (open a block: kind, size, shell, generation; the Tenant slot's offers; the Capital slot, cash in M29, M31 adds the
+rest), licences and the registry; M29.3 launch manifests (bookings, deposits, slips, the dominant launcher's bumps,
+failures, rebooking), insurance and the hard market, congestion, debris losses, the closed shell; M29.4 live operation
+(rent and GPU-hour revenue, opex, link units and optical ground stations, fleet telemetry from `orbit_truth_iv`, useful
+life), the books (optional quarter fields, orbital EBITDA at the space multiple), the storm, grounding and export-clampdown
+wildcards, the orbit interrupts; M29.5 the screens (A4-03 Orbit board, A4-04 Launch manifest, A4-05 the block's deal card,
+A4-08 Licences and registries, A4-02's exposure warnings) in a lazy `Act4Panels` chunk; M29.6 tests (B10's cost ratios,
+B12's single-failure rule) and the M29 report. Act I–III state never gains a key (new fields optional, set in Act IV only).
 
 ### Milestone M28 (branch `m28`, from `m27` at `f5cc011`; the hidden future)
 
