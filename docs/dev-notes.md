@@ -188,6 +188,11 @@ Split (DT spec, 5 Oct 2026): M24.0 housekeeping (m23 tagged m23-done and deleted
 decisions recorded); M24.1 the leak-guard flake (no wall-clock time-out decides pass/fail; 20+ runs under five-sim load; same fix on any guard
 test with the pattern); M24.2 onboarding tips for the Prologue and Act I; M24.3 rich tooltips for the Prologue, Act I and Act II core terms.
 UI only: sim output and every golden byte-identical.
+**M24.1 done:** the cause: the leak guard waited for the lazy Act III panels with `waitFor` (1 s default), and most sections weren't waited for at all
+(checked half-rendered). Fix: `preloadAct3Panels()` (act3Lazy.tsx) in the test's `beforeAll`, so every screen is complete on its first render; no
+`waitFor`; the guard tests take no time limit (0 = none). Under five parallel full sims (load 7–9 on 8 cores): 20 of 20 consecutive runs pass, and
+the full suite passes (load 38). Other guard tests checked: the D15 guard (same file, synchronous) and the hidden-file guard (a text grep) had no
+such pattern; nothing else to change.
 
 ## Milestone M23 (branch `m23`, from main at `6c623d3`; rate robustness and Act III clarity polish)
 

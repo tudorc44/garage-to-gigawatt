@@ -7,6 +7,14 @@ type Panels = typeof import('../screens/Act3Panels.tsx')
 
 let loaded: Panels | null = null
 
+/**
+ * M24.1: loads the panels module now, so the next render already has every Act III panel (no wait). The app doesn't
+ * need it; the guard tests use it so what they check never depends on how long a lazy import takes.
+ */
+export async function preloadAct3Panels(): Promise<void> {
+  loaded ??= await import('../screens/Act3Panels.tsx')
+}
+
 /** The Act III panels module once loaded (null until then). */
 function useAct3Panels(): Panels | null {
   const [m, setM] = useState<Panels | null>(loaded)

@@ -8,8 +8,9 @@
 //   title; nothing else of the reveal may).
 // - An event card flagged for the D15 review doesn't fire (M16.0, DT answer 4); if one ever showed, its text
 //   would be withheld.
-import { cleanup, render, waitFor } from '@testing-library/preact'
-import { afterEach, describe, expect, it } from 'vitest'
+import { cleanup, render } from '@testing-library/preact'
+import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { preloadAct3Panels } from '../../src/ui/components/act3Lazy.tsx'
 import {
   CONTENT,
   SCENARIO_IDS,
@@ -34,6 +35,9 @@ import { act3ScenarioCompany } from '../sim/act3Helpers.ts'
 
 const text = en as Record<string, string>
 afterEach(cleanup)
+// M24.1 (DT): no clock decides pass or fail. The lazily loaded Act III panels are loaded before any render, so every
+// screen is checked complete on its first render (no waitFor time-out), and these tests take no time limit (0 = none).
+beforeAll(() => preloadAct3Panels(), 0)
 
 const act = () => null
 const noop = () => {}
@@ -88,9 +92,8 @@ describe('the leak guard: Act III play screens at 2028Q2 show nothing of the rev
   it.each(SCENARIO_IDS)('%s', async (id) => {
     // Plan (with the Act III panels, loaded on demand: wait for them)
     const plan = render(<PlanScreen state={at2028Q2(id, 'plan')} act={act} />)
-    await waitFor(() =>
-      expect(plan.container.textContent).toContain(text['ui.act3.top.due']),
-    )
+    // (the panels are there on the first render: M24.1's preload)
+    expect(plan.container.textContent).toContain(text['ui.act3.top.due'])
     expectNoLeak(`${id} plan`, plan.container.textContent ?? '')
     plan.unmount()
     // every left-nav section
@@ -99,9 +102,7 @@ describe('the leak guard: Act III play screens at 2028Q2 show nothing of the rev
         <SectionView state={at2028Q2(id, 'plan')} act={act} section={section} />,
       )
       if (section === 'contracts')
-        await waitFor(() =>
-          expect(v.container.textContent).toContain('Every tenant contract'),
-        )
+        expect(v.container.textContent).toContain('Every tenant contract')
       expectNoLeak(`${id} ${section}`, v.container.textContent ?? '')
       v.unmount()
     }
@@ -126,7 +127,7 @@ describe('the leak guard: Act III play screens at 2028Q2 show nothing of the rev
       <Act3Intro state={at2028Q2(id, 'plan')} onEnter={noop} />,
     )
     expectNoLeak(`${id} intro`, intro.container.textContent ?? '')
-  }, 60_000)
+  }, 0)
 })
 
 /** A Growth quick-start company on `id`, played by its bot to the Plan phase of 2028Q2 (real history). */
@@ -180,17 +181,18 @@ describe('the leak guard with played history (M16.0, DT answer 1)', () => {
       expect(body, `${id} ${where}: role tag`).not.toMatch(/aftermath|flavour/i)
     }
     const plan = render(<PlanScreen state={s} act={act} />)
-    await waitFor(() =>
-      expect(plan.container.textContent).toContain(text['ui.act3.top.due']),
-    )
+    expect(plan.container.textContent).toContain(text['ui.act3.top.due'])
     check('plan', plan.container.textContent ?? '')
     plan.unmount()
     for (const section of SECTIONS) {
       const v = render(<SectionView state={s} act={act} section={section} />)
+      // (M24.1: the Contracts and Government sections now render their Act III panels on the first render too)
+      if (section === 'contracts')
+        expect(v.container.textContent).toContain('Every tenant contract')
       check(section, v.container.textContent ?? '')
       v.unmount()
     }
-  }, 120_000)
+  }, 0)
 })
 
 describe('the D15 guard', () => {
