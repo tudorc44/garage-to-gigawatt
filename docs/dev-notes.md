@@ -164,7 +164,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 ## Next
 
 **The Act IV run (M27–M32) is under way, now on `m31`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
-under M29). M29 and M30 are done. Now on **`m31`** (money and rivals); next sub-step: **M31.1** (the content). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+under M29). M29 and M30 are done. Now on **`m31`** (money and rivals); next sub-step: **M31.2** (the orbital Capital slot: export credit, project debt with the insurance covenant, co-funding; `systems/orbitCapital.ts`). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -217,6 +217,8 @@ its cure, co-funding; debt service at quarter end); M31.3 the space-equity windo
 debt), fire-sale haircuts in the rescue; M31.4 the four hires and Bandwidth; M31.5 the rivals and the league (Act III's
 retire; Orrery's auction); M31.6 the screens A4-09 (Capital) and A4-10 (quarter report additions); M31.7 tests and the
 M31 report.
+- **M31.1 done.** `tools/act4/money.ts` (`npm run content:act4-money`) writes `capital_iv.json`, `hires_iv.json`, `rivals_iv.json` (both copies; README section); zod and the rivals' per-quarter paths in `src/content/moneyContent.ts` (`MONEY`). Test `act4MoneyContent.test.ts` (rivals identical through 2032Q2; Orrery's failures).
+- (mine, reversible) Capital terms designed inside doc 33's ranges (README); export credit needs the Accords registry; co-funding takes 30% of capex for 30% of revenue; the space-equity window opens at a 12× space multiple.
 
 ### Milestone M30 (branch `m30`, from `m29`; the Moon)
 

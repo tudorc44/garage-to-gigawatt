@@ -24,6 +24,9 @@ default 14: no new research in this run).
 | `tenants_iv.json` | The four orbital tenant types (fictional names), terms, workloads; link units and optical ground stations | M29.1 |
 | `lunar_iv.json` | The 8 polar sites and the lunar chain's rules: claims, disputes, missions, power, pilot, production, offtake, valuation, alerts | M30.1 |
 | `lunar_claims_iv.json` | The rivals' and blocs' scripted lunar claims per future (identical through 2032Q2) | M30.1 |
+| `capital_iv.json` | Export credit, orbital project debt, co-funding, the space-equity window, task orders, fire-sale haircuts | M31.1 |
+| `hires_iv.json` | The four Act IV hires: salaries and effects | M31.1 |
+| `rivals_iv.json` | The five fictional rivals' value and orbital MW per future (identical through 2032Q2); Orrery's auction | M31.1 |
 
 ## The market files (M27.3)
 
@@ -229,10 +232,38 @@ Both files come from `npm run content:act4-moon` (`tools/act4/moon.ts`). All val
   Northgate on the de Gerlache ridge (2032Q1) in every future; then per future, after 2032Q2, Cratermark Resources, Jade
   Arc Constellation and the blocs on other rims (most crowded in the future where the Moon turns strategic).
 
+## Money and rivals (M31.1, doc 33 §11, §12, §14.3)
+
+All three files come from `npm run content:act4-money` (`tools/act4/money.ts`).
+
+- **Export credit** (a partner's export credit agency): 80% of a block's build, 5% fixed, interest added to the loan
+  during the build, repaid over 28 quarters from going live; the partner's manufacturer (+10% build cost) and its
+  registry (the Accords bloc's). Shape sourced (Iridium NEXT's 4.96% fixed facility, Telesat's loans with interest paid in
+  kind [A]); numbers designed.
+- **Orbital project debt:** 60% of capex, only with a take-or-pay tenant and the insurance covenant (cover ≥ 50% of the
+  drawn debt, `insurance_iv.json`); SOFR + 450 (sovereign), 550 (frontier lab), 600 (inference platform), 650 (EO
+  processor) bp (CoreWeave's ladder by customer credit [A], plus a hardware premium, designed); a broken covenant opens a
+  2-quarter cure.
+- **Sovereign co-funding:** a bloc partner pays 30% of capex for 30% of the block's revenue and its strings (shape from
+  IRIS² and OneWeb's rescue [A]; terms designed inside doc 33's 20–40%).
+- **The space-equity window:** open while the market's space multiple is 12× or more; blocks under way are priced at
+  capex × (space multiple ÷ 20) (designed).
+- **Lunar funding:** no lunar debt; agency task orders ($50–200M, CLPS-scale [A]) part-fund missions: offered 30% of
+  quarters, up to 60% of a mission's cost (designed).
+- **Fire-sale haircuts:** orbital blocks × 0.4, lunar sites × 0.2 (× 0.5 to a bloc buyer) (doc 33 §11.5 ⚙).
+- **Hires** (`hires_iv.json`, doc 33 §14.3 ⚙): Launch Procurement Lead (−10% launch prices, no bumps), Space Operations
+  Chief (−25% orbital GPU failures, half the telemetry noise), Lunar Programme Director (+10 points landing success, pilots
+  a quarter faster, +1 Bandwidth), Chief Risk Officer (−20% premiums, +25% insurance capacity); salaries designed.
+- **Rivals** (`rivals_iv.json`; fictional names, for the owner's check): Pallas Compute, Northgate, Orrery Compute, Jade
+  Arc Constellation, Cratermark Resources: value ($B) and orbital MW at anchor quarters, interpolated at load; identical in
+  every future through 2032Q2. Orrery fails in two futures (2033Q3 and 2034Q2): its 50 MW of live blocks go to auction at
+  $6M a MW for 2 quarters (designed: the vulture buyer's opportunity, doc 33 §11.5).
+
 ## Data changes
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M31.1, 5 Oct 2026:** first version of `capital_iv.json`, `hires_iv.json` and `rivals_iv.json`.
 - **M30.1, 5 Oct 2026:** first version of `lunar_iv.json` and `lunar_claims_iv.json`.
 - **M29.4, 5 Oct 2026:** `shells_iv.json` gains `debris.conjunction_accept_hit_share: 0.25` (accepting a conjunction's
   risk: the chance of a hit); `satellites_iv.json` gains `sale_share_of_value: 0.8` (a quick sale's discount). Designed.

@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "schema": "hires_iv/1",
+    "doc33": "§14.3 (Bandwidth and hires, IV-D27)",
+    "author": "build, M31.1: the four roles and effects from doc 33 §14.3 ⚙; salaries designed (senior space-industry roles)"
+  },
+  "hires": [
+    {
+      "id": "launch_procurement_lead",
+      "salary_usd_yr": 320000,
+      "effect": {
+        "launch_price_mult": 0.9,
+        "no_bumps": true
+      }
+    },
+    {
+      "id": "space_ops_chief",
+      "salary_usd_yr": 380000,
+      "effect": {
+        "orbit_failure_mult": 0.75,
+        "telemetry_noise_mult": 0.5
+      }
+    },
+    {
+      "id": "lunar_programme_director",
+      "salary_usd_yr": 350000,
+      "effect": {
+        "landing_bonus_pts": 10,
+        "pilot_quarters_cut": 1,
+        "bandwidth": 1
+      }
+    },
+    {
+      "id": "chief_risk_officer",
+      "salary_usd_yr": 340000,
+      "effect": {
+        "insurance_premium_mult": 0.8,
+        "insurance_capacity_mult": 1.25
+      }
+    }
+  ]
+}

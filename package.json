@@ -20,6 +20,7 @@
     "content:act4-events": "node tools/act4/events.ts",
     "content:act4-orbit": "node tools/act4/orbit.ts",
     "content:act4-moon": "node tools/act4/moon.ts",
+    "content:act4-money": "node tools/act4/money.ts",
     "release-check": "node tools/release-check.ts",
     "sim": "node tools/sim-runner.ts"
   },

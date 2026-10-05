@@ -1,0 +1,49 @@
+{
+  "_meta": {
+    "schema": "capital_iv/1",
+    "doc33": "§11.1 (instruments, IV-D23), §11.4 (the insurance covenant), §11.5 (fire-sale haircuts), §9 (lunar funding)",
+    "author": "build, M31.1: export credit ~5% fixed with interest paid in kind during the build (Iridium NEXT, Telesat [A]); project debt SOFR + 450-650 bp by tenant (designed from CoreWeave’s ladder [A] plus a hardware premium); co-funding 30% (IRIS² / OneWeb shape [A], terms designed); the rest designed"
+  },
+  "export_credit": {
+    "bandwidth": 1,
+    "apr": 0.05,
+    "share_of_build": 0.8,
+    "build_cost_mult": 1.1,
+    "tenor_quarters": 28,
+    "registry": "accords"
+  },
+  "project_debt": {
+    "bandwidth": 1,
+    "share_of_capex": 0.6,
+    "spread_bps": {
+      "sovereign": 450,
+      "frontier_lab": 550,
+      "inference_platform": 600,
+      "eo_processor": 650
+    },
+    "cure_quarters": 2
+  },
+  "co_funding": {
+    "bandwidth": 1,
+    "share_of_capex": 0.3,
+    "revenue_share": 0.3
+  },
+  "space_equity": {
+    "window_min_mult": 12,
+    "story_ref_mult": 20
+  },
+  "task_orders": {
+    "chance_q": 0.3,
+    "usd": [
+      50000000,
+      200000000
+    ],
+    "max_share_of_mission": 0.6,
+    "bloc": "accords"
+  },
+  "fire_sale": {
+    "orbital": 0.4,
+    "lunar": 0.2,
+    "lunar_to_bloc": 0.5
+  }
+}
