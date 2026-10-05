@@ -1097,6 +1097,9 @@ export interface QuarterStats {
   aiFloorEbitdaUsd?: number
   /** Take-or-pay damages paid for late projects (counted in EBITDA). */
   lateDamagesUsd: number
+  /** Act IV (M29): orbital blocks' revenue, and their running costs (ops, links, insurance, lateness); in EBITDA. */
+  orbitRevenueUsd?: number
+  orbitCostUsd?: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */

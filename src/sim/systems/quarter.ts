@@ -20,6 +20,7 @@ import { inAct2Rules, inAct3Rules, inActIII, inActIV } from '../state.ts'
 import { buildAct4End } from './act4End.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
+import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -89,6 +90,8 @@ export function endQuarter(state: GameState): void {
   // Act III (M12.3): card cash due at this quarter's end (a recovery, a share of the revenue).
   payAct3Payouts(state)
   endQuarterGpuWaves(state)
+  // Act IV (M29.3): orbital launches due this quarter slip, fly or fail.
+  endQuarterLaunches(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
   state.quarterStats.interestUsd += service.interestUsd
@@ -316,6 +319,7 @@ export function startNextQuarter(state: GameState): void {
   fireWildcardsIv(state)
   // Act IV (M29.2): open orbital blocks without a tenant get this quarter's offers.
   startQuarterOrbitOffers(state)
+  startQuarterOrbitBuilds(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

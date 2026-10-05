@@ -175,7 +175,8 @@ before 2036Q1); Bitcoin Supercycle 2031Q2–2035Q1 (M28: mining revenue × 2 for
   chance in a tight quarter; Northgate ×0.9, failures 8% (2031) → 4% (2033) → 2% (2035), 35% slips; Kestrel ×1.6, 1.5% →
   1%, 5% slips, at most 250 t a booking; a sovereign partner's launcher ×1.15, 3% → 2%, 15% slips (M31). Failure rates
   sourced in shape (doc 31: ~1% mature, 5–15% under ten flights [A/inference]); the rest designed. Deposit 15%, booked
-  2–6 quarters ahead (doc 33 §8.2 ⚙).
+  2–6 quarters ahead (doc 33 §8.2 ⚙). A quarter is "tight" (Pallas may bump) when the market's third-party slots are
+  under 1,000 t (designed); one booking can't exceed its quarter's slots less your other bookings there (designed).
 - **Satellites:** sizes 5/10/25/50/100 MW; Gen 31 18 t/MW from 2031, Gen 33 and Gen 35 from the market files' columns
   (derived from the cost model's paths); GPUs $33M/MW with 20% spares and 600 GPUs/MW (sourced, the cost model); build 2
   quarters, ops $0.25M/MW-yr, design life 5 years (doc 33 ⚙, the model's G values); utilisation 85% contracted, 70% spot;
@@ -201,6 +202,9 @@ before 2036Q1); Bitcoin Supercycle 2031Q2–2035Q1 (M28: mining revenue × 2 for
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M29.3, 5 Oct 2026:** `launch_providers.json` gains `tight_below_slots_t_q: 1000` (when the dominant launcher can bump).
+- **M29.2, 5 Oct 2026:** `licences_iv.json` gains `approval_extra_from: "2033Q1"` (from when a future's extra approval
+  time applies).
 - **M29.1, 5 Oct 2026:** first version of the six orbit files.
 - **M28.5, 5 Oct 2026:** first version of `wildcards_iv.json`.
 - **M28.4, 5 Oct 2026:** first version of `events_iv.json` and `text_iv.en.json` (40 cards).

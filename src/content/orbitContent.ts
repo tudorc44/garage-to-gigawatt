@@ -26,6 +26,8 @@ const share = z.number().min(0).max(1)
 const providersSchema = z.object({
   deposit_share: share,
   lead_quarters: z.tuple([z.number().int().min(1), z.number().int().min(1)]),
+  /** A quarter with fewer third-party slots (t) than this is tight: the dominant launcher may bump you. */
+  tight_below_slots_t_q: z.number().positive(),
   providers: z
     .array(
       z.object({

@@ -163,9 +163,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The Act IV run (M27–M32) is under way, now on `m29`** (see "The Act IV run"). M27.7's byte-identity runs were started
-detached (scratchpad `sim-main/` from `main` and `sim-m27/` from `m27`); compare them with `cmp` when they finish and record
-the result under M29. Next sub-step: **M29.3** (launch manifests, insurance, debris: `systems/orbitLaunch.ts`). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+**The Act IV run (M27–M32) is under way, now on `m29`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
+under M29). Next sub-step: **M29.4** (live operation: `systems/orbitOps.ts`, revenue, telemetry, debris, the cascade, retirement, lateness, the orbit alerts, the books and valuation). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -221,7 +220,10 @@ wildcards, the orbit interrupts; M29.5 the screens (A4-03 Orbit board, A4-04 Lau
 A4-08 Licences and registries, A4-02's exposure warnings) in a lazy `Act4Panels` chunk; M29.6 tests (B10's cost ratios,
 B12's single-failure rule) and the M29 report. Act I–III state never gains a key (new fields optional, set in Act IV only).
 - **M29.1 done.** Six orbit files (README section: values and flags; `launch_providers.json` hand-written, the rest from `tools/act4/orbit.ts`), zod-checked in `src/content/orbitContent.ts` (`ORBIT`); B10 test `act4OrbitCost.test.ts` (the data's cost ratios match the model in 2031, 2033 and 2035).
+- **M27.7 byte-identity: passed.** `npm run sim -- --act2 --act3` on `main` (`209622e`) and on `m27`: all 1302 CSVs identical (`cmp`), the logs equal apart from timings (Act III: 532 runs, 0 crashed, 489 chapter, 43 game over).
 - **M29.2 done.** `state.act4Orbit` (optional: blocks, licences, registry, links, insurance market); `systems/orbit.ts`: open a block (0 BW; size, shell, available generation; mass t/MW × MW × shielding), tenant offers (2 a quarter, own stream per block), sign (prepay credited) or spot, Capital = cash (1 BW), licences (1 BW + $1M, 200 MW, approval 2 q + registry + F2's +2 from 2033Q1 via `approval_extra_from`; fast track 10 PC, −1 q), registry (free before the first filing), link units, ground stations (1 BW, $15M, +3 Heat, 4 units next quarter). Tests `act4Orbit.test.ts`.
+- **M29.3 done.** `systems/orbitLaunch.ts`: bookings (1 BW, 15% deposit at the locked $/kg, 2–6 q ahead, capped by the quarter's slots less your other bookings; Kestrel ≤ 250 t; sovereign launcher waits for M31); the build at END_PLAN (cash, licence room; the launch waits for it); launches at quarter end (grounding, closed SSO, slips, Pallas bumps when slots < 1,000 t, then failures by provider year), live 2 quarters after launch; insurance (young/mature rates, capacity cap, payouts, the hard market); the clampdown's ×1.15 cloud capex. Debris moved to M29.4 with live operation. Tests `act4OrbitLaunch.test.ts`.
+- (mine, reversible) Launch slips and failures resolve at the quarter's end with a log line, not as live-quarter alerts (doc 33 §14.2 lists them as interrupts); a failed block goes back to "proposed" (tenant kept) to rebuild and rebook; insurance premiums count in orbital costs (EBITDA); `tight_below_slots_t_q: 1000` added to `launch_providers.json`.
 - (mine, reversible) M29 cuts the orbital tenant negotiation: offers are accepted as drawn (0 BW); a block's licence MW counts from its build start until it leaves orbit.
 
 ### Milestone M28 (branch `m28`, from `m27` at `f5cc011`; the hidden future)

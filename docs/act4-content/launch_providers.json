@@ -6,6 +6,7 @@
   },
   "deposit_share": 0.15,
   "lead_quarters": [2, 6],
+  "tight_below_slots_t_q": 1000,
   "providers": [
     {
       "id": "pallas",

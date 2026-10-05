@@ -217,7 +217,8 @@ export function signOrbitalTenant(state: GameState, blockId: string, offer: numb
     price: o.price,
     termQuarters: o.termQuarters,
     signedQuarter: state.quarter,
-    dueQuarter: block.launch ? block.launch.quarter + 1 : null,
+    // (the quarter it should go live: two after its launch quarter, orbitLaunch.ts)
+    dueQuarter: block.launch ? block.launch.quarter + 2 : null,
     endQuarter: null,
     prepaidLeftUsd: prepaidUsd,
   }

@@ -114,7 +114,16 @@ import {
   signOrbitalTenantBlocker,
   type OpenBlock,
 } from './systems/orbit.ts'
-import type { RegistryId, ShellId } from '../content/orbitContent.ts'
+import type { ProviderId, RegistryId, ShellId } from '../content/orbitContent.ts'
+import {
+  bookLaunch,
+  bookLaunchBlocker,
+  buyInsurance,
+  buyInsuranceBlocker,
+  cancelLaunch,
+  cancelLaunchBlocker,
+  startOrbitalBuilds,
+} from './systems/orbitLaunch.ts'
 import {
   chooseRenewal,
   keepEmpty,
@@ -373,6 +382,12 @@ export type Action =
   | { type: 'RENT_LINK_UNITS'; units: number }
   /** Act IV: build an optical ground station at one of your sites (1 BW, capex, a little Heat). */
   | { type: 'BUILD_GROUND_STATION'; siteId: string }
+  /** Act IV (M29.3): book the block's launch (1 BW, 15% deposit, 2-6 quarters ahead). */
+  | { type: 'BOOK_ORBITAL_LAUNCH'; blockId: string; provider: ProviderId; quarter: number }
+  /** Act IV: give up a booking to rebook (the deposit back only after a provider slip). */
+  | { type: 'CANCEL_ORBITAL_LAUNCH'; blockId: string }
+  /** Act IV: insure a block (launch and first year before launch; a year's renewal in orbit). */
+  | { type: 'BUY_ORBITAL_INSURANCE'; blockId: string }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -498,6 +513,8 @@ function run(s: GameState, a: Action): Message | undefined {
       settleWildcards(s)
       // M19: a Community Deal left unsigned lapses ("Not this year").
       declineCommunityDeal(s)
+      // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
+      startOrbitalBuilds(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -764,6 +781,27 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = buildGroundStationBlocker(s, a.siteId)
       if (blocked) return blocked
       buildGroundStation(s, a.siteId)
+      return
+    }
+
+    case 'BOOK_ORBITAL_LAUNCH': {
+      const blocked = bookLaunchBlocker(s, a.blockId, a.provider, a.quarter)
+      if (blocked) return blocked
+      bookLaunch(s, a.blockId, a.provider, a.quarter)
+      return
+    }
+
+    case 'CANCEL_ORBITAL_LAUNCH': {
+      const blocked = cancelLaunchBlocker(s, a.blockId)
+      if (blocked) return blocked
+      cancelLaunch(s, a.blockId)
+      return
+    }
+
+    case 'BUY_ORBITAL_INSURANCE': {
+      const blocked = buyInsuranceBlocker(s, a.blockId)
+      if (blocked) return blocked
+      buyInsurance(s, a.blockId)
       return
     }
 

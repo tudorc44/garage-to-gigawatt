@@ -2,7 +2,9 @@
 // with an empty plan, to its chapter report (2030Q4), then across the boundary on a chosen future.
 import type { FutureId, ScenarioId } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
+import { advance } from '../../src/sim/advance.ts'
 import { playFrom } from '../../src/sim/replay.ts'
+import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { toAct4, type GameState } from '../../src/sim/state.ts'
 import { act3ScenarioCompany } from './act3Helpers.ts'
 
@@ -29,6 +31,16 @@ export function orbitCompany(future: FutureId = 'f1'): GameState {
   s.cash = 5e9
   s.bandwidth = 9
   return s
+}
+
+/** Plays the Plan phase's end and the live quarter to its report (alerts take their defaults), then the next Plan. */
+export function playQuarter(s: GameState): GameState {
+  let x = act(s, { type: 'END_PLAN' })
+  while (x.phase === 'live') {
+    if (x.interrupt) x = act(x, { type: 'RESOLVE_INTERRUPT', choice: defaultChoice(x) })
+    else x = advance(x)
+  }
+  return x.phase === 'report' ? act(x, { type: 'NEXT_QUARTER' }) : x
 }
 
 /** Applies an action that must succeed. */

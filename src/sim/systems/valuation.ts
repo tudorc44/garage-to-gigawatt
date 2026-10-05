@@ -51,8 +51,10 @@ export function ebitdaUsd(q: {
   aiCostUsd?: number
   lateDamagesUsd?: number
   salariesUsd?: number
+  orbitRevenueUsd?: number
+  orbitCostUsd?: number
 }): number {
-  return (
+  const ebitda =
     q.revenueUsd +
     (q.gridCreditsUsd ?? 0) +
     (q.hostingFeesUsd ?? 0) +
@@ -62,7 +64,13 @@ export function ebitdaUsd(q: {
     q.powerCostUsd -
     q.rentUsd -
     (q.salariesUsd ?? 0)
-  )
+  // Act IV (M29): the orbital blocks (absent before Act IV, so earlier acts' sums are untouched).
+  return q.orbitRevenueUsd === undefined && q.orbitCostUsd === undefined ? ebitda : ebitda + orbitEbitdaUsd(q)
+}
+
+/** Act IV: the orbital unit's EBITDA for a quarter (doc 33 §11.3). */
+export function orbitEbitdaUsd(q: { orbitRevenueUsd?: number; orbitCostUsd?: number }): number {
+  return (q.orbitRevenueUsd ?? 0) - (q.orbitCostUsd ?? 0)
 }
 
 /**

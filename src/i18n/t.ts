@@ -56,6 +56,7 @@ const ID_PARAMS: Record<string, string> = {
   shellName: 'orbit.shell.',
   registryName: 'orbit.registry.',
   providerName: 'orbit.provider.',
+  slipReason: 'orbit.slip.',
 }
 
 function fill(text: string, params: MessageParams): string {
