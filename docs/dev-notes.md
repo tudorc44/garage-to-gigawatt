@@ -5,8 +5,8 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M23 merged into `main` at `37a3535` and pushed; M24 in progress on `m24`). The Prologue, Act I, Act II and
-Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M24" and "Milestone M18 close-out".
+Last updated: 5 Oct 2026 (M24 merged into `main` at `ebcda47` and pushed; M25 in progress on `m25`). The Prologue, Act I, Act II and
+Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M25" and "Milestone M18 close-out".
 
 ## How the owner works
 
@@ -161,9 +161,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M24 is being built on `m24`** (onboarding across all acts, guard-test stability; see "Milestone M24"). M23 is done and merged (`main` =
-`37a3535`, pushed 5 Oct 2026); M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone
-branch is tagged `m<n>-done` (m9 … m23, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
+**M25 is being built on `m25`** (glossary unification, the Act II data audit, the rest of the Act III polish; see "Milestone M25"). M24 is
+done and merged (`main` = `ebcda47`, pushed 5 Oct 2026); M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
+M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m24, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
@@ -181,6 +181,12 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 **M19.3 done:** People card (via hires.json + en.json); the Plan deal card (all acts, wildcard-card style, "Not this year" tagged Default); the game had no
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
+
+## Milestone M25 (branch `m25`, from main at `ebcda47`; glossary unification, Act II data audit, the rest of the Act III polish)
+
+Split (DT spec, 5 Oct 2026): M25.0 housekeeping (m24 tagged m24-done and deleted, it never had a remote branch; the M24 merge recorded); M25.1
+one key per term for the card and the glossary, a "More in the glossary" link, hashprice's halving clause; M25.2 the Act II market data audit (report
+only); M25.3 Act III sparklines and sounds / animations. UI and text only: sim output and every golden byte-identical.
 
 ## Milestone M24 (branch `m24`, from main at `37a3535`; onboarding across all acts, guard-test stability)
 
