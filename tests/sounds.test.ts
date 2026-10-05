@@ -3,6 +3,8 @@ import { applyAction } from '../src/sim/actions.ts'
 import { newGame, type GameState } from '../src/sim/state.ts'
 import { soundsFor } from '../src/ui/audio/director.ts'
 import { SOUNDS } from '../src/ui/audio/sounds.ts'
+import { finishDowntimes } from '../src/sim/systems/density.ts'
+import { act3ScenarioCompany } from './sim/act3Helpers.ts'
 
 const ok = (s: GameState, a: Parameters<typeof applyAction>[1]) => {
   const r = applyAction(s, a)
@@ -43,6 +45,21 @@ describe('sound director (docs/audio)', () => {
     expect(soundsFor(s, withLog('log.covenant_forced_sale'))).toEqual(['liquidation'])
     expect(soundsFor(s, withLog('log.lobby_landed'))).toEqual(['auction-won'])
     expect(soundsFor(s, withLog('log.signal_read'))).toEqual([]) // a read stays quiet: the screen shows it
+  })
+
+  it('a finished Act III retrofit or GPU change logs its line and sounds "energized" (M26.4)', () => {
+    for (const kind of ['retrofit', 'refit'] as const) {
+      const before = act3ScenarioCompany('s0', 1)
+      const after = structuredClone(before)
+      // (a minimal project: finishDowntimes reads only its downtime, tier, number and GPU)
+      const p = { id: 'p-test', n: 1, tier: 'low', gpu: 'h100' } as unknown as GameState['projects'][number]
+      p.downtime = { kind, fromQuarter: after.quarter - 1, weeks: 10, ...(kind === 'retrofit' ? { toTier: 'mid' } : {}) }
+      after.projects.push(p)
+      finishDowntimes(after)
+      expect(after.log.at(-1)!.key).toBe(`log.${kind}_done`)
+      expect(p.downtime).toBeUndefined()
+      expect(soundsFor(before, after)).toEqual(['energized'])
+    }
   })
 
   it('stays quiet when a different game is loaded, and uses only sounds that exist', () => {

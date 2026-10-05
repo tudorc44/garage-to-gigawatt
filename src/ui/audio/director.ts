@@ -36,6 +36,10 @@ const LOG_SOUNDS: Record<string, SoundName> = {
   'log.covenant_breach': 'margin-call',
   'log.covenant_forced_sale': 'liquidation',
   'log.covenant_called': 'liquidation',
+  // M26.4: a hall back at full service after an Act III retrofit or GPU change (density.ts › finishDowntimes builds
+  // these keys as `log.${kind}_done`), with Act I/II's "a site comes online" sound.
+  'log.retrofit_done': 'energized',
+  'log.refit_done': 'energized',
 }
 
 /** The alert that just appeared, as a sound. */
