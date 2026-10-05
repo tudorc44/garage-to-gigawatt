@@ -16,6 +16,7 @@
 import { BALANCE, CONTENT, actFirstQuarter, type FutureId } from '../../content/index.ts'
 import { act4SeedOf, emptyQuarterStats, type Act4Entry, type GameState } from '../state.ts'
 import { drawLunarGrade } from './lunarGeology.ts'
+import { drawWildcardsIv } from './wildcardsIv.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { debtUsd } from './loans.ts'
 import { mwByUse } from './mwUse.ts'
@@ -67,6 +68,8 @@ export function enterAct4(state: GameState, future: FutureId): GameState {
   s.act4SignalReads = []
   // The second hidden draw (doc 33 §6.4): the lunar grade, on its own substream, independent of the future.
   s.lunarGrade = drawLunarGrade(act4SeedOf(state))
+  // Two of the six Act IV wildcards and their quarters, on their own stream (doc 33 §6.6).
+  drawWildcardsIv(s)
 
   // Dropped: Act III-only state (doc 33 §3.2). The Signals reads and the move log live on inside act3End.
   delete s.act3Wildcards

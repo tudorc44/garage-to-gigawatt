@@ -349,6 +349,32 @@ export const signalsIvFileSchema = z.object({
 })
 export type SignalIndicatorIv = z.output<typeof signalsIvFileSchema>['indicators'][number]
 
+// ---------- wildcards_iv.json (M28.5: Act IV's six wildcards, 2 drawn at entry, doc 33 §6.6) ----------
+export const WILDCARD_IDS_IV = [
+  'solar_storm',
+  'flag_on_the_pole',
+  'launch_grounding',
+  'chip_export_clampdown',
+  'reactor_delay',
+  'bitcoin_supercycle',
+] as const
+export type WildcardIdIv = (typeof WILDCARD_IDS_IV)[number]
+export const wildcardsIvFileSchema = z.object({
+  _meta: z.object({ draw: z.number().int().min(1) }).passthrough(),
+  wildcards: z
+    .array(
+      z.object({
+        id: z.enum(WILDCARD_IDS_IV),
+        window: z.tuple([quarterId, quarterId]),
+        wired_in: z.enum(['M28', 'M29', 'M30']),
+        effect: z.record(z.string(), z.unknown()),
+        basis: z.string().min(1),
+      }),
+    )
+    .length(WILDCARD_IDS_IV.length),
+})
+export type WildcardIv = z.output<typeof wildcardsIvFileSchema>['wildcards'][number]
+
 // ---------- rivals_act3.json (M11.5b: the five rivals in Act III, by scenario) ----------
 // RUNTIME view: name and the six numeric series by quarter. zod drops the rest (fate, reasoning,
 // d15_review, grounded): a rival's fate is part of the end-of-act reveal, so it is read only through

@@ -18,6 +18,7 @@ import {
 } from '../state.ts'
 import { inAct2Rules, inAct3Rules, inActIII, inActIV } from '../state.ts'
 import { buildAct4End } from './act4End.ts'
+import { fireWildcardsIv } from './wildcardsIv.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -310,6 +311,8 @@ export function startNextQuarter(state: GameState): void {
   rollAuction(state)
   // Act III (M17.4): a wildcard due this quarter comes in the Plan phase (if it has a target).
   openNextWildcard(state)
+  // Act IV (M28.5): a wildcard due this quarter fires now.
+  fireWildcardsIv(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

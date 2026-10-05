@@ -56,6 +56,7 @@ import marketWeeklyIvF4Raw from './market_weekly_iv_f4.json' with { type: 'json'
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import eventsAct3Raw from './events_act3.json' with { type: 'json' }
 import eventsIvRaw from './events_iv.json' with { type: 'json' }
+import wildcardsIvRaw from './wildcards_iv.json' with { type: 'json' }
 import { eventsIvFileSchema, toEngineCardIv } from './act4Cards.ts'
 import { eventsAct3FileSchema, toEngineCard } from './act3Cards.ts'
 import rivalsRaw from './rivals.json' with { type: 'json' }
@@ -118,6 +119,9 @@ import {
   type MarketQuarterAct4Row,
   type MarketWeekAct4,
   signalsIvFileSchema,
+  wildcardsIvFileSchema,
+  type WildcardIv,
+  type WildcardIdIv,
   SIGNAL_IDS_IV,
   type SignalIdIv,
   type SignalIndicatorIv,
@@ -181,6 +185,8 @@ export type {
   MarketQuarterAct4Row,
   SignalIdIv,
   SignalIndicatorIv,
+  WildcardIv,
+  WildcardIdIv,
 }
 export {
   SIGNAL_IDS,
@@ -488,6 +494,8 @@ export interface Content {
    * authoring fields are never loaded here (see signalsHiddenIv.ts).
    */
   signalsIv: Record<FutureId, SignalIndicatorIv[]>
+  /** Act IV's six wildcards and how many are drawn at entry (M28.5, wildcards_iv.json). */
+  wildcardsIv: { draw: number; wildcards: WildcardIv[] }
   /**
    * Act III's authored Signals (M11.2), by scenario: the six indicators in file order, runtime fields
    * only. The hidden authoring fields are never loaded here (see signalsHidden.ts).
@@ -744,6 +752,8 @@ export interface RawContent {
   eventsAct3: unknown
   /** M28.4: Act IV's cards (events_iv.json). Optional, with act4Futures. */
   eventsIv?: unknown
+  /** M28.5: Act IV's wildcards (wildcards_iv.json). Optional. */
+  wildcardsIv?: unknown
   rivals: unknown
   rivalsAct2: unknown
   rivalsAct3: unknown
@@ -2114,6 +2124,17 @@ export function parseContent(raw: RawContent): Content {
       }
     }
   }
+  // Act IV's wildcards (M28.5): six, each window inside Act IV.
+  let wildcardsIv: Content['wildcardsIv'] = { draw: 0, wildcards: [] }
+  if (raw.wildcardsIv) {
+    const file = check('wildcards_iv.json', wildcardsIvFileSchema, raw.wildcardsIv)
+    if (file) {
+      for (const w of file.wildcards)
+        if (!(w.window[0] >= '2031Q1' && w.window[1] <= '2035Q4' && w.window[0] <= w.window[1]))
+          problems.push(`wildcards_iv.json › ${w.id}: window ${w.window.join('–')} isn't inside Act IV`)
+      wildcardsIv = { draw: file._meta.draw, wildcards: file.wildcards }
+    }
+  }
   // Act III's scenario event cards (M11.5c): turned into Act II-engine scripted cards (act3Cards.ts) in
   // Act III's deck, each in week 2 of its `quarter` (mine, reversible: the file gives no week).
   // Checks: 8 per scenario and 5 shared, a quarter inside Act III, a default that is one of the choice
@@ -2203,6 +2224,7 @@ export function parseContent(raw: RawContent): Content {
     act4Futures,
     act4Markets,
     signalsIv,
+    wildcardsIv,
     signals,
     hosting,
     projects,
@@ -2680,6 +2702,7 @@ export const CONTENT: Content = parseContent({
   eventsAct2: eventsAct2Raw,
   eventsAct3: eventsAct3Raw,
   eventsIv: eventsIvRaw,
+  wildcardsIv: wildcardsIvRaw,
   rivals: rivalsRaw,
   rivalsAct2: rivalsAct2Raw,
   rivalsAct3: rivalsAct3Raw,

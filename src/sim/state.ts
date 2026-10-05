@@ -9,6 +9,7 @@ import {
   type ScenarioId,
   type SignalId,
   type SignalIdIv,
+  type WildcardIdIv,
 } from '../content/index.ts'
 import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
@@ -887,6 +888,8 @@ export interface GameState {
    * `futureId`: no screen during play reads it (only prospect estimates, M30); the chapter report reveals it.
    */
   lunarGrade?: 'rich' | 'patchy' | 'dry'
+  /** Act IV (M28.5): the two wildcards drawn at entry, each with the quarter it fires in (never shown in advance). */
+  act4Wildcards?: { id: WildcardIdIv; quarter: number; fired: boolean }[]
   /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
   act4SignalReads?: { quarter: string; indicator: SignalIdIv }[]
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */

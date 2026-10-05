@@ -2133,6 +2133,15 @@ const ACT3_REPORT_KEYS = new Set<string>([
   ...['wc_grid_event', 'wc_export_control', 'wc_water_moratorium', 'wc_ai_lab_breakup'].flatMap(
     (id) => [`log.wildcard.${id}.c1`, `log.wildcard.${id}.c2`],
   ),
+  // M28.5: Act IV's wildcard news lines
+  ...[
+    'solar_storm',
+    'flag_on_the_pole',
+    'launch_grounding',
+    'chip_export_clampdown',
+    'reactor_delay',
+    'bitcoin_supercycle',
+  ].map((id) => `log.wildcard_iv.${id}`),
   // M17.8: the water moratorium on a proposed project or a site
   ...['c1_start', 'c2_start', 'c1_site', 'c2_site'].map(
     (c) => `log.wildcard.wc_water_moratorium.${c}`,

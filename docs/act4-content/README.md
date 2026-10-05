@@ -17,6 +17,7 @@ default 14: no new research in this run).
 | `orbit_truth_iv.json` (**hidden**) | Each future's true orbital GPU failure rate and useful life; telemetry noise | M28.3 |
 | `reading_score_iv.json` (**hidden**) | The reading score's ideal stances per future and quarter, weights, decoy windows | M28.3 |
 | `events_iv.json`, `text_iv.en.json` | 40 event cards (8 per future, 8 shared) and their text keyed by opaque engine id | M28.4 |
+| `wildcards_iv.json` | The six wildcards (2 drawn at entry): windows, effects, the milestone that wires each | M28.5 |
 
 ## The market files (M27.3)
 
@@ -152,10 +153,21 @@ and `text_iv.en.json` (the text table `t()` merges; keys `event.a4_<hash>.title 
   project, a new hall). Orbit- and Moon-specific effects come with M29–M30.
 - **Names:** fictional only (Pallas Heavy, Orrery Compute; the Station partnership); no real company, agency or country.
 
+## The wildcards (M28.5, doc 33 §6.6)
+
+Hand-written. Two of six drawn at the boundary (stream `act4_wildcards`), each firing once at the start of a quarter
+drawn uniformly in its window (all **designed** ⚙): solar storm 2031Q3–2035Q2 (M29: blocks still climbing lose 40%,
+operating blocks choose safe mode for 3 weeks or ride it and risk 3% of GPUs; doc 31's Feb 2022 and May 2024 storms [A]);
+Flag on the Pole 2033Q1–2035Q2 (M30: extraction frozen 2–4 quarters for operators outside the bloc); launch grounding
+2031Q2–2035Q2 (M29: the dominant launcher grounded 2–6 weeks, manifests slip a quarter); chip export clampdown
+2032Q1–2034Q4 (M29: 4 quarters, the registry state matters); reactor delay 2032Q1–2033Q4 (M30: no leased lunar reactor
+before 2036Q1); Bitcoin Supercycle 2031Q2–2035Q1 (M28: mining revenue × 2 for 3 quarters).
+
 ## Data changes
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M28.5, 5 Oct 2026:** first version of `wildcards_iv.json`.
 - **M28.4, 5 Oct 2026:** first version of `events_iv.json` and `text_iv.en.json` (40 cards).
 - **M28.3, 5 Oct 2026:** the three hidden files; `signals_iv_f3.json`'s decoy shortened to 2031Q4–2032Q1 (was to 2032Q2).
 - **M28.1, 5 Oct 2026:** first version of the four Signals files. The market generator's trigger quarters moved into
