@@ -12,7 +12,7 @@
 // place (and earn) at once, so a quarter the work only partly covers earns at their rate.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inActIII, logEntry, logQuarterLabel, type GameState, type Project } from '../state.ts'
+import { inAct3Rules, logEntry, logQuarterLabel, type GameState, type Project } from '../state.ts'
 import {
   downtimeDoneQuarter,
   fits,
@@ -56,7 +56,7 @@ function changeBlocker(
   state: GameState,
   p: Project | undefined,
 ): Message | undefined {
-  if (!inActIII(state)) return { key: 'error.act3_only' }
+  if (!inAct3Rules(state)) return { key: 'error.act3_only' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (!p) return { key: 'error.unknown_project' }
   if (p.stage === 'building' || p.stage === 'proposed')

@@ -83,8 +83,11 @@ describe('Act IV market (M27.3)', () => {
 
   it('the carried systems read Act IV prices through a scenario and future key, never without one', () => {
     const q = FIRST + 4
+    // (without an Act IV key there's nothing: an Act III game looking past 2030Q4 finds no data, as before M27)
     expect(() => marketWeek(q, 0)).toThrow(RangeError)
     expect(() => marketWeek(q, 0, 's1')).toThrow(RangeError)
+    expect(quarterInputs(q, 's1')).toBeUndefined()
+    expect(quarterRow(q, 's1')).toBeUndefined()
     expect(marketWeek(q, 0, 's1.f2')).toBe(CONTENT.act4Markets['s1.f2'].weeks[4][0])
     expect(quarterInputs(q, 's1.f2')).toBe(CONTENT.act4Markets['s1.f2'].inputs[4])
     expect(quarterRow(q, 's1.f2')).toBe(CONTENT.act4Markets['s1.f2'].quarterly[4])

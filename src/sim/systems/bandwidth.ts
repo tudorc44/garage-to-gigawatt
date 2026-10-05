@@ -1,6 +1,6 @@
 // Bandwidth: the founder's attention. Refilled each quarter; unused points are lost.
 import { BALANCE } from '../../content/index.ts'
-import { inActII, inActIII, type GameState } from '../state.ts'
+import { inActII, inAct3Rules, type GameState } from '../state.ts'
 import { holdBandwidthBonus } from './headStarts.ts'
 import { bandwidthBonus } from './hires.ts'
 import { isReady, poweredKw } from './sites.ts'
@@ -13,7 +13,7 @@ import { isReady, poweredKw } from './sites.ts'
  */
 export function bandwidthForQuarter(state: GameState): number {
   // Act III uses Act II's rule (doc 27 §2: same rules where Act II is silent); Act II's staff carry over.
-  if (inActII(state) || inActIII(state)) {
+  if (inActII(state) || inAct3Rules(state)) {
     const a = BALANCE.act2Bandwidth
     const kw = state.sites.reduce(
       (sum, s) => sum + poweredKw(s, state.quarter),

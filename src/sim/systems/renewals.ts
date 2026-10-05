@@ -17,7 +17,7 @@ import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
 import {
   act3SeedOf,
-  inActIII,
+  inAct3Rules,
   logEntry,
   projectGone,
   type GameState,
@@ -93,7 +93,7 @@ export function renewalOffer(
  * quarter or has already ended (a holdover). The walk is rolled now; the offer is made now.
  */
 export function openRenewals(state: GameState): void {
-  if (!inActIII(state) || !state.scenarioId) return
+  if (!inAct3Rules(state) || !state.scenarioId) return
   state.act3Renewals ??= []
   const label = CONTENT.quarters[state.quarter]
   for (const p of state.projects) {
@@ -305,7 +305,7 @@ export function resolveRenewals(state: GameState): void {
  * card) at the lapsed rent × this quarter's RFP midpoint, for the offered shell term.
  */
 export function completeRelets(state: GameState): void {
-  if (!inActIII(state)) return
+  if (!inAct3Rules(state)) return
   const scenario = scenarioOf(state)
   for (const p of state.projects) {
     const pending = p.pendingRelet
@@ -396,7 +396,7 @@ function openReopener(
  * market at least 10% below the lease), each eligible tenant reopens, at most once in 4 quarters.
  */
 export function openTenantReopeners(state: GameState): void {
-  if (!inActIII(state) || !state.scenarioId) return
+  if (!inAct3Rules(state) || !state.scenarioId) return
   const band = renewalBand(state.quarter, scenarioOf(state))
   if (!band || band.hi >= RO.tenantTriggerBandHigh) return
   for (const p of state.projects) {
@@ -484,7 +484,7 @@ export function endContractAtQuarterEnd(
  * new-lease reference (the card rent × the RFP midpoint) for one more quarter.
  */
 export function repriceRolling(state: GameState): void {
-  if (!inActIII(state)) return
+  if (!inAct3Rules(state)) return
   const mid = rfpMid(state.quarter, scenarioOf(state))
   if (mid === null) return
   for (const p of state.projects) {

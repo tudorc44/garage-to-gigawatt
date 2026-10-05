@@ -24,7 +24,7 @@ import {
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
-  inActIII,
+  inAct3Rules,
   logEntry,
   projectGone,
   type GameState,
@@ -50,7 +50,7 @@ export function nuclearPriceUsdMwh(
   state: GameState,
   quarter = state.quarter,
 ): number | null {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   return quarterInputs(quarter, scenarioOf(state))?.act3?.nuclearPpaUsdMwh ?? null
 }
 
@@ -66,7 +66,7 @@ export function nuclearBlocker(
 ): Message | undefined {
   const from = CONTENT.act3Nuclear.unlockQuarter
   if (
-    !inActIII(state) ||
+    !inAct3Rules(state) ||
     CONTENT.quarters[state.quarter] < from ||
     nuclearPriceUsdMwh(state) === null
   )

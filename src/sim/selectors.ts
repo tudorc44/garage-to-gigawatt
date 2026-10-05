@@ -24,7 +24,7 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { inAct2Rules, inActIII } from './state.ts'
+import { inAct2Rules, inAct3Rules, inActIII } from './state.ts'
 import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
@@ -1045,7 +1045,7 @@ export function hireViews(state: GameState) {
   return allHires()
     .filter((h) => inAct2Rules(state) || !isAct2Hire(h.id))
     // (M17.3: the Government Affairs Director only in Act III)
-    .filter((h) => inActIII(state) || !isAct3Hire(h.id))
+    .filter((h) => inAct3Rules(state) || !isAct3Hire(h.id))
     .map((h) => ({
       id: h.id,
       name: h.name,
@@ -1089,6 +1089,7 @@ export function marketReadView(state: GameState) {
  * for quarters the player has read that indicator. Never a future quarter, never a hidden field.
  */
 export function signalsPanel(state: GameState) {
+  // (Act III's Signals only: Act IV's six come in M28)
   if (!inActIII(state) || !state.scenarioId) return null
   const now = CONTENT.quarters[state.quarter]
   const reads = state.act3SignalReads ?? []
@@ -2039,9 +2040,10 @@ export function contractCalendar(state: GameState) {
  * the locked $/GPU-hr × 8,760 hours). Null outside Act III.
  */
 export function renewalWallView(state: GameState) {
-  if (!inActIII(state)) return null
-  const first = actFirstQuarter(3)
-  const last = actLastQuarter(3)
+  if (!inAct3Rules(state)) return null
+  // (M27.5: the current act's quarters: Act III's 16, or Act IV's 20)
+  const first = actFirstQuarter(state.act)
+  const last = actLastQuarter(state.act)
   const bars = Array.from({ length: last - first + 1 }, (_, i) => ({
     quarter: first + i,
     label: CONTENT.quarters[first + i],
@@ -2132,7 +2134,7 @@ const ACT3_REPORT_KEYS = new Set<string>([
 
 /** The quarter report's Act III block (M13.2): this quarter's contract and card lines, in order. Null outside Act III. */
 export function act3ReportLines(state: GameState) {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   return state.log.filter(
     (e) => e.quarter === state.quarter && ACT3_REPORT_KEYS.has(e.key),
   )
@@ -2184,7 +2186,7 @@ export function ppaRows(state: GameState) {
 }
 
 export function contractsDueSoon(state: GameState): number | null {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   return buildCalendar(state).filter(
     (e) => e.endQuarter !== null && e.endQuarter <= state.quarter + 3,
   ).length
@@ -2273,7 +2275,7 @@ export function renewalsDue(state: GameState) {
  * political-capital log. Null outside Act III.
  */
 export function governmentView(state: GameState) {
-  if (!inActIII(state) || state.politicalCapital === undefined) return null
+  if (!inAct3Rules(state) || state.politicalCapital === undefined) return null
   const C = CONTENT.politicalCapital
   const reports = state.reports.filter((r) => r.politicalCapital !== undefined)
   const now = state.politicalCapital
@@ -2353,7 +2355,7 @@ export function act3Finished(state: GameState): boolean {
  * be drawn now. null outside Act III.
  */
 export function standbyView(state: GameState) {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   const s = activeStandby(state)
   const terms = standbyTerms(state)
   return {
@@ -2382,7 +2384,7 @@ export function standbyView(state: GameState) {
 
 /** Act III (M18.13): the leverage covenant for the Capital screen: LTV now, the limit, and an open breach. */
 export function covenantView(state: GameState) {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   const b = state.covenantBreach
   return {
     ltv: companyLtv(state),

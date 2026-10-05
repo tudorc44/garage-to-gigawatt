@@ -8,7 +8,7 @@ import {
   isAct2RulesQuarter,
   nextQuarter,
   act3ScenarioOfKey,
-  act4Market,
+  isAct4MarketKey,
   type Machine,
   type MarketKey,
   type MarketWeek,
@@ -65,10 +65,13 @@ export function quarterWeeks(
   quarter: number,
   scenario?: MarketKey | null,
 ): MarketWeek[] | undefined {
-  // Act IV (M27.3): prices exist only inside a scenario and future key ("s2.f3"), glided at the seam.
+  // Act IV (M27.3): prices exist only inside a scenario and future key ("s2.f3"), glided at the seam. Read without
+  // one (an Act III game looking past 2030Q4) there is nothing, as before Act IV's quarters existed (marketWeek throws).
   const act4 = CONTENT.acts.find((a) => a.act === 4)
   if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
-    return act4Market(quarter, scenario).weeks[quarter - act4.firstQuarter]
+    return isAct4MarketKey(scenario)
+      ? CONTENT.act4Markets[scenario].weeks[quarter - act4.firstQuarter]
+      : undefined
   const first = actFirstQuarter(3)
   if (
     quarter >= first &&

@@ -49,11 +49,12 @@ export interface Strategy {
  * the prologue's chapter report.
  */
 export interface PlayOptions {
-  through?: 0 | 1 | 2 | 3
+  /** (M27.5: 4 = Act IV's chapter report; an Act IV game is started with toAct4, as Act III's with toAct3.) */
+  through?: 0 | 1 | 2 | 3 | 4
 }
 
 /** Whether a played game stops here: game over, or the chapter report of the last act played. */
-function finished(state: GameState, through: 0 | 1 | 2 | 3): boolean {
+function finished(state: GameState, through: 0 | 1 | 2 | 3 | 4): boolean {
   if (state.phase === 'gameover') return true
   return state.phase === 'chapter' && state.act >= through
 }

@@ -10,7 +10,7 @@ import {
   type DensityTier,
 } from '../../content/index.ts'
 import {
-  inActIII,
+  inAct3Rules,
   logEntry,
   projectGone,
   type GameState,
@@ -77,13 +77,13 @@ export function assignCarriedTiers(state: GameState): void {
 /** Whether "Build to top tier" can be ticked now (Act III, from 2027Q3). */
 export function topBuildOpen(state: GameState): boolean {
   return (
-    inActIII(state) && CONTENT.quarters[state.quarter] >= D.topNewBuildFrom
+    inAct3Rules(state) && CONTENT.quarters[state.quarter] >= D.topNewBuildFrom
   )
 }
 
 /** This quarter's mid→top retrofit, $ per MW (the scenario CSV), or 0 without one. */
 export function midToTopUsdMw(state: GameState, quarter = state.quarter): number {
-  if (!inActIII(state)) return 0
+  if (!inAct3Rules(state)) return 0
   return quarterInputs(quarter, scenarioOf(state))?.act3?.midToTopUsdMw ?? 0
 }
 
@@ -101,7 +101,7 @@ export function buildsToTop(
   state: GameState,
   p: Pick<Project, 'tier'> & { stage?: Project['stage'] },
 ): boolean {
-  return inActIII(state) && p.tier === 'top' && p.stage !== 'live'
+  return inAct3Rules(state) && p.tier === 'top' && p.stage !== 'live'
 }
 
 // ---------- downtime (M16.3: a retrofit or a GPU change) ----------
@@ -147,7 +147,7 @@ export function shellTierRentMult(
   state: GameState,
   p: Pick<Project, 'tier' | 'kind'>,
 ): number {
-  if (!inActIII(state) || p.kind !== 'shell' || !p.tier) return 1
+  if (!inAct3Rules(state) || p.kind !== 'shell' || !p.tier) return 1
   if (CONTENT.quarters[state.quarter] < D.shellTierRentFrom) return 1
   return D.shellTierRentMult[p.tier]
 }

@@ -16,7 +16,8 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
-import { inAct2Rules, inActIII } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV } from '../state.ts'
+import { buildAct4End } from './act4End.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -77,7 +78,7 @@ export function endQuarter(state: GameState): void {
     scenarioOf(state),
   )
   // Act III (M18.11): open lender cures are cured or, at their deadline, foreclose (before this quarter's walks).
-  if (inActIII(state)) settleLenderCures(state)
+  if (inAct3Rules(state)) settleLenderCures(state)
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   // Act III (M17.2): the nuclear PPAs' take-or-pay for the quarter.
   settlePpas(state)
@@ -91,7 +92,7 @@ export function endQuarter(state: GameState): void {
   state.quarterStats.interestUsd += service.interestUsd
   state.quarterStats.principalUsd += service.principalUsd
   // Act III (M18.2): the standby's commitment fee; then, short of cash, the standby is drawn before any forced sale.
-  if (inActIII(state)) {
+  if (inAct3Rules(state)) {
     state.quarterStats.interestUsd += settleStandbyFee(state)
     autoDrawStandby(state)
   }
@@ -106,7 +107,7 @@ export function endQuarter(state: GameState): void {
   // Act III (M17.3): lobbying lands, the Director's gain, the decay.
   endQuarterPolitics(state)
   const report = buildReport(state, w, forcedSale)
-  if (inActIII(state) && state.politicalCapital !== undefined)
+  if (inAct3Rules(state) && state.politicalCapital !== undefined)
     report.politicalCapital = state.politicalCapital
   // The credit rating is reviewed each quarter in Act III too (M11.4c: YES, same formula).
   if (isAct2RulesQuarter(state.quarter)) {
@@ -129,7 +130,7 @@ export function endQuarter(state: GameState): void {
   }
   state.reports.push(report)
   // Act III (M18.13): the leverage covenant test; debt the lenders call short of cash goes to the rescue.
-  if (inActIII(state)) {
+  if (inAct3Rules(state)) {
     testCovenant(state, report)
     if (state.cash < 0) {
       rescueBeforeGameOver(state)
@@ -138,7 +139,7 @@ export function endQuarter(state: GameState): void {
     }
   }
   // Act III (M18.2): the standby lapses after its last quarter (its draws stay until their bullets).
-  if (inActIII(state)) expireStandby(state)
+  if (inAct3Rules(state)) expireStandby(state)
   if (forcedSale) logEntry(state, 'log.forced_sale', { ...forcedSale })
   state.phase = state.cash < 0 ? 'gameover' : 'report'
   if (state.phase === 'gameover') {
@@ -146,6 +147,8 @@ export function endQuarter(state: GameState): void {
     // Act III (M14.4): a game over still gets the reveal, its reading counted up to this quarter.
     if (inActIII(state) && state.scenarioId)
       state.act3End = buildAct3End(state, true)
+    // Act IV (M27.5): a game over gets its end record too (the reveal fills it in M32).
+    if (inActIV(state)) state.act4End = buildAct4End(state, true)
   }
 }
 
@@ -264,6 +267,13 @@ export function startNextQuarter(state: GameState): void {
     if (inActIII(state) && state.scenarioId) {
       // The end of Act III (doc 27 §2, D14): the chapter report, with the scenario reveal stored now.
       state.act3End = buildAct3End(state)
+      state.phase = 'chapter'
+      return
+    }
+    if (inActIV(state)) {
+      // The end of Act IV (doc 33 §15): the chapter report, with the end record stored now (M27.5: a stub; M32 adds
+      // the reveal, the reading score and the titles). The campaign finale follows it.
+      state.act4End = buildAct4End(state)
       state.phase = 'chapter'
       return
     }

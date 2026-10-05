@@ -149,6 +149,21 @@ export interface Act3Entry {
 export type Act4Entry = Act3Entry
 
 /**
+ * Act IV's end record (M27.5: the walking skeleton's fields), stored once when the last quarter (2035Q4) is done or the
+ * game is over in Act IV. Built only by systems/act4End.ts; M32 adds the reveal (the future, the lunar grade), the
+ * reading score and the titles. The chapter report and the campaign finale read it.
+ */
+export interface Act4End {
+  futureId: FutureId
+  /** The last quarter played ("2035Q4", or the game-over quarter). */
+  endQuarter: string
+  gameOver: boolean
+  /** Founder stake × the last report's valuation (never below 0), and its multiple on the Act IV entry. */
+  founderNetWorthUsd: number
+  growthMultiple: number | null
+}
+
+/**
  * The Act III scenario reveal (M11.3), stored once when the last quarter is done: which scenario the
  * player was in, when its trigger hit, what the decoy was, and what they read. No score yet.
  */
@@ -864,6 +879,8 @@ export interface GameState {
   act4Seed?: number
   /** Act IV (M27.4): the company as it entered Act IV (shaped like `act3Entry`; the growth multiple and the finale). */
   act4Entry?: Act4Entry
+  /** Act IV (M27.5): the end record, stored at 2035Q4's end (or a game over in Act IV). Absent until then. */
+  act4End?: Act4End
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */

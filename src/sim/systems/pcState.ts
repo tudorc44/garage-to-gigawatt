@@ -2,19 +2,19 @@
 // adjustment. Kept free of other systems so Anger and the grid queue can read them without an import loop.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inActIII, logQuarterLabel, type GameState } from '../state.ts'
+import { inAct3Rules, logQuarterLabel, type GameState } from '../state.ts'
 
 const PC = BALANCE.act3.politicalCapital
 
 /** Political capital now (0 outside Act III). */
 export function politicalCapital(state: GameState): number {
-  return inActIII(state) ? (state.politicalCapital ?? 0) : 0
+  return inAct3Rules(state) ? (state.politicalCapital ?? 0) : 0
 }
 
 /** Below the threshold (15): the moratorium comes at Anger 40 in your regions, and grid queues take +1 quarter. */
 export function lowCapital(state: GameState): boolean {
   return (
-    inActIII(state) &&
+    inAct3Rules(state) &&
     state.politicalCapital !== undefined &&
     state.politicalCapital < CONTENT.politicalCapital.lowThreshold
   )

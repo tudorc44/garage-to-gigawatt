@@ -9,11 +9,12 @@
 //   forces a sale or emergency equity, the engine draws it, up to the shortfall.
 // Both are `Facility` rows (kinds 'corporate' and 'standby', no project): they count in debt, net debt and valuation
 // like other debt, and their interest and bullets go through the quarter-end cash check like other obligations.
-import { BALANCE, actFirstQuarter } from '../../content/index.ts'
+import { BALANCE, actFirstQuarter, actLastQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   covenantBreached,
-  inActIII,
+  inAct3Rules,
+  inActIV,
   logEntry,
   type Facility,
   type GameState,
@@ -79,14 +80,14 @@ export function drawCorporate(
   logEntry(
     state,
     'log.corporate_drawn',
-    { amountUsd, aprPct: apr, quarter: quarterLabel(due) },
+    { amountUsd, aprPct: apr, quarter: quarterLabel(state, due) },
     weekNo,
   )
 }
 
-/** "2030Q1", or past the timeline "2030Q4+" (a facility carried beyond the act). */
-function quarterLabel(q: number): string {
-  const last = actFirstQuarter(3) + 15
+/** "2030Q1", or past the act's end "2030Q4+" (a facility carried beyond the act; M27.5: Act IV's end is 2035Q4). */
+function quarterLabel(state: GameState, q: number): string {
+  const last = inActIV(state) ? actLastQuarter(4) : actFirstQuarter(3) + 15
   return q <= last ? stateQuarterLabel(q) : `${stateQuarterLabel(last)}+`
 }
 function stateQuarterLabel(q: number): string {
@@ -178,7 +179,7 @@ export function standbyUndrawnUsd(state: GameState): number {
 
 /** Why the standby can't be arranged now, or undefined. */
 export function standbyArrangeBlocker(state: GameState): Message | undefined {
-  if (!inActIII(state) || state.quarter < actFirstQuarter(3))
+  if (!inAct3Rules(state) || state.quarter < actFirstQuarter(3))
     return { key: 'error.act3_only' }
   if (activeStandby(state)) return { key: 'error.standby_held' }
   const rating = loanRating(state)

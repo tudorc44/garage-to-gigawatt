@@ -2420,8 +2420,12 @@ export function quarterInputs(
   scenario?: MarketKey | null,
 ): Act2Quarter | undefined {
   const act4 = CONTENT.acts.find((a) => a.act === 4)
+  // Act IV's quarters are read only through an Act IV key; any other read of them (an Act III game looking past
+  // 2030Q4) finds nothing, as it did before Act IV's quarters existed.
   if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
-    return act4Market(quarter, scenario).inputs[quarter - act4.firstQuarter]
+    return isAct4MarketKey(scenario)
+      ? CONTENT.act4Markets[scenario].inputs[quarter - act4.firstQuarter]
+      : undefined
   const act3 = CONTENT.acts.find((a) => a.act === 3)!
   if (quarter < act3.firstQuarter || quarter > act3.lastQuarter)
     return act2Quarter(quarter)
@@ -2461,7 +2465,7 @@ export function quarterRow(
 ): CarriedQuarterRow | undefined {
   const act4 = CONTENT.acts.find((a) => a.act === 4)
   if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
-    return act4Market(quarter, key).quarterly[quarter - act4.firstQuarter]
+    return isAct4MarketKey(key) ? CONTENT.act4Markets[key].quarterly[quarter - act4.firstQuarter] : undefined
   const act3 = CONTENT.acts.find((a) => a.act === 3)!
   if (quarter < act3.firstQuarter || quarter > act3.lastQuarter || !key) return undefined
   return CONTENT.act3Scenarios[act3ScenarioOfKey(key)].quarterly[quarter - act3.firstQuarter]

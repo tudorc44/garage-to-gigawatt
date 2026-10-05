@@ -31,7 +31,7 @@ import {
   type ProjectKind,
   type TenantOffer,
 } from '../state.ts'
-import { inAct2Rules, inActIII, inActIV, logQuarterLabel } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inActIV, logQuarterLabel } from '../state.ts'
 import { gpuPriceMultNow, modifierMult } from './eventEffects.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import {
@@ -294,8 +294,11 @@ export function gpuContractUsdHr(
  */
 export function gpuContractRateMult(quarter: number): number {
   const first = actFirstQuarter(3)
-  if (quarter < first || quarter > actLastQuarter(3)) return 1
   const m = BALANCE.act3.gpuContractRateMult
+  // M27.5 (mine, reversible): Act IV's GPU contracts keep Act III's end value (the gap below on-demand rates holds).
+  const act4 = CONTENT.acts.find((a) => a.act === 4)
+  if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter) return m.end
+  if (quarter < first || quarter > actLastQuarter(3)) return 1
   return m.glide[quarter - first] ?? m.end
 }
 
@@ -354,7 +357,7 @@ function rollAiLabDistress(state: GameState): void {
     const type = tenantCard(t.card)?.type
     // Act III (M11.4c, DT 3): the fixed 12% AI-lab roll is replaced by the scenario's per-quarter
     // default probability for each of the three tenant types; the effect is Act II's distress.
-    const chancePerQuarter = inActIII(state)
+    const chancePerQuarter = inAct3Rules(state)
       ? scenarioDefaultProb(state, type)
       : type === 'ai_lab'
         ? d.chancePerQuarter
@@ -415,7 +418,7 @@ export function reletProject(state: GameState, projectId: string): void {
  * 1 before (the Deal builder is unchanged in Act II).
  */
 export function newLeaseIndex(state: GameState): number {
-  if (!inActIII(state)) return 1
+  if (!inAct3Rules(state)) return 1
   return rfpMid(state.quarter, scenarioOf(state)) ?? 1
 }
 
@@ -428,7 +431,7 @@ export function act3LeaseMult(
   p: Project,
   card: TenantCard,
 ): number {
-  if (!inActIII(state)) return 1
+  if (!inAct3Rules(state)) return 1
   let m = 1
   if (card.type === 'hyperscaler' && hasPpa(state, p))
     m *= BALANCE.act3.nuclear.hyperscalerRentMult
@@ -754,9 +757,9 @@ export function openProject(
     soldQuarter: null,
   }
   // Act III (M16.2, DT): a new hall is mid tier, or its GPU's if denser, or top when ticked.
-  if (inActIII(state)) p.tier = newHallTier(p.gpu, !!a.topTier)
+  if (inAct3Rules(state)) p.tier = newHallTier(p.gpu, !!a.topTier)
   // Act III (M17.2): on existing MW at a site with a free PPA, the new project takes it.
-  if (inActIII(state)) attachFreePpa(state, p)
+  if (inAct3Rules(state)) attachFreePpa(state, p)
   state.bandwidth -= BALANCE.projects.bandwidth.open
   state.projects.push(p)
   const site = state.sites.find((s) => s.id === a.siteId)!
@@ -1126,7 +1129,7 @@ export function endQuarterProjects(state: GameState): number {
         // Act III (M18.10, DT): an AI-lab or neocloud GPU contract in distress for 2 full quarters walks at the end of
         // the second; M18.11 (DT): only if spot for its generation is below its distressed pay (0.5 × its rate), else it
         // stays at half pay, re-checked each quarter end. Its GPUs go to spot; a DDTL on it opens a lender cure.
-        inActIII(state) &&
+        inAct3Rules(state) &&
         t.gpu &&
         !renewing &&
         t.distressedQuarter !== undefined &&

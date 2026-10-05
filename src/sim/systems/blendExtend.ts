@@ -10,7 +10,7 @@
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
-  inActIII,
+  inAct3Rules,
   logEntry,
   projectGone,
   type BlendOffer,
@@ -62,7 +62,7 @@ export function blendOffer(
  */
 export function openBlendOffers(state: GameState): void {
   if (state.act3BlendOffers) state.act3BlendOffers = []
-  if (!inActIII(state) || !state.scenarioId) return
+  if (!inAct3Rules(state) || !state.scenarioId) return
   if (CONTENT.quarters[state.quarter] < B.from) return
   for (const p of state.projects) {
     if (!eligible(state, p)) continue
