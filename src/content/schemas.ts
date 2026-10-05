@@ -80,6 +80,18 @@ export const SCENARIO_IDS = ['s0', 's1', 's2', 's3'] as const
 export type ScenarioId = (typeof SCENARIO_IDS)[number]
 export const scenarioId = z.enum(SCENARIO_IDS)
 
+// Act IV's four futures (M27.2, doc 33 §6.2): f1 On Schedule, f2 The Wall, f3 Closed Shell, f4 Cheap Ground.
+export const FUTURE_IDS = ['f1', 'f2', 'f3', 'f4'] as const
+export type FutureId = (typeof FUTURE_IDS)[number]
+export const futureId = z.enum(FUTURE_IDS)
+/**
+ * An Act IV market key (M27.3): the player's Act III scenario and the Act IV future, e.g. "s2.f3". Act IV's market
+ * starts from the Act III scenario's 2030Q4 values and glides to the futures' common 2031 baseline (doc 33 §3.3), so
+ * its prices depend on both. A market read takes a ScenarioId (Act III) or one of these (Act IV).
+ */
+export type Act4MarketKey = `${ScenarioId}.${FutureId}`
+export type MarketKey = ScenarioId | Act4MarketKey
+
 export const marketWeekAct3Schema = z.object({
   week: isoDate,
   quarter: quarterId,

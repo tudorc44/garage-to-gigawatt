@@ -163,7 +163,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The Act IV run (M27–M32) is under way on `m27`** (see "The Act IV run"). Next sub-step: **M27.2** (the act-aware refactor). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+**The Act IV run (M27–M32) is under way on `m27`** (see "The Act IV run"). Next sub-step: **M27.3** (the Act IV market files). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -200,6 +200,7 @@ with the ground systems and a stub chapter report; M27.6 the screens (the light 
 A4-01, the test-build quick starts and `?future=`); M27.7 the byte-identity check and the M27 report.
 - **M27.0 done** (`f01f142`): docs 31–34 and the cost model committed as the owner placed them.
 - **M27.1 done.** `docs/act4-scope.md` written; CLAUDE.md: status, Act IV summary, key docs, scope guard, "Act IV rules that must hold".
+- **M27.2 done.** `act: 4`, `isActIV`/`inActIV`, new `inAct3Rules` (Act III or IV, for the Act III systems that run on), `inAct2Rules` and `covenantBreached` cover act 4; `FUTURE_IDS`/`MarketKey`; state fields `futureId`, `futureForced`, `act4QuickStart`, `act4Seed` (`act4SeedOf`), `act4Entry`; save version 5 (4 → 5 changes nothing; Act IV saves need the Act IV span). The Act III goldens are compared at their stored format 4, as Act I's are at 2 (no golden file changed).
 
 ## Milestone M26 (branch `m26`, from main at `f8cf61f`; cleanup)
 

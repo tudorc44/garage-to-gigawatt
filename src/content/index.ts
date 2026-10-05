@@ -146,6 +146,12 @@ import {
 export { BALANCE }
 export { SCENARIO_IDS }
 export {
+  FUTURE_IDS,
+  type FutureId,
+  type Act4MarketKey,
+  type MarketKey,
+} from './schemas.ts'
+export {
   SIGNAL_IDS,
   type SignalId,
   type SignalIndicator,
@@ -186,9 +192,9 @@ export type {
 export interface ActSpan {
   /**
    * 0 = the prologue (Alpha 0.3, quarter indices −32 … −1), 1 = Act I, 2 = Act II, 3 = Act III
-   * (M11.3: 2027Q1–2030Q4, indices 40–55; unreachable from play).
+   * (M11.3: 2027Q1–2030Q4, indices 40–55), 4 = Act IV (M27.3: 2031Q1–2035Q4, indices 56–75).
    */
-  act: 0 | 1 | 2 | 3
+  act: 0 | 1 | 2 | 3 | 4
   firstQuarter: number
   lastQuarter: number
 }

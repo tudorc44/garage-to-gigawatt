@@ -3,7 +3,7 @@
 //  1. Version steps: each change of format has a migration from version n to n + 1, run in turn.
 //  2. Small additions within a version: fields added since the save was made get their
 //     starting values, as in a new game.
-import { actFirstQuarter, actLastQuarter } from '../content/index.ts'
+import { CONTENT, actFirstQuarter, actLastQuarter } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
 import { assignCarriedTiers } from './systems/density.ts'
@@ -15,7 +15,7 @@ import {
   type GameState,
   type Phase,
 } from './state.ts'
-import { isActII, isActIII } from './state.ts'
+import { isActII, isActIII, isActIV } from './state.ts'
 
 const PHASES: Phase[] = [
   'plan',
@@ -28,7 +28,7 @@ const PHASES: Phase[] = [
 ]
 
 /** The save format this build writes (GameState.version). */
-export const SAVE_VERSION = 4
+export const SAVE_VERSION = 5
 
 type SaveData = Record<string, unknown>
 
@@ -51,6 +51,9 @@ const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
   // unreachable from play — a test/sim harness only). Nothing in a version-3 save changes: it was
   // act 0, 1 or 2 as before.
   3: (data) => ({ ...data, version: 4 }),
+  // 4 → 5 (Act IV, M27.2): a save can now be in act 4 (2031Q1–2035Q4) and carry the Act IV fields (futureId,
+  // act4Seed, act4Entry …). Nothing in a version-4 save changes: it was act 0–3 as before.
+  4: (data) => ({ ...data, version: 5 }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }
@@ -72,6 +75,12 @@ function actFitsQuarter(act: unknown, quarter: number): boolean {
   // Act III (M11.3): 2027Q1–2030Q4, plus Act II's last quarter for a boundary save.
   if (isActIII(act))
     return quarter >= actLastQuarter(2) && quarter <= actLastQuarter(3)
+  // Act IV (M27.2): 2031Q1–2035Q4, plus Act III's last quarter for a boundary save. Until the Act IV timeline exists
+  // (M27.3), no Act IV save can be valid.
+  if (isActIV(act)) {
+    const span = CONTENT.acts.find((a) => a.act === 4)
+    return span !== undefined && quarter >= actLastQuarter(3) && quarter <= span.lastQuarter
+  }
   return false
 }
 

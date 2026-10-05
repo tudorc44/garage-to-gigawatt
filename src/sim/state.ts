@@ -4,6 +4,7 @@ import {
   BALANCE,
   CONTENT,
   SCENARIO_IDS,
+  type FutureId,
   type ScenarioId,
   type SignalId,
 } from '../content/index.ts'
@@ -141,6 +142,9 @@ export interface Act3Entry {
   contractedMw: number
   creditRating: string | null
 }
+
+/** Act IV (M27.2): the company as it entered Act IV, measured at 2030Q4 (the same fields as Act III's entry). */
+export type Act4Entry = Act3Entry
 
 /**
  * The Act III scenario reveal (M11.3), stored once when the last quarter is done: which scenario the
@@ -593,7 +597,7 @@ export const inActII = (
  */
 export const inAct2Rules = (
   state: Pick<GameState, 'act'> | null | undefined,
-): boolean => state?.act === 2 || state?.act === 3
+): boolean => state?.act === 2 || state?.act === 3 || state?.act === 4
 
 /**
  * Whether an act number is Act III (M10.1: the walking skeleton only, no Act III game rules yet).
@@ -606,10 +610,32 @@ export const inActIII = (
   state: Pick<GameState, 'act'> | null | undefined,
 ): boolean => isActIII(state?.act)
 
-/** Act III (M18.13): whether a leverage-covenant breach is open, which bars new debt (systems/covenant.ts). */
+/**
+ * Whether an act number is Act IV (M27.2, doc 33: 2031Q1–2035Q4). Every "is this Act IV?" check goes through here,
+ * the same pattern as isActII and isActIII.
+ */
+export const isActIV = (act: unknown): boolean => act === 4
+
+/** Whether a game (or none: null) is in Act IV. */
+export const inActIV = (
+  state: Pick<GameState, 'act'> | null | undefined,
+): boolean => isActIV(state?.act)
+
+/**
+ * Whether Act III's business rules apply in a game (M27.2, doc 33 §3.1 and §10): Act III, and Act IV, which runs
+ * Act III's ground systems (renewals, density, nuclear PPAs, political capital, the covenant, the standby facility) on
+ * its own market. The gate for every Act III system that runs on in Act IV; a system that stays Act III-only keeps
+ * inActIII. Each gate's answer is in dev-notes (M27.5).
+ */
+export const inAct3Rules = (
+  state: Pick<GameState, 'act'> | null | undefined,
+): boolean => state?.act === 3 || state?.act === 4
+
+/** Act III (M18.13): whether a leverage-covenant breach is open, which bars new debt (systems/covenant.ts). Act IV
+ *  continues the covenant (doc 33 §3.2, §11.4). */
 export const covenantBreached = (
   state: Pick<GameState, 'act' | 'covenantBreach'>,
-): boolean => inActIII(state) && state.covenantBreach !== undefined
+): boolean => inAct3Rules(state) && state.covenantBreach !== undefined
 
 /** A project that no longer holds its MW or earns: sold, or ended by selling its GPUs. */
 export const projectGone = (p: Project) =>
@@ -655,13 +681,13 @@ export interface Auction {
 
 export interface GameState {
   /** Save-format version (save.ts SAVE_VERSION). Older saves are migrated step by step when loaded. */
-  version: 4
+  version: 5
   /**
    * The act being played: 0 = the prologue (2009Q1–2016Q4, quarter indices −32 … −1), 1 = Act I
-   * (2017Q1–2022Q3), 2 = Act II (2022Q4–2026Q4), 3 = Act III (M10 walking skeleton: 2 stub
-   * quarters, 2027Q1–2027Q2; unreachable from play, test/sim-harness only).
+   * (2017Q1–2022Q3, 0–22), 2 = Act II (2022Q4–2026Q4, 23–39), 3 = Act III (2027Q1–2030Q4, 40–55),
+   * 4 = Act IV (2031Q1–2035Q4, 56–75; M27).
    */
-  act: 0 | 1 | 2 | 3
+  act: 0 | 1 | 2 | 3 | 4
   /** The prologue's own state: only a prologue start has it (Alpha 0.3). */
   prologue?: PrologueState
   /** What a prologue start brought into Act I (its net worth for the growth multiple, custody). */
@@ -822,6 +848,20 @@ export interface GameState {
   act3WildcardOpen?: { id: WildcardId; projectId?: string; siteId?: string } | null
   /** Act III (M17.4): the export rule wildcard's effects while they last. */
   act3ExportRule?: { from: number; until: number; exempt: boolean }
+  /**
+   * Act IV (M27.4, doc 33 §6.1): which of the four futures (f1–f4) this game plays, drawn once at the Act III → IV
+   * boundary on its own substream of `act4Seed`. Absent before Act IV. Like `scenarioId`, nothing a screen shows during
+   * play reads it (the leak guard); the market reads it through `scenarioOf`.
+   */
+  futureId?: FutureId
+  /** Act IV (M27.6): a tester forced the future (test builds only, `?future=`); the top bar says so. Absent otherwise. */
+  futureForced?: true
+  /** Act IV (M27.6): entered from a test build's quick-start company; the production build refuses its saves. */
+  act4QuickStart?: true
+  /** Act IV (M27.2): the salt for Act IV's own random streams (act4SeedOf); absent = the game's seed. */
+  act4Seed?: number
+  /** Act IV (M27.4): the company as it entered Act IV (shaped like `act3Entry`; the growth multiple and the finale). */
+  act4Entry?: Act4Entry
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
@@ -1105,6 +1145,14 @@ export function act3SeedOf(state: Pick<GameState, 'seed' | 'act3Seed'>): number 
   return state.act3Seed ?? state.seed
 }
 
+/**
+ * The seed every act4_* substream is keyed on (M27.2): `act4Seed` when a harness sets one, else the game's seed. New
+ * Act IV randomness only ever draws from substreams of this, so no earlier act's game changes.
+ */
+export function act4SeedOf(state: Pick<GameState, 'seed' | 'act4Seed'>): number {
+  return state.act4Seed ?? state.seed
+}
+
 export function drawScenario(seed: number): ScenarioId {
   const weights = BALANCE.act3.scenarioWeightsPct
   const roll = random(substream(seed, 'act3_scenario')) * 100
@@ -1152,7 +1200,7 @@ export function toAct3(
 export function newGame(seed: number): GameState {
   const start = CONTENT.siteTiers.find((t) => t.id === BALANCE.startSite)!
   return {
-    version: 4,
+    version: 5,
     act: 1,
     seed,
     rng: seed | 0,
