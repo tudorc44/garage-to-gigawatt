@@ -331,6 +331,9 @@ export function scheduleEvents(state: GameState): void {
       card.scenario !== state.scenarioId
     )
       continue
+    // Act IV (M28.4): a future's card plays only in its own future; 'all' in every one.
+    if (card.future && card.future !== 'all' && card.future !== state.futureId)
+      continue
     // D15 (M16.0, DT answer 4): a card flagged for the editorial review and not cleared doesn't fire.
     if ((card as { withheld?: boolean }).withheld) continue
     if (!holds(state, card.requires, card)) continue

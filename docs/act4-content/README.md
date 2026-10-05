@@ -16,6 +16,7 @@ default 14: no new research in this run).
 | `lunar_truth.json` (**hidden**) | The lunar grade's weights and per-grade truth, per-site variance, prospect noise | M28.3 |
 | `orbit_truth_iv.json` (**hidden**) | Each future's true orbital GPU failure rate and useful life; telemetry noise | M28.3 |
 | `reading_score_iv.json` (**hidden**) | The reading score's ideal stances per future and quarter, weights, decoy windows | M28.3 |
+| `events_iv.json`, `text_iv.en.json` | 40 event cards (8 per future, 8 shared) and their text keyed by opaque engine id | M28.4 |
 
 ## The market files (M27.3)
 
@@ -134,10 +135,28 @@ Hand-written (small), each read only by its own sim system and `act4End.ts` (plu
   cascade (2032Q4); F4 calm, defensive from its trigger (2033Q2). Decoy windows as the Signals files; F3's decoy is two
   quarters (2031Q4–2032Q1) so it ends before F3's hedging begins (mine, reversible).
 
+## The event cards (M28.4)
+
+**Generated:** `npm run content:act4-events` (`tools/act4/events.ts`, where the cards are written) writes `events_iv.json`
+and `text_iv.en.json` (the text table `t()` merges; keys `event.a4_<hash>.title / .body / .choice.cN`). All **designed**
+(doc 33 ⚙); each card's `basis` names what it rests on.
+
+- **Per future, 8:** signal cards before the trigger, the decoy card in the decoy window, the trigger card (`iv_f*_c4`,
+  the Signals file's trigger title, in the trigger quarter), aftermath, recovery and winner cards.
+- **Shared, 8:** the act's opening, the known timeline (doc 33 §19: an EU-analogue space act ~2031, the sixth halving
+  2032Q2, new fission plants ~2032-33, a crewed south-pole landing, a lander accident, the constellation milestone rules,
+  the Station partnership's polar outpost ~2035), all fictionalised.
+- **The 5 lunar cards** of doc 33 §16 come with M30's lunar systems.
+- **Effects:** only keys Act III's card engine already applies (cash, legal cost, Bandwidth, credit notch, debt spread, a
+  corporate facility, political capital, Anger, tenant offers, a long-lease extension, idling old miners, speeding a
+  project, a new hall). Orbit- and Moon-specific effects come with M29–M30.
+- **Names:** fictional only (Pallas Heavy, Orrery Compute; the Station partnership); no real company, agency or country.
+
 ## Data changes
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M28.4, 5 Oct 2026:** first version of `events_iv.json` and `text_iv.en.json` (40 cards).
 - **M28.3, 5 Oct 2026:** the three hidden files; `signals_iv_f3.json`'s decoy shortened to 2031Q4–2032Q1 (was to 2032Q2).
 - **M28.1, 5 Oct 2026:** first version of the four Signals files. The market generator's trigger quarters moved into
   `tools/act4/futures.ts` (shared); the market files regenerate byte-identically.

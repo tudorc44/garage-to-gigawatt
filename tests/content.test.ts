@@ -280,7 +280,7 @@ describe('content loads', () => {
       for (const name of [`market_iv_${f}.csv`, `market_weekly_iv_${f}.csv`, `signals_iv_${f}.json`])
         expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act4-content/${name}`))
     // M28.3: the three hidden files
-    for (const name of ['lunar_truth.json', 'orbit_truth_iv.json', 'reading_score_iv.json'])
+    for (const name of ['lunar_truth.json', 'orbit_truth_iv.json', 'reading_score_iv.json', 'events_iv.json', 'text_iv.en.json'])
       expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act4-content/${name}`))
   })
 

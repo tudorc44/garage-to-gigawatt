@@ -4,7 +4,7 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
-const TABLES = ['../src/i18n/en.json', '../src/i18n/content.en.json']
+const TABLES = ['../src/i18n/en.json', '../src/i18n/content.en.json', '../src/content/text_iv.en.json']
 
 describe('the string tables have no repeated keys', () => {
   for (const file of TABLES)

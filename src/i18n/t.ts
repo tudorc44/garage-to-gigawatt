@@ -8,6 +8,7 @@
 // ids and get translated.
 import en from './en.json' with { type: 'json' }
 import contentText from './content.en.json' with { type: 'json' }
+import textIv from '../content/text_iv.en.json' with { type: 'json' }
 import { fmt } from '../ui/format.ts'
 
 export type MessageKey = keyof typeof en
@@ -19,7 +20,8 @@ export interface Message {
   params?: MessageParams
 }
 
-const table: Record<string, string> = { ...contentText, ...en }
+// (M28.4: and Act IV's card text, src/content/text_iv.en.json, written with the cards by tools/act4/events.ts)
+const table: Record<string, string> = { ...contentText, ...textIv, ...en }
 
 /** String params that hold content ids get translated through these key prefixes. */
 const ID_PARAMS: Record<string, string> = {

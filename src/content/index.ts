@@ -55,6 +55,8 @@ import marketWeeklyIvF3Raw from './market_weekly_iv_f3.json' with { type: 'json'
 import marketWeeklyIvF4Raw from './market_weekly_iv_f4.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import eventsAct3Raw from './events_act3.json' with { type: 'json' }
+import eventsIvRaw from './events_iv.json' with { type: 'json' }
+import { eventsIvFileSchema, toEngineCardIv } from './act4Cards.ts'
 import { eventsAct3FileSchema, toEngineCard } from './act3Cards.ts'
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
@@ -660,10 +662,13 @@ export type EventCard = EventCardRaw & {
   /** Scripted cards: quarter index and week index (0–12) of the card. */
   quarterIndex?: number
   weekIndex?: number
-  /** The act whose deck it's in: events.json is Act I's, events_act2.json Act II's, events_act3.json Act III's. */
-  act: 1 | 2 | 3
+  /** The act whose deck it's in: events.json is Act I's, events_act2.json Act II's, events_act3.json Act III's,
+   *  events_iv.json Act IV's (M28.4). */
+  act: 1 | 2 | 3 | 4
   /** Act III only: the scenario whose game plays it ('all' = every scenario). Engine-only (M11.5c). */
   scenario?: ScenarioId | 'all'
+  /** Act IV only (M28.4): the future whose game plays it ('all' = every future). Engine-only. */
+  future?: FutureId | 'all'
 }
 
 /** A prologue card (events_prologue.json); scripted ones carry their quarter and week index. */
@@ -737,6 +742,8 @@ export interface RawContent {
   hiresAct2: unknown
   eventsAct2: unknown
   eventsAct3: unknown
+  /** M28.4: Act IV's cards (events_iv.json). Optional, with act4Futures. */
+  eventsIv?: unknown
   rivals: unknown
   rivalsAct2: unknown
   rivalsAct3: unknown
@@ -2081,6 +2088,32 @@ export function parseContent(raw: RawContent): Content {
       }
     }
   }
+  // Act IV's cards (M28.4): engine cards in Act IV's deck, each in week 2 of its quarter (as Act III's). Checks: a quarter
+  // inside Act IV, a default among the choices, opaque ids that don't collide, every effect already mapped.
+  if (raw.eventsIv && act4Futures.f1) {
+    const file = check('events_iv.json', eventsIvFileSchema, raw.eventsIv)
+    const first = acts.find((a) => a.act === 4)?.firstQuarter
+    if (file && first !== undefined) {
+      const seen = new Set<string>()
+      for (const c of file.event_cards) {
+        const qi = quarters.indexOf(c.quarter)
+        if (qi < first)
+          problems.push(`events_iv.json › ${c.id}: quarter ${c.quarter} isn't an Act IV quarter`)
+        if (!c.choices.some((ch) => ch.label === c.default))
+          problems.push(`events_iv.json › ${c.id}: default "${c.default}" isn't one of its choices`)
+        const weekOf = act4Futures.f1.weeks[qi - first]?.[1]?.week ?? ''
+        const card = toEngineCardIv(c, weekOf)
+        if (seen.has(card.id)) problems.push(`events_iv.json › ${c.id}: engine id ${card.id} collides`)
+        seen.add(card.id)
+        for (const ch of card.choices)
+          if ('deferred' in (ch.effects as Record<string, unknown>))
+            problems.push(`events_iv.json › ${c.id}: a choice uses an effect the engine doesn't map yet`)
+        const engineCard: EventCard = { ...card, act: 4, quarterIndex: qi, weekIndex: 1 }
+        events.cards.push(engineCard)
+        events.byId[engineCard.id] = engineCard
+      }
+    }
+  }
   // Act III's scenario event cards (M11.5c): turned into Act II-engine scripted cards (act3Cards.ts) in
   // Act III's deck, each in week 2 of its `quarter` (mine, reversible: the file gives no week).
   // Checks: 8 per scenario and 5 shared, a quarter inside Act III, a default that is one of the choice
@@ -2646,6 +2679,7 @@ export const CONTENT: Content = parseContent({
   hiresAct2: hiresAct2Raw,
   eventsAct2: eventsAct2Raw,
   eventsAct3: eventsAct3Raw,
+  eventsIv: eventsIvRaw,
   rivals: rivalsRaw,
   rivalsAct2: rivalsAct2Raw,
   rivalsAct3: rivalsAct3Raw,
