@@ -13,6 +13,7 @@ import { trueReliability, TELEMETRY } from './fleetReliability.ts'
 import { annualValueUsd, licensedMw, linkUnits, orbitBlock, orbitOf, orbitRow } from './orbit.ts'
 import { insuredNow, settleOrbitLoss } from './orbitLaunch.ts'
 import { repayFromProceeds } from './orbitCapital.ts'
+import { staffEffect, staffNumber } from './hires.ts'
 
 const SAT = ORBIT.satellites
 const DEB = ORBIT.shells.debris
@@ -225,12 +226,15 @@ export function endQuarterOrbit(state: GameState): void {
     b.lastEbitdaUsd = revenueUsd - opsUsd
     // Telemetry: this quarter's failures as a yearly rate, the truth plus noise (smaller blocks read noisier).
     const r = substream(act4SeedOf(state), `orbit_ops:${b.id}:${state.quarter}`)
-    const sd = TELEMETRY.noiseSdPctPoints * Math.sqrt(10 / b.mw)
+    // (M31.4: the Space Operations Chief cuts failures 25% and halves the telemetry's noise)
+    const chief = staffEffect(state, 'orbit_failure_mult') !== undefined
+    const failureShareYr = truth.failureShareYr * staffNumber(state, 'orbit_failure_mult', 1)
+    const sd = TELEMETRY.noiseSdPctPoints * Math.sqrt(10 / b.mw) * (chief ? TELEMETRY.spaceOpsNoiseMult : 1)
     b.telemetry.push({
       quarter: state.quarter,
-      failurePctYr: Math.max(0, truth.failureShareYr * 100 + normal(r) * sd),
+      failurePctYr: Math.max(0, failureShareYr * 100 + normal(r) * sd),
     })
-    if (b.kind === 'cloud') b.gpuHealth *= 1 - truth.failureShareYr / 4
+    if (b.kind === 'cloud') b.gpuHealth *= 1 - failureShareYr / 4
     // Debris: a quarterly chance from the shell's congestion.
     const congestion = row[shell(b.shell).congestion_column]
     const p = (DEB.base_loss_pct_q / 100) * (congestion / DEB.reference_congestion) ** DEB.exponent

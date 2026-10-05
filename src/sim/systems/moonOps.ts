@@ -24,6 +24,7 @@ import {
 } from './moon.ts'
 import { MONEY } from '../../content/moneyContent.ts'
 import { wildcardFiredIv } from './wildcardsIv.ts'
+import { staffNumber } from './hires.ts'
 
 const Q = (label: string) => CONTENT.quarters.indexOf(label)
 const row = (state: GameState) => act4Row(state.quarter, scenarioOf(state))
@@ -157,13 +158,17 @@ export function pilotBlocker(state: GameState, site: LunarSiteId): Message | und
   return bwShort(state, PILOT.bandwidth) ?? cashShort(state, pilotCostUsd(state))
 }
 
+/** A pilot's build time now (the Lunar Programme Director takes a quarter off). */
+export const pilotQuarters = (state: GameState): number =>
+  PILOT.build_quarters - staffNumber(state, 'pilot_quarters_cut', 0)
+
 export function decidePilot(state: GameState, site: LunarSiteId): void {
   const capexUsd = pilotCostUsd(state)
   state.bandwidth -= PILOT.bandwidth
   state.cash -= capexUsd
   claimOf(state, site)!.pilot = {
     decidedQuarter: state.quarter,
-    readyQuarter: state.quarter + PILOT.build_quarters,
+    readyQuarter: state.quarter + pilotQuarters(state),
     capexUsd,
     availability: 1,
     maintained: false,
@@ -173,7 +178,7 @@ export function decidePilot(state: GameState, site: LunarSiteId): void {
   logEntry(state, 'log.moon.pilot', {
     lunarSite: site,
     costUsd: capexUsd,
-    quarter: CONTENT.quarters[state.quarter + PILOT.build_quarters] ?? '—',
+    quarter: CONTENT.quarters[state.quarter + pilotQuarters(state)] ?? '—',
   })
 }
 

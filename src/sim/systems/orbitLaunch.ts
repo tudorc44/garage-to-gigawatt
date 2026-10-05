@@ -13,6 +13,7 @@ import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from
 import { licenceRoom, orbitBlock, orbitOf, orbitRow } from './orbit.ts'
 import { wildcardFiredIv } from './wildcardsIv.ts'
 import { buildCostMult, debtAfterLoss, ownShare, payCapex, repayFromProceeds } from './orbitCapital.ts'
+import { staffEffect, staffNumber } from './hires.ts'
 
 const L = ORBIT.launch
 const SAT = ORBIT.satellites
@@ -41,7 +42,13 @@ export function launchFailureShare(id: ProviderId, quarter: number): number {
 
 /** The $/kg a booking made now locks: the market's LEO price × the provider's multiplier × the shell's. */
 export function launchPriceUsdKg(state: GameState, id: ProviderId, shellId: OrbitalBlock['shell']): number {
-  return orbitRow(state).launch_usd_kg_leo * provider(id).price_mult * shell(shellId).launch_mult
+  // (M31.4: the Launch Procurement Lead negotiates 10% off)
+  return (
+    orbitRow(state).launch_usd_kg_leo *
+    provider(id).price_mult *
+    shell(shellId).launch_mult *
+    staffNumber(state, 'launch_price_mult', 1)
+  )
 }
 
 /** Tonnes you already have booked to launch in a quarter (any provider). */
@@ -196,13 +203,20 @@ export const hardMarket = (state: GameState, quarter = state.quarter): boolean =
 
 /** The most cover one launch can buy this quarter (the market's capacity, less in a hard market). */
 export function insuranceCapacityUsd(state: GameState): number {
-  return orbitRow(state).insurance_capacity_usd_m * 1e6 * (hardMarket(state) ? INS.hard_market.capacity_mult : 1)
+  // (M31.4: the Chief Risk Officer reaches 25% more capacity)
+  return (
+    orbitRow(state).insurance_capacity_usd_m *
+    1e6 *
+    (hardMarket(state) ? INS.hard_market.capacity_mult : 1) *
+    staffNumber(state, 'insurance_capacity_mult', 1)
+  )
 }
 
 /** What insuring this block now would cover and cost (launch + first year before launch; a year's renewal in orbit). */
 export function insuranceQuote(state: GameState, block: OrbitalBlock): { coverUsd: number; premiumUsd: number; ratePct: number } | null {
   const row = orbitRow(state)
-  const mult = hardMarket(state) ? INS.hard_market.rate_mult : 1
+  // (M31.4: the Chief Risk Officer cuts premiums 20%)
+  const mult = (hardMarket(state) ? INS.hard_market.rate_mult : 1) * staffNumber(state, 'insurance_premium_mult', 1)
   if (block.stage === 'proposed' || block.stage === 'building' || block.stage === 'awaiting_launch') {
     if (!block.launch || block.insured) return null
     const young = launchFailureShare(block.launch.provider, block.launch.quarter) * 100 >= INS.young_vehicle_failure_pct_at_least
@@ -264,7 +278,13 @@ const slipReason = (state: GameState, b: OrbitalBlock, roll: ReturnType<typeof s
   if (sh.closed_column && orbitRow(state)[sh.closed_column] === 1) return 'closed'
   const p = provider(b.launch!.provider)
   if (chance(roll, p.slip_pct / 100)) return 'slipped'
-  if (p.bump_pct_when_tight > 0 && slotsTonnes(state, state.quarter) < L.tight_below_slots_t_q && chance(roll, p.bump_pct_when_tight / 100))
+  // (M31.4: the Launch Procurement Lead's priority: never bumped)
+  if (
+    p.bump_pct_when_tight > 0 &&
+    slotsTonnes(state, state.quarter) < L.tight_below_slots_t_q &&
+    chance(roll, p.bump_pct_when_tight / 100) &&
+    staffEffect(state, 'no_bumps') !== true
+  )
     return 'bumped'
   return null
 }

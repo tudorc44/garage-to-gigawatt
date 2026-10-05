@@ -18,6 +18,7 @@ import { act4SeedOf, inActIV, logEntry, type Act4Moon, type GameState, type Luna
 import { prospectReport } from './lunarGeology.ts'
 import { scenarioOf } from './market.ts'
 import { addPc, politicalCapital } from './pcState.ts'
+import { staffNumber } from './hires.ts'
 
 const Q = (label: string) => CONTENT.quarters.indexOf(label)
 
@@ -187,7 +188,8 @@ export function missionCostUsd(state: GameState): number {
 
 /** Landing success this quarter (the market's rate). */
 export const landingChance = (state: GameState, quarter = state.quarter): number =>
-  act4Row(quarter, scenarioOf(state)).landing_success_pct / 100
+  // (M31.4: the Lunar Programme Director adds 10 points)
+  Math.min(1, (act4Row(quarter, scenarioOf(state)).landing_success_pct + staffNumber(state, 'landing_bonus_pts', 0)) / 100)
 
 export function sendMissionBlocker(state: GameState, site: LunarSiteId): Message | undefined {
   const blocked = moonPlanBlocker(state)

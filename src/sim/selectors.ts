@@ -171,6 +171,7 @@ import {
   hireBlocker,
   isAct2Hire,
   isAct3Hire,
+  isAct4Hire,
   isHired,
   outreachBandwidth,
   readMarketBandwidth,
@@ -1050,6 +1051,8 @@ export function hireViews(state: GameState) {
     .filter((h) => inAct2Rules(state) || !isAct2Hire(h.id))
     // (M17.3: the Government Affairs Director only in Act III)
     .filter((h) => inAct3Rules(state) || !isAct3Hire(h.id))
+    // (M31.4: Act IV's four only in Act IV)
+    .filter((h) => inActIV(state) || !isAct4Hire(h.id))
     .map((h) => ({
       id: h.id,
       name: h.name,
