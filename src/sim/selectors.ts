@@ -1881,8 +1881,15 @@ export function valuationBreakdown(state: GameState) {
   const v = valuationSplit(r, state.firstAiDealQuarter, scenarioOf(state))
   return {
     quarter: r.quarter,
-    ebitdaUsd: r.ebitdaUsd - v.aiEbitdaUsd,
+    // (Act IV: the orbital and lunar EBITDA have their own lines)
+    ebitdaUsd: r.ebitdaUsd - v.aiEbitdaUsd - (r.orbitEbitdaUsd ?? 0) - (r.moonEbitdaUsd ?? 0),
     multiple: v.miningMultiple,
+    /** Act IV (M31.6): the orbital unit at the space multiple, and the lunar unit; null before Act IV. */
+    orbit:
+      r.orbitEbitdaUsd === undefined
+        ? null
+        : { ebitdaUsd: r.orbitEbitdaUsd, multiple: r.orbitMultiple ?? 0, evUsd: v.orbitEvUsd },
+    lunarUsd: r.lunarUsd ?? null,
     enterpriseUsd: v.miningEvUsd,
     aiEbitdaUsd: v.aiEbitdaUsd,
     aiMultiple: v.aiMultiple,

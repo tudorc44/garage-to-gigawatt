@@ -87,3 +87,18 @@ One column of panels, as the Orbit board:
 - **After 2035**: three short paragraphs (tugs, lunar-made mass, the model's ceiling): no in-act cash.
 - **A4-07** (the Dialog): the category and what it means; a table of reports (quarter, source, estimate, 90% band); the
   shared-site note; "honest on average; the truth arrives in the chapter report".
+
+## A4-09 Capital additions and A4-10 report additions (M31.6, `screens/Act4Money.tsx`)
+
+- **Capital** (Act II's grid, `CapitalAct2`): a panel "Space and lunar capital" after the standby facility: the
+  space-equity window (open with the price a raise gets, or shut with the multiple it needs; the story on blocks under
+  way); the orbital loans table (block, loan, owed, rate, status: building / repaying / covenant cure); co-funded blocks;
+  how many blocks are insured and a hard market; lunar funding (the no-debt rule, a task order with Accept, funding
+  waiting). The Valuation panel gains two rows in Act IV: orbital EBITDA × the space multiple, and the lunar sites.
+- **The deal card's Capital slot** (A4-05): a select of the four ways to pay (own cash, export credit, project debt,
+  co-funding; blocked ones disabled), one line of terms (your share of the build, the rate), Arrange with a pip.
+- **Orrery's auction** (Orbit board, while open): one panel, its lead line and "Buy them".
+- **Report** (after the Act III block): "Orbit and Moon this quarter": one line each for orbit (blocks, revenue, EBITDA,
+  its value at the multiple) and the Moon (water processed, sales, the lunar unit), then the quarter's orbit, Moon and
+  rival log lines. The League's scale column reads "ground · orbit · lunar sites" for you and "orbit · lunar sites" for
+  the five rivals.

@@ -30,6 +30,7 @@ import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { Act4Panel } from '../components/act4Lazy.tsx'
 import { Tip } from '../components/basics.tsx'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -192,6 +193,8 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
 
         <Act2Panel state={state} />
         {state.act >= 3 && <Act3Panel name="Act3ReportBlock" state={state} />}
+        {/* Act IV (M31.6, A4-10): orbit and Moon this quarter */}
+        {state.act === 4 && <Act4Panel name="Act4ReportPanel" state={state} />}
 
         <div class="report-grid">
           <CostChart state={state} coin={coin} />

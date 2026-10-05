@@ -15,7 +15,7 @@ import type { Message } from '../i18n/t.ts'
 import type { Action } from './actions.ts'
 import { inActIV, type GameState, type OrbitalBlock } from './state.ts'
 import { companyLtv, covenantLimit } from './systems/covenant.ts'
-import { ownShare } from './systems/orbitCapital.ts'
+import { CAPITAL_KINDS, blockDebt, debtApr, ownShare } from './systems/orbitCapital.ts'
 import {
   annualValueUsd,
   arrangeOrbitalCapitalBlocker,
@@ -63,7 +63,7 @@ function why(state: GameState, a: OrbitAction): Message | null {
       case 'SIGN_ORBITAL_TENANT':
         return signOrbitalTenantBlocker(state, a.blockId, a.offer)
       case 'ARRANGE_ORBITAL_CAPITAL':
-        return arrangeOrbitalCapitalBlocker(state, a.blockId)
+        return arrangeOrbitalCapitalBlocker(state, a.blockId, a.capital)
       case 'BUY_ORBITAL_INSURANCE':
         return buyInsuranceBlocker(state, a.blockId)
       case 'SELL_ORBITAL_BLOCK':
@@ -203,6 +203,18 @@ export function blockView(state: GameState, b: OrbitalBlock) {
     spotWhy: why(state, { type: 'SIGN_ORBITAL_TENANT', blockId: b.id, offer: 'spot' }),
     capital: b.capital,
     capitalWhy: why(state, { type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id }),
+    // (M31.6) the Capital slot's four ways to pay, each with its terms and what blocks it now
+    capitalOptions: CAPITAL_KINDS.map((kind) => ({
+      kind,
+      apr: kind === 'export_credit' || kind === 'project_debt' ? debtApr(state, b, kind) : null,
+      ownShare: ownShare(state, { ...b, capital: kind }, 'build'),
+      why: why(state, { type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id, capital: kind }),
+    })),
+    debt: (() => {
+      const d = blockDebt(state, b.id)
+      return d ? { kind: d.kind, balanceUsd: d.balanceUsd, apr: d.apr, cureLabel: label(d.cureUntil) } : null
+    })(),
+    cofundShare: b.cofundShare ?? null,
     buildCostUsd: b.stage === 'proposed' ? buildCostUsd(state, b) : null,
     capexSpentUsd: b.capexSpentUsd,
     buildDoneLabel: label(b.buildDoneQuarter),

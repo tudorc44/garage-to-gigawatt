@@ -14,6 +14,8 @@ import { say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 // M30.5: the Moon (A4-06, A4-07) lives in its own file and loads with these panels.
 export { MoonDisputesPanel, MoonSection } from './Act4Moon.tsx'
+// M31.6: the Capital screen's Act IV block (A4-09) and the report's Act IV panel (A4-10).
+export { Act4CapitalPanel, Act4ReportPanel } from './Act4Money.tsx'
 
 const shellName = (id: string) => tDynamic(`orbit.shell.${id}`, id)
 const providerName = (id: string) => tDynamic(`orbit.provider.${id}`, id)
@@ -268,7 +270,7 @@ function LaunchSlot({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
   const [pick, setPick] = useState(0)
   const choice = open[Math.min(pick, open.length - 1)]
   return (
-    <div class="orbit-slot"data-slot="launch">
+    <div class="orbit-slot" data-slot="launch">
       <span class="label">{t('ui.orbit.slot.launch')}</span>
       {b.launch ? (
         <>
@@ -318,7 +320,7 @@ function LaunchSlot({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
 /** The Tenant slot: this quarter's offers, or spot. */
 function TenantSlot({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
   return (
-    <div class="orbit-slot"data-slot="tenant">
+    <div class="orbit-slot" data-slot="tenant">
       <span class="label">{t('ui.orbit.slot.tenant')}</span>
       {b.tenant ? (
         <TenantLine b={b} />
@@ -367,19 +369,37 @@ function TenantLine({ b }: { b: BlockView }) {
 
 /** The Capital slot: own cash (M29; M31 adds the rest). */
 function CapitalSlot({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
+  const open = b.capitalOptions.filter((o) => !o.why)
+  const [kind, setKind] = useState(open[0]?.kind ?? 'cash')
+  const choice = b.capitalOptions.find((o) => o.kind === kind)!
   return (
-    <div class="orbit-slot"data-slot="capital">
+    <div class="orbit-slot" data-slot="capital">
       <span class="label">{t('ui.orbit.slot.capital')}</span>
       <p class="num-s">{t('ui.orbit.capital.build', { costUsd: fmt.money(b.buildCostUsd ?? 0) })}</p>
       {b.capital ? (
-        <p class="num-s">{t('ui.orbit.capital.cash')}</p>
+        <p class="num-s">{t(`ui.orbit.capital.${b.capital}`)}</p>
       ) : (
-        <OrbitButton
-          label={t('ui.orbit.capital.arrange')}
-          why={b.capitalWhy}
-          bw={1}
-          onClick={() => act({ type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id })}
-        />
+        <>
+          <select value={kind} onChange={(e) => setKind((e.target as HTMLSelectElement).value as typeof kind)}>
+            {b.capitalOptions.map((o) => (
+              <option key={o.kind} value={o.kind} disabled={!!o.why}>
+                {t(`ui.orbit.capital.${o.kind}`)}
+              </option>
+            ))}
+          </select>
+          <span class="num-s muted">
+            {t('ui.orbit.capital.terms', {
+              share: fmt.pct(choice.ownShare),
+              rate: choice.apr === null ? '—' : fmt.pct(choice.apr, 2),
+            })}
+          </span>
+          <OrbitButton
+            label={t('ui.orbit.capital.arrange')}
+            why={choice.why}
+            bw={1}
+            onClick={() => act({ type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id, capital: kind })}
+          />
+        </>
       )}
       <p class="num-s muted">
         {b.licenceRoomMw >= b.mw
