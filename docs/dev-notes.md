@@ -153,6 +153,23 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Small follow-ups
 
+- (Done, 6 Oct 2026) **Dialog hotfixes 1 and 2** (owner bug reports; live on GitHub Pages until merged): on `hotfix-dialog`
+  from `main` (`1ca4e6b`, `8c72e9a`, pushed for the owner to merge), cherry-picked onto `m32`. 1: `.dialog > *` keeps
+  `flex-shrink: 0`, so a dialog taller than the window scrolls instead of squeezing its `.seg` switches to 0 px (they were
+  3 px in a browser before, 39 px after). 2: `.deal-panel td.num-s` wraps, so the Deal builder fits its 760 px dialog (the
+  longest notes measured 1,265 px before); the capex note joins its parts with " · ", the utilisation note ends with a full
+  stop before the contract note, one year reads "1 yr" (`ui.deal.years_one`), a rating note reads "B+, rising". A sweep of
+  every dialog this Act II save reaches (11) at 1024 and 1280 px also found the fleet dialog ("Your machines", 876 px):
+  `.fleet-table` lets its batch name and working count wrap (mine, reversible). Tests: `tests/ui/dialogLayout.test.ts`
+  (the CSS rules; happy-dom has no layout) and `tests/ui/dealBuilderText.test.tsx`. On `m32` an Act IV game's 12 dialogs
+  (Read the market included) fit too. Not swept in a browser: the prologue's and Act I-only dialogs (coin sales, crypto
+  loans, the auction, renewals) and Act IV's prospect report (four short columns).
+- **New project dialog, shorter site list (owner request, 6 Oct 2026; after the hotfix):** the SITE list shows every site,
+  including ones with 0 kW or a few kW free (16+ rows late in Act II), which buries the useful ones and made the dialog
+  overflow. Sort sites by free MW, largest first, and fold those with less free power than the smallest project (the pilot's
+  minimum) under a "Show N more sites" toggle, rather than removing them: with Grid upgrade or On-site gas a site needs no
+  free MW, so every site must stay reachable. Garage-tier sites stay excluded as now. UI only, no rule change; test the
+  order and the fold; label the threshold "(mine, reversible)".
 - An ear test of the sounds; the 4 sample fallbacks if a synth sound is wrong (owner task, DT C3 after M20).
 - (Done, 29 Sep 2026) The big JS chunk is split: `vite.config.ts` puts the market data, card text, other content JSON and
   libraries in their own files, and the prologue screens load only when a prologue game starts (`LazyPrologue` in `app.tsx`).
@@ -162,6 +179,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 - (Done, M8.7d and M21.3) Power and Capital slot log lines: in the report's milestones, nuclear included; card-bought rack pilots log both.
 
 ## Next
+
+**The dialog hotfixes 1 and 2 are done** (6 Oct 2026, "Small follow-ups"): the owner merges `hotfix-dialog` into `main`.
+Next small task: the New project dialog's shorter site list (same section).
 
 **The Act IV run (M27–M32) is under way, now on `m32`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
 under M29). M29, M30 and M31 are done. Now on **`m32`**; **the Act IV run is finished** (M27–M32 pushed on `m27`…`m32`, chained; none merged). Next: the owner playtests `m32` (staging); then a balance decision on the MISS targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground ones), the owner's check of the fictional names, and merging the chain into `main`. M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
