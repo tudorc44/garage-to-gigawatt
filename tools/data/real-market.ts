@@ -51,18 +51,22 @@ function quarterAverage(series: [string, number][], q: string): number | null {
   return inQ.reduce((a, [, v]) => a + v, 0) / inQ.length
 }
 
+// `carryForward` (M23.1, DT): a quarter after the last fully covered one takes the series' last observed value, still flagged
+// as an estimate (SOFR only; the HY spread's uncovered quarters keep their estimates).
 const SERIES = [
   {
     column: 'sofr_pct',
     flag: 'sofr_estimate',
     data: readFred('fred_SOFR.csv'),
     format: (avg: number) => String(Number(avg.toFixed(2))),
+    carryForward: true,
   },
   {
     column: 'hy_spread_bps',
     flag: 'hy_spread_estimate',
     data: readFred('fred_BAMLH0A0HYM2.csv'),
     format: (avg: number) => String(Math.round(avg * 100)),
+    carryForward: false,
   },
 ] as const
 
@@ -86,6 +90,10 @@ const out = rows.map((line) => {
     const avg = quarterAverage(s.data, q)
     if (avg === null) {
       cells[col(s.flag)] = 'True'
+      // after the last observation's quarter starts: the last observed value, carried forward (still an estimate)
+      const last = s.data.at(-1)!
+      if (s.carryForward && last[0] >= quarterDays(q)[0])
+        cells[col(s.column)] = s.format(last[1])
       continue
     }
     cells[col(s.column)] = s.format(avg)

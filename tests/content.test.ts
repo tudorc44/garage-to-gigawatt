@@ -524,7 +524,8 @@ describe("Act II's quarterly market (market_quarterly_act2, scope 0.2 §2.3)", (
   it('has rates, spreads, regional power and the AI demand index', () => {
     // M22: SOFR is FRED's quarterly average from 2022Q4 to 2026Q3 (tools/data/real-market.ts); 2026Q4 is still an estimate
     expect(q('2022Q4').sofrPct).toBe(3.62)
-    expect(q('2026Q4').sofrPct).toBe(4)
+    // (M23.1: 2026Q4 = the last FRED observation, 2026-10-01's 3.87%, carried forward; still flagged an estimate)
+    expect(q('2026Q4').sofrPct).toBe(3.87)
     expect(q('2023Q2').ddtlSpreadBps).toBeNull() // no DDTL before 2023Q3
     expect(q('2023Q3').ddtlSpreadBps).toBeGreaterThan(0)
     expect(q('2022Q4').aiDemandIndex).toBe(8)

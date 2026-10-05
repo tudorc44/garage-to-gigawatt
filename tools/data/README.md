@@ -30,6 +30,9 @@ curl -sS -o tools/data/raw/fred_BAMLH0A0HYM2.csv "https://fred.stlouisfed.org/gr
   2023-10-03. Days FRED leaves empty (holidays) are skipped.
 - Each row's `sofr_estimate` / `hy_spread_estimate` is `False` where the value is real, `True` where it is still the
   estimate. The row's `estimate` stays `True` while any column in the row is an estimate.
+- **Carry-forward (M23.1, SOFR only):** a quarter the download doesn't fully cover, but in which it has an observation,
+  takes the last observed value: SOFR 2026Q4 = 3.87% (2026-10-01). It stays flagged `sofr_estimate = True`. The HY spread's
+  uncovered quarters keep their original estimates.
 
 ## Still estimated
 
@@ -37,5 +40,5 @@ curl -sS -o tools/data/raw/fred_BAMLH0A0HYM2.csv "https://fred.stlouisfed.org/gr
 - **The ASIC $/TH tiers** (`asic_price_usd_th_old/mid/new/latest`, weekly file): Luxor's Hashrate Index ASIC Price Index is
   behind its Premium tier and paid data API (checked 5 Oct 2026), so no free download exists; no workaround was tried.
   The mapping, if a licence is obtained: its efficiency bands > 38 J/TH, 25–38, 19–25, < 19 → old / mid / new / latest.
-- **Any quarter after the last complete real quarter** (2026Q4 for both series), and every Act III scenario series
-  (2027 and later: forecasts by design).
+- **Any quarter after the last complete real quarter** (2026Q4 for both series: SOFR as the carried-forward last
+  observation, the HY spread as the original estimate), and every Act III scenario series (2027 and later: forecasts by design).

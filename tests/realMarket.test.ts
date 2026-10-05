@@ -48,6 +48,14 @@ describe('real market data (M22)', () => {
     expect(data.find((r) => r.quarter === '2026Q4')!.sofr_estimate).toBe(true)
   })
 
+  it('M23.1: SOFR’s uncovered 2026Q4 is the last observation carried forward (still an estimate); HY’s keeps its estimate', () => {
+    const q4 = data.find((r) => r.quarter === '2026Q4')!
+    expect(q4.sofr_pct).toBe(sofr.at(-1)![1])
+    expect(sofr.at(-1)![0] >= '2026-10-01').toBe(true)
+    expect(q4.hy_spread_estimate).toBe(true)
+    expect(q4.hy_spread_bps).toBe(380)
+  })
+
   it('HY spread = FRED BAMLH0A0HYM2 quarterly average × 100 for 2023Q4–2026Q3; the rest still estimates', () => {
     const real = data.filter((r) => !r.hy_spread_estimate).map((r) => r.quarter)
     expect(real).toHaveLength(12)

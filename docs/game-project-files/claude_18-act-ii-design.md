@@ -400,6 +400,7 @@ Checked against real 2022–26 companies in the pack:
      - **SOFR:** FRED series `SOFR` (daily, %) → `sofr_pct` = the quarter's average of daily values, 2 dp. Real for 2022Q4–2026Q3 (16 quarters).
      - **High-yield spread:** FRED series `BAMLH0A0HYM2` (ICE BofA US High Yield OAS, daily, %) → `hy_spread_bps` = the quarter's average × 100, whole bps. FRED shows only the last 3 years of this licensed series (from 2023-10-03), so it is real for 2023Q4–2026Q3 (12 quarters).
      - A quarter is real only when the download covers all of it (an observation within its first and last 7 days); the rest **stay estimates**: SOFR 2026Q4, HY 2022Q4–2023Q3 and 2026Q4.
+     - *M23.1:* SOFR 2026Q4 = the last FRED observation carried forward (3.87% on 2026-10-01; was the 4.0% estimate), still flagged an estimate. Seam into Act III: 2026Q4 3.87% → 2027Q1 3.95% (s0, s1, s3) / 4.00% (s2), +8 to +13 bp (was −5 to 0 bp).
      - Per-row flags `sofr_estimate` and `hy_spread_estimate` say which values are real; the row's `estimate` stays True while any column in it is an estimate.
      - **Still estimated:** the DDTL spread (`ddtl_spread_bps`, no public series), the ASIC tiers (item 1), and every Act III scenario series (2027+, forecasts by design).
 4. **Liquidated-damages rate (3%/quarter):** a design default; real contracts don't disclose it.
