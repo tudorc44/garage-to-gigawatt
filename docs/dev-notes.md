@@ -190,6 +190,24 @@ knobs SOFR2 / HY3 and `--knobs` on the full sim (process only). **M23.4 done:** 
 (`resetDismissedTips`). Mine: GPU contracts count their project's MW; holdovers count this quarter; tips go below title rows; the reading-score
 term id is `reading` (the hidden-file grep forbids `reading_score` in UI files). Act3Panels 28.2 → 30.1 KB. 1265 tests.
 
+**M23.3 sweep (report only; 5 full `--act2 --act3` runs, output in the session scratchpad, nothing committed changed):**
+- Baseline (M23.1 only) vs M22: every summary table identical; the only CSV change is 19 rows of `act2-valuation.csv` at 2026Q4 (debt-carrying
+  bots end ~$0.13M richer: 2026Q4 SOFR 4.00 → 3.87%).
+
+| Run | Game overs (S0/S1/S2/S3 = total) | C1 S0 / S1 / S2 / S3 | Covenant breaches S0 / S1 / S2 / S3 | Act II §5 |
+|---|---|---|---|---|
+| baseline | 5 / 17 / 15 / 6 = 43 | 1.01 / 0.84 / 1.80 / 0.97 PASS | 5 / 24 / 20 / 9 | 9 PASS, 4 MISS (as M22) |
+| SOFR −100 bp (Act II) | 5 / 18 / 15 / 6 = 44 | 1.00 / 0.83 / 1.81 / 0.96 PASS | 6 / 24 / 21 / 8 | unchanged |
+| SOFR +100 bp (Act II) | 5 / 19 / 15 / 6 = 45 | 1.02 / 0.85 / 1.77 / 1.04 PASS | 5 / 27 / 18 / 10 | unchanged |
+| HY −150 bp (Act III) | 5 / 18 / 15 / 6 = 44 | 1.01 / 0.84 / 1.80 / 0.97 PASS | 5 / 24 / 20 / 8 | unchanged |
+| HY +150 bp (Act III) | 5 / 17 / 15 / 6 = 43 | 1.01 / 0.84 / 1.80 / 0.97 PASS | 5 / 24 / 20 / 8 | unchanged |
+
+Margins (baseline value · threshold · flipped by any run?): C1 "S1 lowest": S1 0.84 vs next-lowest S3 0.97 (margin 0.13; smallest 0.13
+at SOFR −100) · no. §5 #0 gap 0.44 (≥ 0) · no; #1 17/42 · no; #3 peak $4.6B (band $4–8B) · no; #5 texas-ipo $300.4M ($100–400M) · no; #8 IRR gap
+35 pts (≥ 30) · no; #9/#10 EV/MW in band · no; #11 3/4 · no; the accepted MISSes (#2, #4, #12) and #6 stay MISS. **S3:** 0.96–1.04× across the runs:
+the most rate-sensitive scenario (it crosses 1.0× at SOFR +100), but always ≥ 0.12 above S1. The Act III HY knob barely moves anything: bots
+rarely sign new project debt in Act III, the only thing priced on it.
+
 ## Milestone M22 (branch `m22`, from main at `48d16b4` plus the M21 notes fix `d7bab88`; real market data)
 
 Split (DT spec, 5 Oct 2026): M22.0 housekeeping (m21 / m21.6 tagged and deleted; the "not merged" line fixed: `d7bab88`, made on the
