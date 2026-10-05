@@ -189,6 +189,7 @@ recorded); M26.1 remove the unused `p0.tooltip.*` keys; M26.2 the market fix log
 in `docs/game-project-files/` on the superseded v1 market files; M26.4 the "Retrofit done" / "Refit done" lines.
 - **Closed (DT, M26.0):** the reading-score card keeps its own text (`term.act3.reading.*`) and no glossary link: the glossary is open during
   play, and any entry could hint at the hidden scenario.
+- **M26.1 done.** Removed from `content.en.json` all six `p0.tooltip.*` keys (difficulty, solo_vs_pool, custody, backup, preorders, hodl_sell): no code, test or tool names them, and no dynamic key builds `p0.tooltip.` (the built prefixes are `tooltip.q1.`, `tooltip.act<n>.`, `p0.event/vendor/vanity/news/chapter_title.`). Nothing kept. The pack's own copy stays in `docs/prologue-content/text_prologue.en.json`.
 
 ## Milestone M25 (branch `m25`, from main at `ebcda47`; glossary unification, Act II data audit, the rest of the Act III polish)
 
