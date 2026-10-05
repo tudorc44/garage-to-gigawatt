@@ -202,6 +202,8 @@ before 2036Q1); Bitcoin Supercycle 2031Q2–2035Q1 (M28: mining revenue × 2 for
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M29.4, 5 Oct 2026:** `shells_iv.json` gains `debris.conjunction_accept_hit_share: 0.25` (accepting a conjunction's
+  risk: the chance of a hit); `satellites_iv.json` gains `sale_share_of_value: 0.8` (a quick sale's discount). Designed.
 - **M29.3, 5 Oct 2026:** `launch_providers.json` gains `tight_below_slots_t_q: 1000` (when the dominant launcher can bump).
 - **M29.2, 5 Oct 2026:** `licences_iv.json` gains `approval_extra_from: "2033Q1"` (from when a future's extra approval
   time applies).

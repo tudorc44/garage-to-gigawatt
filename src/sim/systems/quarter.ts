@@ -66,7 +66,8 @@ import {
   startQuarterProjects,
   weightedBacklogUsd,
 } from './projects.ts'
-import { aiEbitdaUsd, ebitdaUsd, valuationUsd } from './valuation.ts'
+import { aiEbitdaUsd, ebitdaUsd, orbitEbitdaUsd, valuationUsd } from './valuation.ts'
+import { endQuarterOrbit, orbitConstructionUsd, spaceMultiple, startQuarterOrbitLive } from './orbitOps.ts'
 import { depreciationAudit, lasting } from './eventEffects.ts'
 
 /**
@@ -90,7 +91,8 @@ export function endQuarter(state: GameState): void {
   // Act III (M12.3): card cash due at this quarter's end (a recovery, a share of the revenue).
   payAct3Payouts(state)
   endQuarterGpuWaves(state)
-  // Act IV (M29.3): orbital launches due this quarter slip, fly or fail.
+  // Act IV (M29.4): live orbital blocks earn, wear and face debris; then (M29.3) launches due now slip, fly or fail.
+  endQuarterOrbit(state)
   endQuarterLaunches(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
@@ -194,7 +196,18 @@ function buildReport(
     ebitdaUsd(st) * (lasting(state, state.events.ebitdaMult)?.mult ?? 1)
   const evMult = lasting(state, state.events.valuationMult)?.mult
   const treasuryUsd = treasuryValueUsd(state, w)
-  const constructionUsd = constructionValueUsd(state)
+  // Act IV (M29.4): orbital blocks under way count at capex spent; the orbital unit at the space multiple.
+  const orbit = state.act4Orbit
+    ? {
+        orbitRevenueUsd: st.orbitRevenueUsd ?? 0,
+        orbitCostUsd: st.orbitCostUsd ?? 0,
+        orbitEbitdaUsd: orbitEbitdaUsd(st),
+        orbitMultiple: spaceMultiple(state),
+      }
+    : null
+  const constructionUsd = orbit
+    ? constructionValueUsd(state) + orbitConstructionUsd(state)
+    : constructionValueUsd(state)
   const weightedBacklog = weightedBacklogUsd(state)
   return {
     quarter: CONTENT.quarters[state.quarter],
@@ -226,8 +239,10 @@ function buildReport(
         weightedBacklogUsd: weightedBacklog,
         evMult,
         scenario: scenarioOf(state),
+        ...(orbit ? { orbitEbitdaUsd: orbit.orbitEbitdaUsd, orbitMultiple: orbit.orbitMultiple } : {}),
       },
     ),
+    ...(orbit ?? {}),
     ...(evMult !== undefined ? { evMult } : {}),
     priceAlerts: st.priceAlerts,
     marginCalls: st.marginCalls,
@@ -320,6 +335,7 @@ export function startNextQuarter(state: GameState): void {
   // Act IV (M29.2): open orbital blocks without a tenant get this quarter's offers.
   startQuarterOrbitOffers(state)
   startQuarterOrbitBuilds(state)
+  startQuarterOrbitLive(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

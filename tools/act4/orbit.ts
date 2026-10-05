@@ -26,6 +26,7 @@ const FILES: Record<string, unknown> = {
     design_life_years: 5,
     utilisation: { contracted: 0.85, spot: 0.7 },
     spot_shell_rent_share: 0.8,
+    sale_share_of_value: 0.8,
   },
   'shells_iv.json': {
     _meta: {
@@ -47,6 +48,7 @@ const FILES: Record<string, unknown> = {
       cascade_capacity_loss_share: 0.4,
       manoeuvre_life_quarters: 1,
       conjunction_alert_chance_per_congestion_point: 0.0025,
+      conjunction_accept_hit_share: 0.25,
     },
   },
   'insurance_iv.json': {

@@ -63,6 +63,8 @@ const satellitesSchema = z.object({
   design_life_years: z.number().positive(),
   utilisation: z.object({ contracted: share, spot: share }),
   spot_shell_rent_share: share,
+  /** Selling a live block fetches this share of its value at the space multiple (a quick sale's discount). */
+  sale_share_of_value: share,
 })
 
 const shellsSchema = z.object({
@@ -86,6 +88,8 @@ const shellsSchema = z.object({
     cascade_capacity_loss_share: share,
     manoeuvre_life_quarters: z.number().int().min(0),
     conjunction_alert_chance_per_congestion_point: share,
+    /** Accepting a conjunction's risk: the chance the debris hits (a loss of loss_capacity_share). */
+    conjunction_accept_hit_share: share,
   }),
 })
 

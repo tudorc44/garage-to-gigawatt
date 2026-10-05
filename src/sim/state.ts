@@ -210,6 +210,8 @@ export interface OrbitalBlock {
   /** Fleet telemetry: the failures it reported, as a yearly %, per live quarter (doc 33 §6.5). */
   telemetry: { quarter: number; failurePctYr: number }[]
   lostLaunches: number
+  /** Its EBITDA in the last quarter it was live (what a buyer values). */
+  lastEbitdaUsd?: number
 }
 
 /** Act IV (M29.2): a constellation licence in one shell (doc 33 §7.3). */
@@ -1174,6 +1176,11 @@ export interface QuarterReport {
   /** The part of the AI EBITDA valued at the contracted multiple floor (M6.0b); missing = 0. */
   aiFloorEbitdaUsd?: number
   lateDamagesUsd: number
+  /** Act IV (M29.4): the orbital unit: revenue, costs, EBITDA and the space multiple it was valued at. */
+  orbitRevenueUsd?: number
+  orbitCostUsd?: number
+  orbitEbitdaUsd?: number
+  orbitMultiple?: number
   /** The valuation's Act II parts at quarter end: projects under construction (capex spent), the
    *  remaining contracted revenue (unweighted, as the top bar shows it) and its credit-weighted value. */
   constructionUsd: number

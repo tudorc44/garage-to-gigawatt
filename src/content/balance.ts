@@ -808,5 +808,7 @@ export const BALANCE = {
      * quarters (2031Q1–2031Q4)": the four quarters 0–3 with three steps (act4-scope.md §6).
      */
     seamGlideQuarters: 3,
+    /** Bandwidth (doc 33 §14.3, IV-D27 ⚙): Act II's rule, +1 once your first orbital block is live, at most 9. */
+    bandwidth: { orbitLiveBonus: 1, max: 9 },
   },
 } as const

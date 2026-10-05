@@ -124,6 +124,7 @@ import {
   cancelLaunchBlocker,
   startOrbitalBuilds,
 } from './systems/orbitLaunch.ts'
+import { planOrbitAlerts, sellOrbitalBlock, sellOrbitalBlockBlocker } from './systems/orbitOps.ts'
 import {
   chooseRenewal,
   keepEmpty,
@@ -388,6 +389,8 @@ export type Action =
   | { type: 'CANCEL_ORBITAL_LAUNCH'; blockId: string }
   /** Act IV: insure a block (launch and first year before launch; a year's renewal in orbit). */
   | { type: 'BUY_ORBITAL_INSURANCE'; blockId: string }
+  /** Act IV (M29.4): sell a live block (1 BW) at its value on the space multiple, less a quick sale's discount. */
+  | { type: 'SELL_ORBITAL_BLOCK'; blockId: string }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -515,6 +518,7 @@ function run(s: GameState, a: Action): Message | undefined {
       declineCommunityDeal(s)
       // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
       startOrbitalBuilds(s)
+      planOrbitAlerts(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -802,6 +806,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = buyInsuranceBlocker(s, a.blockId)
       if (blocked) return blocked
       buyInsurance(s, a.blockId)
+      return
+    }
+
+    case 'SELL_ORBITAL_BLOCK': {
+      const blocked = sellOrbitalBlockBlocker(s, a.blockId)
+      if (blocked) return blocked
+      sellOrbitalBlock(s, a.blockId)
       return
     }
 

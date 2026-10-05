@@ -107,6 +107,9 @@ export interface ValuationParts {
   evMult?: number
   /** Act III: the scenario whose multiples apply (M11.4c). Absent in Acts I and II. */
   scenario?: MarketKey | null
+  /** Act IV (M29.4): the orbital unit's quarter EBITDA (part of the total) and the space multiple it earns. */
+  orbitEbitdaUsd?: number
+  orbitMultiple?: number
 }
 
 /**
@@ -124,12 +127,14 @@ export function valuationUsd(
   parts: ValuationParts = {},
 ): number {
   const ai = parts.aiEbitdaUsd ?? 0
+  const orbit = parts.orbitEbitdaUsd ?? 0
   const mining =
     eraMultiple(quarter, parts.scenario) +
     (parts.pivot ? BALANCE.projects.pivotPremium : 0)
   const enterprise =
-    (Math.max(0, (quarterEbitdaUsd - ai) * 4) * mining +
-      aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd, parts.scenario)) *
+    (Math.max(0, (quarterEbitdaUsd - ai - orbit) * 4) * mining +
+      aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd, parts.scenario) +
+      Math.max(0, orbit) * 4 * (parts.orbitMultiple ?? 0)) *
     (parts.evMult ?? 1)
   return (
     enterprise +
@@ -157,8 +162,11 @@ export function valuationSplit(
   const miningMultiple =
     eraMultiple(q, scenario) + (pivot ? BALANCE.projects.pivotPremium : 0)
   const evMult = r.evMult ?? 1
+  const orbit = r.orbitEbitdaUsd ?? 0
   const miningEvUsd =
-    Math.max(0, (r.ebitdaUsd - ai) * 4) * miningMultiple * evMult
+    Math.max(0, (r.ebitdaUsd - ai - orbit) * 4) * miningMultiple * evMult
+  // Act IV (M29.4): the orbital unit at the space multiple (0 before Act IV).
+  const orbitEvUsd = Math.max(0, orbit) * 4 * (r.orbitMultiple ?? 0) * evMult
   const aiEvUsd = aiEnterpriseUsd(q, ai, r.aiFloorEbitdaUsd, scenario) * evMult
   // The multiple the AI EBITDA earns overall (the era's, lifted by any contracted floor).
   const aiMultiple =
@@ -171,12 +179,14 @@ export function valuationSplit(
     aiEbitdaUsd: ai,
     miningEvUsd,
     aiEvUsd,
+    orbitEvUsd,
     constructionUsd,
     weightedBacklogUsd,
     treasuryUsd:
       r.valuationUsd -
       miningEvUsd -
       aiEvUsd -
+      orbitEvUsd -
       constructionUsd -
       weightedBacklogUsd -
       r.cash +

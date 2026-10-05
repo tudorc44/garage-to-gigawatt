@@ -46,5 +46,6 @@
     "contracted": 0.85,
     "spot": 0.7
   },
-  "spot_shell_rent_share": 0.8
+  "spot_shell_rent_share": 0.8,
+  "sale_share_of_value": 0.8
 }
