@@ -95,17 +95,17 @@ Each future's path is designed with anchors (act quarter, value), straight lines
 | `insurance_capacity_usd_m` | Insurance capacity per launch, $M | 350 → F1 800, F2 500, F3 600 (300 after the cascade), F4 600 | 2026's ~$300M sourced [A]; the rest designed |
 | `insurance_rate_young_pct` / `_mature_pct` / `_inorbit_pct` | Premiums: launch + first year (young / mature vehicle), in-orbit renewal, % of insured value a year | 7.5 / 3 / 2; F3 13 / 5 / 3.5 after the cascade | designed (doc 31 §3: market lore, not verified) — **research gap** |
 | `congestion_sso` / `_high_leo` / `_high_orbit` | Congestion index per shell, 0–100 | SSO 55 → F1 90, F2 65, F3 95 at the cascade then 80, F4 70; high LEO 20 → 30–55; high orbit 5 → 8–20 | designed |
-| `sso_closed` | 1 while the busy shell is closed to new launches | F3: 1 for 6 quarters from its trigger | designed (doc 33 §7.2: 4–8 ⚙) |
-| `orbital_shell_rent_usd_mw_yr` | Orbital shell rent, $ per MW-year | 8.5M → F1 5.0M, F2 9.0M, F3 10.5M after the cascade then 8.5M, F4 6.0M | designed (priced off the cost model's 2031 platform cost) |
-| `orbital_gpu_usd_hr` | Orbital GPU-hour price | 4.2 → F1 2.6, F2 4.3, F3 4.8 then 4.0, F4 2.8 | designed (cost model: orbit $3.66/GPU-hr in 2031) |
+| `sso_closed` | 1 while the busy shell is closed to new launches | F3: 1 for 8 quarters from its trigger (M32.6) | designed (doc 33 §7.2: 4–8 ⚙) |
+| `orbital_shell_rent_usd_mw_yr` | Orbital shell rent, $ per MW-year | 6.0M → F1 3.0M, F2 3.5M, F3 8.0M after the cascade then 6.0M, F4 2.5M (M32.6) | designed (about a 5-year capex annuity in 2031; then what tenants pay in each future) |
+| `orbital_gpu_usd_hr` | Orbital GPU-hour price | 3.6 → F1 2.0, F2 3.0 at its trigger then 1.8, F3 4.2 then 3.4, F4 3.0 at its trigger then 1.4 (M32.6) | designed (cost model: orbit $3.66/GPU-hr in 2031) |
 | `sovereign_premium_pct` | Sovereign tenants' premium over market rent, % | 20 → F1 15, F2 20, F3 30 then 25, F4 15 | designed |
 | `grid_wait_q` / `gas_wait_q` | Quarters to a new grid connection / on-site gas | 20 / 8; F4 falls to 8 / 6 from its trigger | grid sourced (LBNL median > 5 years [A]) into designed paths |
-| `space_ev_ebitda_mult` | The space multiple (market mood) | 22 → F1 30 then 20, F2 12, F3 9 at the cascade then 16, F4 10 | anchors sourced (doc 33 §11.3: CoreWeave ~25x, Iridium ~16x, SES ~6x [A]); paths designed |
+| `space_ev_ebitda_mult` | The space multiple (market mood) | 14 → F1 22 then 16, F2 5, F3 5 at the cascade then 12, F4 5 (M32.6) | anchors sourced (doc 33 §11.3: CoreWeave ~25x, Iridium ~16x, SES ~6x [A]); paths designed |
 | `lunar_delivery_usd_kg` | Earth → lunar surface delivery, $/kg | 40,000 → F1 15,000, F2 35,000, F3–F4 25,000 | inference ($10–50k/kg in the reusable era, doc 33 §9.6), paths designed |
 | `lunar_llo_usd_kg` | Lunar surface → lunar orbit, $/kg | 8,000 → F1 3,000, F2 7,000, F3–F4 5,000 | designed — **research gap** |
 | `landing_success_pct` | Lunar landing success, % (all futures) | 55 → 75 | designed (doc 33 §9.2; 2019–25 history ~38% [A]) |
 | `lunar_offtake_surface_usd_kg` / `_llo_usd_kg` | Offtake prices for water/propellant on the surface / in lunar orbit, $/kg | 8,000 → 3,500–7,000; 2,500 → 1,000–2,500 | designed **[D]** (no priced lunar offtake exists) |
-| `lunar_value_usd_t` | The market's value per tonne of lunar resource, for valuation | 2,000 → F1 2,500, F2 1,500, F3 4,000, F4 1,800 | designed **[D]** |
+| `lunar_value_usd_t` | The market's value per tonne of lunar resource, for valuation | 3,000 → F1 3,500, F2 1,500, F3 5,000, F4 1,200 (M32.6) | designed **[D]** |
 
 ## The Signals files (M28.1)
 
@@ -188,7 +188,7 @@ before 2036Q1); Bitcoin Supercycle 2031Q2–2035Q1 (M28: mining revenue × 2 for
   spot shell rent 80% of market (designed).
 - **Shells:** SSO ×1.0, high LEO ×1.3 with +10% shielding, high orbit ×2.5 with +30% shielding and no interactive
   inference (doc 33 §7.2; derived from the delta-v table). Debris: a live block's quarterly loss chance = 0.2% ×
-  (congestion / 50)³, a loss costing 25% of its capacity; the cascade costs SSO blocks 40%; manoeuvring costs a quarter
+  (congestion / 50)³, a loss costing 25% of its capacity; the cascade costs SSO blocks 70% (M32.6; was 40%); manoeuvring costs a quarter
   of life; a conjunction alert's chance is 0.25% per congestion point (all designed).
 - **Insurance:** rates from the market files (designed, **research gap**); a young vehicle (≥ 3% failures) pays the
   young rate; a loss over $400M hardens the market for 4 quarters (rates ×1.75, capacity ×0.7; the trigger sourced in
@@ -263,6 +263,13 @@ All three files come from `npm run content:act4-money` (`tools/act4/money.ts`).
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M32.6, 6 Oct 2026 (the balance pass, three rounds):** round 1, the orbital shell rent (2031 $8.5M → $6.0M/MW-yr and
+  new per-future paths), the orbital GPU-hour (2031 $4.2 → $3.6) and the space multiple (2031 22× → 14×, new paths);
+  round 2, F2's rent and GPU-hour lower, the lunar value per tonne (2031 $2,000 → $3,000, new paths), the cascade's
+  capacity loss 0.4 → 0.7 (`shells_iv.json`); round 3, F2's and F4's GPU-hour fall from their triggers, the busy shell
+  closed 8 quarters in F3 (was 6). All futures stay identical through 2031Q4 (B14). The market files regenerate from
+  `tools/act4/market.ts`.
+- **M32.4, 6 Oct 2026:** first version of `presets_act4.json` (written by the sim).
 - **M31.1, 5 Oct 2026:** first version of `capital_iv.json`, `hires_iv.json` and `rivals_iv.json`.
 - **M30.1, 5 Oct 2026:** first version of `lunar_iv.json` and `lunar_claims_iv.json`.
 - **M29.4, 5 Oct 2026:** `shells_iv.json` gains `debris.conjunction_accept_hit_share: 0.25` (accepting a conjunction's

@@ -7,8 +7,9 @@ A career runs from a bedroom in 2009 to an AI-campus operator in 2030, in acts o
 Plan phase → Live quarter (13 weekly ticks, pausable, up to 3 interrupts) → Quarter report; each act ends in a
 chapter report. Money, debt, power, Heat and rivals are simulated; prices and events follow scripted data.
 
-**Status (5 Oct 2026): the Prologue, Act I, Act II and Act III are built and public on GitHub Pages. Act IV ("The Race
-to Orbit") is designed (doc 33, approved with the owner's defaults in `docs/act4-scope.md`) and being built (M27–M32).**
+**Status (6 Oct 2026): the Prologue, Act I, Act II and Act III are built and public on GitHub Pages. Act IV ("The Race
+to Orbit", doc 33 with the owner's defaults in `docs/act4-scope.md`) is built on the branches m27–m32 (M27–M32, not yet
+merged or public): its balance pass closed with targets still MISS (dev-notes, M32).**
 - **The Prologue** (Alpha 0.3, Act 0, "Bedroom to Garage"): 32 quarters, 2009 → 2016, optional from the title screen,
   handing over to Act I. Scope in `docs/alpha-0.3-scope.md`.
 - **Act I** (Alpha 0.1, "Garage to Hashrate"): 23 quarters, 2017Q1 → 2022Q3. $10k and an empty garage; machines,
@@ -42,6 +43,7 @@ npm run sim       # sim-runner: bots × 50 seeds → CSVs + summary in sim-outpu
 npm run sim -- --act2 --act3   # also Act II to 2026Q4 and every Act III run (~55 min); the byte-identity check
 npm run sim -- --act3-anchors  # Act III archetypes × scenarios × 30 seeds, the anchor table (~15 min)
 npm run sim -- --prologue      # the prologue bots and the scope 0.3 §5 table
+npm run sim -- --act4 --seeds 10  # Act IV archetypes × presets × futures × lunar grades, the B1-B14 table (~30 min)
 npm run content:market  # regenerate the market JSON files after editing a market CSV
 ```
 
@@ -125,11 +127,11 @@ npm run content:market  # regenerate the market JSON files after editing a marke
 
 ### Act IV rules that must hold
 - **Hidden files:** `reading_score_iv.json`, `lunar_truth.json` and `orbit_truth_iv.json` are each read only by their own
-  sim system (`readingScore.ts`, the lunar geology system, the fleet reliability system) and by `src/sim/systems/act4End.ts`,
-  plus tests and `tools/`. The grep test enforces it.
+  sim system (`readingScoreIv.ts`, `lunarGeology.ts`, `fleetReliability.ts`); `readingScoreIv.ts` and `signalsHiddenIv.ts`
+  only by `src/sim/systems/act4End.ts`; plus tests and `tools/`. The grep tests enforce it.
 - **The leak guard:** no Act IV screen during play shows a future's name, trigger, decoy reason or tell, the true orbital
-  reliability or the true lunar grade; views show estimates (prospect reports, fleet telemetry) only. Only the Act IV
-  chapter report reveals them.
+  reliability or the true lunar grade; views (`orbitViews.ts`, `moonViews.ts`) show estimates (prospect reports, fleet
+  telemetry) only. Only the Act IV chapter report (`Act4Reveal.tsx`) and the finale reveal them.
 - **No lunar output or lunar cost cut inside the act:** no production plant produces anything before the act ends, and
   lunar supply never lowers an orbital cost in 2031–2035 (the "after 2035" panel and the epilogue only). Tests assert both.
 - **The common 2031 baseline:** every market value the UI can show is identical across the four futures in 2031Q1–Q2 and
@@ -139,7 +141,7 @@ npm run content:market  # regenerate the market JSON files after editing a marke
   behind the same production gate as Act III; production refuses such saves.
 
 ### Standing invariants (check them at every milestone)
-- **Goldens:** Act I ×11, the prologue ×2, Act II and act3-s0…s3 (`tests/golden/`). A golden change must be the intended
+- **Goldens:** Act I ×11, the prologue ×2, Act II, act3-s0…s3 and act4-f1…f4 (`tests/golden/`). A golden change must be the intended
   effect of the sub-step and be explained; accept it with `npm test -- -u tests/golden-replay.test.ts`.
 - **Byte-identity:** `npm run sim -- --act2 --act3` CSVs stay byte-identical across changes that add no rule.
 - Saves: `tests/fixtures/saves/v1-*.json` are real old saves: keep them, never reformat them.

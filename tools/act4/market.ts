@@ -319,17 +319,23 @@ const NEW_COLUMNS: Record<string, Record<Future, Anchors>> = {
     f3: [[3, 5], [7, 12], [19, 20]],
     f4: [[3, 5], [19, 10]],
   },
+  // M32.6 balance round 1: rents priced near a 5-year capex annuity (2031: $6.0M/MW-yr), then what tenants will pay in
+  // each future: F1's late flood, F2's wall (tenants won't pay orbit's cost), F3's scarcity after the cascade, F4's
+  // cheap ground. GPU-hours start at the cost model's $3.66 (was $8.5M and $4.2).
   orbital_shell_rent_usd_mw_yr: {
-    f1: [[3, 8.5e6], [10, 8.0e6], [19, 5.0e6]],
-    f2: [[3, 8.5e6], [19, 9.0e6]],
-    f3: [[3, 8.5e6], [6, 8.5e6], [7, 10.5e6], [11, 10.0e6], [19, 8.5e6]],
-    f4: [[3, 8.5e6], [9, 8.3e6], [19, 6.0e6]],
+    f1: [[3, 6.0e6], [10, 5.5e6], [19, 3.0e6]],
+    // (round 2: F2's tenants pay less still: $3.5M by 2035, was $4.5M)
+    f2: [[3, 6.0e6], [19, 3.5e6]],
+    f3: [[3, 6.0e6], [6, 6.0e6], [7, 8.0e6], [11, 7.5e6], [19, 6.0e6]],
+    f4: [[3, 6.0e6], [9, 5.8e6], [19, 2.5e6]],
   },
   orbital_gpu_usd_hr: {
-    f1: [[3, 4.2], [19, 2.6]],
-    f2: [[3, 4.2], [19, 4.3]],
-    f3: [[3, 4.2], [6, 4.2], [7, 4.8], [19, 4.0]],
-    f4: [[3, 4.2], [9, 4.0], [19, 2.8]],
+    f1: [[3, 3.6], [19, 2.0]],
+    // (round 2: $2.2 by 2035, was $3.0; round 3: $3.0 at the trigger, $1.8 by 2035: thin margins on dear orbit)
+    f2: [[3, 3.6], [8, 3.0], [19, 1.8]],
+    f3: [[3, 3.6], [6, 3.6], [7, 4.2], [19, 3.4]],
+    // (round 3: $3.0 at the trigger, $1.4 by 2035, was 3.4 → 1.8: cheap ground undercuts orbital compute)
+    f4: [[3, 3.6], [9, 3.0], [19, 1.4]],
   },
   sovereign_premium_pct: {
     f1: [[3, 20], [19, 15]],
@@ -349,11 +355,14 @@ const NEW_COLUMNS: Record<string, Record<Future, Anchors>> = {
     f3: [[3, 8], [19, 8]],
     f4: [[3, 8], [9, 8], [19, 6]],
   },
+  // M32.6 balance round 1: a 5-year asset's EBITDA isn't worth a 25-year campus's multiple: 14× (Iridium) in 2031, F1
+  // up to 22× then 16×, F2 and F4 compressing to 5× (near SES's 6×), F3 crashing to 5× at the cascade then 12×
+  // (was 22 → 30/12/9-16/10).
   space_ev_ebitda_mult: {
-    f1: [[3, 22], [10, 30], [19, 20]],
-    f2: [[3, 22], [19, 12]],
-    f3: [[3, 22], [6, 24], [7, 9], [12, 14], [19, 16]],
-    f4: [[3, 22], [9, 21], [19, 10]],
+    f1: [[3, 14], [10, 22], [19, 16]],
+    f2: [[3, 14], [19, 5]],
+    f3: [[3, 14], [6, 15], [7, 5], [12, 9], [19, 12]],
+    f4: [[3, 14], [9, 13], [19, 5]],
   },
   lunar_delivery_usd_kg: {
     f1: [[3, 40000], [19, 15000]],
@@ -385,11 +394,13 @@ const NEW_COLUMNS: Record<string, Record<Future, Anchors>> = {
     f3: [[3, 2500], [19, 2500]],
     f4: [[3, 2500], [19, 1500]],
   },
+  // M32.6 balance round 2: a staged lunar bet pays in the rich ice (B6), most where the Moon turns strategic (F3), least
+  // where cheap ground makes it less urgent (F4) (was 2000 → 2500 / 1500 / 4000 / 1800).
   lunar_value_usd_t: {
-    f1: [[3, 2000], [19, 2500]],
-    f2: [[3, 2000], [19, 1500]],
-    f3: [[3, 2000], [6, 2000], [7, 2600], [19, 4000]],
-    f4: [[3, 2000], [19, 1800]],
+    f1: [[3, 3000], [19, 3500]],
+    f2: [[3, 3000], [19, 1500]],
+    f3: [[3, 3000], [6, 3000], [7, 3600], [19, 5000]],
+    f4: [[3, 3000], [19, 1200]],
   },
 }
 /** Columns that are 0/blank switches or step values, not paths. */
@@ -400,7 +411,8 @@ function stepColumns(f: Future, n: number): Record<string, number | null> {
     gen35_t_mw:
       f === 'f1' ? (n >= 14 ? 10 : null) : f === 'f2' ? null : n >= 16 ? 11 : null,
     // F3's cascade closes the busy shell to new launches for 6 quarters from its trigger (doc 33 §7.2: 4–8 ⚙).
-    sso_closed: f === 'f3' && n >= TRIGGER.f3 && n < TRIGGER.f3 + 6 ? 1 : 0,
+    // (M32.6 balance round 3: closed 8 quarters, the top of doc 33 §7.2's 4-8; was 6)
+    sso_closed: f === 'f3' && n >= TRIGGER.f3 && n < TRIGGER.f3 + 8 ? 1 : 0,
   }
 }
 

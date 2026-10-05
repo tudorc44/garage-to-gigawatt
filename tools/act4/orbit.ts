@@ -45,7 +45,8 @@ const FILES: Record<string, unknown> = {
       reference_congestion: 50,
       exponent: 3,
       loss_capacity_share: 0.25,
-      cascade_capacity_loss_share: 0.4,
+      // (M32.6 balance round 2: 0.7, was 0.4: the cascade destroys most of a busy-shell block, doc 33 §7.2)
+      cascade_capacity_loss_share: 0.7,
       manoeuvre_life_quarters: 1,
       conjunction_alert_chance_per_congestion_point: 0.0025,
       conjunction_accept_hit_share: 0.25,

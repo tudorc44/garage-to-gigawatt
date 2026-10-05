@@ -226,27 +226,24 @@ export function act4Archetypes(groundBot: string): Record<string, Strategy> {
       }),
     ),
     balanced: strategy((s) => withGround(s, balanced)),
-    overreactor: strategy((s) =>
-      withGround(s, (g) => {
-        const h = signalsHiddenIv(g.futureId!)
-        const label = CONTENT.quarters[g.quarter]
-        if (!h.decoy.quarters.includes(label)) return balanced(g)
-        // the decoy reads as the wrong future: its wrong stance, hard
-        const wrong = idealWrong(g)
-        if (wrong > 0)
-          return orbitStep(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept
-        return exposureDown(g)
-      }),
-    ),
-    perfect: strategy((s) =>
-      withGround(s, (g) => {
-        const ideal = idealStancesIv(g.futureId!)[q4(g)] ?? 0
-        if (ideal > 0)
-          return orbitStep(g, { kind: 'shell', shell: 'high_leo', contractOnly: false, insure: false, debt: true, maxMw: 25, open: true }).kept
-        if (ideal < 0) return exposureDown(g)
-        return []
-      }),
-    ),
+    // (M32.6: the over-reactor and the perfect reader are Passive plus their reading moves only, so B8 and B9 compare
+    // reading with doing nothing, as doc 33 §18 means)
+    overreactor: strategy((g) => {
+      const h = signalsHiddenIv(g.futureId!)
+      const label = CONTENT.quarters[g.quarter]
+      if (!h.decoy.quarters.includes(label)) return []
+      // the decoy reads as the wrong future: its wrong stance, hard
+      if (idealWrong(g) > 0)
+        return orbitStep(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept
+      return exposureDown(g)
+    }),
+    perfect: strategy((g) => {
+      const ideal = idealStancesIv(g.futureId!)[q4(g)] ?? 0
+      if (ideal > 0)
+        return orbitStep(g, { kind: 'shell', shell: 'high_leo', contractOnly: true, insure: true, debt: true, maxMw: 25, open: true }).kept
+      if (ideal < 0) return exposureDown(g)
+      return []
+    }),
   }
 }
 

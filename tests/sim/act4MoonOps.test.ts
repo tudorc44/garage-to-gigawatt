@@ -5,7 +5,8 @@
 import { describe, expect, it, vi } from 'vitest'
 // (The first Act IV company plays a whole Act III: no clock decides pass or fail, as M24.1's leak guard.)
 vi.setConfig({ testTimeout: 0 })
-import { CONTENT, actLastQuarter } from '../../src/content/index.ts'
+import { CONTENT, act4Row, actLastQuarter } from '../../src/content/index.ts'
+import { scenarioOf } from '../../src/sim/systems/market.ts'
 import { MOON, lunarSite } from '../../src/content/moonContent.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { GameState, LunarClaim } from '../../src/sim/state.ts'
@@ -167,7 +168,8 @@ describe('offtake, production and the books (M30.4)', () => {
     const s = holding()
     const c = claim(s)
     const v = siteValueUsd(s, c)
-    expect(v).toBeCloseTo(1.5e6 * 2000 * 0.5 * 0.2 + 25e6)
+    const perT = act4Row(s.quarter, scenarioOf(s)).lunar_value_usd_t
+    expect(v).toBeCloseTo(1.5e6 * perT * 0.5 * 0.2 + 25e6)
     expect(lunarUnitUsd(s)).toBeCloseTo(v)
     c.status = 'claimed'
     expect(siteValueUsd(s, c)).toBe(0)

@@ -146,3 +146,26 @@ Every place the build differs from doc 33, with the reason. (Added to as the bui
 9. **Stored log text in Acts I–III:** a log line in an Act I–III game that names a quarter past 2030Q4 still shows "—"
    (it did before Act IV's quarters existed), so no earlier act's golden or sim output changes; Act IV games label every
    quarter. (M27.3)
+10. **Orbital tenants without negotiation (§7.5, §14.1):** an offer is signed as drawn (0 Bandwidth); Act II's haggling
+    isn't wired to orbital tenants. (M29.2)
+11. **Launch slips and failures (§14.2):** resolved at the quarter's end with a log line, not as live-quarter alerts;
+    the live alerts are the conjunction and the solar storm (orbit), the landing window and the dust fault (Moon). A
+    failed launch sends its block back to planning (tenant kept) to rebuild and rebook. (M29.3)
+12. **A block's launch is one booking (§8.2):** capped by its quarter's third-party slots less your other bookings; a
+    big block waits for a quarter with room, or a later generation's lighter satellites. (M29.3)
+13. **Orbital revenue settles at the quarter's end (§7):** not week by week. (M29.4)
+14. **Lunar disputes (§9.1):** answered in the Plan phase (a card, also on the Plan screen), not as live alerts; an
+    unanswered dispute stays open until someone lands. (M30.2)
+15. **The lunar unit (§11.3):** only landed sites carry resource value (an unlanded claim adds nothing); prospect
+    missions are capitalised, not expensed. (M30.4)
+16. **Export credit (§11.1):** needs the Accords bloc's registry (the partner's); co-funding's partner is the bloc of
+    your registry. (M31.2)
+17. **The space-equity window (§11.1):** Act II's equity raise, shut below a 12× space multiple, pricing blocks under
+    way at capex × (space multiple ÷ 20). (M31.3)
+18. **Frontier titles (§15.1):** Selenian (a pilot processed water), Cislunar (a held site and orbital MW), Orbital (at
+    least 10% of MW in orbit), Earthbound. (M32.1)
+19. **The finale's ledger (§15.2):** Act I's row shows its net worth only (its MW and title aren't stored); Act II's row
+    comes from `act3Entry`. (M32.3)
+20. **The balance pass (§18, M32.6):** the orbital rents, GPU-hour prices and the space multiple were lowered from the
+    first authored paths (orbit was worth 4–7× its capex in every future); the lunar value per tonne raised; the F3
+    cascade's loss 40% → 70%, its closure 6 → 8 quarters. Every value stays inside doc 33's anchors or its ⚙ ranges.
