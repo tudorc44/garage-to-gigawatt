@@ -81,6 +81,9 @@ function trueResourceT(act4Seed: number, grade: LunarGrade, site: string, iceAcc
   return TRUTH.grades[grade].resource_t_per_site * iceAccess * exp(normal(r) * TRUTH.site_variance_sd_log)
 }
 
+/** The reveal only (act4End.ts, M32.1): a site's true resource, shown in the chapter report beside your estimates. */
+export const revealSiteTruthT = trueResourceT
+
 /**
  * A prospect report (doc 33 §9.2): the site's resource × exp(N(0, sd)) for the report's step (first prospect, a later
  * one, or a pilot that has run), with a 90% band. Median-unbiased; each step narrower. Rolled on its own substream per

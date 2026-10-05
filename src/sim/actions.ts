@@ -117,6 +117,7 @@ import {
 import type { ProviderId, RegistryId, ShellId } from '../content/orbitContent.ts'
 import type { CapitalKind } from './systems/orbitCapital.ts'
 import { buyOrrery, buyOrreryBlocker } from './systems/rivalsIv.ts'
+import { recordAct4Move } from './systems/act4Moves.ts'
 import {
   bookLaunch,
   bookLaunchBlocker,
@@ -545,6 +546,8 @@ export function applyAction(state: GameState, action: Action): ActionResult {
   if (error) return { ok: false, error }
   // Act III (M14.2): a big move the player made goes into the move log.
   recordAct3Move(state, next, action)
+  // Act IV (M32.1): moves on orbital exposure (and ground and lunar ones for the timeline).
+  recordAct4Move(next, action)
   return { ok: true, state: next }
 }
 

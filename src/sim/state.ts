@@ -362,7 +362,47 @@ export interface Act4End {
   /** Founder stake × the last report's valuation (never below 0), and its multiple on the Act IV entry. */
   founderNetWorthUsd: number
   growthMultiple: number | null
+  // ---- M32.1: the reveal (absent on a record built before M32: the chapter report rebuilds it) ----
+  /** The future's name, its trigger quarter, its decoy window, and the reads you made. */
+  futureName?: string
+  triggerQuarter?: string
+  triggerQ?: number
+  decoy?: { indicator: string; quarters: string[]; fromQ: number; toQ: number }
+  signalReads?: { quarter: string; indicator: string }[]
+  /** The lunar grade, and per site of yours your last estimate against the truth. */
+  lunar?: {
+    grade: 'rich' | 'patchy' | 'dry'
+    sites: { site: string; status: string; estimateT: number | null; category: string; truthT: number }[]
+  }
+  /** The orbital fleet's true reliability in this future, against what your telemetry averaged. */
+  fleet?: { failurePctYr: number; lifeYears: number; telemetryAvgPctYr: number | null }
+  reading?: { score: number | null; base: number; penalty: number; perQuarter: { q: number; stance: number; ideal: number; weight: number; value: number }[] }
+  moves?: { q: number; kind: Act4MoveKind; sign: number; mark: 'match' | 'opposite' | 'decoy' | 'neutral' }[]
+  careerTitleId?: string
+  readingTitleId?: string | null
+  /** Where your megawatts ended up: earthbound, orbital, cislunar, selenian. */
+  frontierTitleId?: string
+  rivalFates?: { rival: string; valueUsd: number | null; failed: boolean }[]
 }
+
+/** Act IV (M32.1, doc 33 §6.7): one logged move; q is the Act IV quarter index (0–19). */
+export interface Act4Move {
+  q: number
+  kind: Act4MoveKind
+}
+/** Moves scored on orbital exposure (+1 adds it, −1 reduces it), and moves logged for the timeline only (0). */
+export type Act4MoveKind =
+  | 'orbit_commit'
+  | 'orbit_debt'
+  | 'launch_booking'
+  | 'orbit_buy'
+  | 'orbit_insure'
+  | 'orbit_sale'
+  | 'orbit_presale'
+  | 'launch_cancel'
+  | 'equity_raise'
+  | 'ground_move'
+  | 'lunar_move'
 
 /**
  * The Act III scenario reveal (M11.3), stored once when the last quarter is done: which scenario the
@@ -1091,6 +1131,8 @@ export interface GameState {
   act4Orbit?: Act4Orbit
   /** Act IV (M30.2): the lunar programme (claims, missions, disputes, power, plants, offtake). Absent until first used. */
   act4Moon?: Act4Moon
+  /** Act IV (M32.1): the move log the reading score reads at the end of the act. */
+  act4Moves?: Act4Move[]
   /** Act IV (M28.5): the two wildcards drawn at entry, each with the quarter it fires in (never shown in advance). */
   act4Wildcards?: { id: WildcardIdIv; quarter: number; fired: boolean }[]
   /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */

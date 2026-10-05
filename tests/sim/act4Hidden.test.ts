@@ -32,6 +32,10 @@ describe('Act IV’s hidden files (M28.3, doc 33 §6.8): each read only by its o
     expect(importers(/reading_score_iv\.json/).filter((f) => !/readingScore(Iv)?\.ts$/.test(f))).toEqual([])
   })
 
+  it('M32.1: the Act IV reading score (readingScoreIv.ts) is read only by the reveal (act4End.ts)', () => {
+    expect(importers(/readingScoreIv/)).toEqual(['sim/systems/act4End.ts'])
+  })
+
   it('the two systems are sim-internal: no UI file and no selector imports them', () => {
     for (const f of src) {
       if (!/[\\/]ui[\\/]|selectors\.ts$|projectViews\.ts$|capitalViews\.ts$|orbitViews\.ts$|moonViews\.ts$/.test(f)) continue
