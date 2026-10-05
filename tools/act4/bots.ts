@@ -1,0 +1,274 @@
+// M32.5 (doc 33 §18): Act IV's bot archetypes for the sim-runner. Each is a Strategy (src/sim/replay.ts): its Plan-phase
+// actions are tried in order on a scratch copy and only those that succeed are kept, so a bot never fails a step. The
+// ground side of every archetype but Passive is the preset's own Act II/III bot (Ground Holder is nothing else).
+//   ground      Ground Holder: no orbit, no Moon.
+//   sprinter    Orbit Sprinter: orbital clouds in the busy shell, as big and as early as it can, little insurance.
+//   diversified Orbit Diversified: orbital shells across the three shells, insured, only on take-or-pay tenants.
+//   lunar       Lunar Bettor: two polar claims, prospects, power, pilots, offtake, production when allowed; one modest
+//               insured block in a quiet shell.
+//   balanced    Balanced: ground, measured orbit (insured shells, presold, none started after 2033), one prospect.
+//   overreactor Over-reactor: Balanced, except in the future's decoy window it does the decoy's wrong stance hard.
+//   passive     Passive: no actions at all.
+//   perfect     The perfect reader (B8, B9): commits orbit in the quarters the future's ideal stance is +1, insures,
+//               presells and cancels in the −1 quarters, rests in the 0s. Reads the hidden ideal: tools only.
+import { CONTENT, actFirstQuarter } from '../../src/content/index.ts'
+import { signalsHiddenIv } from '../../src/content/signalsHiddenIv.ts'
+import { applyAction, type Action } from '../../src/sim/actions.ts'
+import type { Strategy } from '../../src/sim/replay.ts'
+import type { GameState } from '../../src/sim/state.ts'
+import { blockMassT, generationTMw, licenceRoom, licensedMw, usedLicenceMw } from '../../src/sim/systems/orbit.ts'
+import { bookedTonnes, buildCostUsd, launchPriceUsdKg, slotsTonnes } from '../../src/sim/systems/orbitLaunch.ts'
+import { idealStancesIv } from '../../src/sim/systems/readingScoreIv.ts'
+import { BOTS } from '../bots.ts'
+
+type Kind = 'shell' | 'cloud'
+type ShellId = 'sso' | 'high_leo' | 'high_orbit'
+
+/** Tries each action in order on a copy; returns the ones that succeeded (in order) and the state after them. */
+function tryAll(state: GameState, actions: Action[]): { kept: Action[]; after: GameState } {
+  let s = state
+  const kept: Action[] = []
+  for (const a of actions) {
+    const r = applyAction(s, a)
+    if (r.ok) {
+      s = r.state
+      kept.push(a)
+    }
+  }
+  return { kept, after: s }
+}
+
+/** The preset's ground bot's plan in Act IV (its Act II/III habits), or nothing if it can't plan here. */
+function groundPlan(bot: string, state: GameState): Action[] {
+  try {
+    return tryAll(state, BOTS[bot]?.plan(state) ?? []).kept
+  } catch {
+    return []
+  }
+}
+
+const q4 = (s: GameState) => s.quarter - actFirstQuarter(4)
+
+/** The biggest block size up to `maxMw` whose mass fits the launch slots two quarters out. */
+function sizeFor(s: GameState, shell: ShellId, maxMw: number): number | null {
+  const tMw = generationTMw(s, 'gen33') ?? generationTMw(s, 'gen31')!
+  const free = slotsTonnes(s, s.quarter + 2) - bookedTonnes(s, s.quarter + 2)
+  for (const mw of [100, 50, 25, 10, 5]) if (mw <= maxMw && blockMassT(tMw, mw, shell) <= free) return mw
+  return null
+}
+
+/**
+ * An equity raise that brings at least `needUsd` above the cash already there (the space-equity window, when open), at
+ * most 30% dilution; nothing if cash covers it.
+ */
+function fund(s: GameState, needUsd: number): Action[] {
+  const short = needUsd - s.cash
+  if (short <= 0) return []
+  const pre = s.reports.at(-1)?.valuationUsd ?? 0
+  if (pre <= 0) return []
+  const d = Math.min(0.3, Math.max(0.08, short / (pre + short)))
+  return [{ type: 'RAISE_EQUITY', dilution: Math.round(d * 100) / 100 }]
+}
+
+/** The actions that open one block (if none is planning), funding its build with equity if cash is short. */
+function orbitActions(
+  s: GameState,
+  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean },
+): Action[] {
+  const out: Action[] = []
+  const gen = generationTMw(s, 'gen33') !== null ? 'gen33' : 'gen31'
+  if (!(s.act4Orbit?.licences ?? []).some((l) => l.shell === o.shell)) out.push({ type: 'FILE_ORBITAL_LICENCE', shell: o.shell })
+  const planning = (s.act4Orbit?.blocks ?? []).filter((b) => b.stage === 'proposed')
+  if (o.open && planning.length === 0) {
+    const mw = sizeFor(s, o.shell, o.maxMw)
+    if (mw !== null) {
+      const tMw = generationTMw(s, gen)!
+      const probe = { massT: blockMassT(tMw, mw, o.shell), kind: o.kind, mw, shell: o.shell, capital: 'cash' } as Parameters<typeof buildCostUsd>[1]
+      // the build's own share (40% with project debt) plus the launch deposit and a margin
+      out.push(...fund(s, buildCostUsd(s, probe) * (o.debt ? 0.5 : 1.1) + 20e6))
+      out.push({ type: 'OPEN_ORBITAL_BLOCK', kind: o.kind, mw, shell: o.shell, gen })
+    }
+  }
+  return out
+}
+
+/** Fills the slots of planning blocks once their build and deposit are funded (after any open above has been applied). */
+function fillActions(
+  s: GameState,
+  o: { contractOnly: boolean; insure: boolean; debt: boolean; onlyInsure?: boolean },
+): Action[] {
+  const out: Action[] = []
+  for (const b of (s.act4Orbit?.blocks ?? []).filter((x) => x.stage === 'proposed' && !o.onlyInsure)) {
+    const ownShare = o.debt ? 0.4 : 1
+    const needUsd = buildCostUsd(s, b) * ownShare + 0.15 * b.massT * 1000 * launchPriceUsdKg(s, 'pallas', b.shell) + 10e6
+    if (s.cash < needUsd) {
+      out.push(...fund(s, needUsd))
+      continue
+    }
+    if (b.tenant === null) {
+      if (b.offers.length > 0) out.push({ type: 'SIGN_ORBITAL_TENANT', blockId: b.id, offer: 0 })
+      else if (!o.contractOnly) out.push({ type: 'SIGN_ORBITAL_TENANT', blockId: b.id, offer: 'spot' })
+    }
+    if (b.capital === null) {
+      if (o.debt) out.push({ type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id, capital: 'project_debt' })
+      out.push({ type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id, capital: 'cash' })
+    }
+    if (!b.launch) {
+      // the earliest quarter with room for it, on the dominant launcher (or Northgate if it's the only one with room)
+      for (let k = 2; k <= 6; k++) {
+        const q = s.quarter + k
+        if (slotsTonnes(s, q) - bookedTonnes(s, q, b.id) < b.massT) continue
+        out.push({ type: 'BOOK_ORBITAL_LAUNCH', blockId: b.id, provider: 'pallas', quarter: q })
+        out.push({ type: 'BOOK_ORBITAL_LAUNCH', blockId: b.id, provider: 'northgate', quarter: q })
+        break
+      }
+    }
+  }
+  if (o.insure)
+    for (const b of s.act4Orbit?.blocks ?? []) out.push({ type: 'BUY_ORBITAL_INSURANCE', blockId: b.id })
+  return out
+}
+
+/**
+ * One orbital step, with a player's discipline: file the shell's licence first and wait for its approval; open a block
+ * only with licence room; fill its slots (tenant, capital, launch) only once its build and deposit are funded (raising
+ * equity first when short), so no tenant's clock runs on a block that can't start.
+ */
+function orbitStep(
+  s: GameState,
+  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean },
+): { kept: Action[]; after: GameState } {
+  const room = licensedMw(s, o.shell) - usedLicenceMw(s, o.shell)
+  if (room <= 0) {
+    const licence = tryAll(s, orbitActions(s, { ...o, open: false }))
+    const ins = tryAll(licence.after, o.insure ? fillActions(licence.after, { ...o, onlyInsure: true }) : [])
+    return { kept: [...licence.kept, ...ins.kept], after: ins.after }
+  }
+  const first = tryAll(s, orbitActions(s, { ...o, maxMw: Math.min(o.maxMw, room) }))
+  const second = tryAll(first.after, fillActions(first.after, o))
+  return { kept: [...first.kept, ...second.kept], after: second.after }
+}
+
+const SITES = ['de_gerlache_ridge', 'malapert_massif', 'nobile_rim', 'haworth_rim', 'cabeus', 'amundsen_rim', 'leibnitz_beta'] as const
+
+/** The lunar programme's step: claims (up to `sites`), missions, power, pilots with a crew, offtake, production. */
+function moonActions(s: GameState, sites: number, pilots: boolean): Action[] {
+  const out: Action[] = []
+  const live = (s.act4Moon?.claims ?? []).filter((c) => c.status === 'claimed' || c.status === 'held')
+  if (live.length < sites) {
+    // the first free site that no one has landed on (claiming tries them in order; one succeeds)
+    for (const site of SITES) if (!live.some((c) => c.site === site)) out.push({ type: 'CLAIM_LUNAR_SITE', site })
+  }
+  out.push({ type: 'ACCEPT_TASK_ORDER' })
+  for (const d of s.act4Moon?.disputes ?? []) {
+    out.push({ type: 'RESOLVE_LUNAR_DISPUTE', site: d.site, choice: 'hold' })
+    out.push({ type: 'RESOLVE_LUNAR_DISPUTE', site: d.site, choice: 'share' })
+  }
+  for (const c of live) {
+    const site = c.site
+    if (c.status === 'claimed') {
+      out.push(...fund(s, 160e6))
+      out.push({ type: 'SEND_LUNAR_MISSION', site })
+      continue
+    }
+    if (!pilots) continue
+    if (!c.solar) {
+      out.push(...fund(s, 500e6))
+      out.push({ type: 'BUILD_LUNAR_SOLAR', site, kwe: 200 }, { type: 'BUILD_LUNAR_SOLAR', site, kwe: 100 })
+    }
+    if (!c.pilot) {
+      out.push(...fund(s, 700e6))
+      out.push({ type: 'DECIDE_LUNAR_PILOT', site })
+    } else if (!c.pilot.maintained) out.push({ type: 'SET_LUNAR_MAINTENANCE', site, on: true })
+    if (c.pilot && !c.production) out.push({ type: 'DECIDE_LUNAR_PRODUCTION', site })
+  }
+  if (pilots && live.some((c) => c.pilot)) {
+    out.push({ type: 'SIGN_LUNAR_MEGAWATT' })
+    out.push({ type: 'SIGN_LUNAR_OFFTAKE', offer: 0 })
+  }
+  return out
+}
+
+/** Builds a Strategy from a per-quarter plan; interrupts take their defaults. */
+const strategy = (plan: (s: GameState) => Action[]): Strategy => ({ plan })
+
+/** The archetypes for a preset whose ground bot is `groundBot`. */
+export function act4Archetypes(groundBot: string): Record<string, Strategy> {
+  const withGround = (s: GameState, more: (after: GameState) => Action[]): Action[] => {
+    const g = tryAll(s, groundPlan(groundBot, s))
+    const m = tryAll(g.after, more(g.after))
+    return [...g.kept, ...m.kept]
+  }
+  const balanced = (s: GameState): Action[] => {
+    const shell: ShellId = q4(s) % 2 === 0 ? 'sso' : 'high_leo'
+    const orbit = orbitStep(s, { kind: 'shell', shell, contractOnly: true, insure: true, debt: false, maxMw: 10, open: q4(s) < 12 && q4(s) % 2 === 0 })
+    const moon = tryAll(orbit.after, moonActions(orbit.after, 1, false))
+    return [...orbit.kept, ...moon.kept]
+  }
+  return {
+    passive: strategy(() => []),
+    ground: strategy((s) => groundPlan(groundBot, s)),
+    sprinter: strategy((s) =>
+      withGround(s, (g) => orbitStep(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept),
+    ),
+    diversified: strategy((s) => {
+      const shells: ShellId[] = ['high_leo', 'high_orbit', 'sso']
+      const shell = shells[Math.floor(q4(s) / 2) % 3]
+      return withGround(s, (g) =>
+        orbitStep(g, { kind: 'shell', shell, contractOnly: true, insure: true, debt: true, maxMw: 25, open: q4(s) % 2 === 0 }).kept,
+      )
+    }),
+    lunar: strategy((s) =>
+      withGround(s, (g) => {
+        const moon = tryAll(g, moonActions(g, 2, true))
+        const orbit = orbitStep(moon.after, { kind: 'shell', shell: 'high_leo', contractOnly: true, insure: true, debt: false, maxMw: 10, open: (moon.after.act4Orbit?.blocks.length ?? 0) === 0 })
+        return [...moon.kept, ...orbit.kept]
+      }),
+    ),
+    balanced: strategy((s) => withGround(s, balanced)),
+    overreactor: strategy((s) =>
+      withGround(s, (g) => {
+        const h = signalsHiddenIv(g.futureId!)
+        const label = CONTENT.quarters[g.quarter]
+        if (!h.decoy.quarters.includes(label)) return balanced(g)
+        // the decoy reads as the wrong future: its wrong stance, hard
+        const wrong = idealWrong(g)
+        if (wrong > 0)
+          return orbitStep(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept
+        return exposureDown(g)
+      }),
+    ),
+    perfect: strategy((s) =>
+      withGround(s, (g) => {
+        const ideal = idealStancesIv(g.futureId!)[q4(g)] ?? 0
+        if (ideal > 0)
+          return orbitStep(g, { kind: 'shell', shell: 'high_leo', contractOnly: false, insure: false, debt: true, maxMw: 25, open: true }).kept
+        if (ideal < 0) return exposureDown(g)
+        return []
+      }),
+    ),
+  }
+}
+
+/** The decoy's wrong stance for this game's future (hidden: tools only). */
+function idealWrong(s: GameState): number {
+  return s.futureId === 'f2' || s.futureId === 'f4' ? 1 : -1
+}
+
+/** Reducing orbital exposure: insure everything, presell what's planning, cancel bookings not yet built. */
+function exposureDown(s: GameState): Action[] {
+  const out: Action[] = []
+  for (const b of s.act4Orbit?.blocks ?? []) {
+    out.push({ type: 'BUY_ORBITAL_INSURANCE', blockId: b.id })
+    if (b.stage === 'proposed') {
+      if (b.tenant === null && b.offers.length > 0) out.push({ type: 'SIGN_ORBITAL_TENANT', blockId: b.id, offer: 0 })
+      if (b.launch) out.push({ type: 'CANCEL_ORBITAL_LAUNCH', blockId: b.id })
+    }
+  }
+  return tryAll(s, out).kept
+}
+
+export const ACT4_ARCHETYPES = ['ground', 'sprinter', 'diversified', 'lunar', 'balanced', 'overreactor', 'passive'] as const
+
+/** (licence room is checked by the build itself; kept here for the runner's reports) */
+export { licenceRoom }

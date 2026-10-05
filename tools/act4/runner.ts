@@ -1,0 +1,164 @@
+// M32.5 (doc 33 §18): `npm run sim -- --act4 [--seeds N] [--out dir]`. Plays every Act IV archetype (tools/act4/bots.ts)
+// on the three presets × the four futures × the three lunar grades × N seeds (default 30; the seed is the act4Seed, so
+// the presets' companies are the same and only Act IV's own draws change), plus the perfect reader. Writes act4-runs.csv
+// and prints the B1-B14 table (founder net worth multiples, 2035Q4 ÷ the Act IV entry, medians). B10, B11, B12 and B14
+// are enforced by tests (act4OrbitCost, act4B11, act4B12, act4Market): the table says so. Only grades and futures are
+// forced (harness overrides, as Act III's anchors force the scenario).
+import { mkdirSync, writeFileSync } from 'node:fs'
+import { FUTURE_IDS, type FutureId } from '../../src/content/index.ts'
+import { PRESETS_IV, type Act4PresetId } from '../../src/content/presetsAct4.ts'
+import { playFrom, playGame } from '../../src/sim/replay.ts'
+import { toAct3, toAct4, type GameState } from '../../src/sim/state.ts'
+import { computeReadingIv } from '../../src/sim/systems/readingScoreIv.ts'
+import { BOTS } from '../bots.ts'
+import { ACT4_ARCHETYPES, act4Archetypes } from './bots.ts'
+
+const args = process.argv.slice(2)
+const argValue = (flag: string, fallback: string) => {
+  const i = args.indexOf(flag)
+  return i >= 0 ? args[i + 1] : fallback
+}
+const SEEDS = Number(argValue('--seeds', '30'))
+const OUT = argValue('--out', 'sim-output')
+const GRADES = ['rich', 'patchy', 'dry'] as const
+type Grade = (typeof GRADES)[number]
+const BOT_NAMES = [...ACT4_ARCHETYPES, 'perfect'] as const
+
+/** The preset companies at 2030Q4 (each played once from 2017). */
+const presetEnd = new Map<Act4PresetId, GameState>()
+for (const p of PRESETS_IV) {
+  const a2 = playGame(p.seed, BOTS[p.bot], { through: 2 }).state
+  presetEnd.set(p.id, playFrom(toAct3(a2, { scenario: p.act3_scenario }), BOTS[p.bot], { through: 3 }).state)
+}
+
+interface Run {
+  preset: Act4PresetId
+  future: FutureId
+  grade: Grade
+  bot: string
+  seed: number
+  multiple: number
+  gameOver: boolean
+  reading: number | null
+  orbitMw: number
+  lunarSites: number
+  pilotT: number
+  decisions: number
+  frontier: string
+}
+
+const runs: Run[] = []
+const t0 = performance.now()
+/** Bots that never touch the Moon: the lunar grade can't change their game, so they're played once per future. */
+const GRADE_FREE = new Set(['ground', 'sprinter', 'diversified', 'passive', 'perfect'])
+for (const p of PRESETS_IV) {
+  const bots = act4Archetypes(p.bot)
+  for (const future of FUTURE_IDS)
+    for (const grade of GRADES)
+      for (const bot of BOT_NAMES)
+        for (let seed = 1; seed <= SEEDS; seed++) {
+          if (GRADE_FREE.has(bot) && grade !== 'rich') {
+            const same = runs.find((r) => r.preset === p.id && r.future === future && r.grade === 'rich' && r.bot === bot && r.seed === seed)!
+            runs.push({ ...same, grade })
+            continue
+          }
+          const start = toAct4(structuredClone(presetEnd.get(p.id)!), { future, act4Seed: seed })
+          start.lunarGrade = grade
+          let decisions = 0
+          const counting = {
+            ...bots[bot],
+            plan: (s: GameState) => {
+              const a = bots[bot].plan(s)
+              decisions += a.length
+              return a
+            },
+          }
+          const end = playFrom(start, counting, { through: 4 }).state
+          const entry = end.act4Entry!.founderNetWorthUsd
+          const nw = Math.max(0, end.founderStake * (end.reports.at(-1)?.valuationUsd ?? 0))
+          runs.push({
+            preset: p.id,
+            future,
+            grade,
+            bot,
+            seed,
+            multiple: entry > 0 ? nw / entry : 0,
+            gameOver: end.phase === 'gameover',
+            reading: computeReadingIv(end.act4Moves ?? [], future).score,
+            orbitMw: (end.act4Orbit?.blocks ?? []).filter((b) => b.stage === 'live').reduce((m, b) => m + b.mw * b.capacity, 0),
+            lunarSites: (end.act4Moon?.claims ?? []).filter((c) => c.status === 'held').length,
+            pilotT: (end.act4Moon?.claims ?? []).reduce((t, c) => t + (c.pilot?.processedT ?? 0), 0),
+            decisions: decisions / Math.max(1, end.reports.filter((r) => r.quarter >= '2031Q1').length),
+            frontier: end.act4End?.frontierTitleId ?? '',
+          })
+        }
+  console.log(`  ${p.id}: done (${Math.round((performance.now() - t0) / 1000)} s)`)
+}
+
+mkdirSync(OUT, { recursive: true })
+const cols = Object.keys(runs[0]) as (keyof Run)[]
+writeFileSync(
+  `${OUT}/act4-runs.csv`,
+  [cols.join(','), ...runs.map((r) => cols.map((c) => String(r[c])).join(','))].join('\n') + '\n',
+)
+
+// ---------- the B table ----------
+const median = (xs: number[]) => {
+  if (xs.length === 0) return NaN
+  const s = [...xs].sort((a, b) => a - b)
+  const m = Math.floor(s.length / 2)
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
+}
+const sel = (f: Partial<Run>) =>
+  runs.filter((r) => (Object.keys(f) as (keyof Run)[]).every((k) => r[k] === f[k]))
+const med = (f: Partial<Run>) => median(sel(f).map((r) => r.multiple))
+const goRate = (f: Partial<Run>) => {
+  const xs = sel(f)
+  return xs.length ? xs.filter((r) => r.gameOver).length / xs.length : NaN
+}
+const x = (n: number) => `${n.toFixed(2)}×`
+const pct = (n: number) => `${Math.round(n * 100)}%`
+const rows: [string, string, boolean, string][] = []
+const add = (id: string, target: string, ok: boolean, got: string) => rows.push([id, target, ok, got])
+
+// B1: per (future × grade) cell, the archetypes' medians; who's best or within 10% of best
+const winners = new Set<string>()
+const bestCount: Record<string, number> = {}
+for (const f of FUTURE_IDS)
+  for (const g of GRADES) {
+    const m = ACT4_ARCHETYPES.map((b) => ({ b, v: med({ future: f, grade: g, bot: b }) }))
+    const best = Math.max(...m.map((y) => y.v))
+    const top = m.filter((y) => y.v === best)[0].b
+    bestCount[top] = (bestCount[top] ?? 0) + 1
+    for (const y of m) if (y.v >= best * 0.9) winners.add(y.b)
+  }
+const anyAlwaysBest = Object.values(bestCount).some((n) => n === 12)
+const orbitWins = winners.has('sprinter') || winners.has('diversified')
+add('B1', 'no archetype best in all 12 cells; Ground, an orbit archetype and Lunar each best or within 10% somewhere', !anyAlwaysBest && winners.has('ground') && orbitWins && winners.has('lunar'), `best counts ${JSON.stringify(bestCount)}; within 10%: ${[...winners].join(', ')}`)
+add('B2', 'F1: Sprinter ≥ 1.3 × Ground', med({ future: 'f1', bot: 'sprinter' }) >= 1.3 * med({ future: 'f1', bot: 'ground' }), `${x(med({ future: 'f1', bot: 'sprinter' }))} vs ${x(med({ future: 'f1', bot: 'ground' }))}`)
+add('B3', 'F2: Ground ≥ 1.2 × Sprinter', med({ future: 'f2', bot: 'ground' }) >= 1.2 * med({ future: 'f2', bot: 'sprinter' }), `${x(med({ future: 'f2', bot: 'ground' }))} vs ${x(med({ future: 'f2', bot: 'sprinter' }))}`)
+add('B4', 'F3: Diversified ≥ 1.25 × Sprinter; Lunar ≥ Sprinter', med({ future: 'f3', bot: 'diversified' }) >= 1.25 * med({ future: 'f3', bot: 'sprinter' }) && med({ future: 'f3', bot: 'lunar' }) >= med({ future: 'f3', bot: 'sprinter' }), `div ${x(med({ future: 'f3', bot: 'diversified' }))}, lunar ${x(med({ future: 'f3', bot: 'lunar' }))}, sprinter ${x(med({ future: 'f3', bot: 'sprinter' }))}`)
+const f4 = ACT4_ARCHETYPES.map((b) => ({ b, v: med({ future: 'f4', bot: b }) }))
+add('B5', 'F4: Ground best; Sprinter game overs ≤ 40%', f4.every((y) => y.v <= med({ future: 'f4', bot: 'ground' })) && goRate({ future: 'f4', bot: 'sprinter' }) <= 0.4, `ground ${x(med({ future: 'f4', bot: 'ground' }))}, best other ${x(Math.max(...f4.filter((y) => y.b !== 'ground').map((y) => y.v)))}; sprinter game overs ${pct(goRate({ future: 'f4', bot: 'sprinter' }))}`)
+add('B6', 'Rich: Lunar ≥ 1.2 × Balanced; Dry: Lunar ≥ 0.7 × Balanced, game overs ≤ 25%', med({ grade: 'rich', bot: 'lunar' }) >= 1.2 * med({ grade: 'rich', bot: 'balanced' }) && med({ grade: 'dry', bot: 'lunar' }) >= 0.7 * med({ grade: 'dry', bot: 'balanced' }) && goRate({ grade: 'dry', bot: 'lunar' }) <= 0.25, `rich ${x(med({ grade: 'rich', bot: 'lunar' }))} vs ${x(med({ grade: 'rich', bot: 'balanced' }))}; dry ${x(med({ grade: 'dry', bot: 'lunar' }))} vs ${x(med({ grade: 'dry', bot: 'balanced' }))}, game overs ${pct(goRate({ grade: 'dry', bot: 'lunar' }))}`)
+const fortressBust = sel({ preset: 'fortress', bot: 'passive' }).filter((r) => r.gameOver).length
+add('B7', 'The Ground Fortress, played passively, never goes bust', fortressBust === 0, `${fortressBust} game overs in ${sel({ preset: 'fortress', bot: 'passive' }).length} runs`)
+const b8a = FUTURE_IDS.filter((f) => med({ future: f, bot: 'perfect' }) >= 1.15 * med({ future: f, bot: 'passive' })).length
+const b8b = FUTURE_IDS.every((f) => med({ future: f, bot: 'overreactor' }) <= 0.97 * med({ future: f, bot: 'passive' }))
+add('B8', 'Perfect ≥ 1.15 × passive in ≥ 3 futures; over-reactor ≤ 0.97 × passive in every future', b8a >= 3 && b8b, `perfect ≥ 1.15× in ${b8a}/4; over-reactor: ${FUTURE_IDS.map((f) => x(med({ future: f, bot: 'overreactor' }) / med({ future: f, bot: 'passive' }))).join(' ')} of passive`)
+add('B9', 'The perfect reader is never below passive (the ideal stance and the economics agree)', FUTURE_IDS.every((f) => med({ future: f, bot: 'perfect' }) >= med({ future: f, bot: 'passive' })), FUTURE_IDS.map((f) => `${f} ${x(med({ future: f, bot: 'perfect' }))}/${x(med({ future: f, bot: 'passive' }))}`).join(', '))
+add('B10', 'Orbital cost ratios match the model', true, 'enforced by tests/sim/act4OrbitCost.test.ts')
+add('B11', 'Pilot water by 2035Q4 in its bands; no production output; no lunar cut to orbit', true, 'enforced by tests/sim/act4B11.test.ts (Rich 27.5, Patchy 13.8, Dry 4.1 t/yr)')
+add('B12', 'No single launch failure forces a sale inside the rule', true, 'enforced by tests/sim/act4B12.test.ts')
+const dec = median(sel({ bot: 'balanced' }).map((r) => r.decisions))
+add('B13', '≤ 20 Plan phases, 3-6 decisions each', dec >= 3 && dec <= 6, `20 Plan phases; Balanced's median ${dec.toFixed(1)} decisions a quarter`)
+add('B14', 'Day one is the same in every future', true, 'enforced by tests/sim/act4Market.test.ts and act4Rivals (the league)')
+
+console.log(`\nAct IV (--act4): ${runs.length} runs (${SEEDS} seeds), ${Math.round((performance.now() - t0) / 1000)} s. CSV in ${OUT}/act4-runs.csv`)
+console.log('\nMedians (founder net worth multiple on the Act IV entry), by future × archetype:')
+console.log(`  ${'archetype'.padEnd(12)}${FUTURE_IDS.map((f) => f.padStart(8)).join('')}   game overs`)
+for (const b of BOT_NAMES)
+  console.log(`  ${b.padEnd(12)}${FUTURE_IDS.map((f) => x(med({ future: f, bot: b })).padStart(8)).join('')}   ${pct(goRate({ bot: b }))}`)
+console.log('\nB1-B14:')
+for (const [id, target, ok, got] of rows) console.log(`  ${id.padEnd(4)} ${ok ? 'PASS' : 'MISS'}  ${target}\n         ${got}`)
+writeFileSync(`${OUT}/act4-btable.txt`, rows.map(([id, t, ok, got]) => `${id}\t${ok ? 'PASS' : 'MISS'}\t${t}\t${got}`).join('\n') + '\n')

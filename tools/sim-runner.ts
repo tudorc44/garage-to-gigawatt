@@ -65,6 +65,11 @@ if (args.includes('--prologue')) {
   await import('./prologue-runner.ts')
   process.exit(0)
 }
+// Act IV's archetypes and the B1-B14 table (M32.5) have theirs.
+if (args.includes('--act4')) {
+  await import('./act4/runner.ts')
+  process.exit(0)
+}
 // Act III step 7's presets scan and anchor harness (M18.3, M18.5) have theirs.
 if (args.includes('--act3-presets') || args.includes('--act3-anchors')) {
   await import('./act3-runner.ts')
