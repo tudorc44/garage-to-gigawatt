@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M25 merged into `main` at `f8cf61f` and pushed; M26 done on `m26`, not merged yet). The Prologue, Act I, Act II and
+Last updated: 5 Oct 2026 (M26 merged at `209622e`; the Act IV run is stopped at step 0 on `m27`, doc 33 missing). The Prologue, Act I, Act II and
 Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M26" and "Milestone M18 close-out".
 
 ## How the owner works
@@ -148,6 +148,13 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 - ~~M13.2: the automated UI smoke test~~: unblocked in M15.2 (happy-dom and @testing-library/preact approved).
 - Balance tuning stays stopped by the owner's A1 answer.
+- **Act IV run (M27–M32), stopped at step 0 (5 Oct 2026): doc 33 not reachable.** The owner's unattended-run prompt says to stop the
+  whole run if `claude_33-act-iv-design.md` can't be read. This session has no claude.ai Projects tool; the docs (`claude_31…`,
+  `claude_32…`, `claude_33…`, `act4-research/orbit_cost_model.py`, `results.md`) are not in the repo, the owner's Google Drive or
+  ~/Downloads. Done: `m27` made from `main` (`209622e`; m26 is merged), baseline green (lint, 1286 tests, build), this note.
+  **To resume:** put the five files in the repo (docs 31–33 in `docs/game-project-files/`, the model and results in
+  `docs/act4-research/`), commit them on `m27`, then say "continue the Act IV run from dev-notes" and re-paste the run prompt
+  (its approvals and defaults aren't in the repo yet). The run starts at M27.1 (`docs/act4-scope.md`).
 
 ## Small follow-ups
 
@@ -161,8 +168,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M26 is done on `m26`, waiting for the owner's merge** (cleanup; see "Milestone M26"). After it: the owner's playtests, and the Act IV
-design brief in the design thread. M25 is done and merged (`main` = `f8cf61f`, pushed 5 Oct 2026); M24 at
+**The Act IV run (M27–M32) is STOPPED at step 0 on `m27`: doc 33 isn't in the repo (see STOPPED for how to resume). Next sub-step:
+M27.1.** M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
