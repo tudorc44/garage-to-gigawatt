@@ -5,8 +5,8 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M22 merged into `main` at `6c623d3` and pushed; M23 in progress on `m23`). The Prologue, Act I, Act II and
-Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M23" and "Milestone M18 close-out".
+Last updated: 5 Oct 2026 (M23 merged into `main` at `37a3535` and pushed; M24 in progress on `m24`). The Prologue, Act I, Act II and
+Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M24" and "Milestone M18 close-out".
 
 ## How the owner works
 
@@ -98,6 +98,11 @@ prologue). Tables: `npm run sim -- --act2` / `--prologue`. **End of M18:** 1,229
   (2 BW, one sealed bid); curtailment (Texas, ≤ once per Q3, 35%); Heat 50 read at quarter end; a due power renewal left alone
   repeats for 4 quarters; the first Texas contract is fixed.
 
+### Closed decisions after M23 (design thread, 5 Oct 2026)
+- **Act II project debt stays on the `lenders.json` rate path.** SOFR + HY + a premium is rejected: the implied premium (doc 18 §15, M23.2)
+  isn't stable (−0.17 to +1.5 points).
+- **S3's rate sensitivity is accepted** (0.96–1.04× across the M23.3 sweep, always ≥ 0.12 above S1); no watch item.
+
 ### Owner decisions: Act II (details: archive › "Act II readiness", the M2–M6 decisions)
 - Scope 0.2 v1.0 frozen: take-or-pay 3% of the annual contract per late quarter; mining → hosting $0.1M/MW; pilot 0.5–2 MW;
   ratings CCC− to BBB; delays 15% a quarter. Pilot = neocloud price × utilisation from 70% (+5 at know-how 2, +10 at 3).
@@ -156,10 +161,10 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M23 is being built on `m23`** (rate robustness and Act III clarity polish; see "Milestone M23"). M22 is done and merged (`main` =
-`6c623d3`, pushed 5 Oct 2026); M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged
-`m<n>-done` (m9 … m22, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III playtest,
-the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+**M24 is being built on `m24`** (onboarding across all acts, guard-test stability; see "Milestone M24"). M23 is done and merged (`main` =
+`37a3535`, pushed 5 Oct 2026); M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone
+branch is tagged `m<n>-done` (m9 … m23, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
+playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 
@@ -176,6 +181,13 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 **M19.3 done:** People card (via hires.json + en.json); the Plan deal card (all acts, wildcard-card style, "Not this year" tagged Default); the game had no
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
+
+## Milestone M24 (branch `m24`, from main at `37a3535`; onboarding across all acts, guard-test stability)
+
+Split (DT spec, 5 Oct 2026): M24.0 housekeeping (m23 tagged m23-done and deleted, it never had a remote branch; the M23 merge and two closed
+decisions recorded); M24.1 the leak-guard flake (no wall-clock time-out decides pass/fail; 20+ runs under five-sim load; same fix on any guard
+test with the pattern); M24.2 onboarding tips for the Prologue and Act I; M24.3 rich tooltips for the Prologue, Act I and Act II core terms.
+UI only: sim output and every golden byte-identical.
 
 ## Milestone M23 (branch `m23`, from main at `6c623d3`; rate robustness and Act III clarity polish)
 
