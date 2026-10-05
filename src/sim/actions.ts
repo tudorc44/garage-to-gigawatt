@@ -128,8 +128,11 @@ import { planOrbitAlerts, sellOrbitalBlock, sellOrbitalBlockBlocker } from './sy
 import {
   claimSite,
   claimSiteBlocker,
+  planLunarLandings,
   resolveDispute,
   resolveDisputeBlocker,
+  sendMission,
+  sendMissionBlocker,
   type DisputeChoice,
 } from './systems/moon.ts'
 import type { LunarSiteId } from '../content/moonContent.ts'
@@ -403,6 +406,8 @@ export type Action =
   | { type: 'CLAIM_LUNAR_SITE'; site: LunarSiteId }
   /** Act IV: answer a lunar dispute: hold (political capital), align with the claimant's bloc, share, or withdraw. */
   | { type: 'RESOLVE_LUNAR_DISPUTE'; site: LunarSiteId; choice: DisputeChoice }
+  /** Act IV (M30.3): commission a prospecting mission to a claimed site (1 BW, paid now, 3-5 quarters' lead). */
+  | { type: 'SEND_LUNAR_MISSION'; site: LunarSiteId }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -531,6 +536,7 @@ function run(s: GameState, a: Action): Message | undefined {
       // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
       startOrbitalBuilds(s)
       planOrbitAlerts(s)
+      planLunarLandings(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -839,6 +845,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = resolveDisputeBlocker(s, a.site, a.choice)
       if (blocked) return blocked
       resolveDispute(s, a.site, a.choice)
+      return
+    }
+
+    case 'SEND_LUNAR_MISSION': {
+      const blocked = sendMissionBlocker(s, a.site)
+      if (blocked) return blocked
+      sendMission(s, a.site)
       return
     }
 

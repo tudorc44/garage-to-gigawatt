@@ -1182,6 +1182,10 @@ export interface QuarterStats {
   /** Act IV (M29): orbital blocks' revenue, and their running costs (ops, links, insurance, lateness); in EBITDA. */
   orbitRevenueUsd?: number
   orbitCostUsd?: number
+  /** Act IV (M30): lunar sales (offtake deliveries) and running costs (maintenance, repairs, the reactor lease); in
+   *  EBITDA without a multiple (the resource term already values the deposit, doc 33 §11.3). */
+  moonRevenueUsd?: number
+  moonCostUsd?: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */

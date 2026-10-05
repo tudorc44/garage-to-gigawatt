@@ -21,7 +21,7 @@ import { buildAct4End } from './act4End.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
-import { startQuarterMoonClaims } from './moon.ts'
+import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -95,6 +95,8 @@ export function endQuarter(state: GameState): void {
   // Act IV (M29.4): live orbital blocks earn, wear and face debris; then (M29.3) launches due now slip, fly or fail.
   endQuarterOrbit(state)
   endQuarterLaunches(state)
+  // (M30.3) a lunar mission due now whose landing never came up lands.
+  endQuarterMissions(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
   state.quarterStats.interestUsd += service.interestUsd

@@ -19,6 +19,7 @@ import {
   lotViews,
   marginCallView,
   quarterName,
+  spaceAlertView,
   treasuryValue,
 } from '../../sim/selectors.ts'
 import type { GameState, WeekSummary } from '../../sim/state.ts'
@@ -175,10 +176,7 @@ export function LiveScreen(
         state.interrupt?.id === 'gpu_spot_alert') && (
         <SpotAlertCard state={state} act={act} />
       )}
-      {(state.interrupt?.id === 'orbit_conjunction' ||
-        state.interrupt?.id === 'orbit_storm') && (
-        <OrbitAlertCard state={state} act={act} />
-      )}
+      {spaceAlertView(state) && <SpaceAlertCard state={state} act={act} />}
       {state.interrupt?.id === 'event' && <EventCard state={state} act={act} />}
       {state.interrupt?.id === 'margin_warning' && (
         <MarginWarningCard state={state} act={act} />
@@ -946,11 +944,15 @@ function FailureWaveCard({ state, act }: ScreenProps) {
   )
 }
 
-/** Act IV (M29.4-5, doc 33 §14.2): a conjunction alert on one block, or the solar storm warning on the fleet. */
-function OrbitAlertCard({ state, act }: ScreenProps) {
+/**
+ * Act IV (M29.4-5, M30.3; doc 33 §14.2): a conjunction alert on one block, the solar storm warning on the fleet, a lunar
+ * landing window, a dust fault at a pilot plant.
+ */
+function SpaceAlertCard({ state, act }: ScreenProps) {
   const alert = state.interrupt!
-  const kind = alert.id as 'orbit_conjunction' | 'orbit_storm'
-  const n = state.act4Orbit?.blocks.find((b) => b.id === alert.orbitBlockId)?.n ?? 0
+  const v = spaceAlertView(state)!
+  const kind = v.kind
+  const params = { n: v.n, site: tDynamic(`moon.site.${v.site}`, v.site), pct: fmt.pct(v.chance) }
   return (
     <div class="scrim">
       <article class="event" role="dialog" aria-modal="true" aria-labelledby="orbit-alert-title">
@@ -971,7 +973,7 @@ function OrbitAlertCard({ state, act }: ScreenProps) {
         <h2 class="event-title" id="orbit-alert-title">
           {t(`interrupt.${kind}.title`)}
         </h2>
-        <p class="event-body">{t(`interrupt.${kind}.body`, { n })}</p>
+        <p class="event-body">{t(`interrupt.${kind}.body`, params)}</p>
         {interruptChoices(state).map((c) => (
           <button
             key={c.id}

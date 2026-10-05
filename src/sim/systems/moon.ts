@@ -3,15 +3,20 @@
 // Rivals and the blocs claim on scripted schedules (lunar_claims_iv.json, per future); first to land holds. An overlapping
 // claim raises a dispute: spend political capital to hold, align with the claimant's bloc, share the site, or withdraw;
 // unanswered, the first to land wins it.
-import { CONTENT } from '../../content/index.ts'
+import { BALANCE, CONTENT, act4Row } from '../../content/index.ts'
 import {
   LUNAR_SITE_IDS,
   MOON,
+  lunarSite,
   type LunarClaimantId,
   type LunarSiteId,
+  type ResourceCategory,
 } from '../../content/moonContent.ts'
 import type { Message, MessageKey } from '../../i18n/t.ts'
-import { inActIV, logEntry, type Act4Moon, type GameState, type LunarClaim } from '../state.ts'
+import { chance, randomInt, substream } from '../rng.ts'
+import { act4SeedOf, inActIV, logEntry, type Act4Moon, type GameState, type LunarClaim } from '../state.ts'
+import { prospectReport } from './lunarGeology.ts'
+import { scenarioOf } from './market.ts'
 import { addPc, politicalCapital } from './pcState.ts'
 
 const Q = (label: string) => CONTENT.quarters.indexOf(label)
@@ -171,6 +176,187 @@ const DISPUTE_LOG: Record<DisputeChoice, MessageKey> = {
 
 /** Your share of a site's resource (a shared site: half). */
 export const resourceShare = (claim: LunarClaim): number => (claim.sharedWith ? MOON.dispute.share_resource_share : 1)
+
+// ---------- prospect missions (M30.3; doc 33 §9.2) ----------
+
+/** What a mission costs now: its payload at the market's Earth-to-surface delivery price, plus the rover and drill. */
+export function missionCostUsd(state: GameState): number {
+  return MOON.mission.payload_kg * act4Row(state.quarter, scenarioOf(state)).lunar_delivery_usd_kg + MOON.mission.rover_drill_usd
+}
+
+/** Landing success this quarter (the market's rate). */
+export const landingChance = (state: GameState, quarter = state.quarter): number =>
+  act4Row(quarter, scenarioOf(state)).landing_success_pct / 100
+
+export function sendMissionBlocker(state: GameState, site: LunarSiteId): Message | undefined {
+  const blocked = moonPlanBlocker(state)
+  if (blocked) return blocked
+  if (!claimOf(state, site)) return { key: 'error.moon_no_claim' }
+  if (state.act4Moon!.missions.some((m) => m.site === site && m.status === 'en_route')) return { key: 'error.moon_mission_en_route' }
+  const m = MOON.mission
+  if (state.bandwidth < m.bandwidth) return { key: 'error.no_bandwidth', params: { needed: m.bandwidth, have: state.bandwidth } }
+  const costUsd = missionCostUsd(state)
+  if (state.cash < costUsd) return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
+}
+
+/** Commissions a lander, rover and drill for a claimed site: paid now, arriving 3-5 quarters later (seeded). */
+export function sendMission(state: GameState, site: LunarSiteId): void {
+  const moon = moonOf(state)
+  const id = `lm${moon.nextId++}`
+  const costUsd = missionCostUsd(state)
+  const [lo, hi] = MOON.mission.lead_quarters
+  const lead = randomInt(substream(act4SeedOf(state), `act4_lunar_mission:${id}`), lo, hi)
+  state.bandwidth -= MOON.mission.bandwidth
+  state.cash -= costUsd
+  moon.missions.push({
+    id,
+    site,
+    launchedQuarter: state.quarter,
+    arrivalQuarter: state.quarter + lead,
+    costUsd,
+    status: 'en_route',
+    aborts: 0,
+  })
+  logEntry(state, 'log.moon.mission', { lunarSite: site, costUsd, quarter: CONTENT.quarters[state.quarter + lead] ?? '—' })
+}
+
+/** The category a site's resource is reported in (doc 33 §9.2): inferred, indicated, measured. */
+export function resourceCategory(claim: LunarClaim): ResourceCategory {
+  if (claim.reports.some((r) => r.step === 'pilot')) return 'measured'
+  return claim.reports.length > 0 ? 'indicated' : 'inferred'
+}
+
+/** Your current estimate of a site's resource (t): the latest report, or the orbital figure before any landing. */
+export function estimateT(claim: LunarClaim): number {
+  return claim.reports.at(-1)?.estimateT ?? MOON.inferred_t_per_site
+}
+
+/** Adds a prospect report (an estimate, never the truth: lunarGeology.ts). */
+export function addReport(state: GameState, claim: LunarClaim, step: 'first' | 'second' | 'pilot'): void {
+  const r = prospectReport(
+    act4SeedOf(state),
+    state.lunarGrade ?? 'patchy',
+    claim.site,
+    lunarSite(claim.site).ice_access,
+    step,
+    claim.reports.length,
+  )
+  claim.reports.push({ quarter: state.quarter, step, ...r })
+  logEntry(state, 'log.moon.report', { lunarSite: claim.site, estimateT: Math.round(r.estimateT) })
+}
+
+/** A mission's landing: success secures the claim and brings a prospect report; failure loses the mission. */
+function land(state: GameState, missionId: string, week: number | null): void {
+  const m = state.act4Moon!.missions.find((x) => x.id === missionId)!
+  const claim = claimOf(state, m.site)
+  if (!claim) {
+    m.status = 'lost'
+    logEntry(state, 'log.moon.mission_no_claim', { lunarSite: m.site }, week)
+    return
+  }
+  const r = substream(act4SeedOf(state), `act4_lunar_landing:${m.id}:${m.aborts}`)
+  if (!chance(r, landingChance(state))) {
+    m.status = 'lost'
+    logEntry(state, 'log.moon.landing_failed', { lunarSite: m.site, costUsd: m.costUsd }, week)
+    return
+  }
+  m.status = 'landed'
+  if (claim.landedQuarter === null) claim.landedQuarter = state.quarter
+  claim.status = 'held'
+  logEntry(state, 'log.moon.landed', { lunarSite: m.site }, week)
+  addReport(state, claim, claim.reports.length === 0 ? 'first' : 'second')
+}
+
+// ---------- the lunar alerts (doc 33 §14.2), planned at the end of the Plan phase ----------
+
+export const LUNAR_ALERTS = {
+  lunar_landing: ['commit', 'abort'],
+  lunar_dust: ['repair', 'accept'],
+} as const
+export type LunarAlertId = keyof typeof LUNAR_ALERTS
+export const isLunarAlert = (id: string): id is LunarAlertId => id in LUNAR_ALERTS
+
+/** Plans this quarter's lunar alerts: a landing for each mission arriving now (M30.4 adds dust faults). */
+export function planLunarLandings(state: GameState): void {
+  const moon = state.act4Moon
+  if (!moon || !inActIV(state)) return
+  moon.planned = moon.planned.filter((p) => p.kind !== 'lunar_landing')
+  for (const m of moon.missions.filter((x) => x.status === 'en_route' && x.arrivalQuarter === state.quarter)) {
+    const r = substream(act4SeedOf(state), `act4_lunar_window:${m.id}:${m.aborts}`)
+    moon.planned.push({ week: randomInt(r, 1, BALANCE.weeksPerQuarter - 2), kind: 'lunar_landing', missionId: m.id })
+  }
+  moon.planned.sort((a, b) => a.week - b.week)
+}
+
+/** In the live quarter: a lunar alert due this week pauses the quarter (or, past the alert limit, takes its default). */
+export function checkLunarAlerts(state: GameState): void {
+  const moon = state.act4Moon
+  if (!moon || moon.planned.length === 0 || state.interrupt) return
+  const due = moon.planned.find((p) => p.week <= state.week)
+  if (!due) return
+  moon.planned.splice(moon.planned.indexOf(due), 1)
+  state.interrupt = {
+    id: due.kind,
+    week: state.week,
+    coin: 'BTC',
+    changePct: 0,
+    ...(due.missionId ? { lunarMissionId: due.missionId } : {}),
+    ...(due.site ? { lunarSite: due.site } : {}),
+  }
+  if (state.interruptsThisQuarter >= CONTENT.interrupts.maxPerQuarter) {
+    resolveLunarAlert(state, LUNAR_ALERTS[due.kind][0])
+    return
+  }
+  state.interruptsThisQuarter++
+}
+
+export const lunarAlertChoices = (state: GameState): string[] =>
+  state.interrupt && isLunarAlert(state.interrupt.id) ? [...LUNAR_ALERTS[state.interrupt.id]] : []
+
+export const lunarAlertDefault = (state: GameState): string => LUNAR_ALERTS[state.interrupt!.id as LunarAlertId][0]
+
+/** Landing: commit (the roll) or abort and retry next quarter's window. Dust: in moonOps.ts (M30.4). */
+export function resolveLunarAlert(state: GameState, choice: string): Message | undefined {
+  const active = state.interrupt!
+  if (!lunarAlertChoices(state).includes(choice)) return { key: 'error.bad_choice' }
+  const week = active.week + 1
+  if (active.id === 'lunar_landing') {
+    const m = state.act4Moon!.missions.find((x) => x.id === active.lunarMissionId)!
+    if (choice === 'commit') land(state, m.id, week)
+    else {
+      m.arrivalQuarter += MOON.mission.abort_delay_quarters
+      m.aborts++
+      state.cash -= MOON.mission.abort_cost_usd
+      logEntry(state, 'log.moon.aborted', { lunarSite: m.site, costUsd: MOON.mission.abort_cost_usd }, week)
+    }
+  } else resolveDustFault(state, active.lunarSite as LunarSiteId, choice, week)
+  state.interrupt = null
+}
+
+/** Safety net at a quarter's end: a mission due now whose landing alert never fired lands (the default). */
+export function endQuarterMissions(state: GameState): void {
+  const moon = state.act4Moon
+  if (!moon || !inActIV(state)) return
+  for (const m of moon.missions.filter((x) => x.status === 'en_route' && x.arrivalQuarter === state.quarter))
+    land(state, m.id, null)
+  moon.planned = []
+}
+
+/** A dust fault on a running pilot (M30.4): repair it (cash) or accept lower availability. */
+function resolveDustFault(state: GameState, site: LunarSiteId, choice: string, week: number): void {
+  const pilot = claimOf(state, site)?.pilot
+  if (!pilot) return
+  const a = MOON.alerts
+  if (choice === 'repair') {
+    state.cash -= a.dust_repair_usd
+    ;(state.quarterStats.moonCostUsd ??= 0)
+    state.quarterStats.moonCostUsd += a.dust_repair_usd
+    logEntry(state, 'log.moon.dust_repaired', { lunarSite: site, costUsd: a.dust_repair_usd }, week)
+  } else {
+    pilot.availability *= 1 - a.dust_accept_loss_share
+    logEntry(state, 'log.moon.dust_accepted', { lunarSite: site, lossPct: a.dust_accept_loss_share }, week)
+  }
+}
 
 // ---------- the start of a quarter: scripted claims arrive, landing clocks run out ----------
 

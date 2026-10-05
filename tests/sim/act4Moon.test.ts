@@ -7,8 +7,19 @@ import { CONTENT } from '../../src/content/index.ts'
 import { MOON } from '../../src/content/moonContent.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { GameState } from '../../src/sim/state.ts'
-import { claimOf, resourceShare, rivalOn, startQuarterMoonClaims } from '../../src/sim/systems/moon.ts'
-import { act, orbitCompany } from './act4Helpers.ts'
+import {
+  claimOf,
+  endQuarterMissions,
+  landingChance,
+  missionCostUsd,
+  resolveLunarAlert,
+  resourceCategory,
+  resourceShare,
+  rivalOn,
+  startQuarterMoonClaims,
+} from '../../src/sim/systems/moon.ts'
+import { prospectReport } from '../../src/sim/systems/lunarGeology.ts'
+import { act, orbitCompany, playQuarter } from './act4Helpers.ts'
 
 const Q = (label: string) => CONTENT.quarters.indexOf(label)
 const err = (s: GameState, a: Action) => {
@@ -96,5 +107,90 @@ describe('lunar claims and disputes (M30.2)', () => {
   it('a site another has landed on can’t be claimed', () => {
     const s = at(lunarCompany(), '2032Q2')
     expect(err(s, { type: 'CLAIM_LUNAR_SITE', site: 'shackleton_ridge' })).toBe('error.moon_held')
+  })
+})
+
+describe('prospect missions, landings and reports (M30.3)', () => {
+  it('a mission: 1 Bandwidth, 2 t at the delivery price + $60M (≈ $140M in 2031), arriving 3-5 quarters later', () => {
+    let s = act(lunarCompany(), { type: 'CLAIM_LUNAR_SITE', site: 'malapert_massif' })
+    expect(missionCostUsd(s)).toBe(2000 * 40000 + 60e6)
+    const cash = s.cash
+    const bw = s.bandwidth
+    s = act(s, { type: 'SEND_LUNAR_MISSION', site: 'malapert_massif' })
+    const m = s.act4Moon!.missions[0]
+    expect(s.cash).toBe(cash - 140e6)
+    expect(s.bandwidth).toBe(bw - 1)
+    expect(m.arrivalQuarter - s.quarter).toBeGreaterThanOrEqual(3)
+    expect(m.arrivalQuarter - s.quarter).toBeLessThanOrEqual(5)
+    expect(err(s, { type: 'SEND_LUNAR_MISSION', site: 'malapert_massif' })).toBe('error.moon_mission_en_route')
+    expect(err(s, { type: 'SEND_LUNAR_MISSION', site: 'cabeus' })).toBe('error.moon_no_claim')
+  })
+
+  it('played through: the landing window comes up in its quarter (default commit); success holds the claim with a report', () => {
+    let s = act(lunarCompany(), { type: 'CLAIM_LUNAR_SITE', site: 'malapert_massif' })
+    s = act(s, { type: 'SEND_LUNAR_MISSION', site: 'malapert_massif' })
+    const arrival = s.act4Moon!.missions[0].arrivalQuarter
+    while (s.quarter < arrival) s = playQuarter(s)
+    s = playQuarter(s)
+    const m = s.act4Moon!.missions[0]
+    expect(['landed', 'lost']).toContain(m.status)
+    const claim = claimOf(s, 'malapert_massif')!
+    if (m.status === 'landed') {
+      expect(claim).toMatchObject({ status: 'held', landedQuarter: arrival })
+      expect(claim.reports).toHaveLength(1)
+      expect(claim.reports[0].step).toBe('first')
+      expect(resourceCategory(claim)).toBe('indicated')
+    } else {
+      expect(claim).toMatchObject({ status: 'claimed', landedQuarter: null })
+      expect(resourceCategory(claim)).toBe('inferred')
+    }
+  })
+
+  it('landing success follows the market’s rate (55% in 2031, over many missions)', () => {
+    let landed = 0
+    const N = 1000
+    const base = act(lunarCompany(), { type: 'CLAIM_LUNAR_SITE', site: 'malapert_massif' })
+    for (let i = 0; i < N; i++) {
+      const s = structuredClone(base)
+      s.act4Moon!.missions.push({
+        id: `t${i}`, site: 'malapert_massif', launchedQuarter: 0, arrivalQuarter: s.quarter, costUsd: 0, status: 'en_route', aborts: 0,
+      })
+      s.interrupt = { id: 'lunar_landing', week: 3, coin: 'BTC', changePct: 0, lunarMissionId: `t${i}` }
+      resolveLunarAlert(s, 'commit')
+      if (s.act4Moon!.missions[0].status === 'landed') landed++
+    }
+    expect(landingChance(base)).toBe(0.55)
+    // (1,000 missions: ±5 points is over 3 standard deviations; 300 gave a 3-sigma run on this seed)
+    expect(Math.abs(landed / N - 0.55)).toBeLessThan(0.05)
+  })
+
+  it('reports are estimates, unbiased and narrowing: the first prospect’s median sits near the pilot-grade reading', () => {
+    const s = lunarCompany()
+    const ice = 0.6
+    const med = (xs: number[]) => xs.sort((a, b) => a - b)[Math.floor(xs.length / 2)]
+    const first = Array.from({ length: 401 }, (_, n) => prospectReport(7, 'patchy', 'malapert_massif', ice, 'first', n))
+    const pilot = Array.from({ length: 401 }, (_, n) => prospectReport(7, 'patchy', 'malapert_massif', ice, 'pilot', n))
+    const mf = med(first.map((r) => r.estimateT))
+    const mp = med(pilot.map((r) => r.estimateT))
+    expect(Math.abs(mf / mp - 1)).toBeLessThan(0.1)
+    expect(first[0].highT / first[0].lowT).toBeGreaterThan(pilot[0].highT / pilot[0].lowT)
+    expect(s.act4Moon).toBeUndefined()
+  })
+
+  it('aborting a landing costs $10M and a quarter; an unfired landing lands at the quarter’s end', () => {
+    let s = act(lunarCompany(), { type: 'CLAIM_LUNAR_SITE', site: 'malapert_massif' })
+    s = act(s, { type: 'SEND_LUNAR_MISSION', site: 'malapert_massif' })
+    const m = s.act4Moon!.missions[0]
+    m.arrivalQuarter = s.quarter
+    s.interrupt = { id: 'lunar_landing', week: 3, coin: 'BTC', changePct: 0, lunarMissionId: m.id }
+    const cash = s.cash
+    const x = structuredClone(s)
+    resolveLunarAlert(x, 'abort')
+    expect(x.act4Moon!.missions[0]).toMatchObject({ arrivalQuarter: s.quarter + 1, aborts: 1, status: 'en_route' })
+    expect(x.cash).toBe(cash - 10e6)
+    const y = structuredClone(s)
+    y.interrupt = null
+    endQuarterMissions(y)
+    expect(y.act4Moon!.missions[0].status).not.toBe('en_route')
   })
 })

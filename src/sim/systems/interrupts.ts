@@ -43,6 +43,12 @@ import {
   orbitAlertDefault,
   resolveOrbitAlert,
 } from './orbitOps.ts'
+import {
+  isLunarAlert,
+  lunarAlertChoices,
+  lunarAlertDefault,
+  resolveLunarAlert,
+} from './moon.ts'
 
 /** Act II project alerts (interrupts_act2.json): a construction delay or the GPU queue. */
 const isProjectEvent = (id: string) =>
@@ -95,6 +101,7 @@ export function resolveInterrupt(
   if (isProjectEvent(active.id)) return resolveProjectEvent(state, choiceId)
   if (isSpotAlert(active.id)) return resolveSpotAlert(state, choiceId)
   if (isOrbitAlert(active.id)) return resolveOrbitAlert(state, choiceId)
+  if (isLunarAlert(active.id)) return resolveLunarAlert(state, choiceId)
   const choice = CONTENT.interrupts.byId[active.id]?.choices?.find(
     (c) => c.id === choiceId,
   )
@@ -194,6 +201,7 @@ export function availableChoices(state: GameState): string[] {
   if (isProjectEvent(active.id)) return projectEventChoices(state)
   if (isSpotAlert(active.id)) return spotAlertChoices()
   if (isOrbitAlert(active.id)) return orbitAlertChoices(state)
+  if (isLunarAlert(active.id)) return lunarAlertChoices(state)
   // SB6: the grid curtails big ERCOT sites directly, so there's nothing to refuse.
   if (active.id === 'curtailment' && active.curtail?.forced) return ['curtail']
   if (active.id === 'margin_warning') {
@@ -218,6 +226,7 @@ export function defaultChoice(state: GameState): string {
   if (isProjectEvent(state.interrupt!.id)) return projectEventDefault(state)
   if (isSpotAlert(state.interrupt!.id)) return spotAlertDefault(state)
   if (isOrbitAlert(state.interrupt!.id)) return orbitAlertDefault(state)
+  if (isLunarAlert(state.interrupt!.id)) return lunarAlertDefault(state)
   if (state.interrupt!.id === 'curtailment' && state.interrupt!.curtail?.forced)
     return 'curtail'
   const def = CONTENT.interrupts.byId[state.interrupt!.id]

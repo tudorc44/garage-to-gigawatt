@@ -231,6 +231,7 @@ import {
   reletKw,
 } from './systems/hosting.ts'
 import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
+import { landingChance } from './systems/moon.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {
@@ -1174,6 +1175,28 @@ export function signalsPanelIv(state: GameState) {
  * Acts II–III count it); orbit and the Moon count their live capacity once M29's blocks and M30's lunar power exist (0
  * until then). Null outside Act IV.
  */
+/**
+ * Act IV's live alerts (M29.4, M30.3): what the card shows. An orbit alert names its block; a landing names its site
+ * and this quarter's landing success; a dust fault names its site. Null for any other interrupt.
+ */
+export function spaceAlertView(state: GameState): {
+  kind: 'orbit_conjunction' | 'orbit_storm' | 'lunar_landing' | 'lunar_dust'
+  n: number
+  site: string
+  chance: number
+} | null {
+  const a = state.interrupt
+  if (!a) return null
+  if (a.id === 'orbit_conjunction' || a.id === 'orbit_storm')
+    return { kind: a.id, n: state.act4Orbit?.blocks.find((b) => b.id === a.orbitBlockId)?.n ?? 0, site: '', chance: 0 }
+  if (a.id === 'lunar_landing') {
+    const m = state.act4Moon?.missions.find((x) => x.id === a.lunarMissionId)
+    return { kind: a.id, n: 0, site: m?.site ?? '', chance: landingChance(state) }
+  }
+  if (a.id === 'lunar_dust') return { kind: a.id, n: 0, site: a.lunarSite ?? '', chance: 0 }
+  return null
+}
+
 export function act4MwColumns(state: GameState) {
   if (!inActIV(state)) return null
   const groundMw = state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0) / 1000
