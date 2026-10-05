@@ -190,6 +190,10 @@ export function PlanScreen({ state, act }: ScreenProps) {
           {state.act === 4 && (
             <Act4Panel name="OrbitExposurePanel" state={state} act={act} />
           )}
+          {/* (M30.5) lunar disputes waiting for an answer */}
+          {state.act === 4 && (
+            <Act4Panel name="MoonDisputesPanel" state={state} act={act} />
+          )}
           <div class="dash">
             <div class="col">
               <MarketPanel state={state} />

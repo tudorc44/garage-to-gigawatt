@@ -64,7 +64,26 @@ One column of panels (the Contracts section's `section single` layout), top to b
   a ground-station line and one Build button per site.
 - **Gone**: deorbited and sold blocks, one muted line.
 
-## The orbit alerts (M29.5, `screens/Live.tsx` › `OrbitAlertCard`)
+## The space alerts (M29.5, M30.3, `screens/Live.tsx` › `SpaceAlertCard`)
 
 The spot alert's card shape: eyebrow (quarter, week) and alert count, the orbit icon, title, a one-line body naming the
-block (conjunction) or the fleet (storm), two choice buttons with the default marked.
+block (conjunction), the fleet (storm), the site and today's landing success (landing window) or the pilot's site (dust
+fault), two choice buttons with the default marked.
+
+## A4-06 Moon and A4-07 prospect report (M30.5, `screens/Act4Moon.tsx`, nav "Moon")
+
+One column of panels, as the Orbit board:
+- **The Moon**: one lead line (the lunar unit's value, today's landing success, a mission's cost, the market's value per
+  tonne); the standoff's freeze and your bloc alignment when they apply.
+- **Lunar disputes** (also on the Plan screen, under the exposure warnings): one line per dispute and four buttons
+  (hold, align, share, withdraw), and the "first to land holds" hint.
+- **Polar sites** (doc 33's map, drawn as a table): site and which bloc wants it, sunlight, ice access, room for power,
+  who holds it (yours, claimed or landed by another, unclaimed, lost), Claim with a pip.
+- **One programme card per site of yours**: title and the resource category tag; the pipeline as five steps (claim →
+  prospect → power → pilot → production, filled or empty); your estimate and the site's value with "Prospect reports
+  (n)"; the mission (or one on its way); power (arranged, delivered; the solar select and Build, Lease a reactor); the
+  pilot (building, or water processed and availability, the crew toggle); Decide production. Never the grade.
+- **Lunar offtake**: this quarter's offer (Sign, 2 pips), your contracts (delivered, left), the megawatt contract.
+- **After 2035**: three short paragraphs (tugs, lunar-made mass, the model's ceiling): no in-act cash.
+- **A4-07** (the Dialog): the category and what it means; a table of reports (quarter, source, estimate, 90% band); the
+  shared-site note; "honest on average; the truth arrives in the chapter report".

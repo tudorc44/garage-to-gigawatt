@@ -21,6 +21,8 @@ export const ICONS = {
   // M29.5 (Act IV): drawn for the game in the bundle's style (it has no orbit icon): a planet, its orbit, a satellite.
   orbit:
     '<circle cx="10" cy="10" r="3.5"/><ellipse cx="10" cy="10" rx="7.5" ry="3" transform="rotate(-25 10 10)"/><circle cx="16.3" cy="6.4" r="1.2"/>',
+  // M30.5 (Act IV): a crescent moon with two craters, drawn the same way.
+  moon: '<path d="M14.5 15.8A7 7 0 1 1 11 3.2a5.5 5.5 0 0 0 3.5 12.6z"/><circle cx="7.2" cy="9" r="1.1"/><circle cx="9" cy="13.2" r="0.8"/>',
   heat: '<path d="M10 17.5c3 0 5-2 5-4.8 0-3.2-2.6-4.4-3.3-7.7C9.8 6.3 9 8 9.2 9.6 7.8 9 7.3 7.6 7.3 7.6 5.9 9 5 10.6 5 12.7c0 2.8 2 4.8 5 4.8z"/>',
   site: '<path d="M2.5 16.5h15"/><path d="M3.5 16.5V8l4-2.5V8l4-2.5V8l4-2.5v11"/><path d="M6 13h1.5M10 13h1.5M14 13h1"/>',
   machine:

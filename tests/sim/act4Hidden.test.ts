@@ -34,7 +34,7 @@ describe('Act IV’s hidden files (M28.3, doc 33 §6.8): each read only by its o
 
   it('the two systems are sim-internal: no UI file and no selector imports them', () => {
     for (const f of src) {
-      if (!/[\\/]ui[\\/]|selectors\.ts$|projectViews\.ts$|capitalViews\.ts$|orbitViews\.ts$/.test(f)) continue
+      if (!/[\\/]ui[\\/]|selectors\.ts$|projectViews\.ts$|capitalViews\.ts$|orbitViews\.ts$|moonViews\.ts$/.test(f)) continue
       expect(code(f), f).not.toMatch(/lunarGeology|fleetReliability/)
     }
   })
@@ -42,6 +42,11 @@ describe('Act IV’s hidden files (M28.3, doc 33 §6.8): each read only by its o
   it('M29.5: the orbit views never read a block’s true end of life (the screens show the design life and telemetry)', () => {
     for (const f of src.filter((x) => /orbitViews\.ts$|[\\/]ui[\\/]/.test(x)))
       expect(code(f), f).not.toMatch(/\bretireQuarter\b|\btrueReliability\b/)
+  })
+
+  it('M30.5: the Moon views read no grade, no grade factor and no truth (only your reports and what a pilot processed)', () => {
+    for (const f of src.filter((x) => /moonViews\.ts$|[\\/]ui[\\/]/.test(x)))
+      expect(code(f), f).not.toMatch(/\blunarGrade\b|\bpilotGradeFactor\b|\bprospectReport\b|\btrueResourceT\b/)
   })
 
   it('no UI file reads the hidden draws (the future, the lunar grade)', () => {

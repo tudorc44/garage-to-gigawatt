@@ -11,6 +11,8 @@ import { Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import { say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
+// M30.5: the Moon (A4-06, A4-07) lives in its own file and loads with these panels.
+export { MoonDisputesPanel, MoonSection } from './Act4Moon.tsx'
 
 const shellName = (id: string) => tDynamic(`orbit.shell.${id}`, id)
 const providerName = (id: string) => tDynamic(`orbit.provider.${id}`, id)

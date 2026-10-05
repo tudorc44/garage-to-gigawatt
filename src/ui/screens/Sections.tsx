@@ -46,6 +46,7 @@ export type Section =
   | 'dashboard'
   | 'projects'
   | 'orbit'
+  | 'moon'
   | 'contracts'
   | 'government'
   | 'fleet'
@@ -60,6 +61,8 @@ export function SectionView(props: ScreenProps & { section: Section }) {
       return <ProjectsSection {...props} />
     case 'orbit':
       return <Act4Panel name="OrbitSection" {...props} />
+    case 'moon':
+      return <Act4Panel name="MoonSection" {...props} />
     case 'contracts':
       return <Act3Panel name="ContractsSection" {...props} />
     case 'government':

@@ -226,6 +226,8 @@ const NAV: {
   { id: 'projects', icon: 'power', key: 'ui.nav.projects', act2: true },
   // Act IV (M29.5, A4-03): the Orbit board.
   { id: 'orbit', icon: 'orbit', key: 'ui.nav.orbit', act4: true },
+  // (M30.5, A4-06): the Moon.
+  { id: 'moon', icon: 'moon', key: 'ui.nav.moon', act4: true },
   // Act III (M13.2, A3-04): every tenant contract by end quarter.
   { id: 'contracts', icon: 'loan', key: 'ui.nav.contracts', act3: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
