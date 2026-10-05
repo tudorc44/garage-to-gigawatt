@@ -2180,7 +2180,11 @@ function lastLeadTime(
 /** A market_quarterly_act2 row, reshaped for the sim. */
 function act2QuarterOf(
   // Act II's rows and Act III's scenario rows share every column this reads (the BTC and ETH closes are not read).
-  r: Omit<MarketQuarterAct2Row, 'btc_usd_close' | 'eth_usd_close'>,
+  // (M22: nor Act II's per-series estimate flags, which Act III's scenario rows don't have)
+  r: Omit<
+    MarketQuarterAct2Row,
+    'btc_usd_close' | 'eth_usd_close' | 'sofr_estimate' | 'hy_spread_estimate'
+  >,
   multiple: Act2Quarter['multiple'],
 ): Act2Quarter {
   return {

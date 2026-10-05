@@ -40,8 +40,9 @@ describe('lenders.json in the game', () => {
     expect(ddtlSpreadBps(q('2026Q1'), true)).toBe(225)
     expect(ddtlSpreadBps(q('2026Q1'), false)).toBe(420)
     expect(ddtlSpreadBps(q('2026Q4'), false)).toBe(475)
-    expect(sofr(q('2023Q4'))).toBeCloseTo(0.0533, 9)
-    expect(ddtlRate(q('2023Q4'), false)).toBeCloseTo(0.0533 + 0.08, 9)
+    // (M22: 2023Q4's SOFR is FRED's quarterly average, 5.32%; the DDTL spread is still the estimate)
+    expect(sofr(q('2023Q4'))).toBeCloseTo(0.0532, 9)
+    expect(ddtlRate(q('2023Q4'), false)).toBeCloseTo(0.0532 + 0.08, 9)
   })
 
   it('the rating matrix, range and runway notch', () => {

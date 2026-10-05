@@ -302,6 +302,9 @@ export const marketQuarterAct2Schema = z.object({
   capex_fullstack_incremental_usd_mw: n,
   sofr_pct: n,
   hy_spread_bps: n,
+  /** M22: per series, whether this quarter's value is still an estimate (False = FRED data, tools/data/real-market.ts). */
+  sofr_estimate: z.boolean(),
+  hy_spread_estimate: z.boolean(),
   ddtl_spread_bps: nn,
   cap_rate_hyperscale_pct: n,
   ev_per_mw_mining_usd_m: n,

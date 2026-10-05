@@ -54,6 +54,14 @@ The six BTC columns changed and an `eth_usd` column was added (see the ETH secti
    off by 1–3%; the gap is closed by a correction that ramps linearly across the quarter, so there are no jumps.
 6. **market_quarterly.csv BTC columns** (difficulty, hashrate, subsidy, hashprice) now equal the quarter's last week.
 
+## market_quarterly.csv: real SOFR and high-yield spread (M22, 5 Oct 2026, design thread)
+
+`sofr_pct` (FRED `SOFR`, 2022Q4–2026Q3) and `hy_spread_bps` (FRED `BAMLH0A0HYM2`, 2023Q4–2026Q3) are now quarterly
+averages of FRED's daily data, written by `tools/data/real-market.ts` from the raw downloads in `tools/data/raw/` (no
+hand edits; both copies byte-identical). New columns `sofr_estimate` and `hy_spread_estimate` flag, per row, which values
+are still estimates (SOFR 2026Q4; HY 2022Q4–2023Q3 and 2026Q4). The DDTL spread and the ASIC tiers stay estimates.
+Sources, transform and the refresh commands: `tools/data/README.md`; doc 18 §15 items 1 and 3.
+
 ## ETH price series (added 27 Sep 2026, owner decision)
 
 The pack had no ETH price after 2022Q3, but the ETH treasury and ETH-backed loans carry into Act II "as is" (doc 18 §2.1).

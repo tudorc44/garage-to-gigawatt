@@ -178,6 +178,16 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
 
+## Milestone M22 (branch `m22`, from main at `48d16b4` plus the M21 notes fix `d7bab88`; real market data)
+
+Split (DT spec, 5 Oct 2026): M22.0 housekeeping (m21 / m21.6 tagged and deleted; the "not merged" line fixed: `d7bab88`, made on the
+branch first called m21.7, renamed m22, mine); M22.1 SOFR and the HY spread from FRED by a committed script over committed raw downloads; M22.2
+the sim against the M21 baseline, no retuning; M22.3 the goldens the data touches.
+**M22.1 done:** `tools/data/real-market.ts` (`npm run data:real`) + `tools/data/raw/fred_SOFR.csv`, `fred_BAMLH0A0HYM2.csv` (retrieved 5 Oct 2026) +
+`tools/data/README.md`. SOFR real 2022Q4–2026Q3, HY 2023Q4–2026Q3 (FRED shows 3 years of the ICE series); a quarter is real only if fully covered
+(mine); per-series flags `sofr_estimate` / `hy_spread_estimate` (schema); DDTL spread and ASIC tiers stay estimates (Luxor: Premium / paid API, no
+workaround). Doc 18 §15 and the act2-content README updated. Two tests that pinned old SOFR values updated; new test recomputes from raw. 1257 tests.
+
 ## Milestone M21 (branch `m21`, from `main` at `dceb047`; the design thread's answers after M20)
 
 Split (run in one go): M21.0 A1 the M19 hire renamed Mae Holloway; A2 the deal card's "Leaves you $X" line and the cash check; M21.1 layout

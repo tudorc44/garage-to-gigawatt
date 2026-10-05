@@ -391,10 +391,17 @@ Checked against real 2022–26 companies in the pack:
 ## 15. Open questions (not resolved; tune or research later)
 
 1. **ASIC price index by efficiency tier ($/TH):** the pack's weakest-sourced series. The tier bands are sourced, but the $/TH values in `market_weekly.csv` are directional. Pull `data.hashrateindex.com/asic-index-data/price-index` before locking mining balance.
+   - *M22 (5 Oct 2026, retrieval attempt):* Luxor's Hashrate Index ASIC Price Index is not freely downloadable: the history sits behind the site's Premium tier and its paid data API (checked `hashrateindex.com/rigs` and `data.hashrateindex.com`, 5 Oct 2026). Per the design thread, no workaround: the four tiers (`asic_price_usd_th_old/mid/new/latest` in `market_weekly_act2.csv`) **stay estimates**, flagged by the row's `estimate`. The intended mapping, if a licence is obtained: the index's efficiency bands (> 38 J/TH, 25–38, 19–25, < 19) → old / mid / new / latest.
 2. **Full-stack incremental build cost ($18–30M/MW):** triangulated, not observed. The first thing to tune in playtesting.
    - A related inconsistency: `gpus.json` uses 1,000 H100s/MW (chip TDP only), but real all-in draw is ~1.2–1.4 kW per GPU, i.e. **~750 GPUs/MW** (01-02 §4a).
    - Use 750 for revenue and cost per MW, and fix `gpus.json`.
 3. **SOFR and high-yield spread series:** shape-accurate but not checked against FRED cell by cell. Pull the FRED CSVs before the final balance lock.
+   - *Resolved in M22 (5 Oct 2026):* replaced with FRED data by a committed script (`tools/data/real-market.ts`, `npm run data:real`) from committed raw downloads (`tools/data/raw/`), retrieved 5 Oct 2026, last observation 2026-10-01.
+     - **SOFR:** FRED series `SOFR` (daily, %) → `sofr_pct` = the quarter's average of daily values, 2 dp. Real for 2022Q4–2026Q3 (16 quarters).
+     - **High-yield spread:** FRED series `BAMLH0A0HYM2` (ICE BofA US High Yield OAS, daily, %) → `hy_spread_bps` = the quarter's average × 100, whole bps. FRED shows only the last 3 years of this licensed series (from 2023-10-03), so it is real for 2023Q4–2026Q3 (12 quarters).
+     - A quarter is real only when the download covers all of it (an observation within its first and last 7 days); the rest **stay estimates**: SOFR 2026Q4, HY 2022Q4–2023Q3 and 2026Q4.
+     - Per-row flags `sofr_estimate` and `hy_spread_estimate` say which values are real; the row's `estimate` stays True while any column in it is an estimate.
+     - **Still estimated:** the DDTL spread (`ddtl_spread_bps`, no public series), the ASIC tiers (item 1), and every Act III scenario series (2027+, forecasts by design).
 4. **Liquidated-damages rate (3%/quarter):** a design default; real contracts don't disclose it.
 5. **West Virginia pre-emption law** (mentioned in 01-02) couldn't be re-confirmed; left out of `regions.json`.
 6. **News ticker:** 25 of ~35 headlines written; 10 more needed (a text-only follow-up).
