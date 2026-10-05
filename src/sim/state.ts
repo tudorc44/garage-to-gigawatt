@@ -276,7 +276,7 @@ export interface LunarClaim {
   claimedQuarter: number
   /** The claim holds only once you land hardware by this quarter (doc 33 §9.1). */
   landBy: number
-  status: 'claimed' | 'held' | 'lost' | 'withdrawn'
+  status: 'claimed' | 'held' | 'lost' | 'withdrawn' | 'sold'
   landedQuarter: number | null
   /** After a dispute settled by sharing: the other claimant, and your share of the resource. */
   sharedWith?: LunarClaimantId
@@ -342,6 +342,9 @@ export interface Act4Moon {
   /** This quarter's planned lunar alerts. */
   planned: { week: number; kind: 'lunar_landing' | 'lunar_dust'; missionId?: string; site?: LunarSiteId }[]
   nextId: number
+  /** M31.3: this quarter's agency task order on offer ($), and accepted funding waiting for your next mission. */
+  taskOrderUsd?: number | null
+  missionCreditUsd?: number
 }
 
 /**

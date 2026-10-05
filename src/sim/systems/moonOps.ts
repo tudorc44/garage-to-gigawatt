@@ -13,7 +13,16 @@ import { pick, randomInt, substream, uniform } from '../rng.ts'
 import { act4SeedOf, inActIV, logEntry, type GameState, type LunarClaim } from '../state.ts'
 import { pilotGradeFactor } from './lunarGeology.ts'
 import { scenarioOf } from './market.ts'
-import { addReport, claimOf, estimateT, moonOf, resourceCategory, resourceShare } from './moon.ts'
+import {
+  addReport,
+  claimOf,
+  estimateT,
+  missionCostUsd,
+  moonOf,
+  resourceCategory,
+  resourceShare,
+} from './moon.ts'
+import { MONEY } from '../../content/moneyContent.ts'
 import { wildcardFiredIv } from './wildcardsIv.ts'
 
 const Q = (label: string) => CONTENT.quarters.indexOf(label)
@@ -255,6 +264,26 @@ export function signOfftake(state: GameState, offer: number): void {
   logEntry(state, 'log.moon.offtake', { buyer: o.buyer, volume: o.volumeTYr, prepaidUsd })
 }
 
+// ---------- agency task orders (M31.3; doc 33 §11.1-11.2) ----------
+
+export function taskOrderBlocker(state: GameState): Message | undefined {
+  const blocked = planBlocker(state)
+  if (blocked) return blocked
+  if (!state.act4Moon?.taskOrderUsd) return { key: 'error.moon_no_task_order' }
+  const bloc = MONEY.capital.task_orders.bloc
+  if (state.act4Moon.alignedBloc && state.act4Moon.alignedBloc !== bloc) return { key: 'error.moon_other_bloc' }
+}
+
+/** Accepts the task order (0 Bandwidth): it pays its part of your next mission; the agency's bloc's strings come with it. */
+export function acceptTaskOrder(state: GameState): void {
+  const moon = moonOf(state)
+  const usd = moon.taskOrderUsd!
+  moon.missionCreditUsd = (moon.missionCreditUsd ?? 0) + usd
+  moon.alignedBloc = MONEY.capital.task_orders.bloc
+  moon.taskOrderUsd = null
+  logEntry(state, 'log.moon.task_order', { amountUsd: usd })
+}
+
 /** A contract's remaining value at its price (for the backlog). */
 export const offtakeLeftUsd = (state: GameState, o: { volumeTYr: number; priceUsdKg: number; endQuarter: number }) =>
   (Math.max(0, o.endQuarter - state.quarter) * o.volumeTYr * 1000 * o.priceUsdKg) / 4
@@ -275,6 +304,14 @@ export function startQuarterMoonOps(state: GameState): void {
       priceUsdKg: row(state).lunar_offtake_surface_usd_kg * uniform(r, o.price_spread[0], o.price_spread[1]),
       termQuarters: o.term_quarters,
     })
+  }
+  // (M31.3) an agency task order part-funds prospecting: lunar funding is grants and orders, never debt
+  const T = MONEY.capital.task_orders
+  moon.taskOrderUsd = null
+  if (moon.claims.some((c) => c.status === 'claimed' || c.status === 'held') && moon.alignedBloc !== 'station') {
+    const r = substream(act4SeedOf(state), `act4_task_order:${state.quarter}`)
+    if (uniform(r, 0, 1) < T.chance_q)
+      moon.taskOrderUsd = Math.min(uniform(r, T.usd[0], T.usd[1]), T.max_share_of_mission * missionCostUsd(state))
   }
   const flag = state.act4Wildcards?.find((w) => w.id === 'flag_on_the_pole' && w.quarter === state.quarter)
   if (flag && wildcardFiredIv(state, 'flag_on_the_pole')) {

@@ -84,7 +84,8 @@ export function claimSiteBlocker(state: GameState, site: LunarSiteId): Message |
   if (blocked) return blocked
   if (!LUNAR_SITE_IDS.includes(site)) return { key: 'error.moon_bad_site' }
   if (claimOf(state, site)) return { key: 'error.moon_claimed' }
-  if (state.act4Moon?.claims.some((c) => c.site === site && c.status === 'lost')) return { key: 'error.moon_lost_site' }
+  if (state.act4Moon?.claims.some((c) => c.site === site && (c.status === 'lost' || c.status === 'sold')))
+    return { key: 'error.moon_lost_site' }
   const rival = rivalOn(state, site)
   if (rival?.landed) return { key: 'error.moon_held', params: { claimant: rival.claimant } }
   const c = MOON.claim
@@ -195,9 +196,13 @@ export function sendMissionBlocker(state: GameState, site: LunarSiteId): Message
   if (state.act4Moon!.missions.some((m) => m.site === site && m.status === 'en_route')) return { key: 'error.moon_mission_en_route' }
   const m = MOON.mission
   if (state.bandwidth < m.bandwidth) return { key: 'error.no_bandwidth', params: { needed: m.bandwidth, have: state.bandwidth } }
-  const costUsd = missionCostUsd(state)
+  const costUsd = missionOwnCostUsd(state)
   if (state.cash < costUsd) return { key: 'error.no_cash', params: { costUsd, cashUsd: state.cash } }
 }
+
+/** What your next mission costs you: its price less any agency task order you accepted (M31.3). */
+export const missionOwnCostUsd = (state: GameState): number =>
+  Math.max(0, missionCostUsd(state) - (state.act4Moon?.missionCreditUsd ?? 0))
 
 /** Commissions a lander, rover and drill for a claimed site: paid now, arriving 3-5 quarters later (seeded). */
 export function sendMission(state: GameState, site: LunarSiteId): void {
@@ -207,7 +212,10 @@ export function sendMission(state: GameState, site: LunarSiteId): void {
   const [lo, hi] = MOON.mission.lead_quarters
   const lead = randomInt(substream(act4SeedOf(state), `act4_lunar_mission:${id}`), lo, hi)
   state.bandwidth -= MOON.mission.bandwidth
-  state.cash -= costUsd
+  // (M31.3) an accepted agency task order pays its part
+  const credit = Math.min(costUsd, moon.missionCreditUsd ?? 0)
+  if (credit > 0) moon.missionCreditUsd = (moon.missionCreditUsd ?? 0) - credit
+  state.cash -= costUsd - credit
   moon.missions.push({
     id,
     site,

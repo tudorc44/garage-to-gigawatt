@@ -153,6 +153,8 @@ import {
   signMegawatt,
   signOfftake,
   signOfftakeBlocker,
+  acceptTaskOrder,
+  taskOrderBlocker,
 } from './systems/moonOps.ts'
 import {
   chooseRenewal,
@@ -440,6 +442,8 @@ export type Action =
   | { type: 'DECIDE_LUNAR_PRODUCTION'; site: LunarSiteId }
   /** Act IV: sign this quarter's lunar offtake offer (2 BW; a share prepaid). */
   | { type: 'SIGN_LUNAR_OFFTAKE'; offer: number }
+  /** Act IV (M31.3): accept this quarter's agency task order (0 BW): it part-funds your next mission. */
+  | { type: 'ACCEPT_TASK_ORDER' }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -934,6 +938,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = signOfftakeBlocker(s, a.offer)
       if (blocked) return blocked
       signOfftake(s, a.offer)
+      return
+    }
+
+    case 'ACCEPT_TASK_ORDER': {
+      const blocked = taskOrderBlocker(s)
+      if (blocked) return blocked
+      acceptTaskOrder(s)
       return
     }
 

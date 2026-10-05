@@ -7,10 +7,12 @@
 import { BALANCE } from '../../content/index.ts'
 import {
   inAct2Rules,
+  inActIV,
   logEntry,
   type GameState,
   type Project,
 } from '../state.ts'
+import { act4FireSale } from './fireSale.ts'
 import { equityPreMoneyUsd } from './equity.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import { saleValueUsd } from './projects.ts'
@@ -66,6 +68,8 @@ export function rescueBeforeGameOver(
     })
     return 'sale'
   }
+  // Act IV (M31.3, doc 33 §11.5): then a fire sale of a live orbital block or a lunar site, at its haircut.
+  if (inActIV(state) && act4FireSale(state, shortUsd)) return 'sale'
   // 2. An emergency raise at half the valuation, at most 30% dilution.
   const pre = equityPreMoneyUsd(state) * r.equityPriceMult
   if (pre > 0) {

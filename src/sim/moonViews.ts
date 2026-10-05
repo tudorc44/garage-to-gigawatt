@@ -47,7 +47,9 @@ const orNull = (m: Message | undefined): Message | null => m ?? null
 function siteView(state: GameState, site: LunarSiteId) {
   const s = lunarSite(site)
   const c: LunarClaim | undefined = claimOf(state, site)
-  const past = state.act4Moon?.claims.find((x) => x.site === site && (x.status === 'lost' || x.status === 'withdrawn'))
+  const past = state.act4Moon?.claims.find(
+    (x) => x.site === site && (x.status === 'lost' || x.status === 'withdrawn' || x.status === 'sold'),
+  )
   const rival = rivalOn(state, site)
   const mission = state.act4Moon?.missions.find((m) => m.site === site && m.status === 'en_route')
   return {

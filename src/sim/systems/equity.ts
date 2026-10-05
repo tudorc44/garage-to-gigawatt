@@ -6,7 +6,9 @@
 // each; up to 2 a quarter, both priced the same way.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inAct2Rules, logEntry, type GameState } from '../state.ts'
+import { inAct2Rules, inActIV, logEntry, type GameState } from '../state.ts'
+import { MONEY } from '../../content/moneyContent.ts'
+import { orbitConstructionUsd, spaceMultiple } from './orbitOps.ts'
 import { contractWeight, remainingContractUsd } from './projects.ts'
 import { aiEbitdaUsd } from './valuation.ts'
 import { auditEquityMult } from './eventEffects.ts'
@@ -57,12 +59,27 @@ export function equityPreMoneyUsd(state: GameState): number {
   const report = state.reports.at(-1)
   if (!report) return 0
   const added = signedThisQuarterUsd(state)
+  // Act IV (M31.3, doc 33 §11.1): the space-equity window prices blocks under way on the story of the day.
+  const story = inActIV(state) ? spaceStoryUsd(state) : 0
   // An audit that found aggressive depreciation prices equity 10% lower for 2 quarters (M6.0k).
   return (
-    Math.max(0, report.valuationUsd + added.backlogUsd + added.pivotUsd) *
+    Math.max(0, report.valuationUsd + added.backlogUsd + added.pivotUsd + story) *
     auditEquityMult(state)
   )
 }
+
+/**
+ * Act IV: what the space story adds to (or takes from) the price of orbital blocks under way: they're in the valuation
+ * at capex spent, and the window prices them at capex × (space multiple ÷ 20).
+ */
+export function spaceStoryUsd(state: GameState): number {
+  const s = MONEY.capital.space_equity
+  return orbitConstructionUsd(state) * (spaceMultiple(state) / s.story_ref_mult - 1)
+}
+
+/** Act IV: the space-equity window is open while the market's space multiple is at least 12×. */
+export const spaceWindowOpen = (state: GameState): boolean =>
+  spaceMultiple(state) >= MONEY.capital.space_equity.window_min_mult
 
 /** What raising at `dilution` brings in now. */
 export function equityRaiseUsd(state: GameState, dilution: number): number {
@@ -81,6 +98,8 @@ export function equityBlocker(
       key: 'error.equity_dilution',
       params: { minPct: lo, maxPct: hi },
     }
+  if (inActIV(state) && !spaceWindowOpen(state))
+    return { key: 'error.space_window_shut', params: { mult: MONEY.capital.space_equity.window_min_mult } }
   if (equityPreMoneyUsd(state) <= 0) return { key: 'error.equity_no_value' }
   if (raisesThisQuarter(state) >= BALANCE.finance.equity.raisesPerQuarter)
     return {
