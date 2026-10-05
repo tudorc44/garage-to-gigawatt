@@ -108,7 +108,7 @@ function TopBar({ state }: { state: GameState }) {
       </div>
       <div class="stat">
         <span class="label">
-          <Term id="difficulty" act={0}>{t('ui.p0.difficulty')}</Term>
+          <Term id="difficulty">{t('ui.p0.difficulty')}</Term>
         </span>
         <span class="num">
           {m.difficulty.toLocaleString('en-US', { maximumFractionDigits: 0 })}
@@ -404,7 +404,7 @@ function RoomPanel({ state }: { state: GameState }) {
       />
       <div class="row-between num-s">
         <span class="label">
-          <Term id="patience" act={0}>{t('ui.p0.patience_label')}</Term>
+          <Term id="patience">{t('ui.p0.patience_label')}</Term>
         </span>
         <span class="num">{fmt.pct(life.patience / life.patienceMax)}</span>
       </div>
@@ -439,7 +439,7 @@ function MiningMode({
       <Tip id="mining" act={0} />
       <div class="row-between">
         <span class="panel-title">
-          <Term id="solo_pool" act={0}>{t('ui.p0.mining_title')}</Term>
+          <Term id="solo_pool">{t('ui.p0.mining_title')}</Term>
         </span>
         <span class="seg" role="group" aria-label={t('ui.p0.mining_title')}>
           <button
@@ -521,7 +521,7 @@ function MarketPanel({ state }: { state: GameState }) {
         </div>
         <div>
           <span class="label">
-          <Term id="difficulty" act={0}>{t('ui.p0.difficulty')}</Term>
+          <Term id="difficulty">{t('ui.p0.difficulty')}</Term>
         </span>
           <Sparkline
             series="hash"

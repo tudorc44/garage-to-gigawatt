@@ -98,7 +98,7 @@ export function Coins({ state, act }: PrologueProps) {
           <Tip id="coins" act={0} />
           <div class="row-between">
             <span class="panel-title">
-              <Term id="wallet_exchange" act={0}>{t('ui.p0.where_coins')}</Term>
+              <Term id="wallet_exchange">{t('ui.p0.where_coins')}</Term>
             </span>
             <span class="num">
               {coins(btc.total, 'BTC')} · {fmt.money(totalUsd)}
@@ -253,7 +253,7 @@ export function Coins({ state, act }: PrologueProps) {
       <div class="col">
         <section class="panel">
           <span class="panel-title">
-            <Term id="selling_limit" act={0}>{t('ui.p0.limit_label')}</Term>
+            <Term id="selling_limit">{t('ui.p0.limit_label')}</Term>
           </span>
           <SellingLimit state={state} />
         </section>

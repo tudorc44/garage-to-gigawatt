@@ -30,7 +30,11 @@ import { ChapterScreen, MergeScreen } from './screens/End.tsx'
 import { ActIntroScreen } from './screens/ActIntro.tsx'
 import { TitleScreen } from './screens/Start.tsx'
 import { readSlot, writeSlot } from '../platform/saves.ts'
-import { SaveContext, type SaveApi } from './components/saves.tsx'
+import {
+  GlossaryHost,
+  SaveContext,
+  type SaveApi,
+} from './components/saves.tsx'
 import { NavContext } from './components/frame.tsx'
 import type { Section } from './screens/Sections.tsx'
 import { readSettings, writeSettings } from '../platform/settings.ts'
@@ -363,7 +367,10 @@ export function App() {
   return (
     <SaveContext.Provider value={saves}>
       <NavContext.Provider value={{ section, setSection, act }}>
-        <div data-theme={themeOf(game)}>{screen}</div>
+        <div data-theme={themeOf(game)}>
+          {screen}
+          <GlossaryHost />
+        </div>
       </NavContext.Provider>
     </SaveContext.Provider>
   )

@@ -1,6 +1,7 @@
 // t('key', params): looks up player-facing text and fills in {placeholders}.
 // Two string tables: en.json (game and UI text) and content.en.json (the content
-// pack's tooltips, glossary and news, copied from docs/act1-content/text.en.json).
+// pack's tooltips, glossary and news, copied from docs/act1-content/text.en.json). M25.1: the glossary also holds every
+// term card's text (glossary_term.<id> heading, glossary.<id> long form, glossary_short.<id> the card's short form).
 // Number params are formatted by name with fmt (src/ui/format.ts):
 //   …Usd → money, …Pct → percent, …Delta → ▲/▼ percent change, …Kw → power.
 // String params named model / tier / condition / flaw (and the others in ID_PARAMS) are content

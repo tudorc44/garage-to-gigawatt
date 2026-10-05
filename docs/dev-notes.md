@@ -188,6 +188,8 @@ Split (DT spec, 5 Oct 2026): M25.0 housekeeping (m24 tagged m24-done and deleted
 one key per term for the card and the glossary, a "More in the glossary" link, hashprice's halving clause; M25.2 the Act II market data audit (report
 only); M25.3 Act III sparklines and sounds / animations. UI and text only: sim output and every golden byte-identical.
 
+- **M25.1 done.** Every term card reads the glossary's keys (`glossary_term` / `glossary_short` card / `glossary` long; the 5 overlaps merged, 21 card-only terms moved in, `term.act*` keys gone) with a "More in the glossary" link that opens Settings at the entry; hashprice halves at each halving. (mine, reversible): the reading score stays out of the glossary (open during play, its line names misleading signals), the glossary is sorted by term, and it no longer shrinks to 9 px in a short window.
+
 ## Milestone M24 (branch `m24`, from main at `37a3535`; onboarding across all acts, guard-test stability)
 
 Split (DT spec, 5 Oct 2026): M24.0 housekeeping (m23 tagged m23-done and deleted, it never had a remote branch; the M23 merge and two closed

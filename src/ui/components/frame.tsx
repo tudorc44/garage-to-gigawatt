@@ -83,7 +83,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       </div>
       <div class="stat">
         <span class="label">
-          <Term id="treasury" act={1}>{t('ui.top.treasury')}</Term>
+          <Term id="treasury">{t('ui.top.treasury')}</Term>
         </span>
         <span class="num">
           <Icon name="treasury" size={16} />
@@ -94,7 +94,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       </div>
       <div class="stat">
         <span class="label">
-          <Term id="bandwidth" act={1}>{t('ui.top.bandwidth')}</Term>
+          <Term id="bandwidth">{t('ui.top.bandwidth')}</Term>
         </span>
         <span class="num">
           <Pips
@@ -107,7 +107,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       {isActIII(s.act) && <Act3Panel name="PcStat" state={s} />}
       <div class="stat">
         <span class="label">
-          <Term id="heat" act={1}>
+          <Term id="heat">
             {t('ui.top.heat', { tier: tierName(heat.tier).toLowerCase() })}
           </Term>
         </span>
@@ -118,7 +118,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       </div>
       <div class="stat">
         <span class="label">
-          <Term id="valuation" act={1}>{t('ui.top.valuation')}</Term>
+          <Term id="valuation">{t('ui.top.valuation')}</Term>
         </span>
         <span class="num">
           {valuation === undefined ? t('ui.top.empty') : fmt.money(valuation)}
@@ -130,7 +130,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           title={rb.rating ? undefined : t('ui.top.not_rated_title')}
         >
           <span class="label">
-            <Term id="rating" act={2}>{t('ui.top.rating')}</Term>
+            <Term id="rating">{t('ui.top.rating')}</Term>
           </span>
           <span class="num">
             <span class={`rating-badge${rb.rating ? '' : ' unrated'}`}>
@@ -142,7 +142,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       {act2 && (
         <div class="stat">
           <span class="label">
-            <Term id="backlog" act={2}>{t('ui.top.backlog')}</Term>
+            <Term id="backlog">{t('ui.top.backlog')}</Term>
           </span>
           <span class="num">{fmt.money(rb.backlogUsd)}</span>
         </div>

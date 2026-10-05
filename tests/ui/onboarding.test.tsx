@@ -5,6 +5,7 @@
 import { cleanup, fireEvent, render } from '@testing-library/preact'
 import { afterEach, describe, expect, it } from 'vitest'
 import en from '../../src/i18n/en.json' with { type: 'json' }
+import contentText from '../../src/i18n/content.en.json' with { type: 'json' }
 import { readDismissedTips, resetDismissedTips } from '../../src/platform/tips.ts'
 import { newGame } from '../../src/sim/state.ts'
 import { Tip } from '../../src/ui/components/basics.tsx'
@@ -19,6 +20,7 @@ afterEach(() => {
 })
 
 const text = en as Record<string, string>
+const glossary = contentText as Record<string, string>
 export const TIPS = {
   0: ['rig', 'household', 'mining', 'coins', 'machines', 'live'],
   1: ['todo', 'market', 'fleet', 'sell', 'live', 'report'],
@@ -30,16 +32,21 @@ export const TERMS = {
   2: ['rating', 'backlog', 'leverage', 'ddtl', 'mw_uses'],
 } as const
 
+/** Act III's terms on play screens (the chapter report's "reading" stays out of the glossary: see term.tsx). */
+const ACT3_TERMS = [
+  'renewal_wall', 'today_rate', 'reopener', 'blend_extend', 'signals', 'density', 'political_capital', 'covenant',
+  'standby', 'nuclear_ppa',
+]
+
 describe('rich tooltips for the Prologue, Act I and Act II (M24.3)', () => {
-  it('every term has a title and a line; the card opens on hover with them', () => {
-    for (const [act, ids] of Object.entries(TERMS))
-      for (const id of ids) {
-        expect(text[`term.act${act}.${id}.title`], `${act}.${id}`).toBeTruthy()
-        expect(text[`term.act${act}.${id}.body`], `${act}.${id}`).toBeTruthy()
-      }
-    const r = render(<Term id="hashprice" act={1}>Hashprice</Term>)
+  it('every term has a title and a line (from the glossary, M25.1); the card opens on hover with them', () => {
+    for (const id of [...Object.values(TERMS).flat(), ...ACT3_TERMS]) {
+      expect(glossary[`glossary_term.${id}`], id).toBeTruthy()
+      expect(glossary[`glossary.${id}`], id).toBeTruthy()
+    }
+    const r = render(<Term id="hashprice">Hashprice</Term>)
     fireEvent.mouseEnter(r.container.querySelector('[data-term="hashprice"]')!)
-    expect(r.container.querySelector('[role="tooltip"]')!.textContent).toContain(text['term.act1.hashprice.body'])
+    expect(r.container.querySelector('[role="tooltip"]')!.textContent).toContain(glossary['glossary_short.hashprice'])
   })
 
   it('the top bar carries Act I’s terms (and Act II’s rating and backlog in Act II)', () => {
@@ -86,8 +93,8 @@ describe('onboarding tips for the Prologue and Act I (M24.2)', () => {
   })
 
   it('no new tip or term text uses a word the leak guard forbids', () => {
-    const all = Object.entries(text)
-      .filter(([k]) => /^tooltip\.act[01]\.|^term\.act[012]\./.test(k))
+    const all = Object.entries({ ...text, ...glossary })
+      .filter(([k]) => /^tooltip\.act[01]\.|^term\.|^glossary(_short|_term)?\./.test(k))
       .map(([, v]) => v)
       .join(' ')
     expect(all).not.toMatch(/trigger|decoy|false alarm|Muddle Through|Great Repricing|Lift-Off|Efficiency Shock/i)

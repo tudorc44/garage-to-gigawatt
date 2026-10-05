@@ -1,21 +1,42 @@
-// M23.4 (B1, DT): rich tooltips on Act III's terms and stats. A term is a word on the screen with a dotted underline;
-// hovering it, or focusing it with the keyboard, opens a small card with a heading and a plain-language line
-// (`term.act3.<id>.title` / `.body`). The card is fixed to the viewport at the term's position, so a scrolling panel
-// never clips it (M21.1's panels scroll sideways). It holds no scenario information: the leak guard's rules apply.
+// M23.4 (B1, DT): rich tooltips on terms and stats. A term is a word on the screen with a dotted underline;
+// hovering it, or focusing it with the keyboard, opens a small card with a heading and a plain-language line. The card
+// is fixed to the viewport at the term's position, so a scrolling panel never clips it (M21.1's panels scroll
+// sideways). It holds no scenario information: the leak guard's rules apply.
+// M25.1 (DT): one text per term. The card reads the glossary's own keys (content.en.json): `glossary_term.<id>` for
+// the heading, `glossary_short.<id>` for the line (or `glossary.<id>` when the glossary's text is already short), and
+// carries a "More in the glossary" link that opens Settings at that entry. A term kept out of the glossary (the
+// chapter report's reading score: the glossary is open during play) keeps its own `term.act3.<id>` text, no link.
 import type { ComponentChildren } from 'preact'
 import { useState } from 'preact/hooks'
-import { tDynamic } from '../../i18n/t.ts'
+import { hasText, t, tDynamic } from '../../i18n/t.ts'
 
-// M24.3: the Prologue's, Act I's and Act II's core terms too (`act` picks term.act<n>.<id>; Act III's are the default).
-export function Term(props: {
-  id: string
-  act?: 0 | 1 | 2 | 3
-  children: ComponentChildren
-}) {
+/** The event a term card's "More in the glossary" link sends; the app opens Settings at that entry. */
+export const GLOSSARY_EVENT = 'g2g:glossary'
+
+/** Opens Settings at the glossary entry `id` (see GlossaryHost in frame.tsx). */
+export function openGlossary(id: string) {
+  window.dispatchEvent(new CustomEvent(GLOSSARY_EVENT, { detail: id }))
+}
+
+/** A term card's heading and line, and whether the glossary has the term. */
+export function termText(id: string) {
+  const inGlossary = hasText(`glossary.${id}`)
+  if (!inGlossary)
+    return {
+      title: tDynamic(`term.act3.${id}.title`, ''),
+      body: tDynamic(`term.act3.${id}.body`, ''),
+      inGlossary,
+    }
+  return {
+    title: tDynamic(`glossary_term.${id}`, id),
+    body: tDynamic(`glossary_short.${id}`, tDynamic(`glossary.${id}`, '')),
+    inGlossary,
+  }
+}
+
+export function Term(props: { id: string; children: ComponentChildren }) {
   const [at, setAt] = useState<{ x: number; y: number } | null>(null)
-  const key = `term.act${props.act ?? 3}.${props.id}`
-  const title = tDynamic(`${key}.title`, '')
-  const body = tDynamic(`${key}.body`, '')
+  const { title, body, inGlossary } = termText(props.id)
   if (!body) return <>{props.children}</>
   const open = (e: Event) => {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect()
@@ -30,9 +51,13 @@ export function Term(props: {
       class="term"
       tabIndex={0}
       onMouseEnter={open}
-      onFocus={open}
+      onFocus={(e) => !at && open(e)}
       onMouseLeave={() => setAt(null)}
-      onBlur={() => setAt(null)}
+      // focus moving onto the card's link keeps the card open
+      onBlur={(e) =>
+        !(e.currentTarget as HTMLElement).contains(e.relatedTarget as Node) &&
+        setAt(null)
+      }
       data-term={props.id}
       aria-describedby={at ? `term-${props.id}` : undefined}
     >
@@ -46,6 +71,19 @@ export function Term(props: {
         >
           <strong>{title}</strong>
           <span>{body}</span>
+          {inGlossary && (
+            <button
+              type="button"
+              class="term-more"
+              onClick={(e) => {
+                e.stopPropagation()
+                setAt(null)
+                openGlossary(props.id)
+              }}
+            >
+              {t('ui.term.more')}
+            </button>
+          )}
         </span>
       )}
     </span>

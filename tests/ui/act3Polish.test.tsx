@@ -5,6 +5,7 @@
 import { cleanup, fireEvent, render } from '@testing-library/preact'
 import { afterEach, beforeAll, describe, expect, it } from 'vitest'
 import en from '../../src/i18n/en.json' with { type: 'json' }
+import contentText from '../../src/i18n/content.en.json' with { type: 'json' }
 import { readDismissedTips } from '../../src/platform/tips.ts'
 import { contractCalendar, renewalWallView } from '../../src/sim/selectors.ts'
 import { toAct3, type GameState } from '../../src/sim/state.ts'
@@ -19,6 +20,7 @@ afterEach(() => {
   localStorage.clear()
 })
 
+const content = contentText as Record<string, string>
 let shell: GameState
 beforeAll(async () => {
   shell = toAct3(await quickStartCompany('shell'), { scenario: 's0' })
@@ -56,8 +58,9 @@ describe('rich tooltips on Act III terms', () => {
     expect(container.querySelector('[role="tooltip"]')).toBeNull()
     fireEvent.mouseEnter(term)
     const card = container.querySelector('[role="tooltip"]')!
-    expect(card.textContent).toContain(en['term.act3.renewal_wall.title'])
-    expect(card.textContent).toContain(en['term.act3.renewal_wall.body'])
+    // (M25.1: the card reads the glossary's keys)
+    expect(card.textContent).toContain(content['glossary_term.renewal_wall'])
+    expect(card.textContent).toContain(content['glossary.renewal_wall'])
     fireEvent.mouseLeave(term)
     expect(container.querySelector('[role="tooltip"]')).toBeNull()
     fireEvent.focus(term)
@@ -95,8 +98,9 @@ describe('onboarding tips (Act III) and Settings › Show them again', () => {
   })
 
   it('no new Act III text uses a word the leak guard forbids during play', () => {
-    const text = Object.entries(en)
-      .filter(([k]) => /^(tooltip|term)\.act3\.|^ui\.act3\.wall\./.test(k))
+    // (M25.1: every term's text now lives in the glossary, which Settings shows during play: all of it is checked)
+    const text = Object.entries({ ...en, ...content })
+      .filter(([k]) => /^(tooltip|term)\.act3\.|^ui\.act3\.wall\.|^glossary(_short|_term)?\./.test(k))
       .map(([, v]) => v)
       .join(' ')
     expect(text.length).toBeGreaterThan(500)

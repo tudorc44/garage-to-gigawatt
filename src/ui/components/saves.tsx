@@ -1,7 +1,7 @@
 // Save and load (scope §2.13): the in-game Save / load dialog and the pieces the title screen
 // shares. The app provides the current game and a way to switch to another through SaveContext.
 import { createContext } from 'preact'
-import { useContext, useState } from 'preact/hooks'
+import { useContext, useEffect, useRef, useState } from 'preact/hooks'
 import { glossaryTerms, t, tDynamic } from '../../i18n/t.ts'
 import {
   decodeSave,
@@ -22,6 +22,7 @@ import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { Dialog } from './basics.tsx'
 import { readDismissedTips, resetDismissedTips } from '../../platform/tips.ts'
+import { GLOSSARY_EVENT } from './term.tsx'
 
 export interface SaveApi {
   /** The game being played right now. */
@@ -186,10 +187,68 @@ export function SavePanel({ onLoaded }: { onLoaded: () => void }) {
   )
 }
 
+/** M25.1: a term card's "More in the glossary" link opens Settings here, at that entry (on any screen). */
+export function GlossaryHost() {
+  const [entry, setEntry] = useState<string | null>(null)
+  useEffect(() => {
+    const on = (e: Event) => setEntry((e as CustomEvent<string>).detail)
+    window.addEventListener(GLOSSARY_EVENT, on)
+    return () => window.removeEventListener(GLOSSARY_EVENT, on)
+  }, [])
+  return entry ? (
+    <SettingsDialog
+      key={entry}
+      entry={entry}
+      onClose={() => setEntry(null)}
+    />
+  ) : null
+}
+
+/** The glossary, sorted by term (M25.1); `entry` is scrolled to and marked. */
+function Glossary({ entry }: { entry?: string }) {
+  const at = useRef<HTMLDivElement>(null)
+  // one frame later: the dialog has its final size, so both it and the list scroll to the entry
+  useEffect(() => {
+    const id = requestAnimationFrame(() =>
+      at.current?.scrollIntoView?.({ block: 'center' }),
+    )
+    return () => cancelAnimationFrame(id)
+  }, [])
+  const terms = glossaryTerms()
+    .map(([id, text]) => ({
+      id,
+      text,
+      title: tDynamic(`glossary_term.${id}`, id.replace(/_/g, ' ')),
+    }))
+    .sort((a, b) => a.title.localeCompare(b.title, 'en'))
+  return (
+    <dl class="glossary">
+      {terms.map(({ id, text, title }) => (
+        <div
+          key={id}
+          ref={id === entry ? at : undefined}
+          class={id === entry ? 'glossary-entry focus' : 'glossary-entry'}
+          data-glossary={id}
+        >
+          <dt>{title}</dt>
+          <dd>{text}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
 /** Settings (wireframes §12): sound, the live quarter's starting speed, saves, the glossary. */
-export function SettingsDialog({ onClose }: { onClose: () => void }) {
+export function SettingsDialog({
+  onClose,
+  entry,
+}: {
+  onClose: () => void
+  /** M25.1: open with the glossary showing this term. */
+  entry?: string
+}) {
   const [settings, setSettings] = useState<Settings>(readSettings)
-  const [glossary, setGlossary] = useState(false)
+  const [glossary, setGlossary] = useState(!!entry)
   const [tipsDismissed, setTipsDismissed] = useState(
     () => readDismissedTips().length,
   )
@@ -264,18 +323,7 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
           {t('ui.settings.glossary')}
         </button>
       </div>
-      {glossary && (
-        <dl class="glossary">
-          {glossaryTerms().map(([term, text]) => (
-            <div key={term}>
-              <dt>
-                {tDynamic(`glossary_term.${term}`, term.replace(/_/g, ' '))}
-              </dt>
-              <dd>{text}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
+      {glossary && <Glossary entry={entry} />}
     </Dialog>
   )
 }

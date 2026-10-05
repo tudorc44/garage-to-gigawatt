@@ -65,7 +65,7 @@ function RatingCard({ state }: { state: ScreenProps['state'] }) {
           <div class="label">{t('ui.cap2.inputs')}</div>
           <div class="cap-input">
             <span>
-              <Term id="leverage" act={2}>{t('ui.cap2.leverage')}</Term>
+              <Term id="leverage">{t('ui.cap2.leverage')}</Term>
             </span>
             <span class="r">
               <strong>
@@ -182,7 +182,7 @@ function DebtStack({ state, act }: ScreenProps) {
               <tr key={i}>
                 <td>
                   {r.kind === 'ddtl' ? (
-                    <Term id="ddtl" act={2}>{tDynamic(`ui.cap2.kind.${r.kind}`, r.kind)}</Term>
+                    <Term id="ddtl">{tDynamic(`ui.cap2.kind.${r.kind}`, r.kind)}</Term>
                   ) : (
                     tDynamic(`ui.cap2.kind.${r.kind}`, r.kind)
                   )}

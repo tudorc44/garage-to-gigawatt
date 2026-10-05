@@ -334,7 +334,7 @@ function MwPanel({ state }: { state: GameState }) {
     <div class="panel p mw-panel">
       <div class="row-between">
         <h2 class="panel-title">
-          <Term id="mw_uses" act={2}>
+          <Term id="mw_uses">
             {t('ui.mw.title', { total: fmt.power(totalKw) })}
           </Term>
         </h2>
@@ -479,7 +479,7 @@ function MarketPanel({ state }: { state: GameState }) {
             : t('ui.market.first_week')}
         </span>
         <span>
-          <Term id="hashprice" act={1}>
+          <Term id="hashprice">
             {t('ui.market.hashprice', {
               value: fmt.money(now.btc_hashprice_usd_ph_day),
             })}
@@ -744,7 +744,7 @@ function SellPanel({ state, act }: ScreenProps) {
       <SellSlider state={state} act={act} coin="ETH" />
       <div class="row-between num-s muted">
         <span>
-          <Term id="hodl" act={1}>{t('ui.sell.hodl_all')}</Term>
+          <Term id="hodl">{t('ui.sell.hodl_all')}</Term>
         </span>
         <span>{t('ui.sell.sell_all')}</span>
       </div>
