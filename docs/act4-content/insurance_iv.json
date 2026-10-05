@@ -1,0 +1,17 @@
+{
+  "_meta": {
+    "schema": "insurance_iv/1",
+    "doc33": "§8.3 (insurance), §13 (the exposure rule), IV-D15",
+    "author": "build, M29.1: capacity and the loss-driven hard market sourced in shape [A]; the rates are market lore (doc 31 §3, research gap) carried in the market files; the multipliers designed"
+  },
+  "covers": "launch and the first year in orbit; then a yearly in-orbit renewal while you keep it",
+  "young_vehicle_failure_pct_at_least": 3,
+  "hard_market": {
+    "trigger_loss_usd": 400000000,
+    "rate_mult": 1.75,
+    "capacity_mult": 0.7,
+    "quarters": 4
+  },
+  "lender_cover_min_share": 0.5,
+  "exposure_warning_share_of_equity": 0.15
+}

@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "schema": "launch_providers/1",
+    "doc33": "§8.1 (providers), §8.2 (manifests), IV-D14",
+    "author": "build, M29.1 (5 Oct 2026): fictional providers; failure rates from doc 31's base rates (~1% mature, 5-15% under ten flights [A/inference]); prices, slips and bumps designed"
+  },
+  "deposit_share": 0.15,
+  "lead_quarters": [2, 6],
+  "providers": [
+    {
+      "id": "pallas",
+      "price_mult": 1.0,
+      "failure_pct_by_year": { "2031": 1.0, "2035": 1.0 },
+      "slip_pct": 10,
+      "bump_pct_when_tight": 15,
+      "max_tonnes_per_booking": null,
+      "needs": null,
+      "note": "Pallas Heavy: the dominant reusable super-heavy launcher; most slots, the lowest price, prices to the next-best alternative; can bump third-party payloads for its own constellation in a tight quarter"
+    },
+    {
+      "id": "northgate",
+      "price_mult": 0.9,
+      "failure_pct_by_year": { "2031": 8.0, "2033": 4.0, "2035": 2.0 },
+      "slip_pct": 35,
+      "bump_pct_when_tight": 0,
+      "max_tonnes_per_booking": null,
+      "needs": null,
+      "note": "Northgate: the second heavy launcher and lunar lander maker; fewer slots, frequent slips, cheaper per kg when it flies (doc 31: one flight in 2026 against a goal of 8-12 [A])"
+    },
+    {
+      "id": "kestrel",
+      "price_mult": 1.6,
+      "failure_pct_by_year": { "2031": 1.5, "2035": 1.0 },
+      "slip_pct": 5,
+      "bump_pct_when_tight": 0,
+      "max_tonnes_per_booking": 250,
+      "needs": null,
+      "note": "Kestrel: a reliable medium launcher, dearer per kg, small blocks only"
+    },
+    {
+      "id": "sovereign",
+      "price_mult": 1.15,
+      "failure_pct_by_year": { "2031": 3.0, "2035": 2.0 },
+      "slip_pct": 15,
+      "bump_pct_when_tight": 0,
+      "max_tonnes_per_booking": null,
+      "needs": "sovereign_partner",
+      "note": "A sovereign partner's launcher: available with that partner's strings (M31)"
+    }
+  ]
+}

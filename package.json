@@ -18,6 +18,7 @@
     "content:act4": "node tools/act4/market.ts",
     "content:act4-signals": "node tools/act4/signals.ts",
     "content:act4-events": "node tools/act4/events.ts",
+    "content:act4-orbit": "node tools/act4/orbit.ts",
     "release-check": "node tools/release-check.ts",
     "sim": "node tools/sim-runner.ts"
   },

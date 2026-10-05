@@ -18,6 +18,10 @@ default 14: no new research in this run).
 | `reading_score_iv.json` (**hidden**) | The reading score's ideal stances per future and quarter, weights, decoy windows | M28.3 |
 | `events_iv.json`, `text_iv.en.json` | 40 event cards (8 per future, 8 shared) and their text keyed by opaque engine id | M28.4 |
 | `wildcards_iv.json` | The six wildcards (2 drawn at entry): windows, effects, the milestone that wires each | M28.5 |
+| `launch_providers.json` | The four launch providers: price multipliers, failure rates by year, slips, bumps, limits | M29.1 |
+| `satellites_iv.json`, `shells_iv.json` | Block sizes, generations, GPUs, build time, opex, life; the three shells, their multipliers and debris rules | M29.1 |
+| `insurance_iv.json`, `licences_iv.json` | The hard market, the lender cover rule, the exposure line; filings, registries, milestones, the clampdown | M29.1 |
+| `tenants_iv.json` | The four orbital tenant types (fictional names), terms, workloads; link units and optical ground stations | M29.1 |
 
 ## The market files (M27.3)
 
@@ -163,10 +167,41 @@ Flag on the Pole 2033Q1–2035Q2 (M30: extraction frozen 2–4 quarters for oper
 2032Q1–2034Q4 (M29: 4 quarters, the registry state matters); reactor delay 2032Q1–2033Q4 (M30: no leased lunar reactor
 before 2036Q1); Bitcoin Supercycle 2031Q2–2035Q1 (M28: mining revenue × 2 for 3 quarters).
 
+## The orbit content (M29.1, doc 33 §7–8)
+
+`launch_providers.json` is hand-written; the other five come from `npm run content:act4-orbit` (`tools/act4/orbit.ts`).
+
+- **Providers** (fictional, IV-D14): Pallas Heavy ×1.0 of the market's launch price, 1% failures, 10% slips, 15% bump
+  chance in a tight quarter; Northgate ×0.9, failures 8% (2031) → 4% (2033) → 2% (2035), 35% slips; Kestrel ×1.6, 1.5% →
+  1%, 5% slips, at most 250 t a booking; a sovereign partner's launcher ×1.15, 3% → 2%, 15% slips (M31). Failure rates
+  sourced in shape (doc 31: ~1% mature, 5–15% under ten flights [A/inference]); the rest designed. Deposit 15%, booked
+  2–6 quarters ahead (doc 33 §8.2 ⚙).
+- **Satellites:** sizes 5/10/25/50/100 MW; Gen 31 18 t/MW from 2031, Gen 33 and Gen 35 from the market files' columns
+  (derived from the cost model's paths); GPUs $33M/MW with 20% spares and 600 GPUs/MW (sourced, the cost model); build 2
+  quarters, ops $0.25M/MW-yr, design life 5 years (doc 33 ⚙, the model's G values); utilisation 85% contracted, 70% spot;
+  spot shell rent 80% of market (designed).
+- **Shells:** SSO ×1.0, high LEO ×1.3 with +10% shielding, high orbit ×2.5 with +30% shielding and no interactive
+  inference (doc 33 §7.2; derived from the delta-v table). Debris: a live block's quarterly loss chance = 0.2% ×
+  (congestion / 50)³, a loss costing 25% of its capacity; the cascade costs SSO blocks 40%; manoeuvring costs a quarter
+  of life; a conjunction alert's chance is 0.25% per congestion point (all designed).
+- **Insurance:** rates from the market files (designed, **research gap**); a young vehicle (≥ 3% failures) pays the
+  young rate; a loss over $400M hardens the market for 4 quarters (rates ×1.75, capacity ×0.7; the trigger sourced in
+  shape [A]); lenders need cover ≥ 50% of drawn debt (M31); the exposure warning above 15% of equity (doc 33 §8.3, §13).
+- **Licences:** a filing costs 1 Bandwidth and $1M for 200 MW in one shell, approved in 2 quarters (+2 in one future after
+  its trigger; +1 under the neutral registry; −1 for 10 political capital); milestones: 25% of the filed MW live by 2035Q2
+  or the licence halves (the FCC's 2026 rules, simplified [A]); the export clampdown makes orbital cloud capex ×1.15
+  outside the neutral registry (designed).
+- **Tenants** (fictional names, for the owner's check): Aegis Sovereign Compute (5-year, + the sovereign premium, 20%
+  prepaid), Tessellate Labs (3-year, ×0.95), Kite Inference (3-year, ×1.05, interactive: needs link units), Cormorant Earth
+  Imaging (4-year, ×0.9, blocks up to 10 MW); 2 offers per block; late penalty 3% of the annual contract value a quarter
+  (doc 33 §7.5, Act II's take-or-pay). Links: 1 unit per 5 MW of interactive work, rented at $0.8M a unit-year or from an
+  optical ground station at one of your sites ($15M, 4 units, +3 Heat, 1 quarter, 1 Bandwidth) (designed).
+
 ## Data changes
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M29.1, 5 Oct 2026:** first version of the six orbit files.
 - **M28.5, 5 Oct 2026:** first version of `wildcards_iv.json`.
 - **M28.4, 5 Oct 2026:** first version of `events_iv.json` and `text_iv.en.json` (40 cards).
 - **M28.3, 5 Oct 2026:** the three hidden files; `signals_iv_f3.json`'s decoy shortened to 2031Q4–2032Q1 (was to 2032Q2).

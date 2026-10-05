@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "schema": "tenants_iv/1",
+    "doc33": "§7.4 (workloads and links), §7.5 (orbital tenants), IV-D18",
+    "author": "build, M29.1: the shapes from doc 33 (sovereign anchors likeliest [inference]); terms, multipliers and link costs designed; fictional names"
+  },
+  "offers_per_block": 2,
+  "late_penalty_share_of_acv": 0.03,
+  "types": [
+    {
+      "id": "sovereign",
+      "name": "Aegis Sovereign Compute",
+      "term_years": 5,
+      "rent_mult": 1,
+      "add_sovereign_premium": true,
+      "prepay_share": 0.2,
+      "workload": "batch",
+      "max_mw": null
+    },
+    {
+      "id": "frontier_lab",
+      "name": "Tessellate Labs",
+      "term_years": 3,
+      "rent_mult": 0.95,
+      "add_sovereign_premium": false,
+      "prepay_share": 0,
+      "workload": "batch",
+      "max_mw": null
+    },
+    {
+      "id": "inference_platform",
+      "name": "Kite Inference",
+      "term_years": 3,
+      "rent_mult": 1.05,
+      "add_sovereign_premium": false,
+      "prepay_share": 0,
+      "workload": "interactive",
+      "max_mw": null
+    },
+    {
+      "id": "eo_processor",
+      "name": "Cormorant Earth Imaging",
+      "term_years": 4,
+      "rent_mult": 0.9,
+      "add_sovereign_premium": false,
+      "prepay_share": 0,
+      "workload": "batch",
+      "max_mw": 10
+    }
+  ],
+  "links": {
+    "units_per_mw_interactive": 0.2,
+    "rent_unit_usd_yr": 800000,
+    "ground_station": {
+      "capex_usd": 15000000,
+      "units": 4,
+      "heat": 3,
+      "build_quarters": 1,
+      "bandwidth": 1
+    }
+  }
+}

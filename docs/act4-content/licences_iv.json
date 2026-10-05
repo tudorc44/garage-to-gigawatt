@@ -1,0 +1,45 @@
+{
+  "_meta": {
+    "schema": "licences_iv/1",
+    "doc33": "§7.3 (licences and registries), IV-D17",
+    "author": "build, M29.1: milestones from the FCC’s 2026 rules, simplified [A]; approval times, fees and the fast track designed"
+  },
+  "filing": {
+    "bandwidth": 1,
+    "fee_usd": 1000000,
+    "filed_mw": 200,
+    "approval_quarters": 2,
+    "approval_extra_quarters_after_trigger": {
+      "f1": 0,
+      "f2": 2,
+      "f3": 0,
+      "f4": 0
+    },
+    "fast_track_pc": 10
+  },
+  "registries": [
+    {
+      "id": "accords",
+      "approval_extra_quarters": 0,
+      "sovereign_premium_add_pct": 0,
+      "clampdown_exempt": false,
+      "note": "the Accords bloc home state: permissive, the dominant launcher’s home"
+    },
+    {
+      "id": "neutral",
+      "approval_extra_quarters": 1,
+      "sovereign_premium_add_pct": 5,
+      "clampdown_exempt": true,
+      "note": "a smaller space-law state: slower, neutral, attractive to some sovereign tenants"
+    }
+  ],
+  "registry_change_bandwidth": 1,
+  "milestones": {
+    "due": "2035Q2",
+    "share_live": 0.25,
+    "shrink_share": 0.5
+  },
+  "clampdown": {
+    "cloud_capex_mult": 1.15
+  }
+}
