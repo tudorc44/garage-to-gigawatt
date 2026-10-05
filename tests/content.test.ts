@@ -282,7 +282,9 @@ describe('content loads', () => {
     // M28.3: the three hidden files
     for (const name of ['lunar_truth.json', 'orbit_truth_iv.json', 'reading_score_iv.json', 'events_iv.json', 'text_iv.en.json', 'wildcards_iv.json',
       // M29.1: the orbit content
-      'launch_providers.json', 'satellites_iv.json', 'shells_iv.json', 'insurance_iv.json', 'licences_iv.json', 'tenants_iv.json'])
+      'launch_providers.json', 'satellites_iv.json', 'shells_iv.json', 'insurance_iv.json', 'licences_iv.json', 'tenants_iv.json',
+      // M30.1: the lunar content
+      'lunar_iv.json', 'lunar_claims_iv.json'])
       expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act4-content/${name}`))
   })
 

@@ -164,7 +164,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 ## Next
 
 **The Act IV run (M27–M32) is under way, now on `m30`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
-under M29). M29 is done. Now on **`m30`** (the Moon); next sub-step: **M30.1** (the lunar content). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+under M29). M29 is done. Now on **`m30`** (the Moon); next sub-step: **M30.2** (claims, the landing clock and disputes: `systems/moon.ts`). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -217,6 +217,8 @@ lease not before 2034, the Reactor Delay wildcard), the pilot plant (output per 
 the production decision (no output in the act), the Flag on the Pole, the lunar alerts, the lunar unit in the books;
 M30.5 the screens A4-06 (Moon, with the "after 2035" panel) and A4-07 (prospect report); M30.6 tests (B11) and the M30
 report. Act I–III state never gains a key.
+- **M30.1 done.** `tools/act4/moon.ts` (`npm run content:act4-moon`) writes `lunar_iv.json` and `lunar_claims_iv.json` (both copies; README section); zod in `src/content/moonContent.ts` (`MOON`). Test `act4MoonContent.test.ts`: claims identical through 2032Q2, B11's pilot band from the data, no production output possible in the act.
+- (mine, reversible) Lunar values designed inside doc 33's ranges (README lists each); an unprospected claim's estimate is one orbital figure (800,000 t) for every site and grade, so it can't hint at the grade.
 
 ### Milestone M29 (branch `m29`, from `m28`; orbit)
 

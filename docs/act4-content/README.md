@@ -22,6 +22,8 @@ default 14: no new research in this run).
 | `satellites_iv.json`, `shells_iv.json` | Block sizes, generations, GPUs, build time, opex, life; the three shells, their multipliers and debris rules | M29.1 |
 | `insurance_iv.json`, `licences_iv.json` | The hard market, the lender cover rule, the exposure line; filings, registries, milestones, the clampdown | M29.1 |
 | `tenants_iv.json` | The four orbital tenant types (fictional names), terms, workloads; link units and optical ground stations | M29.1 |
+| `lunar_iv.json` | The 8 polar sites and the lunar chain's rules: claims, disputes, missions, power, pilot, production, offtake, valuation, alerts | M30.1 |
+| `lunar_claims_iv.json` | The rivals' and blocs' scripted lunar claims per future (identical through 2032Q2) | M30.1 |
 
 ## The market files (M27.3)
 
@@ -198,10 +200,40 @@ before 2036Q1); Bitcoin Supercycle 2031Q2–2035Q1 (M28: mining revenue × 2 for
   (doc 33 §7.5, Act II's take-or-pay). Links: 1 unit per 5 MW of interactive work, rented at $0.8M a unit-year or from an
   optical ground station at one of your sites ($15M, 4 units, +3 Heat, 1 quarter, 1 Bandwidth) (designed).
 
+## The lunar content (M30.1, doc 33 §9, §11.2–11.3, §12)
+
+Both files come from `npm run content:act4-moon` (`tools/act4/moon.ts`). All values designed inside doc 33's ⚙ ranges.
+
+- **Sites** (real lunar place names, IV-D28): the Shackleton connecting ridge (illumination 0.94, doc 33 §9.1 [C]), the de
+  Gerlache ridge (0.85 [C]), Malapert, the Nobile and Haworth rims, Cabeus (ice-rich, poor light), the Amundsen rim and
+  Leibnitz Beta; each with an ice-access factor (multiplies pilot output and the resource), the most kWe its ridge
+  holds, and which bloc wants it.
+- **Claims:** 1 Bandwidth, $5M, 5 political capital; held only once you land within 6 quarters. **Disputes:** 15 political
+  capital to hold, or share (half the resource each), or withdraw. An unprospected claim is valued on an orbital
+  estimate of 800,000 t (the same at every site and in every grade: it tells nothing).
+- **Missions:** 1 Bandwidth; 2 t of payload at the market's delivery $/kg plus $60M of rover and drill (≈ $140M in 2031,
+  inside doc 33's $100–250M); 3–5 quarters' lead; landing success from the market files; an aborted landing waits a
+  quarter and costs $10M.
+- **Valuation (doc 33 §11.3):** confidence inferred 0.2, indicated 0.5, measured 0.8; stage claim 0.2, pilot 0.3,
+  production 0.5; $25M per site with landed hardware; offtake backlog weighted 0.5.
+- **Power:** solar arrays of 25–200 kWe (60 kg/kWe delivered plus $1M/kWe of hardware; 2 quarters), output × the site's
+  illumination; a leased 100 kWe reactor from 2034Q1 (the Accords bloc's strings; $50M set-up, $15M a quarter); a 1 MWe
+  contract for delivery after 2035 from 2034Q1 ($50M), which the production decision needs.
+- **Pilot:** 2 Bandwidth; needs an indicated resource and 100 kWe; $300M plus 8 t delivered; 7 quarters; output 1.2 t of
+  water a year per kWe × 0.3 × the grade factor × ice access (doc 33 §9.4; B11); a fifth reaches lunar orbit; dust costs
+  3% availability a quarter unless a $5M crew maintains it; measured after two quarters running.
+- **Production:** 3 Bandwidth; $4B drawn over 24 quarters; first output 20–32 quarters after the decision (never in the act).
+- **Offtake:** 2 Bandwidth; 2–10 t a year for 8 quarters at the market's surface price × 0.9–1.1, 20% prepaid.
+- **Alerts:** a dust fault hits a running pilot 15% of quarters: repair for $10M or lose 10% availability.
+- **Scripted claims** (`lunar_claims_iv.json`): the Accords bloc on the Shackleton ridge (2031Q3, lands 2032Q2) and
+  Northgate on the de Gerlache ridge (2032Q1) in every future; then per future, after 2032Q2, Cratermark Resources, Jade
+  Arc Constellation and the blocs on other rims (most crowded in the future where the Moon turns strategic).
+
 ## Data changes
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M30.1, 5 Oct 2026:** first version of `lunar_iv.json` and `lunar_claims_iv.json`.
 - **M29.4, 5 Oct 2026:** `shells_iv.json` gains `debris.conjunction_accept_hit_share: 0.25` (accepting a conjunction's
   risk: the chance of a hit); `satellites_iv.json` gains `sale_share_of_value: 0.8` (a quick sale's discount). Designed.
 - **M29.3, 5 Oct 2026:** `launch_providers.json` gains `tight_below_slots_t_q: 1000` (when the dominant launcher can bump).
