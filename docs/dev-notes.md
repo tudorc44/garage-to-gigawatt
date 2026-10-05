@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M24 merged into `main` at `ebcda47` and pushed; M25 in progress on `m25`). The Prologue, Act I, Act II and
+Last updated: 5 Oct 2026 (M24 merged into `main` at `ebcda47` and pushed; M25 done on `m25`, not merged yet). The Prologue, Act I, Act II and
 Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M25" and "Milestone M18 close-out".
 
 ## How the owner works
@@ -161,7 +161,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M25 is being built on `m25`** (glossary unification, the Act II data audit, the rest of the Act III polish; see "Milestone M25"). M24 is
+**M25 is done on `m25`, waiting for the owner's merge** (glossary unification, the Act II data audit, the rest of the Act III polish; see "Milestone M25"). M24 is
 done and merged (`main` = `ebcda47`, pushed 5 Oct 2026); M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m24, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -191,6 +191,8 @@ only); M25.3 Act III sparklines and sounds / animations. UI and text only: sim o
 - **M25.1 done.** Every term card reads the glossary's keys (`glossary_term` / `glossary_short` card / `glossary` long; the 5 overlaps merged, 21 card-only terms moved in, `term.act*` keys gone) with a "More in the glossary" link that opens Settings at the entry; hashprice halves at each halving. (mine, reversible): the reading score stays out of the glossary (open during play, its line names misleading signals), the glossary is sorted by term, and it no longer shrinks to 9 px in a short window.
 - **M25.2 done (audit, nothing changed).** The build loads `src/content/market_weekly_act2.json` (0 cells off its CSV), from `market_weekly_act2.csv` = byte-identical to `docs/act2-content/market_weekly.csv`, the **fixed v2** (the fixes are in `docs/act2-content/README.md`; no `claude_act2-content_market-fixes.md` exists in the repo), not the pack's v1 `docs/game-project-files/claude_act2-content_market_weekly.csv`. Weekly v1 → v2, 222 weeks, same weeks and quarters: `eth_usd` added; **`btc_usd`** every week (2022Q4 rebuilt, up to +24.5% on 24 Oct 2022; other quarters ≤ 2.9%, the ramp to the sourced close); **`btc_difficulty_T`** 11 weeks, 2022Q4 only (−11.0% to +4.1%); **`btc_block_subsidy`** 3 weeks (1–15 Apr 2024: 3.125 → 6.25, halving moved to 22 Apr); **`btc_hashrate_EHs`** every week (derived from difficulty; largest −24.2%, 30 Mar 2026); **`btc_hashprice` (TH and PH)** every week (derived; largest +75.5%, 1 Apr 2024, $65.72 → $115.36/PH/day). Unchanged: fee share, ASIC tiers, H100 rents, `estimate`.
   Quarterly v1 → loaded: multiples removed (B6), `eth_usd_close` and the 2 estimate flags added, hashrate and hashprice derived (largest +66% 2024Q1), H200 rents = H100 × 1.2 (−16 to −30%), SOFR 16 quarters (largest −15.8% 2022Q4) and HY 12 quarters (largest −19.7% 2026Q3) from FRED. **`npm run data:real` writes only the two quarterly copies**; the weekly file was last changed 27 Sep (`d08b9b9`), before M22.
+- **M25.3 done.** Signals rows get a 64×16 ink sparkline (A3-03's "past quarters only"): `signalsPanel`'s history + this quarter's displayed value, fixed 0–100 scale, none before 2027Q2. Act III sounds through `soundsFor`, existing sounds only (mine, reversible): renewal / re-let / blend / PPA signed → deal-agreed, renewal walk → walk-away, lobby landed / backfired → auction-won / -lost, covenant breach → margin-call, forced sale / called → liquidation. The `rise` animation on renewal cards, wildcard cards, a read's band and the reveal (reduced motion stops it).
+- **M25 report.** Commits: `f189f59` M25.0, `c98ff58` M25.1, `a26793b` M25.2, M25.3. No `src/sim`, `src/content`, `tools` or golden file changed against `main`: sim output byte-identical by construction (sims not re-run). 1278 → 1285 tests (133 files); lint and build pass. Main bundle 208.4 → 209.3 KB; chunks: term 4.1, Act3Entry 16.0, bots 19.7, Act3Panels 30.1 → 30.7, Prologue 43.1. Browser-checked at 1024 px (no sideways scroll): the top-bar Heat card → glossary link → Settings at Community Heat; the Act III Signals panel at 2027Q2. Open: the spec's `claude_act2-content_market-fixes.md` isn't in the repo (audited against the README's fix log instead); the content pack's unused `p0.tooltip.*` texts still repeat some term lines (difficulty, solo vs pool, custody), left as content-pack data.
 
 ## Milestone M24 (branch `m24`, from main at `37a3535`; onboarding across all acts, guard-test stability)
 

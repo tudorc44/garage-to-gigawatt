@@ -24,6 +24,18 @@ const LOG_SOUNDS: Record<string, SoundName> = {
   'log.site_ready': 'energized',
   'log.curtail_agreed': 'curtail',
   'log.liquidated': 'liquidation',
+  // M25.3: Act III's moments, with the existing sounds only (Act II's convention: its GPU failure wave reuses
+  // 'failure'). Each mirrors a log line the player sees; none tells anything the screen doesn't.
+  'log.renewal_signed': 'deal-agreed',
+  'log.relet_signed': 'deal-agreed',
+  'log.blend_signed': 'deal-agreed',
+  'log.ppa_signed': 'deal-agreed',
+  'log.renewal_walk': 'walk-away',
+  'log.lobby_landed': 'auction-won',
+  'log.lobby_backfired': 'auction-lost',
+  'log.covenant_breach': 'margin-call',
+  'log.covenant_forced_sale': 'liquidation',
+  'log.covenant_called': 'liquidation',
 }
 
 /** The alert that just appeared, as a sound. */

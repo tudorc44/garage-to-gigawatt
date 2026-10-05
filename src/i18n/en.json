@@ -2394,6 +2394,7 @@
   "ui.act3.sig_short.efficiency_index": "EF",
   "ui.act3.sig_short.bitcoin_hashprice": "HP",
   "ui.act3.signals.title": "Signals",
+  "ui.act3.signals.spark": "{indicator}: its last {n} quarters so far",
   "ui.act3.signals.read": "Read the market · {n} BW",
   "ui.act3.signals.read_done": "Read this quarter. One read a quarter.",
   "ui.act3.signals.your_reads": "Your reads",

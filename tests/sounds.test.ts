@@ -30,6 +30,21 @@ describe('sound director (docs/audio)', () => {
     expect(soundsFor(live, alert)).toEqual(['price-down'])
   })
 
+  it('Act III’s moments use the existing sounds (M25.3)', () => {
+    const s = newGame(1)
+    const withLog = (key: string): GameState => ({
+      ...s,
+      log: [...s.log, { quarter: 0, week: null, key: key as GameState['log'][number]['key'] }],
+    })
+    expect(soundsFor(s, withLog('log.renewal_signed'))).toEqual(['deal-agreed'])
+    expect(soundsFor(s, withLog('log.blend_signed'))).toEqual(['deal-agreed'])
+    expect(soundsFor(s, withLog('log.renewal_walk'))).toEqual(['walk-away'])
+    expect(soundsFor(s, withLog('log.covenant_breach'))).toEqual(['margin-call'])
+    expect(soundsFor(s, withLog('log.covenant_forced_sale'))).toEqual(['liquidation'])
+    expect(soundsFor(s, withLog('log.lobby_landed'))).toEqual(['auction-won'])
+    expect(soundsFor(s, withLog('log.signal_read'))).toEqual([]) // a read stays quiet: the screen shows it
+  })
+
   it('stays quiet when a different game is loaded, and uses only sounds that exist', () => {
     expect(soundsFor(newGame(1), newGame(2))).toEqual([])
     expect(soundsFor(null, newGame(1))).toEqual([])

@@ -106,6 +106,39 @@ function SignalBar(props: {
   )
 }
 
+/**
+ * M25.3 (A3-03 component spec): a small sparkline of the values the player has already seen, the past Act III
+ * quarters' displayed values (`signalsPanel`'s history) and this quarter's, on the same fixed 0–100 scale as the bar.
+ * Never a future quarter; ink only, no gain/loss colours. Hidden until there are two quarters to join.
+ */
+export function SignalSpark(props: { label: string; points: number[] }) {
+  const pts = props.points
+  if (pts.length < 2) return null
+  const w = 64
+  const h = 16
+  const line = pts
+    .map(
+      (v, i) =>
+        `${((i * w) / (pts.length - 1)).toFixed(1)},${(1 + (h - 2) * (1 - v / 100)).toFixed(1)}`,
+    )
+    .join(' ')
+  return (
+    <svg
+      class="sig-spark"
+      viewBox={`0 0 ${w} ${h}`}
+      preserveAspectRatio="none"
+      role="img"
+      aria-label={t('ui.act3.signals.spark', {
+        indicator: props.label,
+        n: pts.length,
+      })}
+      data-spark={pts.join(',')}
+    >
+      <polyline points={line} vector-effect="non-scaling-stroke" />
+    </svg>
+  )
+}
+
 /** The Signals panel: six rows, Read the market (1 BW, a chooser), and your reads (newest first). */
 export function Act3SignalsPanel({ state, act }: ScreenProps) {
   const v = signalsPanel(state)
@@ -126,9 +159,18 @@ export function Act3SignalsPanel({ state, act }: ScreenProps) {
           <div key={i.id} class="sig-row" title={i.higherMeans}>
             <div class="row-between">
               <span class="num-s">{i.label}</span>
-              <span class="num">
-                {i.current?.displayed ?? '—'}{' '}
-                {ARROW[i.current?.arrow ?? ''] ?? ''}
+              <span class="sig-now">
+                <SignalSpark
+                  label={i.label}
+                  points={[
+                    ...i.history.map((p) => p.displayed),
+                    ...(i.current ? [i.current.displayed] : []),
+                  ]}
+                />
+                <span class="num">
+                  {i.current?.displayed ?? '—'}{' '}
+                  {ARROW[i.current?.arrow ?? ''] ?? ''}
+                </span>
               </span>
             </div>
             <SignalBar value={i.current?.displayed ?? null} range={now} />

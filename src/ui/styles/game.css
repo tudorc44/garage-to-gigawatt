@@ -1752,6 +1752,30 @@ td.wrap {
   padding: var(--space-1) 0;
   border-bottom: var(--border-hair) dashed var(--line-soft);
 }
+/* M25.3: Act III's arrivals use the dialogs' and event cards' `rise` (a new renewal offer, a wildcard card, a read's
+   range on its bar, the chapter report's reveal). Reduced motion turns every animation off (the rule above). */
+.renewal-card,
+.wildcard-card,
+.sig-band,
+.chapter-card.reveal {
+  animation: rise 180ms ease-out;
+}
+/* M25.3: the past quarters' sparkline beside the value (ink, 0–100 like the bar) */
+.sig-now {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.sig-spark {
+  width: 64px;
+  height: 16px;
+  flex: none;
+}
+.sig-spark polyline {
+  fill: none;
+  stroke: var(--ink-muted);
+  stroke-width: 1.5;
+}
 /* A plain 0–100 bar: this quarter's value as a mark, a read range as a band. Ink only, no gain/loss colours. */
 .sig-bar {
   position: relative;
