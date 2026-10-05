@@ -137,6 +137,23 @@ import {
 } from './systems/moon.ts'
 import type { LunarSiteId } from '../content/moonContent.ts'
 import {
+  buildSolar,
+  buildSolarBlocker,
+  decidePilot,
+  decideProduction,
+  leaseReactor,
+  leaseReactorBlocker,
+  maintainBlocker,
+  megawattBlocker,
+  pilotBlocker,
+  planLunarDust,
+  productionBlocker,
+  setMaintenance,
+  signMegawatt,
+  signOfftake,
+  signOfftakeBlocker,
+} from './systems/moonOps.ts'
+import {
   chooseRenewal,
   keepEmpty,
   keepEmptyBlocker,
@@ -408,6 +425,20 @@ export type Action =
   | { type: 'RESOLVE_LUNAR_DISPUTE'; site: LunarSiteId; choice: DisputeChoice }
   /** Act IV (M30.3): commission a prospecting mission to a claimed site (1 BW, paid now, 3-5 quarters' lead). */
   | { type: 'SEND_LUNAR_MISSION'; site: LunarSiteId }
+  /** Act IV (M30.4): a solar array on a held site (1 BW, delivered mass + hardware; 2 quarters). */
+  | { type: 'BUILD_LUNAR_SOLAR'; site: LunarSiteId; kwe: number }
+  /** Act IV: lease a bloc's 100 kWe reactor (from 2034; 1 BW, set-up, a lease each quarter, the bloc's strings). */
+  | { type: 'LEASE_LUNAR_REACTOR'; site: LunarSiteId }
+  /** Act IV: contract 1 MWe of lunar power for delivery after 2035 (from 2034; the production decision needs it). */
+  | { type: 'SIGN_LUNAR_MEGAWATT' }
+  /** Act IV: decide a pilot plant (2 BW; needs indicated and 100 kWe). */
+  | { type: 'DECIDE_LUNAR_PILOT'; site: LunarSiteId }
+  /** Act IV: a maintenance crew for a pilot (a fee each quarter; without it, dust wears availability down). */
+  | { type: 'SET_LUNAR_MAINTENANCE'; site: LunarSiteId; on: boolean }
+  /** Act IV: decide a production plant (3 BW; needs measured and the 1 MWe contract; no output in the act). */
+  | { type: 'DECIDE_LUNAR_PRODUCTION'; site: LunarSiteId }
+  /** Act IV: sign this quarter's lunar offtake offer (2 BW; a share prepaid). */
+  | { type: 'SIGN_LUNAR_OFFTAKE'; offer: number }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -537,6 +568,7 @@ function run(s: GameState, a: Action): Message | undefined {
       startOrbitalBuilds(s)
       planOrbitAlerts(s)
       planLunarLandings(s)
+      planLunarDust(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -852,6 +884,55 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sendMissionBlocker(s, a.site)
       if (blocked) return blocked
       sendMission(s, a.site)
+      return
+    }
+
+    case 'BUILD_LUNAR_SOLAR': {
+      const blocked = buildSolarBlocker(s, a.site, a.kwe)
+      if (blocked) return blocked
+      buildSolar(s, a.site, a.kwe)
+      return
+    }
+
+    case 'LEASE_LUNAR_REACTOR': {
+      const blocked = leaseReactorBlocker(s, a.site)
+      if (blocked) return blocked
+      leaseReactor(s, a.site)
+      return
+    }
+
+    case 'SIGN_LUNAR_MEGAWATT': {
+      const blocked = megawattBlocker(s)
+      if (blocked) return blocked
+      signMegawatt(s)
+      return
+    }
+
+    case 'DECIDE_LUNAR_PILOT': {
+      const blocked = pilotBlocker(s, a.site)
+      if (blocked) return blocked
+      decidePilot(s, a.site)
+      return
+    }
+
+    case 'SET_LUNAR_MAINTENANCE': {
+      const blocked = maintainBlocker(s, a.site)
+      if (blocked) return blocked
+      setMaintenance(s, a.site, a.on)
+      return
+    }
+
+    case 'DECIDE_LUNAR_PRODUCTION': {
+      const blocked = productionBlocker(s, a.site)
+      if (blocked) return blocked
+      decideProduction(s, a.site)
+      return
+    }
+
+    case 'SIGN_LUNAR_OFFTAKE': {
+      const blocked = signOfftakeBlocker(s, a.offer)
+      if (blocked) return blocked
+      signOfftake(s, a.offer)
       return
     }
 

@@ -1265,6 +1265,11 @@ export interface QuarterReport {
   orbitCostUsd?: number
   orbitEbitdaUsd?: number
   orbitMultiple?: number
+  /** Act IV (M30.4): lunar sales, costs, their EBITDA (no multiple) and the lunar unit's value. */
+  moonRevenueUsd?: number
+  moonCostUsd?: number
+  moonEbitdaUsd?: number
+  lunarUsd?: number
   /** The valuation's Act II parts at quarter end: projects under construction (capex spent), the
    *  remaining contracted revenue (unweighted, as the top bar shows it) and its credit-weighted value. */
   constructionUsd: number

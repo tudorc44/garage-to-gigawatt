@@ -22,6 +22,7 @@ import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
 import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
+import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -67,7 +68,7 @@ import {
   startQuarterProjects,
   weightedBacklogUsd,
 } from './projects.ts'
-import { aiEbitdaUsd, ebitdaUsd, orbitEbitdaUsd, valuationUsd } from './valuation.ts'
+import { aiEbitdaUsd, ebitdaUsd, moonEbitdaUsd, orbitEbitdaUsd, valuationUsd } from './valuation.ts'
 import { endQuarterOrbit, orbitConstructionUsd, spaceMultiple, startQuarterOrbitLive } from './orbitOps.ts'
 import { depreciationAudit, lasting } from './eventEffects.ts'
 
@@ -95,7 +96,9 @@ export function endQuarter(state: GameState): void {
   // Act IV (M29.4): live orbital blocks earn, wear and face debris; then (M29.3) launches due now slip, fly or fail.
   endQuarterOrbit(state)
   endQuarterLaunches(state)
-  // (M30.3) a lunar mission due now whose landing never came up lands.
+  // (M30.4) lunar pilots process water for the offtakes; leases, maintenance, production capex; (M30.3) a lunar
+  // mission due now whose landing never came up lands.
+  endQuarterMoonOps(state)
   endQuarterMissions(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
@@ -211,6 +214,16 @@ function buildReport(
   const constructionUsd = orbit
     ? constructionValueUsd(state) + orbitConstructionUsd(state)
     : constructionValueUsd(state)
+  // Act IV (M30.4): the lunar unit (sites on your estimates, plants at capex spent, offtake backlog) and its EBITDA,
+  // which earns no multiple.
+  const moon = state.act4Moon
+    ? {
+        moonRevenueUsd: st.moonRevenueUsd ?? 0,
+        moonCostUsd: st.moonCostUsd ?? 0,
+        moonEbitdaUsd: moonEbitdaUsd(st),
+        lunarUsd: lunarUnitUsd(state),
+      }
+    : null
   const weightedBacklog = weightedBacklogUsd(state)
   return {
     quarter: CONTENT.quarters[state.quarter],
@@ -243,9 +256,11 @@ function buildReport(
         evMult,
         scenario: scenarioOf(state),
         ...(orbit ? { orbitEbitdaUsd: orbit.orbitEbitdaUsd, orbitMultiple: orbit.orbitMultiple } : {}),
+        ...(moon ? { moonEbitdaUsd: moon.moonEbitdaUsd, lunarUsd: moon.lunarUsd } : {}),
       },
     ),
     ...(orbit ?? {}),
+    ...(moon ?? {}),
     ...(evMult !== undefined ? { evMult } : {}),
     priceAlerts: st.priceAlerts,
     marginCalls: st.marginCalls,
@@ -341,6 +356,8 @@ export function startNextQuarter(state: GameState): void {
   startQuarterOrbitLive(state)
   // Act IV (M30.2): scripted lunar claims arrive; landing clocks run out.
   startQuarterMoonClaims(state)
+  // (M30.4) lunar offtake offers; the Flag on the Pole's freeze.
+  startQuarterMoonOps(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

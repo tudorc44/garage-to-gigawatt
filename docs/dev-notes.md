@@ -164,7 +164,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 ## Next
 
 **The Act IV run (M27–M32) is under way, now on `m30`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
-under M29). M29 is done. Now on **`m30`** (the Moon); next sub-step: **M30.4** (`systems/moonOps.ts`: power, pilot, offtake, production, dust, the Flag on the Pole, the lunar unit in the books). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+under M29). M29 is done. Now on **`m30`** (the Moon); next sub-step: **M30.5** (the screens A4-06 Moon with the "after 2035" panel, A4-07 the prospect report, in `Act4Panels`). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -222,6 +222,8 @@ report. Act I–III state never gains a key.
 - **M30.2 done.** `state.act4Moon` (optional); `systems/moon.ts`: claim (1 BW, $5M, 5 PC; land within 6 q or it lapses), the scripted claims (`otherClaims`, `rivalOn`), disputes (raised when you claim a claimed site or a scripted claim arrives on yours; hold 15 PC, align with the claimant's bloc, share = half the resource, withdraw; unanswered, the first to land holds). Tests `act4Moon.test.ts`.
 - (mine, reversible) Disputes are answered in the Plan phase (a card), not as live alerts; an unanswered dispute stays open until someone lands.
 - **M30.3 done.** Missions (`SEND_LUNAR_MISSION`: 1 BW, 2 t at the market's delivery $/kg + $60M, lead 3–5 q seeded); the `lunar_landing` alert in its arrival quarter (commit = the market's landing rate; abort = +1 q, $10M; a landing that never came up lands at the quarter's end); success holds the claim and adds a prospect report (`lunarGeology.prospectReport`: truth × exp(N(0, sd)), 90% band; first/second/pilot sds); categories inferred → indicated → measured. `SpaceAlertCard` in Live serves orbit and lunar alerts (`spaceAlertView`). Tests in `act4Moon.test.ts`.
+- **M30.4 done.** `systems/moonOps.ts`: solar arrays (output × illumination), the reactor lease (2034Q1; never in the act after the Reactor Delay; aligns you with the Accords bloc), the 1 MWe contract; the pilot (gates, $300M + 8 t, 7 q, output per doc 33 §9.4, measured after 2 run quarters, dust −3%/q unless a $5M crew); offtake (an offer a quarter once you hold a site; 20% prepaid; water delivered in signing order); production (gates; $4B drawn over 24 q; first output 20–32 q on, after 2035); the Flag on the Pole's freeze; dust-fault alerts; the lunar unit (`lunarUnitUsd`) and lunar EBITDA (no multiple) in the report and valuation; the top strip's lunar kWe. Tests `act4MoonOps.test.ts`.
+- (mine, reversible) Only landed (held) sites carry resource value (an unlanded claim adds nothing, so claiming isn't free paper value); offtake buys surface water only; a solar array per site, no upgrades.
 - (mine, reversible) Prospect missions are capitalised (they don't hit EBITDA); `lunarGeology` builds e^x from a series (no `Math.exp`, as the rest of the sim avoids engine-dependent maths).
 
 ### Milestone M29 (branch `m29`, from `m28`; orbit)

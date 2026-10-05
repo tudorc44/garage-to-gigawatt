@@ -232,6 +232,7 @@ import {
 } from './systems/hosting.ts'
 import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
 import { landingChance } from './systems/moon.ts'
+import { lunarKwe } from './systems/moonOps.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {
@@ -1204,7 +1205,7 @@ export function act4MwColumns(state: GameState) {
   const orbitMw = (state.act4Orbit?.blocks ?? [])
     .filter((b) => b.stage === 'live')
     .reduce((mw, b) => mw + b.mw * b.capacity, 0)
-  return { groundMw, orbitMw, moonKwe: 0 }
+  return { groundMw, orbitMw, moonKwe: lunarKwe(state) }
 }
 
 /** Energized capacity and what the machines there draw, in kW (sites that are built and powered). */
