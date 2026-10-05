@@ -400,6 +400,29 @@ Checked against real 2022–26 companies in the pack:
      - **SOFR:** FRED series `SOFR` (daily, %) → `sofr_pct` = the quarter's average of daily values, 2 dp. Real for 2022Q4–2026Q3 (16 quarters).
      - **High-yield spread:** FRED series `BAMLH0A0HYM2` (ICE BofA US High Yield OAS, daily, %) → `hy_spread_bps` = the quarter's average × 100, whole bps. FRED shows only the last 3 years of this licensed series (from 2023-10-03), so it is real for 2023Q4–2026Q3 (12 quarters).
      - A quarter is real only when the download covers all of it (an observation within its first and last 7 days); the rest **stay estimates**: SOFR 2026Q4, HY 2022Q4–2023Q3 and 2026Q4.
+     - *M23.2 (report only, no rule change): the implied miner premium.* Act II's project debt rate comes from `lenders.json` (`rateByQuarter`), not from SOFR + a spread. Per quarter, that rate against SOFR + the HY OAS ("est." = still an estimate):
+
+       | Quarter | lenders.json | SOFR | HY OAS | SOFR + HY | Premium |
+       |---|---|---|---|---|---|
+       | 2022Q4 | 10.50% | 3.62% | 5.40% (est.) | 9.02% | +1.48 pts |
+       | 2023Q1 | 10.50% | 4.50% | 4.70% (est.) | 9.20% | +1.30 pts |
+       | 2023Q2 | 10.50% | 4.97% | 4.30% (est.) | 9.27% | +1.23 pts |
+       | 2023Q3 | 10.50% | 5.24% | 4.00% (est.) | 9.24% | +1.26 pts |
+       | 2023Q4 | 10.10% | 5.32% | 3.98% | 9.30% | +0.80 pts |
+       | 2024Q1 | 9.70% | 5.31% | 3.36% | 8.67% | +1.03 pts |
+       | 2024Q2 | 9.30% | 5.32% | 3.18% | 8.50% | +0.80 pts |
+       | 2024Q3 | 8.90% | 5.28% | 3.26% | 8.54% | +0.36 pts |
+       | 2024Q4 | 8.50% | 4.68% | 2.80% | 7.48% | +1.02 pts |
+       | 2025Q1 | 8.13% | 4.33% | 2.87% | 7.20% | +0.92 pts |
+       | 2025Q2 | 7.75% | 4.32% | 3.50% | 7.82% | −0.07 pts |
+       | 2025Q3 | 7.38% | 4.33% | 2.86% | 7.19% | +0.19 pts |
+       | 2025Q4 | 7.00% | 3.99% | 2.96% | 6.95% | +0.05 pts |
+       | 2026Q1 | 7.17% | 3.66% | 2.95% | 6.61% | +0.56 pts |
+       | 2026Q2 | 7.33% | 3.62% | 2.81% | 6.43% | +0.90 pts |
+       | 2026Q3 | 7.50% | 3.67% | 2.73% | 6.40% | +1.10 pts |
+       | 2026Q4 | 7.50% | 3.87% (est.) | 3.80% (est.) | 7.67% | −0.17 pts |
+
+       Read: the lenders.json path sits 0.4–1.5 points over SOFR + HY through 2024, near zero in 2025 (one quarter negative), and widens again in 2026; a miner premium of roughly +0.5 to +1 point would be the plausible steady value.
      - *M23.1:* SOFR 2026Q4 = the last FRED observation carried forward (3.87% on 2026-10-01; was the 4.0% estimate), still flagged an estimate. Seam into Act III: 2026Q4 3.87% → 2027Q1 3.95% (s0, s1, s3) / 4.00% (s2), +8 to +13 bp (was −5 to 0 bp).
      - Per-row flags `sofr_estimate` and `hy_spread_estimate` say which values are real; the row's `estimate` stays True while any column in it is an estimate.
      - **Still estimated:** the DDTL spread (`ddtl_spread_bps`, no public series), the ASIC tiers (item 1), and every Act III scenario series (2027+, forecasts by design).
