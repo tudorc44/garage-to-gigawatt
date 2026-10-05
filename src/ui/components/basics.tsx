@@ -260,12 +260,13 @@ export function ActionRow(props: {
 /**
  * An onboarding tip (M6.5; scope 0.2 §2.15): a small info box with "Got it", which hides it for good
  * in this browser (until Settings › Onboarding tips › Show them again, M23.4). `id` names the text:
- * tooltip.act2.<id> (content.en.json), or with `act={3}` tooltip.act3.<id> (en.json; dismissed as "act3.<id>").
+ * tooltip.act2.<id> (content.en.json), or with `act={0 | 1 | 3}` tooltip.act<n>.<id> (en.json; dismissed as
+ * "act<n>.<id>"; M24.2 added the Prologue's and Act I's).
  */
-export function Tip(props: { id: string; act?: 2 | 3 }) {
+export function Tip(props: { id: string; act?: 0 | 1 | 2 | 3 }) {
   const act = props.act ?? 2
   const key = `tooltip.act${act}.${props.id}`
-  const dismissId = act === 2 ? props.id : `act3.${props.id}`
+  const dismissId = act === 2 ? props.id : `act${act}.${props.id}`
   const [gone, setGone] = useState(() => readDismissedTips().includes(dismissId))
   if (gone || !hasText(key)) return null
   return (

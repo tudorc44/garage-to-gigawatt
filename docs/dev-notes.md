@@ -193,6 +193,9 @@ UI only: sim output and every golden byte-identical.
 `waitFor`; the guard tests take no time limit (0 = none). Under five parallel full sims (load 7–9 on 8 cores): 20 of 20 consecutive runs pass, and
 the full suite passes (load 38). Other guard tests checked: the D15 guard (same file, synchronous) and the hidden-file guard (a text grep) had no
 such pattern; nothing else to change.
+**M24.2 done:** `Tip act={0|1}` (dismissed as `act0.<id>` / `act1.<id>`; the Settings reset covers every act). Prologue: rig, household (Plan),
+mining (Plan › Solo or pool), coins (Coins screen), machines (Machines screen), live (Live screen). Act I (only when `act === 1`, as the panels are
+shared with Act II): todo, market, fleet, sell (Plan), live (Live), report (Report › Notes). Tips sit at the top of their panel (mine). 1269 tests.
 
 ## Milestone M23 (branch `m23`, from main at `6c623d3`; rate robustness and Act III clarity polish)
 

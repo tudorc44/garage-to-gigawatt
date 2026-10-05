@@ -22,7 +22,7 @@ import {
   treasuryValue,
 } from '../../sim/selectors.ts'
 import type { GameState, WeekSummary } from '../../sim/state.ts'
-import { Icon, WeekStrip } from '../components/basics.tsx'
+import { Icon, Tip, WeekStrip } from '../components/basics.tsx'
 import { Shell } from '../components/frame.tsx'
 import { fmt } from '../format.ts'
 import { machineName, say, tierName } from '../names.ts'
@@ -95,6 +95,7 @@ export function LiveScreen(
       <Shell state={state} paused={paused || waiting}>
         <div class="live-main">
           <WeekStrip current={current} flags={flags} notes={notes} />
+          {state.act === 1 && <Tip id="live" act={1} />}
           <div class="live-grid">
             <Totals state={state} />
             <PriceChart weeks={weeks} current={current} />

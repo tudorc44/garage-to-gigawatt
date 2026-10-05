@@ -8,7 +8,7 @@ import {
   prologueView,
 } from '../../../sim/prologue/views.ts'
 import { quarterName } from '../../../sim/selectors.ts'
-import { ActionRow, Icon, MachineCard } from '../../components/basics.tsx'
+import { ActionRow, Icon, MachineCard, Tip } from '../../components/basics.tsx'
 import { fmt } from '../../format.ts'
 import { machineName, say, tierName } from '../../names.ts'
 import {
@@ -122,6 +122,7 @@ export function Machines({ state, act }: PrologueProps) {
       </div>
       <div class="col">
         <div class="panel">
+          <Tip id="machines" act={0} />
           <div class="row-between">
             <span class="panel-title">{t('ui.p0.buy_title')}</span>
             {ready.length > 1 && (

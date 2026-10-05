@@ -29,6 +29,7 @@ import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { Tip } from '../components/basics.tsx'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
@@ -668,6 +669,7 @@ function Notes({ state }: { state: GameState }) {
   return (
     <div class="panel p">
       <h2 class="panel-title">{t('ui.report.notes')}</h2>
+      {state.act === 1 && <Tip id="report" act={1} />}
       <div class="log">
         {entries.length === 0 && (
           <div class="muted">{t('ui.report.quiet')}</div>

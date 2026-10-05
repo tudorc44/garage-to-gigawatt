@@ -458,6 +458,7 @@ function MarketPanel({ state }: { state: GameState }) {
       <div class="row-between">
         <h2 class="panel-title">{t('ui.market.title')}</h2>
       </div>
+      {state.act === 1 && <Tip id="market" act={1} />}
       <div class="mkt">
         {spark('BTC', 'btc', (w) => w.btc_usd, fmt.money(now.btc_usd))}
         {spark('ETH', 'eth', (w) => w.eth_usd, fmt.money(now.eth_usd))}
@@ -517,6 +518,7 @@ export function FleetPanel({
   const cap = readySites.reduce((a, s) => a + s.capacityKw, 0)
   return (
     <div class="panel p">
+      {state.act === 1 && <Tip id="fleet" act={1} />}
       <div class="row-between">
         <h2 class="panel-title">{t('ui.fleet.title')}</h2>
         <span class="num-s muted">{`${fmt.power(used)} / ${fmt.power(cap)}`}</span>
@@ -732,6 +734,7 @@ function hashOf(v: LotView, units: number) {
 function SellPanel({ state, act }: ScreenProps) {
   return (
     <div class="panel p">
+      {state.act === 1 && <Tip id="sell" act={1} />}
       <SellSlider state={state} act={act} coin="BTC" />
       <SellSlider state={state} act={act} coin="ETH" />
       <div class="row-between num-s muted">
@@ -885,6 +888,7 @@ function TodoPanel({
 
   return (
     <div class="panel p" style={{ gap: 0 }}>
+      {state.act === 1 && <Tip id="todo" act={1} />}
       <div class="row-between">
         <h2 class="panel-title">{t('ui.plan.todo')}</h2>
         <span class="num-s muted">

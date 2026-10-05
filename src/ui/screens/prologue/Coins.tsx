@@ -10,7 +10,7 @@ import {
   prologueWalletView,
 } from '../../../sim/prologue/views.ts'
 import type { Coin, GameState } from '../../../sim/state.ts'
-import { Icon } from '../../components/basics.tsx'
+import { Icon, Tip } from '../../components/basics.tsx'
 import { fmt } from '../../format.ts'
 import { coins, price, useError, type PrologueProps } from './common.tsx'
 
@@ -94,6 +94,7 @@ export function Coins({ state, act }: PrologueProps) {
     <div class="dash p0-dash">
       <div class="col">
         <section class="panel">
+          <Tip id="coins" act={0} />
           <div class="row-between">
             <span class="panel-title">{t('ui.p0.where_coins')}</span>
             <span class="num">

@@ -24,6 +24,7 @@ import {
   Icon,
   Pips,
   Sparkline,
+  Tip,
 } from '../../components/basics.tsx'
 import { SaveDialog } from '../../components/saves.tsx'
 import { fmt } from '../../format.ts'
@@ -301,6 +302,7 @@ function RigPanel({ state }: { state: GameState }) {
   const netTh = net.networkTh
   return (
     <section class="panel">
+      <Tip id="rig" act={0} />
       <div class="row-between">
         <span class="panel-title">{t('ui.p0.rig_title')}</span>
         <span class="num-s muted">
@@ -381,6 +383,7 @@ function RoomPanel({ state }: { state: GameState }) {
   )
   return (
     <section class="panel">
+      <Tip id="household" act={0} />
       <div class="row-between">
         <span class="panel-title">{t('ui.p0.room_home')}</span>
         <span class="num-s muted">{t('ui.p0.kpi.parents_pay')}</span>
@@ -428,6 +431,7 @@ function MiningMode({
   const pool = poolWeekBtc(state)
   return (
     <section class="panel">
+      <Tip id="mining" act={0} />
       <div class="row-between">
         <span class="panel-title">{t('ui.p0.mining_title')}</span>
         <span class="seg" role="group" aria-label={t('ui.p0.mining_title')}>

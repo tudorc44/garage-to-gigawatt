@@ -9,7 +9,7 @@ import {
   prologueView,
 } from '../../../sim/prologue/views.ts'
 import type { GameState } from '../../../sim/state.ts'
-import { Icon } from '../../components/basics.tsx'
+import { Icon, Tip } from '../../components/basics.tsx'
 import { fmt } from '../../format.ts'
 import {
   CenterCard,
@@ -250,6 +250,7 @@ export function LiveQuarter(
   return (
     <>
       <div class="panel">
+        <Tip id="live" act={0} />
         <div class="row-between">
           <span class="panel-title">
             {t('ui.p0.week', {
