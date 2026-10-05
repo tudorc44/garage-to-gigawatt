@@ -132,10 +132,11 @@ const DECOY: Record<
     tell:
       'Quotes jump while the Regulatory Climate tightens and Fleet Reliability worsens: a lasting price fall comes with more flights and calmer rules, not fewer.',
   },
+  // (M28.3: two quarters, 2031Q4–2032Q1, so the decoy ends before F3's right move, hedging, begins in 2032Q2)
   f3: {
     indicator: 'regulatory_climate',
     from: 3,
-    to: 5,
+    to: 4,
     peak: 4,
     delta: 22,
     reason:

@@ -15,8 +15,7 @@
     "indicator": "regulatory_climate",
     "quarters": [
       "2031Q4",
-      "2032Q1",
-      "2032Q2"
+      "2032Q1"
     ],
     "peak_quarter": "2032Q1",
     "reason": "A proposed brightness-and-debris rule for large constellations draws a storm of comment and is shelved before it takes effect.",
@@ -1276,9 +1275,9 @@
         50,
         50,
         51,
-        66,
+        62,
         74,
-        67,
+        53,
         53,
         54,
         60,
@@ -1330,13 +1329,13 @@
         },
         {
           "quarter": "2031Q4",
-          "displayed": 69,
+          "displayed": 65,
           "arrow": "up",
           "role_tag": "decoy",
           "sharp": {
-            "low": 63,
-            "high": 69,
-            "note": "Licensing backlog and the rules in the works: 63–69. Above 50, orbit is getting harder to license."
+            "low": 59,
+            "high": 65,
+            "note": "Licensing backlog and the rules in the works: 59–65. Above 50, orbit is getting harder to license."
           }
         },
         {
@@ -1352,13 +1351,13 @@
         },
         {
           "quarter": "2032Q2",
-          "displayed": 73,
-          "arrow": "flat",
-          "role_tag": "decoy",
+          "displayed": 59,
+          "arrow": "down",
+          "role_tag": "signal_window",
           "sharp": {
-            "low": 64,
-            "high": 70,
-            "note": "Licensing backlog and the rules in the works: 64–70. Above 50, orbit is getting harder to license."
+            "low": 50,
+            "high": 56,
+            "note": "Licensing backlog and the rules in the works: 50–56. Above 50, orbit is getting harder to license."
           }
         },
         {

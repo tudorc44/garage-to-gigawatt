@@ -14,7 +14,8 @@
 // the last Read the market, the lasting effects that ran out by 2030Q4, and every per-quarter planning and interrupt
 // field. Act III's scenario does not continue: Act IV draws its own future (toAct4 in state.ts).
 import { BALANCE, CONTENT, actFirstQuarter, type FutureId } from '../../content/index.ts'
-import { emptyQuarterStats, type Act4Entry, type GameState } from '../state.ts'
+import { act4SeedOf, emptyQuarterStats, type Act4Entry, type GameState } from '../state.ts'
+import { drawLunarGrade } from './lunarGeology.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { debtUsd } from './loans.ts'
 import { mwByUse } from './mwUse.ts'
@@ -64,6 +65,8 @@ export function enterAct4(state: GameState, future: FutureId): GameState {
   s.futureId = future
   s.act4Entry = entry
   s.act4SignalReads = []
+  // The second hidden draw (doc 33 §6.4): the lunar grade, on its own substream, independent of the future.
+  s.lunarGrade = drawLunarGrade(act4SeedOf(state))
 
   // Dropped: Act III-only state (doc 33 §3.2). The Signals reads and the move log live on inside act3End.
   delete s.act3Wildcards

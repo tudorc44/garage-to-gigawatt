@@ -13,6 +13,9 @@ default 14: no new research in this run).
 | `market_iv_f1.csv` … `market_iv_f4.csv` | The four futures' quarterly markets, 2031Q1–2035Q4 (20 rows) | M27.3 |
 | `market_weekly_iv_f1.csv` … `market_weekly_iv_f4.csv` | Their weekly markets (13 weeks a quarter, 260 rows) | M27.3 |
 | `signals_iv_f1.json` … `signals_iv_f4.json` | The four futures' Signals: six indicators, 20 quarters, one decoy, the trigger (hidden fields included) | M28.1 |
+| `lunar_truth.json` (**hidden**) | The lunar grade's weights and per-grade truth, per-site variance, prospect noise | M28.3 |
+| `orbit_truth_iv.json` (**hidden**) | Each future's true orbital GPU failure rate and useful life; telemetry noise | M28.3 |
+| `reading_score_iv.json` (**hidden**) | The reading score's ideal stances per future and quarter, weights, decoy windows | M28.3 |
 
 ## The market files (M27.3)
 
@@ -114,10 +117,28 @@ in them is **designed** (doc 33 §6.3 ⚙): Signals are authored per future, nev
   Launch Quotes spike (2032Q1–Q3, tempts F1); F3 a Regulatory Climate rule that dies (2031Q4–2032Q2, tempts F2); F4 a
   Ground Power Squeeze spike on a record capacity auction (2031Q4–2032Q1, tempts F1).
 
+## The hidden files (M28.3, doc 33 §6.8)
+
+Hand-written (small), each read only by its own sim system and `act4End.ts` (plus tests and tools; a grep test checks):
+
+- **`lunar_truth.json`** → `src/sim/systems/lunarGeology.ts`. Grade weights Rich 20 / Patchy 50 / Dry 30 (doc 33 §6.4 ⚙,
+  designed); water by weight 5.6% / 2.5% / 0.6% (Rich anchored to LCROSS 5.6 ± 2.9% [A]; the others designed); pilot grade
+  factor 1.0 / 0.5 / 0.15 (doc 33 §9.4 ⚙); resource per site 2.0 Mt / 0.8 Mt / 0.15 Mt (designed — **research gap**:
+  Elvis et al.'s site counts); per-site variance (log sd 0.25) and prospect noise (log sd 0.45 first, 0.25 second, 0.10
+  after a pilot has run two quarters) designed.
+- **`orbit_truth_iv.json`** → `src/sim/systems/fleetReliability.ts`. Failures a year / useful life: F1 6% / 6 yr, F2 10% /
+  4 yr, F3 7% / 5 yr, F4 8% / 5 yr (doc 33 §6.2 ⚙, owner default 9); the planning assumption 8% / 5 yr; telemetry noise
+  3 yearly points (halved by the Space Operations Chief) designed.
+- **`reading_score_iv.json`** (M32 wires it). Act III's scoring rules; ideal stances per doc 33 §6.7 (designed): F1
+  offensive to 2033Q2, calm, cautious from 2034Q2; F2 cautious throughout; F3 calm, hedged 2032Q2–Q3, bold from the
+  cascade (2032Q4); F4 calm, defensive from its trigger (2033Q2). Decoy windows as the Signals files; F3's decoy is two
+  quarters (2031Q4–2032Q1) so it ends before F3's hedging begins (mine, reversible).
+
 ## Data changes
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M28.3, 5 Oct 2026:** the three hidden files; `signals_iv_f3.json`'s decoy shortened to 2031Q4–2032Q1 (was to 2032Q2).
 - **M28.1, 5 Oct 2026:** first version of the four Signals files. The market generator's trigger quarters moved into
   `tools/act4/futures.ts` (shared); the market files regenerate byte-identically.
 - **M27.3, 5 Oct 2026:** first version of the eight market files.

@@ -22,6 +22,44 @@ const code = (file: string) =>
     .replace(/^\s*\/\/.*$/gm, '')
 const rel = (f: string) => f.split('/').slice(-3).join('/')
 
+describe('Act IV’s hidden files (M28.3, doc 33 §6.8): each read only by its own system (and act4End, tests, tools)', () => {
+  const importers = (pattern: RegExp) => src.filter((f) => pattern.test(code(f))).map(rel)
+
+  it('lunar_truth.json only by lunarGeology.ts; orbit_truth_iv.json only by fleetReliability.ts; reading_score_iv.json by no play code', () => {
+    expect(importers(/lunar_truth\.json/)).toEqual(['sim/systems/lunarGeology.ts'])
+    expect(importers(/orbit_truth_iv\.json/)).toEqual(['sim/systems/fleetReliability.ts'])
+    // (M32 wires the Act IV reading score; until then nothing in src/ reads its file)
+    expect(importers(/reading_score_iv\.json/).filter((f) => !/readingScore(Iv)?\.ts$/.test(f))).toEqual([])
+  })
+
+  it('the two systems are sim-internal: no UI file and no selector imports them', () => {
+    for (const f of src) {
+      if (!/[\\/]ui[\\/]|selectors\.ts$|projectViews\.ts$|capitalViews\.ts$/.test(f)) continue
+      expect(code(f), f).not.toMatch(/lunarGeology|fleetReliability/)
+    }
+  })
+
+  it('no UI file reads the hidden draws (the future, the lunar grade)', () => {
+    for (const f of src.filter((x) => /[\\/]ui[\\/]/.test(x)))
+      expect(code(f), f).not.toMatch(/\blunarGrade\b|\bfutureId\b/)
+  })
+
+  it('the lunar grade is drawn at the boundary on its own substream: deterministic, weights 20 / 50 / 30', async () => {
+    const { drawLunarGrade } = await import('../../src/sim/systems/lunarGeology.ts')
+    const counts: Record<string, number> = { rich: 0, patchy: 0, dry: 0 }
+    const N = 4000
+    for (let seed = 1; seed <= N; seed++) counts[drawLunarGrade(seed)]++
+    expect(Math.abs(counts.rich / N - 0.2)).toBeLessThan(0.03)
+    expect(Math.abs(counts.patchy / N - 0.5)).toBeLessThan(0.03)
+    expect(Math.abs(counts.dry / N - 0.3)).toBeLessThan(0.03)
+    // independent of the future draw: the grade doesn't follow the future
+    const { drawFuture } = await import('../../src/sim/state.ts')
+    const pairs = new Set<string>()
+    for (let seed = 1; seed <= 400; seed++) pairs.add(`${drawFuture(seed)}:${drawLunarGrade(seed)}`)
+    expect(pairs.size).toBe(12)
+  })
+})
+
 describe('Act IV’s hidden Signals fields (M28.1)', () => {
   it('signalsHiddenIv is imported by nothing in src/ but act4End.ts', () => {
     const importers = src

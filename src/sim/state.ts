@@ -882,6 +882,11 @@ export interface GameState {
   act4Entry?: Act4Entry
   /** Act IV (M27.5): the end record, stored at 2035Q4's end (or a game over in Act IV). Absent until then. */
   act4End?: Act4End
+  /**
+   * Act IV (M28.3, doc 33 §6.4): the act's lunar grade, drawn at the boundary (systems/lunarGeology.ts). HIDDEN, like
+   * `futureId`: no screen during play reads it (only prospect estimates, M30); the chapter report reveals it.
+   */
+  lunarGrade?: 'rich' | 'patchy' | 'dry'
   /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
   act4SignalReads?: { quarter: string; indicator: SignalIdIv }[]
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */

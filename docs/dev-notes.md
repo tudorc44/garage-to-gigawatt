@@ -219,6 +219,7 @@ their guards; M28.4 `events_iv.json` (~45 cards) in the event engine; M28.5 `wil
 storm, grounding, Flag on the Pole and reactor-delay effects land with M29/M30's systems); M28.6 the M28 report.
 - **M28.1 done.** `tools/act4/signals.ts` (`npm run content:act4-signals`) writes `signals_iv_f1–f4.json` (README section; designed paths, decoys, triggers in `tools/act4/futures.ts`); `SIGNAL_IDS_IV`, `signalsIvFileSchema`, `CONTENT.signalsIv` (runtime fields only); hidden view `src/content/signalsHiddenIv.ts`; guard `tests/sim/act4Hidden.test.ts`; copy test extended.
 - **M28.2 done.** `act4SignalReads`, `READ_SIGNAL_IV` (`systems/signalsIv.ts`, Act III's rule: 1 BW, once a quarter), `signalsPanelIv` (Act III's shape), `act4MwColumns` (ground from the sites; orbit and Moon 0 until M29/M30); the Signals panel, Read dialog and top strip serve Act IV (short labels LQ FR OC GP DG RC; the strip adds "MW · ground / orbit / moon"). The exposure warnings (A4-02) need launches: they come with M29. Browser-checked at 1024 px.
+- **M28.3 done.** Hidden files `lunar_truth.json`, `orbit_truth_iv.json`, `reading_score_iv.json` (README: designed values); `systems/lunarGeology.ts` (zod-checked, `drawLunarGrade` on substream `act4_lunar_grade`, set at the boundary as hidden `state.lunarGrade`) and `systems/fleetReliability.ts` (`trueReliability`, for M29); guards in `act4Hidden.test.ts`; F3's decoy shortened to two quarters (mine, reversible).
 
 ## Milestone M26 (branch `m26`, from main at `f8cf61f`; cleanup)
 
