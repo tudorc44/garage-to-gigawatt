@@ -126,6 +126,14 @@ import {
 } from './systems/orbitLaunch.ts'
 import { planOrbitAlerts, sellOrbitalBlock, sellOrbitalBlockBlocker } from './systems/orbitOps.ts'
 import {
+  claimSite,
+  claimSiteBlocker,
+  resolveDispute,
+  resolveDisputeBlocker,
+  type DisputeChoice,
+} from './systems/moon.ts'
+import type { LunarSiteId } from '../content/moonContent.ts'
+import {
   chooseRenewal,
   keepEmpty,
   keepEmptyBlocker,
@@ -391,6 +399,10 @@ export type Action =
   | { type: 'BUY_ORBITAL_INSURANCE'; blockId: string }
   /** Act IV (M29.4): sell a live block (1 BW) at its value on the space multiple, less a quick sale's discount. */
   | { type: 'SELL_ORBITAL_BLOCK'; blockId: string }
+  /** Act IV (M30.2): claim a polar site (1 BW, the fee, political capital); it holds once you land within 6 quarters. */
+  | { type: 'CLAIM_LUNAR_SITE'; site: LunarSiteId }
+  /** Act IV: answer a lunar dispute: hold (political capital), align with the claimant's bloc, share, or withdraw. */
+  | { type: 'RESOLVE_LUNAR_DISPUTE'; site: LunarSiteId; choice: DisputeChoice }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -813,6 +825,20 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sellOrbitalBlockBlocker(s, a.blockId)
       if (blocked) return blocked
       sellOrbitalBlock(s, a.blockId)
+      return
+    }
+
+    case 'CLAIM_LUNAR_SITE': {
+      const blocked = claimSiteBlocker(s, a.site)
+      if (blocked) return blocked
+      claimSite(s, a.site)
+      return
+    }
+
+    case 'RESOLVE_LUNAR_DISPUTE': {
+      const blocked = resolveDisputeBlocker(s, a.site, a.choice)
+      if (blocked) return blocked
+      resolveDispute(s, a.site, a.choice)
       return
     }
 

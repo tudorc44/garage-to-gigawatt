@@ -15,6 +15,7 @@ import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
 import { enterAct4 } from './systems/act4Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
+import type { LunarClaimantId, LunarSiteId, OfftakeBuyerId } from '../content/moonContent.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { DealNegotiation } from './systems/dealNegotiation.ts'
@@ -243,6 +244,80 @@ export interface Act4Orbit {
   /** Safe mode was chosen in a storm this quarter (live blocks lose 3 weeks' revenue). */
   safeModeQuarter: number | null
   nextN: number
+}
+
+/** Act IV (M30.2): one lunar site you've claimed (doc 33 §9). Every step is a project card: no mining minigame. */
+export interface LunarClaim {
+  site: LunarSiteId
+  claimedQuarter: number
+  /** The claim holds only once you land hardware by this quarter (doc 33 §9.1). */
+  landBy: number
+  status: 'claimed' | 'held' | 'lost' | 'withdrawn'
+  landedQuarter: number | null
+  /** After a dispute settled by sharing: the other claimant, and your share of the resource. */
+  sharedWith?: LunarClaimantId
+  /** A claimant who gave way (you held, aligned with its bloc, or landed first). */
+  beatenClaimant?: LunarClaimantId
+  /** Prospect reports (doc 33 §9.2): your estimates of the site's resource, newest last. Never the truth. */
+  reports: { quarter: number; step: 'first' | 'second' | 'pilot'; estimateT: number; lowT: number; highT: number }[]
+  /** Power on the site (M30.4): a solar array, a leased reactor. */
+  solar: { kwe: number; readyQuarter: number } | null
+  reactor: { kwe: number; readyQuarter: number } | null
+  /** The pilot plant (M30.4): water processed so far (t), availability (dust), quarters run. */
+  pilot: {
+    decidedQuarter: number
+    readyQuarter: number
+    capexUsd: number
+    availability: number
+    maintained: boolean
+    runQuarters: number
+    processedT: number
+  } | null
+  /** The production decision (M30.4): capex drawn over the build; first output always after 2035. */
+  production: { decidedQuarter: number; capexUsd: number; drawnUsd: number; firstOutputQuarter: number } | null
+}
+
+/** Act IV (M30.3): a prospecting mission on its way to a claimed site. */
+export interface LunarMission {
+  id: string
+  site: LunarSiteId
+  launchedQuarter: number
+  arrivalQuarter: number
+  costUsd: number
+  status: 'en_route' | 'landed' | 'lost'
+  aborts: number
+}
+
+/** Act IV (M30.4): a lunar offtake contract (water at the surface, tonnes a year at a locked $/kg). */
+export interface LunarOfftake {
+  id: string
+  buyer: OfftakeBuyerId
+  volumeTYr: number
+  priceUsdKg: number
+  startQuarter: number
+  endQuarter: number
+  prepaidLeftUsd: number
+  deliveredT: number
+}
+
+/** Act IV (M30.2): the act's lunar programme (absent until the first lunar action). */
+export interface Act4Moon {
+  claims: LunarClaim[]
+  missions: LunarMission[]
+  /** Open disputes: another claimant on one of your sites, waiting for your answer (doc 33 §9.1). */
+  disputes: { site: LunarSiteId; claimant: LunarClaimantId; raisedQuarter: number }[]
+  offtakes: LunarOfftake[]
+  /** This quarter's offtake offers (M30.4). */
+  offers: { buyer: OfftakeBuyerId; volumeTYr: number; priceUsdKg: number; termQuarters: number }[]
+  /** The quarter a 1 MWe contract for after 2035 was signed (the production decision needs it), or null. */
+  megawattQuarter: number | null
+  /** The bloc you've aligned with (a dispute, a reactor lease), or null. */
+  alignedBloc: 'accords' | 'station' | null
+  /** The Flag on the Pole: extraction frozen through this quarter for operators outside the bloc partnership. */
+  freezeUntil: number | null
+  /** This quarter's planned lunar alerts. */
+  planned: { week: number; kind: 'lunar_landing' | 'lunar_dust'; missionId?: string; site?: LunarSiteId }[]
+  nextId: number
 }
 
 /**
@@ -985,6 +1060,8 @@ export interface GameState {
   lunarGrade?: 'rich' | 'patchy' | 'dry'
   /** Act IV (M29.2): the orbital business (blocks, licences, links, insurance market). Absent until first used. */
   act4Orbit?: Act4Orbit
+  /** Act IV (M30.2): the lunar programme (claims, missions, disputes, power, plants, offtake). Absent until first used. */
+  act4Moon?: Act4Moon
   /** Act IV (M28.5): the two wildcards drawn at entry, each with the quarter it fires in (never shown in advance). */
   act4Wildcards?: { id: WildcardIdIv; quarter: number; fired: boolean }[]
   /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
@@ -1034,6 +1111,9 @@ export interface ActiveInterrupt {
   week: number
   /** Act IV orbit alerts (M29.4): the orbital block it's about. */
   orbitBlockId?: string
+  /** Act IV lunar alerts (M30.3-4): the mission or the lunar site it's about. */
+  lunarMissionId?: string
+  lunarSite?: string
   coin: Coin
   /** The weekly price move that set it off, e.g. -0.27. */
   changePct: number

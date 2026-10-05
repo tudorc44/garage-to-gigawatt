@@ -57,6 +57,9 @@ const ID_PARAMS: Record<string, string> = {
   registryName: 'orbit.registry.',
   providerName: 'orbit.provider.',
   slipReason: 'orbit.slip.',
+  lunarSite: 'moon.site.',
+  claimant: 'moon.claimant.',
+  buyer: 'moon.buyer.',
 }
 
 function fill(text: string, params: MessageParams): string {
