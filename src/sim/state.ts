@@ -4,12 +4,14 @@ import {
   BALANCE,
   CONTENT,
   SCENARIO_IDS,
+  FUTURE_IDS,
   type FutureId,
   type ScenarioId,
   type SignalId,
 } from '../content/index.ts'
 import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
+import { enterAct4 } from './systems/act4Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
@@ -1194,6 +1196,46 @@ export function toAct3(
   if (options.forced && options.scenario) s.scenarioForced = true
   if (options.scenarioMode && options.scenario) s.scenarioMode = true
   if (options.quickStart) s.act3QuickStart = true
+  return s
+}
+
+/**
+ * The future a game gets at the Act III → IV boundary (doc 33 §6.1, IV-D8: f1 25%, f2 30%, f3 20%, f4 25% ⚙). Its own
+ * substream(act4Seed, "act4_future"), so it never moves the main RNG and no earlier act's game changes.
+ */
+export function drawFuture(seed: number): FutureId {
+  const weights = BALANCE.act4.futureWeightsPct
+  const roll = random(substream(seed, 'act4_future')) * 100
+  let acc = 0
+  for (const id of FUTURE_IDS) {
+    acc += weights[id]
+    if (roll < acc) return id
+  }
+  return FUTURE_IDS[FUTURE_IDS.length - 1]
+}
+
+/**
+ * The Act III → IV boundary (M27.4): enters Act IV on the seed's drawn future, applying doc 33 §3.1–3.2's carry-over
+ * and drops (enterAct4). `options.future` forces a future: for tests, tools, a test build's `?future=` and Scenario Mode.
+ */
+export function toAct4(
+  state: GameState,
+  options: {
+    future?: FutureId
+    /** A tester chose the future (a test build's ?future=); marked on the state for the top bar. */
+    forced?: boolean
+    act4Seed?: number
+    /** A test build's quick-start company (marked so production refuses its saves). */
+    quickStart?: boolean
+  } = {},
+): GameState {
+  const base = options.act4Seed === undefined ? state : { ...state, act4Seed: options.act4Seed }
+  const s = enterAct4(base, options.future ?? drawFuture(act4SeedOf(base)))
+  // A harness's different act4Seed also re-seeds the main RNG (as act3Seed does); the default changes nothing.
+  if (options.act4Seed !== undefined && options.act4Seed !== state.seed)
+    s.rng = substream(options.act4Seed, 'act4_main').rng
+  if (options.forced && options.future) s.futureForced = true
+  if (options.quickStart) s.act4QuickStart = true
   return s
 }
 
