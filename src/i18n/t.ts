@@ -53,6 +53,9 @@ const ID_PARAMS: Record<string, string> = {
   item: 'p0.vanity.',
   p0Card: 'p0.event.',
   p0Choice: 'p0.event.',
+  shellName: 'orbit.shell.',
+  registryName: 'orbit.registry.',
+  providerName: 'orbit.provider.',
 }
 
 function fill(text: string, params: MessageParams): string {

@@ -107,6 +107,8 @@ const licencesSchema = z.object({
     filed_mw: z.number().positive(),
     approval_quarters: z.number().int().min(0),
     approval_extra_quarters_after_trigger: z.record(z.enum(['f1', 'f2', 'f3', 'f4']), z.number().int().min(0)),
+    /** The quarter from which a future's extra approval time applies (its regulators' turn). */
+    approval_extra_from: quarterId,
     fast_track_pc: z.number().int().min(0),
   }),
   registries: z

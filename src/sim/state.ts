@@ -151,6 +151,99 @@ export interface Act3Entry {
 export type Act4Entry = Act3Entry
 
 /**
+ * Act IV (M29.2, doc 33 §7): an orbital compute block, a project card with three slots (Launch, Tenant, Capital). A
+ * block is many satellites; the game never counts them. Its true remaining life (`retireQuarter`) is sim-internal: the
+ * screens show the design life and the telemetry, never the truth.
+ */
+export interface OrbitalBlock {
+  id: string
+  /** Its number on screen ("Block 3"). */
+  n: number
+  kind: 'shell' | 'cloud'
+  mw: number
+  shell: 'sso' | 'high_leo' | 'high_orbit'
+  gen: 'gen31' | 'gen33' | 'gen35'
+  stage: 'proposed' | 'building' | 'awaiting_launch' | 'climbing' | 'live' | 'retired' | 'sold'
+  openedQuarter: number
+  /** Whole mass to launch, tonnes (the generation's t/MW × MW × the shell's shielding). */
+  massT: number
+  /** The Launch slot: provider, target quarter, the $/kg locked at booking, the deposit paid, slips so far. */
+  launch: {
+    provider: 'pallas' | 'northgate' | 'kestrel' | 'sovereign'
+    quarter: number
+    priceUsdKg: number
+    depositUsd: number
+    slips: number
+  } | null
+  /** The Tenant slot: a contract (locked price, term, the quarter it should go live) or spot. */
+  tenant:
+    | {
+        type: 'sovereign' | 'frontier_lab' | 'inference_platform' | 'eo_processor'
+        /** Orbital shell: rent $ per MW-year. Orbital cloud: $ per GPU-hour. */
+        price: number
+        termQuarters: number
+        signedQuarter: number
+        /** The quarter it should go live (take-or-pay lateness after it), set with the booking. */
+        dueQuarter: number | null
+        /** The quarter its term ends (set when it goes live). */
+        endQuarter: number | null
+        prepaidLeftUsd: number
+      }
+    | 'spot'
+    | null
+  /** The tenant offers on the table this Plan phase. */
+  offers: { type: 'sovereign' | 'frontier_lab' | 'inference_platform' | 'eo_processor'; price: number; termQuarters: number }[]
+  /** The Capital slot (M29: own cash; M31 adds export credit, project debt, co-funding and equity). */
+  capital: 'cash' | null
+  buildDoneQuarter: number | null
+  liveQuarter: number | null
+  /** Sim-internal: the quarter it deorbits (live quarter + the future's true useful life). */
+  retireQuarter: number | null
+  /** Structural capacity share (debris, the cascade, storms). */
+  capacity: number
+  /** Cloud: working GPUs as a share of the block's need (1 + spares at launch; failures wear it down). */
+  gpuHealth: number
+  /** Insurance cover: bought before launch it runs to a year after going live (`untilQuarter` null until then). */
+  insured: { coverUsd: number; untilQuarter: number | null } | null
+  /** The current build's capex paid so far (build + launch), $. A lost launch writes it off. */
+  capexSpentUsd: number
+  /** Fleet telemetry: the failures it reported, as a yearly %, per live quarter (doc 33 §6.5). */
+  telemetry: { quarter: number; failurePctYr: number }[]
+  lostLaunches: number
+}
+
+/** Act IV (M29.2): a constellation licence in one shell (doc 33 §7.3). */
+export interface OrbitalLicence {
+  shell: OrbitalBlock['shell']
+  filedQuarter: number
+  approvedQuarter: number
+  filedMw: number
+  /** Political capital fast-tracked it (once per licence). */
+  fastTracked?: boolean
+  /** Its deployment milestone was checked (and the licence shrunk if missed). */
+  milestoneChecked?: boolean
+}
+
+/** Act IV (M29.2): the act's orbital business (absent before Act IV and until the first orbital action). */
+export interface Act4Orbit {
+  blocks: OrbitalBlock[]
+  licences: OrbitalLicence[]
+  registry: 'accords' | 'neutral'
+  /** Link units rented from ground-station networks, and optical ground stations at your own sites. */
+  linksRented: number
+  stations: { id: string; siteId: string; readyQuarter: number; units: number }[]
+  /** After a big industry loss the insurance market hardens until this quarter (doc 33 §8.3). */
+  hardMarketUntil: number | null
+  /** The cascade has hit the busy shell (once). */
+  cascadeDone: boolean
+  /** This quarter's planned orbit alerts (planned at END_PLAN). */
+  planned: { week: number; kind: 'orbit_conjunction' | 'orbit_storm'; blockId?: string }[]
+  /** Safe mode was chosen in a storm this quarter (live blocks lose 3 weeks' revenue). */
+  safeModeQuarter: number | null
+  nextN: number
+}
+
+/**
  * Act IV's end record (M27.5: the walking skeleton's fields), stored once when the last quarter (2035Q4) is done or the
  * game is over in Act IV. Built only by systems/act4End.ts; M32 adds the reveal (the future, the lunar grade), the
  * reading score and the titles. The chapter report and the campaign finale read it.
@@ -888,6 +981,8 @@ export interface GameState {
    * `futureId`: no screen during play reads it (only prospect estimates, M30); the chapter report reveals it.
    */
   lunarGrade?: 'rich' | 'patchy' | 'dry'
+  /** Act IV (M29.2): the orbital business (blocks, licences, links, insurance market). Absent until first used. */
+  act4Orbit?: Act4Orbit
   /** Act IV (M28.5): the two wildcards drawn at entry, each with the quarter it fires in (never shown in advance). */
   act4Wildcards?: { id: WildcardIdIv; quarter: number; fired: boolean }[]
   /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
@@ -935,6 +1030,8 @@ export interface ActiveInterrupt {
   id: string
   /** Index of the week (0–12) the alert fired in. */
   week: number
+  /** Act IV orbit alerts (M29.4): the orbital block it's about. */
+  orbitBlockId?: string
   coin: Coin
   /** The weekly price move that set it off, e.g. -0.27. */
   changePct: number

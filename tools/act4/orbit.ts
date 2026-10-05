@@ -75,6 +75,7 @@ const FILES: Record<string, unknown> = {
       filed_mw: 200,
       approval_quarters: 2,
       approval_extra_quarters_after_trigger: { f1: 0, f2: 2, f3: 0, f4: 0 },
+      approval_extra_from: '2033Q1',
       fast_track_pc: 10,
     },
     registries: [

@@ -94,6 +94,28 @@ import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import { readSignal, readSignalBlocker } from './systems/signals.ts'
 import { readSignalIv, readSignalIvBlocker } from './systems/signalsIv.ts'
 import {
+  arrangeOrbitalCapital,
+  arrangeOrbitalCapitalBlocker,
+  buildGroundStation,
+  buildGroundStationBlocker,
+  cancelOrbitalBlock,
+  cancelOrbitalBlockBlocker,
+  fastTrackLicence,
+  fastTrackLicenceBlocker,
+  fileLicence,
+  fileLicenceBlocker,
+  openOrbitalBlock,
+  openOrbitalBlockBlocker,
+  rentLinkUnits,
+  rentLinkUnitsBlocker,
+  setRegistry,
+  setRegistryBlocker,
+  signOrbitalTenant,
+  signOrbitalTenantBlocker,
+  type OpenBlock,
+} from './systems/orbit.ts'
+import type { RegistryId, ShellId } from '../content/orbitContent.ts'
+import {
   chooseRenewal,
   keepEmpty,
   keepEmptyBlocker,
@@ -333,6 +355,24 @@ export type Action =
   | { type: 'READ_SIGNAL'; indicator: SignalId }
   /** Act IV (M28.2): Read the market on one of Act IV's six indicators (1 BW, once a quarter). */
   | { type: 'READ_SIGNAL_IV'; indicator: SignalIdIv }
+  /** Act IV (M29.2): open an orbital block card (0 BW): kind, size, shell, generation. */
+  | ({ type: 'OPEN_ORBITAL_BLOCK' } & OpenBlock)
+  /** Act IV: drop a block that hasn't started building (its deposit back only after a provider slip). */
+  | { type: 'CANCEL_ORBITAL_BLOCK'; blockId: string }
+  /** Act IV: fill the Tenant slot with an offer (its index) or spot (0 BW). */
+  | { type: 'SIGN_ORBITAL_TENANT'; blockId: string; offer: number | 'spot' }
+  /** Act IV: fill the Capital slot (1 BW; own cash in M29). */
+  | { type: 'ARRANGE_ORBITAL_CAPITAL'; blockId: string }
+  /** Act IV: file a constellation licence in a shell (1 BW, the fee). */
+  | { type: 'FILE_ORBITAL_LICENCE'; shell: ShellId }
+  /** Act IV: political capital takes a quarter off a pending licence. */
+  | { type: 'FAST_TRACK_LICENCE'; shell: ShellId }
+  /** Act IV: choose the registry state (free before the first filing, then 1 BW). */
+  | { type: 'SET_REGISTRY'; registry: RegistryId }
+  /** Act IV: set the link units you rent. */
+  | { type: 'RENT_LINK_UNITS'; units: number }
+  /** Act IV: build an optical ground station at one of your sites (1 BW, capex, a little Heat). */
+  | { type: 'BUILD_GROUND_STATION'; siteId: string }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -660,6 +700,70 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = readSignalIvBlocker(s, a.indicator)
       if (blocked) return blocked
       readSignalIv(s, a.indicator)
+      return
+    }
+
+    case 'OPEN_ORBITAL_BLOCK': {
+      const o: OpenBlock = { kind: a.kind, mw: a.mw, shell: a.shell, gen: a.gen }
+      const blocked = openOrbitalBlockBlocker(s, o)
+      if (blocked) return blocked
+      openOrbitalBlock(s, o)
+      return
+    }
+
+    case 'CANCEL_ORBITAL_BLOCK': {
+      const blocked = cancelOrbitalBlockBlocker(s, a.blockId)
+      if (blocked) return blocked
+      cancelOrbitalBlock(s, a.blockId)
+      return
+    }
+
+    case 'SIGN_ORBITAL_TENANT': {
+      const blocked = signOrbitalTenantBlocker(s, a.blockId, a.offer)
+      if (blocked) return blocked
+      signOrbitalTenant(s, a.blockId, a.offer)
+      return
+    }
+
+    case 'ARRANGE_ORBITAL_CAPITAL': {
+      const blocked = arrangeOrbitalCapitalBlocker(s, a.blockId)
+      if (blocked) return blocked
+      arrangeOrbitalCapital(s, a.blockId)
+      return
+    }
+
+    case 'FILE_ORBITAL_LICENCE': {
+      const blocked = fileLicenceBlocker(s, a.shell)
+      if (blocked) return blocked
+      fileLicence(s, a.shell)
+      return
+    }
+
+    case 'FAST_TRACK_LICENCE': {
+      const blocked = fastTrackLicenceBlocker(s, a.shell)
+      if (blocked) return blocked
+      fastTrackLicence(s, a.shell)
+      return
+    }
+
+    case 'SET_REGISTRY': {
+      const blocked = setRegistryBlocker(s, a.registry)
+      if (blocked) return blocked
+      setRegistry(s, a.registry)
+      return
+    }
+
+    case 'RENT_LINK_UNITS': {
+      const blocked = rentLinkUnitsBlocker(s, a.units)
+      if (blocked) return blocked
+      rentLinkUnits(s, a.units)
+      return
+    }
+
+    case 'BUILD_GROUND_STATION': {
+      const blocked = buildGroundStationBlocker(s, a.siteId)
+      if (blocked) return blocked
+      buildGroundStation(s, a.siteId)
       return
     }
 

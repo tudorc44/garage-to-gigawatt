@@ -19,6 +19,7 @@ import {
 import { inAct2Rules, inAct3Rules, inActIII, inActIV } from '../state.ts'
 import { buildAct4End } from './act4End.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
+import { startQuarterOrbitOffers } from './orbit.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -313,6 +314,8 @@ export function startNextQuarter(state: GameState): void {
   openNextWildcard(state)
   // Act IV (M28.5): a wildcard due this quarter fires now.
   fireWildcardsIv(state)
+  // Act IV (M29.2): open orbital blocks without a tenant get this quarter's offers.
+  startQuarterOrbitOffers(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }
