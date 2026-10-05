@@ -163,8 +163,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The Act IV run (M27–M32) is under way, now on `m30`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
-under M29). M29 and M30 are done. Next: **M31** (money and rivals) on branch `m31` from `m30`: M31.0 the branch and the split. M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+**The Act IV run (M27–M32) is under way, now on `m31`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
+under M29). M29 and M30 are done. Now on **`m31`** (money and rivals); next sub-step: **M31.1** (the content). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -206,6 +206,17 @@ A4-01, the test-build quick starts and `?future=`); M27.7 the byte-identity chec
 - **M27.4 done.** `systems/act4Entry.ts` (`buildAct4Entry`, `enterAct4`: doc 33 §3.1 carries, §3.2 open renewals resolve by default, blend offers lapse, Act III-only state drops) and `toAct4`/`drawFuture` in state.ts (future on substream `act4_future`, weights in `BALANCE.act4`); needs an Act III scenario (the seam reads it). Tests: `act4Entry.test.ts`, helpers `act4Helpers.ts`.
 - **M27.5 done.** Act IV plays 2031Q1–2035Q4 to the chapter phase (`act4End` stub, `systems/act4End.ts`; replay `through: 4`). **Gate review** (doc 33 §3.1): run on in Act IV via `inAct3Rules` — renewals, reopeners, blend-and-extend, the calendar and renewal wall (now the current act's span), density and retrofits, nuclear PPAs, political capital and lobbying, Anger, Act III hires, the covenant, the standby facility, lender cures, card payouts, capacity charges, hosting repricing, lab distress, "no random cards", "no Read the market" (Signals instead); **stay Act III-only** (`inActIII`) — Act III's wildcards, Signals panel and reads, move log, `act3End`/reveal, `act3Finished`. Act III spans extended to Act IV with an Act IV key: capacity charge, hosting rate, SOFR/HY project-debt and DDTL rates, the facility label; GPU contract rate × Act III's end value in Act IV (mine, reversible). An Act IV quarter read without an Act IV key finds nothing (Act III's behaviour kept). Goldens unchanged.
 - **M27.6 done** (`M27.6a` + this): Act III panels that run on show in Act IV; `screens/Act4Entry.tsx` (lazy: A4-01 intro, chapter stub); test-build quick starts `act4QuickStart.ts` + `Act4Preview.tsx` (designed recipes, mine, reversible: fortress texas-shell 3/s0, neocloud sign-then-raise 1/s3, ridge lifeline-shell 19/s0; all survive Act III) and `?future=` with its tag and save guard; "Continue to Act IV" on the Act III chapter report; the light `orbit` theme; `averagePrice` reads the market key (an Act IV report crashed without it); intro boxes no longer squeeze (`flex: none`). Tests: gate, grep (`toAct4`, `futureId`), screens; layout notes in `docs/wireframes/act4/README.md`. Browser-checked at 1024 px: quick start → intro → 2031Q1 Plan → report, no sideways scroll.
+
+### Milestone M31 (branch `m31`, from `m30`; money and rivals)
+
+Split: M31.0 branch and split; M31.1 the content (`capital_iv.json`: export credit, orbital project debt and its
+insurance covenant, sovereign co-funding, the space-equity window, lunar task orders, fire-sale haircuts;
+`hires_iv.json`: the four hires; `rivals_iv.json`: the five fictional rivals per future, Orrery's failure and auction;
+schemas, loader, README); M31.2 the orbital Capital slot (export credit, project debt with the insurance covenant and
+its cure, co-funding; debt service at quarter end); M31.3 the space-equity window, lunar funding (task orders; no lunar
+debt), fire-sale haircuts in the rescue; M31.4 the four hires and Bandwidth; M31.5 the rivals and the league (Act III's
+retire; Orrery's auction); M31.6 the screens A4-09 (Capital) and A4-10 (quarter report additions); M31.7 tests and the
+M31 report.
 
 ### Milestone M30 (branch `m30`, from `m29`; the Moon)
 
