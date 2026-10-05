@@ -10,7 +10,7 @@ import {
   act2Quarter,
   quarterInputs,
   type PowerRegion,
-  type ScenarioId,
+  type MarketKey,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
@@ -21,6 +21,7 @@ import {
   type GameState,
   type HostingContract,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import { scenarioOf } from './market.ts'
 import {
@@ -43,7 +44,7 @@ const HOSTING_MARGIN_ANCHOR = '2024Q1'
 export function hostingRateUsdKwh(
   quarter: number,
   region?: PowerRegion,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   // Act III (M11.5a, DT): the all-in rate follows the region's power price in the scenario (quarterInputs)
   // plus Act II's hosting margin. Act II's margin = the file's last-year rate ($0.060, 2024's, held
@@ -193,7 +194,7 @@ export function startHosting(
       hostedKw: converted,
       costUsd,
       rateCents: c.rateUsdKwh * 100,
-      quarter: CONTENT.quarters[c.readyQuarter] ?? '—',
+      quarter: logQuarterLabel(state, c.readyQuarter),
     })
   }
   return out
@@ -338,7 +339,7 @@ export function renewHosting(state: GameState): void {
       tier: site?.tier ?? '',
       hostedKw: h.kw,
       rateCents: h.rateUsdKwh * 100,
-      quarter: CONTENT.quarters[h.termEndQuarter] ?? '—',
+      quarter: logQuarterLabel(state, h.termEndQuarter),
     })
   }
 }

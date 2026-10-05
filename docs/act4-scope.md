@@ -134,3 +134,15 @@ Every place the build differs from doc 33, with the reason. (Added to as the bui
    content README, not researched (owner default 14).
 5. **Scenario Mode carry-over (§2, open question 11):** an Act III Scenario Mode run may continue into Act IV; the finale
    labels that campaign "scenario known" (owner default 11).
+6. **The common baseline (§3.3, B14):** the four futures' market files are identical through all of 2031 (doc 33 allows
+   up to 3% apart in 2031Q3–Q4) and diverge from 2032Q1, so the seam glide ends exactly on the common baseline. The Signals
+   still start moving from 2031Q3 (M28). Reason: one target for the glide, and B14 holds with no margin to tune. (M27.3)
+7. **The seam glide's length (§3.3):** doc 33 says the gap closes "in equal steps over 4 quarters (2031Q1–2031Q4)" with
+   2031Q1 equal to the Act III value; the build reads that as the four quarters 0–3 with three equal steps, so 2031Q4 is
+   the baseline (`BALANCE.act4.seamGlideQuarters` = 3). (M27.3)
+8. **The glide is computed when the game loads, not stored:** the market files hold each future's own path; the game
+   builds the 16 glided markets (Act III scenario × future) at load, so no file depends on how the player's Act III went.
+   (M27.3)
+9. **Stored log text in Acts I–III:** a log line in an Act I–III game that names a quarter past 2030Q4 still shows "—"
+   (it did before Act IV's quarters existed), so no earlier act's golden or sim output changes; Act IV games label every
+   quarter. (M27.3)

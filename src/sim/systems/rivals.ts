@@ -9,7 +9,8 @@ import {
   type Act3RivalRuntime,
   type Rival,
   type RivalAct2,
-  type ScenarioId,
+  type MarketKey,
+  isAct4MarketKey,
 } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
 import { scenarioOf } from './market.ts'
@@ -111,8 +112,10 @@ export function act3RivalSnapshot(
  */
 export function activeRivals(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): RivalSnapshot[] {
+  // Act IV (M27.3, doc 33 §12.1): Act III's rivals retire at the boundary; Act IV's own five come in M31.
+  if (isAct4MarketKey(scenario)) return []
   // Act III (M11.5b): the same five, on the drawn scenario's numbers for this quarter only.
   if (isAct2RulesQuarter(quarter) && !isActIIQuarter(quarter))
     return scenario

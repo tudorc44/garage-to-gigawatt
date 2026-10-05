@@ -798,4 +798,15 @@ export const BALANCE = {
       fewerOffersQuarters: 4,
     },
   },
+  /** Act IV, "The Race to Orbit" (doc 33; docs/act4-scope.md). ⚙ values are first-pass and tuned in M32. */
+  act4: {
+    /** The four futures' weights at the draw (doc 33 §6.2, IV-D8 ⚙): On Schedule, The Wall, Closed Shell, Cheap Ground. */
+    futureWeightsPct: { f1: 25, f2: 30, f3: 20, f4: 25 },
+    /**
+     * The seam glide (doc 33 §3.3 ⚙): act quarter 0 (2031Q1) is the player's Act III scenario's 2030Q4 value; the gap to
+     * the common baseline closes in equal steps and is gone after this many quarters (2031Q4). Doc 33 says "over 4
+     * quarters (2031Q1–2031Q4)": the four quarters 0–3 with three steps (act4-scope.md §6).
+     */
+    seamGlideQuarters: 3,
+  },
 } as const

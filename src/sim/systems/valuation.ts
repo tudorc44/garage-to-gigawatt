@@ -6,7 +6,7 @@ import {
   CONTENT,
   act1ValueQuarter,
   quarterInputs,
-  type ScenarioId,
+  type MarketKey,
 } from '../../content/index.ts'
 import type { QuarterReport } from '../state.ts'
 import { aiMultipleDelta } from './eventEffects.ts'
@@ -17,7 +17,7 @@ import { aiMultipleDelta } from './eventEffects.ts'
  */
 export function eraMultiple(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   // Act II, and Act III on its scenario's rebased column (M11.4c).
   const inputs = quarterInputs(quarter, scenario)
@@ -31,7 +31,7 @@ export function eraMultiple(
  */
 export function aiInfraMultiple(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const base = quarterInputs(quarter, scenario)?.multiple.aiInfra
   return base === undefined ? 0 : Math.max(0, base + aiMultipleDelta(quarter))
@@ -74,7 +74,7 @@ export function aiEnterpriseUsd(
   quarter: number,
   aiEbitdaUsd: number,
   floorUsd = 0,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const ai = Math.max(0, aiEbitdaUsd)
   const floored = Math.min(ai, Math.max(0, floorUsd))
@@ -98,7 +98,7 @@ export interface ValuationParts {
   /** A card's premium on the operating value (the pivot premium's PR push, M5.8). */
   evMult?: number
   /** Act III: the scenario whose multiples apply (M11.4c). Absent in Acts I and II. */
-  scenario?: ScenarioId | null
+  scenario?: MarketKey | null
 }
 
 /**
@@ -141,7 +141,7 @@ export function valuationUsd(
 export function valuationSplit(
   r: QuarterReport,
   firstAiDealQuarter: number | null,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ) {
   const q = CONTENT.quarters.indexOf(r.quarter)
   const ai = aiEbitdaUsd(r)

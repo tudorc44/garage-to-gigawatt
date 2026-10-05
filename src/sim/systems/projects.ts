@@ -9,11 +9,12 @@ import {
   CONTENT,
   act2Quarter,
   actFirstQuarter,
+  quarterRow,
   actLastQuarter,
   quarterInputs,
   type Act2Quarter,
   type GpuGeneration,
-  type ScenarioId,
+  type MarketKey,
   type TenantCard,
 } from '../../content/index.ts'
 import { scenarioOf } from './market.ts'
@@ -30,7 +31,7 @@ import {
   type ProjectKind,
   type TenantOffer,
 } from '../state.ts'
-import { inAct2Rules, inActIII } from '../state.ts'
+import { inAct2Rules, inActIII, inActIV, logQuarterLabel } from '../state.ts'
 import { gpuPriceMultNow, modifierMult } from './eventEffects.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import {
@@ -77,7 +78,7 @@ const P = () => CONTENT.projects
 function heldBack<T>(
   quarter: number,
   pick: (q: Act2Quarter) => T | null,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): T | undefined {
   // Act II's quarter, or Act III's scenario row (M11.4c).
   const own = quarterInputs(quarter, scenario)
@@ -105,7 +106,7 @@ const isRubin = (gpu: string): gpu is 'rubin_nvl144' | 'rubin_ultra' =>
 export function gpuPriceUsd(
   gpu: string,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number | undefined {
   return heldBack(
     quarter,
@@ -128,7 +129,7 @@ export function gpuPriceUsd(
 export function neocloudUsdHr(
   gpu: string,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number | undefined {
   return heldBack(
     quarter,
@@ -153,7 +154,7 @@ function rubinRent(usdHr: number | null | undefined, gpu: string): number | null
  */
 export function availableGpus(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): GpuGeneration[] {
   const label = CONTENT.quarters[quarter]
   return [...P().gpus, ...CONTENT.act3Gpus.generations].filter(
@@ -165,7 +166,7 @@ export function availableGpus(
 /** The newest generation on sale (Rubin until Rubin Ultra is out, then Rubin Ultra), or null before Act III. */
 export function newestGpu(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): string | null {
   const ids = availableGpus(quarter, scenario).map((g) => g.id)
   return ids.includes('rubin_ultra')
@@ -183,7 +184,7 @@ export function newestGpu(
 export function gpuLeadTimeWeeks(
   gpu: string,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const newest = newestGpu(quarter, scenario)
   const column = quarterInputs(quarter, scenario)?.act3?.newestGenLeadWeeks
@@ -264,7 +265,7 @@ export function gpuContractUsdHr(
   gpu: string,
   termYears: number,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number | undefined {
   const c = BALANCE.projects.gpuContracts
   // M16.1: Rubin and Rubin Ultra price like the B200, off their own neocloud series.
@@ -325,10 +326,12 @@ export function scenarioDefaultProb(
   state: GameState,
   type: TenantCard['type'] | undefined,
 ): number {
-  const row =
-    CONTENT.act3Scenarios[state.scenarioId!].quarterly[
-      state.quarter - actFirstQuarter(3)
-    ]
+  // (M27.3: Act IV's rows carry the same columns, read through the state's market key)
+  const row = quarterRow(
+    state.quarter,
+    inActIV(state) ? scenarioOf(state) : state.scenarioId,
+  )
+  if (!row) return 0
   if (type === 'ai_lab') return row.tenant_default_prob_q_ai_lab ?? 0
   if (type === 'neocloud_sub_tenant')
     return row.tenant_default_prob_q_neocloud_sub ?? 0
@@ -403,7 +406,7 @@ export function reletProject(state: GameState, projectId: string): void {
   logEntry(state, 'log.tenant_terminated', {
     n: p.n,
     tenant: t.card,
-    quarter: CONTENT.quarters[p.emptyUntil + 1] ?? '—',
+    quarter: logQuarterLabel(state, p.emptyUntil + 1),
   })
 }
 
@@ -833,7 +836,7 @@ export function signTenant(
     tenant: card.id,
     rentUsd: annualRentUsd(card, p.kw) * mult,
     years: card.termYears,
-    quarter: CONTENT.quarters[p.tenant.readyByQuarter] ?? '—',
+    quarter: logQuarterLabel(state, p.tenant.readyByQuarter),
     prepaymentUsd,
   })
   return undefined
@@ -884,7 +887,7 @@ function signGpuContract(
     gpu: p.gpu!,
     priceUsd: priceUsdHr,
     years: terms.termYears,
-    quarter: CONTENT.quarters[p.tenant.readyByQuarter] ?? '—',
+    quarter: logQuarterLabel(state, p.tenant.readyByQuarter),
   })
   return undefined
 }
@@ -1028,7 +1031,7 @@ export function startBuild(state: GameState, projectId: string): void {
   logEntry(state, 'log.project_started', {
     n: p.n,
     costUsd: p.capexUsd,
-    quarter: CONTENT.quarters[p.readyQuarter] ?? '—',
+    quarter: logQuarterLabel(state, p.readyQuarter),
   })
 }
 
@@ -1059,7 +1062,7 @@ function gasLawsuits(state: GameState): void {
       logEntry(state, 'log.gas_lawsuit', {
         n: p?.n ?? 0,
         costUsd: L.legalUsd,
-        quarter: CONTENT.quarters[add.readyQuarter] ?? '—',
+        quarter: logQuarterLabel(state, add.readyQuarter),
       })
     }
   }
@@ -1424,7 +1427,7 @@ function slip(
   logEntry(
     state,
     key,
-    { n: p.n, quarter: CONTENT.quarters[p.readyQuarter] ?? '—' },
+    { n: p.n, quarter: logQuarterLabel(state, p.readyQuarter) },
     state.week + 1,
   )
 }
@@ -1728,7 +1731,7 @@ export function pivotActive(state: GameState): boolean {
 export function capRate(
   quarter: number,
   kw: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   // Act III (M11.4c, mine, reversible): the scenario's hyperscale cap rate; a smaller shell keeps Act
   // II's 2026Q4 shell rate, moved by the same change in the hyperscale rate since 2026Q4.

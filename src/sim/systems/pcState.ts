@@ -2,7 +2,7 @@
 // adjustment. Kept free of other systems so Anger and the grid queue can read them without an import loop.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inActIII, type GameState } from '../state.ts'
+import { inActIII, logQuarterLabel, type GameState } from '../state.ts'
 
 const PC = BALANCE.act3.politicalCapital
 
@@ -39,7 +39,7 @@ export function waterPauseBlocker(
   const pause = state.act3Gov?.pause
   if (!pause?.kind || pause.untilQuarter === undefined) return undefined
   if (state.quarter > pause.untilQuarter) return undefined
-  const quarter = CONTENT.quarters[pause.untilQuarter + 1] ?? ''
+  const quarter = logQuarterLabel(state, pause.untilQuarter + 1, '')
   if (pause.kind === 'start' && on.projectId && pause.projectId === on.projectId)
     return { key: 'error.water_pause_start', params: { quarter } }
   if (pause.kind === 'site' && on.siteId && pause.siteId === on.siteId)

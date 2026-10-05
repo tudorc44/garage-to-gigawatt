@@ -11,7 +11,7 @@
 // GPUs' residual value, smallest first), their proceeds repaying debt, until it is. If even that falls short, the
 // lenders call what's left: it's paid from cash, and the existing rescue and game-over rules follow.
 // None of these are the player's moves: nothing here is logged to act3Moves.
-import { BALANCE, CONTENT } from '../../content/index.ts'
+import { BALANCE } from '../../content/index.ts'
 import {
   inActIII,
   logEntry,
@@ -19,6 +19,7 @@ import {
   type Project,
   type QuarterReport,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { debtUsd } from './loans.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import {
@@ -192,7 +193,7 @@ export function testCovenant(state: GameState, report: QuarterReport): void {
       ltvPct: ltv,
       limitPct: limit,
       curePct: cure,
-      quarter: CONTENT.quarters[state.covenantBreach.untilQuarter] ?? '',
+      quarter: logQuarterLabel(state, state.covenantBreach.untilQuarter, ''),
     })
   }
   report.covenant = {

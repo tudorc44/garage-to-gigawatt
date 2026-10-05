@@ -1274,3 +1274,19 @@ export function newGame(seed: number): GameState {
 export function quarterLabel(state: GameState): string {
   return CONTENT.quarters[state.quarter]
 }
+
+/**
+ * A quarter's label for a log line or a stored message (M27.3). An Act I–III game keeps its logs exactly as they were
+ * before Act IV's quarters joined the timeline: a quarter past 2030Q4 has no label there (`fallback`, "—"), as it had
+ * none then. An Act IV game labels every quarter to 2035Q4. (Screens may show the real label; only stored text keeps
+ * the old rule, so no Act I–III golden or sim output changes.)
+ */
+export function logQuarterLabel(
+  state: Pick<GameState, 'act'>,
+  quarter: number,
+  fallback = '—',
+): string {
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  if (state.act !== 4 && quarter > act3.lastQuarter) return fallback
+  return CONTENT.quarters[quarter] ?? fallback
+}

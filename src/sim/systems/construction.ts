@@ -8,6 +8,7 @@
 import { BALANCE, CONTENT, type SiteTier } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { buildQuartersFor } from './hires.ts'
 import { getModel } from './market.ts'
 import { flawEffect, getTier, nominalKw } from './sites.ts'
@@ -108,7 +109,7 @@ export function buildPhase(
     n: next.n,
     of: next.of,
     costUsd: next.costUsd,
-    quarter: CONTENT.quarters[ready] ?? '—',
+    quarter: logQuarterLabel(state, ready),
   })
 }
 
@@ -239,7 +240,7 @@ export function upgradeTransformer(state: GameState, siteId: string): void {
   logEntry(state, 'log.transformer_upgrade', {
     tier: site.tier,
     costUsd: u.costUsd,
-    quarter: CONTENT.quarters[site.upgradeReadyQuarter] ?? '—',
+    quarter: logQuarterLabel(state, site.upgradeReadyQuarter),
   })
 }
 

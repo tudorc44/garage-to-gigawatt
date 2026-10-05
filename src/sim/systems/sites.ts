@@ -8,7 +8,7 @@ import {
   actFirstQuarter,
   actLastQuarter,
   quarterInputs,
-  type ScenarioId,
+  type MarketKey,
   type PowerRegion,
   type SiteTier,
 } from '../../content/index.ts'
@@ -157,7 +157,7 @@ export function normalPriceUsdKwh(
   site: Site,
   quarter: number,
   type: ContractType = BALANCE.sites.defaultPowerOption,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const tier = getTier(site.tier)!
   // Act II's series, or Act III's scenario column (M11.4c).
@@ -187,7 +187,7 @@ export function normalPriceUsdKwh(
 export function powerPriceUsdKwh(
   site: Site,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const c = site.contract
   const base = c
@@ -210,7 +210,7 @@ export function powerPriceUsdKwh(
 export function capacityChargeUsdKwh(
   site: Site,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   return regionCapacityChargeUsdKwh(regionOf(site), quarter, scenario)
 }
@@ -219,7 +219,7 @@ export function capacityChargeUsdKwh(
 export function regionCapacityChargeUsdKwh(
   region: PowerRegion | undefined,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   if (!scenario || (region !== 'pjm' && region !== 'ohio')) return 0
   const first = actFirstQuarter(3)

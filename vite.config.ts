@@ -22,6 +22,13 @@ export default defineConfig({
                 String.raw`src[\\/]content[\\/]market_(weekly_)?s${n}\.json`,
               ),
             })),
+            // Act IV's four futures (M27.3): one file each, likewise.
+            ...[1, 2, 3, 4].map((n) => ({
+              name: `market-iv-f${n}`,
+              test: new RegExp(
+                String.raw`src[\\/]content[\\/]market_(weekly_)?iv_f${n}\.json`,
+              ),
+            })),
             {
               name: 'market',
               test: /src[\\/]content[\\/]market_[^\\/]*\.json/,

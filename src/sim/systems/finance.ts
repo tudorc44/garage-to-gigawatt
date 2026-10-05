@@ -5,7 +5,7 @@ import {
   BALANCE,
   CONTENT,
   quarterInputs,
-  type ScenarioId,
+  type MarketKey,
 } from '../../content/index.ts'
 
 const F = () => CONTENT.finance
@@ -17,7 +17,7 @@ function act2Index(quarter: number): number {
 }
 
 /** SOFR that quarter, as a fraction (the market file). */
-export function sofr(quarter: number, scenario?: ScenarioId | null): number {
+export function sofr(quarter: number, scenario?: MarketKey | null): number {
   return (quarterInputs(quarter, scenario)?.sofrPct ?? 0) / 100
 }
 
@@ -33,7 +33,7 @@ function inAct3(quarter: number): boolean {
  */
 export function projectDebtRate(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   if (inAct3(quarter)) {
     const i = quarterInputs(quarter, scenario)!
@@ -64,7 +64,7 @@ export function isInvestmentGrade(rating: string): boolean {
 export function ddtlSpreadBps(
   quarter: number,
   investmentGrade: boolean,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   // Act III: the scenario's own spread column (M11.4c), whatever the tenant's credit.
   if (inAct3(quarter)) return quarterInputs(quarter, scenario)!.ddtlSpreadBps ?? 0
@@ -85,7 +85,7 @@ export function ddtlSpreadBps(
 export function ddtlRate(
   quarter: number,
   investmentGrade: boolean,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   return (
     sofr(quarter, scenario) +

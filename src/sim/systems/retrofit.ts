@@ -12,7 +12,7 @@
 // place (and earn) at once, so a quarter the work only partly covers earns at their rate.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inActIII, logEntry, type GameState, type Project } from '../state.ts'
+import { inActIII, logEntry, logQuarterLabel, type GameState, type Project } from '../state.ts'
 import {
   downtimeDoneQuarter,
   fits,
@@ -67,7 +67,7 @@ function changeBlocker(
     const end = contractEndQuarter(state, p)
     return {
       key: 'error.gpu_contract_until',
-      params: { quarter: (end !== null && CONTENT.quarters[end]) || '—' },
+      params: { quarter: end !== null ? logQuarterLabel(state, end) : '—' },
     }
   }
   return undefined
@@ -121,7 +121,7 @@ export function startRetrofit(
     n: p.n,
     density: plan.to,
     costUsd,
-    quarter: CONTENT.quarters[downtimeDoneQuarter(p.downtime)] ?? '—',
+    quarter: logQuarterLabel(state, downtimeDoneQuarter(p.downtime)),
   })
 }
 
@@ -231,6 +231,6 @@ export function refitGpus(
     gpu,
     count: plan.count,
     costUsd: plan.netUsd,
-    quarter: CONTENT.quarters[downtimeDoneQuarter(p.downtime)] ?? '—',
+    quarter: logQuarterLabel(state, downtimeDoneQuarter(p.downtime)),
   })
 }

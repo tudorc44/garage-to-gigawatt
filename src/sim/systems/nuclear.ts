@@ -20,7 +20,7 @@ import {
   actFirstQuarter,
   quarterInputs,
   type PowerRegion,
-  type ScenarioId,
+  type MarketKey,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
@@ -289,7 +289,7 @@ export function ppaQuarterNetUsd(
  * cheaper. (Act II's regional policy adders, also in the game's market price, are left out, as in the spec.)
  */
 export function lockedSpreadUsdMwh(
-  scenario: ScenarioId,
+  scenario: MarketKey,
   region: PowerRegion,
   signed: number,
   at: number,

@@ -13,6 +13,7 @@ import {
   type GameState,
   type Project,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { accelerateTarget } from './cardHalls.ts'
 import { isHired } from './hires.ts'
 import { addPc, adjustAnger } from './pcState.ts'
@@ -44,7 +45,7 @@ function used(state: GameState, id: string): boolean {
 /** The quarter `id` can be used again (for the reason line). */
 function againQuarter(state: GameState, id: string): string {
   const last = gov(state).lastUsed[id] ?? state.quarter
-  return CONTENT.quarters[last + PC.cooldownQuarters] ?? '—'
+  return logQuarterLabel(state, last + PC.cooldownQuarters)
 }
 
 // ---------- lobbying ----------

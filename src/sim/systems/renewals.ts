@@ -24,6 +24,7 @@ import {
   type Project,
   type Renewal,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { contractEndQuarter, reopenerEligible } from './calendar.ts'
 import {
   gpuRenewalIndex,
@@ -220,7 +221,7 @@ function startRelet(
   logEntry(state, 'log.renewal_relet', {
     n: p.n,
     tenant: t.card,
-    quarter: CONTENT.quarters[p.emptyUntil + 1] ?? '—',
+    quarter: logQuarterLabel(state, p.emptyUntil + 1),
   })
 }
 

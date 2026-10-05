@@ -14,7 +14,6 @@
 // - distressed_campus: a new idle, energized site of that many MW, no flaw, in the region of the largest site.
 import {
   BALANCE,
-  CONTENT,
   POWER_REGIONS,
   quarterInputs,
 } from '../../content/index.ts'
@@ -26,6 +25,7 @@ import {
   type Project,
   type SiteOffer,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import { exportGpuMult } from './exportRule.ts'
 import { convertibleKw } from './hosting.ts'
@@ -207,7 +207,7 @@ export function accelerateCard(
   logEntry(
     state,
     'log.card_accelerated',
-    { n: p.n, quarter: CONTENT.quarters[p.readyQuarter] ?? '—', costUsd },
+    { n: p.n, quarter: logQuarterLabel(state, p.readyQuarter), costUsd },
     weekNo,
   )
 }

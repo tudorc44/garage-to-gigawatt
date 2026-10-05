@@ -39,7 +39,8 @@ function playAll(s: GameState) {
   return { state: s, seen }
 }
 
-const ALL = CONTENT.quarters.slice(40)
+// (M27.3: Act IV's quarters follow on the timeline, so Act III's are 40–55)
+const ALL = CONTENT.quarters.slice(40, 56)
 
 describe('Act III runs its 16 quarters, then the chapter report', () => {
   it('is 2027Q1 → 2030Q4, unreachable from play (no code path but the test helpers sets act 3)', () => {

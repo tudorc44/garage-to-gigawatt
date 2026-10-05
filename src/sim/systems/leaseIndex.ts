@@ -2,27 +2,24 @@
 // scenario files' renewal, RFP and walk columns, always for the quarter asked (the current one: no
 // system asks for a later quarter). Nothing here knows the scenario's name or phase.
 import {
-  CONTENT,
-  actFirstQuarter,
-  type MarketQuarterAct3Row,
-  type ScenarioId,
+  quarterRow,
+  type CarriedQuarterRow,
+  type MarketKey,
 } from '../../content/index.ts'
 
+// (M27.3: Act IV's rows carry the same columns; quarterRow reads either act through the state's market key.)
 function row(
   quarter: number,
-  scenario: ScenarioId | null | undefined,
-): MarketQuarterAct3Row | null {
+  scenario: MarketKey | null | undefined,
+): CarriedQuarterRow | null {
   if (!scenario) return null
-  return (
-    CONTENT.act3Scenarios[scenario].quarterly[quarter - actFirstQuarter(3)] ??
-    null
-  )
+  return quarterRow(quarter, scenario) ?? null
 }
 
 /** The RFP midpoint (the new-lease index): the mean of rfp_new_lease_index_low and _high. */
 export function rfpMid(
   quarter: number,
-  scenario: ScenarioId | null | undefined,
+  scenario: MarketKey | null | undefined,
 ): number | null {
   const r = row(quarter, scenario)
   if (!r) return null
@@ -34,7 +31,7 @@ export function rfpMid(
 /** Band(q): doc 27's D5 renewal band, [renewal_shell_index_low, renewal_shell_index_high]. */
 export function renewalBand(
   quarter: number,
-  scenario: ScenarioId | null | undefined,
+  scenario: MarketKey | null | undefined,
 ): { lo: number; hi: number } | null {
   const r = row(quarter, scenario)
   if (!r) return null
@@ -47,7 +44,7 @@ export function renewalBand(
  * rounded half up to the engine's GPU terms (1, 2 or 3 years). */
 export function offeredTermYears(
   quarter: number,
-  scenario: ScenarioId | null | undefined,
+  scenario: MarketKey | null | undefined,
   kind: 'shell' | 'gpu',
 ): number | null {
   const r = row(quarter, scenario)
@@ -63,7 +60,7 @@ export function offeredTermYears(
 /** The chance a tenant walks at renewal: the hyperscaler column, or the other one for neoclouds and labs. */
 export function walkProbAtRenewal(
   quarter: number,
-  scenario: ScenarioId | null | undefined,
+  scenario: MarketKey | null | undefined,
   tenantType: string,
 ): number {
   const r = row(quarter, scenario)
@@ -81,7 +78,7 @@ export function walkProbAtRenewal(
  */
 export function gpuRenewalIndex(
   quarter: number,
-  scenario: ScenarioId | null | undefined,
+  scenario: MarketKey | null | undefined,
   gpu: string,
 ): number | null {
   const r = row(quarter, scenario)

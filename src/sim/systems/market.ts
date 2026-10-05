@@ -7,12 +7,15 @@ import {
   actFirstQuarter,
   isAct2RulesQuarter,
   nextQuarter,
+  act3ScenarioOfKey,
+  act4Market,
   type Machine,
+  type MarketKey,
   type MarketWeek,
-  type ScenarioId,
 } from '../../content/index.ts'
 import {
   inActIII,
+  inActIV,
   type Coin,
   type Condition,
   type GameState,
@@ -60,8 +63,12 @@ function prologuePrice(
  */
 export function quarterWeeks(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): MarketWeek[] | undefined {
+  // Act IV (M27.3): prices exist only inside a scenario and future key ("s2.f3"), glided at the seam.
+  const act4 = CONTENT.acts.find((a) => a.act === 4)
+  if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
+    return act4Market(quarter, scenario).weeks[quarter - act4.firstQuarter]
   const first = actFirstQuarter(3)
   if (
     quarter >= first &&
@@ -72,15 +79,20 @@ export function quarterWeeks(
       throw new RangeError(
         `Quarter ${quarter} is in Act III, whose market is read only through a scenario (none given)`,
       )
-    return CONTENT.act3Scenarios[scenario].weeks[quarter - first]
+    return CONTENT.act3Scenarios[act3ScenarioOfKey(scenario)].weeks[quarter - first]
   }
   return CONTENT.market[quarter]
 }
 
-/** The scenario a state's market reads use: its own in Act III, none (the shared market) otherwise. */
+/**
+ * The market key a state's reads use: its scenario in Act III; in Act IV (M27.3) its Act III scenario and its future,
+ * "s2.f3" (the seam glide starts from that scenario); none (the shared market) before Act III.
+ */
 export function scenarioOf(
-  state: Pick<GameState, 'act' | 'scenarioId'>,
-): ScenarioId | undefined {
+  state: Pick<GameState, 'act' | 'scenarioId' | 'futureId'>,
+): MarketKey | undefined {
+  if (inActIV(state) && state.scenarioId && state.futureId)
+    return `${state.scenarioId}.${state.futureId}`
   return inActIII(state) ? state.scenarioId : undefined
 }
 
@@ -90,7 +102,7 @@ export function scenarioOf(
 export function marketWeek(
   quarter: number,
   week: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): MarketWeek {
   const w = quarterWeeks(quarter, scenario)?.[week]
   if (!w)
@@ -104,7 +116,7 @@ export function marketWeek(
 export function previousMarketWeek(
   quarter: number,
   week: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): MarketWeek | undefined {
   if (week > 0) return quarterWeeks(quarter, scenario)![week - 1]
   // Act I's first week has no week before it, as before the prologue existed (its 2016 weeks sit
@@ -134,7 +146,7 @@ export function revenuePerUnitDay(model: Machine, w: MarketWeek): number {
 export function act2Prices(
   model: Machine,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): { newUsd: number; usedUsd: number } | undefined {
   const price = model.act2_price
   // Act II, and Act III on its scenario's weekly $/TH tiers (M11.5a, same tier mapping per model).
@@ -160,7 +172,7 @@ export function buyPrice(
   model: Machine,
   quarter: number,
   condition: Condition,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number | undefined {
   const label = CONTENT.quarters[quarter]
   if (isPrologueModel(model)) {
@@ -207,7 +219,7 @@ export function buyPrice(
 export function sellPrice(
   model: Machine,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   if (isPrologueModel(model))
     return (

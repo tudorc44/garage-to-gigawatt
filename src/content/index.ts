@@ -41,6 +41,14 @@ import marketWeeklyS0Raw from './market_weekly_s0.json' with { type: 'json' }
 import marketWeeklyS1Raw from './market_weekly_s1.json' with { type: 'json' }
 import marketWeeklyS2Raw from './market_weekly_s2.json' with { type: 'json' }
 import marketWeeklyS3Raw from './market_weekly_s3.json' with { type: 'json' }
+import marketIvF1Raw from './market_iv_f1.json' with { type: 'json' }
+import marketIvF2Raw from './market_iv_f2.json' with { type: 'json' }
+import marketIvF3Raw from './market_iv_f3.json' with { type: 'json' }
+import marketIvF4Raw from './market_iv_f4.json' with { type: 'json' }
+import marketWeeklyIvF1Raw from './market_weekly_iv_f1.json' with { type: 'json' }
+import marketWeeklyIvF2Raw from './market_weekly_iv_f2.json' with { type: 'json' }
+import marketWeeklyIvF3Raw from './market_weekly_iv_f3.json' with { type: 'json' }
+import marketWeeklyIvF4Raw from './market_weekly_iv_f4.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import eventsAct3Raw from './events_act3.json' with { type: 'json' }
 import { eventsAct3FileSchema, toEngineCard } from './act3Cards.ts'
@@ -92,8 +100,17 @@ import {
   marketAct3Schema,
   marketQuarterlyAct2Schema,
   marketQuarterlyAct3Schema,
+  marketAct4Schema,
+  marketQuarterlyAct4Schema,
   marketSchema,
   SCENARIO_IDS,
+  FUTURE_IDS,
+  type FutureId,
+  type Act4MarketKey,
+  type MarketKey,
+  type CarriedQuarterRow,
+  type MarketQuarterAct4Row,
+  type MarketWeekAct4,
   signalsFileSchema,
   type SignalIndicator,
   type MarketQuarterAct3Row,
@@ -145,12 +162,8 @@ import {
 
 export { BALANCE }
 export { SCENARIO_IDS }
-export {
-  FUTURE_IDS,
-  type FutureId,
-  type Act4MarketKey,
-  type MarketKey,
-} from './schemas.ts'
+export { FUTURE_IDS }
+export type { FutureId, Act4MarketKey, MarketKey, CarriedQuarterRow, MarketQuarterAct4Row }
 export {
   SIGNAL_IDS,
   type SignalId,
@@ -209,6 +222,20 @@ export interface Act3Scenario {
    */
   inputs: Act2Quarter[]
   /** weeks[n][week]: n = 0 is the first Act III quarter (2027Q1); exactly 13 weeks each. */
+  weeks: MarketWeek[][]
+}
+
+/**
+ * One Act IV market (M27.3): a future's own path (market_iv_fN), glided at the seam from one Act III scenario's 2030Q4
+ * values (doc 33 §3.3: act quarter 0 = the scenario's 2030Q4 value, closing the gap in equal steps so that 2031Q4 is
+ * the common baseline). 16 of them, one per Act III scenario × future, keyed "s2.f3". Read through scenarioOf(state).
+ */
+export interface Act4Market {
+  /** The quarterly rows, glided (20 rows, 2031Q1–2035Q4). */
+  quarterly: MarketQuarterAct4Row[]
+  /** The same rows in Act II's shape (with Act III's extras), as the carried systems read them. */
+  inputs: Act2Quarter[]
+  /** weeks[n][week]: n = 0 is 2031Q1; exactly 13 weeks each, glided. */
   weeks: MarketWeek[][]
 }
 
@@ -434,6 +461,10 @@ export interface Content {
    * (marketWeek's optional argument); nothing else reads them yet.
    */
   act3Scenarios: Record<ScenarioId, Act3Scenario>
+  /** Act IV's four futures as their files have them (M27.3): unglided, for tests and tools (B14). */
+  act4Futures: Record<FutureId, { quarterly: MarketQuarterAct4Row[]; weeks: MarketWeek[][] }>
+  /** Act IV's 16 glided markets, one per Act III scenario × future (M27.3). Read through scenarioOf(state). */
+  act4Markets: Record<Act4MarketKey, Act4Market>
   /**
    * Act III's authored Signals (M11.2), by scenario: the six indicators in file order, runtime fields
    * only. The hidden authoring fields are never loaded here (see signalsHidden.ts).
@@ -661,6 +692,8 @@ export interface RawContent {
   marketPrologue: unknown
   /** The four Act III scenarios' market files (M11.1): quarterly (market_sN) and weekly. */
   act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
+  /** The four Act IV futures' market files (M27.3). Optional: without them the timeline ends at 2030Q4. */
+  act4Futures?: Record<FutureId, { quarterly: unknown; weekly: unknown }>
   /** The four Act III signals files (M11.2), by scenario. */
   signals: Record<ScenarioId, unknown>
   capital: unknown
@@ -1867,31 +1900,7 @@ export function parseContent(raw: RawContent): Content {
       act3Scenarios[id] = {
         quarterly,
         weeks,
-        inputs: quarterly.map((r) => ({
-          ...act2QuarterOf(r, {
-            mining: r.mining_ev_ebitda_mult,
-            aiInfra: r.ai_infra_ev_ebitda_mult,
-          }),
-          // M16.1: the step-5 columns (Act III rows only).
-          act3: {
-            gpuRentalUsdHr: {
-              rubin_nvl144: {
-                hyperscaler: r.gpu_rubin_hyperscaler_usd_hr,
-                neocloud: r.gpu_rubin_neocloud_usd_hr,
-              },
-              rubin_ultra: {
-                hyperscaler: r.gpu_rubin_ultra_hyperscaler_usd_hr,
-                neocloud: r.gpu_rubin_ultra_neocloud_usd_hr,
-              },
-            },
-            rubinUnitUsd: r.rubin_unit_purchase_usd,
-            rubinRackUsd: r.rubin_nvl144_rack_usd,
-            rubinUltraRackUsd: r.rubin_ultra_nvl576_rack_usd,
-            newestGenLeadWeeks: r.newest_gen_lead_time_weeks,
-            midToTopUsdMw: r.capex_retrofit_density_mid_to_top_usd_mw,
-            nuclearPpaUsdMwh: r.nuclear_ppa_usd_mwh,
-          },
-        })),
+        inputs: quarterly.map(carriedInputsOf),
       }
     }
     // Act III's timeline (M11.3): the scenario files' 16 quarters (2027Q1–2030Q4), appended last, after
@@ -1914,6 +1923,90 @@ export function parseContent(raw: RawContent): Content {
       lastQuarter: quarters.length + labels.length - 1,
     })
     quarters.push(...labels)
+  }
+  // Act IV's four futures (M27.3, doc 33 §3.3 and §16): validated like Act III's scenarios, then glided from each Act III
+  // scenario's 2030Q4 values into 16 markets ("s2.f3"). The timeline gains 2031Q1–2035Q4 (indices 56–75), appended last,
+  // so every earlier index stays as it was. Like Act III, the shared `market` array has no Act IV weeks: Act IV prices
+  // exist only inside a market key (marketWeek's key argument; reading an Act IV week without one throws).
+  const act4Futures = {} as Content['act4Futures']
+  const act4Markets = {} as Content['act4Markets']
+  if (raw.act4Futures) {
+    const lastAct2Week = market[acts[1].lastQuarter].at(-1)!
+    const act3Last = acts.find((a) => a.act === 3)!
+    const firstLabel = nextQuarter(quarters[act3Last.lastQuarter])
+    for (const f of FUTURE_IDS) {
+      const raw4 = raw.act4Futures[f]
+      const weeklyFile = `market_weekly_iv_${f}`
+      const quarterlyFile = `market_iv_${f}`
+      const weekly = check(weeklyFile, marketAct4Schema, raw4.weekly)
+      const quarterly = check(quarterlyFile, marketQuarterlyAct4Schema, raw4.quarterly)
+      if (!weekly || !quarterly) continue
+      const labels: string[] = []
+      const weeks: MarketWeek[][] = []
+      for (const row of weekly) {
+        if (row.future !== f)
+          problems.push(`${weeklyFile} › week ${row.week}: future is ${row.future}, expected ${f}`)
+        if (labels.at(-1) !== row.quarter) {
+          if (labels.includes(row.quarter))
+            problems.push(`${weeklyFile} › week ${row.week}: quarter ${row.quarter} appears twice`)
+          labels.push(row.quarter)
+          weeks.push([])
+        }
+        weeks.at(-1)!.push(act4Week(row, lastAct2Week))
+      }
+      labels.forEach((label, i) => {
+        const expected = i === 0 ? firstLabel : nextQuarter(labels[i - 1])
+        if (label !== expected)
+          problems.push(`${weeklyFile} › ${label}: expected ${expected} (quarters run on from 2030Q4 with no gap)`)
+        if (weeks[i].length !== perQuarter)
+          problems.push(`${weeklyFile} › ${label}: has ${weeks[i].length} weeks, expected exactly ${perQuarter}`)
+      })
+      if (quarterly.map((r) => r.quarter).join() !== labels.join())
+        problems.push(`${quarterlyFile}: quarters don't match ${weeklyFile}'s (${labels.join(', ')})`)
+      else
+        quarterly.forEach((r, i) => {
+          if (r.future !== f)
+            problems.push(`${quarterlyFile} › ${r.quarter}: future is ${r.future}, expected ${f}`)
+          if (Math.abs(r.btc_usd_close - weeks[i].at(-1)!.btc_usd) > 0.01)
+            problems.push(
+              `${quarterlyFile} › ${r.quarter}: BTC close ${r.btc_usd_close} doesn't match ${weeklyFile}'s last week`,
+            )
+        })
+      act4Futures[f] = { quarterly, weeks }
+    }
+    const labels = act4Futures.f1?.quarterly.map((r) => r.quarter) ?? []
+    for (const f of FUTURE_IDS) {
+      const own = act4Futures[f]?.quarterly.map((r) => r.quarter) ?? []
+      if (own.join() !== labels.join())
+        problems.push(`market_iv_${f}: quarters (${own.join(', ')}) differ from market_iv_f1's`)
+    }
+    // The 16 glided markets: act quarter n moves from the Act III scenario's last row (and last week) to the future's
+    // own value by act4GlideWeight(n). The futures are identical through 2031Q4, so the glide ends on their common
+    // baseline whatever the future (doc 33 §3.3: the glide can't reveal it).
+    for (const s of SCENARIO_IDS) {
+      const from = act3Scenarios[s]
+      if (!from) continue
+      const lastRow = from.quarterly.at(-1)!
+      const lastWeek = from.weeks.at(-1)!.at(-1)!
+      for (const f of FUTURE_IDS) {
+        const own = act4Futures[f]
+        if (!own) continue
+        const quarterlyGlided = own.quarterly.map((r, n) => glide(lastRow, r, act4GlideWeight(n)))
+        act4Markets[`${s}.${f}`] = {
+          quarterly: quarterlyGlided,
+          inputs: quarterlyGlided.map(carriedInputsOf),
+          weeks: own.weeks.map((qw, n) => qw.map((w) => glide(lastWeek, w, act4GlideWeight(n)))),
+        }
+      }
+    }
+    if (labels.length > 0) {
+      acts.push({
+        act: 4,
+        firstQuarter: quarters.length,
+        lastQuarter: quarters.length + labels.length - 1,
+      })
+      quarters.push(...labels)
+    }
   }
   // Act III's rivals (M11.5b): the same five ids as Act II's, 16 quarters matching the Act III timeline
   // and no negative MW. Only the numeric series are kept; the fates stay in rivalsHidden.ts.
@@ -2038,6 +2131,8 @@ export function parseContent(raw: RawContent): Content {
     acts,
     act2Market,
     act3Scenarios,
+    act4Futures,
+    act4Markets,
     signals,
     hosting,
     projects,
@@ -2183,6 +2278,64 @@ function lastLeadTime(
   return last ? { leadTimeWeeks: last[1] as number } : {}
 }
 
+/**
+ * An Act III scenario row, or an Act IV row (which carries every Act III column), in Act II's shape with Act III's
+ * extras: the era multiples from the row's own columns (rebased at the boundary), and (M16.1) the step-5 columns.
+ */
+function carriedInputsOf(r: CarriedQuarterRow): Act2Quarter {
+  return {
+    ...act2QuarterOf(r, {
+      mining: r.mining_ev_ebitda_mult,
+      aiInfra: r.ai_infra_ev_ebitda_mult,
+    }),
+    act3: {
+      gpuRentalUsdHr: {
+        rubin_nvl144: {
+          hyperscaler: r.gpu_rubin_hyperscaler_usd_hr,
+          neocloud: r.gpu_rubin_neocloud_usd_hr,
+        },
+        rubin_ultra: {
+          hyperscaler: r.gpu_rubin_ultra_hyperscaler_usd_hr,
+          neocloud: r.gpu_rubin_ultra_neocloud_usd_hr,
+        },
+      },
+      rubinUnitUsd: r.rubin_unit_purchase_usd,
+      rubinRackUsd: r.rubin_nvl144_rack_usd,
+      rubinUltraRackUsd: r.rubin_ultra_nvl576_rack_usd,
+      newestGenLeadWeeks: r.newest_gen_lead_time_weeks,
+      midToTopUsdMw: r.capex_retrofit_density_mid_to_top_usd_mw,
+      nuclearPpaUsdMwh: r.nuclear_ppa_usd_mwh,
+    },
+  }
+}
+
+/**
+ * An Act IV week, shaped like Act II's (as act3Week): no ETH mining; ETH held at Act II's last week's price.
+ */
+function act4Week(row: MarketWeekAct4, lastAct2: MarketWeek): MarketWeek {
+  return act3Week({ ...row, scenario: 's0' }, lastAct2)
+}
+
+/**
+ * The seam glide (doc 33 §3.3, M27.3): each number of `to` moved from `from`'s value by the share `w` (0 = all `from`,
+ * 1 = all `to`). Fields `from` lacks, or that aren't numbers on both sides, keep `to`'s value.
+ */
+function glide<T extends object>(from: object, to: T, w: number): T {
+  if (w >= 1) return to
+  const a = from as Record<string, unknown>
+  const out = { ...to } as Record<string, unknown>
+  for (const [k, b] of Object.entries(to)) {
+    const v = a[k]
+    if (typeof v === 'number' && typeof b === 'number') out[k] = v + (b - v) * w
+  }
+  return out as T
+}
+
+/** The seam glide's weight in an act quarter: 0 in 2031Q1, then equal steps to 1 in 2031Q4 (doc 33 §3.3, ⚙). */
+export function act4GlideWeight(n: number): number {
+  return Math.min(1, n / BALANCE.act4.seamGlideQuarters)
+}
+
 /** A market_quarterly_act2 row, reshaped for the sim. */
 function act2QuarterOf(
   // Act II's rows and Act III's scenario rows share every column this reads (the BTC and ETH closes are not read).
@@ -2264,8 +2417,11 @@ export function act2Quarter(quarter: number): Act2Quarter | undefined {
  */
 export function quarterInputs(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): Act2Quarter | undefined {
+  const act4 = CONTENT.acts.find((a) => a.act === 4)
+  if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
+    return act4Market(quarter, scenario).inputs[quarter - act4.firstQuarter]
   const act3 = CONTENT.acts.find((a) => a.act === 3)!
   if (quarter < act3.firstQuarter || quarter > act3.lastQuarter)
     return act2Quarter(quarter)
@@ -2273,7 +2429,48 @@ export function quarterInputs(
     throw new RangeError(
       `Quarter ${quarter} is in Act III, whose market inputs are read only through a scenario (none given)`,
     )
-  return CONTENT.act3Scenarios[scenario].inputs[quarter - act3.firstQuarter]
+  return CONTENT.act3Scenarios[act3ScenarioOfKey(scenario)].inputs[quarter - act3.firstQuarter]
+}
+
+/** Whether a market key is an Act IV key ("s2.f3"). */
+export function isAct4MarketKey(key: MarketKey | null | undefined): key is Act4MarketKey {
+  return typeof key === 'string' && key.includes('.')
+}
+
+/** The Act III scenario of a market key ("s2.f3" → "s2"; "s2" → "s2"). */
+export function act3ScenarioOfKey(key: MarketKey): ScenarioId {
+  return key.slice(0, 2) as ScenarioId
+}
+
+/** The Act IV market of a key, for an Act IV quarter; throws without an Act IV key, like an Act III read without one. */
+export function act4Market(quarter: number, key: MarketKey | null | undefined): Act4Market {
+  if (!isAct4MarketKey(key))
+    throw new RangeError(
+      `Quarter ${quarter} is in Act IV, whose market is read only through a scenario and future key (given ${key ?? 'none'})`,
+    )
+  return CONTENT.act4Markets[key]
+}
+
+/**
+ * The raw quarterly row for an Act III or Act IV quarter (the columns both acts carry), through the state's market key;
+ * undefined before Act III. The renewal and lease indices and the other step-5 columns are read through here.
+ */
+export function quarterRow(
+  quarter: number,
+  key: MarketKey | null | undefined,
+): CarriedQuarterRow | undefined {
+  const act4 = CONTENT.acts.find((a) => a.act === 4)
+  if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
+    return act4Market(quarter, key).quarterly[quarter - act4.firstQuarter]
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  if (quarter < act3.firstQuarter || quarter > act3.lastQuarter || !key) return undefined
+  return CONTENT.act3Scenarios[act3ScenarioOfKey(key)].quarterly[quarter - act3.firstQuarter]
+}
+
+/** Act IV's own columns for an Act IV quarter (launch, insurance, congestion, lunar …), through the state's key. */
+export function act4Row(quarter: number, key: MarketKey | null | undefined): MarketQuarterAct4Row {
+  const act4 = CONTENT.acts.find((a) => a.act === 4)!
+  return act4Market(quarter, key).quarterly[quarter - act4.firstQuarter]
 }
 
 /**
@@ -2291,9 +2488,12 @@ export function isActIIQuarter(quarter: number): boolean {
  */
 export function isAct2RulesQuarter(quarter: number): boolean {
   const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  // M27.3: and Act IV's (doc 33 §3.1: Act II's business rules run on in Act IV).
+  const act4 = CONTENT.acts.find((a) => a.act === 4)
   return (
     isActIIQuarter(quarter) ||
-    (quarter >= act3.firstQuarter && quarter <= act3.lastQuarter)
+    (quarter >= act3.firstQuarter && quarter <= act3.lastQuarter) ||
+    (act4 !== undefined && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
   )
 }
 
@@ -2369,6 +2569,12 @@ export const CONTENT: Content = parseContent({
     s1: { quarterly: marketS1Raw, weekly: marketWeeklyS1Raw },
     s2: { quarterly: marketS2Raw, weekly: marketWeeklyS2Raw },
     s3: { quarterly: marketS3Raw, weekly: marketWeeklyS3Raw },
+  },
+  act4Futures: {
+    f1: { quarterly: marketIvF1Raw, weekly: marketWeeklyIvF1Raw },
+    f2: { quarterly: marketIvF2Raw, weekly: marketWeeklyIvF2Raw },
+    f3: { quarterly: marketIvF3Raw, weekly: marketWeeklyIvF3Raw },
+    f4: { quarterly: marketIvF4Raw, weekly: marketWeeklyIvF4Raw },
   },
   signals: {
     s0: signalsS0Raw,

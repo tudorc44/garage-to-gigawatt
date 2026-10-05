@@ -25,6 +25,7 @@ import {
   type ProjectKind,
   type Site,
 } from './state.ts'
+import { logQuarterLabel } from './state.ts'
 import {
   addMachines,
   removeMachines,
@@ -847,7 +848,7 @@ function run(s: GameState, a: Action): Message | undefined {
       logEntry(s, 'log.site_built', {
         tier: site.tier,
         costUsd: terms.capexUsd,
-        quarter: CONTENT.quarters[site.readyQuarter] ?? '—',
+        quarter: logQuarterLabel(s, site.readyQuarter),
       })
       if (site.flaw)
         logEntry(s, 'log.site_flaw', { tier: site.tier, flaw: site.flaw })

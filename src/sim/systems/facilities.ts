@@ -14,7 +14,7 @@ import {
   type GameState,
   type Project,
 } from '../state.ts'
-import { covenantBreached, inAct2Rules } from '../state.ts'
+import { covenantBreached, inAct2Rules, logQuarterLabel } from '../state.ts'
 import {
   ddtlRate,
   isInvestmentGrade,
@@ -389,7 +389,7 @@ export function startLenderCure(state: GameState, p: Project): void {
   p.lenderCure = { untilQuarter }
   logEntry(state, 'log.lender_cure_started', {
     n: p.n,
-    quarter: CONTENT.quarters[untilQuarter] ?? '—',
+    quarter: logQuarterLabel(state, untilQuarter),
   })
 }
 

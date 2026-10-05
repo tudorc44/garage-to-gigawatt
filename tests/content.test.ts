@@ -106,17 +106,21 @@ const raw = (): RawContent =>
 
 describe('content loads', () => {
   it('covers Act I (23 quarters, 2017Q1 → 2022Q3) then Act II (17 quarters, 2022Q4 → 2026Q4), 13 weeks each', () => {
-    // 56, not 40: Act III (M11.3) appends its 16 quarters (2027Q1–2030Q4) after 2026Q4.
-    expect(CONTENT.quarters).toHaveLength(56)
+    // 76, not 40: Act III (M11.3) appends its 16 quarters (2027Q1–2030Q4) after 2026Q4, and Act IV (M27.3) its 20
+    // (2031Q1–2035Q4) after those.
+    expect(CONTENT.quarters).toHaveLength(76)
     expect(CONTENT.acts).toEqual([
       { act: 1, firstQuarter: 0, lastQuarter: 22 },
       { act: 2, firstQuarter: 23, lastQuarter: 39 },
       // The prologue (Alpha 0.3) sits at negative indices: Act I and II keep theirs.
       { act: 0, firstQuarter: -32, lastQuarter: -1 },
-      // Act III (M11.3): 16 quarters appended after Act II, unreachable from play. Act I and II
-      // keep indices 0–39.
+      // Act III (M11.3): 16 quarters appended after Act II. Act I and II keep indices 0–39.
       { act: 3, firstQuarter: 40, lastQuarter: 55 },
+      // Act IV (M27.3): 20 quarters appended after Act III; every earlier index stays.
+      { act: 4, firstQuarter: 56, lastQuarter: 75 },
     ])
+    expect(CONTENT.quarters[56]).toBe('2031Q1')
+    expect(CONTENT.quarters[75]).toBe('2035Q4')
     expect(CONTENT.quarters[0]).toBe('2017Q1')
     expect(CONTENT.quarters[22]).toBe('2022Q3')
     expect(CONTENT.quarters[23]).toBe('2022Q4')
@@ -244,7 +248,7 @@ describe('content loads', () => {
   })
 
   it('the market JSON files are up to date with their CSVs', () => {
-    const json = {
+    const json: Record<string, unknown> = {
       'market_weekly.json': market,
       'market_weekly_act2.json': marketAct2,
       'market_quarterly_act2.json': marketQuarterlyAct2,
@@ -262,8 +266,19 @@ describe('content loads', () => {
         new URL(`../src/content/${csvName}`, import.meta.url),
         'utf8',
       )
-      expect(csvToRows(csv)).toEqual(json[jsonName])
+      // (M27.3: Act IV's JSON files are read from disk rather than imported here)
+      const parsed =
+        json[jsonName] ??
+        JSON.parse(readFileSync(new URL(`../src/content/${jsonName}`, import.meta.url), 'utf8'))
+      expect(csvToRows(csv), jsonName).toEqual(parsed)
     }
+  })
+
+  it('the Act IV market files are byte-identical copies of docs/act4-content/ (M27.3)', () => {
+    const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
+    for (const f of ['f1', 'f2', 'f3', 'f4'])
+      for (const name of [`market_iv_${f}.csv`, `market_weekly_iv_${f}.csv`])
+        expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act4-content/${name}`))
   })
 
   it('the Act II content files are the corrected copies in docs/act2-content/', () => {
@@ -367,7 +382,7 @@ describe('content loads', () => {
   })
 
   it('Act III’s timeline is the scenario files’ 16 quarters, and a scenario with different quarters is refused (M11.3)', () => {
-    expect(CONTENT.quarters.slice(40)).toEqual(
+    expect(CONTENT.quarters.slice(40, 56)).toEqual(
       CONTENT.act3Scenarios.s0.quarterly.map((r) => r.quarter),
     )
     const bad = raw()

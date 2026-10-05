@@ -199,7 +199,7 @@ describe('calls with no scenario are unaffected (Act I, Act II, the stub)', () =
     for (let q = 0; q < 40; q++) expect(CONTENT.market[q]).toHaveLength(13)
     // The shared market ends at 2026Q4: Act III's prices live only in the scenarios.
     expect(CONTENT.market).toHaveLength(40)
-    expect(CONTENT.acts.filter((a) => a.act !== 3 && a.act !== 0)).toEqual([
+    expect(CONTENT.acts.filter((a) => a.act !== 3 && a.act !== 4 && a.act !== 0)).toEqual([
       { act: 1, firstQuarter: 0, lastQuarter: 22 },
       { act: 2, firstQuarter: 23, lastQuarter: 39 },
     ])

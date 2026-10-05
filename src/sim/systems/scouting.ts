@@ -9,7 +9,7 @@ import {
   CONTENT,
   quarterInputs,
   type PowerRegion,
-  type ScenarioId,
+  type MarketKey,
   POWER_REGIONS,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -20,7 +20,7 @@ import {
   type Site,
   type SiteOffer,
 } from '../state.ts'
-import { inAct2Rules } from '../state.ts'
+import { inAct2Rules, logQuarterLabel } from '../state.ts'
 import { recalcHeat } from './heat.ts'
 import { extraScoutOffers } from './hires.ts'
 import { scenarioOf } from './market.ts'
@@ -106,7 +106,7 @@ export function scoutAct2(state: GameState): SiteOffer[] {
 export function landUsdMw(
   quarter: number,
   region: PowerRegion,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const L = S.energizedLand
   const years = Object.keys(L.usdMwByYear).sort()
@@ -196,7 +196,7 @@ export function buyAct2Site(state: GameState, offer: SiteOffer): Site {
     siteKw: offer.kw ?? 0,
     region: offer.region ?? '',
     costUsd: offer.capexUsd,
-    quarter: CONTENT.quarters[site.readyQuarter] ?? '—',
+    quarter: logQuarterLabel(state, site.readyQuarter),
   })
   if (site.flaw) logEntry(state, 'log.site_flaw_act2', { flawAct2: site.flaw })
   return site

@@ -3,7 +3,7 @@
 // When the term ends, the next Plan phase has a renewal: negotiate it (see negotiation.ts),
 // or do nothing and the utility's opening offer (normal price × opening_mult) applies.
 // Texas can choose a fixed or an index contract; index prices move every quarter.
-import { BALANCE, CONTENT, type ScenarioId } from '../../content/index.ts'
+import { BALANCE, CONTENT, type MarketKey } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { substream, uniform } from '../rng.ts'
 import {
@@ -12,6 +12,7 @@ import {
   type GameState,
   type Site,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { scenarioOf } from './market.ts'
 import { getTier, isReady, normalPriceUsdKwh } from './sites.ts'
 
@@ -30,7 +31,7 @@ export function openingOfferUsdKwh(
   site: Site,
   quarter: number,
   type: ContractType,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   return (
     normalPriceUsdKwh(site, quarter, type, scenario) *
@@ -71,7 +72,7 @@ export function signContract(
     tier: site.tier,
     contract: type,
     price: `${(price * 100).toFixed(2)}¢`,
-    quarter: CONTENT.quarters[state.quarter + term] ?? '—',
+    quarter: logQuarterLabel(state, state.quarter + term),
   })
 }
 

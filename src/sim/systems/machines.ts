@@ -1,5 +1,5 @@
 // Machines: buying, selling and repairing batches ("lots") of identical units.
-import { CONTENT, type ScenarioId } from '../../content/index.ts'
+import { CONTENT, type MarketKey } from '../../content/index.ts'
 import type { Condition, GameState, MachineLot } from '../state.ts'
 import { getModel, leadTimeQuarters, scenarioOf, sellPrice } from './market.ts'
 
@@ -65,7 +65,7 @@ export function saleValueUsd(
   lot: MachineLot,
   count: number,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const price = sellPrice(getModel(lot.model)!, quarter, scenario)
   const broken = Math.min(count, lot.failed)
