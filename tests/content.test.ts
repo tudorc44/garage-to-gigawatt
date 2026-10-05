@@ -277,7 +277,7 @@ describe('content loads', () => {
   it('the Act IV market files are byte-identical copies of docs/act4-content/ (M27.3)', () => {
     const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
     for (const f of ['f1', 'f2', 'f3', 'f4'])
-      for (const name of [`market_iv_${f}.csv`, `market_weekly_iv_${f}.csv`])
+      for (const name of [`market_iv_${f}.csv`, `market_weekly_iv_${f}.csv`, `signals_iv_${f}.json`])
         expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act4-content/${name}`))
   })
 

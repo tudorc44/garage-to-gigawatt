@@ -217,6 +217,7 @@ market, the Signals panel and top strip; A4-02's three MW columns and the exposu
 draw and the three hidden files (`lunar_truth.json`, `orbit_truth_iv.json`, `reading_score_iv.json` first pass) with
 their guards; M28.4 `events_iv.json` (~45 cards) in the event engine; M28.5 `wildcards_iv.json` (2 of 6 drawn; the
 storm, grounding, Flag on the Pole and reactor-delay effects land with M29/M30's systems); M28.6 the M28 report.
+- **M28.1 done.** `tools/act4/signals.ts` (`npm run content:act4-signals`) writes `signals_iv_f1–f4.json` (README section; designed paths, decoys, triggers in `tools/act4/futures.ts`); `SIGNAL_IDS_IV`, `signalsIvFileSchema`, `CONTENT.signalsIv` (runtime fields only); hidden view `src/content/signalsHiddenIv.ts`; guard `tests/sim/act4Hidden.test.ts`; copy test extended.
 
 ## Milestone M26 (branch `m26`, from main at `f8cf61f`; cleanup)
 

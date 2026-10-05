@@ -12,6 +12,7 @@ default 14: no new research in this run).
 |---|---|---|
 | `market_iv_f1.csv` … `market_iv_f4.csv` | The four futures' quarterly markets, 2031Q1–2035Q4 (20 rows) | M27.3 |
 | `market_weekly_iv_f1.csv` … `market_weekly_iv_f4.csv` | Their weekly markets (13 weeks a quarter, 260 rows) | M27.3 |
+| `signals_iv_f1.json` … `signals_iv_f4.json` | The four futures' Signals: six indicators, 20 quarters, one decoy, the trigger (hidden fields included) | M28.1 |
 
 ## The market files (M27.3)
 
@@ -92,8 +93,31 @@ Each future's path is designed with anchors (act quarter, value), straight lines
 | `lunar_offtake_surface_usd_kg` / `_llo_usd_kg` | Offtake prices for water/propellant on the surface / in lunar orbit, $/kg | 8,000 → 3,500–7,000; 2,500 → 1,000–2,500 | designed **[D]** (no priced lunar offtake exists) |
 | `lunar_value_usd_t` | The market's value per tonne of lunar resource, for valuation | 2,000 → F1 2,500, F2 1,500, F3 4,000, F4 1,800 | designed **[D]** |
 
+## The Signals files (M28.1)
+
+**Generated, never hand-edited:** `npm run content:act4-signals` (`tools/act4/signals.ts`) writes both copies. Everything
+in them is **designed** (doc 33 §6.3 ⚙): Signals are authored per future, never derived from the market files.
+
+- **Six indicators** (0–100, 50 = the 2031 level or the plan): Launch Quotes (higher = launch getting cheaper faster than
+  planned), Fleet Reliability (higher = orbital GPUs failing faster than the 8%-a-year plan), Orbital Congestion, Ground
+  Power Squeeze, Compute Demand Gap (Act III's Revenue Gap, continued), Regulatory Climate.
+- **Per quarter:** the displayed value (the true path plus a seeded noise of −6…+6 that depends only on the indicator and
+  quarter, so it is the same in every future), the arrow (a move of 3 or more), and the sharp range Read the market reveals
+  (the true value ± 3, with a note).
+- **Day one:** every indicator shows 50 in 2031Q1–Q2 in every future; the paths bend 2–4 quarters before each future's
+  trigger (`tools/act4/futures.ts`, the same quarters as the market files).
+- **Hidden fields** (`future_name`, `reasoning`, `trigger`, `decoy`, `authoring_latent`, `role_tag`): the game's runtime
+  schema drops them; only tests, tools and `act4End.ts` read them, through `src/content/signalsHiddenIv.ts`.
+- **The triggers** (titles fictional): F1 "The Booster Hits Its Price" (2032Q3), F2 "The Constellation Cap" (2033Q1), F3
+  "The Cascade at 550" (2032Q4), F4 "The Queue Breaks" (2033Q2); each names its event card (`iv_f*_c4`, M28.4).
+- **The decoys** (doc 33 §6.3): F1 an Orbital Congestion scare (2031Q4–2032Q2, tempts the F3 reading); F2 a promotional
+  Launch Quotes spike (2032Q1–Q3, tempts F1); F3 a Regulatory Climate rule that dies (2031Q4–2032Q2, tempts F2); F4 a
+  Ground Power Squeeze spike on a record capacity auction (2031Q4–2032Q1, tempts F1).
+
 ## Data changes
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M28.1, 5 Oct 2026:** first version of the four Signals files. The market generator's trigger quarters moved into
+  `tools/act4/futures.ts` (shared); the market files regenerate byte-identically.
 - **M27.3, 5 Oct 2026:** first version of the eight market files.

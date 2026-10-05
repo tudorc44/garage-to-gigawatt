@@ -41,6 +41,10 @@ import marketWeeklyS0Raw from './market_weekly_s0.json' with { type: 'json' }
 import marketWeeklyS1Raw from './market_weekly_s1.json' with { type: 'json' }
 import marketWeeklyS2Raw from './market_weekly_s2.json' with { type: 'json' }
 import marketWeeklyS3Raw from './market_weekly_s3.json' with { type: 'json' }
+import signalsIvF1Raw from './signals_iv_f1.json' with { type: 'json' }
+import signalsIvF2Raw from './signals_iv_f2.json' with { type: 'json' }
+import signalsIvF3Raw from './signals_iv_f3.json' with { type: 'json' }
+import signalsIvF4Raw from './signals_iv_f4.json' with { type: 'json' }
 import marketIvF1Raw from './market_iv_f1.json' with { type: 'json' }
 import marketIvF2Raw from './market_iv_f2.json' with { type: 'json' }
 import marketIvF3Raw from './market_iv_f3.json' with { type: 'json' }
@@ -111,6 +115,10 @@ import {
   type CarriedQuarterRow,
   type MarketQuarterAct4Row,
   type MarketWeekAct4,
+  signalsIvFileSchema,
+  SIGNAL_IDS_IV,
+  type SignalIdIv,
+  type SignalIndicatorIv,
   signalsFileSchema,
   type SignalIndicator,
   type MarketQuarterAct3Row,
@@ -162,8 +170,16 @@ import {
 
 export { BALANCE }
 export { SCENARIO_IDS }
-export { FUTURE_IDS }
-export type { FutureId, Act4MarketKey, MarketKey, CarriedQuarterRow, MarketQuarterAct4Row }
+export { FUTURE_IDS, SIGNAL_IDS_IV }
+export type {
+  FutureId,
+  Act4MarketKey,
+  MarketKey,
+  CarriedQuarterRow,
+  MarketQuarterAct4Row,
+  SignalIdIv,
+  SignalIndicatorIv,
+}
 export {
   SIGNAL_IDS,
   type SignalId,
@@ -466,6 +482,11 @@ export interface Content {
   /** Act IV's 16 glided markets, one per Act III scenario × future (M27.3). Read through scenarioOf(state). */
   act4Markets: Record<Act4MarketKey, Act4Market>
   /**
+   * Act IV's authored Signals (M28.1), by future: the six indicators in file order, runtime fields only. The hidden
+   * authoring fields are never loaded here (see signalsHiddenIv.ts).
+   */
+  signalsIv: Record<FutureId, SignalIndicatorIv[]>
+  /**
    * Act III's authored Signals (M11.2), by scenario: the six indicators in file order, runtime fields
    * only. The hidden authoring fields are never loaded here (see signalsHidden.ts).
    */
@@ -694,6 +715,8 @@ export interface RawContent {
   act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
   /** The four Act IV futures' market files (M27.3). Optional: without them the timeline ends at 2030Q4. */
   act4Futures?: Record<FutureId, { quarterly: unknown; weekly: unknown }>
+  /** The four Act IV signals files (M28.1). Optional, with act4Futures. */
+  signalsIv?: Record<FutureId, unknown>
   /** The four Act III signals files (M11.2), by scenario. */
   signals: Record<ScenarioId, unknown>
   capital: unknown
@@ -1930,6 +1953,7 @@ export function parseContent(raw: RawContent): Content {
   // exist only inside a market key (marketWeek's key argument; reading an Act IV week without one throws).
   const act4Futures = {} as Content['act4Futures']
   const act4Markets = {} as Content['act4Markets']
+  const signalsIv = {} as Content['signalsIv']
   if (raw.act4Futures) {
     const lastAct2Week = market[acts[1].lastQuarter].at(-1)!
     const act3Last = acts.find((a) => a.act === 3)!
@@ -1999,6 +2023,18 @@ export function parseContent(raw: RawContent): Content {
         }
       }
     }
+    // Act IV's Signals (M28.1): runtime fields only; each file's future and its 20 quarters must match.
+    if (raw.signalsIv)
+      for (const f of FUTURE_IDS) {
+        const file = check(`signals_iv_${f}.json`, signalsIvFileSchema, raw.signalsIv[f])
+        if (!file) continue
+        if (file.future !== f)
+          problems.push(`signals_iv_${f}.json › future: is ${file.future}, expected ${f}`)
+        for (const ind of file.indicators)
+          if (ind.series.map((p) => p.quarter).join() !== labels.join())
+            problems.push(`signals_iv_${f}.json › ${ind.id}: quarters differ from Act IV's`)
+        signalsIv[f] = file.indicators
+      }
     if (labels.length > 0) {
       acts.push({
         act: 4,
@@ -2133,6 +2169,7 @@ export function parseContent(raw: RawContent): Content {
     act3Scenarios,
     act4Futures,
     act4Markets,
+    signalsIv,
     signals,
     hosting,
     projects,
@@ -2579,6 +2616,12 @@ export const CONTENT: Content = parseContent({
     f2: { quarterly: marketIvF2Raw, weekly: marketWeeklyIvF2Raw },
     f3: { quarterly: marketIvF3Raw, weekly: marketWeeklyIvF3Raw },
     f4: { quarterly: marketIvF4Raw, weekly: marketWeeklyIvF4Raw },
+  },
+  signalsIv: {
+    f1: signalsIvF1Raw,
+    f2: signalsIvF2Raw,
+    f3: signalsIvF3Raw,
+    f4: signalsIvF4Raw,
   },
   signals: {
     s0: signalsS0Raw,

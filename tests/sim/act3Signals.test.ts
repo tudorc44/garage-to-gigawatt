@@ -233,7 +233,8 @@ describe('the hidden signals fields never reach src/', () => {
     })
   }
   const src = sourceFiles(new URL('../../src', import.meta.url).pathname)
-  const hiddenModule = /(signals|rivals)Hidden\.ts$/
+  // (M28.1: and Act IV's hidden view, signalsHiddenIv.ts, guarded in tests/sim/act4Hidden.test.ts)
+  const hiddenModule = /(signals|rivals)Hidden(Iv)?\.ts$/
   // The one function allowed to read the hidden view: the end-of-act scenario reveal (M11.3).
   const revealModule = /systems[\\/]act3End\.ts$/
   const code = (file: string) =>
@@ -261,12 +262,12 @@ describe('the hidden signals fields never reach src/', () => {
       }
       if (!revealModule.test(file))
         for (const view of ['signalsHidden', 'rivalsHidden'])
-          expect(text, `${file} imports ${view}`).not.toContain(view)
+          expect(text, `${file} imports ${view}`).not.toMatch(new RegExp(`${view}(?!Iv)`))
     }
     // ...and the reveal file exists and is the only importer (of both hidden views, M11.5b).
     for (const view of ['signalsHidden', 'rivalsHidden']) {
       const importers = src.filter(
-        (f) => !hiddenModule.test(f) && code(f).includes(view),
+        (f) => !hiddenModule.test(f) && new RegExp(`${view}(?!Iv)`).test(code(f)),
       )
       expect(importers.map((f) => f.split('/').slice(-3).join('/'))).toEqual([
         'sim/systems/act3End.ts',

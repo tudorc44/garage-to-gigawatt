@@ -16,6 +16,7 @@
     "content:market": "node tools/market-csv-to-json.ts",
     "data:real": "node tools/data/real-market.ts",
     "content:act4": "node tools/act4/market.ts",
+    "content:act4-signals": "node tools/act4/signals.ts",
     "release-check": "node tools/release-check.ts",
     "sim": "node tools/sim-runner.ts"
   },

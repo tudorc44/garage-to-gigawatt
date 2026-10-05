@@ -1,0 +1,65 @@
+// M28 (doc 33 §6.8, IV-D33; act4-scope.md §3): Act IV's hidden data never reaches play. The hidden view of the Signals
+// (signalsHiddenIv.ts) is read only by act4End.ts (and tests/, tools/); CONTENT.signalsIv holds runtime fields only;
+// no file in src/ names an authoring field outside the hidden modules.
+import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { join } from 'node:path'
+import { describe, expect, it } from 'vitest'
+import { CONTENT, FUTURE_IDS, SIGNAL_IDS_IV } from '../../src/content/index.ts'
+import { signalsHiddenIv } from '../../src/content/signalsHiddenIv.ts'
+import { TRIGGER } from '../../tools/act4/futures.ts'
+
+function sourceFiles(dir: string): string[] {
+  return readdirSync(dir).flatMap((name) => {
+    const p = join(dir, name)
+    if (statSync(p).isDirectory()) return sourceFiles(p)
+    return /\.(ts|tsx)$/.test(name) ? [p] : []
+  })
+}
+const src = sourceFiles(new URL('../../src', import.meta.url).pathname)
+const code = (file: string) =>
+  readFileSync(file, 'utf8')
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/^\s*\/\/.*$/gm, '')
+const rel = (f: string) => f.split('/').slice(-3).join('/')
+
+describe('Act IV’s hidden Signals fields (M28.1)', () => {
+  it('signalsHiddenIv is imported by nothing in src/ but act4End.ts', () => {
+    const importers = src
+      .filter((f) => !/signalsHiddenIv\.ts$/.test(f) && /signalsHiddenIv/.test(code(f)))
+      .map(rel)
+    expect(importers.filter((f) => f !== 'sim/systems/act4End.ts')).toEqual([])
+  })
+
+  it('CONTENT.signalsIv holds runtime fields only (id, label, higher_means, series of displayed / arrow / sharp)', () => {
+    for (const f of FUTURE_IDS) {
+      expect(CONTENT.signalsIv[f].map((i) => i.id)).toEqual([...SIGNAL_IDS_IV])
+      for (const ind of CONTENT.signalsIv[f]) {
+        expect(Object.keys(ind).sort()).toEqual(['higher_means', 'id', 'label', 'series'])
+        for (const p of ind.series) expect(Object.keys(p).sort()).toEqual(['arrow', 'displayed', 'quarter', 'sharp'])
+      }
+    }
+  })
+
+  it('the files agree with doc 33: four futures, one decoy each, triggers in 2032Q2–2033Q3 on the market’s quarters', () => {
+    for (const f of FUTURE_IDS) {
+      const h = signalsHiddenIv(f)
+      expect(h.future).toBe(f)
+      expect(h.trigger.quarter >= '2032Q2' && h.trigger.quarter <= '2033Q3', f).toBe(true)
+      expect(h.trigger.quarter).toBe(CONTENT.quarters[56 + TRIGGER[f]])
+      expect(h.decoy.quarters.length).toBeGreaterThanOrEqual(2)
+      // the decoy indicator really spikes in its window (its latent peaks above its pre-window level)
+      const ind = h.indicators.find((i) => i.id === h.decoy.indicator)!
+      const firstQ = CONTENT.quarters.indexOf(h.decoy.quarters[0]) - 56
+      const peakQ = CONTENT.quarters.indexOf(h.decoy.peak_quarter) - 56
+      expect(ind.authoring_latent[peakQ]).toBeGreaterThan(ind.authoring_latent[firstQ - 1] + 10)
+    }
+  })
+
+  it('day one reads the same in every future: every indicator shows 50 in 2031Q1–Q2, and the Signals never move before 2031Q3', () => {
+    for (const f of FUTURE_IDS)
+      for (const ind of CONTENT.signalsIv[f]) {
+        expect(ind.series[0].displayed).toBe(50)
+        expect(ind.series[1].displayed).toBe(50)
+      }
+  })
+})

@@ -320,6 +320,35 @@ export type SignalIndicator = z.output<
   typeof signalsFileSchema
 >['indicators'][number]
 
+// ---------- signals_iv_f1–f4.json (M28.1: Act IV's authored Signals, doc 33 §6.3) ----------
+// The RUNTIME view only, as Act III's: zod drops the hidden authoring fields (future_name, reasoning, trigger, decoy,
+// authoring_latent, role_tag). The hidden view is src/content/signalsHiddenIv.ts (tests, tools and act4End only).
+export const SIGNAL_IDS_IV = [
+  'launch_quotes',
+  'fleet_reliability',
+  'orbital_congestion',
+  'ground_power_squeeze',
+  'compute_demand_gap',
+  'regulatory_climate',
+] as const
+export type SignalIdIv = (typeof SIGNAL_IDS_IV)[number]
+export const signalIdIv = z.enum(SIGNAL_IDS_IV)
+
+export const signalsIvFileSchema = z.object({
+  future: futureId,
+  indicators: z
+    .array(
+      z.object({
+        id: signalIdIv,
+        label: z.string().min(1),
+        higher_means: z.string().min(1),
+        series: z.array(signalPoint).min(1),
+      }),
+    )
+    .length(SIGNAL_IDS_IV.length),
+})
+export type SignalIndicatorIv = z.output<typeof signalsIvFileSchema>['indicators'][number]
+
 // ---------- rivals_act3.json (M11.5b: the five rivals in Act III, by scenario) ----------
 // RUNTIME view: name and the six numeric series by quarter. zod drops the rest (fate, reasoning,
 // d15_review, grounded): a rival's fate is part of the end-of-act reveal, so it is read only through

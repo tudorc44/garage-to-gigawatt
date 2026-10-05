@@ -17,6 +17,7 @@
 //   here: these files are each future's own path.
 // - Never in the files: the true orbital failure rate or useful life, the lunar grade (the hidden files, doc 33 §6.8).
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { TRIGGER } from './futures.ts'
 
 const ROOT = new URL('../../', import.meta.url)
 const FUTURES = ['f1', 'f2', 'f3', 'f4'] as const
@@ -28,11 +29,7 @@ const QUARTERS = Array.from({ length: 20 }, (_, n) => `${2031 + Math.floor(n / 4
 const N = QUARTERS.length
 /** The last act quarter every future shares exactly (2031Q4): the futures diverge from the next one. */
 const COMMON_UNTIL = 3
-/**
- * Each future's trigger quarter (act quarter; doc 33 §6.1: 2032Q2–2033Q3 = 5–10). Designed; the Signals files (M28)
- * build their windows on the same quarters. F1 2032Q3, F2 2033Q1, F3 2032Q4, F4 2033Q2.
- */
-export const TRIGGER: Record<Future, number> = { f1: 6, f2: 8, f3: 7, f4: 9 }
+// Each future's trigger quarter (act quarter) lives in futures.ts, shared with the Signals generator.
 
 // ---------------------------------------------------------------------------------------------------- csv io ----
 

@@ -1,0 +1,1521 @@
+{
+  "schema_version": 1,
+  "future": "f1",
+  "future_name": "On Schedule",
+  "reasoning": "Reusable heavy lift delivers: launch quotes fall on the published path and orbital fleets prove reliable, so orbit nears cost parity; by 2034 everyone floods the busy shell and rents fall.",
+  "DO_NOT_EXPOSE": "future_name, reasoning, trigger, decoy, authoring_latent and role tags are hidden: only the chapter report reveals them.",
+  "trigger": {
+    "quarter": "2032Q3",
+    "title": "The Booster Hits Its Price",
+    "card_id": "iv_f1_c4",
+    "signals_start_quarter": "2031Q3",
+    "quarters_of_warning": 4
+  },
+  "decoy": {
+    "indicator": "orbital_congestion",
+    "quarters": [
+      "2031Q4",
+      "2032Q1",
+      "2032Q2"
+    ],
+    "peak_quarter": "2032Q1",
+    "reason": "A spent rocket stage breaks up in a lower orbit and sets off a run of conjunction alerts. The fragments are low enough to decay within months; nothing above them is touched.",
+    "tell": "Congestion jumps while Launch Quotes keep improving and Fleet Reliability holds: a real cascade would drag reliability and insurance down with it."
+  },
+  "indicators": [
+    {
+      "id": "launch_quotes",
+      "label": "Launch Quotes",
+      "higher_means": "third-party launch quotes falling faster than planned (cheaper launch ahead; 50 = on plan)",
+      "authoring_latent": [
+        50,
+        50,
+        54,
+        58,
+        65,
+        73,
+        80,
+        80,
+        79,
+        79,
+        78,
+        78,
+        77,
+        77,
+        76,
+        76,
+        75,
+        75,
+        74,
+        74
+      ],
+      "series": [
+        {
+          "quarter": "2031Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Quotes across the providers, read against plan: 47–53. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2031Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Quotes across the providers, read against plan: 47–53. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2031Q3",
+          "displayed": 57,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Quotes across the providers, read against plan: 51–57. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2031Q4",
+          "displayed": 57,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 55,
+            "high": 61,
+            "note": "Quotes across the providers, read against plan: 55–61. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q1",
+          "displayed": 60,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 62,
+            "high": 68,
+            "note": "Quotes across the providers, read against plan: 62–68. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q2",
+          "displayed": 77,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 70,
+            "high": 76,
+            "note": "Quotes across the providers, read against plan: 70–76. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q3",
+          "displayed": 80,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 77,
+            "high": 83,
+            "note": "Quotes across the providers, read against plan: 77–83. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q4",
+          "displayed": 77,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 77,
+            "high": 83,
+            "note": "Quotes across the providers, read against plan: 77–83. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q1",
+          "displayed": 82,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 76,
+            "high": 82,
+            "note": "Quotes across the providers, read against plan: 76–82. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q2",
+          "displayed": 83,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 76,
+            "high": 82,
+            "note": "Quotes across the providers, read against plan: 76–82. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q3",
+          "displayed": 74,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 75,
+            "high": 81,
+            "note": "Quotes across the providers, read against plan: 75–81. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q4",
+          "displayed": 78,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 75,
+            "high": 81,
+            "note": "Quotes across the providers, read against plan: 75–81. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q1",
+          "displayed": 82,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 74,
+            "high": 80,
+            "note": "Quotes across the providers, read against plan: 74–80. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q2",
+          "displayed": 74,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 74,
+            "high": 80,
+            "note": "Quotes across the providers, read against plan: 74–80. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q3",
+          "displayed": 74,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 73,
+            "high": 79,
+            "note": "Quotes across the providers, read against plan: 73–79. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q4",
+          "displayed": 74,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 73,
+            "high": 79,
+            "note": "Quotes across the providers, read against plan: 73–79. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q1",
+          "displayed": 75,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 72,
+            "high": 78,
+            "note": "Quotes across the providers, read against plan: 72–78. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q2",
+          "displayed": 74,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 72,
+            "high": 78,
+            "note": "Quotes across the providers, read against plan: 72–78. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q3",
+          "displayed": 73,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 71,
+            "high": 77,
+            "note": "Quotes across the providers, read against plan: 71–77. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q4",
+          "displayed": 76,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 71,
+            "high": 77,
+            "note": "Quotes across the providers, read against plan: 71–77. Above 50, launch is getting cheaper faster than planned."
+          }
+        }
+      ]
+    },
+    {
+      "id": "fleet_reliability",
+      "label": "Fleet Reliability",
+      "higher_means": "industry-reported orbital GPU failures running worse than the 8%-a-year planning assumption (50 = on plan)",
+      "authoring_latent": [
+        50,
+        50,
+        48,
+        46,
+        44,
+        43,
+        41,
+        40,
+        38,
+        38,
+        38,
+        39,
+        39,
+        39,
+        39,
+        39,
+        39,
+        40,
+        40,
+        40
+      ],
+      "series": [
+        {
+          "quarter": "2031Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Operators' and regulators' failure reports, read together: 47–53. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2031Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Operators' and regulators' failure reports, read together: 47–53. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2031Q3",
+          "displayed": 54,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "Operators' and regulators' failure reports, read together: 45–51. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2031Q4",
+          "displayed": 51,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 43,
+            "high": 49,
+            "note": "Operators' and regulators' failure reports, read together: 43–49. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q1",
+          "displayed": 41,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 41,
+            "high": 47,
+            "note": "Operators' and regulators' failure reports, read together: 41–47. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q2",
+          "displayed": 46,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 40,
+            "high": 46,
+            "note": "Operators' and regulators' failure reports, read together: 40–46. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q3",
+          "displayed": 38,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 38,
+            "high": 44,
+            "note": "Operators' and regulators' failure reports, read together: 38–44. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2032Q4",
+          "displayed": 38,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 37,
+            "high": 43,
+            "note": "Operators' and regulators' failure reports, read together: 37–43. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q1",
+          "displayed": 34,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 35,
+            "high": 41,
+            "note": "Operators' and regulators' failure reports, read together: 35–41. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q2",
+          "displayed": 42,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 35,
+            "high": 41,
+            "note": "Operators' and regulators' failure reports, read together: 35–41. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q3",
+          "displayed": 39,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 35,
+            "high": 41,
+            "note": "Operators' and regulators' failure reports, read together: 35–41. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2033Q4",
+          "displayed": 40,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 36,
+            "high": 42,
+            "note": "Operators' and regulators' failure reports, read together: 36–42. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q1",
+          "displayed": 38,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 36,
+            "high": 42,
+            "note": "Operators' and regulators' failure reports, read together: 36–42. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q2",
+          "displayed": 37,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 36,
+            "high": 42,
+            "note": "Operators' and regulators' failure reports, read together: 36–42. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q3",
+          "displayed": 33,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 36,
+            "high": 42,
+            "note": "Operators' and regulators' failure reports, read together: 36–42. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2034Q4",
+          "displayed": 34,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 36,
+            "high": 42,
+            "note": "Operators' and regulators' failure reports, read together: 36–42. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q1",
+          "displayed": 45,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 36,
+            "high": 42,
+            "note": "Operators' and regulators' failure reports, read together: 36–42. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q2",
+          "displayed": 46,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 37,
+            "high": 43,
+            "note": "Operators' and regulators' failure reports, read together: 37–43. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q3",
+          "displayed": 41,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 37,
+            "high": 43,
+            "note": "Operators' and regulators' failure reports, read together: 37–43. Above 50, hardware in orbit is failing faster than planned."
+          }
+        },
+        {
+          "quarter": "2035Q4",
+          "displayed": 44,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 37,
+            "high": 43,
+            "note": "Operators' and regulators' failure reports, read together: 37–43. Above 50, hardware in orbit is failing faster than planned."
+          }
+        }
+      ]
+    },
+    {
+      "id": "orbital_congestion",
+      "label": "Orbital Congestion",
+      "higher_means": "more conjunction alerts and avoidance manoeuvres in the busy shells (50 = 2031 levels)",
+      "authoring_latent": [
+        50,
+        50,
+        51,
+        66,
+        75,
+        68,
+        54,
+        55,
+        56,
+        58,
+        60,
+        62,
+        64,
+        66,
+        68,
+        70,
+        72,
+        74,
+        76,
+        78
+      ],
+      "series": [
+        {
+          "quarter": "2031Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 47–53. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2031Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 47–53. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2031Q3",
+          "displayed": 52,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 48–54. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2031Q4",
+          "displayed": 60,
+          "arrow": "up",
+          "role_tag": "decoy",
+          "sharp": {
+            "low": 63,
+            "high": 69,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 63–69. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2032Q1",
+          "displayed": 79,
+          "arrow": "up",
+          "role_tag": "decoy",
+          "sharp": {
+            "low": 72,
+            "high": 78,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 72–78. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2032Q2",
+          "displayed": 64,
+          "arrow": "down",
+          "role_tag": "decoy",
+          "sharp": {
+            "low": 65,
+            "high": 71,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 65–71. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2032Q3",
+          "displayed": 49,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 51–57. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2032Q4",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 52,
+            "high": 58,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 52–58. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2033Q1",
+          "displayed": 58,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 53,
+            "high": 59,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 53–59. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2033Q2",
+          "displayed": 60,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 55,
+            "high": 61,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 55–61. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2033Q3",
+          "displayed": 66,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 57,
+            "high": 63,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 57–63. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2033Q4",
+          "displayed": 66,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 59,
+            "high": 65,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 59–65. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2034Q1",
+          "displayed": 68,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 61,
+            "high": 67,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 61–67. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2034Q2",
+          "displayed": 72,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 63,
+            "high": 69,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 63–69. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2034Q3",
+          "displayed": 62,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 65,
+            "high": 71,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 65–71. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2034Q4",
+          "displayed": 76,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 67,
+            "high": 73,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 67–73. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2035Q1",
+          "displayed": 72,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 69,
+            "high": 75,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 69–75. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2035Q2",
+          "displayed": 79,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 71,
+            "high": 77,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 71–77. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2035Q3",
+          "displayed": 80,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 73,
+            "high": 79,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 73–79. Above 50, traffic is outgrowing 2031's."
+          }
+        },
+        {
+          "quarter": "2035Q4",
+          "displayed": 80,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 75,
+            "high": 81,
+            "note": "Conjunction alerts and manoeuvres in the busy shells: 75–81. Above 50, traffic is outgrowing 2031's."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ground_power_squeeze",
+      "label": "Ground Power Squeeze",
+      "higher_means": "scarcer, dearer ground power: capacity prices, grid queues, moratoria (50 = 2031 levels)",
+      "authoring_latent": [
+        50,
+        50,
+        52,
+        54,
+        56,
+        58,
+        60,
+        60,
+        59,
+        59,
+        59,
+        58,
+        58,
+        56,
+        54,
+        52,
+        50,
+        48,
+        46,
+        44
+      ],
+      "series": [
+        {
+          "quarter": "2031Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 47–53. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2031Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 47–53. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2031Q3",
+          "displayed": 49,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 49–55. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2031Q4",
+          "displayed": 53,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 51–57. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2032Q1",
+          "displayed": 51,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 53,
+            "high": 59,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 53–59. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2032Q2",
+          "displayed": 62,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 55,
+            "high": 61,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 55–61. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2032Q3",
+          "displayed": 64,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 57,
+            "high": 63,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 57–63. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2032Q4",
+          "displayed": 58,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 57,
+            "high": 63,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 57–63. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2033Q1",
+          "displayed": 55,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 56,
+            "high": 62,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 56–62. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2033Q2",
+          "displayed": 53,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 56,
+            "high": 62,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 56–62. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2033Q3",
+          "displayed": 59,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 56,
+            "high": 62,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 56–62. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2033Q4",
+          "displayed": 56,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 55,
+            "high": 61,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 55–61. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2034Q1",
+          "displayed": 56,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 55,
+            "high": 61,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 55–61. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2034Q2",
+          "displayed": 50,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 53,
+            "high": 59,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 53–59. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2034Q3",
+          "displayed": 59,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 51–57. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2034Q4",
+          "displayed": 52,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 49–55. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2035Q1",
+          "displayed": 47,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 47–53. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2035Q2",
+          "displayed": 50,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 45–51. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2035Q3",
+          "displayed": 48,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 43,
+            "high": 49,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 43–49. Above 50, ground power is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2035Q4",
+          "displayed": 47,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 41,
+            "high": 47,
+            "note": "Capacity prices, queue lengths and moratoria, read together: 41–47. Above 50, ground power is getting scarcer."
+          }
+        }
+      ]
+    },
+    {
+      "id": "compute_demand_gap",
+      "label": "Compute Demand Gap",
+      "higher_means": "a wider gap between AI revenue and AI capex (bearish for rents; 50 = 2031 trend)",
+      "authoring_latent": [
+        50,
+        50,
+        49,
+        49,
+        48,
+        48,
+        47,
+        47,
+        46,
+        46,
+        46,
+        47,
+        47,
+        47,
+        47,
+        47,
+        47,
+        48,
+        48,
+        48
+      ],
+      "series": [
+        {
+          "quarter": "2031Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "AI revenue against AI capex: 47–53. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2031Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "AI revenue against AI capex: 47–53. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2031Q3",
+          "displayed": 48,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 46,
+            "high": 52,
+            "note": "AI revenue against AI capex: 46–52. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2031Q4",
+          "displayed": 45,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 46,
+            "high": 52,
+            "note": "AI revenue against AI capex: 46–52. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2032Q1",
+          "displayed": 52,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "AI revenue against AI capex: 45–51. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2032Q2",
+          "displayed": 46,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "AI revenue against AI capex: 45–51. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2032Q3",
+          "displayed": 41,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2032Q4",
+          "displayed": 41,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2033Q1",
+          "displayed": 44,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 43,
+            "high": 49,
+            "note": "AI revenue against AI capex: 43–49. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2033Q2",
+          "displayed": 46,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 43,
+            "high": 49,
+            "note": "AI revenue against AI capex: 43–49. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2033Q3",
+          "displayed": 47,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 43,
+            "high": 49,
+            "note": "AI revenue against AI capex: 43–49. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2033Q4",
+          "displayed": 52,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2034Q1",
+          "displayed": 52,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2034Q2",
+          "displayed": 41,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2034Q3",
+          "displayed": 42,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2034Q4",
+          "displayed": 46,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2035Q1",
+          "displayed": 49,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 44,
+            "high": 50,
+            "note": "AI revenue against AI capex: 44–50. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2035Q2",
+          "displayed": 53,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "AI revenue against AI capex: 45–51. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2035Q3",
+          "displayed": 47,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "AI revenue against AI capex: 45–51. Above 50, spending is running ahead of what it earns."
+          }
+        },
+        {
+          "quarter": "2035Q4",
+          "displayed": 51,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "AI revenue against AI capex: 45–51. Above 50, spending is running ahead of what it earns."
+          }
+        }
+      ]
+    },
+    {
+      "id": "regulatory_climate",
+      "label": "Regulatory Climate",
+      "higher_means": "tighter orbital regulation: licensing backlog, brightness and debris rule-making (50 = 2031 levels)",
+      "authoring_latent": [
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        51,
+        51,
+        51,
+        51,
+        51,
+        51,
+        51,
+        51,
+        51,
+        52,
+        52,
+        52,
+        52,
+        52
+      ],
+      "series": [
+        {
+          "quarter": "2031Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Licensing backlog and the rules in the works: 47–53. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2031Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Licensing backlog and the rules in the works: 47–53. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2031Q3",
+          "displayed": 54,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Licensing backlog and the rules in the works: 47–53. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2031Q4",
+          "displayed": 53,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Licensing backlog and the rules in the works: 47–53. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2032Q1",
+          "displayed": 48,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Licensing backlog and the rules in the works: 47–53. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2032Q2",
+          "displayed": 56,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Licensing backlog and the rules in the works: 47–53. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2032Q3",
+          "displayed": 53,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2032Q4",
+          "displayed": 55,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2033Q1",
+          "displayed": 56,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2033Q2",
+          "displayed": 45,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2033Q3",
+          "displayed": 56,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2033Q4",
+          "displayed": 46,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2034Q1",
+          "displayed": 53,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2034Q2",
+          "displayed": 53,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2034Q3",
+          "displayed": 57,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Licensing backlog and the rules in the works: 48–54. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2034Q4",
+          "displayed": 54,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Licensing backlog and the rules in the works: 49–55. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2035Q1",
+          "displayed": 56,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Licensing backlog and the rules in the works: 49–55. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2035Q2",
+          "displayed": 50,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Licensing backlog and the rules in the works: 49–55. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2035Q3",
+          "displayed": 47,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Licensing backlog and the rules in the works: 49–55. Above 50, orbit is getting harder to license."
+          }
+        },
+        {
+          "quarter": "2035Q4",
+          "displayed": 55,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Licensing backlog and the rules in the works: 49–55. Above 50, orbit is getting harder to license."
+          }
+        }
+      ]
+    }
+  ]
+}
