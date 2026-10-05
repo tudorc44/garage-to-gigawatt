@@ -37,6 +37,15 @@ const KNOBS: Record<string, (v: number) => void> = {
       for (const q of CONTENT.act3Scenarios[id].inputs)
         if (q.act3 && q.act3.nuclearPpaUsdMwh !== null) q.act3.nuclearPpaUsdMwh += v
   },
+  // M23.3 (DT, the robustness sweep; report only): SOFR shifted by v bp in every Act II quarter, and the HY spread by v bp
+  // in every Act III scenario quarter. In this process only; nothing written.
+  SOFR2: (v) => {
+    for (const q of CONTENT.act2Market) q.sofrPct += v / 100
+  },
+  HY3: (v) => {
+    for (const id of SCENARIO_IDS)
+      for (const q of CONTENT.act3Scenarios[id].inputs) q.hySpreadBps += v
+  },
 }
 
 /** Applies `spec` (comma-separated name=value); returns the knobs set, for the report. */

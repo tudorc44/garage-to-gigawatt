@@ -57,6 +57,7 @@ import {
   breakdown,
   type Breakdown,
 } from './valuation-breakdown.ts'
+import { applyKnobs } from './act3Knobs.ts'
 
 const args = process.argv.slice(2)
 // The prologue's runs and checks (Alpha 0.3 §5) have their own runner.
@@ -74,6 +75,9 @@ const argValue = (flag: string, fallback: string) => {
   return i >= 0 ? args[i + 1] : fallback
 }
 const SEEDS = Number(argValue('--seeds', '50'))
+// M23.3: a robustness run sets knobs for this process only (tools/act3Knobs.ts), e.g. --knobs SOFR2=100 or HY3=-150
+const KNOBS_SET = applyKnobs(argValue('--knobs', ''))
+if (KNOBS_SET.length > 0) console.log(`Knobs (this run only): ${KNOBS_SET.join(', ')}`)
 /**
  * Scope 0.2 §5 good path at 2026Q4 (also the preset's yardstick, owner M7.0 answer A6), and the great
  * path's 2025 peak band. Revised by the owner's A1 rule (M7.0): sign-then-raise ended at $412M, under
