@@ -41,6 +41,8 @@ export function TitleScreen(props: {
   preview?: ComponentChildren
   /** Test builds only (M18.4, A3-12): "Start at Act III (2027)" with the preset cards, beside the other starts. */
   act3Start?: ComponentChildren
+  /** M32.4 (A4-13): "Start at Act IV (2031)" with the three preset companies. */
+  act4Start?: ComponentChildren
   /** Test builds only (M18.4, A3-12): Scenario Mode (locked or unlocked), opened from the title menu. */
   scenarioMode?: ComponentChildren
 }) {
@@ -166,6 +168,7 @@ export function TitleScreen(props: {
                 </div>
               </div>
               {props.act3Start}
+              {props.act4Start}
               <button
                 type="button"
                 class="btn btn-ghost"

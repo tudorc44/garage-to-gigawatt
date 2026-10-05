@@ -10,6 +10,8 @@ export interface Settings {
    * Mode. Per device, with the settings.
    */
   act3Finished: boolean
+  /** M32.4: an Act IV chapter report was reached on this device (survived or out): unlocks Act IV's Scenario Mode. */
+  act4Finished: boolean
 }
 
 const KEY = 'g2g.settings'
@@ -17,6 +19,7 @@ export const DEFAULT_SETTINGS: Settings = {
   sound: true,
   speed: 1,
   act3Finished: false,
+  act4Finished: false,
 }
 
 export function readSettings(): Settings {
@@ -28,6 +31,7 @@ export function readSettings(): Settings {
       sound: typeof s.sound === 'boolean' ? s.sound : DEFAULT_SETTINGS.sound,
       speed: s.speed === 2 || s.speed === 4 ? s.speed : 1,
       act3Finished: s.act3Finished === true,
+      act4Finished: s.act4Finished === true,
     }
   } catch {
     return { ...DEFAULT_SETTINGS }

@@ -2462,6 +2462,11 @@ export function act3Finished(state: GameState): boolean {
   return inActIII(state) && !!state.act3End
 }
 
+/** M32.4: an Act IV game has reached its chapter report (survived or out): unlocks Act IV's Scenario Mode. */
+export function act4FinishedSel(state: GameState): boolean {
+  return inActIV(state) && !!state.act4End
+}
+
 /**
  * The standby liquidity facility block on Capital (M18.2): its status (none, or available until a quarter with the
  * undrawn and drawn amounts and the locked spread), what arranging it would cost or why it can't, and whether it can

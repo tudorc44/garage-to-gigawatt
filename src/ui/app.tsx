@@ -8,6 +8,7 @@ import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
 import {
   act3Finished,
+  act4FinishedSel,
   bandwidthMax,
   quarterName,
 } from '../sim/selectors.ts'
@@ -44,7 +45,7 @@ import {
 import { NavContext } from './components/frame.tsx'
 import type { Section } from './screens/Sections.tsx'
 import { readSettings, writeSettings } from '../platform/settings.ts'
-import type { ScenarioId } from '../content/index.ts'
+import type { FutureId, ScenarioId } from '../content/index.ts'
 import { play, setSfxSettings } from './audio/sfx.ts'
 import { soundsFor } from './audio/director.ts'
 
@@ -184,6 +185,9 @@ export function App() {
     // M18.4 (DT): reaching an Act III chapter report (survived or out) unlocks Scenario Mode on this device.
     if (s && act3Finished(s) && !readSettings().act3Finished)
       writeSettings({ ...readSettings(), act3Finished: true })
+    // M32.4: reaching an Act IV chapter report unlocks Act IV's Scenario Mode.
+    if (s && act4FinishedSel(s) && !readSettings().act4Finished)
+      writeSettings({ ...readSettings(), act4Finished: true })
   }
   const saves: SaveApi = {
     current: () => ref.current,
@@ -289,7 +293,11 @@ export function App() {
    * M27.6: an end-of-Act III company enters Act IV (the drawn future; in a test build only, the tester's ?future=),
    * and the Act IV intro shows first. `quickStart` marks a test build's quick-start company.
    */
-  const enterAct4 = (end: GameState, quickStart = false) => {
+  const enterAct4 = (
+    end: GameState,
+    quickStart = false,
+    opts: { preset?: string; scenarioMode?: FutureId } = {},
+  ) => {
     const forced =
       import.meta.env.MODE !== 'production'
         ? forcedFuture(window.location.search)
@@ -297,8 +305,14 @@ export function App() {
     setShowEnd(false)
     commit(
       toAct4(end, {
-        ...(forced ? { future: forced, forced: true } : {}),
+        // M32.4: Scenario Mode plays the chosen future openly; else a tester's ?future=, else the draw.
+        ...(opts.scenarioMode
+          ? { future: opts.scenarioMode, scenarioMode: true }
+          : forced
+            ? { future: forced, forced: true }
+            : {}),
         ...(quickStart ? { quickStart: true } : {}),
+        ...(opts.preset ? { preset: opts.preset } : {}),
       }),
     )
     setAct4Intro(true)
@@ -375,12 +389,22 @@ export function App() {
           )
         }
         act3Start={entry && <entry.StartAct3 onReady={(end) => enterAct3(end)} />}
+        act4Start={entry4 && <entry4.StartAct4 onReady={(end, preset) => enterAct4(end, false, { preset })} />}
         scenarioMode={
           entry && (
-            <entry.ScenarioMode
-              unlocked={readSettings().act3Finished}
-              onReady={(end, scenario) => enterAct3(end, scenario)}
-            />
+            <>
+              <entry.ScenarioMode
+                unlocked={readSettings().act3Finished}
+                onReady={(end, scenario) => enterAct3(end, scenario)}
+              />
+              {/* M32.4: Act IV's, unlocked by an Act IV finish */}
+              {entry4 && (
+                <entry4.ScenarioModeAct4
+                  unlocked={readSettings().act4Finished}
+                  onReady={(end, preset, future) => enterAct4(end, false, { preset, scenarioMode: future })}
+                />
+              )}
+            </>
           )
         }
       />

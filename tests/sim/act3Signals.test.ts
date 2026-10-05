@@ -314,6 +314,8 @@ describe('the hidden signals fields never reach src/', () => {
       }
       // M27.6: the Act IV quick starts (test builds only) play their company through Act III on a fixed scenario.
       if (/ui[\\/]act4QuickStart\.ts$/.test(file)) continue
+      // M32.4: so do Act IV's presets (their recipe: a bot, a seed and an Act III scenario played from 2017).
+      if (/ui[\\/]act4PresetStart\.ts$/.test(file)) continue
       expect(code(file), `${file} uses toAct3`).not.toMatch(/\btoAct3\b/)
     }
   })

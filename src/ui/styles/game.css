@@ -1196,8 +1196,11 @@ td.wrap {
 }
 
 /* ===== Act IV: the chapter report's reveal timeline (M32.2, A4-11) ===== */
-.act4-reveal section {
+.act4-reveal section,
+.act4-reveal > table {
   overflow-x: auto;
+  /* keep their height in the card's column (the card scrolls instead of squeezing them, as the intro's boxes) */
+  flex: none;
 }
 .act4-timeline th,
 .act4-timeline td {
@@ -1215,6 +1218,7 @@ td.wrap {
 /* ===== Act IV: the campaign finale (M32.3, A4-12) ===== */
 .act4-finale section {
   overflow-x: auto;
+  flex: none;
 }
 .epilogue-line {
   font-style: italic;

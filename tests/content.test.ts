@@ -286,7 +286,9 @@ describe('content loads', () => {
       // M30.1: the lunar content
       'lunar_iv.json', 'lunar_claims_iv.json',
       // M31.1: money and rivals
-      'capital_iv.json', 'hires_iv.json', 'rivals_iv.json'])
+      'capital_iv.json', 'hires_iv.json', 'rivals_iv.json',
+      // M32.4: the presets
+      'presets_act4.json'])
       expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act4-content/${name}`))
   })
 

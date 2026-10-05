@@ -1526,6 +1526,10 @@ export function toAct4(
     act4Seed?: number
     /** A test build's quick-start company (marked so production refuses its saves). */
     quickStart?: boolean
+    /** M32.4: Scenario Mode: the player chose `future` openly (the finale says "scenario known"). */
+    scenarioMode?: boolean
+    /** M32.4: "Start at Act IV": the preset's id. */
+    preset?: string
   } = {},
 ): GameState {
   const base = options.act4Seed === undefined ? state : { ...state, act4Seed: options.act4Seed }
@@ -1535,6 +1539,8 @@ export function toAct4(
     s.rng = substream(options.act4Seed, 'act4_main').rng
   if (options.forced && options.future) s.futureForced = true
   if (options.quickStart) s.act4QuickStart = true
+  if (options.scenarioMode && options.future) s.act4ScenarioMode = true
+  if (options.preset) s.act4Preset = options.preset
   return s
 }
 

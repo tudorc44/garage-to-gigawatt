@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "schema": "presets_act4/1",
+    "doc33": "§3.4 (three 2030Q4 companies, each a real bot + seed + Act III scenario played from 2017; values set by the sim)",
+    "note": "Written by npm run content:act4-presets (tools/act4/presets.ts): the first company in the scan order (sim-runner’s Act II bots × seeds 1-20 × scenarios s0-s3) that fits each description. Figures are that company’s at 2030Q4."
+  },
+  "presets": [
+    {
+      "id": "fortress",
+      "bot": "texas-shell",
+      "seed": 1,
+      "act3_scenario": "s0",
+      "valuation_usd_m": 602.8,
+      "founder_net_worth_usd_m": 295.1,
+      "cash_usd_m": 14.3,
+      "debt_usd_m": 0,
+      "energized_mw": 118.1,
+      "contracted_mw": 25,
+      "cloud_mw": 0,
+      "sites_with_power": 4,
+      "rating": "BBB"
+    },
+    {
+      "id": "neocloud",
+      "bot": "overleveraged",
+      "seed": 1,
+      "act3_scenario": "s0",
+      "valuation_usd_m": 19775.4,
+      "founder_net_worth_usd_m": 6267.2,
+      "cash_usd_m": 5060.5,
+      "debt_usd_m": 462.9,
+      "energized_mw": 121.1,
+      "contracted_mw": 121,
+      "cloud_mw": 121,
+      "sites_with_power": 4,
+      "rating": "BB"
+    },
+    {
+      "id": "ridge",
+      "bot": "asic-retirer",
+      "seed": 10,
+      "act3_scenario": "s0",
+      "valuation_usd_m": 14,
+      "founder_net_worth_usd_m": 5.3,
+      "cash_usd_m": 14,
+      "debt_usd_m": 0,
+      "energized_mw": 0.1,
+      "contracted_mw": 0,
+      "cloud_mw": 0,
+      "sites_with_power": 1,
+      "rating": "B+"
+    }
+  ]
+}

@@ -19,10 +19,30 @@ valuation, founder net worth, cash, debt, energized MW, contracted MW, rating, w
 theatres, one balance sheet" (Ground, Orbit, Moon, one line each); the foot ("20 quarters, 2031Q1 to 2035Q4") and
 "Enter 2031 →".
 
-## Act IV chapter report (M27.6 stub, `screens/Act4Entry.tsx` › `Act4Chapter`; M32 builds A4-11 and A4-12)
+## A4-11 Act IV chapter report with the reveal (M32.2, `screens/Act4Reveal.tsx`)
 
-The end-card chapter panel: label, title ("2035: the race is run", or "Out of the race" after a game over), a short table
-(last quarter, founder net worth, growth since 2031) and "Back to the title screen". It shows nothing of the future.
+The end-card chapter panel (it scrolls; its sections keep their height): label and title ("2035: the race is run", or
+"Out of the race"); **the future** (its name as the heading, a one-line lead, when it turned and how, the decoy's window
+and what it really was); **your reading** (score and title, a wording line, a 20-quarter timeline with three rows:
+quarter, what the future wanted ▲ ▼ ·, how you leaned, the trigger quarter outlined; it scrolls inside its section; a line
+counting moves that fitted and followed the decoy); **the ice** (the grade, then each of your sites: your last estimate and
+its category beside what was there); **the fleet** (the future's true failure rate and life beside your telemetry's
+average); a table (last quarter, net worth, growth, career title, frontier title); **the rivals** (one line each, the
+"illustrations, not predictions" note); "Back to the title screen" and "The finale →".
+
+## A4-12 the campaign finale (M32.3, `screens/Act4Finale.tsx`)
+
+The same card: "The campaign", "The career" (or "cut short"), a "scenario known" note when the future was chosen; the
+ledger (how it began, then one row per act: act, year, net worth, megawatts, title); the career multiple ("$10.0K →
+$X: N×"), the megawatt line and the frontier; 2–5 italic epilogue lines; "Thank you for playing." and "Back to the title
+screen".
+
+## A4-13 Start at Act IV and Scenario Mode (M32.4, `screens/Act4Entry.tsx`)
+
+New career → a "Start at Act IV (2031)" card under Act III's (the same shape: three preset cards with valuation, MW,
+debt, rating and a line; "Start in 2031 →"; "Playing 2017–2030…" while the bot plays). Scenario Mode's panel shows Act IV's
+under Act III's: locked ("Finish Act IV once to unlock.") or the preset cards, the four futures by name with a line each,
+and "Start in 2031 →".
 
 ## "Continue to Act IV" (M27.6, `screens/Act3Reveal.tsx`)
 
