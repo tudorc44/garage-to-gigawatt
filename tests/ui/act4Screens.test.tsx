@@ -25,7 +25,7 @@ const act = () => null
 const noop = () => {}
 const SECTIONS: Section[] = ['projects', 'contracts', 'government', 'fleet', 'capital', 'people', 'league', 'log']
 /** The futures' working names (doc 33 §6.2): no screen during play may show them. */
-const NAMES = /On Schedule|The Wall|Closed Shell|Cheap Ground/
+const NAMES = /On Schedule|The Wall|Closed Shell|Cheap Ground|decoy|false alarm/i
 
 function toReport(s: GameState): GameState {
   const step = (a: Parameters<typeof applyAction>[1]) => {

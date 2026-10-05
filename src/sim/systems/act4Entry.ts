@@ -63,6 +63,7 @@ export function enterAct4(state: GameState, future: FutureId): GameState {
   s.phase = 'plan'
   s.futureId = future
   s.act4Entry = entry
+  s.act4SignalReads = []
 
   // Dropped: Act III-only state (doc 33 §3.2). The Signals reads and the move log live on inside act3End.
   delete s.act3Wildcards

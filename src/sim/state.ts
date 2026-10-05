@@ -8,6 +8,7 @@ import {
   type FutureId,
   type ScenarioId,
   type SignalId,
+  type SignalIdIv,
 } from '../content/index.ts'
 import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
@@ -881,6 +882,8 @@ export interface GameState {
   act4Entry?: Act4Entry
   /** Act IV (M27.5): the end record, stored at 2035Q4's end (or a game over in Act IV). Absent until then. */
   act4End?: Act4End
+  /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
+  act4SignalReads?: { quarter: string; indicator: SignalIdIv }[]
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */

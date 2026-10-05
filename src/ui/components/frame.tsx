@@ -28,7 +28,7 @@ import {
   ratingBacklogView,
   topHeat,
 } from '../../sim/selectors.ts'
-import { inAct2Rules, inAct3Rules, isActIII, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { tierName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
@@ -179,7 +179,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           <span class="stat-note">{since}</span>
         </div>
       )}
-      {isActIII(s.act) && <Act3Panel name="Act3TopStrip" state={s} />}
+      {inAct3Rules(s) && <Act3Panel name="Act3TopStrip" state={s} />}
       {/* (M20.2: the forcing tag is test-build only; production refuses forced saves anyway) */}
       {import.meta.env.MODE !== 'production' && s.scenarioForced && (
         <div class="stat">

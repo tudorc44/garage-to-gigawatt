@@ -24,7 +24,8 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { inAct2Rules, inAct3Rules, inActIII } from './state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV } from './state.ts'
+import { readSignalIvBlocker } from './systems/signalsIv.ts'
 import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
@@ -1128,6 +1129,55 @@ export function signalsPanel(state: GameState) {
       }
     }),
   }
+}
+
+/**
+ * Act IV's Signals panel (M28.2, doc 33 §6.3): the same shape as Act III's signalsPanel, from Act IV's own six
+ * indicators: this quarter's displayed value and arrow, the displayed history of PAST Act IV quarters, and the sharp
+ * range only for quarters the player read that indicator. Null outside Act IV. Never a future quarter, never a hidden
+ * field (the future id only picks the file; nothing of it is returned).
+ */
+export function signalsPanelIv(state: GameState) {
+  if (!inActIV(state) || !state.futureId) return null
+  const now = CONTENT.quarters[state.quarter]
+  const reads = state.act4SignalReads ?? []
+  return {
+    quarter: now,
+    cost: SIGNAL_READ_BANDWIDTH,
+    readThisQuarter: reads.find((r) => r.quarter === now)?.indicator ?? null,
+    blocked: reads.some((r) => r.quarter === now)
+      ? null
+      : (readSignalIvBlocker(state, 'launch_quotes') ?? null),
+    indicators: CONTENT.signalsIv[state.futureId].map((ind) => {
+      const current = ind.series.find((p) => p.quarter === now)
+      return {
+        id: ind.id as string,
+        label: ind.label,
+        higherMeans: ind.higher_means,
+        current: current ? { displayed: current.displayed, arrow: current.arrow } : null,
+        history: ind.series
+          .filter((p) => p.quarter < now)
+          .map((p) => ({ quarter: p.quarter, displayed: p.displayed, arrow: p.arrow })),
+        reads: reads
+          .filter((r) => r.indicator === ind.id)
+          .flatMap((r) => {
+            const p = ind.series.find((x) => x.quarter === r.quarter)
+            return p ? [{ quarter: p.quarter, ...p.sharp }] : []
+          }),
+      }
+    }),
+  }
+}
+
+/**
+ * A4-02's megawatt strip (M28.2, doc 33 §5): energized MW in the three theatres. Ground = the sites' energized MW (as
+ * Acts II–III count it); orbit and the Moon count their live capacity once M29's blocks and M30's lunar power exist (0
+ * until then). Null outside Act IV.
+ */
+export function act4MwColumns(state: GameState) {
+  if (!inActIV(state)) return null
+  const groundMw = state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0) / 1000
+  return { groundMw, orbitMw: 0, moonKwe: 0 }
 }
 
 /** Energized capacity and what the machines there draw, in kW (sites that are built and powered). */
