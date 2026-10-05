@@ -12,11 +12,13 @@ import {
   contractCalendar,
   contractsDueSoon,
   idleRigsView,
+  renewalWallView,
   renewalsDue,
   signalsPanel,
 } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
-import { Dialog, Pips } from '../components/basics.tsx'
+import { Dialog, Pips, Tip } from '../components/basics.tsx'
+import { Term } from '../components/term.tsx'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -114,7 +116,10 @@ export function Act3SignalsPanel({ state, act }: ScreenProps) {
     .sort((a, b) => (a.quarter < b.quarter ? 1 : -1))
   return (
     <div class="panel p signals">
-      <h2 class="panel-title">{t('ui.act3.signals.title')}</h2>
+      <h2 class="panel-title">
+        <Term id="signals">{t('ui.act3.signals.title')}</Term>
+      </h2>
+      <Tip id="signals" act={3} />
       {v.indicators.map((i) => {
         const now = i.reads.find((r) => r.quarter === v.quarter)
         return (
@@ -229,6 +234,7 @@ export function RenewalsDuePanel({ state, act }: ScreenProps) {
       <h2 class="panel-title">
         {t('ui.act3.renewal.title', { n: due.length })}
       </h2>
+      <Tip id="renewals" act={3} />
       <div class="renewal-cards">
         {due.map((r) => {
           const money = (x: number) =>
@@ -423,11 +429,75 @@ export function RenewalsDuePanel({ state, act }: ScreenProps) {
 // ---------- Contracts (A3-04) ----------
 
 /** Every tenant contract by end quarter, with the reopener in its row, and the blend-and-extend offers. */
+/**
+ * M23.4 (A3-04): the renewal wall above the calendar: MW coming due per quarter, 2027Q1–2030Q4, stacked shell leases /
+ * GPU contracts, from end dates only; this quarter marked; the rent coming due in the next 4 and 8 quarters.
+ */
+function RenewalWall({ state }: { state: GameState }) {
+  const v = renewalWallView(state)
+  if (!v) return null
+  const pct = (mw: number) => (v.maxMw > 0 ? (mw / v.maxMw) * 100 : 0)
+  return (
+    <div class="panel p renewal-wall" data-renewal-wall>
+      <h2 class="panel-title">
+        <Term id="renewal_wall">{t('ui.act3.wall.title')}</Term>
+      </h2>
+      <Tip id="contracts" act={3} />
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {t('ui.act3.wall.note')}
+      </p>
+      {v.maxMw === 0 ? (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t('ui.act3.wall.none')}
+        </p>
+      ) : (
+        <div class="wall-bars" role="list">
+          {v.bars.map((b) => {
+            const mw = b.shellMw + b.gpuMw
+            const label = t('ui.act3.wall.bar', {
+              quarter: fmt.quarter(b.label),
+              mw: fmt.power(mw * 1000),
+            })
+            return (
+              <div
+                key={b.quarter}
+                class={`wall-col${b.current ? ' now' : ''}`}
+                role="listitem"
+                aria-label={label}
+                title={label}
+                data-wall-quarter={b.label}
+                data-wall-mw={Math.round(mw * 1000)}
+              >
+                <div class="wall-stack">
+                  <div class="wall-gpu" style={{ height: `${pct(b.gpuMw)}%` }} />
+                  <div class="wall-shell" style={{ height: `${pct(b.shellMw)}%` }} />
+                </div>
+                <span class="wall-q">{b.label.slice(2)}</span>
+              </div>
+            )
+          })}
+        </div>
+      )}
+      <div class="row-between num-s">
+        <span>
+          <span class="wall-key wall-shell" /> {t('ui.act3.wall.shell')}{' '}
+          <span class="wall-key wall-gpu" /> {t('ui.act3.wall.gpu')}
+        </span>
+      </div>
+      <p class="num-s" style={{ margin: 0 }}>
+        {t('ui.act3.wall.due4', { usd: fmt.money(v.due4Usd) })} ·{' '}
+        {t('ui.act3.wall.due8', { usd: fmt.money(v.due8Usd) })}
+      </p>
+    </div>
+  )
+}
+
 export function ContractsSection({ state, act }: ScreenProps) {
   const rows = contractCalendar(state)
   const blends = blendOffers(state)
   return (
     <div class="section single">
+      <RenewalWall state={state} />
       <div class="panel p">
         <h2 class="panel-title">
           {t('ui.act3.contracts.title', { n: rows.length })}
@@ -442,10 +512,14 @@ export function ContractsSection({ state, act }: ScreenProps) {
                 <th>{t('ui.act3.contracts.col.kind')}</th>
                 <th class="r">{t('ui.act3.contracts.col.size')}</th>
                 <th class="r">{t('ui.act3.contracts.col.rent')}</th>
-                <th class="r">{t('ui.act3.contracts.col.today')}</th>
+                <th class="r">
+                  <Term id="today_rate">{t('ui.act3.contracts.col.today')}</Term>
+                </th>
                 <th class="r">{t('ui.act3.contracts.col.left')}</th>
                 <th>{t('ui.act3.contracts.col.ends')}</th>
-                <th>{t('ui.act3.contracts.col.flags')}</th>
+                <th>
+                  <Term id="reopener">{t('ui.act3.contracts.col.flags')}</Term>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -516,7 +590,9 @@ export function ContractsSection({ state, act }: ScreenProps) {
       <PpaRows state={state} />
       {blends.length > 0 && (
         <div class="panel p">
-          <h2 class="panel-title">{t('ui.act3.blend.title')}</h2>
+          <h2 class="panel-title">
+            <Term id="blend_extend">{t('ui.act3.blend.title')}</Term>
+          </h2>
           <p class="num-s muted">{t('ui.act3.blend.body')}</p>
           <table class="num-s">
             <tbody>

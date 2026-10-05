@@ -183,6 +183,12 @@ Split (DT spec, 5 Oct 2026): M23.0 housekeeping (m22 tagged m22-done and deleted
 merge); M23.1 SOFR 2026Q4 = the last FRED observation carried forward, the seam into 2027Q1, the sim vs M22; M23.2 the implied miner premium
 table (doc 18 §15, report only); M23.3 the robustness sweep (SOFR ±100 bp in Act II, Act III scenario HY ±150 bp; report only, no retuning,
 output outside committed files); M23.4 Act III clarity: the renewal-wall chart, rich tooltips, onboarding tips with a setting to show them again.
+**M23.1 done:** `carryForward` in tools/data/real-market.ts: SOFR 2026Q4 = 3.87% (2026-10-01), still `sofr_estimate`; seam 2026Q4 → 2027Q1 +8 to +13 bp
+(was −5 to 0). **M23.2:** the premium table in doc 18 §15 (+0.4…+1.5 pts through 2024, ≈ 0 in 2025, 2025Q2 −0.07, 2026Q4 −0.17). **M23.3a:**
+knobs SOFR2 / HY3 and `--knobs` on the full sim (process only). **M23.4 done:** `renewalWallView` + the wall above Contracts (A3-04); `Term`
+(fixed-position hover/focus card, 11 terms); `Tip act={3}` (6 tips, dismissed as `act3.<id>`); Settings › Onboarding tips › Show them again
+(`resetDismissedTips`). Mine: GPU contracts count their project's MW; holdovers count this quarter; tips go below title rows; the reading-score
+term id is `reading` (the hidden-file grep forbids `reading_score` in UI files). Act3Panels 28.2 → 30.1 KB. 1265 tests.
 
 ## Milestone M22 (branch `m22`, from main at `48d16b4` plus the M21 notes fix `d7bab88`; real market data)
 

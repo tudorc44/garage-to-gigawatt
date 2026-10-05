@@ -259,22 +259,26 @@ export function ActionRow(props: {
 
 /**
  * An onboarding tip (M6.5; scope 0.2 §2.15): a small info box with "Got it", which hides it for good
- * in this browser. `id` names the text (content.en.json › tooltip.act2.<id>).
+ * in this browser (until Settings › Onboarding tips › Show them again, M23.4). `id` names the text:
+ * tooltip.act2.<id> (content.en.json), or with `act={3}` tooltip.act3.<id> (en.json; dismissed as "act3.<id>").
  */
-export function Tip(props: { id: string }) {
-  const [gone, setGone] = useState(() => readDismissedTips().includes(props.id))
-  if (gone || !hasText(`tooltip.act2.${props.id}`)) return null
+export function Tip(props: { id: string; act?: 2 | 3 }) {
+  const act = props.act ?? 2
+  const key = `tooltip.act${act}.${props.id}`
+  const dismissId = act === 2 ? props.id : `act3.${props.id}`
+  const [gone, setGone] = useState(() => readDismissedTips().includes(dismissId))
+  if (gone || !hasText(key)) return null
   return (
-    <div class="signal tip" role="note">
+    <div class="signal tip" role="note" data-tip={dismissId}>
       <Icon name="info" />
       <div>
         <span class="label">{t('ui.signals.tip')}</span>
-        {tDynamic(`tooltip.act2.${props.id}`, '')}{' '}
+        {tDynamic(key, '')}{' '}
         <button
           type="button"
           class="btn"
           onClick={() => {
-            dismissTip(props.id)
+            dismissTip(dismissId)
             setGone(true)
           }}
         >

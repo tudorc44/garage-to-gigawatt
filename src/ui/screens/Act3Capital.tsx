@@ -8,6 +8,8 @@ import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { BwButton } from './Projects.tsx'
+import { Tip } from '../components/basics.tsx'
+import { Term } from '../components/term.tsx'
 
 /** M18.13: the leverage covenant next to the company's LTV; in a breach, its cure level, deadline and sweep. */
 export function CovenantPanel({ state }: Pick<ScreenProps, 'state'>) {
@@ -15,8 +17,11 @@ export function CovenantPanel({ state }: Pick<ScreenProps, 'state'>) {
   if (!v) return null
   return (
     <section class="panel p" data-covenant>
+      <Tip id="capital" act={3} />
       <div class="row-between">
-        <span class="num-s">{t('ui.cap3.covenant_ltv')}</span>
+        <span class="num-s">
+          <Term id="covenant">{t('ui.cap3.covenant_ltv')}</Term>
+        </span>
         <span class="num-s">
           {Number.isFinite(v.ltv) ? fmt.pct(v.ltv) : '—'}
           {' · '}
@@ -50,7 +55,9 @@ export function StandbyPanel({ state, act }: ScreenProps) {
   const usd = Math.round(Number(amount.replace(/[^0-9.]/g, '')) * 1_000_000)
   return (
     <section class="panel p" data-standby>
-      <div class="label">{t('ui.standby.title')}</div>
+      <div class="label">
+        <Term id="standby">{t('ui.standby.title')}</Term>
+      </div>
       <p class="num-s muted" style={{ margin: 0 }}>
         {t('ui.standby.what')}
       </p>

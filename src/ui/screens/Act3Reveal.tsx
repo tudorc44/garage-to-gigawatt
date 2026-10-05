@@ -10,6 +10,7 @@ import { t, tDynamic } from '../../i18n/t.ts'
 import type { Act3End, GameState } from '../../sim/state.ts'
 import { act3Outcome } from '../../sim/systems/act3End.ts'
 import { fmt } from '../format.ts'
+import { Term } from '../components/term.tsx'
 
 const QUARTERS = 16
 const FIRST_LABEL = '2027Q1'
@@ -391,8 +392,8 @@ function ReadingScore({
   return (
     <section class="panel p reveal-score">
       <span class="label">
-        {t('act3.reveal.reading')}
-        {known && <span data-scenario-known> · {t('ui.scenario_mode.known')}</span>}
+        <Term id="reading">{t('act3.reveal.reading')}</Term>
+        {known &&<span data-scenario-known> · {t('ui.scenario_mode.known')}</span>}
       </span>
       <div>
         <span class="num-xl" data-score>

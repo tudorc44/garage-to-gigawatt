@@ -12,6 +12,15 @@ export function readDismissedTips(): string[] {
   }
 }
 
+/** M23.4: Settings › Onboarding tips › Show them again: every dismissed tip shows again. */
+export function resetDismissedTips(): void {
+  try {
+    localStorage.removeItem(KEY)
+  } catch {
+    // Storage blocked: nothing was kept, so every tip already shows.
+  }
+}
+
 export function dismissTip(id: string): void {
   try {
     const list = readDismissedTips()

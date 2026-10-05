@@ -21,6 +21,7 @@ import { inActII, inActIII, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { Dialog } from './basics.tsx'
+import { readDismissedTips, resetDismissedTips } from '../../platform/tips.ts'
 
 export interface SaveApi {
   /** The game being played right now. */
@@ -189,6 +190,10 @@ export function SavePanel({ onLoaded }: { onLoaded: () => void }) {
 export function SettingsDialog({ onClose }: { onClose: () => void }) {
   const [settings, setSettings] = useState<Settings>(readSettings)
   const [glossary, setGlossary] = useState(false)
+  const [tipsDismissed, setTipsDismissed] = useState(
+    () => readDismissedTips().length,
+  )
+  const [tipsReset, setTipsReset] = useState(false)
   const update = (next: Settings) => {
     setSettings(next)
     writeSettings(next)
@@ -225,6 +230,27 @@ export function SettingsDialog({ onClose }: { onClose: () => void }) {
             </button>
           ))}
         </div>
+      </div>
+      {/* M23.4: dismissed onboarding tips can be brought back */}
+      <div class="row-between">
+        <span>{t('ui.settings.tips')}</span>
+        <button
+          type="button"
+          class="btn"
+          disabled={tipsDismissed === 0}
+          onClick={() => {
+            resetDismissedTips()
+            setTipsDismissed(0)
+            setTipsReset(true)
+          }}
+          data-tips-reset
+        >
+          {tipsReset
+            ? t('ui.settings.tips_done')
+            : tipsDismissed === 0
+              ? t('ui.settings.tips_none')
+              : t('ui.settings.tips_reset')}
+        </button>
       </div>
       <span class="label">{t('ui.save.title')}</span>
       <SavePanel onLoaded={onClose} />

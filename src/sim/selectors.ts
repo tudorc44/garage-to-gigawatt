@@ -6,6 +6,7 @@ import {
   CONTENT,
   POWER_REGIONS,
   act2Quarter,
+  actFirstQuarter,
   actLastQuarter,
   quarterInputs,
   type MarketWeek,
@@ -2029,6 +2030,48 @@ export function contractCalendar(state: GameState) {
         : null,
     }
   })
+}
+
+/**
+ * M23.4 (A3-04, the renewal wall): MW coming due per quarter, 2027Q1–2030Q4, from contract end dates only (known
+ * facts, no forecast); a holdover counts in this quarter (mine). Shell leases count their leased MW, GPU contracts
+ * their project's MW. Plus the annual rent coming due in the next 4 and the next 8 quarters (GPU contracts: GPUs ×
+ * the locked $/GPU-hr × 8,760 hours). Null outside Act III.
+ */
+export function renewalWallView(state: GameState) {
+  if (!inActIII(state)) return null
+  const first = actFirstQuarter(3)
+  const last = actLastQuarter(3)
+  const bars = Array.from({ length: last - first + 1 }, (_, i) => ({
+    quarter: first + i,
+    label: CONTENT.quarters[first + i],
+    shellMw: 0,
+    gpuMw: 0,
+    current: first + i === state.quarter,
+  }))
+  let due4 = 0
+  let due8 = 0
+  for (const e of buildCalendar(state)) {
+    if (e.endQuarter === null) continue
+    const q = Math.max(e.endQuarter, state.quarter)
+    const p = state.projects.find((x) => x.id === e.id)
+    const mw = e.mw ?? (p ? p.kw / 1000 : 0)
+    const bar = bars.find((b) => b.quarter === q)
+    if (bar) {
+      if (e.kind === 'shell') bar.shellMw += mw
+      else bar.gpuMw += mw
+    }
+    const yearly =
+      e.annualRentUsd ?? (e.gpus ?? 0) * (e.usdPerGpuHr ?? 0) * 8760
+    if (q < state.quarter + 4) due4 += yearly
+    if (q < state.quarter + 8) due8 += yearly
+  }
+  return {
+    bars,
+    maxMw: Math.max(0, ...bars.map((b) => b.shellMw + b.gpuMw)),
+    due4Usd: due4,
+    due8Usd: due8,
+  }
 }
 
 /** Log lines the Act III quarter report lists (M13.2): renewals, reopeners, blend-and-extend, card effects. */

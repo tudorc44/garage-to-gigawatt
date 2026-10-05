@@ -2087,6 +2087,75 @@ td.wrap {
   white-space: normal;
 }
 
+/* M23.4 (DT, A3-04): the renewal wall: one column per quarter, 2027Q1–2030Q4, stacked shell / GPU MW */
+.wall-bars {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 4px;
+  height: 120px;
+  align-items: end;
+}
+.wall-col {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100%;
+  min-width: 0;
+}
+.wall-stack {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-bottom: var(--border-hair) solid var(--ink);
+}
+.wall-shell {
+  background: var(--ink);
+}
+.wall-gpu {
+  background: var(--accent);
+}
+.wall-col.now .wall-stack {
+  outline: 1px dashed var(--ink-muted);
+  outline-offset: 1px;
+}
+.wall-q {
+  font: 400 10px/14px var(--font-num);
+  color: var(--ink-muted);
+  text-align: center;
+}
+.wall-key {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  vertical-align: middle;
+}
+
+/* M23.4 (DT): rich tooltips on Act III terms: a dotted underline; the card is fixed to the viewport */
+.term {
+  text-decoration: underline dotted;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.term-card {
+  position: fixed;
+  z-index: 50;
+  width: 280px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--panel);
+  border: var(--border-rule) solid var(--ink);
+  font: 400 13px/18px var(--font-ui);
+  color: var(--ink);
+  text-transform: none;
+  letter-spacing: normal;
+  white-space: normal;
+  text-align: left;
+  pointer-events: none;
+}
+
 /* M21.1 (DT), every width: a panel holding a table wider than itself scrolls sideways, so the table never pushes
    its section or the page wider (the table keeps its own layout; nothing pops out of a panel to be clipped). */
 .panel:has(> table) {

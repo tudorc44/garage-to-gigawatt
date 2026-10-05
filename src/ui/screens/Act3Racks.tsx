@@ -11,6 +11,8 @@ import { fmt } from '../format.ts'
 import { say, siteName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { BwButton } from './Projects.tsx'
+import { Tip } from '../components/basics.tsx'
+import { Term } from '../components/term.tsx'
 
 type View = NonNullable<ReturnType<typeof racksView>>
 type Row = View['rows'][number]
@@ -56,11 +58,14 @@ function HallsTable(props: {
   return (
     <div class="panel p" data-halls>
       <div class="row-between">
-        <h2 class="panel-title">{t('ui.act3.racks.title')}</h2>
+        <h2 class="panel-title">
+          <Term id="density">{t('ui.act3.racks.title')}</Term>
+        </h2>
         <span class="num-s muted">
           {t('ui.act3.racks.energized', { mw: fmt.power(v.energizedMw * 1000) })}
         </span>
       </div>
+      <Tip id="racks" act={3} />
       {v.rows.length === 0 ? (
         <p class="num-s muted">{t('ui.act3.racks.none')}</p>
       ) : (

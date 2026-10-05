@@ -6,7 +6,8 @@ import { Fragment } from 'preact'
 import { t, tDynamic } from '../../i18n/t.ts'
 import { governmentView, ppaRows, wildcardView } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
-import { Icon } from '../components/basics.tsx'
+import { Icon, Tip } from '../components/basics.tsx'
+import { Term } from '../components/term.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -39,9 +40,12 @@ function Meter({ v }: { v: NonNullable<ReturnType<typeof governmentView>> }) {
   return (
     <div class={`panel p pc-meter${v.low ? ' low' : ''}`} data-meter>
       <div class="row-between">
-        <h2 class="panel-title">{t('ui.gov.meter_title')}</h2>
+        <h2 class="panel-title">
+          <Term id="political_capital">{t('ui.gov.meter_title')}</Term>
+        </h2>
         <span class="num-s muted">0 – 100</span>
       </div>
+      <Tip id="government" act={3} />
       <div>
         <span class="num-xl" data-pc>
           {v.pc}
@@ -284,7 +288,8 @@ export function PpaRowsPanel({ state }: { state: GameState }) {
   return (
     <div class="panel p" data-ppa-rows>
       <h2 class="panel-title">
-        <Icon name="nuclear-ppa" size={16} /> {t('ui.ppa.title')}
+        <Icon name="nuclear-ppa" size={16} />{' '}
+        <Term id="nuclear_ppa">{t('ui.ppa.title')}</Term>
       </h2>
       <table class="num-s">
         <thead>
