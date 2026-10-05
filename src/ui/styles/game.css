@@ -1195,6 +1195,23 @@ td.wrap {
   white-space: normal;
 }
 
+/* ===== Act IV: the chapter report's reveal timeline (M32.2, A4-11) ===== */
+.act4-reveal section {
+  overflow-x: auto;
+}
+.act4-timeline th,
+.act4-timeline td {
+  padding: 2px 3px;
+  text-align: center;
+  white-space: nowrap;
+}
+.act4-timeline th {
+  text-align: left;
+}
+.act4-timeline td.trigger {
+  outline: 1px solid var(--warn);
+}
+
 /* ===== Act IV: the Orbit board (M29.5, A4-03 / A4-05; docs/wireframes/act4/README.md) ===== */
 .orbit-row {
   display: flex;

@@ -53,8 +53,8 @@ describe('Act IV’s hidden files (M28.3, doc 33 §6.8): each read only by its o
       expect(code(f), f).not.toMatch(/\blunarGrade\b|\bpilotGradeFactor\b|\bprospectReport\b|\btrueResourceT\b/)
   })
 
-  it('no UI file reads the hidden draws (the future, the lunar grade)', () => {
-    for (const f of src.filter((x) => /[\\/]ui[\\/]/.test(x)))
+  it('no UI file reads the hidden draws (the future, the lunar grade), except the chapter report’s reveal (M32.2)', () => {
+    for (const f of src.filter((x) => /[\\/]ui[\\/]/.test(x) && !/Act4Reveal\.tsx$/.test(x)))
       expect(code(f), f).not.toMatch(/\blunarGrade\b|\bfutureId\b/)
   })
 

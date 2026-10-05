@@ -84,10 +84,12 @@ describe('Act IV screens render (M27.6)', () => {
     expect(render(<Act3Chapter state={end} onNew={noop} />).container.querySelector('[data-continue-act4]')).toBeNull()
   })
 
-  it('the chapter stub shows the end record after 2035Q4', () => {
+  it('M32.2: after 2035Q4 the chapter report reveals the future (the one screen during the game that names it)', () => {
     const end = playFrom(act4Company('s0', 'f2'), { plan: () => [] }, { through: 4 }).state
     const v = render(<Act4Chapter state={end} onNew={noop} />)
     expect(v.container.querySelector('[data-act4-chapter]')).not.toBeNull()
-    expect(v.container.textContent).not.toMatch(NAMES)
+    expect(v.container.querySelector('[data-reveal-future]')!.textContent).toContain('The Wall')
+    expect(v.container.querySelector('[data-reveal-moon]')!.textContent).toMatch(/The ice was: (rich|patchy|dry)/)
+    expect(v.container.querySelectorAll('[data-reveal-rivals] p strong')).toHaveLength(5)
   }, 0)
 })

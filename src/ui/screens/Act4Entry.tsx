@@ -75,48 +75,6 @@ export function Act4Intro(props: { state: GameState; onEnter: () => void }) {
   )
 }
 
-/**
- * The Act IV chapter report (M27.6 stub; M32 builds A4-11 with the reveal and A4-12, the campaign finale): where the
- * company ended, its growth on the Act IV entry, and the way back to the title screen. It shows nothing of the future.
- */
-export function Act4Chapter(props: { state: GameState; onNew: () => void }) {
-  const end = props.state.act4End
-  const rows: [MessageKey, string][] = end
-    ? [
-        ['ui.act4.chapter.end_quarter', fmt.quarter(end.endQuarter)],
-        ['ui.act4.chapter.net_worth', fmt.money(end.founderNetWorthUsd)],
-        [
-          'ui.act4.chapter.growth',
-          end.growthMultiple === null ? '—' : `${end.growthMultiple.toFixed(2)}×`,
-        ],
-      ]
-    : []
-  return (
-    <div class="screen">
-      <div class="center-page">
-        <div class="panel end-card chapter-card" data-act4-chapter>
-          <div class="label">{t('ui.act4.chapter.label')}</div>
-          <h1 class="screen-title">
-            {t(end?.gameOver ? 'ui.act4.chapter.title_out' : 'ui.act4.chapter.title')}
-          </h1>
-          <table>
-            <tbody>
-              {rows.map(([key, value]) => (
-                <tr key={key}>
-                  <td>{t(key)}</td>
-                  <td class="r num">{value}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div class="row-between">
-            <span class="num-s muted">{t('ui.act4.chapter.coming')}</span>
-            <button type="button" class="btn btn-primary" onClick={props.onNew}>
-              {t('ui.act4.back_to_title')}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
+// The Act IV chapter report with the reveal (A4-11, M32.2) and the campaign finale (A4-12) live in their own files and
+// load with this one.
+export { Act4Chapter } from './Act4Reveal.tsx'
