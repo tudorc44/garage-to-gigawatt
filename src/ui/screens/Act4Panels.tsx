@@ -68,6 +68,8 @@ export function OrbitExposurePanel({ state }: ScreenProps) {
             uninsuredUsd: b.exposure!.uninsuredUsd,
             sharePct: b.exposure!.share,
             cashAfterUsd: b.exposure!.cashAfterUsd,
+            ltvPct: b.exposure!.ltvAfter,
+            limitPct: b.exposure!.ltvLimit,
           })}
         </p>
       ))}

@@ -14,6 +14,7 @@ import {
 import type { Message } from '../i18n/t.ts'
 import type { Action } from './actions.ts'
 import { inActIV, type GameState, type OrbitalBlock } from './state.ts'
+import { companyLtv, covenantLimit } from './systems/covenant.ts'
 import {
   annualValueUsd,
   arrangeOrbitalCapitalBlocker,
@@ -112,13 +113,27 @@ export function launchExposure(state: GameState, b: OrbitalBlock) {
   const uninsuredUsd = Math.max(0, valueUsd - coverUsd)
   const equity = equityUsd(state)
   const share = equity > 0 ? uninsuredUsd / equity : uninsuredUsd > 0 ? 1 : 0
+  const cashAfterUsd = state.cash - (launchCostUsd(b) - b.launch.depositUsd)
+  // The leverage covenant after losing it (debt ÷ the valuation less the uninsured loss), against the limit.
+  // (capped at 1,000% so a wiped-out valuation reads as a number)
+  const ltvAfter = Math.min(10, companyLtv(state, equity - uninsuredUsd))
+  const ltvLimit = covenantLimit(state)
+  const overLine = share > ORBIT.insurance.exposure_warning_share_of_equity
+  const cashShort = cashAfterUsd < 0
+  const covenantShort = ltvAfter > ltvLimit
   return {
     valueUsd,
     coverUsd,
     uninsuredUsd,
     share,
-    warn: share > ORBIT.insurance.exposure_warning_share_of_equity,
-    cashAfterUsd: state.cash - (launchCostUsd(b) - b.launch.depositUsd),
+    cashAfterUsd,
+    ltvAfter,
+    ltvLimit,
+    overLine,
+    cashShort,
+    covenantShort,
+    /** The Plan screen warns when any of the three fails (doc 33 §8.3, §13; B12). */
+    warn: overLine || cashShort || covenantShort,
   }
 }
 
