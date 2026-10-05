@@ -1212,6 +1212,15 @@ td.wrap {
   outline: 1px solid var(--warn);
 }
 
+/* ===== Act IV: the campaign finale (M32.3, A4-12) ===== */
+.act4-finale section {
+  overflow-x: auto;
+}
+.epilogue-line {
+  font-style: italic;
+  margin: 0 0 var(--space-1);
+}
+
 /* ===== Act IV: the Orbit board (M29.5, A4-03 / A4-05; docs/wireframes/act4/README.md) ===== */
 .orbit-row {
   display: flex;

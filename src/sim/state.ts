@@ -1133,6 +1133,10 @@ export interface GameState {
   act4Moon?: Act4Moon
   /** Act IV (M32.1): the move log the reading score reads at the end of the act. */
   act4Moves?: Act4Move[]
+  /** Act IV (M32.4): started at Act IV from a preset ("Start at Act IV"): the preset's id. Absent otherwise. */
+  act4Preset?: string
+  /** Act IV (M32.4): Scenario Mode: the player chose the future. Absent otherwise. */
+  act4ScenarioMode?: true
   /** Act IV (M28.5): the two wildcards drawn at entry, each with the quarter it fires in (never shown in advance). */
   act4Wildcards?: { id: WildcardIdIv; quarter: number; fired: boolean }[]
   /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
