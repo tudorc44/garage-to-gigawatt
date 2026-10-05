@@ -163,8 +163,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The Act IV run (M27–M32) is under way, now on `m29`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
-under M29). M29 is done. Next: **M30** (the Moon) on branch `m30` from `m29`: M30.0 the branch and the split. M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+**The Act IV run (M27–M32) is under way, now on `m30`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
+under M29). M29 is done. Now on **`m30`** (the Moon); next sub-step: **M30.1** (the lunar content). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -206,6 +206,17 @@ A4-01, the test-build quick starts and `?future=`); M27.7 the byte-identity chec
 - **M27.4 done.** `systems/act4Entry.ts` (`buildAct4Entry`, `enterAct4`: doc 33 §3.1 carries, §3.2 open renewals resolve by default, blend offers lapse, Act III-only state drops) and `toAct4`/`drawFuture` in state.ts (future on substream `act4_future`, weights in `BALANCE.act4`); needs an Act III scenario (the seam reads it). Tests: `act4Entry.test.ts`, helpers `act4Helpers.ts`.
 - **M27.5 done.** Act IV plays 2031Q1–2035Q4 to the chapter phase (`act4End` stub, `systems/act4End.ts`; replay `through: 4`). **Gate review** (doc 33 §3.1): run on in Act IV via `inAct3Rules` — renewals, reopeners, blend-and-extend, the calendar and renewal wall (now the current act's span), density and retrofits, nuclear PPAs, political capital and lobbying, Anger, Act III hires, the covenant, the standby facility, lender cures, card payouts, capacity charges, hosting repricing, lab distress, "no random cards", "no Read the market" (Signals instead); **stay Act III-only** (`inActIII`) — Act III's wildcards, Signals panel and reads, move log, `act3End`/reveal, `act3Finished`. Act III spans extended to Act IV with an Act IV key: capacity charge, hosting rate, SOFR/HY project-debt and DDTL rates, the facility label; GPU contract rate × Act III's end value in Act IV (mine, reversible). An Act IV quarter read without an Act IV key finds nothing (Act III's behaviour kept). Goldens unchanged.
 - **M27.6 done** (`M27.6a` + this): Act III panels that run on show in Act IV; `screens/Act4Entry.tsx` (lazy: A4-01 intro, chapter stub); test-build quick starts `act4QuickStart.ts` + `Act4Preview.tsx` (designed recipes, mine, reversible: fortress texas-shell 3/s0, neocloud sign-then-raise 1/s3, ridge lifeline-shell 19/s0; all survive Act III) and `?future=` with its tag and save guard; "Continue to Act IV" on the Act III chapter report; the light `orbit` theme; `averagePrice` reads the market key (an Act IV report crashed without it); intro boxes no longer squeeze (`flex: none`). Tests: gate, grep (`toAct4`, `futureId`), screens; layout notes in `docs/wireframes/act4/README.md`. Browser-checked at 1024 px: quick start → intro → 2031Q1 Plan → report, no sideways scroll.
+
+### Milestone M30 (branch `m30`, from `m29`; the Moon)
+
+Split: M30.0 branch and split; M30.1 the lunar content (`lunar_iv.json`: 8 polar sites, claims, missions, power, pilot,
+production, offtake, dust; `lunar_claims_iv.json`: the rivals' and blocs' scripted claims per future; schemas, loader,
+README); M30.2 claims, the landing clock and disputes; M30.3 prospect missions, landings and prospect reports (the
+resource categories; `lunarGeology.ts` turns the truth into estimates); M30.4 lunar power (solar arrays; the reactor
+lease not before 2034, the Reactor Delay wildcard), the pilot plant (output per doc 33 §9.4, dust and night), offtake,
+the production decision (no output in the act), the Flag on the Pole, the lunar alerts, the lunar unit in the books;
+M30.5 the screens A4-06 (Moon, with the "after 2035" panel) and A4-07 (prospect report); M30.6 tests (B11) and the M30
+report. Act I–III state never gains a key.
 
 ### Milestone M29 (branch `m29`, from `m28`; orbit)
 
