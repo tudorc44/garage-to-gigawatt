@@ -163,7 +163,16 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The Act IV run (M27–M32) is under way on `m27`** (see "The Act IV run"). Next sub-step: **M27.6** (the screens: `orbit` theme, "Continue to Act IV", A4-01, quick starts, `?future=`). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+**The Act IV run (M27–M32) is under way on `m27`** (see "The Act IV run"). Next sub-step: **M27.6, second half** (stopped at the owner's usage limit, 5 Oct 2026). Done in the first half (`M27.6a`): Act III
+UI gates that run on in Act IV (renewals, racks, idle rigs, covenant, standby, PC stat, Contracts/Government nav, report block),
+Act IV text keys (finish/report title/tags), `forcedFuture` + the Act IV save guard in `platform/preview.ts`, the `futureForced`
+top-bar tag, and an optional "Continue to Act IV" (`onContinueAct4`) on the Act III chapter report (not yet passed by the app).
+**Left for M27.6:** `src/ui/screens/Act4Entry.tsx` (lazy: `Act4Intro` A4-01, `Act4Chapter` stub), `src/ui/act4QuickStart.ts` +
+`screens/Act4Preview.tsx` (test builds only; designed recipes: fortress = texas-shell seed 3 on s0, neocloud = sign-then-raise seed
+1 on s3, ridge = lifeline-shell seed 19 on s0: test each survives Act III), app.tsx wiring (`useAct4Entry`/`useAct4Preview`,
+`enterAct4` with `forcedFuture`, intro and chapter routing, pass `onContinueAct4` to `Act3Chapter`), the light `orbit` theme in
+`src/ui/styles/tokens.css` + `themeOf`, the gate test (`tests/ui/act3Gate.test.ts`) and grep tests for `toAct4`/`futureId`,
+`docs/wireframes/act4/README.md`, a browser check at 1024 px. Then M27.7 (the `--act2 --act3` byte-identity run, detached; the M27 report). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)

@@ -28,7 +28,7 @@ import {
   ratingBacklogView,
   topHeat,
 } from '../../sim/selectors.ts'
-import { inAct2Rules, isActIII, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, inAct3Rules, isActIII, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { tierName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
@@ -104,7 +104,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           />
         </span>
       </div>
-      {isActIII(s.act) && <Act3Panel name="PcStat" state={s} />}
+      {inAct3Rules(s) && <Act3Panel name="PcStat" state={s} />}
       <div class="stat">
         <span class="label">
           <Term id="heat">
@@ -186,6 +186,12 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           <span class="tag">{t('ui.act3.forced_tag')}</span>
         </div>
       )}
+      {/* (M27.6: Act IV's ?future= forcing tag, test builds only like the scenario's) */}
+      {import.meta.env.MODE !== 'production' && s.futureForced && (
+        <div class="stat" data-future-forced-tag>
+          <span class="tag">{t('ui.act4.forced_tag')}</span>
+        </div>
+      )}
       {s.scenarioMode && (
         // M18.4: a Scenario Mode run (A3-12)
         <div class="stat" data-scenario-mode-tag>
@@ -245,7 +251,7 @@ export function Nav(props: { seed: number; plan: boolean; act: number }) {
       {NAV.filter(
         (item) =>
           (!item.act2 || inAct2Rules({ act: props.act as GameState['act'] })) &&
-          (!item.act3 || isActIII(props.act)),
+          (!item.act3 || inAct3Rules({ act: props.act as GameState['act'] })),
       ).map((item) => (
         <button
           key={item.key}

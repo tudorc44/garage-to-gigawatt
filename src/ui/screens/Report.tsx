@@ -190,7 +190,7 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
         </div>
 
         <Act2Panel state={state} />
-        {state.act === 3 && <Act3Panel name="Act3ReportBlock" state={state} />}
+        {state.act >= 3 && <Act3Panel name="Act3ReportBlock" state={state} />}
 
         <div class="report-grid">
           <CostChart state={state} coin={coin} />
@@ -222,9 +222,11 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
                 ? t(
                     state.act === 1
                       ? 'ui.report.finish'
-                      : state.act === 3
-                        ? 'ui.report.finish_act3'
-                        : 'ui.report.finish_act2',
+                      : state.act === 4
+                        ? 'ui.report.finish_act4'
+                        : state.act === 3
+                          ? 'ui.report.finish_act3'
+                          : 'ui.report.finish_act2',
                   )
                 : t('ui.report.continue', {
                     quarter: fmt.quarter(quarterName(state.quarter + 1)),
@@ -541,7 +543,13 @@ function Act2Panel({ state }: { state: GameState }) {
   return (
     <div class="panel p a2-report">
       <h2 class="panel-title">
-        {t(state.act === 3 ? 'ui.report.a3_title' : 'ui.report.a2_title')}
+        {t(
+          state.act === 4
+            ? 'ui.report.a4_title'
+            : state.act === 3
+              ? 'ui.report.a3_title'
+              : 'ui.report.a2_title',
+        )}
       </h2>
       <div class="a2-report-cols">
         <div>

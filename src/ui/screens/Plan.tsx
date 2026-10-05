@@ -46,6 +46,7 @@ import {
 import {
   inActII,
   inAct2Rules,
+  inAct3Rules,
   inActIII,
   type Coin,
   type GameState,
@@ -181,7 +182,7 @@ export function PlanScreen({ state, act }: ScreenProps) {
           )}
           <CommunityDealCard state={state} act={act} />
 
-          {inActIII(state) && (
+          {inAct3Rules(state) && (
             <Act3Panel name="RenewalsDuePanel" state={state} act={act} />
           )}
           <div class="dash">
@@ -192,7 +193,8 @@ export function PlanScreen({ state, act }: ScreenProps) {
             </div>
             <TodoPanel state={state} act={act} open={setOpen} />
             <aside class="col" aria-label={t('ui.signals.title')}>
-              {inActIII(state) ? (
+              {/* (M27.6: Act IV's own Signals come in M28; Act III's panel shows nothing there) */}
+              {inAct3Rules(state) ? (
                 <Act3Panel name="Act3SignalsPanel" state={state} act={act} />
               ) : (
                 <SignalsPanel state={state} news={news} />
@@ -1137,7 +1139,7 @@ function TodoPanel({
 
       <div class="label group">{t('ui.plan.group.intel')}</div>
       {/* Act III reads the market through Signals instead (M13.2). */}
-      {!inActIII(state) && <ReadMarketRow state={state} act={act} />}
+      {!inAct3Rules(state) && <ReadMarketRow state={state} act={act} />}
       {!state.auction && <AuctionRow state={state} act={act} open={open} />}
     </div>
   )

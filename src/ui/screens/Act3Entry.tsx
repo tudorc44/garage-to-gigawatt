@@ -187,7 +187,12 @@ export function ContinueToAct3(props: { onClick: () => void }) {
 }
 
 /** The end of Act III (2030Q4, or a game over): the chapter report with the reveal (M13.3, A3-11). */
-export function Act3Chapter(props: { state: GameState; onNew: () => void }) {
+export function Act3Chapter(props: {
+  state: GameState
+  onNew: () => void
+  /** M27.6: continue the career into Act IV from the chapter report. */
+  onContinueAct4?: () => void
+}) {
   return <Act3Reveal {...props} />
 }
 

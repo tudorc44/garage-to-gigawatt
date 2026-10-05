@@ -15,7 +15,7 @@ import {
   upcomingRivalsView,
   valuationBreakdown,
 } from '../../sim/selectors.ts'
-import { inAct2Rules, inActIII, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { Icon, Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
 import {
@@ -90,10 +90,10 @@ function FleetSection({ state, act }: ScreenProps) {
   return (
     <div class="section">
       {/* Act III (M16.5, A3-07): halls and rack density, across the section */}
-      {inActIII(state) && <Act3Panel name="RacksPanel" state={state} act={act} />}
+      {inAct3Rules(state) && <Act3Panel name="RacksPanel" state={state} act={act} />}
       <div class="col">
         <FleetPanel state={state} breakdown />
-        {inActIII(state) && (
+        {inAct3Rules(state) && (
           <Act3Panel name="IdleRigsPanel" state={state} act={act} />
         )}
         {inAct2Rules(state) && state.phase === 'plan' && (

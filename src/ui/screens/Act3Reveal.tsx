@@ -435,7 +435,12 @@ function ReadingScore({
 
 // ---------- the screen ----------
 
-export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
+export function Act3Reveal(props: {
+  state: GameState
+  onNew: () => void
+  /** M27.6: "Continue to Act IV" (the app passes it; absent, the footer is as before). */
+  onContinueAct4?: () => void
+}) {
   const o = act3Outcome(props.state)
   const e = o.end
   const id = e.scenarioId
@@ -565,17 +570,33 @@ export function Act3Reveal(props: { state: GameState; onNew: () => void }) {
             </table>
           </section>
 
-          {/* 8. the end */}
-          <div class="row-between">
-            <span class="num-s muted">{t('ui.act3.reveal.continues')}</span>
-            <button
-              type="button"
-              class="btn btn-primary"
-              onClick={props.onNew}
-            >
-              {t('act3.reveal.continue')}
-            </button>
-          </div>
+          {/* 8. the end (M27.6: a company that survived Act III can continue into Act IV) */}
+          {props.onContinueAct4 && props.state.phase === 'chapter' ? (
+            <div class="row-between">
+              <button type="button" class="btn" onClick={props.onNew}>
+                {t('ui.act4.back_to_title')}
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-continue-act4
+                onClick={props.onContinueAct4}
+              >
+                {t('ui.act4.continue')}
+              </button>
+            </div>
+          ) : (
+            <div class="row-between">
+              <span class="num-s muted">{t('ui.act3.reveal.continues')}</span>
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={props.onNew}
+              >
+                {t('act3.reveal.continue')}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
