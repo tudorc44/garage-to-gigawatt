@@ -15,6 +15,7 @@ import type { Message } from '../i18n/t.ts'
 import type { Action } from './actions.ts'
 import { inActIV, type GameState, type OrbitalBlock } from './state.ts'
 import { companyLtv, covenantLimit } from './systems/covenant.ts'
+import { ownShare } from './systems/orbitCapital.ts'
 import {
   annualValueUsd,
   arrangeOrbitalCapitalBlocker,
@@ -113,7 +114,8 @@ export function launchExposure(state: GameState, b: OrbitalBlock) {
   const uninsuredUsd = Math.max(0, valueUsd - coverUsd)
   const equity = equityUsd(state)
   const share = equity > 0 ? uninsuredUsd / equity : uninsuredUsd > 0 ? 1 : 0
-  const cashAfterUsd = state.cash - (launchCostUsd(b) - b.launch.depositUsd)
+  // (your share of the launch bill: a lender or partner pays the rest)
+  const cashAfterUsd = state.cash - (launchCostUsd(b) - b.launch.depositUsd) * ownShare(state, b, 'launch')
   // The leverage covenant after losing it (debt ÷ the valuation less the uninsured loss), against the limit.
   // (capped at 1,000% so a wiped-out valuation reads as a number)
   const ltvAfter = Math.min(10, companyLtv(state, equity - uninsuredUsd))

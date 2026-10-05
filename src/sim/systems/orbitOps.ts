@@ -12,6 +12,7 @@ import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from
 import { trueReliability, TELEMETRY } from './fleetReliability.ts'
 import { annualValueUsd, licensedMw, linkUnits, orbitBlock, orbitOf, orbitRow } from './orbit.ts'
 import { insuredNow, settleOrbitLoss } from './orbitLaunch.ts'
+import { repayFromProceeds } from './orbitCapital.ts'
 
 const SAT = ORBIT.satellites
 const DEB = ORBIT.shells.debris
@@ -169,7 +170,8 @@ export function blockRevenueUsd(state: GameState, b: OrbitalBlock, linkShare: nu
   const safeMode = orbitOf(state).safeModeQuarter === state.quarter
   const weeks = BALANCE.weeksPerQuarter
   const safeShare = safeMode ? 1 - Number(W('solar_storm').safe_mode_weeks) / weeks : 1
-  return (yearly / 4) * b.capacity * linkShare * safeShare
+  // (M31.2) a co-funding partner takes its share of the revenue
+  return (yearly / 4) * b.capacity * linkShare * safeShare * (1 - (b.cofundShare ?? 0))
 }
 
 /** Link units an interactive tenant needs on this block. */
@@ -302,7 +304,8 @@ export function sellOrbitalBlock(state: GameState, blockId: string): void {
   const b = orbitBlock(state, blockId)!
   const priceUsd = blockSaleUsd(state, b)
   state.bandwidth -= ORBIT_SALE_BANDWIDTH
-  state.cash += priceUsd
+  // (M31.2) the proceeds repay the block's lender first
+  state.cash += repayFromProceeds(state, b, priceUsd)
   b.stage = 'sold'
   logEntry(state, 'log.orbit.sold', { n: b.n, priceUsd })
 }
@@ -313,7 +316,8 @@ export function sellOrbitalBlock(state: GameState, blockId: string): void {
 export function orbitConstructionUsd(state: GameState): number {
   return (state.act4Orbit?.blocks ?? [])
     .filter((b) => b.stage === 'building' || b.stage === 'awaiting_launch' || b.stage === 'climbing')
-    .reduce((usd, b) => usd + b.capexSpentUsd * b.capacity, 0)
+    // (a co-funding partner owns its share)
+    .reduce((usd, b) => usd + b.capexSpentUsd * b.capacity * (1 - (b.cofundShare ?? 0)), 0)
 }
 
 /** The market's space multiple this quarter (the orbital unit's EV/EBITDA). */

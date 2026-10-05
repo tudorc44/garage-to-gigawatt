@@ -29,6 +29,7 @@ import {
   type OrbitalBlock,
 } from '../state.ts'
 import { addGrievance } from './heat.ts'
+import { CAPITAL_KINDS, capitalBlocker, setCapital, type CapitalKind } from './orbitCapital.ts'
 import { addPc, politicalCapital } from './pcState.ts'
 import { scenarioOf } from './market.ts'
 
@@ -54,6 +55,7 @@ export function orbitOf(state: GameState): Act4Orbit {
     planned: [],
     safeModeQuarter: null,
     nextN: 1,
+    debts: [],
   }
   return state.act4Orbit
 }
@@ -226,23 +228,28 @@ export function signOrbitalTenant(state: GameState, blockId: string, offer: numb
   logEntry(state, 'log.orbit.tenant_signed', { n: block.n, tenantName: tenantType(o.type).name, prepaidUsd })
 }
 
-// ---------- the Capital slot (1 Bandwidth; own cash in M29) ----------
+// ---------- the Capital slot (1 Bandwidth; M31.2: cash, export credit, project debt, co-funding: orbitCapital.ts) ----------
 
 export const ORBIT_CAPITAL_BANDWIDTH = 1
 
-export function arrangeOrbitalCapitalBlocker(state: GameState, blockId: string): Message | undefined {
+export function arrangeOrbitalCapitalBlocker(
+  state: GameState,
+  blockId: string,
+  kind: CapitalKind = 'cash',
+): Message | undefined {
   const blocked = orbitPlanBlocker(state)
   if (blocked) return blocked
   const block = proposedBlock(state, blockId)
   if ('key' in block) return block
   if (block.capital !== null) return { key: 'error.orbit_slot_filled' }
   if (block.stage !== 'proposed') return { key: 'error.orbit_not_proposed' }
-  return bandwidthShort(state, ORBIT_CAPITAL_BANDWIDTH)
+  if (!CAPITAL_KINDS.includes(kind)) return { key: 'error.orbit_bad_block' }
+  return capitalBlocker(state, block, kind) ?? bandwidthShort(state, ORBIT_CAPITAL_BANDWIDTH)
 }
 
-export function arrangeOrbitalCapital(state: GameState, blockId: string): void {
+export function arrangeOrbitalCapital(state: GameState, blockId: string, kind: CapitalKind = 'cash'): void {
   state.bandwidth -= ORBIT_CAPITAL_BANDWIDTH
-  orbitBlock(state, blockId)!.capital = 'cash'
+  setCapital(state, orbitBlock(state, blockId)!, kind)
 }
 
 // ---------- licences and the registry ----------

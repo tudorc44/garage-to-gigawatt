@@ -12,6 +12,7 @@ import { chance, substream } from '../rng.ts'
 import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
 import { licenceRoom, orbitBlock, orbitOf, orbitRow } from './orbit.ts'
 import { wildcardFiredIv } from './wildcardsIv.ts'
+import { buildCostMult, debtAfterLoss, ownShare, payCapex, repayFromProceeds } from './orbitCapital.ts'
 
 const L = ORBIT.launch
 const SAT = ORBIT.satellites
@@ -136,7 +137,8 @@ export function clampdownActive(state: GameState, quarter = state.quarter): bool
 
 /** The build's cost now: the platform (mass × the market's build $/kg) plus, for a cloud, the GPUs with spares. */
 export function buildCostUsd(state: GameState, block: OrbitalBlock): number {
-  const platform = block.massT * 1000 * orbitRow(state).sat_build_usd_kg
+  // (M31.2: export credit builds at the partner's manufacturer, +10%)
+  const platform = block.massT * 1000 * orbitRow(state).sat_build_usd_kg * buildCostMult(block)
   if (block.kind === 'shell') return platform
   const exempt = ORBIT.licences.registries.find((r) => r.id === orbitOf(state).registry)!.clampdown_exempt
   const mult = clampdownActive(state) && !exempt ? ORBIT.licences.clampdown.cloud_capex_mult : 1
@@ -162,11 +164,13 @@ export function startOrbitalBuilds(state: GameState): void {
       continue
     }
     const costUsd = buildCostUsd(state, b)
-    if (state.cash < costUsd) {
-      logEntry(state, 'log.orbit.build_no_cash', { n: b.n, costUsd })
+    // (M31.2) the lender's draw or the partner's share pays part of it; the rest is your cash
+    const mineUsd = costUsd * ownShare(state, b, 'build')
+    if (state.cash < mineUsd) {
+      logEntry(state, 'log.orbit.build_no_cash', { n: b.n, costUsd: mineUsd })
       continue
     }
-    state.cash -= costUsd
+    payCapex(state, b, costUsd, 'build')
     b.capexSpentUsd += costUsd + b.launch.depositUsd
     b.stage = 'building'
     b.buildDoneQuarter = state.quarter + SAT.build_quarters
@@ -279,11 +283,14 @@ export function endQuarterLaunches(state: GameState): void {
       continue
     }
     const restUsd = launchCostUsd(b) - b.launch.depositUsd
-    state.cash -= restUsd
+    payCapex(state, b, restUsd, 'launch')
     b.capexSpentUsd += restUsd
     if (chance(roll, launchFailureShare(b.launch.provider, state.quarter))) {
       const lossUsd = b.capexSpentUsd
       const payoutUsd = settleOrbitLoss(state, b, lossUsd)
+      // (M31.2) the insurance proceeds repay the block's lender first
+      state.cash -= payoutUsd - repayFromProceeds(state, b, payoutUsd)
+      debtAfterLoss(state, b)
       logEntry(state, 'log.orbit.launch_failed', { n: b.n, providerName: b.launch.provider, lossUsd, payoutUsd })
       b.stage = 'proposed'
       b.launch = null

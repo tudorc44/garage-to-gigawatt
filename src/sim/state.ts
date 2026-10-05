@@ -194,8 +194,10 @@ export interface OrbitalBlock {
     | null
   /** The tenant offers on the table this Plan phase. */
   offers: { type: 'sovereign' | 'frontier_lab' | 'inference_platform' | 'eo_processor'; price: number; termQuarters: number }[]
-  /** The Capital slot (M29: own cash; M31 adds export credit, project debt, co-funding and equity). */
-  capital: 'cash' | null
+  /** The Capital slot (M29: own cash; M31.2: export credit, project debt, sovereign co-funding). */
+  capital: 'cash' | 'export_credit' | 'project_debt' | 'co_funding' | null
+  /** Co-funding (M31.2): the partner's share of the block's revenue. */
+  cofundShare?: number
   buildDoneQuarter: number | null
   liveQuarter: number | null
   /** Sim-internal: the quarter it deorbits (live quarter + the future's true useful life). */
@@ -244,6 +246,28 @@ export interface Act4Orbit {
   /** Safe mode was chosen in a storm this quarter (live blocks lose 3 weeks' revenue). */
   safeModeQuarter: number | null
   nextN: number
+  /** M31.2: loans on orbital blocks (export credit, project debt). */
+  debts?: OrbitalDebt[]
+}
+
+/** Act IV (M31.2): a loan on an orbital block (doc 33 §11.1). Interest joins it during the build; repaid once live. */
+export interface OrbitalDebt {
+  id: string
+  blockId: string
+  n: number
+  kind: 'export_credit' | 'project_debt'
+  apr: number
+  /** The most it lends (a share of the block's capex), drawn as the capex is paid. */
+  limitUsd: number
+  balanceUsd: number
+  tenorQuarters: number
+  /** Repaying: the block is live (or was lost); before that interest is added to the loan. */
+  amortizing: boolean
+  paidQuarters: number
+  /** Project debt's insurance covenant: a breach's cure runs to this quarter, or null. */
+  cureUntil: number | null
+  /** Repaid, called or settled: no longer owed. */
+  closed?: boolean
 }
 
 /** Act IV (M30.2): one lunar site you've claimed (doc 33 §9). Every step is a project card: no mining minigame. */

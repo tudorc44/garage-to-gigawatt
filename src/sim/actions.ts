@@ -115,6 +115,7 @@ import {
   type OpenBlock,
 } from './systems/orbit.ts'
 import type { ProviderId, RegistryId, ShellId } from '../content/orbitContent.ts'
+import type { CapitalKind } from './systems/orbitCapital.ts'
 import {
   bookLaunch,
   bookLaunchBlocker,
@@ -399,8 +400,8 @@ export type Action =
   | { type: 'CANCEL_ORBITAL_BLOCK'; blockId: string }
   /** Act IV: fill the Tenant slot with an offer (its index) or spot (0 BW). */
   | { type: 'SIGN_ORBITAL_TENANT'; blockId: string; offer: number | 'spot' }
-  /** Act IV: fill the Capital slot (1 BW; own cash in M29). */
-  | { type: 'ARRANGE_ORBITAL_CAPITAL'; blockId: string }
+  /** Act IV: fill the Capital slot (1 BW): own cash (the default), export credit, project debt or co-funding. */
+  | { type: 'ARRANGE_ORBITAL_CAPITAL'; blockId: string; capital?: CapitalKind }
   /** Act IV: file a constellation licence in a shell (1 BW, the fee). */
   | { type: 'FILE_ORBITAL_LICENCE'; shell: ShellId }
   /** Act IV: political capital takes a quarter off a pending licence. */
@@ -797,9 +798,9 @@ function run(s: GameState, a: Action): Message | undefined {
     }
 
     case 'ARRANGE_ORBITAL_CAPITAL': {
-      const blocked = arrangeOrbitalCapitalBlocker(s, a.blockId)
+      const blocked = arrangeOrbitalCapitalBlocker(s, a.blockId, a.capital)
       if (blocked) return blocked
-      arrangeOrbitalCapital(s, a.blockId)
+      arrangeOrbitalCapital(s, a.blockId, a.capital)
       return
     }
 

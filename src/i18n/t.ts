@@ -60,6 +60,7 @@ const ID_PARAMS: Record<string, string> = {
   lunarSite: 'moon.site.',
   claimant: 'moon.claimant.',
   buyer: 'moon.buyer.',
+  capital: 'orbit.capital.',
 }
 
 function fill(text: string, params: MessageParams): string {

@@ -20,6 +20,7 @@ import { inAct2Rules, inAct3Rules, inActIII, inActIV } from '../state.ts'
 import { buildAct4End } from './act4End.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
+import { serviceOrbitalDebt } from './orbitCapital.ts'
 import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
 import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
 import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.ts'
@@ -104,6 +105,12 @@ export function endQuarter(state: GameState): void {
   const service = serviceFacilities(state)
   state.quarterStats.interestUsd += service.interestUsd
   state.quarterStats.principalUsd += service.principalUsd
+  // Act IV (M31.2): loans on orbital blocks (interest added during the build; repaid once live) and their covenant.
+  if (state.act4Orbit?.debts?.length) {
+    const orbital = serviceOrbitalDebt(state)
+    state.quarterStats.interestUsd += orbital.interestUsd
+    state.quarterStats.principalUsd += orbital.principalUsd
+  }
   // Act III (M18.2): the standby's commitment fee; then, short of cash, the standby is drawn before any forced sale.
   if (inAct3Rules(state)) {
     state.quarterStats.interestUsd += settleStandbyFee(state)
