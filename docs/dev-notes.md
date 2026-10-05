@@ -5,8 +5,8 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M21 and M21.6 merged into `main` at `48d16b4` and pushed). The Prologue, Act I, Act II and Act III are built
-and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M21" and "Milestone M18 close-out".
+Last updated: 5 Oct 2026 (M22 merged into `main` at `6c623d3` and pushed; M23 in progress on `m23`). The Prologue, Act I, Act II and
+Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M23" and "Milestone M18 close-out".
 
 ## How the owner works
 
@@ -156,11 +156,10 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Nothing is being built.** M21 and M21.6 are done and merged (`main` = `48d16b4`, pushed 5 Oct 2026); M19 and M20 merged on 4 Oct
-(`7804dd0`), M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m21, m21.6, prologue-done) and deleted;
-the remote holds only `main`. The next milestone branch starts from `main` (m22). Waiting on: the design thread's choice of next work
-(Act III polish, balance after playtests, real data, Act IV; the "status after M21.6" questions) and the owner's tasks: the Act III
-playtest, the Act I playtests (postponed), the ear test of the sounds. (D15 resolved by the owner in M20.1.)
+**M23 is being built on `m23`** (rate robustness and Act III clarity polish; see "Milestone M23"). M22 is done and merged (`main` =
+`6c623d3`, pushed 5 Oct 2026); M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged
+`m<n>-done` (m9 … m22, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III playtest,
+the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 
@@ -177,6 +176,13 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 **M19.3 done:** People card (via hires.json + en.json); the Plan deal card (all acts, wildcard-card style, "Not this year" tagged Default); the game had no
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
+
+## Milestone M23 (branch `m23`, from main at `6c623d3`; rate robustness and Act III clarity polish)
+
+Split (DT spec, 5 Oct 2026): M23.0 housekeeping (m22 tagged m22-done and deleted; it never had a remote branch; this note records the M22
+merge); M23.1 SOFR 2026Q4 = the last FRED observation carried forward, the seam into 2027Q1, the sim vs M22; M23.2 the implied miner premium
+table (doc 18 §15, report only); M23.3 the robustness sweep (SOFR ±100 bp in Act II, Act III scenario HY ±150 bp; report only, no retuning,
+output outside committed files); M23.4 Act III clarity: the renewal-wall chart, rich tooltips, onboarding tips with a setting to show them again.
 
 ## Milestone M22 (branch `m22`, from main at `48d16b4` plus the M21 notes fix `d7bab88`; real market data)
 
