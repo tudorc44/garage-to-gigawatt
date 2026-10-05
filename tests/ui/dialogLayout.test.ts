@@ -15,4 +15,16 @@ describe('dialog layout', () => {
     const children = css.match(/\.dialog\s*>\s*\*\s*\{([^}]*)\}/)
     expect(children?.[1]).toMatch(/flex-shrink:\s*0/)
   })
+
+  it("the Deal builder's note cells wrap, so its tables never widen the dialog (hotfix 2)", () => {
+    const notes = css.match(/\.deal-panel\s+td\.num-s\s*\{([^}]*)\}/)
+    expect(notes?.[1]).toMatch(/white-space:\s*normal/)
+  })
+
+  it('the fleet dialog lets its batch name and working count wrap (found by the hotfix 2 sweep)', () => {
+    const fleet = css.match(
+      /\.fleet-table td:first-child,\s*\.fleet-table td:nth-child\(3\)\s*\{([^}]*)\}/,
+    )
+    expect(fleet?.[1]).toMatch(/white-space:\s*normal/)
+  })
 })

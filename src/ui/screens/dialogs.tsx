@@ -265,7 +265,7 @@ export function FleetDialog({ state, act, onClose }: DialogProps) {
   const sites = siteViews(state)
   return (
     <Dialog title={t('ui.fleet_dialog.title')} onClose={onClose}>
-      <table>
+      <table class="fleet-table">
         <thead>
           <tr>
             <th>{t('ui.fleet_dialog.col.batch')}</th>

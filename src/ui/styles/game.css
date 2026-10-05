@@ -1491,6 +1491,15 @@ td.wrap {
   flex-direction: column;
   gap: 6px;
 }
+/* The fleet dialog: the batch name and the working count wrap, so the table fits the dialog at 1024 px. */
+.fleet-table td:first-child,
+.fleet-table td:nth-child(3) {
+  white-space: normal;
+}
+/* The Deal builder's note cells are sentences: they wrap so its tables fit the dialog (they scrolled it sideways). */
+.deal-panel td.num-s {
+  white-space: normal;
+}
 .offer {
   border-top: var(--border-hair) solid var(--line);
   padding-top: 6px;
