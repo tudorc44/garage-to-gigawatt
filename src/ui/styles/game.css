@@ -664,6 +664,10 @@ button.action:hover:not(:disabled) {
   overflow: auto;
   padding: var(--space-5);
 }
+/* A tall dialog scrolls; its parts keep their own height instead of being squeezed (a .seg switch shrank to 0). */
+.dialog > * {
+  flex-shrink: 0;
+}
 @keyframes rise {
   from {
     opacity: 0;
