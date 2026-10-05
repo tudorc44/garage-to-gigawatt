@@ -80,14 +80,26 @@ function SlotChips({ card }: { card: ProjectCardView }) {
   )
 }
 
+/** "1 yr", "12 yrs", "2.5 yrs". */
+function yearsText(n: number | string) {
+  return String(n) === '1'
+    ? t('ui.deal.years_one', { n })
+    : t('ui.deal.years', { n })
+}
+
+/** A card's rating note goes after a comma, not in nested brackets: "B+ (rising)" → "B+, rising". */
+function ratingText(rating: string) {
+  return rating.replace(/\s*\((.*)\)$/, ', $1')
+}
+
 /** A signed tenant: a shell's lease, or a cloud's GPU contract with its locked $/GPU-hr. */
 function TenantLine({ card }: { card: ProjectCardView }) {
   const tn = card.tenant!
   const params = {
     name: tenantName(tn.id),
-    rating: tn.rating,
+    rating: ratingText(tn.rating),
     annual: fmt.money(tn.annualUsd),
-    years: tn.termYears,
+    years: yearsText(tn.termYears),
   }
   return (
     <>
@@ -728,7 +740,9 @@ function CapitalRows(
         ) : (
           t('ui.deal.cap.debt_terms', {
             share: fmt.pct(row.share),
-            years: (row.tenorQuarters / 4).toFixed(1).replace(/\.0$/, ''),
+            years: yearsText(
+              (row.tenorQuarters / 4).toFixed(1).replace(/\.0$/, ''),
+            ),
             rating: row.rating,
           })
         )}
@@ -1203,20 +1217,28 @@ function DealBuilder(
               <td>{t('ui.deal.capex')}</td>
               <td class="num r">{fmt.money(ret.capexUsd)}</td>
               <td class="num-s muted">
-                {v.partnerShare > 0 &&
-                  t('ui.deal.partner_share', {
-                    partner: fmt.pct(v.partnerShare),
-                    whole: fmt.money(v.wholeCapexUsd),
-                  })}
-                {v.cost.gpuUsd > 0 &&
-                  t('ui.deal.capex_split', {
-                    gpus: fmt.money(v.cost.gpuUsd),
-                    retrofit: fmt.money(v.cost.retrofitUsd - v.cost.creditUsd),
-                  })}
-                {v.cost.creditUsd > 0 &&
-                  t('ui.deal.credit', { value: fmt.money(v.cost.creditUsd) })}
-                {v.cost.densityUsd > 0 &&
-                  ` ${t('ui.deal.top_tier', { value: fmt.money(v.cost.densityUsd) })}`}
+                {[
+                  v.partnerShare > 0 &&
+                    t('ui.deal.partner_share', {
+                      partner: fmt.pct(v.partnerShare),
+                      whole: fmt.money(v.wholeCapexUsd),
+                    }),
+                  v.cost.gpuUsd > 0 &&
+                    t('ui.deal.capex_split', {
+                      gpus: fmt.money(v.cost.gpuUsd),
+                      retrofit: fmt.money(
+                        v.cost.retrofitUsd - v.cost.creditUsd,
+                      ),
+                    }),
+                  v.cost.creditUsd > 0 &&
+                    t('ui.deal.credit', { value: fmt.money(v.cost.creditUsd) }),
+                  v.cost.densityUsd > 0 &&
+                    t('ui.deal.top_tier', {
+                      value: fmt.money(v.cost.densityUsd),
+                    }),
+                ]
+                  .filter(Boolean)
+                  .join(' · ')}
               </td>
             </tr>
             <tr>
@@ -1244,7 +1266,7 @@ function DealBuilder(
                     level: v.utilisation.knowHow,
                   })}
                   {v.utilisation.contracted &&
-                    ` ${t('ui.deal.utilisation_contract')}`}
+                    `. ${t('ui.deal.utilisation_contract')}`}
                 </td>
               </tr>
             )}
@@ -1253,7 +1275,7 @@ function DealBuilder(
               <td class="num r">
                 {ret.paybackYears === null
                   ? '—'
-                  : t('ui.deal.years', { n: ret.paybackYears.toFixed(1) })}
+                  : yearsText(ret.paybackYears.toFixed(1))}
               </td>
               <td />
             </tr>
