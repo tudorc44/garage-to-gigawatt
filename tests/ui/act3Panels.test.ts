@@ -215,6 +215,9 @@ describe('the scenario stays off the screen', () => {
       if (REVEAL.test(f)) continue
       const t = code(f)
       expect(t, f).not.toMatch(/\bscenarioId\b/)
+      // M27.6 (doc 33 §6.8): nor Act IV's hidden future or its end record (the Act IV chapter reads only act4End's
+      // shown fields; M32's reveal will be the one exception, like Act3Reveal.tsx)
+      expect(t, f).not.toMatch(/\bfutureId\b/)
       expect(t, f).not.toMatch(/scenario_name|scenarioName/)
       expect(t, f).not.toMatch(/signalsHidden|rivalsHidden|act3End\b/)
       expect(t, f).not.toMatch(/\.role\b|role_tag|roleTag|\bdecoy\b/i)

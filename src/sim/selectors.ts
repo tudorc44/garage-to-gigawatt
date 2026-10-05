@@ -520,12 +520,13 @@ export function averagePrice(
   quarter: number,
   coin: Coin,
   /** Act III (M13.1): the game, whose scenario's weekly market has these quarters (the UI never reads the scenario). */
-  state?: Pick<GameState, 'scenarioId'> | null,
+  state?: Pick<GameState, 'act' | 'scenarioId' | 'futureId'> | null,
 ): number {
+  // (M27.6: through the state's market key, so Act IV's quarters read its glided market)
   const weeks =
     CONTENT.market[quarter] ??
     Array.from({ length: BALANCE.weeksPerQuarter }, (_, w) =>
-      marketWeek(quarter, w, state?.scenarioId),
+      marketWeek(quarter, w, state ? scenarioOf(state) : undefined),
     )
   return weeks.reduce((sum, w) => sum + coinPrice(w, coin), 0) / weeks.length
 }

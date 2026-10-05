@@ -311,7 +311,22 @@ describe('the hidden signals fields never reach src/', () => {
         expect(text).toMatch(/const enterAct3 = \([^)]*\) => \{[\s\S]*?\btoAct3\(/)
         continue
       }
+      // M27.6: the Act IV quick starts (test builds only) play their company through Act III on a fixed scenario.
+      if (/ui[\\/]act4QuickStart\.ts$/.test(file)) continue
       expect(code(file), `${file} uses toAct3`).not.toMatch(/\btoAct3\b/)
+    }
+  })
+
+  it('M27.6: nothing in src/ calls toAct4 but its own definition and the app’s one entry (enterAct4)', () => {
+    for (const file of src) {
+      if (/sim[\\/]state\.ts$/.test(file)) continue
+      if (/ui[\\/]app\.tsx$/.test(file)) {
+        const text = code(file)
+        expect(text.match(/\btoAct4\(/g) ?? []).toHaveLength(1)
+        expect(text).toMatch(/const enterAct4 = \([^)]*\) => \{[\s\S]*?\btoAct4\(/)
+        continue
+      }
+      expect(code(file), `${file} uses toAct4`).not.toMatch(/\btoAct4\b/)
     }
   })
 

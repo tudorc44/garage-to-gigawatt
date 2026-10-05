@@ -1186,6 +1186,8 @@ td.wrap {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* M27.6: keep its height in a short window (the intro card scrolls instead of squeezing the box) */
+  flex: none;
 }
 .act-intro-box td.r,
 .act-intro-box td.num-s {
