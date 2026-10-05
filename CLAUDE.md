@@ -7,8 +7,8 @@ A career runs from a bedroom in 2009 to an AI-campus operator in 2030, in acts o
 Plan phase → Live quarter (13 weekly ticks, pausable, up to 3 interrupts) → Quarter report; each act ends in a
 chapter report. Money, debt, power, Heat and rivals are simulated; prices and events follow scripted data.
 
-**Status (4 Oct 2026): the Prologue, Act I, Act II and Act III are built and public on GitHub Pages. Act IV is not
-designed.**
+**Status (5 Oct 2026): the Prologue, Act I, Act II and Act III are built and public on GitHub Pages. Act IV ("The Race
+to Orbit") is designed (doc 33, approved with the owner's defaults in `docs/act4-scope.md`) and being built (M27–M32).**
 - **The Prologue** (Alpha 0.3, Act 0, "Bedroom to Garage"): 32 quarters, 2009 → 2016, optional from the title screen,
   handing over to Act I. Scope in `docs/alpha-0.3-scope.md`.
 - **Act I** (Alpha 0.1, "Garage to Hashrate"): 23 quarters, 2017Q1 → 2022Q3. $10k and an empty garage; machines,
@@ -21,6 +21,10 @@ designed.**
   on one of four hidden market scenarios; scored on net worth and a reading score, revealed in the chapter report;
   Scenario Mode unlocks after one finish. Design: doc 27 v1.2 (its §17 records every change from the build); balance
   pass closed (4 Oct 2026); public since M20.
+- **Act IV** ("The Race to Orbit"): 20 quarters, 2031Q1 → 2035Q4 (quarters 56–75), from a finished Act III or one of
+  three preset companies, on one of four hidden futures plus a hidden lunar grade. Three theatres on one balance sheet:
+  Ground, Orbit (compute blocks launched on scarce manifests) and the Moon (claim, prospect, pilot). Ends in a chapter
+  report with the reveal, then the campaign finale. Scope: `docs/act4-scope.md`; design: doc 33.
 - Playtests: the owner's Act III playtest and the Act I playtests are still to come.
 
 ## Commands
@@ -60,6 +64,12 @@ npm run content:market  # regenerate the market JSON files after editing a marke
   (A3-01 … A3-12), `docs/act3-carryover-audit.md`.
 - **The Prologue:** `docs/alpha-0.3-scope.md` (wins over `claude_26-alpha-0_3-scope.md`), `docs/prologue-content/`,
   `docs/wireframes/prologue/`.
+- **Act IV:** `docs/act4-scope.md` (**source of truth for Act IV scope**: the owner's approval, defaults, milestone plan,
+  targets B1–B14, cut order and "Changes from doc 33"); `docs/game-project-files/claude_33-act-iv-design.md` (doc 33, the
+  design, IV-D1–IV-D33), `claude_31-act-iv-research-dossier.md` (doc 31, the evidence), `claude_32-act-iv-concepts.md`
+  (doc 32), `claude_34-act-iv-build-prompt.md` (the owner's run prompt); `docs/act4-research/` (the cost model and its
+  results); `docs/act4-content/` and its **README** (the source files; every value flagged sourced, derived or designed);
+  `docs/wireframes/act4/README.md` (the layout notes; no wireframes exist).
 - **Architecture and style:** `docs/tech-stack.md`; `docs/design-system/README.md` and `docs/design-system/tokens.css`
   (**source of truth for UI style**: tokens, era themes, fonts, colours, components; `docs/design-system.md` records
   the decisions); `docs/wireframes-spec.md` (**source of truth for screen layout and flow**); `docs/mockups/q4-2017.html`
@@ -113,6 +123,21 @@ npm run content:market  # regenerate the market JSON files after editing a marke
   forced or quick-start. **The gate test** (`tests/ui/act3Gate.test.ts`) builds production and staging: production has
   the Act III chunks but neither marker, staging has both, and the main bundle stays under 500 KB.
 
+### Act IV rules that must hold
+- **Hidden files:** `reading_score_iv.json`, `lunar_truth.json` and `orbit_truth_iv.json` are each read only by their own
+  sim system (`readingScore.ts`, the lunar geology system, the fleet reliability system) and by `src/sim/systems/act4End.ts`,
+  plus tests and `tools/`. The grep test enforces it.
+- **The leak guard:** no Act IV screen during play shows a future's name, trigger, decoy reason or tell, the true orbital
+  reliability or the true lunar grade; views show estimates (prospect reports, fleet telemetry) only. Only the Act IV
+  chapter report reveals them.
+- **No lunar output or lunar cost cut inside the act:** no production plant produces anything before the act ends, and
+  lunar supply never lowers an orbital cost in 2031–2035 (the "after 2035" panel and the epilogue only). Tests assert both.
+- **The common 2031 baseline:** every market value the UI can show is identical across the four futures in 2031Q1–Q2 and
+  within ±3% through 2031Q4 (B14); the seam glide from the Act III 2030Q4 values ends on that baseline, never on a
+  future's own path. A test asserts it.
+- **Test-build only:** the `?future=` forcing and its top-bar tag, and the "Act IV preview (test build)" quick starts,
+  behind the same production gate as Act III; production refuses such saves.
+
 ### Standing invariants (check them at every milestone)
 - **Goldens:** Act I ×11, the prologue ×2, Act II and act3-s0…s3 (`tests/golden/`). A golden change must be the intended
   effect of the sub-step and be explained; accept it with `npm test -- -u tests/golden-replay.test.ts`.
@@ -140,7 +165,8 @@ Create new folders only as a task needs them.
    (e.g. "run `npm run dev` and click End Quarter").
 3. **Ask before adding any dependency** (npm package, CDN script, tool). Say what it's for and whether there's a
    no-dependency option.
-4. **Scope guard.** The scope docs (`alpha-0.1`, `alpha-0.2` frozen v1.0, `alpha-0.3`) and doc 27 decide what gets built.
+4. **Scope guard.** The scope docs (`alpha-0.1`, `alpha-0.2` frozen v1.0, `alpha-0.3`, `act4-scope.md`), doc 27 and doc 33
+   decide what gets built.
    If a request falls outside them, say so and push back politely. Offer to add it to the backlog, or to swap it for
    something of similar size per the scope doc's change rule. Don't quietly build it.
 5. **Respect the architecture rules above.** If a task seems to need breaking one, stop and explain instead.

@@ -148,13 +148,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 - ~~M13.2: the automated UI smoke test~~: unblocked in M15.2 (happy-dom and @testing-library/preact approved).
 - Balance tuning stays stopped by the owner's A1 answer.
-- **Act IV run (M27–M32), stopped at step 0 (5 Oct 2026): doc 33 not reachable.** The owner's unattended-run prompt says to stop the
-  whole run if `claude_33-act-iv-design.md` can't be read. This session has no claude.ai Projects tool; the docs (`claude_31…`,
-  `claude_32…`, `claude_33…`, `act4-research/orbit_cost_model.py`, `results.md`) are not in the repo, the owner's Google Drive or
-  ~/Downloads. Done: `m27` made from `main` (`209622e`; m26 is merged), baseline green (lint, 1286 tests, build), this note.
-  **To resume:** put the five files in the repo (docs 31–33 in `docs/game-project-files/`, the model and results in
-  `docs/act4-research/`), commit them on `m27`, then say "continue the Act IV run from dev-notes" and re-paste the run prompt
-  (its approvals and defaults aren't in the repo yet). The run starts at M27.1 (`docs/act4-scope.md`).
+- ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
+  repo (M27.0); the run resumed at M27.1.
 
 ## Small follow-ups
 
@@ -168,8 +163,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The Act IV run (M27–M32) is STOPPED at step 0 on `m27`: doc 33 isn't in the repo (see STOPPED for how to resume). Next sub-step:
-M27.1.** M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
+**The Act IV run (M27–M32) is under way on `m27`** (see "The Act IV run"). Next sub-step: **M27.2** (the act-aware refactor). M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -189,6 +183,23 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 **M19.3 done:** People card (via hires.json + en.json); the Plan deal card (all acts, wildcard-card style, "Not this year" tagged Default); the game had no
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
+
+## The Act IV run (M27–M32, the owner's unattended-run prompt of 5 Oct 2026: `docs/game-project-files/claude_34-act-iv-build-prompt.md`)
+
+Scope and rules: `docs/act4-scope.md` (doc 33 approved with the owner's 16 defaults; milestone plan; B1–B14; cut order;
+"Changes from doc 33"). Branches chain: `m27` from main, `m28` from `m27`, … (no merges during the run). Push after every
+sub-step commit.
+
+### Milestone M27 (branch `m27`, from main at `209622e`; setup and the walking skeleton)
+
+Split: M27.0 the design docs committed; M27.1 `docs/act4-scope.md` and the CLAUDE.md updates; M27.2 the act-aware refactor
+(act 4, `inActIV`, gates, save version 5 and its migration, the timeline to 2035Q4, `act4Seed`, `act4Entry`); M27.3
+`docs/act4-content/` (README, the four quarterly and four weekly market files, schemas, loader, copy test, B14 test);
+M27.4 the Act III → IV boundary (carry-over and drop rules, the future draw, the seam glide); M27.5 20 playable quarters
+with the ground systems and a stub chapter report; M27.6 the screens (the light `orbit` theme, "Continue to Act IV",
+A4-01, the test-build quick starts and `?future=`); M27.7 the byte-identity check and the M27 report.
+- **M27.0 done** (`f01f142`): docs 31–34 and the cost model committed as the owner placed them.
+- **M27.1 done.** `docs/act4-scope.md` written; CLAUDE.md: status, Act IV summary, key docs, scope guard, "Act IV rules that must hold".
 
 ## Milestone M26 (branch `m26`, from main at `f8cf61f`; cleanup)
 
