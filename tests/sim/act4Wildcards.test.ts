@@ -1,7 +1,9 @@
 // M28.5 (doc 33 §6.6, IV-D11): Act IV's wildcards. 2 of 6 drawn at the boundary on their own stream, each in its window,
 // independent of the future; each fires once at the start of its quarter with its news line; the Bitcoin Supercycle
 // doubles mining revenue for three quarters (the others' effects come with M29/M30).
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+// (The first Act IV company plays a whole Act III: no clock decides pass or fail, as M24.1's leak guard.)
+vi.setConfig({ testTimeout: 0 })
 import { CONTENT, quarterIndex } from '../../src/content/index.ts'
 import { applyAction } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'

@@ -1,7 +1,9 @@
 // M28.2 (doc 33 §6.3, IV-D10): Act IV's Signals in play. Read the market costs 1 Bandwidth, once a quarter, and reveals
 // the read indicator's sharp range for that quarter only; the panel shows this quarter's value and the past, never a
 // later quarter.
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+// (The first Act IV company plays a whole Act III: no clock decides pass or fail, as M24.1's leak guard.)
+vi.setConfig({ testTimeout: 0 })
 import { CONTENT } from '../../src/content/index.ts'
 import { applyAction } from '../../src/sim/actions.ts'
 import { act4MwColumns, signalsPanelIv } from '../../src/sim/selectors.ts'

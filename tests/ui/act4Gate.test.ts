@@ -1,6 +1,8 @@
 // M27.6 (act4-scope.md §3, "test builds only"): Act IV's ?future= forcing and its quick-start companies are test-build
 // only; production refuses an Act IV save a test build made. (The production/staging build check is in act3Gate.test.ts.)
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+// (The first Act IV company plays a whole Act III: no clock decides pass or fail, as M24.1's leak guard.)
+vi.setConfig({ testTimeout: 0 })
 import { forcedFuture, guardTestBuildSave } from '../../src/platform/preview.ts'
 import { toAct4 } from '../../src/sim/state.ts'
 import { ACT4_QUICK_STARTS, act4QuickStartCompany } from '../../src/ui/act4QuickStart.ts'

@@ -1,6 +1,8 @@
 // M27.4 (doc 33 §3.1–3.2, §6.1; IV-D19): the Act III → IV boundary. What carries, what drops, the future draw on its
 // own substream, and the market seam from the player's own Act III scenario.
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+// (The first Act IV company plays a whole Act III: no clock decides pass or fail, as M24.1's leak guard.)
+vi.setConfig({ testTimeout: 0 })
 import { BALANCE, CONTENT, FUTURE_IDS, actFirstQuarter } from '../../src/content/index.ts'
 import { drawFuture, toAct4 } from '../../src/sim/state.ts'
 import { marketWeek, scenarioOf } from '../../src/sim/systems/market.ts'

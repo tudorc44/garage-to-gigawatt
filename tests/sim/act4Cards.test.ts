@@ -2,7 +2,9 @@
 // cards fire only in its own future; ids are opaque; every effect is one the engine already applies; the text is in the
 // text table word for word; no card text names a future or uses the leak guard's words.
 import { readFileSync } from 'node:fs'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+// (The first Act IV company plays a whole Act III: no clock decides pass or fail, as M24.1's leak guard.)
+vi.setConfig({ testTimeout: 0 })
 import { CONTENT, FUTURE_IDS } from '../../src/content/index.ts'
 import { act4CardEngineId, type Act4CardRaw } from '../../src/content/act4Cards.ts'
 import { tDynamic } from '../../src/i18n/t.ts'

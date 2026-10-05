@@ -2,7 +2,9 @@
 // M27.6: every screen an Act IV game shows renders (the Plan screen and each section, the live quarter, the quarter
 // report, the intro and the chapter stub), in every future, and none names its future.
 import { cleanup, render } from '@testing-library/preact'
-import { afterEach, beforeAll, describe, expect, it } from 'vitest'
+import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest'
+// (The first Act IV company plays a whole Act III: no clock decides pass or fail, as M24.1's leak guard.)
+vi.setConfig({ testTimeout: 0 })
 import { FUTURE_IDS } from '../../src/content/index.ts'
 import { applyAction } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
