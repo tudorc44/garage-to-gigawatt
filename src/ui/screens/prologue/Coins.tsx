@@ -11,6 +11,7 @@ import {
 } from '../../../sim/prologue/views.ts'
 import type { Coin, GameState } from '../../../sim/state.ts'
 import { Icon, Tip } from '../../components/basics.tsx'
+import { Term } from '../../components/term.tsx'
 import { fmt } from '../../format.ts'
 import { coins, price, useError, type PrologueProps } from './common.tsx'
 
@@ -96,7 +97,9 @@ export function Coins({ state, act }: PrologueProps) {
         <section class="panel">
           <Tip id="coins" act={0} />
           <div class="row-between">
-            <span class="panel-title">{t('ui.p0.where_coins')}</span>
+            <span class="panel-title">
+              <Term id="wallet_exchange" act={0}>{t('ui.p0.where_coins')}</Term>
+            </span>
             <span class="num">
               {coins(btc.total, 'BTC')} · {fmt.money(totalUsd)}
             </span>
@@ -249,7 +252,9 @@ export function Coins({ state, act }: PrologueProps) {
       </div>
       <div class="col">
         <section class="panel">
-          <span class="panel-title">{t('ui.p0.limit_label')}</span>
+          <span class="panel-title">
+            <Term id="selling_limit" act={0}>{t('ui.p0.limit_label')}</Term>
+          </span>
           <SellingLimit state={state} />
         </section>
         <section class="panel">

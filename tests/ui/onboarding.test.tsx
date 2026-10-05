@@ -8,6 +8,8 @@ import en from '../../src/i18n/en.json' with { type: 'json' }
 import { readDismissedTips, resetDismissedTips } from '../../src/platform/tips.ts'
 import { newGame } from '../../src/sim/state.ts'
 import { Tip } from '../../src/ui/components/basics.tsx'
+import { TopBar } from '../../src/ui/components/frame.tsx'
+import { Term } from '../../src/ui/components/term.tsx'
 import { FleetPanel } from '../../src/ui/screens/Plan.tsx'
 import { act2Company } from '../sim/act2Helpers.ts'
 
@@ -21,6 +23,36 @@ export const TIPS = {
   0: ['rig', 'household', 'mining', 'coins', 'machines', 'live'],
   1: ['todo', 'market', 'fleet', 'sell', 'live', 'report'],
 } as const
+
+export const TERMS = {
+  0: ['difficulty', 'solo_pool', 'patience', 'wallet_exchange', 'selling_limit'],
+  1: ['bandwidth', 'treasury', 'heat', 'valuation', 'hashprice', 'hodl'],
+  2: ['rating', 'backlog', 'leverage', 'ddtl', 'mw_uses'],
+} as const
+
+describe('rich tooltips for the Prologue, Act I and Act II (M24.3)', () => {
+  it('every term has a title and a line; the card opens on hover with them', () => {
+    for (const [act, ids] of Object.entries(TERMS))
+      for (const id of ids) {
+        expect(text[`term.act${act}.${id}.title`], `${act}.${id}`).toBeTruthy()
+        expect(text[`term.act${act}.${id}.body`], `${act}.${id}`).toBeTruthy()
+      }
+    const r = render(<Term id="hashprice" act={1}>Hashprice</Term>)
+    fireEvent.mouseEnter(r.container.querySelector('[data-term="hashprice"]')!)
+    expect(r.container.querySelector('[role="tooltip"]')!.textContent).toContain(text['term.act1.hashprice.body'])
+  })
+
+  it('the top bar carries Act I’s terms (and Act II’s rating and backlog in Act II)', () => {
+    const a1 = render(<TopBar state={newGame(1)} />)
+    for (const id of ['treasury', 'bandwidth', 'heat', 'valuation'])
+      expect(a1.container.querySelector(`[data-term="${id}"]`), id).not.toBeNull()
+    expect(a1.container.querySelector('[data-term="rating"]')).toBeNull()
+    cleanup()
+    const a2 = render(<TopBar state={act2Company('2024Q1')} />)
+    expect(a2.container.querySelector('[data-term="rating"]')).not.toBeNull()
+    expect(a2.container.querySelector('[data-term="backlog"]')).not.toBeNull()
+  })
+})
 
 describe('onboarding tips for the Prologue and Act I (M24.2)', () => {
   it('every tip has its text (one or two sentences)', () => {
@@ -53,9 +85,9 @@ describe('onboarding tips for the Prologue and Act I (M24.2)', () => {
     expect(act2.container.querySelector('[data-tip="act1.fleet"]')).toBeNull()
   })
 
-  it('no new tip text uses a word the leak guard forbids', () => {
+  it('no new tip or term text uses a word the leak guard forbids', () => {
     const all = Object.entries(text)
-      .filter(([k]) => /^tooltip\.act[01]\./.test(k))
+      .filter(([k]) => /^tooltip\.act[01]\.|^term\.act[012]\./.test(k))
       .map(([, v]) => v)
       .join(' ')
     expect(all).not.toMatch(/trigger|decoy|false alarm|Muddle Through|Great Repricing|Lift-Off|Efficiency Shock/i)

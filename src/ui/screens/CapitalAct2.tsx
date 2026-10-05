@@ -20,6 +20,7 @@ import { say } from '../names.ts'
 import { LoanDialog } from './dialogs.tsx'
 import type { ScreenProps } from './Plan.tsx'
 import { BwButton } from './Projects.tsx'
+import { Term } from '../components/term.tsx'
 
 const tenantName = (id: string) => tDynamic(`tenant.${id}`, id)
 const x = (n: number) => `${n.toFixed(1)}×`
@@ -63,7 +64,9 @@ function RatingCard({ state }: { state: ScreenProps['state'] }) {
           </p>
           <div class="label">{t('ui.cap2.inputs')}</div>
           <div class="cap-input">
-            <span>{t('ui.cap2.leverage')}</span>
+            <span>
+              <Term id="leverage" act={2}>{t('ui.cap2.leverage')}</Term>
+            </span>
             <span class="r">
               <strong>
                 {v.inputs.debtToEbitda === null
@@ -178,7 +181,11 @@ function DebtStack({ state, act }: ScreenProps) {
             {v.rows.map((r, i) => (
               <tr key={i}>
                 <td>
-                  {tDynamic(`ui.cap2.kind.${r.kind}`, r.kind)}
+                  {r.kind === 'ddtl' ? (
+                    <Term id="ddtl" act={2}>{tDynamic(`ui.cap2.kind.${r.kind}`, r.kind)}</Term>
+                  ) : (
+                    tDynamic(`ui.cap2.kind.${r.kind}`, r.kind)
+                  )}
                   {r.projectN !== null &&
                     ` · ${t('ui.cap2.project_n', { n: r.projectN })}`}
                   {r.rating && <span class="tag">{r.rating}</span>}

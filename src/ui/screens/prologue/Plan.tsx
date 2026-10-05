@@ -27,6 +27,7 @@ import {
   Tip,
 } from '../../components/basics.tsx'
 import { SaveDialog } from '../../components/saves.tsx'
+import { Term } from '../../components/term.tsx'
 import { fmt } from '../../format.ts'
 import type { IconName } from '../../icons.ts'
 import { machineName, say } from '../../names.ts'
@@ -106,7 +107,9 @@ function TopBar({ state }: { state: GameState }) {
         </span>
       </div>
       <div class="stat">
-        <span class="label">{t('ui.p0.difficulty')}</span>
+        <span class="label">
+          <Term id="difficulty" act={0}>{t('ui.p0.difficulty')}</Term>
+        </span>
         <span class="num">
           {m.difficulty.toLocaleString('en-US', { maximumFractionDigits: 0 })}
         </span>
@@ -400,7 +403,9 @@ function RoomPanel({ state }: { state: GameState }) {
         label={t('ui.p0.load_of', { load: watts(load), cap: watts(cap) })}
       />
       <div class="row-between num-s">
-        <span class="label">{t('ui.p0.patience_label')}</span>
+        <span class="label">
+          <Term id="patience" act={0}>{t('ui.p0.patience_label')}</Term>
+        </span>
         <span class="num">{fmt.pct(life.patience / life.patienceMax)}</span>
       </div>
       <Bar
@@ -433,7 +438,9 @@ function MiningMode({
     <section class="panel">
       <Tip id="mining" act={0} />
       <div class="row-between">
-        <span class="panel-title">{t('ui.p0.mining_title')}</span>
+        <span class="panel-title">
+          <Term id="solo_pool" act={0}>{t('ui.p0.mining_title')}</Term>
+        </span>
         <span class="seg" role="group" aria-label={t('ui.p0.mining_title')}>
           <button
             type="button"
@@ -513,7 +520,9 @@ function MarketPanel({ state }: { state: GameState }) {
           </span>
         </div>
         <div>
-          <span class="label">{t('ui.p0.difficulty')}</span>
+          <span class="label">
+          <Term id="difficulty" act={0}>{t('ui.p0.difficulty')}</Term>
+        </span>
           <Sparkline
             series="hash"
             label={t('ui.p0.difficulty')}

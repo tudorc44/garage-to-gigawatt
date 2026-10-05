@@ -6,10 +6,16 @@ import type { ComponentChildren } from 'preact'
 import { useState } from 'preact/hooks'
 import { tDynamic } from '../../i18n/t.ts'
 
-export function Term(props: { id: string; children: ComponentChildren }) {
+// M24.3: the Prologue's, Act I's and Act II's core terms too (`act` picks term.act<n>.<id>; Act III's are the default).
+export function Term(props: {
+  id: string
+  act?: 0 | 1 | 2 | 3
+  children: ComponentChildren
+}) {
   const [at, setAt] = useState<{ x: number; y: number } | null>(null)
-  const title = tDynamic(`term.act3.${props.id}.title`, '')
-  const body = tDynamic(`term.act3.${props.id}.body`, '')
+  const key = `term.act${props.act ?? 3}.${props.id}`
+  const title = tDynamic(`${key}.title`, '')
+  const body = tDynamic(`${key}.body`, '')
   if (!body) return <>{props.children}</>
   const open = (e: Event) => {
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect()

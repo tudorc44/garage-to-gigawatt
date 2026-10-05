@@ -32,6 +32,7 @@ import { inAct2Rules, isActIII, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { tierName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
+import { Term } from './term.tsx'
 import type { IconName } from '../icons.ts'
 
 function Delta(props: { value: number; dp?: number }) {
@@ -81,7 +82,9 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
         </span>
       </div>
       <div class="stat">
-        <span class="label">{t('ui.top.treasury')}</span>
+        <span class="label">
+          <Term id="treasury" act={1}>{t('ui.top.treasury')}</Term>
+        </span>
         <span class="num">
           <Icon name="treasury" size={16} />
           {coins.length
@@ -90,7 +93,9 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
         </span>
       </div>
       <div class="stat">
-        <span class="label">{t('ui.top.bandwidth')}</span>
+        <span class="label">
+          <Term id="bandwidth" act={1}>{t('ui.top.bandwidth')}</Term>
+        </span>
         <span class="num">
           <Pips
             total={total}
@@ -102,7 +107,9 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       {isActIII(s.act) && <Act3Panel name="PcStat" state={s} />}
       <div class="stat">
         <span class="label">
-          {t('ui.top.heat', { tier: tierName(heat.tier).toLowerCase() })}
+          <Term id="heat" act={1}>
+            {t('ui.top.heat', { tier: tierName(heat.tier).toLowerCase() })}
+          </Term>
         </span>
         <span class="num">
           <Icon name="heat" size={16} />
@@ -110,7 +117,9 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
         </span>
       </div>
       <div class="stat">
-        <span class="label">{t('ui.top.valuation')}</span>
+        <span class="label">
+          <Term id="valuation" act={1}>{t('ui.top.valuation')}</Term>
+        </span>
         <span class="num">
           {valuation === undefined ? t('ui.top.empty') : fmt.money(valuation)}
         </span>
@@ -120,7 +129,9 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           class="stat"
           title={rb.rating ? undefined : t('ui.top.not_rated_title')}
         >
-          <span class="label">{t('ui.top.rating')}</span>
+          <span class="label">
+            <Term id="rating" act={2}>{t('ui.top.rating')}</Term>
+          </span>
           <span class="num">
             <span class={`rating-badge${rb.rating ? '' : ' unrated'}`}>
               {rb.rating ?? t('ui.top.not_rated')}
@@ -130,7 +141,9 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       )}
       {act2 && (
         <div class="stat">
-          <span class="label">{t('ui.top.backlog')}</span>
+          <span class="label">
+            <Term id="backlog" act={2}>{t('ui.top.backlog')}</Term>
+          </span>
           <span class="num">{fmt.money(rb.backlogUsd)}</span>
         </div>
       )}

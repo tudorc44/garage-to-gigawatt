@@ -196,6 +196,14 @@ such pattern; nothing else to change.
 **M24.2 done:** `Tip act={0|1}` (dismissed as `act0.<id>` / `act1.<id>`; the Settings reset covers every act). Prologue: rig, household (Plan),
 mining (Plan › Solo or pool), coins (Coins screen), machines (Machines screen), live (Live screen). Act I (only when `act === 1`, as the panels are
 shared with Act II): todo, market, fleet, sell (Plan), live (Live), report (Report › Notes). Tips sit at the top of their panel (mine). 1269 tests.
+**M24.3 done:** `Term act={0|1|2}` (keys `term.act<n>.<id>`). Prologue: difficulty (top bar), solo_pool (Solo or pool), patience (Parents' patience),
+wallet_exchange (Where your coins are), selling_limit (Coins). Act I: bandwidth, treasury, heat, valuation (top bar, so also in Acts II–III), hashprice
+(Market), hodl (Sell). Act II: rating, backlog (top bar, Acts II–III), leverage (Capital › Debt / EBITDA), ddtl (Capital debt row), mw_uses (Where your
+megawatts go). Skipped: J/TH, fee share, subsidy (not on any screen), halving (an event card only). 1271 tests.
+**M24 report (5 Oct 2026):** commits `e3000e5` `26ce54f` `d48d7c2` + M24.3; no file under src/sim, src/content, tools or tests/golden changed (UI and
+text only), so sim output and every golden are byte-identical by construction; browser at 1024 px: every touched screen (Prologue Plan / Coins /
+Machines / Live, Act I Plan / Live / Report, Act II Plan / Capital) no sideways scroll, nothing outside its panel. Main 208.4 KB; term 3.7 KB (shared
+chunk); Prologue 43.1; Act3Panels 30.1; Act3Entry 16.0; bots 19.7.
 
 ## Milestone M23 (branch `m23`, from main at `6c623d3`; rate robustness and Act III clarity polish)
 

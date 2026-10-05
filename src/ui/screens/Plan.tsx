@@ -53,6 +53,7 @@ import {
 import { Act3Panel } from '../components/act3Lazy.tsx'
 import { ActionRow, Icon, Pips, Sparkline, Tip } from '../components/basics.tsx'
 import { HeatBreakdown, heatTooltip } from '../components/heatBreakdown.tsx'
+import { Term } from '../components/term.tsx'
 import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
@@ -333,7 +334,9 @@ function MwPanel({ state }: { state: GameState }) {
     <div class="panel p mw-panel">
       <div class="row-between">
         <h2 class="panel-title">
-          {t('ui.mw.title', { total: fmt.power(totalKw) })}
+          <Term id="mw_uses" act={2}>
+            {t('ui.mw.title', { total: fmt.power(totalKw) })}
+          </Term>
         </h2>
         <MwLegend use={use} />
       </div>
@@ -476,9 +479,11 @@ function MarketPanel({ state }: { state: GameState }) {
             : t('ui.market.first_week')}
         </span>
         <span>
-          {t('ui.market.hashprice', {
-            value: fmt.money(now.btc_hashprice_usd_ph_day),
-          })}
+          <Term id="hashprice" act={1}>
+            {t('ui.market.hashprice', {
+              value: fmt.money(now.btc_hashprice_usd_ph_day),
+            })}
+          </Term>
         </span>
       </div>
     </div>
@@ -738,7 +743,9 @@ function SellPanel({ state, act }: ScreenProps) {
       <SellSlider state={state} act={act} coin="BTC" />
       <SellSlider state={state} act={act} coin="ETH" />
       <div class="row-between num-s muted">
-        <span>{t('ui.sell.hodl_all')}</span>
+        <span>
+          <Term id="hodl" act={1}>{t('ui.sell.hodl_all')}</Term>
+        </span>
         <span>{t('ui.sell.sell_all')}</span>
       </div>
       <span class="num-s muted">{t('ui.sell.note')}</span>
