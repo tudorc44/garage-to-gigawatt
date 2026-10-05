@@ -217,11 +217,15 @@ const NAV: {
   key: Parameters<typeof t>[0]
   /** Only under Act II's rules (Act II and Act III). */
   act2?: boolean
-  /** Only in Act III. */
+  /** Only under Act III's rules (Act III and Act IV). */
   act3?: boolean
+  /** Only in Act IV. */
+  act4?: boolean
 }[] = [
   { id: 'dashboard', icon: 'dashboard', key: 'ui.nav.dashboard' },
   { id: 'projects', icon: 'power', key: 'ui.nav.projects', act2: true },
+  // Act IV (M29.5, A4-03): the Orbit board.
+  { id: 'orbit', icon: 'orbit', key: 'ui.nav.orbit', act4: true },
   // Act III (M13.2, A3-04): every tenant contract by end quarter.
   { id: 'contracts', icon: 'loan', key: 'ui.nav.contracts', act3: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
@@ -251,7 +255,8 @@ export function Nav(props: { seed: number; plan: boolean; act: number }) {
       {NAV.filter(
         (item) =>
           (!item.act2 || inAct2Rules({ act: props.act as GameState['act'] })) &&
-          (!item.act3 || inAct3Rules({ act: props.act as GameState['act'] })),
+          (!item.act3 || inAct3Rules({ act: props.act as GameState['act'] })) &&
+          (!item.act4 || props.act === 4),
       ).map((item) => (
         <button
           key={item.key}

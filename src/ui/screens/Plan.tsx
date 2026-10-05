@@ -52,6 +52,7 @@ import {
   type GameState,
 } from '../../sim/state.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { Act4Panel } from '../components/act4Lazy.tsx'
 import { ActionRow, Icon, Pips, Sparkline, Tip } from '../components/basics.tsx'
 import { HeatBreakdown, heatTooltip } from '../components/heatBreakdown.tsx'
 import { Term } from '../components/term.tsx'
@@ -184,6 +185,10 @@ export function PlanScreen({ state, act }: ScreenProps) {
 
           {inAct3Rules(state) && (
             <Act3Panel name="RenewalsDuePanel" state={state} act={act} />
+          )}
+          {/* Act IV (M29.5, A4-02): launches riding on too much uninsured value */}
+          {state.act === 4 && (
+            <Act4Panel name="OrbitExposurePanel" state={state} act={act} />
           )}
           <div class="dash">
             <div class="col">

@@ -18,6 +18,9 @@ export const ICONS = {
   eth: '<path d="M10 2.5 5 10.2 10 13l5-2.8z"/><path d="M5 11.6 10 17.5l5-5.9L10 14.4z"/>',
   hashrate: '<path d="M2.5 14.5h3l2-7 3 9 2-5h5"/>',
   power: '<path d="M11 2.5 5 11h4.5L8.5 17.5 15 9h-4.5z"/>',
+  // M29.5 (Act IV): drawn for the game in the bundle's style (it has no orbit icon): a planet, its orbit, a satellite.
+  orbit:
+    '<circle cx="10" cy="10" r="3.5"/><ellipse cx="10" cy="10" rx="7.5" ry="3" transform="rotate(-25 10 10)"/><circle cx="16.3" cy="6.4" r="1.2"/>',
   heat: '<path d="M10 17.5c3 0 5-2 5-4.8 0-3.2-2.6-4.4-3.3-7.7C9.8 6.3 9 8 9.2 9.6 7.8 9 7.3 7.6 7.3 7.6 5.9 9 5 10.6 5 12.7c0 2.8 2 4.8 5 4.8z"/>',
   site: '<path d="M2.5 16.5h15"/><path d="M3.5 16.5V8l4-2.5V8l4-2.5V8l4-2.5v11"/><path d="M6 13h1.5M10 13h1.5M14 13h1"/>',
   machine:

@@ -175,6 +175,10 @@ export function LiveScreen(
         state.interrupt?.id === 'gpu_spot_alert') && (
         <SpotAlertCard state={state} act={act} />
       )}
+      {(state.interrupt?.id === 'orbit_conjunction' ||
+        state.interrupt?.id === 'orbit_storm') && (
+        <OrbitAlertCard state={state} act={act} />
+      )}
       {state.interrupt?.id === 'event' && <EventCard state={state} act={act} />}
       {state.interrupt?.id === 'margin_warning' && (
         <MarginWarningCard state={state} act={act} />
@@ -934,6 +938,51 @@ function FailureWaveCard({ state, act }: ScreenProps) {
                     mult: `${v.rushMult}×`,
                   })
                 : t('ui.wave.effect_degraded')}
+            </span>
+          </button>
+        ))}
+      </article>
+    </div>
+  )
+}
+
+/** Act IV (M29.4-5, doc 33 §14.2): a conjunction alert on one block, or the solar storm warning on the fleet. */
+function OrbitAlertCard({ state, act }: ScreenProps) {
+  const alert = state.interrupt!
+  const kind = alert.id as 'orbit_conjunction' | 'orbit_storm'
+  const n = state.act4Orbit?.blocks.find((b) => b.id === alert.orbitBlockId)?.n ?? 0
+  return (
+    <div class="scrim">
+      <article class="event" role="dialog" aria-modal="true" aria-labelledby="orbit-alert-title">
+        <div class="row-between">
+          <span class="label">
+            {t('ui.event.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: alert.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', { n: state.interruptsThisQuarter, max: MAX_INTERRUPTS })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="orbit" />
+        </div>
+        <h2 class="event-title" id="orbit-alert-title">
+          {t(`interrupt.${kind}.title`)}
+        </h2>
+        <p class="event-body">{t(`interrupt.${kind}.body`, { n })}</p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">{tDynamic(`interrupt.${kind}.${c.id}`, c.id)}</span>
+              {c.isDefault && <span class="default-tag">{t('ui.alert.default')}</span>}
             </span>
           </button>
         ))}

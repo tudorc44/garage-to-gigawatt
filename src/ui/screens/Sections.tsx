@@ -39,11 +39,13 @@ import { FleetPanel, type ScreenProps } from './Plan.tsx'
 import { CapitalAct2 } from './CapitalAct2.tsx'
 import { ProjectsSection } from './Projects.tsx'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { Act4Panel } from '../components/act4Lazy.tsx'
 import { League } from './Report.tsx'
 
 export type Section =
   | 'dashboard'
   | 'projects'
+  | 'orbit'
   | 'contracts'
   | 'government'
   | 'fleet'
@@ -56,6 +58,8 @@ export function SectionView(props: ScreenProps & { section: Section }) {
   switch (props.section) {
     case 'projects':
       return <ProjectsSection {...props} />
+    case 'orbit':
+      return <Act4Panel name="OrbitSection" {...props} />
     case 'contracts':
       return <Act3Panel name="ContractsSection" {...props} />
     case 'government':

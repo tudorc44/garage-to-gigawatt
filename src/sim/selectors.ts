@@ -1177,7 +1177,11 @@ export function signalsPanelIv(state: GameState) {
 export function act4MwColumns(state: GameState) {
   if (!inActIV(state)) return null
   const groundMw = state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0) / 1000
-  return { groundMw, orbitMw: 0, moonKwe: 0 }
+  // (M29.5: the orbit's live blocks, at their remaining capacity)
+  const orbitMw = (state.act4Orbit?.blocks ?? [])
+    .filter((b) => b.stage === 'live')
+    .reduce((mw, b) => mw + b.mw * b.capacity, 0)
+  return { groundMw, orbitMw, moonKwe: 0 }
 }
 
 /** Energized capacity and what the machines there draw, in kW (sites that are built and powered). */
