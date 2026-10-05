@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M25 merged into `main` at `f8cf61f` and pushed; M26 in progress on `m26`). The Prologue, Act I, Act II and
+Last updated: 5 Oct 2026 (M25 merged into `main` at `f8cf61f` and pushed; M26 done on `m26`, not merged yet). The Prologue, Act I, Act II and
 Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M26" and "Milestone M18 close-out".
 
 ## How the owner works
@@ -161,7 +161,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M26 is being built on `m26`** (cleanup; see "Milestone M26"). M25 is done and merged (`main` = `f8cf61f`, pushed 5 Oct 2026); M24 at
+**M26 is done on `m26`, waiting for the owner's merge** (cleanup; see "Milestone M26"). After it: the owner's playtests, and the Act IV
+design brief in the design thread. M25 is done and merged (`main` = `f8cf61f`, pushed 5 Oct 2026); M24 at
 `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
 M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
 playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
@@ -190,8 +191,10 @@ in `docs/game-project-files/` on the superseded v1 market files; M26.4 the "Retr
 - **Closed (DT, M26.0):** the reading-score card keeps its own text (`term.act3.reading.*`) and no glossary link: the glossary is open during
   play, and any entry could hint at the hidden scenario.
 - **M26.1 done.** Removed from `content.en.json` all six `p0.tooltip.*` keys (difficulty, solo_vs_pool, custody, backup, preorders, hodl_sell): no code, test or tool names them, and no dynamic key builds `p0.tooltip.` (the built prefixes are `tooltip.q1.`, `tooltip.act<n>.`, `p0.event/vendor/vanity/news/chapter_title.`). Nothing kept. The pack's own copy stays in `docs/prologue-content/text_prologue.en.json`.
+- **M26.2 skipped (as the spec allows).** The design project's `claude/claude_act2-content_market-fixes.md` isn't in the repo, and the build thread can't reach the project's files (a search of this Mac found no copy). To add it: put the file anywhere in the repo, or paste its text, and it gets copied unchanged to `docs/act2-content/market-fixes.md` and linked from that README (and from `docs/game-project-files/README.md`).
 - **M26.3 done.** New `docs/game-project-files/README.md`: the folder is the design project's read-only snapshot; its Act II market CSVs are the superseded v1; the build loads `docs/act2-content/` (v2, test-checked copies); the fix log is `docs/act2-content/README.md` (M26.2's `market-fixes.md` wasn't reachable). Nothing deleted.
 - **M26.4 done: neither of the spec's cases.** No Act II action retrofits or refits (`RETROFIT` and `REFIT_GPUS` are Act III actions, M16.3, blocked elsewhere by `error.act3_only`), and the Act III lines are already logged at completion (`density.ts › finishDowntimes` builds `` `log.${kind}_done` ``; M25's report missed the runtime-built key). So the keys stay (removing them would break Act III's log); the only change is the sound, `energized` for both (mine, reversible), tested through `finishDowntimes`. No sim, content or golden change: no sim re-run needed.
+- **M26 report.** Commits `fbaf25b` M26.0, `51aea59` M26.1, `fde56b1` M26.3, `9e42b7b` M26.4, M26.2 skipped (above). No `src/sim`, `src/content`, `tools` or golden file changed against `main`: every golden unchanged, sim output byte-identical by construction (sims not re-run). 1285 → 1286 tests (133 files); lint, build pass; one key once in both tables. Main bundle 209.3 → 209.4 KB. No screen changed (the new sound plays on an existing log line), so no browser check.
 
 ## Milestone M25 (branch `m25`, from main at `ebcda47`; glossary unification, Act II data audit, the rest of the Act III polish)
 
