@@ -189,7 +189,9 @@ names, then merging the chain into `main` (tag each `m<n>-done`, delete the bran
 - (Fixed, 6 Oct 2026) Plan dashboard: a tall panel above it (Renewals due, also the wildcard and Act IV's alerts) squeezed
   Market / to-do / Signals into small scroll boxes. Now the columns keep 460 px (mine, reversible), the main area scrolls,
   and the news line with Start quarter stays pinned at its bottom; renewal cards are 640 px wide minimum, so the three
-  choices sit on one row. Same layout on `main` (Act III is public): not yet hotfixed there.
+  choices sit on one row. Then a compact renewal card (`dcb5df1`): the details left, the choices right (about 165 px tall
+  at 1440 px, was about 280), stacked as before on a narrow card; a negotiation spans the card. Both are on
+  `hotfix-plan` from `main` (`8278b19`, `726c21b`, pushed) for the owner to merge, as Act III is public.
 - (Done, 6 Oct 2026, owner request) `npm run staging` serves on the local network too (`--host`): open the printed Network
   URL on another device. Saves stay per browser (and per address); restart the server to pick it up.
 - (Fixed, 6 Oct 2026) Orbit board and Moon page, window 1280 px and up: panels drawn over each other ("Launch manifest" and
