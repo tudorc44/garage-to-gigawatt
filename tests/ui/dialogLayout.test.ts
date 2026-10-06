@@ -32,6 +32,12 @@ describe('dialog layout', () => {
     expect(css.match(/\.main:has\(> \.dash\) > \.foot\s*\{([^}]*)\}/)?.[1]).toMatch(/position:\s*sticky/)
   })
 
+  it('a renewal card puts its details and its choices side by side, wrapping when narrow', () => {
+    const card = css.match(/\n\.renewal-card\s*\{([^}]*)\}/)?.[1]
+    expect(card).toMatch(/flex-direction:\s*row/)
+    expect(card).toMatch(/flex-wrap:\s*wrap/)
+  })
+
   it('the fleet dialog lets its batch name and working count wrap (found by the hotfix 2 sweep)', () => {
     const fleet = css.match(
       /\.fleet-table td:first-child,\s*\.fleet-table td:nth-child\(3\)\s*\{([^}]*)\}/,

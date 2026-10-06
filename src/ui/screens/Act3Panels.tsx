@@ -306,52 +306,70 @@ export function RenewalsDuePanel({ state, act }: ScreenProps) {
             state.dealNegotiation.projectId === r.projectId
           return (
             <div key={r.projectId} class="panel p renewal-card">
-              <span class="label">
-                {t(`ui.act3.renewal.cause.${r.cause}${r.by ? `_${r.by}` : ''}` as 'ui.act3.renewal.cause.term')}
-              </span>
-              <strong>
-                {t(r.walked ? 'ui.act3.renewal.walked_title' : 'ui.act3.renewal.offer_title', {
-                  tenant: tenantName(r.card),
-                })}
-              </strong>
-              <span class="num-s">
-                {t('ui.act3.renewal.contract', {
-                  kind: t(`ui.act3.kind.${r.kind}`),
-                  size:
-                    r.mw !== null
-                      ? fmt.power(r.mw * 1000)
-                      : t('ui.act3.gpus', {
-                          n: (r.gpus ?? 0).toLocaleString('en-US'),
-                        }),
-                  type: tenantType(r.tenantType),
-                })}
-              </span>
-              <span class="num-s">
-                {t('ui.act3.renewal.current', { rent: money(r.currentRate) })}
-              </span>
-              {!r.walked && r.offer && (
-                <>
-                  <span class="num">
-                    {t('ui.act3.renewal.offer', {
-                      rent: money(r.offer.rate),
-                      years: r.offer.termYears,
-                      change: fmt.delta(r.offer.mult - 1, 'pct'),
-                    })}
+              {/* (owner playtest, 6 Oct 2026) the details left, the choices right, so a card stays short */}
+              <div class="renewal-info">
+                <span class="label">
+                  {t(`ui.act3.renewal.cause.${r.cause}${r.by ? `_${r.by}` : ''}` as 'ui.act3.renewal.cause.term')}
+                </span>
+                <strong>
+                  {t(r.walked ? 'ui.act3.renewal.walked_title' : 'ui.act3.renewal.offer_title', {
+                    tenant: tenantName(r.card),
+                  })}
+                </strong>
+                <span class="num-s">
+                  {t('ui.act3.renewal.contract', {
+                    kind: t(`ui.act3.kind.${r.kind}`),
+                    size:
+                      r.mw !== null
+                        ? fmt.power(r.mw * 1000)
+                        : t('ui.act3.gpus', {
+                            n: (r.gpus ?? 0).toLocaleString('en-US'),
+                          }),
+                    type: tenantType(r.tenantType),
+                  })}
+                </span>
+                <span class="num-s">
+                  {t('ui.act3.renewal.current', { rent: money(r.currentRate) })}
+                </span>
+                {!r.walked && r.offer && (
+                  <>
+                    <span class="num">
+                      {t('ui.act3.renewal.offer', {
+                        rent: money(r.offer.rate),
+                        years: r.offer.termYears,
+                        change: fmt.delta(r.offer.mult - 1, 'pct'),
+                      })}
+                    </span>
+                    {r.counterMult !== null && (
+                      <span class="num-s">
+                        {t('ui.act3.renewal.countered', {
+                          rent: money(r.currentRate * r.counterMult),
+                        })}
+                      </span>
+                    )}
+                    {r.walkChance !== null && (
+                      <span class="num-s muted">
+                        {t('ui.act3.renewal.survived', {
+                          pct: fmt.pct(r.walkChance),
+                        })}
+                      </span>
+                    )}
+                  </>
+                )}
+                {r.walked && (
+                  <span class="num-s">
+                    {r.kind === 'shell'
+                      ? t('ui.act3.renewal.walked_shell', {
+                          size: fmt.power((r.mw ?? 0) * 1000),
+                          quarter: r.startsQuarter ? fmt.quarter(r.startsQuarter) : '',
+                          rent: money(r.currentRate),
+                        })
+                      : t('ui.act3.renewal.walked_gpu')}
                   </span>
-                  {r.counterMult !== null && (
-                    <span class="num-s">
-                      {t('ui.act3.renewal.countered', {
-                        rent: money(r.currentRate * r.counterMult),
-                      })}
-                    </span>
-                  )}
-                  {r.walkChance !== null && (
-                    <span class="num-s muted">
-                      {t('ui.act3.renewal.survived', {
-                        pct: fmt.pct(r.walkChance),
-                      })}
-                    </span>
-                  )}
+                )}
+              </div>
+              {!r.walked && r.offer && (
+                <div class="renewal-side">
                   <div class="renewal-actions">
                     <div>
                       <button
@@ -423,60 +441,51 @@ export function RenewalsDuePanel({ state, act }: ScreenProps) {
                       what: t(`ui.act3.renewal.will.${r.choice}` as 'ui.act3.renewal.will.accept'),
                     })}
                   </span>
-                  {negotiating && (
-                    <NegotiationPanel
-                      state={state}
-                      act={act}
-                      projectId={r.projectId}
-                    />
-                  )}
-                </>
+                </div>
               )}
-              {r.walked && (
-                <>
-                  <span class="num-s">
-                    {r.kind === 'shell'
-                      ? t('ui.act3.renewal.walked_shell', {
-                          size: fmt.power((r.mw ?? 0) * 1000),
-                          quarter: r.startsQuarter ? fmt.quarter(r.startsQuarter) : '',
-                          rent: money(r.currentRate),
-                        })
-                      : t('ui.act3.renewal.walked_gpu')}
-                  </span>
-                  {r.kind === 'shell' && (
-                    <div class="renewal-actions">
-                      <div>
-                        <span class={`tag${r.choice === 'walk' ? ' default' : ''}`}>
-                          {t('ui.act3.renewal.auto_relet')}
-                        </span>
-                        <span class="num-s muted">
-                          {t('ui.act3.renewal.relet_note', {
-                            quarters: r.reletEmptyQuarters,
-                            rent: fmt.money(r.reletEstimateUsd ?? 0),
-                          })}
-                        </span>
-                      </div>
-                      <div>
-                        <button
-                          type="button"
-                          class={`btn${r.choice === 'keep_empty' ? ' btn-primary' : ''}`}
-                          disabled={!!r.blocked.keepEmpty}
-                          onClick={() =>
-                            act({
-                              type: 'RENEWAL_KEEP_EMPTY',
-                              projectId: r.projectId,
-                            })
-                          }
-                        >
-                          {t('ui.act3.renewal.keep_empty')}
-                        </button>
-                        <span class="num-s muted">
-                          {t('ui.act3.renewal.keep_empty_note')}
-                        </span>
-                      </div>
+              {!r.walked && r.offer && negotiating && (
+                <div class="renewal-negotiation">
+                  <NegotiationPanel
+                    state={state}
+                    act={act}
+                    projectId={r.projectId}
+                  />
+                </div>
+              )}
+              {r.walked && r.kind === 'shell' && (
+                <div class="renewal-side">
+                  <div class="renewal-actions">
+                    <div>
+                      <span class={`tag${r.choice === 'walk' ? ' default' : ''}`}>
+                        {t('ui.act3.renewal.auto_relet')}
+                      </span>
+                      <span class="num-s muted">
+                        {t('ui.act3.renewal.relet_note', {
+                          quarters: r.reletEmptyQuarters,
+                          rent: fmt.money(r.reletEstimateUsd ?? 0),
+                        })}
+                      </span>
                     </div>
-                  )}
-                </>
+                    <div>
+                      <button
+                        type="button"
+                        class={`btn${r.choice === 'keep_empty' ? ' btn-primary' : ''}`}
+                        disabled={!!r.blocked.keepEmpty}
+                        onClick={() =>
+                          act({
+                            type: 'RENEWAL_KEEP_EMPTY',
+                            projectId: r.projectId,
+                          })
+                        }
+                      >
+                        {t('ui.act3.renewal.keep_empty')}
+                      </button>
+                      <span class="num-s muted">
+                        {t('ui.act3.renewal.keep_empty_note')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
           )
