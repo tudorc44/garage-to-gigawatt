@@ -186,6 +186,8 @@ targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground on
 names, then merging the chain into `main` (tag each `m<n>-done`, delete the branches).
 
 **Act IV playtest findings** (fixed on `m32` unless marked open; the staging snapshot needs a rebuild to show a fix):
+- (Done, 6 Oct 2026, owner request) `npm run staging` serves on the local network too (`--host`): open the printed Network
+  URL on another device. Saves stay per browser (and per address); restart the server to pick it up.
 - (Fixed, 6 Oct 2026) Orbit board and Moon page, window 1280 px and up: panels drawn over each other ("Launch manifest" and
   "Licences and registry" cut to their titles, "Links to the ground" over them; "Polar sites" on the Moon). A section is a
   grid with auto rows; a panel that scrolls sideways (`.panel:has(> table)`, M21.1) may shrink to 0 there, so in a page

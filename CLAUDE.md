@@ -35,7 +35,7 @@ npm run dev       # play in the browser: start the dev server and open the print
 npm run build     # type-check (tsc -b) and build to dist/ (the production build GitHub Pages serves)
 npm run preview   # serve the built dist/ locally
 npm run staging:build  # the owner's snapshot: build the game into staging/ (only the owner runs this); keeps g2g
-npm run staging   # play the staging snapshot at http://localhost:4173 (unaffected by later edits)
+npm run staging   # play the staging snapshot at http://localhost:4173, or from the local network at the printed Network URL
 npm test          # Vitest: unit tests per system, component tests, golden replays
 npm run lint      # ESLint (also enforces the pure-sim rules below)
 npm run play      # the terminal game (Act I, then Act II; options: -- --seed 42 --fast)
