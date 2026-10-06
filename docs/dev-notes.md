@@ -164,12 +164,12 @@ None open from before: all five M11.4c questions below were answered by the desi
   (the CSS rules; happy-dom has no layout) and `tests/ui/dealBuilderText.test.tsx`. On `m32` an Act IV game's 12 dialogs
   (Read the market included) fit too. Not swept in a browser: the prologue's and Act I-only dialogs (coin sales, crypto
   loans, the auction, renewals) and Act IV's prospect report (four short columns).
-- **New project dialog, shorter site list (owner request, 6 Oct 2026; after the hotfix):** the SITE list shows every site,
-  including ones with 0 kW or a few kW free (16+ rows late in Act II), which buries the useful ones and made the dialog
-  overflow. Sort sites by free MW, largest first, and fold those with less free power than the smallest project (the pilot's
-  minimum) under a "Show N more sites" toggle, rather than removing them: with Grid upgrade or On-site gas a site needs no
-  free MW, so every site must stay reachable. Garage-tier sites stay excluded as now. UI only, no rule change; test the
-  order and the fold; label the threshold "(mine, reversible)".
+- (Done, 6 Oct 2026) **New project dialog, shorter site list** (owner request): on `hotfix-dialog` (`c16f975`), cherry-picked
+  onto `m32`. Sites sort by free power, largest first, and the dialog picks the first. Sites with less free power than the
+  pilot's minimum size (`pilotSizes[0]`, the threshold: mine, reversible) fold under "Show N more sites" and can be shown
+  or hidden again (hiding a picked small site moves the pick back to the largest). If no site reaches the threshold, every
+  site shows and nothing folds (mine, reversible): the Act III presets are like that. UI only; test
+  `tests/ui/openProjectSites.test.tsx`.
 - An ear test of the sounds; the 4 sample fallbacks if a synth sound is wrong (owner task, DT C3 after M20).
 - (Done, 29 Sep 2026) The big JS chunk is split: `vite.config.ts` puts the market data, card text, other content JSON and
   libraries in their own files, and the prologue screens load only when a prologue game starts (`LazyPrologue` in `app.tsx`).
@@ -180,8 +180,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The dialog hotfixes 1 and 2 are done** (6 Oct 2026, "Small follow-ups"): the owner merges `hotfix-dialog` into `main`.
-Next small task: the New project dialog's shorter site list (same section).
+**The dialog hotfixes 1 and 2 and the shorter site list are done** (6 Oct 2026, "Small follow-ups"): the owner merges
+`hotfix-dialog` into `main`.
 
 **The Act IV run (M27–M32) is under way, now on `m32`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
 under M29). M29, M30 and M31 are done. Now on **`m32`**; **the Act IV run is finished** (M27–M32 pushed on `m27`…`m32`, chained; none merged). Next: the owner playtests `m32` (staging); then a balance decision on the MISS targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground ones), the owner's check of the fictional names, and merging the chain into `main`. M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
