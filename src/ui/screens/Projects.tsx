@@ -467,7 +467,16 @@ function OpenProjectDialog(
 ) {
   const { state, act } = props
   const v = openProjectView(state)
-  const [siteId, setSiteId] = useState(v.sites[0]?.site.id ?? '')
+  // The site list: most free power first; sites with less free power than the smallest project (the pilot's minimum)
+  // fold under "Show N more sites". They stay reachable: Grid upgrade or On-site gas needs no free MW. If no site has
+  // that much free, all show unfolded.
+  const sorted = [...v.sites].sort((a, b) => b.freeKw - a.freeKw)
+  const minKw = v.pilotSizes[0] ?? 0
+  const roomy = sorted.filter((x) => x.freeKw >= minKw)
+  const folded = roomy.length === 0 ? [] : sorted.filter((x) => x.freeKw < minKw)
+  const shown = roomy.length === 0 ? sorted : roomy
+  const [showFolded, setShowFolded] = useState(false)
+  const [siteId, setSiteId] = useState(sorted[0]?.site.id ?? '')
   const [kind, setKind] = useState<ProjectKind>('shell')
   const [gpu, setGpu] = useState<string>(v.gpus[0] ?? 'h100')
   const site = v.sites.find((x) => x.site.id === siteId)
@@ -525,8 +534,8 @@ function OpenProjectDialog(
       {v.sites.length === 0 ? (
         <p class="num-s muted">{t('ui.projects.no_sites')}</p>
       ) : (
-        v.sites.map((x) => (
-          <label class="form-row" key={x.site.id}>
+        [...shown, ...(showFolded ? folded : [])].map((x) => (
+          <label class="form-row" key={x.site.id} data-site={x.site.id}>
             <input
               type="radio"
               name="project-site"
@@ -546,6 +555,32 @@ function OpenProjectDialog(
             </span>
           </label>
         ))
+      )}
+      {folded.length > 0 && (
+        <button
+          type="button"
+          class="btn"
+          style={{ alignSelf: 'flex-start' }}
+          aria-expanded={showFolded}
+          data-more-sites
+          onClick={() => {
+            // Folding a picked site away moves the pick back to the site with the most free power.
+            if (showFolded && folded.some((x) => x.site.id === siteId)) {
+              setSiteId(sorted[0].site.id)
+              setKw(Math.floor(sorted[0].freeKw))
+            }
+            setShowFolded(!showFolded)
+          }}
+        >
+          {showFolded
+            ? t('ui.projects.fewer_sites')
+            : t(
+                folded.length === 1
+                  ? 'ui.projects.more_sites_one'
+                  : 'ui.projects.more_sites',
+                { n: folded.length, min: fmt.power(minKw) },
+              )}
+        </button>
       )}
       <div class="label">{t('ui.projects.open_kind')}</div>
       <div
