@@ -1839,8 +1839,28 @@ td.wrap {
   grid-template-columns: repeat(auto-fill, minmax(min(100%, 640px), 1fr));
   gap: var(--space-3);
 }
+/* the details left, the choices right; on a narrow card the choices drop below (owner playtest, 6 Oct 2026) */
 .renewal-card {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-2) var(--space-5);
+}
+.renewal-info,
+.renewal-side {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-2);
+}
+.renewal-info {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+.renewal-side {
+  flex: 0 1 auto;
+}
+.renewal-negotiation {
+  flex: 1 1 100%;
 }
 .renewal-actions {
   display: flex;
