@@ -26,6 +26,12 @@ describe('dialog layout', () => {
     expect(section?.[1]).toMatch(/grid-auto-rows:\s*min-content/)
   })
 
+  it('the Plan dashboard keeps usable columns under tall panels; the main area scrolls, Start quarter stays pinned', () => {
+    expect(css.match(/\.main:has\(> \.dash\)\s*\{([^}]*)\}/)?.[1]).toMatch(/overflow-y:\s*auto/)
+    expect(css.match(/\.main > \.dash\s*\{([^}]*)\}/)?.[1]).toMatch(/min-height:\s*\d+px/)
+    expect(css.match(/\.main:has\(> \.dash\) > \.foot\s*\{([^}]*)\}/)?.[1]).toMatch(/position:\s*sticky/)
+  })
+
   it('the fleet dialog lets its batch name and working count wrap (found by the hotfix 2 sweep)', () => {
     const fleet = css.match(
       /\.fleet-table td:first-child,\s*\.fleet-table td:nth-child\(3\)\s*\{([^}]*)\}/,

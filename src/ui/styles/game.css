@@ -1032,6 +1032,26 @@ tr.locked td {
 .main {
   min-height: 0;
 }
+/* Owner playtest, 6 Oct 2026: panels above the Plan dashboard (renewals, the wildcard, Act IV's alerts) no longer
+   squeeze its three columns into small scroll boxes. The columns keep a usable height and the main area scrolls
+   instead; the news line and Start quarter stay pinned at its bottom. */
+.main:has(> .dash) {
+  overflow-y: auto;
+}
+.main:has(> .dash) > * {
+  flex-shrink: 0;
+}
+.main > .dash {
+  min-height: 460px;
+}
+.main:has(> .dash) > .foot {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  margin-bottom: -14px;
+  padding: var(--space-2) 0 14px;
+  background: var(--paper);
+}
 .dash > * {
   max-height: 100%;
   overflow-y: auto;
@@ -1876,7 +1896,8 @@ td.wrap {
 }
 .renewal-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  /* wide enough for the three choices on one row, so a card stays short (owner playtest, 6 Oct 2026) */
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 640px), 1fr));
   gap: var(--space-3);
 }
 .renewal-card {

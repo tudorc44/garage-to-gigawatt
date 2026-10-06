@@ -186,6 +186,10 @@ targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground on
 names, then merging the chain into `main` (tag each `m<n>-done`, delete the branches).
 
 **Act IV playtest findings** (fixed on `m32` unless marked open; the staging snapshot needs a rebuild to show a fix):
+- (Fixed, 6 Oct 2026) Plan dashboard: a tall panel above it (Renewals due, also the wildcard and Act IV's alerts) squeezed
+  Market / to-do / Signals into small scroll boxes. Now the columns keep 460 px (mine, reversible), the main area scrolls,
+  and the news line with Start quarter stays pinned at its bottom; renewal cards are 640 px wide minimum, so the three
+  choices sit on one row. Same layout on `main` (Act III is public): not yet hotfixed there.
 - (Done, 6 Oct 2026, owner request) `npm run staging` serves on the local network too (`--host`): open the printed Network
   URL on another device. Saves stay per browser (and per address); restart the server to pick it up.
 - (Fixed, 6 Oct 2026) Orbit board and Moon page, window 1280 px and up: panels drawn over each other ("Launch manifest" and
