@@ -153,8 +153,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Small follow-ups
 
-- (Done, 6 Oct 2026) **Dialog hotfixes 1 and 2** (owner bug reports; live on GitHub Pages until merged): on `hotfix-dialog`
-  from `main` (`1ca4e6b`, `8c72e9a`, pushed for the owner to merge), cherry-picked onto `m32`. 1: `.dialog > *` keeps
+- (Done, 6 Oct 2026) **Dialog hotfixes 1 and 2** (owner bug reports): on `hotfix-dialog` from `main` (`1ca4e6b`,
+  `8c72e9a`), merged into `main` and pushed by the owner on 6 Oct 2026; cherry-picked onto `m32`. 1: `.dialog > *` keeps
   `flex-shrink: 0`, so a dialog taller than the window scrolls instead of squeezing its `.seg` switches to 0 px (they were
   3 px in a browser before, 39 px after). 2: `.deal-panel td.num-s` wraps, so the Deal builder fits its 760 px dialog (the
   longest notes measured 1,265 px before); the capex note joins its parts with " · ", the utilisation note ends with a full
@@ -180,14 +180,17 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**The dialog hotfixes 1 and 2 and the shorter site list are done** (6 Oct 2026, "Small follow-ups"): the owner merges
-`hotfix-dialog` into `main`.
+**Now: the owner playtests Act IV on `m32`** (staging built from `m32` on 6 Oct 2026). The Act IV run (M27–M32) is finished
+(see "The Act IV run"): pushed on `m27`…`m32`, chained, none merged. After the playtest: a balance decision on the MISS
+targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground ones), the owner's check of the fictional
+names, then merging the chain into `main` (tag each `m<n>-done`, delete the branches).
 
-**The Act IV run (M27–M32) is under way, now on `m32`** (see "The Act IV run"). M27.7's byte-identity check passed (recorded
-under M29). M29, M30 and M31 are done. Now on **`m32`**; **the Act IV run is finished** (M27–M32 pushed on `m27`…`m32`, chained; none merged). Next: the owner playtests `m32` (staging); then a balance decision on the MISS targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground ones), the owner's check of the fictional names, and merging the chain into `main`. M26 is done and merged (`main` = `209622e`, pushed 5 Oct 2026; `m26` not yet tagged m26-done or deleted); M25 at `f8cf61f`; M24 at
-`ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
-M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
-playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+**`main` = `c16f975`** (pushed 6 Oct 2026): M26 plus the dialog hotfixes 1 and 2 and the shorter site list (merged from
+`hotfix-dialog`, now deleted; the same commits are cherry-picked on `m32`, see "Small follow-ups"). Earlier: M26 at
+`209622e`, M25 at `f8cf61f`, M24 at `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at
+`7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
+and deleted; the remote holds `main` and `m27`…`m32`. Still open: the owner's tasks (the Act III playtest, the Act I
+playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 
