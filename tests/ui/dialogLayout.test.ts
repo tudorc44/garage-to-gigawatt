@@ -21,6 +21,11 @@ describe('dialog layout', () => {
     expect(notes?.[1]).toMatch(/white-space:\s*normal/)
   })
 
+  it('a left-nav section sizes each row to its panel, so a long page never squeezes a table panel (the Orbit board, owner playtest 6 Oct 2026)', () => {
+    const section = css.match(/\n\.section\s*\{([^}]*)\}/)
+    expect(section?.[1]).toMatch(/grid-auto-rows:\s*min-content/)
+  })
+
   it('the fleet dialog lets its batch name and working count wrap (found by the hotfix 2 sweep)', () => {
     const fleet = css.match(
       /\.fleet-table td:first-child,\s*\.fleet-table td:nth-child\(3\)\s*\{([^}]*)\}/,

@@ -1112,6 +1112,9 @@ td.wrap {
   min-height: 0;
   align-items: start;
   overflow-y: auto;
+  /* Each row as tall as its panel. With auto rows, a section taller than the window squeezed a panel that scrolls
+     sideways (.panel:has(> table)) down to 24 px, and the next panel was drawn over it. (As .capital2.) */
+  grid-auto-rows: min-content;
 }
 .section.single {
   grid-template-columns: minmax(0, 1fr);

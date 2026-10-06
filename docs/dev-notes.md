@@ -185,6 +185,14 @@ None open from before: all five M11.4c questions below were answered by the desi
 targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground ones), the owner's check of the fictional
 names, then merging the chain into `main` (tag each `m<n>-done`, delete the branches).
 
+**Act IV playtest findings** (fixed on `m32` unless marked open; the staging snapshot needs a rebuild to show a fix):
+- (Fixed, 6 Oct 2026) Orbit board and Moon page, window 1280 px and up: panels drawn over each other ("Launch manifest" and
+  "Licences and registry" cut to their titles, "Links to the ground" over them; "Polar sites" on the Moon). A section is a
+  grid with auto rows; a panel that scrolls sideways (`.panel:has(> table)`, M21.1) may shrink to 0 there, so in a page
+  taller than the window its row fell to 24 px. Fix: `.section { grid-auto-rows: min-content; }`, as `.capital2` already
+  has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
+  sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
+
 **`main` = `c16f975`** (pushed 6 Oct 2026): M26 plus the dialog hotfixes 1 and 2 and the shorter site list (merged from
 `hotfix-dialog`, now deleted; the same commits are cherry-picked on `m32`, see "Small follow-ups"). Earlier: M26 at
 `209622e`, M25 at `f8cf61f`, M24 at `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at
