@@ -524,7 +524,10 @@ function OpenProjectDialog(
             })
           : t('ui.projects.power_note.gas', {
               usd: fmt.money(site.gas.usdMw),
-              quarters: site.gas.quarters,
+              quarters:
+                site.gas.quarters[0] === site.gas.quarters[1]
+                  ? String(site.gas.quarters[0])
+                  : `${site.gas.quarters[0]}–${site.gas.quarters[1]}`,
               heat: site.gas.heat,
             })
   const why = whyNot(state, action)

@@ -353,7 +353,7 @@ const venturesSchema = z.object({
       targets,
     }),
   }),
-  gas_act4: z.object({ class: z.enum(OVERRUN_CLASSES), turbine_slip_q: intRange, backlog_until: quarterId }),
+  act4_power: z.object({ grid_wait_spread: range, gas_build_q: intRange, gas_class: z.enum(OVERRUN_CLASSES) }),
 })
 
 /** The venture content, checked (M36). */

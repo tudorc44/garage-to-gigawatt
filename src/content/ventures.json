@@ -128,9 +128,10 @@
    "targets": {"p2035": 0.95}
   }
  },
- "gas_act4": {
-  "class": "thermal",
-  "turbine_slip_q": [2, 4],
-  "backlog_until": "2032Q4"
+ "act4_power": {
+  "note": "Design thread, 9 Oct 2026 (answer 9): Act IV's Power slot reads doc 33's waits. A grid upgrade waits grid_wait_q × 0.8-1.2 (16-24 quarters at 20; F4 8-12 at 10), shifted by policies and hires as before; on-site gas takes 6-10 quarters (the turbine backlog) with a thermal-class overrun (doc 38 §5.9). The 0.8-1.2 spread is designed.",
+  "grid_wait_spread": [0.8, 1.2],
+  "gas_build_q": [6, 10],
+  "gas_class": "thermal"
  }
 }

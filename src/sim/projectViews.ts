@@ -6,10 +6,12 @@ import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import {
   inAct3Rules,
+  inActIV,
   projectGone,
   type GameState,
   type Project,
 } from './state.ts'
+import { VENTURES } from '../content/energyContent.ts'
 import { convertibleKw } from './systems/hosting.ts'
 import { scenarioOf } from './systems/market.ts'
 import { siteMwByUse } from './systems/mwUse.ts'
@@ -237,7 +239,10 @@ export function openProjectView(state: GameState) {
           },
           gas: {
             usdMw: P().power.gas.capexUsdMw,
-            quarters: P().power.gas.buildQuarters,
+            // (M36.4: Act IV's turbine backlog, 6-10 quarters; earlier acts' fixed build)
+            quarters: (inActIV(state)
+              ? VENTURES.act4_power.gas_build_q
+              : [P().power.gas.buildQuarters, P().power.gas.buildQuarters]) as [number, number],
             heat: P().power.gas.heatDelta,
             blocker: powerBlocker(state, site, 'gas') ?? null,
           },

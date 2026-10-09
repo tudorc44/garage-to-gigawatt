@@ -256,6 +256,13 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
   entry, so no equity; $17M EBITDA caps debt near $68M); Neocloud bought its site in all 40 runs but it never powered in
   time; Ridge ($14M cash, no EBITDA) did nothing. B3 MISS 1.08× vs 1.21×; B5 MISS as written (ground 1.03× vs 1.07×).
   The space-multiple knob is **not run**: the fix had no effect, so the owner decides first (report questions).
+- **Design thread answers after M34.4 + doc 38 (9 Oct 2026; owner: 11a).** Split (mine, reversible): **M36.4** (9) Act IV's
+  Power slot reads doc 33's waits; **M36.5** (1-3) Ground Holder: 15-point dilution budget, pro-forma leverage, powered
+  sites only if offered; **M36.6** (4) the F2 space-multiple knob; **M36.7** (6, 7, 8, 10) overrun refit, E-B5 and E-B1
+  redefined, Meridian Arc; **M36.8** (11a) ventures marked to milestones; **M36.9** runs and the report.
+- M36.4: Act IV grid upgrades wait grid_wait_q × 0.8-1.2 (16-24; F4 8-12 at 10; spread mine), shifted by policies and
+  hires as before; Act IV gas 6-10 q (replaces M36's 2-4 q slip; overrun kept). No golden changed (no golden script
+  builds Act IV ground power). Test `act4PowerWaits`.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
