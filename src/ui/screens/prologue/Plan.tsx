@@ -30,7 +30,9 @@ import { SaveDialog } from '../../components/saves.tsx'
 import { Term } from '../../components/term.tsx'
 import { fmt } from '../../format.ts'
 import type { IconName } from '../../icons.ts'
-import { machineName, say } from '../../names.ts'
+import { machineName, say, siteName } from '../../names.ts'
+import { energyCardView } from '../../../sim/energyViews.ts'
+import { EnergyDialog } from '../../components/energyDialog.tsx'
 import { Coins, SellingLimit } from './Coins.tsx'
 import {
   Bar,
@@ -244,9 +246,14 @@ function Dashboard(
   const [dialog, setDialog] = useState<'preorders' | 'vanity' | null>(
     state.prologue!.openPanel === 'preorders' ? 'preorders' : null,
   )
+  // M35 (doc 38 §4.1-4.3): a site's Power options (rooftop solar, small wind, a home battery).
+  const [energySite, setEnergySite] = useState<string | null>(null)
   const panel = state.prologue!.openPanel
   return (
     <>
+      {energySite && (
+        <EnergyDialog state={state} act={act} siteId={energySite} onClose={() => setEnergySite(null)} />
+      )}
       {panel && panel !== 'preorders' && (
         <div class="panel tape">
           <span class="num-s">
@@ -271,6 +278,7 @@ function Dashboard(
             run={e.run}
             goTo={props.goTo}
             open={setDialog}
+            openEnergy={setEnergySite}
           />
           <OffersPanel state={state} run={e.run} />
           {e.view}
@@ -662,11 +670,13 @@ function ThisQuarter({
   run,
   goTo,
   open,
+  openEnergy,
 }: {
   state: GameState
   run: ReturnType<typeof useError>['run']
   goTo: (s: Section) => void
   open: (d: 'preorders' | 'vanity') => void
+  openEnergy: (siteId: string) => void
 }) {
   const life = prologueLifeView(state)
   const pre = preorderMenuView(state)
@@ -695,6 +705,19 @@ function ThisQuarter({
           onClick={() => run({ type: 'P0_BUILD_HOME_RIG' })}
         />
       )}
+      {state.sites
+        .filter((site) => {
+          const v = energyCardView(state, site.id)
+          return !!v && (v.choices.length > 0 || v.assets.length > 0)
+        })
+        .map((site) => (
+          <ActionRow
+            key={`energy-${site.id}`}
+            icon="power"
+            name={t('ui.p0.power_options', { site: siteName(site) })}
+            onClick={() => openEnergy(site.id)}
+          />
+        ))}
       <ActionRow
         icon="backup"
         name={t(life.backup ? 'ui.p0.backed_up' : 'ui.p0.back_up')}

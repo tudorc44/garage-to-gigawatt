@@ -56,6 +56,7 @@ import { waterPauseBlocker } from './pcState.ts'
 import { projectPolicy } from './regions.ts'
 import { convertibleKw } from './hosting.ts'
 import { flawEffect, powerPriceUsdKwh, regionOf, uptime } from './sites.ts'
+import { miningOnly } from './energyAssets.ts'
 import {
   attachFreePpa,
   hasPpa,
@@ -659,6 +660,8 @@ export function openBlocker(
   const site = state.sites.find((s) => s.id === a.siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.project_garage' }
+  // M35.3 (doc 38 §4.6): a flare pad is mining only (remote, poor connectivity).
+  if (miningOnly(site)) return { key: 'error.flare_mining_only' }
   if (!Number.isFinite(a.kw) || a.kw <= 0) return { key: 'error.bad_kw' }
   if (regionMoratoriumOn(state, regionOf(site)))
     return { key: 'error.region_moratorium' }

@@ -5,9 +5,12 @@ import {
   CONTENT,
   isAct2RulesQuarter,
   actLastQuarter,
+  quarterInputs,
   type MarketWeek,
 } from '../../content/index.ts'
 import { finishUpgrades } from './construction.ts'
+import { bookEnergy, endQuarterEnergy } from './energy.ts'
+import { endQuarterSpecialSites } from './specialSites.ts'
 import {
   emptyQuarterStats,
   logEntry,
@@ -91,6 +94,9 @@ export function endQuarter(state: GameState): void {
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   // Act III (M17.2): the nuclear PPAs' take-or-pay for the quarter.
   settlePpas(state)
+  // M35 (doc 38 §4): energy assets' savings, upkeep and chances, Texas's credits, special sites' events.
+  bookEnergy(state, endQuarterEnergy(state, quarterInputs(state.quarter, scenarioOf(state))?.pjmCapacityUsdMwDay))
+  endQuarterSpecialSites(state)
   // Act III (M12.2): the renewals opened this quarter are settled (the new terms start next quarter).
   resolveRenewals(state)
   // Act III (M12.3): card cash due at this quarter's end (a recovery, a share of the revenue).
@@ -270,6 +276,10 @@ function buildReport(
     ),
     ...(orbit ?? {}),
     ...(moon ?? {}),
+    // M35: energy assets' lines, only in a quarter that had one (so earlier reports are untouched).
+    ...(st.energyRevenueUsd !== undefined || st.energyCostUsd !== undefined
+      ? { energyRevenueUsd: st.energyRevenueUsd ?? 0, energyCostUsd: st.energyCostUsd ?? 0 }
+      : {}),
     ...(evMult !== undefined ? { evMult } : {}),
     priceAlerts: st.priceAlerts,
     marginCalls: st.marginCalls,

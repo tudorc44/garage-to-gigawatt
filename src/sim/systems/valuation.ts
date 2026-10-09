@@ -55,6 +55,8 @@ export function ebitdaUsd(q: {
   orbitCostUsd?: number
   moonRevenueUsd?: number
   moonCostUsd?: number
+  energyRevenueUsd?: number
+  energyCostUsd?: number
 }): number {
   const ebitda =
     q.revenueUsd +
@@ -68,7 +70,11 @@ export function ebitdaUsd(q: {
     (q.salariesUsd ?? 0)
   // Act IV (M29, M30): the orbital blocks and the lunar sales (absent before Act IV, so earlier acts' sums are untouched).
   const orbit = q.orbitRevenueUsd === undefined && q.orbitCostUsd === undefined ? ebitda : ebitda + orbitEbitdaUsd(q)
-  return q.moonRevenueUsd === undefined && q.moonCostUsd === undefined ? orbit : orbit + moonEbitdaUsd(q)
+  const moon = q.moonRevenueUsd === undefined && q.moonCostUsd === undefined ? orbit : orbit + moonEbitdaUsd(q)
+  // M35 (doc 38 §4): energy assets' savings, credits and upkeep (absent without one, so earlier sums are untouched).
+  return q.energyRevenueUsd === undefined && q.energyCostUsd === undefined
+    ? moon
+    : moon + (q.energyRevenueUsd ?? 0) - (q.energyCostUsd ?? 0)
 }
 
 /** Act IV: the lunar sales' EBITDA for a quarter (doc 33 §11.3: in EBITDA, valued with no multiple). */

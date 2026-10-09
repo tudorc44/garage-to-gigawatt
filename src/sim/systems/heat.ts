@@ -9,6 +9,7 @@
 // era: extra pressure on big sites from era_pressure.from.
 // A hostile_council flaw multiplies every increase (load, grievance, era).
 import { BALANCE, CONTENT } from '../../content/index.ts'
+import { ENERGY } from '../../content/energyContent.ts'
 import { moratoriumWaived } from './eventEffects.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
@@ -130,6 +131,8 @@ export function recalcHeat(state: GameState, site: Site): void {
   // M19: a Community Deal's goodwill, added after the region's scaling so Heat lands on the deal's target
   const total = heatBeforeDeal(state, site) + (h.dealOffset ?? 0)
   h.value = Math.min(100, Math.max(0, total))
+  // M35.3 (doc 38 §4.5): Iceland is 100% renewable; Heat never rises there.
+  if (site.special && ENERGY.specialKinds[site.special].green) h.value = 0
 }
 
 export type HeatPartId =

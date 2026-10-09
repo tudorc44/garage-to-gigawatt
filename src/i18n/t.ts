@@ -61,6 +61,9 @@ const ID_PARAMS: Record<string, string> = {
   claimant: 'moon.claimant.',
   buyer: 'moon.buyer.',
   capital: 'orbit.capital.',
+  energyKind: 'energy_kind.',
+  summer: 'texas_summer.',
+  specialKind: 'special_kind.',
 }
 
 /** M33.1 (doc 35): site types a player owns one of at most; their name stands alone ("Garage"), with no number. */

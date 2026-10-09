@@ -11,6 +11,7 @@ import {
   type SignalIdIv,
   type WildcardIdIv,
 } from '../content/index.ts'
+import type { EnergyKind, SpecialSiteKind } from '../content/energyContent.ts'
 import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
 import { enterAct4 } from './systems/act4Entry.ts'
@@ -86,6 +87,56 @@ export interface Site {
   powerAdds?: PowerAdd[]
   /** Act II card (the PJM shock): power × mult from…until (quarter indexes, both included). */
   eventPowerMult?: { mult: number; from: number; until: number }
+  /**
+   * M35 (doc 38 §4): energy assets built at the site (rooftop solar, small wind, a home battery, a utility battery,
+   * behind-the-meter solar or wind, iron-air storage; systems/energy.ts). Missing until the first one is built.
+   */
+  energy?: EnergyAsset[]
+  /** M35.3 (doc 38 §4.4-4.6): a special site: a hydro or Iceland allocation, or a flare-gas pad. */
+  special?: SpecialSiteKind
+  /** M35.3: the hydro crypto tariff on this site's power (new load after the moratorium, or existing at renewal). */
+  tariffMult?: number
+  /**
+   * M35.3, a flare-gas pad: the quarter its current well started, the quarter a relocation ends (offline until then),
+   * and a quarter that loses a week to a genset failure.
+   */
+  flare?: { wellQuarter: number; relocatingUntil?: number; offlineQuarter?: number }
+  /** M35.4 (doc 38 §4.7): Texas demand response and 4CP at an ERCOT site (systems/texasPower.ts). */
+  dr?: SiteDemandResponse
+}
+
+/** M35.4 (doc 38 §4.7): a Texas site's demand-response enrolment and 4CP choice. */
+export interface SiteDemandResponse {
+  enrolled: boolean
+  fourCp: boolean
+  /** The year whose power is 10% cheaper after a 4CP summer (e.g. "2022"). */
+  discountYear?: string
+  /** The year whose credit was forfeited by refusing a grid call while enrolled. */
+  forfeitYear?: string
+}
+
+/**
+ * M35 (doc 38 §4): an energy asset at a site. kw is the power (solar, wind, a battery's or iron-air's MW × 1,000); a
+ * home battery counts blocks instead.
+ */
+export interface EnergyAsset {
+  id: string
+  kind: EnergyKind
+  kw: number
+  /** Home battery: 13.5 kWh blocks. */
+  blocks?: number
+  /** A utility battery's hours (2, 4 or 8). */
+  hours?: number
+  /** What it cost to build (net of the tax credit), plus any overrun paid on completion. */
+  capexUsd: number
+  builtQuarter: number
+  readyQuarter: number
+  /** Small wind: the realised capacity factor, drawn at install, shown from the first report after it's ready. */
+  cf?: number
+  /** Small wind: broken until repaired. */
+  broken?: boolean
+  /** The overrun still to settle when it's ready: (m − 1) × capex, negative for an underrun. */
+  overrunUsd?: number
 }
 
 /** Power added to a site for one project (M5.6). */
@@ -1273,6 +1324,13 @@ export interface QuarterStats {
    *  EBITDA without a multiple (the resource term already values the deposit, doc 33 §11.3). */
   moonRevenueUsd?: number
   moonCostUsd?: number
+  /**
+   * M35 (doc 38 §4): energy assets' savings and earnings (bill offsets, demand-response credits, capacity payments) and
+   * their running costs (upkeep, repairs); in EBITDA. Absent in a quarter with no energy asset, so earlier sums are
+   * untouched.
+   */
+  energyRevenueUsd?: number
+  energyCostUsd?: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
@@ -1357,6 +1415,9 @@ export interface QuarterReport {
   moonCostUsd?: number
   moonEbitdaUsd?: number
   lunarUsd?: number
+  /** M35 (doc 38 §4): energy assets' savings and earnings, and running costs (in EBITDA). Absent with none. */
+  energyRevenueUsd?: number
+  energyCostUsd?: number
   /** The valuation's Act II parts at quarter end: projects under construction (capex spent), the
    *  remaining contracted revenue (unweighted, as the top bar shows it) and its credit-weighted value. */
   constructionUsd: number

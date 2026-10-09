@@ -15,11 +15,12 @@ export const siteName = (site: {
   tier: string
   category?: string
   serial?: number
-}) => siteShortName(site.category ?? site.tier, site.serial)
+  special?: string
+}) => siteShortName(site.special ?? site.category ?? site.tier, site.serial)
 
 /** M33.1: a site's long name, "Own site 3 · Georgia · 20 MW": dialog titles, tooltips and the site card. */
 export const siteLongName = (
-  site: { tier: string; category?: string; serial?: number },
+  site: { tier: string; category?: string; serial?: number; special?: string },
   facts: { region: string | null; energizedKw: number },
 ) =>
   facts.region
@@ -35,7 +36,7 @@ export const siteLongName = (
 
 /** M34.2 (owner, 9 Oct 2026, 3c): a project's name, its site's short name and its label: "Own site 3 · AI 1". */
 export const projectName = (
-  site: { tier: string; category?: string; serial?: number },
+  site: { tier: string; category?: string; serial?: number; special?: string },
   n: number,
 ) => t('ui.projects.name', { site: siteName(site), n })
 

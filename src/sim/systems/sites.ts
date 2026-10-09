@@ -22,6 +22,13 @@ import {
   type Site,
   type SiteOffer,
 } from '../state.ts'
+import {
+  firmKw,
+  flareOutput,
+  fourCpOutputMult,
+  fourCpPriceMult,
+  specialPriceUsdKwh,
+} from './energyAssets.ts'
 import { extraScoutOffers } from './hires.ts'
 import { regionPowerAdderUsdKwh } from './regions.ts'
 import { saleValueUsd } from './machines.ts'
@@ -73,11 +80,12 @@ export function powerAddsKw(site: Site, quarter?: number): number {
  * building), and power added for projects counts from their opening.
  */
 export function capacityKw(site: Site): number {
-  return (
+  const kw =
     nominalKw(site) * (flawEffect(site, 'capacity_mult') ?? 1) -
     (site.soldKw ?? 0) +
     powerAddsKw(site)
-  )
+  // M35 (doc 38 §4.9): firm power from renewables with storage, being built or built (none without energy assets).
+  return site.energy ? kw + firmKw(site, 0, true) : kw
 }
 
 /**
@@ -85,7 +93,9 @@ export function capacityKw(site: Site): number {
  * project counts once it's energized.
  */
 export function poweredKw(site: Site, quarter: number): number {
-  const pending = powerAddsKw(site) - powerAddsKw(site, quarter)
+  // M35: firm power from storage counts once its assets work (none without energy assets).
+  const firmPending = site.energy ? firmKw(site, quarter, true) - firmKw(site, quarter) : 0
+  const pending = powerAddsKw(site) - powerAddsKw(site, quarter) + firmPending
   if (!site.phases)
     return isReady(site, quarter) ? capacityKw(site) - pending : 0
   const done = site.phases.filter((q) => q <= quarter).length
@@ -95,7 +105,8 @@ export function poweredKw(site: Site, quarter: number): number {
       done *
       (flawEffect(site, 'capacity_mult') ?? 1) -
       (site.soldKw ?? 0) +
-      powerAddsKw(site, quarter),
+      powerAddsKw(site, quarter) +
+      (site.energy ? firmKw(site, quarter) : 0),
   )
 }
 
@@ -161,6 +172,8 @@ export function normalPriceUsdKwh(
   scenario?: MarketKey | null,
 ): number {
   const tier = getTier(site.tier)!
+  // M35.3 (doc 38 §4.4-4.6): a hydro or Iceland allocation, or a flare pad, has its own price in every act.
+  if (site.special) return specialPriceUsdKwh(site, quarter) * site.powerPriceMult
   // Act II's series, or Act III's scenario column (M11.4c).
   // (Without a scenario, an Act II game looking a quarter ahead across the boundary reads as before.)
   const act2 = scenario
@@ -196,8 +209,10 @@ export function powerPriceUsdKwh(
     : normalPriceUsdKwh(site, quarter, undefined, scenario)
   const e = site.eventPowerMult
   const eventMult = e && quarter >= e.from && quarter <= e.until ? e.mult : 1
+  // M35.4: the year after a 4CP summer, 10% less (1 without 4CP).
+  const fourCp = site.dr ? fourCpPriceMult(site, quarter) : 1
   return (
-    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult +
+    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult * fourCp +
     regionPowerAdderUsdKwh(regionOf(site), quarter) +
     capacityChargeUsdKwh(site, quarter, scenario)
   )
@@ -233,19 +248,25 @@ export function regionCapacityChargeUsdKwh(
   return (now - base) / 24 / 1000
 }
 
-/** Share of the week the site actually has power (outage flaw). */
-export function uptime(site: Site): number {
-  return flawEffect(site, 'uptime') ?? 1
+/**
+ * Share of the week the site actually has power (outage flaw). M35.3: a flare pad's output (its well's decline, a
+ * relocation, a genset failure) when the quarter is given.
+ */
+export function uptime(site: Site, quarter?: number): number {
+  const up = flawEffect(site, 'uptime') ?? 1
+  return site.flare && quarter !== undefined ? up * flareOutput(site, quarter) : up
 }
 
 /** Hashrate multiplier for the site this quarter (cooling flaws bite in Q3, summer; Act II: water limits). */
 export function hashrateMult(site: Site, quarter: number): number {
   const summer = CONTENT.quarters[quarter].endsWith('Q3')
-  return summer
+  const mult = summer
     ? (flawEffect(site, 'summer_hashrate_mult') ??
         flawEffect(site, 'summer_derate') ??
         1)
     : 1
+  // M35.4: 4CP gives up 1.5% of Q3's output (none without it).
+  return site.dr ? mult * fourCpOutputMult(site, quarter) : mult
 }
 
 /** Up-front cost of building a tier with standard terms: capex (or capex per MW) plus land. */

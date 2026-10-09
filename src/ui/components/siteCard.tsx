@@ -7,6 +7,8 @@ import { t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import { siteCardView, type SiteCardView, type SiteFeeAction } from '../../sim/selectors.ts'
 import { SiteActionConfirm } from './siteActionConfirm.tsx'
+import { energyCardView } from '../../sim/energyViews.ts'
+import { EnergyDialog } from './energyDialog.tsx'
 import type { GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import {
@@ -54,7 +56,7 @@ export function SiteCardHost(props: {
   )
 }
 
-type Sub = 'buy' | 'leave' | 'renew' | 'hosting' | SiteFeeAction | null
+type Sub = 'buy' | 'leave' | 'renew' | 'hosting' | 'energy' | SiteFeeAction | null
 
 function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: () => void }) {
   const { state, siteId } = props
@@ -63,6 +65,9 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
   const v = siteCardView(state, siteId)
   if (!v) return null
   const plan = state.phase === 'plan'
+  // M35 (doc 38 §4): the site's energy assets and options, when it has any.
+  const ev = energyCardView(state, siteId)
+  const energy = !!ev && (ev.assets.length > 0 || ev.choices.length > 0 || !!ev.texas || !!ev.flare)
   const close = () => setSub(null)
   return (
     <>
@@ -70,9 +75,11 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
         <div class="site-card-body" data-site-card={siteId}>
           <p class="num-s muted" style={{ margin: 0 }}>
             {t('site.card.sub', {
-              type: v.site.category
-                ? tDynamic(`site.name.cat.${v.site.category}`, v.site.category)
-                : tierName(v.site.tier),
+              type: v.site.special
+                ? tDynamic(`ui.energy.special_long.${v.site.special}`, v.site.special)
+                : v.site.category
+                  ? tDynamic(`site.name.cat.${v.site.category}`, v.site.category)
+                  : tierName(v.site.tier),
               // (M34.2, 3b: "Acquired Q2 2024 · powered since Q4 2024"; no "Acquired" half for an older save's site)
               ready: [
                 v.acquiredQuarter
@@ -89,6 +96,22 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
             })}
           </p>
           <Power v={v} />
+          {ev && ev.assets.length > 0 && (
+            <p class="num-s" data-site-energy>
+              {t('site.card.energy_line', {
+                list: ev.assets
+                  .map((a) =>
+                    t('site.card.energy_item', {
+                      kind: tDynamic(`ui.energy.kind.${a.kind}`, a.kind),
+                      status: a.status === 'building'
+                        ? t('ui.energy.building_until', { quarter: fmt.quarter(a.readyQuarter) })
+                        : t(`ui.energy.status.${a.status}`),
+                    }),
+                  )
+                  .join(', '),
+              })}
+            </p>
+          )}
           <Uses v={v} />
           <section class="site-card-sec">
             <h3 class="label">{t('site.card.money')}</h3>
@@ -114,7 +137,7 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
             )}
           </section>
           {plan && (
-            <Actions v={v} open={setSub} />
+            <Actions v={v} open={setSub} energy={energy} />
           )}
         </div>
       </Dialog>
@@ -132,6 +155,7 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
       )}
       {sub === 'renew' && <RenewalDialog state={state} act={act} siteId={siteId} onClose={close} />}
       {sub === 'hosting' && <HostingDialog state={state} act={act} siteId={siteId} onClose={close} />}
+      {sub === 'energy' && <EnergyDialog state={state} act={act} siteId={siteId} onClose={close} />}
       {(sub === 'talk' || sub === 'mitigate' || sub === 'transformer' || sub === 'station') && (
         <SiteActionConfirm state={state} act={act} kind={sub} siteId={siteId} onClose={close} />
       )}
@@ -212,7 +236,7 @@ function Uses({ v }: { v: SiteCardView }) {
 }
 
 /** The site actions open here (as the Plan's pickers): each opens its own confirm (M34.2, 3f). */
-function Actions(props: { v: SiteCardView; open: (s: Sub) => void }) {
+function Actions(props: { v: SiteCardView; open: (s: Sub) => void; energy: boolean }) {
   const { v, open } = props
   const a = v.actions
   const button = (key: string, label: string, why: Message | null | undefined, onClick: () => void) =>
@@ -230,6 +254,7 @@ function Actions(props: { v: SiteCardView; open: (s: Sub) => void }) {
       <div class="site-card-actions">
         {button('buy', t('site.card.buy'), null, () => open('buy'))}
         {button('hosting', t('site.pick.hosting'), a.hosting, () => open('hosting'))}
+        {props.energy && button('energy', t('site.card.energy'), null, () => open('energy'))}
         {button('renew', t('site.pick.renewal'), a.renewal, () => open('renew'))}
         {/* (M34.2, 3f: a fee-charging action opens the one confirm) */}
         {button('transformer', t('site.pick.transformer'), a.transformer, () => open('transformer'))}

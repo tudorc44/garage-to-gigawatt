@@ -1141,6 +1141,33 @@ tr.locked td {
   gap: 2px;
   max-width: 220px;
 }
+/* M35: the Power options dialog (doc 38 §4). */
+.energy-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 640px;
+}
+.energy-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-2) 0;
+}
+.energy-choice + .energy-choice {
+  border-top: var(--border-hair) solid var(--line);
+}
+.energy-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.energy-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
 /* From 1280 px the card is a drawer on the right, the page still visible beside it; below, a dialog. */
 @media (min-width: 1280px) {
   .site-card-scrim {

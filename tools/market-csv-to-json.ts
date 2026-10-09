@@ -31,6 +31,8 @@ export const MARKET_FILES = [
   ['market_weekly_iv_f2.csv', 'market_weekly_iv_f2.json'],
   ['market_weekly_iv_f3.csv', 'market_weekly_iv_f3.json'],
   ['market_weekly_iv_f4.csv', 'market_weekly_iv_f4.json'],
+  // M35.1 (doc 38): the energy series by year, 2009-2040, the same in every scenario and future (docs/energy-content/README.md).
+  ['market_energy.csv', 'market_energy.json'],
 ] as const
 
 type Cell = string | number | boolean | null
@@ -45,13 +47,14 @@ export function csvToRows(csv: string): Record<string, Cell>[] {
       const cell = cells[i] ?? ''
       // `week` and `quarter` stay as text. An empty cell is "no value" (null), never 0.
       // True/False (the Act II `estimate` flag) become booleans; every other column is a number.
-      // Act III's files also have the text columns `scenario` and `phase`; Act IV's, `future`.
+      // Act III's files also have the text columns `scenario` and `phase`; Act IV's, `future`; the energy file's, `texas_summer`.
       if (
         col === 'week' ||
         col === 'quarter' ||
         col === 'scenario' ||
         col === 'phase' ||
-        col === 'future'
+        col === 'future' ||
+        col === 'texas_summer'
       )
         row[col] = cell
       else if (cell === '') row[col] = null

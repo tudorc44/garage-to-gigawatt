@@ -378,6 +378,14 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
           {t('ui.report.hosting_line', { fees: fmt.money(r.hostingFeesUsd) })}
         </p>
       )}
+      {(r.energyRevenueUsd !== undefined || r.energyCostUsd !== undefined) && (
+        <p class="num-s muted" style={{ margin: 0 }} data-report-energy>
+          {t('ui.report.energy_line', {
+            earned: fmt.money(r.energyRevenueUsd ?? 0),
+            upkeep: fmt.money(r.energyCostUsd ?? 0),
+          })}
+        </p>
+      )}
       {r.reservationUsd > 0 && (
         <p class="num-s muted" style={{ margin: 0 }}>
           {t('ui.report.reservation_line', {

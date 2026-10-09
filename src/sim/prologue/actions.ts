@@ -69,6 +69,9 @@ const SHARED = new Set([
   'REPAIR_MACHINES',
   'REPAIR_ALL',
   'SET_HODL',
+  // M35 (doc 38 §4.1-4.3): rooftop solar, small wind and a home battery at a household site or the garage.
+  'ENERGY_BUILD',
+  'ENERGY_REPAIR',
 ])
 
 const fail = (key: Message['key'], params?: Message['params']): Message => ({

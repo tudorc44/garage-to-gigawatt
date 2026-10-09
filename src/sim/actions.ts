@@ -255,6 +255,10 @@ import {
   scoutAct2Blocker,
 } from './systems/scouting.ts'
 import { planSpotShock } from './systems/spotMarket.ts'
+import type { EnergyKind, SpecialSiteKind } from '../content/energyContent.ts'
+import { buildEnergy, buildEnergyBlocker, repairEnergy, repairEnergyBlocker } from './systems/energy.ts'
+import { setTexas, setTexasBlocker } from './systems/texasPower.ts'
+import { leaseSpecial, leaseSpecialBlocker, relocate, relocateBlocker } from './systems/specialSites.ts'
 import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
   backstopBlocker,
@@ -296,6 +300,16 @@ export type Action =
     }
   | { type: 'SELL_MACHINES'; lotId: string; count: number }
   | { type: 'REPAIR_MACHINES'; lotId: string }
+  /** M35 (doc 38 §4): build an energy asset at a site: size in kW (owned solar, wind), blocks (home battery), MW (the rest). */
+  | { type: 'ENERGY_BUILD'; siteId: string; kind: EnergyKind; size: number; hours?: number }
+  /** M35: repair a broken small wind turbine. */
+  | { type: 'ENERGY_REPAIR'; siteId: string; assetId: string }
+  /** M35.4: Texas demand response and 4CP at a site (each left out = unchanged). */
+  | { type: 'TEXAS_SET'; siteId: string; enrolled?: boolean; fourCp?: boolean }
+  /** M35.3: lease a hydro or Iceland allocation, or build a flare pad. */
+  | { type: 'SPECIAL_LEASE'; kind: SpecialSiteKind }
+  /** M35.3: move a flare pad to a new well. */
+  | { type: 'FLARE_RELOCATE'; siteId: string }
   /** Share of mined coins to keep (0–1), for one coin, or for both if `coin` is left out. */
   | { type: 'SET_HODL'; pct: number; coin?: Coin }
   | { type: 'SCOUT_SITES'; tier: string }
@@ -840,6 +854,41 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = rentLinkUnitsBlocker(s, a.units)
       if (blocked) return blocked
       rentLinkUnits(s, a.units)
+      return
+    }
+
+    case 'ENERGY_BUILD': {
+      const blocked = buildEnergyBlocker(s, a)
+      if (blocked) return blocked
+      buildEnergy(s, a)
+      return
+    }
+
+    case 'ENERGY_REPAIR': {
+      const blocked = repairEnergyBlocker(s, a.siteId, a.assetId)
+      if (blocked) return blocked
+      repairEnergy(s, a.siteId, a.assetId)
+      return
+    }
+
+    case 'TEXAS_SET': {
+      const blocked = setTexasBlocker(s, a)
+      if (blocked) return blocked
+      setTexas(s, a)
+      return
+    }
+
+    case 'SPECIAL_LEASE': {
+      const blocked = leaseSpecialBlocker(s, a.kind)
+      if (blocked) return blocked
+      leaseSpecial(s, a.kind)
+      return
+    }
+
+    case 'FLARE_RELOCATE': {
+      const blocked = relocateBlocker(s, a.siteId)
+      if (blocked) return blocked
+      relocate(s, a.siteId)
       return
     }
 

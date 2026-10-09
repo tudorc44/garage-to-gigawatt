@@ -4,6 +4,7 @@
 import { BALANCE, CONTENT, type MarketWeek } from '../../content/index.ts'
 import { binomial } from '../rng.ts'
 import type { Coin, GameState, MachineLot, Site } from '../state.ts'
+import { rideThroughShare } from './energyAssets.ts'
 import { isShutDown } from './heat.ts'
 import { failureMult } from './hires.ts'
 import { modifierMult } from './eventEffects.ts'
@@ -87,7 +88,9 @@ export function mineWeek(
       const model = getModel(lot.model)!
       const site = state.sites.find((s) => s.id === lot.siteId)!
       const working = (lot.count - lot.failed) * poweredShare(state, site)
-      const up = uptime(site)
+      // M35: a flare pad's output; a home battery keeps its share of the machines running through outages.
+      const up0 = uptime(site, state.quarter)
+      const up = site.energy ? up0 + (1 - up0) * rideThroughShare(state, site) : up0
       const revenueUsd =
         working *
         revenuePerUnitDay(model, w) *

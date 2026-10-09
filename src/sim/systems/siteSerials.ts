@@ -4,9 +4,9 @@
 import type { MessageParams } from '../../i18n/t.ts'
 import type { GameState, Site } from '../state.ts'
 
-/** The type a site is numbered under: its Act II category, else its tier. */
-export function siteLabel(site: Pick<Site, 'tier' | 'category'>): string {
-  return site.category ?? site.tier
+/** The type a site is numbered under: a special site's kind (M35.3), its Act II category, else its tier. */
+export function siteLabel(site: Pick<Site, 'tier' | 'category' | 'special'>): string {
+  return site.special ?? site.category ?? site.tier
 }
 
 /** Gives a newly acquired site the next number of its type. */
@@ -53,12 +53,13 @@ export function numberUnnumbered(state: GameState): void {
  * scouted site its category (i18n/t.ts renders them as the short name). A missing site gives an empty tier.
  */
 export function siteParams(
-  site: Pick<Site, 'tier' | 'category' | 'serial'> | undefined,
+  site: Pick<Site, 'tier' | 'category' | 'serial' | 'special'> | undefined,
 ): MessageParams {
   if (!site) return { tier: '' }
+  const label = site.special ?? site.category
   return {
     tier: site.tier,
     ...(site.serial !== undefined ? { serial: site.serial } : {}),
-    ...(site.category ? { siteLabel: site.category } : {}),
+    ...(label ? { siteLabel: label } : {}),
   }
 }

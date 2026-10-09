@@ -214,6 +214,35 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` and `m27`…`m32`. Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
+
+The design thread's handover of 9 Oct 2026: build doc 38 (`docs/game-project-files/claude_38-energy-ventures-design.md`;
+evidence docs 36, 37 and `docs/act5-research/cost_curves.csv`); E-D1…E-D15 approved; Act V is not in scope. Act I-III
+goldens and the `--act2 --act3` CSVs stay byte-identical (every feature is opt-in, with its own substreams; bots don't use
+the early-era options). Data and every designed value: `docs/energy-content/README.md`. Split (mine, reversible):
+- **M35.1 Data:** `market_energy.csv` (prices by year 2009-2040, one file for every act, not columns in each act's market
+  files: the series are by year and the same in every scenario; mine) and `energy.json`, `energyContent.ts`.
+- **M35.2 Early-era options:** rooftop solar, small wind, home battery (Prologue and Act I); special sites (hydro PUD,
+  muni, Québec, Iceland, flare pads); on-site solar and wind, firmness with storage.
+- **M35.3 Texas flexibility and batteries:** demand response, 4CP, the AI exclusion and the battery exit; utility battery
+  (BESS) and iron-air; the Power options dialog, the Plan's special-site rows, the report's energy line.
+- **M36.1 The venture mechanic** (Site, Offtake, Capital; diligence; overruns; three cash calls; slips; debt rules).
+- **M36.2 The venture set** (EGS, LWR SMR, advanced fission, fusion, pumped storage, iron-air, the solar+BESS control,
+  on-site gas's overrun and turbine slip in Act IV).
+- **M36.3 Bots and the E-B1…E-B5 checks, new Act IV goldens, the end checks and the report.**
+
+- M34.4 (closed here): the `--act2 --act3` CSVs are byte-identical to M33 (1,302 files, `bi-m34`), so M34 added no Act II/III
+  rule beyond `acquiredQuarter`. The owner's 1b decision (fix the Ground Holder bot or relax B3/B5) is still open.
+- M35.1-M35.3 built in one chunk (they share `energy.ts`, `en.json` and the site card). Every golden unchanged (91 checks).
+  New: `systems/energy.ts`, `energyAssets.ts`, `texasPower.ts`, `specialSites.ts`, `overrun.ts`, `sim/energyViews.ts`,
+  `ui/components/energyDialog.tsx`; tests `energy`, `texasPower`, `ui/energyDialog`. Vite splits `sim-energy`, `sim-space`.
+- Decisions (mine, reversible): Texas requires any fixed contract (the game has no 8-year PPA); refusing a grid call while
+  enrolled forfeits the year; 4CP at a site with AI halls needs a battery covering them; special sites lease like a
+  warehouse (1 Bandwidth) from a warehouse up, and show in the Plan's to-do; a home battery covers its machines' outages
+  fully; a battery fire costs 10% of capex (no offline week). The rest: `docs/energy-content/README.md`.
+- **For the design thread:** doc 38 §5.1's lognormal parameters don't give its stated tail shares (nuclear σ 0.70 → ~25%
+  at or under budget, not ~3%); built as written, E-B3 will report it.
+
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
 The owner's answers to the three open questions after M33 (Act IV balance, orbit rule gaps, site-name follow-ups) and

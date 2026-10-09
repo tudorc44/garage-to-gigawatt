@@ -24,6 +24,7 @@ import {
 } from '../state.ts'
 import { logQuarterLabel } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
+import { miningOnly } from './energyAssets.ts'
 import { siteParams } from './siteSerials.ts'
 import { scenarioOf } from './market.ts'
 import {
@@ -125,6 +126,8 @@ export function hostingBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.hosting_garage' }
+  // M35.3 (doc 38 §4.6): a flare pad is mining only.
+  if (miningOnly(site)) return { key: 'error.flare_mining_only' }
   if (!Number.isFinite(kw) || kw <= 0) return { key: 'error.bad_kw' }
   if (underMoratorium(state, siteId))
     return {

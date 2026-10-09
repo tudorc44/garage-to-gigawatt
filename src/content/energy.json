@@ -1,0 +1,187 @@
+{
+ "_meta": {
+  "schema": "energy/1",
+  "doc": "doc 38 (claude_38-energy-ventures-design.md) §4, approved with E-D1..E-D15 (owner, 9 Oct 2026)",
+  "note": "Prices by year are in market_energy.csv. Grades and every designed value: docs/energy-content/README.md. 'verify' marks a value doc 38 asks to verify (doc 39, §8)."
+ },
+ "crf": {"rate": 0.07, "years": 25, "note": "Capital recovery factor for the effective $/MWh on a card (doc 38 §4.1: 0.0858)"},
+ "itc": {
+  "steps": [{"from": "2009Q1", "pct": 30}, {"from": "2020Q1", "pct": 26}, {"from": "2022Q3", "pct": 30}],
+  "applies_to": ["rooftop_solar"],
+  "verify": true,
+  "note": "doc 38 §4.1: the US residential ITC as the design thread recalls it (§8 Q12)"
+ },
+ "net_metering_until": "2022Q4",
+ "daylight_share": 0.5,
+ "owned": {
+  "rooftop_solar": {
+   "from": "2010Q1",
+   "until": "2022Q3",
+   "price_col": "res_solar_usd_w",
+   "price_unit": "usd_w",
+   "running_usd_kw_yr": 20,
+   "cf": 0.15,
+   "cf_by_region": {"ercot": 0.17, "georgia": 0.17},
+   "roof_kw": {"bedroom": 5, "home_rig": 5, "garage": 7, "own_site": 100, "texas_site": 100},
+   "sizes_kw": [3, 5, 7, 25, 50, 100],
+   "build_quarters": 1,
+   "lifetime_years": 25,
+   "heat_once": {"tiers": ["garage"], "delta": -3}
+  },
+  "small_wind": {
+   "from": "2009Q1",
+   "until": "2022Q3",
+   "price_col": "small_wind_usd_kw",
+   "price_unit": "usd_kw",
+   "running_usd_kw_yr": 40,
+   "cf_pitched": 0.2,
+   "cf_realised": [0.08, 0.15],
+   "limit_kw": {"home_rig": 10, "garage": 10, "own_site": 100, "texas_site": 100},
+   "sizes_kw": [10, 20, 50, 100],
+   "build_quarters": 2,
+   "lifetime_years": 20,
+   "breakdown_per_year": 0.05,
+   "repair_share_of_capex": 0.1,
+   "noise_per_year": 0.3,
+   "noise_heat": 4,
+   "overrun_class": "wind"
+  },
+  "home_battery": {
+   "from": "2015Q1",
+   "until": "2022Q3",
+   "price_col": "home_battery_usd_kwh",
+   "price_unit": "usd_kwh",
+   "block_kwh": 13.5,
+   "machines_per_block": 1,
+   "ride_through_hours": 4,
+   "max_blocks": {"bedroom": 2, "home_rig": 2, "garage": 4, "small_unit": 10, "warehouse": 10, "own_site": 10, "texas_site": 10},
+   "build_quarters": 1,
+   "lifetime_years": 10,
+   "fire_per_year": 0.005,
+   "fire_damage_usd": 5000
+  }
+ },
+ "special_sites": {
+  "note": "doc 38 §4.4-4.6, all designed [D] and 'verify' (§8 Q1-Q3). A special site is a leased hydro or Iceland allocation, or a flare-gas pad; the tier gives its rent and Heat class.",
+  "kinds": {
+   "pud": {"tier": "warehouse", "kw": 5000, "power_usd_kwh": {"2017": 0.03, "2018": 0.03, "2019": 0.03, "2020": 0.03, "2021": 0.03, "2022": 0.03}, "rent_usd_q": 30000, "capex_usd": 400000, "build_quarters": 1, "from": "2017Q1", "until": "2022Q3", "cooling_mult": 0.95, "queue": "hydro", "verify": true},
+   "muni": {"tier": "warehouse", "kw": 2000, "power_usd_kwh": {"2017": 0.045, "2018": 0.045, "2019": 0.045, "2020": 0.045, "2021": 0.045, "2022": 0.045}, "rent_usd_q": 30000, "capex_usd": 400000, "build_quarters": 1, "from": "2017Q1", "until": "2022Q3", "town_hall_per_year": 0.3, "town_hall_heat": 5, "queue": "hydro", "verify": true},
+   "quebec": {"tier": "warehouse", "kw": 5000, "power_usd_kwh": {"2017": 0.045, "2018": 0.045, "2019": 0.045, "2020": 0.045, "2021": 0.045, "2022": 0.045}, "rent_usd_q": 30000, "capex_usd": 400000, "build_quarters": 1, "from": "2017Q1", "until": "2022Q3", "cooling_mult": 0.95, "queue": "hydro", "verify": true},
+   "iceland": {"tier": "warehouse", "kw": 5000, "power_usd_kwh": {"2017": 0.0425, "2018": 0.045, "2019": 0.0475, "2020": 0.05, "2021": 0.055, "2022": 0.055}, "rent_usd_q": 30000, "capex_usd": 400000, "build_quarters": 3, "from": "2017Q1", "until": "2022Q3", "cooling_mult": 0.9, "green": true, "delivery_extra_quarters": 1, "queue": "iceland", "verify": true},
+   "flare": {"tier": "warehouse", "kw": 2000, "running_usd_mwh": 30, "genset_usd_kw": 750, "rent_usd_q": 0, "build_quarters": 2, "from": "2018Q1", "until": "2026Q4", "mining_only": true, "verify": true}
+  },
+  "requires_tier_index": 2,
+  "queues": {
+   "hydro": {
+    "per_quarter": 1,
+    "flood_quarter": "2017Q4",
+    "moratorium_from": "2018Q1",
+    "moratorium_quarters": [4, 6],
+    "tariff_new_load_mult": [1.6, 2.0],
+    "tariff_existing_mult": 1.3,
+    "verify": true
+   },
+   "iceland": {
+    "per_quarter": 1,
+    "freezes": [{"from": "2018Q1", "quarters": 2}, {"from": "2021Q4", "quarters": 99}],
+    "verify": true
+   }
+  },
+  "flare": {
+   "cf_first_quarters": 4,
+   "cf": 0.85,
+   "decline_per_quarter": 0.08,
+   "relocate_downtime_quarters": 1,
+   "relocate_wear_share": 0.1,
+   "relocate_usd_kw": 100,
+   "genset_fail_per_quarter": 0.03,
+   "genset_fail_weeks": 1,
+   "heat_once": -5,
+   "tax_break": {"from": "2021Q1", "running_mult": 0.9},
+   "accident_per_year": 0.01,
+   "accident_heat": 10,
+   "accident_usd": 50000
+  }
+ },
+ "texas": {
+  "from": "2020Q1",
+  "contract": "fixed",
+  "contract_note": "doc 38 §4.7 asks for a fixed PPA of 8+ years; the game's contracts run 4 or 8 quarters, so any fixed contract qualifies",
+  "dr_usd_mw_yr": {"mild": 15000, "normal": 40000, "hot": 100000},
+  "dr_paid_quarter_of_year": 3,
+  "refusal_forfeits_year": true,
+  "four_cp": {"q3_output_loss": 0.015, "next_year_price_mult": 0.9},
+  "backlash": {"credits_usd_year": 50000000, "heat": 5, "anger": 5},
+  "tuned": ["dr_usd_mw_yr", "four_cp"]
+ },
+ "site_assets": {
+  "bess": {
+   "from": "2022Q4",
+   "price_col": "bess_usd_kwh_us",
+   "region_mult": {"nordics": 0.8},
+   "hours": [2, 4],
+   "hours_act4": [2, 4, 8],
+   "sizes_mw": [5, 10, 20, 50, 100],
+   "running_usd_kw_yr": 7,
+   "round_trip_loss": 0.13,
+   "build_quarters": 3,
+   "lifetime_years": 15,
+   "fade_per_year": 0.02,
+   "overrun_class": "solar",
+   "capacity_derate": {"2": 0.35, "4": 0.6, "8": 0.8},
+   "capacity_regions": ["pjm", "ohio"],
+   "capacity_from": "2027Q1",
+   "fire_per_year": 0.002,
+   "fire_heat": 8,
+   "fire_repair_share": 0.1,
+   "firm_share": 0.3
+  },
+  "btm_solar": {
+   "from": "2022Q4",
+   "price_col": "utility_solar_usd_kw",
+   "sizes_mw": [5, 10, 20, 50, 100],
+   "running_usd_kw_yr": 20,
+   "cf_by_region": {"ercot": 0.24, "georgia": 0.2, "arizona": 0.28, "nordics": 0.11, "pjm": 0.18, "ohio": 0.18},
+   "build_quarters": 4,
+   "overrun_class": "solar",
+   "heat_once": -3,
+   "rural_tiers": ["own_site", "texas_site"],
+   "land_mw_per_site_mw": 1
+  },
+  "btm_wind": {
+   "from": "2022Q4",
+   "price_col": "utility_wind_usd_kw",
+   "sizes_mw": [5, 10, 20, 50, 100],
+   "running_usd_kw_yr": 43,
+   "cf_by_region": {"ercot": 0.38, "georgia": 0.15, "nordics": 0.35, "pjm": 0.3, "ohio": 0.3, "arizona": 0.3},
+   "build_quarters": 6,
+   "overrun_class": "wind",
+   "heat_once": 3,
+   "complaint_per_year": 0.3,
+   "complaint_heat": 4,
+   "rural_tiers": ["own_site", "texas_site"],
+   "land_mw_per_site_mw": 1
+  },
+  "iron_air": {
+   "from": "2031Q1",
+   "price_col": "iron_air_usd_kwh",
+   "hours": 100,
+   "sizes_mw": [5, 10, 20, 50, 100],
+   "round_trip": 0.45,
+   "build_quarters": 8,
+   "slip_chance": 0.5,
+   "slip_quarters": 4,
+   "lifetime_years": 20,
+   "overrun_class": "solar",
+   "firm_share": 0.9
+  }
+ },
+ "overrun_classes": {
+  "nuclear": {"median": 1.6, "sigma": 0.7, "cap": 6.0},
+  "pumped_hydro": {"median": 1.5, "sigma": 0.8, "cap": 6.0},
+  "thermal": {"median": 1.03, "sigma": 0.35, "cap": 3.0},
+  "wind": {"median": 1.02, "sigma": 0.3, "cap": 2.5},
+  "transmission": {"median": 0.98, "sigma": 0.2, "cap": 2.0},
+  "solar": {"median": 1.0, "sigma": 0.1, "cap": 1.5}
+ }
+}

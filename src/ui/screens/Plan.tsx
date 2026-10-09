@@ -3,6 +3,7 @@
 import { useContext, useState } from 'preact/hooks'
 import { hasText, siteShortName, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
+import { specialSitesView } from '../../sim/energyViews.ts'
 import {
   BANDWIDTH_COST,
   HEAT_MARKS,
@@ -977,6 +978,26 @@ function TodoPanel({
       )
       break // one locked rung is enough to show what's next
     }
+  }
+  // M35.3 (doc 38 §4.4-4.6): the special sites on offer (hydro allocations, Iceland, flare pads).
+  for (const row of specialSitesView(state)) {
+    const a: Action = { type: 'SPECIAL_LEASE', kind: row.kind }
+    ladderRows.push(
+      <ActionRow
+        key={`special-${row.kind}`}
+        icon={row.kind === 'flare' ? 'own-site' : 'warehouse'}
+        name={t(`ui.energy.lease.${row.kind}`, {
+          mw: fmt.power(row.kw),
+          price: fmt.cents(row.priceUsdKwh),
+          quarters: row.buildQuarters,
+        })}
+        bandwidth={BANDWIDTH_COST.build}
+        bandwidthLeft={left}
+        price={fmt.money(row.costUsd)}
+        disabledReason={reason(a)}
+        onClick={() => act(a)}
+      />,
+    )
   }
 
   return (
