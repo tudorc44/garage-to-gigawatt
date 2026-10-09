@@ -27,6 +27,7 @@ import {
 import { powerNegotiationShift } from './hires.ts'
 import { scenarioOf } from './market.ts'
 import { normalPriceUsdKwh } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 export interface PowerNegotiation {
   siteId: string
@@ -63,7 +64,7 @@ export function startBlocker(
     return { key: 'error.negotiation_open' }
   if (state.pitch) return { key: 'error.pitch_open' }
   if (!renewalDue(state, site))
-    return { key: 'error.no_renewal', params: { tier: site.tier } }
+    return { key: 'error.no_renewal', params: { ...siteParams(site) } }
   if (!contractTypes(site).includes(type)) return { key: 'error.bad_choice' }
   if (!(CONTENT.negotiation.terms as readonly number[]).includes(term))
     return { key: 'error.bad_choice' }
@@ -115,7 +116,7 @@ export function startNegotiation(
     shift,
   }
   logEntry(state, 'log.negotiation_started', {
-    tier: site.tier,
+    ...siteParams(site),
     contract: type,
     term,
   })
@@ -130,7 +131,7 @@ function deal(state: GameState, price: number): void {
   const n = state.negotiation!
   const site = siteOf(state)
   logEntry(state, 'log.negotiation_deal', {
-    tier: site.tier,
+    ...siteParams(site),
     price: `${(price * 100).toFixed(2)}¢`,
     opening: `${(n.openingUsdKwh * 100).toFixed(2)}¢`,
     term: n.term,
@@ -146,7 +147,7 @@ function walkAway(state: GameState, by: 'you' | 'utility'): void {
   logEntry(
     state,
     by === 'you' ? 'log.negotiation_you_walked' : 'log.negotiation_they_walked',
-    { tier: site.tier, opening: `${(n.openingUsdKwh * 100).toFixed(2)}¢` },
+    { ...siteParams(site), opening: `${(n.openingUsdKwh * 100).toFixed(2)}¢` },
   )
   signContract(
     state,

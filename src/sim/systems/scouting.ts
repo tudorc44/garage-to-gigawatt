@@ -23,6 +23,7 @@ import {
 import { inAct2Rules, logQuarterLabel } from '../state.ts'
 import { recalcHeat } from './heat.ts'
 import { extraScoutOffers } from './hires.ts'
+import { addSite } from './siteSerials.ts'
 import { scenarioOf } from './market.ts'
 import { extraQueueQuarters, getRegion } from './regions.ts'
 import { flawEffect } from './sites.ts'
@@ -188,7 +189,7 @@ export function buyAct2Site(state: GameState, offer: SiteOffer): Site {
   }
   site.readyQuarter += delay
   state.cash += flawEffect(site, 'cash') ?? 0
-  state.sites.push(site)
+  addSite(state, site)
   recalcHeat(state, site)
   state.siteOffers = state.siteOffers.filter((o) => o.id !== offer.id)
   logEntry(state, 'log.act2_site_bought', {

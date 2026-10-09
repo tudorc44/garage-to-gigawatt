@@ -4,13 +4,13 @@
 import { t, tDynamic } from '../../i18n/t.ts'
 import { carryOver } from '../../sim/selectors.ts'
 import { fmt } from '../format.ts'
-import { tierName } from '../names.ts'
+import { siteName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 export function ActIntroScreen({ state, act }: ScreenProps) {
   const c = carryOver(state)
   const sites = c.sites
-    .map((s) => `${tierName(s.tier)} · ${fmt.power(s.energizedKw)}`)
+    .map((s) => `${siteName(s.site)} · ${fmt.power(s.energizedKw)}`)
     .join(', ')
   const coins = [
     c.treasury.BTC > 0 ? fmt.crypto(c.treasury.BTC, 'BTC') : null,

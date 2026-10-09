@@ -25,6 +25,7 @@
     {
       "id": "site-1",
       "tier": "garage",
+      "serial": 1,
       "readyQuarter": 0,
       "rentUsdQ": 0,
       "powerPriceMult": 1,
@@ -37,6 +38,7 @@
       "rentUsdQ": 6000,
       "powerPriceMult": 1,
       "flaw": null,
+      "serial": 1,
       "contract": {
         "type": "fixed",
         "price": 0.0886275771727669,
@@ -51,6 +53,7 @@
       "rentUsdQ": 25929,
       "powerPriceMult": 1.145,
       "flaw": "undersized_transformer",
+      "serial": 1,
       "contract": {
         "type": "fixed",
         "price": 0.08329874999999999,
@@ -59,6 +62,11 @@
       }
     }
   ],
+  "siteSerials": {
+    "garage": 1,
+    "small_unit": 1,
+    "warehouse": 1
+  },
   "machines": [
     {
       "id": "lot-2",
@@ -1861,6 +1869,7 @@
       "key": "log.site_built",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "costUsd": 35000,
         "quarter": "2017Q4"
       }
@@ -1870,7 +1879,8 @@
       "week": null,
       "key": "log.site_ready",
       "params": {
-        "tier": "small_unit"
+        "tier": "small_unit",
+        "serial": 1
       }
     },
     {
@@ -1879,6 +1889,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "price": "8.00¢",
         "quarter": "2018Q4"
@@ -1941,6 +1952,7 @@
       "key": "log.site_built",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "costUsd": 345127,
         "quarter": "2018Q3"
       }
@@ -1951,6 +1963,7 @@
       "key": "log.site_flaw",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "flaw": "undersized_transformer"
       }
     },
@@ -1959,7 +1972,8 @@
       "week": null,
       "key": "log.site_ready",
       "params": {
-        "tier": "warehouse"
+        "tier": "warehouse",
+        "serial": 1
       }
     },
     {
@@ -1968,6 +1982,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "price": "6.87¢",
         "quarter": "2019Q3"
@@ -1990,6 +2005,7 @@
       "key": "log.complaint_ignored",
       "params": {
         "tier": "garage",
+        "serial": 1,
         "heat": 40
       }
     },
@@ -2007,7 +2023,8 @@
       "key": "log.failure_wave_degraded",
       "params": {
         "units": 7,
-        "tier": "small_unit"
+        "tier": "small_unit",
+        "serial": 1
       }
     },
     {
@@ -2041,6 +2058,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -2051,6 +2069,7 @@
       "key": "log.negotiation_deal",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "price": "7.36¢",
         "opening": "8.80¢",
         "term": 4
@@ -2062,6 +2081,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "price": "7.36¢",
         "quarter": "2019Q4"
@@ -2453,7 +2473,8 @@
       "key": "log.failure_wave_degraded",
       "params": {
         "units": 37,
-        "tier": "warehouse"
+        "tier": "warehouse",
+        "serial": 1
       }
     },
     {
@@ -2478,6 +2499,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -2488,6 +2510,7 @@
       "key": "log.negotiation_deal",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "price": "6.54¢",
         "opening": "6.93¢",
         "term": 4
@@ -2499,6 +2522,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "price": "6.54¢",
         "quarter": "2020Q3"
@@ -2626,6 +2650,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -2636,6 +2661,7 @@
       "key": "log.negotiation_they_walked",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "opening": "8.80¢"
       }
     },
@@ -2645,6 +2671,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "price": "8.80¢",
         "quarter": "2020Q4"
@@ -3024,6 +3051,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -3034,6 +3062,7 @@
       "key": "log.negotiation_deal",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "price": "5.79¢",
         "opening": "6.93¢",
         "term": 4
@@ -3045,6 +3074,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "price": "5.79¢",
         "quarter": "2021Q3"
@@ -3172,6 +3202,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -3182,6 +3213,7 @@
       "key": "log.negotiation_deal",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "price": "7.76¢",
         "opening": "8.80¢",
         "term": 4
@@ -3193,6 +3225,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "price": "7.76¢",
         "quarter": "2021Q4"
@@ -3361,6 +3394,7 @@
       "key": "log.complaint_ignored",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "heat": 50
       }
     },
@@ -3518,7 +3552,8 @@
       "key": "log.failure_wave_degraded",
       "params": {
         "units": 7,
-        "tier": "small_unit"
+        "tier": "small_unit",
+        "serial": 1
       }
     },
     {
@@ -3603,6 +3638,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -3613,6 +3649,7 @@
       "key": "log.negotiation_deal",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "price": "7.01¢",
         "opening": "7.56¢",
         "term": 4
@@ -3624,6 +3661,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "price": "7.01¢",
         "quarter": "2022Q3"
@@ -3733,6 +3771,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -3743,6 +3782,7 @@
       "key": "log.negotiation_deal",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "price": "8.86¢",
         "opening": "9.35¢",
         "term": 4
@@ -3754,6 +3794,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "price": "8.86¢",
         "quarter": "2022Q4"
@@ -3871,6 +3912,7 @@
       "key": "log.complaint_ignored",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "heat": 49
       }
     },
@@ -4166,6 +4208,7 @@
       "key": "log.complaint_ignored",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "heat": 25
       }
     },
@@ -4186,6 +4229,7 @@
       "key": "log.negotiation_started",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "term": 4
       }
@@ -4196,6 +4240,7 @@
       "key": "log.negotiation_deal",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "price": "8.33¢",
         "opening": "9.45¢",
         "term": 4
@@ -4207,6 +4252,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "warehouse",
+        "serial": 1,
         "contract": "fixed",
         "price": "8.33¢",
         "quarter": "2023Q3"

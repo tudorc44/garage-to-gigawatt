@@ -19,7 +19,7 @@ import { BALANCE } from '../../content/index.ts'
 import type { PowerSource, ProjectKind } from '../../sim/state.ts'
 import { Dialog, Icon, Pips, Tip } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
-import { say, siteName, tierIcon, tierName } from '../names.ts'
+import { say, siteName, tierIcon } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 const kindName = (kind: string) => tDynamic(`project_kind.${kind}`, kind)
@@ -1128,7 +1128,7 @@ function DealBuilder(
           <>
             <div class="num-s">
               {t('ui.deal.power_line', {
-                tier: tierName(card.tier),
+                tier: siteName(card.site),
                 total: fmt.power(v.power.totalKw),
                 mining: fmt.power(v.power.miningKw),
                 free: fmt.power(v.power.freeKw),

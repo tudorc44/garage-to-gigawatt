@@ -26,7 +26,7 @@ import type { GameState, WeekSummary } from '../../sim/state.ts'
 import { Icon, Tip, WeekStrip } from '../components/basics.tsx'
 import { Shell } from '../components/frame.tsx'
 import { fmt } from '../format.ts'
-import { machineName, say, tierName } from '../names.ts'
+import { machineName, say, siteName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { MarketReadText } from './Plan.tsx'
 import { readSettings } from '../../platform/settings.ts'
@@ -661,7 +661,7 @@ function ComplaintCard({ state, act }: ScreenProps) {
   const alert = state.interrupt!
   const v = complaintView(state)
   if (!v) return null
-  const tier = tierName(v.tier)
+  const tier = siteName(v.site)
   const effect = (id: string) =>
     id === 'pay'
       ? t('ui.complaint.effect_pay', {
@@ -827,7 +827,7 @@ function EventCard({ state, act }: ScreenProps) {
               quarter: fmt.quarter(quarterName(state.quarter)),
               week: v.week + 1,
             })}
-            {v.siteTier ? ` · ${tierName(v.siteTier)}` : ''}
+            {v.site ? ` · ${siteName(v.site)}` : ''}
           </span>
           {v.type === 'random' && (
             <span class="label">
@@ -881,7 +881,7 @@ function EventCard({ state, act }: ScreenProps) {
 function FailureWaveCard({ state, act }: ScreenProps) {
   const v = failureWaveView(state)
   if (!v) return null
-  const tier = tierName(v.tier)
+  const tier = v.site ? siteName(v.site) : tierName(v.tier)
   return (
     <div class="scrim">
       <article
@@ -1067,7 +1067,7 @@ function GpuWaveCard({ state, act }: ScreenProps) {
     n: v.n,
     gpus: v.gpus.toLocaleString('en-US'),
     cluster: v.clusterGpus.toLocaleString('en-US'),
-    tier: tierName(v.tier),
+    tier: v.site ? siteName(v.site) : tierName(v.tier),
   }
   return (
     <div class="scrim">
@@ -1146,7 +1146,7 @@ function ProjectAlertCard({ state, act }: ScreenProps) {
   const params = {
     n: v.n,
     projectKw: fmt.power(v.kw),
-    tier: tierName(v.tier),
+    tier: v.site ? siteName(v.site) : tierName(v.tier),
   }
   const effect = (id: string) => {
     if (id === 'accelerate' || id === 'pay_premium')

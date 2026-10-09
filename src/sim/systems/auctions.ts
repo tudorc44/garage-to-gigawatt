@@ -12,6 +12,7 @@ import { activeRivals } from './rivals.ts'
 import { underMoratorium } from './heat.ts'
 import { gpuKwLeft } from './construction.ts'
 import { capacityKw, usedKw } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 /** The auction window covering this quarter, if any. */
 export function auctionWindow(quarter: number) {
@@ -106,14 +107,14 @@ export function bidBlocker(
   if (underMoratorium(state, site.id))
     return {
       key: 'error.moratorium',
-      params: { tier: site.tier, at: CONTENT.heat.moratoriumAt },
+      params: { ...siteParams(site), at: CONTENT.heat.moratoriumAt },
     }
   const freeKw = capacityKw(site) - usedKw(state, site.id)
   const neededKw = getModel(a.model)!.power_kw * a.count
   if (neededKw > freeKw + 1e-9)
     return {
       key: 'error.no_capacity',
-      params: { tier: site.tier, freeKw, neededKw },
+      params: { ...siteParams(site), freeKw, neededKw },
     }
 }
 

@@ -1,28 +1,43 @@
 // Display names and icons for content ids (machines, site tiers, flaws).
-import { hasText, t, tDynamic, type Message } from '../i18n/t.ts'
-import type { Coin } from '../sim/state.ts'
+import { hasText, siteShortName, t, tDynamic, type Message } from '../i18n/t.ts'
+import { fmt } from './format.ts'
+import { siteFacts } from '../sim/selectors.ts'
+import type { Coin, GameState, Site } from '../sim/state.ts'
 import type { IconName } from './icons.ts'
 
 export const machineName = (id: string) => tDynamic(`machine.${id}`, id)
 export const tierName = (id: string) => tDynamic(`site.${id}`, id)
-/** A site's name: its tier's, or for an Act II scouted site its type, region and size. */
+/**
+ * M33.1 (doc 35): a site's short name, unique in the company: its type and number ("Own site 3", "Powered shell 2"),
+ * or "Garage". Used wherever a site is named (buttons, rows, table cells).
+ */
 export const siteName = (site: {
   tier: string
   category?: string
-  region?: string
-  kw?: number
-}) =>
-  site.category
-    ? t('ui.site_name_act2', {
-        category: tDynamic(
-          `site_category_badge.${site.category}`,
-          site.category,
-        ),
-        region: tDynamic(`ui.region.${site.region ?? ''}`, site.region ?? ''),
-        siteKw: site.kw ?? 0,
+  serial?: number
+}) => siteShortName(site.category ?? site.tier, site.serial)
+
+/** M33.1: a site's long name, "Own site 3 · Georgia · 20 MW": dialog titles, tooltips and the site card. */
+export const siteLongName = (
+  site: { tier: string; category?: string; serial?: number },
+  facts: { region: string | null; energizedKw: number },
+) =>
+  facts.region
+    ? t('site.name.long', {
+        short: siteName(site),
+        region: tDynamic(`ui.region.${facts.region}`, facts.region),
+        mw: fmt.power(facts.energizedKw),
       })
-    : tierName(site.tier)
-export const flawName = (id: string) => tDynamic(`flaw.${id}`, id)
+    : t('site.name.long_no_region', {
+        short: siteName(site),
+        mw: fmt.power(facts.energizedKw),
+      })
+
+/** The long name of a company site, from the game state. */
+export const siteLong = (state: GameState, site: Site) =>
+  siteLongName(site, siteFacts(state, site))
+export const flawName = (id: string) =>
+  hasText(`flaw.${id}`) ? tDynamic(`flaw.${id}`, id) : tDynamic(`flaw_act2.${id}`, id)
 export const rivalName = (id: string) => tDynamic(`rival.${id}`, id)
 /** The two-letter monogram on the league table and auction tiles, e.g. "RI". */
 export const rivalCode = (id: string) =>

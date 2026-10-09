@@ -19,6 +19,7 @@ import {
 } from '../../content/index.ts'
 import { scenarioOf } from './market.ts'
 import { rfpMid } from './leaseIndex.ts'
+import { siteParams } from './siteSerials.ts'
 import { startLenderCure } from './facilities.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream } from '../rng.ts'
@@ -694,7 +695,7 @@ export function openBlocker(
   if (underMoratorium(state, a.siteId))
     return {
       key: 'error.moratorium',
-      params: { tier: site.tier, at: CONTENT.heat.moratoriumAt },
+      params: { ...siteParams(site), at: CONTENT.heat.moratoriumAt },
     }
   if (a.power) {
     // New power (a grid upgrade or on-site gas) brings its own MW.
@@ -707,7 +708,7 @@ export function openBlocker(
     if (a.kw > freeKw + 1e-9)
       return {
         key: 'error.no_project_room',
-        params: { tier: site.tier, freeKw, neededKw: a.kw },
+        params: { ...siteParams(site), freeKw, neededKw: a.kw },
       }
   }
   const need = BALANCE.projects.bandwidth.open
@@ -773,14 +774,14 @@ export function openProject(
   drawOffers(state, p)
   logEntry(state, 'log.project_opened', {
     n,
-    tier: site.tier,
+    ...siteParams(site),
     projectKw: a.kw,
     kind: a.kind,
   })
   // The Power slot is filled as the project opens (M8.7d): the site's existing MW, a grid upgrade or a gas plant.
   logEntry(state, `log.project_power_${a.power ?? 'existing'}`, {
     n,
-    tier: site.tier,
+    ...siteParams(site),
     projectKw: a.kw,
   })
   return p

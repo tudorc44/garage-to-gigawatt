@@ -122,7 +122,7 @@ function CommunityDealCard({ state, act }: ScreenProps) {
       <p class="num-s" style={{ margin: 0 }}>
         {t('ui.cdeal.body', {
           name: v.name,
-          tier: v.tier,
+          tier: siteName(v.site),
           target: v.targetHeat,
           heat: Math.round(v.heat),
           fade: v.fade,
@@ -631,7 +631,7 @@ export function FleetPanel({
               />
             </div>
             <HeatMeter
-              tier={sv.site.tier}
+              name={siteName(sv.site)}
               heat={sv.heat}
               tooltip={heatTooltip(state, sv.site.id)}
             />
@@ -696,11 +696,12 @@ export function FleetPanel({
 
 /** A site's Heat, 0–100, with marks at the thresholds (danger from the moratorium up). */
 function HeatMeter({
-  tier,
+  name,
   heat,
   tooltip,
 }: {
-  tier: string
+  /** the site's short name (M33.1) */
+  name: string
   heat: number
   /** M21.2: the site's Heat breakdown, one line each (hover) */
   tooltip?: string
@@ -723,7 +724,7 @@ function HeatMeter({
         aria-valuemax={100}
         aria-valuenow={shown}
         aria-label={t('ui.fleet.heat_label', {
-          tier: tierName(tier),
+          tier: name,
           heat: shown,
         })}
       >
@@ -983,7 +984,7 @@ function TodoPanel({
           financed: true,
         }
         const name = t('ui.plan.phase', {
-          tier: tierName(p.site.tier),
+          tier: siteName(p.site),
           n: p.next.n,
           of: p.next.of,
           kw: fmt.power(p.next.kw),
@@ -1018,7 +1019,7 @@ function TodoPanel({
           <ActionRow
             key={`transformer-${u.site.id}`}
             icon="power"
-            name={t('ui.plan.transformer', { tier: tierName(u.site.tier) })}
+            name={t('ui.plan.transformer', { tier: siteName(u.site) })}
             locked={t('ui.locked.transformer_underway', {
               quarter: fmt.quarter(quarterName(u.readyQuarter)),
             })}
@@ -1027,7 +1028,7 @@ function TodoPanel({
           <ActionRow
             key={`transformer-${u.site.id}`}
             icon="power"
-            name={t('ui.plan.transformer', { tier: tierName(u.site.tier) })}
+            name={t('ui.plan.transformer', { tier: siteName(u.site) })}
             bandwidth={u.bandwidth}
             bandwidthLeft={left}
             price={t('ui.plan.minus', { value: fmt.money(u.costUsd) })}
@@ -1047,7 +1048,7 @@ function TodoPanel({
             <ActionRow
               key={`leave-${sv.site.id}`}
               icon="close"
-              name={t('ui.plan.leave', { tier: tierName(sv.site.tier) })}
+              name={t('ui.plan.leave', { tier: siteName(sv.site) })}
               price={t('ui.plan.leave_price', {
                 value: fmt.money(sv.leaving.penaltyUsd),
               })}
@@ -1067,7 +1068,7 @@ function TodoPanel({
             state.negotiation?.siteId === r.site.id
               ? 'ui.plan.negotiating'
               : 'ui.plan.renewal',
-            { tier: tierName(r.site.tier) },
+            { tier: siteName(r.site) },
           )}
           price={t('ui.plan.renewal_price', {
             price: fmt.cents(
@@ -1087,7 +1088,7 @@ function TodoPanel({
           locked={
             next
               ? t('ui.locked.next_renewal', {
-                  tier: tierName(next.tier),
+                  tier: siteName(next.site),
                   quarter: fmt.quarter(next.quarter),
                 })
               : t('ui.locked.no_contracts')
@@ -1130,7 +1131,7 @@ function TodoPanel({
         bandwidth={communityView(state).outreachBandwidth}
         bandwidthLeft={left}
         price={t('ui.plan.hottest', {
-          tier: tierName(topHeat(state).tier),
+          tier: siteName(topHeat(state).site),
           heat: Math.round(topHeat(state).heat),
         })}
         onClick={() => open('community')}
@@ -1231,7 +1232,7 @@ function FleetRow({ state, act }: ScreenProps) {
       name={t('ui.plan.distressed_fleet', {
         count: best.units,
         model: machineName(v.model),
-        tier: tierName(best.tier),
+        tier: siteName(best.site),
       })}
       bandwidth={v.bandwidth}
       bandwidthLeft={state.bandwidth}

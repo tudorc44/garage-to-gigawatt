@@ -130,6 +130,7 @@ export function projectCard(state: GameState, p: Project) {
   return {
     project: p,
     column: columnOf(p),
+    site,
     tier: site.tier,
     region: regionOf(site) ?? null,
     slots: slots(p),

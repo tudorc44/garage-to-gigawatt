@@ -73,6 +73,7 @@ import {
 import { aiEbitdaUsd, ebitdaUsd, moonEbitdaUsd, orbitEbitdaUsd, valuationUsd } from './valuation.ts'
 import { endQuarterOrbit, orbitConstructionUsd, spaceMultiple, startQuarterOrbitLive } from './orbitOps.ts'
 import { depreciationAudit, lasting } from './eventEffects.ts'
+import { siteParams } from './siteSerials.ts'
 
 /**
  * Runs after week 13. If cash is below zero: sell treasury coins, then machines
@@ -339,7 +340,7 @@ export function startNextQuarter(state: GameState): void {
   finishUpgrades(state)
   for (const site of state.sites) {
     if (site.readyQuarter === state.quarter && state.quarter > 0) {
-      logEntry(state, 'log.site_ready', { tier: site.tier })
+      logEntry(state, 'log.site_ready', siteParams(site))
     }
   }
   startQuarterContracts(state)

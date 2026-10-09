@@ -136,6 +136,12 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   'events.extraOffers': null,
 }
 
+/** Additions whose value depends on the save (M33.1's site numbers, given on load): a check, not a fixed value. */
+const ADDED_CHECKS: Record<string, (v: unknown) => boolean> = {
+  'sites.*.serial': (v) => Number.isInteger(v) && (v as number) >= 1,
+  siteSerials: (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+}
+
 /**
  * Checks that `actual` keeps every value of `expected`, recursively, and that anything extra is
  * a known addition (ADDED_SINCE_V1) with its starting value. Records the extra paths in `added`.
@@ -157,7 +163,10 @@ function expectKeeps(
     for (const key of Object.keys(actual)) {
       const p = path ? `${path}.${key}` : key
       if (key in expected) expectKeeps(actual[key], expected[key], p, added)
-      else {
+      else if (p in ADDED_CHECKS) {
+        expect(ADDED_CHECKS[p](actual[key]), `${p} = ${JSON.stringify(actual[key])}`).toBe(true)
+        added.push(p)
+      } else {
         expect(ADDED_SINCE_V1, `unexpected new field ${p}`).toHaveProperty([p])
         expect(actual[key]).toEqual(ADDED_SINCE_V1[p])
         added.push(p)

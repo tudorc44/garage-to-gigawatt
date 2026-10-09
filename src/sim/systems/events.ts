@@ -85,6 +85,7 @@ import { capacityKw, isReady, regionOf, tierIndex, usedKw } from './sites.ts'
 import { moratoriumRegion } from './anger.ts'
 import { activeRivals } from './rivals.ts'
 import { sellTreasury } from './treasury.ts'
+import { siteParams } from './siteSerials.ts'
 
 const W = BALANCE.weeksPerQuarter
 
@@ -707,7 +708,7 @@ export function resolveEvent(
           state,
           won ? 'log.event_lawyer_won' : 'log.event_lawyer_lost',
           {
-            tier: site?.tier ?? '',
+            ...siteParams(site),
           },
           weekNo,
         )

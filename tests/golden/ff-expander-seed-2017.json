@@ -24,6 +24,7 @@
     {
       "id": "site-1",
       "tier": "garage",
+      "serial": 1,
       "readyQuarter": 0,
       "rentUsdQ": 0,
       "powerPriceMult": 1,
@@ -36,6 +37,7 @@
       "rentUsdQ": 6000,
       "powerPriceMult": 1,
       "flaw": null,
+      "serial": 1,
       "contract": {
         "type": "fixed",
         "price": 0.08800000000000001,
@@ -44,6 +46,10 @@
       }
     }
   ],
+  "siteSerials": {
+    "garage": 1,
+    "small_unit": 1
+  },
   "machines": [],
   "siteOffers": [],
   "equipmentLoan": null,
@@ -867,6 +873,7 @@
       "key": "log.site_built",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "costUsd": 35000,
         "quarter": "2017Q2"
       }
@@ -887,7 +894,8 @@
       "week": null,
       "key": "log.site_ready",
       "params": {
-        "tier": "small_unit"
+        "tier": "small_unit",
+        "serial": 1
       }
     },
     {
@@ -896,6 +904,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "price": "8.00¢",
         "quarter": "2018Q2"
@@ -948,6 +957,7 @@
       "key": "log.contract_signed",
       "params": {
         "tier": "small_unit",
+        "serial": 1,
         "contract": "fixed",
         "price": "8.80¢",
         "quarter": "2019Q2"

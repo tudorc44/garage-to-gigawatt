@@ -20,6 +20,7 @@ import { nationalHeatDelta, regionHeatMult } from './regions.ts'
 import { angerHeat } from './anger.ts'
 import { capacityKw, flawEffect, getTier, regionOf } from './sites.ts'
 import { outreachBandwidth, staffHeatBase } from './hires.ts'
+import { siteParams } from './siteSerials.ts'
 
 export interface SiteHeat {
   /** Heat now (0–100), recalculated every week and after anything that changes it. */
@@ -214,7 +215,7 @@ export function updateHeatWeek(state: GameState, lots: LotWeek[]): void {
         state,
         'log.heat_shutdown',
         {
-          tier: site.tier,
+          ...siteParams(site),
           heat: Math.round(h.value),
           below: CONTENT.heat.shutdown.untilBelow,
         },
@@ -250,13 +251,13 @@ export function endQuarterHeat(state: GameState): void {
     if (hot && !site.surcharge) {
       site.surcharge = rateHike.powerMult
       logEntry(state, 'log.rate_hike', {
-        tier: site.tier,
+        ...siteParams(site),
         heat: Math.round(h.value),
         surchargePct: rateHike.powerMult - 1,
       })
     } else if (!hot && site.surcharge) {
       delete site.surcharge
-      logEntry(state, 'log.rate_hike_ends', { tier: site.tier })
+      logEntry(state, 'log.rate_hike_ends', { ...siteParams(site) })
     }
     if (
       h.shutdownSince !== null &&
@@ -265,7 +266,7 @@ export function endQuarterHeat(state: GameState): void {
     ) {
       h.shutdownSince = null
       logEntry(state, 'log.heat_shutdown_lifted', {
-        tier: site.tier,
+        ...siteParams(site),
         heat: Math.round(h.value),
       })
     }
@@ -275,7 +276,7 @@ export function endQuarterHeat(state: GameState): void {
       const left = Math.min(0, h.dealOffset + fade)
       if (left === 0) {
         delete h.dealOffset
-        logEntry(state, 'log.community_deal_faded', { tier: site.tier })
+        logEntry(state, 'log.community_deal_faded', { ...siteParams(site) })
       } else h.dealOffset = left
     }
   }
@@ -348,7 +349,7 @@ export function outreachBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (heatOf(state, siteId).outreachQuarter === state.quarter)
-    return { key: 'error.outreach_done', params: { tier: site.tier } }
+    return { key: 'error.outreach_done', params: { ...siteParams(site) } }
   const bw = outreachBandwidth(state)
   if (state.bandwidth < bw)
     return {
@@ -369,7 +370,7 @@ export function doOutreach(state: GameState, siteId: string): void {
   heatOf(state, siteId).outreachQuarter = state.quarter
   addGrievance(state, siteId, CONTENT.heat.outreach.grievance)
   logEntry(state, 'log.outreach', {
-    tier: site.tier,
+    ...siteParams(site),
     costUsd,
     heat: Math.round(siteHeatValue(state, siteId)),
   })
@@ -383,7 +384,7 @@ export function mitigationBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (CONTENT.heat.mitigation.once && heatOf(state, siteId).mitigated)
-    return { key: 'error.mitigation_done', params: { tier: site.tier } }
+    return { key: 'error.mitigation_done', params: { ...siteParams(site) } }
   const bw = CONTENT.heat.mitigation.bandwidth
   if (state.bandwidth < bw)
     return {
@@ -411,7 +412,7 @@ export function doMitigation(
     state,
     'log.mitigated',
     {
-      tier: site.tier,
+      ...siteParams(site),
       costUsd,
       heat: Math.round(siteHeatValue(state, siteId)),
     },
@@ -514,7 +515,7 @@ export function resolveComplaint(
     const costUsd = complaintPayUsd()
     state.cash -= costUsd
     addGrievance(state, siteId, complaintPayGrievance())
-    logEntry(state, 'log.complaint_paid', { tier: site.tier, costUsd }, week)
+    logEntry(state, 'log.complaint_paid', { ...siteParams(site), costUsd }, week)
   } else if (choiceId === 'mitigate') {
     doMitigation(state, siteId, week)
   } else {
@@ -522,7 +523,7 @@ export function resolveComplaint(
     logEntry(
       state,
       'log.complaint_ignored',
-      { tier: site.tier, heat: Math.round(siteHeatValue(state, siteId)) },
+      { ...siteParams(site), heat: Math.round(siteHeatValue(state, siteId)) },
       week,
     )
   }

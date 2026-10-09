@@ -1090,6 +1090,39 @@ tr.locked td {
 .heat-meter {
   margin: 6px 0 4px;
 }
+/* M33.1 (doc 35): a site's short name, and the facts after it in pickers and lists (free MW, Heat chip, flags). */
+.site-name {
+  white-space: nowrap;
+}
+.site-label,
+.site-extras {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px var(--space-2);
+}
+.site-extras {
+  font-family: var(--font-num);
+}
+.heat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.heat-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.site-flag {
+  display: inline-flex;
+  color: var(--warn);
+}
 /* Table cells with sentences (the People dialog): wrap instead of widening the table. */
 td.wrap {
   white-space: normal;

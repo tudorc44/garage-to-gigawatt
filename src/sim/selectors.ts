@@ -397,6 +397,23 @@ export interface SiteView {
   } | null
 }
 
+/**
+ * M33.1 (doc 35): what a site's long name ("Own site 3 · Georgia · 20 MW") and its row in a picker or list show:
+ * region, energized and free kW, Heat, and the flags (a power renewal due, a flaw).
+ */
+export function siteFacts(state: GameState, site: Site) {
+  const energizedKw = poweredKw(site, state.quarter)
+  return {
+    region: regionOf(site) ?? null,
+    energizedKw,
+    freeKw: Math.max(0, energizedKw - usedKw(state, site.id)),
+    heat: siteHeatValue(state, site.id),
+    renewalDue: renewalDue(state, site),
+    flaw: site.flaw,
+  }
+}
+export type SiteFacts = ReturnType<typeof siteFacts>
+
 export function siteViews(state: GameState): SiteView[] {
   return state.sites.map((site) => ({
     site,
@@ -854,9 +871,13 @@ export function heatBand(heat: number): 1 | 2 | 3 | 4 | 5 {
 }
 
 /** The hottest site, for the top bar: its tier and Heat. */
-export function topHeat(state: GameState): { tier: string; heat: number } {
+export function topHeat(state: GameState): {
+  site: Site
+  tier: string
+  heat: number
+} {
   const h = hottestSite(state)
-  return { tier: h.site.tier, heat: h.value }
+  return { site: h.site, tier: h.site.tier, heat: h.value }
 }
 
 /** Every site's Heat and what outreach / noise mitigation would cost there (Community dialog). */
@@ -918,6 +939,7 @@ export function communityDealView(state: GameState) {
   const d = CONTENT.heat.communityDeal
   return {
     name: allHires().find((h) => h.effect.community_deal === true)?.name ?? '',
+    site,
     tier: site.tier,
     heat: siteHeatValue(state, site.id),
     costUsd: offer.costUsd,
@@ -938,6 +960,7 @@ export function complaintView(state: GameState) {
   const heat = siteHeatValue(state, site.id)
   const ignore = CONTENT.heat.ignoreComplaint * growthMult(site)
   return {
+    site,
     tier: site.tier,
     heat,
     payUsd: complaintPayUsd(),
@@ -985,12 +1008,13 @@ export function renewalViews(state: GameState) {
 /** The next power contract to come up for renewal (for the locked row), or null. */
 export function nextRenewal(
   state: GameState,
-): { tier: string; quarter: string } | null {
+): { site: Site; tier: string; quarter: string } | null {
   const next = state.sites
     .filter((s) => s.contract)
     .sort((a, b) => a.contract!.endQuarter - b.contract!.endQuarter)[0]
   return next
     ? {
+        site: next,
         tier: next.tier,
         quarter: CONTENT.quarters[next.contract!.endQuarter] ?? '',
       }
@@ -1003,6 +1027,7 @@ export function negotiationView(state: GameState) {
   if (!n) return null
   const site = state.sites.find((x) => x.id === n.siteId)!
   return {
+    site,
     tier: site.tier,
     contractType: n.contractType,
     term: n.term,
@@ -1234,6 +1259,7 @@ export function carryOver(state: GameState) {
   const w = marketWeek(q, BALANCE.weeksPerQuarter - 1)
   const sites = state.sites.map((site) => ({
     id: site.id,
+    site,
     tier: site.tier,
     energizedKw: poweredKw(site, q),
   }))
@@ -1342,6 +1368,7 @@ export function fleetOfferView(state: GameState) {
       .filter((s) => s.tier !== BALANCE.startSite)
       .map((s) => ({
         siteId: s.id,
+        site: s,
         tier: s.tier,
         units: fleetUnitsFor(state, s.id),
         costUsd: fleetUnitsFor(state, s.id) * offer.unitUsd,
@@ -1559,6 +1586,10 @@ export function chapterReport(state: GameState) {
       })),
       sites: logOf('log.site_ready').map((e) => ({
         tier: String(e.params?.tier),
+        // M33.1: the site's number and scouted category, for its short name (none in a pre-M33 log line)
+        serial: typeof e.params?.serial === 'number' ? e.params.serial : undefined,
+        category:
+          typeof e.params?.siteLabel === 'string' ? e.params.siteLabel : undefined,
         quarter: CONTENT.quarters[e.quarter],
       })),
       best: byEbitda[0]
@@ -1734,6 +1765,7 @@ export function eventCardView(state: GameState) {
       ?.withheld,
     week: alert.week,
     siteTier: state.sites.find((x) => x.id === alert.siteId)?.tier ?? null,
+    site: state.sites.find((x) => x.id === alert.siteId) ?? null,
     choices: availableChoices(state).map((id) => {
       const r = applyAction(state, { type: 'RESOLVE_INTERRUPT', choice: id })
       return {
@@ -1758,6 +1790,7 @@ export function failureWaveView(state: GameState) {
   if (a?.id !== 'failure_wave') return null
   const site = state.sites.find((x) => x.id === a.siteId)
   return {
+    site: site ?? null,
     tier: site?.tier ?? '',
     week: a.week,
     units: (a.wave ?? []).reduce((n, d) => n + d.units, 0),
@@ -1843,6 +1876,7 @@ export function gpuWaveView(state: GameState) {
   return {
     week: a.week,
     n: p.n,
+    site: state.sites.find((x) => x.id === p.siteId) ?? null,
     tier: state.sites.find((x) => x.id === p.siteId)?.tier ?? '',
     gpus,
     clusterGpus: p.gpuCount,
@@ -1863,6 +1897,7 @@ export function projectAlertView(state: GameState) {
     week: a.week,
     n: p.n,
     kw: p.kw,
+    site: state.sites.find((x) => x.id === p.siteId) ?? null,
     tier: state.sites.find((x) => x.id === p.siteId)?.tier ?? '',
     costUsd: projectEventCostUsd(state),
     waitQuarters: gpuWaitQuarters(state, p),
@@ -2449,6 +2484,7 @@ export function wildcardView(state: GameState) {
     /** M17.8 F: the water moratorium's text variant ('' a build, '_start' a proposed project, '_site' a site). */
     variant: waterVariant(state, open),
     tier: siteTier(state, open.siteId) ?? null,
+    site: state.sites.find((s) => s.id === open.siteId) ?? null,
     choices: (['c1', 'c2'] as const).map((c) => ({
       id: c,
       blocker: wildcardChoiceBlocker(state, c) ?? null,
@@ -2562,6 +2598,7 @@ export function hostingView(state: GameState) {
     })
   const contracts = state.hosting.map((h) => ({
     contract: h,
+    site: state.sites.find((x) => x.id === h.siteId) ?? null,
     tier: state.sites.find((x) => x.id === h.siteId)?.tier ?? '',
     live: h.readyQuarter <= state.quarter,
     readyQuarter: quarterName(h.readyQuarter),

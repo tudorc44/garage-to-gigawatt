@@ -7,6 +7,7 @@ import { CONTENT, actFirstQuarter, actLastQuarter } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
 import { assignCarriedTiers } from './systems/density.ts'
+import { numberUnnumbered } from './systems/siteSerials.ts'
 import { startPolitics } from './systems/politics.ts'
 import { drawWildcards } from './systems/wildcards.ts'
 import {
@@ -112,6 +113,9 @@ export function restoreSave(raw: unknown): Loaded {
     return bad
   const fresh = newGame(data.seed)
   const state = { ...fresh, ...structuredClone(data) } as GameState
+  // M33.1: a save from before site numbers numbers its sites per type in acquisition order (not the new game's count).
+  if (!isObject(data.siteSerials)) state.siteSerials = {}
+  numberUnnumbered(state)
   // Nested records that gained fields: the quarter's running totals and each report.
   state.quarterStats = {
     ...emptyQuarterStats(),

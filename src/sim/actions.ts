@@ -31,6 +31,7 @@ import {
   type Site,
 } from './state.ts'
 import { logQuarterLabel } from './state.ts'
+import { addSite, siteParams } from './systems/siteSerials.ts'
 import {
   addMachines,
   removeMachines,
@@ -685,13 +686,13 @@ function run(s: GameState, a: Action): Message | undefined {
       if (!site) return fail('error.unknown_site')
       if (underMoratorium(s, site.id))
         return fail('error.moratorium', {
-          tier: site.tier,
+          ...siteParams(site),
           at: CONTENT.heat.moratoriumAt,
         })
       const freeKw = capacityKw(site) - usedKw(s, site.id)
       const neededKw = model.power_kw * a.count
       if (neededKw > freeKw + 1e-9) {
-        return fail('error.no_capacity', { tier: site.tier, freeKw, neededKw })
+        return fail('error.no_capacity', { ...siteParams(site), freeKw, neededKw })
       }
       if (cost > s.cash)
         return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
@@ -1156,15 +1157,15 @@ function run(s: GameState, a: Action): Message | undefined {
         )
       }
       s.cash += flawEffect(site, 'cash') ?? 0
-      s.sites.push(site)
+      addSite(s, site)
       recalcHeat(s, site)
       logEntry(s, 'log.site_built', {
-        tier: site.tier,
+        ...siteParams(site),
         costUsd: terms.capexUsd,
         quarter: logQuarterLabel(s, site.readyQuarter),
       })
       if (site.flaw)
-        logEntry(s, 'log.site_flaw', { tier: site.tier, flaw: site.flaw })
+        logEntry(s, 'log.site_flaw', { ...siteParams(site), flaw: site.flaw })
       if ('offerId' in a)
         s.siteOffers = s.siteOffers.filter((o) => o.id !== a.offerId)
       return
@@ -1546,7 +1547,7 @@ function run(s: GameState, a: Action): Message | undefined {
       s.hosting = s.hosting.filter((h) => h.siteId !== site.id)
       s.sites = s.sites.filter((x) => x !== site)
       delete s.siteHeat[site.id]
-      logEntry(s, 'log.site_left', { tier: site.tier, penaltyUsd })
+      logEntry(s, 'log.site_left', { ...siteParams(site), penaltyUsd })
       return
     }
   }

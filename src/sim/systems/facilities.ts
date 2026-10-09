@@ -23,6 +23,7 @@ import {
   sofr,
 } from './finance.ts'
 import { spreadCut } from './hires.ts'
+import { siteParams } from './siteSerials.ts'
 import {
   companyServiceDue,
   isCompanyFacility,
@@ -450,7 +451,7 @@ function foreclose(state: GameState, p: Project): void {
   p.soldQuarter = state.quarter
   logEntry(state, 'log.project_foreclosed', {
     n: p.n,
-    tier: site?.tier ?? '',
+    ...siteParams(site),
     debtUsd,
   })
 }

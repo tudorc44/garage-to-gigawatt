@@ -308,6 +308,7 @@ export function orbitBoardView(state: GameState) {
       stations: (o?.stations ?? []).map((s) => ({ ...s, readyLabel: label(s.readyQuarter) })),
       stationSites: state.sites.map((s) => ({
         siteId: s.id,
+        site: s,
         tier: s.tier,
         why: why(state, { type: 'BUILD_GROUND_STATION', siteId: s.id }),
       })),

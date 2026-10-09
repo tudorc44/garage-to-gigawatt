@@ -63,10 +63,29 @@ const ID_PARAMS: Record<string, string> = {
   capital: 'orbit.capital.',
 }
 
+/** M33.1 (doc 35): site types a player owns one of at most; their name stands alone ("Garage"), with no number. */
+const SINGLE_SITES = new Set(['garage', 'bedroom', 'home_rig'])
+
+/**
+ * A site's short name ("Own site 3", "Powered shell 2", "Garage") from its type (an Act II category or a tier) and
+ * its number (systems/siteSerials.ts). Without a number (a log line from before M33), the type alone.
+ */
+export function siteShortName(label: string, serial?: number): string {
+  const type = table[`site.name.cat.${label}`] ?? table[`site.${label}`] ?? label
+  if (serial === undefined || SINGLE_SITES.has(label)) return type
+  return fill(table['site.name.short'], { type, n: String(serial) })
+}
+
 function fill(text: string, params: MessageParams): string {
   return text.replace(/\{(\w+)\}/g, (_, name: string) => {
     const value = params[name]
     if (value === undefined) return `{${name}}`
+    // M33.1: a site named in a log line or message carries its number: show its short name.
+    if (name === 'tier' && typeof params.serial === 'number' && typeof value === 'string')
+      return siteShortName(
+        typeof params.siteLabel === 'string' ? params.siteLabel : value,
+        params.serial,
+      )
     if (typeof value === 'string') {
       const prefix = ID_PARAMS[name]
       return prefix ? (table[prefix + value] ?? value) : value

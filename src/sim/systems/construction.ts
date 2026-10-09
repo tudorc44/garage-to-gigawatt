@@ -12,6 +12,7 @@ import { logQuarterLabel } from '../state.ts'
 import { buildQuartersFor } from './hires.ts'
 import { getModel } from './market.ts'
 import { flawEffect, getTier, nominalKw } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 const W = BALANCE.weeksPerQuarter
 
@@ -69,9 +70,9 @@ export function phaseBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   const next = nextPhase(state, site)
-  if (!next) return { key: 'error.not_phased', params: { tier: site.tier } }
+  if (!next) return { key: 'error.not_phased', params: { ...siteParams(site) } }
   if (next.n > next.of)
-    return { key: 'error.all_phases_built', params: { tier: site.tier } }
+    return { key: 'error.all_phases_built', params: { ...siteParams(site) } }
   const bw = BALANCE.bandwidth.build
   if (state.bandwidth < bw)
     return {
@@ -105,7 +106,7 @@ export function buildPhase(
   const ready = state.quarter + next.quarters
   site.phases!.push(ready)
   logEntry(state, 'log.phase_started', {
-    tier: site.tier,
+    ...siteParams(site),
     n: next.n,
     of: next.of,
     costUsd: next.costUsd,
@@ -139,7 +140,7 @@ export function constructionLoanBlocker(
   if (terms.requiresContract && !site.contract)
     return {
       key: 'error.construction_loan_contract',
-      params: { tier: site.tier },
+      params: { ...siteParams(site) },
     }
 }
 
@@ -198,9 +199,9 @@ export function transformerBlocker(
   if (!site) return { key: 'error.unknown_site' }
   const u = transformerUpgrade(site)
   if (!u)
-    return { key: 'error.nothing_to_upgrade', params: { tier: site.tier } }
+    return { key: 'error.nothing_to_upgrade', params: { ...siteParams(site) } }
   if (site.upgradeReadyQuarter !== undefined)
-    return { key: 'error.upgrade_underway', params: { tier: site.tier } }
+    return { key: 'error.upgrade_underway', params: { ...siteParams(site) } }
   if (state.bandwidth < u.bandwidth)
     return {
       key: 'error.no_bandwidth',
@@ -238,7 +239,7 @@ export function upgradeTransformer(state: GameState, siteId: string): void {
   state.bandwidth -= u.bandwidth
   site.upgradeReadyQuarter = state.quarter + u.quarters
   logEntry(state, 'log.transformer_upgrade', {
-    tier: site.tier,
+    ...siteParams(site),
     costUsd: u.costUsd,
     quarter: logQuarterLabel(state, site.upgradeReadyQuarter),
   })
@@ -254,7 +255,7 @@ export function finishUpgrades(state: GameState): void {
       continue
     site.flaw = null
     delete site.upgradeReadyQuarter
-    logEntry(state, 'log.transformer_upgraded', { tier: site.tier })
+    logEntry(state, 'log.transformer_upgraded', { ...siteParams(site) })
   }
 }
 

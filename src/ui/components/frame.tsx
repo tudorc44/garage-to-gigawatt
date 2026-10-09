@@ -30,7 +30,7 @@ import {
 } from '../../sim/selectors.ts'
 import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
-import { tierName } from '../names.ts'
+import { siteName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
 import { Term } from './term.tsx'
 import type { IconName } from '../icons.ts'
@@ -108,7 +108,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
       <div class="stat">
         <span class="label">
           <Term id="heat">
-            {t('ui.top.heat', { tier: tierName(heat.tier).toLowerCase() })}
+            {t('ui.top.heat', { tier: siteName(heat.site) })}
           </Term>
         </span>
         <span class="num">

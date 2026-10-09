@@ -10,7 +10,7 @@ import { orbitBoardView, type BlockView, type OrbitBoardView } from '../../sim/o
 import { orreryAuctionView } from '../../sim/selectors.ts'
 import { Pips } from '../components/basics.tsx'
 import { fmt } from '../format.ts'
-import { say, tierName } from '../names.ts'
+import { say, siteName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 // M30.5: the Moon (A4-06, A4-07) lives in its own file and loads with these panels.
 export { MoonDisputesPanel, MoonSection } from './Act4Moon.tsx'
@@ -640,7 +640,7 @@ function Links({ v, act }: { v: OrbitBoardView; act: ScreenProps['act'] }) {
         {l.stationSites.map((s) => (
           <OrbitButton
             key={s.siteId}
-            label={t('ui.orbit.links.build', { site: tierName(s.tier) })}
+            label={t('ui.orbit.links.build', { site: siteName(s.site) })}
             why={s.why}
             bw={1}
             onClick={() => act({ type: 'BUILD_GROUND_STATION', siteId: s.siteId })}

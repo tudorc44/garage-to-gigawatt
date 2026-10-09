@@ -40,6 +40,11 @@ export interface Site {
   id: string
   /** Site tier id from sites.json, e.g. "garage" or "warehouse". */
   tier: string
+  /**
+   * M33.1 (doc 35): its number among the sites of its type ("Own site 3"), set when it's acquired and never changed
+   * or reused (systems/siteSerials.ts). Missing only in saves and presets from before M33, numbered when loaded.
+   */
+  serial?: number
   /** Quarter index when the site is energized. Before that it's still being built. */
   readyQuarter: number
   /** Scouted offers vary around the tier's numbers; these are this site's actual terms. */
@@ -974,6 +979,8 @@ export interface GameState {
   /** Funding rounds already taken (capital.json ladder ids). */
   raisesDone: string[]
   sites: Site[]
+  /** M33.1: the highest number ever given per site type (category or tier), so a left site's number isn't reused. */
+  siteSerials?: Record<string, number>
   machines: MachineLot[]
   siteOffers: SiteOffer[]
   /** The one equipment loan you can have at a time, or null. */
@@ -1564,12 +1571,14 @@ export function newGame(seed: number): GameState {
       {
         id: 'site-1',
         tier: start.id,
+        serial: 1,
         readyQuarter: 0,
         rentUsdQ: start.rent_usd_q,
         powerPriceMult: 1,
         flaw: null,
       },
     ],
+    siteSerials: { [start.id]: 1 },
     machines: [],
     siteOffers: [],
     equipmentLoan: null,

@@ -41,6 +41,7 @@ import {
 import { retrofitPlan, startRetrofit } from './retrofit.ts'
 import { buyAct2Site } from './scouting.ts'
 import { capacityKw, poweredKw, regionOf } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 /** The card effects as act3Cards.ts writes them. */
 export interface RetrofitCard {
@@ -288,7 +289,7 @@ export function rackCard(state: GameState, e: RackCard, weekNo: number): void {
   logEntry(
     state,
     'log.project_power_existing',
-    { n, tier: site.tier, projectKw: plan.kw },
+    { n, ...siteParams(site), projectKw: plan.kw },
     weekNo,
   )
   logEntry(

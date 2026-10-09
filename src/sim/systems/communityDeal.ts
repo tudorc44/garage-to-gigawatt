@@ -12,6 +12,7 @@ import { logEntry, type GameState, type Site } from '../state.ts'
 import { heatBeforeDeal, heatOf, recalcHeat, siteHeatValue } from './heat.ts'
 import { bringsCommunityDeal } from './hires.ts'
 import { capacityKw } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 const D = () => CONTENT.heat.communityDeal
 
@@ -78,7 +79,7 @@ export function signCommunityDeal(state: GameState): void {
   recalcHeat(state, site)
   delete d.offer
   logEntry(state, 'log.community_deal_signed', {
-    tier: site.tier,
+    ...siteParams(site),
     costUsd: offer.costUsd,
     heat: Math.round(h.value),
     fade: D().fadePerQuarter,

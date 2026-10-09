@@ -15,6 +15,7 @@ import {
 import { logQuarterLabel } from '../state.ts'
 import { scenarioOf } from './market.ts'
 import { getTier, isReady, normalPriceUsdKwh } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 /** Sites that buy power on contracts: every tier except the garage (household power). */
 export function hasContracts(site: Site): boolean {
@@ -69,7 +70,7 @@ export function signContract(
   }
   if (type === 'index') site.contract.indexMult = indexRoll(state, site)
   logEntry(state, 'log.contract_signed', {
-    tier: site.tier,
+    ...siteParams(site),
     contract: type,
     price: `${(price * 100).toFixed(2)}¢`,
     quarter: logQuarterLabel(state, state.quarter + term),
@@ -107,7 +108,7 @@ export function acceptBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (!renewalDue(state, site))
-    return { key: 'error.no_renewal', params: { tier: site.tier } }
+    return { key: 'error.no_renewal', params: { ...siteParams(site) } }
   if (!contractTypes(site).includes(type)) return { key: 'error.bad_choice' }
 }
 

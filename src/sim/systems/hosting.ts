@@ -24,6 +24,7 @@ import {
 } from '../state.ts'
 import { logQuarterLabel } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
+import { siteParams } from './siteSerials.ts'
 import { scenarioOf } from './market.ts'
 import {
   poweredKw,
@@ -128,13 +129,13 @@ export function hostingBlocker(
   if (underMoratorium(state, siteId))
     return {
       key: 'error.moratorium',
-      params: { tier: site.tier, at: CONTENT.heat.moratoriumAt },
+      params: { ...siteParams(site), at: CONTENT.heat.moratoriumAt },
     }
   const freeKw = convertibleKw(state, siteId)
   if (kw > freeKw + 1e-9)
     return {
       key: 'error.no_hosting_room',
-      params: { tier: site.tier, freeKw, neededKw: kw },
+      params: { ...siteParams(site), freeKw, neededKw: kw },
     }
   const need = BALANCE.hosting.bandwidth
   if (state.bandwidth < need)
@@ -185,7 +186,7 @@ export function startHosting(
     site.hostingReletKw = (site.hostingReletKw ?? 0) - relet
     if (site.hostingReletKw <= 1e-9) delete site.hostingReletKw
     logEntry(state, 'log.hosting_relet', {
-      tier: site.tier,
+      ...siteParams(site),
       hostedKw: relet,
       rateCents: c.rateUsdKwh * 100,
     })
@@ -195,7 +196,7 @@ export function startHosting(
     const c = add(converted, state.quarter + 1 + CONTENT.hosting.buildQuarters)
     state.cash -= costUsd
     logEntry(state, 'log.hosting_started', {
-      tier: site.tier,
+      ...siteParams(site),
       hostedKw: converted,
       costUsd,
       rateCents: c.rateUsdKwh * 100,
@@ -225,7 +226,7 @@ export function rollHostingDefaults(state: GameState): void {
     const site = state.sites.find((s) => s.id === h.siteId)
     if (site) site.hostingReletKw = (site.hostingReletKw ?? 0) + h.kw
     logEntry(state, 'log.hosting_default', {
-      tier: site?.tier ?? '',
+      ...siteParams(site),
       hostedKw: h.kw,
       feesUsd: quarterFeesUsd(h),
     })
@@ -274,7 +275,7 @@ export function endHosting(
   state.hosting = state.hosting.filter((h) => h.id !== contractId)
   const site = state.sites.find((s) => s.id === contract.siteId)!
   logEntry(state, 'log.hosting_ended', {
-    tier: site.tier,
+    ...siteParams(site),
     hostedKw: contract.kw,
     feeUsd,
   })
@@ -341,7 +342,7 @@ export function renewHosting(state: GameState): void {
     h.termEndQuarter = state.quarter + BALANCE.hosting.termQuarters - 1
     const site = state.sites.find((s) => s.id === h.siteId)
     logEntry(state, 'log.hosting_renewed', {
-      tier: site?.tier ?? '',
+      ...siteParams(site),
       hostedKw: h.kw,
       rateCents: h.rateUsdKwh * 100,
       quarter: logQuarterLabel(state, h.termEndQuarter),

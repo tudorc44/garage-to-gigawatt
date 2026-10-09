@@ -201,12 +201,34 @@ names, then merging the chain into `main` (tag each `m<n>-done`, delete the bran
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `c16f975`** (pushed 6 Oct 2026): M26 plus the dialog hotfixes 1 and 2 and the shorter site list (merged from
-`hotfix-dialog`, now deleted; the same commits are cherry-picked on `m32`, see "Small follow-ups"). Earlier: M26 at
+**`main` = `726c21b`** (pushed 6 Oct 2026): M26, the dialog hotfixes 1 and 2 and the shorter site list (`hotfix-dialog`),
+then the Plan dashboard fix and the compact renewal card (`hotfix-plan`); both hotfix branches are merged and deleted, and
+the same commits are cherry-picked on `m32`. Earlier: M26 at
 `209622e`, M25 at `f8cf61f`, M24 at `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
 and deleted; the remote holds `main` and `m27`…`m32`. Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M33 (branch `m33`, from `m32` at `bd22812`; telling sites apart, design thread's doc 35 of 9 Oct 2026)
+
+The design thread's prompt calls it "M22"; that number is taken (`m22-done`), so it runs as **M33** on `m33`, from `m32`
+since `m32` isn't merged (mine, reversible). Presentation only: no rule changes. Invariants: goldens and `npm run sim`
+outputs byte-identical except the new stored serial (the goldens serialise state: their diff must be serial fields only,
+plus the serial added to site log entries so logs can name a site); tests green; main bundle under 500 KB.
+Sub-steps:
+- **M33.1 Naming:** a stored `site.serial` and `state.siteSerials` counter, set when a site is acquired (never reused);
+  a load-time migration; short names ("Own site 3", "Powered shell 2", "Garage") and long names ("Own site 3 · Georgia ·
+  20 MW") everywhere a site is named, logs included; pickers and lists show free MW, a Heat chip, flag icons.
+- **M33.2 SitePicker and grouped to-do rows:** one dialog component for one-action-many-sites (ground station, leave,
+  buy machines, hosting, power renewal); Plan to-do rows grouped per action kind.
+- **M33.3 Site card:** a drawer (≥ 1280 px) or dialog with a site's power, uses, money, Heat and actions.
+- **M33.4 Long lists:** Fleet & Sites and New project grouped by type, with sorts and filter chips.
+- **M33.5** End checks (byte-identity sim, browser check at 1024 and 1440 px with a 20-site save) and the report.
+
+- M33.1 done: `systems/siteSerials.ts` (`addSite` at every acquisition, `numberUnnumbered` on load, `siteParams` on ~50 log
+  lines and messages; `i18n/t.ts` renders `{tier}` with a number as the short name). Goldens: 21 changed, identical with the
+  serial fields stripped. Sentences name a site in plain text; table cells and lists use `<SiteName>` (tooltip = long name)
+  (mine, reversible). Prologue screens and the report's "Heat · site type" tile keep the type (reports store no site).
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 

@@ -254,7 +254,7 @@ export function WildcardPanel({ state, act }: ScreenProps) {
       <p class="num-s" style={{ margin: 0 }}>
         {tDynamic(`wildcard.${v.id}.body${v.variant}`, '', {
           n: v.projectN ?? '',
-          ...(v.tier ? { tier: v.tier } : {}),
+          ...(v.site ? { tier: siteName(v.site) } : v.tier ? { tier: v.tier } : {}),
         })}
       </p>
       {v.choices.map((c) => (
