@@ -11,6 +11,7 @@ import {
 import { finishUpgrades } from './construction.ts'
 import { bookEnergy, endQuarterEnergy } from './energy.ts'
 import { endQuarterSpecialSites } from './specialSites.ts'
+import { endQuarterVentures, fusionHypeDelta, venturesValueUsd } from './ventures.ts'
 import {
   emptyQuarterStats,
   logEntry,
@@ -73,7 +74,7 @@ import {
   startQuarterProjects,
   weightedBacklogUsd,
 } from './projects.ts'
-import { aiEbitdaUsd, ebitdaUsd, moonEbitdaUsd, orbitEbitdaUsd, valuationUsd } from './valuation.ts'
+import { aiEbitdaUsd, ebitdaUsd, moonEbitdaUsd, orbitEbitdaUsd, valuationUsd, ventureHypeUsd } from './valuation.ts'
 import { endQuarterOrbit, orbitConstructionUsd, spaceMultiple, startQuarterOrbitLive } from './orbitOps.ts'
 import { depreciationAudit, lasting } from './eventEffects.ts'
 import { siteParams } from './siteSerials.ts'
@@ -94,8 +95,11 @@ export function endQuarter(state: GameState): void {
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   // Act III (M17.2): the nuclear PPAs' take-or-pay for the quarter.
   settlePpas(state)
-  // M35 (doc 38 §4): energy assets' savings, upkeep and chances, Texas's credits, special sites' events.
-  bookEnergy(state, endQuarterEnergy(state, quarterInputs(state.quarter, scenarioOf(state))?.pjmCapacityUsdMwDay))
+  // M35 (doc 38 §4): energy assets' savings, upkeep and chances, Texas's credits, special sites' events; M36 (§5):
+  // ventures move on, and those at operation deliver to your campus (their PPA saving is energy revenue).
+  const energy = endQuarterEnergy(state, quarterInputs(state.quarter, scenarioOf(state))?.pjmCapacityUsdMwDay)
+  energy.revenueUsd += endQuarterVentures(state).revenueUsd
+  bookEnergy(state, energy)
   endQuarterSpecialSites(state)
   // Act III (M12.2): the renewals opened this quarter are settled (the new terms start next quarter).
   resolveRenewals(state)
@@ -240,6 +244,10 @@ function buildReport(
       }
     : null
   const weightedBacklog = weightedBacklogUsd(state)
+  // M36 (doc 38 §5): your venture stakes and the fusion hype (absent without a venture).
+  const ventures = state.ventures?.length
+    ? { venturesUsd: venturesValueUsd(state), multipleDelta: fusionHypeDelta(state) }
+    : null
   return {
     quarter: CONTENT.quarters[state.quarter],
     hashrate: hashrate(state),
@@ -272,10 +280,17 @@ function buildReport(
         scenario: scenarioOf(state),
         ...(orbit ? { orbitEbitdaUsd: orbit.orbitEbitdaUsd, orbitMultiple: orbit.orbitMultiple } : {}),
         ...(moon ? { moonEbitdaUsd: moon.moonEbitdaUsd, lunarUsd: moon.lunarUsd } : {}),
+        ...(ventures ?? {}),
       },
     ),
     ...(orbit ?? {}),
     ...(moon ?? {}),
+    ...(ventures
+      ? {
+          venturesUsd: ventures.venturesUsd,
+          ventureHypeUsd: ventureHypeUsd(ebitda - (moon?.moonEbitdaUsd ?? 0), ventures.multipleDelta),
+        }
+      : {}),
     // M35: energy assets' lines, only in a quarter that had one (so earlier reports are untouched).
     ...(st.energyRevenueUsd !== undefined || st.energyCostUsd !== undefined
       ? { energyRevenueUsd: st.energyRevenueUsd ?? 0, energyCostUsd: st.energyCostUsd ?? 0 }

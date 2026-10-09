@@ -64,6 +64,9 @@ const ID_PARAMS: Record<string, string> = {
   energyKind: 'energy_kind.',
   summer: 'texas_summer.',
   specialKind: 'special_kind.',
+  ventureType: 'venture_type.',
+  ventureChoice: 'venture_choice.',
+  ventureGate: 'venture_gate.',
 }
 
 /** M33.1 (doc 35): site types a player owns one of at most; their name stands alone ("Garage"), with no number. */

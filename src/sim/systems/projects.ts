@@ -46,6 +46,7 @@ import {
 import {
   drawPowerQuarters,
   expectedPowerQuarters,
+  gasActIvDraw,
   powerBlocker,
   powerCostUsd,
 } from './power.ts'
@@ -1027,6 +1028,13 @@ export function startBuild(state: GameState, projectId: string): void {
     ?.powerAdds?.find((x) => x.projectId === p.id)
   if (add && !add.card) {
     add.readyQuarter = state.quarter + drawPowerQuarters(state, p)
+    // M36 (doc 38 §5.9): Act IV's gas turbines slip while the backlog lasts, and the plant's cost overruns.
+    const gas = gasActIvDraw(state, p)
+    if (gas.slipQuarters > 0 || gas.overrunUsd !== 0) {
+      add.readyQuarter += gas.slipQuarters
+      p.capexUsd += gas.overrunUsd
+      logEntry(state, 'log.gas_iv', { n: p.n, quarters: gas.slipQuarters, costUsd: gas.overrunUsd })
+    }
     p.readyQuarter = Math.max(p.readyQuarter, add.readyQuarter)
   }
   p.startQuarter = state.quarter

@@ -4,6 +4,7 @@
 import { z } from 'zod'
 import energyRaw from './energy.json' with { type: 'json' }
 import marketEnergyRaw from './market_energy.json' with { type: 'json' }
+import venturesRaw from './ventures.json' with { type: 'json' }
 import { quarterId } from './schemas.ts'
 
 export const OWNED_KINDS = ['rooftop_solar', 'small_wind', 'home_battery'] as const
@@ -241,6 +242,122 @@ const marketEnergySchema = z
   .refine((rows) => rows.every((r, i) => r.year === 2009 + i), 'market_energy: one row per year from 2009, in order')
 
 export type SpecialSiteRules = z.infer<typeof specialKindSchema>
+
+// ---------- Ventures (M36, doc 38 §5) ----------
+
+export const VENTURE_TYPES = ['egs', 'smr', 'adv_fission', 'fusion', 'pumped', 'control'] as const
+export type VentureType = (typeof VENTURE_TYPES)[number]
+const slipSchema = z.object({ median: pos, sigma: nonneg })
+const intRange = z.tuple([quarters, quarters])
+const regionsSchema = z.union([z.array(z.string()).min(1), z.literal('nuclear'), z.literal('any')])
+const targets = z.object({ p2035: share, p2040: share.optional() })
+const nuclearSchema = z.object({
+  from: quarterId,
+  mw: pos,
+  pitch_usd_kw: pos,
+  /** The pitched first power, years after joining (doc 38 §5.3: "2032" for a 2027 start). */
+  pitch_cod_years: pos,
+  ppa_usd_mwh: pos,
+  class: z.literal('nuclear'),
+  foak_floor: pos,
+  licence_q: quarters,
+  build_q: quarters,
+  slip: slipSchema,
+  running_usd_mwh: nonneg,
+  cf: share,
+  regions: regionsSchema,
+  cancel: z.object({ subscribed_min: share, per_year: share, others_subscribed: range }),
+  cost_share: z.object({ chance: share, share: range }),
+  haleu: z.object({ chance: share, slip_q: intRange }).optional(),
+  regulator_slot_q: quarters,
+  lifetime_years: pos,
+  targets,
+})
+const venturesSchema = z.object({
+  diligence: z.object({ bandwidth: quarters, fee_usd: nonneg }),
+  equity_shares: z.array(share).min(1),
+  offtake_shares: z.array(share).min(1),
+  prepay: z.array(z.object({ share, price_cut: share })).min(1),
+  ppa_years: pos,
+  cash_calls: z.array(share).length(3),
+  partner_cover: range,
+  default_call: z.enum(['pay', 'dilute', 'walk']),
+  crf: z.object({ rate: pos }),
+  types: z.object({
+    egs: z.object({
+      from: quarterId,
+      mw: pos,
+      pitch_usd_kw: pos,
+      pitch_cod_quarters: quarters,
+      ppa_usd_mwh: pos,
+      class: z.literal('thermal'),
+      licence_q: quarters,
+      build_q: quarters,
+      slip: slipSchema,
+      running_usd_mwh: nonneg,
+      cf: share,
+      regions: regionsSchema,
+      weak_field: z.object({ chance: share, cf: share, fix_usd_kw: nonneg }),
+      seismic: z.object({ per_year: share, pause_q: quarters, heat: z.number() }),
+      pc_on_cod: z.number(),
+      targets,
+    }),
+    smr: nuclearSchema,
+    adv_fission: nuclearSchema,
+    fusion: z.object({
+      from: quarterId,
+      mw: pos,
+      capex_usd_kw: pos,
+      pitch_usd_mwh: pos,
+      pitch_years: pos,
+      gates: z.array(z.object({ id: z.string(), p: share, q: intRange })).length(4),
+      pivot: z.object({ chance: share, q: intRange, valuation_mult: share }),
+      reservation_share: share,
+      reservation_mw: pos,
+      hype: z.object({ plus: z.number(), minus: z.number(), minus_q: quarters }),
+      no_power_before: quarterId,
+      targets,
+    }),
+    pumped: z.object({
+      from: quarterId,
+      mw: pos,
+      pitch_usd_kw: pos,
+      pitch_years: pos,
+      real_usd_kw: pos,
+      class: z.literal('pumped_hydro'),
+      licence_q: quarters,
+      build_q: quarters,
+      slip: slipSchema,
+      hours: pos,
+      running_usd_kw_yr: nonneg,
+      capacity_usd_kw_yr: nonneg,
+      govt_share: range,
+      tbm: z.object({ chance: share, slip_q: quarters, budget_share: share }),
+      regions: regionsSchema,
+      targets,
+    }),
+    control: z.object({
+      from: quarterId,
+      mw: pos,
+      bess_hours: pos,
+      ppa_usd_mwh: pos,
+      class: z.literal('solar'),
+      licence_q: quarters,
+      build_q: quarters,
+      slip: slipSchema,
+      slip_extra_q: quarters,
+      grid_wait_q: intRange,
+      running_usd_kw_yr: nonneg,
+      cf_region: z.string(),
+      regions: regionsSchema,
+      targets,
+    }),
+  }),
+  gas_act4: z.object({ class: z.enum(OVERRUN_CLASSES), turbine_slip_q: intRange, backlog_until: quarterId }),
+})
+
+/** The venture content, checked (M36). */
+export const VENTURES = venturesSchema.parse(venturesRaw)
 
 const rules = energySchema.parse(energyRaw)
 

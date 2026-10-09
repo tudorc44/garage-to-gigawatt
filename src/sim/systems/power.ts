@@ -10,7 +10,9 @@
 import { BALANCE, CONTENT, type PowerRegion } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
-import type { GameState, PowerSource, Project, Site } from '../state.ts'
+import { inActIV, type GameState, type PowerSource, type Project, type Site } from '../state.ts'
+import { VENTURES } from '../../content/energyContent.ts'
+import { drawOverrun } from './overrun.ts'
 import { isHired } from './hires.ts'
 import { extraQueueQuarters, gridUpgradesHalted } from './regions.ts'
 import { flawEffect, regionOf } from './sites.ts'
@@ -79,6 +81,19 @@ export function expectedPowerQuarters(state: GameState, p: Project): number {
   if (p.power === 'nuclear') return nuclearPowerQuarters()
   const site = state.sites.find((s) => s.id === p.siteId)!
   return gridQuarterRange(state, regionOf(site)!)[0]
+}
+
+/**
+ * M36 (doc 38 §5.9): on-site gas in Act IV has a thermal-class overrun and, while the turbine backlog lasts (to 2032),
+ * a 2-4 quarter delivery slip. Drawn when the build starts, on its own substream; nothing outside Act IV.
+ */
+export function gasActIvDraw(state: GameState, p: Project): { slipQuarters: number; overrunUsd: number } {
+  if (p.power !== 'gas' || !inActIV(state)) return { slipQuarters: 0, overrunUsd: 0 }
+  const g = VENTURES.gas_act4
+  const r = substream(state.seed, `gas_iv:${p.id}`)
+  const m = drawOverrun(r, g.class)
+  const slip = CONTENT.quarters[state.quarter] <= g.backlog_until ? randomInt(r, ...g.turbine_slip_q) : 0
+  return { slipQuarters: slip, overrunUsd: Math.round((m - 1) * powerCostUsd('gas', p.kw)) }
 }
 
 /** Heat from on-site gas running at a site in `quarter` (Act II): per plant, plus the air-permit flaw's. */

@@ -460,7 +460,8 @@ function rollAssetChances(
 
 /** Books a quarter's energy totals into the quarter's stats (only when there was any, so other quarters are untouched). */
 export function bookEnergy(state: GameState, q: EnergyQuarter): void {
-  if (q.revenueUsd === 0 && q.costUsd === 0 && !state.sites.some((s) => s.energy?.length || s.dr)) return
+  if (q.revenueUsd === 0 && q.costUsd === 0 && !state.sites.some((s) => s.energy?.length || s.dr) && !state.ventures?.length)
+    return
   const st = state.quarterStats
   st.energyRevenueUsd = (st.energyRevenueUsd ?? 0) + q.revenueUsd
   st.energyCostUsd = (st.energyCostUsd ?? 0) + q.costUsd

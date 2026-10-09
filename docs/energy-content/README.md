@@ -72,6 +72,27 @@ Grades follow doc 36: [A] primary, [B] reputable reporting, [C] analyst or forec
 | Iron-air | from 2031; 100 h; 8 q, 50% chance of +4 q; makes 90% of covered renewables firm | doc 38 §5.7 |
 | Firm power | renewables count only with storage: iron-air 90%, a 4 h+ battery 30% of the renewable MW covered | doc 38 §4.9 (E-D8) |
 
+## ventures.json (doc 38 §5)
+
+| Rule | Value | Source |
+|---|---|---|
+| Diligence | 1 Bandwidth and a $2M fee; shows pitch × the class median, the class's share over +50%, and doc 38's P(power by 2035) | §5.1; the fee mine |
+| Roles | stake 10/20/30/49%, paid in now (its share of the budget); offtake 25/50/100% of output at the pitched PPA, delivered to one of your sites in the type's regions; prepay 10% (price −10%) or 20% (−15%) of the PPA's notional 15-year value | §5.1; the menus and "prepay = a share of the notional contract" mine |
+| Cash calls | the overrun (m − 1) × budget × your stake, in thirds at 33/66/100% of the build; pay, dilute (stake × paid ÷ (paid + call)) or walk; unanswered: dilute | §5.1; the default mine |
+| Partner | Act IV only: covers 30-50% of a call; its string: a third of that share comes off your delivered MW | §5.1 ("strings: offtake priority"); the size of the string mine |
+| Debt | none before first power, for every type | §5.1 point 5 |
+| Value | before first power: what you paid in (plus prepayments); at operation: stake × the venture's EBITDA × 4 × the ground AI multiple; 0 if cancelled, folded or walked | §5.1 point 6; "book value before" mine |
+| Delivery | firm MW at your site from first power, with no grid wait; you pay the PPA instead of the grid price (the saving is energy revenue) | §5.1 point 6; the settlement mine |
+| EGS | 100 MW block; $7,500/kW; PPA $80 (FOAK range $80-110, low end as the pitch); thermal class; 12 q × slip (median 1.15, σ 0.2); weak field 15% (CF 60% until $1,500/kW); seismicity 2%/yr (a quarter, Heat +5 at your campus); Act III political capital +2 at first power; delivers to Arizona | §5.2; size, σ and the region mine. Later blocks, the rig limit, NOAK costs and project debt after block 1 are not modelled (one block per venture) |
+| SMR | 300 MW; pitch $4,000/kW, first power 5 years on, PPA $90; nuclear class floored ×3; licence 10 q + build 20 q, × slip (median 1.6, σ 0.3); undersubscribed (others 20-70% + your offtake < 80%) while licensing: 40%/yr cancelled; a call has a 50% chance of a 30-50% government cost-share, else the PPA reopens at cost (60 years at 7%); one nuclear venture per 8 quarters; delivers to nuclear-eligible regions | §5.3; size, σ, others' share, the cost-share's chance mine. Units 2-4 not modelled. Public-opinion events and political capital for the licence slot not modelled |
+| Advanced fission | 345 MW; pitch $4,800/kW (+20%), build 24 q (+4), HALEU 20%: +2-4 q | §5.4 |
+| Fusion | 50 MW pilot; capex $20,000/kW (its round); gates 0.90/0.70/0.60/0.80 at 4-8, 4-12, 8-12, 4-8 quarters; a fail: 50% pivot (8-12 q, a raise at half the valuation: pay half what you paid in to keep the stake, or it halves), else it folds; reservation 10% of a notional 15-year PPA for 50 MW at $40, refunded only on a fold; hype +1x on your multiples between first plasma and Q > 1, −2x for 4 quarters after a failed gate; the last gate never before 2038 | §5.5; size, the pivot's price mine |
+| Pumped storage | 1,000 MW, 10 h; pitch $1,000/kW over 4 years; real $4,000/kW × the dam class; 36 q × slip (median 1.45, σ 0.25); government funds 40-60% (the buy-in uses 50%); boring-machine event 25% over the build (+4 q, +10% budget); equity only; capacity revenue $110/kW-yr; Nordics and Arizona | §5.6; the event's chance, the capacity revenue and the regions mine; government loans with PIK interest not modelled |
+| Control | 100 MW utility solar + 4 h battery at that year's prices; 6 q + 1 q; then the grid wait (Act IV: the future's `grid_wait_q`; Act III: 16-24 q); PPA $55; delivers 30% of its MW as firm power | §5.8; the PPA and the firm share (the battery's 30%) mine |
+| On-site gas, Act IV | thermal-class overrun on the plant's cost and a 2-4 quarter turbine slip while the backlog lasts (to 2032Q4), both drawn when the build starts | §5.9; "to 2032" mine |
+| Pitched dates | relative to joining (SMR +5 years, advanced +6, fusion +3, EGS 12 q, pumped 4 years) | doc 38 gives them for a 2027 start |
+| Names | generic developers ("Small modular reactor"); the content pack names them with doc 33's clash check | doc 38 §9 |
+
 ### Overrun classes (doc 38 §5.1)
 
 Lognormal multipliers (median, σ, cap): nuclear 1.6/0.70/6.0, pumped hydro 1.5/0.80/6.0, thermal 1.03/0.35/3.0, wind

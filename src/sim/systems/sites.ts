@@ -84,8 +84,9 @@ export function capacityKw(site: Site): number {
     nominalKw(site) * (flawEffect(site, 'capacity_mult') ?? 1) -
     (site.soldKw ?? 0) +
     powerAddsKw(site)
-  // M35 (doc 38 §4.9): firm power from renewables with storage, being built or built (none without energy assets).
-  return site.energy ? kw + firmKw(site, 0, true) : kw
+  // M35 (doc 38 §4.9): firm power from renewables with storage, being built or built (none without energy assets);
+  // M36: a venture's delivered firm power (set at its first power, so energized at once).
+  return (site.energy ? kw + firmKw(site, 0, true) : kw) + (site.ventureKw ?? 0)
 }
 
 /**
@@ -106,7 +107,8 @@ export function poweredKw(site: Site, quarter: number): number {
       (flawEffect(site, 'capacity_mult') ?? 1) -
       (site.soldKw ?? 0) +
       powerAddsKw(site, quarter) +
-      (site.energy ? firmKw(site, quarter) : 0),
+      (site.energy ? firmKw(site, quarter) : 0) +
+      (site.ventureKw ?? 0),
   )
 }
 

@@ -38,6 +38,8 @@ export {
 import { PpaRowsPanel as PpaRows } from './Act3Government.tsx'
 // Step 7's Capital block (M18.2).
 export { CovenantPanel, StandbyPanel } from './Act3Capital.tsx'
+// M36 (doc 38 §5): the Ventures page (Acts III-IV), loaded with the other Act III panels.
+export { VenturesSection } from './Ventures.tsx'
 
 const tenantName = (id: string) => tDynamic(`tenant.${id}`, id)
 const tenantType = (type: string) => tDynamic(`ui.tenant_type.${type}`, type)

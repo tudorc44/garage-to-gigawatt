@@ -230,6 +230,8 @@ const NAV: {
   { id: 'moon', icon: 'moon', key: 'ui.nav.moon', act4: true },
   // Act III (M13.2, A3-04): every tenant contract by end quarter.
   { id: 'contracts', icon: 'loan', key: 'ui.nav.contracts', act3: true },
+  // M36 (doc 38 §5): energy ventures (Acts III-IV).
+  { id: 'ventures', icon: 'power', key: 'ui.nav.ventures', act3: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
   { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
   // Act III (M17.6, A3-09): political capital, the Director, lobbying, the spend cards.

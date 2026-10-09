@@ -242,6 +242,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
   fully; a battery fire costs 10% of capex (no offline week). The rest: `docs/energy-content/README.md`.
 - **For the design thread:** doc 38 §5.1's lognormal parameters don't give its stated tail shares (nuclear σ 0.70 → ~25%
   at or under budget, not ~3%); built as written, E-B3 will report it.
+- M36.1-M36.2 built (one chunk): `ventures.json`, `systems/ventures.ts`, `sim/ventureViews.ts`, `ui/screens/Ventures.tsx` (a
+  Ventures page in Acts III-IV, lazy with the Act III panels); Act IV gas overrun and turbine slip (`power.ts`); tests
+  `ventures` (E-B3, E-B4). Goldens unchanged. Mine: see the venture rows in `docs/energy-content/README.md`.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 

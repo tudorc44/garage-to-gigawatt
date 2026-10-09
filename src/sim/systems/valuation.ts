@@ -127,6 +127,9 @@ export interface ValuationParts {
   /** Act IV (M30.4): the lunar sales' quarter EBITDA (part of the total, earning no multiple) and the lunar unit. */
   moonEbitdaUsd?: number
   lunarUsd?: number
+  /** M36 (doc 38 §5): your venture stakes and prepayments, and the fusion hype on your multiples (+1x, or −2x). */
+  venturesUsd?: number
+  multipleDelta?: number
 }
 
 /**
@@ -154,7 +157,7 @@ export function valuationUsd(
       aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd, parts.scenario) +
       Math.max(0, orbit) * 4 * (parts.orbitMultiple ?? 0)) *
     (parts.evMult ?? 1)
-  return (
+  const total =
     enterprise +
     cashUsd +
     treasuryUsd +
@@ -162,7 +165,15 @@ export function valuationUsd(
     (parts.weightedBacklogUsd ?? 0) +
     (parts.lunarUsd ?? 0) -
     debtUsd
-  )
+  // M36: ventures (absent without one, so every earlier valuation is untouched).
+  if (parts.venturesUsd === undefined && parts.multipleDelta === undefined) return total
+  return total + (parts.venturesUsd ?? 0) + ventureHypeUsd(quarterEbitdaUsd - moon, parts.multipleDelta ?? 0)
+}
+
+/** The fusion hype's effect on the operating value (doc 38 §5.5): the multiple's delta × run-rate EBITDA, never below
+ *  zero EBITDA. */
+export function ventureHypeUsd(ebitdaUsd: number, delta: number): number {
+  return Math.max(0, ebitdaUsd) * 4 * delta
 }
 
 /**
@@ -194,6 +205,8 @@ export function valuationSplit(
     ai > 0 ? aiEvUsd / evMult / (ai * 4) : aiInfraMultiple(q, scenario)
   const constructionUsd = r.constructionUsd ?? 0
   const weightedBacklogUsd = r.weightedBacklogUsd ?? 0
+  // M36: ventures and the fusion hype (0 without a venture).
+  const venturesUsd = (r.venturesUsd ?? 0) + (r.ventureHypeUsd ?? 0)
   return {
     miningMultiple,
     aiMultiple,
@@ -204,6 +217,7 @@ export function valuationSplit(
     lunarUsd,
     constructionUsd,
     weightedBacklogUsd,
+    venturesUsd,
     treasuryUsd:
       r.valuationUsd -
       miningEvUsd -
@@ -212,6 +226,7 @@ export function valuationSplit(
       lunarUsd -
       constructionUsd -
       weightedBacklogUsd -
+      venturesUsd -
       r.cash +
       r.debtUsd,
   }

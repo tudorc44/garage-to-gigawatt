@@ -11,7 +11,7 @@ import {
   type SignalIdIv,
   type WildcardIdIv,
 } from '../content/index.ts'
-import type { EnergyKind, SpecialSiteKind } from '../content/energyContent.ts'
+import type { EnergyKind, SpecialSiteKind, VentureType } from '../content/energyContent.ts'
 import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
 import { enterAct4 } from './systems/act4Entry.ts'
@@ -103,6 +103,82 @@ export interface Site {
   flare?: { wellQuarter: number; relocatingUntil?: number; offlineQuarter?: number }
   /** M35.4 (doc 38 §4.7): Texas demand response and 4CP at an ERCOT site (systems/texasPower.ts). */
   dr?: SiteDemandResponse
+  /** M36 (doc 38 §5.1 point 6): firm kW a venture at commercial operation delivers here, with no grid wait. */
+  ventureKw?: number
+}
+
+/** M36 (doc 38 §5): where a venture stands. */
+export type VentureStage =
+  | 'licensing'
+  | 'construction'
+  | 'grid_wait'
+  | 'research'
+  | 'operating'
+  | 'cancelled'
+  | 'folded'
+
+/** A cash call (or a fusion pivot's raise, or an EGS well-field fix) waiting for the player's answer. */
+export interface VentureCall {
+  /** 1-3: the overrun tranches; 4: a well-field fix; 5: a fusion pivot's new raise. */
+  n: number
+  /** Your share of it, $. */
+  dueUsd: number
+  /** Act IV: a partner covering this share of it (offtake priority as its string), or null. */
+  partnerShare: number | null
+  /** Nuclear: a government cost-share covering this share of it, or null (then the PPA reopens at cost). */
+  costShare: number | null
+}
+
+/**
+ * M36 (doc 38 §5.1): a venture you joined, as equity (a stake), offtaker (a PPA for some of its output) or both. The
+ * realised cost multiplier and the schedule are drawn when you join and stay hidden: they arrive as cash calls and
+ * dates (the UI shows the pitch, and with diligence the reference-class estimate).
+ */
+export interface Venture {
+  id: string
+  type: VentureType
+  joinedQuarter: number
+  mw: number
+  /** The developer's pitch, $/kW, and its budget (pitch × kW). */
+  pitchUsdKw: number
+  budgetUsd: number
+  diligence: boolean
+  /** Your equity share now (0 = none, or walked). */
+  stake: number
+  /** What you paid in as equity (the buy-in and calls paid): its book value before operation. */
+  paidUsd: number
+  /** Your offtake: MW, the PPA price (after any prepayment's cut), the prepayment, the campus it delivers to. */
+  offtakeMw: number
+  ppaUsdMwh: number
+  prepaidUsd: number
+  siteId: string | null
+  /** Hidden: the realised cost multiplier. */
+  m: number
+  stage: VentureStage
+  /** Quarter indexes: licence ends, build ends, first power (grid connection for the control). */
+  licenceEnd: number
+  buildStart: number
+  buildEnd: number
+  codQuarter: number
+  /** Cash calls made so far (0-3), and one waiting for an answer. */
+  callsDone: number
+  call: VentureCall | null
+  /** Nuclear: the share of output other buyers subscribed (hidden). */
+  othersSubscribed: number
+  /** Your delivered MW lost to a partner's offtake priority (a share). */
+  partnerCut: number
+  /** Nuclear: the PPA reopened at cost (no cost-share at a call). */
+  reopened?: boolean
+  /** EGS: a weak well field (hidden until operation); fixed once paid. */
+  weakField?: boolean
+  fieldFixed?: boolean
+  /** Fusion: the next gate (0-3), when it's due, the hype and its slump. */
+  gate?: number
+  gateDue?: number
+  hypeMinusUntil?: number
+  /** The quarter it ended (cancelled, folded) or you walked. */
+  endedQuarter?: number
+  walked?: boolean
 }
 
 /** M35.4 (doc 38 §4.7): a Texas site's demand-response enrolment and 4CP choice. */
@@ -1194,6 +1270,10 @@ export interface GameState {
   act4Orbit?: Act4Orbit
   /** Act IV (M30.2): the lunar programme (claims, missions, disputes, power, plants, offtake). Absent until first used. */
   act4Moon?: Act4Moon
+  /** M36 (doc 38 §5): energy ventures joined (Acts III-IV). Absent until the first. */
+  ventures?: Venture[]
+  /** M36: the venture types you've done diligence on (their reference-class estimates show). Absent until the first. */
+  ventureDiligence?: VentureType[]
   /** Act IV (M32.1): the move log the reading score reads at the end of the act. */
   act4Moves?: Act4Move[]
   /** Act IV (M32.4): started at Act IV from a preset ("Start at Act IV"): the preset's id. Absent otherwise. */
@@ -1418,6 +1498,9 @@ export interface QuarterReport {
   /** M35 (doc 38 §4): energy assets' savings and earnings, and running costs (in EBITDA). Absent with none. */
   energyRevenueUsd?: number
   energyCostUsd?: number
+  /** M36 (doc 38 §5): your venture stakes and prepayments, and the fusion hype's effect. Absent without a venture. */
+  venturesUsd?: number
+  ventureHypeUsd?: number
   /** The valuation's Act II parts at quarter end: projects under construction (capex spent), the
    *  remaining contracted revenue (unweighted, as the top bar shows it) and its credit-weighted value. */
   constructionUsd: number

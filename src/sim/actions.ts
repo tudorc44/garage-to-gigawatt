@@ -255,7 +255,16 @@ import {
   scoutAct2Blocker,
 } from './systems/scouting.ts'
 import { planSpotShock } from './systems/spotMarket.ts'
-import type { EnergyKind, SpecialSiteKind } from '../content/energyContent.ts'
+import type { EnergyKind, SpecialSiteKind, VentureType } from '../content/energyContent.ts'
+import {
+  answerCall,
+  callBlocker,
+  diligenceBlocker,
+  doDiligence,
+  joinBlocker,
+  joinVenture,
+  settleVentureCalls,
+} from './systems/ventures.ts'
 import { buildEnergy, buildEnergyBlocker, repairEnergy, repairEnergyBlocker } from './systems/energy.ts'
 import { setTexas, setTexasBlocker } from './systems/texasPower.ts'
 import { leaseSpecial, leaseSpecialBlocker, relocate, relocateBlocker } from './systems/specialSites.ts'
@@ -310,6 +319,12 @@ export type Action =
   | { type: 'SPECIAL_LEASE'; kind: SpecialSiteKind }
   /** M35.3: move a flare pad to a new well. */
   | { type: 'FLARE_RELOCATE'; siteId: string }
+  /** M36 (doc 38 §5.1): diligence on a venture type (1 Bandwidth, a fee): its reference-class estimate shows. */
+  | { type: 'VENTURE_DILIGENCE'; venture: VentureType }
+  /** M36: join a venture as equity (stake), offtaker (offtake share, prepay tier, campus) or both. */
+  | { type: 'VENTURE_JOIN'; venture: VentureType; stake: number; offtake: number; prepay: number; siteId?: string }
+  /** M36: answer a cash call: pay, dilute, walk, or let a partner or a government cover part. */
+  | { type: 'VENTURE_CALL'; ventureId: string; choice: 'pay' | 'dilute' | 'walk' | 'partner' | 'cost_share' }
   /** Share of mined coins to keep (0–1), for one coin, or for both if `coin` is left out. */
   | { type: 'SET_HODL'; pct: number; coin?: Coin }
   | { type: 'SCOUT_SITES'; tier: string }
@@ -590,6 +605,8 @@ function run(s: GameState, a: Action): Message | undefined {
       settleWildcards(s)
       // M19: a Community Deal left unsigned lapses ("Not this year").
       declineCommunityDeal(s)
+      // M36: a venture's cash call left unanswered takes the default (dilute).
+      if (s.ventures?.some((v) => v.call)) settleVentureCalls(s)
       // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
       startOrbitalBuilds(s)
       planOrbitAlerts(s)
@@ -889,6 +906,28 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = relocateBlocker(s, a.siteId)
       if (blocked) return blocked
       relocate(s, a.siteId)
+      return
+    }
+
+    case 'VENTURE_DILIGENCE': {
+      const blocked = diligenceBlocker(s, a.venture)
+      if (blocked) return blocked
+      doDiligence(s, a.venture)
+      return
+    }
+
+    case 'VENTURE_JOIN': {
+      const j = { type: a.venture, stake: a.stake, offtake: a.offtake, prepay: a.prepay, siteId: a.siteId }
+      const blocked = joinBlocker(s, j)
+      if (blocked) return blocked
+      joinVenture(s, j)
+      return
+    }
+
+    case 'VENTURE_CALL': {
+      const blocked = callBlocker(s, a.ventureId, a.choice)
+      if (blocked) return blocked
+      answerCall(s, a.ventureId, a.choice)
       return
     }
 
