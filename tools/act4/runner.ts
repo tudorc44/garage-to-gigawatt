@@ -11,7 +11,7 @@ import { playFrom, playGame } from '../../src/sim/replay.ts'
 import { toAct3, toAct4, type GameState } from '../../src/sim/state.ts'
 import { computeReadingIv } from '../../src/sim/systems/readingScoreIv.ts'
 import { BOTS } from '../bots.ts'
-import { ACT4_ARCHETYPES, act4Archetypes } from './bots.ts'
+import { ACT4_ARCHETYPES, act4Archetypes, groundStats } from './bots.ts'
 
 const args = process.argv.slice(2)
 const argValue = (flag: string, fallback: string) => {
@@ -45,6 +45,13 @@ interface Run {
   pilotT: number
   decisions: number
   frontier: string
+  /** M34.4: the founder stake at the end, and (Ground Holder) how often it borrowed, raised, skipped, built, bought a site. */
+  stake: number
+  borrowed: number
+  raised: number
+  skipped: number
+  built: number
+  sites: number
 }
 
 const runs: Run[] = []
@@ -73,6 +80,7 @@ for (const p of PRESETS_IV) {
               return a
             },
           }
+          for (const k of Object.keys(groundStats) as (keyof typeof groundStats)[]) groundStats[k] = 0
           const end = playFrom(start, counting, { through: 4 }).state
           const entry = end.act4Entry!.founderNetWorthUsd
           const nw = Math.max(0, end.founderStake * (end.reports.at(-1)?.valuationUsd ?? 0))
@@ -90,6 +98,8 @@ for (const p of PRESETS_IV) {
             pilotT: (end.act4Moon?.claims ?? []).reduce((t, c) => t + (c.pilot?.processedT ?? 0), 0),
             decisions: decisions / Math.max(1, end.reports.filter((r) => r.quarter >= '2031Q1').length),
             frontier: end.act4End?.frontierTitleId ?? '',
+            stake: end.founderStake,
+            ...groundStats,
           })
         }
   console.log(`  ${p.id}: done (${Math.round((performance.now() - t0) / 1000)} s)`)
@@ -161,6 +171,13 @@ console.log('\nMedians (founder net worth multiple on the Act IV entry), by futu
 console.log(`  ${'archetype'.padEnd(12)}${FUTURE_IDS.map((f) => f.padStart(8)).join('')}   game overs`)
 for (const b of BOT_NAMES)
   console.log(`  ${b.padEnd(12)}${FUTURE_IDS.map((f) => x(med({ future: f, bot: b })).padStart(8)).join('')}   ${pct(goRate({ bot: b }))}`)
+// M34.4 (design thread, 9 Oct 2026): the Ground Holder's financing, by preset (runs, sums), and its founder stake.
+console.log('\nGround Holder (M34.4): per preset, over its runs: built / borrowed / raised / skipped / sites bought; median founder stake at the end')
+for (const p of PRESETS_IV) {
+  const g = sel({ preset: p.id, bot: 'ground', grade: 'rich' })
+  const sum = (k: keyof Run) => g.reduce((n, r) => n + Number(r[k]), 0)
+  console.log(`  ${p.id.padEnd(10)} runs ${g.length}: built ${sum('built')}, borrowed ${sum('borrowed')}, raised ${sum('raised')}, skipped ${sum('skipped')}, sites ${sum('sites')}; stake ${median(g.map((r) => r.stake)).toFixed(3)}`)
+}
 console.log('\nB1-B14:')
 for (const [id, target, ok, got] of rows) console.log(`  ${id.padEnd(4)} ${ok ? 'PASS' : 'MISS'}  ${target}\n         ${got}`)
 writeFileSync(`${OUT}/act4-btable.txt`, rows.map(([id, t, ok, got]) => `${id}\t${ok ? 'PASS' : 'MISS'}\t${t}\t${got}`).join('\n') + '\n')

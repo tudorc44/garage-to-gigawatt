@@ -245,6 +245,17 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
 - M36.1-M36.2 built (one chunk): `ventures.json`, `systems/ventures.ts`, `sim/ventureViews.ts`, `ui/screens/Ventures.tsx` (a
   Ventures page in Acts III-IV, lazy with the Act III panels); Act IV gas overrun and turbine slip (`power.ts`); tests
   `ventures` (E-B3, E-B4). Goldens unchanged. Mine: see the venture rows in `docs/energy-content/README.md`.
+- M36.3: `npm run sim -- --energy` (tools/act4/energyRunner.ts), new goldens act4-energy-f2/f4, one venture per type. Run
+  `energy-m36` (10 seeds, 960 runs): E-B1 MISS (only on busts: venture-free 5 of 120 vs fusion's 2; within 15% of best in
+  all four futures), E-B2 PASS, E-B3 PASS on P(m>1.5) and the mean, P(m≤1) 25% not 3%, E-B4 PASS, E-B5 MISS (16-75 q).
+- End checks: `--act2 --act3` byte-identical to M34 (1,302 files, `bi-m35`); lint, 1,559 tests, build pass.
+- **M34.4 (design thread's answers of 9 Oct 2026, done on `m35`: no bot uses energy, ventures or gas, and every Act IV
+  golden is unchanged, so `m35`'s Act IV balance equals `m34`'s):** the Ground Holder borrows first (debt ≤ 4× trailing
+  EBITDA, inside the covenant), then raises (founder ≥ 50%), else skips; a company with no free MW buys one site ≤ 50% of
+  its energized MW. Run `act4-m344`: **table identical to M34**; Fortress skipped 800 offers (founder already 49% at
+  entry, so no equity; $17M EBITDA caps debt near $68M); Neocloud bought its site in all 40 runs but it never powered in
+  time; Ridge ($14M cash, no EBITDA) did nothing. B3 MISS 1.08× vs 1.21×; B5 MISS as written (ground 1.03× vs 1.07×).
+  The space-multiple knob is **not run**: the fix had no effect, so the owner decides first (report questions).
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 

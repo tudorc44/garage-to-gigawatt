@@ -17,6 +17,10 @@ import { openProjectView } from '../../src/sim/projectViews.ts'
 import { renewalsDue } from '../../src/sim/selectors.ts'
 import type { LunarClaim } from '../../src/sim/state.ts'
 import { convertibleKw } from '../../src/sim/systems/hosting.ts'
+import { companyLtv, covenantLimit } from '../../src/sim/systems/covenant.ts'
+import { dilutionRange, equityRaiseUsd } from '../../src/sim/systems/equity.ts'
+import { debtUsd } from '../../src/sim/systems/loans.ts'
+import { poweredKw } from '../../src/sim/systems/sites.ts'
 import { scenarioOf } from '../../src/sim/systems/market.ts'
 import { resourceShare } from '../../src/sim/systems/moon.ts'
 import { signalsHiddenIv } from '../../src/content/signalsHiddenIv.ts'
@@ -157,41 +161,161 @@ function orbitStep(
 }
 
 /**
+ * M34.4 (design thread, 9 Oct 2026, answers 2-3): how often the Ground Holder borrowed, raised, skipped, built a cloud
+ * or bought a site (the runner resets and reports these).
+ */
+export const groundStats = { borrowed: 0, raised: 0, skipped: 0, built: 0, sites: 0 }
+/** Company debt ÷ trailing four quarters' EBITDA, the cap on borrowing (designed: 4×). */
+const LEVERAGE_CAP = 4
+/** The founder stake an equity raise may never take the Ground Holder below (designed). */
+const FOUNDER_FLOOR = 0.5
+
+/** Company debt ÷ the last four reports' EBITDA (Infinity with none). */
+function leverage(s: GameState): number {
+  const e = s.reports.slice(-4).reduce((n, r) => n + r.ebitdaUsd, 0)
+  const debt = debtUsd(s)
+  if (debt <= 0) return 0
+  return e > 0 ? debt / e : Infinity
+}
+
+/** True when the step's debt stays within the caps: ≤ 4× trailing EBITDA and inside the leverage covenant. */
+function debtOk(s: GameState): boolean {
+  return leverage(s) <= LEVERAGE_CAP && companyLtv(s) <= covenantLimit(s)
+}
+
+/**
+ * The smallest at-the-market raise (the game's own dilution steps) that brings at least `shortUsd`, never taking the
+ * founder below 50%; null if none does.
+ */
+function equityFor(s: GameState, shortUsd: number): Action | null {
+  const [lo, hi] = dilutionRange()
+  for (let d = lo; d <= hi + 1e-9; d = Math.round((d + 0.01) * 100) / 100) {
+    if (s.founderStake * (1 - d) < FOUNDER_FLOOR) return null
+    if (equityRaiseUsd(s, d) >= shortUsd) return { type: 'RAISE_EQUITY', dilution: d }
+  }
+  return null
+}
+
+/**
+ * M34.1 (owner, 1b) and M34.4 (design thread, 2): a ground GPU cloud at the site with the most free MW, when a GPU
+ * contract is on offer. Short of cash for its share: borrow first (project debt, then a DDTL, as the game sizes them),
+ * keeping debt ≤ 4× trailing EBITDA and inside the covenant; then equity for the rest (founder ≥ 50%); else skip it.
+ */
+function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null {
+  const site = s.sites
+    .filter((x) => x.tier !== CONTENT.siteTiers[0].id)
+    .sort((a, b) => convertibleKw(s, b.id) - convertibleKw(s, a.id))[0]
+  const v = openProjectView(s)
+  const gpu = v.act3?.gpusMid.at(-1) ?? v.gpus.at(-1)
+  if (!site || !gpu) return null
+  const freeMw = Math.floor(convertibleKw(s, site.id) / 1000)
+  let offered = false
+  for (const mw of [40, 30, 20, 15, 10, 8, 5, 3, 2, 1].filter((m) => m <= freeMw)) {
+    const open: Action = { type: 'PROJECT_OPEN', siteId: site.id, kw: mw * 1000, kind: 'cloud', gpu }
+    const r = applyAction(s, open)
+    if (!r.ok) continue
+    const p = r.state.projects.at(-1)!
+    // a tenant must exist: a GPU contract on offer (the best priced); none now, no cloud this quarter
+    const offer = [...p.offers].filter((o) => !!o.gpu).sort((a, b) => (b.priceMult ?? 1) - (a.priceMult ?? 1))[0]
+    if (!offer) return null
+    offered = true
+    const signed = tryAll(r.state, [{ type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: offer.id }])
+    const start = (st: GameState, extra: Action[]) =>
+      tryAll(st, [...extra, { type: 'PROJECT_FUND_CASH', projectId: p.id }, { type: 'PROJECT_START', projectId: p.id }])
+    const started = (t: { kept: Action[] }) => t.kept.some((a) => a.type === 'PROJECT_START')
+    // 1. Cash alone.
+    const cash = start(signed.after, [])
+    if (started(cash)) {
+      groundStats.built++
+      return { kept: [open, ...signed.kept, ...cash.kept], after: cash.after }
+    }
+    // 2. Borrow first, within the caps.
+    const debt = tryAll(signed.after, [
+      { type: 'PROJECT_DEBT', projectId: p.id, debt: 'project_debt', on: true },
+      { type: 'PROJECT_DEBT', projectId: p.id, debt: 'ddtl', on: true },
+    ])
+    const borrowed = start(debt.after, [])
+    if (debt.kept.length > 0 && started(borrowed) && debtOk(borrowed.after)) {
+      groundStats.borrowed++
+      groundStats.built++
+      return { kept: [open, ...signed.kept, ...debt.kept, ...borrowed.kept], after: borrowed.after }
+    }
+    // 3. Then equity for the rest (with the debt if it kept inside the caps, else without it).
+    for (const base of debt.kept.length > 0 ? [debt, signed] : [signed]) {
+      const probe = start(base.after, [])
+      if (started(probe)) continue
+      const need = projectCashNeed(base.after, p.id)
+      if (need === null) continue
+      const raise = equityFor(base.after, need - base.after.cash + 5e6)
+      if (!raise) continue
+      const funded = start(base.after, [raise])
+      if (started(funded) && (base === signed || debtOk(funded.after))) {
+        groundStats.raised++
+        if (base !== signed) groundStats.borrowed++
+        groundStats.built++
+        return { kept: [open, ...signed.kept, ...(base === signed ? [] : debt.kept), ...funded.kept], after: funded.after }
+      }
+    }
+  }
+  if (offered) groundStats.skipped++
+  return null
+}
+
+/** What starting a project still needs in cash, or null if it can't tell (the build blocker's figure). */
+function projectCashNeed(s: GameState, projectId: string): number | null {
+  const r = applyAction(s, { type: 'PROJECT_START', projectId })
+  if (r.ok) return 0
+  const cost = r.error.params?.costUsd
+  return typeof cost === 'number' ? cost : null
+}
+
+/**
+ * M34.4 (design thread, 3): a company with no free MW buys one new site in the act, through the game's scouting, at most
+ * half its energized MW, funded as a cloud is (borrowing as the game allows, then equity, founder ≥ 50%).
+ */
+function groundSite(s: GameState): { kept: Action[]; after: GameState } | null {
+  if (boughtSiteInAct4(s)) return null
+  const free = s.sites.reduce((n, x) => n + convertibleKw(s, x.id), 0)
+  if (free >= 1000) return null
+  const energized = s.sites.reduce((n, x) => n + poweredKw(x, s.quarter), 0)
+  const scout = tryAll(s, [{ type: 'SCOUT_SITES_ACT2' }])
+  const offers = scout.after.siteOffers
+    .filter((o) => o.category && (o.kw ?? 0) <= energized / 2)
+    .sort((a, b) => (b.kw ?? 0) - (a.kw ?? 0))
+  for (const o of offers) {
+    const buy = (st: GameState, extra: Action[]) => tryAll(st, [...extra, { type: 'BUILD_SITE', offerId: o.id }])
+    let done = buy(scout.after, [])
+    if (!done.kept.some((a) => a.type === 'BUILD_SITE')) {
+      const raise = equityFor(scout.after, o.capexUsd - scout.after.cash + 5e6)
+      if (!raise) continue
+      done = buy(scout.after, [raise])
+      if (!done.kept.some((a) => a.type === 'BUILD_SITE')) continue
+      groundStats.raised++
+    }
+    groundStats.sites++
+    return { kept: [...scout.kept, ...done.kept], after: done.after }
+  }
+  return scout.kept.length > 0 ? { kept: scout.kept, after: scout.after } : null
+}
+
+/** True once the company has bought a site in Act IV. */
+const boughtSiteInAct4 = (s: GameState) =>
+  s.sites.some((x) => x.acquiredQuarter !== undefined && x.acquiredQuarter !== null && x.acquiredQuarter >= actFirstQuarter(4))
+
+/**
  * M34.1 (owner, 9 Oct 2026, 1b): the Ground Holder is a 2031 ground landlord, "no orbit, no Moon" (doc 33 §18), not "no
- * clouds": it takes its renewals, and builds a ground GPU cloud wherever it has free MW and a GPU contract is on offer.
+ * clouds": it takes its renewals, buys one site if it has no free MW (M34.4), and builds a ground GPU cloud wherever it
+ * has free MW and a GPU contract is on offer.
  */
 function groundCloudStep(s: GameState): { kept: Action[]; after: GameState } {
   const renewals: Action[] = renewalsDue(s)
     .filter((r) => !r.walked)
     .map((r) => ({ type: 'RENEWAL_ACCEPT', projectId: r.projectId }))
   const done = tryAll(s, renewals)
-  const after = done.after
-  const site = after.sites
-    .filter((x) => x.tier !== CONTENT.siteTiers[0].id)
-    .sort((a, b) => convertibleKw(after, b.id) - convertibleKw(after, a.id))[0]
-  const v = openProjectView(after)
-  const gpu = v.act3?.gpusMid.at(-1) ?? v.gpus.at(-1)
-  if (!site || !gpu) return done
-  const freeMw = Math.floor(convertibleKw(after, site.id) / 1000)
-  for (const mw of [40, 30, 20, 15, 10, 8, 5, 3, 2, 1].filter((m) => m <= freeMw)) {
-    const open: Action = { type: 'PROJECT_OPEN', siteId: site.id, kw: mw * 1000, kind: 'cloud', gpu }
-    const r = applyAction(after, open)
-    if (!r.ok) continue
-    const p = r.state.projects.at(-1)!
-    // a tenant must exist: a GPU contract on offer (the best priced); none now, no cloud this quarter
-    const offer = [...p.offers].filter((o) => !!o.gpu).sort((a, b) => (b.priceMult ?? 1) - (a.priceMult ?? 1))[0]
-    if (!offer) break
-    const steps = tryAll(r.state, [
-      { type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: offer.id },
-      { type: 'PROJECT_DEBT', projectId: p.id, debt: 'project_debt', on: true },
-      { type: 'PROJECT_DEBT', projectId: p.id, debt: 'ddtl', on: true },
-      { type: 'PROJECT_FUND_CASH', projectId: p.id },
-      { type: 'PROJECT_START', projectId: p.id },
-    ])
-    if (steps.kept.some((a) => a.type === 'PROJECT_START'))
-      return { kept: [...done.kept, open, ...steps.kept], after: steps.after }
-  }
-  return done
+  const site = groundSite(done.after)
+  const base = site ? { kept: [...done.kept, ...site.kept], after: site.after } : done
+  const cloud = groundCloud(base.after)
+  return cloud ? { kept: [...base.kept, ...cloud.kept], after: cloud.after } : base
 }
 
 /**
