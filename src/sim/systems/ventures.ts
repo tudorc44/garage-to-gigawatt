@@ -27,7 +27,6 @@ import { scenarioOf } from './market.ts'
 import { addPc } from './pcState.ts'
 import { drawOverrun, lognormal } from './overrun.ts'
 import { powerPriceUsdKwh, regionOf, usedKw } from './sites.ts'
-import { aiInfraMultiple } from './valuation.ts'
 
 const V = VENTURES
 const T = V.types
@@ -66,6 +65,20 @@ export function pitchPpaUsdMwh(type: VentureType): number | null {
   if (type === 'fusion') return T.fusion.pitch_usd_mwh
   if (type === 'pumped') return null
   return T[type].ppa_usd_mwh
+}
+
+/**
+ * The developer's pitched first power for a venture joined in quarter `joined` (relative to joining: doc 38's dates
+ * assume a 2027 start): SMR +5 years, advanced +6, fusion +3 (its "$40/MWh by"), EGS 12 quarters, pumped storage 4
+ * years, the control its build.
+ */
+export function pitchCodQuarter(type: VentureType, joined: number): number {
+  const t = T[type]
+  if ('pitch_cod_years' in t) return joined + t.pitch_cod_years * 4
+  if (type === 'egs') return joined + T.egs.pitch_cod_quarters
+  if (type === 'pumped') return joined + T.pumped.pitch_years * 4
+  if (type === 'fusion') return joined + T.fusion.pitch_years * 4
+  return joined + T.control.build_q
 }
 
 /** The reference-class estimate diligence reveals, $/kW: pitch × the class's median overrun (SMR floor ×3 not shown). */
@@ -201,6 +214,12 @@ export function joinVenture(state: GameState, j: VentureJoin): Venture {
     call: null,
     othersSubscribed: 0,
     partnerCut: 0,
+    buyInUsd: buyIn,
+    stakeAtJoin: j.stake,
+    callsPaidUsd: 0,
+    milestones: 0,
+    slips: 0,
+    pitchCodQuarter: pitchCodQuarter(j.type, q),
   }
   drawSchedule(state, v, r)
   state.cash = roundCents(state.cash - buyIn - prepaid)
@@ -290,6 +309,7 @@ export function answerCall(state: GameState, ventureId: string, choice: string):
   if (choice === 'pay' || choice === 'partner' || choice === 'cost_share') {
     state.cash = roundCents(state.cash - due)
     v.paidUsd = roundCents(v.paidUsd + due)
+    v.callsPaidUsd = roundCents((v.callsPaidUsd ?? 0) + due)
     if (choice === 'partner') v.partnerCut = Math.min(1, v.partnerCut + (c.partnerShare ?? 0) / 3)
   } else if (choice === 'dilute') {
     // A fusion down round halves a stake that doesn't join it (doc 38 §5.5: the raise is at half the valuation).
@@ -349,6 +369,11 @@ export function endQuarterVentures(state: GameState): { revenueUsd: number } {
     if (v.type === 'fusion') stepFusion(state, v, r)
     else stepBuild(state, v, r)
     if (v.stage === 'operating') revenueUsd += deliverySavingsUsd(state, v)
+    // M36.8: each full year past the pitched first power without it is a slip (from the pitched quarter itself).
+    else if (!isOver(v) && v.pitchCodQuarter !== undefined) {
+      const late = q + 1 - v.pitchCodQuarter
+      if (late >= 0 && late % 4 === 0) mark(v, 'slip')
+    }
   }
   syncVentureKw(state)
   state.cash = roundCents(state.cash + revenueUsd)
@@ -368,6 +393,7 @@ function stepBuild(state: GameState, v: Venture, r: RngHolder): void {
     }
     if (q + 1 >= v.licenceEnd) {
       v.stage = 'construction'
+      mark(v, 'milestone')
       logEntry(state, 'log.venture.licensed', { ventureType: v.type })
     }
     return
@@ -377,6 +403,7 @@ function stepBuild(state: GameState, v: Venture, r: RngHolder): void {
     if (v.type === 'egs' && chance(r, perQuarter(T.egs.seismic.per_year))) {
       v.buildEnd += T.egs.seismic.pause_q
       v.codQuarter += T.egs.seismic.pause_q
+      mark(v, 'slip')
       const site = state.sites.find((s) => s.id === v.siteId)
       if (site) addGrievance(state, site.id, T.egs.seismic.heat)
       logEntry(state, 'log.venture.seismic', { ventureType: v.type })
@@ -385,6 +412,8 @@ function stepBuild(state: GameState, v: Venture, r: RngHolder): void {
     const progress = (q + 1 - v.buildStart) / span
     if (!v.call && v.callsDone < 3 && progress >= V.cash_calls[v.callsDone] - 1e-9) {
       v.callsDone++
+      // (each third of the build is a milestone, whether or not it brings a call)
+      mark(v, 'milestone')
       const due = trancheUsd(v)
       if (due > 0) {
         v.call = {
@@ -414,6 +443,7 @@ function stepBuild(state: GameState, v: Venture, r: RngHolder): void {
 function firstPower(state: GameState, v: Venture): void {
   v.stage = 'operating'
   v.codQuarter = state.quarter + 1
+  mark(v, 'milestone')
   logEntry(state, 'log.venture.first_power', { ventureType: v.type })
   if (v.type === 'egs') {
     if (state.politicalCapital !== undefined && inActIII(state)) addPc(state, T.egs.pc_on_cod)
@@ -450,6 +480,7 @@ function stepFusion(state: GameState, v: Venture, r: RngHolder): void {
   const gate = f.gates[v.gate]
   if (chance(r, gate.p)) {
     logEntry(state, 'log.venture.gate_passed', { ventureGate: gate.id })
+    mark(v, 'milestone')
     v.gate++
     if (v.gate >= f.gates.length) {
       firstPower(state, v)
@@ -464,6 +495,7 @@ function stepFusion(state: GameState, v: Venture, r: RngHolder): void {
   v.hypeMinusUntil = q + 1 + f.hype.minus_q
   if (chance(r, f.pivot.chance)) {
     v.gateDue = q + 1 + randomInt(r, ...f.pivot.q)
+    mark(v, 'slip')
     logEntry(state, 'log.venture.pivot', { ventureGate: gate.id })
     if (v.stake > 0) {
       // Keeping your stake through the down round costs half of what you paid in (mine); else it halves.
@@ -536,19 +568,34 @@ export function ventureEbitdaUsd(v: Venture): number {
   return v.mw * cf * HOURS_Q * (price - t.running_usd_mwh)
 }
 
+/** Counts a milestone hit or a slip toward the stake's mark (M36.8). */
+function mark(v: Venture, kind: 'milestone' | 'slip'): void {
+  if (kind === 'milestone') v.milestones = (v.milestones ?? 0) + 1
+  else v.slips = (v.slips ?? 0) + 1
+}
+
 /**
- * Your stake's value (doc 38 §5.1 point 6): at operation, the stake × the venture's EBITDA × 4 × the ground AI multiple;
- * before, what you paid in (book); 0 once cancelled, folded or walked. Prepayments count at cost while it's alive.
+ * Your venture's value, marked to milestones (M36.8, design thread answer 11a), as a funding round would mark it: the
+ * buy-in, scaled by any dilution since, × 1.5 per milestone hit × 0.8 per slip; cash calls paid at par; prepayments at
+ * cost; at first power an offtake adds its contracted power savings over the rest of the act. 0 once cancelled,
+ * folded or walked away from (an offtake you keep still counts).
  */
 export function ventureValueUsd(state: GameState, v: Venture): number {
   if (isOver(v)) return 0
-  const prepay = v.prepaidUsd
-  if (v.stake <= 0) return prepay
-  if (v.stage === 'operating') {
-    const m = aiInfraMultiple(state.quarter, scenarioOf(state))
-    return v.stake * Math.max(0, ventureEbitdaUsd(v)) * 4 * m + prepay
+  const M = V.marks
+  let value = v.prepaidUsd
+  if (v.stake > 0) {
+    const buyIn = v.buyInUsd ?? v.paidUsd
+    const share = v.stakeAtJoin && v.stakeAtJoin > 0 ? v.stake / v.stakeAtJoin : 1
+    value += buyIn * share * M.milestone_mult ** (v.milestones ?? 0) * M.slip_mult ** (v.slips ?? 0) + (v.callsPaidUsd ?? 0)
   }
-  return v.paidUsd + prepay
+  if (v.stage === 'operating' && v.offtakeMw > 0) value += deliverySavingsUsd(state, v) * quartersLeftInAct(state)
+  return Math.max(0, value)
+}
+
+/** Quarters left in the current act after this one. */
+function quartersLeftInAct(state: GameState): number {
+  return Math.max(0, actLastQuarter(inActIV(state) ? 4 : 3) - state.quarter)
 }
 
 /** All your ventures' value, $ (a valuation part). */

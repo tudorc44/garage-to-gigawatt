@@ -153,6 +153,13 @@ export function Act4Chapter(props: { state: GameState; onNew: () => void }) {
                 <td>{t('ui.act4.chapter.net_worth')}</td>
                 <td class="r num">{fmt.money(o.netWorthUsd)}</td>
               </tr>
+              {/* M36.8 (answer 11a): the company's ventures, marked to milestones (part of the valuation) */}
+              {props.state.reports.at(-1)?.venturesUsd !== undefined && (
+                <tr data-reveal-ventures>
+                  <td>{t('ui.cap2.val.ventures')}</td>
+                  <td class="r num">{fmt.money(props.state.reports.at(-1)!.venturesUsd!)}</td>
+                </tr>
+              )}
               <tr>
                 <td>{t('ui.act4.chapter.growth')}</td>
                 <td class="r num">{o.growth === null ? '—' : `${o.growth.toFixed(2)}×`}</td>

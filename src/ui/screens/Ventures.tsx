@@ -35,6 +35,9 @@ export function VenturesSection({ state, act }: ScreenProps) {
               <h3 class="panel-title">{t('ui.ventures.mine')}</h3>
               <span class="num-s">{t('ui.ventures.total', { value: fmt.money(v.totalValueUsd) })}</span>
             </div>
+            <p class="num-s muted" style={{ margin: 0 }}>
+              {t('ui.ventures.marks_note')}
+            </p>
             {v.mine.map((m) => (
               <div key={m.id} class="venture-row" data-venture={m.type}>
                 <div class="row-between">
@@ -61,6 +64,7 @@ export function VenturesSection({ state, act }: ScreenProps) {
                       ? t('ui.ventures.gates', { n: m.gatesPassed })
                       : t('ui.ventures.calls', { n: m.callsDone }),
                     m.reopened ? t('ui.ventures.reopened') : null,
+                    t('ui.ventures.marked', { hit: m.milestones, slips: m.slips }),
                   ]
                     .filter(Boolean)
                     .join(' · ')}

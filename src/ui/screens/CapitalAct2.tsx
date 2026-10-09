@@ -379,6 +379,9 @@ function Valuation({ state }: { state: ScreenProps['state'] }) {
               v.orbit.evUsd,
             )}
           {v.lunarUsd !== null && line(t('ui.cap2.val.lunar'), v.lunarUsd)}
+          {/* M36.8: venture stakes marked to milestones, and the fusion hype on the multiples */}
+          {v.venturesUsd !== null && line(t('ui.cap2.val.ventures'), v.venturesUsd)}
+          {v.ventureHypeUsd !== null && line(t('ui.cap2.val.hype'), v.ventureHypeUsd)}
           {line(t('ui.section.val.cash'), v.cashUsd)}
           {line(t('ui.section.val.treasury'), v.treasuryUsd)}
           {line(t('ui.section.val.debt'), -v.debtUsd, 'loss')}

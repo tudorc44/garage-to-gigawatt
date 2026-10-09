@@ -516,6 +516,13 @@ export function Act3Reveal(props: {
             <section class="panel p reveal-stats">
               <span class="label">{t('ui.act3.reveal.net_worth')}</span>
               <span class="num-xl">{fmt.money(o.netWorthUsd)}</span>
+              {/* M36.8 (answer 11a): the company's ventures, marked to milestones (part of the valuation) */}
+              {props.state.reports.at(-1)?.venturesUsd !== undefined && (
+                <div class="row-between" data-reveal-ventures>
+                  <span>{t('ui.cap2.val.ventures')}</span>
+                  <span class="num">{fmt.money(props.state.reports.at(-1)!.venturesUsd!)}</span>
+                </div>
+              )}
               <div class="row-between">
                 <span>{t('act3.reveal.at_entry')}</span>
                 <span class="num">{fmt.money(o.entryNetWorthUsd)}</span>

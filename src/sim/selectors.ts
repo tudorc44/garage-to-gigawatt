@@ -2070,6 +2070,9 @@ export function valuationBreakdown(state: GameState) {
         ? null
         : { ebitdaUsd: r.orbitEbitdaUsd, multiple: r.orbitMultiple ?? 0, evUsd: v.orbitEvUsd },
     lunarUsd: r.lunarUsd ?? null,
+    /** M36.8: venture stakes marked to milestones, and the fusion hype's effect; null without a venture. */
+    venturesUsd: r.venturesUsd ?? null,
+    ventureHypeUsd: r.ventureHypeUsd ? r.ventureHypeUsd : null,
     enterpriseUsd: v.miningEvUsd,
     aiEbitdaUsd: v.aiEbitdaUsd,
     aiMultiple: v.aiMultiple,

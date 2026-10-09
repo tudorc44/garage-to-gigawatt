@@ -179,6 +179,17 @@ export interface Venture {
   /** The quarter it ended (cancelled, folded) or you walked. */
   endedQuarter?: number
   walked?: boolean
+  /**
+   * M36.8 (design thread, 9 Oct 2026, answer 11a; owner: show ventures now): the stake marked to milestones, as a funding
+   * round would: the buy-in and the stake it bought, the calls paid (at par), milestones hit (× 1.5 each), slips
+   * (× 0.8 each), and the pitched first-power quarter that years late count from.
+   */
+  buyInUsd?: number
+  stakeAtJoin?: number
+  callsPaidUsd?: number
+  milestones?: number
+  slips?: number
+  pitchCodQuarter?: number
 }
 
 /** M35.4 (doc 38 §4.7): a Texas site's demand-response enrolment and 4CP choice. */

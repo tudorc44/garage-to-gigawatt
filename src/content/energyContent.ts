@@ -296,6 +296,7 @@ const venturesSchema = z.object({
   partner_cover: range,
   default_call: z.enum(['pay', 'dilute', 'walk']),
   crf: z.object({ rate: pos }),
+  marks: z.object({ milestone_mult: pos, slip_mult: pos }),
   types: z.object({
     egs: z.object({
       from: quarterId,

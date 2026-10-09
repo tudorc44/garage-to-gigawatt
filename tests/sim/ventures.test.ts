@@ -178,6 +178,40 @@ describe('E-B4: across 30 seeds an SMR is cancelled and a fusion venture folds (
   })
 })
 
+describe('ventures marked to milestones (M36.8, design thread answer 11a)', () => {
+  it('buy-in × 1.5 per milestone × 0.8 per slip, scaled by dilution; calls at par; 0 once cancelled', () => {
+    const s = company()
+    const v = joinVenture(s, { type: 'egs', stake: 0.2, offtake: 0, prepay: 0 })
+    const buyIn = v.buyInUsd!
+    expect(venturesValueUsd(s)).toBe(buyIn)
+    v.milestones = 2
+    v.slips = 1
+    expect(venturesValueUsd(s)).toBeCloseTo(buyIn * 1.5 * 1.5 * 0.8)
+    v.stake = 0.1
+    v.callsPaidUsd = 5e6
+    expect(venturesValueUsd(s)).toBeCloseTo(buyIn * 0.5 * 1.5 * 1.5 * 0.8 + 5e6)
+    v.stage = 'cancelled'
+    expect(venturesValueUsd(s)).toBe(0)
+  })
+
+  it('a year past the pitched first power without it is a slip; each third of the build a milestone', () => {
+    for (let seed = 1; seed <= 40; seed++) {
+      const s = company(seed)
+      const v = joinVenture(s, { type: 'egs', stake: 0.2, offtake: 0, prepay: 0 })
+      if (v.codQuarter <= v.pitchCodQuarter!) continue
+      while (s.quarter < v.pitchCodQuarter!) {
+        endQuarterVentures(s)
+        s.quarter++
+        settleVentureCalls(s)
+      }
+      expect(v.slips).toBeGreaterThanOrEqual(1)
+      expect(v.milestones).toBeGreaterThanOrEqual(2)
+      return
+    }
+    throw new Error('no seed where EGS is late')
+  })
+})
+
 describe('a game without a venture', () => {
   it('has no venture fields and books no venture value', () => {
     const s = company()

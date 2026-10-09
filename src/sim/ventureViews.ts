@@ -12,6 +12,7 @@ import {
   callDueUsd,
   diligenceBlocker,
   joinBlocker,
+  pitchCodQuarter,
   pitchPpaUsdMwh,
   pitchUsdKw,
   prepayUsd,
@@ -65,6 +66,9 @@ export interface MyVentureView {
   walked: boolean
   /** Fusion: gates passed. */
   gatesPassed: number | null
+  /** M36.8: milestones hit and slips counted in its mark. */
+  milestones: number
+  slips: number
   /** The quarter it went into operation or ended ("2034Q2"), when it has. */
   sinceQuarter: string | null
   call: {
@@ -86,15 +90,10 @@ export interface VenturesView {
 /** The pitched first power's year for a venture joined in quarter `joined` (relative to joining: doc 38's dates assume
  *  a 2027 start, mine). */
 function pitchYear(type: VentureType, joined: number): string | null {
-  const t = T[type]
+  const q = pitchCodQuarter(type, joined)
   const year = Number(CONTENT.quarters[joined].slice(0, 4))
-  const after = (q: number) => Math.floor(year + (Number(CONTENT.quarters[joined].slice(5)) - 1 + q) / 4)
-  if ('pitch_cod_years' in t) return String(year + t.pitch_cod_years)
-  if (type === 'egs') return String(after(T.egs.pitch_cod_quarters))
-  if (type === 'pumped') return String(year + T.pumped.pitch_years)
-  if (type === 'fusion') return String(year + T.fusion.pitch_years)
-  if (type === 'control') return String(after(T.control.build_q))
-  return null
+  // (past the timeline's last quarter: count the years on from the join)
+  return q < CONTENT.quarters.length ? CONTENT.quarters[q].slice(0, 4) : String(year + Math.round((q - joined) / 4))
 }
 
 function offerView(state: GameState, type: VentureType): VentureOfferView {
@@ -156,6 +155,8 @@ function myView(state: GameState, v: Venture): MyVentureView {
     reopened: !!v.reopened,
     walked: !!v.walked,
     gatesPassed: v.type === 'fusion' ? (v.gate ?? 0) : null,
+    milestones: v.milestones ?? 0,
+    slips: v.slips ?? 0,
     sinceQuarter: since,
     call: v.call
       ? { n: v.call.n, dueUsd: v.call.dueUsd, choices, partnerShare: v.call.partnerShare, costShare: v.call.costShare }
