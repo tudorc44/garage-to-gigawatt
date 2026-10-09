@@ -404,6 +404,15 @@ const NEW_COLUMNS: Record<string, Record<Future, Anchors>> = {
     f4: [[3, 3000], [19, 1200]],
   },
 }
+/**
+ * M36.6 (design thread, 9 Oct 2026, answer 4): F2's space multiple × 0.60 from its trigger quarter on, the floor of the
+ * 0.05-step search (1.00 → 0.60) and the first value where F2's Sprinter ≤ Ground ÷ 1.2 (0.852× vs 1.030×, 10 seeds).
+ */
+const F2_SPACE_SCALE = 0.6
+function knob(column: string, f: Future, n: number): number {
+  return column === 'space_ev_ebitda_mult' && f === 'f2' && n >= TRIGGER.f2 ? F2_SPACE_SCALE : 1
+}
+
 /** Columns that are 0/blank switches or step values, not paths. */
 function stepColumns(f: Future, n: number): Record<string, number | null> {
   return {
@@ -430,7 +439,7 @@ function quarterlyCsv(f: Future): string {
       QUARTERS[n],
       f,
       ...CARRIED.map((c) => fmt(carriedValue(c, f, n))),
-      ...Object.keys(NEW_COLUMNS).map((c) => fmt(path(NEW_COLUMNS[c][f], n))),
+      ...Object.keys(NEW_COLUMNS).map((c) => fmt(path(NEW_COLUMNS[c][f], n) * knob(c, f, n))),
       fmt(steps.gen33_t_mw),
       fmt(steps.gen35_t_mw),
       fmt(steps.sso_closed),

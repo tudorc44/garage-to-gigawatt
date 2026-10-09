@@ -3,10 +3,10 @@
   "act": 4,
   "seed": 1,
   "rng": 358174165,
-  "phase": "chapter",
-  "quarter": 75,
+  "phase": "gameover",
+  "quarter": 64,
   "week": 13,
-  "cash": 6237395.31,
+  "cash": -55587512.89,
   "bandwidth": 4,
   "hodlPct": {
     "BTC": 0,
@@ -16,7 +16,7 @@
     "BTC": 0,
     "ETH": 0
   },
-  "founderStake": 0.24554460116218374,
+  "founderStake": 0.3429999999999999,
   "raisesDone": [
     "equity-2031Q1",
     "equity-2031Q4",
@@ -42,9 +42,9 @@
       "flaw": null,
       "contract": {
         "type": "fixed",
-        "price": 0.097306,
-        "startQuarter": 73,
-        "endQuarter": 77
+        "price": 0.08094900000000001,
+        "startQuarter": 61,
+        "endQuarter": 65
       }
     }
   ],
@@ -62,7 +62,7 @@
   "spotShock": null,
   "firstAiDealQuarter": null,
   "facilities": [],
-  "creditRating": "B+",
+  "creditRating": "CCC-",
   "cryptoLoan": null,
   "auction": null,
   "curtailment": null,
@@ -101,15 +101,15 @@
   "failureWaves": [
     {
       "siteId": "site-1",
-      "week": 4,
-      "roll": 0.991450781468302,
-      "size": 0.08905299842590467
+      "week": 2,
+      "roll": 0.7575733801349998,
+      "size": 0.06051347255706788
     },
     {
       "siteId": "site-2",
-      "week": 10,
-      "roll": 0.015930633759126067,
-      "size": 0.08936037278035656
+      "week": 8,
+      "roll": 0.28440025029703975,
+      "size": 0.06299621978541836
     }
   ],
   "siteHeat": {
@@ -136,7 +136,7 @@
   "interruptsThisQuarter": 0,
   "quarterStats": {
     "revenueUsd": 0,
-    "powerCostUsd": 1120250.7000000002,
+    "powerCostUsd": 941141.55,
     "rentUsd": 0,
     "coinsMined": {
       "BTC": 0,
@@ -154,22 +154,22 @@
     "soldUsd": 0,
     "gridCreditsUsd": 0,
     "hostingFeesUsd": 0,
-    "reservationUsd": 1120250.7000000002,
+    "reservationUsd": 941141.55,
     "aiRevenueUsd": 0,
     "aiCostUsd": 0,
     "lateDamagesUsd": 0,
     "rateHikeUsd": 0,
     "stormChargeUsd": 0,
     "salariesUsd": 0,
-    "interestUsd": 1863535.9406725434,
-    "principalUsd": 9245449.62814285,
-    "startCash": 5584581.57,
+    "interestUsd": 4221403.026504272,
+    "principalUsd": 15526999.637716861,
+    "startCash": 5977725.02,
     "startTreasuryUsd": 0,
     "weeks": [
       {
         "week": 1,
-        "date": "2035-10-01",
-        "btcUsd": 164194,
+        "date": "2033-01-03",
+        "btcUsd": 132055,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -181,12 +181,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 5498408.44
+        "cash": 5905329.52
       },
       {
         "week": 2,
-        "date": "2035-10-08",
-        "btcUsd": 165612,
+        "date": "2033-01-10",
+        "btcUsd": 133195,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -197,13 +197,13 @@
           "BTC": 0,
           "ETH": 0
         },
-        "priceAlert": false,
-        "cash": 5412235.31
+        "priceAlert": true,
+        "cash": 5832934.02
       },
       {
         "week": 3,
-        "date": "2035-10-15",
-        "btcUsd": 166418,
+        "date": "2033-01-17",
+        "btcUsd": 133844,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -215,12 +215,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 5326062.18
+        "cash": 5760538.52
       },
       {
         "week": 4,
-        "date": "2035-10-22",
-        "btcUsd": 166483,
+        "date": "2033-01-24",
+        "btcUsd": 133896,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -232,12 +232,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 5239889.05
+        "cash": 5688143.02
       },
       {
         "week": 5,
-        "date": "2035-10-29",
-        "btcUsd": 165847,
+        "date": "2033-01-31",
+        "btcUsd": 133385,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -249,12 +249,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 5153715.92
+        "cash": 5615747.52
       },
       {
         "week": 6,
-        "date": "2035-11-05",
-        "btcUsd": 164710,
+        "date": "2033-02-07",
+        "btcUsd": 132471,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -266,12 +266,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 5067542.79
+        "cash": 5543352.02
       },
       {
         "week": 7,
-        "date": "2035-11-12",
-        "btcUsd": 163390,
+        "date": "2033-02-14",
+        "btcUsd": 131409,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -283,12 +283,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 4981369.66
+        "cash": 5470956.52
       },
       {
         "week": 8,
-        "date": "2035-11-19",
-        "btcUsd": 162245,
+        "date": "2033-02-21",
+        "btcUsd": 130488,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -300,12 +300,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 4895196.53
+        "cash": 5398561.02
       },
       {
         "week": 9,
-        "date": "2035-11-26",
-        "btcUsd": 161597,
+        "date": "2033-02-28",
+        "btcUsd": 129967,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -317,12 +317,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 4809023.4
+        "cash": 5326165.52
       },
       {
         "week": 10,
-        "date": "2035-12-03",
-        "btcUsd": 161653,
+        "date": "2033-03-07",
+        "btcUsd": 130012,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -334,12 +334,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 4722850.27
+        "cash": 5253770.02
       },
       {
         "week": 11,
-        "date": "2035-12-10",
-        "btcUsd": 162460,
+        "date": "2033-03-14",
+        "btcUsd": 130661,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -351,12 +351,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 4636677.14
+        "cash": 5181374.52
       },
       {
         "week": 12,
-        "date": "2035-12-17",
-        "btcUsd": 163893,
+        "date": "2033-03-21",
+        "btcUsd": 131813,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -368,12 +368,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 4550504.01
+        "cash": 5108979.02
       },
       {
         "week": 13,
-        "date": "2035-12-24",
-        "btcUsd": 165683,
+        "date": "2033-03-28",
+        "btcUsd": 133253,
         "ethUsd": 2824.46,
         "revenueUsd": 0,
         "powerCostUsd": 0,
@@ -385,11 +385,11 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 4464330.88
+        "cash": 5036583.52
       }
     ],
-    "orbitRevenueUsd": 17062500,
-    "orbitCostUsd": 4180450,
+    "orbitRevenueUsd": 13878906.25,
+    "orbitCostUsd": 2245000,
     "moonRevenueUsd": 0,
     "moonCostUsd": 0
   },
@@ -2357,14 +2357,14 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 0.11,
+      "cash": -55587512.89,
       "ebitdaUsd": 10692764.7,
       "marginByTier": {},
-      "valuationUsd": 572094964.2297516,
+      "valuationUsd": 373541413.0422516,
       "orbitRevenueUsd": 13878906.25,
       "orbitCostUsd": 2245000,
       "orbitEbitdaUsd": 11633906.25,
-      "orbitMultiple": 10.6667,
+      "orbitMultiple": 6.4,
       "moonRevenueUsd": 0,
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
@@ -2416,942 +2416,10 @@
         "eventNotches": 0
       },
       "covenant": {
-        "ltv": 0.955732787502837,
+        "ltv": 1.4637464436046095,
         "limit": 0.75,
         "cureLtv": 0.65,
         "untilQuarter": 65
-      }
-    },
-    {
-      "quarter": "2033Q2",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 997512.1499999999,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 37847257.29,
-      "ebitdaUsd": 27073894.1,
-      "marginByTier": {},
-      "valuationUsd": 1146916021.138978,
-      "orbitRevenueUsd": 30941406.25,
-      "orbitCostUsd": 2870000,
-      "orbitEbitdaUsd": 28071406.25,
-      "orbitMultiple": 10,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 44906434.98161808,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 0.11,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 997512.1499999999,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 312840000.00000006,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 7596691.322307336,
-      "principalUsd": 24772449.265859716,
-      "debtUsd": 371533921.13264,
-      "heat": 37,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": {
-        "treasuryUsd": 0,
-        "machinesUsd": 0,
-        "units": 0
-      },
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 3.4307395877403537,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.323941696065661,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2033Q3",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 997512.1499999999,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 33215564.44,
-      "ebitdaUsd": 26323737.85,
-      "marginByTier": {},
-      "valuationUsd": 740580711.2242217,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 3241250,
-      "orbitEbitdaUsd": 27321250,
-      "orbitMultiple": 9.3333,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 37422029.1513484,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 36847257.29,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 997512.1499999999,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 8468082.488819404,
-      "principalUsd": 21487348.26551321,
-      "debtUsd": 350046572.86712676,
-      "heat": 47,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 3.3244383345346864,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.472664987842419,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2033Q4",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 997512.1499999999,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 29078185.44,
-      "ebitdaUsd": 26323737.85,
-      "marginByTier": {},
-      "valuationUsd": 677596893.6594653,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 3241250,
-      "orbitEbitdaUsd": 27321250,
-      "orbitMultiple": 8.6667,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 29937623.321078718,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 32215564.44,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 997512.1499999999,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 7973768.6321558,
-      "principalUsd": 21487348.265513215,
-      "debtUsd": 328559224.6016135,
-      "heat": 42,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 3.1203701624161013,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.48488891799249456,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2034Q1",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 997512.1499999999,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 25435120.3,
-      "ebitdaUsd": 26323737.85,
-      "marginByTier": {},
-      "valuationUsd": 615096461.4547088,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 3241250,
-      "orbitEbitdaUsd": 27321250,
-      "orbitMultiple": 8,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 22453217.49080904,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 28078185.44,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 997512.1499999999,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 7479454.775492198,
-      "principalUsd": 21487348.26551321,
-      "debtUsd": 307071876.3361003,
-      "heat": 47,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 2.9163019902975162,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.4992255614832712,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2034Q2",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 1057134.9000000004,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 20662546.21,
-      "ebitdaUsd": 24699915.1,
-      "marginByTier": {},
-      "valuationUsd": 505583528.8599524,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 4805450,
-      "orbitEbitdaUsd": 25757050,
-      "orbitMultiple": 7.3333,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 14968811.660539359,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 24435120.3,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 1057134.9000000004,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 6985140.9188285945,
-      "principalUsd": 21487348.26551321,
-      "debtUsd": 285584528.0705871,
-      "heat": 42,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 2.890541596138797,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.5648612183125423,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2034Q3",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 1057134.9000000004,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 14820085.97,
-      "ebitdaUsd": 23135715.1,
-      "marginByTier": {},
-      "valuationUsd": 403353204.3751958,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 6369650,
-      "orbitEbitdaUsd": 24192850,
-      "orbitMultiple": 6.6667,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 7484405.830269679,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 19662546.21,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 1057134.9000000004,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 6490827.062164993,
-      "principalUsd": 21487348.26551321,
-      "debtUsd": 264097179.80507392,
-      "heat": 37,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 2.8537823303014513,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.6547541384087107,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2034Q4",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 1057134.9000000004,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 9471939.59,
-      "ebitdaUsd": 23135715.1,
-      "marginByTier": {},
-      "valuationUsd": 347490508.05043936,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 6369650,
-      "orbitEbitdaUsd": 24192850,
-      "orbitMultiple": 6,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 0,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 13820085.97,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 1057134.9000000004,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 5996513.205501391,
-      "principalUsd": 21487348.265513215,
-      "debtUsd": 242609831.53956068,
-      "heat": 47,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 2.621594259037628,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.6981768592779665,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2035Q1",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 1057134.9000000004,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 4618107.07,
-      "ebitdaUsd": 23135715.1,
-      "marginByTier": {},
-      "valuationUsd": 339931173.79595256,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 6369650,
-      "orbitEbitdaUsd": 24192850,
-      "orbitMultiple": 5.75,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 0,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 8471939.59,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 1057134.9000000004,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 5502199.348837788,
-      "principalUsd": 21487348.265513215,
-      "debtUsd": 221122483.2740475,
-      "heat": 42,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 2.3894061877738055,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.6504919240115904,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2035Q2",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 1120250.7000000002,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 195472.62,
-      "ebitdaUsd": 23072599.3,
-      "marginByTier": {},
-      "valuationUsd": 332803037.61146575,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 6369650,
-      "orbitEbitdaUsd": 24192850,
-      "orbitMultiple": 5.5,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 0,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 3618107.0700000003,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 1120250.7000000002,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 5007885.492174186,
-      "principalUsd": 21487348.265513215,
-      "debtUsd": 199635135.00853425,
-      "heat": 47,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "CCC+",
-      "ratingWhy": {
-        "debtToEbitda": 2.1631192525470486,
-        "band": "from2to4",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.5998597141459998,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2035Q3",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 1120250.7000000002,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 6584581.57,
-      "ebitdaUsd": 23072599.3,
-      "marginByTier": {},
-      "valuationUsd": 422179935.2885715,
-      "orbitRevenueUsd": 30562500,
-      "orbitCostUsd": 6369650,
-      "orbitEbitdaUsd": 24192850,
-      "orbitMultiple": 5.25,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 0,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 195472.62,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 1120250.7000000002,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 4513571.635510583,
-      "principalUsd": 21487348.265513215,
-      "debtUsd": 92454496.2814285,
-      "heat": 42,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": {
-        "treasuryUsd": 0,
-        "machinesUsd": 0,
-        "units": 0
-      },
-      "politicalCapital": 0,
-      "creditRating": "B+",
-      "ratingWhy": {
-        "debtToEbitda": 1.0017780731951222,
-        "band": "lt2",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.21899310827795104,
-        "limit": 0.75,
-        "cureLtv": 0.65
-      }
-    },
-    {
-      "quarter": "2035Q4",
-      "hashrate": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "revenueUsd": 0,
-      "powerCostUsd": 1120250.7000000002,
-      "rentUsd": 0,
-      "coinsMined": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "costPerCoinUsd": {
-        "BTC": null,
-        "ETH": null
-      },
-      "failures": 0,
-      "brokenUnits": 0,
-      "treasury": {
-        "BTC": 0,
-        "ETH": 0
-      },
-      "treasuryValueUsd": 0,
-      "cash": 6237395.31,
-      "ebitdaUsd": 11761799.3,
-      "marginByTier": {},
-      "valuationUsd": 180669348.65671435,
-      "orbitRevenueUsd": 17062500,
-      "orbitCostUsd": 4180450,
-      "orbitEbitdaUsd": 12882050,
-      "orbitMultiple": 5,
-      "moonRevenueUsd": 0,
-      "moonCostUsd": 0,
-      "moonEbitdaUsd": 0,
-      "lunarUsd": 0,
-      "priceAlerts": 0,
-      "marginCalls": 0,
-      "founderStake": 0.24554460116218374,
-      "startCash": 5584581.57,
-      "startTreasuryUsd": 0,
-      "soldUsd": 0,
-      "treasurySoldUsd": 0,
-      "gridCreditsUsd": 0,
-      "hostingFeesUsd": 0,
-      "reservationUsd": 1120250.7000000002,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
-      "lateDamagesUsd": 0,
-      "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
-      "rateHikeUsd": 0,
-      "stormChargeUsd": 0,
-      "salariesUsd": 0,
-      "interestUsd": 1863535.9406725434,
-      "principalUsd": 9245449.62814285,
-      "debtUsd": 83209046.65328565,
-      "heat": 37,
-      "heatTier": "own_site",
-      "mwByUseKw": {
-        "mining": 0,
-        "hosting": 0,
-        "aiShell": 0,
-        "aiCloud": 0,
-        "building": 0,
-        "idle": 20005
-      },
-      "forcedSale": null,
-      "politicalCapital": 0,
-      "creditRating": "B+",
-      "ratingWhy": {
-        "debtToEbitda": 1.76862919802767,
-        "band": "lt2",
-        "quality": "weak",
-        "shortRunway": false,
-        "eventNotches": 0
-      },
-      "covenant": {
-        "ltv": 0.4605598418987453,
-        "limit": 0.75,
-        "cureLtv": 0.65
       }
     }
   ],
@@ -5936,685 +5004,17 @@
     {
       "quarter": 64,
       "week": null,
-      "key": "log.rescue_equity",
+      "key": "log.forced_sale",
       "params": {
-        "amountUsd": 55587513,
-        "dilutionPct": 0.2841265272239539,
-        "stakePct": 0.24554460116218374
+        "treasuryUsd": 0,
+        "machinesUsd": 0,
+        "units": 0
       }
     },
     {
       "quarter": 64,
       "week": null,
-      "key": "log.forced_sale",
-      "params": {
-        "treasuryUsd": 0,
-        "machinesUsd": 0,
-        "units": 0
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.wildcard_iv.reactor_delay"
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.orbit.live",
-      "params": {
-        "n": 4,
-        "mw": 10
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.contract_signed",
-      "params": {
-        "tier": "own_site",
-        "contract": "fixed",
-        "price": "8.61¢",
-        "quarter": "2034Q2"
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 65,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_78e2412d.title",
-        "eventChoice": "a4_78e2412d.choice.c1",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 65,
-      "week": 12,
-      "key": "log.moon.mission_no_claim",
-      "params": {
-        "lunarSite": "cabeus"
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 2,
-        "penaltyUsd": 1620000
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.orbit.debt_paid_off",
-      "params": {
-        "n": 3
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.orbit.fire_sale",
-      "params": {
-        "n": 3,
-        "priceUsd": 212062500,
-        "shortUsd": 18945246.32816705
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.rating_changed",
-      "params": {
-        "from": "CCC-",
-        "to": "CCC+"
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.covenant_cured",
-      "params": {
-        "ltvPct": 0.323941696065661
-      }
-    },
-    {
-      "quarter": 65,
-      "week": null,
-      "key": "log.forced_sale",
-      "params": {
-        "treasuryUsd": 0,
-        "machinesUsd": 0,
-        "units": 0
-      }
-    },
-    {
-      "quarter": 66,
-      "week": null,
-      "key": "log.orbit.live",
-      "params": {
-        "n": 2,
-        "mw": 10
-      }
-    },
-    {
-      "quarter": 66,
-      "week": null,
-      "key": "log.rival.orrery_failed",
-      "params": {
-        "mw": 50
-      }
-    },
-    {
-      "quarter": 66,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "2034Q3"
-      }
-    },
-    {
-      "quarter": 66,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 66,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_deab72f0.title",
-        "eventChoice": "a4_deab72f0.choice.c2",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 66,
-      "week": 10,
-      "key": "log.complaint_ignored",
-      "params": {
-        "tier": "own_site",
-        "heat": 47
-      }
-    },
-    {
-      "quarter": 66,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 66,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 67,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "2034Q4"
-      }
-    },
-    {
-      "quarter": 67,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 67,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_8db4f7c9.title",
-        "eventChoice": "a4_8db4f7c9.choice.c1",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 67,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 67,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 68,
-      "week": null,
-      "key": "log.wildcard_iv.launch_grounding"
-    },
-    {
-      "quarter": 68,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "2035Q1"
-      }
-    },
-    {
-      "quarter": 68,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 68,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_6cc6f179.title",
-        "eventChoice": "a4_6cc6f179.choice.c2",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 68,
-      "week": 8,
-      "key": "log.complaint_ignored",
-      "params": {
-        "tier": "own_site",
-        "heat": 47
-      }
-    },
-    {
-      "quarter": 68,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 68,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 69,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "2035Q2"
-      }
-    },
-    {
-      "quarter": 69,
-      "week": null,
-      "key": "log.contract_signed",
-      "params": {
-        "tier": "own_site",
-        "contract": "fixed",
-        "price": "9.15¢",
-        "quarter": "2035Q2"
-      }
-    },
-    {
-      "quarter": 69,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 69,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 69,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 70,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "2035Q3"
-      }
-    },
-    {
-      "quarter": 70,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 70,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_6ff0e9d1.title",
-        "eventChoice": "a4_6ff0e9d1.choice.c2",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 70,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 70,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 71,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "2035Q4"
-      }
-    },
-    {
-      "quarter": 71,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 71,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_aba49b1f.title",
-        "eventChoice": "a4_aba49b1f.choice.c2",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 71,
-      "week": 8,
-      "key": "log.complaint_ignored",
-      "params": {
-        "tier": "own_site",
-        "heat": 47
-      }
-    },
-    {
-      "quarter": 71,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 71,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 72,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "—"
-      }
-    },
-    {
-      "quarter": 72,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 72,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_b8e08dfa.title",
-        "eventChoice": "a4_b8e08dfa.choice.c1",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 72,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 72,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 73,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "—"
-      }
-    },
-    {
-      "quarter": 73,
-      "week": null,
-      "key": "log.contract_signed",
-      "params": {
-        "tier": "own_site",
-        "contract": "fixed",
-        "price": "9.73¢",
-        "quarter": "—"
-      }
-    },
-    {
-      "quarter": 73,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 73,
-      "week": 2,
-      "key": "log.event_choice",
-      "params": {
-        "eventTitle": "a4_74523d7f.title",
-        "eventChoice": "a4_74523d7f.choice.c1",
-        "cashUsd": 0
-      }
-    },
-    {
-      "quarter": 73,
-      "week": 4,
-      "key": "log.complaint_ignored",
-      "params": {
-        "tier": "own_site",
-        "heat": 47
-      }
-    },
-    {
-      "quarter": 73,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 73,
-      "week": null,
-      "key": "log.orbit.milestone_missed",
-      "params": {
-        "shellName": "high_leo",
-        "licensedKw": 1300000,
-        "inUseKw": 20000
-      }
-    },
-    {
-      "quarter": 73,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 74,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 74,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 74,
-      "week": null,
-      "key": "log.orbit.debt_paid_off",
-      "params": {
-        "n": 2
-      }
-    },
-    {
-      "quarter": 74,
-      "week": null,
-      "key": "log.orbit.fire_sale",
-      "params": {
-        "n": 2,
-        "priceUsd": 95010720,
-        "shortUsd": 2732847.9710238
-      }
-    },
-    {
-      "quarter": 74,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 74,
-      "week": null,
-      "key": "log.rating_changed",
-      "params": {
-        "from": "CCC+",
-        "to": "B+"
-      }
-    },
-    {
-      "quarter": 74,
-      "week": null,
-      "key": "log.forced_sale",
-      "params": {
-        "treasuryUsd": 0,
-        "machinesUsd": 0,
-        "units": 0
-      }
-    },
-    {
-      "quarter": 75,
-      "week": null,
-      "key": "log.orbit.licence_filed",
-      "params": {
-        "shellName": "high_leo",
-        "quarter": "—"
-      }
-    },
-    {
-      "quarter": 75,
-      "week": null,
-      "key": "log.orbit.build_no_cash",
-      "params": {
-        "n": 5,
-        "costUsd": 63360000.000000015
-      }
-    },
-    {
-      "quarter": 75,
-      "week": null,
-      "key": "log.orbit.late",
-      "params": {
-        "n": 5,
-        "penaltyUsd": 1991250
-      }
-    },
-    {
-      "quarter": 75,
-      "week": null,
-      "key": "log.pc_quarter",
-      "params": {
-        "pc": 0,
-        "deltaPc": 0
-      }
+      "key": "log.game_over"
     }
   ],
   "scenarioId": "s0",
@@ -6836,12 +5236,12 @@
     {
       "id": "reactor_delay",
       "quarter": 65,
-      "fired": true
+      "fired": false
     },
     {
       "id": "launch_grounding",
       "quarter": 68,
-      "fired": true
+      "fired": false
     }
   ],
   "act4Moves": [
@@ -7014,7 +5414,7 @@
         "mw": 10,
         "shell": "high_leo",
         "gen": "gen31",
-        "stage": "sold",
+        "stage": "climbing",
         "openedQuarter": 59,
         "massT": 198.00000000000003,
         "launch": {
@@ -7030,61 +5430,23 @@
           "termQuarters": 16,
           "signedQuarter": 59,
           "dueQuarter": 63,
-          "endQuarter": 82,
+          "endQuarter": null,
           "prepaidLeftUsd": 0
         },
         "offers": [],
         "capital": "project_debt",
         "buildDoneQuarter": 61,
         "liveQuarter": 66,
-        "retireQuarter": 82,
+        "retireQuarter": null,
         "capacity": 1,
         "gpuHealth": 1,
         "insured": {
           "coverUsd": 312840000.00000006,
-          "untilQuarter": 74
+          "untilQuarter": null
         },
         "capexSpentUsd": 312840000.00000006,
-        "telemetry": [
-          {
-            "quarter": 66,
-            "failurePctYr": 14.652990387985483
-          },
-          {
-            "quarter": 67,
-            "failurePctYr": 13.134070377564058
-          },
-          {
-            "quarter": 68,
-            "failurePctYr": 12.260682159336284
-          },
-          {
-            "quarter": 69,
-            "failurePctYr": 12.302025474840775
-          },
-          {
-            "quarter": 70,
-            "failurePctYr": 11.434211475774646
-          },
-          {
-            "quarter": 71,
-            "failurePctYr": 7.2622219489421695
-          },
-          {
-            "quarter": 72,
-            "failurePctYr": 8.962487053824589
-          },
-          {
-            "quarter": 73,
-            "failurePctYr": 11.469935089815408
-          },
-          {
-            "quarter": 74,
-            "failurePctYr": 11.562599807977676
-          }
-        ],
-        "lostLaunches": 0,
-        "lastEbitdaUsd": 11310800
+        "telemetry": [],
+        "lostLaunches": 0
       },
       {
         "id": "ob3",
@@ -7093,7 +5455,7 @@
         "mw": 10,
         "shell": "high_leo",
         "gen": "gen31",
-        "stage": "sold",
+        "stage": "live",
         "openedQuarter": 60,
         "massT": 198.00000000000003,
         "launch": {
@@ -7128,10 +5490,6 @@
           {
             "quarter": 64,
             "failurePctYr": 12.64939567935653
-          },
-          {
-            "quarter": 65,
-            "failurePctYr": 7.909952329704538
           }
         ],
         "lostLaunches": 0,
@@ -7144,7 +5502,7 @@
         "mw": 10,
         "shell": "high_leo",
         "gen": "gen31",
-        "stage": "live",
+        "stage": "climbing",
         "openedQuarter": 61,
         "massT": 198.00000000000003,
         "launch": {
@@ -7160,69 +5518,23 @@
           "termQuarters": 20,
           "signedQuarter": 61,
           "dueQuarter": 65,
-          "endQuarter": 85,
-          "prepaidLeftUsd": 0
+          "endQuarter": null,
+          "prepaidLeftUsd": 13650000
         },
         "offers": [],
         "capital": "project_debt",
         "buildDoneQuarter": 63,
         "liveQuarter": 65,
-        "retireQuarter": 81,
+        "retireQuarter": null,
         "capacity": 1,
         "gpuHealth": 1,
         "insured": {
           "coverUsd": 312840000.00000006,
-          "untilQuarter": 75
+          "untilQuarter": null
         },
         "capexSpentUsd": 312840000.00000006,
-        "telemetry": [
-          {
-            "quarter": 65,
-            "failurePctYr": 12.882826675893739
-          },
-          {
-            "quarter": 66,
-            "failurePctYr": 5.334467898821458
-          },
-          {
-            "quarter": 67,
-            "failurePctYr": 10.142332951072603
-          },
-          {
-            "quarter": 68,
-            "failurePctYr": 9.36160886567086
-          },
-          {
-            "quarter": 69,
-            "failurePctYr": 10.094421321991831
-          },
-          {
-            "quarter": 70,
-            "failurePctYr": 6.641387460986152
-          },
-          {
-            "quarter": 71,
-            "failurePctYr": 12.233312436845154
-          },
-          {
-            "quarter": 72,
-            "failurePctYr": 13.102185171563178
-          },
-          {
-            "quarter": 73,
-            "failurePctYr": 8.242547439876944
-          },
-          {
-            "quarter": 74,
-            "failurePctYr": 13.573607460595667
-          },
-          {
-            "quarter": 75,
-            "failurePctYr": 13.465420584427193
-          }
-        ],
-        "lostLaunches": 0,
-        "lastEbitdaUsd": 14873300
+        "telemetry": [],
+        "lostLaunches": 0
       },
       {
         "id": "ob5",
@@ -7271,125 +5583,54 @@
         "shell": "high_leo",
         "filedQuarter": 56,
         "approvedQuarter": 58,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 57,
         "approvedQuarter": 59,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 58,
         "approvedQuarter": 60,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 59,
         "approvedQuarter": 61,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 60,
         "approvedQuarter": 62,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 61,
         "approvedQuarter": 63,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 62,
         "approvedQuarter": 64,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 63,
         "approvedQuarter": 65,
-        "filedMw": 100,
-        "milestoneChecked": true
+        "filedMw": 200
       },
       {
         "shell": "high_leo",
         "filedQuarter": 64,
         "approvedQuarter": 68,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 66,
-        "approvedQuarter": 70,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 67,
-        "approvedQuarter": 71,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 68,
-        "approvedQuarter": 72,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 69,
-        "approvedQuarter": 73,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 70,
-        "approvedQuarter": 74,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 71,
-        "approvedQuarter": 75,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 72,
-        "approvedQuarter": 76,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 73,
-        "approvedQuarter": 77,
-        "filedMw": 100,
-        "milestoneChecked": true
-      },
-      {
-        "shell": "high_leo",
-        "filedQuarter": 75,
-        "approvedQuarter": 79,
         "filedMw": 200
       }
     ],
@@ -7423,12 +5664,11 @@
         "kind": "project_debt",
         "apr": 0.10062499999999999,
         "limitUsd": 173804400.00000003,
-        "balanceUsd": 0,
+        "balanceUsd": 191063926.3018938,
         "tenorQuarters": 16,
-        "amortizing": true,
-        "paidQuarters": 9,
-        "cureUntil": null,
-        "closed": true
+        "amortizing": false,
+        "paidQuarters": 0,
+        "cureUntil": null
       },
       {
         "id": "od3.1",
@@ -7437,12 +5677,11 @@
         "kind": "project_debt",
         "apr": 0.090625,
         "limitUsd": 173804400.00000003,
-        "balanceUsd": 0,
+        "balanceUsd": 170796996.0148855,
         "tenorQuarters": 12,
         "amortizing": true,
-        "paidQuarters": 2,
-        "cureUntil": null,
-        "closed": true
+        "paidQuarters": 1,
+        "cureUntil": null
       },
       {
         "id": "od4.1",
@@ -7451,10 +5690,10 @@
         "kind": "project_debt",
         "apr": 0.080625,
         "limitUsd": 173804400.00000003,
-        "balanceUsd": 83209046.65328565,
+        "balanceUsd": 184908992.56285703,
         "tenorQuarters": 20,
-        "amortizing": true,
-        "paidQuarters": 11,
+        "amortizing": false,
+        "paidQuarters": 0,
         "cureUntil": null
       },
       {
@@ -7514,7 +5753,7 @@
         "launchedQuarter": 62,
         "arrivalQuarter": 65,
         "costUsd": 138126000,
-        "status": "lost",
+        "status": "en_route",
         "aborts": 0
       }
     ],
@@ -7539,12 +5778,16 @@
     "nextId": 4,
     "taskOrderUsd": null
   },
+  "covenantBreach": {
+    "fromQuarter": 63,
+    "untilQuarter": 65
+  },
   "act4End": {
     "futureId": "f2",
-    "endQuarter": "2035Q4",
-    "gameOver": false,
-    "founderNetWorthUsd": 44362383.158144444,
-    "growthMultiple": 0.09076465552119106,
+    "endQuarter": "2033Q1",
+    "gameOver": true,
+    "founderNetWorthUsd": 128124704.67349227,
+    "growthMultiple": 0.2621408917998778,
     "futureName": "The Wall",
     "triggerQuarter": "2033Q1",
     "triggerQ": 8,
@@ -7574,11 +5817,11 @@
     "fleet": {
       "failurePctYr": 10,
       "lifeYears": 4,
-      "telemetryAvgPctYr": 10.88459293249711
+      "telemetryAvgPctYr": 12.16017153696157
     },
     "reading": {
-      "score": 28,
-      "base": 58,
+      "score": 37,
+      "base": 67,
       "penalty": 30,
       "perQuarter": [
         {
@@ -7639,83 +5882,6 @@
         },
         {
           "q": 8,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 9,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 10,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 11,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 12,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 13,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 14,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 15,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 16,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 17,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 18,
-          "stance": 0,
-          "ideal": -1,
-          "weight": 1,
-          "value": 0.5
-        },
-        {
-          "q": 19,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
@@ -7893,33 +6059,33 @@
         "mark": "neutral"
       }
     ],
-    "careerTitleId": "survivor",
+    "careerTitleId": "bust",
     "readingTitleId": "weathervane",
     "frontierTitleId": "orbital",
     "rivalFates": [
       {
         "rival": "pallas_compute",
-        "valueUsd": 95000000000,
+        "valueUsd": 82500000000,
         "failed": false
       },
       {
         "rival": "northgate",
-        "valueUsd": 28000000000,
+        "valueUsd": 23500000000,
         "failed": false
       },
       {
         "rival": "orrery_compute",
-        "valueUsd": null,
-        "failed": true
+        "valueUsd": 4500000000,
+        "failed": false
       },
       {
         "rival": "jade_arc",
-        "valueUsd": 18000000000,
+        "valueUsd": 13500000000,
         "failed": false
       },
       {
         "rival": "cratermark",
-        "valueUsd": 1600000000,
+        "valueUsd": 1350000000,
         "failed": false
       }
     ]

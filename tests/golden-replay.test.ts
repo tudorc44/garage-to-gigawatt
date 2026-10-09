@@ -460,11 +460,13 @@ describe.each(['f1', 'f2', 'f3', 'f4'] as const)('golden replay: act4-%s (2031Q1
 
   it('plays to its end with orbit and the Moon in play: the chapter phase, or (F3) a game over after the cascade', () => {
     // (F3: a block a quarter overspends once the space-equity window shuts after the cascade: a fire sale, a covenant
-    // breach, then a game over with its reveal. The other futures reach 2035Q4.)
-    expect(run.state.phase).toBe(future === 'f3' ? 'gameover' : 'chapter')
+    // breach, then a game over with its reveal. M36.6: F2 too, since its space multiple × 0.60 from its 2033Q1 trigger
+    // (11.3× → 6.4×) does the same to a block a quarter. F1 and F4 reach 2035Q4.)
+    const bust = future === 'f3' || future === 'f2'
+    expect(run.state.phase).toBe(bust ? 'gameover' : 'chapter')
     expect(run.state.act).toBe(4)
     expect(run.state.futureId).toBe(future)
-    if (future !== 'f3') expect(run.state.reports.at(-1)!.quarter).toBe('2035Q4')
+    if (!bust) expect(run.state.reports.at(-1)!.quarter).toBe('2035Q4')
     expect(run.state.act4Orbit!.blocks.length).toBeGreaterThan(0)
     expect(run.state.act4Moon!.claims.length).toBeGreaterThan(0)
     expect(run.state.act4End?.futureId).toBe(future)
