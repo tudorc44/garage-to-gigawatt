@@ -5,7 +5,8 @@
 // are enforced by tests (act4OrbitCost, act4B11, act4B12, act4Market): the table says so. Only grades and futures are
 // forced (harness overrides, as Act III's anchors force the scenario).
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { FUTURE_IDS, type FutureId } from '../../src/content/index.ts'
+import { CONTENT, FUTURE_IDS, type FutureId } from '../../src/content/index.ts'
+import { TRIGGER } from './futures.ts'
 import { PRESETS_IV, type Act4PresetId } from '../../src/content/presetsAct4.ts'
 import { playFrom, playGame } from '../../src/sim/replay.ts'
 import { toAct3, toAct4, type GameState } from '../../src/sim/state.ts'
@@ -22,7 +23,17 @@ const SEEDS = Number(argValue('--seeds', '30'))
 const OUT = argValue('--out', 'sim-output')
 const GRADES = ['rich', 'patchy', 'dry'] as const
 type Grade = (typeof GRADES)[number]
-const BOT_NAMES = [...ACT4_ARCHETYPES, 'perfect'] as const
+const ALL_BOTS = [...ACT4_ARCHETYPES, 'perfect'] as const
+// M36.6 (design thread, answer 4): a search run may play some futures and bots only (`--futures f2 --bots ground,sprinter`)
+const BOT_NAMES = (args.includes('--bots') ? argValue('--bots', '').split(',') : ALL_BOTS) as readonly (typeof ALL_BOTS)[number][]
+const FUTURES = (args.includes('--futures') ? argValue('--futures', '').split(',') : FUTURE_IDS) as readonly FutureId[]
+// and scale F2's space multiple from its trigger quarter on, for this process only (`--f2space 0.85`)
+const F2_SPACE = Number(argValue('--f2space', '1'))
+if (F2_SPACE !== 1) {
+  for (const [key, m] of Object.entries(CONTENT.act4Markets))
+    if (key.endsWith('.f2')) m.quarterly.forEach((row, i) => i >= TRIGGER.f2 && (row.space_ev_ebitda_mult *= F2_SPACE))
+  console.log(`F2's space multiple × ${F2_SPACE} from act quarter ${TRIGGER.f2} (this run only)`)
+}
 
 /** The preset companies at 2030Q4 (each played once from 2017). */
 const presetEnd = new Map<Act4PresetId, GameState>()
@@ -52,6 +63,8 @@ interface Run {
   skipped: number
   built: number
   sites: number
+  poweredOffered: number
+  poweredBought: number
 }
 
 const runs: Run[] = []
@@ -60,7 +73,7 @@ const t0 = performance.now()
 const GRADE_FREE = new Set(['ground', 'sprinter', 'diversified', 'passive', 'perfect'])
 for (const p of PRESETS_IV) {
   const bots = act4Archetypes(p.bot)
-  for (const future of FUTURE_IDS)
+  for (const future of FUTURES)
     for (const grade of GRADES)
       for (const bot of BOT_NAMES)
         for (let seed = 1; seed <= SEEDS; seed++) {
@@ -172,11 +185,11 @@ console.log(`  ${'archetype'.padEnd(12)}${FUTURE_IDS.map((f) => f.padStart(8)).j
 for (const b of BOT_NAMES)
   console.log(`  ${b.padEnd(12)}${FUTURE_IDS.map((f) => x(med({ future: f, bot: b })).padStart(8)).join('')}   ${pct(goRate({ bot: b }))}`)
 // M34.4 (design thread, 9 Oct 2026): the Ground Holder's financing, by preset (runs, sums), and its founder stake.
-console.log('\nGround Holder (M34.4): per preset, over its runs: built / borrowed / raised / skipped / sites bought; median founder stake at the end')
+console.log('\nGround Holder (M34.4, M36.5): per preset, over its runs: built / borrowed / raised / skipped; quarters a powered site was offered / bought; median founder stake at the end')
 for (const p of PRESETS_IV) {
   const g = sel({ preset: p.id, bot: 'ground', grade: 'rich' })
   const sum = (k: keyof Run) => g.reduce((n, r) => n + Number(r[k]), 0)
-  console.log(`  ${p.id.padEnd(10)} runs ${g.length}: built ${sum('built')}, borrowed ${sum('borrowed')}, raised ${sum('raised')}, skipped ${sum('skipped')}, sites ${sum('sites')}; stake ${median(g.map((r) => r.stake)).toFixed(3)}`)
+  console.log(`  ${p.id.padEnd(10)} runs ${g.length}: built ${sum('built')}, borrowed ${sum('borrowed')}, raised ${sum('raised')}, skipped ${sum('skipped')}; powered offered ${sum('poweredOffered')}, bought ${sum('poweredBought')}; stake ${median(g.map((r) => r.stake)).toFixed(3)}`)
 }
 console.log('\nB1-B14:')
 for (const [id, target, ok, got] of rows) console.log(`  ${id.padEnd(4)} ${ok ? 'PASS' : 'MISS'}  ${target}\n         ${got}`)

@@ -20,6 +20,8 @@ import { convertibleKw } from '../../src/sim/systems/hosting.ts'
 import { companyLtv, covenantLimit } from '../../src/sim/systems/covenant.ts'
 import { dilutionRange, equityRaiseUsd } from '../../src/sim/systems/equity.ts'
 import { debtUsd } from '../../src/sim/systems/loans.ts'
+import { debtPlan } from '../../src/sim/systems/facilities.ts'
+import { projectedReturn } from '../../src/sim/systems/projects.ts'
 import { poweredKw } from '../../src/sim/systems/sites.ts'
 import { scenarioOf } from '../../src/sim/systems/market.ts'
 import { resourceShare } from '../../src/sim/systems/moon.ts'
@@ -164,42 +166,59 @@ function orbitStep(
  * M34.4 (design thread, 9 Oct 2026, answers 2-3): how often the Ground Holder borrowed, raised, skipped, built a cloud
  * or bought a site (the runner resets and reports these).
  */
-export const groundStats = { borrowed: 0, raised: 0, skipped: 0, built: 0, sites: 0 }
-/** Company debt ÷ trailing four quarters' EBITDA, the cap on borrowing (designed: 4×). */
-const LEVERAGE_CAP = 4
-/** The founder stake an equity raise may never take the Ground Holder below (designed). */
-const FOUNDER_FLOOR = 0.5
-
-/** Company debt ÷ the last four reports' EBITDA (Infinity with none). */
-function leverage(s: GameState): number {
-  const e = s.reports.slice(-4).reduce((n, r) => n + r.ebitdaUsd, 0)
-  const debt = debtUsd(s)
-  if (debt <= 0) return 0
-  return e > 0 ? debt / e : Infinity
+export const groundStats = {
+  borrowed: 0,
+  raised: 0,
+  skipped: 0,
+  built: 0,
+  sites: 0,
+  /** M36.5: quarters a scouting round offered a powered site (≤ half its energized MW), and powered sites bought. */
+  poweredOffered: 0,
+  poweredBought: 0,
 }
+/** Pro-forma leverage cap (designed: 4×). */
+const LEVERAGE_CAP = 4
+/** M36.5 (design thread, answer 1): the founder may be diluted by at most this from the Act IV entry stake (designed). */
+const DILUTION_BUDGET = 0.15
 
-/** True when the step's debt stays within the caps: ≤ 4× trailing EBITDA and inside the leverage covenant. */
-function debtOk(s: GameState): boolean {
-  return leverage(s) <= LEVERAGE_CAP && companyLtv(s) <= covenantLimit(s)
+/** The founder stake at the Act IV entry (the entry's founder net worth ÷ its valuation). */
+function entryStake(s: GameState): number {
+  const e = s.act4Entry
+  return e && e.valuationUsd > 0 ? e.founderNetWorthUsd / e.valuationUsd : s.founderStake
 }
 
 /**
- * The smallest at-the-market raise (the game's own dilution steps) that brings at least `shortUsd`, never taking the
- * founder below 50%; null if none does.
+ * M36.5 (answer 2): pro-forma leverage: (debt + the new loan) ÷ (trailing four quarters' EBITDA + the new project's
+ * contracted yearly EBITDA) ≤ 4×, and inside the leverage covenant (its LTV with the new loan).
+ */
+function debtOk(s: GameState, newDebtUsd: number, newEbitdaUsd: number): boolean {
+  const e = s.reports.slice(-4).reduce((n, r) => n + r.ebitdaUsd, 0) + Math.max(0, newEbitdaUsd)
+  const debt = debtUsd(s) + newDebtUsd
+  const lev = debt <= 0 ? 0 : e > 0 ? debt / e : Infinity
+  const value = s.reports.at(-1)?.valuationUsd ?? 0
+  const ltv = debt <= 0 ? 0 : value > 0 ? debt / value : Infinity
+  return lev <= LEVERAGE_CAP && ltv <= covenantLimit(s) && companyLtv(s) <= covenantLimit(s)
+}
+
+/**
+ * The smallest at-the-market raise (the game's own dilution steps) that brings at least `shortUsd`, never diluting the
+ * founder more than 15 points below the Act IV entry stake; null if none does.
  */
 function equityFor(s: GameState, shortUsd: number): Action | null {
+  const floor = entryStake(s) - DILUTION_BUDGET
   const [lo, hi] = dilutionRange()
   for (let d = lo; d <= hi + 1e-9; d = Math.round((d + 0.01) * 100) / 100) {
-    if (s.founderStake * (1 - d) < FOUNDER_FLOOR) return null
+    if (s.founderStake * (1 - d) < floor) return null
     if (equityRaiseUsd(s, d) >= shortUsd) return { type: 'RAISE_EQUITY', dilution: d }
   }
   return null
 }
 
 /**
- * M34.1 (owner, 1b) and M34.4 (design thread, 2): a ground GPU cloud at the site with the most free MW, when a GPU
- * contract is on offer. Short of cash for its share: borrow first (project debt, then a DDTL, as the game sizes them),
- * keeping debt ≤ 4× trailing EBITDA and inside the covenant; then equity for the rest (founder ≥ 50%); else skip it.
+ * M34.1 (owner, 1b), M34.4 and M36.5 (design thread, 1-2): a ground GPU cloud at the site with the most free MW, when a
+ * GPU contract is on offer. Short of cash for its share: borrow first (project debt, then a DDTL, as the game sizes them
+ * at DSCR 1.12), within pro-forma leverage ≤ 4× and the covenant; then equity for the rest (15-point dilution budget);
+ * else skip it.
  */
 function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null {
   const site = s.sites
@@ -229,19 +248,23 @@ function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null 
       groundStats.built++
       return { kept: [open, ...signed.kept, ...cash.kept], after: cash.after }
     }
-    // 2. Borrow first, within the caps.
+    // 2. Borrow first, within the caps (pro forma, on the project's own contracted EBITDA).
     const debt = tryAll(signed.after, [
       { type: 'PROJECT_DEBT', projectId: p.id, debt: 'project_debt', on: true },
       { type: 'PROJECT_DEBT', projectId: p.id, debt: 'ddtl', on: true },
     ])
-    const borrowed = start(debt.after, [])
-    if (debt.kept.length > 0 && started(borrowed) && debtOk(borrowed.after)) {
+    const proj = debt.after.projects.find((x) => x.id === p.id)!
+    const plan = debtPlan(debt.after, proj)
+    const ebitdaYr = projectedReturn(debt.after, proj).ebitdaUsd ?? 0
+    const withinCaps = debt.kept.length > 0 && plan.totalUsd > 0 && debtOk(debt.after, plan.totalUsd, ebitdaYr)
+    const borrowed = withinCaps ? start(debt.after, []) : { kept: [], after: debt.after }
+    if (withinCaps && started(borrowed)) {
       groundStats.borrowed++
       groundStats.built++
       return { kept: [open, ...signed.kept, ...debt.kept, ...borrowed.kept], after: borrowed.after }
     }
     // 3. Then equity for the rest (with the debt if it kept inside the caps, else without it).
-    for (const base of debt.kept.length > 0 ? [debt, signed] : [signed]) {
+    for (const base of withinCaps ? [debt, signed] : [signed]) {
       const probe = start(base.after, [])
       if (started(probe)) continue
       const need = projectCashNeed(base.after, p.id)
@@ -249,7 +272,7 @@ function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null 
       const raise = equityFor(base.after, need - base.after.cash + 5e6)
       if (!raise) continue
       const funded = start(base.after, [raise])
-      if (started(funded) && (base === signed || debtOk(funded.after))) {
+      if (started(funded)) {
         groundStats.raised++
         if (base !== signed) groundStats.borrowed++
         groundStats.built++
@@ -261,17 +284,20 @@ function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null 
   return null
 }
 
-/** What starting a project still needs in cash, or null if it can't tell (the build blocker's figure). */
+/** What starting a project still needs in cash, or null if it can't tell (the build blocker's figure, once the
+ *  capital slot is filled with own cash). */
 function projectCashNeed(s: GameState, projectId: string): number | null {
-  const r = applyAction(s, { type: 'PROJECT_START', projectId })
+  const funded = applyAction(s, { type: 'PROJECT_FUND_CASH', projectId })
+  const r = applyAction(funded.ok ? funded.state : s, { type: 'PROJECT_START', projectId })
   if (r.ok) return 0
   const cost = r.error.params?.costUsd
   return typeof cost === 'number' ? cost : null
 }
 
 /**
- * M34.4 (design thread, 3): a company with no free MW buys one new site in the act, through the game's scouting, at most
- * half its energized MW, funded as a cloud is (borrowing as the game allows, then equity, founder ≥ 50%).
+ * M34.4 and M36.5 (design thread, 3): a company with no free MW buys one new site in the act, through the game's
+ * scouting, only an already-powered one (a distressed miner, energized land) at most half its energized MW, funded with
+ * cash, then equity within the dilution budget. Greenfield isn't bought (it never powers inside the act).
  */
 function groundSite(s: GameState): { kept: Action[]; after: GameState } | null {
   if (boughtSiteInAct4(s)) return null
@@ -280,8 +306,9 @@ function groundSite(s: GameState): { kept: Action[]; after: GameState } | null {
   const energized = s.sites.reduce((n, x) => n + poweredKw(x, s.quarter), 0)
   const scout = tryAll(s, [{ type: 'SCOUT_SITES_ACT2' }])
   const offers = scout.after.siteOffers
-    .filter((o) => o.category && (o.kw ?? 0) <= energized / 2)
+    .filter((o) => o.category && (o.readyQuarters ?? 1) === 0 && (o.kw ?? 0) <= energized / 2)
     .sort((a, b) => (b.kw ?? 0) - (a.kw ?? 0))
+  if (scout.kept.length > 0 && offers.length > 0) groundStats.poweredOffered++
   for (const o of offers) {
     const buy = (st: GameState, extra: Action[]) => tryAll(st, [...extra, { type: 'BUILD_SITE', offerId: o.id }])
     let done = buy(scout.after, [])
@@ -293,6 +320,7 @@ function groundSite(s: GameState): { kept: Action[]; after: GameState } | null {
       groundStats.raised++
     }
     groundStats.sites++
+    groundStats.poweredBought++
     return { kept: [...scout.kept, ...done.kept], after: done.after }
   }
   return scout.kept.length > 0 ? { kept: scout.kept, after: scout.after } : null

@@ -263,6 +263,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
 - M36.4: Act IV grid upgrades wait grid_wait_q × 0.8-1.2 (16-24; F4 8-12 at 10; spread mine), shifted by policies and
   hires as before; Act IV gas 6-10 q (replaces M36's 2-4 q slip; overrun kept). No golden changed (no golden script
   builds Act IV ground power). Test `act4PowerWaits`.
+- M36.5 (tools only): Ground Holder dilution budget 15 points from the entry stake; pro-forma leverage on the project's
+  own EBITDA ((debt + loan) ÷ (trailing EBITDA + project EBITDA) ≤ 4×, DSCR sizing, covenant); powered sites only.
+  One seed: Fortress now builds 2 clouds (stake 49% → 35%); Act IV scouting offers no powered site, so Neocloud and Ridge renew only.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
