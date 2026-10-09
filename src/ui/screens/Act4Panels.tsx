@@ -7,8 +7,9 @@ import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
 import type { Message } from '../../i18n/t.ts'
 import { orbitBoardView, type BlockView, type OrbitBoardView } from '../../sim/orbitViews.ts'
-import { orreryAuctionView } from '../../sim/selectors.ts'
+import { orreryAuctionView, siteFacts } from '../../sim/selectors.ts'
 import { Pips } from '../components/basics.tsx'
+import { SitePicker, type PickRow } from '../components/sitePicker.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -109,7 +110,7 @@ export function OrbitSection({ state, act }: ScreenProps) {
       ))}
       <Manifest v={v} />
       <Licences v={v} act={act} />
-      <Links v={v} act={act} />
+      <Links v={v} act={act} state={state} />
       {v.gone.length > 0 && (
         <div class="panel p">
           <h2 class="panel-title">{t('ui.orbit.gone.title')}</h2>
@@ -602,8 +603,20 @@ function Licences({ v, act }: { v: OrbitBoardView; act: ScreenProps['act'] }) {
 
 // ---------- links ----------
 
-function Links({ v, act }: { v: OrbitBoardView; act: ScreenProps['act'] }) {
+function Links({ v, act, state }: { v: OrbitBoardView } & ScreenProps) {
   const l = v.links
+  const [picking, setPicking] = useState(false)
+  // M33.2 (doc 35): one button and a site picker, not a button per site; the stations you have are listed first.
+  const rows: PickRow[] = l.stationSites.map((s) => ({
+    site: s.site,
+    fact: fmt.money(l.station.capex_usd),
+    factSort: l.station.capex_usd,
+    why: s.why ? say(s.why) : undefined,
+  }))
+  const open = l.stationSites
+    .filter((s) => !s.why)
+    .sort((a, b) => siteFacts(state, a.site).heat - siteFacts(state, b.site).heat)
+  const siteOf = (id: string) => state.sites.find((x) => x.id === id)
   return (
     <div class="panel p" data-orbit-links>
       <h2 class="panel-title">{t('ui.orbit.links.title')}</h2>
@@ -636,17 +649,56 @@ function Links({ v, act }: { v: OrbitBoardView; act: ScreenProps['act'] }) {
           heat: l.station.heat,
         })}
       </p>
+      {l.stations.map((st) => {
+        const site = siteOf(st.siteId)
+        return (
+          <p key={st.id} class="num-s" data-orbit-station>
+            {t('ui.orbit.links.station_row', {
+              site: site ? siteName(site) : st.siteId,
+              units: st.units,
+              quarter: st.readyLabel ? fmt.quarter(st.readyLabel) : '',
+            })}
+          </p>
+        )
+      })}
       <div class="orbit-row">
-        {l.stationSites.map((s) => (
-          <OrbitButton
-            key={s.siteId}
-            label={t('ui.orbit.links.build', { site: siteName(s.site) })}
-            why={s.why}
-            bw={1}
-            onClick={() => act({ type: 'BUILD_GROUND_STATION', siteId: s.siteId })}
-          />
-        ))}
+        <OrbitButton
+          label={t('ui.orbit.links.pick')}
+          why={open.length > 0 ? null : { key: 'error.no_station_site' }}
+          bw={1}
+          onClick={() => setPicking(true)}
+        />
+        {open.length > 0 && (
+          <span class="num-s muted">
+            {t('ui.orbit.links.cheapest', {
+              cost: fmt.money(l.station.capex_usd),
+              site: siteName(open[0].site),
+            })}
+          </span>
+        )}
       </div>
+      {picking && (
+        <SitePicker
+          state={state}
+          title={t('site.pick.title.station')}
+          intro={t('ui.orbit.links.station', {
+            cost: fmt.money(l.station.capex_usd),
+            units: l.station.units,
+            heat: l.station.heat,
+          })}
+          factLabel={t('site.pick.fact.station')}
+          actionLabel={t('site.pick.station')}
+          bw={1}
+          rows={rows}
+          defaultSort="heat"
+          defaultDesc={false}
+          onPick={(site) => {
+            act({ type: 'BUILD_GROUND_STATION', siteId: site.id })
+            setPicking(false)
+          }}
+          onClose={() => setPicking(false)}
+        />
+      )}
     </div>
   )
 }

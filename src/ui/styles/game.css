@@ -1123,6 +1123,44 @@ tr.locked td {
   display: inline-flex;
   color: var(--warn);
 }
+/* M33.2 (doc 35): the site picker. Its table scrolls inside the dialog; the reason a site can't wraps. */
+.picker-scroll {
+  overflow-x: auto;
+}
+.site-picker th {
+  padding: 4px 6px;
+}
+.sort-btn {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 2px 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site-picker td.picker-action {
+  white-space: normal;
+  min-width: 140px;
+}
+.site-field {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: 36px;
+}
+.picker-filter {
+  font: 13px var(--font-ui);
+  padding: 6px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-2);
+  background: var(--panel);
+  color: var(--ink);
+  max-width: 260px;
+}
 /* Table cells with sentences (the People dialog): wrap instead of widening the table. */
 td.wrap {
   white-space: normal;

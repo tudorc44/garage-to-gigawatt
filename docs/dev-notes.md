@@ -229,6 +229,9 @@ Sub-steps:
   lines and messages; `i18n/t.ts` renders `{tier}` with a number as the short name). Goldens: 21 changed, identical with the
   serial fields stripped. Sentences name a site in plain text; table cells and lists use `<SiteName>` (tooltip = long name)
   (mine, reversible). Prologue screens and the report's "Heat · site type" tile keep the type (reports store no site).
+- M33.2 done: `components/sitePicker.tsx`, `screens/planPickers.tsx`. Pickers: ground station (Orbit), leave, renewal,
+  transformer, talk, mitigation, hosting (a site with a contract stays pickable), Buy machines' site (fact: power price).
+  One eligible site is named inline and acts at once (talk, mitigation) (mine, reversible); facts and labels mine.
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 

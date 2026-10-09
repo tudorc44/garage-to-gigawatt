@@ -38,7 +38,8 @@ import type {
 } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { HeatBreakdown } from '../components/heatBreakdown.tsx'
-import { SiteName } from '../components/siteName.tsx'
+import { SiteLabel, SiteName } from '../components/siteName.tsx'
+import { SitePicker } from '../components/sitePicker.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -72,6 +73,7 @@ export function BuyDialog({ state, act, onClose }: DialogProps) {
   const [condition, setCondition] = useState<Condition>('new')
   const [count, setCount] = useState(1)
   const [siteId, setSiteId] = useState(bestSite(state).id)
+  const [picking, setPicking] = useState(false)
 
   const m = market.find((x) => x.id === model)!
   const price = condition === 'new' ? m.newPriceUsd : m.usedPriceUsd
@@ -214,22 +216,43 @@ export function BuyDialog({ state, act, onClose }: DialogProps) {
         <button type="button" class="btn" onClick={() => setCount(maxCount)}>
           {t('ui.buy.max', { n: maxCount })}
         </button>
-        <label class="field">
+        {/* M33.2 (doc 35): which site, through the site picker (cheapest power first) */}
+        <div class="field">
           <span class="label">{t('ui.buy.site')}</span>
-          <select
-            value={siteId}
-            onChange={(e) => setSiteId((e.target as HTMLSelectElement).value)}
-          >
-            {sites.map((s) => (
-              <option key={s.site.id} value={s.site.id}>
-                {t('ui.buy.site_option', {
-                  tier: siteName(s.site),
-                  free: fmt.power(s.capacityKw - s.usedKw),
-                })}
-              </option>
-            ))}
-          </select>
-        </label>
+          <span class="site-field">
+            <SiteLabel state={state} site={site.site} />
+            {sites.length > 1 && (
+              <button
+                type="button"
+                class="btn"
+                data-buy-site
+                onClick={() => setPicking(true)}
+              >
+                {t('site.pick.change')}
+              </button>
+            )}
+          </span>
+        </div>
+        {picking && (
+          <SitePicker
+            state={state}
+            title={t('site.pick.title.buy')}
+            factLabel={t('site.pick.fact.power')}
+            actionLabel={t('site.pick.choose')}
+            rows={sites.map((s) => ({
+              site: s.site,
+              fact: fmt.cents(s.powerUsdKwh),
+              factSort: s.powerUsdKwh,
+              why:
+                s.capacityKw - s.usedKw <= 0 ? t('site.pick.no_free') : undefined,
+            }))}
+            onPick={(x) => {
+              setSiteId(x.id)
+              setPicking(false)
+            }}
+            onClose={() => setPicking(false)}
+          />
+        )}
       </div>
 
       <div class="row-between">
@@ -1734,8 +1757,21 @@ export function HiresTable({ state, act }: ScreenProps) {
  * Act II hosting (scope 0.2 §2.4): per site, convert free energized kW (cost, rate, power price and
  * a quarter's margin per MW shown up front); then the contracts, each with what ending costs now.
  */
-export function HostingDialog({ state, act, onClose }: DialogProps) {
-  const v = hostingView(state)
+export function HostingDialog({
+  state,
+  act,
+  onClose,
+  siteId,
+}: DialogProps & { siteId?: string }) {
+  const all = hostingView(state)
+  // M33.2: opened from the site picker, it shows that site only (and its contracts).
+  const v = siteId
+    ? {
+        ...all,
+        sites: all.sites.filter((x) => x.site.id === siteId),
+        contracts: all.contracts.filter((c) => c.contract.siteId === siteId),
+      }
+    : all
   const [kw, setKw] = useState<Record<string, number>>(() =>
     Object.fromEntries(v.sites.map((x) => [x.site.id, Math.floor(x.freeKw)])),
   )

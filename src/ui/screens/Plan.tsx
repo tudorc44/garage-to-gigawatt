@@ -60,6 +60,12 @@ import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
 import { Runway } from '../components/runway.tsx'
+import {
+  PlanPicker,
+  pickRows,
+  TALK_FROM_HEAT,
+  type PickKind,
+} from './planPickers.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -103,6 +109,8 @@ type Open =
   | 'auction'
   | 'community'
   | 'hosting'
+  | `hosting:${string}`
+  | `pick:${PickKind}`
   | `leave:${string}`
   | `renew:${string}`
   | `pitch:${string}`
@@ -283,6 +291,23 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'hosting' && (
         <HostingDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
+      {open?.startsWith('hosting:') && (
+        <HostingDialog
+          state={state}
+          act={act}
+          siteId={open.slice('hosting:'.length)}
+          onClose={() => setOpen(null)}
+        />
+      )}
+      {open?.startsWith('pick:') && (
+        <PlanPicker
+          state={state}
+          act={act}
+          kind={open.slice('pick:'.length) as PickKind}
+          openDialog={setOpen}
+          onClose={() => setOpen(null)}
+        />
       )}
       {open?.startsWith('leave:') && (
         <LeaveDialog
@@ -1014,7 +1039,21 @@ function TodoPanel({
           />,
         ]
       })}
-      {transformerViews(state).map((u) =>
+      {/* M33.2 (doc 35): an action at 2+ sites is one row opening the site picker */}
+      {transformerViews(state).length >= 2 ? (
+        <ActionRow
+          icon="power"
+          name={t('site.group.transformer', {
+            n: transformerViews(state).length,
+          })}
+          price={t('ui.plan.from', {
+            value: fmt.money(
+              Math.min(...transformerViews(state).map((u) => u.costUsd)),
+            ),
+          })}
+          onClick={() => open('pick:transformer')}
+        />
+      ) : transformerViews(state).map((u) =>
         u.readyQuarter !== undefined ? (
           <ActionRow
             key={`transformer-${u.site.id}`}
@@ -1042,7 +1081,20 @@ function TodoPanel({
           />
         ),
       )}
-      {siteViews(state).map(
+      {siteViews(state).filter((sv) => sv.leaving).length >= 2 ? (
+        <ActionRow
+          icon="close"
+          name={t('site.group.leave', {
+            n: pickRows(state, 'leave').filter((r) => !r.why).length,
+          })}
+          price={t('ui.plan.from', {
+            value: fmt.money(
+              Math.min(...pickRows(state, 'leave').map((r) => r.factSort)),
+            ),
+          })}
+          onClick={() => open('pick:leave')}
+        />
+      ) : siteViews(state).map(
         (sv) =>
           sv.leaving && (
             <ActionRow
@@ -1060,7 +1112,18 @@ function TodoPanel({
             />
           ),
       )}
-      {renewals.map((r) => (
+      {renewals.length >= 2 ? (
+        <ActionRow
+          icon="negotiate"
+          name={t('site.group.renewal', { n: renewals.length })}
+          price={t('ui.plan.from', {
+            value: fmt.cents(
+              Math.min(...pickRows(state, 'renewal').map((r) => r.factSort)),
+            ),
+          })}
+          onClick={() => open('pick:renewal')}
+        />
+      ) : renewals.map((r) => (
         <ActionRow
           key={`renew-${r.site.id}`}
           icon="negotiate"
@@ -1125,33 +1188,97 @@ function TodoPanel({
         })}
         onClick={() => open('hires')}
       />
-      <ActionRow
-        icon="outreach"
-        name={t('ui.plan.neighbours')}
-        bandwidth={communityView(state).outreachBandwidth}
-        bandwidthLeft={left}
-        price={t('ui.plan.hottest', {
-          tier: siteName(topHeat(state).site),
-          heat: Math.round(topHeat(state).heat),
-        })}
-        onClick={() => open('community')}
-      />
-      <ActionRow
-        icon="outreach"
-        name={t('ui.plan.mitigation')}
-        price={t('ui.plan.from', {
-          value: fmt.money(
-            Math.min(...communityView(state).sites.map((x) => x.mitigationUsd)),
-          ),
-        })}
-        onClick={() => open('community')}
-      />
+      <TalkRow state={state} act={act} open={open} left={left} />
+      <MitigateRow state={state} act={act} open={open} left={left} />
 
       <div class="label group">{t('ui.plan.group.intel')}</div>
       {/* Act III reads the market through Signals instead (M13.2). */}
       {!inAct3Rules(state) && <ReadMarketRow state={state} act={act} />}
       {!state.auction && <AuctionRow state={state} act={act} open={open} />}
     </div>
+  )
+}
+
+/**
+ * Talk to the neighbours (M33.2, doc 35): one site at Heat ≥ 30 is named and talked to at once; otherwise the row
+ * opens the site picker ("· N sites at Heat ≥ 30 ›"), hottest first.
+ */
+function TalkRow(props: ScreenProps & { open: (o: Open) => void; left: number }) {
+  const { state, act, open, left } = props
+  const v = communityView(state)
+  const hot = v.sites.filter(
+    (x) =>
+      x.heat >= TALK_FROM_HEAT &&
+      !x.outreachDone &&
+      !whyNot(state, { type: 'OUTREACH', siteId: x.site.id }),
+  )
+  const price = t('ui.plan.hottest', {
+    tier: siteName(topHeat(state).site),
+    heat: Math.round(topHeat(state).heat),
+  })
+  if (hot.length === 1) {
+    const a: Action = { type: 'OUTREACH', siteId: hot[0].site.id }
+    return (
+      <ActionRow
+        icon="outreach"
+        name={t('site.single.talk', { site: siteName(hot[0].site) })}
+        bandwidth={v.outreachBandwidth}
+        bandwidthLeft={left}
+        price={price}
+        onClick={() => act(a)}
+      />
+    )
+  }
+  return (
+    <ActionRow
+      icon="outreach"
+      name={
+        hot.length >= 2
+          ? t('site.group.talk', { n: hot.length })
+          : t('site.group.talk_any')
+      }
+      bandwidth={v.outreachBandwidth}
+      bandwidthLeft={left}
+      price={price}
+      onClick={() => open('pick:talk')}
+    />
+  )
+}
+
+/** Noise mitigation (M33.2): one site that can take it is named; otherwise the row opens the site picker. */
+function MitigateRow(
+  props: ScreenProps & { open: (o: Open) => void; left: number },
+) {
+  const { state, act, open, left } = props
+  const rows = pickRows(state, 'mitigate')
+  const can = rows.filter((r) => !r.why)
+  const v = communityView(state)
+  if (can.length === 1) {
+    const a: Action = { type: 'MITIGATE_NOISE', siteId: can[0].site.id }
+    return (
+      <ActionRow
+        icon="outreach"
+        name={t('site.single.mitigate', { site: siteName(can[0].site) })}
+        bandwidth={v.mitigationBandwidth}
+        bandwidthLeft={left}
+        price={t('ui.plan.minus', { value: can[0].fact })}
+        onClick={() => act(a)}
+      />
+    )
+  }
+  return (
+    <ActionRow
+      icon="outreach"
+      name={
+        can.length >= 2
+          ? t('site.group.mitigate', { n: can.length })
+          : t('ui.plan.mitigation')
+      }
+      price={t('ui.plan.from', {
+        value: fmt.money(Math.min(...v.sites.map((x) => x.mitigationUsd))),
+      })}
+      onClick={() => open('pick:mitigate')}
+    />
   )
 }
 
@@ -1167,10 +1294,16 @@ function HostingRow({
   const v = hostingView(state)
   const free = v.sites.reduce((kw, x) => kw + x.freeKw, 0)
   const rate = v.sites[0]?.rateUsdKwh
+  // M33.2: with free power at 2+ sites, the row opens the site picker.
+  const withFree = v.sites.filter((x) => x.freeKw > 0).length
   return (
     <ActionRow
       icon="power"
-      name={t('ui.plan.hosting')}
+      name={
+        withFree >= 2
+          ? t('site.group.hosting', { n: withFree })
+          : t('ui.plan.hosting')
+      }
       bandwidth={free > 0 ? v.bandwidth : undefined}
       bandwidthLeft={state.bandwidth}
       price={
@@ -1183,7 +1316,7 @@ function HostingRow({
             ? undefined
             : t('ui.plan.hosting_none')
       }
-      onClick={() => open('hosting')}
+      onClick={() => open(withFree >= 2 ? 'pick:hosting' : 'hosting')}
     />
   )
 }
