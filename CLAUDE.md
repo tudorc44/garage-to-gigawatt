@@ -144,6 +144,7 @@ npm run content:market  # regenerate the market JSON files after editing a marke
 - **Goldens:** Act I ×11, the prologue ×2, Act II, act3-s0…s3 and act4-f1…f4 (`tests/golden/`). A golden change must be the intended
   effect of the sub-step and be explained; accept it with `npm test -- -u tests/golden-replay.test.ts`.
 - **Byte-identity:** `npm run sim -- --act2 --act3` CSVs stay byte-identical across changes that add no rule.
+  Check it only when a milestone changed `src/sim/` or `src/content/`; otherwise the goldens are enough.
 - Saves: `tests/fixtures/saves/v1-*.json` are real old saves: keep them, never reformat them.
 
 ### Layout
@@ -197,11 +198,16 @@ All other rules still apply.
 
 - **Work through the whole milestone without pausing between sub-steps.** Split it into sub-steps yourself
   (M21.1, M21.2 …) and write the split into `docs/dev-notes.md` before starting.
-- **After each sub-step:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes with **at
+- **Build in chunks, check once per chunk.** A chunk is one sub-step, or a group of related sub-steps the dev-notes
+  split names as one chunk. Between edits inside a chunk, don't run the suite; at most run a single test file while
+  fixing a specific failure.
+- **After each chunk:** `npm run lint`, `npm test` and `npm run build` must pass. Then update dev-notes with **at
   most 3 lines** and commit on the milestone branch with the prefix `M<n>.<k>: `. Never force-push, never rewrite
   history, never commit to `main`, never touch `staging/`.
-- **Run the sims only at the end of a milestone,** unless the sub-step exists to check balance. Start long runs detached
-  so a session's time limit doesn't kill them; a sleeping laptop pauses them.
+- **Run the sims only at the end of a milestone that changed `src/sim/` or `src/content/`,** and only for the acts it
+  touched (or when a sub-step exists to check balance). A milestone that changes neither skips them (the goldens cover
+  determinism); say so in dev-notes. Start long runs detached so a session's time limit doesn't kill them; a sleeping
+  laptop pauses them.
 - **Read `docs/dev-notes-archive.md` only when a task needs the history** (finished steps, old balance reviews,
   sub-step details); `docs/dev-notes.md` has where the build stands and the rules in force.
 - **Change files only with the Edit and Write tools,** never with `python3`, `node`, `sed` or heredoc scripts (those
