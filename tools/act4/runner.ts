@@ -144,6 +144,13 @@ const pct = (n: number) => `${Math.round(n * 100)}%`
 const rows: [string, string, boolean, string][] = []
 const add = (id: string, target: string, ok: boolean, got: string) => rows.push([id, target, ok, got])
 
+// A filtered run (M36.6's knob search) prints its medians only: the B table needs every future and bot.
+if (FUTURES.length < FUTURE_IDS.length || BOT_NAMES.length < ALL_BOTS.length) {
+  console.log(`\nFiltered run: ${runs.length} runs. Medians (founder net worth multiple on the Act IV entry):`)
+  for (const b of BOT_NAMES)
+    console.log(`  ${b.padEnd(12)}${FUTURES.map((f) => `${f} ${x(med({ future: f, bot: b }))}`).join('  ')}   game overs ${pct(goRate({ bot: b }))}`)
+  process.exit(0)
+}
 // B1: per (future × grade) cell, the archetypes' medians; who's best or within 10% of best
 const winners = new Set<string>()
 const bestCount: Record<string, number> = {}
