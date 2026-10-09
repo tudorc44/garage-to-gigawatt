@@ -17,13 +17,13 @@ import {
 } from '../../sim/selectors.ts'
 import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { Icon, Tip } from '../components/basics.tsx'
+import { SiteName } from '../components/siteName.tsx'
 import { fmt } from '../format.ts'
 import {
   machineIcon,
   machineName,
   rivalName,
   say,
-  siteName,
   tierIcon,
   tierName,
 } from '../names.ts'
@@ -196,7 +196,9 @@ function FleetSection({ state, act }: ScreenProps) {
                           )}
                         </span>
                       </td>
-                      <td>{siteName(site)}</td>
+                      <td>
+                        <SiteName state={state} site={site} />
+                      </td>
                       <td class="num r">
                         {v.lot.failed > 0
                           ? t('ui.section.units_broken', {

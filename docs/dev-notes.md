@@ -232,6 +232,8 @@ Sub-steps:
 - M33.2 done: `components/sitePicker.tsx`, `screens/planPickers.tsx`. Pickers: ground station (Orbit), leave, renewal,
   transformer, talk, mitigation, hosting (a site with a contract stays pickable), Buy machines' site (fact: power price).
   One eligible site is named inline and acts at once (talk, mitigation) (mine, reversible); facts and labels mine.
+- M33.3 done: `components/siteCard.tsx` (host mounted in `app.tsx`; `<SiteName>` is a link to it), `siteCardView`. No
+  acquired quarter is stored, so the header says "powered since/from" (mine, reversible). Drawer 460 px from 1280 px.
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 

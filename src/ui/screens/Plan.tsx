@@ -60,6 +60,7 @@ import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
 import { Runway } from '../components/runway.tsx'
+import { SiteName } from '../components/siteName.tsx'
 import {
   PlanPicker,
   pickRows,
@@ -571,7 +572,9 @@ export function FleetPanel({
             <div class="fleet-row">
               <Icon name={tierIcon(sv.site.tier)} />
               <div>
-                <div class="site-head">{siteName(sv.site)}</div>
+                <div class="site-head">
+                  <SiteName state={state} site={sv.site} />
+                </div>
                 <div class="num-s muted">
                   {t('ui.fleet.site_sub', {
                     power: fmt.cents(sv.powerUsdKwh),

@@ -174,6 +174,8 @@ export function Dialog(props: {
   title: string
   onClose: () => void
   children: ComponentChildren
+  /** An extra class on the scrim and the dialog (M33.3: "site-card" makes it a side drawer from 1280 px). */
+  variant?: string
 }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && props.onClose()
@@ -182,11 +184,11 @@ export function Dialog(props: {
   }, [props.onClose])
   return (
     <div
-      class="scrim"
+      class={props.variant ? `scrim ${props.variant}-scrim` : 'scrim'}
       onClick={(e) => e.target === e.currentTarget && props.onClose()}
     >
       <section
-        class="dialog"
+        class={props.variant ? `dialog ${props.variant}` : 'dialog'}
         role="dialog"
         aria-modal="true"
         aria-label={props.title}

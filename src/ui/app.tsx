@@ -44,6 +44,7 @@ import {
 } from './components/saves.tsx'
 import { NavContext } from './components/frame.tsx'
 import type { Section } from './screens/Sections.tsx'
+import { SiteCardHost } from './components/siteCard.tsx'
 import { readSettings, writeSettings } from '../platform/settings.ts'
 import type { FutureId, ScenarioId } from '../content/index.ts'
 import { play, setSfxSettings } from './audio/sfx.ts'
@@ -469,7 +470,14 @@ export function App() {
     <SaveContext.Provider value={saves}>
       <NavContext.Provider value={{ section, setSection, act }}>
         <div data-theme={themeOf(game)}>
-          {screen}
+          {/* M33.3: any site name opens that site's card */}
+          {game ? (
+            <SiteCardHost state={game} act={act}>
+              {screen}
+            </SiteCardHost>
+          ) : (
+            screen
+          )}
           <GlossaryHost />
         </div>
       </NavContext.Provider>

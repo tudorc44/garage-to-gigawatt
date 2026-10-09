@@ -65,14 +65,20 @@ function cashChange(state: GameState, a: Action): number | null {
   return r.ok ? r.state.cash - state.cash : null
 }
 
-export function BuyDialog({ state, act, onClose }: DialogProps) {
+export function BuyDialog({
+  state,
+  act,
+  onClose,
+  siteId: initialSite,
+}: DialogProps & { siteId?: string }) {
   const market = machineMarket(state)
   const sites = siteViews(state)
   const firstOut = market.find((m) => m.isOut)!
   const [model, setModel] = useState(firstOut.id)
   const [condition, setCondition] = useState<Condition>('new')
   const [count, setCount] = useState(1)
-  const [siteId, setSiteId] = useState(bestSite(state).id)
+  // (M33.3: the site card's "Buy machines here" opens on its site)
+  const [siteId, setSiteId] = useState(initialSite ?? bestSite(state).id)
   const [picking, setPicking] = useState(false)
 
   const m = market.find((x) => x.id === model)!

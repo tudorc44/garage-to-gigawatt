@@ -414,6 +414,76 @@ export function siteFacts(state: GameState, site: Site) {
 }
 export type SiteFacts = ReturnType<typeof siteFacts>
 
+/**
+ * M33.3 (doc 35): everything a site's card shows: power, uses (machines, hosting, projects, a ground station), money,
+ * Heat, and which site actions are open here now (each with why not).
+ */
+export function siteCardView(state: GameState, siteId: string) {
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return null
+  const sv = siteViews(state).find((x) => x.site.id === siteId)!
+  const facts = siteFacts(state, site)
+  const lots = state.machines.filter((l) => l.siteId === siteId)
+  const models = new Map<string, number>()
+  for (const l of lots) models.set(l.model, (models.get(l.model) ?? 0) + l.count)
+  const why = (a: Action) => whyNot(state, a)
+  const community = communityView(state).sites.find((x) => x.site.id === siteId)
+  return {
+    site,
+    facts,
+    readyQuarter: quarterName(site.readyQuarter) || null,
+    ready: isReady(site, state.quarter),
+    capacityKw: sv.capacityKw,
+    usedKw: sv.usedKw,
+    powerUsdKwh: sv.powerUsdKwh,
+    contract: site.contract
+      ? {
+          type: site.contract.type,
+          endQuarter: quarterName(site.contract.endQuarter),
+        }
+      : null,
+    machines: {
+      units: lots.reduce((n, l) => n + l.count, 0),
+      models: [...models].map(([model, count]) => ({ model, count })),
+    },
+    hosting: state.hosting
+      .filter((h) => h.siteId === siteId)
+      .map((h) => ({ kw: h.kw, rateUsdKwh: h.rateUsdKwh, termEnd: quarterName(h.termEndQuarter) })),
+    projects: state.projects
+      .filter((p) => p.siteId === siteId && !['sold', 'ended', 'foreclosed'].includes(p.stage))
+      .map((p) => ({ n: p.n, kind: p.kind, stage: p.stage, kw: p.kw, tenant: p.tenant?.card ?? null })),
+    stations: (state.act4Orbit?.stations ?? [])
+      .filter((st) => st.siteId === siteId)
+      .map((st) => ({ units: st.units, readyQuarter: quarterName(st.readyQuarter) })),
+    rentUsdQ: site.rentUsdQ,
+    leavePenaltyUsd: sv.leaving?.penaltyUsd ?? null,
+    heat: sv.heat,
+    flaw: site.flaw,
+    /** The site actions (as the Plan's pickers): null when open, else why not; absent when they don't apply. */
+    actions: {
+      leave: sv.leaving ? why({ type: 'LEAVE_SITE', siteId }) : undefined,
+      renewal: sv.renewalDue ? null : undefined,
+      transformer: transformerViews(state).some((u) => u.site.id === siteId && u.readyQuarter === undefined)
+        ? why({ type: 'UPGRADE_TRANSFORMER', siteId })
+        : undefined,
+      talk: community
+        ? community.outreachDone
+          ? ({ key: 'ui.community.done' } as Message)
+          : why({ type: 'OUTREACH', siteId })
+        : undefined,
+      mitigate: community
+        ? community.mitigated
+          ? ({ key: 'ui.community.done' } as Message)
+          : why({ type: 'MITIGATE_NOISE', siteId })
+        : undefined,
+      hosting:
+        inAct2Rules(state) && site.tier !== BALANCE.startSite ? null : undefined,
+      station: inActIV(state) ? why({ type: 'BUILD_GROUND_STATION', siteId }) : undefined,
+    },
+  }
+}
+export type SiteCardView = NonNullable<ReturnType<typeof siteCardView>>
+
 export function siteViews(state: GameState): SiteView[] {
   return state.sites.map((site) => ({
     site,

@@ -1,7 +1,9 @@
 // M33.1 (design thread, doc 35): telling sites apart. A site's short name ("Own site 3") with its long name as the
 // tooltip ("Own site 3 · Georgia · 20 MW"); and, in pickers and lists only, the facts after it: free MW, a Heat chip
 // from Heat 30 (the Heat colours, hatched from the moratorium), and flags for a power renewal due or a flaw.
+import { useContext } from 'preact/hooks'
 import { t } from '../../i18n/t.ts'
+import { SiteCardContext } from './siteCardContext.ts'
 import { heatBand, siteFacts, type SiteFacts } from '../../sim/selectors.ts'
 import type { GameState, Site } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
@@ -11,12 +13,29 @@ import { Icon } from './basics.tsx'
 /** Heat at which a site's row shows a Heat chip (doc 35). */
 export const HEAT_CHIP_FROM = 30
 
-/** A site's short name, its long name on hover. */
+/** A site's short name, its long name on hover; a link that opens the site's card (M33.3) where a card host exists. */
 export function SiteName({ state, site }: { state: GameState; site: Site }) {
+  const card = useContext(SiteCardContext)
+  const long = siteLongName(site, siteFacts(state, site))
+  if (!card || !state.sites.some((s) => s.id === site.id))
+    return (
+      <span class="site-name" title={long}>
+        {siteName(site)}
+      </span>
+    )
   return (
-    <span class="site-name" title={siteLongName(site, siteFacts(state, site))}>
+    <button
+      type="button"
+      class="site-name site-link"
+      title={long}
+      data-site-link={site.id}
+      onClick={(e) => {
+        e.stopPropagation()
+        card.open(site.id)
+      }}
+    >
       {siteName(site)}
-    </span>
+    </button>
   )
 }
 
