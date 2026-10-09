@@ -15,7 +15,8 @@ import {
 } from '../../content/energyContent.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream, uniform } from '../rng.ts'
-import { logEntry, roundCents, type EnergyAsset, type GameState, type Site } from '../state.ts'
+// (Act IV's own seed when there is one, so each Act IV run draws afresh; the game's seed before: act4SeedOf)
+import { act4SeedOf, logEntry, roundCents, type EnergyAsset, type GameState, type Site } from '../state.ts'
 import { assetsOf, isWorking } from './energyAssets.ts'
 import { addGrievance } from './heat.ts'
 import { scenarioOf } from './market.ts'
@@ -195,7 +196,7 @@ export function buildEnergy(state: GameState, b: EnergyBuild): void {
   const site = state.sites.find((s) => s.id === b.siteId)!
   const cost = buildCostUsd(state, site, b.kind, b.size, b.hours)!
   const id = `en-${state.nextId++}`
-  const r = substream(state.seed, `energy:build:${id}`)
+  const r = substream(act4SeedOf(state), `energy:build:${id}`)
   const asset: EnergyAsset = {
     id,
     kind: b.kind,
@@ -374,7 +375,7 @@ export function endQuarterEnergy(state: GameState, pjmUsdMwDay?: number): Energy
   let costUsd = 0
   for (const site of state.sites) {
     if (!site.energy?.length) continue
-    const r = substream(state.seed, `energy:q${state.quarter}:${site.id}`)
+    const r = substream(act4SeedOf(state), `energy:q${state.quarter}:${site.id}`)
     for (const a of [...site.energy]) {
       if (a.readyQuarter === state.quarter) {
         // An overrun is capex, not EBITDA: paid from cash, added to the asset's cost.

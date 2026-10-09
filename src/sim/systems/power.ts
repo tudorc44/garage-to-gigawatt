@@ -11,7 +11,7 @@ import { BALANCE, CONTENT, act4Row, type PowerRegion } from '../../content/index
 import { scenarioOf } from './market.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
-import { inActIV, type GameState, type PowerSource, type Project, type Site } from '../state.ts'
+import { act4SeedOf, inActIV, type GameState, type PowerSource, type Project, type Site } from '../state.ts'
 import { VENTURES } from '../../content/energyContent.ts'
 import { drawOverrun } from './overrun.ts'
 import { isHired } from './hires.ts'
@@ -75,7 +75,7 @@ export function drawPowerQuarters(state: GameState, p: Project): number {
   const site = state.sites.find((s) => s.id === p.siteId)!
   // M36.4 (answer 9): Act IV's on-site gas waits for turbines, 6-10 quarters (its own stream).
   if (p.power === 'gas' && inActIV(state))
-    return randomInt(substream(state.seed, `gas_build:${CONTENT.quarters[state.quarter]}:${p.id}`), ...VENTURES.act4_power.gas_build_q)
+    return randomInt(substream(act4SeedOf(state), `gas_build:${CONTENT.quarters[state.quarter]}:${p.id}`), ...VENTURES.act4_power.gas_build_q)
   if (p.power === 'gas') return POWER().gas.buildQuarters
   if (p.power === 'nuclear') return nuclearPowerQuarters()
   const [lo, hi] = gridQuarterRange(state, regionOf(site)!)
@@ -101,7 +101,7 @@ export function expectedPowerQuarters(state: GameState, p: Project): number {
  */
 export function gasActIvDraw(state: GameState, p: Project): { slipQuarters: number; overrunUsd: number } {
   if (p.power !== 'gas' || !inActIV(state)) return { slipQuarters: 0, overrunUsd: 0 }
-  const m = drawOverrun(substream(state.seed, `gas_iv:${p.id}`), VENTURES.act4_power.gas_class)
+  const m = drawOverrun(substream(act4SeedOf(state), `gas_iv:${p.id}`), VENTURES.act4_power.gas_class)
   return { slipQuarters: 0, overrunUsd: Math.round((m - 1) * powerCostUsd('gas', p.kw)) }
 }
 

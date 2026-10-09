@@ -12,6 +12,7 @@ import { ENERGY, VENTURES, VENTURE_TYPES, energyYear, type VentureType } from '.
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream, uniform, type RngHolder } from '../rng.ts'
 import {
+  act4SeedOf,
   inActIII,
   inActIV,
   logEntry,
@@ -182,7 +183,8 @@ export function joinBlocker(state: GameState, j: VentureJoin): Message | undefin
 /** Joins a venture: pays the buy-in and any prepayment; draws the hidden cost and schedule (doc 38 §5.1-5.8). */
 export function joinVenture(state: GameState, j: VentureJoin): Venture {
   const id = `venture-${state.nextId++}`
-  const r = substream(state.seed, `venture:${id}`)
+  // (Act IV's own seed when there is one, so each Act IV run draws afresh: act4SeedOf)
+  const r = substream(act4SeedOf(state), `venture:${id}`)
   const t = T[j.type]
   const q = state.quarter
   const budget = budgetUsd(state, j.type)
@@ -365,7 +367,7 @@ export function endQuarterVentures(state: GameState): { revenueUsd: number } {
   const q = state.quarter
   for (const v of list) {
     if (isOver(v)) continue
-    const r = substream(state.seed, `venture:${v.id}:q${q}`)
+    const r = substream(act4SeedOf(state), `venture:${v.id}:q${q}`)
     if (v.type === 'fusion') stepFusion(state, v, r)
     else stepBuild(state, v, r)
     if (v.stage === 'operating') revenueUsd += deliverySavingsUsd(state, v)
