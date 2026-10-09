@@ -276,6 +276,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
   was flawed: its runtime option scaled the shared F2 table once per scenario key (k⁴, so "0.60" tested ~0.13; fixed in
   the runner). Measured on the written data: F2 Sprinter 1.05× vs Ground 1.03× → **B3 a recorded miss at the floor**;
   no passed anchor broke (`act4-m366`). act4-f2 golden: the busy orbit script now goes bust in 2033Q1, as F3's does.
+- M36.9: venture, energy and Act IV gas draws use act4SeedOf (each Act IV run of a preset had drawn the same values).
+  Energy run `energy-m369`: E-B1 PASS (5/120 vs 36/720, p = 0.72), E-B2 MISS (EGS mean $65M vs control $2M; the control
+  never leaves its grid wait), E-B3/E-B4 PASS (tests), E-B5 PASS (31 q in 2028 → 16 q in 2035). Open questions: report.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
