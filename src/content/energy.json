@@ -177,8 +177,8 @@
   }
  },
  "overrun_classes": {
-  "nuclear": {"median": 1.6, "sigma": 0.7, "cap": 6.0},
-  "pumped_hydro": {"median": 1.5, "sigma": 0.8, "cap": 6.0},
+  "nuclear": {"median": 1.6, "sigma": 0.7, "cap": 6.0, "p_under": 0.03, "under": [0.85, 1.0], "x_median": 0.6, "x_sigma": 1.0},
+  "pumped_hydro": {"median": 1.5, "sigma": 0.8, "cap": 6.0, "p_under": 0.1, "under": [0.85, 1.0], "x_median": 0.58, "x_sigma": 1.02},
   "thermal": {"median": 1.03, "sigma": 0.35, "cap": 3.0},
   "wind": {"median": 1.02, "sigma": 0.3, "cap": 2.5},
   "transmission": {"median": 0.98, "sigma": 0.2, "cap": 2.0},

@@ -229,8 +229,8 @@ Both files come from `npm run content:act4-moon` (`tools/act4/moon.ts`). All val
 - **Offtake:** 2 Bandwidth; 2–10 t a year for 8 quarters at the market's surface price × 0.9–1.1, 20% prepaid.
 - **Alerts:** a dust fault hits a running pilot 15% of quarters: repair for $10M or lose 10% availability.
 - **Scripted claims** (`lunar_claims_iv.json`): the Accords bloc on the Shackleton ridge (2031Q3, lands 2032Q2) and
-  Northgate on the de Gerlache ridge (2032Q1) in every future; then per future, after 2032Q2, Cratermark Resources, Jade
-  Arc Constellation and the blocs on other rims (most crowded in the future where the Moon turns strategic).
+  Northgate on the de Gerlache ridge (2032Q1) in every future; then per future, after 2032Q2, Cratermark Resources, Meridian
+  Arc (renamed from Jade Arc Constellation, design thread, 9 Oct 2026) and the blocs on other rims (most crowded in the future where the Moon turns strategic).
 
 ## Money and rivals (M31.1, doc 33 §11, §12, §14.3)
 
@@ -254,8 +254,8 @@ All three files come from `npm run content:act4-money` (`tools/act4/money.ts`).
 - **Hires** (`hires_iv.json`, doc 33 §14.3 ⚙): Launch Procurement Lead (−10% launch prices, no bumps), Space Operations
   Chief (−25% orbital GPU failures, half the telemetry noise), Lunar Programme Director (+10 points landing success, pilots
   a quarter faster, +1 Bandwidth), Chief Risk Officer (−20% premiums, +25% insurance capacity); salaries designed.
-- **Rivals** (`rivals_iv.json`; fictional names, for the owner's check): Pallas Compute, Northgate, Orrery Compute, Jade
-  Arc Constellation, Cratermark Resources: value ($B) and orbital MW at anchor quarters, interpolated at load; identical in
+- **Rivals** (`rivals_iv.json`; fictional names, for the owner's check): Pallas Compute, Northgate, Orrery Compute, Meridian
+  Arc (was Jade Arc Constellation; its id stays `jade_arc`), Cratermark Resources: value ($B) and orbital MW at anchor quarters, interpolated at load; identical in
   every future through 2032Q2. Orrery fails in two futures (2033Q3 and 2034Q2): its 50 MW of live blocks go to auction at
   $6M a MW for 2 quarters (designed: the vulture buyer's opportunity, doc 33 §11.5).
 

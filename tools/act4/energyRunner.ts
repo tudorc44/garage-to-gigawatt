@@ -150,18 +150,39 @@ const m$ = (n: number) => `${n < 0 ? '−' : ''}$${Math.round(Math.abs(n) / 1e6)
 const rows: [string, string, boolean, string][] = []
 const add = (id: string, target: string, ok: boolean, got: string) => rows.push([id, target, ok, got])
 
-// E-B1: the venture-free path is never bust because of skipping ventures, and within 15% of the best path in a future.
+// E-B1 (redefined, design thread answer 8): the venture-free path is within 15% of the best path in a future, and its
+// game-over rate isn't significantly worse than the venture paths' (one-sided Fisher exact test, p < 0.05) nor worse by
+// more than 3 points.
 const none = (f: FutureId) => median(sel({ future: f, variant: 'none' }).map((r) => r.multiple))
 const best = (f: FutureId) => Math.max(...VARIANTS.map((v) => median(sel({ future: f, variant: v }).map((r) => r.multiple))))
 const within = FUTURE_IDS.filter((f) => none(f) >= 0.85 * best(f))
 const busts = (v: Variant) => sel({ variant: v }).filter((r) => r.gameOver).length
-const fewestBusts = Math.min(...VARIANTS.map(busts))
+const n1 = sel({ variant: 'none' }).length
+const vRuns = runs.filter((r) => (VENTURE_VARIANTS as readonly string[]).includes(r.variant))
+const vBusts = vRuns.filter((r) => r.gameOver).length
+const p = fisherWorse(busts('none'), n1, vBusts, vRuns.length)
+const gap = busts('none') / n1 - vBusts / vRuns.length
 add(
   'E-B1',
-  'Venture-free: never bust because of it; within 15% of the best path in at least one future',
-  within.length >= 1 && busts('none') <= fewestBusts,
-  `within 15% in ${within.join(', ') || 'none'} (${FUTURE_IDS.map((f) => `${f} ${x(none(f))}/${x(best(f))}`).join(', ')}); game overs: venture-free ${busts('none')}, fewest ${fewestBusts}`,
+  'Venture-free: within 15% of the best path in a future; game overs not significantly worse (Fisher p < 0.05) nor > 3 points worse',
+  within.length >= 1 && !(p < 0.05) && gap <= 0.03,
+  `within 15% in ${within.join(', ') || 'none'} (${FUTURE_IDS.map((f) => `${f} ${x(none(f))}/${x(best(f))}`).join(', ')}); game overs: venture-free ${busts('none')}/${n1}, venture paths ${vBusts}/${vRuns.length} (gap ${(gap * 100).toFixed(1)} points, p = ${p.toFixed(3)})`,
 )
+
+/** One-sided Fisher exact test: the chance of a busts count at least `a` in group 1 if the groups' rates were equal. */
+function fisherWorse(a: number, n1: number, c: number, n2: number): number {
+  const lf = (n: number) => {
+    let s = 0
+    for (let i = 2; i <= n; i++) s += Math.log(i)
+    return s
+  }
+  const k = a + c
+  const n = n1 + n2
+  const pmf = (x: number) => Math.exp(lf(k) - lf(x) - lf(k - x) + lf(n - k) - lf(n1 - x) - lf(n - k - n1 + x) - lf(n) + lf(n1) + lf(n - n1))
+  let total = 0
+  for (let x = a; x <= Math.min(k, n1); x++) if (n - k - n1 + x >= 0) total += pmf(x)
+  return Math.min(1, total)
+}
 
 // E-B2: each venture's expected net-worth contribution (vs the venture-free run, same preset, future and seed) against
 // the control's: none above 1.5× the control's in expectation; at least one 3× the control's in its best case.
@@ -189,8 +210,10 @@ const ercotPrice = (label: string): number | undefined => {
   const key = label >= '2031Q1' ? ('s0.f2' as const) : label >= '2027Q1' ? ('s0' as const) : null
   return quarterInputs(q, key)?.powerUsdKwh.ercot
 }
+// (redefined, design thread answer 7: within the battery's life, ≤ 60 quarters, for builds from 2028, falling with
+// battery prices)
 const paybacks: string[] = []
-let bestQ = Infinity
+const from2028: number[] = []
 for (let y = 2023; y <= 2035; y++) {
   const price = ercotPrice(`${y}Q1`)
   const bess = energyYear(y).bess_usd_kwh_us
@@ -198,10 +221,16 @@ for (let y = 2023; y <= 2035; y++) {
   const capexPerMw = bess * 4 * 1000
   const earnPerMwYr = ENERGY.texas.dr_usd_mw_yr.normal + (1 - ENERGY.texas.four_cp.next_year_price_mult) * price * 8760 * 1000
   const q = (capexPerMw / earnPerMwYr) * 4
-  bestQ = Math.min(bestQ, q)
+  if (y >= 2028) from2028.push(q)
   paybacks.push(`${y} ${Math.round(q)} q`)
 }
-add('E-B5', 'A battery sized to the AI load pays back within 12 quarters in normal summers (credits lost without it: tested)', bestQ <= 12, `payback by build year: ${paybacks.join(', ')}`)
+const falling = from2028.every((q, i) => i === 0 || q <= from2028[i - 1] + 1e-9)
+add(
+  'E-B5',
+  'A battery sized to the AI load pays back within its life (≤ 60 quarters) for builds from 2028, falling with prices (credits lost without it: tested)',
+  from2028.length > 0 && from2028.every((q) => q <= 60) && falling,
+  `payback by build year: ${paybacks.join(', ')}`,
+)
 
 console.log(`\nEnergy (--energy): ${runs.length} runs (${SEEDS} seeds), ${Math.round((performance.now() - t0) / 1000)} s. CSV in ${OUT}/energy-runs.csv`)
 console.log('\nMedians (founder net worth multiple on the Act IV entry), by future × variant (Balanced + one venture):')

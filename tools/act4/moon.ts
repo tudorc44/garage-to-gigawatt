@@ -81,7 +81,7 @@ const FILES: Record<string, unknown> = {
       schema: 'lunar_claims_iv/1',
       doc33: '§9.1 (rivals and the blocs claim sites on scripted schedules, authored per future; first to land holds), §12',
       author:
-        'build, M30.1: designed; the same in every future through 2032Q2; fictional claimants (Northgate, Cratermark Resources, Jade Arc Constellation, the two blocs)',
+        'build, M30.1: designed; the same in every future through 2032Q2; fictional claimants (Northgate, Cratermark Resources, Meridian Arc, the two blocs)',
     },
     futures: {
       f1: [

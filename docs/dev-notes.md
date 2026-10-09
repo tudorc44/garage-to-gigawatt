@@ -266,6 +266,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
 - M36.5 (tools only): Ground Holder dilution budget 15 points from the entry stake; pro-forma leverage on the project's
   own EBITDA ((debt + loan) ÷ (trailing EBITDA + project EBITDA) ≤ 4×, DSCR sizing, covenant); powered sites only.
   One seed: Fortress now builds 2 clouds (stake 49% → 35%); Act IV scouting offers no powered site, so Neocloud and Ridge renew only.
+- M36.7: overruns refitted (nuclear 3% uniform 0.85-1.00 else 1 + X, X median 0.6 σ 1.0; pumped hydro 10%, X median 0.58
+  σ 1.02, fitted by me): realised nuclear 2.4% / 57.2% / mean 1.93, pumped 10.4% / 48.8% / 9.7% at ≥ 3×. E-B1 (Fisher) and
+  E-B5 (≤ 60 q from 2028, falling) redefined; Meridian Arc. act4-energy-f2/f4 goldens changed (the SMR's draws: licensed a quarter earlier, an $80M call in 2035).
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 

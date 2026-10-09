@@ -6,7 +6,7 @@
   "phase": "chapter",
   "quarter": 75,
   "week": 13,
-  "cash": 466123755.29,
+  "cash": 386123755.29,
   "bandwidth": 4,
   "hodlPct": {
     "BTC": 0,
@@ -210,7 +210,7 @@
     "salariesUsd": 0,
     "interestUsd": 0,
     "principalUsd": 0,
-    "startCash": 467042063.3,
+    "startCash": 387042063.3,
     "startTreasuryUsd": 0,
     "weeks": [
       {
@@ -228,7 +228,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466957451.82
+        "cash": 386957451.82
       },
       {
         "week": 2,
@@ -245,7 +245,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466872840.34
+        "cash": 386872840.34
       },
       {
         "week": 3,
@@ -262,7 +262,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466788228.86
+        "cash": 386788228.86
       },
       {
         "week": 4,
@@ -279,7 +279,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466703617.38
+        "cash": 386703617.38
       },
       {
         "week": 5,
@@ -296,7 +296,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466619005.9
+        "cash": 386619005.9
       },
       {
         "week": 6,
@@ -313,7 +313,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466534394.42
+        "cash": 386534394.42
       },
       {
         "week": 7,
@@ -330,7 +330,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466449782.94
+        "cash": 386449782.94
       },
       {
         "week": 8,
@@ -347,7 +347,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466365171.46
+        "cash": 386365171.46
       },
       {
         "week": 9,
@@ -364,7 +364,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466280559.98
+        "cash": 386280559.98
       },
       {
         "week": 10,
@@ -381,7 +381,7 @@
           "ETH": 0
         },
         "priceAlert": true,
-        "cash": 466195948.5
+        "cash": 386195948.5
       },
       {
         "week": 11,
@@ -398,7 +398,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466111337.02
+        "cash": 386111337.02
       },
       {
         "week": 12,
@@ -415,7 +415,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 466026725.54
+        "cash": 386026725.54
       },
       {
         "week": 13,
@@ -432,7 +432,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 465942114.06
+        "cash": 385942114.06
       }
     ],
     "energyRevenueUsd": 316641.234,
@@ -3269,20 +3269,20 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 466123755.29,
+      "cash": 386123755.29,
       "ebitdaUsd": -918308.0291249999,
       "marginByTier": {
         "own_site": 0
       },
       "valuationUsd": 902408225.98,
-      "venturesUsd": 436284470.69,
+      "venturesUsd": 516284470.69,
       "ventureHypeUsd": 0,
       "energyRevenueUsd": 316641.234,
       "energyCostUsd": 135000,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.48999999999999994,
-      "startCash": 467042063.3,
+      "startCash": 387042063.3,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -5739,6 +5739,14 @@
     {
       "quarter": 66,
       "week": null,
+      "key": "log.venture.licensed",
+      "params": {
+        "ventureType": "smr"
+      }
+    },
+    {
+      "quarter": 66,
+      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
@@ -5801,14 +5809,6 @@
       "key": "log.failures",
       "params": {
         "count": 1
-      }
-    },
-    {
-      "quarter": 67,
-      "week": null,
-      "key": "log.venture.licensed",
-      "params": {
-        "ventureType": "smr"
       }
     },
     {
@@ -6312,10 +6312,30 @@
     {
       "quarter": 74,
       "week": null,
+      "key": "log.venture.call",
+      "params": {
+        "ventureType": "smr",
+        "n": 1,
+        "costUsd": 80000000
+      }
+    },
+    {
+      "quarter": 74,
+      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
         "deltaPc": 0
+      }
+    },
+    {
+      "quarter": 75,
+      "week": null,
+      "key": "log.venture.call_answered",
+      "params": {
+        "ventureType": "smr",
+        "ventureChoice": "pay",
+        "costUsd": 80000000
       }
     },
     {
@@ -6339,16 +6359,6 @@
       "params": {
         "units": 17,
         "tier": "own_site"
-      }
-    },
-    {
-      "quarter": 75,
-      "week": null,
-      "key": "log.venture.call",
-      "params": {
-        "ventureType": "smr",
-        "n": 1,
-        "costUsd": 80000000
       }
     },
     {
@@ -6635,26 +6645,22 @@
       "budgetUsd": 1200000000,
       "diligence": false,
       "stake": 0.1,
-      "paidUsd": 120000000,
+      "paidUsd": 200000000,
       "offtakeMw": 75,
-      "ppaUsdMwh": 81,
+      "ppaUsdMwh": 138.42,
       "prepaidUsd": 79825500,
       "siteId": "site-2",
       "m": 3,
       "stage": "construction",
-      "licenceEnd": 68,
-      "buildStart": 68,
-      "buildEnd": 92,
-      "codQuarter": 92,
+      "licenceEnd": 67,
+      "buildStart": 67,
+      "buildEnd": 89,
+      "codQuarter": 89,
       "callsDone": 1,
-      "call": {
-        "n": 1,
-        "dueUsd": 80000000,
-        "partnerShare": 0.34,
-        "costShare": 0.44
-      },
-      "othersSubscribed": 0.59,
-      "partnerCut": 0
+      "call": null,
+      "othersSubscribed": 0.58,
+      "partnerCut": 0,
+      "reopened": true
     },
     {
       "id": "venture-7",

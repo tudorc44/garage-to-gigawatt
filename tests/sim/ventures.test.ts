@@ -47,18 +47,22 @@ function stepTo(s: GameState, label: string): GameState {
   return s
 }
 
-describe('E-B3: nuclear overruns reproduce the class over 1,000 draws (doc 38 §5.1)', () => {
-  const draws = Array.from({ length: 1000 }, (_, i) => drawOverrun(substream(i + 1, 'eb3'), 'nuclear'))
-  const share = (f: (m: number) => boolean) => draws.filter(f).length / draws.length
-  it('P(m > 1.5) ≈ 55% and the mean ≈ 2.0, within ±5 points', () => {
-    expect(Math.abs(share((m) => m > 1.5) - 0.55)).toBeLessThanOrEqual(0.05)
-    const mean = draws.reduce((a, b) => a + b, 0) / draws.length
-    expect(Math.abs(mean - 2.0)).toBeLessThanOrEqual(0.15)
-    expect(Math.max(...draws)).toBeLessThanOrEqual(ENERGY.overrun_classes.nuclear.cap)
+describe('E-B3: overruns reproduce the sourced base rates over 1,000 draws (doc 38 §5.1, refitted: answer 6)', () => {
+  const draws = (cls: 'nuclear' | 'pumped_hydro') =>
+    Array.from({ length: 1000 }, (_, i) => drawOverrun(substream(i + 1, `eb3:${cls}`), cls))
+  const share = (xs: number[], f: (m: number) => boolean) => xs.filter(f).length / xs.length
+  it('nuclear: ~3% at or under budget, ~55% over by half, mean ~2.0 (each within ±5 points)', () => {
+    const xs = draws('nuclear')
+    expect(Math.abs(share(xs, (m) => m <= 1) - 0.03)).toBeLessThanOrEqual(0.05)
+    expect(Math.abs(share(xs, (m) => m > 1.5) - 0.55)).toBeLessThanOrEqual(0.05)
+    expect(Math.abs(xs.reduce((a, b) => a + b, 0) / xs.length - 2.0)).toBeLessThanOrEqual(0.15)
+    expect(Math.max(...xs)).toBeLessThanOrEqual(ENERGY.overrun_classes.nuclear.cap)
   })
-  it('P(m ≤ 1) is about 25% with these parameters, not the ~3% doc 38 states (reported to the design thread)', () => {
-    expect(share((m) => m <= 1)).toBeGreaterThan(0.18)
-    expect(share((m) => m <= 1)).toBeLessThan(0.32)
+  it('pumped hydro: ~10% at or under budget, ~50% over by half, ~10% at 3× or more', () => {
+    const xs = draws('pumped_hydro')
+    expect(Math.abs(share(xs, (m) => m <= 1) - 0.1)).toBeLessThanOrEqual(0.05)
+    expect(Math.abs(share(xs, (m) => m > 1.5) - 0.5)).toBeLessThanOrEqual(0.05)
+    expect(Math.abs(share(xs, (m) => m >= 3) - 0.1)).toBeLessThanOrEqual(0.05)
   })
 })
 

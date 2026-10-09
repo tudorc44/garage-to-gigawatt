@@ -28,8 +28,16 @@ export function lognormal(holder: RngHolder, median: number, sigma: number, cap 
   return Math.min(cap, median * expDet(sigma * normal(holder)))
 }
 
-/** A cost multiplier m for a reference class (energy.json overrun_classes; doc 38 §5.1's table). */
+/**
+ * A cost multiplier m for a reference class (energy.json overrun_classes; doc 38 §5.1's table). Refitted classes
+ * (design thread, answer 6: nuclear, pumped hydro): with chance p_under m is uniform in `under` (at or under budget),
+ * else 1 + X, X lognormal; this keeps both the fat tail and the stated under-budget share.
+ */
 export function drawOverrun(holder: RngHolder, cls: OverrunClass): number {
   const c = ENERGY.overrun_classes[cls]
+  if (c.p_under !== undefined && c.under && c.x_median !== undefined && c.x_sigma !== undefined) {
+    if (random(holder) < c.p_under) return c.under[0] + random(holder) * (c.under[1] - c.under[0])
+    return Math.min(c.cap, 1 + lognormal(holder, c.x_median, c.x_sigma))
+  }
   return lognormal(holder, c.median, c.sigma, c.cap)
 }

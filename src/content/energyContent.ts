@@ -57,6 +57,21 @@ const specialKindSchema = z.object({
   queue: z.enum(['hydro', 'iceland']).optional(),
 })
 
+/**
+ * A reference class's cost multiplier (doc 38 §5.1): lognormal (median, σ), capped; or, refitted (design thread, 9 Oct
+ * 2026, answer 6), with chance p_under a draw in `under`, else 1 + X with X lognormal (x_median, x_sigma). `median`
+ * stays the class median diligence quotes.
+ */
+const overrunClassSchema = z.object({
+  median: pos,
+  sigma: nonneg,
+  cap: pos,
+  p_under: share.optional(),
+  under: range.optional(),
+  x_median: pos.optional(),
+  x_sigma: nonneg.optional(),
+})
+
 const ownedBase = {
   from: quarterId,
   until: quarterId,
@@ -218,9 +233,7 @@ const energySchema = z.object({
     }),
   }),
   overrun_classes: z.object(
-    Object.fromEntries(
-      OVERRUN_CLASSES.map((k) => [k, z.object({ median: pos, sigma: nonneg, cap: pos })]),
-    ) as Record<OverrunClass, z.ZodObject<{ median: z.ZodNumber; sigma: z.ZodNumber; cap: z.ZodNumber }>>,
+    Object.fromEntries(OVERRUN_CLASSES.map((k) => [k, overrunClassSchema])) as Record<OverrunClass, typeof overrunClassSchema>,
   ),
 })
 
