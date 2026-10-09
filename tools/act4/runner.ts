@@ -30,8 +30,9 @@ const FUTURES = (args.includes('--futures') ? argValue('--futures', '').split(',
 // and scale F2's space multiple from its trigger quarter on, for this process only (`--f2space 0.85`)
 const F2_SPACE = Number(argValue('--f2space', '1'))
 if (F2_SPACE !== 1) {
-  for (const [key, m] of Object.entries(CONTENT.act4Markets))
-    if (key.endsWith('.f2')) m.quarterly.forEach((row, i) => i >= TRIGGER.f2 && (row.space_ev_ebitda_mult *= F2_SPACE))
+  // (the four Act III scenarios' F2 keys share one table: scale each table once, not once per key)
+  const tables = new Set(Object.entries(CONTENT.act4Markets).filter(([k]) => k.endsWith('.f2')).map(([, m]) => m.quarterly))
+  for (const q of tables) q.forEach((row, i) => i >= TRIGGER.f2 && (row.space_ev_ebitda_mult *= F2_SPACE))
   console.log(`F2's space multiple × ${F2_SPACE} from act quarter ${TRIGGER.f2} (this run only)`)
 }
 

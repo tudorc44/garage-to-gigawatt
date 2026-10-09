@@ -272,9 +272,10 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
 - M36.8 (11a): ventures marked to milestones in the valuation (buy-in × 1.5 per milestone × 0.8 per slip, calls at par,
   offtake savings to the act's end at first power), shown as "Ventures (marked to milestones)" on Capital and both chapter
   reports. act4-energy goldens: ventures $512M → $934M, growth 0.90× → 1.32× (an operating EGS at ~4× its buy-in).
-- M36.6 (4): knob search (F2 only, Ground and Sprinter, 10 seeds; Ground 1.030×): Sprinter 1.13 / 1.06 / 1.02 / 0.98 /
-  0.95 / 0.91 / 0.88 / 0.85× at 0.95 … 0.60. B3 passes only at the floor, **× 0.60** (0.852 ≤ 0.858), written into
-  `tools/act4/market.ts` (F2 only, from its 2033Q1 trigger). act4-f2 golden: the busy orbit script now goes bust in 2033Q1, as F3's does.
+- M36.6 (4): F2's space multiple **× 0.60** (the floor) from its 2033Q1 trigger, in `tools/act4/market.ts`. The search
+  was flawed: its runtime option scaled the shared F2 table once per scenario key (k⁴, so "0.60" tested ~0.13; fixed in
+  the runner). Measured on the written data: F2 Sprinter 1.05× vs Ground 1.03× → **B3 a recorded miss at the floor**;
+  no passed anchor broke (`act4-m366`). act4-f2 golden: the busy orbit script now goes bust in 2033Q1, as F3's does.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
