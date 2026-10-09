@@ -76,7 +76,12 @@ describe('joining a venture (doc 38 §5.1)', () => {
     const before = s.cash
     s = ok(s, { type: 'VENTURE_JOIN', venture: 'egs', stake: 0.2, offtake: 0, prepay: 0 })
     expect(before - s.cash).toBe(0.2 * 7500 * 100 * 1000)
-    expect(applyAction(s, { type: 'VENTURE_JOIN', venture: 'egs', stake: 0, offtake: 0.5, prepay: 0 })).toMatchObject({
+    // One developer per type: joined once.
+    expect(applyAction(s, { type: 'VENTURE_JOIN', venture: 'egs', stake: 0.1, offtake: 0, prepay: 0 })).toMatchObject({
+      ok: false,
+      error: { key: 'error.venture_joined' },
+    })
+    expect(applyAction(company(), { type: 'VENTURE_JOIN', venture: 'egs', stake: 0, offtake: 0.5, prepay: 0 })).toMatchObject({
       ok: false,
       error: { key: 'error.venture_needs_campus' },
     })

@@ -148,6 +148,8 @@ export function prepayUsd(j: Pick<VentureJoin, 'type' | 'offtake' | 'prepay'>): 
 export function joinBlocker(state: GameState, j: VentureJoin): Message | undefined {
   const blocked = typeBlocker(state, j.type)
   if (blocked) return blocked
+  // One developer per type: you join it once while it lives (mine).
+  if (liveVentures(state).some((v) => v.type === j.type)) return { key: 'error.venture_joined' }
   if (j.stake !== 0 && !V.equity_shares.includes(j.stake)) return { key: 'error.bad_choice' }
   if (j.offtake !== 0 && !V.offtake_shares.includes(j.offtake)) return { key: 'error.bad_choice' }
   if (!(j.prepay >= 0 && j.prepay < V.prepay.length)) return { key: 'error.bad_choice' }

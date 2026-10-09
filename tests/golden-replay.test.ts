@@ -482,6 +482,61 @@ describe.each(['f1', 'f2', 'f3', 'f4'] as const)('golden replay: act4-%s (2031Q1
   })
 })
 
+/**
+ * M36 (doc 38 §4-5): two goldens for the energy options and ventures, on F2 and F4 (the grid futures far apart). The
+ * same Act III company enters Act IV and plays all 20 quarters with an energy strategy: on-site solar with a 4-hour
+ * battery at its own site, Texas demand response where it can, and a stake in each venture (EGS after diligence, an SMR
+ * and the solar+battery control with offtakes to its own site, fusion with a reservation); a cash call is paid when cash
+ * allows, else diluted. Each step is tried in order and kept only if it succeeds.
+ */
+const energyAct4: Strategy = {
+  plan(state) {
+    const kept: Step[] = []
+    let s = state
+    const tryStep = (a: Action) => {
+      const r = applyAction(s, a)
+      if (r.ok) {
+        s = r.state
+        kept.push(a)
+      }
+    }
+    if (s.cash < 300e6) tryStep({ type: 'RAISE_EQUITY', dilution: 0.3 })
+    tryStep({ type: 'ENERGY_BUILD', siteId: 'site-2', kind: 'btm_solar', size: 10 })
+    tryStep({ type: 'ENERGY_BUILD', siteId: 'site-2', kind: 'bess', size: 10, hours: 4 })
+    for (const site of s.sites) tryStep({ type: 'TEXAS_SET', siteId: site.id, enrolled: true })
+    tryStep({ type: 'VENTURE_DILIGENCE', venture: 'egs' })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'egs', stake: 0.1, offtake: 0, prepay: 0 })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'smr', stake: 0.1, offtake: 0.25, prepay: 1, siteId: 'site-2' })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'fusion', stake: 0.1, offtake: 1, prepay: 0 })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'control', stake: 0.2, offtake: 0.5, prepay: 0, siteId: 'site-2' })
+    for (const v of s.ventures ?? [])
+      if (v.call) tryStep({ type: 'VENTURE_CALL', ventureId: v.id, choice: s.cash > v.call.dueUsd + 200e6 ? 'pay' : 'dilute' })
+    return kept as Action[]
+  },
+}
+describe.each(['f2', 'f4'] as const)('golden replay: act4-energy-%s (2031Q1 → the chapter phase)', (future) => {
+  const start = () => act4Company('s0', future, ACT4_SEED)
+  const run = playFrom(start(), energyAct4, { through: 4 })
+
+  it('plays to its end with energy assets and ventures in play', () => {
+    expect(run.state.act).toBe(4)
+    expect(run.state.reports.at(-1)!.quarter).toBe('2035Q4')
+    expect(run.state.sites.find((x) => x.id === 'site-2')!.energy!.length).toBeGreaterThanOrEqual(2)
+    expect(run.state.ventures!.map((v) => v.type).sort()).toEqual(['control', 'egs', 'fusion', 'smr'])
+  })
+
+  it('same seed + the same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playFrom(start(), energyAct4, { through: 4 }).state).toEqual(run.state)
+    expect(run.log.reduce(applyStep, start())).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(
+      `./golden/act4-energy-${future}-seed-${ACT4_SEED}.json`,
+    )
+  })
+})
+
 describe('balance anchors (scope §5)', () => {
   it('the steady grower survives to the Merge', () => {
     expect(playGame(SEED, bots['steady-grower']).state.phase).toBe('chapter')
