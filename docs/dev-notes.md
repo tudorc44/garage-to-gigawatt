@@ -237,6 +237,10 @@ Sub-steps:
 - M33.4 done: `components/siteGroups.tsx`. Fleet & Sites shows the grouped list instead of the per-site cards with their
   Heat breakdown (now in the site card) (mine, reversible); New project groups in its free-power order, the picked
   site's group open whatever its size (mine, reversible). Folds: a module-level map, so "the session" = until reload.
+- M33.5 done (9 Oct 2026): `npm run sim -- --act2 --act3` on `m32` (`bd22812`) and `m33`: all 1,302 CSVs byte-identical.
+  Browser, a 20-site Act IV save at 1024 and 1440 px: Plan to-do (4 grouped rows), Orbit links (3 buttons, picker of 20),
+  Fleet & Sites (7 groups), the card (drawer at 1440, dialog at 1024), New project: no sideways scroll anywhere. Tests 1,502.
+- **Next on `m33`:** the design thread's Orbit launch-slot clarity fix (9 Oct 2026), as its own commit.
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 
