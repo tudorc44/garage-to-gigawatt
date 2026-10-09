@@ -193,8 +193,10 @@ import {
   capacityChargeUsdKwh,
   capacityKw,
   getTier,
+  hostingKw,
   isReady,
   leavingTerms,
+  machinesKw,
   poweredKw,
   powerPriceUsdKwh,
   regionOf,
@@ -483,6 +485,34 @@ export function siteCardView(state: GameState, siteId: string) {
   }
 }
 export type SiteCardView = NonNullable<ReturnType<typeof siteCardView>>
+
+export type SiteUse = 'mining' | 'hosting' | 'shell' | 'cloud' | 'pilot' | 'idle'
+
+/**
+ * M33.4 (doc 35): one row of a long site list (Fleet & Sites, New project): its facts, its main use (the most kW), whether
+ * it has projects, and its acquisition order (site ids count up).
+ */
+export function siteListRow(state: GameState, site: Site) {
+  const live = state.projects.filter(
+    (p) => p.siteId === site.id && !['sold', 'ended', 'foreclosed'].includes(p.stage),
+  )
+  const uses: [SiteUse, number][] = [
+    ['mining', machinesKw(state, site.id)],
+    ['hosting', hostingKw(state, site.id)],
+    ...(['shell', 'cloud', 'pilot'] as const).map(
+      (k): [SiteUse, number] => [k, live.filter((p) => p.kind === k).reduce((kw, p) => kw + p.kw, 0)],
+    ),
+  ]
+  const top = uses.reduce((a, b) => (b[1] > a[1] ? b : a))
+  return {
+    site,
+    facts: siteFacts(state, site),
+    mainUse: (top[1] > 0 ? top[0] : 'idle') as SiteUse,
+    hasProjects: live.length > 0,
+    order: Number(site.id.slice(site.id.lastIndexOf('-') + 1)) || 0,
+  }
+}
+export type SiteListRow = ReturnType<typeof siteListRow>
 
 export function siteViews(state: GameState): SiteView[] {
   return state.sites.map((site) => ({

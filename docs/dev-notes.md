@@ -234,6 +234,9 @@ Sub-steps:
   One eligible site is named inline and acts at once (talk, mitigation) (mine, reversible); facts and labels mine.
 - M33.3 done: `components/siteCard.tsx` (host mounted in `app.tsx`; `<SiteName>` is a link to it), `siteCardView`. No
   acquired quarter is stored, so the header says "powered since/from" (mine, reversible). Drawer 460 px from 1280 px.
+- M33.4 done: `components/siteGroups.tsx`. Fleet & Sites shows the grouped list instead of the per-site cards with their
+  Heat breakdown (now in the site card) (mine, reversible); New project groups in its free-power order, the picked
+  site's group open whatever its size (mine, reversible). Folds: a module-level map, so "the session" = until reload.
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 

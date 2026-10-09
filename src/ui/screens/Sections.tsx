@@ -18,6 +18,7 @@ import {
 import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { Icon, Tip } from '../components/basics.tsx'
 import { SiteName } from '../components/siteName.tsx'
+import { SitesList } from '../components/siteGroups.tsx'
 import { fmt } from '../format.ts'
 import {
   machineIcon,
@@ -35,7 +36,7 @@ import {
   LoanDialog,
   OffersDialog,
 } from './dialogs.tsx'
-import { FleetPanel, type ScreenProps } from './Plan.tsx'
+import type { ScreenProps } from './Plan.tsx'
 import { CapitalAct2 } from './CapitalAct2.tsx'
 import { ProjectsSection } from './Projects.tsx'
 import { Act3Panel } from '../components/act3Lazy.tsx'
@@ -99,7 +100,8 @@ function FleetSection({ state, act }: ScreenProps) {
       {/* Act III (M16.5, A3-07): halls and rack density, across the section */}
       {inAct3Rules(state) && <Act3Panel name="RacksPanel" state={state} act={act} />}
       <div class="col">
-        <FleetPanel state={state} breakdown />
+        {/* M33.4 (doc 35): every site, grouped by type, with sorts and filters; a site's detail is its card */}
+        <SitesList state={state} />
         {inAct3Rules(state) && (
           <Act3Panel name="IdleRigsPanel" state={state} act={act} />
         )}

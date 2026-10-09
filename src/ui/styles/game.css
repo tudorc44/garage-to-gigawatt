@@ -1183,6 +1183,58 @@ tr.locked td {
   display: inline-flex;
   color: var(--warn);
 }
+/* M33.4 (doc 35): long site lists grouped by type, with sorts and filter chips. */
+.sites-list-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.filter-chip {
+  font: 12px/16px var(--font-ui);
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+.filter-chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-action);
+}
+.site-group {
+  border-top: var(--border-hair) solid var(--line);
+}
+.site-group-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 8px 2px;
+  font: 600 12px/16px var(--font-ui);
+  letter-spacing: 0.04em;
+  text-align: left;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.sites-table td {
+  padding: 5px 6px;
+}
+.sites-table td.sites-name {
+  white-space: normal;
+}
+.sites-flags {
+  width: 1%;
+}
 /* M33.2 (doc 35): the site picker. Its table scrolls inside the dialog; the reason a site can't wraps. */
 .picker-scroll {
   overflow-x: auto;

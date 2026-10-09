@@ -12,12 +12,15 @@ import {
   openProjectView,
   projectsView,
   quarterName,
+  siteFacts,
   whyNot,
   type ProjectCardView,
 } from '../../sim/selectors.ts'
 import { BALANCE } from '../../content/index.ts'
 import type { PowerSource, ProjectKind } from '../../sim/state.ts'
 import { Dialog, Icon, Pips, Tip } from '../components/basics.tsx'
+import { groupInOrder, SiteGroup } from '../components/siteGroups.tsx'
+import { HeatChip } from '../components/siteName.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName, tierIcon } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -534,27 +537,39 @@ function OpenProjectDialog(
       {v.sites.length === 0 ? (
         <p class="num-s muted">{t('ui.projects.no_sites')}</p>
       ) : (
-        [...shown, ...(showFolded ? folded : [])].map((x) => (
-          <label class="form-row" key={x.site.id} data-site={x.site.id}>
-            <input
-              type="radio"
-              name="project-site"
-              checked={x.site.id === siteId}
-              onChange={() => {
-                setSiteId(x.site.id)
-                setKw(Math.floor(x.freeKw))
-              }}
-            />
-            <Icon name={tierIcon(x.site.tier)} size={16} />
-            {siteName(x.site)}
-            {x.region && !x.site.category && (
-              <span class="tag">{regionName(x.region)}</span>
-            )}
-            <span class="num-s muted">
-              {t('ui.projects.free', { value: fmt.power(x.freeKw) })}
-            </span>
-          </label>
-        ))
+        // M33.4 (doc 35): grouped by type, keeping the most-free-power-first order within each group
+        [shown, showFolded ? folded : []].flatMap((part, i) =>
+          groupInOrder(part).map((g) => (
+            <SiteGroup
+              key={`${i}:${g.label}`}
+              screen={`new-project-${i}`}
+              label={g.label}
+              sites={g.items.map((x) => ({ facts: siteFacts(state, x.site) }))}
+              defaultOpen={g.items.some((x) => x.site.id === siteId)}
+            >
+              {g.items.map((x) => (
+                <label class="form-row" key={x.site.id} data-site={x.site.id}>
+                  <input
+                    type="radio"
+                    name="project-site"
+                    checked={x.site.id === siteId}
+                    onChange={() => {
+                      setSiteId(x.site.id)
+                      setKw(Math.floor(x.freeKw))
+                    }}
+                  />
+                  <Icon name={tierIcon(x.site.tier)} size={16} />
+                  {siteName(x.site)}
+                  {x.region && <span class="tag">{regionName(x.region)}</span>}
+                  <span class="num-s muted">
+                    {t('ui.projects.free', { value: fmt.power(x.freeKw) })}
+                  </span>
+                  <HeatChip heat={siteFacts(state, x.site).heat} />
+                </label>
+              ))}
+            </SiteGroup>
+          )),
+        )
       )}
       {folded.length > 0 && (
         <button
