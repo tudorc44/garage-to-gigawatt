@@ -8,7 +8,11 @@ import { CONTENT } from '../../src/content/index.ts'
 import { ORBIT } from '../../src/content/orbitContent.ts'
 import type { GameState, OrbitalBlock } from '../../src/sim/state.ts'
 import { orbitBlock, orbitRow } from '../../src/sim/systems/orbit.ts'
+import { insuranceQuote } from '../../src/sim/systems/orbitLaunch.ts'
+import { fireSaleCandidates } from '../../src/sim/systems/fireSale.ts'
+import { launchExposure } from '../../src/sim/orbitViews.ts'
 import {
+  blockPricingEbitdaUsd,
   blockRevenueUsd,
   blockSaleUsd,
   checkOrbitAlerts,
@@ -95,13 +99,17 @@ describe('orbital blocks in operation (M29.4)', () => {
     s.act4Orbit!.linksRented = 2
     const b = orbitBlock(s, 'ob1')!
     const rev = blockRevenueUsd(s, b, 1)
+    // (M34.1, 1a: an uninsured live block's in-orbit cover renews automatically, a quarter's premium with the costs)
+    const cover = insuranceQuote(s, b)!.premiumUsd / 4
+    expect(cover).toBeGreaterThan(0)
     const cash = s.cash
     endQuarterOrbit(s)
-    const ops = (250_000 * 10) / 4
+    const ops = (250_000 * 10) / 4 + cover
     const links = (2 * 800_000) / 4
     expect(s.quarterStats.orbitRevenueUsd).toBeCloseTo(rev)
     expect(s.quarterStats.orbitCostUsd).toBeCloseTo(ops + links)
     expect(s.cash).toBeCloseTo(cash + rev - 1e6 - ops - links)
+    expect(b.insured?.untilQuarter).toBe(s.quarter)
     expect(b.tenant !== 'spot' && b.tenant!.prepaidLeftUsd).toBe(0)
     expect(b.telemetry).toHaveLength(1)
     expect(b.gpuHealth).toBeCloseTo(1.2 * (1 - 0.06 / 4))
@@ -200,5 +208,62 @@ describe('orbital blocks in operation (M29.4)', () => {
     expect(split.orbitEvUsd).toBeCloseTo(Math.max(0, r.orbitEbitdaUsd!) * 4 * r.orbitMultiple! * (r.evMult ?? 1))
     const plain = playQuarter(orbitCompany())
     expect(plain.reports.at(-1)!).not.toHaveProperty('orbitEbitdaUsd')
+  })
+})
+
+describe('the owner’s orbit rule answers (M34.1, 9 Oct 2026)', () => {
+  it('2b: a block with no booked quarter sells on its run-rate, never $0; a fire sale takes its haircut on top', () => {
+    const s = withLive(orbitCompany('f1'), {
+      kind: 'cloud',
+      tenant: { type: 'sovereign', price: 4, termQuarters: 20, signedQuarter: 0, dueQuarter: null, endQuarter: null, prepaidLeftUsd: 0 },
+    })
+    const b = orbitBlock(s, 'ob1')!
+    expect(b.lastEbitdaUsd).toBeUndefined()
+    const runRate = blockPricingEbitdaUsd(s, b)
+    expect(runRate).toBeCloseTo(blockRevenueUsd(s, b, linkShares(s).get(b.id) ?? 1) - (250_000 * 10) / 4)
+    const mult = orbitRow(s).space_ev_ebitda_mult
+    expect(blockSaleUsd(s, b)).toBeCloseTo(runRate * 4 * mult * ORBIT.satellites.sale_share_of_value)
+    expect(blockSaleUsd(s, b)).toBeGreaterThan(0)
+    const fire = fireSaleCandidates(s).find((c) => c.kind === 'orbit' && c.id === b.id)!
+    expect(fire.priceUsd).toBeGreaterThan(0)
+    expect(fire.priceUsd).toBeLessThan(blockSaleUsd(s, b))
+    // From the first booked quarter, actuals as before.
+    endQuarterOrbit(s)
+    expect(blockPricingEbitdaUsd(s, b)).toBe(b.lastEbitdaUsd)
+  })
+
+  it('2a: a launch’s exposure counts the take-or-pay penalties through a rebuild (about 3 quarters × 3%)', () => {
+    let s = orbitCompany('f1')
+    s = act(s, { type: 'OPEN_ORBITAL_BLOCK', kind: 'shell', mw: 10, shell: 'sso', gen: 'gen31' })
+    const b = orbitBlock(s, 'ob1')!
+    b.launch = { provider: 'pallas', quarter: s.quarter + 2, priceUsdKg: 600, depositUsd: 1e7, slips: 0 }
+    const spot = launchExposure(s, b)!
+    expect(spot.penaltiesUsd).toBe(0)
+    b.tenant = { type: 'frontier_lab', price: 6e6, termQuarters: 12, signedQuarter: 0, dueQuarter: null, endQuarter: null, prepaidLeftUsd: 0 }
+    const e = launchExposure(s, b)!
+    expect(e.penaltiesUsd).toBeCloseTo(3 * 0.03 * 6e6 * 10)
+    expect(e.uninsuredUsd).toBeCloseTo(e.valueUsd + e.penaltiesUsd - e.coverUsd)
+  })
+
+  it('2c: the 2035Q2 licence cut never goes below the MW in use; it still blocks new builds', () => {
+    let s = orbitCompany('f1')
+    s = act(s, { type: 'FILE_ORBITAL_LICENCE', shell: 'sso' })
+    s.act4Orbit!.licences[0].approvedQuarter = s.quarter
+    // 150 MW building (in use), none live: the milestone is missed; half of 200 would be under what's in use
+    for (const mw of [100, 50] as const) {
+      s = act(s, { type: 'OPEN_ORBITAL_BLOCK', kind: 'shell', mw, shell: 'sso', gen: 'gen31' })
+      s.act4Orbit!.blocks.at(-1)!.stage = 'building'
+    }
+    s.quarter = CONTENT.quarters.indexOf(ORBIT.licences.milestones.due)
+    endQuarterOrbit(s)
+    expect(s.act4Orbit!.licences[0].filedMw).toBe(150)
+    expect(s.log.at(-1)!.key).toBe('log.orbit.milestone_missed')
+    // with nothing in use, the cut halves as before
+    let t = orbitCompany('f1')
+    t = act(t, { type: 'FILE_ORBITAL_LICENCE', shell: 'sso' })
+    t.act4Orbit!.licences[0].approvedQuarter = t.quarter
+    t.quarter = CONTENT.quarters.indexOf(ORBIT.licences.milestones.due)
+    endQuarterOrbit(t)
+    expect(t.act4Orbit!.licences[0].filedMw).toBe(100)
   })
 })

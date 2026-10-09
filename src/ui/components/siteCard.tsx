@@ -5,10 +5,19 @@ import type { ComponentChildren } from 'preact'
 import { useState } from 'preact/hooks'
 import { t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
-import { siteCardView, type SiteCardView } from '../../sim/selectors.ts'
+import { siteCardView, type SiteCardView, type SiteFeeAction } from '../../sim/selectors.ts'
+import { SiteActionConfirm } from './siteActionConfirm.tsx'
 import type { GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
-import { flawName, machineName, say, siteLong, tierName } from '../names.ts'
+import {
+  flawName,
+  machineName,
+  projectName,
+  say,
+  siteLong,
+  siteName,
+  tierName,
+} from '../names.ts'
 import {
   BuyDialog,
   HostingDialog,
@@ -29,8 +38,9 @@ export function SiteCardHost(props: {
   children: ComponentChildren
 }) {
   const [siteId, setSiteId] = useState<string | null>(null)
+  const names = new Map(props.state.sites.map((s) => [siteName(s), s.id]))
   return (
-    <SiteCardContext.Provider value={{ open: setSiteId }}>
+    <SiteCardContext.Provider value={{ open: setSiteId, names }}>
       {props.children}
       {siteId && (
         <SiteCard
@@ -44,7 +54,7 @@ export function SiteCardHost(props: {
   )
 }
 
-type Sub = 'buy' | 'leave' | 'renew' | 'hosting' | null
+type Sub = 'buy' | 'leave' | 'renew' | 'hosting' | SiteFeeAction | null
 
 function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: () => void }) {
   const { state, siteId } = props
@@ -63,11 +73,19 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
               type: v.site.category
                 ? tDynamic(`site.name.cat.${v.site.category}`, v.site.category)
                 : tierName(v.site.tier),
-              ready: v.readyQuarter
-                ? t(v.ready ? 'site.card.powered_since' : 'site.card.powered_from', {
-                    quarter: fmt.quarter(v.readyQuarter),
-                  })
-                : '',
+              // (M34.2, 3b: "Acquired Q2 2024 · powered since Q4 2024"; no "Acquired" half for an older save's site)
+              ready: [
+                v.acquiredQuarter
+                  ? t('site.card.acquired', { quarter: fmt.quarter(v.acquiredQuarter) })
+                  : '',
+                v.readyQuarter
+                  ? t(v.ready ? 'site.card.powered_since' : 'site.card.powered_from', {
+                      quarter: fmt.quarter(v.readyQuarter),
+                    })
+                  : '',
+              ]
+                .filter(Boolean)
+                .join(' · '),
             })}
           </p>
           <Power v={v} />
@@ -96,11 +114,7 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
             )}
           </section>
           {plan && (
-            <Actions
-              v={v}
-              act={act}
-              open={setSub}
-            />
+            <Actions v={v} open={setSub} />
           )}
         </div>
       </Dialog>
@@ -118,6 +132,9 @@ function SiteCard(props: { state: GameState; act: Act; siteId: string; onClose: 
       )}
       {sub === 'renew' && <RenewalDialog state={state} act={act} siteId={siteId} onClose={close} />}
       {sub === 'hosting' && <HostingDialog state={state} act={act} siteId={siteId} onClose={close} />}
+      {(sub === 'talk' || sub === 'mitigate' || sub === 'transformer' || sub === 'station') && (
+        <SiteActionConfirm state={state} act={act} kind={sub} siteId={siteId} onClose={close} />
+      )}
     </>
   )
 }
@@ -177,8 +194,7 @@ function Uses({ v }: { v: SiteCardView }) {
       {v.projects.map((p) => (
         <p key={`p${p.n}`} class="num-s">
           {t('site.card.project', {
-            // (as the Projects board names it)
-            name: t('ui.projects.name', { tier: v.site.tier, n: p.n }),
+            name: projectName(v.site, p.n),
             kind: tDynamic(`project_kind.${p.kind}`, p.kind),
             stage: tDynamic(`site.card.stage.${p.stage}`, p.stage),
             kw: fmt.power(p.kw),
@@ -195,14 +211,9 @@ function Uses({ v }: { v: SiteCardView }) {
   )
 }
 
-/** The site actions open here (as the Plan's pickers): each opens its confirm, or is done at once. */
-function Actions(props: {
-  v: SiteCardView
-  act: (a: Action) => Message | null
-  open: (s: Sub) => void
-}) {
-  const { v, act, open } = props
-  const id = v.site.id
+/** The site actions open here (as the Plan's pickers): each opens its own confirm (M34.2, 3f). */
+function Actions(props: { v: SiteCardView; open: (s: Sub) => void }) {
+  const { v, open } = props
   const a = v.actions
   const button = (key: string, label: string, why: Message | null | undefined, onClick: () => void) =>
     why === undefined ? null : (
@@ -220,16 +231,11 @@ function Actions(props: {
         {button('buy', t('site.card.buy'), null, () => open('buy'))}
         {button('hosting', t('site.pick.hosting'), a.hosting, () => open('hosting'))}
         {button('renew', t('site.pick.renewal'), a.renewal, () => open('renew'))}
-        {button('transformer', t('site.pick.transformer'), a.transformer, () =>
-          act({ type: 'UPGRADE_TRANSFORMER', siteId: id }),
-        )}
-        {button('talk', t('site.pick.talk'), a.talk, () => act({ type: 'OUTREACH', siteId: id }))}
-        {button('mitigate', t('site.pick.mitigate'), a.mitigate, () =>
-          act({ type: 'MITIGATE_NOISE', siteId: id }),
-        )}
-        {button('station', t('site.pick.title.station'), a.station, () =>
-          act({ type: 'BUILD_GROUND_STATION', siteId: id }),
-        )}
+        {/* (M34.2, 3f: a fee-charging action opens the one confirm) */}
+        {button('transformer', t('site.pick.transformer'), a.transformer, () => open('transformer'))}
+        {button('talk', t('site.pick.talk'), a.talk, () => open('talk'))}
+        {button('mitigate', t('site.pick.mitigate'), a.mitigate, () => open('mitigate'))}
+        {button('station', t('site.pick.title.station'), a.station, () => open('station'))}
         {button('leave', t('site.pick.leave'), a.leave, () => open('leave'))}
       </div>
     </section>

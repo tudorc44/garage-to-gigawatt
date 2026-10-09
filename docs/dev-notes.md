@@ -134,7 +134,12 @@ prologue). Tables: `npm run sim -- --act2` / `--prologue`. **End of M18:** 1,229
 
 ## Open questions for the design thread
 
-None open. The Act III balance pass is closed (design thread, 4 Oct 2026): no more mechanics rounds unless the owner asks.
+- **Doc 33 Q16 (M34.3, 9 Oct 2026):** "Jade Arc Constellation" has no name clash, but "Jade" codes the real-world bloc
+  loudly. Kept for now; if the fictionalisation should hold, rename it Meridian Arc Constellation.
+- **M34.3:** the sovereign tenant's new name is the build's own choice, Ironwall Sovereign Compute: both of the design
+  thread's candidates clash (Rampart Technologies and Bulwark Dynamics are real defence companies). Confirm or replace.
+
+The Act III balance pass is closed (design thread, 4 Oct 2026): no more mechanics rounds unless the owner asks.
 
 None open from before: all five M11.4c questions below were answered by the design thread and built in M11.5a (1 scouting open, 2 ASIC prices from the scenario weekly files, 3 hashprice rebased, 4 hosting rate = region power price + Act II's margin, 5 accepted); kept here for the record:
 1. **Scouting and site offers in Act III** (`scouting.ts`, `sites.ts`): Act II's site categories are dated windows; with scouting off a company can't buy new sites in 2027–2030 (the bots can't grow by sites). Open it, or does Act III use other content?
@@ -208,6 +213,32 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
 and deleted; the remote holds `main` and `m27`…`m32`. Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
+
+The owner's answers to the three open questions after M33 (Act IV balance, orbit rule gaps, site-name follow-ups) and
+the names check. Chunks (CLAUDE.md: check once per chunk):
+- **M34.1 Rules and bots** (one chunk, one Act IV run): 1a orbital cloud returns carry the cost premium (rent premium
+  capped, orbital-only opex, true failure rate and useful life with zero residual, space multiple to ~6× F2 / ~8× F4 by
+  2034; a payback test); 1b the Ground Holder bot builds ground clouds and renews; 1c F3's cascade 40–60% destroyed,
+  shell shut 8 quarters, hard market on the rebuild; 1d the Lunar Bettor skips a pilot below breakeven; 1e B8/B9 reworded;
+  1f B13 accepted; 2b a block's sale price on its run-rate until a quarter is booked; 2c licence halving floored at MW in
+  use. Then `--act4 --seeds 10`, the 7×4 table and verdicts (relax B3/B5 as given if they still miss), new act4 goldens.
+- **M34.2 Presentation:** 2a the exposure line includes take-or-pay penalties through a rebuild; 3b `site.acquiredQuarter`;
+  3c project names "Own site 3 · AI 1"; 3d the dashboard's Fleet & sites panel capped from 6 sites; 3e site names linked
+  in alerts, the log and to-do rows; 3f one eligible site opens the confirm; 3g "the" dropped before site names.
+- **M34.3 Names:** Pallas → Dorado/Carrack (clash check), Aegis → Rampart/Bulwark; hire names checked against real
+  people; Jade Arc kept, flagged as doc 33 Q16.
+- **M34.4** End checks and the report.
+
+- M34.1–M34.3 built, in one commit (the chunks share `en.json`, `orbitViews.ts`, `Act4Panels.tsx` and the goldens). Payback
+  test: orbit 3.59 y vs ground 2.42 y × 1.58 (ratio 0.94). Act IV run, 10 seeds (`act4-m34`): ground 1.18/1.08/1.20/1.03,
+  sprinter 2.27/1.21/1.51/0.80, diversified 1.67/1.23/1.53/1.03, lunar 1.23/1.32/1.42/1.07 (28% GO), balanced
+  1.34/1.22/1.47/1.07, passive 1.09/1.01/1.11/0.98, perfect 1.54/1.01/1.10/0.98. PASS B1 B2 B7 B9–B12 B14; MISS B3 B4 B5
+  B6 B8 B13 (accepted). **1b had no effect** (Ground row unchanged): the Fortress has 71 MW free and GPU offers but $14M
+  cash (a 1 MW cloud needs ~$24M own); Neocloud and Ridge have no free MW. Owner's call before relaxing B3/B5 (report).
+  Goldens: Act I–III ×17 identical apart from `acquiredQuarter`; act4-f1…f4 changed (rules, rename). Names: Carrack,
+  Ironwall (mine); hires pass.
 
 ## Milestone M33 (branch `m33`, from `m32` at `bd22812`; telling sites apart, design thread's doc 35 of 9 Oct 2026)
 

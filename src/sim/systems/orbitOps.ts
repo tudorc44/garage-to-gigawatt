@@ -4,19 +4,28 @@
 // fleet telemetry). Live blocks face debris (a quarterly chance from their shell's congestion), the cascade when the busy
 // shell closes, conjunction alerts and the solar storm. Late blocks pay their tenant 3% of the contract's yearly value a
 // quarter. A block can be sold. The books: orbital revenue and costs are EBITDA, valued at the market's space multiple.
-import { BALANCE, CONTENT } from '../../content/index.ts'
+import { BALANCE, CONTENT, actLastQuarter } from '../../content/index.ts'
 import { ORBIT, shell, tenantType } from '../../content/orbitContent.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, random, randomInt, substream } from '../rng.ts'
 import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
 import { trueReliability, TELEMETRY } from './fleetReliability.ts'
-import { annualValueUsd, licensedMw, linkUnits, orbitBlock, orbitOf, orbitRow } from './orbit.ts'
-import { insuredNow, settleOrbitLoss } from './orbitLaunch.ts'
+import {
+  annualValueUsd,
+  licensedMw,
+  linkUnits,
+  orbitBlock,
+  orbitOf,
+  orbitRow,
+  usedLicenceMw,
+} from './orbit.ts'
+import { insuranceQuote, insuredNow, settleOrbitLoss } from './orbitLaunch.ts'
 import { repayFromProceeds } from './orbitCapital.ts'
 import { staffEffect, staffNumber } from './hires.ts'
 
 const SAT = ORBIT.satellites
 const DEB = ORBIT.shells.debris
+const INS = ORBIT.insurance
 const TEN = ORBIT.tenants
 const W = (id: string) => CONTENT.wildcardsIv.wildcards.find((w) => w.id === id)!.effect
 
@@ -213,7 +222,13 @@ export function endQuarterOrbit(state: GameState): void {
   const shares = linkShares(state)
   for (const b of liveBlocks(state)) {
     const revenueUsd = blockRevenueUsd(state, b, shares.get(b.id) ?? 1)
-    const opsUsd = (SAT.ops_usd_mw_yr * b.mw) / 4
+    // M34.1 (owner, 9 Oct 2026, 1a): in-orbit cover is a running cost orbit pays and the ground doesn't. Once the launch
+    // year's cover ends it renews quarter by quarter (the in-orbit rate on the block's value, to the market's capacity),
+    // charged with the running costs.
+    const quote = insuranceQuote(state, b)
+    const premiumQUsd = quote && quote.coverUsd > 0 ? quote.premiumUsd / 4 : 0
+    if (quote && premiumQUsd > 0) b.insured = { coverUsd: quote.coverUsd, untilQuarter: state.quarter }
+    const opsUsd = (SAT.ops_usd_mw_yr * b.mw) / 4 + premiumQUsd
     let cashUsd = revenueUsd
     if (b.tenant && b.tenant !== 'spot' && b.tenant.prepaidLeftUsd > 0) {
       const used = Math.min(b.tenant.prepaidLeftUsd, revenueUsd)
@@ -265,6 +280,17 @@ export function endQuarterOrbit(state: GameState): void {
       const payoutUsd = settleOrbitLoss(state, b, lossUsd, share)
       logEntry(state, 'log.orbit.cascade', { n: b.n, lossUsd, payoutUsd })
     }
+    // M34.1 (owner, 9 Oct 2026, 1c): the cascade hardens the insurance market for the rebuild, whoever lost what:
+    // from now until a year after the shell reopens (mine, reversible: "applies to the rebuild").
+    let reopen = state.quarter
+    while (reopen < actLastQuarter(4) && orbitRow(state, reopen).sso_closed === 1) reopen++
+    orbit.hardMarketUntil = Math.max(
+      orbit.hardMarketUntil ?? -1,
+      reopen + INS.hard_market.quarters - 1,
+    )
+    logEntry(state, 'log.orbit.hard_market_cascade', {
+      quarter: CONTENT.quarters[orbit.hardMarketUntil] ?? '',
+    })
   }
   checkLicenceMilestone(state)
 }
@@ -277,11 +303,25 @@ function checkLicenceMilestone(state: GameState): void {
     const licensed = licensedMw(state, id)
     const live = liveBlocks(state).filter((b) => b.shell === id).reduce((mw, b) => mw + b.mw, 0)
     if (licensed === 0 || live >= m.share_live * licensed) continue
-    for (const l of state.act4Orbit!.licences.filter((x) => x.shell === id && !x.milestoneChecked)) {
-      l.filedMw *= 1 - m.shrink_share
+    // M34.1 (owner, 9 Oct 2026, 2c): the cut shrinks the undeployed authorisation, never below the MW in use (as the
+    // real milestone rules do); it still leaves no room for new builds.
+    const inUse = usedLicenceMw(state, id)
+    const open = state.act4Orbit!.licences.filter((x) => x.shell === id && !x.milestoneChecked)
+    const approved = open.filter((l) => l.approvedQuarter <= state.quarter)
+    const openMw = approved.reduce((mw, l) => mw + l.filedMw, 0)
+    const keptMw = licensed - openMw
+    const cutTo = Math.max(openMw * (1 - m.shrink_share), inUse - keptMw)
+    const factor = openMw > 0 ? Math.min(1, cutTo / openMw) : 1
+    for (const l of open) {
+      // (a filing still pending is cut as before; nothing of it is in use)
+      l.filedMw *= approved.includes(l) ? factor : 1 - m.shrink_share
       l.milestoneChecked = true
     }
-    logEntry(state, 'log.orbit.milestone_missed', { shellName: id })
+    logEntry(state, 'log.orbit.milestone_missed', {
+      shellName: id,
+      licensedKw: licensedMw(state, id) * 1000,
+      inUseKw: inUse * 1000,
+    })
   }
 }
 
@@ -289,9 +329,22 @@ function checkLicenceMilestone(state: GameState): void {
 
 export const ORBIT_SALE_BANDWIDTH = 1
 
+/**
+ * M34.1 (owner, 9 Oct 2026, 2b): the quarterly EBITDA a block is priced on: its last booked quarter's, or before its first
+ * one, its contracted run-rate (this quarter's revenue at its tenant's price, or spot, less its running cost). A new block
+ * is never worth $0, so a forced sale in distress doesn't give it away.
+ */
+export function blockPricingEbitdaUsd(state: GameState, b: OrbitalBlock): number {
+  if (b.lastEbitdaUsd !== undefined) return b.lastEbitdaUsd
+  return blockRevenueUsd(state, b, linkShares(state).get(b.id) ?? 1) - (SAT.ops_usd_mw_yr * b.mw) / 4
+}
+
 /** What a buyer pays for a live block now: its run-rate EBITDA × the space multiple, at a quick sale's discount. */
 export function blockSaleUsd(state: GameState, b: OrbitalBlock): number {
-  return Math.max(0, (b.lastEbitdaUsd ?? 0) * 4 * orbitRow(state).space_ev_ebitda_mult * SAT.sale_share_of_value)
+  return Math.max(
+    0,
+    blockPricingEbitdaUsd(state, b) * 4 * orbitRow(state).space_ev_ebitda_mult * SAT.sale_share_of_value,
+  )
 }
 
 export function sellOrbitalBlockBlocker(state: GameState, blockId: string): Message | undefined {

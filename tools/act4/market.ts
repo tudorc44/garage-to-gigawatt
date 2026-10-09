@@ -360,7 +360,8 @@ const NEW_COLUMNS: Record<string, Record<Future, Anchors>> = {
   // (was 22 → 30/12/9-16/10).
   space_ev_ebitda_mult: {
     f1: [[3, 14], [10, 22], [19, 16]],
-    f2: [[3, 14], [19, 5]],
+    // (M34.1, the owner's answer 1a: F2 reaches ~6× by 2034, was 7.25× at 2034Q4; F4 is ~8× there already)
+    f2: [[3, 14], [15, 6], [19, 5]],
     f3: [[3, 14], [6, 15], [7, 5], [12, 9], [19, 12]],
     f4: [[3, 14], [9, 13], [19, 5]],
   },

@@ -263,6 +263,20 @@ All three files come from `npm run content:act4-money` (`tools/act4/money.ts`).
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M34.3, 9 Oct 2026 (the owner's names check):** two fictional names renamed for real-world clashes, display only (ids
+  kept): the dominant launcher and its rival company Pallas Heavy / Pallas Compute → **Carrack Heavy / Carrack Compute**
+  (Dorado, the first candidate, is a real sounding rocket); the sovereign tenant Aegis Sovereign Compute → **Ironwall
+  Sovereign Compute** (Rampart and Bulwark, the owner's candidates, are real defence companies: the build's own third
+  choice, mine, reversible). Files: `tenants_iv.json` (via `tools/act4/orbit.ts`), `events_iv.json` and `text_iv.en.json`
+  (via `tools/act4/events.ts`), `launch_providers.json` (hand-written note).
+- **M34.2, 9 Oct 2026 (the owner's answer 2a):** `tenants_iv.json` gains `rebuild_late_quarters_est: 3` ⚙ (the quarters
+  late a rebuild after a failed launch costs, counted in the launch exposure line). Designed.
+- **M34.1, 9 Oct 2026 (the owner's answer 1a):** `market_iv_f2.csv` `space_ev_ebitda_mult` reaches 6× at 2034Q4 (was
+  7.25×), then 5× by 2035Q4 (`tools/act4/market.ts`). Designed.
+- **M34.1, 9 Oct 2026 (the owner's answer 1c):** `shells_iv.json` `debris.cascade_capacity_loss_share` 0.7 → 0.6 (the
+  owner's 40–60% range, its top); the cascade now also hardens the insurance market until a year after the busy shell
+  reopens (code, `orbitOps.ts`). Designed.
+
 - **M32.6, 6 Oct 2026 (the balance pass, three rounds):** round 1, the orbital shell rent (2031 $8.5M → $6.0M/MW-yr and
   new per-future paths), the orbital GPU-hour (2031 $4.2 → $3.6) and the space multiple (2031 22× → 14×, new paths);
   round 2, F2's rent and GPU-hour lower, the lunar value per tonne (2031 $2,000 → $3,000, new paths), the cascade's

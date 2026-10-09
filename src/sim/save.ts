@@ -116,6 +116,8 @@ export function restoreSave(raw: unknown): Loaded {
   // M33.1: a save from before site numbers numbers its sites per type in acquisition order (not the new game's count).
   if (!isObject(data.siteSerials)) state.siteSerials = {}
   numberUnnumbered(state)
+  // M34.2 (3b): a site from before acquisition dates were stored has none (never shown as "unknown").
+  for (const site of state.sites) if (site.acquiredQuarter === undefined) site.acquiredQuarter = null
   // Nested records that gained fields: the quarter's running totals and each report.
   state.quarterStats = {
     ...emptyQuarterStats(),

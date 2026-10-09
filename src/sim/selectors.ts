@@ -13,6 +13,7 @@ import {
   type PowerRegion,
   type RegionPolicy,
 } from '../content/index.ts'
+import { ORBIT } from '../content/orbitContent.ts'
 import type { Message, MessageKey } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import type {
@@ -434,6 +435,11 @@ export function siteCardView(state: GameState, siteId: string) {
     site,
     facts,
     readyQuarter: quarterName(site.readyQuarter) || null,
+    /** M34.2 (3b): when it was acquired; null for a site from an older save. */
+    acquiredQuarter:
+      site.acquiredQuarter === null || site.acquiredQuarter === undefined
+        ? null
+        : quarterName(site.acquiredQuarter) || null,
     ready: isReady(site, state.quarter),
     capacityKw: sv.capacityKw,
     usedKw: sv.usedKw,
@@ -485,6 +491,45 @@ export function siteCardView(state: GameState, siteId: string) {
   }
 }
 export type SiteCardView = NonNullable<ReturnType<typeof siteCardView>>
+
+export type SiteFeeAction = 'talk' | 'mitigate' | 'transformer' | 'station'
+
+/**
+ * M34.2 (owner, 9 Oct 2026, 3f): the confirm every fee-charging site action lands on (from the to-do row, the site picker
+ * or the site card): its action, cost, Bandwidth, what it does, and why not. Null when it doesn't apply to the site.
+ */
+export function siteActionView(state: GameState, kind: SiteFeeAction, siteId: string) {
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return null
+  const why = (a: Action) => whyNot(state, a)
+  switch (kind) {
+    case 'talk': {
+      const c = communityView(state)
+      const x = c.sites.find((y) => y.site.id === siteId)!
+      const action: Action = { type: 'OUTREACH', siteId }
+      return { kind, site, action, costUsd: x.outreachUsd, bandwidth: c.outreachBandwidth, grievance: c.outreachGrievance, heat: x.heat, why: why(action) }
+    }
+    case 'mitigate': {
+      const c = communityView(state)
+      const x = c.sites.find((y) => y.site.id === siteId)!
+      const action: Action = { type: 'MITIGATE_NOISE', siteId }
+      return { kind, site, action, costUsd: x.mitigationUsd, bandwidth: c.mitigationBandwidth, base: c.mitigationBase, heat: x.heat, why: why(action) }
+    }
+    case 'transformer': {
+      const u = transformerViews(state).find((y) => y.site.id === siteId)
+      if (!u) return null
+      const action: Action = { type: 'UPGRADE_TRANSFORMER', siteId }
+      return { kind, site, action, costUsd: u.costUsd, bandwidth: u.bandwidth, quarters: u.quarters, why: why(action) }
+    }
+    case 'station': {
+      if (!inActIV(state)) return null
+      const g = ORBIT.tenants.links.ground_station
+      const action: Action = { type: 'BUILD_GROUND_STATION', siteId }
+      return { kind, site, action, costUsd: g.capex_usd, bandwidth: g.bandwidth, units: g.units, heatAdd: g.heat, why: why(action) }
+    }
+  }
+}
+export type SiteActionView = NonNullable<ReturnType<typeof siteActionView>>
 
 export type SiteUse = 'mining' | 'hosting' | 'shell' | 'cloud' | 'pilot' | 'idle'
 

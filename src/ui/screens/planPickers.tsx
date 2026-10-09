@@ -10,6 +10,7 @@ import {
   siteViews,
   transformerViews,
   whyNot,
+  type SiteFeeAction,
 } from '../../sim/selectors.ts'
 import type { GameState, Site } from '../../sim/state.ts'
 import { SitePicker, type PickRow } from '../components/sitePicker.tsx'
@@ -122,10 +123,16 @@ export function PlanPicker(props: {
   state: GameState
   act: (a: Action) => unknown
   kind: PickKind
-  openDialog: (o: `leave:${string}` | `renew:${string}` | `hosting:${string}`) => void
+  openDialog: (
+    o:
+      | `leave:${string}`
+      | `renew:${string}`
+      | `hosting:${string}`
+      | `confirm:${SiteFeeAction}:${string}`,
+  ) => void
   onClose: () => void
 }) {
-  const { state, act, kind } = props
+  const { state, kind } = props
   const v = communityView(state)
   const spec: Record<
     PickKind,
@@ -144,7 +151,8 @@ export function PlanPicker(props: {
     transformer: {
       fact: t('site.pick.fact.cost'),
       action: t('site.pick.transformer'),
-      pick: (s) => act({ type: 'UPGRADE_TRANSFORMER', siteId: s.id }),
+      // (M34.2, 3f: a fee-charging action opens its confirm)
+      pick: (s) => props.openDialog(`confirm:transformer:${s.id}`),
     },
     talk: {
       fact: t('site.pick.fact.cost'),
@@ -152,13 +160,13 @@ export function PlanPicker(props: {
       bw: v.outreachBandwidth,
       sort: 'heat',
       desc: true,
-      pick: (s) => act({ type: 'OUTREACH', siteId: s.id }),
+      pick: (s) => props.openDialog(`confirm:talk:${s.id}`),
     },
     mitigate: {
       fact: t('site.pick.fact.cost'),
       action: t('site.pick.mitigate'),
       bw: v.mitigationBandwidth,
-      pick: (s) => act({ type: 'MITIGATE_NOISE', siteId: s.id }),
+      pick: (s) => props.openDialog(`confirm:mitigate:${s.id}`),
     },
     hosting: {
       fact: t('site.pick.fact.free'),

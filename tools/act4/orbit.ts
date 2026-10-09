@@ -45,8 +45,9 @@ const FILES: Record<string, unknown> = {
       reference_congestion: 50,
       exponent: 3,
       loss_capacity_share: 0.25,
-      // (M32.6 balance round 2: 0.7, was 0.4: the cascade destroys most of a busy-shell block, doc 33 §7.2)
-      cascade_capacity_loss_share: 0.7,
+      // (M32.6 balance round 2: 0.7, was 0.4: the cascade destroys most of a busy-shell block, doc 33 §7.2;
+      // M34.1, the owner's answer 1c: 0.6, the top of the owner's 40–60% range)
+      cascade_capacity_loss_share: 0.6,
       manoeuvre_life_quarters: 1,
       conjunction_alert_chance_per_congestion_point: 0.0025,
       conjunction_accept_hit_share: 0.25,
@@ -98,8 +99,10 @@ const FILES: Record<string, unknown> = {
     },
     offers_per_block: 2,
     late_penalty_share_of_acv: 0.03,
+    // (M34.2, the owner's answer 2a ⚙: the quarters late a rebuild after a failed launch costs, for the exposure line)
+    rebuild_late_quarters_est: 3,
     types: [
-      { id: 'sovereign', name: 'Aegis Sovereign Compute', term_years: 5, rent_mult: 1.0, add_sovereign_premium: true, prepay_share: 0.2, workload: 'batch', max_mw: null },
+      { id: 'sovereign', name: 'Ironwall Sovereign Compute', term_years: 5, rent_mult: 1.0, add_sovereign_premium: true, prepay_share: 0.2, workload: 'batch', max_mw: null },
       { id: 'frontier_lab', name: 'Tessellate Labs', term_years: 3, rent_mult: 0.95, add_sovereign_premium: false, prepay_share: 0, workload: 'batch', max_mw: null },
       { id: 'inference_platform', name: 'Kite Inference', term_years: 3, rent_mult: 1.05, add_sovereign_premium: false, prepay_share: 0, workload: 'interactive', max_mw: null },
       { id: 'eo_processor', name: 'Cormorant Earth Imaging', term_years: 4, rent_mult: 0.9, add_sovereign_premium: false, prepay_share: 0, workload: 'batch', max_mw: 10 },

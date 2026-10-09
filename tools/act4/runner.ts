@@ -143,15 +143,17 @@ add('B5', 'F4: Ground best; Sprinter game overs ≤ 40%', f4.every((y) => y.v <=
 add('B6', 'Rich: Lunar ≥ 1.2 × Balanced; Dry: Lunar ≥ 0.7 × Balanced, game overs ≤ 25%', med({ grade: 'rich', bot: 'lunar' }) >= 1.2 * med({ grade: 'rich', bot: 'balanced' }) && med({ grade: 'dry', bot: 'lunar' }) >= 0.7 * med({ grade: 'dry', bot: 'balanced' }) && goRate({ grade: 'dry', bot: 'lunar' }) <= 0.25, `rich ${x(med({ grade: 'rich', bot: 'lunar' }))} vs ${x(med({ grade: 'rich', bot: 'balanced' }))}; dry ${x(med({ grade: 'dry', bot: 'lunar' }))} vs ${x(med({ grade: 'dry', bot: 'balanced' }))}, game overs ${pct(goRate({ grade: 'dry', bot: 'lunar' }))}`)
 const fortressBust = sel({ preset: 'fortress', bot: 'passive' }).filter((r) => r.gameOver).length
 add('B7', 'The Ground Fortress, played passively, never goes bust', fortressBust === 0, `${fortressBust} game overs in ${sel({ preset: 'fortress', bot: 'passive' }).length} runs`)
-const b8a = FUTURE_IDS.filter((f) => med({ future: f, bot: 'perfect' }) >= 1.15 * med({ future: f, bot: 'passive' })).length
+// (M34.1, the owner's answer 1e: in F2 and F4 the ideal stance is "stay out of orbit", which is what Passive does, so
+// B8 asks for the reading edge in F1 and F3 only, and B9 for ≥ 0.98× passive everywhere: the noise band at 10 seeds)
+const b8a = (['f1', 'f3'] as const).filter((f) => med({ future: f, bot: 'perfect' }) >= 1.15 * med({ future: f, bot: 'passive' })).length
 const b8b = FUTURE_IDS.every((f) => med({ future: f, bot: 'overreactor' }) <= 0.97 * med({ future: f, bot: 'passive' }))
-add('B8', 'Perfect ≥ 1.15 × passive in ≥ 3 futures; over-reactor ≤ 0.97 × passive in every future', b8a >= 3 && b8b, `perfect ≥ 1.15× in ${b8a}/4; over-reactor: ${FUTURE_IDS.map((f) => x(med({ future: f, bot: 'overreactor' }) / med({ future: f, bot: 'passive' }))).join(' ')} of passive`)
-add('B9', 'The perfect reader is never below passive (the ideal stance and the economics agree)', FUTURE_IDS.every((f) => med({ future: f, bot: 'perfect' }) >= med({ future: f, bot: 'passive' })), FUTURE_IDS.map((f) => `${f} ${x(med({ future: f, bot: 'perfect' }))}/${x(med({ future: f, bot: 'passive' }))}`).join(', '))
+add('B8', 'Perfect ≥ 1.15 × passive in F1 and F3; over-reactor ≤ 0.97 × passive in every future', b8a === 2 && b8b, `perfect ≥ 1.15× in ${b8a}/2 (F1, F3); over-reactor: ${FUTURE_IDS.map((f) => x(med({ future: f, bot: 'overreactor' }) / med({ future: f, bot: 'passive' }))).join(' ')} of passive`)
+add('B9', 'The perfect reader is ≥ 0.98 × passive in every future', FUTURE_IDS.every((f) => med({ future: f, bot: 'perfect' }) >= 0.98 * med({ future: f, bot: 'passive' })), FUTURE_IDS.map((f) => `${f} ${x(med({ future: f, bot: 'perfect' }))}/${x(med({ future: f, bot: 'passive' }))}`).join(', '))
 add('B10', 'Orbital cost ratios match the model', true, 'enforced by tests/sim/act4OrbitCost.test.ts')
 add('B11', 'Pilot water by 2035Q4 in its bands; no production output; no lunar cut to orbit', true, 'enforced by tests/sim/act4B11.test.ts (Rich 27.5, Patchy 13.8, Dry 4.1 t/yr)')
 add('B12', 'No single launch failure forces a sale inside the rule', true, 'enforced by tests/sim/act4B12.test.ts')
 const dec = median(sel({ bot: 'balanced' }).map((r) => r.decisions))
-add('B13', '≤ 20 Plan phases, 3-6 decisions each', dec >= 3 && dec <= 6, `20 Plan phases; Balanced's median ${dec.toFixed(1)} decisions a quarter`)
+add('B13', '≤ 20 Plan phases, 3-6 decisions each (a miss accepted by the owner, 1f: a bot limit, measured in playtests)', dec >= 3 && dec <= 6, `20 Plan phases; Balanced's median ${dec.toFixed(1)} decisions a quarter`)
 add('B14', 'Day one is the same in every future', true, 'enforced by tests/sim/act4Market.test.ts and act4Rivals (the league)')
 
 console.log(`\nAct IV (--act4): ${runs.length} runs (${SEEDS} seeds), ${Math.round((performance.now() - t0) / 1000)} s. CSV in ${OUT}/act4-runs.csv`)

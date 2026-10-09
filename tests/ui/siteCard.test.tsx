@@ -43,10 +43,12 @@ describe('the site card', () => {
     expect(screen.getByRole('dialog', { name: /Own site 3 · Georgia · 20 MW/ })).toBeTruthy()
     for (const part of ['Power', 'Uses', 'Money', 'Heat'])
       expect(card.textContent).toContain(part)
-    // Leave opens its own confirm; Talk is done at once.
+    // Leave opens its own confirm; Talk opens the one fee confirm (M34.2, 3f), and Confirm acts.
     fireEvent.click(screen.getByRole('button', { name: 'Leave…' }))
-    expect(screen.getByRole('dialog', { name: /Leave the Own site 3/ })).toBeTruthy()
+    expect(screen.getByRole('dialog', { name: /Leave Own site 3/ })).toBeTruthy()
     fireEvent.click(screen.getByRole('button', { name: 'Talk' }))
+    expect(act).not.toHaveBeenCalled()
+    fireEvent.click(screen.getByRole('button', { name: /Confirm/ }))
     expect(act).toHaveBeenCalledWith({ type: 'OUTREACH', siteId: third.id })
   })
 })

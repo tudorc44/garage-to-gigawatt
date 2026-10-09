@@ -45,6 +45,11 @@ export interface Site {
    * or reused (systems/siteSerials.ts). Missing only in saves and presets from before M33, numbered when loaded.
    */
   serial?: number
+  /**
+   * M34.2 (owner, 9 Oct 2026, 3b): the quarter it was acquired, set when acquired (systems/siteSerials.ts); null for a
+   * site from a save made before it was stored (the site card then leaves it out).
+   */
+  acquiredQuarter?: number | null
   /** Quarter index when the site is energized. Before that it's still being built. */
   readyQuarter: number
   /** Scouted offers vary around the tier's numbers; these are this site's actual terms. */
@@ -1572,6 +1577,7 @@ export function newGame(seed: number): GameState {
         id: 'site-1',
         tier: start.id,
         serial: 1,
+        acquiredQuarter: 0,
         readyQuarter: 0,
         rentUsdQ: start.rent_usd_q,
         powerPriceMult: 1,

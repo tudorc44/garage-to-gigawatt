@@ -114,7 +114,17 @@ export function launchExposure(state: GameState, b: OrbitalBlock) {
   if (!b.launch || !['proposed', 'building', 'awaiting_launch'].includes(b.stage)) return null
   const valueUsd = blockValueUsd(state, b)
   const coverUsd = insuredNow(state, b) ? b.insured!.coverUsd : 0
-  const uninsuredUsd = Math.max(0, valueUsd - coverUsd)
+  // M34.2 (owner, 9 Oct 2026, 2a): a failed launch also costs the tenant's take-or-pay penalties while the block is
+  // rebuilt (its due date doesn't move): about 3 quarters × 3% of a year's contract value ⚙. Every random loss shows
+  // before commit (doc 33 §13), so the exposure counts them.
+  const t = b.tenant
+  const penaltiesUsd =
+    t && t !== 'spot'
+      ? ORBIT.tenants.rebuild_late_quarters_est *
+        ORBIT.tenants.late_penalty_share_of_acv *
+        annualValueUsd(b.kind, b.mw, t.price)
+      : 0
+  const uninsuredUsd = Math.max(0, valueUsd + penaltiesUsd - coverUsd)
   const equity = equityUsd(state)
   const share = equity > 0 ? uninsuredUsd / equity : uninsuredUsd > 0 ? 1 : 0
   // (your share of the launch bill: a lender or partner pays the rest)
@@ -129,6 +139,7 @@ export function launchExposure(state: GameState, b: OrbitalBlock) {
   return {
     valueUsd,
     coverUsd,
+    penaltiesUsd,
     uninsuredUsd,
     share,
     cashAfterUsd,
@@ -314,6 +325,8 @@ export function orbitBoardView(state: GameState) {
     shell,
     licensedMw: licensedMw(state, shell),
     usedMw: usedLicenceMw(state, shell),
+    /** M34.1 (2c): the 2035Q2 milestone cut this shell's licence (never below the MW in use). */
+    cut: (o?.licences ?? []).some((l) => l.shell === shell && l.milestoneChecked === true),
     pending: (o?.licences ?? [])
       .filter((l) => l.shell === shell && l.approvedQuarter > state.quarter)
       .map((l) => ({ approvedLabel: label(l.approvedQuarter)!, mw: l.filedMw, fastTracked: l.fastTracked === true })),

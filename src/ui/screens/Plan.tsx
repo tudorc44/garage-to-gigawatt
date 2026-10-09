@@ -1,7 +1,7 @@
 // Plan dashboard: market, fleet & sites, sell slider | the quarter's to-do list | signals.
 // Reads the state through selectors and sends actions; no game rules here.
 import { useContext, useState } from 'preact/hooks'
-import { hasText, t, tDynamic, type Message } from '../../i18n/t.ts'
+import { hasText, siteShortName, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
@@ -36,7 +36,9 @@ import {
   recentMarket,
   renewalViews,
   siteLadder,
+  siteListRow,
   siteViews,
+  type SiteFeeAction,
   topHeat,
   treasuryValue,
   whyNot,
@@ -61,6 +63,11 @@ import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
 import { Runway } from '../components/runway.tsx'
 import { SiteName } from '../components/siteName.tsx'
+import { SiteActionConfirm } from '../components/siteActionConfirm.tsx'
+import { groupSites } from '../components/siteGroups.tsx'
+
+/** M34.2 (owner, 9 Oct 2026, 3d): the dashboard's Fleet & sites panel shows each site's card up to 5 sites, then caps. */
+const FLEET_CARDS_UP_TO = 6
 import {
   PlanPicker,
   pickRows,
@@ -112,6 +119,7 @@ type Open =
   | 'hosting'
   | `hosting:${string}`
   | `pick:${PickKind}`
+  | `confirm:${SiteFeeAction}:${string}`
   | `leave:${string}`
   | `renew:${string}`
   | `pitch:${string}`
@@ -298,6 +306,15 @@ export function PlanScreen({ state, act }: ScreenProps) {
           state={state}
           act={act}
           siteId={open.slice('hosting:'.length)}
+          onClose={() => setOpen(null)}
+        />
+      )}
+      {open?.startsWith('confirm:') && (
+        <SiteActionConfirm
+          state={state}
+          act={act}
+          kind={open.split(':')[1] as SiteFeeAction}
+          siteId={open.split(':').slice(2).join(':')}
           onClose={() => setOpen(null)}
         />
       )}
@@ -558,6 +575,10 @@ export function FleetPanel({
   const readySites = sites.filter((s) => s.ready)
   const used = readySites.reduce((a, s) => a + s.usedKw, 0)
   const cap = readySites.reduce((a, s) => a + s.capacityKw, 0)
+  const nav = useContext(NavContext)
+  // M34.2 (owner, 9 Oct 2026, 3d): from 6 sites the dashboard caps the panel: one line per type ("Own site · 12 · 240 MW ·
+  // 31 MW free") and the way to Fleet & Sites, nothing else.
+  const capped = !breakdown && sites.length >= FLEET_CARDS_UP_TO
   return (
     <div class="panel p">
       {state.act === 1 && <Tip id="fleet" act={1} />}
@@ -565,7 +586,32 @@ export function FleetPanel({
         <h2 class="panel-title">{t('ui.fleet.title')}</h2>
         <span class="num-s muted">{`${fmt.power(used)} / ${fmt.power(cap)}`}</span>
       </div>
-      {sites.map((sv) => {
+      {capped && (
+        <div class="fleet-types" data-fleet-types>
+          {groupSites(state.sites.map((s) => siteListRow(state, s))).map((g) => (
+            <div key={g.label} class="num-s" data-fleet-type={g.label}>
+              {t('site.group.header', {
+                type: siteShortName(g.label),
+                n: g.items.length,
+                mw: fmt.power(g.items.reduce((kw, r) => kw + r.facts.energizedKw, 0)),
+                free: fmt.power(g.items.reduce((kw, r) => kw + r.facts.freeKw, 0)),
+              })}
+            </div>
+          ))}
+          {nav && (
+            <button
+              type="button"
+              class="btn btn-ghost"
+              style={{ alignSelf: 'flex-start' }}
+              data-fleet-link
+              onClick={() => nav.setSection('fleet')}
+            >
+              {t('site.fleet_link')}
+            </button>
+          )}
+        </div>
+      )}
+      {!capped && sites.map((sv) => {
         const siteLots = lots.filter((l) => l.lot.siteId === sv.site.id)
         return (
           <div key={sv.site.id}>
@@ -715,7 +761,7 @@ export function FleetPanel({
           </div>
         )
       })}
-      {lots.length === 0 && (
+      {!capped && lots.length === 0 && (
         <div class="num-s muted">{t('ui.fleet.empty')}</div>
       )}
     </div>
@@ -1078,9 +1124,7 @@ function TodoPanel({
               type: 'UPGRADE_TRANSFORMER',
               siteId: u.site.id,
             })}
-            onClick={() =>
-              act({ type: 'UPGRADE_TRANSFORMER', siteId: u.site.id })
-            }
+            onClick={() => open(`confirm:transformer:${u.site.id}`)}
           />
         ),
       )}
@@ -1207,7 +1251,7 @@ function TodoPanel({
  * opens the site picker ("· N sites at Heat ≥ 30 ›"), hottest first.
  */
 function TalkRow(props: ScreenProps & { open: (o: Open) => void; left: number }) {
-  const { state, act, open, left } = props
+  const { state, open, left } = props
   const v = communityView(state)
   const hot = v.sites.filter(
     (x) =>
@@ -1220,15 +1264,15 @@ function TalkRow(props: ScreenProps & { open: (o: Open) => void; left: number })
     heat: Math.round(topHeat(state).heat),
   })
   if (hot.length === 1) {
-    const a: Action = { type: 'OUTREACH', siteId: hot[0].site.id }
+    // (M34.2, 3f: one site is named, with its cost; clicking opens the confirm, never acts at once)
     return (
       <ActionRow
         icon="outreach"
         name={t('site.single.talk', { site: siteName(hot[0].site) })}
         bandwidth={v.outreachBandwidth}
         bandwidthLeft={left}
-        price={price}
-        onClick={() => act(a)}
+        price={t('ui.plan.minus', { value: fmt.money(hot[0].outreachUsd) })}
+        onClick={() => open(`confirm:talk:${hot[0].site.id}`)}
       />
     )
   }
@@ -1252,12 +1296,11 @@ function TalkRow(props: ScreenProps & { open: (o: Open) => void; left: number })
 function MitigateRow(
   props: ScreenProps & { open: (o: Open) => void; left: number },
 ) {
-  const { state, act, open, left } = props
+  const { state, open, left } = props
   const rows = pickRows(state, 'mitigate')
   const can = rows.filter((r) => !r.why)
   const v = communityView(state)
   if (can.length === 1) {
-    const a: Action = { type: 'MITIGATE_NOISE', siteId: can[0].site.id }
     return (
       <ActionRow
         icon="outreach"
@@ -1265,7 +1308,7 @@ function MitigateRow(
         bandwidth={v.mitigationBandwidth}
         bandwidthLeft={left}
         price={t('ui.plan.minus', { value: can[0].fact })}
-        onClick={() => act(a)}
+        onClick={() => open(`confirm:mitigate:${can[0].site.id}`)}
       />
     )
   }

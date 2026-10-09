@@ -25,6 +25,7 @@ import {
 import type { GameState, WeekSummary } from '../../sim/state.ts'
 import { Icon, Tip, WeekStrip } from '../components/basics.tsx'
 import { Shell } from '../components/frame.tsx'
+import { SiteText } from '../components/siteText.tsx'
 import { fmt } from '../format.ts'
 import { machineName, say, siteName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -706,10 +707,10 @@ function ComplaintCard({ state, act }: ScreenProps) {
           </span>
         </div>
         <h2 class="event-title" id="complaint-title">
-          {t('ui.complaint.title', { tier })}
+          <SiteText text={t('ui.complaint.title', { tier })} />
         </h2>
         <p class="event-body">
-          {t('ui.complaint.body', { tier, heat: Math.round(v.heat) })}
+          <SiteText text={t('ui.complaint.body', { tier, heat: Math.round(v.heat) })} />
         </p>
         {interruptChoices(state).map((c) => (
           <button
@@ -827,7 +828,12 @@ function EventCard({ state, act }: ScreenProps) {
               quarter: fmt.quarter(quarterName(state.quarter)),
               week: v.week + 1,
             })}
-            {v.site ? ` · ${siteName(v.site)}` : ''}
+            {v.site && (
+              <>
+                {' · '}
+                <SiteText text={siteName(v.site)} />
+              </>
+            )}
           </span>
           {v.type === 'random' && (
             <span class="label">
@@ -910,9 +916,11 @@ function FailureWaveCard({ state, act }: ScreenProps) {
           <span class="num-s">{t('ui.wave.units')}</span>
         </div>
         <h2 class="event-title" id="wave-title">
-          {t('ui.wave.title', { tier })}
+          <SiteText text={t('ui.wave.title', { tier })} />
         </h2>
-        <p class="event-body">{t('ui.wave.body', { tier, units: v.units })}</p>
+        <p class="event-body">
+          <SiteText text={t('ui.wave.body', { tier, units: v.units })} />
+        </p>
         {interruptChoices(state).map((c) => (
           <button
             key={c.id}
@@ -1099,7 +1107,9 @@ function GpuWaveCard({ state, act }: ScreenProps) {
         <h2 class="event-title" id="gpu-wave-title">
           {t('ui.gpuwave.title', params)}
         </h2>
-        <p class="event-body">{t('ui.gpuwave.body', params)}</p>
+        <p class="event-body">
+          <SiteText text={t('ui.gpuwave.body', params)} />
+        </p>
         <p class="event-body muted">{t('ui.gpuwave.cause')}</p>
         <p class="event-body muted">{t('ui.gpuwave.basis')}</p>
         {interruptChoices(state).map((c) => (
@@ -1186,7 +1196,7 @@ function ProjectAlertCard({ state, act }: ScreenProps) {
           {tDynamic(`ui.project_alert.${v.kind}.title`, v.kind, params)}
         </h2>
         <p class="event-body">
-          {tDynamic(`ui.project_alert.${v.kind}.body`, v.kind, params)}
+          <SiteText text={tDynamic(`ui.project_alert.${v.kind}.body`, v.kind, params)} />
         </p>
         {interruptChoices(state).map((c) => (
           <button

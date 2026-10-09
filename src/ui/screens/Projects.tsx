@@ -22,7 +22,7 @@ import { Dialog, Icon, Pips, Tip } from '../components/basics.tsx'
 import { groupInOrder, SiteGroup } from '../components/siteGroups.tsx'
 import { HeatChip } from '../components/siteName.tsx'
 import { fmt } from '../format.ts'
-import { say, siteName, tierIcon } from '../names.ts'
+import { projectName as siteProjectName, say, siteName, tierIcon } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 const kindName = (kind: string) => tDynamic(`project_kind.${kind}`, kind)
@@ -116,8 +116,9 @@ function TenantLine({ card }: { card: ProjectCardView }) {
   )
 }
 
+/** (M34.2, 3c: "Own site 3 · AI 1") */
 function projectName(card: ProjectCardView) {
-  return t('ui.projects.name', { tier: card.tier, n: card.project.n })
+  return siteProjectName(card.site, card.project.n)
 }
 
 // ---------- the Projects page (A2-04) ----------

@@ -10,6 +10,7 @@ import { Icon, Tip } from '../components/basics.tsx'
 import { Term } from '../components/term.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName } from '../names.ts'
+import { SiteText } from '../components/siteText.tsx'
 import type { ScreenProps } from './Plan.tsx'
 import { BwButton } from './Projects.tsx'
 
@@ -142,7 +143,7 @@ export function GovernmentSection({ state, act }: ScreenProps) {
           ) : (
             v.log.map((e, i) => (
               <div key={i} class="num-s">
-                {say(e)}
+                <SiteText text={say(e)} />
               </div>
             ))
           )}

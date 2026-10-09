@@ -18,9 +18,10 @@ export function numberSite(state: GameState, site: Site): void {
   site.serial = n
 }
 
-/** Adds an acquired site to the company, numbered. */
+/** Adds an acquired site to the company, numbered and dated (M34.2: the quarter it was acquired). */
 export function addSite(state: GameState, site: Site): void {
   numberSite(state, site)
+  site.acquiredQuarter = state.quarter
   state.sites.push(site)
 }
 

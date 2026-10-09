@@ -30,6 +30,7 @@ import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { SiteText } from '../components/siteText.tsx'
 import { Act4Panel } from '../components/act4Lazy.tsx'
 import { Tip } from '../components/basics.tsx'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
@@ -670,7 +671,9 @@ function Act2Panel({ state }: { state: GameState }) {
               <div class="muted">{t('ui.report.a2_no_milestones')}</div>
             )}
             {v.milestones.map((e, i) => (
-              <div key={i}>{say(e)}</div>
+              <div key={i}>
+                <SiteText text={say(e)} />
+              </div>
             ))}
           </div>
           <span class="label">{t('ui.report.a2_tenants')}</span>
@@ -679,7 +682,9 @@ function Act2Panel({ state }: { state: GameState }) {
               <div class="muted">{t('ui.report.a2_no_tenants')}</div>
             )}
             {v.tenants.map((e, i) => (
-              <div key={i}>{say(e)}</div>
+              <div key={i}>
+                <SiteText text={say(e)} />
+              </div>
             ))}
           </div>
         </div>
@@ -709,7 +714,7 @@ function Notes({ state }: { state: GameState }) {
                   ? t('ui.report.note_end')
                   : t('ui.report.note_plan')}{' '}
             </span>
-            {say(e)}
+            <SiteText text={say(e)} />
           </div>
         ))}
       </div>

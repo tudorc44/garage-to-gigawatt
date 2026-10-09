@@ -261,7 +261,7 @@ describe('leaving a site (breaking the lease)', () => {
     expect(s.cash).toBeCloseTo(10_000 + Number(sold.params!.valueUsd) - 2_000)
     const entry = s.log.at(-1)!
     expect(t(entry.key, entry.params)).toBe(
-      'Left the Small unit 1 and paid $2,000 to break the lease. No more rent there.',
+      'Left Small unit 1 and paid $2,000 to break the lease. No more rent there.',
     )
   })
 

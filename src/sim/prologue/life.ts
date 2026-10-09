@@ -126,7 +126,10 @@ export function moveBackHome(s: GameState, auto = false): Message | undefined {
         flaw: null,
       }),
     )
-  for (const site of home) numberSite(s, site)
+  for (const site of home) {
+    numberSite(s, site)
+    site.acquiredQuarter = s.quarter
+  }
   s.sites = home
   // The machines fill the home sites, the biggest first room-wise; what doesn't fit is sold.
   const room = new Map(home.map((x) => [x.id, siteCapacityKw(x)]))

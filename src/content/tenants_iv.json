@@ -6,10 +6,11 @@
   },
   "offers_per_block": 2,
   "late_penalty_share_of_acv": 0.03,
+  "rebuild_late_quarters_est": 3,
   "types": [
     {
       "id": "sovereign",
-      "name": "Aegis Sovereign Compute",
+      "name": "Ironwall Sovereign Compute",
       "term_years": 5,
       "rent_mult": 1,
       "add_sovereign_premium": true,

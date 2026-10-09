@@ -11,7 +11,14 @@
 //   passive     Passive: no actions at all.
 //   perfect     The perfect reader (B8, B9): commits orbit in the quarters the future's ideal stance is +1, insures,
 //               presells and cancels in the −1 quarters, rests in the 0s. Reads the hidden ideal: tools only.
-import { CONTENT, actFirstQuarter } from '../../src/content/index.ts'
+import { CONTENT, actFirstQuarter, act4Row } from '../../src/content/index.ts'
+import { MOON } from '../../src/content/moonContent.ts'
+import { openProjectView } from '../../src/sim/projectViews.ts'
+import { renewalsDue } from '../../src/sim/selectors.ts'
+import type { LunarClaim } from '../../src/sim/state.ts'
+import { convertibleKw } from '../../src/sim/systems/hosting.ts'
+import { scenarioOf } from '../../src/sim/systems/market.ts'
+import { resourceShare } from '../../src/sim/systems/moon.ts'
 import { signalsHiddenIv } from '../../src/content/signalsHiddenIv.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { Strategy } from '../../src/sim/replay.ts'
@@ -149,6 +156,59 @@ function orbitStep(
   return { kept: [...first.kept, ...second.kept], after: second.after }
 }
 
+/**
+ * M34.1 (owner, 9 Oct 2026, 1b): the Ground Holder is a 2031 ground landlord, "no orbit, no Moon" (doc 33 §18), not "no
+ * clouds": it takes its renewals, and builds a ground GPU cloud wherever it has free MW and a GPU contract is on offer.
+ */
+function groundCloudStep(s: GameState): { kept: Action[]; after: GameState } {
+  const renewals: Action[] = renewalsDue(s)
+    .filter((r) => !r.walked)
+    .map((r) => ({ type: 'RENEWAL_ACCEPT', projectId: r.projectId }))
+  const done = tryAll(s, renewals)
+  const after = done.after
+  const site = after.sites
+    .filter((x) => x.tier !== CONTENT.siteTiers[0].id)
+    .sort((a, b) => convertibleKw(after, b.id) - convertibleKw(after, a.id))[0]
+  const v = openProjectView(after)
+  const gpu = v.act3?.gpusMid.at(-1) ?? v.gpus.at(-1)
+  if (!site || !gpu) return done
+  const freeMw = Math.floor(convertibleKw(after, site.id) / 1000)
+  for (const mw of [40, 30, 20, 15, 10, 8, 5, 3, 2, 1].filter((m) => m <= freeMw)) {
+    const open: Action = { type: 'PROJECT_OPEN', siteId: site.id, kw: mw * 1000, kind: 'cloud', gpu }
+    const r = applyAction(after, open)
+    if (!r.ok) continue
+    const p = r.state.projects.at(-1)!
+    // a tenant must exist: a GPU contract on offer (the best priced); none now, no cloud this quarter
+    const offer = [...p.offers].filter((o) => !!o.gpu).sort((a, b) => (b.priceMult ?? 1) - (a.priceMult ?? 1))[0]
+    if (!offer) break
+    const steps = tryAll(r.state, [
+      { type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: offer.id },
+      { type: 'PROJECT_DEBT', projectId: p.id, debt: 'project_debt', on: true },
+      { type: 'PROJECT_DEBT', projectId: p.id, debt: 'ddtl', on: true },
+      { type: 'PROJECT_FUND_CASH', projectId: p.id },
+      { type: 'PROJECT_START', projectId: p.id },
+    ])
+    if (steps.kept.some((a) => a.type === 'PROJECT_START'))
+      return { kept: [...done.kept, open, ...steps.kept], after: steps.after }
+  }
+  return done
+}
+
+/**
+ * M34.1 (owner, 9 Oct 2026, 1d): the Lunar Bettor respects the stage gate. A pilot pays back through the lunar unit (doc 33
+ * §11.3): running one lifts a site from indicated × claim to measured × pilot, so it's worth its cost only if the latest
+ * prospect's upper band × that lift × the value per tonne covers the pilot and the power it still needs. Below: skip.
+ */
+function pilotWorthIt(s: GameState, c: LunarClaim, solarUsd: number): boolean {
+  const last = c.reports.at(-1)
+  if (!last) return false
+  const conf = MOON.category_confidence
+  const stage = MOON.stage_factor
+  const lift = conf.measured * stage.pilot - conf.indicated * stage.claim
+  const upsideUsd = last.highT * resourceShare(c) * act4Row(s.quarter, scenarioOf(s)).lunar_value_usd_t * lift
+  return upsideUsd >= MOON.pilot.base_usd + solarUsd
+}
+
 const SITES = ['de_gerlache_ridge', 'malapert_massif', 'nobile_rim', 'haworth_rim', 'cabeus', 'amundsen_rim', 'leibnitz_beta'] as const
 
 /** The lunar programme's step: claims (up to `sites`), missions, power, pilots with a crew, offtake, production. */
@@ -172,6 +232,9 @@ function moonActions(s: GameState, sites: number, pilots: boolean): Action[] {
       continue
     }
     if (!pilots) continue
+    // (M34.1, 1d: no pilot, and no power for one, below the stage gate's breakeven)
+    const solarUsd = c.solar ? 0 : 300 * MOON.power.solar.hardware_usd_per_kwe
+    if (!c.pilot && !pilotWorthIt(s, c, solarUsd)) continue
     if (!c.solar) {
       out.push(...fund(s, 500e6))
       out.push({ type: 'BUILD_LUNAR_SOLAR', site, kwe: 200 }, { type: 'BUILD_LUNAR_SOLAR', site, kwe: 100 })
@@ -207,7 +270,11 @@ export function act4Archetypes(groundBot: string): Record<string, Strategy> {
   }
   return {
     passive: strategy(() => []),
-    ground: strategy((s) => groundPlan(groundBot, s)),
+    // (M34.1, 1b: the preset's ground habits, then ground clouds and renewals)
+    ground: strategy((s) => {
+      const g = tryAll(s, groundPlan(groundBot, s))
+      return [...g.kept, ...groundCloudStep(g.after).kept]
+    }),
     sprinter: strategy((s) =>
       withGround(s, (g) => orbitStep(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept),
     ),

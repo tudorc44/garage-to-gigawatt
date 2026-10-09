@@ -33,6 +33,12 @@ export const siteLongName = (
         mw: fmt.power(facts.energizedKw),
       })
 
+/** M34.2 (owner, 9 Oct 2026, 3c): a project's name, its site's short name and its label: "Own site 3 · AI 1". */
+export const projectName = (
+  site: { tier: string; category?: string; serial?: number },
+  n: number,
+) => t('ui.projects.name', { site: siteName(site), n })
+
 /** The long name of a company site, from the game state. */
 export const siteLong = (state: GameState, site: Site) =>
   siteLongName(site, siteFacts(state, site))

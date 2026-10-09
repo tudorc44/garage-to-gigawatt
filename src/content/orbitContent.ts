@@ -136,6 +136,7 @@ const licencesSchema = z.object({
 const tenantsSchema = z.object({
   offers_per_block: z.number().int().min(1),
   late_penalty_share_of_acv: share,
+  rebuild_late_quarters_est: z.number().min(0),
   types: z
     .array(
       z.object({

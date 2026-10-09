@@ -8,6 +8,7 @@ import { logEntry, type GameState } from '../state.ts'
 import { blockDebt, repayFromProceeds } from './orbitCapital.ts'
 import { orbitRow } from './orbit.ts'
 import { siteValueUsd } from './moonOps.ts'
+import { blockPricingEbitdaUsd } from './orbitOps.ts'
 
 const F = MONEY.capital.fire_sale
 
@@ -17,7 +18,8 @@ export function fireSaleCandidates(state: GameState) {
   const orbit = (state.act4Orbit?.blocks ?? [])
     .filter((b) => b.stage === 'live')
     .map((b) => {
-      const priceUsd = Math.max(0, (b.lastEbitdaUsd ?? 0) * 4 * mult) * F.orbital
+      // (M34.1, 2b: a block without a booked quarter yet is priced on its run-rate; the fire-sale haircut on top)
+      const priceUsd = Math.max(0, blockPricingEbitdaUsd(state, b) * 4 * mult) * F.orbital
       return { kind: 'orbit' as const, id: b.id, n: b.n, priceUsd, netUsd: priceUsd - (blockDebt(state, b.id)?.balanceUsd ?? 0) }
     })
   const aligned = state.act4Moon?.alignedBloc ?? null

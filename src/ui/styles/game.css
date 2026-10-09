@@ -1183,6 +1183,13 @@ tr.locked td {
   display: inline-flex;
   color: var(--warn);
 }
+/* M34.2 (3d): the dashboard's capped Fleet & sites panel: one line per type, then the way to Fleet & Sites. */
+.fleet-types {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: var(--space-2);
+}
 /* M33.4 (doc 35): long site lists grouped by type, with sorts and filter chips. */
 .sites-list-controls {
   display: flex;

@@ -81,6 +81,20 @@ describe('saves from before site numbers', () => {
     expect(r.state.siteSerials).toEqual({ garage: 1, own_site: 3, warehouse: 1 })
   })
 
+  it('M34.2 (3b): a site is dated when acquired; a site from an older save is dated null, never "unknown"', () => {
+    const s = newGame(1)
+    s.quarter = 5
+    const x = site(s, 'own_site')
+    addSite(s, x)
+    expect(x.acquiredQuarter).toBe(5)
+    expect(s.sites[0].acquiredQuarter).toBe(0) // the garage, from the start
+    const old = JSON.parse(JSON.stringify(s)) as Record<string, unknown>
+    for (const y of old.sites as Record<string, unknown>[]) delete y.acquiredQuarter
+    const r = restoreSave(old)
+    expect(r.ok).toBe(true)
+    if (r.ok) expect(r.state.sites.every((y) => y.acquiredQuarter === null)).toBe(true)
+  })
+
   it('a real version-1 save loads with every site numbered', () => {
     const raw = JSON.parse(
       readFileSync(

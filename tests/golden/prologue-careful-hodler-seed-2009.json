@@ -26,7 +26,8 @@
       "rentUsdQ": 0,
       "powerPriceMult": 1,
       "flaw": null,
-      "serial": 1
+      "serial": 1,
+      "acquiredQuarter": -12
     }
   ],
   "siteSerials": {

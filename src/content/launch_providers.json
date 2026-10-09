@@ -16,7 +16,7 @@
       "bump_pct_when_tight": 15,
       "max_tonnes_per_booking": null,
       "needs": null,
-      "note": "Pallas Heavy: the dominant reusable super-heavy launcher; most slots, the lowest price, prices to the next-best alternative; can bump third-party payloads for its own constellation in a tight quarter"
+      "note": "Carrack Heavy (was Pallas Heavy, renamed M34.3: a real Pallas-1 rocket exists): the dominant reusable super-heavy launcher; most slots, the lowest price, prices to the next-best alternative; can bump third-party payloads for its own constellation in a tight quarter"
     },
     {
       "id": "northgate",

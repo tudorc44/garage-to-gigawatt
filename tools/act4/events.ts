@@ -106,7 +106,7 @@ const CARDS: Card[] = [
   {
     id: 'iv_f1_c1', future: 'f1', quarter: '2031Q3', role: 'signal',
     title: 'A Cheaper Ride',
-    body: 'Pallas Heavy’s sales team calls with a third-party seat on a reused booster for late 2032, quoted under list. “Book early,” they say. “It only gets cheaper from here.”',
+    body: 'Carrack Heavy’s sales team calls with a third-party seat on a reused booster for late 2032, quoted under list. “Book early,” they say. “It only gets cheaper from here.”',
     choices: [
       { label: 'Note it', effect: {} },
       { label: 'Brief your lenders on an orbit plan', effect: { bandwidth: -1, debt_spread_bps: -25 } },
@@ -128,7 +128,7 @@ const CARDS: Card[] = [
   {
     id: 'iv_f1_c3', future: 'f1', quarter: '2032Q2', role: 'signal',
     title: 'Ten Flights, One Booster',
-    body: 'The same Pallas booster flies its tenth mission in a quarter. Analysts redraw their launch-cost curves; two lenders ask for your orbit numbers.',
+    body: 'The same Carrack booster flies its tenth mission in a quarter. Analysts redraw their launch-cost curves; two lenders ask for your orbit numbers.',
     choices: [
       { label: 'Keep watching', effect: {} },
       { label: 'Open talks with orbital tenants', effect: { bandwidth: -1, tenant_slots: 1 } },
@@ -139,7 +139,7 @@ const CARDS: Card[] = [
   {
     id: 'iv_f1_c4', future: 'f1', quarter: '2032Q3', role: 'trigger',
     title: 'The Booster Hits Its Price',
-    body: 'Pallas Heavy posts a third-party price of $450 a kilogram and says the curve keeps bending. Space stocks jump, and lenders who wouldn’t take your call last year are asking about orbital capacity.',
+    body: 'Carrack Heavy posts a third-party price of $450 a kilogram and says the curve keeps bending. Space stocks jump, and lenders who wouldn’t take your call last year are asking about orbital capacity.',
     choices: [
       { label: 'Ride the wave: reprice your debt', effect: { bandwidth: -1, debt_spread_bps: -50 } },
       { label: 'Stay disciplined', effect: {} },
@@ -204,7 +204,7 @@ const CARDS: Card[] = [
   {
     id: 'iv_f2_c2', future: 'f2', quarter: '2032Q2', role: 'decoy',
     title: 'A Seat Sale',
-    body: 'Pallas Heavy offers spare capacity on its next manifests at a promotional price. “Limited time,” says the email. The list price hasn’t moved.',
+    body: 'Carrack Heavy offers spare capacity on its next manifests at a promotional price. “Limited time,” says the email. The list price hasn’t moved.',
     choices: [
       { label: 'Ignore it', effect: {} },
       { label: 'Put down a deposit for a block', effect: { cash: -2000000 } },

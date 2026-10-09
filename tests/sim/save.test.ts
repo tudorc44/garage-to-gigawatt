@@ -134,6 +134,8 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
   'events.spreadAddBps': 0,
   'events.aiLabRevenueMult': 1,
   'events.extraOffers': null,
+  // M34.2 (3b): a site from before acquisition dates were stored
+  'sites.*.acquiredQuarter': null,
 }
 
 /** Additions whose value depends on the save (M33.1's site numbers, given on load): a check, not a fixed value. */

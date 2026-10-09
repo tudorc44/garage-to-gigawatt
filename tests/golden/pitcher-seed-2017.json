@@ -26,6 +26,7 @@
       "id": "site-1",
       "tier": "garage",
       "serial": 1,
+      "acquiredQuarter": 0,
       "readyQuarter": 0,
       "rentUsdQ": 0,
       "powerPriceMult": 1,
@@ -39,6 +40,7 @@
       "powerPriceMult": 1,
       "flaw": null,
       "serial": 1,
+      "acquiredQuarter": 2,
       "contract": {
         "type": "fixed",
         "price": 0.09350000000000001,
@@ -54,6 +56,7 @@
       "powerPriceMult": 1.145,
       "flaw": "undersized_transformer",
       "serial": 1,
+      "acquiredQuarter": 5,
       "contract": {
         "type": "fixed",
         "price": 0.0944625,

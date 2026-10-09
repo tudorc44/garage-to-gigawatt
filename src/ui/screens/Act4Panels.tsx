@@ -16,6 +16,7 @@ import {
 import { orreryAuctionView, siteFacts } from '../../sim/selectors.ts'
 import { Pips } from '../components/basics.tsx'
 import { SitePicker, type PickRow } from '../components/sitePicker.tsx'
+import { SiteActionConfirm } from '../components/siteActionConfirm.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -83,6 +84,8 @@ export function OrbitExposurePanel({ state }: ScreenProps) {
             ltvPct: b.exposure!.ltvAfter,
             limitPct: b.exposure!.ltvLimit,
           })}
+          {b.exposure!.penaltiesUsd > 0 &&
+            ` ${t('ui.orbit.exposure.penalties', { penaltiesUsd: b.exposure!.penaltiesUsd })}`}
         </p>
       ))}
       <p class="num-s muted">{t('ui.orbit.exposure.hint')}</p>
@@ -641,6 +644,18 @@ function Licences({ v, act }: { v: OrbitBoardView; act: ScreenProps['act'] }) {
           ))}
         </tbody>
       </table>
+      {/* M34.1 (owner, 9 Oct 2026, 2c): a cut licence, never below what's in use */}
+      {v.licences
+        .filter((l) => l.cut)
+        .map((l) => (
+          <p key={`cut-${l.shell}`} class="num-s warn" data-licence-cut={l.shell}>
+            {shellName(l.shell)}:{' '}
+            {t('ui.orbit.licences.cut', {
+              licensed: fmt.power(l.licensedMw * 1000),
+              inUse: fmt.power(l.usedMw * 1000),
+            })}
+          </p>
+        ))}
       <h3 class="label">{t('ui.orbit.registry.title')}</h3>
       {v.registryOptions.map((r) => (
         <div key={r.id} class="num-s">
@@ -672,6 +687,7 @@ function Licences({ v, act }: { v: OrbitBoardView; act: ScreenProps['act'] }) {
 function Links({ v, act, state }: { v: OrbitBoardView } & ScreenProps) {
   const l = v.links
   const [picking, setPicking] = useState(false)
+  const [confirm, setConfirm] = useState<string | null>(null)
   // M33.2 (doc 35): one button and a site picker, not a button per site; the stations you have are listed first.
   const rows: PickRow[] = l.stationSites.map((s) => ({
     site: s.site,
@@ -759,10 +775,20 @@ function Links({ v, act, state }: { v: OrbitBoardView } & ScreenProps) {
           defaultSort="heat"
           defaultDesc={false}
           onPick={(site) => {
-            act({ type: 'BUILD_GROUND_STATION', siteId: site.id })
+            // (M34.2, 3f: the station's fee goes through its confirm)
+            setConfirm(site.id)
             setPicking(false)
           }}
           onClose={() => setPicking(false)}
+        />
+      )}
+      {confirm && (
+        <SiteActionConfirm
+          state={state}
+          act={act}
+          kind="station"
+          siteId={confirm}
+          onClose={() => setConfirm(null)}
         />
       )}
     </div>

@@ -6,6 +6,7 @@ import { hasText, t, tDynamic } from '../../i18n/t.ts'
 import { dismissTip, readDismissedTips } from '../../platform/tips.ts'
 import { ICONS, type IconName } from '../icons.ts'
 import { MACHINE_DRAWINGS, type MachineDrawing } from '../machineDrawings.ts'
+import { SiteText } from './siteText.tsx'
 
 /**
  * MachineCard (design system): a 240×160 line drawing of a machine class on the era's paper, with
@@ -243,7 +244,10 @@ export function ActionRow(props: {
       onClick={props.onClick}
     >
       <Icon name={props.icon} />
-      <span class="name">{props.name}</span>
+      <span class="name">
+        {/* (M34.2, 3e: a site's name in the row opens its card) */}
+        <SiteText text={props.name} inButton />
+      </span>
       {cost > 0 ? (
         <Pips
           total={cost}

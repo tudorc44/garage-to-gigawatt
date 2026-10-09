@@ -19,6 +19,7 @@ import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { Icon, Tip } from '../components/basics.tsx'
 import { SiteName } from '../components/siteName.tsx'
 import { SitesList } from '../components/siteGroups.tsx'
+import { SiteText } from '../components/siteText.tsx'
 import { fmt } from '../format.ts'
 import {
   machineIcon,
@@ -694,7 +695,7 @@ function LogSection({ state }: { state: GameState }) {
                       {t('ui.section.week', { week: e.week })}{' '}
                     </span>
                   ) : null}
-                  {say(e)}
+                  <SiteText text={say(e)} />
                 </div>
               ))}
           </div>
