@@ -406,7 +406,7 @@ const NEW_COLUMNS: Record<string, Record<Future, Anchors>> = {
 }
 /**
  * M36.6 (design thread, 9 Oct 2026, answer 4): F2's space multiple × 0.60 from its trigger quarter on, the floor of the
- * 0.05-step search (1.00 → 0.60) and the first value where F2's Sprinter ≤ Ground ÷ 1.2 (0.852× vs 1.030×, 10 seeds).
+ * knob (1.00 → 0.60). B3 still misses there (F2 Sprinter 1.05× vs Ground 1.03×, 10 seeds): a recorded miss.
  */
 const F2_SPACE_SCALE = 0.6
 function knob(column: string, f: Future, n: number): number {

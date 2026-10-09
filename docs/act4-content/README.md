@@ -254,8 +254,9 @@ All three files come from `npm run content:act4-money` (`tools/act4/money.ts`).
 - **Hires** (`hires_iv.json`, doc 33 §14.3 ⚙): Launch Procurement Lead (−10% launch prices, no bumps), Space Operations
   Chief (−25% orbital GPU failures, half the telemetry noise), Lunar Programme Director (+10 points landing success, pilots
   a quarter faster, +1 Bandwidth), Chief Risk Officer (−20% premiums, +25% insurance capacity); salaries designed.
-- **F2's space multiple × 0.60 from its trigger (2033Q1)** (M36.6, design thread, 9 Oct 2026, answer 4): the floor of a
-  0.05-step search, the first value where F2's Orbit Sprinter ≤ Ground Holder ÷ 1.2 (B3). 2035Q4: 5× → 3×.
+- **F2's space multiple × 0.60 from its trigger (2033Q1)** (M36.6, design thread, 9 Oct 2026, answer 4): the floor of the
+  design thread's knob (1.00 → 0.60). B3 still misses at it (F2 Sprinter 1.05× vs Ground 1.03×, 10 seeds): recorded as a
+  miss. 2035Q4: 5× → 3×.
 
 - **Rivals** (`rivals_iv.json`; fictional names, for the owner's check): Pallas Compute, Northgate, Orrery Compute, Meridian
   Arc (was Jade Arc Constellation; its id stays `jade_arc`), Cratermark Resources: value ($B) and orbital MW at anchor quarters, interpolated at load; identical in
