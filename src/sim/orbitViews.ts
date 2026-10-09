@@ -8,6 +8,7 @@ import {
   PROVIDER_IDS,
   SHELL_IDS,
   tenantType,
+  type GenerationId,
   type ProviderId,
   type ShellId,
 } from '../content/orbitContent.ts'
@@ -20,7 +21,9 @@ import {
   annualValueUsd,
   arrangeOrbitalCapitalBlocker,
   availableGenerations,
+  blockMassT,
   buildGroundStationBlocker,
+  generationTMw,
   cancelOrbitalBlockBlocker,
   fastTrackLicenceBlocker,
   fileLicenceBlocker,
@@ -139,6 +142,50 @@ export function launchExposure(state: GameState, b: OrbitalBlock) {
   }
 }
 
+/**
+ * Launch slot clarity (design thread, 9 Oct 2026): for a block of this size, shell and satellites, the booking window,
+ * its mass, the most free third-party tonnes in one quarter of the window, the first quarter it fits, how many quarters
+ * it doesn't, and (when it fits none) the largest listed size that fits some quarter and the earliest one. Null when
+ * no quarter can be booked any more (the window has closed) or the generation isn't on sale.
+ */
+export function launchFit(
+  state: GameState,
+  /** `massT`: an opened block's own (fixed when opened), else worked out from size, shell and satellites */
+  spec: { mw: number; shell: ShellId; gen: GenerationId; massT?: number },
+  /** a block's own booking doesn't count against it */
+  exceptBlockId?: string,
+) {
+  const [lo, hi] = ORBIT.launch.lead_quarters
+  const lastQ = Math.min(state.quarter + hi, actLastQuarter(4))
+  const window: { q: number; freeT: number }[] = []
+  for (let q = state.quarter + lo; q <= lastQ; q++)
+    window.push({ q, freeT: Math.max(0, slotsTonnes(state, q) - bookedTonnes(state, q, exceptBlockId)) })
+  const tMw = generationTMw(state, spec.gen)
+  if (window.length === 0 || tMw === null) return null
+  const massOf = (mw: number) => blockMassT(tMw, mw, spec.shell)
+  const massT = spec.massT ?? massOf(spec.mw)
+  const firstFit = (m: number) => window.find((w) => w.freeT >= m) ?? null
+  const most = window.reduce((a, b) => (b.freeT > a.freeT ? b : a))
+  const fit = firstFit(massT)
+  const smaller = [...ORBIT.satellites.sizes_mw]
+    .sort((a, b) => b - a)
+    .map((mw) => ({ mw, w: firstFit(massOf(mw)) }))
+    .find((x) => x.w !== null)
+  return {
+    firstLabel: label(window[0].q)!,
+    lastLabel: label(window[window.length - 1].q)!,
+    massT,
+    maxFreeT: most.freeT,
+    maxFreeLabel: label(most.q)!,
+    fitLabel: fit ? label(fit.q)! : null,
+    /** Quarters of the window with too few free tonnes for this mass. */
+    unfitQuarters: window.filter((w) => w.freeT < massT).length,
+    /** The largest size that fits some quarter, and the earliest; null if none fits. */
+    hint: smaller ? { mw: smaller.mw, label: label(smaller.w!.q)! } : null,
+  }
+}
+export type LaunchFit = NonNullable<ReturnType<typeof launchFit>>
+
 /** The block's deal card (A4-05). */
 export function blockView(state: GameState, b: OrbitalBlock) {
   const t = b.tenant
@@ -169,6 +216,11 @@ export function blockView(state: GameState, b: OrbitalBlock) {
     gen: b.gen,
     stage: b.stage,
     massT: b.massT,
+    /** Launch slot clarity: how this block fits the booking window (unbooked blocks in planning only). */
+    launchFit:
+      b.stage === 'proposed' && !b.launch
+        ? launchFit(state, { mw: b.mw, shell: b.shell, gen: b.gen, massT: b.massT }, b.id)
+        : null,
     launch: b.launch
       ? { ...b.launch, label: label(b.launch.quarter), costUsd: launchCostUsd(b) }
       : null,

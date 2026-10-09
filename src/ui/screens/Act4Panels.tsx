@@ -6,7 +6,13 @@
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
 import type { Message } from '../../i18n/t.ts'
-import { orbitBoardView, type BlockView, type OrbitBoardView } from '../../sim/orbitViews.ts'
+import {
+  launchFit,
+  orbitBoardView,
+  type BlockView,
+  type LaunchFit,
+  type OrbitBoardView,
+} from '../../sim/orbitViews.ts'
 import { orreryAuctionView, siteFacts } from '../../sim/selectors.ts'
 import { Pips } from '../components/basics.tsx'
 import { SitePicker, type PickRow } from '../components/sitePicker.tsx'
@@ -149,12 +155,13 @@ function OrreryAuction({ state, act }: ScreenProps) {
 }
 
 /** Open a block: kind, size, shell, generation (0 Bandwidth). */
-function OpenBlockForm({ v, act }: { v: OrbitBoardView } & ScreenProps) {
+function OpenBlockForm({ v, act, state }: { v: OrbitBoardView } & ScreenProps) {
   const [kind, setKind] = useState<'shell' | 'cloud'>('shell')
   const [mw, setMw] = useState(10)
   const [shell, setShell] = useState<'sso' | 'high_leo' | 'high_orbit'>('sso')
   const gens = v.open.generations.filter((g) => g.available)
   const [gen, setGen] = useState(gens.at(-1)?.id ?? 'gen31')
+  const fit = launchFit(state, { mw, shell, gen })
   return (
     <div class="orbit-row" data-orbit-open>
       <label class="num-s">
@@ -197,6 +204,13 @@ function OpenBlockForm({ v, act }: { v: OrbitBoardView } & ScreenProps) {
           ))}
         </select>
       </label>
+      {/* (launch slot clarity, 9 Oct 2026: the block's mass, and a warning when no launch in the window can take it;
+          opening stays allowed, to plan ahead) */}
+      {fit && (
+        <span class="num" data-open-mass>
+          {t('ui.orbit.open.mass', { mass: tonnes(fit.massT) })}
+        </span>
+      )}
       <button
         type="button"
         class="btn btn-primary"
@@ -204,6 +218,14 @@ function OpenBlockForm({ v, act }: { v: OrbitBoardView } & ScreenProps) {
       >
         {t('ui.orbit.open.go')}
       </button>
+      {fit && fit.fitLabel === null && (
+        <p class="num-s warn" data-open-too-heavy style={{ flexBasis: '100%', margin: 0 }}>
+          {t('ui.orbit.open.too_heavy', {
+            maxFree: tonnes(fit.maxFreeT),
+            quarter: fmt.quarter(fit.maxFreeLabel),
+          })}
+        </p>
+      )}
     </div>
   )
 }
@@ -265,6 +287,37 @@ function BlockCard({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
   )
 }
 
+/** Tonnes as a whole number, "1,350". */
+const tonnes = (x: number) => Math.round(x).toLocaleString('en-US')
+
+/**
+ * Launch slot clarity (design thread, 9 Oct 2026): when no quarter in the booking window has room for the block, say
+ * why (its mass against the most free in one quarter) and which size would fit, and from when.
+ */
+function NothingFits({ f }: { f: LaunchFit }) {
+  return (
+    <div data-launch-nothing-fits>
+      <p class="num-s warn">
+        {t('ui.orbit.launch.nothing_fits', {
+          first: fmt.quarter(f.firstLabel),
+          last: fmt.quarter(f.lastLabel),
+          mass: tonnes(f.massT),
+          maxFree: tonnes(f.maxFreeT),
+          quarter: fmt.quarter(f.maxFreeLabel),
+        })}
+      </p>
+      <p class="num-s muted">
+        {f.hint
+          ? t('ui.orbit.launch.fit_hint', {
+              size: fmt.power(f.hint.mw * 1000),
+              quarter: fmt.quarter(f.hint.label),
+            })
+          : t('ui.orbit.launch.no_size_fits', { last: fmt.quarter(f.lastLabel) })}
+      </p>
+    </div>
+  )
+}
+
 /** The Launch slot: a booking (provider and quarter), or the booking made. */
 function LaunchSlot({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
   const open = b.bookingOptions.filter((o) => !o.why)
@@ -291,7 +344,11 @@ function LaunchSlot({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
           />
         </>
       ) : open.length === 0 ? (
-        <Why why={b.bookingOptions[0]?.why ?? null} />
+        b.launchFit && b.launchFit.fitLabel === null ? (
+          <NothingFits f={b.launchFit} />
+        ) : (
+          <Why why={b.bookingOptions[0]?.why ?? null} />
+        )
       ) : (
         <>
           <select value={pick} onChange={(e) => setPick(Number((e.target as HTMLSelectElement).value))}>
@@ -306,6 +363,15 @@ function LaunchSlot({ b, act }: { b: BlockView; act: ScreenProps['act'] }) {
             ))}
           </select>
           <span class="num-s muted">{t('ui.orbit.launch.deposit', { deposit: fmt.money(choice.depositUsd) })}</span>
+          {/* (launch slot clarity, 9 Oct 2026: quarters left out for slots are said, not silently dropped) */}
+          {b.launchFit && b.launchFit.unfitQuarters > 0 && (
+            <span class="num-s muted" data-launch-unfit>
+              {t(b.launchFit.unfitQuarters === 1 ? 'ui.orbit.launch.unfit_one' : 'ui.orbit.launch.unfit', {
+                n: b.launchFit.unfitQuarters,
+                mass: tonnes(b.launchFit.massT),
+              })}
+            </span>
+          )}
           <OrbitButton
             label={t('ui.orbit.launch.book')}
             why={choice.why}
