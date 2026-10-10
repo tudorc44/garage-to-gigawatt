@@ -4470,7 +4470,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 4,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 13650000
       }
     },
@@ -4653,7 +4653,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 5,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 13275000
       }
     },

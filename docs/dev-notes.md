@@ -135,10 +135,8 @@ prologue). Tables: `npm run sim -- --act2` / `--prologue`. **End of M18:** 1,229
 
 ## Open questions for the design thread
 
-- **Doc 33 Q16 (M34.3, 9 Oct 2026):** "Jade Arc Constellation" has no name clash, but "Jade" codes the real-world bloc
-  loudly. Kept for now; if the fictionalisation should hold, rename it Meridian Arc Constellation.
-- **M34.3:** the sovereign tenant's new name is the build's own choice, Ironwall Sovereign Compute: both of the design
-  thread's candidates clash (Rampart Technologies and Bulwark Dynamics are real defence companies). Confirm or replace.
+- (Answered, M41.2) The constellation is **Lantern Arc** (id `jade_arc`) and the sovereign tenant **Keelstone Sovereign
+  Compute**: the design thread's names after the M40 report.
 
 The Act III balance pass is closed (design thread, 4 Oct 2026): no more mechanics rounds unless the owner asks.
 
@@ -251,6 +249,8 @@ decoy); target Perfect ≥ Passive − 2 in all 12 cells, a short cell is a reco
 Constellation (id `jade_arc` kept), Keelstone Sovereign Compute · then the `--act4` run and the PR.
 - **M41.1** done (`scoredSignsIv`): a raise takes the sign of the next non-raise ±1 move after it in the log (play order: a raise
   logged after its quarter's build looks further on, mine, reversible); none: 0. Goldens: act4-energy-f2/f4 reading only.
+- **M41.2** done: Lantern Arc (en.json, short code JA → LA: mine, reversible) and Keelstone Sovereign Compute (tenants_iv.json
+  both copies and its tool, orbit guide, README log); ids kept. Doc 33/34 and act4-scope keep the old names as history.
 
 ## Milestone M40 (branch `m40`, from `main` at `ff442df`; design thread answers after M37.7-M39, 10 Oct 2026)
 
