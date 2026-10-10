@@ -5,9 +5,10 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #6 merged: M40; cleanup on `m41`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+Last updated: 10 Oct 2026 (PR #7 merged: M41; cleanup on `m42`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
 with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
-M40 answers (Act IV reading, venture delivery at CF) are merged into `main` and public on GitHub Pages. See "Next" and "Milestone M40".
+M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
+and "Milestone M41".
 
 ## How the owner works
 
@@ -187,9 +188,11 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): PR #6 merged (`main` = `464a6ad`): M40 (Act IV reading rules, venture delivery at CF); `m40` tagged
-`m40-done` and deleted; `m41` (from `main`) holds this cleanup. Open: the design thread's answers on the M40 report (Perfect
-below Passive in 3 of 12 cells, see STOPPED; the quarter-level "that build's own"; E-B2).**
+**Now (10 Oct 2026): PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
+`m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
+
+**Before: PR #6 merged (`main` = `464a6ad`): M40 (Act IV reading rules, venture delivery at CF); `m40` tagged
+`m40-done` and deleted.**
 
 **Before: PR #5 merged (`main` = `ff442df`): M37.7, Prologue bulk buy, M38 (report), M39 (energy data fixes);
 `m38` tagged `m38-done` and deleted; staging rebuilt from `main` by the owner. `m40` (from `main`) holds this cleanup. Open: the
@@ -227,7 +230,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `464a6ad`** (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
+**`main` = `71f36cb`** (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
+Before: `464a6ad` (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
 Before: `ff442df` (10 Oct 2026, PR #5 merged): M37.7, bulk buy, M38, M39; `m38` tagged `m38-done` and deleted.
 Before: `3e67c1d` (10 Oct 2026, PR #4 merged): M37 Finances; `m37` tagged `m37-done` and deleted.
 Before: `319a660` (10 Oct 2026, PR #3 merged by the owner): M27–M36, Act IV and doc 38. Branches `m27`…`m35` tagged
