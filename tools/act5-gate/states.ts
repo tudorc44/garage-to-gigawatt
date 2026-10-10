@@ -44,7 +44,11 @@ function guardOk(s: GameState, spendUsd: number): boolean {
   return s.cash - spendUsd >= 2 * fixedQ
 }
 
-function ventureStep(s: GameState, v: FirmType): Action[] {
+function ventureStep(s: GameState, types: readonly FirmType[]): Action[] {
+  return types.flatMap((v, i) => joinStep(s, v, i === types.length - 1))
+}
+
+function joinStep(s: GameState, v: FirmType, answerCalls: boolean): Action[] {
   const out: Action[] = []
   if (!(s.ventures ?? []).some((x) => x.type === v)) {
     const campus = v === 'pumped' ? null : campusFor(s, v)
@@ -59,8 +63,9 @@ function ventureStep(s: GameState, v: FirmType): Action[] {
       out.push({ type: 'VENTURE_JOIN', venture: v, prepay: 0, ...t })
     }
   }
-  for (const x of s.ventures ?? [])
-    if (x.call) out.push({ type: 'VENTURE_CALL', ventureId: x.id, choice: guardOk(s, x.call.dueUsd) ? 'pay' : 'dilute' })
+  if (answerCalls)
+    for (const x of s.ventures ?? [])
+      if (x.call) out.push({ type: 'VENTURE_CALL', ventureId: x.id, choice: guardOk(s, x.call.dueUsd) ? 'pay' : 'dilute' })
   return out
 }
 
@@ -77,8 +82,12 @@ function preset2030(id: Act4PresetId): GameState {
   return s
 }
 
-/** One gate company at the end of 2035Q4 (the Act IV chapter phase). */
-export function state2035(preset: Act4PresetId, future: FutureId, type: FirmType, seed: number): GameState {
+/**
+ * One gate company at the end of 2035Q4 (the Act IV chapter phase), joining one firm venture, or several (M43.0b's
+ * firm-heavy start, doc 43 §0.6 item 6: EGS and SMR, joined in 2031Q1 in that order, the cash guard on each).
+ */
+export function state2035(preset: Act4PresetId, future: FutureId, type: FirmType | readonly FirmType[], seed: number): GameState {
+  const types: readonly FirmType[] = typeof type === 'string' ? [type] : type
   const p = PRESETS_IV.find((x) => x.id === preset)!
   const balanced = act4Archetypes(p.bot).balanced
   const start = toAct4(structuredClone(preset2030(preset)), { future, act4Seed: seed })
@@ -86,7 +95,7 @@ export function state2035(preset: Act4PresetId, future: FutureId, type: FirmType
   const bot: Strategy = {
     plan: (s) => {
       const base = tryAll(s, balanced.plan(s))
-      return [...base.kept, ...tryAll(base.after, ventureStep(base.after, type)).kept]
+      return [...base.kept, ...tryAll(base.after, ventureStep(base.after, types)).kept]
     },
   }
   return playFrom(start, bot, { through: 4 }).state

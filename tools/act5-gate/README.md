@@ -60,3 +60,44 @@ node tools/act5-gate/gate.ts --seeds 30 --out sim-output/act5-gate   # about 40 
     AI multiple. Not energized: under construction at capex spent (net 0).
 - **The Seller's sale:** at 2036Q1 values (its EBITDA with 80% of its merchant share at market − 10%; the 12×/7×
   blend). No infrastructure-fund index (V1's `infra_bid_index` isn't designed yet: × 1.0, as the prompt says).
+
+## M43.0b (doc 43 v1.1 §0; rules in §0.6): `gate-b.ts`
+
+```bash
+node tools/act5-gate/gate-b.ts --seeds 30 --out sim-output/act5-gate-b   # about 45 min; gate-b-runs.csv, gate-b-summary.txt
+```
+
+The decision is now the whole ground book: lock it in (Seller) or keep it open to the scarcity price (Firm Holder), on two
+stub futures, V1 (scarcity up) and V3 (down after a 2037Q4 trigger). Pass: V1 Holder ≥ 1.2 × Seller **and** V3 Seller ≥
+1.2 × Holder. Starts: the three presets' single-venture runs (as M43.0) plus a firm-heavy start (EGS + SMR, §0.6 item 6:
+the two joins fit, so no top-quartile fallback). The multiple's base is act5Entry = the 2035Q4 valuation + free MW × $300K.
+
+What §0.6 left open, decided here (all mine, reversible):
+- **Leases are the live projects with a tenant at 2035Q4** (shell leases and GPU contracts). Spot clusters, hosting and
+  projects not yet live are held at 2035Q4 (common to both bots).
+- **Market rent:**
+  - A shell's is its card rent × the 2035Q4 new-lease reference (the RFP midpoint) × its hall's tier multiple (Act III's
+    rolling-lease rule).
+  - A GPU contract's is its rate × the GPU renewal index now ÷ at its signing (from 2027Q1, as the renewal offer).
+  - Both × `scarcity_index`.
+- **Margins:**
+  - A shell's margin is rent × (1 − the host's 17.5% opex share); a GPU contract's is its full revenue (its power and
+    insurance don't depend on the rate).
+  - Our JV share applies. Distress and lab-renegotiation haircuts are ignored.
+- **Walks:**
+  - The 2035Q4 walk chance at renewal by tenant type, rolled once per end date with the same draw for both bots.
+  - The Seller's extensions roll too (§0.6: walks at each end date). A walked lease (GPU contracts too) is empty one
+    quarter, then re-lets at that quarter's market rent: 2 years for the Holder, 9 for the Seller.
+- **Valuation of the lease change:** the 2040Q4 margin change × 4 × the 2035Q4 AI multiple. The contracted-multiple
+  floor (15×, ≥ 20 quarters left) is ignored: the market multiple is 13.8-16.4× in 2035. The cash earned along the way
+  is added.
+- **Plants:**
+  - The developer's contracted share (90% thermal, 50% pumped, §0.4) sells at the class PPA ($90/MWh); the player's
+    offtake share at its own PPA; the rest merchant at the region's power price × the stub's path.
+  - Capacity revenue (PJM and Ohio) on rating × MW (nuclear 0.95; EGS 0.90).
+  - The contracted half of pumped storage keeps 2036's terms; its merchant half follows the stub. Spread $30 → V1 $45,
+    V3 $20 from the trigger. Running cost $18/kW-yr (doc 38).
+  - Plant multiple = contracted share × 10 + merchant share × the stub's merchant multiple (no 8×/11× by contract
+    length: the developer contracts' terms aren't modelled).
+- **Everything else is as M43.0:** the company without its ventures held, plus 20 quarters of 2035Q4 EBITDA − interest
+  (common); no taxes, raises, dilution or game overs; cash earns nothing; the Holder pays every call.
