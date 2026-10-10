@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #7 merged: M41; cleanup on `m42`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+Last updated: 10 Oct 2026 (PR #8 merged: M42, F-10 closed; cleanup on `m43`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
 with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
 M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
 and "Milestone M41".
@@ -191,8 +191,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 ## Next
 
 **Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
-`docs/game-project-files/claude_42-act-v-concepts.md`), then doc 43, both being written by the design thread. F-10 closed (M42).
-PR #8 (`m42`: the PR #7 cleanup, M41's `--act4` results, the M42.1 finding) is for the owner to merge.
+`docs/game-project-files/claude_42-act-v-concepts.md`, committed on `m43`), then doc 43 (being written by the design thread).
+F-10 closed (M42; doc 27 §16 marks it, the note added on `m43` at the owner's request). PR #8 merged (`main` = `4b633a7`);
+`m42` tagged `m42-done` and deleted; `m43` (from `main`) holds this cleanup.
 
 **Before: PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
 `m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
@@ -236,7 +237,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `71f36cb`** (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
+**`main` = `4b633a7`** (10 Oct 2026, PR #8 merged): M42 (notes only; F-10 closed); `m42` tagged `m42-done` and deleted.
+Before: `71f36cb` (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
 Before: `464a6ad` (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
 Before: `ff442df` (10 Oct 2026, PR #5 merged): M37.7, bulk buy, M38, M39; `m38` tagged `m38-done` and deleted.
 Before: `3e67c1d` (10 Oct 2026, PR #4 merged): M37 Finances; `m37` tagged `m37-done` and deleted.
