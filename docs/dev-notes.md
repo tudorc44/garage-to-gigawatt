@@ -293,6 +293,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
   Built: one developer per type from its doc 38 start (2027Q1; fusion 2028Q1), replayed quietly; joining takes it over as
   it stands (milestones count after joining). Fitted (mine, to the targets, 2,000 games): EGS slip σ 0.2 → 1.14 (80.4%),
   SMR slip 1.6 → 1.06 and cancel below 30% subscribed (was 80%) (56.1%), advanced 1.07 and 30% (38.8%), pumped 1.45 → 1.27 (13.6%), fusion 0% (the 2038 rule).
+- M36.10 runs: Act IV table unchanged from `act4-m366` (Fortress builds 2 clouds a run, holds 360 quarters); `--act2 --act3`
+  byte-identical to M34 (1,302 files). Energy (`energy-m3610b`, after the fusion-2038 fix): E-B1 PASS, **E-B2 MISS recorded**
+  (SMR mean $305M, advanced $254M vs control $35M; EGS −$0M), E-B3-E-B5 PASS; the cash guard: BTM game overs 15 → 2 of 120.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
