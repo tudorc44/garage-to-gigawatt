@@ -244,6 +244,8 @@ Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5
   closed 6 q, overage = max(own, warehouse price) from 2018Q1; Québec 4.5¢, closed 2018Q2-2019Q3, −3.4% for sites from 2019Q4).
 - **M39.3** done: Iceland's price locked at signing (4.3¢ 2017; U(5.1, 7.1)¢ 2018+), every other quarter in 2018, a dry week in 2021Q4.
   Mine: the 2018 "warning event" is the row's reason ("rationed"), not a log line, so games without energy options stay identical.
+- **M39.4** done: home battery $1,000/750/900, utility battery $1,500 (2015) … $625 (2018), $513 (2019, straight line: mine), ITC 0%
+  from 2026 and 30% from 2022Q1, small wind CF 0.20 × U(0.3, 1), battery 85% / 2.5% fade, PJM derate by year, ERCOT battery income.
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 

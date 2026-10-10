@@ -210,7 +210,11 @@ export function buildEnergy(state: GameState, b: EnergyBuild): void {
   }
   if (b.kind === 'home_battery') asset.blocks = b.size
   if (b.kind === 'bess') asset.hours = b.hours ?? 4
-  if (b.kind === 'small_wind') asset.cf = roundCents(uniform(r, ...ENERGY.owned.small_wind.cf_realised) * 100) / 100
+  // M39.4 (doc 41): the realised CF is the pitched one × U(0.3, 1.0), i.e. 6-20%
+  if (b.kind === 'small_wind') {
+    const w = ENERGY.owned.small_wind
+    asset.cf = roundCents(w.cf_pitched * uniform(r, ...w.cf_realised_share) * 100) / 100
+  }
   const cls = b.kind === 'small_wind' ? ENERGY.owned.small_wind.overrun_class : isOwnedKind(b.kind) ? null : ENERGY.site_assets[b.kind].overrun_class
   if (cls) {
     const m = drawOverrun(r, cls)
@@ -357,7 +361,31 @@ export function capacityPaymentUsd(state: GameState, site: Site, a: EnergyAsset,
   if (!region || !b.capacity_regions.includes(region) || label(state.quarter) < b.capacity_from) return 0
   const years = Math.max(0, (state.quarter - a.readyQuarter) / 4)
   const fade = (1 - b.fade_per_year) ** years
-  return (a.kw / 1000) * pjmUsdMwDay * 91 * (b.capacity_derate[String(a.hours ?? 4)] ?? 0) * fade
+  return (a.kw / 1000) * pjmUsdMwDay * 91 * capacityDerate(a.hours ?? 4, label(state.quarter).slice(0, 4)) * fade
+}
+
+/**
+ * M39.4 (doc 41, doc 40 §Q10): a battery's PJM capacity derate in a year: the 4-hour path by year (its first year before
+ * it, its last after); 2-hour = 4-hour × 0.58; 8-hour = 4-hour + 0.10.
+ */
+export function capacityDerate(hours: number, year: string): number {
+  const b = ENERGY.site_assets.bess
+  const path = b.capacity_derate_4h
+  const years = Object.keys(path).sort()
+  const y = year < years[0] ? years[0] : year > years[years.length - 1] ? years[years.length - 1] : year
+  const four = path[y] ?? path[years.filter((x) => x <= y).at(-1)!]
+  if (hours <= 2) return four * b.capacity_derate_2h_ratio
+  if (hours >= 8) return Math.min(1, four + b.capacity_derate_8h_add)
+  return four
+}
+
+/** M39.4 (doc 41, doc 40 §Q11): an ERCOT battery's ancillary-services income this quarter, $ (a quarter of the year's). */
+export function ercotBatteryUsd(state: GameState, site: Site, a: EnergyAsset): number {
+  const steps = ENERGY.site_assets.bess.ercot_ancillary_usd_mw_yr
+  if (a.kind !== 'bess' || !steps || regionOf(site) !== 'ercot' || !isWorking(a, state.quarter)) return 0
+  const year = label(state.quarter).slice(0, 4)
+  const usd = steps.filter((s) => s.from <= year).at(-1)?.usd ?? 0
+  return ((a.kw / 1000) * usd) / 4
 }
 
 // ---------- The quarter's end ----------
@@ -403,7 +431,7 @@ export function endQuarterEnergy(state: GameState, pjmUsdMwDay?: number): Energy
       }
       if (a.readyQuarter > state.quarter) continue
       costUsd += runningUsdYr(a) / 4
-      if (a.kind === 'bess') revenueUsd += capacityPaymentUsd(state, site, a, pjmUsdMwDay)
+      if (a.kind === 'bess') revenueUsd += capacityPaymentUsd(state, site, a, pjmUsdMwDay) + ercotBatteryUsd(state, site, a)
       rollAssetChances(state, site, a, r, (usd) => (costUsd += usd))
     }
     revenueUsd += billOffsetUsd(state, site)

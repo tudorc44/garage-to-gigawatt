@@ -115,7 +115,8 @@ const energySchema = z.object({
       ...ownedBase,
       running_usd_kw_yr: nonneg,
       cf_pitched: share,
-      cf_realised: range,
+      /** M39.4 (doc 41): the realised CF is cf_pitched × a draw in this range. */
+      cf_realised_share: range,
       limit_kw: z.record(z.string(), pos),
       sizes_kw: z.array(pos).min(1),
       breakdown_per_year: share,
@@ -201,7 +202,10 @@ const energySchema = z.object({
       lifetime_years: pos,
       fade_per_year: share,
       overrun_class: z.enum(OVERRUN_CLASSES),
-      capacity_derate: z.record(z.string(), share),
+      /** M39.4 (doc 41): a 4-hour battery's PJM capacity derate by year (the last year's holds after it). */
+      capacity_derate_4h: byYear,
+      capacity_derate_2h_ratio: share,
+      capacity_derate_8h_add: share,
       capacity_regions: z.array(z.string()),
       capacity_from: quarterId,
       fire_per_year: share,

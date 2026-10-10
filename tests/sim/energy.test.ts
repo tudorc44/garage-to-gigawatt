@@ -6,11 +6,13 @@ import { CONTENT } from '../../src/content/index.ts'
 import { ENERGY, energyYear, itcPct } from '../../src/content/energyContent.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
-import { newGame, type GameState, type Site } from '../../src/sim/state.ts'
+import { newGame, type EnergyAsset, type GameState, type Site } from '../../src/sim/state.ts'
 import {
   billOffsetUsd,
   buildCostUsd,
+  capacityDerate,
   energyChoices,
+  ercotBatteryUsd,
   paybackYears,
 } from '../../src/sim/systems/energy.ts'
 import { firmKw, flareOutput } from '../../src/sim/systems/energyAssets.ts'
@@ -47,12 +49,15 @@ function act1(label: string, seed = 1): GameState {
 }
 
 describe('the energy market file', () => {
-  it('has one row per year, 2009-2040, and the ITC steps of doc 38 §4.1', () => {
+  it('has one row per year, 2009-2040, and the ITC steps (M39.4, doc 40 §Q12: 30 / 26 from 2020 / 30 from 2022 / 0 from 2026)', () => {
     expect(ENERGY.market.map((r) => r.year)).toEqual(Array.from({ length: 32 }, (_, i) => 2009 + i))
     expect(energyYear(2014).res_solar_usd_w).toBe(4.3)
     expect(energyYear(2025).bess_usd_kwh_us).toBe(219)
     expect(energyYear(2023).texas_summer).toBe('hot')
-    expect([itcPct('2019Q4'), itcPct('2021Q2'), itcPct('2022Q2'), itcPct('2022Q3')]).toEqual([30, 26, 26, 30])
+    expect([itcPct('2019Q4'), itcPct('2021Q4'), itcPct('2022Q1'), itcPct('2025Q4'), itcPct('2026Q1')]).toEqual([30, 26, 30, 30, 0])
+    // M39.4: the battery prices of doc 40 §Q8-Q9
+    expect([2015, 2016, 2017, 2020, 2021].map((y) => energyYear(y).home_battery_usd_kwh)).toEqual([1000, 1000, 750, 750, 900])
+    expect([2015, 2016, 2017, 2018, 2020].map((y) => energyYear(y).bess_usd_kwh_us)).toEqual([1500, 1200, 900, 625, 400])
   })
 })
 
@@ -88,14 +93,15 @@ describe('rooftop solar (doc 38 §4.1)', () => {
 })
 
 describe('small wind, the trap (doc 38 §4.2)', () => {
-  it('draws a realised capacity factor of 8-15% against the pitched 20%', () => {
+  it('draws a realised capacity factor of 6-20% against the pitched 20% (M39.4: 0.20 × U(0.3, 1.0))', () => {
     const cfs: number[] = []
     for (let seed = 1; seed <= 20; seed++) {
       const s = ok(act1('2018Q1', seed), { type: 'ENERGY_BUILD', siteId: 'site-1', kind: 'small_wind', size: 10 })
       cfs.push(s.sites[0].energy![0].cf!)
     }
-    expect(Math.min(...cfs)).toBeGreaterThanOrEqual(0.08)
-    expect(Math.max(...cfs)).toBeLessThanOrEqual(0.15)
+    expect(Math.min(...cfs)).toBeGreaterThanOrEqual(0.06)
+    expect(Math.max(...cfs)).toBeLessThanOrEqual(0.2)
+    expect(Math.max(...cfs) - Math.min(...cfs)).toBeGreaterThan(0.05)
   })
 
   it('quotes the pitched capacity factor until its first report, then the real one', () => {
@@ -285,5 +291,30 @@ describe('a game without energy plays as before', () => {
     let s = act1('2018Q1')
     for (let i = 0; i < 2; i++) s = playQuarter(s)
     expect(JSON.stringify(s)).not.toMatch(/"energy"|"special"|"dr"|"flare"|energyRevenueUsd/)
+  })
+})
+
+describe('utility batteries (M39.4, doc 40 §Q9-Q11)', () => {
+  it('the PJM capacity derate follows the path by year; 2-hour = 4-hour × 0.58, 8-hour = 4-hour + 0.10', () => {
+    expect(['2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035', '2040'].map((y) => capacityDerate(4, y))).toEqual([
+      0.58, 0.59, 0.52, 0.45, 0.4, 0.35, 0.3, 0.27, 0.25, 0.25,
+    ])
+    expect(capacityDerate(2, '2030')).toBeCloseTo(0.45 * 0.58)
+    expect(capacityDerate(8, '2030')).toBeCloseTo(0.55)
+    expect(ENERGY.site_assets.bess.round_trip_loss).toBe(0.15)
+    expect(ENERGY.site_assets.bess.fade_per_year).toBe(0.025)
+  })
+
+  it('an ERCOT battery earns ancillary-services income each quarter: $140K (2022), $190K (2023), $55K (2024), $50K per MW-yr after', () => {
+    const site = { id: 'x', tier: 'texas_site', readyQuarter: 0, rentUsdQ: 0, powerPriceMult: 1, flaw: null } as Site
+    const bess = { id: 'b', kind: 'bess', kw: 10_000, hours: 4, readyQuarter: q('2022Q4'), builtQuarter: q('2022Q1'), capexUsd: 0 } as EnergyAsset
+    const at = (l: string) => ercotBatteryUsd({ ...newGame(1), quarter: q(l) }, site, bess)
+    expect(at('2022Q4')).toBeCloseTo((10 * 140_000) / 4)
+    expect(at('2023Q2')).toBeCloseTo((10 * 190_000) / 4)
+    expect(at('2024Q1')).toBeCloseTo((10 * 55_000) / 4)
+    expect(at('2030Q3')).toBeCloseTo((10 * 50_000) / 4)
+    // not before it's ready, and not outside ERCOT
+    expect(ercotBatteryUsd({ ...newGame(1), quarter: q('2022Q3') }, site, bess)).toBe(0)
+    expect(ercotBatteryUsd({ ...newGame(1), quarter: q('2023Q2') }, { ...site, tier: 'own_site', region: 'pjm' }, bess)).toBe(0)
   })
 })
