@@ -627,15 +627,26 @@ function deliverySavingsUsd(state: GameState, v: Venture): number {
   return kw * HOURS_Q * (grid - v.ppaUsdMwh / 1000)
 }
 
+/**
+ * M39.5 (doc 41, doc 40 §Q14): a reactor's capacity factor in a quarter: 0.80 for its first 8 quarters after first
+ * power, then 0.92. Any other type: its own CF.
+ */
+export function ventureCf(v: Venture, quarter: number): number {
+  const t = T[v.type] as { cf?: number; cf_first?: { cf: number; quarters: number } }
+  const first = t.cf_first
+  if (first && v.stage === 'operating' && quarter - v.codQuarter < first.quarters) return first.cf
+  return t.cf ?? 0
+}
+
 /** The venture's own EBITDA for a quarter at operation, $ (it sells all its output at its PPA price). */
-export function ventureEbitdaUsd(v: Venture): number {
+export function ventureEbitdaUsd(v: Venture, quarter: number): number {
   if (v.stage !== 'operating') return 0
   if (v.type === 'pumped') return (v.mw * 1000 * (T.pumped.capacity_usd_kw_yr - T.pumped.running_usd_kw_yr)) / 4
   if (v.type === 'fusion') return 0
   if (v.type === 'control')
     return (v.mw * capacityFactorControl() * HOURS_Q * T.control.ppa_usd_mwh) - (v.mw * 1000 * T.control.running_usd_kw_yr) / 4
   const t = T[v.type]
-  const cf = isEgs(v.type) && v.weakField && !v.fieldFixed ? T[v.type].weak_field.cf : t.cf
+  const cf = isEgs(v.type) && v.weakField && !v.fieldFixed ? T[v.type].weak_field.cf : ventureCf(v, quarter)
   const price = v.reopened ? Math.max(v.ppaUsdMwh, t.ppa_usd_mwh) : t.ppa_usd_mwh
   return v.mw * cf * HOURS_Q * (price - t.running_usd_mwh)
 }

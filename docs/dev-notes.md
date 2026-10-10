@@ -246,6 +246,8 @@ Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5
   Mine: the 2018 "warning event" is the row's reason ("rationed"), not a log line, so games without energy options stay identical.
 - **M39.4** done: home battery $1,000/750/900, utility battery $1,500 (2015) … $625 (2018), $513 (2019, straight line: mine), ITC 0%
   from 2026 and 30% from 2022Q1, small wind CF 0.20 × U(0.3, 1), battery 85% / 2.5% fade, PJM derate by year, ERCOT battery income.
+- **M39.5** done: EGS $7,000/kW, PPA $90; block 2 $5,500/kW, $90; reactors $40/MWh, CF 0.80 for 8 q then 0.92 (`ventureCf`). Goldens
+  act4-energy-f2/f4 change (the cheaper EGS buy-in); the others don't. Open: delivery to the campus stays firm (CF not applied).
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 

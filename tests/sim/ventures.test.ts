@@ -16,6 +16,7 @@ import {
   joinVenture,
   referenceUsdKw,
   settleVentureCalls,
+  ventureCf,
   venturesValueUsd,
 } from '../../src/sim/systems/ventures.ts'
 import { act3ScenarioCompany } from './act3Helpers.ts'
@@ -79,7 +80,7 @@ describe('joining a venture (doc 38 §5.1)', () => {
     let s = company()
     const before = s.cash
     s = ok(s, { type: 'VENTURE_JOIN', venture: 'egs', stake: 0.2, offtake: 0, prepay: 0 })
-    expect(before - s.cash).toBe(0.2 * 7500 * 100 * 1000)
+    expect(before - s.cash).toBe(0.2 * 7000 * 100 * 1000)
     // One developer per type: joined once.
     expect(applyAction(s, { type: 'VENTURE_JOIN', venture: 'egs', stake: 0.1, offtake: 0, prepay: 0 })).toMatchObject({
       ok: false,
@@ -109,7 +110,7 @@ describe('joining a venture (doc 38 §5.1)', () => {
       ok: false,
       error: { key: 'error.venture_not_yet' },
     })
-    expect(buyInUsd(s, { type: 'egs2', stake: 0.2 })).toBe(0.2 * 4500 * 100 * 1000)
+    expect(buyInUsd(s, { type: 'egs2', stake: 0.2 })).toBe(0.2 * 5500 * 100 * 1000)
   })
 
   it('is not offered before Act III, and one nuclear venture every 8 quarters', () => {
@@ -228,6 +229,20 @@ describe('ventures marked to milestones (M36.8, design thread answer 11a)', () =
       return
     }
     throw new Error('no seed where EGS is late')
+  })
+})
+
+describe('M39.5 (doc 41): reactors run at 0.80 for their first 8 quarters, then 0.92', () => {
+  it('ventureCf by quarters since first power', () => {
+    const s = company()
+    const v = joinVenture(s, { type: 'smr', stake: 0.1, offtake: 0, prepay: 0 })
+    v.stage = 'operating'
+    v.codQuarter = q('2030Q1')
+    expect(ventureCf(v, q('2030Q1'))).toBe(0.8)
+    expect(ventureCf(v, q('2031Q4'))).toBe(0.8)
+    expect(ventureCf(v, q('2032Q1'))).toBe(0.92)
+    expect(VENTURES.types.smr.running_usd_mwh).toBe(40)
+    expect(VENTURES.types.adv_fission.running_usd_mwh).toBe(40)
   })
 })
 

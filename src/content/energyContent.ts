@@ -301,6 +301,8 @@ const nuclearSchema = z.object({
   slip: slipSchema,
   running_usd_mwh: nonneg,
   cf: share,
+  /** M39.5 (doc 41, doc 40 §Q14): the CF for the first quarters after first power (then `cf`). */
+  cf_first: z.object({ cf: share, quarters: quarters }).optional(),
   regions: regionsSchema,
   cancel: z.object({ subscribed_min: share, per_year: share, others_subscribed: range }),
   cost_share: z.object({ chance: share, share: range }),
