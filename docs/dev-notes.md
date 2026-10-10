@@ -234,6 +234,16 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Milestone M40 (branch `m40`, from `main` at `ff442df`; design thread answers after M37.7-M39, 10 Oct 2026)
+
+The PR the answers asked for was already merged (PR #5), so `m40` starts at `main` (same content as `m38`). Answers 3 and 4
+need no change: venture marks stay scaled by the buy-in (egs2's 1.26× in F2 accepted); Iceland 2018 stays the row's reason.
+Split: **M40.1** the Act IV reading (a build quarter's hedges and debt at 0; a raise takes + before an offensive move) ·
+**M40.2** venture delivery = contracted MW × the quarter's CF · then the runs (`--act4`, `--energy`; Act III untouched).
+- **M40.1** done (`scoredSignsIv`, readingScoreIv.ts; the reveal shows the scored sign): in a quarter with a commit or orbital
+  debt draw, presale, insurance and the debt draw count 0 and are never decoys (no block ids in the log: "that build's own" =
+  that quarter's, mine, reversible); a raise is + if a + move follows that quarter or the next. Act IV goldens: reading only.
+
 ## Milestone M39 (branch `m38`; energy data fixes, doc 41 of 10 Oct 2026, from doc 40's research)
 
 Split (one commit per step; doc 41 numbers them M38.x, renumbered M39.x by the owner): **M39.1** Texas: the credit split

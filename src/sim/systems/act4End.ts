@@ -8,7 +8,6 @@ import { MONEY } from '../../content/moneyContent.ts'
 import { lunarSite, type LunarSiteId } from '../../content/moonContent.ts'
 import { signalsHiddenIv } from '../../content/signalsHiddenIv.ts'
 import type { Act4End, GameState } from '../state.ts'
-import { ACT4_MOVE_SIGN } from './act4Moves.ts'
 import { trueReliability } from './fleetReliability.ts'
 import { revealSiteTruthT } from './lunarGeology.ts'
 import { estimateT, resourceCategory } from './moon.ts'
@@ -90,7 +89,7 @@ export function buildAct4End(state: GameState, gameOver = false): Act4End {
       telemetryAvgPctYr: telemetry.length ? telemetry.reduce((s, x) => s + x.failurePctYr, 0) / telemetry.length : null,
     },
     reading: { score: reading.score, base: reading.base, penalty: reading.penalty, perQuarter: reading.perQuarter },
-    moves: markMovesIv(moves, future).map((m) => ({ q: m.q, kind: m.kind, sign: ACT4_MOVE_SIGN[m.kind], mark: m.mark })),
+    moves: markMovesIv(moves, future).map((m) => ({ q: m.q, kind: m.kind, sign: m.sign, mark: m.mark })),
     careerTitleId: careerTitleId(state, gameOver),
     readingTitleId: readingTitleId(reading.score),
     frontierTitleId: frontierTitleId(state),

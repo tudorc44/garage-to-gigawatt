@@ -11071,13 +11071,13 @@
       "telemetryAvgPctYr": 8.0181903519386
     },
     "reading": {
-      "score": 31,
-      "base": 61,
+      "score": 7,
+      "base": 37,
       "penalty": 30,
       "perQuarter": [
         {
           "q": 0,
-          "stance": -1,
+          "stance": 1,
           "ideal": 0,
           "weight": 1,
           "value": 0.5
@@ -11098,87 +11098,87 @@
         },
         {
           "q": 3,
-          "stance": -1,
+          "stance": 1,
           "ideal": 0,
           "weight": 1,
           "value": 0.5
         },
         {
           "q": 4,
-          "stance": 0,
+          "stance": 1,
           "ideal": 0,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 5,
-          "stance": -1,
+          "stance": 1,
           "ideal": 0,
           "weight": 1,
           "value": 0.5
         },
         {
           "q": 6,
-          "stance": 0,
+          "stance": 1,
           "ideal": 0,
           "weight": 1,
-          "value": 0.7
+          "value": 0.5
         },
         {
           "q": 7,
-          "stance": -1,
+          "stance": 1,
           "ideal": 0,
           "weight": 1,
           "value": 0.5
         },
         {
           "q": 8,
-          "stance": -1,
+          "stance": 1,
           "ideal": 0,
           "weight": 1,
           "value": 0.5
         },
         {
           "q": 9,
-          "stance": -1,
+          "stance": 1,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0
         },
         {
           "q": 10,
-          "stance": -1,
+          "stance": 1,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0
         },
         {
           "q": 11,
-          "stance": 0,
+          "stance": 1,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 0
         },
         {
           "q": 12,
-          "stance": 0,
+          "stance": 1,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 0
         },
         {
           "q": 13,
-          "stance": 0,
+          "stance": 1,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 0
         },
         {
           "q": 14,
-          "stance": 0,
+          "stance": 1,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 0
         },
         {
           "q": 15,
@@ -11221,19 +11221,19 @@
       {
         "q": 0,
         "kind": "equity_raise",
-        "sign": -1,
+        "sign": 1,
         "mark": "neutral"
       },
       {
         "q": 0,
         "kind": "orbit_presale",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 0,
         "kind": "orbit_debt",
-        "sign": 1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
@@ -11245,7 +11245,7 @@
       {
         "q": 0,
         "kind": "orbit_insure",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
@@ -11263,20 +11263,20 @@
       {
         "q": 3,
         "kind": "equity_raise",
-        "sign": -1,
-        "mark": "neutral"
+        "sign": 1,
+        "mark": "decoy"
       },
       {
         "q": 3,
         "kind": "orbit_presale",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 3,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "decoy"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 3,
@@ -11287,20 +11287,20 @@
       {
         "q": 3,
         "kind": "orbit_insure",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 4,
         "kind": "orbit_presale",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 4,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "decoy"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 4,
@@ -11311,25 +11311,25 @@
       {
         "q": 4,
         "kind": "orbit_insure",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 5,
         "kind": "equity_raise",
-        "sign": -1,
+        "sign": 1,
         "mark": "neutral"
       },
       {
         "q": 5,
         "kind": "orbit_presale",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 5,
         "kind": "orbit_debt",
-        "sign": 1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
@@ -11341,19 +11341,19 @@
       {
         "q": 5,
         "kind": "orbit_insure",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 6,
         "kind": "orbit_presale",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 6,
         "kind": "orbit_debt",
-        "sign": 1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
@@ -11365,12 +11365,6 @@
       {
         "q": 6,
         "kind": "orbit_insure",
-        "sign": -1,
-        "mark": "neutral"
-      },
-      {
-        "q": 6,
-        "kind": "lunar_move",
         "sign": 0,
         "mark": "neutral"
       },
@@ -11381,21 +11375,27 @@
         "mark": "neutral"
       },
       {
+        "q": 6,
+        "kind": "lunar_move",
+        "sign": 0,
+        "mark": "neutral"
+      },
+      {
         "q": 7,
         "kind": "equity_raise",
-        "sign": -1,
+        "sign": 1,
         "mark": "neutral"
       },
       {
         "q": 7,
         "kind": "orbit_presale",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 7,
         "kind": "orbit_debt",
-        "sign": 1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
@@ -11407,25 +11407,25 @@
       {
         "q": 7,
         "kind": "orbit_insure",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 8,
         "kind": "equity_raise",
-        "sign": -1,
+        "sign": 1,
         "mark": "neutral"
       },
       {
         "q": 8,
         "kind": "orbit_presale",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 8,
         "kind": "orbit_debt",
-        "sign": 1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
@@ -11437,26 +11437,26 @@
       {
         "q": 8,
         "kind": "orbit_insure",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 9,
         "kind": "equity_raise",
-        "sign": -1,
-        "mark": "match"
+        "sign": 1,
+        "mark": "opposite"
       },
       {
         "q": 9,
         "kind": "orbit_presale",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 9,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "opposite"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 9,
@@ -11467,26 +11467,26 @@
       {
         "q": 9,
         "kind": "orbit_insure",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 10,
         "kind": "equity_raise",
-        "sign": -1,
-        "mark": "match"
+        "sign": 1,
+        "mark": "opposite"
       },
       {
         "q": 10,
         "kind": "orbit_presale",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 10,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "opposite"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 10,
@@ -11497,8 +11497,8 @@
       {
         "q": 10,
         "kind": "orbit_insure",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 10,
@@ -11509,14 +11509,14 @@
       {
         "q": 11,
         "kind": "orbit_presale",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 11,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "opposite"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 11,
@@ -11527,8 +11527,8 @@
       {
         "q": 11,
         "kind": "orbit_insure",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 11,
@@ -11539,14 +11539,14 @@
       {
         "q": 12,
         "kind": "orbit_presale",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 12,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "opposite"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 12,
@@ -11557,8 +11557,8 @@
       {
         "q": 12,
         "kind": "orbit_insure",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 12,
@@ -11569,14 +11569,14 @@
       {
         "q": 13,
         "kind": "orbit_presale",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 13,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "opposite"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 13,
@@ -11587,8 +11587,8 @@
       {
         "q": 13,
         "kind": "orbit_insure",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 13,
@@ -11599,14 +11599,14 @@
       {
         "q": 14,
         "kind": "orbit_presale",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 14,
         "kind": "orbit_debt",
-        "sign": 1,
-        "mark": "opposite"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 14,
@@ -11617,8 +11617,8 @@
       {
         "q": 14,
         "kind": "orbit_insure",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 14,
@@ -11658,7 +11658,7 @@
       }
     ],
     "careerTitleId": "developer",
-    "readingTitleId": "weathervane",
+    "readingTitleId": "bagholder",
     "frontierTitleId": "cislunar",
     "rivalFates": [
       {
