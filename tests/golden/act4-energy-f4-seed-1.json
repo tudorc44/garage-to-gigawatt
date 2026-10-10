@@ -6393,7 +6393,7 @@
   },
   "ledger": {
     "from": 40,
-    "quarters": [
+    "history": [
       {
         "q": 40,
         "startCash": 500000000,
@@ -7620,51 +7620,51 @@
           "venture:venture-6": "site-2",
           "venture:venture-8": "site-2"
         }
+      }
+    ],
+    "current": {
+      "q": 75,
+      "startCash": 277371510.8,
+      "lines": {
+        "power": -5182235.188125,
+        "energy_income": 210672.46200000006,
+        "energy_opex": -135000
       },
-      {
-        "q": 75,
-        "startCash": 277371510.8,
-        "lines": {
+      "byBiz": {},
+      "byRef": {
+        "site:site-2": {
           "power": -5182235.188125,
           "energy_income": 210672.46200000006,
           "energy_opex": -135000
         },
-        "byBiz": {},
-        "byRef": {
-          "site:site-2": {
-            "power": -5182235.188125,
-            "energy_income": 210672.46200000006,
-            "energy_opex": -135000
-          },
-          "venture:venture-6": {
-            "energy_income": -212400.00599999994
-          },
-          "venture:venture-8": {
-            "energy_income": 106431.23400000001
-          }
+        "venture:venture-6": {
+          "energy_income": -212400.00599999994
         },
-        "rounding": -0.0538751482963562,
-        "weeks": [
-          276972877.32,
-          276574243.84,
-          276175610.36,
-          275776976.88,
-          275378343.4,
-          274979709.92,
-          274581076.44,
-          274182442.96,
-          273783809.48,
-          273385176,
-          272986542.52,
-          272587909.04,
-          272189275.56
-        ],
-        "parents": {
-          "venture:venture-6": "site-2",
-          "venture:venture-8": "site-2"
+        "venture:venture-8": {
+          "energy_income": 106431.23400000001
         }
+      },
+      "rounding": -0.0538751482963562,
+      "weeks": [
+        276972877.32,
+        276574243.84,
+        276175610.36,
+        275776976.88,
+        275378343.4,
+        274979709.92,
+        274581076.44,
+        274182442.96,
+        273783809.48,
+        273385176,
+        272986542.52,
+        272587909.04,
+        272189275.56
+      ],
+      "parents": {
+        "venture:venture-6": "site-2",
+        "venture:venture-8": "site-2"
       }
-    ]
+    }
   },
   "act3Payouts": [],
   "act3End": {

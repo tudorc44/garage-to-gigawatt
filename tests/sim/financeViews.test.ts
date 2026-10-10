@@ -12,6 +12,7 @@ import {
   pnlFigures,
   periodTotals,
   pnlView,
+  quarterRevenue,
   siteView,
   type Period,
 } from '../../src/sim/financeViews.ts'
@@ -90,6 +91,18 @@ describe('the Finances views add up', () => {
     expect(c.chart.points).toHaveLength(14)
     expect(c.chart.points[c.chart.lowIndex].usd).toBe(Math.min(...c.chart.points.map((x) => x.usd)))
     expect(cashFlowView(s, { kind: 'year', year: 2021 }).chart.points).toHaveLength(4)
+  })
+
+  it('M37.7: the report tile’s revenue is the P&L’s total, with the coins mined inside it', () => {
+    let mixed = 0
+    for (const r of s.reports) {
+      const v = quarterRevenue(s, q(r.quarter))!
+      close(v.total, pnlView(s, { kind: 'quarter', q: q(r.quarter) }).now.revenue)
+      close(v.mining, r.revenueUsd)
+      if (v.mining > 1 && v.total - v.mining > 1) mixed++
+    }
+    // (the career has quarters with mining and other revenue both: the tile's "of which mining" case)
+    expect(mixed).toBeGreaterThan(0)
   })
 
   it('the previous period and the biggest changes', () => {

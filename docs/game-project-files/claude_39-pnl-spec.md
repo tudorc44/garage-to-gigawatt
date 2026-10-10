@@ -9,9 +9,9 @@ INVARIANTS: no rule changes. All `npm run sim` CSVs and tables byte-identical. G
 ## M37.1 — The ledger (the real work)
 - One helper for every cash movement: `book(state, category, amountUsd, ref?)` (ref = site id, project id, block id, venture id, or none). Replace every direct change to state.cash in the sim with it, across all acts. Cash changes only through book().
 - Categories (DT; one enum, each with its P&L or cash-flow section):
-  - REVENUE: mining_btc, mining_eth, mining_other (value of coins mined, at the week's price), hosting_fees, ai_shell_rent, ai_cloud, orbit_revenue, grid_credits (curtailment, demand response), energy_income (resold power, PPA savings, storage income), other_income (card cash, prepayments received).
+  - REVENUE: mining_btc, mining_eth, mining_other (value of coins mined, at the week's price), hosting_fees, ai_shell_rent, ai_cloud, orbit_revenue, grid_credits (curtailment, demand response), energy_income (resold power, PPA savings, storage income), other_income (card cash, grants, fees received). (Amended M37.7: prepayments are not income; see "Amendments".)
   - OPERATING COSTS: power (including reservation, capacity charge, take-or-pay, PPA), rent, salaries, repairs (machines and GPUs), insurance, ai_opex, orbit_opex, community (outreach, mitigation, Community Deal, lobbying, political capital spends), other_opex (fees not listed).
-  - BELOW EBITDA: interest (all loans and facilities), finance_fees (arrangement, commitment, standby fees), one_offs (penalties, legal costs, damages, leave penalties, write-offs, losses or gains on asset sales vs cost), taxes (only if the game has them).
+  - BELOW EBITDA: interest (all loans and facilities), finance_fees (arrangement, commitment, standby fees), one_offs (penalties, legal costs, damages, leave penalties, write-offs), taxes (event cards levy them). (Amended M37.7: no gain or loss on asset sales; see "Amendments".)
   - INVESTING (cash flow only): machines, site_builds, project_capex, gpus, retrofits, orbit_capex (builds, launches, deposits), lunar_capex, venture_calls, energy_assets, asset_sales (+, proceeds).
   - FINANCING (cash flow only): debt_drawn (+), debt_repaid (−), equity_raised (+), founder_payouts (− if any).
   - TREASURY (cash flow only): coins_sold (+), coins_bought (−).
@@ -68,3 +68,24 @@ INVARIANTS: no rule changes. All `npm run sim` CSVs and tables byte-identical. G
 - Browser check at 1024 and 1440 px: P&L in each view, cash flow with the weekly chart, in Act I, Act II and Act IV saves.
 
 REPORT: files touched, tests before/after, the number of cash-changing call sites converted to book(), the reconciliation result, the golden diff ("ledger only"), bundle size, the browser check, and numbered questions.
+
+## Amendments (design thread, 10 Oct 2026, after the M37 build; built in M37.7)
+- **A1 Prepayments are deferred revenue, not income.** A tenant's or buyer's prepayment is cash outside the P&L: the cash
+  flow's operating section shows "Prepayments received, less those used" (category `prepayments`). The revenue it covers
+  counts in full when earned (rent, orbital revenue, lunar sales). Counting it as other_income made income negative later.
+- **A2 No gain or loss on asset sales.** The game has no depreciation, so a gain or loss against cost would mislead (every
+  old machine would show a large loss). Sales show as proceeds in Investing (asset_sales) only.
+- **A3 Extra categories:** lunar_revenue, lunar_opex (the Moon's sales and running costs), energy_opex (energy-asset upkeep),
+  taxes (event cards levy them); the Moon is its own business column.
+- **A4 Event cards:** a card's plain cash is other_income when it pays, a one-off when it costs.
+- **A5 Attribution:** rent and power go to the business the site serves (mining while it has machines, else AI with a
+  project there, else hosting with a contract, else Corporate).
+- **A6 By site:** a site, project or block with nothing in the P&L for the period (only an investment) isn't listed.
+- **A7 Start rules:** an old save's ledger starts at the quarter it's loaded in (the next one if saved mid-quarter); its
+  earlier quarters keep their report's summary. A preset company's ledger starts at its opening balance.
+- **A8 Storage (M37.7):** the open quarter is copied with the game each week; closed quarters are kept in a history that is
+  shared between copies and never changed (closing a quarter appends to a new list). Saves hold the full history.
+- **A9 Mined coins in the cash flow:** "Less coins mined (cash only when sold)" takes out their full value; coin sales come in
+  under Treasury (coins_sold).
+- **A10 The quarter report's Revenue tile** shows total revenue (the P&L block's figure), with "of which mining $x" when
+  mining is some but not all of it. The prologue's report gets a Revenue row with the same figure.

@@ -34,6 +34,7 @@ import { SiteText } from '../components/siteText.tsx'
 import { Act4Panel } from '../components/act4Lazy.tsx'
 import { Tip } from '../components/basics.tsx'
 import { QuarterFinances } from '../components/financeSummary.tsx'
+import { quarterRevenue } from '../../sim/financeViews.ts'
 import { Finances } from '../components/financesLazy.tsx'
 import { useState } from 'preact/hooks'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
@@ -96,6 +97,7 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
   const gameOver = gameOverView(state)
   // M37.5: "Open Finances ›" shows the Finances section in place of the report, with a way back.
   const [finances, setFinances] = useState(false)
+  const revenue = quarterRevenue(state, CONTENT.quarters.indexOf(r.quarter))
   if (finances)
     return (
       <div class="screen">
@@ -148,10 +150,15 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
         </div>
 
         <div class="tiles">
+          {/* M37.7 (DT): total revenue, as the P&L block; the mining part when it's some but not all of it */}
           <Tile
             label={t('ui.report.revenue')}
-            value={fmt.money(r.revenueUsd)}
-            sub={minedText(r) || t('ui.report.nothing_mined')}
+            value={fmt.money(revenue?.total ?? r.revenueUsd)}
+            sub={
+              revenue && revenue.mining > 0.005 && revenue.total - revenue.mining > 0.005
+                ? [t('ui.fin.of_which_mining', { usd: fmt.money(revenue.mining) }), minedText(r)].filter(Boolean).join(' · ')
+                : minedText(r) || t('ui.report.nothing_mined')
+            }
           />
           <Tile
             label={t('ui.report.costs')}

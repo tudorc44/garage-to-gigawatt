@@ -3922,5 +3922,7 @@
   "ui.fin.summary.invested": "Invested",
   "ui.fin.summary.raised": "Raised (debt and equity)",
   "ui.fin.summary.best_worst": "Best site: {best} ({bestUsd} contribution). Worst: {worst} ({worstUsd}).",
-  "ui.fin.summary.one_site": "Your one site, {site}, contributed {usd}."
+  "ui.fin.summary.one_site": "Your one site, {site}, contributed {usd}.",
+  "ui.fin.of_which_mining": "of which mining {usd}",
+  "ui.p0.r.revenue": "Revenue"
 }

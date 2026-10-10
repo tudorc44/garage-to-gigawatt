@@ -250,6 +250,9 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
   sideways scroll, no cut cell. Tests 1,569 → 1,621; main bundle 221.1 → 224.9 KB (Finances chunk 11.4 KB). Merged (PR #4), live.
 - M37 runs (final code): `--act2 --act3` identical to M34 (1,302 files), `--act4` and `--energy` identical to M36.11, prologue CSV
   identical. The ledger costs ~20% speed: prologue "1,000 runs" 104.6 → 126.1 s, a MISS on its 120 s line (open question).
+- **M37.7** (design thread after M37): ledger = open quarter + a shared, never-changed history (`cloneState` in state.ts copies the
+  open quarter only); overhead 25-34% → 1-2%, prologue 1,000 runs 102.1 s (PASS); Revenue tile = total revenue ("of which
+  mining"), a Revenue row on the prologue report; doc 39 amended (A1-A10). M37-format saves split at load.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 

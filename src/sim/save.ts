@@ -10,7 +10,7 @@ import { assignCarriedTiers } from './systems/density.ts'
 import { numberUnnumbered } from './systems/siteSerials.ts'
 import { startPolitics } from './systems/politics.ts'
 import { drawWildcards } from './systems/wildcards.ts'
-import { startLedgerAtLoad } from './ledger.ts'
+import { splitLedgerAtLoad, startLedgerAtLoad, type LedgerQuarter } from './ledger.ts'
 import {
   emptyQuarterStats,
   newGame,
@@ -158,5 +158,8 @@ export function restoreSave(raw: unknown): Loaded {
   // M37.1: a save from before the ledger starts it now; its past quarters keep what their reports knew. (A game with
   // no quarter played yet needs nothing: its ledger opens with its first cash movement, as a new game's does.)
   if (!isObject(data.ledger) && state.reports.length > 0) startLedgerAtLoad(state)
+  // M37.7: a save from M37's build kept every quarter in one list; it splits into the closed history and the open quarter.
+  else if (isObject(data.ledger) && Array.isArray(data.ledger.quarters))
+    splitLedgerAtLoad(state, data.ledger.quarters as LedgerQuarter[], Number(data.ledger.from))
   return { ok: true, state }
 }

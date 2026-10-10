@@ -143,7 +143,7 @@ const ADDED_CHECKS: Record<string, (v: unknown) => boolean> = {
   'sites.*.serial': (v) => Number.isInteger(v) && (v as number) >= 1,
   siteSerials: (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
   // M37.1: an old save starts its ledger at load (its past quarters partial)
-  ledger: (v) => typeof v === 'object' && v !== null && Array.isArray((v as { quarters: unknown }).quarters),
+  ledger: (v) => typeof v === 'object' && v !== null && Array.isArray((v as { history: unknown }).history),
 }
 
 /**

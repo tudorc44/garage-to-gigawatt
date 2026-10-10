@@ -8074,7 +8074,7 @@
   },
   "ledger": {
     "from": 40,
-    "quarters": [
+    "history": [
       {
         "q": 40,
         "startCash": 500000000,
@@ -9897,122 +9897,122 @@
           2703901197.61,
           2703824399.29
         ]
-      },
-      {
-        "q": 75,
-        "startCash": 2688066155.11,
-        "lines": {
-          "other_opex": -1000000,
-          "prepayments": -1441049.9000460089,
-          "power": -998378.1581250005,
-          "orbit_revenue": 177821860.9453125,
-          "orbit_opex": -8750000,
-          "insurance": -10640678.4,
-          "orbit_capex": -16190460.000000004,
-          "lunar_opex": -5000000,
-          "lunar_revenue": 2832836.5561742517,
-          "interest": -26887569.14321345,
-          "debt_repaid": -124191403.55192848
-        },
-        "byBiz": {
-          "orbit": {
-            "other_opex": -1000000,
-            "insurance": -10640678.4
-          },
-          "moon": {
-            "prepayments": -1441049.9000460089
-          }
-        },
-        "byRef": {
-          "site:site-2": {
-            "power": -998378.1581250005
-          },
-          "block:ob1": {
-            "orbit_revenue": 13500000,
-            "orbit_opex": -625000,
-            "insurance": -1251360.0000000002
-          },
-          "block:ob2": {
-            "orbit_revenue": 13500000,
-            "orbit_opex": -625000,
-            "insurance": -1251360.0000000002
-          },
-          "block:ob3": {
-            "orbit_revenue": 14080356.125,
-            "orbit_opex": -625000,
-            "insurance": -1197939.6
-          },
-          "block:ob4": {
-            "orbit_revenue": 17479911.140625,
-            "orbit_opex": -625000,
-            "insurance": -1144440.0000000002
-          },
-          "block:ob5": {
-            "orbit_revenue": 17221539.328125,
-            "orbit_opex": -625000,
-            "insurance": -1091019.6
-          },
-          "block:ob6": {
-            "orbit_revenue": 16964286.5625,
-            "orbit_opex": -625000.0000000001,
-            "insurance": -1037520.0000000003
-          },
-          "block:ob7": {
-            "orbit_revenue": 16708146.898437498,
-            "orbit_opex": -625000.0000000001,
-            "insurance": -989247.6
-          },
-          "block:ob8": {
-            "orbit_revenue": 16453126.265625,
-            "orbit_opex": -625000.0000000001,
-            "insurance": -940896.0000000003
-          },
-          "block:ob9": {
-            "orbit_revenue": 16199218.750000002,
-            "orbit_opex": -625000,
-            "insurance": -892623.6000000003
-          },
-          "block:ob10": {
-            "orbit_revenue": 15340277.125000002,
-            "orbit_opex": -625000.0000000001,
-            "insurance": -844272.0000000003
-          },
-          "block:ob11": {
-            "orbit_revenue": 11124999.000000002,
-            "orbit_opex": -625000
-          },
-          "block:ob12": {
-            "orbit_opex": -625000
-          },
-          "block:ob13": {
-            "orbit_opex": -625000
-          },
-          "block:ob14": {
-            "orbit_revenue": 9249999.75,
-            "orbit_opex": -625000
-          },
-          "block:ob16": {
-            "orbit_capex": -16190460.000000004
-          }
-        },
-        "rounding": 0.0018243789672851562,
-        "weeks": [
-          2688381143.45,
-          2688304345.13,
-          2688227546.81,
-          2688150748.49,
-          2688073950.17,
-          2687997151.85,
-          2687920353.53,
-          2687843555.21,
-          2687766756.89,
-          2687689958.57,
-          2687613160.25,
-          2687536361.93,
-          2687459563.61
-        ]
       }
-    ]
+    ],
+    "current": {
+      "q": 75,
+      "startCash": 2688066155.11,
+      "lines": {
+        "other_opex": -1000000,
+        "prepayments": -1441049.9000460089,
+        "power": -998378.1581250005,
+        "orbit_revenue": 177821860.9453125,
+        "orbit_opex": -8750000,
+        "insurance": -10640678.4,
+        "orbit_capex": -16190460.000000004,
+        "lunar_opex": -5000000,
+        "lunar_revenue": 2832836.5561742517,
+        "interest": -26887569.14321345,
+        "debt_repaid": -124191403.55192848
+      },
+      "byBiz": {
+        "orbit": {
+          "other_opex": -1000000,
+          "insurance": -10640678.4
+        },
+        "moon": {
+          "prepayments": -1441049.9000460089
+        }
+      },
+      "byRef": {
+        "site:site-2": {
+          "power": -998378.1581250005
+        },
+        "block:ob1": {
+          "orbit_revenue": 13500000,
+          "orbit_opex": -625000,
+          "insurance": -1251360.0000000002
+        },
+        "block:ob2": {
+          "orbit_revenue": 13500000,
+          "orbit_opex": -625000,
+          "insurance": -1251360.0000000002
+        },
+        "block:ob3": {
+          "orbit_revenue": 14080356.125,
+          "orbit_opex": -625000,
+          "insurance": -1197939.6
+        },
+        "block:ob4": {
+          "orbit_revenue": 17479911.140625,
+          "orbit_opex": -625000,
+          "insurance": -1144440.0000000002
+        },
+        "block:ob5": {
+          "orbit_revenue": 17221539.328125,
+          "orbit_opex": -625000,
+          "insurance": -1091019.6
+        },
+        "block:ob6": {
+          "orbit_revenue": 16964286.5625,
+          "orbit_opex": -625000.0000000001,
+          "insurance": -1037520.0000000003
+        },
+        "block:ob7": {
+          "orbit_revenue": 16708146.898437498,
+          "orbit_opex": -625000.0000000001,
+          "insurance": -989247.6
+        },
+        "block:ob8": {
+          "orbit_revenue": 16453126.265625,
+          "orbit_opex": -625000.0000000001,
+          "insurance": -940896.0000000003
+        },
+        "block:ob9": {
+          "orbit_revenue": 16199218.750000002,
+          "orbit_opex": -625000,
+          "insurance": -892623.6000000003
+        },
+        "block:ob10": {
+          "orbit_revenue": 15340277.125000002,
+          "orbit_opex": -625000.0000000001,
+          "insurance": -844272.0000000003
+        },
+        "block:ob11": {
+          "orbit_revenue": 11124999.000000002,
+          "orbit_opex": -625000
+        },
+        "block:ob12": {
+          "orbit_opex": -625000
+        },
+        "block:ob13": {
+          "orbit_opex": -625000
+        },
+        "block:ob14": {
+          "orbit_revenue": 9249999.75,
+          "orbit_opex": -625000
+        },
+        "block:ob16": {
+          "orbit_capex": -16190460.000000004
+        }
+      },
+      "rounding": 0.0018243789672851562,
+      "weeks": [
+        2688381143.45,
+        2688304345.13,
+        2688227546.81,
+        2688150748.49,
+        2688073950.17,
+        2687997151.85,
+        2687920353.53,
+        2687843555.21,
+        2687766756.89,
+        2687689958.57,
+        2687613160.25,
+        2687536361.93,
+        2687459563.61
+      ]
+    }
   },
   "act3Payouts": [],
   "act3End": {

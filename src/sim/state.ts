@@ -1604,6 +1604,23 @@ export function roundCents(usd: number): number {
 }
 
 /**
+ * A copy of the game for one step (a week, an action). Everything is copied deep, except the ledger's closed quarters
+ * (M37.7, DT): they never change once closed (closing one makes a new list), so the copies share them and the step's
+ * cost doesn't grow with the career.
+ */
+export function cloneState(state: GameState): GameState {
+  const ledger = state.ledger
+  if (!ledger) return structuredClone(state)
+  const s = structuredClone({ ...state, ledger: undefined }) as GameState
+  s.ledger = {
+    from: ledger.from,
+    history: ledger.history,
+    current: ledger.current ? structuredClone(ledger.current) : null,
+  }
+  return s
+}
+
+/**
  * The scenario a game gets at the Act II→III boundary (doc 27 D2: S0 25%, S1 30%, S2 25%, S3 20%).
  * Its own substream(seed, "act3_scenario"), so it never moves the main RNG and no earlier act's game
  * changes. The same seed always draws the same scenario.

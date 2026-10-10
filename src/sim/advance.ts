@@ -4,7 +4,7 @@
 // failure wave → project alerts → neighbour complaint → event card → price alert.
 // After week 13 the quarter ends (report, or game over).
 import { BALANCE } from '../content/index.ts'
-import { logEntry, type GameState } from './state.ts'
+import { cloneState, logEntry, type GameState } from './state.ts'
 import { book, ledgerWeekEnd, roundCash } from './ledger.ts'
 import { checkPriceAlert } from './systems/interrupts.ts'
 import { marketWeek, previousMarketWeek, scenarioOf } from './systems/market.ts'
@@ -40,7 +40,7 @@ export function advance(state: GameState): GameState {
   if (state.interrupt) {
     throw new Error('advance() is paused until the interrupt is resolved')
   }
-  const s = structuredClone(state)
+  const s = cloneState(state)
   // The prologue (act 0) has its own week (src/sim/prologue/engine.ts).
   if (s.act === 0) {
     prologueWeek(s)

@@ -6393,7 +6393,7 @@
   },
   "ledger": {
     "from": 40,
-    "quarters": [
+    "history": [
       {
         "q": 40,
         "startCash": 500000000,
@@ -7620,51 +7620,51 @@
           "venture:venture-6": "site-2",
           "venture:venture-8": "site-2"
         }
+      }
+    ],
+    "current": {
+      "q": 75,
+      "startCash": 274221813.1,
+      "lines": {
+        "power": -6399432.123749998,
+        "energy_income": 433789.35600000015,
+        "energy_opex": -135000
       },
-      {
-        "q": 75,
-        "startCash": 274221813.1,
-        "lines": {
+      "byBiz": {},
+      "byRef": {
+        "site:site-2": {
           "power": -6399432.123749998,
           "energy_income": 433789.35600000015,
           "energy_opex": -135000
         },
-        "byBiz": {},
-        "byRef": {
-          "site:site-2": {
-            "power": -6399432.123749998,
-            "energy_income": 433789.35600000015,
-            "energy_opex": -135000
-          },
-          "venture:venture-6": {
-            "energy_income": -138027.70799999993
-          },
-          "venture:venture-8": {
-            "energy_income": 180803.53200000004
-          }
+        "venture:venture-6": {
+          "energy_income": -138027.70799999993
         },
-        "rounding": -0.012250185012817383,
-        "weeks": [
-          273729549.09,
-          273237285.08,
-          272745021.07,
-          272252757.06,
-          271760493.05,
-          271268229.04,
-          270775965.03,
-          270283701.02,
-          269791437.01,
-          269299173,
-          268806908.99,
-          268314644.98,
-          267822380.97
-        ],
-        "parents": {
-          "venture:venture-6": "site-2",
-          "venture:venture-8": "site-2"
+        "venture:venture-8": {
+          "energy_income": 180803.53200000004
         }
+      },
+      "rounding": -0.012250185012817383,
+      "weeks": [
+        273729549.09,
+        273237285.08,
+        272745021.07,
+        272252757.06,
+        271760493.05,
+        271268229.04,
+        270775965.03,
+        270283701.02,
+        269791437.01,
+        269299173,
+        268806908.99,
+        268314644.98,
+        267822380.97
+      ],
+      "parents": {
+        "venture:venture-6": "site-2",
+        "venture:venture-8": "site-2"
       }
-    ]
+    }
   },
   "act3Payouts": [],
   "act3End": {
