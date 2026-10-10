@@ -254,6 +254,12 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Milestone M43.0 (branch `m44`; the Act V gate, doc 43 §19, design thread prompt of 10 Oct 2026)
+
+Sim-only prototype, no UI, nothing in `src/` (goldens and sim outputs unchanged): `tools/act5-gate/` (`states.ts` plays
+the 2035Q4 companies as the energy runner; `gate.ts` the 20 stub V1 quarters, §11.3 valuation, Firm Holder vs Seller,
+30 seeds; `README.md` lists every assumption, all mine, reversible). On `m44` (unmerged, holds docs 43-44): mine.
+
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
 PR #8 (`m42`: the PR #7 cleanup and M41's run) opened for the owner. **M42.1** (F-10, Act II data): checked, not changed:
