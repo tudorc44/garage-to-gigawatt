@@ -49,10 +49,23 @@ describe('the Act IV reading score (M32.1)', () => {
     const perfect = computeReadingIv(o.perfect, f).score!
     const passive = computeReadingIv(o.passive, f).score!
     const opposite = computeReadingIv(o.opposite, f).score!
-    expect(perfect).toBeGreaterThan(passive)
+    // (M36.11: in F2, staying out of orbit is the reading itself, so passive scores as perfect does: 100)
+    if (f === 'f2') expect(passive).toBe(perfect)
+    else expect(perfect).toBeGreaterThan(passive)
     expect(passive).toBeGreaterThan(opposite)
     expect(perfect).toBeGreaterThanOrEqual(85)
     expect(opposite).toBeLessThanOrEqual(35)
+  })
+})
+
+describe('F2 reads exposure (M36.11, design thread)', () => {
+  it('a quiet quarter with no orbital exposure is a match; holding a block is not', () => {
+    expect(computeReadingIv([], 'f2').score).toBe(100)
+    expect(computeReadingIv([{ q: 0, kind: 'lunar_move' }], 'f2').score).toBe(100)
+    const held = computeReadingIv([{ q: 0, kind: 'orbit_commit' }], 'f2')
+    expect(held.perQuarter[1].value).toBe(0.5)
+    const sold = computeReadingIv([{ q: 0, kind: 'orbit_commit' }, { q: 3, kind: 'orbit_sale' }], 'f2')
+    expect(sold.perQuarter[4].value).toBe(1)
   })
 })
 

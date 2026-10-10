@@ -95,6 +95,23 @@ describe('joining a venture (doc 38 §5.1)', () => {
     ).toMatchObject({ ok: false, error: { key: 'error.venture_region' } })
   })
 
+  it('a firm offtake is your share of the unit, capped at 100 MW per venture (M36.11)', () => {
+    const s = company(1, 'tennessee')
+    s.sites[1].region = CONTENT.act3Nuclear.regions[0]
+    const v = joinVenture(s, { type: 'smr', stake: 0, offtake: 1, prepay: 0, siteId: 'site-2' })
+    expect(v.offtakeMw).toBe(VENTURES.offtake_cap_mw)
+    expect(joinVenture(company(2), { type: 'egs', stake: 0, offtake: 0.5, prepay: 0, siteId: 'site-2' }).offtakeMw).toBe(50)
+  })
+
+  it('the second EGS block opens in 2031Q1, at the NOAK pitch, on the first block’s terms (M36.11)', () => {
+    const s = company()
+    expect(applyAction(s, { type: 'VENTURE_JOIN', venture: 'egs2', stake: 0.2, offtake: 0, prepay: 0 })).toMatchObject({
+      ok: false,
+      error: { key: 'error.venture_not_yet' },
+    })
+    expect(buyInUsd(s, { type: 'egs2', stake: 0.2 })).toBe(0.2 * 4500 * 100 * 1000)
+  })
+
   it('is not offered before Act III, and one nuclear venture every 8 quarters', () => {
     const s = company()
     expect(applyAction({ ...s, act: 2, quarter: q('2026Q1') }, { type: 'VENTURE_DILIGENCE', venture: 'egs' }).ok).toBe(false)

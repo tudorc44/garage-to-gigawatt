@@ -5820,8 +5820,8 @@
       "telemetryAvgPctYr": 12.16017153696157
     },
     "reading": {
-      "score": 37,
-      "base": 67,
+      "score": 59,
+      "base": 89,
       "penalty": 30,
       "perQuarter": [
         {
@@ -5836,14 +5836,14 @@
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 1
         },
         {
           "q": 2,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 1
         },
         {
           "q": 3,
@@ -5878,14 +5878,14 @@
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 1
         },
         {
           "q": 8,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 0.5
+          "value": 1
         }
       ]
     },
@@ -6060,7 +6060,7 @@
       }
     ],
     "careerTitleId": "bust",
-    "readingTitleId": "weathervane",
+    "readingTitleId": "steady_hand",
     "frontierTitleId": "orbital",
     "rivalFates": [
       {

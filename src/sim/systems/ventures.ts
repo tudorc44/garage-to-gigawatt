@@ -36,6 +36,8 @@ const label = (q: number) => CONTENT.quarters[q]
 const qIndex = (id: string) => CONTENT.quarters.indexOf(id)
 const perQuarter = (pYear: number) => 1 - (1 - pYear) ** 0.25
 const isNuclear = (type: VentureType): type is 'smr' | 'adv_fission' => type === 'smr' || type === 'adv_fission'
+/** Either EGS block (M36.11: the second block shares the first's rules). */
+export const isEgs = (type: VentureType): type is 'egs' | 'egs2' => type === 'egs' || type === 'egs2'
 
 /** True in the acts ventures are offered in (III and IV). */
 export const venturesOpen = (state: GameState) => inActIII(state) || inActIV(state)
@@ -76,7 +78,7 @@ export function pitchPpaUsdMwh(type: VentureType): number | null {
 export function pitchCodQuarter(type: VentureType, joined: number): number {
   const t = T[type]
   if ('pitch_cod_years' in t) return joined + t.pitch_cod_years * 4
-  if (type === 'egs') return joined + T.egs.pitch_cod_quarters
+  if (isEgs(type)) return joined + T[type].pitch_cod_quarters
   if (type === 'pumped') return joined + T.pumped.pitch_years * 4
   if (type === 'fusion') return joined + T.fusion.pitch_years * 4
   return joined + T.control.build_q
@@ -149,14 +151,23 @@ function notionalPpaUsd(type: VentureType, mw: number, price: number): number {
 
 const capacityFactorControl = () => ENERGY.site_assets.btm_solar.cf_by_region[T.control.cf_region] ?? 0.24
 
+/**
+ * The MW an offtake share subscribes: the share of the unit's MW (fusion: of its reservation), capped at 100 MW per
+ * venture (M36.11, design thread answer 1).
+ */
+export function offtakeMwOf(type: VentureType, share: number): number {
+  const unit = type === 'fusion' ? T.fusion.reservation_mw : T[type].mw
+  return Math.min(V.offtake_cap_mw, unit * share)
+}
+
 /** The prepayment for an offtake, $: the share of the PPA's notional value (fusion: its capacity reservation). */
 export function prepayUsd(j: Pick<VentureJoin, 'type' | 'offtake' | 'prepay'>): number {
   if (j.offtake <= 0) return 0
   if (j.type === 'fusion')
-    return roundCents(T.fusion.reservation_share * notionalPpaUsd('fusion', T.fusion.reservation_mw * j.offtake, T.fusion.pitch_usd_mwh))
+    return roundCents(T.fusion.reservation_share * notionalPpaUsd('fusion', offtakeMwOf('fusion', j.offtake), T.fusion.pitch_usd_mwh))
   const p = V.prepay[j.prepay]
   const price = pitchPpaUsdMwh(j.type) ?? 0
-  return roundCents(p.share * notionalPpaUsd(j.type, T[j.type].mw * j.offtake, price))
+  return roundCents(p.share * notionalPpaUsd(j.type, offtakeMwOf(j.type, j.offtake), price))
 }
 
 export function joinBlocker(state: GameState, j: VentureJoin): Message | undefined {
@@ -231,7 +242,6 @@ export function developerVenture(state: GameState, type: VentureType, upTo = sta
 /** Joins a venture: pays the buy-in and any prepayment, and takes the developer's project over as it stands now. */
 export function joinVenture(state: GameState, j: VentureJoin): Venture {
   const dev = developerVenture(state, j.type)
-  const t = T[j.type]
   const buyIn = buyInUsd(state, j)
   const prepaid = prepayUsd(j)
   const cut = j.type === 'fusion' ? 0 : V.prepay[j.prepay].price_cut
@@ -242,7 +252,7 @@ export function joinVenture(state: GameState, j: VentureJoin): Venture {
     diligence: state.ventureDiligence?.includes(j.type) ?? false,
     stake: j.stake,
     paidUsd: buyIn,
-    offtakeMw: j.type === 'fusion' ? T.fusion.reservation_mw * j.offtake : t.mw * j.offtake,
+    offtakeMw: offtakeMwOf(j.type, j.offtake),
     ppaUsdMwh: roundCents((pitchPpaUsdMwh(j.type) ?? 0) * (1 - cut)),
     prepaidUsd: prepaid,
     siteId: j.offtake > 0 && j.type !== 'fusion' ? (j.siteId ?? null) : null,
@@ -290,7 +300,7 @@ function drawSchedule(v: Venture, start: number, r: RngHolder): void {
     build += T.pumped.tbm.slip_q
     v.m += T.pumped.tbm.budget_share
   }
-  if (v.type === 'egs') v.weakField = chance(r, T.egs.weak_field.chance)
+  if (isEgs(v.type)) v.weakField = chance(r, T[v.type].weak_field.chance)
   v.buildEnd = v.buildStart + Math.max(1, build)
   // The control waits for its grid connection after building (16-24 quarters, from its 2027 start: doc 38 §5.8).
   v.codQuarter = v.type === 'control' ? v.buildEnd + randomInt(r, ...T.control.grid_wait_q) : v.buildEnd
@@ -434,12 +444,13 @@ function stepBuild(state: GameState, v: Venture, r: RngHolder, q: number, quiet:
   }
   if (v.stage === 'construction') {
     // EGS: induced seismicity pauses the build a quarter (Heat at the campus it serves).
-    if (v.type === 'egs' && chance(r, perQuarter(T.egs.seismic.per_year))) {
-      v.buildEnd += T.egs.seismic.pause_q
-      v.codQuarter += T.egs.seismic.pause_q
+    if (isEgs(v.type) && chance(r, perQuarter(T[v.type].seismic.per_year))) {
+      const seismic = T[v.type].seismic
+      v.buildEnd += seismic.pause_q
+      v.codQuarter += seismic.pause_q
       mark(v, 'slip')
       const site = state.sites.find((s) => s.id === v.siteId)
-      if (site && !quiet) addGrievance(state, site.id, T.egs.seismic.heat)
+      if (site && !quiet) addGrievance(state, site.id, seismic.heat)
       log(state, 'log.venture.seismic', { ventureType: v.type })
     }
     const span = Math.max(1, v.buildEnd - v.buildStart)
@@ -480,10 +491,11 @@ function firstPower(state: GameState, v: Venture, q: number, quiet: boolean): vo
   mark(v, 'milestone')
   if (quiet) return
   logEntry(state, 'log.venture.first_power', { ventureType: v.type })
-  if (v.type === 'egs') {
-    if (state.politicalCapital !== undefined && inActIII(state)) addPc(state, T.egs.pc_on_cod)
+  if (isEgs(v.type)) {
+    const e = T[v.type]
+    if (state.politicalCapital !== undefined && inActIII(state)) addPc(state, e.pc_on_cod)
     if (v.weakField && v.stake > 0) {
-      const due = roundCents(v.stake * T.egs.weak_field.fix_usd_kw * v.mw * 1000)
+      const due = roundCents(v.stake * e.weak_field.fix_usd_kw * v.mw * 1000)
       v.call = { n: 4, dueUsd: due, partnerShare: null, costShare: null }
       logEntry(state, 'log.venture.weak_field', { costUsd: due })
     }
@@ -573,8 +585,8 @@ export function deliveredKw(v: Venture): number {
   const firm =
     v.type === 'control'
       ? ENERGY.site_assets.bess.firm_share
-      : v.type === 'egs' && v.weakField && !v.fieldFixed
-        ? T.egs.weak_field.cf / T.egs.cf
+      : isEgs(v.type) && v.weakField && !v.fieldFixed
+        ? T[v.type].weak_field.cf / T[v.type].cf
         : 1
   return v.offtakeMw * 1000 * firm * (1 - v.partnerCut)
 }
@@ -611,7 +623,7 @@ export function ventureEbitdaUsd(v: Venture): number {
   if (v.type === 'control')
     return (v.mw * capacityFactorControl() * HOURS_Q * T.control.ppa_usd_mwh) - (v.mw * 1000 * T.control.running_usd_kw_yr) / 4
   const t = T[v.type]
-  const cf = v.type === 'egs' && v.weakField && !v.fieldFixed ? T.egs.weak_field.cf : t.cf
+  const cf = isEgs(v.type) && v.weakField && !v.fieldFixed ? T[v.type].weak_field.cf : t.cf
   const price = v.reopened ? Math.max(v.ppaUsdMwh, t.ppa_usd_mwh) : t.ppa_usd_mwh
   return v.mw * cf * HOURS_Q * (price - t.running_usd_mwh)
 }

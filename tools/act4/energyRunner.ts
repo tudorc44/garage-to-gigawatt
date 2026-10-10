@@ -25,7 +25,7 @@ const argValue = (flag: string, fallback: string) => {
 }
 const SEEDS = Number(argValue('--seeds', '10'))
 const OUT = argValue('--out', 'sim-output')
-const VENTURE_VARIANTS = ['egs', 'smr', 'adv_fission', 'fusion', 'pumped', 'control'] as const satisfies readonly VentureType[]
+const VENTURE_VARIANTS = ['egs', 'egs2', 'smr', 'adv_fission', 'fusion', 'pumped', 'control'] as const satisfies readonly VentureType[]
 const VARIANTS = ['none', ...VENTURE_VARIANTS, 'btm'] as const
 type Variant = (typeof VARIANTS)[number]
 

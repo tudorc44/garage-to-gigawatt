@@ -258,7 +258,7 @@ export type SpecialSiteRules = z.infer<typeof specialKindSchema>
 
 // ---------- Ventures (M36, doc 38 §5) ----------
 
-export const VENTURE_TYPES = ['egs', 'smr', 'adv_fission', 'fusion', 'pumped', 'control'] as const
+export const VENTURE_TYPES = ['egs', 'egs2', 'smr', 'adv_fission', 'fusion', 'pumped', 'control'] as const
 export type VentureType = (typeof VENTURE_TYPES)[number]
 const slipSchema = z.object({ median: pos, sigma: nonneg })
 const intRange = z.tuple([quarters, quarters])
@@ -286,10 +286,29 @@ const nuclearSchema = z.object({
   lifetime_years: pos,
   targets,
 })
+const egsSchema = z.object({
+  from: quarterId,
+  mw: pos,
+  pitch_usd_kw: pos,
+  pitch_cod_quarters: quarters,
+  ppa_usd_mwh: pos,
+  class: z.literal('thermal'),
+  licence_q: quarters,
+  build_q: quarters,
+  slip: slipSchema,
+  running_usd_mwh: nonneg,
+  cf: share,
+  regions: regionsSchema,
+  weak_field: z.object({ chance: share, cf: share, fix_usd_kw: nonneg }),
+  seismic: z.object({ per_year: share, pause_q: quarters, heat: z.number() }),
+  pc_on_cod: z.number(),
+  targets,
+})
 const venturesSchema = z.object({
   diligence: z.object({ bandwidth: quarters, fee_usd: nonneg }),
   equity_shares: z.array(share).min(1),
   offtake_shares: z.array(share).min(1),
+  offtake_cap_mw: pos,
   prepay: z.array(z.object({ share, price_cut: share })).min(1),
   ppa_years: pos,
   cash_calls: z.array(share).length(3),
@@ -298,24 +317,9 @@ const venturesSchema = z.object({
   crf: z.object({ rate: pos }),
   marks: z.object({ milestone_mult: pos, slip_mult: pos }),
   types: z.object({
-    egs: z.object({
-      from: quarterId,
-      mw: pos,
-      pitch_usd_kw: pos,
-      pitch_cod_quarters: quarters,
-      ppa_usd_mwh: pos,
-      class: z.literal('thermal'),
-      licence_q: quarters,
-      build_q: quarters,
-      slip: slipSchema,
-      running_usd_mwh: nonneg,
-      cf: share,
-      regions: regionsSchema,
-      weak_field: z.object({ chance: share, cf: share, fix_usd_kw: nonneg }),
-      seismic: z.object({ per_year: share, pause_q: quarters, heat: z.number() }),
-      pc_on_cod: z.number(),
-      targets,
-    }),
+    egs: egsSchema,
+    // M36.11: the second EGS block (doc 38's later blocks), from 2031Q1
+    egs2: egsSchema,
     smr: nuclearSchema,
     adv_fission: nuclearSchema,
     fusion: z.object({

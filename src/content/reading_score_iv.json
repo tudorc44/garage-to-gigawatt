@@ -30,6 +30,8 @@
     },
     "f2": {
       "why": "The Wall: orbit stays dear and fragile; the right stance is cautious throughout.",
+      "quiet_no_exposure": 1,
+      "quiet_no_exposure_why": "Design thread, 10 Oct 2026 (M36.11): a quarter with no orbital move while the player holds no orbital exposure counts as a match, like S0's calm and quiet; ground and lunar moves stay neutral. Exposure is read from the log: blocks committed or bought, less blocks sold.",
       "ideal": [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
       "weight": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       "decoy": {

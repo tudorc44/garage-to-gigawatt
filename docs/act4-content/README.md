@@ -143,7 +143,10 @@ Hand-written (small), each read only by its own sim system and `act4End.ts` (plu
 - **`reading_score_iv.json`** (M32 wires it). Act III's scoring rules; ideal stances per doc 33 §6.7 (designed): F1
   offensive to 2033Q2, calm, cautious from 2034Q2; F2 cautious throughout; F3 calm, hedged 2032Q2–Q3, bold from the
   cascade (2032Q4); F4 calm, defensive from its trigger (2033Q2). Decoy windows as the Signals files; F3's decoy is two
-  quarters (2031Q4–2032Q1) so it ends before F3's hedging begins (mine, reversible).
+  quarters (2031Q4–2032Q1) so it ends before F3's hedging begins (mine, reversible). **M36.11, 10 Oct 2026** (design
+  thread): F2 reads exposure: a quarter with no orbital move while you hold no orbital exposure (blocks committed or
+  bought, less blocks sold) scores as a match (`quiet_no_exposure: 1`); ground and lunar moves stay neutral. The oracle's
+  Passive and Perfect both score 100 in F2 (were 50).
 
 ## The event cards (M28.4)
 

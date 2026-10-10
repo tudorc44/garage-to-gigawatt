@@ -12,6 +12,8 @@ import { ACT4_MOVE_SIGN } from './act4Moves.ts'
 
 const stance = z.union([z.literal(-1), z.literal(0), z.literal(1)])
 const futureSchema = z.object({
+  /** M36.11 (F2): a quarter with no orbital move while holding no orbital exposure scores this (a match). */
+  quiet_no_exposure: z.number().optional(),
   ideal: z.array(stance).length(20),
   weight: z.array(z.number().nonnegative()).length(20),
   decoy: z.object({ indicator: z.string(), quarters: z.array(z.string()).min(1), wrong_stance: stance }),
@@ -39,6 +41,13 @@ export const LAST_Q_IV = 19
 const decoyQuarters = (id: FutureId) => FILE.futures[id].decoy.quarters.map((l) => FILE._meta.quarters.indexOf(l))
 const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0)
 
+/** Orbital exposure held after quarter q, read from the log: blocks committed or bought, less blocks sold. */
+function exposureAfter(moves: readonly Pick<Act4Move, 'q' | 'kind'>[], q: number): number {
+  return moves
+    .filter((m) => m.q <= q)
+    .reduce((n, m) => n + (m.kind === 'orbit_commit' || m.kind === 'orbit_buy' ? 1 : m.kind === 'orbit_sale' ? -1 : 0), 0)
+}
+
 export interface ReadingIv {
   score: number | null
   base: number
@@ -62,8 +71,14 @@ export function computeReadingIv(
     if (weight === 0) continue
     const st = sign(moves.filter((m) => m.q === q).reduce((s, m) => s + ACT4_MOVE_SIGN[m.kind], 0))
     const ideal = f.ideal[q]
-    const value =
-      st !== 0 && st === ideal
+    // M36.11 (F2): no orbital move this quarter and no orbital exposure held counts as a match.
+    const quietOut =
+      f.quiet_no_exposure !== undefined &&
+      !moves.some((m) => m.q === q && ACT4_MOVE_SIGN[m.kind] !== 0) &&
+      exposureAfter(moves, q) <= 0
+    const value = quietOut
+      ? f.quiet_no_exposure!
+      : st !== 0 && st === ideal
         ? S.match
         : st === 0 && ideal === 0
           ? decoy.includes(q)

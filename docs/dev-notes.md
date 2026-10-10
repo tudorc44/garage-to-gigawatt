@@ -299,6 +299,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
 - Playtest fix (owner, 10 Oct 2026: "click Talk, then Confirm, for each site is repetitive"): in the site list Talk and noise
   mitigation act at once (each row shows its cost), plus "Talk at every site at Heat 30+" with one confirm; a lone to-do
   row keeps its confirm (M34.2 3f, partly reversed). Test `ui/talkPicker`.
+- **M36.11** (design thread, 10 Oct 2026): venture offtake capped at 100 MW; EGS block 2 (`egs2`, from 2031Q1, $4,500/kW, 7 q;
+  slip median 1.0 fitted, mine: P(power by 2035Q4) 0.796); F2 reading counts quiet, unexposed quarters as matches (goldens
+  act4-f2 37 → 59, act4-energy-f2 55 → 100: that rule only). Ground Holder accepted as weak. Runs and report: below.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
