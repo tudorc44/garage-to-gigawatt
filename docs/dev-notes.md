@@ -259,6 +259,9 @@ playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 Sim-only prototype, no UI, nothing in `src/` (goldens and sim outputs unchanged): `tools/act5-gate/` (`states.ts` plays
 the 2035Q4 companies as the energy runner; `gate.ts` the 20 stub V1 quarters, §11.3 valuation, Firm Holder vs Seller,
 30 seeds; `README.md` lists every assumption, all mine, reversible). On `m44` (unmerged, holds docs 43-44): mine.
+- **Result (30 seeds, 1,232 runs with a stake): FAIL**, Holder ÷ Seller 1.009 overall, 0.94-1.05 in every cell (target 1.2).
+  Plant alone: holding beats selling for thermal plants (×1.27-1.46), but one 10-20% stake is 1-4% of company value; pumped
+  storage loses when held (calls at ×4 overrun, capacity-only earnings). STOPPED: the design thread revises V1 or the gate.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
