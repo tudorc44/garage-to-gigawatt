@@ -258,6 +258,8 @@ Split: **1** the asset (WebP 1152 and 640 px in `src/assets/art/`; the PNG origi
 manifest `src/ui/art.ts` · **3** test art only in dev and staging · **4** the A4-01 intro banner and the "First block live"
 report panel, in Act IV's lazy chunk · **5** design · **6** checks (tests, bundle, browser at 1024 and 1440 px).
 - **1** done: one-off `npx sharp-cli@5.1.0` (no dependency), quality 85: 26 KB (1152 × 768) and 12 KB (640 × 427).
+- **2-3** done (one commit: the gate lives in the manifest, mine): `src/ui/art.ts` (`ART`, `artFor`, `SHOW_TEST_ART` = mode ≠
+  production or `VITE_SHOW_TEST_ART=true`); alt and credit through `t()`; test `tests/ui/art.test.ts`.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
