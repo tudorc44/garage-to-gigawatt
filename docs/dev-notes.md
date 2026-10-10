@@ -246,7 +246,9 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
 - **M37.5** done: quarter report block (revenue, opex, EBITDA, net, cash change; "Open Finances ›" in place, with a way back);
   each chapter report (prologue, I-IV) "The act in figures" + best/worst site. Ledger stores only off-category business bookings.
 - **M37.6** done: tests `sim/ledgerActs` (each act's lines vs its own report), `ui/finances`; browser at 1024/1440 (I, II, IV): no
-  sideways scroll, no cut cell. Tests 1,569 → 1,621; main bundle 221.1 → 224.9 KB (Finances chunk 11.4 KB). Sims: report below.
+  sideways scroll, no cut cell. Tests 1,569 → 1,621; main bundle 221.1 → 224.9 KB (Finances chunk 11.4 KB). Merged (PR #4), live.
+- M37 runs (final code): `--act2 --act3` identical to M34 (1,302 files), `--act4` and `--energy` identical to M36.11, prologue CSV
+  identical. The ledger costs ~20% speed: prologue "1,000 runs" 104.6 → 126.1 s, a MISS on its 120 s line (open question).
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 
