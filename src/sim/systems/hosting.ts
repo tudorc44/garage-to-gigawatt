@@ -8,7 +8,7 @@ import {
   BALANCE,
   CONTENT,
   act2Quarter,
-  isAct4MarketKey,
+  lastQuarterOfKey,
   quarterInputs,
   type PowerRegion,
   type MarketKey,
@@ -56,10 +56,8 @@ export function hostingRateUsdKwh(
   // Act II itself is unchanged.
   const act3 = CONTENT.acts.find((a) => a.act === 3)!
   // (Only with a scenario: an Act II game looking a quarter ahead across the boundary keeps the file's rate.)
-  // (M27.5: and Act IV's quarters, read with an Act IV key)
-  const act4 = CONTENT.acts.find((a) => a.act === 4)
-  const lastQuarter =
-    isAct4MarketKey(scenario) && act4 ? act4.lastQuarter : act3.lastQuarter
+  // (M27.5: and Act IV's quarters, read with an Act IV key; M49: Act V's with an Act V key)
+  const lastQuarter = lastQuarterOfKey(scenario)
   if (
     region &&
     scenario &&

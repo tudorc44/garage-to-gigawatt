@@ -272,6 +272,12 @@ the previous branch. The morning report is at the end of this section.
 - **M48 (step 2) done:** doc 47's generators in `tools/act5/` (Python kept, mine, reversible; `npm run content:act5`); they
   reproduce all 21 files byte for byte; the §0.11 errata applied (raise rule 0, en dashes, exit bids hidden, flex rating, CC/CT
   flat); `check.py` PASS; the game's copies in `src/content/` (byte-identity test). README "Data changes" lists each change.
+- **M49 (step 3, §19 items 1-2) part 1:**
+  - **Content:** the timeline runs to 2040Q4 (76-95); 64 glided Act V markets ("s2.f3.v1"), the glide skipping the subsidy
+    and hashprice; Gen 2037's columns merged at load.
+  - **Sim:** act 5, `inActV`, `inAct4Rules`, save v6, `toAct5`/`enterAct5` (the Moon → one holding, Act IV-only state
+    dropped), `act5End`, and Gen 2037 from 2037Q1 in Act V only.
+  - **UI:** "Continue to Act V" / "Retire at 2035", the A5-01 intro and a skeleton chapter. Goldens byte-identical.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

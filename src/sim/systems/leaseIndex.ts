@@ -86,7 +86,8 @@ export function gpuRenewalIndex(
   return gpu === 'b200' ||
     gpu === 'gb200' ||
     gpu === 'rubin_nvl144' ||
-    gpu === 'rubin_ultra'
+    gpu === 'rubin_ultra' ||
+    gpu === 'gen2037'
     ? r.renewal_b200_gpu_index_vs_2025q4
     : r.renewal_h100_gpu_index_vs_2025q4
 }

@@ -106,9 +106,9 @@ const raw = (): RawContent =>
 
 describe('content loads', () => {
   it('covers Act I (23 quarters, 2017Q1 → 2022Q3) then Act II (17 quarters, 2022Q4 → 2026Q4), 13 weeks each', () => {
-    // 76, not 40: Act III (M11.3) appends its 16 quarters (2027Q1–2030Q4) after 2026Q4, and Act IV (M27.3) its 20
-    // (2031Q1–2035Q4) after those.
-    expect(CONTENT.quarters).toHaveLength(76)
+    // 96, not 40: Act III (M11.3) appends its 16 quarters (2027Q1–2030Q4) after 2026Q4, Act IV (M27.3) its 20
+    // (2031Q1–2035Q4) after those, and Act V (M49) its 20 (2036Q1–2040Q4).
+    expect(CONTENT.quarters).toHaveLength(96)
     expect(CONTENT.acts).toEqual([
       { act: 1, firstQuarter: 0, lastQuarter: 22 },
       { act: 2, firstQuarter: 23, lastQuarter: 39 },
@@ -118,7 +118,11 @@ describe('content loads', () => {
       { act: 3, firstQuarter: 40, lastQuarter: 55 },
       // Act IV (M27.3): 20 quarters appended after Act III; every earlier index stays.
       { act: 4, firstQuarter: 56, lastQuarter: 75 },
+      // Act V (M49): 20 quarters appended after Act IV; every earlier index stays.
+      { act: 5, firstQuarter: 76, lastQuarter: 95 },
     ])
+    expect(CONTENT.quarters[76]).toBe('2036Q1')
+    expect(CONTENT.quarters[95]).toBe('2040Q4')
     expect(CONTENT.quarters[56]).toBe('2031Q1')
     expect(CONTENT.quarters[75]).toBe('2035Q4')
     expect(CONTENT.quarters[0]).toBe('2017Q1')

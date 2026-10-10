@@ -15,6 +15,7 @@ import {
   act4SeedOf,
   inActIII,
   inActIV,
+  inActV,
   logEntry,
   logQuarterLabel,
   roundCents,
@@ -686,7 +687,8 @@ export function ventureValueUsd(state: GameState, v: Venture): number {
 
 /** Quarters left in the current act after this one. */
 function quartersLeftInAct(state: GameState): number {
-  return Math.max(0, actLastQuarter(inActIV(state) ? 4 : 3) - state.quarter)
+  // (M49: Act V's own end in Act V)
+  return Math.max(0, actLastQuarter(inActV(state) ? 5 : inActIV(state) ? 4 : 3) - state.quarter)
 }
 
 /** All your ventures' value, $ (a valuation part). */

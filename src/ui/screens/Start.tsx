@@ -5,7 +5,7 @@ import { useState } from 'preact/hooks'
 import { t } from '../../i18n/t.ts'
 import { quarterName } from '../../sim/selectors.ts'
 import type { ComponentChildren } from 'preact'
-import { inActII, inActIII, inActIV, type GameState } from '../../sim/state.ts'
+import { inActII, inActIII, inActIV, inActV, type GameState } from '../../sim/state.ts'
 import { ImportBox, saveLabel } from '../components/saves.tsx'
 import { fmt } from '../format.ts'
 
@@ -14,7 +14,9 @@ export function actTag(s: GameState): string {
   return t(
     s.act === 0
       ? 'ui.title.tag_prologue'
-      : inActIV(s)
+      : inActV(s)
+        ? 'ui.title.tag_act5'
+        : inActIV(s)
         ? 'ui.title.tag_act4'
         : inActIII(s)
           ? 'ui.title.tag_act3'

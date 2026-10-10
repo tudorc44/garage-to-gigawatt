@@ -7,8 +7,7 @@ import {
   act1ValueQuarter,
   act2Quarter,
   actFirstQuarter,
-  actLastQuarter,
-  isAct4MarketKey,
+  lastQuarterOfKey,
   quarterInputs,
   type MarketKey,
   type PowerRegion,
@@ -249,7 +248,7 @@ export function regionCapacityChargeUsdKwh(
   if (!scenario || (region !== 'pjm' && region !== 'ohio')) return 0
   const first = actFirstQuarter(3)
   // (M27.5: and through Act IV with an Act IV key, still measured from Act III's first quarter)
-  const last = isAct4MarketKey(scenario) ? actLastQuarter(4) : actLastQuarter(3)
+  const last = lastQuarterOfKey(scenario)
   if (quarter < first || quarter > last) return 0
   const now = quarterInputs(quarter, scenario)?.pjmCapacityUsdMwDay
   const base = quarterInputs(first, scenario)?.pjmCapacityUsdMwDay

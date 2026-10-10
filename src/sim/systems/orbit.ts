@@ -23,11 +23,12 @@ import { book } from '../ledger.ts'
 import { pick, substream } from '../rng.ts'
 import {
   act4SeedOf,
-  inActIV,
+  inAct4Rules,
   logEntry,
   type Act4Orbit,
   type GameState,
   type OrbitalBlock,
+  logQuarterLabel,
 } from '../state.ts'
 import { addGrievance } from './heat.ts'
 import { CAPITAL_KINDS, capitalBlocker, setCapital, type CapitalKind } from './orbitCapital.ts'
@@ -132,7 +133,7 @@ export interface OpenBlock {
 }
 
 function orbitPlanBlocker(state: GameState): Message | undefined {
-  if (!inActIV(state)) return { key: 'error.orbit_unavailable' }
+  if (!inAct4Rules(state)) return { key: 'error.orbit_unavailable' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
 }
 
@@ -284,7 +285,7 @@ export function fileLicence(state: GameState, shellId: ShellId): void {
   })
   logEntry(state, 'log.orbit.licence_filed', {
     shellName: shellId,
-    quarter: CONTENT.quarters[approvedQuarter] ?? '—',
+    quarter: logQuarterLabel(state, approvedQuarter),
   })
 }
 

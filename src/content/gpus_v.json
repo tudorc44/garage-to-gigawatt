@@ -1,0 +1,62 @@
+{
+  "_meta": {
+    "schema": "gpus_act3/1 (Act V additions)",
+    "note": "Two generations added to gpus_act3.json's list for Act V (doc 49). Rents and prices in market_v_chips_v*.csv.",
+    "conventions": "nominal USD; kW per rack; grounded flag per value"
+  },
+  "generations": [
+    {
+      "id": "gen2037",
+      "name": "Gen 2037",
+      "rack_kw": 600,
+      "tier": "top",
+      "kw_range": [
+        600,
+        600
+      ],
+      "available_from": "2037Q1",
+      "every_game": true,
+      "cooling": "liquid + 800V DC, purpose-built halls",
+      "gpus_per_mw": 1150,
+      "rack_usd_2037q1": 18025522,
+      "unit_usd_2037q1": 26124,
+      "perf_per_watt_vs_2036_newest": 1.4,
+      "revenue_per_mw_vs_2036_newest": 1.25,
+      "grounded": false,
+      "reasoning": "Generic next generation (IV-D28). Perf/W 1.4x the game's 2036 newest class: a 2-year step after 2030 at 1.3-1.5x (measured gains 1.3-1.8x training, ~2x inference per step today [A/B]; Koomey's post-2000 2.6-year doubling [B]). GPUs/MW +10% (the doc 27 rule: GPUs/MW rises modestly); the rest is per-GPU throughput. Revenue/MW 1.25x at launch: part of the gain goes to buyers. Top tier: no denser tier exists after 600 kW racks (mine)."
+    },
+    {
+      "id": "bowline",
+      "name": "Halyard Bowline",
+      "rack_kw": 600,
+      "tier": "top",
+      "kw_range": [
+        600,
+        600
+      ],
+      "available_from": "max(the venture's volume quarter + 1, 2036Q1), only if the venture succeeds",
+      "every_game": false,
+      "cooling": "liquid + 800V DC",
+      "gpus_per_mw": 1150,
+      "unit_usd_2037q1": 31349,
+      "rack_usd_2037q1": 21630627,
+      "perf_per_watt_vs_gen2037": 1.3,
+      "rent_per_gpu_vs_gen2037": 1.2,
+      "grounded": false,
+      "reasoning": "A specialised accelerator's measured edge over the mainstream GPU of its time is 1.0-1.9x perf/W (TPU v4 vs A100 1.3-1.9x [A]); vendor claims of 10-20x are unmeasured [B]. 1.3x chosen; priced at 1.2x Gen 2037's rent and list price to win buyers (mine). Backers with a reservation pay list × (1 − discount)."
+    }
+  ],
+  "density_rules": {
+    "gpus_per_mw": {
+      "gen2037": 1150,
+      "bowline": 1150,
+      "grounded": false,
+      "reasoning": "Designed: +10% on the 2036 newest class (1,050), the +15-20%-per-generation rule tempered by post-2030 slowing"
+    },
+    "retrofit": "Same top tier as the 2036 newest class: no retrofit needed to host either"
+  },
+  "depreciation_and_obsolescence": {
+    "rule": "When Gen 2037 ships (2037Q1), the older classes' renewal_*_gpu_index applies at contract end, as gpus_act3.json",
+    "grounded": false
+  }
+}

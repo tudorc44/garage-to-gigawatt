@@ -10,6 +10,7 @@ import {
   act2Quarter,
   actFirstQuarter,
   quarterRow,
+  act5Row,
   actLastQuarter,
   quarterInputs,
   type Act2Quarter,
@@ -33,7 +34,7 @@ import {
   type ProjectKind,
   type TenantOffer,
 } from '../state.ts'
-import { inAct2Rules, inAct3Rules, inActIV, logQuarterLabel } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inAct4Rules, logQuarterLabel } from '../state.ts'
 import { gpuPriceMultNow, modifierMult } from './eventEffects.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import {
@@ -98,8 +99,23 @@ function heldBack<T>(
 export function gpuGeneration(id: string): GpuGeneration | undefined {
   return (
     P().gpus.find((g) => g.id === id) ??
-    CONTENT.act3Gpus.generations.find((g) => g.id === id)
+    CONTENT.act3Gpus.generations.find((g) => g.id === id) ??
+    (id === 'gen2037' ? gen2037Generation() : undefined)
   )
+}
+
+/**
+ * Gen 2037 (M49; doc 49 via doc 43 §0.12): the mainstream generation from 2037Q1 in every Act V game, priced only from
+ * Act V's market rows (its columns are blank before 2037Q1, and no earlier act has them, so no earlier game sees it).
+ */
+function gen2037Generation(): GpuGeneration | undefined {
+  const g = CONTENT.gen2037
+  return g ? { id: 'gen2037', from: g.from, gpusPerMw: g.gpusPerMw } : undefined
+}
+
+/** Gen 2037's Act V row values this quarter (null before 2037Q1 or outside Act V). */
+function gen2037Row(quarter: number, scenario?: MarketKey | null) {
+  return act5Row(quarter, scenario)
 }
 
 /** Rubin and Rubin Ultra (M16.1): priced only from an Act III scenario's columns. */
@@ -112,6 +128,8 @@ export function gpuPriceUsd(
   quarter: number,
   scenario?: MarketKey | null,
 ): number | undefined {
+  // M49: Gen 2037's unit price from its own column (flat after launch: doc 47's scarcity-neutral rule).
+  if (gpu === 'gen2037') return gen2037Row(quarter, scenario)?.gen2037_unit_purchase_usd ?? undefined
   return heldBack(
     quarter,
     (q) => {
@@ -135,6 +153,7 @@ export function neocloudUsdHr(
   quarter: number,
   scenario?: MarketKey | null,
 ): number | undefined {
+  if (gpu === 'gen2037') return gen2037Row(quarter, scenario)?.gen2037_neocloud_usd_hr ?? undefined
   return heldBack(
     quarter,
     (q) =>
@@ -161,7 +180,9 @@ export function availableGpus(
   scenario?: MarketKey | null,
 ): GpuGeneration[] {
   const label = CONTENT.quarters[quarter]
-  return [...P().gpus, ...CONTENT.act3Gpus.generations].filter(
+  // M49: Gen 2037 joins in Act V from 2037Q1 (priced only through an Act V key, so nothing changes before Act V).
+  const gen2037 = gen2037Generation()
+  return [...P().gpus, ...CONTENT.act3Gpus.generations, ...(gen2037 ? [gen2037] : [])].filter(
     (g) =>
       g.from <= label && gpuPriceUsd(g.id, quarter, scenario) !== undefined,
   )
@@ -173,7 +194,9 @@ export function newestGpu(
   scenario?: MarketKey | null,
 ): string | null {
   const ids = availableGpus(quarter, scenario).map((g) => g.id)
-  return ids.includes('rubin_ultra')
+  return ids.includes('gen2037')
+    ? 'gen2037'
+    : ids.includes('rubin_ultra')
     ? 'rubin_ultra'
     : ids.includes('rubin_nvl144')
       ? 'rubin_nvl144'
@@ -274,7 +297,10 @@ export function gpuContractUsdHr(
   const c = BALANCE.projects.gpuContracts
   // M16.1: Rubin and Rubin Ultra price like the B200, off their own neocloud series.
   const base =
-    gpu === 'b200'
+    // M49: Gen 2037 prices like the B200 and Rubin, off its own neocloud series (doc 49).
+    gpu === 'gen2037'
+      ? (gen2037Row(quarter, scenario)?.gen2037_neocloud_usd_hr ?? undefined)
+      : gpu === 'b200'
       ? heldBack(quarter, (q) => q.gpuRentalUsdHr.b200.neocloud, scenario)
       : isRubin(gpu)
         ? heldBack(
@@ -336,7 +362,7 @@ export function scenarioDefaultProb(
   // (M27.3: Act IV's rows carry the same columns, read through the state's market key)
   const row = quarterRow(
     state.quarter,
-    inActIV(state) ? scenarioOf(state) : state.scenarioId,
+    inAct4Rules(state) ? scenarioOf(state) : state.scenarioId,
   )
   if (!row) return 0
   if (type === 'ai_lab') return row.tenant_default_prob_q_ai_lab ?? 0

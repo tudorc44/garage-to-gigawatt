@@ -10,7 +10,7 @@ import type { ContractTarget } from '../../content/act3Cards.ts'
 import type { Message } from '../../i18n/t.ts'
 import { book } from '../ledger.ts'
 import { chance, type RngHolder } from '../rng.ts'
-import { logEntry, projectGone, type GameState, type Project } from '../state.ts'
+import { logEntry, logQuarterLabel, projectGone, type GameState, type Project } from '../state.ts'
 import { contractEndQuarter } from './calendar.ts'
 import { rfpMid } from './leaseIndex.ts'
 import { getModel, scenarioOf } from './market.ts'
@@ -228,7 +228,7 @@ export function applyContractEffect(
       logEntry(
         state,
         'log.card_recovery',
-        { ...params, amountUsd: usd, quarter: CONTENT.quarters[quarter] ?? '—' },
+        { ...params, amountUsd: usd, quarter: logQuarterLabel(state, quarter) },
         weekNo,
       )
     }

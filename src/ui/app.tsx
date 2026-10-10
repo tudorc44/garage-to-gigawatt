@@ -16,7 +16,9 @@ import {
   inActII,
   inActIII,
   inActIV,
+  inActV,
   toAct4,
+  toAct5,
   newGame,
   toAct3,
   type GameState,
@@ -93,6 +95,17 @@ function useAct4Entry(): Entry4Module | null {
   return m
 }
 
+type Entry5Module = typeof import('./screens/Act5Entry.tsx')
+
+/** M49: Act V's intro and chapter report, loaded lazily (their own chunk), as Act IV's. */
+function useAct5Entry(): Entry5Module | null {
+  const [m, setM] = useState<Entry5Module | null>(null)
+  useEffect(() => {
+    void import('./screens/Act5Entry.tsx').then(setM)
+  }, [])
+  return m
+}
+
 /** M27.6: the Act IV quick starts, test builds only (the inline check lets production drop the file). */
 function useAct4Preview(): Preview4Module | null {
   const [m, setM] = useState<Preview4Module | null>(null)
@@ -143,7 +156,8 @@ function toSeed(text: string): number {
 const themeOf = (s: GameState | null) =>
   s?.act === 0
     ? 'bedroom'
-    : inActIV(s)
+    : // (M49: Act V keeps Act IV's theme until its own "firm" theme is designed, doc 43 §2)
+      inActIV(s) || inActV(s)
       ? 'orbit'
       : inActIII(s)
       ? 'grid'
@@ -164,6 +178,9 @@ export function App() {
   const entry4 = useAct4Entry()
   const preview4 = useAct4Preview()
   const [act4Intro, setAct4Intro] = useState(false)
+  // Act V's entry module and the intro before 2036Q1's Plan (M49).
+  const entry5 = useAct5Entry()
+  const [act5Intro, setAct5Intro] = useState(false)
   const [section, setSection] = useState<Section>('dashboard')
   // The latest state, so actions and timer ticks never work on a stale copy.
   const ref = useRef<GameState | null>(null)
@@ -320,7 +337,19 @@ export function App() {
   }
 
   let screen
-  if (entry4 && game && inActIV(game) && act4Intro) {
+  if (entry5 && game && inActV(game) && act5Intro) {
+    screen = <entry5.Act5Intro state={game} onEnter={() => setAct5Intro(false)} />
+  } else if (entry5 && game && inActV(game) && (game.phase === 'chapter' || (game.phase === 'gameover' && showEnd))) {
+    screen = (
+      <entry5.Act5Chapter
+        state={game}
+        onNew={() => {
+          setShowEnd(false)
+          commit(null)
+        }}
+      />
+    )
+  } else if (entry4 && game && inActIV(game) && act4Intro) {
     screen = <entry4.Act4Intro state={game} onEnter={() => setAct4Intro(false)} />
   } else if (
     entry4 &&
@@ -334,6 +363,12 @@ export function App() {
         onNew={() => {
           setShowEnd(false)
           commit(null)
+        }}
+        // M49 (doc 43 §2, V-D2): a finished Act IV continues to Act V (the intro first), or retires at 2035.
+        onContinueToAct5={() => {
+          setShowEnd(false)
+          commit(toAct5(game))
+          setAct5Intro(true)
         }}
       />
     )

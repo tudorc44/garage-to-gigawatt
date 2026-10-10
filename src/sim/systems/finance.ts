@@ -5,6 +5,8 @@ import {
   BALANCE,
   CONTENT,
   isAct4MarketKey,
+  isAct5MarketKey,
+  lastQuarterOfKey,
   quarterInputs,
   type MarketKey,
 } from '../../content/index.ts'
@@ -31,11 +33,12 @@ function inAct3(quarter: number): boolean {
 /** Whether a quarter is in Act IV and read with an Act IV key (M27.5: rates from the glided market, as Act III's). */
 function inAct4(quarter: number, scenario: MarketKey | null | undefined): boolean {
   const act4 = CONTENT.acts.find((a) => a.act === 4)
+  // (M49: and Act V's quarters, read with an Act V key: the same rule on Act V's market)
   return (
-    isAct4MarketKey(scenario) &&
+    (isAct4MarketKey(scenario) || isAct5MarketKey(scenario)) &&
     act4 !== undefined &&
     quarter >= act4.firstQuarter &&
-    quarter <= act4.lastQuarter
+    quarter <= lastQuarterOfKey(scenario)
   )
 }
 

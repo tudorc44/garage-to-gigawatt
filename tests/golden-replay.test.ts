@@ -491,7 +491,9 @@ describe.each(['f1', 'f2', 'f3', 'f4'] as const)('golden replay: act4-%s (2031Q1
   })
 
   it('matches the stored golden end state', async () => {
-    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(
+    // The save-format number isn't game state: format 6 (Act V, M49) changes nothing in an Act IV game, so the stored
+    // goldens (format 5) are compared as they are.
+    await expect(JSON.stringify({ ...run.state, version: 5 }, null, 2) + '\n').toMatchFileSnapshot(
       `./golden/act4-${future}-seed-${ACT4_SEED}.json`,
     )
   })
@@ -550,7 +552,8 @@ describe.each(['f2', 'f4'] as const)('golden replay: act4-energy-%s (2031Q1 → 
   })
 
   it('matches the stored golden end state', async () => {
-    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(
+    // (format 6, Act V, changes nothing in an Act IV game: compared at format 5, as above)
+    await expect(JSON.stringify({ ...run.state, version: 5 }, null, 2) + '\n').toMatchFileSnapshot(
       `./golden/act4-energy-${future}-seed-${ACT4_SEED}.json`,
     )
   })

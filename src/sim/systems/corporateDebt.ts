@@ -16,6 +16,7 @@ import {
   covenantBreached,
   inAct3Rules,
   inActIV,
+  inActV,
   logEntry,
   type Facility,
   type GameState,
@@ -88,7 +89,7 @@ export function drawCorporate(
 
 /** "2030Q1", or past the act's end "2030Q4+" (a facility carried beyond the act; M27.5: Act IV's end is 2035Q4). */
 function quarterLabel(state: GameState, q: number): string {
-  const last = inActIV(state) ? actLastQuarter(4) : actFirstQuarter(3) + 15
+  const last = inActV(state) ? actLastQuarter(5) : inActIV(state) ? actLastQuarter(4) : actFirstQuarter(3) + 15
   return q <= last ? stateQuarterLabel(q) : `${stateQuarterLabel(last)}+`
 }
 function stateQuarterLabel(q: number): string {

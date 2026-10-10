@@ -8,7 +8,7 @@ import { ORBIT } from '../../content/orbitContent.ts'
 import { MONEY } from '../../content/moneyContent.ts'
 import type { Message } from '../../i18n/t.ts'
 import { book, bookSplit } from '../ledger.ts'
-import { inActIV, logEntry, type GameState, type OrbitalBlock, type OrbitalDebt } from '../state.ts'
+import { inAct4Rules, logEntry, type GameState, type OrbitalBlock, type OrbitalDebt } from '../state.ts'
 import { sofr } from './finance.ts'
 import { scenarioOf } from './market.ts'
 import { moonOf } from './moon.ts'
@@ -145,7 +145,7 @@ export const orbitalDebtUsd = (state: GameState): number =>
 export function serviceOrbitalDebt(state: GameState): { interestUsd: number; principalUsd: number } {
   const paid = { interestUsd: 0, principalUsd: 0 }
   const o = state.act4Orbit
-  if (!o?.debts || !inActIV(state)) return paid
+  if (!o?.debts || !inAct4Rules(state)) return paid
   for (const d of o.debts.filter((x) => !x.closed && x.balanceUsd > 0)) {
     const b = orbitBlock(state, d.blockId)
     if (!d.amortizing && (!b || b.stage === 'live' || b.stage === 'retired' || b.stage === 'sold')) d.amortizing = true

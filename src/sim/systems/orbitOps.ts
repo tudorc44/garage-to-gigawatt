@@ -9,7 +9,7 @@ import { ORBIT, shell, tenantType } from '../../content/orbitContent.ts'
 import type { Message } from '../../i18n/t.ts'
 import { book, bookSplit } from '../ledger.ts'
 import { chance, random, randomInt, substream } from '../rng.ts'
-import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
+import { act4SeedOf, inAct4Rules, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
 import { trueReliability, TELEMETRY } from './fleetReliability.ts'
 import {
   annualValueUsd,
@@ -79,7 +79,7 @@ export function startQuarterOrbitLive(state: GameState): void {
 /** Plans the quarter's orbit alerts: a conjunction per live block by its shell's congestion; the storm in its quarter. */
 export function planOrbitAlerts(state: GameState): void {
   const orbit = state.act4Orbit
-  if (!orbit || !inActIV(state)) return
+  if (!orbit || !inAct4Rules(state)) return
   orbit.planned = []
   const row = orbitRow(state)
   for (const b of liveBlocks(state)) {
@@ -214,7 +214,7 @@ export function linkShares(state: GameState): Map<string, number> {
  */
 export function endQuarterOrbit(state: GameState): void {
   const orbit = state.act4Orbit
-  if (!orbit || !inActIV(state) || !state.futureId) return
+  if (!orbit || !inAct4Rules(state) || !state.futureId) return
   const st = state.quarterStats
   st.orbitRevenueUsd ??= 0
   st.orbitCostUsd ??= 0
@@ -293,7 +293,7 @@ export function endQuarterOrbit(state: GameState): void {
     // M34.1 (owner, 9 Oct 2026, 1c): the cascade hardens the insurance market for the rebuild, whoever lost what:
     // from now until a year after the shell reopens (mine, reversible: "applies to the rebuild").
     let reopen = state.quarter
-    while (reopen < actLastQuarter(4) && orbitRow(state, reopen).sso_closed === 1) reopen++
+    while (reopen < actLastQuarter(state.act === 5 ? 5 : 4) && orbitRow(state, reopen).sso_closed === 1) reopen++
     orbit.hardMarketUntil = Math.max(
       orbit.hardMarketUntil ?? -1,
       reopen + INS.hard_market.quarters - 1,
@@ -358,7 +358,7 @@ export function blockSaleUsd(state: GameState, b: OrbitalBlock): number {
 }
 
 export function sellOrbitalBlockBlocker(state: GameState, blockId: string): Message | undefined {
-  if (!inActIV(state)) return { key: 'error.orbit_unavailable' }
+  if (!inAct4Rules(state)) return { key: 'error.orbit_unavailable' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const b = orbitBlock(state, blockId)
   if (!b || b.stage !== 'live') return { key: 'error.orbit_not_live' }

@@ -25,7 +25,7 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { inAct2Rules, inAct3Rules, inActIII, inActIV } from './state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV, inAct4Rules } from './state.ts'
 import { readSignalIvBlocker } from './systems/signalsIv.ts'
 import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
@@ -486,7 +486,7 @@ export function siteCardView(state: GameState, siteId: string) {
         : undefined,
       hosting:
         inAct2Rules(state) && site.tier !== BALANCE.startSite ? null : undefined,
-      station: inActIV(state) ? why({ type: 'BUILD_GROUND_STATION', siteId }) : undefined,
+      station: inAct4Rules(state) ? why({ type: 'BUILD_GROUND_STATION', siteId }) : undefined,
     },
   }
 }
@@ -522,7 +522,7 @@ export function siteActionView(state: GameState, kind: SiteFeeAction, siteId: st
       return { kind, site, action, costUsd: u.costUsd, bandwidth: u.bandwidth, quarters: u.quarters, why: why(action) }
     }
     case 'station': {
-      if (!inActIV(state)) return null
+      if (!inAct4Rules(state)) return null
       const g = ORBIT.tenants.links.ground_station
       const action: Action = { type: 'BUILD_GROUND_STATION', siteId }
       return { kind, site, action, costUsd: g.capex_usd, bandwidth: g.bandwidth, units: g.units, heatAdd: g.heat, why: why(action) }
@@ -1223,7 +1223,7 @@ export function hireViews(state: GameState) {
     // (M17.3: the Government Affairs Director only in Act III)
     .filter((h) => inAct3Rules(state) || !isAct3Hire(h.id))
     // (M31.4: Act IV's four only in Act IV)
-    .filter((h) => inActIV(state) || !isAct4Hire(h.id))
+    .filter((h) => inAct4Rules(state) || !isAct4Hire(h.id))
     .map((h) => ({
       id: h.id,
       name: h.name,
@@ -1373,7 +1373,7 @@ export function spaceAlertView(state: GameState): {
 }
 
 export function act4MwColumns(state: GameState) {
-  if (!inActIV(state)) return null
+  if (!inAct4Rules(state)) return null
   const groundMw = state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0) / 1000
   // (M29.5: the orbit's live blocks, at their remaining capacity)
   const orbitMw = (state.act4Orbit?.blocks ?? [])

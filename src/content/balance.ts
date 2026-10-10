@@ -668,6 +668,8 @@ export const BALANCE = {
         gb200_nvl72: 'mid',
         rubin_nvl144: 'mid',
         rubin_ultra: 'top',
+        // M49 (doc 49 via doc 43 §0.12): Gen 2037, top tier (600 kW racks; no denser tier exists)
+        gen2037: 'top',
       } as Record<string, 'low' | 'mid' | 'top'>,
       /** GPUs in one rack: Rubin NVL144 72 (DT), Rubin Ultra 144 (designed: its unit price is the rack ÷ 144). */
       gpusPerRack: { rubin_nvl144: 72, rubin_ultra: 144 },
@@ -810,5 +812,18 @@ export const BALANCE = {
     seamGlideQuarters: 3,
     /** Bandwidth (doc 33 §14.3, IV-D27 ⚙): Act II's rule, +1 once your first orbital block is live, at most 9. */
     bandwidth: { orbitLiveBonus: 1, max: 9 },
+  },
+  /** Act V, "Firm" (doc 43 v1.2; M49 onward). ⚙ values are first-pass and tuned in the balance pass. */
+  act5: {
+    /** The four futures' weights at the draw (doc 43 §6.2 ⚙; doc 47's futures.py): Queue is King, Flexible Lane,
+     *  Demand Plateau, Up and Out. */
+    futureWeightsPct: { v1: 30, v2: 25, v3: 25, v4: 20 },
+    /**
+     * The seam glide (doc 43 §3.3 ⚙): act quarter 0 (2036Q1) is the player's Act IV market's 2035Q4 value; the gap to
+     * the common 2036 baseline closes in equal steps, gone by 2036Q4 (the same reading as Act IV's: quarters 0–3,
+     * three steps). The glide skips the block subsidy, the hashprice and the capacity ratings (doc 43 §0.9 item 10).
+     */
+    seamGlideQuarters: 3,
+    seamGlideSkip: ['btc_block_subsidy', 'btc_hashprice_usd_ph_day', 'btc_hashprice_usd_th_day'],
   },
 } as const

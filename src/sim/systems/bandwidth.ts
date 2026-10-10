@@ -1,6 +1,6 @@
 // Bandwidth: the founder's attention. Refilled each quarter; unused points are lost.
 import { BALANCE } from '../../content/index.ts'
-import { inActII, inAct3Rules, inActIV, type GameState } from '../state.ts'
+import { inActII, inAct3Rules, inAct4Rules, type GameState } from '../state.ts'
 import { holdBandwidthBonus } from './headStarts.ts'
 import { bandwidthBonus } from './hires.ts'
 import { isReady, poweredKw } from './sites.ts'
@@ -21,7 +21,7 @@ export function bandwidthForQuarter(state: GameState): number {
     )
     const mw = a.mwSteps.filter((step) => kw >= step).length
     // Act IV (M29.4): +1 once an orbital block has gone live, and a higher cap.
-    if (inActIV(state)) {
+    if (inAct4Rules(state)) {
       const b = BALANCE.act4.bandwidth
       const orbit = state.act4Orbit?.blocks.some((x) => x.liveQuarter !== null && x.liveQuarter <= state.quarter)
       return Math.min(
