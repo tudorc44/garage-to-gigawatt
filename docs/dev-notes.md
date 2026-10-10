@@ -156,7 +156,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 - ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
   repo (M27.0); the run resumed at M27.1.
 - ~~M40.1's target~~ (Perfect's reading ≥ Passive's): resolved by M41.1's raise rule; all 12 cells meet Perfect ≥ Passive − 2.
-- **M42.1 (F-10):** "quarterly BTC = mean of its 13 weekly closes" not applied: it would replace the sourced quarter-end closes
+- ~~**M42.1 (F-10)**~~ resolved: the design thread closed F-10 as already fixed by the 27 Sep rebuild; no `btc_usd_mean` column.
+  The finding, for the record: "quarterly BTC = mean of its 13 weekly closes" not applied: it would replace the sourced quarter-end closes
   (e.g. 2023Q1 28,478 → mean 23,203) and fail the load check `index.ts` (quarterly close = the weekly file's last week); the
   sim never reads the quarterly BTC columns (`act2QuarterOf` omits them), so play can't change. Design thread's question.
 
@@ -189,7 +190,11 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
+**Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
+`docs/game-project-files/claude_42-act-v-concepts.md`), then doc 43, both being written by the design thread. F-10 closed (M42).
+PR #8 (`m42`: the PR #7 cleanup, M41's `--act4` results, the M42.1 finding) is for the owner to merge.
+
+**Before: PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
 `m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
 
 **Before: PR #6 merged (`main` = `464a6ad`): M40 (Act IV reading rules, venture delivery at CF); `m40` tagged
