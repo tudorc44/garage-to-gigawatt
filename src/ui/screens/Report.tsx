@@ -33,6 +33,9 @@ import { Act3Panel } from '../components/act3Lazy.tsx'
 import { SiteText } from '../components/siteText.tsx'
 import { Act4Panel } from '../components/act4Lazy.tsx'
 import { Tip } from '../components/basics.tsx'
+import { QuarterFinances } from '../components/financeSummary.tsx'
+import { Finances } from '../components/financesLazy.tsx'
+import { useState } from 'preact/hooks'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
@@ -91,6 +94,21 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
   const { turn, turns } = actTurn(state)
   // Act II game over (M6.4): its cause, next to the button that shows the end.
   const gameOver = gameOverView(state)
+  // M37.5: "Open Finances ›" shows the Finances section in place of the report, with a way back.
+  const [finances, setFinances] = useState(false)
+  if (finances)
+    return (
+      <div class="screen">
+        <div class="report">
+          <div>
+            <button type="button" class="btn btn-ghost" onClick={() => setFinances(false)}>
+              {t('ui.fin.summary.back')}
+            </button>
+          </div>
+          <Finances state={state} />
+        </div>
+      </div>
+    )
 
   return (
     <div class="screen">
@@ -191,6 +209,8 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
             }
           />
         </div>
+
+        <QuarterFinances state={state} onOpen={() => setFinances(true)} />
 
         <Act2Panel state={state} />
         {state.act >= 3 && <Act3Panel name="Act3ReportBlock" state={state} />}

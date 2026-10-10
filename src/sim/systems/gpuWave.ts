@@ -11,6 +11,7 @@
 // quarter and project (its own "gpu_wave" substream), so nothing about it is stored until it hits.
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { chance, randomInt, substream, uniform } from '../rng.ts'
 import {
   inAct2Rules,
@@ -108,7 +109,7 @@ function applyChoice(
 ): void {
   const costUsd = waveCostUsd(gpus)
   if (choice === 'replace_now') {
-    state.cash -= costUsd
+    book(state, 'repairs', -costUsd, { biz: 'ai' })
     logEntry(
       state,
       silent ? 'log.gpu_wave_silent' : 'log.gpu_wave_replaced',
@@ -162,7 +163,7 @@ export function endQuarterGpuWaves(state: GameState): void {
     if (!out || state.quarter < out.untilQuarter) continue
     delete p.gpuOut
     if (projectGone(p)) continue
-    state.cash -= out.costUsd
+    book(state, 'repairs', -out.costUsd, { site: p.siteId, project: p.id, biz: 'ai' })
     logEntry(state, 'log.gpu_wave_repaired', {
       n: p.n,
       gpus: out.gpus,

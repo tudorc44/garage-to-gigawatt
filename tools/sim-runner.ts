@@ -42,6 +42,8 @@ import {
 } from '../src/sim/systems/readingScore.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
+import { book } from '../src/sim/ledger.ts'
+import { checkedLedger } from './ledgerCheck.ts'
 import { normalPriceUsdKwh, poweredKw } from '../src/sim/systems/sites.ts'
 import { mwByUse } from '../src/sim/systems/mwUse.ts'
 import { aiEbitdaUsd, valuationSplit } from '../src/sim/systems/valuation.ts'
@@ -190,7 +192,7 @@ function runAll(
   return Object.entries(strategies).map(([name, bot]): StrategySummary => {
     const runs: Run[] = []
     for (let seed = 1; seed <= SEEDS; seed++) {
-      const { state } = playGame(seed, bot)
+      const state = checkedLedger(playGame(seed, bot).state, `${name}:${seed}`)
       if (csv)
         writeFileSync(
           join(OUT, `${name}-seed${seed}.csv`),
@@ -756,13 +758,16 @@ if (args.includes('--act2')) {
     name,
     runs: Array.from({ length: SEEDS }, (_, i) => {
       const key = `${name}:${i + 1}`
-      const state = playGame(
-        i + 1,
-        recording(key, BOTS[name] ?? PROBES[name]),
-        {
-          through: 2,
-        },
-      ).state
+      const state = checkedLedger(
+        playGame(
+          i + 1,
+          recording(key, BOTS[name] ?? PROBES[name]),
+          {
+            through: 2,
+          },
+        ).state,
+        key,
+      )
       const last = state.reports.at(-1)
       if (last && state.phase === 'chapter')
         breakdowns.get(key)!.set(last.quarter, breakdown(state, last))
@@ -944,6 +949,7 @@ if (args.includes('--act2')) {
                   ? withPpas(bot, false)
                   : bot
           const r = playFrom(start, strategy, { through: 3 })
+          checkedLedger(r.state, 'act3')
           const rep = r.state.reports.filter((x) => x.quarter >= '2027Q1')
           const pcAt = (label: string) =>
             rep.find((x) => x.quarter === label)?.politicalCapital ?? null
@@ -1503,12 +1509,17 @@ if (args.includes('--act2')) {
           CONTENT.quarters[state.quarter] === from &&
           !state.projects.some((p) => p.kind === 'pilot')
         )
-          state.cash += projectCapex(state, {
-            kw: 1000,
-            kind: 'pilot',
-            gpu: CONTENT.projects.pilot.gpu,
-            tenant: null,
-          }).totalUsd
+          // (a probe's gift of cash, booked so the ledger still reconciles)
+          book(
+            state,
+            'equity_raised',
+            projectCapex(state, {
+              kw: 1000,
+              kind: 'pilot',
+              gpu: CONTENT.projects.pilot.gpu,
+              tenant: null,
+            }).totalUsd,
+          )
         return inner.plan(state)
       },
     }

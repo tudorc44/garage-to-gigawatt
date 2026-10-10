@@ -11,7 +11,8 @@ import {
   type MarketWeek,
 } from '../../content/index.ts'
 import { binomial } from '../rng.ts'
-import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
+import { logEntry, type Coin, type GameState } from '../state.ts'
+import { accrue, book, ledgerWeekEnd, roundCash } from '../ledger.ts'
 import { endQuarterEnergy } from '../systems/energy.ts'
 import { removeMachines } from '../systems/machines.ts'
 import { getModel, marketWeek } from '../systems/market.ts'
@@ -160,7 +161,13 @@ export function prologueWeek(s: GameState): void {
   const incomeUsd =
     p.livingAtHome && !p.movedBack ? P().start.income_usd_q / WEEKS() : 0
   const rentUsd = p.livingAtHome ? 0 : rentUsdQ(s.quarter) / WEEKS()
-  s.cash = roundCents(s.cash + incomeUsd - rentUsd - powerUsd)
+  // (M37.1: mined coins are revenue at this week's price; cash comes only when they sell)
+  accrue(s, 'mining_btc', btcCoins * price(w, 'BTC'))
+  accrue(s, 'mining_eth', ethCoins * price(w, 'ETH'))
+  book(s, 'other_income', incomeUsd)
+  book(s, 'rent', -rentUsd)
+  book(s, 'power', -powerUsd)
+  roundCash(s)
   p.quarter.incomeUsd += incomeUsd
   p.quarter.rentUsd += rentUsd
   p.quarter.powerCostUsd += powerUsd
@@ -169,6 +176,7 @@ export function prologueWeek(s: GameState): void {
     logEntry(s, 'log.p0_blocks', { n: blocks, coins: btcCoins }, weekNo)
 
   checkPrologueEvents(s, weekNo)
+  ledgerWeekEnd(s)
   s.week++
   if (s.week === WEEKS() && !s.interrupt) prologueEndQuarter(s)
 }
@@ -194,7 +202,7 @@ export function sellWeek(s: GameState, w: MarketWeek): number {
     const got = saleUsd * (1 - impact)
     capLeft -= saleUsd
     total += got
-    s.cash += got
+    book(s, 'coins_sold', got)
     s.treasury[coin] -= coins
     p.onExchange[coin] -= coins
     p.sellQueue[coin] -= coins
@@ -287,7 +295,7 @@ function forcedSale(s: GameState, w: MarketWeek): void {
       const held =
         where === 'exchange' ? p.onExchange[coin] : walletCoins(s, coin)
       const coins = Math.min(held, -s.cash / px)
-      s.cash += coins * px
+      book(s, 'coins_sold', coins * px)
       s.treasury[coin] -= coins
       if (where === 'exchange') p.onExchange[coin] -= coins
     }
@@ -295,9 +303,10 @@ function forcedSale(s: GameState, w: MarketWeek): void {
   if (s.cash < 0 && !p.livingAtHome) moveBackHome(s, true)
   for (const lot of [...s.machines]) {
     if (s.cash >= 0) break
-    s.cash += removeMachines(s, lot, lot.count)
+    const site = lot.siteId
+    book(s, 'asset_sales', removeMachines(s, lot, lot.count), { site })
   }
-  s.cash = roundCents(s.cash)
+  roundCash(s)
   logEntry(s, 'log.p0_forced_sale')
 }
 

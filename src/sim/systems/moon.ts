@@ -13,6 +13,7 @@ import {
   type ResourceCategory,
 } from '../../content/moonContent.ts'
 import type { Message, MessageKey } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { chance, randomInt, substream } from '../rng.ts'
 import { act4SeedOf, inActIV, logEntry, type Act4Moon, type GameState, type LunarClaim } from '../state.ts'
 import { prospectReport } from './lunarGeology.ts'
@@ -99,7 +100,7 @@ export function claimSiteBlocker(state: GameState, site: LunarSiteId): Message |
 export function claimSite(state: GameState, site: LunarSiteId): void {
   const c = MOON.claim
   state.bandwidth -= c.bandwidth
-  state.cash -= c.fee_usd
+  book(state, 'lunar_capex', -c.fee_usd)
   addPc(state, -c.pc)
   const moon = moonOf(state)
   moon.claims = moon.claims.filter((x) => !(x.site === site && x.status === 'withdrawn'))
@@ -217,7 +218,7 @@ export function sendMission(state: GameState, site: LunarSiteId): void {
   // (M31.3) an accepted agency task order pays its part
   const credit = Math.min(costUsd, moon.missionCreditUsd ?? 0)
   if (credit > 0) moon.missionCreditUsd = (moon.missionCreditUsd ?? 0) - credit
-  state.cash -= costUsd - credit
+  book(state, 'lunar_capex', -(costUsd - credit))
   moon.missions.push({
     id,
     site,
@@ -336,7 +337,7 @@ export function resolveLunarAlert(state: GameState, choice: string): Message | u
     else {
       m.arrivalQuarter += MOON.mission.abort_delay_quarters
       m.aborts++
-      state.cash -= MOON.mission.abort_cost_usd
+      book(state, 'lunar_opex', -MOON.mission.abort_cost_usd)
       logEntry(state, 'log.moon.aborted', { lunarSite: m.site, costUsd: MOON.mission.abort_cost_usd }, week)
     }
   } else resolveDustFault(state, active.lunarSite as LunarSiteId, choice, week)
@@ -358,7 +359,7 @@ function resolveDustFault(state: GameState, site: LunarSiteId, choice: string, w
   if (!pilot) return
   const a = MOON.alerts
   if (choice === 'repair') {
-    state.cash -= a.dust_repair_usd
+    book(state, 'repairs', -a.dust_repair_usd, { biz: 'moon' })
     ;(state.quarterStats.moonCostUsd ??= 0)
     state.quarterStats.moonCostUsd += a.dust_repair_usd
     logEntry(state, 'log.moon.dust_repaired', { lunarSite: site, costUsd: a.dust_repair_usd }, week)

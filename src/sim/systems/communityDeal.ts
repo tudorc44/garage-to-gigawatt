@@ -8,6 +8,7 @@
 // offers, but an offset already paid for stays. Signing isn't one of the player's big moves (Act III move log).
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { logEntry, type GameState, type Site } from '../state.ts'
 import { heatBeforeDeal, heatOf, recalcHeat, siteHeatValue } from './heat.ts'
 import { bringsCommunityDeal } from './hires.ts'
@@ -70,7 +71,7 @@ export function signCommunityDeal(state: GameState): void {
   const d = state.communityDeal!
   const offer = d.offer!
   const site = state.sites.find((s) => s.id === offer.siteId)!
-  state.cash -= offer.costUsd
+  book(state, 'community', -offer.costUsd, { site: offer.siteId })
   state.bandwidth -= D().bandwidth
   const h = heatOf(state, site.id)
   // a new deal replaces any offset left; never raises Heat

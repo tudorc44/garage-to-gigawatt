@@ -3,6 +3,7 @@
 // first, the backstop second, if they get expensive.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import {
   logEntry,
   projectGone,
@@ -126,7 +127,7 @@ export function fundJv(state: GameState, projectId: string, equityUsd: number) {
   const p = getProject(state, projectId)!
   if (!p.jv) return
   p.jv.fundedUsd = Math.round(p.jv.share * Math.max(0, equityUsd))
-  state.cash += p.jv.fundedUsd
+  book(state, 'equity_raised', p.jv.fundedUsd, { site: p.siteId, project: p.id })
   logEntry(state, 'log.jv_funded', {
     n: p.n,
     amountUsd: p.jv.fundedUsd,

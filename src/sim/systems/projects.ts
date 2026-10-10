@@ -19,6 +19,7 @@ import {
 } from '../../content/index.ts'
 import { scenarioOf } from './market.ts'
 import { rfpMid } from './leaseIndex.ts'
+import { book, bookSplit, type Category, type LedgerRef } from '../ledger.ts'
 import { siteParams } from './siteSerials.ts'
 import { startLenderCure } from './facilities.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -836,7 +837,7 @@ export function signTenant(
     ...(mult !== 1 ? { priceMult: mult } : {}),
   }
   p.offers = []
-  state.cash += prepaymentUsd
+  book(state, 'prepayments', prepaymentUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   if (state.firstAiDealQuarter === null)
     state.firstAiDealQuarter = state.quarter
   logEntry(state, 'log.tenant_signed', {
@@ -1041,7 +1042,7 @@ export function startBuild(state: GameState, projectId: string): void {
   p.stage = 'building'
   // Act III (M17.2): a nuclear Power slot signs its PPA now, at this quarter's price.
   if (p.power === 'nuclear') signProjectPpa(state, p)
-  state.cash -= p.capexUsd
+  book(state, 'project_capex', -p.capexUsd, { site: p.siteId, project: p.id })
   state.bandwidth -= BALANCE.projects.bandwidth.start
   logEntry(state, 'log.project_started', {
     n: p.n,
@@ -1070,7 +1071,7 @@ function gasLawsuits(state: GameState): void {
       const r = substream(state.seed, `gas_lawsuit:${add.projectId}`)
       if (!chance(r, chanceOf)) continue
       add.readyQuarter = state.quarter + L.shutQuarters
-      state.cash -= L.legalUsd
+      book(state, 'one_offs', -L.legalUsd, { site: site.id, project: add.projectId ?? undefined, biz: 'ai' })
       const p = state.projects.find((x) => x.id === add.projectId)
       if (p && p.stage === 'building' && p.readyQuarter !== null)
         p.readyQuarter = Math.max(p.readyQuarter, add.readyQuarter)
@@ -1124,6 +1125,7 @@ export function startQuarterProjects(state: GameState): void {
  */
 export function endQuarterProjects(state: GameState): number {
   let damagesUsd = 0
+  const damageParts: [Category, number, LedgerRef][] = []
   const label = CONTENT.quarters[state.quarter]
   for (const p of state.projects) {
     const t = p.tenant
@@ -1167,6 +1169,7 @@ export function endQuarterProjects(state: GameState): number {
     const usd =
       annualContractUsd(p) * P().latePenaltyShareYr * (1 - ownedShareOut(p))
     damagesUsd += usd
+    damageParts.push(['one_offs', -usd, { site: p.siteId, project: p.id, biz: 'ai' }])
     t.lateQuarters++
     logEntry(state, 'log.project_late', {
       n: p.n,
@@ -1182,7 +1185,7 @@ export function endQuarterProjects(state: GameState): number {
         tenantWalks(state, p)
     }
   }
-  state.cash -= damagesUsd
+  bookSplit(state, -damagesUsd, damageParts)
   return damagesUsd
 }
 
@@ -1220,6 +1223,7 @@ export function settleProjectsWeek(
   const marginByTier: Record<string, number> = {}
   const hours = 24 * 7
   const b = BALANCE.projects
+  const parts: [Category, number, LedgerRef][] = []
   for (const p of state.projects) {
     if (p.stage !== 'live') continue
     const site = state.sites.find((s) => s.id === p.siteId)
@@ -1234,13 +1238,17 @@ export function settleProjectsWeek(
         : 1
     // Act III (M16.3): a hall in a retrofit or GPU change earns only its share of the quarter.
     const share = downtimeShare(p, state.quarter)
+    let costParts: [Category, number][]
+    const ref = { site: site.id, project: p.id, biz: 'ai' as const }
     if (p.kind === 'shell') {
       if (!p.tenant) continue
       rev = (annualContractUsd(p) / 52) * labMult * share
       cost = rev * b.shellOpexShare
+      costParts = [['ai_opex', cost]]
       const setOff = Math.min(p.tenant.prepaymentLeftUsd, rev)
       p.tenant.prepaymentLeftUsd -= setOff
-      state.cash -= setOff
+      // (the rent is revenue in full; the part the prepayment covers comes off the prepayment, not the cash)
+      book(state, 'prepayments', -setOff, ref)
     } else {
       const up = uptime(site)
       const contract = p.tenant?.gpu
@@ -1264,22 +1272,30 @@ export function settleProjectsWeek(
       // A degraded cluster (card ec19) runs below its full rate.
       rev *= modifierMult(state, 'utilisation', null) * share
       // (in downtime the hall draws power only for the share it runs; the GPUs stay insured)
-      cost =
+      const powerPart =
         p.kw *
-          b.cloudPue *
-          hours *
-          up *
-          share *
-          // (M17.8: at the market price; a PPA settles the difference at the quarter's end)
-          powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) +
-        (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
+        b.cloudPue *
+        hours *
+        up *
+        share *
+        // (M17.8: at the market price; a PPA settles the difference at the quarter's end)
+        powerPriceUsdKwh(site, state.quarter, scenarioOf(state))
+      const insurancePart = (p.gpuCapexUsd * b.cloudInsuranceShareYr) / 52
+      cost = powerPart + insurancePart
+      costParts = [
+        ['power', powerPart],
+        ['insurance', insurancePart],
+      ]
       // GPUs out after a failure wave you ran short on (M8.4) earn nothing; a contracted tenant is
       // credited 2× what they would have earned.
       const outShare = gpuOutShare(state, p)
       if (outShare > 0) {
         const lost = rev * outShare
         rev -= lost
-        if (contract) cost += lost * CONTENT.projects.gpuWave.slaCreditMult
+        if (contract) {
+          cost += lost * CONTENT.projects.gpuWave.slaCreditMult
+          costParts.push(['ai_opex', lost * CONTENT.projects.gpuWave.slaCreditMult])
+        }
       }
     }
     // A JV partner takes its share of the project's earnings (M4.6).
@@ -1290,8 +1306,10 @@ export function settleProjectsWeek(
     costUsd += cost
     if (floorEligible(p)) floorMarginUsd += rev - cost
     marginByTier[site.tier] = (marginByTier[site.tier] ?? 0) + rev - cost
+    parts.push([p.kind === 'shell' ? 'ai_shell_rent' : 'ai_cloud', rev, ref])
+    for (const [cat, usd] of costParts) parts.push([cat, -usd * ours, ref])
   }
-  state.cash += revenueUsd - costUsd
+  bookSplit(state, revenueUsd - costUsd, parts)
   return { revenueUsd, costUsd, marginByTier, floorMarginUsd }
 }
 
@@ -1412,7 +1430,7 @@ export function slipProject(
  */
 export function tenantWalks(state: GameState, p: Project): void {
   const t = p.tenant!
-  state.cash -= t.prepaymentLeftUsd
+  book(state, 'prepayments', -t.prepaymentLeftUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   logEntry(state, 'log.tenant_walked', {
     n: p.n,
     tenant: t.card,
@@ -1491,7 +1509,7 @@ export function resolveProjectEvent(
   switch (choiceId) {
     case 'accelerate':
     case 'pay_premium':
-      state.cash -= costUsd
+      book(state, 'project_capex', -costUsd, { site: p.siteId, project: p.id })
       p.capexUsd += costUsd
       logEntry(state, 'log.project_paid', { n: p.n, costUsd }, weekNo)
       break
@@ -1662,7 +1680,7 @@ export function sellGpus(state: GameState, projectId: string): void {
   const valueUsd = Math.round(
     gpuResidualUsd(p, state.quarter) * (1 - ownedShareOut(p)),
   )
-  state.cash += valueUsd
+  book(state, 'asset_sales', valueUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   state.bandwidth -= BALANCE.projects.gpuResidual.sellBandwidth
   p.stage = 'ended'
   p.soldQuarter = state.quarter
@@ -1808,7 +1826,7 @@ export function sellProject(state: GameState, projectId: string): void {
   const priceUsd = Math.round(saleValueUsd(state, p))
   const site = state.sites.find((s) => s.id === p.siteId)!
   site.soldKw = (site.soldKw ?? 0) + p.kw
-  state.cash += priceUsd
+  book(state, 'asset_sales', priceUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   state.bandwidth -= BALANCE.projects.bandwidth.sell
   p.stage = 'sold'
   p.soldQuarter = state.quarter

@@ -12,6 +12,7 @@ import { BALANCE, CONTENT } from '../../content/index.ts'
 import { ENERGY } from '../../content/energyContent.ts'
 import { moratoriumWaived } from './eventEffects.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type GameState, type Site } from '../state.ts'
 import { getModel } from './market.ts'
@@ -369,7 +370,7 @@ export function doOutreach(state: GameState, siteId: string): void {
   const site = state.sites.find((s) => s.id === siteId)!
   const costUsd = outreachCostUsd(site)
   state.bandwidth -= outreachBandwidth(state)
-  state.cash -= costUsd
+  book(state, 'community', -costUsd, { site: siteId })
   heatOf(state, siteId).outreachQuarter = state.quarter
   addGrievance(state, siteId, CONTENT.heat.outreach.grievance)
   logEntry(state, 'log.outreach', {
@@ -408,7 +409,7 @@ export function doMitigation(
   const site = state.sites.find((s) => s.id === siteId)!
   const costUsd = mitigationCostUsd(site)
   state.bandwidth -= CONTENT.heat.mitigation.bandwidth
-  state.cash -= costUsd
+  book(state, 'community', -costUsd, { site: siteId })
   heatOf(state, siteId).mitigated = true
   recalcHeat(state, site)
   logEntry(
@@ -516,7 +517,7 @@ export function resolveComplaint(
   const week = active.week + 1
   if (choiceId === 'pay') {
     const costUsd = complaintPayUsd()
-    state.cash -= costUsd
+    book(state, 'community', -costUsd, { site: siteId })
     addGrievance(state, siteId, complaintPayGrievance())
     logEntry(state, 'log.complaint_paid', { ...siteParams(site), costUsd }, week)
   } else if (choiceId === 'mitigate') {

@@ -10,6 +10,7 @@
 // Both are `Facility` rows (kinds 'corporate' and 'standby', no project): they count in debt, net debt and valuation
 // like other debt, and their interest and bullets go through the quarter-end cash check like other obligations.
 import { BALANCE, actFirstQuarter, actLastQuarter } from '../../content/index.ts'
+import { book, bookSplit } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   covenantBreached,
@@ -76,7 +77,7 @@ export function drawCorporate(
     missedQuarters: 0,
     rating: loanRating(state),
   })
-  state.cash += amountUsd
+  book(state, 'debt_drawn', amountUsd)
   logEntry(
     state,
     'log.corporate_drawn',
@@ -116,7 +117,10 @@ export function serviceCompanyFacility(
   f: Facility,
 ): { interestUsd: number; principalUsd: number } {
   const due = companyServiceDue(f, state.quarter)
-  state.cash -= due.interestUsd + due.principalUsd
+  bookSplit(state, -(due.interestUsd + due.principalUsd), [
+    ['interest', -due.interestUsd],
+    ['debt_repaid', -due.principalUsd],
+  ])
   f.balanceUsd -= due.principalUsd
   if (due.principalUsd > 0) {
     state.facilities = state.facilities.filter((x) => x !== f)
@@ -140,7 +144,7 @@ export function companyRepayBlocker(
 /** Repays a company facility early from cash (0 Bandwidth). */
 export function repayCompanyFacility(state: GameState, facilityId: string): void {
   const f = state.facilities.find((x) => x.id === facilityId)!
-  state.cash -= f.balanceUsd
+  book(state, 'debt_repaid', -f.balanceUsd)
   state.facilities = state.facilities.filter((x) => x !== f)
   logEntry(state, 'log.corporate_repaid', { amountUsd: f.balanceUsd, debt: f.kind })
 }
@@ -200,7 +204,7 @@ export function standbyArrangeBlocker(state: GameState): Message | undefined {
 export function arrangeStandby(state: GameState): void {
   const { sizeUsd, feeUsd } = standbyTerms(state)
   state.bandwidth -= SB.bandwidth
-  state.cash -= feeUsd
+  book(state, 'finance_fees', -feeUsd)
   state.act3Standby = {
     arrangedQuarter: state.quarter,
     sizeUsd,
@@ -246,7 +250,7 @@ export function drawStandby(state: GameState, amountUsd: number, auto = false): 
     missedQuarters: 0,
     rating: loanRating(state),
   })
-  state.cash += amountUsd
+  book(state, 'debt_drawn', amountUsd)
   logEntry(state, auto ? 'log.standby_auto_drawn' : 'log.standby_drawn', { amountUsd })
 }
 
@@ -261,7 +265,7 @@ export function settleStandbyFee(state: GameState): number {
   const undrawn =
     state.quarter < s.arrangedQuarter ? 0 : Math.max(0, s.sizeUsd - standbyDrawnUsd(state))
   const feeUsd = (undrawn * SB.commitmentFeeYr) / 4
-  state.cash -= feeUsd
+  book(state, 'finance_fees', -feeUsd)
   return feeUsd
 }
 

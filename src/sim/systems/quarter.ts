@@ -9,13 +9,13 @@ import {
   type MarketWeek,
 } from '../../content/index.ts'
 import { finishUpgrades } from './construction.ts'
+import { book, roundCash } from '../ledger.ts'
 import { bookEnergy, endQuarterEnergy } from './energy.ts'
 import { endQuarterSpecialSites } from './specialSites.ts'
 import { endQuarterVentures, fusionHypeDelta, venturesValueUsd } from './ventures.ts'
 import {
   emptyQuarterStats,
   logEntry,
-  roundCents,
   type Coin,
   type GameState,
   type QuarterReport,
@@ -133,7 +133,7 @@ export function endQuarter(state: GameState): void {
   rescueBeforeGameOver(state)
   // Act III (M18.13): an open covenant breach sweeps half the quarter's operating cash flow into debt.
   covenantSweep(state)
-  state.cash = roundCents(state.cash)
+  roundCash(state)
   // Aggressive depreciation's Q4 audit (card ec18): a restatement shows in this quarter's report.
   if (isAct2RulesQuarter(state.quarter)) depreciationAudit(state)
   // Act III (M17.3): lobbying lands, the Director's gain, the decay.
@@ -166,7 +166,7 @@ export function endQuarter(state: GameState): void {
     testCovenant(state, report)
     if (state.cash < 0) {
       rescueBeforeGameOver(state)
-      state.cash = roundCents(state.cash)
+      roundCash(state)
       report.cash = state.cash
     }
   }
@@ -194,14 +194,15 @@ function forceSales(
     const price = coinPrice(w, coin)
     const coins = Math.min(state.treasury[coin], -state.cash / price)
     state.treasury[coin] -= coins
-    state.cash += coins * price
+    book(state, 'coins_sold', coins * price)
     treasuryUsd += coins * price
   }
   let machinesUsd = 0
   let units = 0
   while (state.cash < 0 && state.machines.length > 0) {
+    const site = state.machines[0].siteId
     const usd = removeMachines(state, state.machines[0], 1)
-    state.cash += usd
+    book(state, 'asset_sales', usd, { site })
     machinesUsd += usd
     units++
   }

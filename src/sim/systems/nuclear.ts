@@ -23,6 +23,7 @@ import {
   type MarketKey,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { bookSplit } from '../ledger.ts'
 import {
   inAct3Rules,
   logEntry,
@@ -320,7 +321,10 @@ export function settlePpas(state: GameState): number {
     (x) => holds(state, x, state.quarter) || state.quarter < x.signedQuarter,
   )
   if (usd !== 0) {
-    state.cash -= usd
+    bookSplit(state, -usd, [
+      ['power', -(usd + resoldUsd), { biz: 'ai' }],
+      ['energy_income', resoldUsd],
+    ])
     state.quarterStats.aiCostUsd += usd
     logEntry(state, 'log.ppa_bill', { costUsd: usd + resoldUsd })
     if (resoldUsd > 0)

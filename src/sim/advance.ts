@@ -4,7 +4,8 @@
 // failure wave → project alerts → neighbour complaint → event card → price alert.
 // After week 13 the quarter ends (report, or game over).
 import { BALANCE } from '../content/index.ts'
-import { logEntry, roundCents, type GameState } from './state.ts'
+import { logEntry, type GameState } from './state.ts'
+import { book, ledgerWeekEnd, roundCash } from './ledger.ts'
 import { checkPriceAlert } from './systems/interrupts.ts'
 import { marketWeek, previousMarketWeek, scenarioOf } from './systems/market.ts'
 import { mineWeek, rollFailures } from './systems/mining.ts'
@@ -59,7 +60,7 @@ export function advance(state: GameState): GameState {
   // Winter Storm Uri: index contracts that didn't curtail pay the storm price on their firm load.
   const stormUsd = curtailed.creditUsd > 0 ? 0 : stormChargeUsd(s, s.week)
   if (stormUsd > 0) {
-    s.cash -= stormUsd
+    book(s, 'power', -stormUsd)
     money.powerCostUsd += stormUsd
     logEntry(s, 'log.storm_charge', { chargeUsd: stormUsd }, weekNo)
   }
@@ -67,7 +68,7 @@ export function advance(state: GameState): GameState {
   const salariesUsd = paySalariesWeek(s)
   const loan = payLoanWeek(s)
   const cryptoInterestUsd = payCryptoInterestWeek(s)
-  s.cash = roundCents(s.cash)
+  roundCash(s)
 
   const st = s.quarterStats
   st.revenueUsd += money.revenueUsd
@@ -149,6 +150,7 @@ export function advance(state: GameState): GameState {
     cash: s.cash,
   })
 
+  ledgerWeekEnd(s)
   s.week++
   if (s.week === BALANCE.weeksPerQuarter && !s.interrupt) endQuarter(s)
   return s

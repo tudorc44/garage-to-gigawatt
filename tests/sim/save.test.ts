@@ -142,6 +142,8 @@ const ADDED_SINCE_V1: Record<string, unknown> = {
 const ADDED_CHECKS: Record<string, (v: unknown) => boolean> = {
   'sites.*.serial': (v) => Number.isInteger(v) && (v as number) >= 1,
   siteSerials: (v) => typeof v === 'object' && v !== null && !Array.isArray(v),
+  // M37.1: an old save starts its ledger at load (its past quarters partial)
+  ledger: (v) => typeof v === 'object' && v !== null && Array.isArray((v as { quarters: unknown }).quarters),
 }
 
 /**
@@ -362,11 +364,12 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
     expect(q4.quarter).toBe(23)
   })
 
+  // (two whole careers to Act II's end: a minute's allowance, since the suite runs files side by side)
   it('a game played across the act boundary replays exactly from its seed and steps', () => {
     const { state, log } = playGame(3, BOTS['raise-climb'], { through: 2 })
     expect(state.act).toBe(2)
     expect(replay(3, log)).toEqual(state)
-  })
+  }, 60_000)
 
   it('a version-2 save round-trips unchanged', () => {
     const s = restoreSave(readV1('v1-merge-2022Q3'))

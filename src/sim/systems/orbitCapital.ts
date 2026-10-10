@@ -7,6 +7,7 @@
 import { ORBIT } from '../../content/orbitContent.ts'
 import { MONEY } from '../../content/moneyContent.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book, bookSplit } from '../ledger.ts'
 import { inActIV, logEntry, type GameState, type OrbitalBlock, type OrbitalDebt } from '../state.ts'
 import { sofr } from './finance.ts'
 import { scenarioOf } from './market.ts'
@@ -112,7 +113,7 @@ export function payCapex(state: GameState, b: OrbitalBlock, usd: number, part: '
     theirs += draw
   }
   const mine = usd - theirs
-  state.cash -= mine
+  book(state, 'orbit_capex', -mine, { block: b.id })
   return mine
 }
 
@@ -155,7 +156,10 @@ export function serviceOrbitalDebt(state: GameState): { interestUsd: number; pri
     }
     const left = Math.max(1, d.tenorQuarters - d.paidQuarters)
     const principal = d.balanceUsd / left
-    state.cash -= interest + principal
+    bookSplit(state, -(interest + principal), [
+      ['interest', -interest],
+      ['debt_repaid', -principal],
+    ])
     d.balanceUsd -= principal
     d.paidQuarters++
     paid.interestUsd += interest
@@ -184,7 +188,7 @@ function testInsuranceCovenant(state: GameState, d: OrbitalDebt, b: OrbitalBlock
   if (state.quarter >= d.cureUntil) {
     // the lender calls the loan: paid from cash now (short of cash, the rescue and the game-over rules follow)
     const calledUsd = d.balanceUsd
-    state.cash -= calledUsd
+    book(state, 'debt_repaid', -calledUsd)
     logEntry(state, 'log.orbit.debt_called', { n: d.n, debtUsd: calledUsd })
     closeDebt(state, d)
   }

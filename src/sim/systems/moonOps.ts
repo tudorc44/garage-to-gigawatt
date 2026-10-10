@@ -9,6 +9,7 @@
 import { CONTENT, act4Row } from '../../content/index.ts'
 import { MOON, lunarSite, type LunarSiteId } from '../../content/moonContent.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book, bookSplit } from '../ledger.ts'
 import { pick, randomInt, substream, uniform } from '../rng.ts'
 import { act4SeedOf, inActIV, logEntry, type GameState, type LunarClaim } from '../state.ts'
 import { pilotGradeFactor } from './lunarGeology.ts'
@@ -66,7 +67,7 @@ export function buildSolarBlocker(state: GameState, site: LunarSiteId, kwe: numb
 export function buildSolar(state: GameState, site: LunarSiteId, kwe: number): void {
   const costUsd = solarCostUsd(state, kwe)
   state.bandwidth -= P.solar.bandwidth
-  state.cash -= costUsd
+  book(state, 'lunar_capex', -costUsd)
   const c = claimOf(state, site)!
   c.solar = { kwe, readyQuarter: state.quarter + P.solar.build_quarters }
   logEntry(state, 'log.moon.solar', { lunarSite: site, kwe, costUsd })
@@ -106,7 +107,7 @@ const t2036 = () => String(CONTENT.wildcardsIv.wildcards.find((x) => x.id === 'r
 /** Leases a bloc programme's fission unit: its strings (alignment with that bloc), set-up now, a lease each quarter. */
 export function leaseReactor(state: GameState, site: LunarSiteId): void {
   state.bandwidth -= P.reactor.bandwidth
-  state.cash -= P.reactor.setup_usd
+  book(state, 'lunar_capex', -P.reactor.setup_usd)
   moonOf(state).alignedBloc = P.reactor.bloc
   claimOf(state, site)!.reactor = { kwe: P.reactor.kwe, readyQuarter: state.quarter + 1 }
   logEntry(state, 'log.moon.reactor', { lunarSite: site, costUsd: P.reactor.setup_usd })
@@ -136,7 +137,7 @@ export function megawattBlocker(state: GameState): Message | undefined {
 export function signMegawatt(state: GameState): void {
   const m = P.megawatt_contract
   state.bandwidth -= m.bandwidth
-  state.cash -= m.fee_usd
+  book(state, 'lunar_opex', -m.fee_usd)
   moonOf(state).megawattQuarter = state.quarter
   logEntry(state, 'log.moon.megawatt', { costUsd: m.fee_usd })
 }
@@ -165,7 +166,7 @@ export const pilotQuarters = (state: GameState): number =>
 export function decidePilot(state: GameState, site: LunarSiteId): void {
   const capexUsd = pilotCostUsd(state)
   state.bandwidth -= PILOT.bandwidth
-  state.cash -= capexUsd
+  book(state, 'lunar_capex', -capexUsd)
   claimOf(state, site)!.pilot = {
     decidedQuarter: state.quarter,
     readyQuarter: state.quarter + pilotQuarters(state),
@@ -254,7 +255,7 @@ export function signOfftake(state: GameState, offer: number): void {
   const o = moon.offers[offer]
   const prepaidUsd = MOON.offtake.prepay_share * o.volumeTYr * 1000 * o.priceUsdKg
   state.bandwidth -= MOON.offtake.bandwidth
-  state.cash += prepaidUsd
+  book(state, 'prepayments', prepaidUsd, { biz: 'moon' })
   moon.offtakes.push({
     id: `lo${moon.nextId++}`,
     buyer: o.buyer,
@@ -357,7 +358,7 @@ export function endQuarterMoonOps(state: GameState): void {
   let waterT = 0
   for (const c of moon.claims.filter((x) => x.status === 'held')) {
     if (c.reactor && c.reactor.readyQuarter <= state.quarter) {
-      state.cash -= P.reactor.lease_usd_q
+      book(state, 'lunar_opex', -P.reactor.lease_usd_q)
       st.moonCostUsd += P.reactor.lease_usd_q
     }
     const p = c.pilot
@@ -367,7 +368,7 @@ export function endQuarterMoonOps(state: GameState): void {
       waterT += out
       if (out > 0) p.runQuarters++
       if (p.maintained) {
-        state.cash -= PILOT.maintenance_usd_q
+        book(state, 'lunar_opex', -PILOT.maintenance_usd_q)
         st.moonCostUsd += PILOT.maintenance_usd_q
       } else p.availability *= 1 - PILOT.dust_loss_share_q
       if (p.runQuarters === PILOT.measured_after_quarters && !c.reports.some((r) => r.step === 'pilot'))
@@ -376,7 +377,7 @@ export function endQuarterMoonOps(state: GameState): void {
     const prod = c.production
     if (prod && prod.drawnUsd < prod.capexUsd) {
       const draw = Math.min(prod.capexUsd / MOON.production.draw_quarters, prod.capexUsd - prod.drawnUsd)
-      state.cash -= draw
+      book(state, 'lunar_capex', -draw)
       prod.drawnUsd += draw
     }
   }
@@ -389,7 +390,11 @@ export function endQuarterMoonOps(state: GameState): void {
     const usd = t * 1000 * o.priceUsdKg
     const credited = Math.min(o.prepaidLeftUsd, usd)
     o.prepaidLeftUsd -= credited
-    state.cash += usd - credited
+    // (the sales are revenue in full; the part a prepayment covers comes off the prepayment)
+    bookSplit(state, usd - credited, [
+      ['lunar_revenue', usd],
+      ['prepayments', -credited, { biz: 'moon' }],
+    ])
     st.moonRevenueUsd += usd
   }
 }

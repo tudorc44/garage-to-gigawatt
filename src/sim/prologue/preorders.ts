@@ -9,6 +9,7 @@ import type { Message } from '../../i18n/t.ts'
 import { randomInt, uniform } from '../rng.ts'
 import { logEntry, roundCents, type GameState } from '../state.ts'
 import { addMachines } from '../systems/machines.ts'
+import { book, roundCash } from '../ledger.ts'
 import { getModel } from '../systems/market.ts'
 import { P, rollStream, siteCapacityKw, siteLoadKw } from './setup.ts'
 import type { Preorder } from './types.ts'
@@ -84,7 +85,8 @@ export function placePreorder(
       deliverQuarter: due + randomInt(r, ...v.severe_quarters),
     }
   else order = { outcome: 'never', deliverQuarter: null }
-  s.cash = roundCents(s.cash - v.price_usd)
+  book(s, 'machines', -v.price_usd)
+  roundCash(s)
   s.prologue!.preorders.push({
     id,
     vendor: v.id,
@@ -115,7 +117,8 @@ export function deliverPreorders(s: GameState): void {
     if (o.outcome === 'never') {
       if (s.quarter >= refundQuarter(o)) {
         const refund = roundCents(o.paidUsd * v.refund_share)
-        s.cash = roundCents(s.cash + refund)
+        book(s, 'machines', refund)
+        roundCash(s)
         o.delivered = true
         logEntry(s, 'log.p0_preorder_refund', { vendor: v.id, refundUsd: refund })
       }

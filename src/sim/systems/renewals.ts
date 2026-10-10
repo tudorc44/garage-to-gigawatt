@@ -14,6 +14,7 @@
 // Only this quarter's market columns are read, and only once a renewal opens (no offer is known early).
 import { BALANCE, CONTENT, actFirstQuarter } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book, oneOffCategory } from '../ledger.ts'
 import { chance, substream } from '../rng.ts'
 import {
   act3SeedOf,
@@ -369,7 +370,8 @@ function openReopener(
 ): void {
   const t = p.tenant!
   const feeUsd = reopenerFeeUsd(p)
-  state.cash += by === 'tenant' ? feeUsd : -feeUsd
+  const usd = by === 'tenant' ? feeUsd : -feeUsd
+  book(state, oneOffCategory(usd), usd, { site: p.siteId, project: p.id, biz: 'ai' })
   t.reopenedQuarter = state.quarter
   const offer = renewalOffer(state, p)
   ;(state.act3Renewals ??= []).push({

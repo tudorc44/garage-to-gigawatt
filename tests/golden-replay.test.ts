@@ -22,6 +22,7 @@ import { act4Company } from './sim/act4Helpers.ts'
 import { BOTS } from '../tools/bots.ts'
 import { PROLOGUE_BOTS } from '../tools/prologueBots.ts'
 import type { GameState } from '../src/sim/state.ts'
+import { unreconciled } from '../src/sim/ledger.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import { marketWeek, revenuePerUnitDay } from '../src/sim/systems/market.ts'
@@ -337,6 +338,10 @@ describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
       JSON.stringify({ ...run.state, version: 2 }, null, 2) + '\n',
     ).toMatchFileSnapshot(`./golden/${name}-seed-${SEED}.json`)
   })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
 })
 
 /** Prologue starts (Alpha 0.3): the Act 0 golden and the Act 0 → I golden. */
@@ -366,6 +371,10 @@ describe.each([
     await expect(
       JSON.stringify({ ...run.state, version: 3 }, null, 2) + '\n',
     ).toMatchFileSnapshot(`./golden/${name}-seed-${PROLOGUE_SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
   })
 })
 
@@ -408,6 +417,10 @@ describe.each(['s0', 's1', 's2', 's3'] as const)(
       ).toMatchFileSnapshot(
         `./golden/act3-${scenario}-seed-${ACT3_SEED}.json`,
       )
+    })
+
+    it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+      expect(unreconciled(run.state)).toEqual([])
     })
   },
 )
@@ -482,6 +495,10 @@ describe.each(['f1', 'f2', 'f3', 'f4'] as const)('golden replay: act4-%s (2031Q1
       `./golden/act4-${future}-seed-${ACT4_SEED}.json`,
     )
   })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
 })
 
 /**
@@ -536,6 +553,10 @@ describe.each(['f2', 'f4'] as const)('golden replay: act4-energy-%s (2031Q1 → 
     await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(
       `./golden/act4-energy-${future}-seed-${ACT4_SEED}.json`,
     )
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
   })
 })
 

@@ -5,6 +5,7 @@
 // 2. if none cures it, an emergency equity raise at half the current valuation, diluting at most 30%.
 // Game over only if both fail. The log says which one fired.
 import { BALANCE } from '../../content/index.ts'
+import { book } from '../ledger.ts'
 import {
   inAct2Rules,
   inActIV,
@@ -38,7 +39,7 @@ export function forcedProjectSale(
   const priceUsd = Math.round(saleValueUsd(state, p) * mult)
   const site = state.sites.find((s) => s.id === p.siteId)
   if (site) site.soldKw = (site.soldKw ?? 0) + p.kw
-  state.cash += priceUsd
+  book(state, 'asset_sales', priceUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   repayProjectFacilities(state, p.id)
   p.stage = 'sold'
   p.soldQuarter = state.quarter
@@ -76,7 +77,7 @@ export function rescueBeforeGameOver(
     const d = shortUsd / (pre + shortUsd)
     if (d <= r.maxDilution) {
       const amountUsd = Math.ceil((pre * d) / (1 - d))
-      state.cash += amountUsd
+      book(state, 'equity_raised', amountUsd)
       state.founderStake *= 1 - d
       logEntry(state, 'log.rescue_equity', {
         amountUsd,

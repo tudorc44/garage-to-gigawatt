@@ -4,6 +4,7 @@
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type Coin, type GameState } from '../state.ts'
+import { book } from '../ledger.ts'
 import { addMachines } from '../systems/machines.ts'
 import { buyPrice, getModel } from '../systems/market.ts'
 import { beginPrologueLive } from './engine.ts'
@@ -141,7 +142,7 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       if (blocked) return blocked
       const model = getModel(a.model)!
       const cost = buyPrice(model, s.quarter, a.condition)! * a.count
-      s.cash -= cost
+      book(s, 'machines', -cost, { site: a.siteId })
       addMachines(s, a.model, a.condition, a.count, a.siteId)
       onMachineBought(s, a.model)
       logEntry(s, 'log.bought', {

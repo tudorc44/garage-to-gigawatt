@@ -7,6 +7,7 @@
 import { BALANCE, CONTENT, actLastQuarter } from '../../content/index.ts'
 import { ORBIT, shell, tenantType } from '../../content/orbitContent.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book, bookSplit } from '../ledger.ts'
 import { chance, random, randomInt, substream } from '../rng.ts'
 import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
 import { trueReliability, TELEMETRY } from './fleetReliability.ts'
@@ -230,12 +231,21 @@ export function endQuarterOrbit(state: GameState): void {
     if (quote && premiumQUsd > 0) b.insured = { coverUsd: quote.coverUsd, untilQuarter: state.quarter }
     const opsUsd = (SAT.ops_usd_mw_yr * b.mw) / 4 + premiumQUsd
     let cashUsd = revenueUsd
+    let usedUsd = 0
     if (b.tenant && b.tenant !== 'spot' && b.tenant.prepaidLeftUsd > 0) {
       const used = Math.min(b.tenant.prepaidLeftUsd, revenueUsd)
       b.tenant.prepaidLeftUsd -= used
       cashUsd -= used
+      usedUsd = used
     }
-    state.cash += cashUsd - opsUsd
+    const ref = { block: b.id }
+    // (the revenue counts in full; the part a prepayment covers comes off the prepayment)
+    bookSplit(state, cashUsd - opsUsd, [
+      ['orbit_revenue', revenueUsd, ref],
+      ['prepayments', -usedUsd, { ...ref, biz: 'orbit' }],
+      ['orbit_opex', -(opsUsd - premiumQUsd), ref],
+      ['insurance', -premiumQUsd, { ...ref, biz: 'orbit' }],
+    ])
     st.orbitRevenueUsd += revenueUsd
     st.orbitCostUsd += opsUsd
     b.lastEbitdaUsd = revenueUsd - opsUsd
@@ -262,13 +272,13 @@ export function endQuarterOrbit(state: GameState): void {
       continue
     if (state.quarter < t.dueQuarter) continue
     const penaltyUsd = TEN.late_penalty_share_of_acv * annualValueUsd(b.kind, b.mw, t.price)
-    state.cash -= penaltyUsd
+    book(state, 'one_offs', -penaltyUsd, { block: b.id, biz: 'orbit' })
     st.orbitCostUsd += penaltyUsd
     logEntry(state, 'log.orbit.late', { n: b.n, penaltyUsd })
   }
   // Link units rented.
   const linkRentUsd = (orbit.linksRented * TEN.links.rent_unit_usd_yr) / 4
-  state.cash -= linkRentUsd
+  book(state, 'orbit_opex', -linkRentUsd)
   st.orbitCostUsd += linkRentUsd
   // The cascade: when the busy shell closes, its live blocks lose a large share (once).
   if (!orbit.cascadeDone && row.sso_closed === 1) {
@@ -362,7 +372,11 @@ export function sellOrbitalBlock(state: GameState, blockId: string): void {
   const priceUsd = blockSaleUsd(state, b)
   state.bandwidth -= ORBIT_SALE_BANDWIDTH
   // (M31.2) the proceeds repay the block's lender first
-  state.cash += repayFromProceeds(state, b, priceUsd)
+  const netUsd = repayFromProceeds(state, b, priceUsd)
+  bookSplit(state, netUsd, [
+    ['asset_sales', priceUsd, { block: b.id, biz: 'orbit' }],
+    ['debt_repaid', -(priceUsd - netUsd)],
+  ])
   b.stage = 'sold'
   logEntry(state, 'log.orbit.sold', { n: b.n, priceUsd })
 }

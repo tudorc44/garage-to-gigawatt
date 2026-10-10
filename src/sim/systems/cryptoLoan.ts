@@ -19,6 +19,7 @@ import {
   type GameState,
 } from '../state.ts'
 import { logQuarterLabel } from '../state.ts'
+import { book, bookSplit } from '../ledger.ts'
 import { removeMachines, saleValueUsd } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { cryptoLoanCapUsd } from './liquidity.ts'
@@ -121,7 +122,7 @@ export function takeCryptoLoan(
   )
   state.treasury[coin] -= collateral
   state.bandwidth -= BALANCE.bandwidth.loan
-  state.cash += amountUsd
+  book(state, 'debt_drawn', amountUsd)
   state.cryptoLoan = {
     coin,
     collateral,
@@ -146,7 +147,7 @@ export function repayCryptoLoan(state: GameState): Message | undefined {
       params: { costUsd: loan.balanceUsd, cashUsd: state.cash },
     }
   }
-  state.cash -= loan.balanceUsd
+  book(state, 'debt_repaid', -loan.balanceUsd)
   state.treasury[loan.coin] += loan.collateral
   logEntry(state, 'log.crypto_loan_repaid', {
     amountUsd: loan.balanceUsd,
@@ -162,7 +163,7 @@ export function payCryptoInterestWeek(state: GameState): number {
   const interestUsd = roundCents(
     (loan.balanceUsd * loan.apr) / (4 * BALANCE.weeksPerQuarter),
   )
-  state.cash -= interestUsd
+  book(state, 'interest', -interestUsd)
   return interestUsd
 }
 
@@ -305,7 +306,7 @@ function liquidate(state: GameState, w: MarketWeek): void {
   const sold = Math.min(loan.collateral, loan.balanceUsd / price)
   const shortfallUsd = Math.max(0, loan.balanceUsd - sold * price)
   state.treasury[loan.coin] += loan.collateral - sold
-  state.cash -= shortfallUsd
+  book(state, 'debt_repaid', -shortfallUsd)
   logEntry(
     state,
     'log.liquidated',
@@ -365,7 +366,7 @@ export function resolveMarginCall(
       )
       break
     case 'pay_cash':
-      state.cash -= o.gapUsd
+      book(state, 'debt_repaid', -o.gapUsd)
       loan.balanceUsd = roundCents(loan.balanceUsd - o.gapUsd)
       logEntry(state, 'log.margin_paid', { valueUsd: o.gapUsd }, weekNo)
       break
@@ -379,7 +380,10 @@ export function resolveMarginCall(
       }
       const repaidUsd = Math.min(raisedUsd, loan.balanceUsd)
       loan.balanceUsd = roundCents(loan.balanceUsd - repaidUsd)
-      state.cash += raisedUsd - repaidUsd
+      bookSplit(state, raisedUsd - repaidUsd, [
+        ['asset_sales', raisedUsd],
+        ['debt_repaid', -repaidUsd],
+      ])
       logEntry(
         state,
         'log.margin_sold_machines',

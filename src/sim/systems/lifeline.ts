@@ -5,6 +5,7 @@
 // pays interest every week; interest only for its first 4 quarters (owner, M7.0 answer A5), then
 // equal principal at the end of each remaining quarter.
 import { BALANCE, CONTENT } from '../../content/index.ts'
+import { book, bookSplit } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
 import { logQuarterLabel } from '../state.ts'
@@ -72,7 +73,10 @@ export function takeLifeline(state: GameState): void {
   }
   addSite(state, site)
   recalcHeat(state, site)
-  state.cash += terms.loanUsd - terms.priceUsd
+  bookSplit(state, terms.loanUsd - terms.priceUsd, [
+    ['debt_drawn', terms.loanUsd],
+    ['site_builds', -terms.priceUsd, { site: site.id }],
+  ])
   state.bridgeLoan = {
     amountUsd: terms.loanUsd,
     balanceUsd: terms.loanUsd,
@@ -116,7 +120,10 @@ export function payBridgeWeek(state: GameState): {
       : amortizing
         ? Math.min(loan.balanceUsd, roundCents(loan.amountUsd / slices))
         : 0
-  state.cash -= interestUsd + principalUsd
+  bookSplit(state, -(interestUsd + principalUsd), [
+    ['interest', -interestUsd],
+    ['debt_repaid', -principalUsd],
+  ])
   loan.balanceUsd = roundCents(loan.balanceUsd - principalUsd)
   const due = loan.balanceUsd <= 0.005
   if (due) {
@@ -204,7 +211,7 @@ export function repayBridgeLoan(state: GameState): Message | undefined {
       key: 'error.no_cash',
       params: { costUsd: loan.balanceUsd, cashUsd: state.cash },
     }
-  state.cash -= loan.balanceUsd
+  book(state, 'debt_repaid', -loan.balanceUsd)
   logEntry(state, 'log.bridge_repaid', { amountUsd: loan.balanceUsd })
   state.bridgeLoan = null
   return undefined

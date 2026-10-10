@@ -5,9 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (M36.10 on `m35`, PR #3 into `main`). The Prologue, Act I, Act II and Act III are built and
-public on GitHub Pages. Act IV (M27–M34) and the energy options and ventures (doc 38, M35–M36) are built on the unmerged
-chain `m27`…`m35`. See "Next" and "Milestones M35-M36".
+Last updated: 10 Oct 2026 (PR #3 merged; cleanup on `m37`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+with the energy options and ventures (doc 38, M35–M36) are merged into `main` and public on GitHub Pages. See "Next"
+and "Milestones M35-M36".
 
 ## How the owner works
 
@@ -186,11 +186,12 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): M36.11 done; the owner merges PR #3** (`m35` carries the whole unmerged chain `m27`…`m35`: Act IV,
-its follow-ups, doc 38; after the merge tag each `m<n>-done` and delete the branches). The design thread recommends
-merging now. Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
+**Now (10 Oct 2026): PR #3 merged (`main` = `319a660`); branches tagged `m27-done`…`m35-done` and deleted.** Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
 
-**Next small milestone (after the merge), design thread answer 1:** investigate the Perfect bot's in-play reading
+**Now: M37 — Finances** (the P&L and cash flow; doc 39, `docs/game-project-files/claude_39-pnl-spec.md`, design thread
+10 Oct 2026), on `m37` from `main` at `319a660`. See "Milestone M37" below.
+
+**After M37 (the Perfect-bot investigation, design thread answer 1, now M38):** investigate the Perfect bot's in-play reading
 (F1 23, F3 55, below Passive's 53 and 58; the oracle gives 95/96). List its logged moves per quarter in one F1 run and
 one F3 run (kind, sign, the ideal stance that quarter) and say which kinds pull it below Passive. Hypothesis (DT):
 financing moves (raises, debt draws) taken to fund an offensive move score as defensive; if confirmed, propose "funding
@@ -215,13 +216,37 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `726c21b`** (pushed 6 Oct 2026): M26, the dialog hotfixes 1 and 2 and the shorter site list (`hotfix-dialog`),
+**`main` = `319a660`** (10 Oct 2026, PR #3 merged by the owner): M27–M36, Act IV and doc 38. Branches `m27`…`m35` tagged
+`m27-done`…`m35-done` and deleted (remote and local). Before: `726c21b` (6 Oct 2026): M26, the dialog hotfixes 1 and 2
+and the shorter site list (`hotfix-dialog`),
 then the Plan dashboard fix and the compact renewal card (`hotfix-plan`); both hotfix branches are merged and deleted, and
 the same commits are cherry-picked on `m32`. Earlier: M26 at
 `209622e`, M25 at `f8cf61f`, M24 at `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
-and deleted; the remote holds `main` and `m27`…`m32`. Still open: the owner's tasks (the Act III playtest, the Act I
+and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
+
+Split (one commit per step): **M37.1** the ledger: `src/sim/ledger.ts` with `book()`, every cash change in `src/sim`
+converted (186 sites in 55 files at the start), the reconciliation (test and self-check), a grep test that only the
+ledger writes `state.cash`, old saves start the ledger at load · **M37.2** attribution: business and site/project/block
+views (`src/sim/financeViews.ts`) · **M37.3** the Finances screen, P&L tab (left nav, every act) · **M37.4** the Cash flow
+tab and the weekly chart · **M37.5** summaries in the quarter report and the chapter reports · **M37.6** tests and the
+browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the Act I/prologue tables) byte-identical.
+- **M37.1** done: `src/sim/ledger.ts` (`book`, `bookSplit` for a combined amount, `accrue` for mined coins, `roundCash`); all 186
+  cash changes converted (grep test `sim/ledger`); 23 goldens reconcile, diff ledger only; old saves partial; tools' `checkedLedger`.
+  Mine: lunar_revenue/lunar_opex/energy_opex/taxes added; prepayments income when received, set off later; no gain/loss on sales.
+- **M37.2** done: `src/sim/financeViews.ts` (periods, P&L, by business, by site with projects/ventures under their site and blocks
+  under Orbit, cash flow, chart, summaries); test `sim/financeViews` (sums, periods). Moon is its own business column (mine).
+- **M37.3** done: left-nav "Finances" (every act, the prologue too; own chunk 12 KB), P&L tab by line/business/site, period picker,
+  biggest changes. Mine: prepayments are cash outside the P&L (`prepayments`, operating cash), so revenue is never negative.
+- **M37.4** done: Cash flow tab (start, operating = net profit − coins mined + prepayments, investing, financing, treasury, end =
+  the cash), weekly chart (quarter) or quarterly (longer) with the low marked, "why cash fell/rose". Mine: "coins mined" adjustment.
+- **M37.5** done: quarter report block (revenue, opex, EBITDA, net, cash change; "Open Finances ›" in place, with a way back);
+  each chapter report (prologue, I-IV) "The act in figures" + best/worst site. Ledger stores only off-category business bookings.
+- **M37.6** done: tests `sim/ledgerActs` (each act's lines vs its own report), `ui/finances`; browser at 1024/1440 (I, II, IV): no
+  sideways scroll, no cut cell. Tests 1,569 → 1,621; main bundle 221.1 → 224.9 KB (Finances chunk 11.4 KB). Sims: report below.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 

@@ -6,6 +6,7 @@ import { brakeApplies, sellFromTreasury, sellQueued } from './liquidity.ts'
 import type { Coin, GameState } from '../state.ts'
 import { coinPrice } from './market.ts'
 import type { LotWeek } from './mining.ts'
+import { accrue, book, bookSplit, siteBusiness, type Category, type LedgerRef } from '../ledger.ts'
 
 const COINS: Coin[] = ['BTC', 'ETH']
 
@@ -20,15 +21,17 @@ export interface WeekMoney {
   powerByCoin: Record<Coin, number>
 }
 
+/** Each site's rent for a week, in site order (M37.1: the ledger books it per site). */
+function weeklyRentBySite(state: GameState): [string, number][] {
+  return state.sites.map((s) => [
+    s.id,
+    (s.rentUsdQ / BALANCE.weeksPerQuarter) * modifierMult(state, 'rent', s.id),
+  ])
+}
+
 /** Rent for every site you hold (including ones still being built), spread over 13 weeks. */
 export function weeklyRentUsd(state: GameState): number {
-  return state.sites.reduce(
-    (sum, s) =>
-      sum +
-      (s.rentUsdQ / BALANCE.weeksPerQuarter) *
-        modifierMult(state, 'rent', s.id),
-    0,
-  )
+  return weeklyRentBySite(state).reduce((sum, [, usd]) => sum + usd, 0)
 }
 
 /** Books one week of mining: sells or holds the coins, pays power and rent. */
@@ -65,8 +68,18 @@ export function settleWeek(
       soldUsd += (coinsMined[coin] - held) * coinPrice(w, coin)
     }
   const powerCostUsd = powerByCoin.BTC + powerByCoin.ETH
-  const rentUsd = weeklyRentUsd(state)
-  state.cash += soldUsd - powerCostUsd - rentUsd
+  const rents = weeklyRentBySite(state)
+  const rentUsd = rents.reduce((sum, [, usd]) => sum + usd, 0)
+  // M37.1: mined coins are revenue at this week's value (no cash until sold); power by the lot's site, rent by site.
+  const parts: [Category, number, LedgerRef?][] = [['coins_sold', soldUsd]]
+  const siteOf = new Map(state.machines.map((m) => [m.id, m.siteId]))
+  for (const lot of lots) {
+    const site = siteOf.get(lot.lotId)
+    accrue(state, lot.coin === 'BTC' ? 'mining_btc' : 'mining_eth', lot.revenueUsd, { site })
+    parts.push(['power', -lot.powerCostUsd, { site }])
+  }
+  for (const [site, usd] of rents) parts.push(['rent', -usd, { site, biz: siteBusiness(state, site) }])
+  bookSplit(state, soldUsd - powerCostUsd - rentUsd, parts)
   return { revenueUsd, soldUsd, powerCostUsd, rentUsd, coinsMined, powerByCoin }
 }
 
@@ -91,7 +104,7 @@ export function sellTreasury(
     state.treasury[coin] -= coins
     usd += coins * coinPrice(w, coin)
   }
-  state.cash += usd
+  book(state, 'coins_sold', usd)
   return usd
 }
 

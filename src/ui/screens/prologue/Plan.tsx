@@ -47,13 +47,16 @@ import {
 import { LiveQuarter, type Speed } from './Live.tsx'
 import { Machines } from './Machines.tsx'
 import { PreorderDialog } from './Preorders.tsx'
+import { Finances } from '../../components/financesLazy.tsx'
 
-type Section = 'dashboard' | 'machines' | 'coins' | 'log'
+type Section = 'dashboard' | 'machines' | 'coins' | 'finances' | 'log'
 
 const NAV: { id: Section; icon: IconName }[] = [
   { id: 'dashboard', icon: 'dashboard' },
   { id: 'machines', icon: 'pc-tower' },
   { id: 'coins', icon: 'wallet' },
+  // M37.3 (doc 39): the P&L and the cash flow
+  { id: 'finances', icon: 'cash' },
   { id: 'log', icon: 'log' },
 ]
 
@@ -182,6 +185,8 @@ export function PlanOrLive(
             <Machines {...props} />
           ) : shown === 'coins' ? (
             <Coins {...props} />
+          ) : shown === 'finances' ? (
+            <Finances state={state} />
           ) : shown === 'log' ? (
             <Log state={state} />
           ) : (

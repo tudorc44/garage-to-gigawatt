@@ -19,6 +19,7 @@ import {
   type ShellId,
 } from '../../content/orbitContent.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { pick, substream } from '../rng.ts'
 import {
   act4SeedOf,
@@ -213,7 +214,7 @@ export function signOrbitalTenant(state: GameState, blockId: string, offer: numb
   }
   const o = block.offers[offer]
   const prepaidUsd = tenantType(o.type).prepay_share * annualValueUsd(block.kind, block.mw, o.price)
-  state.cash += prepaidUsd
+  book(state, 'prepayments', prepaidUsd, { block: blockId, biz: 'orbit' })
   block.tenant = {
     type: o.type,
     price: o.price,
@@ -273,7 +274,7 @@ export function fileLicenceBlocker(state: GameState, shellId: ShellId): Message 
 /** Files a constellation licence in a shell (another filing in the same shell adds its MW). */
 export function fileLicence(state: GameState, shellId: ShellId): void {
   state.bandwidth -= LIC.filing.bandwidth
-  state.cash -= LIC.filing.fee_usd
+  book(state, 'other_opex', -LIC.filing.fee_usd, { biz: 'orbit' })
   const approvedQuarter = licenceApprovalQuarter(state)
   orbitOf(state).licences.push({
     shell: shellId,
@@ -373,7 +374,7 @@ export function buildGroundStationBlocker(state: GameState, siteId: string): Mes
 export function buildGroundStation(state: GameState, siteId: string): void {
   const g = TEN.links.ground_station
   state.bandwidth -= g.bandwidth
-  state.cash -= g.capex_usd
+  book(state, 'orbit_capex', -g.capex_usd, { site: siteId })
   const orbit = orbitOf(state)
   orbit.stations.push({
     id: `gs${orbit.stations.length + 1}`,
@@ -406,7 +407,7 @@ export function cancelOrbitalBlockBlocker(state: GameState, blockId: string): Me
 export function cancelOrbitalBlock(state: GameState, blockId: string): void {
   const orbit = orbitOf(state)
   const block = orbitBlock(state, blockId)!
-  if (block.launch && block.launch.slips > 0) state.cash += block.launch.depositUsd
+  if (block.launch && block.launch.slips > 0) book(state, 'orbit_capex', block.launch.depositUsd, { block: blockId })
   orbit.blocks = orbit.blocks.filter((b) => b.id !== blockId)
   logEntry(state, 'log.orbit.cancelled', { n: block.n })
 }

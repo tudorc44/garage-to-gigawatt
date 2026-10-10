@@ -2,6 +2,7 @@
 // per game, inside its window. The rounds in capital.json › pitch can also be negotiated
 // (systems/pitch.ts); taking the offer takes the investor's opening valuation.
 import { BALANCE, CONTENT, type LadderStep } from '../../content/index.ts'
+import { book } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type GameState } from '../state.ts'
 import { capacityKw, isReady } from './sites.ts'
@@ -126,7 +127,7 @@ export function completeRaise(
 ): void {
   const step = getStep(id)!
   state.bandwidth -= bandwidth
-  state.cash += step.amount_usd
+  book(state, 'equity_raised', step.amount_usd)
   state.founderStake *= 1 - dilution
   state.raisesDone.push(id)
   logEntry(state, 'log.raised', {

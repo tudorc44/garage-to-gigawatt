@@ -8,6 +8,7 @@
 import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { ORBIT, PROVIDER_IDS, provider, shell, type ProviderId } from '../../content/orbitContent.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { chance, substream } from '../rng.ts'
 import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
 import { licenceRoom, orbitBlock, orbitOf, orbitRow } from './orbit.ts'
@@ -102,7 +103,7 @@ export function bookLaunch(state: GameState, blockId: string, id: ProviderId, qu
   const block = orbitBlock(state, blockId)!
   const depositUsd = launchDepositUsd(state, block, id)
   state.bandwidth -= LAUNCH_BOOKING_BANDWIDTH
-  state.cash -= depositUsd
+  book(state, 'orbit_capex', -depositUsd, { block: blockId })
   block.launch = { provider: id, quarter, priceUsdKg: launchPriceUsdKg(state, id, block.shell), depositUsd, slips: 0 }
   if (block.tenant && block.tenant !== 'spot' && block.tenant.dueQuarter === null)
     block.tenant.dueQuarter = quarter + LIVE_AFTER_LAUNCH
@@ -126,7 +127,7 @@ export function cancelLaunchBlocker(state: GameState, blockId: string): Message 
 export function cancelLaunch(state: GameState, blockId: string): void {
   const block = orbitBlock(state, blockId)!
   const refundUsd = block.launch!.slips > 0 ? block.launch!.depositUsd : 0
-  state.cash += refundUsd
+  book(state, 'orbit_capex', refundUsd, { block: blockId })
   block.launch = null
   block.insured = null
   logEntry(state, 'log.orbit.launch_cancelled', { n: block.n, refundUsd })
@@ -247,7 +248,7 @@ export function buyInsuranceBlocker(state: GameState, blockId: string): Message 
 export function buyInsurance(state: GameState, blockId: string): void {
   const block = orbitBlock(state, blockId)!
   const q = insuranceQuote(state, block)!
-  state.cash -= q.premiumUsd
+  book(state, 'insurance', -q.premiumUsd, { block: blockId, biz: 'orbit' })
   ;(state.quarterStats.orbitCostUsd ??= 0)
   state.quarterStats.orbitCostUsd += q.premiumUsd
   block.insured = { coverUsd: q.coverUsd, untilQuarter: block.stage === 'live' ? state.quarter + 3 : null }
@@ -261,7 +262,7 @@ export const insuredNow = (state: GameState, block: OrbitalBlock): boolean =>
 /** An insured loss: the payout (capped by the cover); a loss over the trigger hardens the market. */
 export function settleOrbitLoss(state: GameState, block: OrbitalBlock, lossUsd: number, coverShare = 1): number {
   const payoutUsd = insuredNow(state, block) ? Math.min(lossUsd, block.insured!.coverUsd * coverShare) : 0
-  state.cash += payoutUsd
+  book(state, 'one_offs', payoutUsd, { block: block.id, biz: 'orbit' })
   if (lossUsd >= INS.hard_market.trigger_loss_usd) {
     orbitOf(state).hardMarketUntil = state.quarter + INS.hard_market.quarters
     logEntry(state, 'log.orbit.hard_market', { lossUsd })
@@ -309,7 +310,8 @@ export function endQuarterLaunches(state: GameState): void {
       const lossUsd = b.capexSpentUsd
       const payoutUsd = settleOrbitLoss(state, b, lossUsd)
       // (M31.2) the insurance proceeds repay the block's lender first
-      state.cash -= payoutUsd - repayFromProceeds(state, b, payoutUsd)
+      const keptUsd = repayFromProceeds(state, b, payoutUsd)
+      book(state, 'debt_repaid', -(payoutUsd - keptUsd))
       debtAfterLoss(state, b)
       logEntry(state, 'log.orbit.launch_failed', { n: b.n, providerName: b.launch.provider, lossUsd, payoutUsd })
       b.stage = 'proposed'

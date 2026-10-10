@@ -8,6 +8,7 @@
 import { BALANCE, CONTENT, type SignalId } from '../../content/index.ts'
 import type { ContractTarget } from '../../content/act3Cards.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { chance, type RngHolder } from '../rng.ts'
 import { logEntry, projectGone, type GameState, type Project } from '../state.ts'
 import { contractEndQuarter } from './calendar.ts'
@@ -406,7 +407,7 @@ export function backstopPayout(state: GameState, weekNo: number): number {
       .filter((p) => p.backstop && !projectGone(p))
       .reduce((sum, p) => sum + shortfallUsd(p, C.shortfallQuarters), 0),
   )
-  state.cash += usd
+  book(state, 'other_income', usd, { biz: 'ai' })
   logEntry(state, 'log.card_backstop', { amountUsd: usd }, weekNo)
   return usd
 }
@@ -436,7 +437,7 @@ export function payAct3Payouts(state: GameState): void {
   const revenueUsd = st.revenueUsd + st.hostingFeesUsd + st.aiRevenueUsd
   for (const x of due) {
     const usd = Math.round(x.usd ?? (x.revenueShare ?? 0) * revenueUsd)
-    state.cash += usd
+    book(state, 'other_income', usd)
     logEntry(state, `log.card_payout_${x.reason}`, { amountUsd: usd })
   }
   state.act3Payouts = state.act3Payouts!.filter(

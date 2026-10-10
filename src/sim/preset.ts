@@ -5,6 +5,7 @@
 import { BALANCE, CONTENT, actLastQuarter } from '../content/index.ts'
 import { applyAction } from './actions.ts'
 import { advance } from './advance.ts'
+import { openingCash } from './ledger.ts'
 import { newGame, roundCents, type GameState, type Site } from './state.ts'
 import { signContract } from './systems/contracts.ts'
 import { addSite } from './systems/siteSerials.ts'
@@ -87,7 +88,7 @@ export function presetGame(seed: number): GameState {
     weeksLeft: weeks,
     takenQuarter: s.quarter,
   }
-  s.cash = c.cashUsd
+  openingCash(s, c.cashUsd)
   s.log = []
   // Play 2022Q3 with the default answers, for a real quarter report.
   s = act(s, { type: 'END_PLAN' })
@@ -99,7 +100,8 @@ export function presetGame(seed: number): GameState {
   const report = s.reports.at(-1)!
   const cashShift = c.cashUsd - s.cash
   const debtShift = c.equipmentDebtUsd - (s.equipmentLoan?.balanceUsd ?? 0)
-  s.cash = c.cashUsd
+  // (M37.1: the preset's balance sheet is its opening position: the ledger starts here)
+  openingCash(s, c.cashUsd)
   if (s.equipmentLoan) s.equipmentLoan.balanceUsd = c.equipmentDebtUsd
   report.cash = s.cash
   report.debtUsd += debtShift

@@ -43,6 +43,7 @@ import { ProjectsSection } from './Projects.tsx'
 import { Act3Panel } from '../components/act3Lazy.tsx'
 import { Act4Panel } from '../components/act4Lazy.tsx'
 import { League } from './Report.tsx'
+import { Finances } from '../components/financesLazy.tsx'
 
 export type Section =
   | 'dashboard'
@@ -54,6 +55,7 @@ export type Section =
   | 'ventures'
   | 'fleet'
   | 'capital'
+  | 'finances'
   | 'people'
   | 'league'
   | 'log'
@@ -80,6 +82,8 @@ export function SectionView(props: ScreenProps & { section: Section }) {
       ) : (
         <CapitalSection {...props} />
       )
+    case 'finances':
+      return <Finances state={props.state} />
     case 'people':
       return <PeopleSection {...props} />
     case 'league':

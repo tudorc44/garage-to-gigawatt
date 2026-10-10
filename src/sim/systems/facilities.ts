@@ -6,6 +6,7 @@
 // over the contract's term (capitalised interest included) plus interest, paid at quarter end. Two
 // quarters in a row unpaid: the lender forecloses on the project (it and its MW go).
 import { BALANCE, CONTENT } from '../../content/index.ts'
+import { book, bookSplit } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import {
   logEntry,
@@ -293,7 +294,7 @@ export function drawFacilities(
       missedQuarters: 0,
       rating: offer.rating,
     })
-    state.cash += amountUsd
+    book(state, 'debt_drawn', amountUsd)
     logEntry(state, 'log.debt_drawn', {
       n: p.n,
       debt: offer.kind,
@@ -350,7 +351,10 @@ export function serviceFacilities(state: GameState): {
     }
     const total = due.interestUsd + due.principalUsd
     if (state.cash >= total) {
-      state.cash -= total
+      bookSplit(state, -total, [
+        ['interest', -due.interestUsd],
+        ['debt_repaid', -due.principalUsd],
+      ])
       f.balanceUsd -= due.principalUsd
       f.missedQuarters = 0
       paid.interestUsd += due.interestUsd
@@ -435,7 +439,7 @@ export function repayCureDdtl(state: GameState, projectId: string): void {
   state.facilities = state.facilities.filter(
     (f) => !(f.projectId === projectId && f.kind === 'ddtl'),
   )
-  state.cash -= owed
+  book(state, 'debt_repaid', -owed)
   logEntry(state, 'log.debt_paid_off', { n: getProject(state, projectId)!.n, debt: 'ddtl' })
 }
 
@@ -465,7 +469,7 @@ export function repayProjectFacilities(
     .filter((f) => f.projectId === projectId)
     .reduce((a, f) => a + f.balanceUsd, 0)
   state.facilities = state.facilities.filter((f) => f.projectId !== projectId)
-  state.cash -= owed
+  book(state, 'debt_repaid', -owed)
   return owed
 }
 

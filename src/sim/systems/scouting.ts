@@ -13,6 +13,7 @@ import {
   POWER_REGIONS,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { chance, randomInt, substream, uniform } from '../rng.ts'
 import {
   logEntry,
@@ -166,7 +167,7 @@ export function buyAct2Blocker(
  */
 export function buyAct2Site(state: GameState, offer: SiteOffer): Site {
   state.bandwidth -= BALANCE.bandwidth.build
-  state.cash -= offer.capexUsd
+  book(state, 'site_builds', -offer.capexUsd, { site: `site-${state.nextId}` })
   const site: Site = {
     id: `site-${state.nextId++}`,
     tier: offer.tier,
@@ -188,7 +189,7 @@ export function buyAct2Site(state: GameState, offer: SiteOffer): Site {
     logEntry(state, 'log.zoning_voided', { quarters: delay })
   }
   site.readyQuarter += delay
-  state.cash += flawEffect(site, 'cash') ?? 0
+  book(state, 'one_offs', flawEffect(site, 'cash') ?? 0, { site: site.id })
   addSite(state, site)
   recalcHeat(state, site)
   state.siteOffers = state.siteOffers.filter((o) => o.id !== offer.id)

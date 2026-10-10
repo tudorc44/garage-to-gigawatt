@@ -9,10 +9,10 @@ import { emptyEventState } from '../systems/eventEffects.ts'
 import {
   emptyQuarterStats,
   logEntry,
-  roundCents,
   type GameState,
 } from '../state.ts'
 import { prologueNetWorth } from './engine.ts'
+import { book, roundCash } from '../ledger.ts'
 import { buyPrice, getModel } from '../systems/market.ts'
 import { moveIntoGarage } from './life.ts'
 import { boxedPreorders, vendor } from './preorders.ts'
@@ -24,13 +24,16 @@ export function handOverToAct1(s: GameState): void {
   // move in; what doesn't fit is sold.
   if (p.livingAtHome) {
     const deposit = depositUsd(s.quarter)
-    if (s.cash >= deposit) s.cash = roundCents(s.cash - deposit)
+    if (s.cash >= deposit) {
+      book(s, 'one_offs', -deposit)
+      roundCash(s)
+    }
   }
   moveIntoGarage(s, 0)
   // Pre-ordered units still in their box are sold at the used price.
   for (const o of boxedPreorders(s)) {
     const model = getModel(vendor(o.vendor)!.model)!
-    s.cash += buyPrice(model, s.quarter, 'used') ?? 0
+    book(s, 'asset_sales', buyPrice(model, s.quarter, 'used') ?? 0)
     o.delivered = true
   }
   // Act I's own S9.
@@ -50,7 +53,7 @@ export function handOverToAct1(s: GameState): void {
   s.quarter = 0
   s.week = 0
   s.phase = 'plan'
-  s.cash = roundCents(s.cash)
+  roundCash(s)
   s.bandwidth = BALANCE.bandwidth.perQuarter
   s.reports = []
   s.events = emptyEventState()

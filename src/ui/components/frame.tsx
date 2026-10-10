@@ -234,6 +234,8 @@ const NAV: {
   { id: 'ventures', icon: 'power', key: 'ui.nav.ventures', act3: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
   { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
+  // M37.3 (doc 39): the P&L and the cash flow, every act.
+  { id: 'finances', icon: 'cash', key: 'ui.nav.finances' },
   // Act III (M17.6, A3-09): political capital, the Director, lobbying, the spend cards.
   {
     id: 'government',

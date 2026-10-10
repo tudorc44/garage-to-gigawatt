@@ -10,6 +10,7 @@ import { assignCarriedTiers } from './systems/density.ts'
 import { numberUnnumbered } from './systems/siteSerials.ts'
 import { startPolitics } from './systems/politics.ts'
 import { drawWildcards } from './systems/wildcards.ts'
+import { startLedgerAtLoad } from './ledger.ts'
 import {
   emptyQuarterStats,
   newGame,
@@ -154,5 +155,8 @@ export function restoreSave(raw: unknown): Loaded {
     drawWildcards(state)
     state.act3WildcardOpen = null
   }
+  // M37.1: a save from before the ledger starts it now; its past quarters keep what their reports knew. (A game with
+  // no quarter played yet needs nothing: its ledger opens with its first cash movement, as a new game's does.)
+  if (!isObject(data.ledger) && state.reports.length > 0) startLedgerAtLoad(state)
   return { ok: true, state }
 }

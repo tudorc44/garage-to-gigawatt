@@ -8,6 +8,7 @@ import {
   prologueHandoverView,
 } from '../../../sim/prologue/views.ts'
 import { Icon } from '../../components/basics.tsx'
+import { ActFinances } from '../../components/financeSummary.tsx'
 import { fmt } from '../../format.ts'
 import { machineName, tierName } from '../../names.ts'
 import {
@@ -116,6 +117,8 @@ function Report({ state, next }: PrologueProps & { next: () => void }) {
         </div>
         <Career career={v.career} markers={v.markers} />
       </section>
+      {/* M37.5 (doc 39): the prologue's P&L in figures */}
+      <ActFinances state={state} act={0} />
       <div class="row-between">
         <p class="num-s">
           <Icon name="news" size={16} />{' '}
