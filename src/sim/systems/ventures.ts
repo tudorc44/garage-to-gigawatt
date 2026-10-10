@@ -591,23 +591,29 @@ export function fusionHypeDelta(state: GameState, quarter = state.quarter): numb
 
 // ---------- Delivery and value ----------
 
-/** The firm kW a venture delivers to its campus now (0 before first power). */
-export function deliveredKw(v: Venture): number {
+/**
+ * The firm kW a venture delivers to its campus in `quarter` (0 before first power). M40.2 (design thread answer 2 after
+ * M39): a reactor or an EGS plant delivers its contracted MW × that quarter's capacity factor (reactors 0.80 for 8
+ * quarters, then 0.92; EGS 0.9, or 0.6 under a weak field until fixed); the shortfall is grid power at the site's price.
+ */
+export function deliveredKw(v: Venture, quarter: number): number {
   if (v.stage !== 'operating' || !v.siteId || v.offtakeMw <= 0) return 0
   const firm =
     v.type === 'control'
       ? ENERGY.site_assets.bess.firm_share
       : isEgs(v.type) && v.weakField && !v.fieldFixed
-        ? T[v.type].weak_field.cf / T[v.type].cf
-        : 1
+        ? T[v.type].weak_field.cf
+        : isEgs(v.type) || isNuclear(v.type)
+          ? ventureCf(v, quarter)
+          : 1
   return v.offtakeMw * 1000 * firm * (1 - v.partnerCut)
 }
 
-/** Sets each site's delivered venture kW (doc 38 §5.1 point 6: no interconnection wait). */
+/** Sets each site's delivered venture kW for the coming quarter (doc 38 §5.1 point 6: no interconnection wait). */
 function syncVentureKw(state: GameState): void {
   const bySite = new Map<string, number>()
   for (const v of state.ventures ?? []) {
-    const kw = deliveredKw(v)
+    const kw = deliveredKw(v, state.quarter + 1)
     if (kw > 0 && v.siteId) bySite.set(v.siteId, (bySite.get(v.siteId) ?? 0) + kw)
   }
   for (const site of state.sites) {
@@ -617,11 +623,12 @@ function syncVentureKw(state: GameState): void {
   }
 }
 
-/** A quarter's PPA saving at the campus: (grid price − PPA price) × the kWh the site uses of it. */
+/** A quarter's PPA saving at the campus: (grid price − PPA price) × the delivered kWh the site uses (the PPA is paid on
+ *  delivered MWh only). */
 function deliverySavingsUsd(state: GameState, v: Venture): number {
   const site: Site | undefined = state.sites.find((s) => s.id === v.siteId)
   if (!site || state.quarter < v.codQuarter) return 0
-  const kw = Math.min(deliveredKw(v), usedKw(state, site.id))
+  const kw = Math.min(deliveredKw(v, state.quarter), usedKw(state, site.id))
   if (kw <= 0) return 0
   const grid = powerPriceUsdKwh(site, state.quarter, scenarioOf(state))
   return kw * HOURS_Q * (grid - v.ppaUsdMwh / 1000)
@@ -638,7 +645,8 @@ export function ventureCf(v: Venture, quarter: number): number {
   return t.cf ?? 0
 }
 
-/** The venture's own EBITDA for a quarter at operation, $ (it sells all its output at its PPA price). */
+/** The venture's own EBITDA for a quarter at operation, $ (it sells all its output at its PPA price). Unused for now:
+ *  kept for Act V (design thread answer 2 after M39). */
 export function ventureEbitdaUsd(v: Venture, quarter: number): number {
   if (v.stage !== 'operating') return 0
   if (v.type === 'pumped') return (v.mw * 1000 * (T.pumped.capacity_usd_kw_yr - T.pumped.running_usd_kw_yr)) / 4

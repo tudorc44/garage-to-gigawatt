@@ -243,6 +243,9 @@ Split: **M40.1** the Act IV reading (a build quarter's hedges and debt at 0; a r
 - **M40.1** done (`scoredSignsIv`, readingScoreIv.ts; the reveal shows the scored sign): in a quarter with a commit or orbital
   debt draw, presale, insurance and the debt draw count 0 and are never decoys (no block ids in the log: "that build's own" =
   that quarter's, mine, reversible); a raise is + if a + move follows that quarter or the next. Act IV goldens: reading only.
+- **M40.2** done: `deliveredKw(v, quarter)` = offtake × CF (reactors 0.80 × 8 q then 0.92; EGS 0.9, weak field 0.6 until fixed);
+  savings on delivered kWh only (the rest is grid at the site's price). weak_field was read before (M36.1: delivery × 0.6/0.9).
+  `ventureEbitdaUsd` kept, unused, for Act V. Energy goldens: SMR 75 MW → 60 MW firm (90 → 75 MW with the control).
 
 ## Milestone M39 (branch `m38`; energy data fixes, doc 41 of 10 Oct 2026, from doc 40's research)
 

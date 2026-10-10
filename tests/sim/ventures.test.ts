@@ -12,6 +12,7 @@ import { drawOverrun } from '../../src/sim/systems/overrun.ts'
 import { capacityKw } from '../../src/sim/systems/sites.ts'
 import {
   buyInUsd,
+  deliveredKw,
   endQuarterVentures,
   joinVenture,
   referenceUsdKw,
@@ -243,6 +244,23 @@ describe('M39.5 (doc 41): reactors run at 0.80 for their first 8 quarters, then 
     expect(ventureCf(v, q('2032Q1'))).toBe(0.92)
     expect(VENTURES.types.smr.running_usd_mwh).toBe(40)
     expect(VENTURES.types.adv_fission.running_usd_mwh).toBe(40)
+  })
+})
+
+describe('M40.2 (design thread answer 2 after M39): delivery follows the capacity factor', () => {
+  it('a reactor delivers its offtake × 0.80 for 8 quarters, then × 0.92; EGS × 0.9, × 0.6 under a weak field', () => {
+    const s = company()
+    const smr = joinVenture(s, { type: 'smr', stake: 0.1, offtake: 0, prepay: 0 })
+    Object.assign(smr, { stage: 'operating', codQuarter: q('2030Q1'), siteId: 'site-2', offtakeMw: 50, partnerCut: 0 })
+    expect(deliveredKw(smr, q('2030Q1'))).toBeCloseTo(40_000)
+    expect(deliveredKw(smr, q('2032Q1'))).toBeCloseTo(46_000)
+    const egs = joinVenture(s, { type: 'egs', stake: 0.1, offtake: 0, prepay: 0 })
+    Object.assign(egs, { stage: 'operating', codQuarter: q('2030Q1'), siteId: 'site-2', offtakeMw: 50, partnerCut: 0 })
+    expect(deliveredKw(egs, q('2030Q1'))).toBeCloseTo(45_000)
+    egs.weakField = true
+    expect(deliveredKw(egs, q('2030Q1'))).toBeCloseTo(30_000)
+    egs.fieldFixed = true
+    expect(deliveredKw(egs, q('2030Q1'))).toBeCloseTo(45_000)
   })
 })
 
