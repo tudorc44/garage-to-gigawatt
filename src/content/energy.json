@@ -77,7 +77,10 @@
     "curtail": {"from": "2019Q4", "output_loss": 0.034},
     "source": "doc 40 §Q3 [A]: sites before 2018Q2 keep 4.5¢ (grandfathered; a proxy, Rate LG not found); the 15¢ deterrent rate closed new sites 2018Q2-2019Q3; from 2019Q4 new sites at 4.5¢ with 300 hours a year of curtailment (−3.4% output)",
     "verify": true},
-   "iceland": {"tier": "warehouse", "kw": 5000, "power_usd_kwh": {"2017": 0.0425, "2018": 0.045, "2019": 0.0475, "2020": 0.05, "2021": 0.055, "2022": 0.055}, "rent_usd_q": 30000, "capex_usd": 400000, "build_quarters": 3, "from": "2017Q1", "until": "2022Q3", "cooling_mult": 0.9, "green": true, "delivery_extra_quarters": 1, "queue": "iceland", "verify": true},
+   "iceland": {"tier": "warehouse", "kw": 5000, "power_usd_kwh": {"2017": 0.043, "2018": 0.061, "2019": 0.061, "2020": 0.061, "2021": 0.061, "2022": 0.061}, "rent_usd_q": 30000, "capex_usd": 400000, "build_quarters": 3, "from": "2017Q1", "until": "2022Q3", "cooling_mult": 0.9, "green": true, "delivery_extra_quarters": 1, "queue": "iceland",
+    "price_lock": [{"from": "2017Q1", "range": [0.043, 0.043]}, {"from": "2018Q1", "range": [0.051, 0.071]}],
+    "dry_winter": {"quarter": "2021Q4", "weeks": 1},
+    "source": "doc 40 §Q3 [C]: the price is locked when the site is taken (a proxy for the 12-year contracts): 4.3¢ for 2017, drawn 5.1-7.1¢ for 2018-22 (the path's 2018+ value is the range's middle, for display only); the 2021Q4 dry winter [B; one week designed]"},
    "flare": {"tier": "warehouse", "kw": 2000, "running_usd_mwh": 30, "genset_usd_kw": 750, "rent_usd_q": 0, "build_quarters": 2, "from": "2018Q1", "until": "2026Q4", "mining_only": true, "verify": true}
   },
   "requires_tier_index": 2,
@@ -89,8 +92,9 @@
    },
    "iceland": {
     "per_quarter": 1,
-    "freezes": [{"from": "2018Q1", "quarters": 2}, {"from": "2021Q4", "quarters": 99}],
-    "verify": true
+    "freezes": [{"from": "2021Q4", "quarters": 99}],
+    "every_other": {"from": "2018Q1", "until": "2018Q4"},
+    "source": "doc 40 §Q3 [B]: 2018: the power company warns it can't supply every project (an allocation only every other quarter, 2018Q1 and Q3); 2021Q4: no new sites, for good"
    }
   },
   "flare": {

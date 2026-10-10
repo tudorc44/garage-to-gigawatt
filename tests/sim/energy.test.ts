@@ -225,8 +225,11 @@ describe('special sites (doc 38 §4.4-4.6)', () => {
     expect(uptime(curtailed, q('2021Q1'))).toBeCloseTo(1 - 0.034)
   })
 
-  it('Iceland freezes in 2018Q1-Q2 and from 2021Q4; machines shipped there take a quarter longer', () => {
-    expect(specialStatus(withWarehouse('2018Q2'), 'iceland')).toBe('frozen')
+  it('Iceland (M39.3): every other quarter in 2018, stops from 2021Q4; machines shipped there take a quarter longer', () => {
+    expect(specialStatus(withWarehouse('2018Q1'), 'iceland')).toBe('open')
+    expect(specialStatus(withWarehouse('2018Q2'), 'iceland')).toBe('rationed')
+    expect(specialStatus(withWarehouse('2018Q3'), 'iceland')).toBe('open')
+    expect(specialStatus(withWarehouse('2018Q4'), 'iceland')).toBe('rationed')
     expect(specialStatus(withWarehouse('2019Q1'), 'iceland')).toBe('open')
     expect(specialStatus(withWarehouse('2022Q1'), 'iceland')).toBe('frozen')
     let s = ok(withWarehouse('2019Q1'), { type: 'SPECIAL_LEASE', kind: 'iceland' })
@@ -236,6 +239,25 @@ describe('special sites (doc 38 §4.4-4.6)', () => {
     const lot = s.machines.at(-1)!
     const home = ok({ ...s, machines: [] }, { type: 'BUY_MACHINES', model: 's9', condition: 'new', count: 1, siteId: 'site-7' })
     expect(lot.earnsFromQuarter).toBe(home.machines.at(-1)!.earnsFromQuarter + 1)
+  })
+
+  it('Iceland (M39.3): the price is locked when taken (4.3¢ in 2017, 5.1-7.1¢ after); the 2021Q4 dry winter costs a week', () => {
+    const early = ok(withWarehouse('2017Q3'), { type: 'SPECIAL_LEASE', kind: 'iceland' }).sites.at(-1)!
+    expect(early.lockedUsdKwh).toBe(0.043)
+    expect(normalPriceUsdKwh(early, q('2022Q1'))).toBeCloseTo(0.043 * 0.9)
+    const prices = new Set<number>()
+    for (let seed = 1; seed <= 10; seed++) {
+      const ice = ok(withWarehouse('2019Q1', seed), { type: 'SPECIAL_LEASE', kind: 'iceland' }).sites.at(-1)!
+      expect(ice.lockedUsdKwh!).toBeGreaterThanOrEqual(0.051)
+      expect(ice.lockedUsdKwh!).toBeLessThanOrEqual(0.071)
+      // locked: the same in every later year
+      expect(normalPriceUsdKwh(ice, q('2021Q3'))).toBeCloseTo(ice.lockedUsdKwh! * 0.9)
+      prices.add(ice.lockedUsdKwh!)
+    }
+    expect(prices.size).toBeGreaterThan(5)
+    // the dry winter: an Iceland site already running loses one week of 2021Q4's output
+    expect(uptime(early, q('2021Q4'))).toBeCloseTo(12 / 13)
+    expect(uptime(early, q('2022Q1'))).toBe(1)
   })
 
   it('a flare pad is mining only, declines after a year and can move to a new well', () => {

@@ -52,7 +52,15 @@ function icelandFrozen(quarter: number): boolean {
   })
 }
 
-export type SpecialStatus = 'open' | 'moratorium' | 'frozen' | 'queue_full' | 'closed' | 'not_yet'
+/** M39.3 (doc 41): Iceland in 2018 offers an allocation only every other quarter. */
+function icelandRationed(quarter: number): boolean {
+  const e = S.queues.iceland.every_other
+  if (!e) return false
+  const from = qIndex(e.from)
+  return quarter >= from && quarter <= qIndex(e.until) && (quarter - from) % 2 === 1
+}
+
+export type SpecialStatus = 'open' | 'moratorium' | 'frozen' | 'rationed' | 'queue_full' | 'closed' | 'not_yet'
 
 /** Where a special kind stands this quarter. */
 export function specialStatus(state: GameState, kind: SpecialSiteKind): SpecialStatus {
@@ -63,6 +71,7 @@ export function specialStatus(state: GameState, kind: SpecialSiteKind): SpecialS
   const m = kindMoratorium(kind)
   if (m && state.quarter >= m.from && state.quarter <= m.until) return 'moratorium'
   if (k.queue === 'iceland' && icelandFrozen(state.quarter)) return 'frozen'
+  if (k.queue === 'iceland' && icelandRationed(state.quarter)) return 'rationed'
   if (k.queue) {
     const perQ = S.queues[k.queue].per_quarter
     const taken = state.sites.filter(

@@ -988,7 +988,13 @@ function TodoPanel({
         icon={row.kind === 'flare' ? 'own-site' : 'warehouse'}
         name={t(`ui.energy.lease.${row.kind}`, {
           mw: fmt.power(row.kw),
-          price: fmt.cents(row.priceUsdKwh),
+          // (M39.3: Iceland's price is drawn in a range and locked when you sign)
+          price: row.priceRange
+            ? t('ui.energy.price_locked', {
+                lo: (row.priceRange[0] * 100).toFixed(1),
+                hi: fmt.cents(row.priceRange[1]),
+              })
+            : fmt.cents(row.priceUsdKwh),
           quarters: row.buildQuarters,
         })}
         bandwidth={BANDWIDTH_COST.build}

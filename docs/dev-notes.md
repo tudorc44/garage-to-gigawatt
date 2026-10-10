@@ -242,6 +242,8 @@ Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5
   $60K (2026+) per MW off next year, a quarter each quarter (power +); backlash on a $30M payment. Goldens unchanged.
 - **M39.2** done: per-kind hydro timelines (PUD 2.6¢, closed 2018Q1-2019Q1, tariff ramp from 2019Q2 on every PUD site; muni 2.0¢,
   closed 6 q, overage = max(own, warehouse price) from 2018Q1; Québec 4.5¢, closed 2018Q2-2019Q3, −3.4% for sites from 2019Q4).
+- **M39.3** done: Iceland's price locked at signing (4.3¢ 2017; U(5.1, 7.1)¢ 2018+), every other quarter in 2018, a dry week in 2021Q4.
+  Mine: the 2018 "warning event" is the row's reason ("rationed"), not a log line, so games without energy options stay identical.
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 

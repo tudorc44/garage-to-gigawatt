@@ -151,6 +151,8 @@ const energySchema = z.object({
       iceland: z.object({
         per_quarter: z.number().int().min(1),
         freezes: z.array(z.object({ from: quarterId, quarters: quarters })),
+        /** M39.3 (doc 41): from `from` to `until`, an allocation only every other quarter (the first, the third …). */
+        every_other: z.object({ from: quarterId, until: quarterId }).optional(),
       }),
     }),
     flare: z.object({

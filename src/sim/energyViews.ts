@@ -230,6 +230,8 @@ export interface SpecialSiteRow {
   buildQuarters: number
   /** For a hydro kind: the moratorium's end (known once it has begun) and the tariff on new load after it. */
   moratoriumUntil: number | null
+  /** M39.3: Iceland's price, drawn in this range ($/kWh after its cooling) and locked when the site is taken. */
+  priceRange?: [number, number]
   blocked?: Message
 }
 
@@ -249,6 +251,8 @@ export function specialSitesView(state: GameState): SpecialSiteRow[] {
     }
     const m = kindMoratorium(kind)
     const blocked = leaseSpecialBlocker(state, kind)
+    const lock = k.price_lock?.filter((x) => x.from <= CONTENT.quarters[state.quarter]).at(-1)
+    const cool = k.cooling_mult ?? 1
     return {
       kind,
       status: specialStatus(state, kind),
@@ -259,6 +263,9 @@ export function specialSitesView(state: GameState): SpecialSiteRow[] {
       buildQuarters: k.build_quarters,
       // (the first quarter open again)
       moratoriumUntil: m && state.quarter >= m.from && state.quarter <= m.until ? m.until + 1 : null,
+      ...(lock && lock.range[0] !== lock.range[1]
+        ? { priceRange: [lock.range[0] * cool, lock.range[1] * cool] as [number, number] }
+        : {}),
       ...(blocked ? { blocked } : {}),
     }
   })
