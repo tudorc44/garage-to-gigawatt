@@ -241,6 +241,8 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
   under Orbit, cash flow, chart, summaries); test `sim/financeViews` (sums, periods). Moon is its own business column (mine).
 - **M37.3** done: left-nav "Finances" (every act, the prologue too; own chunk 12 KB), P&L tab by line/business/site, period picker,
   biggest changes. Mine: prepayments are cash outside the P&L (`prepayments`, operating cash), so revenue is never negative.
+- **M37.4** done: Cash flow tab (start, operating = net profit − coins mined + prepayments, investing, financing, treasury, end =
+  the cash), weekly chart (quarter) or quarterly (longer) with the low marked, "why cash fell/rose". Mine: "coins mined" adjustment.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 
