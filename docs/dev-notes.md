@@ -5,9 +5,10 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #6 merged: M40; cleanup on `m41`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+Last updated: 10 Oct 2026 (PR #7 merged: M41; cleanup on `m42`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
 with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
-M40 answers (Act IV reading, venture delivery at CF) are merged into `main` and public on GitHub Pages. See "Next" and "Milestone M40".
+M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
+and "Milestone M41".
 
 ## How the owner works
 
@@ -154,9 +155,11 @@ None open from before: all five M11.4c questions below were answered by the desi
 - Balance tuning stays stopped by the owner's A1 answer.
 - ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
   repo (M27.0); the run resumed at M27.1.
-- **M40.1's target** (Perfect's reading ≥ Passive's in every future and preset): 3 cells of 12 still below (ridge F1 13 vs 53,
-  fortress and ridge F3 56 vs 58): raises with no offensive move in that or the next quarter. Rule not changed further: the
-  design thread's question (M40 report).
+- ~~M40.1's target~~ (Perfect's reading ≥ Passive's): resolved by M41.1's raise rule; all 12 cells meet Perfect ≥ Passive − 2.
+- ~~**M42.1 (F-10)**~~ resolved: the design thread closed F-10 as already fixed by the 27 Sep rebuild; no `btc_usd_mean` column.
+  The finding, for the record: "quarterly BTC = mean of its 13 weekly closes" not applied: it would replace the sourced quarter-end closes
+  (e.g. 2023Q1 28,478 → mean 23,203) and fail the load check `index.ts` (quarterly close = the weekly file's last week); the
+  sim never reads the quarterly BTC columns (`act2QuarterOf` omits them), so play can't change. Design thread's question.
 
 ## Small follow-ups
 
@@ -187,9 +190,15 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): PR #6 merged (`main` = `464a6ad`): M40 (Act IV reading rules, venture delivery at CF); `m40` tagged
-`m40-done` and deleted; `m41` (from `main`) holds this cleanup. Open: the design thread's answers on the M40 report (Perfect
-below Passive in 3 of 12 cells, see STOPPED; the quarter-level "that build's own"; E-B2).**
+**Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
+`docs/game-project-files/claude_42-act-v-concepts.md`), then doc 43, both being written by the design thread. F-10 closed (M42).
+PR #8 (`m42`: the PR #7 cleanup, M41's `--act4` results, the M42.1 finding) is for the owner to merge.
+
+**Before: PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
+`m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
+
+**Before: PR #6 merged (`main` = `464a6ad`): M40 (Act IV reading rules, venture delivery at CF); `m40` tagged
+`m40-done` and deleted.**
 
 **Before: PR #5 merged (`main` = `ff442df`): M37.7, Prologue bulk buy, M38 (report), M39 (energy data fixes);
 `m38` tagged `m38-done` and deleted; staging rebuilt from `main` by the owner. `m40` (from `main`) holds this cleanup. Open: the
@@ -227,7 +236,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `464a6ad`** (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
+**`main` = `71f36cb`** (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
+Before: `464a6ad` (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
 Before: `ff442df` (10 Oct 2026, PR #5 merged): M37.7, bulk buy, M38, M39; `m38` tagged `m38-done` and deleted.
 Before: `3e67c1d` (10 Oct 2026, PR #4 merged): M37 Finances; `m37` tagged `m37-done` and deleted.
 Before: `319a660` (10 Oct 2026, PR #3 merged by the owner): M27–M36, Act IV and doc 38. Branches `m27`…`m35` tagged
@@ -240,6 +250,14 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
+
+PR #8 (`m42`: the PR #7 cleanup and M41's run) opened for the owner. **M42.1** (F-10, Act II data): checked, not changed:
+STOPPED (below). Both issues are in the superseded v1 pack (`docs/game-project-files/claude_act2-content_market_*.csv`: weekly
+last week 85,889.70 vs quarterly 88,000; hashprice hand-drawn). The live files (`docs/act2-content/` = `src/content/`, rebuilt
+27 Sep 2026, README §"fixes of 27 Sep") already hold: 222/222 weekly rows on the formula; each quarterly BTC column = the
+sourced quarter close = its last week (2026Q4 88,000 both), quarterly hashprice on the formula (within 0.01).
+
 ## Milestone M41 (branch `m41`, from `main` at `464a6ad`; design thread answers to the M40 report, 10 Oct 2026)
 
 Answers: 2 keep the quarter-level "that build's own"; 3 E-B2 stays a recorded miss (the reactors' fat tail, M40.2 numbers:
@@ -251,6 +269,9 @@ Constellation (id `jade_arc` kept), Keelstone Sovereign Compute · then the `--a
   logged after its quarter's build looks further on, mine, reversible); none: 0. Goldens: act4-energy-f2/f4 reading only.
 - **M41.2** done: Lantern Arc (en.json, short code JA → LA: mine, reversible) and Keelstone Sovereign Compute (tenants_iv.json
   both copies and its tool, orbit guide, README log); ids kept. Doc 33/34 and act4-scope keep the old names as history.
+- M41 run (`--act4`, 10 seeds; identical to M40 but the reading): Perfect ≥ Passive in all 12 cells (PASS): F1 fortress 82→84,
+  neocloud 89, ridge 13→73 (Passive 53; its raises all take + from the build, none a decoy); F3 fortress, ridge 56→58, neocloud 73
+  (58); F2 100, F4 62 (= Passive). B8 MISS, B9 PASS unchanged (money). Merged (PR #7) before the run ended: recorded on `m42`.
 
 ## Milestone M40 (branch `m40`, from `main` at `ff442df`; design thread answers after M37.7-M39, 10 Oct 2026)
 

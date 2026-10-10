@@ -10,7 +10,7 @@ chapter report. Money, debt, power, Heat and rivals are simulated; prices and ev
 **Status (10 Oct 2026): the Prologue, Act I, Act II, Act III and Act IV are built and merged into `main` (public on
 GitHub Pages). Act IV ("The Race to Orbit", doc 33 with the owner's defaults in `docs/act4-scope.md`) came in M27–M34;
 the energy options and ventures (doc 38, `docs/energy-content/`) in M35–M36; Finances (the P&L and cash flow, doc 39:
-`src/sim/ledger.ts`, every cash movement through `book()`) in M37; the energy data fixes (doc 41) in M39; the design thread's M40 answers (Act IV reading, venture delivery at CF) in M40. Act IV's balance targets B3, B4, B6, B8,
+`src/sim/ledger.ts`, every cash movement through `book()`) in M37; the energy data fixes (doc 41) in M39; the design thread's M40-M41 answers (Act IV reading, venture delivery at CF, names) in M40-M41. Act IV's balance targets B3, B4, B6, B8,
 B13 and the energy target E-B2 are recorded misses, accepted by the design thread (dev-notes, "Milestones M35-M36").**
 - **The Prologue** (Alpha 0.3, Act 0, "Bedroom to Garage"): 32 quarters, 2009 → 2016, optional from the title screen,
   handing over to Act I. Scope in `docs/alpha-0.3-scope.md`.
