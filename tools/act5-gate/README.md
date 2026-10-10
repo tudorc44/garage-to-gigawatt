@@ -101,3 +101,28 @@ What §0.6 left open, decided here (all mine, reversible):
     length: the developer contracts' terms aren't modelled).
 - **Everything else is as M43.0:** the company without its ventures held, plus 20 quarters of 2035Q4 EBITDA − interest
   (common); no taxes, raises, dilution or game overs; cash earns nothing; the Holder pays every call.
+
+## M43.0c (doc 43 v1.1 §0.7 on top of §0.6): `gate-c.ts`
+
+```bash
+node tools/act5-gate/gate-c.ts --seeds 30 --out sim-output/act5-gate-c   # about 45 min; gate-c-runs.csv, gate-c-summary.txt
+```
+
+It reuses M43.0b's model (`gate-b.ts` exports it; that file runs only when called directly). §0.7's additions:
+- **The ground multiple:** the AI multiple × (1 + 0.5 × (scarcity − 1)) and spot GPU rents by the same factor.
+- **The Seller's site sale:** it sells its leased ground sites in 2036Q1.
+- **Who is judged:** only the ground-heavy starts, Ground Fortress and the Firm Builder (any run with leases ≥ 40% of
+  act5Entry).
+
+What §0.7 left open, decided here (all mine, reversible):
+- **Which sites are sold:** sites "serving its own GPU clusters" are those with any live cloud project. The Seller keeps
+  them, and their GPU contracts stay locked long as §0.6. Every other site with a lease is sold.
+- **The sale price:** the leases' 2035Q4 margin × 4 × the 2035Q4 AI multiple × the 2036Q1 factor. The site's free MW are
+  already sold at the powered value under §0.6, so they're not counted twice. Site-level costs (site rent, staff) aren't
+  modelled; both bots keep them.
+- **Spot GPU revenue:** the 2035Q4 AI revenue that isn't a lease's. Spot moves by the factor in cash each quarter and in
+  the 2040Q4 EBITDA.
+- **The factor's reach:** the whole 2040Q4 AI EBITDA a bot still holds (kept leases, spot, and the rest of the AI unit).
+- **The gap breakdown:** "multiple" includes the spot rents, which move by the same factor.
+- **The Firm Builder row:** pools the qualifying runs from every start (so it overlaps the Fortress row). Each judged row
+  is judged on its own.

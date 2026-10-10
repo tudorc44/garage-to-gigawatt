@@ -5,6 +5,7 @@
 // rises; V3: it falls after a 2037Q4 trigger), as each bot. Pass: V1 Holder ≥ 1.2 × Seller AND V3 Seller ≥ 1.2 × Holder
 // (medians of the founder net-worth multiple, 2040Q4 ÷ act5Entry). Assumptions: README.md, "M43.0b".
 import { mkdirSync, writeFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { BALANCE, CONTENT, FUTURE_IDS, quarterInputs, type FutureId } from '../../src/content/index.ts'
 import { VENTURES } from '../../src/content/energyContent.ts'
 import { PRESETS_IV, type Act4PresetId } from '../../src/content/presetsAct4.ts'
@@ -29,12 +30,12 @@ const SEEDS = Number(argValue('--seeds', '30'))
 const OUT = argValue('--out', 'sim-output/act5-gate-b')
 
 // ---------- The two stub futures (doc 43 §0.6 item 5; V1's baseline as M43.0's stub) ----------
-const Q = 20 // t = 0 (2036Q1) … 19 (2040Q4)
-const HOURS_Q = 2190
+export const Q = 20 // t = 0 (2036Q1) … 19 (2040Q4)
+export const HOURS_Q = 2190
 const TRIGGER = 7 // 2037Q4
 const lerp = (a: number, b: number, x: number) => a + (b - a) * Math.min(1, Math.max(0, x))
-type StubId = 'v1' | 'v3'
-interface Stub {
+export type StubId = 'v1' | 'v3'
+export interface Stub {
   scarcity: (t: number) => number
   poweredUsdMw: (t: number) => number
   merchantMult: (t: number) => number
@@ -42,7 +43,7 @@ interface Stub {
   plantMerchantMultiple: (t: number) => number
   spreadUsdMwh: (t: number) => number
 }
-const STUBS: Record<StubId, Stub> = {
+export const STUBS: Record<StubId, Stub> = {
   v1: {
     scarcity: (t) => (t <= TRIGGER ? lerp(1, 1.1, (t + 1) / (TRIGGER + 1)) : lerp(1.1, 1.5, (t - TRIGGER) / (Q - 1 - TRIGGER))),
     poweredUsdMw: (t) => lerp(300_000, 500_000, (t + 1) / Q),
@@ -75,11 +76,14 @@ const PLANT = {
 const SELLER_TERM_Q = 36 // 9 years
 const HOLDER_TERM_Q = 8 // 2 years
 
-type Market = NonNullable<ReturnType<typeof quarterInputs>>
+export type Market = NonNullable<ReturnType<typeof quarterInputs>>
 
 // ---------- Leases (§0.6 item 1) ----------
-interface Lease {
+export interface Lease {
   id: string
+  /** Its site, and its revenue this quarter, $ (our share) (M43.0c's site sale and spot estimate). */
+  siteId: string
+  revenueNowQ: number
   /** This quarter's margin at the current rent, $ (our share). */
   marginNowQ: number
   /** The margin at a given annual rent (or GPU $/hr), $ a quarter. */
@@ -91,7 +95,7 @@ interface Lease {
   walkProb: number
 }
 
-function leasesOf(s: GameState): Lease[] {
+export function leasesOf(s: GameState): Lease[] {
   const scenario = scenarioOf(s)
   const opex = BALANCE.projects.shellOpexShare
   const mid = rfpMid(s.quarter, scenario) ?? 1
@@ -110,19 +114,39 @@ function leasesOf(s: GameState): Lease[] {
       const then = gpuRenewalIndex(base, scenario, p.gpu ?? 'h100')
       const marketRate = g.priceUsdHr * (now !== null && then ? now / then : 1)
       const marginAt = (rate: number) => g.gpus * rate * HOURS_Q * ours
-      out.push({ id: p.id, marginNowQ: marginAt(g.priceUsdHr), marginAt, rateNow: g.priceUsdHr, marketRate, endQ: end, walkProb })
+      out.push({
+        id: p.id,
+        siteId: p.siteId,
+        revenueNowQ: marginAt(g.priceUsdHr),
+        marginNowQ: marginAt(g.priceUsdHr),
+        marginAt,
+        rateNow: g.priceUsdHr,
+        marketRate,
+        endQ: end,
+        walkProb,
+      })
     } else {
       const rateNow = annualContractUsd(p)
       const marketRate = annualRentUsd(tenantCard(t.card)!, p.kw) * mid * shellTierRentMult(s, p)
       const marginAt = (rate: number) => (rate / 4) * (1 - opex) * ours
-      out.push({ id: p.id, marginNowQ: marginAt(rateNow), marginAt, rateNow, marketRate, endQ: end, walkProb })
+      out.push({
+        id: p.id,
+        siteId: p.siteId,
+        revenueNowQ: (rateNow / 4) * ours,
+        marginNowQ: marginAt(rateNow),
+        marginAt,
+        rateNow,
+        marketRate,
+        endQ: end,
+        walkProb,
+      })
     }
   }
   return out
 }
 
 /** A lease's margin each stub quarter for one bot, $ a quarter. Walks are rolled once per end date and shared. */
-function leasePath(l: Lease, bot: 'holder' | 'seller', stub: Stub, seed: number): number[] {
+export function leasePath(l: Lease, bot: 'holder' | 'seller', stub: Stub, seed: number): number[] {
   const first = CONTENT.quarters.length // 2036Q1
   const margins: number[] = []
   let rate = l.rateNow
@@ -220,7 +244,7 @@ function codT(v: Venture, seed: number): number | null {
 }
 
 /** The plant part for one bot: Holder = distributions + 2040 value − calls; Seller = the 2036Q1 sale. */
-function plantPart(s: GameState, v: Venture, m: Market, stub: Stub, bot: 'holder' | 'seller', seed: number): number {
+export function plantPart(s: GameState, v: Venture, m: Market, stub: Stub, bot: 'holder' | 'seller', seed: number): number {
   if (v.stake <= 0 || v.stage === 'cancelled' || v.stage === 'folded') return 0
   const mark = ventureValueUsd(s, v)
   const at = codT(v, seed)
@@ -312,7 +336,10 @@ function gateRuns(preset: Act4PresetId, future: FutureId, start: StartId, seed: 
   return out
 }
 
-// ---------- Run and report ----------
+// ---------- Run and report (only when this file is run, not when M43.0c imports its model) ----------
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) main()
+
+function main(): void {
 const STARTS: StartId[] = [...FIRM_TYPES, 'firm_heavy']
 const runs: GateBRun[] = []
 const t0 = performance.now()
@@ -384,3 +411,4 @@ for (const [name, pick] of rows) {
   say(`  ${name.padEnd(12)} ${pct((r) => r.leaseShare)} / ${pct((r) => r.orbitShare)} / ${pct((r) => r.cashShare)} / ${pct((r) => r.plantShare)}`)
 }
 writeFileSync(`${OUT}/gate-b-summary.txt`, lines.join('\n') + '\n')
+}
