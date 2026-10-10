@@ -301,7 +301,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
   row keeps its confirm (M34.2 3f, partly reversed). Test `ui/talkPicker`.
 - **M36.11** (design thread, 10 Oct 2026): venture offtake capped at 100 MW; EGS block 2 (`egs2`, from 2031Q1, $4,500/kW, 7 q;
   slip median 1.0 fitted, mine: P(power by 2035Q4) 0.796); F2 reading counts quiet, unexposed quarters as matches (goldens
-  act4-f2 37 → 59, act4-energy-f2 55 → 100: that rule only). Ground Holder accepted as weak. Runs and report: below.
+  act4-f2 37 → 59, act4-energy-f2 55 → 100: that rule only). Ground Holder accepted as weak. Runs: Act IV table unchanged;
+  F2 reading Passive/Perfect 50 → 100, Lunar 61 → 68; **E-B2 still a recorded miss** with the cap (SMR $217M, advanced
+  $187M vs control $35M: scarce firm power is the act's premise); EGS2 operating 82/120; `--act2 --act3` identical to M34.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
