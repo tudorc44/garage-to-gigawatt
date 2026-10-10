@@ -186,12 +186,16 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): M36.10's re-runs and report** (the Act IV table, the energy E-B table, the `--act2 --act3`
-byte-identity check), then the design thread's answers. `m35` carries the whole unmerged chain (`m27`…`m35`: Act IV,
-its follow-ups, doc 38); PR #3 merges it into `main` (the owner merges; tag each `m<n>-done`, delete the branches).
-Act IV targets standing: B3 a recorded miss (×0.60 kept on F2); B4, B6, B8 miss; B13 accepted; B5 passes relaxed.
-Open: the design thread's calls on the energy E-B results, and the F2 reading-versus-economics tension (Perfect = Passive
-in F2: its ideal stance is "reduce orbit" every quarter, while Lunar earns most).
+**Now (10 Oct 2026): M36.11 done; the owner merges PR #3** (`m35` carries the whole unmerged chain `m27`…`m35`: Act IV,
+its follow-ups, doc 38; after the merge tag each `m<n>-done` and delete the branches). The design thread recommends
+merging now. Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
+
+**Next small milestone (after the merge), design thread answer 1:** investigate the Perfect bot's in-play reading
+(F1 23, F3 55, below Passive's 53 and 58; the oracle gives 95/96). List its logged moves per quarter in one F1 run and
+one F3 run (kind, sign, the ideal stance that quarter) and say which kinds pull it below Passive. Hypothesis (DT):
+financing moves (raises, debt draws) taken to fund an offensive move score as defensive; if confirmed, propose "funding
+follows purpose" (a raise or loan in the same quarter as an offensive move takes its sign, Act IV; say whether Act III
+has the same effect). **Report before changing anything.**
 
 **Before (6 Oct 2026):** the owner playtested Act IV on `m32` (staging built from `m32`); the findings below.
 
@@ -304,6 +308,11 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
   act4-f2 37 → 59, act4-energy-f2 55 → 100: that rule only). Ground Holder accepted as weak. Runs: Act IV table unchanged;
   F2 reading Passive/Perfect 50 → 100, Lunar 61 → 68; **E-B2 still a recorded miss** with the cap (SMR $217M, advanced
   $187M vs control $35M: scarce firm power is the act's premise); EGS2 operating 82/120; `--act2 --act3` identical to M34.
+- **Design thread after M36.11 (10 Oct 2026):** E-B2's miss is final (no second lever); F2's reading not telling cautious
+  players apart is intended; EGS block 1 is the Act III bet, block 2 the Act IV window. **Accepted as recorded misses:**
+  B4 (F3: Diversified 1.53× vs Sprinter 1.51×, needs 1.25×; Lunar 1.42×; review after the owner's Act IV playtest),
+  B6 (Rich: Lunar 1.20× vs Balanced 1.14×, needs 1.2× the ratio; Dry ratio passes, game overs 28% > 25%),
+  B8 (Perfect ≥ 1.15× Passive in F1 only, 1.54× vs 1.09×; F3 1.10× vs 1.11×; Over-reactor 1.00/0.95/1.00/1.00× Passive).
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 
