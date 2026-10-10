@@ -156,6 +156,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 - Balance tuning stays stopped by the owner's A1 answer.
 - ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
   repo (M27.0); the run resumed at M27.1.
+- **M40.1's target** (Perfect's reading ≥ Passive's in every future and preset): 3 cells of 12 still below (ridge F1 13 vs 53,
+  fortress and ridge F3 56 vs 58): raises with no offensive move in that or the next quarter. Rule not changed further: the
+  design thread's question (M40 report).
 
 ## Small follow-ups
 
@@ -246,6 +249,9 @@ Split: **M40.1** the Act IV reading (a build quarter's hedges and debt at 0; a r
 - **M40.2** done: `deliveredKw(v, quarter)` = offtake × CF (reactors 0.80 × 8 q then 0.92; EGS 0.9, weak field 0.6 until fixed);
   savings on delivered kWh only (the rest is grid at the site's price). weak_field was read before (M36.1: delivery × 0.6/0.9).
   `ventureEbitdaUsd` kept, unused, for Act V. Energy goldens: SMR 75 MW → 60 MW firm (90 → 75 MW with the control).
+- M40 runs: `--act4` identical to M39 but the reading; Perfect/Passive F1 fortress 22→82, neocloud 40→89, ridge 6→13 (Passive 53);
+  F3 neocloud 53→73, fortress and ridge 56 (58): STOPPED. B8/B9 unchanged (money). `--energy`: smr mean $216M→$171M, adv_fission
+  $186M→$148M, control $35M; E-B1 PASS, E-B2 MISS, E-B5 PASS. Act I-III and the prologue untouched (no rerun).
 
 ## Milestone M39 (branch `m38`; energy data fixes, doc 41 of 10 Oct 2026, from doc 40's research)
 
