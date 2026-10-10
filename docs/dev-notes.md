@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #8 merged: M42, F-10 closed; cleanup on `m43`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+Last updated: 10 Oct 2026 (PR #9 merged: doc 42, doc 27's F-10 note; cleanup on `m44`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
 with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
 M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
 and "Milestone M41".
@@ -191,9 +191,10 @@ None open from before: all five M11.4c questions below were answered by the desi
 ## Next
 
 **Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
-`docs/game-project-files/claude_42-act-v-concepts.md`, committed on `m43`), then doc 43 (being written by the design thread).
-F-10 closed (M42; doc 27 §16 marks it, the note added on `m43` at the owner's request). PR #8 merged (`main` = `4b633a7`);
-`m42` tagged `m42-done` and deleted; `m43` (from `main`) holds this cleanup.
+`docs/game-project-files/claude_42-act-v-concepts.md`, in `main`), doc 43 (the Act V design, "Firm", 2036-2040, v0.1) and
+doc 44 (the brief for the third research pass, doc 45), both committed on `m44`. The Act V content pack follows doc 45.
+F-10 closed (M42; doc 27 §16 marks it). PR #9 merged (`main` = `c08bb2c`); `m43` tagged `m43-done` and deleted; `m44` (from
+`main`) holds this cleanup.
 
 **Before: PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
 `m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
@@ -237,7 +238,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `4b633a7`** (10 Oct 2026, PR #8 merged): M42 (notes only; F-10 closed); `m42` tagged `m42-done` and deleted.
+**`main` = `c08bb2c`** (10 Oct 2026, PR #9 merged): doc 42, doc 27's F-10 note; `m43` tagged `m43-done` and deleted.
+Before: `4b633a7` (10 Oct 2026, PR #8 merged): M42 (notes only; F-10 closed); `m42` tagged `m42-done` and deleted.
 Before: `71f36cb` (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
 Before: `464a6ad` (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
 Before: `ff442df` (10 Oct 2026, PR #5 merged): M37.7, bulk buy, M38, M39; `m38` tagged `m38-done` and deleted.
@@ -251,6 +253,18 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M43.0 (branch `m44`; the Act V gate, doc 43 §19, design thread prompt of 10 Oct 2026)
+
+Sim-only prototype, no UI, nothing in `src/` (goldens and sim outputs unchanged): `tools/act5-gate/` (`states.ts` plays
+the 2035Q4 companies as the energy runner; `gate.ts` the 20 stub V1 quarters, §11.3 valuation, Firm Holder vs Seller,
+30 seeds; `README.md` lists every assumption, all mine, reversible). On `m44` (unmerged, holds docs 43-44): mine.
+- **Result (30 seeds, 1,232 runs with a stake): FAIL**, Holder ÷ Seller 1.009 overall, 0.94-1.05 in every cell (target 1.2).
+  Plant alone: holding beats selling for thermal plants (×1.27-1.46), but one 10-20% stake is 1-4% of company value; pumped
+  storage loses when held (calls at ×4 overrun, capacity-only earnings). STOPPED: the design thread revises V1 or the gate.
+- **M43.0b** (doc 43 v1.1 §0.6, `gate-b.ts`, 30 seeds, 2,160 runs per stub): **FAIL both**, V1 Holder ÷ Seller 1.040 (best cell
+  Fortress F2 1.162), V3 Seller ÷ Holder 1.024. Gap = leases (V1 +3.1%, Fortress +8.6%); powered value 0 (median free MW 0);
+  plants ≈ 0. act5Entry is leases 55% (Fortress), 10% (Neocloud, firm-heavy), 0% (Ridge). STOPPED for the design thread.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
