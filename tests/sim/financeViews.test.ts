@@ -20,8 +20,8 @@ import { playGame } from '../../src/sim/replay.ts'
 import { BOTS } from '../../tools/bots.ts'
 
 const q = (l: string) => CONTENT.quarters.indexOf(l)
-// One career through Act II with a bot that builds sites, hosts and runs AI projects.
-const run = playGame(5, BOTS.reinvest, { through: 2 })
+// One career through Act II with a bot that builds sites and runs AI projects.
+const run = playGame(1, BOTS['texas-capital'], { through: 2 })
 const s = run.state
 
 const close = (a: number, b: number) => expect(Math.abs(a - b)).toBeLessThan(0.01)
@@ -33,9 +33,10 @@ function sumLines(ls: Lines[]): Lines {
 }
 
 describe('the Finances views add up', () => {
-  it('a career with several sites reached its later quarters', () => {
+  it('a career with several sites and AI projects reached its later quarters', () => {
     expect(s.reports.length).toBeGreaterThan(20)
     expect(s.sites.length).toBeGreaterThan(1)
+    expect(siteView(s, { kind: 'career' }).rows.some((r) => r.children.some((c) => c.key.startsWith('project:')))).toBe(true)
   })
 
   it.each([

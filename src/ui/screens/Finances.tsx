@@ -319,6 +319,8 @@ function PnlByBusiness({ state, period }: { state: GameState; period: Period }) 
   )
 }
 
+const inPnl = (c: Contribution) => Math.abs(c.revenue) >= 0.005 || Math.abs(c.directCosts) >= 0.005
+
 function PnlBySite({ state, period }: { state: GameState; period: Period }) {
   const v = siteView(state, period)
   const row = (c: Contribution, name: string, depth: number, strong = false) => (
@@ -342,9 +344,10 @@ function PnlBySite({ state, period }: { state: GameState; period: Period }) {
             </tr>
           </thead>
           <tbody>
-            {v.rows.flatMap((r) => [
+            {/* (a site, project or block with nothing in the P&L this period, only an investment, isn't listed) */}
+            {v.rows.filter(inPnl).flatMap((r) => [
               row(r, refName(state, r.key), 0),
-              ...r.children.map((c) => row(c, refName(state, c.key), 1)),
+              ...r.children.filter(inPnl).map((c) => row(c, refName(state, c.key), 1)),
             ])}
             {row(v.unallocated, t('ui.fin.site.unallocated'), 0)}
             {row(v.total, t('ui.fin.site.total'), 0, true)}

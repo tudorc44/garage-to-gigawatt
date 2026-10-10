@@ -49,8 +49,9 @@ export function refName(state: GameState, key: string): string {
   return key
 }
 
-/** A money cell: costs negative, with a true minus. */
-export const money = (usd: number) => (usd < 0 ? '−' + fmt.money(-usd) : fmt.money(usd))
+/** A money cell: costs negative, with a true minus (a floating-point leftover under half a cent is $0). */
+export const money = (usd: number) =>
+  Math.abs(usd) < 0.005 ? fmt.money(0) : usd < 0 ? '−' + fmt.money(-usd) : fmt.money(usd)
 
 /** The change cell: ▲/▼ with the sign, in the gain or loss colour (a cost that grew is a loss). */
 export function Change(props: { now: number; prev: number | null }) {

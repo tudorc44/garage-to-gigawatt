@@ -245,6 +245,8 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
   the cash), weekly chart (quarter) or quarterly (longer) with the low marked, "why cash fell/rose". Mine: "coins mined" adjustment.
 - **M37.5** done: quarter report block (revenue, opex, EBITDA, net, cash change; "Open Finances ›" in place, with a way back);
   each chapter report (prologue, I-IV) "The act in figures" + best/worst site. Ledger stores only off-category business bookings.
+- **M37.6** done: tests `sim/ledgerActs` (each act's lines vs its own report), `ui/finances`; browser at 1024/1440 (I, II, IV): no
+  sideways scroll, no cut cell. Tests 1,569 → 1,621; main bundle 221.1 → 224.9 KB (Finances chunk 11.4 KB). Sims: report below.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 
