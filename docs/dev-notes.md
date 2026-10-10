@@ -262,6 +262,9 @@ the 2035Q4 companies as the energy runner; `gate.ts` the 20 stub V1 quarters, §
 - **Result (30 seeds, 1,232 runs with a stake): FAIL**, Holder ÷ Seller 1.009 overall, 0.94-1.05 in every cell (target 1.2).
   Plant alone: holding beats selling for thermal plants (×1.27-1.46), but one 10-20% stake is 1-4% of company value; pumped
   storage loses when held (calls at ×4 overrun, capacity-only earnings). STOPPED: the design thread revises V1 or the gate.
+- **M43.0b** (doc 43 v1.1 §0.6, `gate-b.ts`, 30 seeds, 2,160 runs per stub): **FAIL both**, V1 Holder ÷ Seller 1.040 (best cell
+  Fortress F2 1.162), V3 Seller ÷ Holder 1.024. Gap = leases (V1 +3.1%, Fortress +8.6%); powered value 0 (median free MW 0);
+  plants ≈ 0. act5Entry is leases 55% (Fortress), 10% (Neocloud, firm-heavy), 0% (Ridge). STOPPED for the design thread.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
