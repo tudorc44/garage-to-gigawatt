@@ -183,19 +183,30 @@ function plantRegion(s: GameState, v: Venture): string {
 }
 
 /** 100% of a plant's EBITDA in stub quarter t, and the contracted share of its output. */
-function plantEbitdaQ(s: GameState, v: Venture, m: Market, stub: Stub, t: number): number {
+/**
+ * 100% of a plant's EBITDA in stub quarter t. `lock` (M43.0d's Locker, 0 otherwise): the share of the merchant output
+ * sold forward in 2036Q1 at that quarter's market − 10% (energy, capacity and pumped storage's spread alike).
+ */
+function plantEbitdaQ(s: GameState, v: Venture, m: Market, stub: Stub, t: number, lock = 0): number {
   const type = v.type as FirmType
   const contracted = Math.max(Math.min(1, v.offtakeMw / v.mw), PLANT.contractedShare[type])
   const merchant = 1 - contracted
   const region = plantRegion(s, v)
   const capBase = region === 'pjm' || region === 'ohio' ? m.pjmCapacityUsdMwDay : 0
+  // A merchant price path: the stub's now (1 − lock) and the 2036Q1 price × 0.9 (lock).
+  const blend = (now: number, at2036: number) => (1 - lock) * now + lock * 0.9 * at2036
   if (type === 'pumped') {
     const p = VENTURES.types.pumped
     const capacity = (PLANT.pumpedCapacityUsdKwYr * v.mw * 1000) / 4
     const spread = (u: number) => v.mw * PLANT.pumpedHours * 91.25 * u * PLANT.pumpedRoundTrip
     // The contracted half keeps 2036's terms; the merchant half follows the stub.
     const revenue =
-      contracted * (capacity + spread(30)) + merchant * (capacity * stub.capacityMult(t) + spread(stub.spreadUsdMwh(t)))
+      contracted * (capacity + spread(30)) +
+      merchant *
+        blend(
+          capacity * stub.capacityMult(t) + spread(stub.spreadUsdMwh(t)),
+          capacity * stub.capacityMult(0) + spread(stub.spreadUsdMwh(0)),
+        )
     return revenue - (v.mw * 1000 * p.running_usd_kw_yr) / 4
   }
   const T = VENTURES.types[type as 'egs' | 'egs2' | 'smr' | 'adv_fission']
@@ -206,8 +217,8 @@ function plantEbitdaQ(s: GameState, v: Venture, m: Market, stub: Stub, t: number
   const revenue =
     mwh * off * v.ppaUsdMwh +
     mwh * Math.max(0, contracted - off) * T.ppa_usd_mwh +
-    mwh * merchant * powerUsdMwh * stub.merchantMult(t) +
-    capBase * PLANT.capacityRating[type] * v.mw * 91.25 * (contracted + merchant * stub.capacityMult(t))
+    mwh * merchant * powerUsdMwh * blend(stub.merchantMult(t), stub.merchantMult(0)) +
+    capBase * PLANT.capacityRating[type] * v.mw * 91.25 * (contracted + merchant * blend(stub.capacityMult(t), stub.capacityMult(0)))
   const cost =
     v.type === 'smr' || v.type === 'adv_fission'
       ? (PLANT.reactorFixedUsdKwYr * v.mw * 1000) / 4 + mwh * PLANT.reactorVarUsdMwh
@@ -215,8 +226,9 @@ function plantEbitdaQ(s: GameState, v: Venture, m: Market, stub: Stub, t: number
   return revenue - cost
 }
 
-const plantMultiple = (v: Venture, stub: Stub, t: number) => {
-  const c = Math.max(Math.min(1, v.offtakeMw / v.mw), PLANT.contractedShare[v.type as FirmType])
+const plantMultiple = (v: Venture, stub: Stub, t: number, lock = 0) => {
+  const c0 = Math.max(Math.min(1, v.offtakeMw / v.mw), PLANT.contractedShare[v.type as FirmType])
+  const c = c0 + lock * (1 - c0)
   return c * PLANT.contractedMultiple + (1 - c) * stub.plantMerchantMultiple(t)
 }
 
@@ -244,17 +256,33 @@ function codT(v: Venture, seed: number): number | null {
 }
 
 /** The plant part for one bot: Holder = distributions + 2040 value − calls; Seller = the 2036Q1 sale. */
-export function plantPart(s: GameState, v: Venture, m: Market, stub: Stub, bot: 'holder' | 'seller', seed: number): number {
+/**
+ * The plant part for one bot: Holder = distributions + 2040 value − calls; Seller = the 2036Q1 sale; Locker (M43.0d) =
+ * the Holder's, with 80% of the merchant output contracted in 2036Q1 at market − 10%.
+ */
+export function plantPart(
+  s: GameState,
+  v: Venture,
+  m: Market,
+  stub: Stub,
+  bot: 'holder' | 'seller' | 'locker',
+  seed: number,
+): number {
   if (v.stake <= 0 || v.stage === 'cancelled' || v.stage === 'folded') return 0
   const mark = ventureValueUsd(s, v)
   const at = codT(v, seed)
   if (bot === 'seller') return at === 0 ? v.stake * plantEbitdaQ(s, v, m, stub, 0) * 4 * plantMultiple(v, stub, 0) : mark
   if (at === null) return v.stage === 'licensing' || v.stage === 'construction' ? mark : 0
+  const lock = bot === 'locker' ? 0.8 : 0
   const run: Venture = { ...v, stage: 'operating', fieldFixed: v.fieldFixed || (isEgs(v.type) && !!v.weakField) }
   if (v.stage !== 'operating') run.codQuarter = CONTENT.quarters.length + at
   let cash = 0
-  for (let t = at; t < Q; t++) cash += v.stake * plantEbitdaQ(s, run, m, stub, t)
-  return cash + v.stake * plantEbitdaQ(s, run, m, stub, Q - 1) * 4 * plantMultiple(run, stub, Q - 1) - remainingCallsUsd(v)
+  for (let t = at; t < Q; t++) cash += v.stake * plantEbitdaQ(s, run, m, stub, t, lock)
+  return (
+    cash +
+    v.stake * plantEbitdaQ(s, run, m, stub, Q - 1, lock) * 4 * plantMultiple(run, stub, Q - 1, lock) -
+    remainingCallsUsd(v)
+  )
 }
 
 // ---------- One company ----------

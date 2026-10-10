@@ -126,3 +126,32 @@ What §0.7 left open, decided here (all mine, reversible):
 - **The gap breakdown:** "multiple" includes the spot rents, which move by the same factor.
 - **The Firm Builder row:** pools the qualifying runs from every start (so it overlaps the Fortress row). Each judged row
   is judged on its own.
+
+## M43.0d (the owner's option A after M43.0c): `gate-d.ts`
+
+```bash
+node tools/act5-gate/gate-d.ts --seeds 30 --out sim-output/act5-gate-d   # about 45 min; gate-d-runs.csv, gate-d-summary.txt
+```
+
+A confirmation run (no tuning). On top of M43.0c:
+- **The Seller's cash:** its proceeds repay debt first, and the rest earns the 2035Q4 SOFR.
+- **The Locker,** a third archetype: keeps everything, locks leases long at the 2036 rate, and contracts 80% of its plant
+  output at market − 10%.
+- **The targets** (Fortress and the Firm Builder subset): V1 Holder ≥ 1.2 × Seller and V1 Holder ≥ Locker; V3 Locker ≥
+  1.05 × Holder. V3 Seller ÷ Holder is information only.
+
+What the prompt left open, decided here (all mine, reversible):
+- **The Seller's proceeds:** the leased sites' sale price, its free MW at $300K, and its plant stakes' sale price, all in
+  2036Q1.
+- **Debt repaid:** its 2035Q4 debt (`debtUsd` in the report, every kind), at most the proceeds.
+- **Interest saved:** the 2035Q4 quarterly rate (interest ÷ debt) × the debt repaid, for 20 quarters (no principal
+  schedule).
+- **The rest:** compounds at the 2035Q4 SOFR ÷ 4 each quarter.
+- **The Locker's leases:** follow the Seller's §0.6 path (walks re-let long at that quarter's market rent).
+- **The Locker's plant contract:** 80% of the merchant share (energy, capacity and pumped storage's capacity and
+  spread), priced at the 2036Q1 market × 0.9 for every later quarter.
+  - Its plant multiple counts that share as contracted (10×).
+  - A plant not yet running gets the same contract from its first power.
+  - The developer's share and the offtake are unchanged.
+- **The gap breakdown:** shown against the Holder's 2040 value, Holder − Seller and Holder − Locker, by part: multiple
+  (and spot), lease repricing, site sale, cash yield, powered value, plants.
