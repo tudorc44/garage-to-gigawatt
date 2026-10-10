@@ -295,6 +295,54 @@ the previous branch. The morning report is at the end of this section.
   - **Carry-over checked against `state.ts`:** every §3.1 field carries; dropped: act4Moves, act4Wildcards,
     act4SignalReads, marketRead, act4Moon (→ lunarHolding).
 
+### Morning report (12 Oct 2026)
+
+**Steps done:**
+- **Step 0 (docs):** `m47`, PR #14.
+- **Step 1 (M43.0e):** `m47`, PR #14.
+- **Step 2 (M48, content fixes):** `m48`, PR #15.
+- **Step 3 (M49, act-aware refactor + walking skeleton + Gen 2037):** `m49`, PR #16.
+
+**Not reached:** steps 4 (futures engine, Signals, hidden files, reading score), 5 (plants), 6 (the queue) and 7 (chips
+part 2). Not stopped by a rule: time. Each is a milestone of its own, and step 3 took most of the night.
+
+**M43.0e (no tuning):**
+- **V1, Holder ÷ Seller:** Fortress 1.311, Firm Builder 1.463 (target ≥ 1.2).
+- **V1, Holder ÷ Locker:** 1.137 and 1.142 (target ≥ 1).
+- **V3, Locker ÷ Holder:** Firm Builder 1.074 (pass); Fortress 1.028, a recorded near-miss (target 1.05).
+- **Information, V3 Seller ÷ Holder:** 1.031 and 1.035.
+- **Gap, V1 Fortress, Holder − Seller:** multiple +9.4%, leases +7.1%, site sale +11.0%, cash yield −6.8%.
+- **Gap, V3 Fortress, Holder − Locker:** leases −4.6%.
+- **V2 and V4:** in `gate-e-summary.txt` (scratchpad) and the PR.
+
+**Content fixes (M48):** the generators reproduce the 21 files byte for byte, then only the errata change (listed in the
+README). `check.py` PASS.
+
+**Goldens and tests:**
+- **Every milestone:** all goldens (Acts I-IV and the prologue) byte-identical.
+- **M49:** the Act IV goldens are compared at format 5, as earlier format bumps were; Act IV log labels past 2035Q4 kept
+  as "—".
+- **Tests:** 1,646 after M48, 1,656 after M49.
+- **Main bundle:** 225.66 → 226.64 KB; Act V's markets in four chunks of 281 KB.
+
+**Assumptions (mine, reversible):**
+- the generators kept in Python;
+- the Locker and Seller rules as M43.0d;
+- the M43.0e glide on power, capacity, AI multiple and SOFR;
+- pumped storage's capacity path ∝ the PJM price;
+- Act V rivals = Act IV's frozen at 2035Q4 until the rivals milestone;
+- the act-gate answers above;
+- Act V borrows the orbit theme;
+- Gen 2037 contracts priced off its neocloud rent;
+- the preset fit tests in `tools/act5/presets.ts`.
+
+**Open questions for the design thread:**
+1. **Presets:** Firm Builder and Small Grid fit no company in the scan. A Fortress-line SMR switches on in 2035Q1 with no
+   offtake (no nuclear-region site), and no line has one site with a battery that survives. Change the descriptions, let
+   the preset scan add a later venture or a site, or ship with Orbital Landlord only?
+2. **Fortress's V3:** 1.028 on the real files; confirm the balance pass owns it (§0.11's levers).
+3. **Generators:** keep them in Python, or port them to TypeScript?
+
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 
 Split: **1** the asset (WebP 1152 and 640 px in `src/assets/art/`; the PNG original in `docs/art/incoming/`) · **2** the art
