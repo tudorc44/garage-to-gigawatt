@@ -2589,11 +2589,7 @@
         "lines": {
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.029999999999290594,
         "weeks": [
@@ -2618,11 +2614,7 @@
         "lines": {
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.02999999999974534,
         "weeks": [
@@ -2647,11 +2639,7 @@
         "lines": {
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.029999999998835847,
         "weeks": [
@@ -2676,11 +2664,7 @@
         "lines": {
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.029999999998835847,
         "weeks": [
@@ -2706,14 +2690,7 @@
           "other_income": 1199.9999999999998,
           "mining_btc": 165.44062031015505
         },
-        "byBiz": {
-          "corporate": {
-            "other_income": 1199.9999999999998
-          },
-          "mining": {
-            "mining_btc": 165.44062031015505
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.029999999998835847,
         "weeks": [
@@ -2739,14 +2716,7 @@
           "mining_btc": 182.148124062031,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 182.148124062031
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000009749783,
         "weeks": [
@@ -2773,15 +2743,7 @@
           "machines": -1596,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "site_builds": -300,
-            "other_income": 1199.9999999999998
-          },
-          "mining": {
-            "machines": -1596
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-3": {
             "machines": -1596
@@ -2811,14 +2773,7 @@
           "mining_btc": 17354.83551775888,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 17354.83551775888
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000011568773,
         "weeks": [
@@ -2844,14 +2799,7 @@
           "mining_btc": 5058.751225612807,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 5058.751225612807
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000011568773,
         "weeks": [
@@ -2877,14 +2825,7 @@
           "mining_btc": 10298.60666838497,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 10298.60666838497
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000009749783,
         "weeks": [
@@ -2910,14 +2851,7 @@
           "mining_btc": 1053.6856018935237,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 1053.6856018935237
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000011568773,
         "weeks": [
@@ -2944,15 +2878,7 @@
           "machines": -1036,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "asset_sales": 720,
-            "other_income": 1199.9999999999998
-          },
-          "mining": {
-            "machines": -1036
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-3": {
             "asset_sales": 720,
@@ -2983,14 +2909,7 @@
           "mining_btc": 648.7803784837909,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 648.7803784837909
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000009749783,
         "weeks": [
@@ -3016,14 +2935,7 @@
           "mining_btc": 329.7881212560891,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 329.7881212560891
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000007930794,
         "weeks": [
@@ -3049,14 +2961,7 @@
           "mining_btc": 697.1515911659661,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 697.1515911659661
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000013387762,
         "weeks": [
@@ -3083,15 +2988,7 @@
           "machines": -596,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "asset_sales": 360,
-            "other_income": 1199.9999999999998
-          },
-          "mining": {
-            "machines": -596
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-3": {
             "asset_sales": 360,
@@ -3123,15 +3020,7 @@
           "machines": -596,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "asset_sales": 360,
-            "other_income": 1199.9999999999998
-          },
-          "mining": {
-            "machines": -596
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-3": {
             "asset_sales": 360,
@@ -3162,14 +3051,7 @@
           "mining_btc": 877.1443531726017,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 877.1443531726017
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000013387762,
         "weeks": [
@@ -3195,14 +3077,7 @@
           "mining_btc": 98.42903224547976,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 98.42903224547976
-          },
-          "corporate": {
-            "other_income": 1199.9999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.030000000009749783,
         "weeks": [
@@ -3229,15 +3104,7 @@
           "machines": -1400,
           "other_income": 1199.9999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "asset_sales": 360,
-            "other_income": 1199.9999999999998
-          },
-          "mining": {
-            "machines": -1400
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-3": {
             "asset_sales": 360,
@@ -3271,17 +3138,7 @@
           "rent": -2879.999999999999,
           "power": -377.3951999999999
         },
-        "byBiz": {
-          "corporate": {
-            "one_offs": -940,
-            "rent": -2879.999999999999
-          },
-          "mining": {
-            "machines": -2700,
-            "mining_btc": 10131.462209422467,
-            "power": -377.3951999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-9": {
             "machines": -2700
@@ -3312,15 +3169,7 @@
           "rent": -2879.999999999999,
           "power": -1182.9887999999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 11514.448005318096,
-            "power": -1182.9887999999999
-          },
-          "corporate": {
-            "rent": -2879.999999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": -0.021200000004682806,
         "weeks": [
@@ -3347,15 +3196,7 @@
           "rent": -2879.999999999999,
           "power": -1132.1855999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 3684.457533733921,
-            "power": -1132.1855999999998
-          },
-          "corporate": {
-            "rent": -2879.999999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": -0.004399999997986015,
         "weeks": [
@@ -3382,15 +3223,7 @@
           "rent": -2879.999999999999,
           "power": -1132.1855999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 1577.6362785402791,
-            "power": -1132.1855999999998
-          },
-          "corporate": {
-            "rent": -2879.999999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": -0.004399999998440762,
         "weeks": [
@@ -3415,11 +3248,7 @@
         "lines": {
           "rent": -2970.000000000001
         },
-        "byBiz": {
-          "corporate": {
-            "rent": -2970.000000000001
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.020000000000720775,
         "weeks": [
@@ -3445,14 +3274,7 @@
           "rent": -2970.000000000001,
           "coins_sold": 2648.16
         },
-        "byBiz": {
-          "corporate": {
-            "rent": -2970.000000000001
-          },
-          "mining": {
-            "coins_sold": 2648.16
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.02000000000033708,
         "weeks": [
@@ -3478,14 +3300,7 @@
           "rent": -2970.000000000001,
           "coins_sold": 19012.37251132243
         },
-        "byBiz": {
-          "corporate": {
-            "rent": -2970.000000000001
-          },
-          "mining": {
-            "coins_sold": 19012.37251132243
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.017488677577063072,
         "weeks": [
@@ -3510,11 +3325,7 @@
         "lines": {
           "rent": -2970.000000000001
         },
-        "byBiz": {
-          "corporate": {
-            "rent": -2970.000000000001
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.020000000007712515,
         "weeks": [
@@ -3539,11 +3350,7 @@
         "lines": {
           "rent": -3087.000000000001
         },
-        "byBiz": {
-          "corporate": {
-            "rent": -3087.000000000001
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.020000000007712515,
         "weeks": [
@@ -3568,11 +3375,7 @@
         "lines": {
           "rent": -3087.000000000001
         },
-        "byBiz": {
-          "corporate": {
-            "rent": -3087.000000000001
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 0.020000000001346052,
         "weeks": [
@@ -3600,16 +3403,7 @@
           "rent": -3087.000000000001,
           "coins_sold": 1828.5300000000002
         },
-        "byBiz": {
-          "corporate": {
-            "asset_sales": 1560,
-            "rent": -3087.000000000001
-          },
-          "mining": {
-            "machines": -7200,
-            "coins_sold": 1828.5300000000002
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-9": {
             "asset_sales": 1560,
@@ -3642,16 +3436,7 @@
           "power": -1037.8367999999996,
           "coins_sold": 4124.89934170052
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 2738.452384029279,
-            "power": -1037.8367999999996,
-            "coins_sold": 4124.89934170052
-          },
-          "corporate": {
-            "rent": -3087.000000000001
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": -0.06254170051979457,
         "weeks": [

@@ -94,7 +94,11 @@ export interface LedgerQuarter {
   startCash: number
   /** Totals by category (mined coins included, at their value when mined). */
   lines: Lines
-  /** The same totals by business. */
+  /**
+   * The part of a category booked to a business other than the category's own (rent at an AI site, power for hosting);
+   * the rest of each line is its category's business (`businessLines` adds them up). Kept small: the game copies its
+   * state every week.
+   */
   byBiz: Partial<Record<Business, Lines>>
   /** Totals by ref ("site:<id>", "project:<id>", "block:<id>", "venture:<id>"). */
   byRef: Record<string, Lines>
@@ -140,7 +144,7 @@ function record(state: GameState, cat: Category, usd: number, ref?: LedgerRef): 
   if (usd === 0) return
   const lq = current(state)
   addTo(lq.lines, cat, usd)
-  addTo((lq.byBiz[ref?.biz ?? CATEGORIES[cat].biz] ??= {}), cat, usd)
+  if (ref?.biz && ref.biz !== CATEGORIES[cat].biz) addTo((lq.byBiz[ref.biz] ??= {}), cat, usd)
   if (!ref) return
   const site = ref.site ?? undefined
   if (site) addTo((lq.byRef[`site:${site}`] ??= {}), cat, usd)
@@ -252,6 +256,28 @@ export function startLedgerAtLoad(state: GameState): void {
 }
 
 // ---------- Reading the ledger ----------
+
+/** Lines by business: each category's own business holds what wasn't booked to another (see `byBiz`). */
+export function businessLines(lines: Lines, overrides: Partial<Record<Business, Lines>>): Partial<Record<Business, Lines>> {
+  const out: Partial<Record<Business, Lines>> = {}
+  for (const cat of CATEGORY_IDS) {
+    const total = lines[cat]
+    if (!total) continue
+    let rest = total
+    for (const b of BUSINESSES) {
+      const usd = overrides[b]?.[cat]
+      if (!usd) continue
+      ;(out[b] ??= {})[cat] = ((out[b] ??= {})[cat] ?? 0) + usd
+      rest -= usd
+    }
+    // (a cent-level remainder of floating point isn't a business's line)
+    if (Math.abs(rest) >= 0.005) {
+      const own = CATEGORIES[cat].biz
+      ;(out[own] ??= {})[cat] = ((out[own] ??= {})[cat] ?? 0) + rest
+    }
+  }
+  return out
+}
 
 /** The cash-moving total of a set of lines (mined coins excluded). */
 export function cashTotal(lines: Lines): number {

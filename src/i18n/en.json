@@ -3913,5 +3913,14 @@
   "ui.fin.cf.low": "low {usd}",
   "ui.fin.cf.why_fell": "Why cash fell this period: {lines}.",
   "ui.fin.cf.why_rose": "Why cash rose this period: {lines}.",
-  "ui.fin.cf.why_flat": "Cash didn't change this period."
+  "ui.fin.cf.why_flat": "Cash didn't change this period.",
+  "ui.fin.summary.quarter_title": "This quarter's P&L",
+  "ui.fin.summary.open": "Open Finances ›",
+  "ui.fin.summary.back": "‹ Back to the report",
+  "ui.fin.summary.cash_change": "Change in cash",
+  "ui.fin.summary.act_title": "The act in figures",
+  "ui.fin.summary.invested": "Invested",
+  "ui.fin.summary.raised": "Raised (debt and equity)",
+  "ui.fin.summary.best_worst": "Best site: {best} ({bestUsd} contribution). Worst: {worst} ({worstUsd}).",
+  "ui.fin.summary.one_site": "Your one site, {site}, contributed {usd}."
 }

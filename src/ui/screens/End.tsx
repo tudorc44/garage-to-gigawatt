@@ -16,6 +16,7 @@ import { gameOverText, momentLines, runSummaryText } from '../chapter.ts'
 import { fmt } from '../format.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { League } from './Report.tsx'
+import { ActFinances } from '../components/financeSummary.tsx'
 
 export function MergeScreen({ state, act }: ScreenProps) {
   const v = mergeView(state)
@@ -195,6 +196,8 @@ function Act2Chapter(props: {
             <span class="label">{t('ui.chapter2.curve')}</span>
             <CareerChart curve={c.curve} />
           </div>
+          {/* M37.5 (doc 39): the act's P&L in figures, its best and worst site */}
+          <ActFinances state={s} act={2} />
           {b && (
             <div class="panel p">
               <span class="label">
@@ -430,6 +433,8 @@ export function ChapterScreen(props: {
             <span class="label">{t('ui.chapter.curve')}</span>
             <CareerChart curve={c.curve} />
           </div>
+          {/* M37.5 (doc 39): the act's P&L in figures, its best and worst site */}
+          <ActFinances state={s} act={1} />
           {c.mergeChoice && (
             <div class="panel p">
               <span class="label">{t('ui.chapter.your_merge')}</span>

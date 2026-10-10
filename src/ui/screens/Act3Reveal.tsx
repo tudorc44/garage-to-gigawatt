@@ -11,6 +11,7 @@ import type { Act3End, GameState } from '../../sim/state.ts'
 import { act3Outcome } from '../../sim/systems/act3End.ts'
 import { fmt } from '../format.ts'
 import { Term } from '../components/term.tsx'
+import { ActFinances } from '../components/financeSummary.tsx'
 
 const QUARTERS = 16
 const FIRST_LABEL = '2027Q1'
@@ -576,6 +577,9 @@ export function Act3Reveal(props: {
               </tbody>
             </table>
           </section>
+
+          {/* M37.5 (doc 39): the act's P&L in figures, its best and worst site */}
+          <ActFinances state={props.state} act={3} />
 
           {/* 8. the end (M27.6: a company that survived Act III can continue into Act IV) */}
           {props.onContinueAct4 && props.state.phase === 'chapter' ? (

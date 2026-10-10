@@ -72,8 +72,9 @@ export function settleWeek(
   const rentUsd = rents.reduce((sum, [, usd]) => sum + usd, 0)
   // M37.1: mined coins are revenue at this week's value (no cash until sold); power by the lot's site, rent by site.
   const parts: [Category, number, LedgerRef?][] = [['coins_sold', soldUsd]]
+  const siteOf = new Map(state.machines.map((m) => [m.id, m.siteId]))
   for (const lot of lots) {
-    const site = state.machines.find((m) => m.id === lot.lotId)?.siteId
+    const site = siteOf.get(lot.lotId)
     accrue(state, lot.coin === 'BTC' ? 'mining_btc' : 'mining_eth', lot.revenueUsd, { site })
     parts.push(['power', -lot.powerCostUsd, { site }])
   }

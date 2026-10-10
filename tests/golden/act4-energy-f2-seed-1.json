@@ -6402,13 +6402,7 @@
           "coins_sold": 394834.72000000003,
           "power": -903991.5504000003
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 394834.72000000003,
-            "coins_sold": 394834.72000000003,
-            "power": -903991.5504000003
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 394834.72000000003,
@@ -6440,13 +6434,7 @@
           "coins_sold": 383470.92000000004,
           "power": -909885.3041999997
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 383470.92000000004,
-            "coins_sold": 383470.92000000004,
-            "power": -909885.3041999997
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 383470.92000000004,
@@ -6478,13 +6466,7 @@
           "coins_sold": 394120.57999999996,
           "power": -906693.4049999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 394120.57999999996,
-            "coins_sold": 394120.57999999996,
-            "power": -906693.4049999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 394120.57999999996,
@@ -6516,13 +6498,7 @@
           "coins_sold": 385187.88,
           "power": -902995.4729999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 385187.88,
-            "coins_sold": 385187.88,
-            "power": -902995.4729999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 385187.88,
@@ -6554,13 +6530,7 @@
           "coins_sold": 395520.43999999994,
           "power": -898752.5825999997
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 395520.43999999994,
-            "coins_sold": 395520.43999999994,
-            "power": -898752.5825999997
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 395520.43999999994,
@@ -6592,13 +6562,7 @@
           "coins_sold": 64635.2,
           "power": -791053.0527299999
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 64635.2,
-            "coins_sold": 64635.2,
-            "power": -791053.0527299999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 64635.2,
@@ -6628,11 +6592,7 @@
         "lines": {
           "power": -750090.0562499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -750090.0562499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -750090.0562499999
@@ -6661,11 +6621,7 @@
         "lines": {
           "power": -750090.0562499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -750090.0562499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -750090.0562499999
@@ -6694,11 +6650,7 @@
         "lines": {
           "power": -750090.0562499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -750090.0562499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -750090.0562499999
@@ -6727,11 +6679,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -6760,11 +6708,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -6793,11 +6737,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -6826,11 +6766,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -6859,11 +6795,7 @@
         "lines": {
           "power": -960019.3500000002
         },
-        "byBiz": {
-          "mining": {
-            "power": -960019.3500000002
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -960019.3500000002
@@ -6892,11 +6824,7 @@
         "lines": {
           "power": -808342.6875000001
         },
-        "byBiz": {
-          "mining": {
-            "power": -808342.6875000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -808342.6875000001
@@ -6925,11 +6853,7 @@
         "lines": {
           "power": -808342.6875000001
         },
-        "byBiz": {
-          "mining": {
-            "power": -808342.6875000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -808342.6875000001
@@ -6963,12 +6887,7 @@
         },
         "byBiz": {
           "energy": {
-            "energy_assets": -18380000,
-            "other_opex": -2000000,
-            "venture_calls": -435237500
-          },
-          "mining": {
-            "power": -941220.9375000002
+            "other_opex": -2000000
           }
         },
         "byRef": {
@@ -7014,17 +6933,7 @@
           "energy_assets": -18380000,
           "power": -1297023.2295000001
         },
-        "byBiz": {
-          "corporate": {
-            "equity_raised": 211046372
-          },
-          "energy": {
-            "energy_assets": -18380000
-          },
-          "mining": {
-            "power": -1297023.2295000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "energy_assets": -18380000,
@@ -7057,18 +6966,7 @@
           "power": -1297023.2295000001,
           "one_offs": -500000
         },
-        "byBiz": {
-          "corporate": {
-            "equity_raised": 320848450,
-            "one_offs": -500000
-          },
-          "energy": {
-            "venture_calls": -95787694.06
-          },
-          "mining": {
-            "power": -1297023.2295000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "venture:venture-5": {
             "venture_calls": -15787694.06
@@ -7105,15 +7003,7 @@
           "energy_assets": 26306.39,
           "energy_opex": -17500
         },
-        "byBiz": {
-          "mining": {
-            "power": -1297023.2295000001
-          },
-          "energy": {
-            "energy_assets": 26306.39,
-            "energy_opex": -17500
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1297023.2295000001,
@@ -7147,16 +7037,7 @@
           "energy_income": 373372.7088,
           "energy_opex": -85000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1297023.2295000001
-          },
-          "energy": {
-            "energy_assets": 1101651.28,
-            "energy_income": 373372.7088,
-            "energy_opex": -85000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1297023.2295000001,
@@ -7191,16 +7072,7 @@
           "energy_income": 328497.07800000004,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1141134.129375
-          },
-          "energy": {
-            "energy_assets": -627392,
-            "energy_income": 328497.07800000004,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1141134.129375,
@@ -7234,15 +7106,7 @@
           "energy_income": 328497.07800000004,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1141134.129375
-          },
-          "energy": {
-            "energy_income": 328497.07800000004,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1141134.129375,
@@ -7275,15 +7139,7 @@
           "energy_income": 446784.1560000001,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1846990.2918750006
-          },
-          "energy": {
-            "energy_income": 446784.1560000001,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1846990.2918750006,
@@ -7322,15 +7178,7 @@
           "energy_income": 446784.1560000001,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1846990.2918750006
-          },
-          "energy": {
-            "energy_income": 446784.1560000001,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1846990.2918750006,
@@ -7370,16 +7218,7 @@
           "energy_income": 486135.4680000002,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "energy": {
-            "venture_calls": -80000000,
-            "energy_income": 486135.4680000002,
-            "energy_opex": -135000
-          },
-          "mining": {
-            "power": -1957617.5943750003
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "venture:venture-6": {
             "venture_calls": -80000000
@@ -7421,15 +7260,7 @@
           "energy_income": 486135.4680000002,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1957617.5943750003
-          },
-          "energy": {
-            "energy_income": 486135.4680000002,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1957617.5943750003,
@@ -7469,16 +7300,7 @@
           "energy_opex": -135000,
           "venture_calls": 23652000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1957617.5943750003
-          },
-          "energy": {
-            "energy_income": 486135.4680000002,
-            "energy_opex": -135000,
-            "venture_calls": 23652000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1957617.5943750003,
@@ -7520,15 +7342,7 @@
           "energy_income": 486135.4680000002,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -1957617.5943750003
-          },
-          "energy": {
-            "energy_income": 486135.4680000002,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1957617.5943750003,
@@ -7567,15 +7381,7 @@
           "energy_income": 527757.0480000002,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -2074627.2412500004
-          },
-          "energy": {
-            "energy_income": 527757.0480000002,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -2074627.2412500004,
@@ -7614,15 +7420,7 @@
           "energy_income": 527757.0480000002,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -2074627.2412500004
-          },
-          "energy": {
-            "energy_income": 527757.0480000002,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -2074627.2412500004,
@@ -7661,15 +7459,7 @@
           "energy_income": 527757.0480000002,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -2074627.2412500004
-          },
-          "energy": {
-            "energy_income": 527757.0480000002,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -2074627.2412500004,
@@ -7709,16 +7499,7 @@
           "energy_income": 367699.3320000003,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "energy": {
-            "venture_calls": -80000000,
-            "energy_income": 367699.3320000003,
-            "energy_opex": -135000
-          },
-          "mining": {
-            "power": -6038883.11625
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "venture:venture-6": {
             "venture_calls": -80000000,
@@ -7762,15 +7543,7 @@
           "energy_income": 433789.35600000015,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -6399432.123749998
-          },
-          "energy": {
-            "energy_income": 433789.35600000015,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -6399432.123749998,
@@ -7813,15 +7586,7 @@
           "energy_income": 433789.35600000015,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -6399432.123749998
-          },
-          "energy": {
-            "energy_income": 433789.35600000015,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -6399432.123749998,
@@ -7864,15 +7629,7 @@
           "energy_income": 433789.35600000015,
           "energy_opex": -135000
         },
-        "byBiz": {
-          "mining": {
-            "power": -6399432.123749998
-          },
-          "energy": {
-            "energy_income": 433789.35600000015,
-            "energy_opex": -135000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -6399432.123749998,

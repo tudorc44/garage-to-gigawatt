@@ -915,11 +915,7 @@
         "lines": {
           "machines": -10000
         },
-        "byBiz": {
-          "mining": {
-            "machines": -10000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "machines": -10000
@@ -950,13 +946,7 @@
           "coins_sold": 22332.618,
           "power": -1244.8799999999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 22332.618,
-            "coins_sold": 22332.618,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 22332.618,
@@ -988,13 +978,7 @@
           "coins_sold": 8317.953000000001,
           "power": -1244.8799999999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 8317.953000000001,
-            "coins_sold": 8317.953000000001,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 8317.953000000001,
@@ -1026,13 +1010,7 @@
           "coins_sold": 4809.294,
           "power": -1244.8799999999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 4809.294,
-            "coins_sold": 4809.294,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 4809.294,
@@ -1064,13 +1042,7 @@
           "coins_sold": 7274.421,
           "power": -1244.8799999999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 7274.421,
-            "coins_sold": 7274.421,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 7274.421,
@@ -1105,18 +1077,7 @@
           "rent": -6000.000000000001,
           "asset_sales": 1500
         },
-        "byBiz": {
-          "corporate": {
-            "site_builds": -35000,
-            "rent": -6000.000000000001,
-            "asset_sales": 1500
-          },
-          "mining": {
-            "mining_eth": 3282.7409999999995,
-            "coins_sold": 3282.7409999999995,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-3": {
             "site_builds": -35000,
@@ -1155,17 +1116,7 @@
           "rent": -6000.000000000001,
           "asset_sales": 4000
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 1577.9735999999998,
-            "coins_sold": 1577.9735999999998,
-            "power": -995.9039999999994
-          },
-          "corporate": {
-            "rent": -6000.000000000001,
-            "asset_sales": 4000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 1577.9735999999998,

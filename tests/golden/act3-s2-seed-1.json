@@ -2954,13 +2954,7 @@
           "coins_sold": 391833.68000000005,
           "power": -915015.8376000003
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 391833.68000000005,
-            "coins_sold": 391833.68000000005,
-            "power": -915015.8376000003
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 391833.68000000005,
@@ -2992,13 +2986,7 @@
           "coins_sold": 391394.2199999999,
           "power": -933250.9389000001
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 391394.22,
-            "coins_sold": 391394.2199999999,
-            "power": -933250.9389000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 391394.22,
@@ -3030,13 +3018,7 @@
           "coins_sold": 393013.32,
           "power": -929977.0725000001
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 393013.32000000007,
-            "coins_sold": 393013.32,
-            "power": -929977.0725000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 393013.32000000007,
@@ -3068,13 +3050,7 @@
           "coins_sold": 405896.68,
           "power": -926184.1785000003
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 405896.68,
-            "coins_sold": 405896.68,
-            "power": -926184.1785000003
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 405896.68,
@@ -3106,13 +3082,7 @@
           "coins_sold": 418888.96,
           "power": -921832.3317000001
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 418888.96,
-            "coins_sold": 418888.96,
-            "power": -921832.3317000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 418888.96,
@@ -3144,13 +3114,7 @@
           "coins_sold": 69117.44,
           "power": -854805.1636800002
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 69117.44,
-            "coins_sold": 69117.44,
-            "power": -854805.1636800002
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 69117.44,
@@ -3180,11 +3144,7 @@
         "lines": {
           "power": -810540.9000000003
         },
-        "byBiz": {
-          "mining": {
-            "power": -810540.9000000003
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -810540.9000000003
@@ -3215,13 +3175,7 @@
           "mining_btc": 274840.02,
           "coins_sold": 274840.02
         },
-        "byBiz": {
-          "mining": {
-            "power": -1063534.0622400003,
-            "mining_btc": 274840.02,
-            "coins_sold": 274840.02
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1063534.0622400003,
@@ -3253,13 +3207,7 @@
           "coins_sold": 321510.7,
           "power": -1079942.3668800003
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 321510.7,
-            "coins_sold": 321510.7,
-            "power": -1079942.3668800003
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 321510.7,
@@ -3292,16 +3240,7 @@
           "power": -1174988.70009,
           "one_offs": -2000000
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 348094.88,
-            "coins_sold": 348094.88,
-            "power": -1174988.70009
-          },
-          "corporate": {
-            "one_offs": -2000000
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 348094.88,
@@ -3333,13 +3272,7 @@
           "coins_sold": 325935.95999999996,
           "power": -1169563.90617
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 325935.95999999996,
-            "coins_sold": 325935.95999999996,
-            "power": -1169563.90617
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 325935.95999999996,
@@ -3371,13 +3304,7 @@
           "coins_sold": 357195.86,
           "power": -1166069.0870100004
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 357195.86,
-            "coins_sold": 357195.86,
-            "power": -1166069.0870100004
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 357195.86,
@@ -3409,13 +3336,7 @@
           "coins_sold": 350582.68,
           "power": -1161844.00713
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 350582.68,
-            "coins_sold": 350582.68,
-            "power": -1161844.00713
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 350582.68,
@@ -3445,11 +3366,7 @@
         "lines": {
           "power": -1152582.765
         },
-        "byBiz": {
-          "mining": {
-            "power": -1152582.765
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -1152582.765
@@ -3480,13 +3397,7 @@
           "coins_sold": 311022.88,
           "power": -1259689.87296
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 311022.88,
-            "coins_sold": 311022.88,
-            "power": -1259689.87296
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 311022.88,
@@ -3518,13 +3429,7 @@
           "coins_sold": 257437.88,
           "power": -1209290.84064
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 257437.88,
-            "coins_sold": 257437.88,
-            "power": -1209290.84064
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 257437.88,

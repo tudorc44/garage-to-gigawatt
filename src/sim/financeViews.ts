@@ -8,6 +8,7 @@ import {
   BUSINESSES,
   CATEGORIES,
   CATEGORY_IDS,
+  businessLines,
   endCash,
   type Business,
   type Category,
@@ -292,7 +293,8 @@ export interface BusinessView {
 
 export function businessView(state: GameState, period: Period): BusinessView {
   const t = periodTotals(state, period)
-  const businesses = BUSINESSES.filter((b) => PNL_SECTIONS.some((s) => catsOf(s).some((c) => (t.byBiz[b]?.[c] ?? 0) !== 0)))
+  const biz = businessLines(t.lines, t.byBiz)
+  const businesses = BUSINESSES.filter((b) => PNL_SECTIONS.some((s) => catsOf(s).some((c) => (biz[b]?.[c] ?? 0) !== 0)))
   const rows: BusinessView['rows'] = []
   for (const section of PNL_SECTIONS)
     for (const id of catsOf(section)) {
@@ -300,13 +302,13 @@ export function businessView(state: GameState, period: Period): BusinessView {
       rows.push({
         section: section as BusinessView['rows'][number]['section'],
         id,
-        byBiz: Object.fromEntries(businesses.map((b) => [b, t.byBiz[b]?.[id] ?? 0])),
+        byBiz: Object.fromEntries(businesses.map((b) => [b, biz[b]?.[id] ?? 0])),
       })
     }
   return {
     businesses,
     rows,
-    figures: Object.fromEntries(businesses.map((b) => [b, pnlFigures(t.byBiz[b] ?? {})])),
+    figures: Object.fromEntries(businesses.map((b) => [b, pnlFigures(biz[b] ?? {})])),
     hasSummary: t.summary !== null,
   }
 }

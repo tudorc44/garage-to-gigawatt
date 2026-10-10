@@ -243,6 +243,8 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
   biggest changes. Mine: prepayments are cash outside the P&L (`prepayments`, operating cash), so revenue is never negative.
 - **M37.4** done: Cash flow tab (start, operating = net profit − coins mined + prepayments, investing, financing, treasury, end =
   the cash), weekly chart (quarter) or quarterly (longer) with the low marked, "why cash fell/rose". Mine: "coins mined" adjustment.
+- **M37.5** done: quarter report block (revenue, opex, EBITDA, net, cash change; "Open Finances ›" in place, with a way back);
+  each chapter report (prologue, I-IV) "The act in figures" + best/worst site. Ledger stores only off-category business bookings.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 

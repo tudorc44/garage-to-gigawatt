@@ -2405,11 +2405,7 @@
         "lines": {
           "machines": -7500
         },
-        "byBiz": {
-          "mining": {
-            "machines": -7500
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "machines": -7500
@@ -2439,12 +2435,7 @@
           "mining_eth": 22332.618,
           "power": -1244.8799999999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 22332.618,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 22332.618,
@@ -2475,12 +2466,7 @@
           "mining_eth": 8317.953000000001,
           "power": -1244.8799999999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 8317.953000000001,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 8317.953000000001,
@@ -2512,13 +2498,7 @@
           "power": -1244.8799999999999,
           "coins_sold": 1234.64
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 4809.294,
-            "power": -1244.8799999999999,
-            "coins_sold": 1234.64
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 4809.294,
@@ -2551,16 +2531,7 @@
           "power": -1244.8799999999999,
           "interest": -1125.0199999999998
         },
-        "byBiz": {
-          "corporate": {
-            "debt_drawn": 50000,
-            "interest": -1125.0199999999998
-          },
-          "mining": {
-            "mining_eth": 7274.421,
-            "power": -1244.8799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 7274.421,
@@ -2592,15 +2563,7 @@
           "power": -1244.8799999999999,
           "interest": -1125.0199999999998
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 3282.7409999999995,
-            "power": -1244.8799999999999
-          },
-          "corporate": {
-            "interest": -1125.0199999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 3282.7409999999995,
@@ -2633,16 +2596,7 @@
           "interest": -942.0599999999998,
           "debt_repaid": -26204.42552513987
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 1972.4669999999999,
-            "power": -1244.8799999999999
-          },
-          "corporate": {
-            "interest": -942.0599999999998,
-            "debt_repaid": -26204.42552513987
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 1972.4669999999999,
@@ -2675,16 +2629,7 @@
           "interest": -414.0999999999999,
           "debt_repaid": -12364.35375915287
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 505.76399999999995,
-            "power": -478.79999999999995
-          },
-          "corporate": {
-            "interest": -414.0999999999999,
-            "debt_repaid": -12364.35375915287
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 505.76399999999995,
@@ -2714,11 +2659,7 @@
         "lines": {
           "interest": -257.14
         },
-        "byBiz": {
-          "corporate": {
-            "interest": -257.14
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": 2.2737367544323206e-12,
         "weeks": [
@@ -2745,15 +2686,7 @@
           "mining_eth": 1016.316,
           "power": -766.0799999999999
         },
-        "byBiz": {
-          "corporate": {
-            "interest": -257.14
-          },
-          "mining": {
-            "mining_eth": 1016.316,
-            "power": -766.0799999999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 1016.316,
@@ -2785,15 +2718,7 @@
           "power": -670.3199999999999,
           "interest": -257.14
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 834.3720000000001,
-            "power": -670.3199999999999
-          },
-          "corporate": {
-            "interest": -257.14
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 834.3720000000001,
@@ -2823,11 +2748,7 @@
         "lines": {
           "interest": -257.14
         },
-        "byBiz": {
-          "corporate": {
-            "interest": -257.14
-          }
-        },
+        "byBiz": {},
         "byRef": {},
         "rounding": -2.2737367544323206e-13,
         "weeks": [
@@ -2854,15 +2775,7 @@
           "mining_eth": 200.97000000000003,
           "power": -191.51999999999998
         },
-        "byBiz": {
-          "corporate": {
-            "interest": -257.14
-          },
-          "mining": {
-            "mining_eth": 200.97000000000003,
-            "power": -191.51999999999998
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 200.97000000000003,
@@ -2895,16 +2808,7 @@
           "power": -957.5999999999999,
           "coins_sold": 516.77
         },
-        "byBiz": {
-          "corporate": {
-            "interest": -257.14
-          },
-          "mining": {
-            "mining_eth": 1121.652,
-            "power": -957.5999999999999,
-            "coins_sold": 516.77
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 1121.652,
@@ -2937,16 +2841,7 @@
           "interest": -257.14,
           "coins_sold": 1502.02
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 2469.537,
-            "power": -1244.8799999999999,
-            "coins_sold": 1502.02
-          },
-          "corporate": {
-            "interest": -257.14
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 2469.537,
@@ -2979,16 +2874,7 @@
           "interest": -257.14,
           "coins_sold": 1502.02
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 2525.733,
-            "power": -1244.8799999999999,
-            "coins_sold": 1502.02
-          },
-          "corporate": {
-            "interest": -257.14
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 2525.733,
@@ -3021,16 +2907,7 @@
           "interest": -257.14,
           "coins_sold": 1605.76
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 4976.874,
-            "power": -1348.6200000000001,
-            "coins_sold": 1605.76
-          },
-          "corporate": {
-            "interest": -257.14
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 4976.874,
@@ -3064,17 +2941,7 @@
           "taxes": -377.86896,
           "coins_sold": 1983.63
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 6483.96,
-            "power": -1348.6200000000001,
-            "coins_sold": 1983.63
-          },
-          "corporate": {
-            "interest": -257.14,
-            "taxes": -377.86896
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 6483.96,
@@ -3108,17 +2975,7 @@
           "interest": -257.14,
           "coins_sold": 1983.63
         },
-        "byBiz": {
-          "corporate": {
-            "taxes": -377.86896,
-            "interest": -257.14
-          },
-          "mining": {
-            "mining_eth": 5187.798,
-            "power": -1348.6200000000001,
-            "coins_sold": 1983.63
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 5187.798,
@@ -3152,17 +3009,7 @@
           "interest": -257.14,
           "coins_sold": 1983.63
         },
-        "byBiz": {
-          "corporate": {
-            "taxes": -377.86896,
-            "interest": -257.14
-          },
-          "mining": {
-            "mining_eth": 5456.555999999999,
-            "power": -1348.6200000000001,
-            "coins_sold": 1983.63
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 5456.555999999999,
@@ -3196,17 +3043,7 @@
           "interest": -257.14,
           "coins_sold": 2191.11
         },
-        "byBiz": {
-          "corporate": {
-            "taxes": -377.86896,
-            "interest": -257.14
-          },
-          "mining": {
-            "mining_eth": 3386.0609999999997,
-            "power": -1556.1000000000004,
-            "coins_sold": 2191.11
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 3386.0609999999997,
@@ -3239,16 +3076,7 @@
           "interest": -257.14,
           "coins_sold": 1454.14
         },
-        "byBiz": {
-          "mining": {
-            "mining_eth": 1979.4600000000003,
-            "power": -1197.0000000000002,
-            "coins_sold": 1454.14
-          },
-          "corporate": {
-            "interest": -257.14
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 1979.4600000000003,
@@ -3281,16 +3109,7 @@
           "power": -837.9000000000001,
           "coins_sold": 1095.04
         },
-        "byBiz": {
-          "corporate": {
-            "interest": -257.14
-          },
-          "mining": {
-            "mining_eth": 1035.531,
-            "power": -837.9000000000001,
-            "coins_sold": 1095.04
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-1": {
             "mining_eth": 1035.531,

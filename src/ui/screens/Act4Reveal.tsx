@@ -8,6 +8,7 @@ import type { GameState } from '../../sim/state.ts'
 import { act4Outcome } from '../../sim/systems/act4End.ts'
 import { fmt } from '../format.ts'
 import { Act4Finale } from './Act4Finale.tsx'
+import { ActFinances } from '../components/financeSummary.tsx'
 
 const ARROW = (s: number) => (s > 0 ? '▲' : s < 0 ? '▼' : '·')
 const tonnes = (x: number) => Math.round(x).toLocaleString('en-US')
@@ -187,6 +188,9 @@ export function Act4Chapter(props: { state: GameState; onNew: () => void }) {
               <p class="num-s muted">{t('ui.act4.reveal.fates_note')}</p>
             </section>
           )}
+
+          {/* M37.5 (doc 39): the act's P&L in figures, its best and worst site */}
+          <ActFinances state={props.state} act={4} />
 
           <div class="row-between">
             <button type="button" class="btn" onClick={props.onNew}>

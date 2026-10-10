@@ -4942,13 +4942,7 @@
           "coins_sold": 394834.72000000003,
           "power": -903991.5504000003
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 394834.72000000003,
-            "coins_sold": 394834.72000000003,
-            "power": -903991.5504000003
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 394834.72000000003,
@@ -4980,13 +4974,7 @@
           "coins_sold": 383470.92000000004,
           "power": -909885.3041999997
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 383470.92000000004,
-            "coins_sold": 383470.92000000004,
-            "power": -909885.3041999997
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 383470.92000000004,
@@ -5018,13 +5006,7 @@
           "coins_sold": 394120.57999999996,
           "power": -906693.4049999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 394120.57999999996,
-            "coins_sold": 394120.57999999996,
-            "power": -906693.4049999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 394120.57999999996,
@@ -5056,13 +5038,7 @@
           "coins_sold": 385187.88,
           "power": -902995.4729999999
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 385187.88,
-            "coins_sold": 385187.88,
-            "power": -902995.4729999999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 385187.88,
@@ -5094,13 +5070,7 @@
           "coins_sold": 395520.43999999994,
           "power": -898752.5825999997
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 395520.43999999994,
-            "coins_sold": 395520.43999999994,
-            "power": -898752.5825999997
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 395520.43999999994,
@@ -5132,13 +5102,7 @@
           "coins_sold": 64635.2,
           "power": -791053.0527299999
         },
-        "byBiz": {
-          "mining": {
-            "mining_btc": 64635.2,
-            "coins_sold": 64635.2,
-            "power": -791053.0527299999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "mining_btc": 64635.2,
@@ -5168,11 +5132,7 @@
         "lines": {
           "power": -750090.0562499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -750090.0562499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -750090.0562499999
@@ -5201,11 +5161,7 @@
         "lines": {
           "power": -750090.0562499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -750090.0562499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -750090.0562499999
@@ -5234,11 +5190,7 @@
         "lines": {
           "power": -750090.0562499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -750090.0562499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -750090.0562499999
@@ -5267,11 +5219,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -5300,11 +5248,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -5333,11 +5277,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -5366,11 +5306,7 @@
         "lines": {
           "power": -778666.8187499999
         },
-        "byBiz": {
-          "mining": {
-            "power": -778666.8187499999
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -778666.8187499999
@@ -5399,11 +5335,7 @@
         "lines": {
           "power": -960019.3500000002
         },
-        "byBiz": {
-          "mining": {
-            "power": -960019.3500000002
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -960019.3500000002
@@ -5432,11 +5364,7 @@
         "lines": {
           "power": -808342.6875000001
         },
-        "byBiz": {
-          "mining": {
-            "power": -808342.6875000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -808342.6875000001
@@ -5465,11 +5393,7 @@
         "lines": {
           "power": -808342.6875000001
         },
-        "byBiz": {
-          "mining": {
-            "power": -808342.6875000001
-          }
-        },
+        "byBiz": {},
         "byRef": {
           "site:site-2": {
             "power": -808342.6875000001
@@ -5503,16 +5427,9 @@
           "power": -808342.6875000001
         },
         "byBiz": {
-          "corporate": {
-            "equity_raised": 209469752
-          },
           "orbit": {
             "other_opex": -1000000,
-            "orbit_capex": -23166000.000000004,
             "insurance": -9385200.000000002
-          },
-          "mining": {
-            "power": -808342.6875000001
           }
         },
         "byRef": {
@@ -5552,12 +5469,6 @@
         "byBiz": {
           "orbit": {
             "other_opex": -1000000
-          },
-          "moon": {
-            "lunar_capex": -145000000
-          },
-          "mining": {
-            "power": -976110.2655000002
           }
         },
         "byRef": {
@@ -5593,14 +5504,7 @@
         },
         "byBiz": {
           "orbit": {
-            "other_opex": -1000000,
-            "orbit_capex": -63360000.000000015
-          },
-          "mining": {
-            "power": -976110.2655000002
-          },
-          "corporate": {
-            "one_offs": -500000
+            "other_opex": -1000000
           }
         },
         "byRef": {
@@ -5639,16 +5543,9 @@
           "power": -976110.2655000002
         },
         "byBiz": {
-          "corporate": {
-            "equity_raised": 206031833
-          },
           "orbit": {
             "other_opex": -1000000,
-            "orbit_capex": -86526000.00000001,
             "insurance": -9385200.000000002
-          },
-          "mining": {
-            "power": -976110.2655000002
           }
         },
         "byRef": {
@@ -5690,12 +5587,8 @@
         "byBiz": {
           "orbit": {
             "other_opex": -1000000,
-            "orbit_capex": -137014713.00000003,
             "insurance": -9104772.6,
             "one_offs": -1620000
-          },
-          "mining": {
-            "power": -976110.2655000002
           }
         },
         "byRef": {
@@ -5741,18 +5634,11 @@
           "one_offs": -1620000
         },
         "byBiz": {
-          "corporate": {
-            "equity_raised": 224569269
-          },
           "orbit": {
             "other_opex": -1000000,
             "prepayments": 14400000,
-            "orbit_capex": -82488087.00000001,
             "insurance": -8825117.400000002,
             "one_offs": -1620000
-          },
-          "mining": {
-            "power": -854724.9712500004
           }
         },
         "byRef": {
@@ -5805,22 +5691,8 @@
           "orbit": {
             "other_opex": -1000000,
             "prepayments": 14400000,
-            "orbit_capex": -130640122.80000001,
             "insurance": -8544690.000000002,
-            "orbit_revenue": 13500000,
-            "orbit_opex": -625000,
             "asset_sales": 309000000
-          },
-          "moon": {
-            "lunar_capex": -457504000
-          },
-          "mining": {
-            "power": -854724.9712500004
-          },
-          "corporate": {
-            "interest": -4691455.621875001,
-            "debt_repaid": -187658224.87500003,
-            "asset_sales": 192062.42424242265
           }
         },
         "byRef": {
@@ -5874,7 +5746,6 @@
           "orbit": {
             "other_opex": -1000000,
             "prepayments": 20800000,
-            "orbit_capex": -134271997.20000005,
             "insurance": -15000000,
             "one_offs": -1620000
           },

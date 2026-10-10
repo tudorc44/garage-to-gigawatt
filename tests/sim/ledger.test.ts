@@ -11,6 +11,7 @@ import {
   accrue,
   book,
   bookSplit,
+  businessLines,
   cashTotal,
   roundCash,
   unreconciled,
@@ -51,9 +52,15 @@ describe('book, bookSplit, accrue and roundCash', () => {
     const q = s.ledger!.quarters[0]
     expect(q.startCash).toBe(start)
     expect(q.lines).toEqual({ machines: -1000, equity_raised: 5000 })
-    expect(q.byBiz.mining).toEqual({ machines: -1000 })
-    expect(q.byBiz.corporate).toEqual({ equity_raised: 5000 })
-    expect(q.byRef['site:site-1']).toEqual({ machines: -1000 })
+    // (only a booking to another business than its category's is stored; the rest is derived)
+    expect(q.byBiz).toEqual({})
+    book(s, 'rent', -50, { site: 'site-1', biz: 'ai' })
+    expect(q.byBiz).toEqual({ ai: { rent: -50 } })
+    const biz = businessLines(q.lines, q.byBiz)
+    expect(biz.mining).toEqual({ machines: -1000 })
+    expect(biz.corporate).toEqual({ equity_raised: 5000 })
+    expect(biz.ai).toEqual({ rent: -50 })
+    expect(q.byRef['site:site-1']).toEqual({ machines: -1000, rent: -50 })
   })
 
   it('bookSplit moves the cash by the total in one step; accrue labels without moving cash', () => {
