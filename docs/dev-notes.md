@@ -155,9 +155,7 @@ None open from before: all five M11.4c questions below were answered by the desi
 - Balance tuning stays stopped by the owner's A1 answer.
 - ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
   repo (M27.0); the run resumed at M27.1.
-- **M40.1's target** (Perfect's reading ≥ Passive's in every future and preset): 3 cells of 12 still below (ridge F1 13 vs 53,
-  fortress and ridge F3 56 vs 58): raises with no offensive move in that or the next quarter. Rule not changed further: the
-  design thread's question (M40 report).
+- ~~M40.1's target~~ (Perfect's reading ≥ Passive's): resolved by M41.1's raise rule; all 12 cells meet Perfect ≥ Passive − 2.
 
 ## Small follow-ups
 
@@ -255,6 +253,9 @@ Constellation (id `jade_arc` kept), Keelstone Sovereign Compute · then the `--a
   logged after its quarter's build looks further on, mine, reversible); none: 0. Goldens: act4-energy-f2/f4 reading only.
 - **M41.2** done: Lantern Arc (en.json, short code JA → LA: mine, reversible) and Keelstone Sovereign Compute (tenants_iv.json
   both copies and its tool, orbit guide, README log); ids kept. Doc 33/34 and act4-scope keep the old names as history.
+- M41 run (`--act4`, 10 seeds; identical to M40 but the reading): Perfect ≥ Passive in all 12 cells (PASS): F1 fortress 82→84,
+  neocloud 89, ridge 13→73 (Passive 53; its raises all take + from the build, none a decoy); F3 fortress, ridge 56→58, neocloud 73
+  (58); F2 100, F4 62 (= Passive). B8 MISS, B9 PASS unchanged (money). Merged (PR #7) before the run ended: recorded on `m42`.
 
 ## Milestone M40 (branch `m40`, from `main` at `ff442df`; design thread answers after M37.7-M39, 10 Oct 2026)
 
