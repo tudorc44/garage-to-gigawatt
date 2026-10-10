@@ -1,0 +1,25 @@
+{
+ "_meta": {
+  "schema": "presets_act5/1",
+  "doc43": "§3.4 (three 2035Q4 companies, bot-made; values set by the sim), §0.8 (the Firm Builder from the Fortress line), §0.9 item 11 (each carries its Act IV future)",
+  "note": "Written by npm run content:act5-presets (tools/act5/presets.ts): the first company in the scan order (Act IV preset lines × futures f1-f4 × seeds 1-8 × the recipe list) that fits each description. Figures are that company's at 2035Q4, with free MW at the 2036 powered price."
+ },
+ "presets": [
+  {
+   "id": "orbital_landlord",
+   "act4_preset": "fortress",
+   "act4_future": "f1",
+   "act4_seed": 1,
+   "joins": [],
+   "valuation_usd_m": 7056,
+   "founder_net_worth_usd_m": 1118.2,
+   "cash_usd_m": 118.2,
+   "debt_usd_m": 0,
+   "energized_mw": 112.1,
+   "free_mw": 16.1,
+   "ground_share": 0.2,
+   "orbit_share": 0.62,
+   "rating": "BBB"
+  }
+ ]
+}

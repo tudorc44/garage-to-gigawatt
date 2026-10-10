@@ -426,6 +426,18 @@ export function App() {
         }
         act3Start={entry && <entry.StartAct3 onReady={(end) => enterAct3(end)} />}
         act4Start={entry4 && <entry4.StartAct4 onReady={(end, preset) => enterAct4(end, false, { preset })} />}
+        // M49 (doc 43 §3.4): a preset company at 2035Q4 crosses into Act V on the drawn future, then the intro.
+        act5Start={
+          entry5 && (
+            <entry5.StartAct5
+              onReady={(end, preset) => {
+                setShowEnd(false)
+                commit(toAct5(end, { preset }))
+                setAct5Intro(true)
+              }}
+            />
+          )
+        }
         scenarioMode={
           entry && (
             <>

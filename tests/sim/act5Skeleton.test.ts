@@ -13,6 +13,10 @@ import { drawVFuture, toAct5, type GameState } from '../../src/sim/state.ts'
 import { lunarHoldingUsd } from '../../src/sim/systems/act5Entry.ts'
 import { scenarioOf } from '../../src/sim/systems/market.ts'
 import { availableGpus, gpuPriceUsd, newestGpu } from '../../src/sim/systems/projects.ts'
+import { activeRivals } from '../../src/sim/systems/rivals.ts'
+import { buildAct5Entry } from '../../src/sim/systems/act5Entry.ts'
+import { PRESETS_V } from '../../src/content/presetsAct5.ts'
+import { playAct5Recipe } from '../../tools/act5/presetRun.ts'
 import { act4Company } from './act4Helpers.ts'
 
 let end4: GameState | null = null
@@ -113,6 +117,29 @@ describe('Gen 2037 (M49, doc 49 via doc 43 §0.12)', () => {
     // an Act IV game (any quarter, its own key) never sees it
     for (let q = actFirstQuarter(4); q <= first - 1; q++)
       expect(availableGpus(q, 's0.f1').map((g) => g.id)).not.toContain('gen2037')
+  })
+})
+
+describe('the Act IV future carries into Act V (M49, doc 43 §0.9 item 11)', () => {
+  it("Orrery is in Act V's league only after F1 or F3 (the futures it survives)", () => {
+    const has = (f: string) =>
+      activeRivals(actFirstQuarter(5), `s0.${f}.v1` as `s0.f1.v1`).some((r) => r.id === 'orrery_compute')
+    expect([has('f1'), has('f2'), has('f3'), has('f4')]).toEqual([true, false, true, false])
+  })
+})
+
+describe('Act V presets (M49, doc 43 §3.4): real companies, values set by the sim', () => {
+  it('each preset recipe replays to its stored 2035Q4 figures and carries its Act IV future into Act V', () => {
+    expect(PRESETS_V.length).toBeGreaterThan(0)
+    for (const p of PRESETS_V) {
+      const end = playAct5Recipe({ act4_preset: p.act4_preset, act4_future: p.act4_future, act4_seed: p.act4_seed, joins: p.joins as 'btm' })
+      expect(end.phase).toBe('chapter')
+      expect(end.futureId).toBe(p.act4_future)
+      const e = buildAct5Entry(end, 'v1')
+      expect(Math.round(e.valuationUsd / 1e5) / 10).toBe(p.valuation_usd_m)
+      const s5 = toAct5(end, { preset: p.id })
+      expect([s5.act, s5.act5Preset, s5.futureId]).toEqual([5, p.id, p.act4_future])
+    }
   })
 })
 

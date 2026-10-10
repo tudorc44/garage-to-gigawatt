@@ -278,6 +278,22 @@ the previous branch. The morning report is at the end of this section.
   - **Sim:** act 5, `inActV`, `inAct4Rules`, save v6, `toAct5`/`enterAct5` (the Moon → one holding, Act IV-only state
     dropped), `act5End`, and Gen 2037 from 2037Q1 in Act V only.
   - **UI:** "Continue to Act V" / "Retire at 2035", the A5-01 intro and a skeleton chapter. Goldens byte-identical.
+- **M49 part 2, the presets:** `tools/act5/presetRun.ts` (a recipe: an Act IV preset line + future + seed, the Balanced bot
+  and the energy runner's joins or battery) and `presets.ts` (`npm run content:act5-presets`), and "Start at Act V".
+  - **Found:** only **Orbital Landlord** (Fortress line, F1, seed 1: orbit 62% of value).
+  - **Not found:** Firm Builder (the SMR reaches first power in 2035Q1 with no offtake, since there's no nuclear-region
+    site; ground 18% < 40%) and Small Grid (Ridge with a battery goes bust; Fortress has 4 sites). Not targeted; DT question.
+- **M49 gate review** (doc 43 §3.2: each Act IV-only gate's answer, mine, reversible):
+  - **Carry on in Act V (`inAct4Rules`):** the orbital business (blocks, launches, manifests, ops, orbital debt, fire
+    sales, ground stations), Act IV's grid and gas rules (until the queue milestone), the orbit Bandwidth bonus, Act IV's
+    hires, and the tenant default read through Act V's key.
+  - **Stay Act IV-only (`inActIV`):** the Moon (offstage), Act IV's Signals, wildcards, move log and Orrery's news and
+    auction, the space-equity window and its capital view (§11.1: it closes), and joining new ventures (follow-on units
+    come with plants).
+  - **Also:** `inAct2Rules` and `inAct3Rules` include act 5 (§3.2). End-of-act clamps use the current act. Log labels
+    past the game's act stay "—", so Act IV logs are unchanged.
+  - **Carry-over checked against `state.ts`:** every §3.1 field carries; dropped: act4Moves, act4Wildcards,
+    act4SignalReads, marketRead, act4Moon (→ lunarHolding).
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 
