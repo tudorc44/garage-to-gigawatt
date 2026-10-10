@@ -2,11 +2,14 @@
 // garage, a small unit) with their load and machines, and the buy menu as MachineCards.
 import { useState } from 'preact/hooks'
 import { t } from '../../../i18n/t.ts'
+import type { Message } from '../../../i18n/t.ts'
 import {
+  p0BuyCheck,
   prologueBuyView,
   prologueLifeView,
   prologueView,
 } from '../../../sim/prologue/views.ts'
+import type { GameState } from '../../../sim/state.ts'
 import { quarterName } from '../../../sim/selectors.ts'
 import { ActionRow, Icon, MachineCard, Tip } from '../../components/basics.tsx'
 import { fmt } from '../../format.ts'
@@ -19,6 +22,79 @@ import {
   watts,
   type PrologueProps,
 } from './common.tsx'
+
+/**
+ * Buying in bulk (owner, 10 Oct 2026): a count with − / + and quick 1 / 10 / Max (N), the cost and power of that many,
+ * and one Buy. N is the most the reducer accepts here now (p0MaxBuy); a count it refuses shows why and can't be bought.
+ */
+export function BuyPicker(props: {
+  state: GameState
+  model: string
+  condition: 'new' | 'used'
+  unitUsd: number
+  powerKw: number
+  max: number
+  blocker: Message | null
+  siteId: string
+  onBuy: (count: number) => void
+}) {
+  const [count, setCount] = useState(1)
+  const set = (n: number) => setCount(Math.max(1, Math.floor(Number.isFinite(n) ? n : 1)))
+  const why =
+    props.max === 0 ? props.blocker : p0BuyCheck(props.state, props.model, props.condition, count, props.siteId)
+  return (
+    <div class="p0-buy">
+      <div class="p0-buy-row">
+        <span class="seg">
+          <button type="button" aria-label={t('ui.p0.buy_less')} disabled={count <= 1} onClick={() => set(count - 1)}>
+            −
+          </button>
+          <input
+            type="number"
+            min={1}
+            class="p0-buy-count num"
+            aria-label={t('ui.p0.buy_count')}
+            value={count}
+            onInput={(ev) => set(Number((ev.currentTarget as HTMLInputElement).value))}
+          />
+          <button type="button" aria-label={t('ui.p0.buy_more')} onClick={() => set(count + 1)}>
+            +
+          </button>
+        </span>
+        <span class="seg">
+          <button type="button" aria-pressed={count === 1} onClick={() => set(1)}>
+            1
+          </button>
+          <button type="button" aria-pressed={count === 10} onClick={() => set(10)}>
+            10
+          </button>
+          <button
+            type="button"
+            aria-pressed={count === props.max && props.max > 0}
+            disabled={props.max === 0}
+            title={props.max === 0 && props.blocker ? say(props.blocker) : undefined}
+            onClick={() => set(props.max)}
+          >
+            {t('ui.p0.buy_max', { n: props.max })}
+          </button>
+        </span>
+      </div>
+      <div class="num-s">
+        {t('ui.p0.buy_total', {
+          count,
+          model: machineName(props.model),
+          total: fmt.money(props.unitUsd * count),
+          power: watts(props.powerKw * count),
+        })}
+      </div>
+      {why && <div class="num-s loss">{say(why)}</div>}
+      <button type="button" class="btn" disabled={!!why} onClick={() => props.onBuy(count)}>
+        <Icon name="buy" size={16} />
+        {t('ui.p0.buy')}
+      </button>
+    </div>
+  )
+}
 
 export function Machines({ state, act }: PrologueProps) {
   const v = prologueView(state)
@@ -160,24 +236,19 @@ export function Machines({ state, act }: PrologueProps) {
                     power: watts(b.model.power_kw),
                   })}
                 </div>
-                <button
-                  type="button"
-                  class="btn"
-                  disabled={!!b.blocker}
-                  title={b.blocker ? say(b.blocker) : undefined}
-                  onClick={() =>
-                    e.run({
-                      type: 'P0_BUY',
-                      model: b.model.id,
-                      condition: b.condition,
-                      count: 1,
-                      siteId: site!.site.id,
-                    })
+                <BuyPicker
+                  state={state}
+                  model={b.model.id}
+                  condition={b.condition}
+                  unitUsd={b.unitUsd!}
+                  powerKw={b.model.power_kw}
+                  max={b.max}
+                  blocker={b.blocker}
+                  siteId={site!.site.id}
+                  onBuy={(count) =>
+                    e.run({ type: 'P0_BUY', model: b.model.id, condition: b.condition, count, siteId: site!.site.id })
                   }
-                >
-                  <Icon name="buy" size={16} />
-                  {t('ui.p0.buy_one')}
-                </button>
+                />
               </div>
             ))}
           </div>

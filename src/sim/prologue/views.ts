@@ -174,6 +174,39 @@ export function prologueView(state: GameState) {
   }
 }
 
+/** Why buying `count` of a machine at a site is refused now (the reducer's own check), or null. */
+export function p0BuyCheck(
+  state: GameState,
+  model: string,
+  condition: 'new' | 'used',
+  count: number,
+  siteId: string,
+): Message | null {
+  return p0BuyBlocker(state, { type: 'P0_BUY', model, condition, count, siteId }) ?? null
+}
+
+/**
+ * The most of a machine the reducer accepts at a site now (owner, 10 Oct 2026: bulk buying): bounded by cash and the
+ * site's free power, then confirmed against p0BuyBlocker (a count it refuses steps down). 0 with the reason when not one.
+ */
+export function p0MaxBuy(
+  state: GameState,
+  model: string,
+  condition: 'new' | 'used',
+  siteId: string,
+): { max: number; blocker: Message | null } {
+  const one = p0BuyCheck(state, model, condition, 1, siteId)
+  if (one) return { max: 0, blocker: one }
+  const m = getModel(model)!
+  const unit = buyPrice(m, state.quarter, condition)!
+  const site = state.sites.find((x) => x.id === siteId)!
+  const freeKw = siteCapacityKw(site) - siteLoadKw(state, site.id)
+  let max = Math.floor((freeKw + 1e-9) / m.power_kw)
+  if (unit > 0) max = Math.min(max, Math.floor(state.cash / unit))
+  while (max > 1 && p0BuyCheck(state, model, condition, max, siteId)) max--
+  return { max: Math.max(1, max), blocker: null }
+}
+
 /** The prologue's buy menu: machines on sale now, new and used, with their price and why not. */
 export function prologueBuyView(state: GameState, siteId: string) {
   return CONTENT.prologue.machines
@@ -185,6 +218,8 @@ export function prologueBuyView(state: GameState, siteId: string) {
           model: m,
           condition,
           unitUsd,
+          /** The most the reducer accepts here now (0 when not one). */
+          max: unitUsd === undefined ? 0 : p0MaxBuy(state, m.id, condition, siteId).max,
           blocker:
             unitUsd === undefined
               ? null

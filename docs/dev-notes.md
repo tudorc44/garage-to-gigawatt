@@ -253,6 +253,9 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
 - **M37.7** (design thread after M37): ledger = open quarter + a shared, never-changed history (`cloneState` in state.ts copies the
   open quarter only); overhead 25-34% → 1-2%, prologue 1,000 runs 102.1 s (PASS); Revenue tile = total revenue ("of which
   mining"), a Revenue row on the prologue report; doc 39 amended (A1-A10). M37-format saves split at load.
+- **Prologue bulk buying** (owner, 10 Oct 2026; presentation only): each machine card has a count (− / +, 1 / 10 / Max (N)), the
+  total and power, one Buy; N = `p0MaxBuy` (views.ts: cash and free power, confirmed by p0BuyBlocker). Act I's Buy dialog
+  already had a count. The used offer and pre-orders are one unit or one order by their rules: unchanged. Goldens unchanged.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 
