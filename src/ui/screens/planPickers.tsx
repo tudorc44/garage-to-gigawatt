@@ -5,6 +5,7 @@ import type { Action } from '../../sim/actions.ts'
 import {
   communityView,
   hostingView,
+  siteFacts,
   quarterName,
   renewalViews,
   siteViews,
@@ -154,19 +155,21 @@ export function PlanPicker(props: {
       // (M34.2, 3f: a fee-charging action opens its confirm)
       pick: (s) => props.openDialog(`confirm:transformer:${s.id}`),
     },
+    // (Playtest fix, owner, 10 Oct 2026: in the list, where each row shows its cost, Talk and noise mitigation act at
+    // once, with no confirm per site; a lone to-do row still opens its confirm, M34.2 3f)
     talk: {
       fact: t('site.pick.fact.cost'),
       action: t('site.pick.talk'),
       bw: v.outreachBandwidth,
       sort: 'heat',
       desc: true,
-      pick: (s) => props.openDialog(`confirm:talk:${s.id}`),
+      pick: (s) => props.act({ type: 'OUTREACH', siteId: s.id }),
     },
     mitigate: {
       fact: t('site.pick.fact.cost'),
       action: t('site.pick.mitigate'),
       bw: v.mitigationBandwidth,
-      pick: (s) => props.openDialog(`confirm:mitigate:${s.id}`),
+      pick: (s) => props.act({ type: 'MITIGATE_NOISE', siteId: s.id }),
     },
     hosting: {
       fact: t('site.pick.fact.free'),
@@ -177,6 +180,23 @@ export function PlanPicker(props: {
     },
   }
   const s = spec[kind]
+  // The batch: talk at every site at Heat 30+ that can be talked at now, one confirm for all (from two such sites).
+  const hot =
+    kind === 'talk'
+      ? pickRows(state, 'talk').filter((r) => !r.why && siteFacts(state, r.site).heat >= TALK_FROM_HEAT)
+      : []
+  const hotUsd = hot.reduce((sum, r) => sum + r.factSort, 0)
+  const bulk =
+    hot.length >= 2
+      ? {
+          label: t('site.pick.talk_all', { heat: TALK_FROM_HEAT, n: hot.length, cost: fmt.money(hotUsd) }),
+          confirm: t('site.pick.talk_all_confirm', { n: hot.length, cost: fmt.money(hotUsd) }),
+          run: () => {
+            // (one at a time on the latest state; stops at the first refusal, e.g. cash running out)
+            for (const r of hot) if (props.act({ type: 'OUTREACH', siteId: r.site.id })) break
+          },
+        }
+      : undefined
   return (
     <SitePicker
       state={state}
@@ -199,6 +219,7 @@ export function PlanPicker(props: {
       defaultDesc={s.desc ?? (kind === 'hosting' ? true : undefined)}
       onPick={s.pick}
       onClose={props.onClose}
+      {...(bulk ? { bulk } : {})}
     />
   )
 }

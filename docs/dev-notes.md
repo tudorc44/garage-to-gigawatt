@@ -296,6 +296,9 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
 - M36.10 runs: Act IV table unchanged from `act4-m366` (Fortress builds 2 clouds a run, holds 360 quarters); `--act2 --act3`
   byte-identical to M34 (1,302 files). Energy (`energy-m3610b`, after the fusion-2038 fix): E-B1 PASS, **E-B2 MISS recorded**
   (SMR mean $305M, advanced $254M vs control $35M; EGS −$0M), E-B3-E-B5 PASS; the cash guard: BTM game overs 15 → 2 of 120.
+- Playtest fix (owner, 10 Oct 2026: "click Talk, then Confirm, for each site is repetitive"): in the site list Talk and noise
+  mitigation act at once (each row shows its cost), plus "Talk at every site at Heat 30+" with one confirm; a lone to-do
+  row keeps its confirm (M34.2 3f, partly reversed). Test `ui/talkPicker`.
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 

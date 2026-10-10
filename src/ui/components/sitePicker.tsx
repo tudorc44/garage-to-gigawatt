@@ -42,8 +42,14 @@ export function SitePicker(props: {
   defaultDesc?: boolean
   onPick: (site: Site) => void
   onClose: () => void
+  /**
+   * Playtest fix (owner, 10 Oct 2026): one action for many sites ("Talk at every site at Heat 30+"), with one confirm
+   * for the whole batch. Absent: no bulk button.
+   */
+  bulk?: { label: string; confirm: string; run: () => void }
 }) {
   const { state } = props
+  const [confirming, setConfirming] = useState(false)
   const [sort, setSort] = useState<SortKey>(props.defaultSort ?? 'fact')
   const [desc, setDesc] = useState(props.defaultDesc ?? false)
   const [filter, setFilter] = useState('')
@@ -106,6 +112,31 @@ export function SitePicker(props: {
           {props.intro}
         </p>
       )}
+      {props.bulk &&
+        (confirming ? (
+          <div class="picker-bulk" data-picker-bulk-confirm>
+            <span class="num-s">{props.bulk.confirm}</span>
+            <button type="button" class="btn" onClick={() => setConfirming(false)}>
+              {t('site.confirm.cancel')}
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              onClick={() => {
+                props.bulk!.run()
+                setConfirming(false)
+              }}
+            >
+              {t('site.confirm.go')}
+            </button>
+          </div>
+        ) : (
+          <div class="picker-bulk">
+            <button type="button" class="btn" data-picker-bulk onClick={() => setConfirming(true)}>
+              {props.bulk.label}
+            </button>
+          </div>
+        ))}
       {rows.length >= FILTER_FROM && (
         <input
           type="search"

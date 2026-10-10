@@ -3710,6 +3710,8 @@
   "venture_gate.net_electric": "net electricity",
   "venture_gate.availability": "90% availability",
   "ui.nav.ventures": "Ventures",
+  "site.pick.talk_all": "Talk at every site at Heat {heat}+ ({n} sites · {cost})",
+  "site.pick.talk_all_confirm": "Talk to the neighbours at {n} sites for {cost} in all?",
   "ui.ventures.title": "Energy ventures",
   "ui.ventures.intro": "Firm-power bets with fat tails. Each card shows the developer's pitch; diligence shows what projects like it really cost. Take a stake (paid in now, with cash calls if it overruns: pay, dilute or walk), an offtake (its power at your campus, no grid wait) or both. Lenders don't fund unproven plants: no debt before first power.",
   "ui.ventures.closed": "Ventures are offered in Acts III and IV.",
