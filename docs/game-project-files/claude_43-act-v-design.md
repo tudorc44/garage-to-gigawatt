@@ -1,6 +1,6 @@
-# 43: Act V design, "Firm" (2036 → 2040). v0.1 draft for approval, 10 Oct 2026
+# 43: Act V design, "Firm" (2036 → 2040). v1.1, 10 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45 and the M43.0 gate)
 
-*Design thread. The recommended concept from doc 42 (Concept A, with B's exit and C's flexibility and Q-Day folded in), designed in the shape of doc 33. The owner approved doc 42's six recommendations on 10 Oct 2026 (V-D1 to V-D6 below). Built on doc 40 (second research pass, Part D), doc 37 (energy and 2040 dossier), doc 38 (energy ventures, especially §5-§6), doc 33 (Act IV as designed) and the game as built (dev-notes through M42, `main` = 71f36cb, `src/sim/state.ts`, `docs/energy-content/README.md`). Nothing else is decided until the owner approves the decisions in §21. The content pack, scope doc and wireframe prompt come after approval, as for Acts III-IV.*
+*Design thread. The recommended concept from doc 42 (Concept A, with B's exit and C's flexibility and Q-Day folded in), designed in the shape of doc 33. The owner approved doc 42's six recommendations on 10 Oct 2026 (V-D1 to V-D6 below). Built on doc 40 (second research pass, Part D), doc 37 (energy and 2040 dossier), doc 38 (energy ventures, especially §5-§6), doc 33 (Act IV as designed) and the game as built (dev-notes through M42, `main` = 71f36cb, `src/sim/state.ts`, `docs/energy-content/README.md`). The owner approved every recommendation in §21 on 10 Oct 2026 (V-D1 to V-D30). §22's open questions stay open; the design thread's recommendations on Q1 and Q2 are noted there. The content pack, scope doc and wireframe prompt come after approval, as for Acts III-IV.*
 
 **How to read this doc.**
 - Evidence grades (doc 36): **[A]** primary or official, **[B]** reputable reporting or company statement, **[C]** analyst, forecast or industry estimate, **[D]** inference or designed. Almost every 2036-2040 value is [C] or [D]. Every future is a scenario, not a forecast, and the game says so on its intro screen and in the chapter report.
@@ -19,6 +19,79 @@
 | COD | Commercial operation date: when a plant starts selling power. |
 | Infrastructure fund | An investor that buys operating plants for their long, steady cash flows. |
 | Capacity factor (CF) | Actual output ÷ output at full power all year. |
+
+---
+
+## 0. v1.1 amendments (10 Oct 2026): doc 45 and the M43.0 gate
+
+*Where this section and a later section disagree, this section wins. The later sections keep their v1.0 text so the history stays readable; the content pack applies §0.*
+
+### 0.1 The gate failed, and why (M43.0)
+Firm Holder ÷ Seller in a stub V1: 1.009 overall, 0 of 12 cells at 1.2. The cause was the gate's own definition (design thread's error): the two bots differed only in one 10-20% plant stake, about 1-4% of a 2035 company's value, while the jam (waits, demand) touched only new MW, which neither bot built. In doc 43 v1.0 nothing made scarcity reprice what a company already holds, and the "Seller" only sold plant stakes. The real V1 decision for a 2035 company is about its whole ground book: **lock it in at 2036 prices, or keep it open to the scarcity price.** v1.1 makes that the decision.
+
+### 0.2 Scarcity reprices what you hold (new §8.4; replaces the "jam only on new MW" reading)
+- **Leases follow a scarcity index.** New leases, re-lets and renewal offers in Act V price off `scarcity_index` = the AI demand index × a queue factor (market column per future ⚙; V1 rises to about 1.5 by 2040, V2 about 1.1, V3 about 0.8 after the trigger, V4 about 1.0 then 0.9 late). Act III's renewal system and its blend-and-extend offers carry the price.
+- **Lock or roll.** At each renewal or blend-and-extend offer the player chooses **long** (8-10 years at today's rate) or **short** (2 years, then back at market). Long is −1 in the reading score, short +1 (replaces "ground lease renewals 0" in §6.7).
+- **Energized MW you hold but don't use are worth the powered-land price.** Valuation adds free energized MW × `powered_value_usd_mw` (market column): $300K/MW in 2036 [C, doc 45 §Q3], V1 rising to $500K by 2040, V2 falling to $150K, V3 to $100K, V4 to $200K (paths designed ⚙). **Sell a site** pays its leases' value plus free MW × the powered value (−1).
+- **No jump at the seam:** `act5Entry` (the growth multiple's base) is measured with the powered-value term included, so a company with idle MW doesn't show fake growth on day one; Acts II-IV valuation is unchanged.
+- **Queue positions** (not yet energized) keep doc 45's premium: $100/kW in 2036, rising to $300 (V1), falling to $25 (V2, V3); holding one costs $50/kW of security (Texas's rule [B]).
+
+### 0.3 Archetypes, redefined (replaces §18's Firm Holder and Seller)
+- **Firm Holder:** keeps every site, renews short, keeps free MW, holds plant stakes merchant.
+- **Seller:** in 2036 takes every blend-and-extend and renewal long at the 2036 rate, sells free energized MW (sites) at the powered value, sells plant stakes to funds and contracts plant output.
+V-B2 (V1: Holder ≥ 1.2 × Seller) and V-B4 (V3: Seller ≥ 1.2 × Holder) are now tested together, so the fix can't simply tilt everything toward holding.
+
+### 0.4 Doc 45's corrections, adopted
+| Where | v1.0 | v1.1 (doc 45) |
+|---|---|---|
+| §11.3 plant multiples | 12x contracted / 7x merchant | **10x contracted (8x with ≤ 8 years of contract left, 11x with ≥ 15) / 7.5x merchant (V1 8.5x after the trigger, V3 6x)** [A/B/C] |
+| §11.1 fund bid | 0.90-1.15 | **0.95-1.15; V3 0.85-1.00 after the trigger** [B/C] |
+| §11.1 plant debt | ≤ 60%; SOFR + 250 / + 400; 15 y | **Contracted: ≤ 65%, SOFR + 200, 15-18 y sculpted to DSCR 1.30. Merchant: ≤ 40%, SOFR + 275, 7 y, 1%/yr + 50% cash sweep** [A/C] |
+| §11.4 plant default | lenders take the plant after 2 q below DSCR 1.0 | **Lock-up below 1.15 (no distributions); below 1.0 for 4 q → restructure (stake ×0.5); for 8 q → lenders take the plant** [C] |
+| §7.1 reactor costs | $40 / $30 per MWh plus fixed ⚙ | **Fixed $107/kW-yr (×1.3 for a single unit) + $9/MWh variable and fuel; no separate all-in figure.** EGS $20/MWh all-in, fixed 0. Gas CC $15/kW-yr + $2.5/MWh, CT $10 + $5, plus fuel [A/B] |
+| §7.1 contracted share at COD | ⚙ | **SMR, advanced fission, EGS, fusion 90%; storage 80%; pumped hydro 50% [D]** [B] |
+| §7.1 capacity ratings | ⚙ | **Nuclear 0.95; gas CC 0.76 → 0.78; CT 0.62 → 0.70; 8 h storage 0.62; 10 h 0.72** [A] |
+| §7.3 pumped storage | capacity $110/kW-yr + spread | **Capacity × 10-h rating (≈ $85/kW-yr at the cap) + a 10-hour spread of $30/MWh (V1 $45, V3 $20) × 0.80** [A/D] |
+| §8.2 network upgrades | pay $150/kW for −⅓ of the wait (+1) | **The study names a bill (median $100/kW ERCOT and SPP, $150 PJM and MISO; 20% chance of a $400-600 tail): pay to keep the position, or withdraw. Paying buys no speed** [A]. Speed comes only from co-location or the fast lane. Paying stays +1 |
+| §8.1 waits | 24 q in 2036 | **PJM 20 q, ERCOT 12 q, other regions 16 q in 2036; the futures' directions kept; rivals' positions withdraw 15%/yr (V3 30%)** [A/C] |
+| §8.2 fast lane | 4-8 q; 200 h; −2.3% | **4-8 q; up to 180 h a year; −0.5% output; 24-hour notice** [B/C] |
+| §6.2 demand | V2 130; V3 95 | **V2 135; V3 100 → 105, then flat (the plateau is [D])** [A/C] |
+| §10 halvings | ~2036Q2, ~2040Q2 | **2036Q1 and 2040Q1** [A/D] |
+| §15.2 exit bid | 0.95-1.15 | **1.05-1.25 (V1 1.15-1.30; V3 0.95-1.10)** [A/B/C] |
+| §14.3 Head of Grid Strategy | −2 q on upgraded positions | **Upgrade bills −25% and the $400-600 tail halved** (paying no longer buys speed) |
+| §6.6 wildcards | moratorium 4 q, > 20 MW; transformers +2 q | **Moratorium 2-8 q, > 50 MW; transformers +2 q, 40% of draws +4 q** [B/C] |
+| Known timeline (§19) | - | **No federal clean credit for any project starting construction after 2035; plants started by 2033 keep theirs** [A/B]; **a "licensing clock" card (−2 q on SMR licences) in every future** [A/B] |
+
+### 0.5 The gate's other questions (answered 10 Oct 2026)
+- **Measure on the plant unit alone?** No. Thermal plants already pass there (1.27-1.46x), but V-B2 is about the player's company. The plant-unit ratio stays in the report as information.
+- **Firm-heavy starts?** Yes, as one of the starts (the Firm Builder preset, §3.4), alongside the three Act IV presets; not as the fix.
+- **Pumped storage:** it keeps doc 38's overrun calls (the real record) and gets the capacity + spread revenue above; a held pumped stake that loses money in most runs is an honest outcome, judged by V-B6 in expectation.
+
+### 0.6 The gate's rules in detail (M43.0b; answers to the build thread, 10 Oct 2026)
+These define the sim-only prototype. Where the full game later needs more, the content pack decides; the prototype follows this list.
+1. **Renewals and re-lets.**
+   - Each existing lease keeps its current rent and remaining term in both bots; long or short applies only from its own end date.
+   - **Market rent** at a quarter = the lease's class rate in the 2035Q4 market data (the new-lease rate for its hall tier, or the GPU contract rate for its class, as Act III's new-lease index does) × `scarcity_index` that quarter. Orbital blocks are unchanged.
+   - **Holder:** at each end date, renews for 2 years at that quarter's market rent, and repeats.
+   - **Seller:** in 2036Q1 extends every lease: from its end date it runs 9 more years at the 2036Q1 market rent (scarcity 1.0). No blending is needed for the gate; this is the effect of a blend-and-extend.
+   - Walks use the market file's walk probabilities at each end date; a walked lease re-lets after 1 quarter of vacancy at the market rent (Seller's walked leases re-let at market too).
+2. **Powered value.**
+   - **Free energized MW** = the site's free MW as the game already computes it: energized and not used by any lease, project, hosting client or own machine.
+   - `powered_value_usd_mw` is both the valuation term (every quarter, including 2040Q4) and the sale price: the Seller sells its free MW in 2036Q1 at $300K/MW.
+   - **act5Entry** (the base for both bots' multiples) = the 2035Q4 valuation + free MW × $300K.
+3. **Archetypes.**
+   - Both keep their offtake (it supplies their own sites).
+   - **Seller** sells every plant stake in 2036Q1: operating plants at plant value × 1.0, ventures before first power at their milestone mark × 1.0 (so it pays no later calls). No output contracting is needed (it owns no output after the sale).
+   - **Holder** keeps every stake, sells output merchant except the developer's contracted share (§0.4), and pays calls (dilutes only if cash runs short).
+4. **§0.4 items in the gate.**
+   - Plant debt: neither bot borrows.
+   - Upgrades: neither bot opens a new grid request, so neither pays; the jam acts through `scarcity_index` and the powered value.
+   - Reactor single-unit ×1.3 applies to the fixed $107/kW-yr only, not to the $9/MWh.
+   - Pumped storage capacity: $85/kW-yr flat in its regions (doc 45: $325/MW-day × 0.72 × 365) plus the 10-hour spread margin; not $110 × 0.72.
+5. **Stub paths.**
+   - **V1:** trigger fixed at 2037Q4. `scarcity_index` 1.0 → 1.1 at the trigger (straight line), then → 1.5 at 2040Q4; powered value $300K → $500K (straight line over the act); merchant plant multiple 7.5x, 8.5x from the trigger.
+   - **V3:** trigger fixed at 2037Q4. `scarcity_index` 1.0 to the trigger, then → 0.8 at 2039Q4 and flat; powered value $300K to the trigger, then → $100K at 2040Q4; merchant plant multiple 7.5x, 6x from the trigger; capacity prices −50% and merchant power −30% from the trigger.
+6. **Firm-heavy start:** the same Balanced bot and cash guard, joining two ventures in 2031Q1 (EGS and SMR, 20% stakes, 50% offtake each). If two joins don't fit, the top quartile of the existing runs by plant value share.
 
 ---
 
@@ -390,7 +463,7 @@ Lunar operations (V-D4); Mars; asteroid mining; fusion output before 2038; Q-Day
 | V-D4 | The Moon | **Offstage: one lunar holding; the production plant's fate told in the finale.** *Approved* |
 | V-D5 | Act IV → V draw | **Independent.** *Approved* |
 | V-D6 | The B3 dependency | **M43.0 gate: Firm Holder ≥ 1.2 × Seller in V1 before the build.** *Approved* |
-| V-D7 | Span and length | 2036Q1-2040Q4, 20 decision quarters, about 55-60 min ⚙ |
+| V-D7 | Span and length | 2036Q1-2040Q4, 20 decision quarters, about 55-60 min ⚙. *Approved (V-D7 to V-D30 approved together, 10 Oct 2026)* |
 | V-D8 | Act title | **"Firm"** (doc 38's working title). Alternative: "The Long Line" |
 | V-D9 | Weights and triggers | V1 30 / V2 25 / V3 25 / V4 20 ⚙; triggers 2037Q2-2038Q3 |
 | V-D10 | Reuse | Scenario engine, Signals (six new), Read the market, decoy, reading score with the M40-41 rules, guards, Scenario Mode |
@@ -413,12 +486,12 @@ Lunar operations (V-D4); Mars; asteroid mining; fusion output before 2038; Q-Day
 | V-D27 | Build order | As §19, after the gate |
 | V-D28 | Cut order | As §19 |
 | V-D29 | Hidden files | Reading score and exit outlook hidden; markets and Signals read in play |
-| V-D30 | Research | A short third research pass (§16 list) before the content pack |
+| V-D30 | Research | A short third research pass (§16 list) before the content pack: brief in doc 44, results expected as doc 45 |
 
 ## 22. Open questions (not settled here)
 
-1. **The gate's fallback.** If M43.0 fails, which do you prefer: sharpen V1 (higher capacity prices, longer waits), revalue plants (a scarcity premium on firm MW), or drop V1 to three futures?
-2. **The exit's outlook factor** is the least grounded number in the game. Keep it (it makes the exit a decision), or make "hold" simply equal the valuation (then selling is a coin-flip on the bid)?
+1. **The gate's fallback.** If M43.0 fails, which do you prefer: sharpen V1 (higher capacity prices, longer waits), revalue plants (a scarcity premium on firm MW), or drop V1 to three futures? *Design thread recommends: sharpen V1 first, within the research's ranges; drop V1 only if that can't pass.*
+2. **The exit's outlook factor** is the least grounded number in the game. Keep it (it makes the exit a decision), or make "hold" simply equal the valuation (then selling is a coin-flip on the bid)? *Design thread recommends: keep it, labelled [D] in the finale.*
 3. **Scenario Mode carry-over:** may an Act IV Scenario Mode run continue into Act V, and how is the finale labelled?
 4. **Standalone Act V:** open from the start, or after an Act IV finish?
 5. **Session length:** the full campaign from the bedroom to 2040 is now about 5-6 hours ⚙. Is that the intended shape, or should the Prologue or Act V offer more auto-play?
