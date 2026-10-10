@@ -125,8 +125,8 @@
     },
     {
       "id": "equity_raise_unfollowed",
-      "sign": -1,
-      "source": "doc 43 §6.7, the M41 rule: a raise takes the sign of the next scored move, −1 if none follows"
+      "sign": 0,
+      "source": "doc 43 §6.7, the M41 rule (doc 43 §0.11 erratum 1): a raise takes the sign of the next scored move at any distance, 0 if none follows before the act ends"
     },
     {
       "id": "request_grid_mw",
@@ -136,7 +136,7 @@
     {
       "id": "withdraw_position",
       "sign": 0,
-      "source": "mine: not listed in doc 43; withdrawing is usually forced by a study bill (open question)"
+      "source": "doc 43 §0.9 item 7: withdrawing is usually a cost decision after a high study bill"
     },
     {
       "id": "orbit_replace",
@@ -171,7 +171,7 @@
   ],
   "rules": {
     "same_quarter_hedges": "A build's own hedges and debt count 0 in its quarter (M40-41 rule, carried).",
-    "raise": "An equity raise takes the sign of the next scored move; −1 if none follows within 2 quarters (M41).",
+    "raise": "An equity raise takes the sign of the next scored move, at any distance; 0 if none follows before the act ends (M41).",
     "lease_offers": "Lock-or-roll applies at each renewal or blend-and-extend offer: long (8-10 years) −1, short (2 years) +1; letting a lease run on its existing term logs nothing."
   },
   "futures": {

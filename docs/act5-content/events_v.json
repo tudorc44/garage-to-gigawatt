@@ -3,7 +3,7 @@
   "schema": "events_v/1",
   "doc43": "§6.2-6.4, §14.2, §16, §19; doc 47",
   "author": "content pack (doc 47), 10 Oct 2026: designed; each card's basis names what it rests on",
-  "note": "window = [from, to] quarters (equal for a fixed-quarter card). reading_sign: the scarcity-exposure sign each choice logs, keyed by choice label (README); a choice not listed logs 0; 'raise_rule' = the M41 raise rule (the sign of the next scored move, -1 if none follows). Interrupt cards fire when their condition holds inside the window (README, 'Card firing')."
+  "note": "window = [from, to] quarters (equal for a fixed-quarter card). reading_sign: the scarcity-exposure sign each choice logs, keyed by choice label (README); a choice not listed logs 0; 'raise_rule' = the M41 raise rule (the sign of the next scored move at any distance, 0 if none follows before the act ends). Interrupt cards fire when their condition holds inside the window (README, 'Card firing')."
  },
  "event_cards": [
   {

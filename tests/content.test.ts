@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import {
   CONTENT,
@@ -290,6 +290,33 @@ describe('content loads', () => {
       // M32.4: the presets
       'presets_act4.json'])
       expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act4-content/${name}`))
+  })
+
+  it('the Act V content files are byte-identical copies of docs/act5-content/ (M48, doc 47 with doc 43 §0.11 errata)', () => {
+    const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
+    const names = readdirSync(new URL('../docs/act5-content/', import.meta.url)).filter((f) => /\.(json|csv)$/.test(f))
+    expect(names.length).toBe(21)
+    for (const name of names) expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act5-content/${name}`))
+  })
+
+  it('the Act V content carries doc 43 §0.11 errata: raise rule, no en dashes, exit bids hidden, flex rating, flat ratings', () => {
+    const read = (name: string) => readFileSync(new URL(`../docs/act5-content/${name}`, import.meta.url), 'utf8')
+    const rs = JSON.parse(read('reading_score_v.json')) as { moves: { id: string; sign: number }[]; rules: { raise: string } }
+    expect(rs.moves.find((m) => m.id === 'equity_raise_unfollowed')!.sign).toBe(0)
+    expect(rs.moves.find((m) => m.id === 'withdraw_position')!.sign).toBe(0)
+    expect(rs.rules.raise).not.toMatch(/within 2 quarters/)
+    for (const f of ['v1', 'v2', 'v3', 'v4']) {
+      expect(read(`signals_v_${f}.json`)).not.toContain('–')
+      const [header, ...rows] = read(`market_v_${f}.csv`).trim().split('\n')
+      const cols = header.split(',')
+      expect(cols).not.toContain('exit_bid_low')
+      expect(cols).toContain('flex_capacity_rating')
+      const at = (c: string) => rows.map((r) => r.split(',')[cols.indexOf(c)])
+      expect(new Set(at('capacity_rating_cc'))).toEqual(new Set(['0.78']))
+      expect(new Set(at('capacity_rating_ct'))).toEqual(new Set(['0.7']))
+      expect(at('flex_capacity_rating').some((v) => v !== '')).toBe(f === 'v2')
+    }
+    expect(JSON.parse(read('exit_v.json')).hidden.bid_factor_range.v1).toEqual([1.15, 1.3])
   })
 
   it('the Act II content files are the corrected copies in docs/act2-content/', () => {

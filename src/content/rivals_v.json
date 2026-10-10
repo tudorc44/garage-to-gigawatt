@@ -1,0 +1,490 @@
+{
+  "_meta": {
+    "schema": "rivals_v/1",
+    "doc43": "§12 (Act IV's rivals carry; one new firm-power developer), §15.1 (fates in the chapter report)",
+    "author": "content pack (doc 47): designed paths ($B value, orbital MW, firm MW) at anchor quarters, interpolated at load like rivals_iv.json; identical in every future through 2036Q2. 2036Q1 = the median of the four Act IV futures' 2035Q4 values (Orrery: of the two futures it survives).",
+    "display_names": "Ids are kept from Act IV; display names follow the M34.3 and M41.2 renames: pallas_compute = Carrack Compute, jade_arc = Lantern Arc."
+  },
+  "rivals": [
+    {
+      "id": "pallas_compute",
+      "name": "Carrack Compute",
+      "common": {
+        "value": {
+          "2036Q1": 90,
+          "2036Q2": 92
+        },
+        "orbitMw": {
+          "2036Q1": 450,
+          "2036Q2": 480
+        },
+        "firmMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        }
+      },
+      "futures": {
+        "v1": {
+          "value": {
+            "2038Q4": 130,
+            "2040Q4": 170
+          },
+          "orbitMw": {
+            "2040Q4": 900
+          },
+          "firmMw": {
+            "2038Q4": 150,
+            "2040Q4": 150
+          },
+          "fate": "Carrack Compute paid record premiums for queue-holding campuses and ended the decade as the biggest landlord of firm ground power."
+        },
+        "v2": {
+          "value": {
+            "2038Q4": 110,
+            "2040Q4": 120
+          },
+          "orbitMw": {
+            "2040Q4": 700
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Carrack Compute moved its new halls into the fast lane and grew steadily, without the windfall it had hoped for."
+        },
+        "v3": {
+          "value": {
+            "2037Q4": 85,
+            "2039Q4": 65,
+            "2040Q4": 70
+          },
+          "orbitMw": {
+            "2040Q4": 500
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Carrack Compute wrote down two campuses after the capex pause and spent 2039 selling ground it had bought in 2037."
+        },
+        "v4": {
+          "value": {
+            "2038Q2": 120,
+            "2040Q4": 260
+          },
+          "orbitMw": {
+            "2038Q2": 900,
+            "2040Q4": 2500
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Carrack Compute launched its own price war and owned the marginal gigawatt by 2040."
+        }
+      }
+    },
+    {
+      "id": "northgate",
+      "name": "Northgate",
+      "common": {
+        "value": {
+          "2036Q1": 36.5,
+          "2036Q2": 37
+        },
+        "orbitMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        },
+        "firmMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        }
+      },
+      "futures": {
+        "v1": {
+          "value": {
+            "2040Q4": 50
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Northgate kept flying and kept slipping; steady, never spectacular."
+        },
+        "v2": {
+          "value": {
+            "2040Q4": 42
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Northgate's launch business grew with the decade, quietly."
+        },
+        "v3": {
+          "value": {
+            "2040Q4": 30
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Northgate cut its flight rate as orbital orders dried up."
+        },
+        "v4": {
+          "value": {
+            "2038Q1": 50,
+            "2040Q4": 70
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Northgate matched Carrack's price in 2038 and rode the launch boom to record value."
+        }
+      }
+    },
+    {
+      "id": "orrery_compute",
+      "name": "Orrery Compute",
+      "present_if_act4_future": [
+        "f1",
+        "f3"
+      ],
+      "common": {
+        "value": {
+          "2036Q1": 13.5,
+          "2036Q2": 14
+        },
+        "orbitMw": {
+          "2036Q1": 195,
+          "2036Q2": 200
+        },
+        "firmMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        }
+      },
+      "futures": {
+        "v1": {
+          "value": {
+            "2040Q4": 18
+          },
+          "orbitMw": {
+            "2040Q4": 300
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Orrery Compute stayed small and profitable, renting orbit to tenants who could not find ground."
+        },
+        "v2": {
+          "value": {
+            "2040Q4": 16
+          },
+          "orbitMw": {
+            "2040Q4": 260
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Orrery Compute found a niche in batch work the fast lane could not serve."
+        },
+        "v3": {
+          "value": {
+            "2038Q2": 4
+          },
+          "orbitMw": {
+            "2038Q2": 120
+          },
+          "firmMw": {
+            "2038Q2": 0
+          },
+          "fails": "2038Q3",
+          "fate": "Orrery Compute ran out of tenants after the capex pause and its blocks went to auction."
+        },
+        "v4": {
+          "value": {
+            "2040Q4": 30
+          },
+          "orbitMw": {
+            "2040Q4": 600
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Orrery Compute tripled its fleet on cheap launch."
+        }
+      }
+    },
+    {
+      "id": "jade_arc",
+      "name": "Lantern Arc",
+      "common": {
+        "value": {
+          "2036Q1": 24,
+          "2036Q2": 24.5
+        },
+        "orbitMw": {
+          "2036Q1": 225,
+          "2036Q2": 235
+        },
+        "firmMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        }
+      },
+      "futures": {
+        "v1": {
+          "value": {
+            "2040Q4": 30
+          },
+          "orbitMw": {
+            "2040Q4": 350
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Lantern Arc grew on its bloc's own demand, untouched by the queue."
+        },
+        "v2": {
+          "value": {
+            "2040Q4": 28
+          },
+          "orbitMw": {
+            "2040Q4": 320
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Lantern Arc kept to its bloc's market and its own pace."
+        },
+        "v3": {
+          "value": {
+            "2040Q4": 20
+          },
+          "orbitMw": {
+            "2040Q4": 280
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Lantern Arc's state backers slowed its launches but never let it shrink."
+        },
+        "v4": {
+          "value": {
+            "2040Q4": 45
+          },
+          "orbitMw": {
+            "2040Q4": 900
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Lantern Arc quadrupled its constellation in the launch boom."
+        }
+      }
+    },
+    {
+      "id": "cratermark",
+      "name": "Cratermark Resources",
+      "common": {
+        "value": {
+          "2036Q1": 2.3,
+          "2036Q2": 2.3
+        },
+        "orbitMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        },
+        "firmMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        }
+      },
+      "futures": {
+        "v1": {
+          "value": {
+            "2040Q4": 2.6
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Cratermark Resources is still waiting for its first tonnes."
+        },
+        "v2": {
+          "value": {
+            "2040Q4": 2.4
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Cratermark Resources is still waiting for its first tonnes."
+        },
+        "v3": {
+          "value": {
+            "2040Q4": 2.0
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Cratermark Resources cut staff and kept its claims."
+        },
+        "v4": {
+          "value": {
+            "2040Q4": 3.5
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 0
+          },
+          "fate": "Cratermark Resources raised again on cheaper lunar delivery."
+        }
+      }
+    },
+    {
+      "id": "ironvale_power",
+      "name": "Ironvale Power",
+      "new_in_act5": true,
+      "role": "The firm-power developer whose orderbook tells the SMR-wave story: dozens announced, a handful built.",
+      "common": {
+        "value": {
+          "2036Q1": 6.0,
+          "2036Q2": 6.2
+        },
+        "orbitMw": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        },
+        "firmMw": {
+          "2036Q1": 1200,
+          "2036Q2": 1200
+        },
+        "orderbookUnits": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        },
+        "deliveredUnits": {
+          "2036Q1": 0,
+          "2036Q2": 0
+        }
+      },
+      "futures": {
+        "v1": {
+          "value": {
+            "2037Q2": 14,
+            "2038Q4": 10,
+            "2040Q4": 11
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2038Q4": 1500,
+            "2040Q4": 1900
+          },
+          "orderbookUnits": {
+            "2037Q1": 24,
+            "2040Q4": 24
+          },
+          "deliveredUnits": {
+            "2039Q3": 1,
+            "2040Q4": 2
+          },
+          "fate": "Ironvale Power announced 24 reactors in 2037 and delivered two by 2040. Its gas fleet made the money."
+        },
+        "v2": {
+          "value": {
+            "2037Q3": 12,
+            "2040Q4": 7
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 1500
+          },
+          "orderbookUnits": {
+            "2037Q2": 20,
+            "2040Q4": 20
+          },
+          "deliveredUnits": {
+            "2040Q2": 1,
+            "2040Q4": 1
+          },
+          "fate": "Ironvale Power's twenty-reactor orderbook produced one unit by 2040; the fast lane made it matter less."
+        },
+        "v3": {
+          "value": {
+            "2037Q1": 8,
+            "2038Q2": 5,
+            "2040Q4": 3.5
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2038Q4": 1100,
+            "2040Q4": 1100
+          },
+          "orderbookUnits": {
+            "2037Q1": 6,
+            "2038Q1": 0
+          },
+          "deliveredUnits": {
+            "2040Q4": 0
+          },
+          "fate": "Ironvale Power shelved its reactor orderbook in 2038 and sold two gas plants to pay down debt."
+        },
+        "v4": {
+          "value": {
+            "2037Q4": 11,
+            "2040Q4": 5
+          },
+          "orbitMw": {
+            "2040Q4": 0
+          },
+          "firmMw": {
+            "2040Q4": 1400
+          },
+          "orderbookUnits": {
+            "2037Q3": 20,
+            "2040Q4": 20
+          },
+          "deliveredUnits": {
+            "2040Q4": 1
+          },
+          "fate": "Ironvale Power built one reactor of twenty and found the new load had gone to orbit."
+        }
+      }
+    }
+  ],
+  "orrery_auction_v3": {
+    "quarter": "2038Q3",
+    "mw": 120,
+    "shell": "sso",
+    "gen": "gen35",
+    "life_left_quarters": 10,
+    "price_usd_per_mw": 4000000,
+    "bandwidth": 1,
+    "open_quarters": 2,
+    "basis": "As Act IV's Orrery auction (rivals_iv.json); price designed lower for a demand plateau"
+  }
+}

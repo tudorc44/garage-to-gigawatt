@@ -1,0 +1,80 @@
+{
+  "_meta": {
+    "schema": "epilogue_v/1",
+    "doc43": "§15.3 (the finale at 2040: pools for the futures, the exit, the ventures, the lunar plant, the bitcoin coda)",
+    "author": "content pack (doc 47): text only, deterministic, no number after 2040, hyphens not em dashes",
+    "choose": "3-5 lines: the arc line, the future, the exit, one line per venture held (at most two, the largest stakes first), then the lunar line if a production plant was decided, else the bitcoin coda. Within a pool, pick by seed (stream act5_epilogue)."
+  },
+  "arc": [
+    "From {start_kw} in a {start_place} to {end_mw} megawatts of {mw_title} power.",
+    "It started with {start_kw} and a fan that never stopped. It ended with {end_mw} megawatts."
+  ],
+  "future": {
+    "v1": [
+      "The queue never cleared. Megawatts you could switch on were the scarcest thing you could own.",
+      "By 2040 a place in line was worth more than the land under it."
+    ],
+    "v2": [
+      "The grid learned to bend. The loads that bent with it got in first.",
+      "Firm power still mattered. Flexible power mattered more."
+    ],
+    "v3": [
+      "The boom flattened into a plateau. The careful kept what they had built.",
+      "Demand stopped climbing, and the queue emptied as quickly as it had filled."
+    ],
+    "v4": [
+      "The marginal gigawatt went up, not out. Rockets set the price of compute.",
+      "The ground stayed busy. The sky got busier."
+    ]
+  },
+  "exit": {
+    "sold": [
+      "You sold at the top of your own story. Someone else will write the next chapter.",
+      "You took the bid. Whatever comes after 2040 is their problem now."
+    ],
+    "sold_plants": [
+      "You sold the plants to people who wanted forty years of quiet cash, and kept the part you liked running.",
+      "The funds got the turbines and reactors. You kept the platform and your options."
+    ],
+    "held": [
+      "You didn't sell. The next decade will tell you if that was courage or habit.",
+      "You held on. The company is still yours, and so is the risk."
+    ]
+  },
+  "venture": {
+    "built": [
+      "{venture} came on line in {year} and has run ever since.",
+      "The {venture} bet you made back in the 2020s finally paid in power."
+    ],
+    "slipped": [
+      "{venture} is still being built. It may yet be the best thing you ever backed.",
+      "{venture} slipped past 2040. The crews are still on site."
+    ],
+    "cancelled": [
+      "{venture} never got its funding. The site is a field again.",
+      "{venture} was cancelled before it poured concrete."
+    ],
+    "folded": [
+      "{venture} folded. It got closer than most.",
+      "The fusion bet folded, as most of them did."
+    ]
+  },
+  "lunar": {
+    "first_tonnes": [
+      "Somewhere near the lunar south pole, the plant you decided on in the 2030s is producing its first tonnes of water.",
+      "Your lunar plant poured its first water as the decade turned."
+    ],
+    "not_yet": [
+      "Your lunar plant is still waiting for its first tonnes. The ridge isn't going anywhere.",
+      "The Moon is still a promise on your balance sheet."
+    ],
+    "never": [
+      "You never went to the Moon. The ground, and the sky, were enough."
+    ]
+  },
+  "bitcoin": [
+    "In 2040 the block reward halved for the eighth time. Somewhere a rig is still mining.",
+    "The eighth halving came and went. The coins from the bedroom are still in the treasury.",
+    "Bitcoin halved again in 2040. The garage would have found that hard to believe."
+  ]
+}

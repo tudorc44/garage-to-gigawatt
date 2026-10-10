@@ -1,0 +1,111 @@
+{
+  "_meta": {
+    "schema": "wildcards_v/1",
+    "doc43": "§6.6 as amended by §0.4 (V-D11)",
+    "author": "content pack (doc 47): windows designed; magnitudes as labelled",
+    "draw": 2
+  },
+  "wildcards": [
+    {
+      "id": "q_day_scare",
+      "window": [
+        "2036Q3",
+        "2040Q2"
+      ],
+      "effect": {
+        "btc_price_mult": 0.6,
+        "quarters": 2,
+        "then": "post_quantum_migration",
+        "migration": {
+          "mining_downtime_weeks": 1,
+          "treasury_move_cost_usd": 250000
+        }
+      },
+      "text": {
+        "title": "A Quantum Scare",
+        "body": "A lab demonstrates an attack on an old signature scheme. Bitcoin falls 40% while developers rush a migration to quantum-safe keys."
+      },
+      "basis": "Doc 40 §D6: NIST disallows pre-quantum schemes after 2035 [A/B]; experts put a CRQC at 28-49% within 10 years [C]; magnitude designed [D]"
+    },
+    {
+      "id": "fusion_net_electric",
+      "window": [
+        "2038Q1",
+        "2040Q2"
+      ],
+      "effect": {
+        "space_mult": 1.1,
+        "ai_mult": 1.1,
+        "quarters": 2,
+        "then": {
+          "space_mult": 0.95,
+          "ai_mult": 0.95,
+          "quarters": 2
+        },
+        "fusion_output": 0
+      },
+      "text": {
+        "title": "Net Electric, Briefly",
+        "body": "A rival's fusion pilot reports net electricity for an afternoon. Multiples jump on the headline, then sag when the plant spends the next quarter offline."
+      },
+      "basis": "Doc 43 §6.6 [D]; doc 45 §Q9: no net electricity announced by Oct 2026, goals walked back [B]; no fusion output before 2038 (the honesty rule)"
+    },
+    {
+      "id": "dry_year",
+      "window": [
+        "2036Q3",
+        "2040Q1"
+      ],
+      "effect": {
+        "hydro_pumped_output_mult": 0.75,
+        "quarters": 4,
+        "region": "drawn among nordics, arizona"
+      },
+      "text": {
+        "title": "A Dry Year",
+        "body": "A dry winter leaves reservoirs low across one region. Hydro and pumped storage run at three-quarters for a year."
+      },
+      "basis": "Designed magnitude [D]; Iceland's Dec 2021 curtailment of interruptible supply on low reservoirs as the shape (doc 40 §Q2 [B])"
+    },
+    {
+      "id": "large_load_moratorium",
+      "window": [
+        "2036Q3",
+        "2040Q1"
+      ],
+      "effect": {
+        "region": "drawn among the regions with your sites",
+        "min_load_mw": 50,
+        "quarters": [
+          2,
+          8
+        ],
+        "applies_to": "new connections and expansions"
+      },
+      "text": {
+        "title": "A Moratorium",
+        "body": "One region pauses new connections for loads over 50 MW while it rewrites its rules. Positions already energised are safe; new ones wait."
+      },
+      "basis": "Doc 45 §Q8: 69+ local bans, statewide bills in 14 states, proposals of 3 months to 4 years [B]; 50 MW from FERC's suggested definition [B]; length drawn U{2..8} [D]"
+    },
+    {
+      "id": "transformer_shortage",
+      "window": [
+        "2036Q2",
+        "2039Q4"
+      ],
+      "effect": {
+        "delay_quarters": 2,
+        "long_delay_quarters": 4,
+        "long_delay_share": 0.4,
+        "lasts_quarters": 4,
+        "applies_to": "new grid-connected assets and network upgrades started while it lasts"
+      },
+      "text": {
+        "title": "Transformer Shortage",
+        "body": "Large transformers are on allocation for a year. Anything new that needs a grid transformer takes two quarters longer, some four."
+      },
+      "basis": "Doc 45 §Q8: large transformers 128-144 weeks, a 30% supply deficit, up to four years for high-capacity units [B/C]; +2 q (40% of draws +4) designed"
+    }
+  ]
+}

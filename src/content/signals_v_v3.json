@@ -1,0 +1,1545 @@
+{
+  "schema_version": 1,
+  "future": "v3",
+  "future_name": "Demand Plateau",
+  "reasoning": "AI demand flattens near the low case: speculative queue positions withdraw, capacity prices fall, and late plants and merchant megawatts strand.",
+  "DO_NOT_EXPOSE": "future_name, reasoning, trigger, decoy, authoring_latent and role tags are hidden: only the chapter report reveals them. Headlines are shown in play (they are news, written to fit every reading until the trigger).",
+  "trigger": {
+    "quarter": "2037Q4",
+    "title": "The Capex Pause",
+    "body": "Two of the largest AI buyers cut next year's data-centre spending and walk away from queued sites. Speculative requests start withdrawing by the hundred.",
+    "card_id": "v_v3_c4",
+    "signals_start_quarter": "2037Q1",
+    "quarters_of_warning": 3
+  },
+  "decoy": {
+    "indicator": "capacity_market",
+    "quarters": [
+      "2037Q1",
+      "2037Q2"
+    ],
+    "peak_quarter": "2037Q2",
+    "name": "The record auction",
+    "reason": "A capacity auction clears at the cap with a record uncapped price, after a run of old plant retirements. It looks like the squeeze of Queue is King; it is a one-off on the supply side.",
+    "tell": "The Capacity Market spikes while AI Demand slides and the Grid Queue starts to shorten. A real squeeze needs new load; this auction was driven by plants retiring, and the next one clears lower.",
+    "wrong_reading": "v1"
+  },
+  "indicators": [
+    {
+      "id": "grid_queue",
+      "label": "Grid Queue",
+      "higher_means": "longer waits to connect: median waits, fewer withdrawals, bigger upgrade bills (50 = 2036 levels)",
+      "authoring_latent": [
+        50,
+        50,
+        51,
+        52,
+        51,
+        48,
+        45,
+        41,
+        37,
+        34,
+        32,
+        31,
+        30,
+        29,
+        29,
+        28,
+        28,
+        28,
+        28,
+        28
+      ],
+      "series": [
+        {
+          "quarter": "2036Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Median waits, withdrawals and study bills across the big regions: 47-53. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2036Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Median waits, withdrawals and study bills across the big regions: 47-53. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2036Q3",
+          "displayed": 52,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Median waits, withdrawals and study bills across the big regions: 48-54. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2036Q4",
+          "displayed": 51,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Median waits, withdrawals and study bills across the big regions: 49-55. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2037Q1",
+          "displayed": 46,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Median waits, withdrawals and study bills across the big regions: 48-54. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2037Q2",
+          "displayed": 52,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 45,
+            "high": 51,
+            "note": "Median waits, withdrawals and study bills across the big regions: 45-51. Above 50, connecting to the grid is getting slower."
+          },
+          "headline": "Queue withdrawals jump as speculative data-centre sites give back positions."
+        },
+        {
+          "quarter": "2037Q3",
+          "displayed": 40,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 42,
+            "high": 48,
+            "note": "Median waits, withdrawals and study bills across the big regions: 42-48. Above 50, connecting to the grid is getting slower."
+          },
+          "headline": "Study bills come in lower: the network has headroom again in two zones."
+        },
+        {
+          "quarter": "2037Q4",
+          "displayed": 39,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 38,
+            "high": 44,
+            "note": "Median waits, withdrawals and study bills across the big regions: 38-44. Above 50, connecting to the grid is getting slower."
+          },
+          "headline": "The Capex Pause: hundreds of queued sites withdraw in a quarter."
+        },
+        {
+          "quarter": "2038Q1",
+          "displayed": 40,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 34,
+            "high": 40,
+            "note": "Median waits, withdrawals and study bills across the big regions: 34-40. Above 50, connecting to the grid is getting slower."
+          },
+          "headline": "Median waits fall below four years in PJM for the first time since 2030."
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 38,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 31,
+            "high": 37,
+            "note": "Median waits, withdrawals and study bills across the big regions: 31-37. Above 50, connecting to the grid is getting slower."
+          },
+          "headline": "ERCOT reports its large-load queue shrinking for the third straight quarter."
+        },
+        {
+          "quarter": "2038Q3",
+          "displayed": 36,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 29,
+            "high": 35,
+            "note": "Median waits, withdrawals and study bills across the big regions: 29-35. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2038Q4",
+          "displayed": 35,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 28,
+            "high": 34,
+            "note": "Median waits, withdrawals and study bills across the big regions: 28-34. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2039Q1",
+          "displayed": 27,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 27,
+            "high": 33,
+            "note": "Median waits, withdrawals and study bills across the big regions: 27-33. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2039Q2",
+          "displayed": 29,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 26,
+            "high": 32,
+            "note": "Median waits, withdrawals and study bills across the big regions: 26-32. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2039Q3",
+          "displayed": 23,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 26,
+            "high": 32,
+            "note": "Median waits, withdrawals and study bills across the big regions: 26-32. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2039Q4",
+          "displayed": 25,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 25,
+            "high": 31,
+            "note": "Median waits, withdrawals and study bills across the big regions: 25-31. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2040Q1",
+          "displayed": 34,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 25,
+            "high": 31,
+            "note": "Median waits, withdrawals and study bills across the big regions: 25-31. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2040Q2",
+          "displayed": 34,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 25,
+            "high": 31,
+            "note": "Median waits, withdrawals and study bills across the big regions: 25-31. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2040Q3",
+          "displayed": 27,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 25,
+            "high": 31,
+            "note": "Median waits, withdrawals and study bills across the big regions: 25-31. Above 50, connecting to the grid is getting slower."
+          }
+        },
+        {
+          "quarter": "2040Q4",
+          "displayed": 27,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 25,
+            "high": 31,
+            "note": "Median waits, withdrawals and study bills across the big regions: 25-31. Above 50, connecting to the grid is getting slower."
+          }
+        }
+      ]
+    },
+    {
+      "id": "capacity_market",
+      "label": "Capacity Market",
+      "higher_means": "capacity auctions clearing hotter: at or above the cap, with the uncapped price far above it (50 = 2036 levels)",
+      "authoring_latent": [
+        50,
+        50,
+        50,
+        51,
+        72,
+        77,
+        60,
+        45,
+        34,
+        28,
+        25,
+        24,
+        23,
+        23,
+        22,
+        22,
+        22,
+        22,
+        22,
+        22
+      ],
+      "series": [
+        {
+          "quarter": "2036Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Auction results read against the cap: 47-53. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2036Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Auction results read against the cap: 47-53. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2036Q3",
+          "displayed": 44,
+          "arrow": "down",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Auction results read against the cap: 47-53. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2036Q4",
+          "displayed": 49,
+          "arrow": "up",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Auction results read against the cap: 48-54. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2037Q1",
+          "displayed": 75,
+          "arrow": "up",
+          "role_tag": "decoy",
+          "sharp": {
+            "low": 69,
+            "high": 75,
+            "note": "Auction results read against the cap: 69-75. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "Record auction: capacity clears at the cap after a wave of plant retirements."
+        },
+        {
+          "quarter": "2037Q2",
+          "displayed": 76,
+          "arrow": "flat",
+          "role_tag": "decoy",
+          "sharp": {
+            "low": 74,
+            "high": 80,
+            "note": "Auction results read against the cap: 74-80. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "The uncapped price would have been the highest ever; traders call it a squeeze."
+        },
+        {
+          "quarter": "2037Q3",
+          "displayed": 58,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 57,
+            "high": 63,
+            "note": "Auction results read against the cap: 57-63. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "The next auction clears below the cap as two retirements are deferred."
+        },
+        {
+          "quarter": "2037Q4",
+          "displayed": 44,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 42,
+            "high": 48,
+            "note": "Auction results read against the cap: 42-48. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "Load forecasts are cut and the auction clears well below the cap."
+        },
+        {
+          "quarter": "2038Q1",
+          "displayed": 30,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 31,
+            "high": 37,
+            "note": "Auction results read against the cap: 31-37. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "Capacity prices fall by a third in a year."
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 24,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 25,
+            "high": 31,
+            "note": "Auction results read against the cap: 25-31. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "Merchant plants report their weakest capacity income since 2029."
+        },
+        {
+          "quarter": "2038Q3",
+          "displayed": 27,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Auction results read against the cap: 22-28. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "Capacity clears at half the cap."
+        },
+        {
+          "quarter": "2038Q4",
+          "displayed": 30,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 21,
+            "high": 27,
+            "note": "Auction results read against the cap: 21-27. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2039Q1",
+          "displayed": 21,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 20,
+            "high": 26,
+            "note": "Auction results read against the cap: 20-26. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2039Q2",
+          "displayed": 24,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 20,
+            "high": 26,
+            "note": "Auction results read against the cap: 20-26. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2039Q3",
+          "displayed": 17,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 19,
+            "high": 25,
+            "note": "Auction results read against the cap: 19-25. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2039Q4",
+          "displayed": 25,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 19,
+            "high": 25,
+            "note": "Auction results read against the cap: 19-25. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2040Q1",
+          "displayed": 16,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 19,
+            "high": 25,
+            "note": "Auction results read against the cap: 19-25. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2040Q2",
+          "displayed": 25,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 19,
+            "high": 25,
+            "note": "Auction results read against the cap: 19-25. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2040Q3",
+          "displayed": 20,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 19,
+            "high": 25,
+            "note": "Auction results read against the cap: 19-25. Above 50, firm capacity is getting scarcer."
+          }
+        },
+        {
+          "quarter": "2040Q4",
+          "displayed": 22,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 19,
+            "high": 25,
+            "note": "Auction results read against the cap: 19-25. Above 50, firm capacity is getting scarcer."
+          }
+        }
+      ]
+    },
+    {
+      "id": "ai_demand",
+      "label": "AI Demand",
+      "higher_means": "AI demand growing faster than the 2036 trend: hyperscaler capex and AI revenue (50 = 2036 trend)",
+      "authoring_latent": [
+        50,
+        50,
+        52,
+        52,
+        49,
+        45,
+        40,
+        34,
+        30,
+        28,
+        27,
+        26,
+        26,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25,
+        25
+      ],
+      "series": [
+        {
+          "quarter": "2036Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Hyperscaler capex and AI revenue, read together: 47-53. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2036Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Hyperscaler capex and AI revenue, read together: 47-53. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2036Q3",
+          "displayed": 49,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Hyperscaler capex and AI revenue, read together: 49-55. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2036Q4",
+          "displayed": 54,
+          "arrow": "up",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Hyperscaler capex and AI revenue, read together: 49-55. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2037Q1",
+          "displayed": 46,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 46,
+            "high": 52,
+            "note": "Hyperscaler capex and AI revenue, read together: 46-52. Above 50, demand is beating the 2036 trend."
+          },
+          "headline": "AI revenue misses forecasts; two labs slow their training plans."
+        },
+        {
+          "quarter": "2037Q2",
+          "displayed": 42,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 42,
+            "high": 48,
+            "note": "Hyperscaler capex and AI revenue, read together: 42-48. Above 50, demand is beating the 2036 trend."
+          },
+          "headline": "GPU rental rates slide on idle capacity."
+        },
+        {
+          "quarter": "2037Q3",
+          "displayed": 36,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 37,
+            "high": 43,
+            "note": "Hyperscaler capex and AI revenue, read together: 37-43. Above 50, demand is beating the 2036 trend."
+          },
+          "headline": "A large AI buyer cancels two campuses before construction."
+        },
+        {
+          "quarter": "2037Q4",
+          "displayed": 31,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 31,
+            "high": 37,
+            "note": "Hyperscaler capex and AI revenue, read together: 31-37. Above 50, demand is beating the 2036 trend."
+          },
+          "headline": "The Capex Pause: the biggest buyers cut next year's data-centre spending."
+        },
+        {
+          "quarter": "2038Q1",
+          "displayed": 24,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 27,
+            "high": 33,
+            "note": "Hyperscaler capex and AI revenue, read together: 27-33. Above 50, demand is beating the 2036 trend."
+          },
+          "headline": "Analysts call it a plateau: demand flat, efficiency up."
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 34,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 25,
+            "high": 31,
+            "note": "Hyperscaler capex and AI revenue, read together: 25-31. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2038Q3",
+          "displayed": 23,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 24,
+            "high": 30,
+            "note": "Hyperscaler capex and AI revenue, read together: 24-30. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2038Q4",
+          "displayed": 32,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 23,
+            "high": 29,
+            "note": "Hyperscaler capex and AI revenue, read together: 23-29. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2039Q1",
+          "displayed": 20,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 23,
+            "high": 29,
+            "note": "Hyperscaler capex and AI revenue, read together: 23-29. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2039Q2",
+          "displayed": 21,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Hyperscaler capex and AI revenue, read together: 22-28. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2039Q3",
+          "displayed": 21,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Hyperscaler capex and AI revenue, read together: 22-28. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2039Q4",
+          "displayed": 31,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Hyperscaler capex and AI revenue, read together: 22-28. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2040Q1",
+          "displayed": 26,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Hyperscaler capex and AI revenue, read together: 22-28. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2040Q2",
+          "displayed": 25,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Hyperscaler capex and AI revenue, read together: 22-28. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2040Q3",
+          "displayed": 29,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Hyperscaler capex and AI revenue, read together: 22-28. Above 50, demand is beating the 2036 trend."
+          }
+        },
+        {
+          "quarter": "2040Q4",
+          "displayed": 30,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 22,
+            "high": 28,
+            "note": "Hyperscaler capex and AI revenue, read together: 22-28. Above 50, demand is beating the 2036 trend."
+          }
+        }
+      ]
+    },
+    {
+      "id": "reform_docket",
+      "label": "Reform Docket",
+      "higher_means": "large-load connection reform moving forward: filed, approved, applied, energised (50 = 2036 status)",
+      "authoring_latent": [
+        50,
+        50,
+        51,
+        52,
+        52,
+        53,
+        53,
+        52,
+        52,
+        51,
+        51,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50,
+        50
+      ],
+      "series": [
+        {
+          "quarter": "2036Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2036Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2036Q3",
+          "displayed": 51,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Large-load rules filed, approved and actually energised: 48-54. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2036Q4",
+          "displayed": 53,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Large-load rules filed, approved and actually energised: 49-55. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2037Q1",
+          "displayed": 54,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Large-load rules filed, approved and actually energised: 49-55. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2037Q2",
+          "displayed": 53,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 50,
+            "high": 56,
+            "note": "Large-load rules filed, approved and actually energised: 50-56. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2037Q3",
+          "displayed": 52,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 50,
+            "high": 56,
+            "note": "Large-load rules filed, approved and actually energised: 50-56. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2037Q4",
+          "displayed": 57,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Large-load rules filed, approved and actually energised: 49-55. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2038Q1",
+          "displayed": 58,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Large-load rules filed, approved and actually energised: 49-55. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 47,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Large-load rules filed, approved and actually energised: 48-54. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2038Q3",
+          "displayed": 51,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Large-load rules filed, approved and actually energised: 48-54. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2038Q4",
+          "displayed": 47,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2039Q1",
+          "displayed": 55,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2039Q2",
+          "displayed": 55,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2039Q3",
+          "displayed": 52,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2039Q4",
+          "displayed": 54,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2040Q1",
+          "displayed": 53,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2040Q2",
+          "displayed": 45,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2040Q3",
+          "displayed": 50,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        },
+        {
+          "quarter": "2040Q4",
+          "displayed": 45,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Large-load rules filed, approved and actually energised: 47-53. Above 50, the large-load rules are moving."
+          }
+        }
+      ]
+    },
+    {
+      "id": "launch_cadence",
+      "label": "Launch Cadence",
+      "higher_means": "launches a year rising and $/kg quotes falling faster than plan (50 = on plan)",
+      "authoring_latent": [
+        50,
+        50,
+        50,
+        51,
+        51,
+        51,
+        52,
+        52,
+        52,
+        52,
+        53,
+        53,
+        53,
+        53,
+        53,
+        54,
+        54,
+        54,
+        54,
+        54
+      ],
+      "series": [
+        {
+          "quarter": "2036Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Launch counts and third-party $/kg quotes against plan: 47-53. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2036Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Launch counts and third-party $/kg quotes against plan: 47-53. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2036Q3",
+          "displayed": 48,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Launch counts and third-party $/kg quotes against plan: 47-53. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2036Q4",
+          "displayed": 45,
+          "arrow": "down",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Launch counts and third-party $/kg quotes against plan: 48-54. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2037Q1",
+          "displayed": 50,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Launch counts and third-party $/kg quotes against plan: 48-54. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2037Q2",
+          "displayed": 47,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Launch counts and third-party $/kg quotes against plan: 48-54. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2037Q3",
+          "displayed": 58,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Launch counts and third-party $/kg quotes against plan: 49-55. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2037Q4",
+          "displayed": 53,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Launch counts and third-party $/kg quotes against plan: 49-55. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2038Q1",
+          "displayed": 50,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Launch counts and third-party $/kg quotes against plan: 49-55. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 56,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Launch counts and third-party $/kg quotes against plan: 49-55. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2038Q3",
+          "displayed": 53,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 50,
+            "high": 56,
+            "note": "Launch counts and third-party $/kg quotes against plan: 50-56. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2038Q4",
+          "displayed": 53,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 50,
+            "high": 56,
+            "note": "Launch counts and third-party $/kg quotes against plan: 50-56. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2039Q1",
+          "displayed": 48,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 50,
+            "high": 56,
+            "note": "Launch counts and third-party $/kg quotes against plan: 50-56. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2039Q2",
+          "displayed": 59,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 50,
+            "high": 56,
+            "note": "Launch counts and third-party $/kg quotes against plan: 50-56. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2039Q3",
+          "displayed": 59,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 50,
+            "high": 56,
+            "note": "Launch counts and third-party $/kg quotes against plan: 50-56. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2039Q4",
+          "displayed": 56,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Launch counts and third-party $/kg quotes against plan: 51-57. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2040Q1",
+          "displayed": 56,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Launch counts and third-party $/kg quotes against plan: 51-57. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2040Q2",
+          "displayed": 49,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Launch counts and third-party $/kg quotes against plan: 51-57. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2040Q3",
+          "displayed": 49,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Launch counts and third-party $/kg quotes against plan: 51-57. Above 50, launch is getting cheaper faster than planned."
+          }
+        },
+        {
+          "quarter": "2040Q4",
+          "displayed": 52,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 51,
+            "high": 57,
+            "note": "Launch counts and third-party $/kg quotes against plan: 51-57. Above 50, launch is getting cheaper faster than planned."
+          }
+        }
+      ]
+    },
+    {
+      "id": "firm_buildout",
+      "label": "Firm Build-out",
+      "higher_means": "more firm power coming: announced and delivered reactors, geothermal and gas (50 = 2036 pace)",
+      "authoring_latent": [
+        50,
+        50,
+        51,
+        52,
+        56,
+        60,
+        58,
+        52,
+        46,
+        42,
+        40,
+        38,
+        37,
+        36,
+        36,
+        36,
+        36,
+        36,
+        36,
+        36
+      ],
+      "series": [
+        {
+          "quarter": "2036Q1",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Announced and delivered firm MW, read together: 47-53. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2036Q2",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "baseline",
+          "sharp": {
+            "low": 47,
+            "high": 53,
+            "note": "Announced and delivered firm MW, read together: 47-53. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2036Q3",
+          "displayed": 51,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Announced and delivered firm MW, read together: 48-54. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2036Q4",
+          "displayed": 51,
+          "arrow": "flat",
+          "role_tag": "quiet",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Announced and delivered firm MW, read together: 49-55. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2037Q1",
+          "displayed": 51,
+          "arrow": "flat",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 53,
+            "high": 59,
+            "note": "Announced and delivered firm MW, read together: 53-59. Above 50, firm power looks set to get more plentiful."
+          },
+          "headline": "A small reactor orderbook is announced for the 2040s."
+        },
+        {
+          "quarter": "2037Q2",
+          "displayed": 60,
+          "arrow": "up",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 57,
+            "high": 63,
+            "note": "Announced and delivered firm MW, read together: 57-63. Above 50, firm power looks set to get more plentiful."
+          },
+          "headline": "Geothermal developers report record offtake interest."
+        },
+        {
+          "quarter": "2037Q3",
+          "displayed": 55,
+          "arrow": "down",
+          "role_tag": "signal_window",
+          "sharp": {
+            "low": 55,
+            "high": 61,
+            "note": "Announced and delivered firm MW, read together: 55-61. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2037Q4",
+          "displayed": 48,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 49,
+            "high": 55,
+            "note": "Announced and delivered firm MW, read together: 49-55. Above 50, firm power looks set to get more plentiful."
+          },
+          "headline": "The reactor orderbook is put on hold as load forecasts fall."
+        },
+        {
+          "quarter": "2038Q1",
+          "displayed": 44,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 43,
+            "high": 49,
+            "note": "Announced and delivered firm MW, read together: 43-49. Above 50, firm power looks set to get more plentiful."
+          },
+          "headline": "Two planned gas plants are cancelled."
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 42,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 39,
+            "high": 45,
+            "note": "Announced and delivered firm MW, read together: 39-45. Above 50, firm power looks set to get more plentiful."
+          },
+          "headline": "Firm projects in development fall for the first time since 2029."
+        },
+        {
+          "quarter": "2038Q3",
+          "displayed": 40,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 37,
+            "high": 43,
+            "note": "Announced and delivered firm MW, read together: 37-43. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2038Q4",
+          "displayed": 36,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 35,
+            "high": 41,
+            "note": "Announced and delivered firm MW, read together: 35-41. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2039Q1",
+          "displayed": 36,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 34,
+            "high": 40,
+            "note": "Announced and delivered firm MW, read together: 34-40. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2039Q2",
+          "displayed": 30,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 33,
+            "high": 39,
+            "note": "Announced and delivered firm MW, read together: 33-39. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2039Q3",
+          "displayed": 37,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 33,
+            "high": 39,
+            "note": "Announced and delivered firm MW, read together: 33-39. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2039Q4",
+          "displayed": 42,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 33,
+            "high": 39,
+            "note": "Announced and delivered firm MW, read together: 33-39. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2040Q1",
+          "displayed": 38,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 33,
+            "high": 39,
+            "note": "Announced and delivered firm MW, read together: 33-39. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2040Q2",
+          "displayed": 32,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 33,
+            "high": 39,
+            "note": "Announced and delivered firm MW, read together: 33-39. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2040Q3",
+          "displayed": 37,
+          "arrow": "up",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 33,
+            "high": 39,
+            "note": "Announced and delivered firm MW, read together: 33-39. Above 50, firm power looks set to get more plentiful."
+          }
+        },
+        {
+          "quarter": "2040Q4",
+          "displayed": 33,
+          "arrow": "down",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 33,
+            "high": 39,
+            "note": "Announced and delivered firm MW, read together: 33-39. Above 50, firm power looks set to get more plentiful."
+          }
+        }
+      ]
+    }
+  ]
+}
