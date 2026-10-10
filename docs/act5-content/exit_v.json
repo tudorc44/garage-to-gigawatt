@@ -1,0 +1,54 @@
+{
+  "_meta": {
+    "schema": "exit_v/1",
+    "doc43": "§15.2 (V-D20), §6.8 (hidden), §0.4 (doc 45 §Q7 bid factors)",
+    "author": "content pack (doc 47)",
+    "DO_NOT_EXPOSE": "hidden.outlook_factor is read only by act5End.ts and the exit system after the choice; never shown before the reveal."
+  },
+  "window": [
+    "2040Q3",
+    "2040Q4"
+  ],
+  "default": "hold",
+  "public": {
+    "bid_factor_range": {
+      "v1": [
+        1.15,
+        1.3
+      ],
+      "v2": [
+        1.05,
+        1.25
+      ],
+      "v3": [
+        0.95,
+        1.1
+      ],
+      "v4": [
+        1.05,
+        1.25
+      ]
+    },
+    "draw": "uniform in the future's range on substream act5_exit_bid, drawn once at 2040Q3 and shown",
+    "market_columns": [
+      "exit_bid_low",
+      "exit_bid_high"
+    ],
+    "options": {
+      "sell_company": "net worth = founder stake × valuation × bid factor",
+      "sell_plants": "plant stakes sold at stake × plant value × infra_bid_index; the rest held at valuation × outlook",
+      "hold": "net worth = founder stake × valuation × outlook factor"
+    }
+  },
+  "hidden": {
+    "outlook_factor": {
+      "v1": 1.15,
+      "v2": 1.0,
+      "v3": 0.85,
+      "v4": 0.95
+    },
+    "grade": "D",
+    "basis": "Designed (doc 43 §15.2): nothing published bounds a post-2040 outlook (doc 45 §Q7)."
+  },
+  "disclaimer": "The outlook after 2040 is the game's assumption for this future, not a forecast."
+}

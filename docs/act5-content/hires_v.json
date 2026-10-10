@@ -1,0 +1,28 @@
+{
+  "_meta": {
+    "schema": "hires_v/1",
+    "doc43": "§14.3 as amended by §0.4 (V-D18)",
+    "author": "content pack (doc 47): effects from doc 43; salaries designed, in Act IV's band ($320-380K)"
+  },
+  "hires": [
+    {
+      "id": "head_of_grid_strategy",
+      "salary_usd_yr": 330000,
+      "hire_bandwidth": 1,
+      "effect": {
+        "upgrade_bill_mult": 0.75,
+        "upgrade_tail_chance_mult": 0.5
+      },
+      "note": "\"The $400-600 tail halved\" read as the tail's chance (20% → 10%), not its size (mine, reversible)"
+    },
+    {
+      "id": "head_of_power_trading",
+      "salary_usd_yr": 360000,
+      "hire_bandwidth": 1,
+      "effect": {
+        "merchant_sales_mult": 1.05,
+        "contract_output_discount": 0.05
+      }
+    }
+  ]
+}
