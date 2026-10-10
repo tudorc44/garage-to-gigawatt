@@ -248,6 +248,8 @@ Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5
   from 2026 and 30% from 2022Q1, small wind CF 0.20 × U(0.3, 1), battery 85% / 2.5% fade, PJM derate by year, ERCOT battery income.
 - **M39.5** done: EGS $7,000/kW, PPA $90; block 2 $5,500/kW, $90; reactors $40/MWh, CF 0.80 for 8 q then 0.92 (`ventureCf`). Goldens
   act4-energy-f2/f4 change (the cheaper EGS buy-in); the others don't. Open: delivery to the campus stays firm (CF not applied).
+- **M39.6** done: the energy cards' reality lines (doc 40 §Q5): $540/MWh in 2015 under rooftop solar and the home battery;
+  $185/MWh under on-site solar and the utility battery (mine: those four kinds).
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 

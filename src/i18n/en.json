@@ -3666,6 +3666,8 @@
   "ui.energy.what.bess": "Shaves the 4CP peaks without losing output, lets AI load earn demand-response credits, rides AI halls through grid calls, and earns PJM capacity payments.",
   "ui.energy.what.btm_solar": "Behind the meter: cuts what you buy while the sun shines; surplus is wasted. Firm only with storage.",
   "ui.energy.what.btm_wind": "Behind the meter: cuts what you buy while the wind blows; surplus is wasted. Noisy. Firm only with storage.",
+  "ui.energy.reality.home": "Running a rig around the clock on sun and batteries cost about $540/MWh in 2015: you need six times the panels and a night's worth of storage.",
+  "ui.energy.reality.utility": "A 1 MW site on solar and batteries alone works out near $185/MWh - several times the grid price.",
   "ui.energy.what.iron_air": "100 hours of storage: makes 90% of the on-site renewables it covers firm power. Slow to build.",
   "ui.energy.texas": "Texas power programmes",
   "ui.energy.texas_note": "Demand response pays every summer on curtailable MW, called or not. Only miners are curtailable: GPU and hosting MW never earn, unless a battery carries them. Refusing a grid call forfeits the year.",
