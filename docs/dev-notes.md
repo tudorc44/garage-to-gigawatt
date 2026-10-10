@@ -191,7 +191,8 @@ None open from before: all five M11.4c questions below were answered by the desi
 ## Next
 
 **Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
-`docs/game-project-files/claude_42-act-v-concepts.md`, in `main`), then doc 43 (being written by the design thread).
+`docs/game-project-files/claude_42-act-v-concepts.md`, in `main`), doc 43 (the Act V design, "Firm", 2036-2040, v0.1) and
+doc 44 (the brief for the third research pass, doc 45), both committed on `m44`. The Act V content pack follows doc 45.
 F-10 closed (M42; doc 27 §16 marks it). PR #9 merged (`main` = `c08bb2c`); `m43` tagged `m43-done` and deleted; `m44` (from
 `main`) holds this cleanup.
 
