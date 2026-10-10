@@ -250,6 +250,8 @@ Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5
   act4-energy-f2/f4 change (the cheaper EGS buy-in); the others don't. Open: delivery to the campus stays firm (CF not applied).
 - **M39.6** done: the energy cards' reality lines (doc 40 §Q5): $540/MWh in 2015 under rooftop solar and the home battery;
   $185/MWh under on-site solar and the utility battery (mine: those four kinds).
+- **M39.7**: `source` replaces `verify` where doc 40 answered (Québec's Rate LG and the flare pad stay `verify`); the energy README
+  rows updated with a "Still gaps" list. Runs (`--energy`, the byte-identity sims, the venture table): below.
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 

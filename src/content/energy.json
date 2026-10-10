@@ -2,7 +2,7 @@
  "_meta": {
   "schema": "energy/1",
   "doc": "doc 38 (claude_38-energy-ventures-design.md) §4, approved with E-D1..E-D15 (owner, 9 Oct 2026)",
-  "note": "Prices by year are in market_energy.csv. Grades and every designed value: docs/energy-content/README.md. 'verify' marks a value doc 38 asks to verify (doc 39, §8)."
+  "note": "Prices by year are in market_energy.csv. Grades and every designed value: docs/energy-content/README.md. M39 (doc 41): 'source' gives doc 40's answer and grade where it checked a value; 'verify' marks one still a gap."
  },
  "crf": {"rate": 0.07, "years": 25, "note": "Capital recovery factor for the effective $/MWh on a card (doc 38 §4.1: 0.0858)"},
  "itc": {
@@ -62,7 +62,7 @@
   }
  },
  "special_sites": {
-  "note": "doc 38 §4.4-4.6, all designed [D] and 'verify' (§8 Q1-Q3). A special site is a leased hydro or Iceland allocation, or a flare-gas pad; the tier gives its rent and Heat class.",
+  "note": "doc 38 §4.4-4.6; M39.2-M39.3 (doc 41): the hydro kinds and Iceland from doc 40 §Q1-Q3 (each kind's 'source'); Québec's Rate LG and the flare pad still 'verify'. A special site is a leased hydro or Iceland allocation, or a flare-gas pad; the tier gives its rent and Heat class.",
   "kinds": {
    "pud": {"tier": "warehouse", "kw": 5000, "power_usd_kwh": {"2017": 0.026, "2018": 0.026, "2019": 0.026, "2020": 0.026, "2021": 0.026, "2022": 0.026}, "rent_usd_q": 30000, "capex_usd": 400000, "build_quarters": 1, "from": "2017Q1", "until": "2022Q3", "cooling_mult": 0.95, "queue": "hydro",
     "moratorium": {"from": "2018Q1", "until": "2019Q1"},
