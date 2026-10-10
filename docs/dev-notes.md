@@ -271,6 +271,9 @@ the 2035Q4 companies as the energy runner; `gate.ts` the 20 stub V1 quarters, §
 - **M43.0c** (§0.7, `gate-c.ts`, branch `m45`, 30 seeds): **V1 passes, V3 fails**: V1 Fortress 1.400, Firm Builder 1.570 (475 of
   2,160 runs qualify, all Fortress); V3 0.958 and 0.937. The Seller's fair-value site sale costs it 15-21% in both futures (its
   cash earns nothing: five years of rent lost). Stop rule (V1 passes only where V3 fails): reported, not tuned. STOPPED.
+- **M43.0d** (owner's option A, `gate-d.ts`, 30 seeds; confirmation, no tuning): V1 targets pass (Holder ÷ Seller Fortress 1.295,
+  Firm Builder 1.398; Holder ÷ Locker 1.122, 1.131). V3 Locker ÷ Holder: Firm Builder 1.061 passes, **Fortress 1.031 misses
+  1.05**; info V3 Seller ÷ Holder 1.034, 1.047. Gate FAIL on one target by 0.019: the owner's call.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
