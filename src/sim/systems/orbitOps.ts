@@ -239,10 +239,10 @@ export function endQuarterOrbit(state: GameState): void {
       usedUsd = used
     }
     const ref = { block: b.id }
-    // (a prepayment was income when received: the revenue it covers comes off it, so it isn't counted twice)
+    // (the revenue counts in full; the part a prepayment covers comes off the prepayment)
     bookSplit(state, cashUsd - opsUsd, [
       ['orbit_revenue', revenueUsd, ref],
-      ['other_income', -usedUsd, { ...ref, biz: 'orbit' }],
+      ['prepayments', -usedUsd, { ...ref, biz: 'orbit' }],
       ['orbit_opex', -(opsUsd - premiumQUsd), ref],
       ['insurance', -premiumQUsd, { ...ref, biz: 'orbit' }],
     ])

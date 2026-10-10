@@ -8078,7 +8078,7 @@
         "lines": {
           "equity_raised": 210118352,
           "other_opex": -1000000,
-          "other_income": 14165832.537500001,
+          "prepayments": 14165832.537500001,
           "orbit_capex": -83001600.00000001,
           "insurance": -8853421.500000002,
           "power": -850768.18875,
@@ -8090,7 +8090,7 @@
           },
           "orbit": {
             "other_opex": -1000000,
-            "other_income": 14165832.537500001,
+            "prepayments": 14165832.537500001,
             "orbit_capex": -83001600.00000001,
             "insurance": -8853421.500000002,
             "one_offs": -1620000
@@ -8101,7 +8101,7 @@
         },
         "byRef": {
           "block:ob4": {
-            "other_income": 14165832.537500001,
+            "prepayments": 14165832.537500001,
             "orbit_capex": -83001600.00000001,
             "insurance": -8853421.500000002
           },
@@ -8134,7 +8134,7 @@
         "startCash": 538175793.65,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 14049375,
+          "prepayments": 14049375,
           "orbit_capex": -131998680.00000003,
           "insurance": -8590390.875000002,
           "lunar_capex": -457504000,
@@ -8148,7 +8148,7 @@
         "byBiz": {
           "orbit": {
             "other_opex": -1000000,
-            "other_income": 14049375,
+            "prepayments": 14049375,
             "orbit_capex": -131998680.00000003,
             "insurance": -8590390.875000002,
             "orbit_revenue": 13500000,
@@ -8169,7 +8169,7 @@
         },
         "byRef": {
           "block:ob5": {
-            "other_income": 14049375,
+            "prepayments": 14049375,
             "orbit_capex": -81239400.00000001,
             "insurance": -8590390.875000002
           },
@@ -8209,7 +8209,7 @@
         "lines": {
           "equity_raised": 184995260,
           "other_opex": -1000000,
-          "other_income": 13933334.125,
+          "prepayments": 13933334.125,
           "orbit_capex": -128486160.00000003,
           "insurance": -8329266.000000003,
           "power": -932348.7,
@@ -8222,7 +8222,7 @@
           },
           "orbit": {
             "other_opex": -1000000,
-            "other_income": 13933334.125,
+            "prepayments": 13933334.125,
             "orbit_capex": -128486160.00000003,
             "insurance": -8329266.000000003,
             "one_offs": -1620000
@@ -8230,7 +8230,7 @@
         },
         "byRef": {
           "block:ob6": {
-            "other_income": 13933334.125,
+            "prepayments": 13933334.125,
             "orbit_capex": -79477200.00000001,
             "insurance": -8329266.000000003
           },
@@ -8267,7 +8267,7 @@
         "lines": {
           "equity_raised": 158482250,
           "other_opex": -1000000,
-          "other_income": 13817707.543750001,
+          "prepayments": 13817707.543750001,
           "orbit_capex": -177483240.00000006,
           "insurance": -8070046.875000001,
           "power": -932348.7,
@@ -8286,7 +8286,7 @@
           },
           "orbit": {
             "other_opex": -1000000,
-            "other_income": 13817707.543750001,
+            "prepayments": 13817707.543750001,
             "orbit_capex": -177483240.00000006,
             "insurance": -8070046.875000001,
             "orbit_revenue": 14170834.124999998,
@@ -8296,7 +8296,7 @@
         },
         "byRef": {
           "block:ob7": {
-            "other_income": 13817707.543750001,
+            "prepayments": 13817707.543750001,
             "orbit_capex": -77715000.00000001,
             "insurance": -8070046.875000001
           },
@@ -8338,7 +8338,7 @@
         "lines": {
           "equity_raised": 159922322,
           "other_opex": -1000000,
-          "other_income": -463332.53750000335,
+          "prepayments": -463332.53750000335,
           "orbit_capex": -121461120.00000003,
           "insurance": -7812733.500000001,
           "power": -970049.5499999998,
@@ -8357,7 +8357,7 @@
           },
           "orbit": {
             "other_opex": -1000000,
-            "other_income": -463332.53750000335,
+            "prepayments": -463332.53750000335,
             "orbit_capex": -121461120.00000003,
             "insurance": -7812733.500000001,
             "orbit_revenue": 31878124.796875,
@@ -8367,7 +8367,7 @@
         },
         "byRef": {
           "block:ob8": {
-            "other_income": 13702499.999999998,
+            "prepayments": 13702499.999999998,
             "orbit_capex": -75952800.00000001,
             "insurance": -7812733.500000001
           },
@@ -8380,7 +8380,7 @@
           },
           "block:ob4": {
             "orbit_revenue": 17707290.671875,
-            "other_income": -14165832.537500001,
+            "prepayments": -14165832.537500001,
             "orbit_opex": -625000
           },
           "block:ob2": {
@@ -8413,7 +8413,7 @@
         "lines": {
           "equity_raised": 530684032,
           "other_opex": -1000000,
-          "other_income": -1160687.4999999981,
+          "prepayments": -1160687.4999999981,
           "orbit_capex": -118218870.00000003,
           "insurance": -7609803.300000003,
           "lunar_capex": -126876000,
@@ -8432,7 +8432,7 @@
           },
           "orbit": {
             "other_opex": -1000000,
-            "other_income": -1160687.4999999981,
+            "prepayments": -1160687.4999999981,
             "orbit_capex": -118218870.00000003,
             "insurance": -7609803.300000003,
             "orbit_revenue": 62939843.546875,
@@ -8444,7 +8444,7 @@
         },
         "byRef": {
           "block:ob9": {
-            "other_income": 12888687.500000002,
+            "prepayments": 12888687.500000002,
             "orbit_capex": -74460870.00000001,
             "insurance": -7609803.300000003
           },
@@ -8465,7 +8465,7 @@
           },
           "block:ob5": {
             "orbit_revenue": 17561718.75,
-            "other_income": -14049375,
+            "prepayments": -14049375,
             "orbit_opex": -625000
           },
           "block:ob7": {
@@ -8494,7 +8494,7 @@
         "startCash": 388308790.88,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 6358803.203624729,
+          "prepayments": 6358803.203624729,
           "orbit_capex": -114976620.00000003,
           "insurance": -7408328.400000001,
           "power": -970049.5499999998,
@@ -8506,14 +8506,14 @@
         "byBiz": {
           "orbit": {
             "other_opex": -1000000,
-            "other_income": -1854334.125,
+            "prepayments": -1854334.125,
             "orbit_capex": -114976620.00000003,
             "insurance": -7408328.400000001,
             "orbit_revenue": 80356511.203125,
             "orbit_opex": -3125000
           },
           "moon": {
-            "other_income": 8213137.328624728
+            "prepayments": 8213137.328624728
           },
           "corporate": {
             "power": -970049.5499999998,
@@ -8523,7 +8523,7 @@
         },
         "byRef": {
           "block:ob10": {
-            "other_income": 12079000,
+            "prepayments": 12079000,
             "orbit_capex": -72968940.00000001,
             "insurance": -7408328.400000001
           },
@@ -8548,7 +8548,7 @@
           },
           "block:ob6": {
             "orbit_revenue": 17416667.65625,
-            "other_income": -13933334.125,
+            "prepayments": -13933334.125,
             "orbit_opex": -625000
           },
           "block:ob8": {
@@ -8579,7 +8579,7 @@
           "other_opex": -1000000,
           "orbit_capex": -71477010.00000001,
           "insurance": -8691510.811500004,
-          "other_income": -712174.4104130976,
+          "prepayments": -712174.4104130976,
           "power": -970049.5499999998,
           "orbit_revenue": 97628645.6328125,
           "orbit_opex": -3750000,
@@ -8593,10 +8593,10 @@
             "insurance": -8691510.811500004,
             "orbit_revenue": 97628645.6328125,
             "orbit_opex": -3750000,
-            "other_income": -13817707.543750001
+            "prepayments": -13817707.543750001
           },
           "moon": {
-            "other_income": 13105533.133336904
+            "prepayments": 13105533.133336904
           },
           "corporate": {
             "power": -970049.5499999998,
@@ -8635,7 +8635,7 @@
           },
           "block:ob7": {
             "orbit_revenue": 17272134.4296875,
-            "other_income": -13817707.543750001,
+            "prepayments": -13817707.543750001,
             "orbit_opex": -625000
           }
         },
@@ -8663,7 +8663,7 @@
           "other_opex": -1000000,
           "orbit_capex": -150587316.00000006,
           "insurance": -9929610.281250002,
-          "other_income": -5865193.156552666,
+          "prepayments": -5865193.156552666,
           "power": -940659.7499999998,
           "orbit_revenue": 114756770.6328125,
           "orbit_opex": -4375000,
@@ -8677,10 +8677,10 @@
             "insurance": -9929610.281250002,
             "orbit_revenue": 114756770.6328125,
             "orbit_opex": -4375000,
-            "other_income": -13702499.999999998
+            "prepayments": -13702499.999999998
           },
           "moon": {
-            "other_income": 7837306.843447332
+            "prepayments": 7837306.843447332
           },
           "corporate": {
             "power": -940659.7499999998,
@@ -8724,7 +8724,7 @@
           },
           "block:ob8": {
             "orbit_revenue": 17128124.999999996,
-            "other_income": -13702499.999999998,
+            "prepayments": -13702499.999999998,
             "orbit_opex": -625000
           },
           "block:ob9": {
@@ -8758,7 +8758,7 @@
           "other_opex": -1000000,
           "orbit_capex": -54617706.000000015,
           "insurance": -12633679.921500003,
-          "other_income": 5039098.476900067,
+          "prepayments": 5039098.476900067,
           "power": -940659.7499999998,
           "orbit_revenue": 114756770.6328125,
           "orbit_opex": -4375000,
@@ -8776,7 +8776,7 @@
             "one_offs": -1933303.1250000002
           },
           "moon": {
-            "other_income": 5039098.476900067
+            "prepayments": 5039098.476900067
           },
           "corporate": {
             "power": -940659.7499999998,
@@ -8853,7 +8853,7 @@
         "startCash": 12909904.05,
         "lines": {
           "other_opex": -1000000,
-          "other_income": -21974980.910743587,
+          "prepayments": -21974980.910743587,
           "power": -940659.7499999998,
           "orbit_revenue": 145966380.0078125,
           "orbit_opex": -5625000,
@@ -8869,12 +8869,12 @@
             "orbit_revenue": 145966380.0078125,
             "orbit_opex": -5625000,
             "insurance": -7160855.625000001,
-            "other_income": -24967687.5,
+            "prepayments": -24967687.5,
             "orbit_capex": -37456848.00000001,
             "asset_sales": 149167282.39999998
           },
           "moon": {
-            "other_income": 2992706.5892564137
+            "prepayments": 2992706.5892564137
           },
           "corporate": {
             "power": -940659.7499999998,
@@ -8922,12 +8922,12 @@
           },
           "block:ob9": {
             "orbit_revenue": 16110859.375000002,
-            "other_income": -12888687.500000002,
+            "prepayments": -12888687.500000002,
             "orbit_opex": -625000
           },
           "block:ob10": {
             "orbit_revenue": 15098750,
-            "other_income": -12079000,
+            "prepayments": -12079000,
             "orbit_opex": -625000
           },
           "block:ob12": {
@@ -8956,7 +8956,7 @@
         "startCash": 1897208.14,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 3782241.4076393847,
+          "prepayments": 3782241.4076393847,
           "power": -940659.7499999998,
           "orbit_revenue": 143288880.0078125,
           "orbit_opex": -5625000,
@@ -8972,7 +8972,7 @@
             "insurance": -6954954.435000001
           },
           "moon": {
-            "other_income": 3782241.4076393847
+            "prepayments": 3782241.4076393847
           },
           "corporate": {
             "power": -940659.7499999998,
@@ -9048,7 +9048,7 @@
         "startCash": 28767315.3,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 2082681.781237945,
+          "prepayments": 2082681.781237945,
           "power": -907174.6500000001,
           "orbit_revenue": 143288880.0078125,
           "orbit_opex": -6250000,
@@ -9064,7 +9064,7 @@
             "insurance": -8209200.656250001
           },
           "moon": {
-            "other_income": 2082681.781237945
+            "prepayments": 2082681.781237945
           },
           "corporate": {
             "power": -907174.6500000001,
@@ -9144,7 +9144,7 @@
         "startCash": 38060592.83,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 9185074.445342822,
+          "prepayments": 9185074.445342822,
           "power": -907174.6500000001,
           "orbit_revenue": 143288880.0078125,
           "orbit_opex": -6250000,
@@ -9162,7 +9162,7 @@
             "one_offs": -1307250
           },
           "moon": {
-            "other_income": 9185074.445342822
+            "prepayments": 9185074.445342822
           },
           "corporate": {
             "power": -907174.6500000001,
@@ -9245,7 +9245,7 @@
         "startCash": 55205697.96,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 1789439.9864505976,
+          "prepayments": 1789439.9864505976,
           "orbit_capex": -47520000.000000015,
           "power": -907174.6500000001,
           "orbit_revenue": 143288880.0078125,
@@ -9265,7 +9265,7 @@
             "one_offs": -1307250
           },
           "moon": {
-            "other_income": 1789439.9864505976
+            "prepayments": 1789439.9864505976
           },
           "corporate": {
             "power": -907174.6500000001,

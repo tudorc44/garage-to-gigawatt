@@ -239,6 +239,8 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
   Mine: lunar_revenue/lunar_opex/energy_opex/taxes added; prepayments income when received, set off later; no gain/loss on sales.
 - **M37.2** done: `src/sim/financeViews.ts` (periods, P&L, by business, by site with projects/ventures under their site and blocks
   under Orbit, cash flow, chart, summaries); test `sim/financeViews` (sums, periods). Moon is its own business column (mine).
+- **M37.3** done: left-nav "Finances" (every act, the prologue too; own chunk 12 KB), P&L tab by line/business/site, period picker,
+  biggest changes. Mine: prepayments are cash outside the P&L (`prepayments`, operating cash), so revenue is never negative.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 

@@ -387,8 +387,18 @@ export function bestWorstSite(state: GameState, period: Period): { best: Contrib
 export interface CashFlowView {
   period: Period
   startCash: number
-  /** Net profit; less the mined coins (revenue, but cash only when sold); the cents rounding; summary quarters. */
-  operating: { netProfit: number; minedCoins: number; rounding: number; summaryChange: number; total: number }
+  /**
+   * Net profit; less the mined coins (revenue, but cash only when sold); prepayments received less those used (cash
+   * outside the P&L); the cents rounding; summary quarters.
+   */
+  operating: {
+    netProfit: number
+    minedCoins: number
+    prepayments: number
+    rounding: number
+    summaryChange: number
+    total: number
+  }
   investing: { rows: { id: Category; usd: number }[]; total: number }
   financing: { rows: { id: Category; usd: number }[]; total: number }
   treasury: { rows: { id: Category; usd: number }[]; total: number }
@@ -412,12 +422,14 @@ export function cashFlowView(state: GameState, period: Period): CashFlowView {
   const f = pnlFigures(t.lines)
   const minedCoins = -sum(t.lines, MINED)
   const summaryChange = t.summary?.cashChangeUsd ?? 0
+  const prepayments = sectionRows(t.lines, 'operating').total
   const operating = {
     netProfit: f.net,
     minedCoins,
+    prepayments,
     rounding: t.rounding,
     summaryChange,
-    total: f.net + minedCoins + t.rounding + summaryChange,
+    total: f.net + minedCoins + prepayments + t.rounding + summaryChange,
   }
   const investing = sectionRows(t.lines, 'investing')
   const financing = sectionRows(t.lines, 'financing')

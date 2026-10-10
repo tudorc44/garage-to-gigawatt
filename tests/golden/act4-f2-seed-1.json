@@ -5839,7 +5839,7 @@
         "lines": {
           "equity_raised": 195063768,
           "other_opex": -1000000,
-          "other_income": 13650000,
+          "prepayments": 13650000,
           "orbit_capex": -86526000.00000001,
           "insurance": -9385200.000000002,
           "power": -858791.6643749998,
@@ -5851,7 +5851,7 @@
           },
           "orbit": {
             "other_opex": -1000000,
-            "other_income": 13650000,
+            "prepayments": 13650000,
             "orbit_capex": -86526000.00000001,
             "insurance": -9385200.000000002,
             "one_offs": -1620000
@@ -5862,7 +5862,7 @@
         },
         "byRef": {
           "block:ob4": {
-            "other_income": 13650000,
+            "prepayments": 13650000,
             "orbit_capex": -86526000.00000001,
             "insurance": -9385200.000000002
           },
@@ -5895,7 +5895,7 @@
         "startCash": 516512133.01,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 13275000,
+          "prepayments": 13275000,
           "orbit_capex": -75675600.00000001,
           "insurance": -9385200.000000002,
           "lunar_capex": -472504000,
@@ -5909,7 +5909,7 @@
         "byBiz": {
           "orbit": {
             "other_opex": -1000000,
-            "other_income": 13275000,
+            "prepayments": 13275000,
             "orbit_capex": -75675600.00000001,
             "insurance": -9385200.000000002,
             "orbit_revenue": 13500000,
@@ -5930,7 +5930,7 @@
         },
         "byRef": {
           "block:ob5": {
-            "other_income": 13275000,
+            "prepayments": 13275000,
             "orbit_capex": -23166000.000000004,
             "insurance": -9385200.000000002
           },
@@ -5969,7 +5969,7 @@
         "startCash": 38280923.24,
         "lines": {
           "other_opex": -1000000,
-          "other_income": 11975049.328431487,
+          "prepayments": 11975049.328431487,
           "power": -941141.55,
           "one_offs": -1620000,
           "orbit_capex": -52509600.000000015,
@@ -5982,7 +5982,7 @@
             "orbit_capex": -52509600.000000015
           },
           "moon": {
-            "other_income": 11975049.328431487,
+            "prepayments": 11975049.328431487,
             "asset_sales": 12792493.955062862
           },
           "corporate": {

@@ -6,8 +6,11 @@
 import { quarterIndex } from '../content/index.ts'
 import { roundCents, type GameState } from './state.ts'
 
-/** The ledger's sections: the P&L's (revenue, operating costs, below EBITDA) and the cash flow's own. */
-export type LedgerSection = 'revenue' | 'opex' | 'below' | 'investing' | 'financing' | 'treasury'
+/**
+ * The ledger's sections: the P&L's (revenue, operating costs, below EBITDA) and the cash flow's own (operating
+ * adjustments outside the P&L, investing, financing, treasury).
+ */
+export type LedgerSection = 'revenue' | 'opex' | 'below' | 'operating' | 'investing' | 'financing' | 'treasury'
 
 /** The businesses the P&L can be split by (doc 39 §M37.2; the Moon is its own column: mine). */
 export const BUSINESSES = ['mining', 'hosting', 'ai', 'orbit', 'moon', 'energy', 'corporate'] as const
@@ -47,6 +50,9 @@ export const CATEGORIES = {
   finance_fees: { section: 'below', biz: 'corporate', cash: true },
   one_offs: { section: 'below', biz: 'corporate', cash: true },
   taxes: { section: 'below', biz: 'corporate', cash: true },
+  // Operating cash outside the P&L (mine, M37.3): a tenant's or buyer's prepayment comes in as cash, and the revenue it
+  // later covers comes off it, so the P&L shows the revenue in full when it's earned (never a negative income)
+  prepayments: { section: 'operating', biz: 'corporate', cash: true },
   // Investing (cash flow only)
   machines: { section: 'investing', biz: 'mining', cash: true },
   site_builds: { section: 'investing', biz: 'corporate', cash: true },

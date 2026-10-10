@@ -214,7 +214,7 @@ export function signOrbitalTenant(state: GameState, blockId: string, offer: numb
   }
   const o = block.offers[offer]
   const prepaidUsd = tenantType(o.type).prepay_share * annualValueUsd(block.kind, block.mw, o.price)
-  book(state, 'other_income', prepaidUsd, { block: blockId, biz: 'orbit' })
+  book(state, 'prepayments', prepaidUsd, { block: blockId, biz: 'orbit' })
   block.tenant = {
     type: o.type,
     price: o.price,

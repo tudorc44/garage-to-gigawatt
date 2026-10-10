@@ -255,7 +255,7 @@ export function signOfftake(state: GameState, offer: number): void {
   const o = moon.offers[offer]
   const prepaidUsd = MOON.offtake.prepay_share * o.volumeTYr * 1000 * o.priceUsdKg
   state.bandwidth -= MOON.offtake.bandwidth
-  book(state, 'other_income', prepaidUsd, { biz: 'moon' })
+  book(state, 'prepayments', prepaidUsd, { biz: 'moon' })
   moon.offtakes.push({
     id: `lo${moon.nextId++}`,
     buyer: o.buyer,
@@ -390,10 +390,10 @@ export function endQuarterMoonOps(state: GameState): void {
     const usd = t * 1000 * o.priceUsdKg
     const credited = Math.min(o.prepaidLeftUsd, usd)
     o.prepaidLeftUsd -= credited
-    // (a prepayment was income when received: the sales it covers come off it)
+    // (the sales are revenue in full; the part a prepayment covers comes off the prepayment)
     bookSplit(state, usd - credited, [
       ['lunar_revenue', usd],
-      ['other_income', -credited, { biz: 'moon' }],
+      ['prepayments', -credited, { biz: 'moon' }],
     ])
     st.moonRevenueUsd += usd
   }

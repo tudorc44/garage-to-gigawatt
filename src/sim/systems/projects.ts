@@ -837,7 +837,7 @@ export function signTenant(
     ...(mult !== 1 ? { priceMult: mult } : {}),
   }
   p.offers = []
-  book(state, 'other_income', prepaymentUsd, { site: p.siteId, project: p.id, biz: 'ai' })
+  book(state, 'prepayments', prepaymentUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   if (state.firstAiDealQuarter === null)
     state.firstAiDealQuarter = state.quarter
   logEntry(state, 'log.tenant_signed', {
@@ -1247,8 +1247,8 @@ export function settleProjectsWeek(
       costParts = [['ai_opex', cost]]
       const setOff = Math.min(p.tenant.prepaymentLeftUsd, rev)
       p.tenant.prepaymentLeftUsd -= setOff
-      // (a prepayment was income when received: the rent it covers comes off it, so it isn't counted twice)
-      book(state, 'other_income', -setOff, ref)
+      // (the rent is revenue in full; the part the prepayment covers comes off the prepayment, not the cash)
+      book(state, 'prepayments', -setOff, ref)
     } else {
       const up = uptime(site)
       const contract = p.tenant?.gpu
@@ -1430,7 +1430,7 @@ export function slipProject(
  */
 export function tenantWalks(state: GameState, p: Project): void {
   const t = p.tenant!
-  book(state, 'other_income', -t.prepaymentLeftUsd, { site: p.siteId, project: p.id, biz: 'ai' })
+  book(state, 'prepayments', -t.prepaymentLeftUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   logEntry(state, 'log.tenant_walked', {
     n: p.n,
     tenant: t.card,
