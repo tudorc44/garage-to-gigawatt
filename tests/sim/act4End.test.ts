@@ -10,7 +10,7 @@ import type { GameState } from '../../src/sim/state.ts'
 import { act4Outcome, buildAct4End, frontierTitleId } from '../../src/sim/systems/act4End.ts'
 import { trueReliability } from '../../src/sim/systems/fleetReliability.ts'
 import { orbitBlock } from '../../src/sim/systems/orbit.ts'
-import { computeReadingIv, oracleLogsIv } from '../../src/sim/systems/readingScoreIv.ts'
+import { computeReadingIv, oracleLogsIv, scoredSignsIv } from '../../src/sim/systems/readingScoreIv.ts'
 import { act, act3Finished, orbitCompany } from './act4Helpers.ts'
 
 const Q = (label: string) => CONTENT.quarters.indexOf(label)
@@ -55,6 +55,39 @@ describe('the Act IV reading score (M32.1)', () => {
     expect(passive).toBeGreaterThan(opposite)
     expect(perfect).toBeGreaterThanOrEqual(85)
     expect(opposite).toBeLessThanOrEqual(35)
+  })
+})
+
+describe('a build and its funding (M40.1, design thread answer 1 after M39)', () => {
+  it("a build quarter's presale, insurance and debt draw count 0; the booking carries it", () => {
+    const build = [
+      { q: 0, kind: 'orbit_presale' as const },
+      { q: 0, kind: 'orbit_debt' as const },
+      { q: 0, kind: 'launch_booking' as const },
+      { q: 0, kind: 'orbit_insure' as const },
+    ]
+    expect(scoredSignsIv(build)).toEqual([0, 0, 1, 0])
+    expect(computeReadingIv(build, 'f1').perQuarter[0].value).toBe(1)
+    // without a build that quarter, insurance keeps its −1
+    expect(scoredSignsIv([{ q: 2, kind: 'orbit_insure' }])).toEqual([-1])
+  })
+
+  it('never counts a build quarter’s hedges as decoy moves (F1 decoy window 2031Q4-2032Q2, wrong stance −1)', () => {
+    const inDecoy = [
+      { q: 3, kind: 'orbit_commit' as const },
+      { q: 3, kind: 'orbit_insure' as const },
+      { q: 3, kind: 'orbit_presale' as const },
+    ]
+    expect(computeReadingIv(inDecoy, 'f1').penalty).toBe(0)
+    expect(computeReadingIv([{ q: 3, kind: 'orbit_insure' }], 'f1').penalty).toBe(10)
+  })
+
+  it('a raise takes + when an offensive move follows the same quarter or the next; else −1', () => {
+    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 2, kind: 'launch_booking' }])).toEqual([1, 1])
+    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 1, kind: 'orbit_commit' }])).toEqual([1, 1])
+    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 3, kind: 'launch_booking' }])).toEqual([-1, 1])
+    // a build's debt draw (0 after rule a) isn't an offensive move by itself
+    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 2, kind: 'orbit_debt' }])).toEqual([-1, 0])
   })
 })
 

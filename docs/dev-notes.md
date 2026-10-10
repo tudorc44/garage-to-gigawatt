@@ -5,9 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #4 merged: M37 Finances; cleanup on `m38`). The Prologue, Act I, Act II, Act III and Act IV
-(M27–M34) with the energy options and ventures (doc 38, M35–M36) and Finances (doc 39, M37) are merged into `main` and
-public on GitHub Pages. See "Next" and "Milestone M37".
+Last updated: 10 Oct 2026 (PR #5 merged: M37.7, Prologue bulk buy, M38, M39; cleanup on `m40`). The Prologue, Act I, Act II,
+Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37) and the energy
+data fixes (doc 41, M39) are merged into `main` and public on GitHub Pages. See "Next" and "Milestone M39".
 
 ## How the owner works
 
@@ -156,6 +156,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 - Balance tuning stays stopped by the owner's A1 answer.
 - ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
   repo (M27.0); the run resumed at M27.1.
+- **M40.1's target** (Perfect's reading ≥ Passive's in every future and preset): 3 cells of 12 still below (ridge F1 13 vs 53,
+  fortress and ridge F3 56 vs 58): raises with no offensive move in that or the next quarter. Rule not changed further: the
+  design thread's question (M40 report).
 
 ## Small follow-ups
 
@@ -186,7 +189,12 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): M37 Finances merged (PR #4, `main` = `3e67c1d`), live; `m37` tagged `m37-done` and deleted.** `m38`
+**Now (10 Oct 2026): PR #5 merged (`main` = `ff442df`): M37.7, Prologue bulk buy, M38 (report), M39 (energy data fixes);
+`m38` tagged `m38-done` and deleted; staging rebuilt from `main` by the owner. `m40` (from `main`) holds this cleanup. Open: the
+design thread's answers on M38's fix options and M39's three questions (reactor CF on delivery, venture marks scaling with
+price, Iceland's 2018 warning as a row reason).**
+
+**Before: M37 Finances merged (PR #4, `main` = `3e67c1d`), live; `m37` tagged `m37-done` and deleted.** `m38`
 starts at `m37`'s tip (it carries M37's last dev-notes commit, `d4a28ef`, not yet on `main`). Open: the design thread's
 answers on M37's four questions (the 120 s prologue timing line, prepayments, gains on sales, the report's revenue tile).
 Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
@@ -217,7 +225,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `3e67c1d`** (10 Oct 2026, PR #4 merged): M37 Finances; `m37` tagged `m37-done` and deleted.
+**`main` = `ff442df`** (10 Oct 2026, PR #5 merged): M37.7, bulk buy, M38, M39; `m38` tagged `m38-done` and deleted.
+Before: `3e67c1d` (10 Oct 2026, PR #4 merged): M37 Finances; `m37` tagged `m37-done` and deleted.
 Before: `319a660` (10 Oct 2026, PR #3 merged by the owner): M27–M36, Act IV and doc 38. Branches `m27`…`m35` tagged
 `m27-done`…`m35-done` and deleted (remote and local). Before: `726c21b` (6 Oct 2026): M26, the dialog hotfixes 1 and 2
 and the shorter site list (`hotfix-dialog`),
@@ -227,6 +236,22 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M40 (branch `m40`, from `main` at `ff442df`; design thread answers after M37.7-M39, 10 Oct 2026)
+
+The PR the answers asked for was already merged (PR #5), so `m40` starts at `main` (same content as `m38`). Answers 3 and 4
+need no change: venture marks stay scaled by the buy-in (egs2's 1.26× in F2 accepted); Iceland 2018 stays the row's reason.
+Split: **M40.1** the Act IV reading (a build quarter's hedges and debt at 0; a raise takes + before an offensive move) ·
+**M40.2** venture delivery = contracted MW × the quarter's CF · then the runs (`--act4`, `--energy`; Act III untouched).
+- **M40.1** done (`scoredSignsIv`, readingScoreIv.ts; the reveal shows the scored sign): in a quarter with a commit or orbital
+  debt draw, presale, insurance and the debt draw count 0 and are never decoys (no block ids in the log: "that build's own" =
+  that quarter's, mine, reversible); a raise is + if a + move follows that quarter or the next. Act IV goldens: reading only.
+- **M40.2** done: `deliveredKw(v, quarter)` = offtake × CF (reactors 0.80 × 8 q then 0.92; EGS 0.9, weak field 0.6 until fixed);
+  savings on delivered kWh only (the rest is grid at the site's price). weak_field was read before (M36.1: delivery × 0.6/0.9).
+  `ventureEbitdaUsd` kept, unused, for Act V. Energy goldens: SMR 75 MW → 60 MW firm (90 → 75 MW with the control).
+- M40 runs: `--act4` identical to M39 but the reading; Perfect/Passive F1 fortress 22→82, neocloud 40→89, ridge 6→13 (Passive 53);
+  F3 neocloud 53→73, fortress and ridge 56 (58): STOPPED. B8/B9 unchanged (money). `--energy`: smr mean $216M→$171M, adv_fission
+  $186M→$148M, control $35M; E-B1 PASS, E-B2 MISS, E-B5 PASS. Act I-III and the prologue untouched (no rerun).
 
 ## Milestone M39 (branch `m38`; energy data fixes, doc 41 of 10 Oct 2026, from doc 40's research)
 

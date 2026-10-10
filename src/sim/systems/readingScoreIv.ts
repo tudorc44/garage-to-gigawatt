@@ -41,6 +41,27 @@ export const LAST_Q_IV = 19
 const decoyQuarters = (id: FutureId) => FILE.futures[id].decoy.quarters.map((l) => FILE._meta.quarters.indexOf(l))
 const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0)
 
+/** A build's own hedges and debt (M40.1): 0 in a quarter where a block's capital is arranged. */
+const BUILD_HEDGES: ReadonlySet<Act4MoveKind> = new Set(['orbit_presale', 'orbit_insure', 'orbit_debt'])
+const isBuild = (k: Act4MoveKind) => k === 'orbit_commit' || k === 'orbit_debt'
+
+/**
+ * Each move's scored sign (M40.1, design thread answer 1 after M39), in log order:
+ * (a) in a quarter where a build's capital is arranged (a commit or an orbital debt draw), the presale, insurance and
+ *     debt draw count 0 and are never decoy moves (the log carries no block ids, so "that build's own" is read as "that
+ *     quarter's": mine, reversible);
+ * (b) an equity raise takes +1 when an offensive move (+1 after (a)) follows in the same quarter or the next one; else −1.
+ * Every other move keeps its ACT4_MOVE_SIGN. The score is computed after the act, so the lookahead is fine.
+ */
+export function scoredSignsIv(moves: readonly Pick<Act4Move, 'q' | 'kind'>[]): (-1 | 0 | 1)[] {
+  const buildQ = new Set(moves.filter((m) => isBuild(m.kind)).map((m) => m.q))
+  const base = moves.map((m) => (buildQ.has(m.q) && BUILD_HEDGES.has(m.kind) ? 0 : ACT4_MOVE_SIGN[m.kind]))
+  const offensiveQ = new Set(moves.filter((_, i) => base[i] > 0).map((m) => m.q))
+  return moves.map((m, i) =>
+    m.kind === 'equity_raise' && (offensiveQ.has(m.q) || offensiveQ.has(m.q + 1)) ? 1 : base[i],
+  )
+}
+
 /** Orbital exposure held after quarter q, read from the log: blocks committed or bought, less blocks sold. */
 function exposureAfter(moves: readonly Pick<Act4Move, 'q' | 'kind'>[], q: number): number {
   return moves
@@ -63,18 +84,19 @@ export function computeReadingIv(
 ): ReadingIv {
   const f = FILE.futures[future]
   const decoy = decoyQuarters(future)
+  const signs = scoredSignsIv(moves)
   const perQuarter: ReadingIv['perQuarter'] = []
   let sumW = 0
   let sumWV = 0
   for (let q = 0; q <= Math.min(lastQ, LAST_Q_IV); q++) {
     const weight = f.weight[q]
     if (weight === 0) continue
-    const st = sign(moves.filter((m) => m.q === q).reduce((s, m) => s + ACT4_MOVE_SIGN[m.kind], 0))
+    const st = sign(moves.reduce((s, m, i) => (m.q === q ? s + signs[i] : s), 0))
     const ideal = f.ideal[q]
     // M36.11 (F2): no orbital move this quarter and no orbital exposure held counts as a match.
     const quietOut =
       f.quiet_no_exposure !== undefined &&
-      !moves.some((m) => m.q === q && ACT4_MOVE_SIGN[m.kind] !== 0) &&
+      !moves.some((m, i) => m.q === q && signs[i] !== 0) &&
       exposureAfter(moves, q) <= 0
     const value = quietOut
       ? f.quiet_no_exposure!
@@ -92,7 +114,7 @@ export function computeReadingIv(
     sumWV += weight * value
   }
   const decoyMoves = moves.filter(
-    (m) => m.q <= lastQ && decoy.includes(m.q) && ACT4_MOVE_SIGN[m.kind] === f.decoy.wrong_stance,
+    (m, i) => m.q <= lastQ && decoy.includes(m.q) && signs[i] !== 0 && signs[i] === f.decoy.wrong_stance,
   ).length
   const penalty = Math.min(S.decoy_penalty_cap, S.decoy_penalty_per_move * decoyMoves)
   if (sumW === 0) return { score: null, base: 0, penalty, perQuarter }
@@ -104,11 +126,12 @@ export function computeReadingIv(
 export function markMovesIv(
   moves: readonly Pick<Act4Move, 'q' | 'kind'>[],
   future: FutureId,
-): { q: number; kind: Act4MoveKind; mark: 'match' | 'opposite' | 'decoy' | 'neutral' }[] {
+): { q: number; kind: Act4MoveKind; sign: -1 | 0 | 1; mark: 'match' | 'opposite' | 'decoy' | 'neutral' }[] {
   const f = FILE.futures[future]
   const decoy = decoyQuarters(future)
-  return moves.map((m) => {
-    const s = ACT4_MOVE_SIGN[m.kind]
+  const signs = scoredSignsIv(moves)
+  return moves.map((m, i) => {
+    const s = signs[i]
     const mark =
       decoy.includes(m.q) && s !== 0 && s === f.decoy.wrong_stance
         ? 'decoy'
@@ -117,7 +140,7 @@ export function markMovesIv(
           : s === f.ideal[m.q]
             ? 'match'
             : 'opposite'
-    return { q: m.q, kind: m.kind, mark }
+    return { q: m.q, kind: m.kind, sign: s, mark }
   })
 }
 
