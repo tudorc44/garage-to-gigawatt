@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 vi.setConfig({ testTimeout: 0 })
 import { CONTENT, quarterIndex } from '../../src/content/index.ts'
 import type { Lines, LedgerQuarter } from '../../src/sim/ledger.ts'
-import { unreconciled } from '../../src/sim/ledger.ts'
+import { ledgerQuarters, unreconciled } from '../../src/sim/ledger.ts'
 import { playFrom, playGame, playPrologue } from '../../src/sim/replay.ts'
 import type { GameState, QuarterReport } from '../../src/sim/state.ts'
 import { BOTS } from '../../tools/bots.ts'
@@ -17,7 +17,7 @@ const L = (lines: Lines, ...cats: (keyof Lines)[]) => cats.reduce((s, c) => s + 
 
 function quarterOf(s: GameState, label: string): { lq: LedgerQuarter; r: QuarterReport } {
   const q = CONTENT.quarters.indexOf(label)
-  const lq = s.ledger!.quarters.find((x) => x.q === q && !x.partial)!
+  const lq = ledgerQuarters(s).find((x) => x.q === q && !x.partial)!
   const r = s.reports.find((x) => x.quarter === label)!
   expect(lq, `ledger ${label}`).toBeDefined()
   expect(r, `report ${label}`).toBeDefined()
@@ -30,7 +30,7 @@ describe('category totals match each act’s own quarter report', () => {
     const reports = s.prologue!.reports.filter((r) => r.powerCostUsd > 0)
     expect(reports.length).toBeGreaterThan(4)
     for (const r of reports.slice(0, 6)) {
-      const lq = s.ledger!.quarters.find((x) => x.q === quarterIndex(r.quarter))!
+      const lq = ledgerQuarters(s).find((x) => x.q === quarterIndex(r.quarter))!
       near(-L(lq.lines, 'power'), r.powerCostUsd)
       near(-L(lq.lines, 'rent'), r.rentUsd)
       near(L(lq.lines, 'other_income'), r.incomeUsd)

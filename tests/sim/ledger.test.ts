@@ -13,12 +13,13 @@ import {
   bookSplit,
   businessLines,
   cashTotal,
+  ledgerQuarters,
   roundCash,
   unreconciled,
 } from '../../src/sim/ledger.ts'
 import { playGame, type Strategy } from '../../src/sim/replay.ts'
 import { restoreSave } from '../../src/sim/save.ts'
-import { newGame, type GameState } from '../../src/sim/state.ts'
+import { cloneState, newGame, type GameState } from '../../src/sim/state.ts'
 
 function files(dir: string): string[] {
   return readdirSync(dir).flatMap((n) => {
@@ -49,7 +50,7 @@ describe('book, bookSplit, accrue and roundCash', () => {
     book(s, 'machines', -1000, { site: 'site-1' })
     book(s, 'equity_raised', 5000)
     expect(s.cash).toBe(start + 4000)
-    const q = s.ledger!.quarters[0]
+    const q = ledgerQuarters(s)[0]
     expect(q.startCash).toBe(start)
     expect(q.lines).toEqual({ machines: -1000, equity_raised: 5000 })
     // (only a booking to another business than its category's is stored; the rest is derived)
@@ -72,7 +73,7 @@ describe('book, bookSplit, accrue and roundCash', () => {
     ])
     accrue(s, 'mining_btc', 250, { site: 'site-1' })
     expect(s.cash).toBe(start + 70)
-    const q = s.ledger!.quarters[0]
+    const q = ledgerQuarters(s)[0]
     expect(q.lines.mining_btc).toBe(250)
     // mined coins aren't cash: the cash lines are the sale and the power
     expect(cashTotal(q.lines)).toBe(70)
@@ -83,7 +84,7 @@ describe('book, bookSplit, accrue and roundCash', () => {
     book(s, 'power', -0.004)
     roundCash(s)
     expect(unreconciled(s)).toEqual([])
-    expect(s.ledger!.quarters[0].rounding).toBeCloseTo(0.004)
+    expect(ledgerQuarters(s)[0].rounding).toBeCloseTo(0.004)
   })
 
   it('a change outside the ledger shows as untagged', () => {
@@ -117,7 +118,7 @@ describe('coins kept versus sold (doc 39 §M37.6)', () => {
 
   it('a mined-and-held quarter shows the coins as revenue in the P&L, and no cash comes in for them', () => {
     const s = heldQuarter(1)
-    const q = s.ledger!.quarters.find((x) => x.q === Q2)!
+    const q = ledgerQuarters(s).find((x) => x.q === Q2)!
     expect(q.lines.mining_btc ?? 0).toBeGreaterThan(0)
     expect(q.lines.coins_sold ?? 0).toBe(0)
     expect(s.treasury.BTC).toBeGreaterThan(0)
@@ -125,8 +126,8 @@ describe('coins kept versus sold (doc 39 §M37.6)', () => {
   })
 
   it('sold as mined: the same revenue, and the cash comes in as coins sold', () => {
-    const held = heldQuarter(1).ledger!.quarters.find((x) => x.q === Q2)!
-    const sold = heldQuarter(0).ledger!.quarters.find((x) => x.q === Q2)!
+    const held = ledgerQuarters(heldQuarter(1)).find((x) => x.q === Q2)!
+    const sold = ledgerQuarters(heldQuarter(0)).find((x) => x.q === Q2)!
     expect(sold.lines.mining_btc).toBeCloseTo(held.lines.mining_btc!, 6)
     expect(sold.lines.coins_sold).toBeCloseTo(sold.lines.mining_btc!, 6)
   })
@@ -136,10 +137,37 @@ describe('a whole game reconciles, quarter by quarter', () => {
   it('the do-nothing career to the Merge: every quarter, start + lines = end', () => {
     const idle: Strategy = { plan: () => [] }
     const run = playGame(3, idle)
-    expect(run.state.ledger!.quarters.length).toBeGreaterThan(20)
+    expect(ledgerQuarters(run.state).length).toBeGreaterThan(20)
     expect(unreconciled(run.state)).toEqual([])
     // the weekly cash: 13 values a played quarter
-    expect(run.state.ledger!.quarters[1].weeks).toHaveLength(13)
+    expect(ledgerQuarters(run.state)[1].weeks).toHaveLength(13)
+  })
+})
+
+describe('M37.7: the closed quarters are shared, never copied or changed', () => {
+  it('a step copies the open quarter and shares the history; closing a quarter leaves older states as they were', () => {
+    const idle: Strategy = { plan: () => [] }
+    const s = playGame(3, idle).state
+    const next = cloneState(s)
+    expect(next.ledger!.history).toBe(s.ledger!.history)
+    expect(next.ledger!.current).not.toBe(s.ledger!.current)
+    expect(next.ledger!.current).toEqual(s.ledger!.current)
+    // a booking in a later quarter closes the open one into a new history list
+    const before = s.ledger!.history.length
+    next.quarter += 1
+    book(next, 'other_income', 1)
+    expect(next.ledger!.history).not.toBe(s.ledger!.history)
+    expect(next.ledger!.history).toHaveLength(before + 1)
+    expect(s.ledger!.history).toHaveLength(before)
+  })
+
+  it('a save from M37’s build (every quarter in one list) loads split, and still reconciles', () => {
+    const s = playGame(3, { plan: () => [] }).state
+    const old = { ...JSON.parse(JSON.stringify(s)), ledger: { from: s.ledger!.from, quarters: ledgerQuarters(s) } }
+    const r = restoreSave(old)
+    const loaded = (r as { state: GameState }).state
+    expect(ledgerQuarters(loaded)).toEqual(ledgerQuarters(s))
+    expect(unreconciled(loaded)).toEqual([])
   })
 })
 
@@ -152,9 +180,9 @@ describe('old saves (doc 39 §M37.1): the ledger starts at load', () => {
     expect(r.ok).toBe(true)
     const s = (r as { state: GameState }).state
     expect(s.ledger!.from).toBe(CONTENT.quarters.indexOf('2021Q2'))
-    expect(s.ledger!.quarters.length).toBe(s.reports.length)
-    expect(s.ledger!.quarters.every((q) => q.partial !== undefined)).toBe(true)
-    expect(s.ledger!.quarters[0].partial!.revenueUsd).toBe(s.reports[0].revenueUsd)
+    expect(ledgerQuarters(s).length).toBe(s.reports.length)
+    expect(ledgerQuarters(s).every((q) => q.partial !== undefined)).toBe(true)
+    expect(ledgerQuarters(s)[0].partial!.revenueUsd).toBe(s.reports[0].revenueUsd)
   })
 
   it('a save loaded mid-quarter has full detail from the next one', () => {

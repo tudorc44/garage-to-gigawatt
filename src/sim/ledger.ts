@@ -120,19 +120,36 @@ export interface PartialQuarter {
   ebitdaUsd: number
 }
 
+/**
+ * M37.7 (DT): the open quarter is `current`; closed quarters go to `history`, which never changes once written (closing
+ * a quarter makes a new array). The game's weekly copy (cloneState in state.ts) copies `current` and shares `history`,
+ * so the ledger's cost doesn't grow with the career. Saves hold both.
+ */
 export interface Ledger {
   /** The first quarter with full detail. */
   from: number
-  quarters: LedgerQuarter[]
+  /** Closed quarters, oldest first (an old save's summary-only quarters too). Never mutated: replaced when one closes. */
+  history: LedgerQuarter[]
+  /** The quarter being played, or null before its first cash movement. */
+  current: LedgerQuarter | null
 }
 
-/** The quarter's ledger entry, opened (with the cash as it stands) on its first use. */
+/** Every quarter the ledger knows, oldest first (the open one last). */
+export function ledgerQuarters(state: GameState): LedgerQuarter[] {
+  const l = state.ledger
+  if (!l) return []
+  return l.current ? [...l.history, l.current] : l.history
+}
+
+/** The quarter's ledger entry, opened (with the cash as it stands) on its first use; the one before it closes then. */
 function current(state: GameState): LedgerQuarter {
-  const ledger = (state.ledger ??= { from: state.quarter, quarters: [] })
-  const last = ledger.quarters.at(-1)
-  if (last && last.q === state.quarter && !last.partial) return last
+  const ledger = (state.ledger ??= { from: state.quarter, history: [], current: null })
+  const open = ledger.current
+  if (open && open.q === state.quarter) return open
+  // (a new array: the closed quarters are shared with earlier copies of the game, which must not change)
+  if (open) ledger.history = [...ledger.history, open]
   const q: LedgerQuarter = { q: state.quarter, startCash: state.cash, lines: {}, byBiz: {}, byRef: {}, rounding: 0, weeks: [] }
-  ledger.quarters.push(q)
+  ledger.current = q
   return q
 }
 
@@ -205,7 +222,7 @@ export function ledgerWeekEnd(state: GameState): void {
  */
 export function openingCash(state: GameState, usd: number): void {
   state.cash = usd
-  state.ledger = { from: state.quarter, quarters: [] }
+  state.ledger = { from: state.quarter, history: [], current: null }
 }
 
 /**
@@ -252,7 +269,17 @@ export function startLedgerAtLoad(state: GameState): void {
     })
   }
   const fresh = state.phase === 'plan' && state.week === 0
-  state.ledger = { from: fresh ? state.quarter : state.quarter + 1, quarters }
+  state.ledger = { from: fresh ? state.quarter : state.quarter + 1, history: quarters, current: null }
+}
+
+/**
+ * M37.7: a save from M37's build (10 Oct 2026, before the history split) kept every quarter in one list; its last one is
+ * the open quarter when it's the quarter being played.
+ */
+export function splitLedgerAtLoad(state: GameState, quarters: LedgerQuarter[], from: number): void {
+  const last = quarters.at(-1)
+  const open = last && last.q === state.quarter && !last.partial ? last : null
+  state.ledger = { from, history: open ? quarters.slice(0, -1) : quarters, current: open }
 }
 
 // ---------- Reading the ledger ----------
@@ -286,9 +313,8 @@ export function cashTotal(lines: Lines): number {
   return sum
 }
 
-/** The quarter's ending cash: the next entry's start, or the cash now for the last one. */
-export function endCash(state: GameState, i: number): number {
-  const qs = state.ledger!.quarters
+/** A quarter's ending cash (`qs` = ledgerQuarters): the next entry's start, or the cash now for the last one. */
+export function endCash(state: GameState, qs: readonly LedgerQuarter[], i: number): number {
   return i + 1 < qs.length ? qs[i + 1].startCash : state.cash
 }
 
@@ -299,10 +325,10 @@ export function endCash(state: GameState, i: number): number {
  */
 export function unreconciled(state: GameState): { q: number; untaggedUsd: number }[] {
   const out: { q: number; untaggedUsd: number }[] = []
-  const qs = state.ledger?.quarters ?? []
+  const qs = ledgerQuarters(state)
   qs.forEach((lq, i) => {
     if (lq.partial) return
-    const untagged = endCash(state, i) - lq.startCash - cashTotal(lq.lines) - lq.rounding
+    const untagged = endCash(state, qs, i) - lq.startCash - cashTotal(lq.lines) - lq.rounding
     if (Math.abs(untagged) > 0.01) out.push({ q: lq.q, untaggedUsd: untagged })
   })
   return out

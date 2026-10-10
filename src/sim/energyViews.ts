@@ -20,9 +20,9 @@ import {
 } from './systems/energy.ts'
 import { firmKw, flareOutput } from './systems/energyAssets.ts'
 import {
-  hydroMoratorium,
+  kindMoratorium,
+  kindTariffRamp,
   leaseSpecialBlocker,
-  newLoadTariff,
   relocateBlocker,
   relocateCostUsd,
   specialCostUsd,
@@ -31,7 +31,16 @@ import {
   type SpecialStatus,
 } from './systems/specialSites.ts'
 import { normalPriceUsdKwh } from './systems/sites.ts'
-import { aiMw, curtailableMw, drCreditUsd, setTexasBlocker, summerOf, texasBlocker } from './systems/texasPower.ts'
+import {
+  aiMw,
+  curtailableMw,
+  drCreditUsd,
+  fourCpSavingUsdMwYr,
+  resaleUsd,
+  setTexasBlocker,
+  summerOf,
+  texasBlocker,
+} from './systems/texasPower.ts'
 import { bessMw } from './systems/energyAssets.ts'
 
 export interface EnergyAssetRow {
@@ -80,8 +89,14 @@ export interface TexasView {
   bessMw: number
   /** The year's credit at this summer's rate (and the year's summer type when it's known). */
   creditUsd: number
+  /** M39.1: the year's resale at this summer's rate (0 on a floating contract), and whether the contract is fixed. */
+  resaleUsd: number
+  fixedPrice: boolean
   summer: string
   discountYear: string | null
+  /** M39.1: 4CP's saving off the discount year's power, $, and next year's saving per MW enrolled, $. */
+  fourCpSavingUsd: number
+  fourCpUsdMw: number
   forfeited: boolean
   fourCpBlocked?: Message
 }
@@ -170,8 +185,12 @@ export function energyCardView(state: GameState, siteId: string): EnergyCardView
           aiMw: aiMw(state, site),
           bessMw: bessMw(site, state.quarter),
           creditUsd: drCreditUsd(state, site),
+          resaleUsd: resaleUsd(state, site),
+          fixedPrice: site.contract?.type === ENERGY.texas.resale_contract,
           summer: summerOf(year),
           discountYear: site.dr?.discountYear ?? null,
+          fourCpSavingUsd: site.dr?.fourCpSavingUsd ?? 0,
+          fourCpUsdMw: fourCpSavingUsdMwYr(String(Number(year) + 1)),
           forfeited: site.dr?.forfeitYear === year,
           ...(() => {
             const b = site.dr?.fourCp ? undefined : setTexasBlocker(state, { siteId, fourCp: true })
@@ -211,6 +230,8 @@ export interface SpecialSiteRow {
   buildQuarters: number
   /** For a hydro kind: the moratorium's end (known once it has begun) and the tariff on new load after it. */
   moratoriumUntil: number | null
+  /** M39.3: Iceland's price, drawn in this range ($/kWh after its cooling) and locked when the site is taken. */
+  priceRange?: [number, number]
   blocked?: Message
 }
 
@@ -226,10 +247,12 @@ export function specialSitesView(state: GameState): SpecialSiteRow[] {
       powerPriceMult: 1,
       flaw: null,
       special: kind,
-      tariffMult: newLoadTariff(state, kind),
+      tariffRamp: kindTariffRamp(state, kind),
     }
-    const m = k.queue === 'hydro' ? hydroMoratorium(state) : null
+    const m = kindMoratorium(kind)
     const blocked = leaseSpecialBlocker(state, kind)
+    const lock = k.price_lock?.filter((x) => x.from <= CONTENT.quarters[state.quarter]).at(-1)
+    const cool = k.cooling_mult ?? 1
     return {
       kind,
       status: specialStatus(state, kind),
@@ -238,7 +261,11 @@ export function specialSitesView(state: GameState): SpecialSiteRow[] {
       costUsd: specialCostUsd(kind),
       rentUsdQ: k.rent_usd_q,
       buildQuarters: k.build_quarters,
-      moratoriumUntil: m && state.quarter >= m.from ? m.until : null,
+      // (the first quarter open again)
+      moratoriumUntil: m && state.quarter >= m.from && state.quarter <= m.until ? m.until + 1 : null,
+      ...(lock && lock.range[0] !== lock.range[1]
+        ? { priceRange: [lock.range[0] * cool, lock.range[1] * cool] as [number, number] }
+        : {}),
       ...(blocked ? { blocked } : {}),
     }
   })

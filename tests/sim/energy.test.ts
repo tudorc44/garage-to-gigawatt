@@ -6,19 +6,21 @@ import { CONTENT } from '../../src/content/index.ts'
 import { ENERGY, energyYear, itcPct } from '../../src/content/energyContent.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
-import { newGame, type GameState, type Site } from '../../src/sim/state.ts'
+import { newGame, type EnergyAsset, type GameState, type Site } from '../../src/sim/state.ts'
 import {
   billOffsetUsd,
   buildCostUsd,
+  capacityDerate,
   energyChoices,
+  ercotBatteryUsd,
   paybackYears,
 } from '../../src/sim/systems/energy.ts'
 import { firmKw, flareOutput } from '../../src/sim/systems/energyAssets.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { mineWeek } from '../../src/sim/systems/mining.ts'
 import { marketWeek } from '../../src/sim/systems/market.ts'
-import { capacityKw, normalPriceUsdKwh, poweredKw } from '../../src/sim/systems/sites.ts'
-import { hydroMoratorium, specialStatus } from '../../src/sim/systems/specialSites.ts'
+import { capacityKw, normalPriceUsdKwh, poweredKw, uptime } from '../../src/sim/systems/sites.ts'
+import { pudTariff, specialStatus } from '../../src/sim/systems/specialSites.ts'
 import { act2Company } from './act2Helpers.ts'
 import { act3ScenarioCompany } from './act3Helpers.ts'
 
@@ -47,12 +49,15 @@ function act1(label: string, seed = 1): GameState {
 }
 
 describe('the energy market file', () => {
-  it('has one row per year, 2009-2040, and the ITC steps of doc 38 §4.1', () => {
+  it('has one row per year, 2009-2040, and the ITC steps (M39.4, doc 40 §Q12: 30 / 26 from 2020 / 30 from 2022 / 0 from 2026)', () => {
     expect(ENERGY.market.map((r) => r.year)).toEqual(Array.from({ length: 32 }, (_, i) => 2009 + i))
     expect(energyYear(2014).res_solar_usd_w).toBe(4.3)
     expect(energyYear(2025).bess_usd_kwh_us).toBe(219)
     expect(energyYear(2023).texas_summer).toBe('hot')
-    expect([itcPct('2019Q4'), itcPct('2021Q2'), itcPct('2022Q2'), itcPct('2022Q3')]).toEqual([30, 26, 26, 30])
+    expect([itcPct('2019Q4'), itcPct('2021Q4'), itcPct('2022Q1'), itcPct('2025Q4'), itcPct('2026Q1')]).toEqual([30, 26, 30, 30, 0])
+    // M39.4: the battery prices of doc 40 §Q8-Q9
+    expect([2015, 2016, 2017, 2020, 2021].map((y) => energyYear(y).home_battery_usd_kwh)).toEqual([1000, 1000, 750, 750, 900])
+    expect([2015, 2016, 2017, 2018, 2020].map((y) => energyYear(y).bess_usd_kwh_us)).toEqual([1500, 1200, 900, 625, 400])
   })
 })
 
@@ -88,14 +93,15 @@ describe('rooftop solar (doc 38 §4.1)', () => {
 })
 
 describe('small wind, the trap (doc 38 §4.2)', () => {
-  it('draws a realised capacity factor of 8-15% against the pitched 20%', () => {
+  it('draws a realised capacity factor of 6-20% against the pitched 20% (M39.4: 0.20 × U(0.3, 1.0))', () => {
     const cfs: number[] = []
     for (let seed = 1; seed <= 20; seed++) {
       const s = ok(act1('2018Q1', seed), { type: 'ENERGY_BUILD', siteId: 'site-1', kind: 'small_wind', size: 10 })
       cfs.push(s.sites[0].energy![0].cf!)
     }
-    expect(Math.min(...cfs)).toBeGreaterThanOrEqual(0.08)
-    expect(Math.max(...cfs)).toBeLessThanOrEqual(0.15)
+    expect(Math.min(...cfs)).toBeGreaterThanOrEqual(0.06)
+    expect(Math.max(...cfs)).toBeLessThanOrEqual(0.2)
+    expect(Math.max(...cfs) - Math.min(...cfs)).toBeGreaterThan(0.05)
   })
 
   it('quotes the pitched capacity factor until its first report, then the real one', () => {
@@ -170,29 +176,66 @@ describe('special sites (doc 38 §4.4-4.6)', () => {
     s = ok(s, { type: 'SPECIAL_LEASE', kind: 'pud' })
     const pud = s.sites.at(-1)!
     expect(pud.special).toBe('pud')
-    expect(normalPriceUsdKwh(pud, s.quarter)).toBeCloseTo(0.03 * 0.95)
+    expect(normalPriceUsdKwh(pud, s.quarter)).toBeCloseTo(0.026 * 0.95)
     expect(specialStatus(s, 'quebec')).toBe('queue_full')
     expect(applyAction(s, { type: 'SPECIAL_LEASE', kind: 'quebec' }).ok).toBe(false)
   })
 
-  it('the moratorium starts 2018Q1 for 4-6 quarters; new load after it pays a 60-100% tariff', () => {
+  it('PUD (M39.2): 2.6¢; no new sites 2018Q1-2019Q1; from 2019Q2 a tariff ramps to ×2.5-3.0 over 8-12 quarters, existing load too', () => {
+    expect(specialStatus(withWarehouse('2017Q4'), 'pud')).toBe('open')
+    expect(specialStatus(withWarehouse('2018Q1'), 'pud')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q1'), 'pud')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q2'), 'pud')).toBe('open')
     for (let seed = 1; seed <= 10; seed++) {
-      const m = hydroMoratorium(withWarehouse('2018Q1', seed))
-      expect(m.from).toBe(q('2018Q1'))
-      expect(m.until - m.from).toBeGreaterThanOrEqual(4)
-      expect(m.until - m.from).toBeLessThanOrEqual(6)
-      expect(m.tariffMult).toBeGreaterThanOrEqual(1.6)
-      expect(m.tariffMult).toBeLessThanOrEqual(2)
+      const t = pudTariff(withWarehouse('2017Q1', seed))!
+      expect(t.from).toBe(q('2019Q2'))
+      expect(t.mult).toBeGreaterThanOrEqual(2.5)
+      expect(t.mult).toBeLessThanOrEqual(3.0)
+      expect(t.quarters).toBeGreaterThanOrEqual(8)
+      expect(t.quarters).toBeLessThanOrEqual(12)
     }
-    const s = withWarehouse('2018Q2')
-    expect(specialStatus(s, 'muni')).toBe('moratorium')
-    const after = withWarehouse(CONTENT.quarters[hydroMoratorium(s).until])
-    const leased = ok(after, { type: 'SPECIAL_LEASE', kind: 'muni' })
-    expect(leased.sites.at(-1)!.tariffMult).toBe(hydroMoratorium(s).tariffMult)
+    // a site taken in 2017 (before the tariff) carries the ramp: the existing load pays it too, no renewal needed
+    const s = ok(withWarehouse('2017Q2'), { type: 'SPECIAL_LEASE', kind: 'pud' })
+    const pud = s.sites.at(-1)!
+    const t = pud.tariffRamp!
+    const base = 0.026 * 0.95
+    expect(normalPriceUsdKwh(pud, q('2019Q1'))).toBeCloseTo(base)
+    expect(normalPriceUsdKwh(pud, t.from)).toBeCloseTo(base * (1 + (t.mult - 1) / t.quarters))
+    expect(normalPriceUsdKwh(pud, t.from + t.quarters - 1)).toBeCloseTo(base * t.mult)
+    expect(normalPriceUsdKwh(pud, t.from + t.quarters + 4)).toBeCloseTo(base * t.mult)
   })
 
-  it('Iceland freezes in 2018Q1-Q2 and from 2021Q4; machines shipped there take a quarter longer', () => {
-    expect(specialStatus(withWarehouse('2018Q2'), 'iceland')).toBe('frozen')
+  it('muni (M39.2): 2.0¢ until 2017Q4; no new sites for 6 quarters from 2018Q1; from 2018Q1 the overage at market price', () => {
+    expect(specialStatus(withWarehouse('2019Q2'), 'muni')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q3'), 'muni')).toBe('open')
+    const s = ok(withWarehouse('2017Q2'), { type: 'SPECIAL_LEASE', kind: 'muni' })
+    const muni = s.sites.at(-1)!
+    expect(normalPriceUsdKwh(muni, q('2017Q4'))).toBeCloseTo(0.02)
+    // from 2018Q1: what a normal warehouse pays, if that's more
+    const market = (quarter: number) => normalPriceUsdKwh({ ...muni, special: undefined }, quarter)
+    for (const l of ['2018Q1', '2020Q2', '2022Q1'])
+      expect(normalPriceUsdKwh(muni, q(l))).toBeCloseTo(Math.max(0.02, market(q(l))))
+    expect(market(q('2018Q1'))).toBeGreaterThan(0.02)
+  })
+
+  it('Québec (M39.2): grandfathered at 4.5¢; no new sites 2018Q2-2019Q3; new ones from 2019Q4 lose 3.4% to curtailment', () => {
+    const early = ok(withWarehouse('2018Q1'), { type: 'SPECIAL_LEASE', kind: 'quebec' })
+    const old = early.sites.at(-1)!
+    expect(normalPriceUsdKwh(old, q('2021Q1'))).toBeCloseTo(0.045 * 0.95)
+    expect(uptime(old, q('2021Q1'))).toBe(1)
+    expect(specialStatus(withWarehouse('2018Q2'), 'quebec')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q3'), 'quebec')).toBe('moratorium')
+    const late = ok(withWarehouse('2019Q4'), { type: 'SPECIAL_LEASE', kind: 'quebec' })
+    const curtailed = late.sites.at(-1)!
+    expect(normalPriceUsdKwh(curtailed, q('2021Q1'))).toBeCloseTo(0.045 * 0.95)
+    expect(uptime(curtailed, q('2021Q1'))).toBeCloseTo(1 - 0.034)
+  })
+
+  it('Iceland (M39.3): every other quarter in 2018, stops from 2021Q4; machines shipped there take a quarter longer', () => {
+    expect(specialStatus(withWarehouse('2018Q1'), 'iceland')).toBe('open')
+    expect(specialStatus(withWarehouse('2018Q2'), 'iceland')).toBe('rationed')
+    expect(specialStatus(withWarehouse('2018Q3'), 'iceland')).toBe('open')
+    expect(specialStatus(withWarehouse('2018Q4'), 'iceland')).toBe('rationed')
     expect(specialStatus(withWarehouse('2019Q1'), 'iceland')).toBe('open')
     expect(specialStatus(withWarehouse('2022Q1'), 'iceland')).toBe('frozen')
     let s = ok(withWarehouse('2019Q1'), { type: 'SPECIAL_LEASE', kind: 'iceland' })
@@ -202,6 +245,25 @@ describe('special sites (doc 38 §4.4-4.6)', () => {
     const lot = s.machines.at(-1)!
     const home = ok({ ...s, machines: [] }, { type: 'BUY_MACHINES', model: 's9', condition: 'new', count: 1, siteId: 'site-7' })
     expect(lot.earnsFromQuarter).toBe(home.machines.at(-1)!.earnsFromQuarter + 1)
+  })
+
+  it('Iceland (M39.3): the price is locked when taken (4.3¢ in 2017, 5.1-7.1¢ after); the 2021Q4 dry winter costs a week', () => {
+    const early = ok(withWarehouse('2017Q3'), { type: 'SPECIAL_LEASE', kind: 'iceland' }).sites.at(-1)!
+    expect(early.lockedUsdKwh).toBe(0.043)
+    expect(normalPriceUsdKwh(early, q('2022Q1'))).toBeCloseTo(0.043 * 0.9)
+    const prices = new Set<number>()
+    for (let seed = 1; seed <= 10; seed++) {
+      const ice = ok(withWarehouse('2019Q1', seed), { type: 'SPECIAL_LEASE', kind: 'iceland' }).sites.at(-1)!
+      expect(ice.lockedUsdKwh!).toBeGreaterThanOrEqual(0.051)
+      expect(ice.lockedUsdKwh!).toBeLessThanOrEqual(0.071)
+      // locked: the same in every later year
+      expect(normalPriceUsdKwh(ice, q('2021Q3'))).toBeCloseTo(ice.lockedUsdKwh! * 0.9)
+      prices.add(ice.lockedUsdKwh!)
+    }
+    expect(prices.size).toBeGreaterThan(5)
+    // the dry winter: an Iceland site already running loses one week of 2021Q4's output
+    expect(uptime(early, q('2021Q4'))).toBeCloseTo(12 / 13)
+    expect(uptime(early, q('2022Q1'))).toBe(1)
   })
 
   it('a flare pad is mining only, declines after a year and can move to a new well', () => {
@@ -229,5 +291,30 @@ describe('a game without energy plays as before', () => {
     let s = act1('2018Q1')
     for (let i = 0; i < 2; i++) s = playQuarter(s)
     expect(JSON.stringify(s)).not.toMatch(/"energy"|"special"|"dr"|"flare"|energyRevenueUsd/)
+  })
+})
+
+describe('utility batteries (M39.4, doc 40 §Q9-Q11)', () => {
+  it('the PJM capacity derate follows the path by year; 2-hour = 4-hour × 0.58, 8-hour = 4-hour + 0.10', () => {
+    expect(['2027', '2028', '2029', '2030', '2031', '2032', '2033', '2034', '2035', '2040'].map((y) => capacityDerate(4, y))).toEqual([
+      0.58, 0.59, 0.52, 0.45, 0.4, 0.35, 0.3, 0.27, 0.25, 0.25,
+    ])
+    expect(capacityDerate(2, '2030')).toBeCloseTo(0.45 * 0.58)
+    expect(capacityDerate(8, '2030')).toBeCloseTo(0.55)
+    expect(ENERGY.site_assets.bess.round_trip_loss).toBe(0.15)
+    expect(ENERGY.site_assets.bess.fade_per_year).toBe(0.025)
+  })
+
+  it('an ERCOT battery earns ancillary-services income each quarter: $140K (2022), $190K (2023), $55K (2024), $50K per MW-yr after', () => {
+    const site = { id: 'x', tier: 'texas_site', readyQuarter: 0, rentUsdQ: 0, powerPriceMult: 1, flaw: null } as Site
+    const bess = { id: 'b', kind: 'bess', kw: 10_000, hours: 4, readyQuarter: q('2022Q4'), builtQuarter: q('2022Q1'), capexUsd: 0 } as EnergyAsset
+    const at = (l: string) => ercotBatteryUsd({ ...newGame(1), quarter: q(l) }, site, bess)
+    expect(at('2022Q4')).toBeCloseTo((10 * 140_000) / 4)
+    expect(at('2023Q2')).toBeCloseTo((10 * 190_000) / 4)
+    expect(at('2024Q1')).toBeCloseTo((10 * 55_000) / 4)
+    expect(at('2030Q3')).toBeCloseTo((10 * 50_000) / 4)
+    // not before it's ready, and not outside ERCOT
+    expect(ercotBatteryUsd({ ...newGame(1), quarter: q('2022Q3') }, site, bess)).toBe(0)
+    expect(ercotBatteryUsd({ ...newGame(1), quarter: q('2023Q2') }, { ...site, tier: 'own_site', region: 'pjm' }, bess)).toBe(0)
   })
 })

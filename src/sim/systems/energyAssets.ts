@@ -51,11 +51,6 @@ export function fourCpOutputMult(site: Site, quarter: number): number {
   return 1 - ENERGY.texas.four_cp.q3_output_loss * (1 - cover)
 }
 
-/** 4CP: power at this site costs 10% less in the year after a 4CP summer. 1 otherwise. */
-export function fourCpPriceMult(site: Site, quarter: number): number {
-  return site.dr?.discountYear === label(quarter).slice(0, 4) ? ENERGY.texas.four_cp.next_year_price_mult : 1
-}
-
 /** A home battery's ride-through (doc 38 §4.3): the share of the site's working machines kept running in outages. */
 export function rideThroughShare(state: GameState, site: Site): number {
   const blocks = assetsOf(site, 'home_battery')
@@ -78,10 +73,35 @@ export function specialPriceUsdKwh(site: Site, quarter: number): number {
     const t = ENERGY.special_sites.flare.tax_break
     return ((k.running_usd_mwh ?? 0) / 1000) * (q >= t.from ? t.running_mult : 1)
   }
+  // M39.3 (doc 41): an Iceland site keeps the price it signed at
+  if (site.lockedUsdKwh !== undefined) return site.lockedUsdKwh * (k.cooling_mult ?? 1)
   const path = k.power_usd_kwh ?? {}
   const years = Object.keys(path).sort()
   const year = q.slice(0, 4) > years[years.length - 1] ? years[years.length - 1] : q.slice(0, 4) < years[0] ? years[0] : q.slice(0, 4)
-  return path[year] * (k.cooling_mult ?? 1) * (site.tariffMult ?? 1)
+  return path[year] * (k.cooling_mult ?? 1) * tariffRampMult(site, quarter)
+}
+
+/** M39.2 (doc 41): a PUD site's crypto tariff this quarter: 1 before it, then a straight line to its full multiple. */
+export function tariffRampMult(site: Site, quarter: number): number {
+  const r = site.tariffRamp
+  if (!r || quarter < r.from) return 1
+  return 1 + (r.mult - 1) * Math.min(1, (quarter - r.from + 1) / r.quarters)
+}
+
+/**
+ * M39.2-M39.3 (doc 41): a special site's share of its output lost to its grid: a Québec site taken from 2019Q4 (300
+ * hours a year of curtailment); an Iceland site in the 2021Q4 dry winter (a week). 1 for any other site.
+ */
+export function specialOutputMult(site: Site, quarter: number): number {
+  if (!site.special) return 1
+  const k = ENERGY.specialKinds[site.special]
+  let mult = 1
+  const c = k.curtail
+  if (c && site.acquiredQuarter != null && label(site.acquiredQuarter) >= c.from) mult *= 1 - c.output_loss
+  const dry = k.dry_winter
+  if (dry && label(quarter) === dry.quarter && site.acquiredQuarter != null && site.acquiredQuarter < quarter)
+    mult *= (13 - dry.weeks) / 13
+  return mult
 }
 
 /**

@@ -2024,6 +2024,32 @@ td.wrap {
   flex-wrap: wrap;
   gap: var(--space-3);
 }
+/* Buying in bulk (owner, 10 Oct 2026): count with − / +, quick 1 / 10 / Max, the total, Buy. */
+.p0-buy {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.p0-buy-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.p0-buy .seg button {
+  padding: 4px 10px;
+  min-height: 32px;
+}
+.p0-buy-count {
+  width: 64px;
+  border: 0;
+  border-left: var(--border-hair) solid var(--ink);
+  border-right: var(--border-hair) solid var(--ink);
+  background: var(--panel);
+  color: var(--ink);
+  text-align: center;
+  font: 12.5px/18px var(--font-num);
+}
 
 /* The prologue's chapter report and handover (P0-07, P0-08). */
 .p0-kv {

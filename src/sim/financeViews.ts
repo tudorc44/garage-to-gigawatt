@@ -10,6 +10,7 @@ import {
   CATEGORY_IDS,
   businessLines,
   endCash,
+  ledgerQuarters,
   type Business,
   type Category,
   type LedgerQuarter,
@@ -68,7 +69,7 @@ function firstQuarterOfYear(year: number): number {
 
 /** The first quarter the ledger knows (full or partial), or the current one. */
 function ledgerFirstQuarter(state: GameState): number {
-  return state.ledger?.quarters[0]?.q ?? state.quarter
+  return ledgerQuarters(state)[0]?.q ?? state.quarter
 }
 
 /** The period before, of the same length (none before the career, or before the ledger's first quarter). */
@@ -124,7 +125,7 @@ function add(into: Lines, from: Lines, sign = 1): void {
 export function periodTotals(state: GameState, p: Period): PeriodTotals {
   const quarters = periodQuarters(state, p)
   const set = new Set(quarters)
-  const all = state.ledger?.quarters ?? []
+  const all = ledgerQuarters(state)
   const t: PeriodTotals = {
     quarters,
     lines: {},
@@ -148,7 +149,7 @@ export function periodTotals(state: GameState, p: Period): PeriodTotals {
     return t
   }
   t.startCash = all[inside[0]].startCash
-  t.endCash = endCash(state, inside.at(-1)!)
+  t.endCash = endCash(state, all, inside.at(-1)!)
   let anyPartial = false
   for (const i of inside) {
     const lq: LedgerQuarter = all[i]
@@ -160,7 +161,7 @@ export function periodTotals(state: GameState, p: Period): PeriodTotals {
       s.rentUsd -= lq.partial.rentUsd
       // (the report's EBITDA = revenue − power − rent − the rest: the rest is what it didn't itemise)
       s.otherOpexUsd -= lq.partial.revenueUsd - lq.partial.powerUsd - lq.partial.rentUsd - lq.partial.ebitdaUsd
-      s.cashChangeUsd += endCash(state, i) - lq.startCash
+      s.cashChangeUsd += endCash(state, all, i) - lq.startCash
       continue
     }
     if (anyPartial && t.fullFrom === null) t.fullFrom = lq.q
@@ -464,7 +465,7 @@ export function cashFlowView(state: GameState, period: Period): CashFlowView {
 }
 
 function cashChart(state: GameState, period: Period, t: PeriodTotals): CashFlowView['chart'] {
-  const all = state.ledger?.quarters ?? []
+  const all = ledgerQuarters(state)
   let points: { label: string; usd: number }[]
   let weekly = false
   if (period.kind === 'quarter') {
@@ -476,7 +477,7 @@ function cashChart(state: GameState, period: Period, t: PeriodTotals): CashFlowV
   } else {
     points = t.quarters.map((q) => {
       const i = all.findIndex((x) => x.q === q)
-      return { label: label(q), usd: i >= 0 ? endCash(state, i) : t.endCash }
+      return { label: label(q), usd: i >= 0 ? endCash(state, all, i) : t.endCash }
     })
   }
   let lowIndex = 0
@@ -494,6 +495,16 @@ export function quarterSummary(state: GameState): (PnlFigures & { cashChange: nu
   const t = periodTotals(state, p)
   if (!state.ledger || t.quarters.length === 0) return null
   return { ...pnlFigures(t.lines, t.summary), cashChange: t.endCash - t.startCash }
+}
+
+/**
+ * M37.7 (DT): a quarter's revenue for the report's Revenue tile: the P&L's total, and the coins mined within it (null
+ * without a ledger for that quarter, e.g. an old save's earlier quarters).
+ */
+export function quarterRevenue(state: GameState, q: number): { total: number; mining: number } | null {
+  const t = periodTotals(state, { kind: 'quarter', q })
+  if (t.quarters.length === 0 || !ledgerQuarters(state).some((x) => x.q === q && !x.partial)) return null
+  return { total: pnlFigures(t.lines).revenue, mining: sum(t.lines, MINED) }
 }
 
 /** An act's P&L summary for its chapter report: revenue, EBITDA, net profit, invested, raised; best and worst site. */

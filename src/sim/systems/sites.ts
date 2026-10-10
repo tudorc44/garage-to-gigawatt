@@ -1,5 +1,6 @@
 // Sites: the ladder (garage → small unit → warehouse → own site → Texas), capacity,
 // power prices, scouting offers and hidden flaws.
+import { ENERGY } from '../../content/energyContent.ts'
 import {
   BALANCE,
   CONTENT,
@@ -26,7 +27,7 @@ import {
   firmKw,
   flareOutput,
   fourCpOutputMult,
-  fourCpPriceMult,
+  specialOutputMult,
   specialPriceUsdKwh,
 } from './energyAssets.ts'
 import { extraScoutOffers } from './hires.ts'
@@ -175,7 +176,14 @@ export function normalPriceUsdKwh(
 ): number {
   const tier = getTier(site.tier)!
   // M35.3 (doc 38 §4.4-4.6): a hydro or Iceland allocation, or a flare pad, has its own price in every act.
-  if (site.special) return specialPriceUsdKwh(site, quarter) * site.powerPriceMult
+  if (site.special) {
+    const own = specialPriceUsdKwh(site, quarter) * site.powerPriceMult
+    // M39.2 (doc 41): an upstate muni charges the overage at market price: never less than a normal warehouse pays
+    const overage = ENERGY.specialKinds[site.special].overage_from
+    if (overage && CONTENT.quarters[quarter] >= overage)
+      return Math.max(own, normalPriceUsdKwh({ ...site, special: undefined }, quarter, type, scenario))
+    return own
+  }
   // Act II's series, or Act III's scenario column (M11.4c).
   // (Without a scenario, an Act II game looking a quarter ahead across the boundary reads as before.)
   const act2 = scenario
@@ -211,10 +219,9 @@ export function powerPriceUsdKwh(
     : normalPriceUsdKwh(site, quarter, undefined, scenario)
   const e = site.eventPowerMult
   const eventMult = e && quarter >= e.from && quarter <= e.until ? e.mult : 1
-  // M35.4: the year after a 4CP summer, 10% less (1 without 4CP).
-  const fourCp = site.dr ? fourCpPriceMult(site, quarter) : 1
+  // (M39.1: 4CP's saving is now a flat amount at each quarter's end, texasPower.ts, not a lower price)
   return (
-    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult * fourCp +
+    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult +
     regionPowerAdderUsdKwh(regionOf(site), quarter) +
     capacityChargeUsdKwh(site, quarter, scenario)
   )
@@ -256,7 +263,9 @@ export function regionCapacityChargeUsdKwh(
  */
 export function uptime(site: Site, quarter?: number): number {
   const up = flawEffect(site, 'uptime') ?? 1
-  return site.flare && quarter !== undefined ? up * flareOutput(site, quarter) : up
+  if (quarter === undefined || !site.special) return up
+  // M39.2-M39.3: a Québec site's curtailment, Iceland's dry winter
+  return up * (site.flare ? flareOutput(site, quarter) : 1) * specialOutputMult(site, quarter)
 }
 
 /** Hashrate multiplier for the site this quarter (cooling flaws bite in Q3, summer; Act II: water limits). */

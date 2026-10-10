@@ -14,6 +14,14 @@ type Act = (a: Action) => Message | null
 
 const kindName = (kind: string) => tDynamic(`ui.energy.kind.${kind}`, kind)
 
+/** M39.6 (doc 41): the reality line under a kind (doc 40 §Q5): the home kinds' 2015 cost, the utility kinds' 1 MW cost. */
+const REALITY: Partial<Record<string, 'ui.energy.reality.home' | 'ui.energy.reality.utility'>> = {
+  rooftop_solar: 'ui.energy.reality.home',
+  home_battery: 'ui.energy.reality.home',
+  btm_solar: 'ui.energy.reality.utility',
+  bess: 'ui.energy.reality.utility',
+}
+
 /** "7 kW", "4 blocks", "20 MW · 4 h". */
 function sizeLabel(unit: EnergyChoiceView['unit'], size: number, hours?: number): string {
   const base =
@@ -112,6 +120,12 @@ export function EnergyDialog(props: { state: GameState; act: Act; siteId: string
                 summer: tDynamic(`texas_summer.${v.texas.summer}`, v.texas.summer),
               })}
             </label>
+            {/* M39.1 (doc 41): the resale of that power, paid with the credit, on a fixed-price contract only */}
+            <p class="num-s">
+              {v.texas.fixedPrice
+                ? t('ui.energy.resale', { usd: fmt.money(v.texas.resaleUsd) })
+                : t('ui.energy.resale_none')}
+            </p>
             {v.texas.aiMw > 0 && (
               <p class="num-s">
                 {t('ui.energy.ai_excluded', {
@@ -128,10 +142,14 @@ export function EnergyDialog(props: { state: GameState; act: Act; siteId: string
                 disabled={(!!v.texas.blocked || !!v.texas.fourCpBlocked) && !v.texas.fourCp}
                 onChange={() => run({ type: 'TEXAS_SET', siteId, fourCp: !v.texas!.fourCp })}
               />
-              {t('ui.energy.four_cp')}
+              {t('ui.energy.four_cp', { usd: fmt.money(v.texas.fourCpUsdMw) })}
             </label>
             {v.texas.fourCpBlocked && <p class="num-s muted">{say(v.texas.fourCpBlocked)}</p>}
-            {v.texas.discountYear && <p class="num-s">{t('ui.energy.discount', { year: v.texas.discountYear })}</p>}
+            {v.texas.discountYear && (
+              <p class="num-s">
+                {t('ui.energy.discount', { year: v.texas.discountYear, usd: fmt.money(v.texas.fourCpSavingUsd) })}
+              </p>
+            )}
           </section>
         )}
 
@@ -177,6 +195,12 @@ function Choice(props: { c: EnergyChoiceView; onBuild: (q: EnergyQuote) => void 
       <p class="num-s muted" style={{ margin: 0 }}>
         {t(`ui.energy.what.${c.kind}`)}
       </p>
+      {/* M39.6 (doc 41, doc 40 §Q5): what running a rig on sun and batteries alone really costs */}
+      {REALITY[c.kind] && (
+        <p class="num-s muted" style={{ margin: 0 }}>
+          {t(REALITY[c.kind]!)}
+        </p>
+      )}
       {c.blocked && <p class="num-s muted">{say(c.blocked)}</p>}
       {q && (
         <div class="energy-choice-row">

@@ -30,7 +30,7 @@ import {
   type ProjectKind,
   type Site,
 } from './state.ts'
-import { logQuarterLabel } from './state.ts'
+import { cloneState, logQuarterLabel } from './state.ts'
 import { book, bookSplit } from './ledger.ts'
 import { addSite, siteParams } from './systems/siteSerials.ts'
 import {
@@ -572,7 +572,7 @@ export type ActionResult =
   { ok: true; state: GameState } | { ok: false; error: Message }
 
 export function applyAction(state: GameState, action: Action): ActionResult {
-  const next = structuredClone(state)
+  const next = cloneState(state)
   const error = run(next, action)
   if (error) return { ok: false, error }
   // Act III (M14.2): a big move the player made goes into the move log.

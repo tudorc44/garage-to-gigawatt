@@ -36,7 +36,7 @@ describe('special sites on the Plan', () => {
     render(<PlanScreen state={s} act={() => null} />)
     const pud = screen.getByRole('button', { name: /Lease a PUD county allocation/ }) as HTMLButtonElement
     expect(pud.disabled).toBe(true)
-    expect(pud.title).toMatch(/moratorium/)
+    expect(pud.title).toMatch(/isn't taking new crypto load/)
     expect((screen.getByRole('button', { name: /Build a flare-gas pad/ }) as HTMLButtonElement).disabled).toBe(false)
   })
 

@@ -55,6 +55,18 @@ const specialKindSchema = z.object({
   delivery_extra_quarters: quarters.optional(),
   mining_only: z.boolean().optional(),
   queue: z.enum(['hydro', 'iceland']).optional(),
+  /** M39.2 (doc 41): no new sites of this kind from `from` to `until` (both included). */
+  moratorium: z.object({ from: quarterId, until: quarterId }).optional(),
+  /** M39.2: a crypto tariff from `from`, rising in a straight line to × U(mult) over U{quarters}; existing load too. */
+  tariff_ramp: z.object({ from: quarterId, mult: range, quarters: z.tuple([quarters, quarters]) }).optional(),
+  /** M39.2: from this quarter every site of the kind pays max(its own price, what a normal warehouse pays). */
+  overage_from: quarterId.optional(),
+  /** M39.2: sites taken from `from` are curtailed: they lose this share of their output. */
+  curtail: z.object({ from: quarterId, output_loss: share }).optional(),
+  /** M39.3 (doc 41): a dry winter: sites already running lose `weeks` of that quarter's output. */
+  dry_winter: z.object({ quarter: quarterId, weeks: z.number().int().min(1).max(13) }).optional(),
+  /** M39.3: the price is locked when the site is taken: drawn in `range` ($/kWh) for a site taken from `from`. */
+  price_lock: z.array(z.object({ from: quarterId, range })).optional(),
 })
 
 /**
@@ -103,7 +115,8 @@ const energySchema = z.object({
       ...ownedBase,
       running_usd_kw_yr: nonneg,
       cf_pitched: share,
-      cf_realised: range,
+      /** M39.4 (doc 41): the realised CF is cf_pitched × a draw in this range. */
+      cf_realised_share: range,
       limit_kw: z.record(z.string(), pos),
       sizes_kw: z.array(pos).min(1),
       breakdown_per_year: share,
@@ -135,14 +148,12 @@ const energySchema = z.object({
       hydro: z.object({
         per_quarter: z.number().int().min(1),
         flood_quarter: quarterId,
-        moratorium_from: quarterId,
-        moratorium_quarters: z.tuple([quarters, quarters]),
-        tariff_new_load_mult: range,
-        tariff_existing_mult: pos,
       }),
       iceland: z.object({
         per_quarter: z.number().int().min(1),
         freezes: z.array(z.object({ from: quarterId, quarters: quarters })),
+        /** M39.3 (doc 41): from `from` to `until`, an allocation only every other quarter (the first, the third …). */
+        every_other: z.object({ from: quarterId, until: quarterId }).optional(),
       }),
     }),
     flare: z.object({
@@ -165,10 +176,17 @@ const energySchema = z.object({
     from: quarterId,
     contract: z.enum(['fixed', 'index']),
     dr_usd_mw_yr: z.object({ mild: nonneg, normal: nonneg, hot: nonneg }),
+    /** M39.1 (doc 41): resale of a fixed-price site's curtailed power, paid with the DR credit. */
+    resale_usd_mw_yr: z.object({ mild: nonneg, normal: nonneg, hot: nonneg }),
+    resale_contract: z.enum(['fixed', 'index']),
     dr_paid_quarter_of_year: z.number().int().min(1).max(4),
     refusal_forfeits_year: z.boolean(),
-    four_cp: z.object({ q3_output_loss: share, next_year_price_mult: pos }),
-    backlash: z.object({ credits_usd_year: pos, heat: z.number(), anger: z.number() }),
+    four_cp: z.object({
+      q3_output_loss: share,
+      /** M39.1: the flat saving per enrolled MW off the next year's power, by that year (the last step at or before it). */
+      saving_usd_mw_yr: z.array(z.object({ from: z.string().regex(/^\d{4}$/), usd: nonneg })).min(1),
+    }),
+    backlash: z.object({ payment_usd: pos, heat: z.number(), anger: z.number() }),
   }),
   site_assets: z.object({
     bess: z.object({
@@ -184,13 +202,18 @@ const energySchema = z.object({
       lifetime_years: pos,
       fade_per_year: share,
       overrun_class: z.enum(OVERRUN_CLASSES),
-      capacity_derate: z.record(z.string(), share),
+      /** M39.4 (doc 41): a 4-hour battery's PJM capacity derate by year (the last year's holds after it). */
+      capacity_derate_4h: byYear,
+      capacity_derate_2h_ratio: share,
+      capacity_derate_8h_add: share,
       capacity_regions: z.array(z.string()),
       capacity_from: quarterId,
       fire_per_year: share,
       fire_heat: z.number(),
       fire_repair_share: share,
       firm_share: share,
+      /** M39.4 (doc 41): ERCOT ancillary-services income per MW of battery power, $ a year, by year (paid quarterly). */
+      ercot_ancillary_usd_mw_yr: z.array(z.object({ from: z.string().regex(/^\d{4}$/), usd: nonneg })).optional(),
     }),
     btm_solar: z.object({
       from: quarterId,
@@ -278,6 +301,8 @@ const nuclearSchema = z.object({
   slip: slipSchema,
   running_usd_mwh: nonneg,
   cf: share,
+  /** M39.5 (doc 41, doc 40 §Q14): the CF for the first quarters after first power (then `cf`). */
+  cf_first: z.object({ cf: share, quarters: quarters }).optional(),
   regions: regionsSchema,
   cancel: z.object({ subscribed_min: share, per_year: share, others_subscribed: range }),
   cost_share: z.object({ chance: share, share: range }),

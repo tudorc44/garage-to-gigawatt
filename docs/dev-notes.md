@@ -5,9 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #3 merged; cleanup on `m37`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
-with the energy options and ventures (doc 38, M35–M36) are merged into `main` and public on GitHub Pages. See "Next"
-and "Milestones M35-M36".
+Last updated: 10 Oct 2026 (PR #4 merged: M37 Finances; cleanup on `m38`). The Prologue, Act I, Act II, Act III and Act IV
+(M27–M34) with the energy options and ventures (doc 38, M35–M36) and Finances (doc 39, M37) are merged into `main` and
+public on GitHub Pages. See "Next" and "Milestone M37".
 
 ## How the owner works
 
@@ -186,12 +186,13 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): PR #3 merged (`main` = `319a660`); branches tagged `m27-done`…`m35-done` and deleted.** Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
+**Now (10 Oct 2026): M37 Finances merged (PR #4, `main` = `3e67c1d`), live; `m37` tagged `m37-done` and deleted.** `m38`
+starts at `m37`'s tip (it carries M37's last dev-notes commit, `d4a28ef`, not yet on `main`). Open: the design thread's
+answers on M37's four questions (the 120 s prologue timing line, prepayments, gains on sales, the report's revenue tile).
+Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
 
-**Now: M37 — Finances** (the P&L and cash flow; doc 39, `docs/game-project-files/claude_39-pnl-spec.md`, design thread
-10 Oct 2026), on `m37` from `main` at `319a660`. See "Milestone M37" below.
-
-**After M37 (the Perfect-bot investigation, design thread answer 1, now M38):** investigate the Perfect bot's in-play reading
+**M38 done (report below, "M38"); now M39 (energy data fixes, doc 41,
+`docs/game-project-files/claude_41-energy-data-fixes.md`).** M38's brief was (the Perfect-bot investigation, design thread answer 1):** investigate the Perfect bot's in-play reading
 (F1 23, F3 55, below Passive's 53 and 58; the oracle gives 95/96). List its logged moves per quarter in one F1 run and
 one F3 run (kind, sign, the ideal stance that quarter) and say which kinds pull it below Passive. Hypothesis (DT):
 financing moves (raises, debt draws) taken to fund an offensive move score as defensive; if confirmed, propose "funding
@@ -216,7 +217,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `319a660`** (10 Oct 2026, PR #3 merged by the owner): M27–M36, Act IV and doc 38. Branches `m27`…`m35` tagged
+**`main` = `3e67c1d`** (10 Oct 2026, PR #4 merged): M37 Finances; `m37` tagged `m37-done` and deleted.
+Before: `319a660` (10 Oct 2026, PR #3 merged by the owner): M27–M36, Act IV and doc 38. Branches `m27`…`m35` tagged
 `m27-done`…`m35-done` and deleted (remote and local). Before: `726c21b` (6 Oct 2026): M26, the dialog hotfixes 1 and 2
 and the shorter site list (`hotfix-dialog`),
 then the Plan dashboard fix and the compact renewal card (`hotfix-plan`); both hotfix branches are merged and deleted, and
@@ -225,6 +227,34 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M39 (branch `m38`; energy data fixes, doc 41 of 10 Oct 2026, from doc 40's research)
+
+Split (one commit per step; doc 41 numbers them M38.x, renumbered M39.x by the owner): **M39.1** Texas: the credit split
+into demand response (grid_credits) and fixed-price resale (energy_income), 4CP as a flat saving, the $30M-a-payment
+backlash · **M39.2** hydro timelines per kind (PUD ramp on existing load, muni overage, Québec grandfathering and block) ·
+**M39.3** Iceland (price locked at signing, 2018 every other quarter, 2021Q4 dry week) · **M39.4** owned generation and
+batteries (prices, ITC steps, small wind CF, battery losses, the PJM derate path, ERCOT battery income) · **M39.5**
+ventures (EGS prices and PPAs, nuclear running cost and CF ramp) · **M39.6** card text · **M39.7** provenance, README,
+tests, the E-B anchors, `--energy`, the 2,000-game venture table. Non-energy goldens and sims stay byte-identical.
+Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5 q; anchors and `--energy` = `energy-m37f`.
+- **M39.1** done: DR $8/18/30K (grid_credits) + fixed-price resale $10/30/75K (energy_income) at Q3; 4CP a flat $50K (2020-25),
+  $60K (2026+) per MW off next year, a quarter each quarter (power +); backlash on a $30M payment. Goldens unchanged.
+- **M39.2** done: per-kind hydro timelines (PUD 2.6¢, closed 2018Q1-2019Q1, tariff ramp from 2019Q2 on every PUD site; muni 2.0¢,
+  closed 6 q, overage = max(own, warehouse price) from 2018Q1; Québec 4.5¢, closed 2018Q2-2019Q3, −3.4% for sites from 2019Q4).
+- **M39.3** done: Iceland's price locked at signing (4.3¢ 2017; U(5.1, 7.1)¢ 2018+), every other quarter in 2018, a dry week in 2021Q4.
+  Mine: the 2018 "warning event" is the row's reason ("rationed"), not a log line, so games without energy options stay identical.
+- **M39.4** done: home battery $1,000/750/900, utility battery $1,500 (2015) … $625 (2018), $513 (2019, straight line: mine), ITC 0%
+  from 2026 and 30% from 2022Q1, small wind CF 0.20 × U(0.3, 1), battery 85% / 2.5% fade, PJM derate by year, ERCOT battery income.
+- **M39.5** done: EGS $7,000/kW, PPA $90; block 2 $5,500/kW, $90; reactors $40/MWh, CF 0.80 for 8 q then 0.92 (`ventureCf`). Goldens
+  act4-energy-f2/f4 change (the cheaper EGS buy-in); the others don't. Open: delivery to the campus stays firm (CF not applied).
+- **M39.6** done: the energy cards' reality lines (doc 40 §Q5): $540/MWh in 2015 under rooftop solar and the home battery;
+  $185/MWh under on-site solar and the utility battery (mine: those four kinds).
+- **M39.7**: `source` replaces `verify` where doc 40 answered (Québec's Rate LG and the flare pad stay `verify`); the energy README
+  rows updated with a "Still gaps" list. Runs (`--energy`, the byte-identity sims, the venture table): below.
+- M39 runs: `--act2 --act3` = M34, `--act4` = M36.11, prologue CSV identical (102-103 s). `--energy`: E-B1/E-B5 PASS, E-B2 MISS as
+  before; battery payback 2022Q4 33 q, 2024Q1 31 q, 2027Q1 20 q (were 81, 67, 35); egs2 F2 median 1.13 → 1.26 (the mark scales with
+  the pitch). Venture table unchanged (EGS 0.804, block 2 0.796, SMR 0.561, advanced 0.388, pumped 0.136, fusion 0, control 1.0).
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 
@@ -246,7 +276,18 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
 - **M37.5** done: quarter report block (revenue, opex, EBITDA, net, cash change; "Open Finances ›" in place, with a way back);
   each chapter report (prologue, I-IV) "The act in figures" + best/worst site. Ledger stores only off-category business bookings.
 - **M37.6** done: tests `sim/ledgerActs` (each act's lines vs its own report), `ui/finances`; browser at 1024/1440 (I, II, IV): no
-  sideways scroll, no cut cell. Tests 1,569 → 1,621; main bundle 221.1 → 224.9 KB (Finances chunk 11.4 KB). Sims: report below.
+  sideways scroll, no cut cell. Tests 1,569 → 1,621; main bundle 221.1 → 224.9 KB (Finances chunk 11.4 KB). Merged (PR #4), live.
+- M37 runs (final code): `--act2 --act3` identical to M34 (1,302 files), `--act4` and `--energy` identical to M36.11, prologue CSV
+  identical. The ledger costs ~20% speed: prologue "1,000 runs" 104.6 → 126.1 s, a MISS on its 120 s line (open question).
+- **M37.7** (design thread after M37): ledger = open quarter + a shared, never-changed history (`cloneState` in state.ts copies the
+  open quarter only); overhead 25-34% → 1-2%, prologue 1,000 runs 102.1 s (PASS); Revenue tile = total revenue ("of which
+  mining"), a Revenue row on the prologue report; doc 39 amended (A1-A10). M37-format saves split at load.
+- **Prologue bulk buying** (owner, 10 Oct 2026; presentation only): each machine card has a count (− / +, 1 / 10 / Max (N)), the
+  total and power, one Buy; N = `p0MaxBuy` (views.ts: cash and free power, confirmed by p0BuyBlocker). Act I's Buy dialog
+  already had a count. The used offer and pre-orders are one unit or one order by their rules: unchanged. Goldens unchanged.
+- **M38** (Perfect-bot reading, report only, no change): a build quarter logs presale− debt+ booking+ insure− = net 0 (0.5, not
+  1); raises the quarter before a build score 0; the build's own −1 moves count as decoy moves (F1 penalty 30). Same-quarter
+  "funding follows purpose" alone barely helps (F1 41→41, 23→33, 6→6); hedges neutral too: 41→90. Act III: 10 of 209 build quarters.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 

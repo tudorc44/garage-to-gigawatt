@@ -9,6 +9,8 @@ import {
   prologueView,
 } from '../../../sim/prologue/views.ts'
 import type { GameState } from '../../../sim/state.ts'
+import { quarterIndex } from '../../../content/index.ts'
+import { quarterRevenue } from '../../../sim/financeViews.ts'
 import { Icon, Tip } from '../../components/basics.tsx'
 import { fmt } from '../../format.ts'
 import {
@@ -288,6 +290,15 @@ export function QuarterReport({ state, act, onNew }: PrologueProps) {
   const r = prologueView(state).lastReport
   if (!r) return null
   const over = state.phase === 'gameover'
+  // M37.7 (DT): the quarter's revenue as the P&L counts it (coins mined at their value, income at home)
+  const q = quarterIndex(r.quarter)
+  const revenue = q === undefined ? null : quarterRevenue(state, q)
+  const revenueText = revenue
+    ? fmt.money(revenue.total) +
+      (revenue.mining > 0.005 && revenue.total - revenue.mining > 0.005
+        ? ` (${t('ui.fin.of_which_mining', { usd: fmt.money(revenue.mining) })})`
+        : '')
+    : null
   return (
     <CenterCard>
       <div class="label">
@@ -303,6 +314,12 @@ export function QuarterReport({ state, act, onNew }: PrologueProps) {
       </h1>
       <table class="num-s" style={{ width: '100%' }}>
         <tbody>
+          {revenueText && (
+            <tr>
+              <td>{t('ui.p0.r.revenue')}</td>
+              <td class="g-right">{revenueText}</td>
+            </tr>
+          )}
           {(
             [
               ['ui.p0.r.income', fmt.money(r.incomeUsd)],

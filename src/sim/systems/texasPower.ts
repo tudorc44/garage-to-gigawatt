@@ -1,8 +1,9 @@
-// Texas flexibility (M35.4, doc 38 §4.7, E-D6): a site in ERCOT on a fixed contract can enrol its curtailable MW in
-// demand response (a yearly credit paid whether or not the grid calls, by the summer's type) and opt into 4CP (lose
-// 1.5% of Q3's output, pay 10% less for next year's power). Curtailable means miners: GPU and hosting MW never earn,
-// unless a utility battery covers the AI load (the battery is the bridge). A grid call is Act I's curtailment alert;
-// refusing it while enrolled forfeits that year's credit. Credits over $50M in a year start a backlash.
+// Texas flexibility (M35.4, doc 38 §4.7, E-D6; M39.1, doc 41): a site in ERCOT on a fixed contract can enrol its
+// curtailable MW in demand response (a yearly credit paid whether or not the grid calls, by the summer's type) and, on a
+// fixed-price contract, earn the resale of that power too, paid with it; and opt into 4CP (lose 1.5% of Q3's output, a
+// flat saving per MW off next year's power). Curtailable means miners: GPU and hosting MW never earn, unless a utility
+// battery covers the AI load (the battery is the bridge). A grid call is Act I's curtailment alert; refusing it while
+// enrolled forfeits that year's credit. A payment over $30M starts a backlash.
 import { CONTENT } from '../../content/index.ts'
 import { ENERGY, energyYear } from '../../content/energyContent.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -86,9 +87,23 @@ export function curtailableMw(state: GameState, site: Site): number {
 /** The year's summer type (market_energy.csv texas_summer; "normal" when blank). */
 export const summerOf = (year: string) => energyYear(Number(year)).texas_summer || 'normal'
 
-/** The credit a site earns for a whole year at this summer's rate, $ (shown on the card before it's paid). */
+/** The demand-response credit a site earns for a whole year at this summer's rate, $ (shown on the card before it's paid). */
 export function drCreditUsd(state: GameState, site: Site, summer = summerOf(yearOf(state.quarter))): number {
   return curtailableMw(state, site) * T.dr_usd_mw_yr[summer]
+}
+
+/**
+ * M39.1 (doc 41): the resale of a fixed-price site's curtailed power, $ a year at this summer's rate (paid with the DR
+ * credit; 0 on a floating contract, which has no fixed price to sell back).
+ */
+export function resaleUsd(state: GameState, site: Site, summer = summerOf(yearOf(state.quarter))): number {
+  if (site.contract?.type !== T.resale_contract) return 0
+  return curtailableMw(state, site) * T.resale_usd_mw_yr[summer]
+}
+
+/** M39.1: 4CP's flat saving per enrolled MW for a year's power, $ per MW-yr (doc 40 §Q4). */
+export function fourCpSavingUsdMwYr(year: string): number {
+  return T.four_cp.saving_usd_mw_yr.filter((s) => s.from <= year).at(-1)?.usd ?? 0
 }
 
 /** Refusing a grid call while enrolled forfeits the year's credit (doc 38 §4.7, mine). */
@@ -101,39 +116,64 @@ export function forfeitOnRefusal(state: GameState): void {
     }
 }
 
+/** What Texas pays at a quarter's end: each site's DR credit and resale (both at Q3's end), and its 4CP saving. */
+export interface TexasQuarter {
+  /** DR credits plus resale, $ (the energy revenue line of the report). */
+  revenueUsd: number
+  /** Per site: the DR credit (grid_credits) and the resale (energy_income). */
+  drUsd: { siteId: string; usd: number }[]
+  resaleUsd: { siteId: string; usd: number }[]
+  /** Per site: this quarter's 4CP saving, $ (a negative power cost; already taken off the quarter's power cost). */
+  fourCpUsd: { siteId: string; usd: number }[]
+}
+
 /**
- * At Q3's end (the summer is over): every enrolled site is paid its credit for the year, unless it refused a call;
- * a 4CP site's next year is set cheaper; credits over the backlash line add Heat at every ERCOT site and, in Act III
- * and IV, Ratepayer Anger.
+ * At a quarter's end: a site in its 4CP year saves a quarter of that year's saving off its power. At Q3's end (the
+ * summer is over): every enrolled site is paid its credit for the year, unless it refused a call, and a fixed-price site
+ * its resale too; a 4CP site's next year's saving is set; a payment over the backlash line adds Heat at every ERCOT site
+ * and, in Act III and IV, Ratepayer Anger.
  */
-export function endQuarterTexas(state: GameState): { revenueUsd: number } {
-  const q = label(state.quarter)
-  if (!q.endsWith(`Q${T.dr_paid_quarter_of_year}`)) return { revenueUsd: 0 }
+export function endQuarterTexas(state: GameState): TexasQuarter {
+  const out: TexasQuarter = { revenueUsd: 0, drUsd: [], resaleUsd: [], fourCpUsd: [] }
   const year = yearOf(state.quarter)
+  // M39.1 (doc 41): 4CP is a flat saving on the enrolled MW, a quarter of it each quarter of the next year.
+  for (const site of state.sites) {
+    const dr = site.dr
+    if (!dr?.fourCpSavingUsd || dr.discountYear !== year) continue
+    const usd = roundCents(dr.fourCpSavingUsd / 4)
+    if (usd <= 0) continue
+    out.fourCpUsd.push({ siteId: site.id, usd })
+    state.quarterStats.powerCostUsd -= usd
+  }
+  const q = label(state.quarter)
+  if (!q.endsWith(`Q${T.dr_paid_quarter_of_year}`)) return out
   const summer = summerOf(year)
-  let revenueUsd = 0
   for (const site of state.sites) {
     const dr = site.dr
     if (!dr) continue
     if (dr.enrolled) {
       if (dr.forfeitYear === year) logEntry(state, 'log.texas.forfeited', { ...siteParams(site) })
       else {
-        const usd = roundCents(drCreditUsd(state, site, summer))
-        if (usd > 0) {
-          revenueUsd += usd
-          logEntry(state, 'log.texas.credit', { ...siteParams(site), creditUsd: usd, summer })
+        const credit = roundCents(drCreditUsd(state, site, summer))
+        const resale = roundCents(resaleUsd(state, site, summer))
+        if (credit > 0) out.drUsd.push({ siteId: site.id, usd: credit })
+        if (resale > 0) out.resaleUsd.push({ siteId: site.id, usd: resale })
+        if (credit + resale > 0) {
+          out.revenueUsd += credit + resale
+          logEntry(state, 'log.texas.credit', { ...siteParams(site), creditUsd: credit, resaleUsd: resale, summer })
         }
       }
     }
     if (dr.fourCp && aiCovered(state, site)) {
       dr.discountYear = String(Number(year) + 1)
-      logEntry(state, 'log.texas.four_cp_set', { ...siteParams(site), year: dr.discountYear })
+      dr.fourCpSavingUsd = roundCents(curtailableMw(state, site) * fourCpSavingUsdMwYr(dr.discountYear))
+      logEntry(state, 'log.texas.four_cp_set', { ...siteParams(site), year: dr.discountYear, savingUsd: dr.fourCpSavingUsd })
     } else if (dr.fourCp) logEntry(state, 'log.texas.four_cp_missed', { ...siteParams(site) })
   }
-  if (revenueUsd > T.backlash.credits_usd_year) {
+  if (out.revenueUsd > T.backlash.payment_usd) {
     for (const site of state.sites) if (regionOf(site) === 'ercot') addGrievance(state, site.id, T.backlash.heat)
     if (state.act >= 3) state.angerAdj = (state.angerAdj ?? 0) + T.backlash.anger
-    logEntry(state, 'log.texas.backlash', { creditUsd: revenueUsd })
+    logEntry(state, 'log.texas.backlash', { creditUsd: out.revenueUsd })
   }
-  return { revenueUsd }
+  return out
 }
