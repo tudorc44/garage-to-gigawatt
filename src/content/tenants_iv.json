@@ -10,7 +10,7 @@
   "types": [
     {
       "id": "sovereign",
-      "name": "Ironwall Sovereign Compute",
+      "name": "Keelstone Sovereign Compute",
       "term_years": 5,
       "rent_mult": 1,
       "add_sovereign_premium": true,

@@ -232,8 +232,8 @@ Both files come from `npm run content:act4-moon` (`tools/act4/moon.ts`). All val
 - **Offtake:** 2 Bandwidth; 2–10 t a year for 8 quarters at the market's surface price × 0.9–1.1, 20% prepaid.
 - **Alerts:** a dust fault hits a running pilot 15% of quarters: repair for $10M or lose 10% availability.
 - **Scripted claims** (`lunar_claims_iv.json`): the Accords bloc on the Shackleton ridge (2031Q3, lands 2032Q2) and
-  Northgate on the de Gerlache ridge (2032Q1) in every future; then per future, after 2032Q2, Cratermark Resources, Meridian
-  Arc (renamed from Jade Arc Constellation, design thread, 9 Oct 2026) and the blocs on other rims (most crowded in the future where the Moon turns strategic).
+  Northgate on the de Gerlache ridge (2032Q1) in every future; then per future, after 2032Q2, Cratermark Resources, Lantern
+  Arc (renamed from Jade Arc Constellation, then Meridian Arc; design thread, 9 and 10 Oct 2026) and the blocs on other rims (most crowded in the future where the Moon turns strategic).
 
 ## Money and rivals (M31.1, doc 33 §11, §12, §14.3)
 
@@ -261,8 +261,8 @@ All three files come from `npm run content:act4-money` (`tools/act4/money.ts`).
   design thread's knob (1.00 → 0.60). B3 still misses at it (F2 Sprinter 1.05× vs Ground 1.03×, 10 seeds): recorded as a
   miss. 2035Q4: 5× → 3×.
 
-- **Rivals** (`rivals_iv.json`; fictional names, for the owner's check): Pallas Compute, Northgate, Orrery Compute, Meridian
-  Arc (was Jade Arc Constellation; its id stays `jade_arc`), Cratermark Resources: value ($B) and orbital MW at anchor quarters, interpolated at load; identical in
+- **Rivals** (`rivals_iv.json`; fictional names, for the owner's check): Pallas Compute, Northgate, Orrery Compute, Lantern
+  Arc (was Jade Arc Constellation, then Meridian Arc; its id stays `jade_arc`), Cratermark Resources: value ($B) and orbital MW at anchor quarters, interpolated at load; identical in
   every future through 2032Q2. Orrery fails in two futures (2033Q3 and 2034Q2): its 50 MW of live blocks go to auction at
   $6M a MW for 2 quarters (designed: the vulture buyer's opportunity, doc 33 §11.5).
 
@@ -270,6 +270,11 @@ All three files come from `npm run content:act4-money` (`tools/act4/money.ts`).
 
 (Every change to a delivered file is listed here, newest first.)
 
+- **M41.2, 10 Oct 2026 (design thread, answer 4 to the M40 report):** two more renames, display only (ids kept): the
+  constellation Meridian Arc → **Lantern Arc** (`jade_arc`; "Meridian" clashes with SpinLaunch's Meridian Space
+  constellation) and the sovereign tenant Ironwall Sovereign Compute → **Keelstone Sovereign Compute** ("Ironwall" is a live
+  privacy product). Files: `tenants_iv.json` (via `tools/act4/orbit.ts`), the author note of `lunar_claims_iv.json` (via
+  `tools/act4/moon.ts`), `src/i18n/en.json`, `docs/guides/orbit-guide.html`.
 - **M34.3, 9 Oct 2026 (the owner's names check):** two fictional names renamed for real-world clashes, display only (ids
   kept): the dominant launcher and its rival company Pallas Heavy / Pallas Compute → **Carrack Heavy / Carrack Compute**
   (Dorado, the first candidate, is a real sounding rocket); the sovereign tenant Aegis Sovereign Compute → **Ironwall

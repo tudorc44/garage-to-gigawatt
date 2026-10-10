@@ -5,9 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #5 merged: M37.7, Prologue bulk buy, M38, M39; cleanup on `m40`). The Prologue, Act I, Act II,
-Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37) and the energy
-data fixes (doc 41, M39) are merged into `main` and public on GitHub Pages. See "Next" and "Milestone M39".
+Last updated: 10 Oct 2026 (PR #6 merged: M40; cleanup on `m41`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
+M40 answers (Act IV reading, venture delivery at CF) are merged into `main` and public on GitHub Pages. See "Next" and "Milestone M40".
 
 ## How the owner works
 
@@ -135,10 +135,8 @@ prologue). Tables: `npm run sim -- --act2` / `--prologue`. **End of M18:** 1,229
 
 ## Open questions for the design thread
 
-- **Doc 33 Q16 (M34.3, 9 Oct 2026):** "Jade Arc Constellation" has no name clash, but "Jade" codes the real-world bloc
-  loudly. Kept for now; if the fictionalisation should hold, rename it Meridian Arc Constellation.
-- **M34.3:** the sovereign tenant's new name is the build's own choice, Ironwall Sovereign Compute: both of the design
-  thread's candidates clash (Rampart Technologies and Bulwark Dynamics are real defence companies). Confirm or replace.
+- (Answered, M41.2) The constellation is **Lantern Arc** (id `jade_arc`) and the sovereign tenant **Keelstone Sovereign
+  Compute**: the design thread's names after the M40 report.
 
 The Act III balance pass is closed (design thread, 4 Oct 2026): no more mechanics rounds unless the owner asks.
 
@@ -189,7 +187,11 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): PR #5 merged (`main` = `ff442df`): M37.7, Prologue bulk buy, M38 (report), M39 (energy data fixes);
+**Now (10 Oct 2026): PR #6 merged (`main` = `464a6ad`): M40 (Act IV reading rules, venture delivery at CF); `m40` tagged
+`m40-done` and deleted; `m41` (from `main`) holds this cleanup. Open: the design thread's answers on the M40 report (Perfect
+below Passive in 3 of 12 cells, see STOPPED; the quarter-level "that build's own"; E-B2).**
+
+**Before: PR #5 merged (`main` = `ff442df`): M37.7, Prologue bulk buy, M38 (report), M39 (energy data fixes);
 `m38` tagged `m38-done` and deleted; staging rebuilt from `main` by the owner. `m40` (from `main`) holds this cleanup. Open: the
 design thread's answers on M38's fix options and M39's three questions (reactor CF on delivery, venture marks scaling with
 price, Iceland's 2018 warning as a row reason).**
@@ -225,7 +227,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `ff442df`** (10 Oct 2026, PR #5 merged): M37.7, bulk buy, M38, M39; `m38` tagged `m38-done` and deleted.
+**`main` = `464a6ad`** (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
+Before: `ff442df` (10 Oct 2026, PR #5 merged): M37.7, bulk buy, M38, M39; `m38` tagged `m38-done` and deleted.
 Before: `3e67c1d` (10 Oct 2026, PR #4 merged): M37 Finances; `m37` tagged `m37-done` and deleted.
 Before: `319a660` (10 Oct 2026, PR #3 merged by the owner): M27–M36, Act IV and doc 38. Branches `m27`…`m35` tagged
 `m27-done`…`m35-done` and deleted (remote and local). Before: `726c21b` (6 Oct 2026): M26, the dialog hotfixes 1 and 2
@@ -236,6 +239,18 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M41 (branch `m41`, from `main` at `464a6ad`; design thread answers to the M40 report, 10 Oct 2026)
+
+Answers: 2 keep the quarter-level "that build's own"; 3 E-B2 stays a recorded miss (the reactors' fat tail, M40.2 numbers:
+smr mean $171M, best $5.2B; adv_fission $148M, $5.4B; control $35M; finished-plant valuation is an Act V design item).
+Split: **M41.1** rule (b) replaced: a raise takes the sign of the next scored move after it in Act IV, 0 with none (never a
+decoy); target Perfect ≥ Passive − 2 in all 12 cells, a short cell is a recorded miss · **M41.2** names: Lantern Arc
+Constellation (id `jade_arc` kept), Keelstone Sovereign Compute · then the `--act4` run and the PR.
+- **M41.1** done (`scoredSignsIv`): a raise takes the sign of the next non-raise ±1 move after it in the log (play order: a raise
+  logged after its quarter's build looks further on, mine, reversible); none: 0. Goldens: act4-energy-f2/f4 reading only.
+- **M41.2** done: Lantern Arc (en.json, short code JA → LA: mine, reversible) and Keelstone Sovereign Compute (tenants_iv.json
+  both copies and its tool, orbit guide, README log); ids kept. Doc 33/34 and act4-scope keep the old names as history.
 
 ## Milestone M40 (branch `m40`, from `main` at `ff442df`; design thread answers after M37.7-M39, 10 Oct 2026)
 

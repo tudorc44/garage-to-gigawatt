@@ -5394,7 +5394,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 4,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 14165832.537500001
       }
     },
@@ -5577,7 +5577,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 5,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 14049375
       }
     },
@@ -5778,7 +5778,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 6,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 13933334.125
       }
     },
@@ -5934,7 +5934,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 7,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 13817707.543750001
       }
     },
@@ -6064,7 +6064,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 8,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 13702499.999999998
       }
     },
@@ -6244,7 +6244,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 9,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 12888687.500000002
       }
     },
@@ -6359,7 +6359,7 @@
       "key": "log.orbit.tenant_signed",
       "params": {
         "n": 10,
-        "tenantName": "Ironwall Sovereign Compute",
+        "tenantName": "Keelstone Sovereign Compute",
         "prepaidUsd": 12079000
       }
     },

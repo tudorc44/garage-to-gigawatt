@@ -8048,8 +8048,8 @@
       "telemetryAvgPctYr": null
     },
     "reading": {
-      "score": 60,
-      "base": 60,
+      "score": 62,
+      "base": 62,
       "penalty": 0,
       "perQuarter": [
         {
@@ -8061,17 +8061,17 @@
         },
         {
           "q": 1,
-          "stance": -1,
+          "stance": 0,
           "ideal": 0,
           "weight": 1,
-          "value": 0.5
+          "value": 0.7
         },
         {
           "q": 2,
-          "stance": -1,
+          "stance": 0,
           "ideal": 0,
           "weight": 1,
-          "value": 0.5
+          "value": 0.7
         },
         {
           "q": 3,
@@ -8198,13 +8198,13 @@
       {
         "q": 1,
         "kind": "equity_raise",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       },
       {
         "q": 2,
         "kind": "equity_raise",
-        "sign": -1,
+        "sign": 0,
         "mark": "neutral"
       }
     ],

@@ -102,7 +102,7 @@ const FILES: Record<string, unknown> = {
     // (M34.2, the owner's answer 2a ⚙: the quarters late a rebuild after a failed launch costs, for the exposure line)
     rebuild_late_quarters_est: 3,
     types: [
-      { id: 'sovereign', name: 'Ironwall Sovereign Compute', term_years: 5, rent_mult: 1.0, add_sovereign_premium: true, prepay_share: 0.2, workload: 'batch', max_mw: null },
+      { id: 'sovereign', name: 'Keelstone Sovereign Compute', term_years: 5, rent_mult: 1.0, add_sovereign_premium: true, prepay_share: 0.2, workload: 'batch', max_mw: null },
       { id: 'frontier_lab', name: 'Tessellate Labs', term_years: 3, rent_mult: 0.95, add_sovereign_premium: false, prepay_share: 0, workload: 'batch', max_mw: null },
       { id: 'inference_platform', name: 'Kite Inference', term_years: 3, rent_mult: 1.05, add_sovereign_premium: false, prepay_share: 0, workload: 'interactive', max_mw: null },
       { id: 'eo_processor', name: 'Cormorant Earth Imaging', term_years: 4, rent_mult: 0.9, add_sovereign_premium: false, prepay_share: 0, workload: 'batch', max_mw: 10 },
