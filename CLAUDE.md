@@ -7,9 +7,10 @@ A career runs from a bedroom in 2009 to an AI-campus operator in 2030, in acts o
 Plan phase → Live quarter (13 weekly ticks, pausable, up to 3 interrupts) → Quarter report; each act ends in a
 chapter report. Money, debt, power, Heat and rivals are simulated; prices and events follow scripted data.
 
-**Status (6 Oct 2026): the Prologue, Act I, Act II and Act III are built and public on GitHub Pages. Act IV ("The Race
-to Orbit", doc 33 with the owner's defaults in `docs/act4-scope.md`) is built on the branches m27–m32 (M27–M32, not yet
-merged or public): its balance pass closed with targets still MISS (dev-notes, M32).**
+**Status (10 Oct 2026): the Prologue, Act I, Act II, Act III and Act IV are built and merged into `main` (public on
+GitHub Pages). Act IV ("The Race to Orbit", doc 33 with the owner's defaults in `docs/act4-scope.md`) came in M27–M34;
+the energy options and ventures (doc 38, `docs/energy-content/`) in M35–M36. Act IV's balance targets B3, B4, B6, B8,
+B13 and the energy target E-B2 are recorded misses, accepted by the design thread (dev-notes, "Milestones M35-M36").**
 - **The Prologue** (Alpha 0.3, Act 0, "Bedroom to Garage"): 32 quarters, 2009 → 2016, optional from the title screen,
   handing over to Act I. Scope in `docs/alpha-0.3-scope.md`.
 - **Act I** (Alpha 0.1, "Garage to Hashrate"): 23 quarters, 2017Q1 → 2022Q3. $10k and an empty garage; machines,
