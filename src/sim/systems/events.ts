@@ -60,7 +60,7 @@ import {
   type GameState,
   type Site,
 } from '../state.ts'
-import { inActII, inActIII } from '../state.ts'
+import { inActII, inAct3Rules } from '../state.ts'
 import { getStep, unmetRequirement } from './capital.ts'
 import { absWeek, aiDemandDelta } from './eventEffects.ts'
 import type { ScheduledEvent } from './eventEffects.ts'
@@ -85,6 +85,7 @@ import { capacityKw, isReady, regionOf, tierIndex, usedKw } from './sites.ts'
 import { moratoriumRegion } from './anger.ts'
 import { activeRivals } from './rivals.ts'
 import { sellTreasury } from './treasury.ts'
+import { siteParams } from './siteSerials.ts'
 
 const W = BALANCE.weeksPerQuarter
 
@@ -331,13 +332,16 @@ export function scheduleEvents(state: GameState): void {
       card.scenario !== state.scenarioId
     )
       continue
+    // Act IV (M28.4): a future's card plays only in its own future; 'all' in every one.
+    if (card.future && card.future !== 'all' && card.future !== state.futureId)
+      continue
     // D15 (M16.0, DT answer 4): a card flagged for the editorial review and not cleared doesn't fire.
     if ((card as { withheld?: boolean }).withheld) continue
     if (!holds(state, card.requires, card)) continue
     schedule(state, card, card.weekIndex! + 1, false)
   }
   // Act III has no random deck: its cards are all scripted (the Act II deck stays off, M11.4c).
-  if (inActIII(state)) return
+  if (inAct3Rules(state)) return
   const rules = inActII(state) ? CONTENT.events.act2 : CONTENT.events
   if (state.quarter < rules.randomStart) return
   const r = substream(state.seed, `events:${state.quarter}`)
@@ -704,7 +708,7 @@ export function resolveEvent(
           state,
           won ? 'log.event_lawyer_won' : 'log.event_lawyer_lost',
           {
-            tier: site?.tier ?? '',
+            ...siteParams(site),
           },
           weekNo,
         )

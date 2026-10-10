@@ -29,6 +29,7 @@ import {
 } from './life.ts'
 import { placePreorder } from './preorders.ts'
 import { P, siteCapacityKw, siteLoadKw } from './setup.ts'
+import { siteParams } from '../systems/siteSerials.ts'
 
 export type PrologueAction =
   | {
@@ -68,6 +69,9 @@ const SHARED = new Set([
   'REPAIR_MACHINES',
   'REPAIR_ALL',
   'SET_HODL',
+  // M35 (doc 38 §4.1-4.3): rooftop solar, small wind and a home battery at a household site or the garage.
+  'ENERGY_BUILD',
+  'ENERGY_REPAIR',
 ])
 
 const fail = (key: Message['key'], params?: Message['params']): Message => ({
@@ -123,7 +127,7 @@ export function p0BuyBlocker(
   const freeKw = siteCapacityKw(site) - siteLoadKw(s, site.id)
   const neededKw = model.power_kw * a.count
   if (neededKw > freeKw + 1e-9)
-    return fail('error.no_capacity', { tier: site.tier, freeKw, neededKw })
+    return fail('error.no_capacity', { ...siteParams(site), freeKw, neededKw })
   const cost = unit * a.count
   if (cost > s.cash)
     return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })

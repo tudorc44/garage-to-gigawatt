@@ -194,8 +194,8 @@ describe('each button’s action works from what its panel shows', () => {
 })
 
 describe('the scenario stays off the screen', () => {
-  /** The chapter report's reveal (M13.3) is the one UI file allowed to read the hidden views. */
-  const REVEAL = /screens[\\/]Act3Reveal\.tsx$/
+  /** The chapter reports' reveals (M13.3; Act IV's, M32.2) are the UI files allowed to read the hidden views. */
+  const REVEAL = /screens[\\/]Act[34]Reveal\.tsx$/
   function files(dir: string): string[] {
     return readdirSync(dir).flatMap((n) => {
       const p = join(dir, n)
@@ -215,6 +215,8 @@ describe('the scenario stays off the screen', () => {
       if (REVEAL.test(f)) continue
       const t = code(f)
       expect(t, f).not.toMatch(/\bscenarioId\b/)
+      // M27.6 (doc 33 §6.8): nor Act IV's hidden future (M32.2: Act4Reveal.tsx is the one exception, like Act3Reveal.tsx)
+      expect(t, f).not.toMatch(/\bfutureId\b/)
       expect(t, f).not.toMatch(/scenario_name|scenarioName/)
       expect(t, f).not.toMatch(/signalsHidden|rivalsHidden|act3End\b/)
       expect(t, f).not.toMatch(/\.role\b|role_tag|roleTag|\bdecoy\b/i)

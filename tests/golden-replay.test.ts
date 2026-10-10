@@ -2,7 +2,9 @@
 // game. End states are stored in tests/golden/. If a deliberate change to rules or
 // balance changes an outcome, check the difference, then update the files with:
 //   npx vitest run -u
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+// (M32.7: the Act IV goldens play a whole Act III first: no clock decides pass or fail, as the Act IV test files)
+vi.setConfig({ testTimeout: 0 })
 import { CONTENT } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import {
@@ -12,9 +14,11 @@ import {
   playPrologue,
   replay,
   replayPrologue,
+  type Step,
   type Strategy,
 } from '../src/sim/replay.ts'
 import { act3ScenarioCompany } from './sim/act3Helpers.ts'
+import { act4Company } from './sim/act4Helpers.ts'
 import { BOTS } from '../tools/bots.ts'
 import { PROLOGUE_BOTS } from '../tools/prologueBots.ts'
 import type { GameState } from '../src/sim/state.ts'
@@ -397,14 +401,143 @@ describe.each(['s0', 's1', 's2', 's3'] as const)(
     })
 
     it('matches the stored golden end state', async () => {
+      // The save-format number isn't game state: format 5 (Act IV, M27.2) changes nothing in an Act III game, so the
+      // stored goldens (format 4) are compared as they are.
       await expect(
-        JSON.stringify(run.state, null, 2) + '\n',
+        JSON.stringify({ ...run.state, version: 4 }, null, 2) + '\n',
       ).toMatchFileSnapshot(
         `./golden/act3-${scenario}-seed-${ACT3_SEED}.json`,
       )
     })
   },
 )
+
+/**
+ * Act IV (M32.7): one golden per future. The Act III company of `act4Company` (s0, seed 1) enters Act IV on each future
+ * and plays all 20 quarters with a fixed busy strategy that exercises the act's systems: an equity raise when cash is
+ * short, a 10 MW orbital shell in high LEO a quarter (licence, the first offer or spot, project debt or cash, the earliest launch
+ * with room, insurance), a lunar claim with its mission, power, pilot, crew and offtake. Each step is tried in order and
+ * kept only if it succeeds, so the strategy never fails a step.
+ */
+const ACT4_SEED = 1
+const busyAct4: Strategy = {
+  plan(state) {
+    const kept: Step[] = []
+    let s = state
+    const tryStep = (a: Step) => {
+      if (a.type === 'ADVANCE') return
+      const r = applyAction(s, a)
+      if (r.ok) {
+        s = r.state
+        kept.push(a)
+      }
+    }
+    if (s.cash < 500e6) tryStep({ type: 'RAISE_EQUITY', dilution: 0.3 })
+    // (the quiet high-LEO shell: in F3 a busy-shell strategy like this one goes bust in the cascade)
+    tryStep({ type: 'FILE_ORBITAL_LICENCE', shell: 'high_leo' })
+    if (!s.act4Orbit?.blocks.some((b) => b.stage === 'proposed'))
+      tryStep({ type: 'OPEN_ORBITAL_BLOCK', kind: 'shell', mw: 10, shell: 'high_leo', gen: 'gen31' })
+    for (const b of s.act4Orbit?.blocks.filter((x) => x.stage === 'proposed') ?? []) {
+      tryStep({ type: 'SIGN_ORBITAL_TENANT', blockId: b.id, offer: 0 })
+      tryStep({ type: 'SIGN_ORBITAL_TENANT', blockId: b.id, offer: 'spot' })
+      tryStep({ type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id, capital: 'project_debt' })
+      tryStep({ type: 'ARRANGE_ORBITAL_CAPITAL', blockId: b.id })
+      for (let k = 2; k <= 6; k++) tryStep({ type: 'BOOK_ORBITAL_LAUNCH', blockId: b.id, provider: 'pallas', quarter: s.quarter + k })
+      tryStep({ type: 'BUY_ORBITAL_INSURANCE', blockId: b.id })
+    }
+    tryStep({ type: 'CLAIM_LUNAR_SITE', site: 'cabeus' })
+    tryStep({ type: 'SEND_LUNAR_MISSION', site: 'cabeus' })
+    tryStep({ type: 'BUILD_LUNAR_SOLAR', site: 'cabeus', kwe: 100 })
+    tryStep({ type: 'DECIDE_LUNAR_PILOT', site: 'cabeus' })
+    tryStep({ type: 'SET_LUNAR_MAINTENANCE', site: 'cabeus', on: true })
+    tryStep({ type: 'SIGN_LUNAR_OFFTAKE', offer: 0 })
+    return kept as Action[]
+  },
+}
+describe.each(['f1', 'f2', 'f3', 'f4'] as const)('golden replay: act4-%s (2031Q1 → the chapter phase)', (future) => {
+  const start = () => act4Company('s0', future, ACT4_SEED)
+  const run = playFrom(start(), busyAct4, { through: 4 })
+
+  it('plays to its end with orbit and the Moon in play: the chapter phase, or (F3) a game over after the cascade', () => {
+    // (F3: a block a quarter overspends once the space-equity window shuts after the cascade: a fire sale, a covenant
+    // breach, then a game over with its reveal. M36.6: F2 too, since its space multiple × 0.60 from its 2033Q1 trigger
+    // (11.3× → 6.4×) does the same to a block a quarter. F1 and F4 reach 2035Q4.)
+    const bust = future === 'f3' || future === 'f2'
+    expect(run.state.phase).toBe(bust ? 'gameover' : 'chapter')
+    expect(run.state.act).toBe(4)
+    expect(run.state.futureId).toBe(future)
+    if (!bust) expect(run.state.reports.at(-1)!.quarter).toBe('2035Q4')
+    expect(run.state.act4Orbit!.blocks.length).toBeGreaterThan(0)
+    expect(run.state.act4Moon!.claims.length).toBeGreaterThan(0)
+    expect(run.state.act4End?.futureId).toBe(future)
+  })
+
+  it('same seed + the same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playFrom(start(), busyAct4, { through: 4 }).state).toEqual(run.state)
+    expect(run.log.reduce(applyStep, start())).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(
+      `./golden/act4-${future}-seed-${ACT4_SEED}.json`,
+    )
+  })
+})
+
+/**
+ * M36 (doc 38 §4-5): two goldens for the energy options and ventures, on F2 and F4 (the grid futures far apart). The
+ * same Act III company enters Act IV and plays all 20 quarters with an energy strategy: on-site solar with a 4-hour
+ * battery at its own site, Texas demand response where it can, and a stake in each venture (EGS after diligence, an SMR
+ * and the solar+battery control with offtakes to its own site, fusion with a reservation); a cash call is paid when cash
+ * allows, else diluted. Each step is tried in order and kept only if it succeeds.
+ */
+const energyAct4: Strategy = {
+  plan(state) {
+    const kept: Step[] = []
+    let s = state
+    const tryStep = (a: Action) => {
+      const r = applyAction(s, a)
+      if (r.ok) {
+        s = r.state
+        kept.push(a)
+      }
+    }
+    if (s.cash < 300e6) tryStep({ type: 'RAISE_EQUITY', dilution: 0.3 })
+    tryStep({ type: 'ENERGY_BUILD', siteId: 'site-2', kind: 'btm_solar', size: 10 })
+    tryStep({ type: 'ENERGY_BUILD', siteId: 'site-2', kind: 'bess', size: 10, hours: 4 })
+    for (const site of s.sites) tryStep({ type: 'TEXAS_SET', siteId: site.id, enrolled: true })
+    tryStep({ type: 'VENTURE_DILIGENCE', venture: 'egs' })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'egs', stake: 0.1, offtake: 0, prepay: 0 })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'smr', stake: 0.1, offtake: 0.25, prepay: 1, siteId: 'site-2' })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'fusion', stake: 0.1, offtake: 1, prepay: 0 })
+    tryStep({ type: 'VENTURE_JOIN', venture: 'control', stake: 0.2, offtake: 0.5, prepay: 0, siteId: 'site-2' })
+    for (const v of s.ventures ?? [])
+      if (v.call) tryStep({ type: 'VENTURE_CALL', ventureId: v.id, choice: s.cash > v.call.dueUsd + 200e6 ? 'pay' : 'dilute' })
+    return kept as Action[]
+  },
+}
+describe.each(['f2', 'f4'] as const)('golden replay: act4-energy-%s (2031Q1 → the chapter phase)', (future) => {
+  const start = () => act4Company('s0', future, ACT4_SEED)
+  const run = playFrom(start(), energyAct4, { through: 4 })
+
+  it('plays to its end with energy assets and ventures in play', () => {
+    expect(run.state.act).toBe(4)
+    expect(run.state.reports.at(-1)!.quarter).toBe('2035Q4')
+    expect(run.state.sites.find((x) => x.id === 'site-2')!.energy!.length).toBeGreaterThanOrEqual(2)
+    expect(run.state.ventures!.map((v) => v.type).sort()).toEqual(['control', 'egs', 'fusion', 'smr'])
+  })
+
+  it('same seed + the same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playFrom(start(), energyAct4, { through: 4 }).state).toEqual(run.state)
+    expect(run.log.reduce(applyStep, start())).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(
+      `./golden/act4-energy-${future}-seed-${ACT4_SEED}.json`,
+    )
+  })
+})
 
 describe('balance anchors (scope §5)', () => {
   it('the steady grower survives to the Merge', () => {

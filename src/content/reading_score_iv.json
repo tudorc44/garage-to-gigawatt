@@ -1,0 +1,67 @@
+{
+  "_meta": {
+    "schema": "reading_score_iv/1",
+    "doc33": "§6.7 (the reading score: orbital exposure), §6.8 (hidden files), IV-D10",
+    "author": "build, M28.3 (5 Oct 2026): first pass, designed per doc 33 §6.7 (the ideal stances), Act III's scoring rules (doc 27 §17.1); the oracle values are computed and asserted by the sim in M32",
+    "DO_NOT_EXPOSE": "Hidden content: the ideal stance per quarter reveals the future. Read only by the reading-score system and act4End (the chapter report), plus tests/ and tools/; never by selectors, the UI during play, or player-like bots.",
+    "quarters": ["2031Q1", "2031Q2", "2031Q3", "2031Q4", "2032Q1", "2032Q2", "2032Q3", "2032Q4", "2033Q1", "2033Q2", "2033Q3", "2033Q4", "2034Q1", "2034Q2", "2034Q3", "2034Q4", "2035Q1", "2035Q2", "2035Q3", "2035Q4"],
+    "stance": "orbital exposure: +1 = adds exposure (commit a block, a non-refundable launch booking, draw orbital debt); -1 = reduces it (insurance, selling or deorbiting early, long take-or-pay presales, cancelling bookings, an equity raise); 0 = ground and lunar moves (logged for the reveal timeline, not scored)"
+  },
+  "scoring": {
+    "match": 1,
+    "calm_and_quiet": 0.7,
+    "one_neutral": 0.5,
+    "opposite": 0,
+    "decoy_penalty_per_move": 10,
+    "decoy_penalty_cap": 30,
+    "calm_in_decoy_window": 1
+  },
+  "futures": {
+    "f1": {
+      "why": "On Schedule: build orbit early while launch falls; calm through the middle; cautious from 2034, when everyone's orbital supply floods and rents fall.",
+      "ideal": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1],
+      "weight": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "decoy": {
+        "indicator": "orbital_congestion",
+        "quarters": ["2031Q4", "2032Q1", "2032Q2"],
+        "wrong_stance": -1,
+        "why": "A congestion scare tempts a retreat from orbit (the Closed Shell reading) just as orbit is about to pay."
+      }
+    },
+    "f2": {
+      "why": "The Wall: orbit stays dear and fragile; the right stance is cautious throughout.",
+      "quiet_no_exposure": 1,
+      "quiet_no_exposure_why": "Design thread, 10 Oct 2026 (M36.11): a quarter with no orbital move while the player holds no orbital exposure counts as a match, like S0's calm and quiet; ground and lunar moves stay neutral. Exposure is read from the log: blocks committed or bought, less blocks sold.",
+      "ideal": [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+      "weight": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "decoy": {
+        "indicator": "launch_quotes",
+        "quarters": ["2032Q1", "2032Q2", "2032Q3"],
+        "wrong_stance": 1,
+        "why": "A promotional launch price tempts a rush into orbit (the On Schedule reading); the list price never moves."
+      }
+    },
+    "f3": {
+      "why": "Closed Shell: calm first; hedge as congestion climbs (insure, diversify, presell); bold after the cascade, when the survivors rebuild in the quiet shells.",
+      "ideal": [0, 0, 0, 0, 0, -1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "weight": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "decoy": {
+        "indicator": "regulatory_climate",
+        "quarters": ["2031Q4", "2032Q1"],
+        "wrong_stance": -1,
+        "why": "A shelved rule tempts an early retreat (the Wall reading) before the real danger, congestion, shows."
+      }
+    },
+    "f4": {
+      "why": "Cheap Ground: calm before the trigger; defensive after it, when the ground unblocks and orbit's speed premium evaporates.",
+      "ideal": [0, 0, 0, 0, 0, 0, 0, 0, 0, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+      "weight": [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+      "decoy": {
+        "indicator": "ground_power_squeeze",
+        "quarters": ["2031Q4", "2032Q1"],
+        "wrong_stance": 1,
+        "why": "A record capacity auction tempts a bet on orbit (the On Schedule reading) just before the ground eases."
+      }
+    }
+  }
+}

@@ -20,6 +20,7 @@ import { payBridgeWeek } from './lifeline.ts'
 import { scenarioOf } from './market.ts'
 import { gpuResidualUsd } from './projects.ts'
 import { ratingInputs } from './rating.ts'
+import { orbitalDebtUsd } from './orbitCapital.ts'
 
 /** An equipment loan offer: LTV and yearly rate (fractions), the term, and in Act II the rating it's priced on. */
 export interface LoanTerms {
@@ -233,6 +234,8 @@ export function debtUsd(state: GameState): number {
     state.constructionLoans.reduce((sum, l) => sum + l.balanceUsd, 0) +
     (state.bridgeLoan?.balanceUsd ?? 0) +
     (state.cryptoLoan?.balanceUsd ?? 0) +
-    (state.facilities ?? []).reduce((sum, f) => sum + f.balanceUsd, 0)
+    (state.facilities ?? []).reduce((sum, f) => sum + f.balanceUsd, 0) +
+    // Act IV (M31.2): loans on orbital blocks (none before Act IV: nothing is added)
+    (state.act4Orbit ? orbitalDebtUsd(state) : 0)
   )
 }

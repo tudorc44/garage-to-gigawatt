@@ -21,6 +21,7 @@ import { addGrievance } from './heat.ts'
 import { addPc, adjustAnger } from './pcState.ts'
 import { annualContractUsd, contractQuarters, tenantCard } from './projects.ts'
 import { capacityKw, poweredKw, usedKw } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 const W = BALANCE.act3.wildcards
 const card = (id: WildcardId) => CONTENT.wildcards.find((w) => w.id === id)!
@@ -212,7 +213,9 @@ export function chooseWildcard(state: GameState, choice: 'c1' | 'c2'): void {
   const key = `log.wildcard.${open.id}.${choice}${waterVariant(state, open)}` as const
   logEntry(state, key as MessageKey, {
     ...(p ? { n: p.n } : {}),
-    ...(siteTier(state, open.siteId) ? { tier: siteTier(state, open.siteId)! } : {}),
+    ...(siteTier(state, open.siteId)
+      ? siteParams(state.sites.find((s) => s.id === open.siteId))
+      : {}),
   })
   state.act3WildcardOpen = null
   openNextWildcard(state)

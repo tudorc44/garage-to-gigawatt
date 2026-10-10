@@ -5,11 +5,13 @@ import { BALANCE, CONTENT } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import {
-  inActIII,
+  inAct3Rules,
+  inActIV,
   projectGone,
   type GameState,
   type Project,
 } from './state.ts'
+import { VENTURES } from '../content/energyContent.ts'
 import { convertibleKw } from './systems/hosting.ts'
 import { scenarioOf } from './systems/market.ts'
 import { siteMwByUse } from './systems/mwUse.ts'
@@ -130,6 +132,7 @@ export function projectCard(state: GameState, p: Project) {
   return {
     project: p,
     column: columnOf(p),
+    site,
     tier: site.tier,
     region: regionOf(site) ?? null,
     slots: slots(p),
@@ -236,12 +239,15 @@ export function openProjectView(state: GameState) {
           },
           gas: {
             usdMw: P().power.gas.capexUsdMw,
-            quarters: P().power.gas.buildQuarters,
+            // (M36.4: Act IV's turbine backlog, 6-10 quarters; earlier acts' fixed build)
+            quarters: (inActIV(state)
+              ? VENTURES.act4_power.gas_build_q
+              : [P().power.gas.buildQuarters, P().power.gas.buildQuarters]) as [number, number],
             heat: P().power.gas.heatDelta,
             blocker: powerBlocker(state, site, 'gas') ?? null,
           },
           /** Act III (M17.6, A3-08): the nuclear PPA here: its price now, the grid price here now, why not. */
-          nuclear: inActIII(state)
+          nuclear: inAct3Rules(state)
             ? {
                 blocker: powerBlocker(state, site, 'nuclear') ?? null,
                 priceUsdMwh: nuclearPriceUsdMwh(state),
@@ -266,7 +272,7 @@ export function openProjectView(state: GameState) {
      * Act III (M16.2/M16.5): a new hall is mid tier unless built to top; the GPUs that fit each, and what the
      * top-tier build adds. Null outside Act III.
      */
-    act3: inActIII(state)
+    act3: inAct3Rules(state)
       ? {
           topOpen: topBuildOpen(state),
           topFrom: BALANCE.act3.density.topNewBuildFrom,
@@ -437,7 +443,7 @@ function downtimeQuarters(state: GameState, weeks: number) {
  * outside Act III.
  */
 export function racksView(state: GameState) {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   const G = CONTENT.act3Gpus
   const label = CONTENT.quarters[state.quarter]
   const onSale = availableGpus(state.quarter, scenarioOf(state)).map((g) => g.id)

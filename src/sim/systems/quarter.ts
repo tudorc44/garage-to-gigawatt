@@ -5,9 +5,13 @@ import {
   CONTENT,
   isAct2RulesQuarter,
   actLastQuarter,
+  quarterInputs,
   type MarketWeek,
 } from '../../content/index.ts'
 import { finishUpgrades } from './construction.ts'
+import { bookEnergy, endQuarterEnergy } from './energy.ts'
+import { endQuarterSpecialSites } from './specialSites.ts'
+import { endQuarterVentures, fusionHypeDelta, venturesValueUsd } from './ventures.ts'
 import {
   emptyQuarterStats,
   logEntry,
@@ -16,7 +20,15 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
-import { inAct2Rules, inActIII } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV } from '../state.ts'
+import { buildAct4End } from './act4End.ts'
+import { fireWildcardsIv } from './wildcardsIv.ts'
+import { startQuarterOrbitOffers } from './orbit.ts'
+import { serviceOrbitalDebt } from './orbitCapital.ts'
+import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
+import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
+import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.ts'
+import { startQuarterRivalsIv } from './rivalsIv.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -62,8 +74,10 @@ import {
   startQuarterProjects,
   weightedBacklogUsd,
 } from './projects.ts'
-import { aiEbitdaUsd, ebitdaUsd, valuationUsd } from './valuation.ts'
+import { aiEbitdaUsd, ebitdaUsd, moonEbitdaUsd, orbitEbitdaUsd, valuationUsd, ventureHypeUsd } from './valuation.ts'
+import { endQuarterOrbit, orbitConstructionUsd, spaceMultiple, startQuarterOrbitLive } from './orbitOps.ts'
 import { depreciationAudit, lasting } from './eventEffects.ts'
+import { siteParams } from './siteSerials.ts'
 
 /**
  * Runs after week 13. If cash is below zero: sell treasury coins, then machines
@@ -77,21 +91,40 @@ export function endQuarter(state: GameState): void {
     scenarioOf(state),
   )
   // Act III (M18.11): open lender cures are cured or, at their deadline, foreclose (before this quarter's walks).
-  if (inActIII(state)) settleLenderCures(state)
+  if (inAct3Rules(state)) settleLenderCures(state)
   state.quarterStats.lateDamagesUsd += endQuarterProjects(state)
   // Act III (M17.2): the nuclear PPAs' take-or-pay for the quarter.
   settlePpas(state)
+  // M35 (doc 38 §4): energy assets' savings, upkeep and chances, Texas's credits, special sites' events; M36 (§5):
+  // ventures move on, and those at operation deliver to your campus (their PPA saving is energy revenue).
+  const energy = endQuarterEnergy(state, quarterInputs(state.quarter, scenarioOf(state))?.pjmCapacityUsdMwDay)
+  energy.revenueUsd += endQuarterVentures(state).revenueUsd
+  bookEnergy(state, energy)
+  endQuarterSpecialSites(state)
   // Act III (M12.2): the renewals opened this quarter are settled (the new terms start next quarter).
   resolveRenewals(state)
   // Act III (M12.3): card cash due at this quarter's end (a recovery, a share of the revenue).
   payAct3Payouts(state)
   endQuarterGpuWaves(state)
+  // Act IV (M29.4): live orbital blocks earn, wear and face debris; then (M29.3) launches due now slip, fly or fail.
+  endQuarterOrbit(state)
+  endQuarterLaunches(state)
+  // (M30.4) lunar pilots process water for the offtakes; leases, maintenance, production capex; (M30.3) a lunar
+  // mission due now whose landing never came up lands.
+  endQuarterMoonOps(state)
+  endQuarterMissions(state)
   // Project debt service is due now; unpaid, it's missed (and may foreclose) instead of forcing sales.
   const service = serviceFacilities(state)
   state.quarterStats.interestUsd += service.interestUsd
   state.quarterStats.principalUsd += service.principalUsd
+  // Act IV (M31.2): loans on orbital blocks (interest added during the build; repaid once live) and their covenant.
+  if (state.act4Orbit?.debts?.length) {
+    const orbital = serviceOrbitalDebt(state)
+    state.quarterStats.interestUsd += orbital.interestUsd
+    state.quarterStats.principalUsd += orbital.principalUsd
+  }
   // Act III (M18.2): the standby's commitment fee; then, short of cash, the standby is drawn before any forced sale.
-  if (inActIII(state)) {
+  if (inAct3Rules(state)) {
     state.quarterStats.interestUsd += settleStandbyFee(state)
     autoDrawStandby(state)
   }
@@ -106,7 +139,7 @@ export function endQuarter(state: GameState): void {
   // Act III (M17.3): lobbying lands, the Director's gain, the decay.
   endQuarterPolitics(state)
   const report = buildReport(state, w, forcedSale)
-  if (inActIII(state) && state.politicalCapital !== undefined)
+  if (inAct3Rules(state) && state.politicalCapital !== undefined)
     report.politicalCapital = state.politicalCapital
   // The credit rating is reviewed each quarter in Act III too (M11.4c: YES, same formula).
   if (isAct2RulesQuarter(state.quarter)) {
@@ -129,7 +162,7 @@ export function endQuarter(state: GameState): void {
   }
   state.reports.push(report)
   // Act III (M18.13): the leverage covenant test; debt the lenders call short of cash goes to the rescue.
-  if (inActIII(state)) {
+  if (inAct3Rules(state)) {
     testCovenant(state, report)
     if (state.cash < 0) {
       rescueBeforeGameOver(state)
@@ -138,7 +171,7 @@ export function endQuarter(state: GameState): void {
     }
   }
   // Act III (M18.2): the standby lapses after its last quarter (its draws stay until their bullets).
-  if (inActIII(state)) expireStandby(state)
+  if (inAct3Rules(state)) expireStandby(state)
   if (forcedSale) logEntry(state, 'log.forced_sale', { ...forcedSale })
   state.phase = state.cash < 0 ? 'gameover' : 'report'
   if (state.phase === 'gameover') {
@@ -146,6 +179,8 @@ export function endQuarter(state: GameState): void {
     // Act III (M14.4): a game over still gets the reveal, its reading counted up to this quarter.
     if (inActIII(state) && state.scenarioId)
       state.act3End = buildAct3End(state, true)
+    // Act IV (M27.5): a game over gets its end record too (the reveal fills it in M32).
+    if (inActIV(state)) state.act4End = buildAct4End(state, true)
   }
 }
 
@@ -186,8 +221,33 @@ function buildReport(
     ebitdaUsd(st) * (lasting(state, state.events.ebitdaMult)?.mult ?? 1)
   const evMult = lasting(state, state.events.valuationMult)?.mult
   const treasuryUsd = treasuryValueUsd(state, w)
-  const constructionUsd = constructionValueUsd(state)
+  // Act IV (M29.4): orbital blocks under way count at capex spent; the orbital unit at the space multiple.
+  const orbit = state.act4Orbit
+    ? {
+        orbitRevenueUsd: st.orbitRevenueUsd ?? 0,
+        orbitCostUsd: st.orbitCostUsd ?? 0,
+        orbitEbitdaUsd: orbitEbitdaUsd(st),
+        orbitMultiple: spaceMultiple(state),
+      }
+    : null
+  const constructionUsd = orbit
+    ? constructionValueUsd(state) + orbitConstructionUsd(state)
+    : constructionValueUsd(state)
+  // Act IV (M30.4): the lunar unit (sites on your estimates, plants at capex spent, offtake backlog) and its EBITDA,
+  // which earns no multiple.
+  const moon = state.act4Moon
+    ? {
+        moonRevenueUsd: st.moonRevenueUsd ?? 0,
+        moonCostUsd: st.moonCostUsd ?? 0,
+        moonEbitdaUsd: moonEbitdaUsd(st),
+        lunarUsd: lunarUnitUsd(state),
+      }
+    : null
   const weightedBacklog = weightedBacklogUsd(state)
+  // M36 (doc 38 §5): your venture stakes and the fusion hype (absent without a venture).
+  const ventures = state.ventures?.length
+    ? { venturesUsd: venturesValueUsd(state), multipleDelta: fusionHypeDelta(state) }
+    : null
   return {
     quarter: CONTENT.quarters[state.quarter],
     hashrate: hashrate(state),
@@ -218,8 +278,23 @@ function buildReport(
         weightedBacklogUsd: weightedBacklog,
         evMult,
         scenario: scenarioOf(state),
+        ...(orbit ? { orbitEbitdaUsd: orbit.orbitEbitdaUsd, orbitMultiple: orbit.orbitMultiple } : {}),
+        ...(moon ? { moonEbitdaUsd: moon.moonEbitdaUsd, lunarUsd: moon.lunarUsd } : {}),
+        ...(ventures ?? {}),
       },
     ),
+    ...(orbit ?? {}),
+    ...(moon ?? {}),
+    ...(ventures
+      ? {
+          venturesUsd: ventures.venturesUsd,
+          ventureHypeUsd: ventureHypeUsd(ebitda - (moon?.moonEbitdaUsd ?? 0), ventures.multipleDelta),
+        }
+      : {}),
+    // M35: energy assets' lines, only in a quarter that had one (so earlier reports are untouched).
+    ...(st.energyRevenueUsd !== undefined || st.energyCostUsd !== undefined
+      ? { energyRevenueUsd: st.energyRevenueUsd ?? 0, energyCostUsd: st.energyCostUsd ?? 0 }
+      : {}),
     ...(evMult !== undefined ? { evMult } : {}),
     priceAlerts: st.priceAlerts,
     marginCalls: st.marginCalls,
@@ -267,6 +342,13 @@ export function startNextQuarter(state: GameState): void {
       state.phase = 'chapter'
       return
     }
+    if (inActIV(state)) {
+      // The end of Act IV (doc 33 §15): the chapter report, with the end record stored now (M27.5: a stub; M32 adds
+      // the reveal, the reading score and the titles). The campaign finale follows it.
+      state.act4End = buildAct4End(state)
+      state.phase = 'chapter'
+      return
+    }
     state.phase = state.act === 1 ? 'merge' : 'chapter'
     return
   }
@@ -283,7 +365,7 @@ export function startNextQuarter(state: GameState): void {
   finishUpgrades(state)
   for (const site of state.sites) {
     if (site.readyQuarter === state.quarter && state.quarter > 0) {
-      logEntry(state, 'log.site_ready', { tier: site.tier })
+      logEntry(state, 'log.site_ready', siteParams(site))
     }
   }
   startQuarterContracts(state)
@@ -300,6 +382,18 @@ export function startNextQuarter(state: GameState): void {
   rollAuction(state)
   // Act III (M17.4): a wildcard due this quarter comes in the Plan phase (if it has a target).
   openNextWildcard(state)
+  // Act IV (M28.5): a wildcard due this quarter fires now.
+  fireWildcardsIv(state)
+  // Act IV (M29.2): open orbital blocks without a tenant get this quarter's offers.
+  startQuarterOrbitOffers(state)
+  startQuarterOrbitBuilds(state)
+  startQuarterOrbitLive(state)
+  // Act IV (M30.2): scripted lunar claims arrive; landing clocks run out.
+  startQuarterMoonClaims(state)
+  // (M30.4) lunar offtake offers; the Flag on the Pole's freeze.
+  startQuarterMoonOps(state)
+  // (M31.5) a rival's failure makes the news.
+  startQuarterRivalsIv(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

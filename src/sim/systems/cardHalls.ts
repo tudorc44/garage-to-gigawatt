@@ -14,7 +14,6 @@
 // - distressed_campus: a new idle, energized site of that many MW, no flaw, in the region of the largest site.
 import {
   BALANCE,
-  CONTENT,
   POWER_REGIONS,
   quarterInputs,
 } from '../../content/index.ts'
@@ -26,6 +25,7 @@ import {
   type Project,
   type SiteOffer,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import { exportGpuMult } from './exportRule.ts'
 import { convertibleKw } from './hosting.ts'
@@ -41,6 +41,7 @@ import {
 import { retrofitPlan, startRetrofit } from './retrofit.ts'
 import { buyAct2Site } from './scouting.ts'
 import { capacityKw, poweredKw, regionOf } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 /** The card effects as act3Cards.ts writes them. */
 export interface RetrofitCard {
@@ -207,7 +208,7 @@ export function accelerateCard(
   logEntry(
     state,
     'log.card_accelerated',
-    { n: p.n, quarter: CONTENT.quarters[p.readyQuarter] ?? '—', costUsd },
+    { n: p.n, quarter: logQuarterLabel(state, p.readyQuarter), costUsd },
     weekNo,
   )
 }
@@ -288,7 +289,7 @@ export function rackCard(state: GameState, e: RackCard, weekNo: number): void {
   logEntry(
     state,
     'log.project_power_existing',
-    { n, tier: site.tier, projectKw: plan.kw },
+    { n, ...siteParams(site), projectKw: plan.kw },
     weekNo,
   )
   logEntry(

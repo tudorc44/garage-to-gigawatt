@@ -2,19 +2,19 @@
 // adjustment. Kept free of other systems so Anger and the grid queue can read them without an import loop.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inActIII, type GameState } from '../state.ts'
+import { inAct3Rules, logQuarterLabel, type GameState } from '../state.ts'
 
 const PC = BALANCE.act3.politicalCapital
 
 /** Political capital now (0 outside Act III). */
 export function politicalCapital(state: GameState): number {
-  return inActIII(state) ? (state.politicalCapital ?? 0) : 0
+  return inAct3Rules(state) ? (state.politicalCapital ?? 0) : 0
 }
 
 /** Below the threshold (15): the moratorium comes at Anger 40 in your regions, and grid queues take +1 quarter. */
 export function lowCapital(state: GameState): boolean {
   return (
-    inActIII(state) &&
+    inAct3Rules(state) &&
     state.politicalCapital !== undefined &&
     state.politicalCapital < CONTENT.politicalCapital.lowThreshold
   )
@@ -39,7 +39,7 @@ export function waterPauseBlocker(
   const pause = state.act3Gov?.pause
   if (!pause?.kind || pause.untilQuarter === undefined) return undefined
   if (state.quarter > pause.untilQuarter) return undefined
-  const quarter = CONTENT.quarters[pause.untilQuarter + 1] ?? ''
+  const quarter = logQuarterLabel(state, pause.untilQuarter + 1, '')
   if (pause.kind === 'start' && on.projectId && pause.projectId === on.projectId)
     return { key: 'error.water_pause_start', params: { quarter } }
   if (pause.kind === 'site' && on.siteId && pause.siteId === on.siteId)

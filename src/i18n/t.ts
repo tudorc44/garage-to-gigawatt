@@ -8,6 +8,7 @@
 // ids and get translated.
 import en from './en.json' with { type: 'json' }
 import contentText from './content.en.json' with { type: 'json' }
+import textIv from '../content/text_iv.en.json' with { type: 'json' }
 import { fmt } from '../ui/format.ts'
 
 export type MessageKey = keyof typeof en
@@ -19,7 +20,8 @@ export interface Message {
   params?: MessageParams
 }
 
-const table: Record<string, string> = { ...contentText, ...en }
+// (M28.4: and Act IV's card text, src/content/text_iv.en.json, written with the cards by tools/act4/events.ts)
+const table: Record<string, string> = { ...contentText, ...textIv, ...en }
 
 /** String params that hold content ids get translated through these key prefixes. */
 const ID_PARAMS: Record<string, string> = {
@@ -51,12 +53,45 @@ const ID_PARAMS: Record<string, string> = {
   item: 'p0.vanity.',
   p0Card: 'p0.event.',
   p0Choice: 'p0.event.',
+  shellName: 'orbit.shell.',
+  registryName: 'orbit.registry.',
+  providerName: 'orbit.provider.',
+  slipReason: 'orbit.slip.',
+  lunarSite: 'moon.site.',
+  claimant: 'moon.claimant.',
+  buyer: 'moon.buyer.',
+  capital: 'orbit.capital.',
+  energyKind: 'energy_kind.',
+  summer: 'texas_summer.',
+  specialKind: 'special_kind.',
+  ventureType: 'venture_type.',
+  ventureChoice: 'venture_choice.',
+  ventureGate: 'venture_gate.',
+}
+
+/** M33.1 (doc 35): site types a player owns one of at most; their name stands alone ("Garage"), with no number. */
+const SINGLE_SITES = new Set(['garage', 'bedroom', 'home_rig'])
+
+/**
+ * A site's short name ("Own site 3", "Powered shell 2", "Garage") from its type (an Act II category or a tier) and
+ * its number (systems/siteSerials.ts). Without a number (a log line from before M33), the type alone.
+ */
+export function siteShortName(label: string, serial?: number): string {
+  const type = table[`site.name.cat.${label}`] ?? table[`site.${label}`] ?? label
+  if (serial === undefined || SINGLE_SITES.has(label)) return type
+  return fill(table['site.name.short'], { type, n: String(serial) })
 }
 
 function fill(text: string, params: MessageParams): string {
   return text.replace(/\{(\w+)\}/g, (_, name: string) => {
     const value = params[name]
     if (value === undefined) return `{${name}}`
+    // M33.1: a site named in a log line or message carries its number: show its short name.
+    if (name === 'tier' && typeof params.serial === 'number' && typeof value === 'string')
+      return siteShortName(
+        typeof params.siteLabel === 'string' ? params.siteLabel : value,
+        params.serial,
+      )
     if (typeof value === 'string') {
       const prefix = ID_PARAMS[name]
       return prefix ? (table[prefix + value] ?? value) : value

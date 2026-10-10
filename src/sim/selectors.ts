@@ -13,6 +13,7 @@ import {
   type PowerRegion,
   type RegionPolicy,
 } from '../content/index.ts'
+import { ORBIT } from '../content/orbitContent.ts'
 import type { Message, MessageKey } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import type {
@@ -24,7 +25,8 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { inAct2Rules, inActIII } from './state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV } from './state.ts'
+import { readSignalIvBlocker } from './systems/signalsIv.ts'
 import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
@@ -170,6 +172,7 @@ import {
   hireBlocker,
   isAct2Hire,
   isAct3Hire,
+  isAct4Hire,
   isHired,
   outreachBandwidth,
   readMarketBandwidth,
@@ -191,8 +194,10 @@ import {
   capacityChargeUsdKwh,
   capacityKw,
   getTier,
+  hostingKw,
   isReady,
   leavingTerms,
+  machinesKw,
   poweredKw,
   powerPriceUsdKwh,
   regionOf,
@@ -230,6 +235,9 @@ import {
   reletKw,
 } from './systems/hosting.ts'
 import { auctionWindow, lotValueUsd } from './systems/auctions.ts'
+import { landingChance } from './systems/moon.ts'
+import { lunarKwe } from './systems/moonOps.ts'
+import { buyOrreryBlocker, orreryAuction } from './systems/rivalsIv.ts'
 
 /** Would this action be allowed right now? Returns the reason if not. */
 export function whyNot(state: GameState, action: Action): Message | null {
@@ -392,6 +400,165 @@ export interface SiteView {
   } | null
 }
 
+/**
+ * M33.1 (doc 35): what a site's long name ("Own site 3 · Georgia · 20 MW") and its row in a picker or list show:
+ * region, energized and free kW, Heat, and the flags (a power renewal due, a flaw).
+ */
+export function siteFacts(state: GameState, site: Site) {
+  const energizedKw = poweredKw(site, state.quarter)
+  return {
+    region: regionOf(site) ?? null,
+    energizedKw,
+    freeKw: Math.max(0, energizedKw - usedKw(state, site.id)),
+    heat: siteHeatValue(state, site.id),
+    renewalDue: renewalDue(state, site),
+    flaw: site.flaw,
+  }
+}
+export type SiteFacts = ReturnType<typeof siteFacts>
+
+/**
+ * M33.3 (doc 35): everything a site's card shows: power, uses (machines, hosting, projects, a ground station), money,
+ * Heat, and which site actions are open here now (each with why not).
+ */
+export function siteCardView(state: GameState, siteId: string) {
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return null
+  const sv = siteViews(state).find((x) => x.site.id === siteId)!
+  const facts = siteFacts(state, site)
+  const lots = state.machines.filter((l) => l.siteId === siteId)
+  const models = new Map<string, number>()
+  for (const l of lots) models.set(l.model, (models.get(l.model) ?? 0) + l.count)
+  const why = (a: Action) => whyNot(state, a)
+  const community = communityView(state).sites.find((x) => x.site.id === siteId)
+  return {
+    site,
+    facts,
+    readyQuarter: quarterName(site.readyQuarter) || null,
+    /** M34.2 (3b): when it was acquired; null for a site from an older save. */
+    acquiredQuarter:
+      site.acquiredQuarter === null || site.acquiredQuarter === undefined
+        ? null
+        : quarterName(site.acquiredQuarter) || null,
+    ready: isReady(site, state.quarter),
+    capacityKw: sv.capacityKw,
+    usedKw: sv.usedKw,
+    powerUsdKwh: sv.powerUsdKwh,
+    contract: site.contract
+      ? {
+          type: site.contract.type,
+          endQuarter: quarterName(site.contract.endQuarter),
+        }
+      : null,
+    machines: {
+      units: lots.reduce((n, l) => n + l.count, 0),
+      models: [...models].map(([model, count]) => ({ model, count })),
+    },
+    hosting: state.hosting
+      .filter((h) => h.siteId === siteId)
+      .map((h) => ({ kw: h.kw, rateUsdKwh: h.rateUsdKwh, termEnd: quarterName(h.termEndQuarter) })),
+    projects: state.projects
+      .filter((p) => p.siteId === siteId && !['sold', 'ended', 'foreclosed'].includes(p.stage))
+      .map((p) => ({ n: p.n, kind: p.kind, stage: p.stage, kw: p.kw, tenant: p.tenant?.card ?? null })),
+    stations: (state.act4Orbit?.stations ?? [])
+      .filter((st) => st.siteId === siteId)
+      .map((st) => ({ units: st.units, readyQuarter: quarterName(st.readyQuarter) })),
+    rentUsdQ: site.rentUsdQ,
+    leavePenaltyUsd: sv.leaving?.penaltyUsd ?? null,
+    heat: sv.heat,
+    flaw: site.flaw,
+    /** The site actions (as the Plan's pickers): null when open, else why not; absent when they don't apply. */
+    actions: {
+      leave: sv.leaving ? why({ type: 'LEAVE_SITE', siteId }) : undefined,
+      renewal: sv.renewalDue ? null : undefined,
+      transformer: transformerViews(state).some((u) => u.site.id === siteId && u.readyQuarter === undefined)
+        ? why({ type: 'UPGRADE_TRANSFORMER', siteId })
+        : undefined,
+      talk: community
+        ? community.outreachDone
+          ? ({ key: 'ui.community.done' } as Message)
+          : why({ type: 'OUTREACH', siteId })
+        : undefined,
+      mitigate: community
+        ? community.mitigated
+          ? ({ key: 'ui.community.done' } as Message)
+          : why({ type: 'MITIGATE_NOISE', siteId })
+        : undefined,
+      hosting:
+        inAct2Rules(state) && site.tier !== BALANCE.startSite ? null : undefined,
+      station: inActIV(state) ? why({ type: 'BUILD_GROUND_STATION', siteId }) : undefined,
+    },
+  }
+}
+export type SiteCardView = NonNullable<ReturnType<typeof siteCardView>>
+
+export type SiteFeeAction = 'talk' | 'mitigate' | 'transformer' | 'station'
+
+/**
+ * M34.2 (owner, 9 Oct 2026, 3f): the confirm every fee-charging site action lands on (from the to-do row, the site picker
+ * or the site card): its action, cost, Bandwidth, what it does, and why not. Null when it doesn't apply to the site.
+ */
+export function siteActionView(state: GameState, kind: SiteFeeAction, siteId: string) {
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return null
+  const why = (a: Action) => whyNot(state, a)
+  switch (kind) {
+    case 'talk': {
+      const c = communityView(state)
+      const x = c.sites.find((y) => y.site.id === siteId)!
+      const action: Action = { type: 'OUTREACH', siteId }
+      return { kind, site, action, costUsd: x.outreachUsd, bandwidth: c.outreachBandwidth, grievance: c.outreachGrievance, heat: x.heat, why: why(action) }
+    }
+    case 'mitigate': {
+      const c = communityView(state)
+      const x = c.sites.find((y) => y.site.id === siteId)!
+      const action: Action = { type: 'MITIGATE_NOISE', siteId }
+      return { kind, site, action, costUsd: x.mitigationUsd, bandwidth: c.mitigationBandwidth, base: c.mitigationBase, heat: x.heat, why: why(action) }
+    }
+    case 'transformer': {
+      const u = transformerViews(state).find((y) => y.site.id === siteId)
+      if (!u) return null
+      const action: Action = { type: 'UPGRADE_TRANSFORMER', siteId }
+      return { kind, site, action, costUsd: u.costUsd, bandwidth: u.bandwidth, quarters: u.quarters, why: why(action) }
+    }
+    case 'station': {
+      if (!inActIV(state)) return null
+      const g = ORBIT.tenants.links.ground_station
+      const action: Action = { type: 'BUILD_GROUND_STATION', siteId }
+      return { kind, site, action, costUsd: g.capex_usd, bandwidth: g.bandwidth, units: g.units, heatAdd: g.heat, why: why(action) }
+    }
+  }
+}
+export type SiteActionView = NonNullable<ReturnType<typeof siteActionView>>
+
+export type SiteUse = 'mining' | 'hosting' | 'shell' | 'cloud' | 'pilot' | 'idle'
+
+/**
+ * M33.4 (doc 35): one row of a long site list (Fleet & Sites, New project): its facts, its main use (the most kW), whether
+ * it has projects, and its acquisition order (site ids count up).
+ */
+export function siteListRow(state: GameState, site: Site) {
+  const live = state.projects.filter(
+    (p) => p.siteId === site.id && !['sold', 'ended', 'foreclosed'].includes(p.stage),
+  )
+  const uses: [SiteUse, number][] = [
+    ['mining', machinesKw(state, site.id)],
+    ['hosting', hostingKw(state, site.id)],
+    ...(['shell', 'cloud', 'pilot'] as const).map(
+      (k): [SiteUse, number] => [k, live.filter((p) => p.kind === k).reduce((kw, p) => kw + p.kw, 0)],
+    ),
+  ]
+  const top = uses.reduce((a, b) => (b[1] > a[1] ? b : a))
+  return {
+    site,
+    facts: siteFacts(state, site),
+    mainUse: (top[1] > 0 ? top[0] : 'idle') as SiteUse,
+    hasProjects: live.length > 0,
+    order: Number(site.id.slice(site.id.lastIndexOf('-') + 1)) || 0,
+  }
+}
+export type SiteListRow = ReturnType<typeof siteListRow>
+
 export function siteViews(state: GameState): SiteView[] {
   return state.sites.map((site) => ({
     site,
@@ -520,12 +687,13 @@ export function averagePrice(
   quarter: number,
   coin: Coin,
   /** Act III (M13.1): the game, whose scenario's weekly market has these quarters (the UI never reads the scenario). */
-  state?: Pick<GameState, 'scenarioId'> | null,
+  state?: Pick<GameState, 'act' | 'scenarioId' | 'futureId'> | null,
 ): number {
+  // (M27.6: through the state's market key, so Act IV's quarters read its glided market)
   const weeks =
     CONTENT.market[quarter] ??
     Array.from({ length: BALANCE.weeksPerQuarter }, (_, w) =>
-      marketWeek(quarter, w, state?.scenarioId),
+      marketWeek(quarter, w, state ? scenarioOf(state) : undefined),
     )
   return weeks.reduce((sum, w) => sum + coinPrice(w, coin), 0) / weeks.length
 }
@@ -848,9 +1016,13 @@ export function heatBand(heat: number): 1 | 2 | 3 | 4 | 5 {
 }
 
 /** The hottest site, for the top bar: its tier and Heat. */
-export function topHeat(state: GameState): { tier: string; heat: number } {
+export function topHeat(state: GameState): {
+  site: Site
+  tier: string
+  heat: number
+} {
   const h = hottestSite(state)
-  return { tier: h.site.tier, heat: h.value }
+  return { site: h.site, tier: h.site.tier, heat: h.value }
 }
 
 /** Every site's Heat and what outreach / noise mitigation would cost there (Community dialog). */
@@ -912,6 +1084,7 @@ export function communityDealView(state: GameState) {
   const d = CONTENT.heat.communityDeal
   return {
     name: allHires().find((h) => h.effect.community_deal === true)?.name ?? '',
+    site,
     tier: site.tier,
     heat: siteHeatValue(state, site.id),
     costUsd: offer.costUsd,
@@ -932,6 +1105,7 @@ export function complaintView(state: GameState) {
   const heat = siteHeatValue(state, site.id)
   const ignore = CONTENT.heat.ignoreComplaint * growthMult(site)
   return {
+    site,
     tier: site.tier,
     heat,
     payUsd: complaintPayUsd(),
@@ -979,12 +1153,13 @@ export function renewalViews(state: GameState) {
 /** The next power contract to come up for renewal (for the locked row), or null. */
 export function nextRenewal(
   state: GameState,
-): { tier: string; quarter: string } | null {
+): { site: Site; tier: string; quarter: string } | null {
   const next = state.sites
     .filter((s) => s.contract)
     .sort((a, b) => a.contract!.endQuarter - b.contract!.endQuarter)[0]
   return next
     ? {
+        site: next,
         tier: next.tier,
         quarter: CONTENT.quarters[next.contract!.endQuarter] ?? '',
       }
@@ -997,6 +1172,7 @@ export function negotiationView(state: GameState) {
   if (!n) return null
   const site = state.sites.find((x) => x.id === n.siteId)!
   return {
+    site,
     tier: site.tier,
     contractType: n.contractType,
     term: n.term,
@@ -1045,7 +1221,9 @@ export function hireViews(state: GameState) {
   return allHires()
     .filter((h) => inAct2Rules(state) || !isAct2Hire(h.id))
     // (M17.3: the Government Affairs Director only in Act III)
-    .filter((h) => inActIII(state) || !isAct3Hire(h.id))
+    .filter((h) => inAct3Rules(state) || !isAct3Hire(h.id))
+    // (M31.4: Act IV's four only in Act IV)
+    .filter((h) => inActIV(state) || !isAct4Hire(h.id))
     .map((h) => ({
       id: h.id,
       name: h.name,
@@ -1089,6 +1267,7 @@ export function marketReadView(state: GameState) {
  * for quarters the player has read that indicator. Never a future quarter, never a hidden field.
  */
 export function signalsPanel(state: GameState) {
+  // (Act III's Signals only: Act IV's six come in M28)
   if (!inActIII(state) || !state.scenarioId) return null
   const now = CONTENT.quarters[state.quarter]
   const reads = state.act3SignalReads ?? []
@@ -1128,6 +1307,81 @@ export function signalsPanel(state: GameState) {
   }
 }
 
+/**
+ * Act IV's Signals panel (M28.2, doc 33 §6.3): the same shape as Act III's signalsPanel, from Act IV's own six
+ * indicators: this quarter's displayed value and arrow, the displayed history of PAST Act IV quarters, and the sharp
+ * range only for quarters the player read that indicator. Null outside Act IV. Never a future quarter, never a hidden
+ * field (the future id only picks the file; nothing of it is returned).
+ */
+export function signalsPanelIv(state: GameState) {
+  if (!inActIV(state) || !state.futureId) return null
+  const now = CONTENT.quarters[state.quarter]
+  const reads = state.act4SignalReads ?? []
+  return {
+    quarter: now,
+    cost: SIGNAL_READ_BANDWIDTH,
+    readThisQuarter: reads.find((r) => r.quarter === now)?.indicator ?? null,
+    blocked: reads.some((r) => r.quarter === now)
+      ? null
+      : (readSignalIvBlocker(state, 'launch_quotes') ?? null),
+    indicators: CONTENT.signalsIv[state.futureId].map((ind) => {
+      const current = ind.series.find((p) => p.quarter === now)
+      return {
+        id: ind.id as string,
+        label: ind.label,
+        higherMeans: ind.higher_means,
+        current: current ? { displayed: current.displayed, arrow: current.arrow } : null,
+        history: ind.series
+          .filter((p) => p.quarter < now)
+          .map((p) => ({ quarter: p.quarter, displayed: p.displayed, arrow: p.arrow })),
+        reads: reads
+          .filter((r) => r.indicator === ind.id)
+          .flatMap((r) => {
+            const p = ind.series.find((x) => x.quarter === r.quarter)
+            return p ? [{ quarter: p.quarter, ...p.sharp }] : []
+          }),
+      }
+    }),
+  }
+}
+
+/**
+ * A4-02's megawatt strip (M28.2, doc 33 §5): energized MW in the three theatres. Ground = the sites' energized MW (as
+ * Acts II–III count it); orbit and the Moon count their live capacity once M29's blocks and M30's lunar power exist (0
+ * until then). Null outside Act IV.
+ */
+/**
+ * Act IV's live alerts (M29.4, M30.3): what the card shows. An orbit alert names its block; a landing names its site
+ * and this quarter's landing success; a dust fault names its site. Null for any other interrupt.
+ */
+export function spaceAlertView(state: GameState): {
+  kind: 'orbit_conjunction' | 'orbit_storm' | 'lunar_landing' | 'lunar_dust'
+  n: number
+  site: string
+  chance: number
+} | null {
+  const a = state.interrupt
+  if (!a) return null
+  if (a.id === 'orbit_conjunction' || a.id === 'orbit_storm')
+    return { kind: a.id, n: state.act4Orbit?.blocks.find((b) => b.id === a.orbitBlockId)?.n ?? 0, site: '', chance: 0 }
+  if (a.id === 'lunar_landing') {
+    const m = state.act4Moon?.missions.find((x) => x.id === a.lunarMissionId)
+    return { kind: a.id, n: 0, site: m?.site ?? '', chance: landingChance(state) }
+  }
+  if (a.id === 'lunar_dust') return { kind: a.id, n: 0, site: a.lunarSite ?? '', chance: 0 }
+  return null
+}
+
+export function act4MwColumns(state: GameState) {
+  if (!inActIV(state)) return null
+  const groundMw = state.sites.reduce((kw, s) => kw + poweredKw(s, state.quarter), 0) / 1000
+  // (M29.5: the orbit's live blocks, at their remaining capacity)
+  const orbitMw = (state.act4Orbit?.blocks ?? [])
+    .filter((b) => b.stage === 'live')
+    .reduce((mw, b) => mw + b.mw * b.capacity, 0)
+  return { groundMw, orbitMw, moonKwe: lunarKwe(state) }
+}
+
 /** Energized capacity and what the machines there draw, in kW (sites that are built and powered). */
 function energizedKw(state: GameState): { totalKw: number; usedKw: number } {
   let totalKw = 0
@@ -1150,6 +1404,7 @@ export function carryOver(state: GameState) {
   const w = marketWeek(q, BALANCE.weeksPerQuarter - 1)
   const sites = state.sites.map((site) => ({
     id: site.id,
+    site,
     tier: site.tier,
     energizedKw: poweredKw(site, q),
   }))
@@ -1258,6 +1513,7 @@ export function fleetOfferView(state: GameState) {
       .filter((s) => s.tier !== BALANCE.startSite)
       .map((s) => ({
         siteId: s.id,
+        site: s,
         tier: s.tier,
         units: fleetUnitsFor(state, s.id),
         costUsd: fleetUnitsFor(state, s.id) * offer.unitUsd,
@@ -1475,6 +1731,10 @@ export function chapterReport(state: GameState) {
       })),
       sites: logOf('log.site_ready').map((e) => ({
         tier: String(e.params?.tier),
+        // M33.1: the site's number and scouted category, for its short name (none in a pre-M33 log line)
+        serial: typeof e.params?.serial === 'number' ? e.params.serial : undefined,
+        category:
+          typeof e.params?.siteLabel === 'string' ? e.params.siteLabel : undefined,
         quarter: CONTENT.quarters[e.quarter],
       })),
       best: byEbitda[0]
@@ -1650,6 +1910,7 @@ export function eventCardView(state: GameState) {
       ?.withheld,
     week: alert.week,
     siteTier: state.sites.find((x) => x.id === alert.siteId)?.tier ?? null,
+    site: state.sites.find((x) => x.id === alert.siteId) ?? null,
     choices: availableChoices(state).map((id) => {
       const r = applyAction(state, { type: 'RESOLVE_INTERRUPT', choice: id })
       return {
@@ -1674,6 +1935,7 @@ export function failureWaveView(state: GameState) {
   if (a?.id !== 'failure_wave') return null
   const site = state.sites.find((x) => x.id === a.siteId)
   return {
+    site: site ?? null,
     tier: site?.tier ?? '',
     week: a.week,
     units: (a.wave ?? []).reduce((n, d) => n + d.units, 0),
@@ -1759,6 +2021,7 @@ export function gpuWaveView(state: GameState) {
   return {
     week: a.week,
     n: p.n,
+    site: state.sites.find((x) => x.id === p.siteId) ?? null,
     tier: state.sites.find((x) => x.id === p.siteId)?.tier ?? '',
     gpus,
     clusterGpus: p.gpuCount,
@@ -1779,6 +2042,7 @@ export function projectAlertView(state: GameState) {
     week: a.week,
     n: p.n,
     kw: p.kw,
+    site: state.sites.find((x) => x.id === p.siteId) ?? null,
     tier: state.sites.find((x) => x.id === p.siteId)?.tier ?? '',
     costUsd: projectEventCostUsd(state),
     waitQuarters: gpuWaitQuarters(state, p),
@@ -1797,8 +2061,18 @@ export function valuationBreakdown(state: GameState) {
   const v = valuationSplit(r, state.firstAiDealQuarter, scenarioOf(state))
   return {
     quarter: r.quarter,
-    ebitdaUsd: r.ebitdaUsd - v.aiEbitdaUsd,
+    // (Act IV: the orbital and lunar EBITDA have their own lines)
+    ebitdaUsd: r.ebitdaUsd - v.aiEbitdaUsd - (r.orbitEbitdaUsd ?? 0) - (r.moonEbitdaUsd ?? 0),
     multiple: v.miningMultiple,
+    /** Act IV (M31.6): the orbital unit at the space multiple, and the lunar unit; null before Act IV. */
+    orbit:
+      r.orbitEbitdaUsd === undefined
+        ? null
+        : { ebitdaUsd: r.orbitEbitdaUsd, multiple: r.orbitMultiple ?? 0, evUsd: v.orbitEvUsd },
+    lunarUsd: r.lunarUsd ?? null,
+    /** M36.8: venture stakes marked to milestones, and the fusion hype's effect; null without a venture. */
+    venturesUsd: r.venturesUsd ?? null,
+    ventureHypeUsd: r.ventureHypeUsd ? r.ventureHypeUsd : null,
     enterpriseUsd: v.miningEvUsd,
     aiEbitdaUsd: v.aiEbitdaUsd,
     aiMultiple: v.aiMultiple,
@@ -1816,6 +2090,20 @@ export function valuationBreakdown(state: GameState) {
 export function leagueScaleView(state: GameState) {
   const u = mwByUseOf(state, state.quarter)
   return { aiKw: u.aiShell + u.aiCloud, miningKw: u.mining + u.hosting }
+}
+
+/** Act IV (M31.5): your league columns: ground MW, orbital MW and lunar sites held. Null outside Act IV. */
+export function leagueScaleIv(state: GameState) {
+  const mw = act4MwColumns(state)
+  if (!mw) return null
+  const sites = (state.act4Moon?.claims ?? []).filter((c) => c.status === 'held').length
+  return { groundMw: mw.groundMw, orbitMw: mw.orbitMw, sites }
+}
+
+/** Act IV (M31.5): Orrery Compute's auction, for the Orbit board. */
+export const orreryAuctionView = (state: GameState) => {
+  const a = orreryAuction(state)
+  return { ...a, why: buyOrreryBlocker(state) ?? null }
 }
 
 /** Log lines that are project milestones: started, a slot filled (power, tenant, capital), delayed, live, sold, foreclosed. */
@@ -2039,9 +2327,10 @@ export function contractCalendar(state: GameState) {
  * the locked $/GPU-hr × 8,760 hours). Null outside Act III.
  */
 export function renewalWallView(state: GameState) {
-  if (!inActIII(state)) return null
-  const first = actFirstQuarter(3)
-  const last = actLastQuarter(3)
+  if (!inAct3Rules(state)) return null
+  // (M27.5: the current act's quarters: Act III's 16, or Act IV's 20)
+  const first = actFirstQuarter(state.act)
+  const last = actLastQuarter(state.act)
   const bars = Array.from({ length: last - first + 1 }, (_, i) => ({
     quarter: first + i,
     label: CONTENT.quarters[first + i],
@@ -2080,6 +2369,15 @@ const ACT3_REPORT_KEYS = new Set<string>([
   ...['wc_grid_event', 'wc_export_control', 'wc_water_moratorium', 'wc_ai_lab_breakup'].flatMap(
     (id) => [`log.wildcard.${id}.c1`, `log.wildcard.${id}.c2`],
   ),
+  // M28.5: Act IV's wildcard news lines
+  ...[
+    'solar_storm',
+    'flag_on_the_pole',
+    'launch_grounding',
+    'chip_export_clampdown',
+    'reactor_delay',
+    'bitcoin_supercycle',
+  ].map((id) => `log.wildcard_iv.${id}`),
   // M17.8: the water moratorium on a proposed project or a site
   ...['c1_start', 'c2_start', 'c1_site', 'c2_site'].map(
     (c) => `log.wildcard.wc_water_moratorium.${c}`,
@@ -2132,7 +2430,7 @@ const ACT3_REPORT_KEYS = new Set<string>([
 
 /** The quarter report's Act III block (M13.2): this quarter's contract and card lines, in order. Null outside Act III. */
 export function act3ReportLines(state: GameState) {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   return state.log.filter(
     (e) => e.quarter === state.quarter && ACT3_REPORT_KEYS.has(e.key),
   )
@@ -2184,7 +2482,7 @@ export function ppaRows(state: GameState) {
 }
 
 export function contractsDueSoon(state: GameState): number | null {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   return buildCalendar(state).filter(
     (e) => e.endQuarter !== null && e.endQuarter <= state.quarter + 3,
   ).length
@@ -2273,7 +2571,7 @@ export function renewalsDue(state: GameState) {
  * political-capital log. Null outside Act III.
  */
 export function governmentView(state: GameState) {
-  if (!inActIII(state) || state.politicalCapital === undefined) return null
+  if (!inAct3Rules(state) || state.politicalCapital === undefined) return null
   const C = CONTENT.politicalCapital
   const reports = state.reports.filter((r) => r.politicalCapital !== undefined)
   const now = state.politicalCapital
@@ -2334,6 +2632,7 @@ export function wildcardView(state: GameState) {
     /** M17.8 F: the water moratorium's text variant ('' a build, '_start' a proposed project, '_site' a site). */
     variant: waterVariant(state, open),
     tier: siteTier(state, open.siteId) ?? null,
+    site: state.sites.find((s) => s.id === open.siteId) ?? null,
     choices: (['c1', 'c2'] as const).map((c) => ({
       id: c,
       blocker: wildcardChoiceBlocker(state, c) ?? null,
@@ -2347,13 +2646,18 @@ export function act3Finished(state: GameState): boolean {
   return inActIII(state) && !!state.act3End
 }
 
+/** M32.4: an Act IV game has reached its chapter report (survived or out): unlocks Act IV's Scenario Mode. */
+export function act4FinishedSel(state: GameState): boolean {
+  return inActIV(state) && !!state.act4End
+}
+
 /**
  * The standby liquidity facility block on Capital (M18.2): its status (none, or available until a quarter with the
  * undrawn and drawn amounts and the locked spread), what arranging it would cost or why it can't, and whether it can
  * be drawn now. null outside Act III.
  */
 export function standbyView(state: GameState) {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   const s = activeStandby(state)
   const terms = standbyTerms(state)
   return {
@@ -2382,7 +2686,7 @@ export function standbyView(state: GameState) {
 
 /** Act III (M18.13): the leverage covenant for the Capital screen: LTV now, the limit, and an open breach. */
 export function covenantView(state: GameState) {
-  if (!inActIII(state)) return null
+  if (!inAct3Rules(state)) return null
   const b = state.covenantBreach
   return {
     ltv: companyLtv(state),
@@ -2442,6 +2746,7 @@ export function hostingView(state: GameState) {
     })
   const contracts = state.hosting.map((h) => ({
     contract: h,
+    site: state.sites.find((x) => x.id === h.siteId) ?? null,
     tier: state.sites.find((x) => x.id === h.siteId)?.tier ?? '',
     live: h.readyQuarter <= state.quarter,
     readyQuarter: quarterName(h.readyQuarter),

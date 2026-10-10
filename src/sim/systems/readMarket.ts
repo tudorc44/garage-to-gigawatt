@@ -6,10 +6,10 @@
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { random, substream } from '../rng.ts'
-import { inActIII, logEntry, type Coin, type GameState } from '../state.ts'
+import { inAct3Rules, logEntry, type Coin, type GameState } from '../state.ts'
 import { readMarketBandwidth } from './hires.ts'
 import { coinPrice, quarterWeeks, scenarioOf } from './market.ts'
-import type { ScenarioId } from '../../content/index.ts'
+import type { MarketKey } from '../../content/index.ts'
 
 export type Direction = 'up' | 'flat' | 'down'
 
@@ -22,7 +22,7 @@ export interface MarketRead {
 export function trueDirection(
   quarter: number,
   coin: Coin,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): Direction {
   const weeks = quarterWeeks(quarter, scenario)!
   const change = coinPrice(weeks.at(-1)!, coin) / coinPrice(weeks[0], coin) - 1
@@ -43,7 +43,7 @@ function oneStepOff(truth: Direction, roll: number): Direction {
 /** Why the market can't be read now, or undefined. Checks only. */
 export function readMarketBlocker(state: GameState): Message | undefined {
   // Act III reads the Signals panel instead (M11.2); this read would leak the scenario's market.
-  if (inActIII(state)) return { key: 'error.market_read_act3' }
+  if (inAct3Rules(state)) return { key: 'error.market_read_act3' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (state.marketRead?.quarter === state.quarter)
     return { key: 'error.market_read_done' }

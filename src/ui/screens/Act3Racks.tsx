@@ -8,7 +8,7 @@ import { t, tDynamic } from '../../i18n/t.ts'
 import type { DensityTier } from '../../content/index.ts'
 import { racksView } from '../../sim/projectViews.ts'
 import { fmt } from '../format.ts'
-import { say, siteName } from '../names.ts'
+import { projectName, say } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { BwButton } from './Projects.tsx'
 import { Tip } from '../components/basics.tsx'
@@ -44,8 +44,8 @@ export function DensityBadge(props: { v: View; tier: DensityTier }) {
   )
 }
 
-const hallName = (r: Row) =>
-  `${siteName(r.site)} · ${t('ui.projects.name', { tier: r.site.tier, n: r.project.n })}`
+// (M34.2, 3c: the project's name carries its site: "Own site 3 · AI 1")
+const hallName = (r: Row) => projectName(r.site, r.project.n)
 
 // ---------- the table ----------
 

@@ -1,0 +1,40 @@
+year,metric,value,unit,source,grade
+2009,residential_solar_installed,8.0,$/W-DC (proxy ~2024$),Proxy from LBNL decline of $9-11/W over two decades,D
+2014,residential_solar_installed,4.3,$/W-DC (2014$),LBNL Tracking the Sun VIII (2015),A
+2017,residential_solar_installed,3.8,$/W-DC host-owned (2017$),LBNL Tracking the Sun 2018,A
+2023,residential_solar_installed,4.1,$/W-DC (2023$; inferred flat real),LBNL Tracking the Sun 2024 (median not stated in text),D
+2024,residential_solar_installed,4.0,$/W-DC (2024$),LBNL Distributed Solar & Storage 2025 Data Update,A
+2024,residential_solar_installed_cash,3.5,$/W-DC (2024$),LBNL 2025 Data Update,A
+2025,residential_solar_modeled,3.39,$/W (modeled Q4 2025),Wood Mackenzie via secondary,C
+2025,residential_solar_benchmark,2.95,$/W (modeled Q1 2025),NREL benchmark via secondary,C
+2030,residential_solar_installed,3.6,$/W-DC (game projection),Designed: -$0.1/W/yr trend,D
+2040,residential_solar_installed,2.8,$/W-DC (game projection),Designed: trend continuation,D
+2024,utility_solar_installed,1.61,$/W-AC (2024$),LBNL Utility-Scale Solar 2025,A
+2009,wind_utility_installed,2370,$/kW (2016$; 2009-10 peak),LBNL 2017 release ($1590 + $780),A
+2013,wind_utility_installed,1630,$/kW (~2013$),LBNL 2013 Wind Technologies Market Report release,A
+2016,wind_utility_installed,1590,$/kW (2016$),LBNL 2017 release,A
+2021,wind_utility_installed,1500,$/kW (~2021$),LBNL 2022 release,A
+2023,wind_utility_installed,1700,$/kW (2023$; 2018-2023 steady),LBNL Land-Based Wind Market Report 2024,A
+2023,wind_utility_reference_capex,1968,$/kW,NREL Cost of Wind Energy Review 2024,A
+2023,wind_small_installed,7370,$/kW,PNNL Distributed Wind Market Report 2024,A
+2023,wind_distributed_large,3362,$/kW (1.5 MW ref),NREL COWER 2024,A
+2040,wind_utility_installed,1400,$/kW (game projection),Designed,D
+2010,battery_pack_all_segments,1474,$/kWh (2025$),BNEF via Energy-Storage.news,B
+2022,battery_pack_all_segments,151,$/kWh (2022$),BNEF 2022 survey via press,B
+2023,battery_pack_all_segments,139,$/kWh (2023$),BNEF press release,B
+2024,battery_pack_all_segments,115,$/kWh (2024$),BNEF press release,B
+2025,battery_pack_all_segments,108,$/kWh (2025$),BNEF press release,B
+2025,battery_pack_stationary,70,$/kWh (2025$),BNEF press release,B
+2024,battery_utility_turnkey_global,165,$/kWh (2024$; revised 169 in 2025$),BNEF ESS Cost Survey 2024,B
+2025,battery_utility_turnkey_global,117,$/kWh (2025$),BNEF ESS Cost Survey 2025,B
+2025,battery_utility_turnkey_us,219,$/kWh (2025$),BNEF ESS Cost Survey 2025,B
+2025,battery_utility_turnkey_china,73,$/kWh (2025$),BNEF ESS Cost Survey 2025,B
+2035,battery_utility_turnkey_us,110,$/kWh (game projection),Designed,D
+2022,battery_residential_installed,900,$/kWh (2022$),LBNL Tracking the Sun 2023,A
+2024,battery_residential_installed,900,$/kWh (2024$; implied),LBNL 2025 Data Update (implied),D
+2020,pumped_hydro_capex_low,1999,$/kW (10 h),NREL ATB 2022,A
+2020,pumped_hydro_capex_high,5505,$/kW (10 h),NREL ATB 2022,A
+2020,pumped_hydro_capex_class10_avg,3755,$/kW (2020$),NREL ATB 2022,A
+2021,pumped_hydro_capex_class10_avg,4234,$/kW (2021$),NREL ATB 2024,A
+2017,pumped_hydro_snowy2_estimate,1000,A$/kW (A$2B / ~2 GW),Snowy Hydro via The Conversation,D
+2023,pumped_hydro_snowy2_estimate,6000,A$/kW (A$12B / ~2 GW),Snowy Hydro/ANAO via PASA,D

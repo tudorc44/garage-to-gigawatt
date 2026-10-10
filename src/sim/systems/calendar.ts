@@ -16,7 +16,7 @@
 // ended before 2027Q1 is a holdover at its old rent; its renewal comes due in 2027Q1 (M12.2).
 import { BALANCE, actFirstQuarter } from '../../content/index.ts'
 import {
-  inActIII,
+  inAct3Rules,
   projectGone,
   type GameState,
   type Project,
@@ -84,7 +84,7 @@ export function contractEndQuarter(
  */
 export function reopenerEligible(state: GameState, p: Project): boolean {
   const t = p.tenant
-  if (!inActIII(state) || !state.scenarioId) return false
+  if (!inAct3Rules(state) || !state.scenarioId) return false
   if (!t || t.gpu || t.rolling || p.kind !== 'shell') return false
   if (projectGone(p) || p.stage !== 'live') return false
   const R = BALANCE.act3.reopener

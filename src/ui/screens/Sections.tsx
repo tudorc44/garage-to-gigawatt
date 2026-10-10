@@ -15,15 +15,17 @@ import {
   upcomingRivalsView,
   valuationBreakdown,
 } from '../../sim/selectors.ts'
-import { inAct2Rules, inActIII, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { Icon, Tip } from '../components/basics.tsx'
+import { SiteName } from '../components/siteName.tsx'
+import { SitesList } from '../components/siteGroups.tsx'
+import { SiteText } from '../components/siteText.tsx'
 import { fmt } from '../format.ts'
 import {
   machineIcon,
   machineName,
   rivalName,
   say,
-  siteName,
   tierIcon,
   tierName,
 } from '../names.ts'
@@ -35,17 +37,21 @@ import {
   LoanDialog,
   OffersDialog,
 } from './dialogs.tsx'
-import { FleetPanel, type ScreenProps } from './Plan.tsx'
+import type { ScreenProps } from './Plan.tsx'
 import { CapitalAct2 } from './CapitalAct2.tsx'
 import { ProjectsSection } from './Projects.tsx'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { Act4Panel } from '../components/act4Lazy.tsx'
 import { League } from './Report.tsx'
 
 export type Section =
   | 'dashboard'
   | 'projects'
+  | 'orbit'
+  | 'moon'
   | 'contracts'
   | 'government'
+  | 'ventures'
   | 'fleet'
   | 'capital'
   | 'people'
@@ -56,10 +62,16 @@ export function SectionView(props: ScreenProps & { section: Section }) {
   switch (props.section) {
     case 'projects':
       return <ProjectsSection {...props} />
+    case 'orbit':
+      return <Act4Panel name="OrbitSection" {...props} />
+    case 'moon':
+      return <Act4Panel name="MoonSection" {...props} />
     case 'contracts':
       return <Act3Panel name="ContractsSection" {...props} />
     case 'government':
       return <Act3Panel name="GovernmentSection" {...props} />
+    case 'ventures':
+      return <Act3Panel name="VenturesSection" {...props} />
     case 'fleet':
       return <FleetSection {...props} />
     case 'capital':
@@ -90,10 +102,11 @@ function FleetSection({ state, act }: ScreenProps) {
   return (
     <div class="section">
       {/* Act III (M16.5, A3-07): halls and rack density, across the section */}
-      {inActIII(state) && <Act3Panel name="RacksPanel" state={state} act={act} />}
+      {inAct3Rules(state) && <Act3Panel name="RacksPanel" state={state} act={act} />}
       <div class="col">
-        <FleetPanel state={state} breakdown />
-        {inActIII(state) && (
+        {/* M33.4 (doc 35): every site, grouped by type, with sorts and filters; a site's detail is its card */}
+        <SitesList state={state} />
+        {inAct3Rules(state) && (
           <Act3Panel name="IdleRigsPanel" state={state} act={act} />
         )}
         {inAct2Rules(state) && state.phase === 'plan' && (
@@ -189,7 +202,9 @@ function FleetSection({ state, act }: ScreenProps) {
                           )}
                         </span>
                       </td>
-                      <td>{siteName(site)}</td>
+                      <td>
+                        <SiteName state={state} site={site} />
+                      </td>
                       <td class="num r">
                         {v.lot.failed > 0
                           ? t('ui.section.units_broken', {
@@ -683,7 +698,7 @@ function LogSection({ state }: { state: GameState }) {
                       {t('ui.section.week', { week: e.week })}{' '}
                     </span>
                   ) : null}
-                  {say(e)}
+                  <SiteText text={say(e)} />
                 </div>
               ))}
           </div>

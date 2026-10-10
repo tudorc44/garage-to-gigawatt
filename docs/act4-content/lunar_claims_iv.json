@@ -1,0 +1,131 @@
+{
+  "_meta": {
+    "schema": "lunar_claims_iv/1",
+    "doc33": "§9.1 (rivals and the blocs claim sites on scripted schedules, authored per future; first to land holds), §12",
+    "author": "build, M30.1: designed; the same in every future through 2032Q2; fictional claimants (Northgate, Cratermark Resources, Meridian Arc, the two blocs)"
+  },
+  "futures": {
+    "f1": [
+      {
+        "claimant": "accords_bloc",
+        "site": "shackleton_ridge",
+        "claim": "2031Q3",
+        "lands": "2032Q2"
+      },
+      {
+        "claimant": "northgate",
+        "site": "de_gerlache_ridge",
+        "claim": "2032Q1",
+        "lands": "2032Q4"
+      },
+      {
+        "claimant": "cratermark",
+        "site": "malapert_massif",
+        "claim": "2032Q3",
+        "lands": "2033Q3"
+      },
+      {
+        "claimant": "jade_arc",
+        "site": "amundsen_rim",
+        "claim": "2033Q1",
+        "lands": "2034Q1"
+      },
+      {
+        "claimant": "accords_bloc",
+        "site": "nobile_rim",
+        "claim": "2033Q3",
+        "lands": "2034Q2"
+      }
+    ],
+    "f2": [
+      {
+        "claimant": "accords_bloc",
+        "site": "shackleton_ridge",
+        "claim": "2031Q3",
+        "lands": "2032Q2"
+      },
+      {
+        "claimant": "northgate",
+        "site": "de_gerlache_ridge",
+        "claim": "2032Q1",
+        "lands": "2033Q4"
+      },
+      {
+        "claimant": "cratermark",
+        "site": "malapert_massif",
+        "claim": "2033Q1",
+        "lands": "2034Q3"
+      },
+      {
+        "claimant": "jade_arc",
+        "site": "amundsen_rim",
+        "claim": "2033Q3",
+        "lands": "2035Q1"
+      }
+    ],
+    "f3": [
+      {
+        "claimant": "accords_bloc",
+        "site": "shackleton_ridge",
+        "claim": "2031Q3",
+        "lands": "2032Q2"
+      },
+      {
+        "claimant": "northgate",
+        "site": "de_gerlache_ridge",
+        "claim": "2032Q1",
+        "lands": "2033Q1"
+      },
+      {
+        "claimant": "station_bloc",
+        "site": "nobile_rim",
+        "claim": "2032Q3",
+        "lands": "2033Q2"
+      },
+      {
+        "claimant": "cratermark",
+        "site": "malapert_massif",
+        "claim": "2032Q3",
+        "lands": "2033Q3"
+      },
+      {
+        "claimant": "jade_arc",
+        "site": "haworth_rim",
+        "claim": "2032Q4",
+        "lands": "2033Q3"
+      },
+      {
+        "claimant": "station_bloc",
+        "site": "amundsen_rim",
+        "claim": "2033Q1",
+        "lands": "2034Q1"
+      }
+    ],
+    "f4": [
+      {
+        "claimant": "accords_bloc",
+        "site": "shackleton_ridge",
+        "claim": "2031Q3",
+        "lands": "2032Q2"
+      },
+      {
+        "claimant": "northgate",
+        "site": "de_gerlache_ridge",
+        "claim": "2032Q1",
+        "lands": "2033Q2"
+      },
+      {
+        "claimant": "cratermark",
+        "site": "malapert_massif",
+        "claim": "2032Q4",
+        "lands": "2034Q1"
+      },
+      {
+        "claimant": "jade_arc",
+        "site": "amundsen_rim",
+        "claim": "2033Q2",
+        "lands": "2034Q3"
+      }
+    ]
+  }
+}

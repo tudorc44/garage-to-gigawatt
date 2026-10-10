@@ -19,13 +19,15 @@ import {
   lotViews,
   marginCallView,
   quarterName,
+  spaceAlertView,
   treasuryValue,
 } from '../../sim/selectors.ts'
 import type { GameState, WeekSummary } from '../../sim/state.ts'
 import { Icon, Tip, WeekStrip } from '../components/basics.tsx'
 import { Shell } from '../components/frame.tsx'
+import { SiteText } from '../components/siteText.tsx'
 import { fmt } from '../format.ts'
-import { machineName, say, tierName } from '../names.ts'
+import { machineName, say, siteName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { MarketReadText } from './Plan.tsx'
 import { readSettings } from '../../platform/settings.ts'
@@ -175,6 +177,7 @@ export function LiveScreen(
         state.interrupt?.id === 'gpu_spot_alert') && (
         <SpotAlertCard state={state} act={act} />
       )}
+      {spaceAlertView(state) && <SpaceAlertCard state={state} act={act} />}
       {state.interrupt?.id === 'event' && <EventCard state={state} act={act} />}
       {state.interrupt?.id === 'margin_warning' && (
         <MarginWarningCard state={state} act={act} />
@@ -659,7 +662,7 @@ function ComplaintCard({ state, act }: ScreenProps) {
   const alert = state.interrupt!
   const v = complaintView(state)
   if (!v) return null
-  const tier = tierName(v.tier)
+  const tier = siteName(v.site)
   const effect = (id: string) =>
     id === 'pay'
       ? t('ui.complaint.effect_pay', {
@@ -704,10 +707,10 @@ function ComplaintCard({ state, act }: ScreenProps) {
           </span>
         </div>
         <h2 class="event-title" id="complaint-title">
-          {t('ui.complaint.title', { tier })}
+          <SiteText text={t('ui.complaint.title', { tier })} />
         </h2>
         <p class="event-body">
-          {t('ui.complaint.body', { tier, heat: Math.round(v.heat) })}
+          <SiteText text={t('ui.complaint.body', { tier, heat: Math.round(v.heat) })} />
         </p>
         {interruptChoices(state).map((c) => (
           <button
@@ -825,7 +828,12 @@ function EventCard({ state, act }: ScreenProps) {
               quarter: fmt.quarter(quarterName(state.quarter)),
               week: v.week + 1,
             })}
-            {v.siteTier ? ` · ${tierName(v.siteTier)}` : ''}
+            {v.site && (
+              <>
+                {' · '}
+                <SiteText text={siteName(v.site)} />
+              </>
+            )}
           </span>
           {v.type === 'random' && (
             <span class="label">
@@ -879,7 +887,7 @@ function EventCard({ state, act }: ScreenProps) {
 function FailureWaveCard({ state, act }: ScreenProps) {
   const v = failureWaveView(state)
   if (!v) return null
-  const tier = tierName(v.tier)
+  const tier = v.site ? siteName(v.site) : tierName(v.tier)
   return (
     <div class="scrim">
       <article
@@ -908,9 +916,11 @@ function FailureWaveCard({ state, act }: ScreenProps) {
           <span class="num-s">{t('ui.wave.units')}</span>
         </div>
         <h2 class="event-title" id="wave-title">
-          {t('ui.wave.title', { tier })}
+          <SiteText text={t('ui.wave.title', { tier })} />
         </h2>
-        <p class="event-body">{t('ui.wave.body', { tier, units: v.units })}</p>
+        <p class="event-body">
+          <SiteText text={t('ui.wave.body', { tier, units: v.units })} />
+        </p>
         {interruptChoices(state).map((c) => (
           <button
             key={c.id}
@@ -934,6 +944,55 @@ function FailureWaveCard({ state, act }: ScreenProps) {
                     mult: `${v.rushMult}×`,
                   })
                 : t('ui.wave.effect_degraded')}
+            </span>
+          </button>
+        ))}
+      </article>
+    </div>
+  )
+}
+
+/**
+ * Act IV (M29.4-5, M30.3; doc 33 §14.2): a conjunction alert on one block, the solar storm warning on the fleet, a lunar
+ * landing window, a dust fault at a pilot plant.
+ */
+function SpaceAlertCard({ state, act }: ScreenProps) {
+  const alert = state.interrupt!
+  const v = spaceAlertView(state)!
+  const kind = v.kind
+  const params = { n: v.n, site: tDynamic(`moon.site.${v.site}`, v.site), pct: fmt.pct(v.chance) }
+  return (
+    <div class="scrim">
+      <article class="event" role="dialog" aria-modal="true" aria-labelledby="orbit-alert-title">
+        <div class="row-between">
+          <span class="label">
+            {t('ui.event.eyebrow', {
+              quarter: fmt.quarter(quarterName(state.quarter)),
+              week: alert.week + 1,
+            })}
+          </span>
+          <span class="label">
+            {t('ui.alert.count', { n: state.interruptsThisQuarter, max: MAX_INTERRUPTS })}
+          </span>
+        </div>
+        <div class="event-art">
+          <Icon name="orbit" />
+        </div>
+        <h2 class="event-title" id="orbit-alert-title">
+          {t(`interrupt.${kind}.title`)}
+        </h2>
+        <p class="event-body">{t(`interrupt.${kind}.body`, params)}</p>
+        {interruptChoices(state).map((c) => (
+          <button
+            key={c.id}
+            type="button"
+            class={`choice${c.isDefault ? ' default' : ''}`}
+            autoFocus={c.isDefault}
+            onClick={() => act({ type: 'RESOLVE_INTERRUPT', choice: c.id })}
+          >
+            <span class="row-between">
+              <span class="choice-label">{tDynamic(`interrupt.${kind}.${c.id}`, c.id)}</span>
+              {c.isDefault && <span class="default-tag">{t('ui.alert.default')}</span>}
             </span>
           </button>
         ))}
@@ -1016,7 +1075,7 @@ function GpuWaveCard({ state, act }: ScreenProps) {
     n: v.n,
     gpus: v.gpus.toLocaleString('en-US'),
     cluster: v.clusterGpus.toLocaleString('en-US'),
-    tier: tierName(v.tier),
+    tier: v.site ? siteName(v.site) : tierName(v.tier),
   }
   return (
     <div class="scrim">
@@ -1048,7 +1107,9 @@ function GpuWaveCard({ state, act }: ScreenProps) {
         <h2 class="event-title" id="gpu-wave-title">
           {t('ui.gpuwave.title', params)}
         </h2>
-        <p class="event-body">{t('ui.gpuwave.body', params)}</p>
+        <p class="event-body">
+          <SiteText text={t('ui.gpuwave.body', params)} />
+        </p>
         <p class="event-body muted">{t('ui.gpuwave.cause')}</p>
         <p class="event-body muted">{t('ui.gpuwave.basis')}</p>
         {interruptChoices(state).map((c) => (
@@ -1095,7 +1156,7 @@ function ProjectAlertCard({ state, act }: ScreenProps) {
   const params = {
     n: v.n,
     projectKw: fmt.power(v.kw),
-    tier: tierName(v.tier),
+    tier: v.site ? siteName(v.site) : tierName(v.tier),
   }
   const effect = (id: string) => {
     if (id === 'accelerate' || id === 'pay_premium')
@@ -1135,7 +1196,7 @@ function ProjectAlertCard({ state, act }: ScreenProps) {
           {tDynamic(`ui.project_alert.${v.kind}.title`, v.kind, params)}
         </h2>
         <p class="event-body">
-          {tDynamic(`ui.project_alert.${v.kind}.body`, v.kind, params)}
+          <SiteText text={tDynamic(`ui.project_alert.${v.kind}.body`, v.kind, params)} />
         </p>
         {interruptChoices(state).map((c) => (
           <button

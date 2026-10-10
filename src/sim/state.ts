@@ -4,12 +4,19 @@ import {
   BALANCE,
   CONTENT,
   SCENARIO_IDS,
+  FUTURE_IDS,
+  type FutureId,
   type ScenarioId,
   type SignalId,
+  type SignalIdIv,
+  type WildcardIdIv,
 } from '../content/index.ts'
+import type { EnergyKind, SpecialSiteKind, VentureType } from '../content/energyContent.ts'
 import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
+import { enterAct4 } from './systems/act4Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
+import type { LunarClaimantId, LunarSiteId, OfftakeBuyerId } from '../content/moonContent.ts'
 import type { SiteHeat } from './systems/heat.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { DealNegotiation } from './systems/dealNegotiation.ts'
@@ -34,6 +41,16 @@ export interface Site {
   id: string
   /** Site tier id from sites.json, e.g. "garage" or "warehouse". */
   tier: string
+  /**
+   * M33.1 (doc 35): its number among the sites of its type ("Own site 3"), set when it's acquired and never changed
+   * or reused (systems/siteSerials.ts). Missing only in saves and presets from before M33, numbered when loaded.
+   */
+  serial?: number
+  /**
+   * M34.2 (owner, 9 Oct 2026, 3b): the quarter it was acquired, set when acquired (systems/siteSerials.ts); null for a
+   * site from a save made before it was stored (the site card then leaves it out).
+   */
+  acquiredQuarter?: number | null
   /** Quarter index when the site is energized. Before that it's still being built. */
   readyQuarter: number
   /** Scouted offers vary around the tier's numbers; these are this site's actual terms. */
@@ -70,6 +87,143 @@ export interface Site {
   powerAdds?: PowerAdd[]
   /** Act II card (the PJM shock): power × mult from…until (quarter indexes, both included). */
   eventPowerMult?: { mult: number; from: number; until: number }
+  /**
+   * M35 (doc 38 §4): energy assets built at the site (rooftop solar, small wind, a home battery, a utility battery,
+   * behind-the-meter solar or wind, iron-air storage; systems/energy.ts). Missing until the first one is built.
+   */
+  energy?: EnergyAsset[]
+  /** M35.3 (doc 38 §4.4-4.6): a special site: a hydro or Iceland allocation, or a flare-gas pad. */
+  special?: SpecialSiteKind
+  /** M35.3: the hydro crypto tariff on this site's power (new load after the moratorium, or existing at renewal). */
+  tariffMult?: number
+  /**
+   * M35.3, a flare-gas pad: the quarter its current well started, the quarter a relocation ends (offline until then),
+   * and a quarter that loses a week to a genset failure.
+   */
+  flare?: { wellQuarter: number; relocatingUntil?: number; offlineQuarter?: number }
+  /** M35.4 (doc 38 §4.7): Texas demand response and 4CP at an ERCOT site (systems/texasPower.ts). */
+  dr?: SiteDemandResponse
+  /** M36 (doc 38 §5.1 point 6): firm kW a venture at commercial operation delivers here, with no grid wait. */
+  ventureKw?: number
+}
+
+/** M36 (doc 38 §5): where a venture stands. */
+export type VentureStage =
+  | 'licensing'
+  | 'construction'
+  | 'grid_wait'
+  | 'research'
+  | 'operating'
+  | 'cancelled'
+  | 'folded'
+
+/** A cash call (or a fusion pivot's raise, or an EGS well-field fix) waiting for the player's answer. */
+export interface VentureCall {
+  /** 1-3: the overrun tranches; 4: a well-field fix; 5: a fusion pivot's new raise. */
+  n: number
+  /** Your share of it, $. */
+  dueUsd: number
+  /** Act IV: a partner covering this share of it (offtake priority as its string), or null. */
+  partnerShare: number | null
+  /** Nuclear: a government cost-share covering this share of it, or null (then the PPA reopens at cost). */
+  costShare: number | null
+}
+
+/**
+ * M36 (doc 38 §5.1): a venture you joined, as equity (a stake), offtaker (a PPA for some of its output) or both. The
+ * realised cost multiplier and the schedule are drawn when you join and stay hidden: they arrive as cash calls and
+ * dates (the UI shows the pitch, and with diligence the reference-class estimate).
+ */
+export interface Venture {
+  id: string
+  type: VentureType
+  joinedQuarter: number
+  mw: number
+  /** The developer's pitch, $/kW, and its budget (pitch × kW). */
+  pitchUsdKw: number
+  budgetUsd: number
+  diligence: boolean
+  /** Your equity share now (0 = none, or walked). */
+  stake: number
+  /** What you paid in as equity (the buy-in and calls paid): its book value before operation. */
+  paidUsd: number
+  /** Your offtake: MW, the PPA price (after any prepayment's cut), the prepayment, the campus it delivers to. */
+  offtakeMw: number
+  ppaUsdMwh: number
+  prepaidUsd: number
+  siteId: string | null
+  /** Hidden: the realised cost multiplier. */
+  m: number
+  stage: VentureStage
+  /** Quarter indexes: licence ends, build ends, first power (grid connection for the control). */
+  licenceEnd: number
+  buildStart: number
+  buildEnd: number
+  codQuarter: number
+  /** Cash calls made so far (0-3), and one waiting for an answer. */
+  callsDone: number
+  call: VentureCall | null
+  /** Nuclear: the share of output other buyers subscribed (hidden). */
+  othersSubscribed: number
+  /** Your delivered MW lost to a partner's offtake priority (a share). */
+  partnerCut: number
+  /** Nuclear: the PPA reopened at cost (no cost-share at a call). */
+  reopened?: boolean
+  /** EGS: a weak well field (hidden until operation); fixed once paid. */
+  weakField?: boolean
+  fieldFixed?: boolean
+  /** Fusion: the next gate (0-3), when it's due, the hype and its slump. */
+  gate?: number
+  gateDue?: number
+  hypeMinusUntil?: number
+  /** The quarter it ended (cancelled, folded) or you walked. */
+  endedQuarter?: number
+  walked?: boolean
+  /**
+   * M36.8 (design thread, 9 Oct 2026, answer 11a; owner: show ventures now): the stake marked to milestones, as a funding
+   * round would: the buy-in and the stake it bought, the calls paid (at par), milestones hit (× 1.5 each), slips
+   * (× 0.8 each), and the pitched first-power quarter that years late count from.
+   */
+  buyInUsd?: number
+  stakeAtJoin?: number
+  callsPaidUsd?: number
+  milestones?: number
+  slips?: number
+  pitchCodQuarter?: number
+}
+
+/** M35.4 (doc 38 §4.7): a Texas site's demand-response enrolment and 4CP choice. */
+export interface SiteDemandResponse {
+  enrolled: boolean
+  fourCp: boolean
+  /** The year whose power is 10% cheaper after a 4CP summer (e.g. "2022"). */
+  discountYear?: string
+  /** The year whose credit was forfeited by refusing a grid call while enrolled. */
+  forfeitYear?: string
+}
+
+/**
+ * M35 (doc 38 §4): an energy asset at a site. kw is the power (solar, wind, a battery's or iron-air's MW × 1,000); a
+ * home battery counts blocks instead.
+ */
+export interface EnergyAsset {
+  id: string
+  kind: EnergyKind
+  kw: number
+  /** Home battery: 13.5 kWh blocks. */
+  blocks?: number
+  /** A utility battery's hours (2, 4 or 8). */
+  hours?: number
+  /** What it cost to build (net of the tax credit), plus any overrun paid on completion. */
+  capexUsd: number
+  builtQuarter: number
+  readyQuarter: number
+  /** Small wind: the realised capacity factor, drawn at install, shown from the first report after it's ready. */
+  cf?: number
+  /** Small wind: broken until repaired. */
+  broken?: boolean
+  /** The overrun still to settle when it's ready: (m − 1) × capex, negative for an underrun. */
+  overrunUsd?: number
 }
 
 /** Power added to a site for one project (M5.6). */
@@ -141,6 +295,262 @@ export interface Act3Entry {
   contractedMw: number
   creditRating: string | null
 }
+
+/** Act IV (M27.2): the company as it entered Act IV, measured at 2030Q4 (the same fields as Act III's entry). */
+export type Act4Entry = Act3Entry
+
+/**
+ * Act IV (M29.2, doc 33 §7): an orbital compute block, a project card with three slots (Launch, Tenant, Capital). A
+ * block is many satellites; the game never counts them. Its true remaining life (`retireQuarter`) is sim-internal: the
+ * screens show the design life and the telemetry, never the truth.
+ */
+export interface OrbitalBlock {
+  id: string
+  /** Its number on screen ("Block 3"). */
+  n: number
+  kind: 'shell' | 'cloud'
+  mw: number
+  shell: 'sso' | 'high_leo' | 'high_orbit'
+  gen: 'gen31' | 'gen33' | 'gen35'
+  stage: 'proposed' | 'building' | 'awaiting_launch' | 'climbing' | 'live' | 'retired' | 'sold'
+  openedQuarter: number
+  /** Whole mass to launch, tonnes (the generation's t/MW × MW × the shell's shielding). */
+  massT: number
+  /** The Launch slot: provider, target quarter, the $/kg locked at booking, the deposit paid, slips so far. */
+  launch: {
+    provider: 'pallas' | 'northgate' | 'kestrel' | 'sovereign'
+    quarter: number
+    priceUsdKg: number
+    depositUsd: number
+    slips: number
+  } | null
+  /** The Tenant slot: a contract (locked price, term, the quarter it should go live) or spot. */
+  tenant:
+    | {
+        type: 'sovereign' | 'frontier_lab' | 'inference_platform' | 'eo_processor'
+        /** Orbital shell: rent $ per MW-year. Orbital cloud: $ per GPU-hour. */
+        price: number
+        termQuarters: number
+        signedQuarter: number
+        /** The quarter it should go live (take-or-pay lateness after it), set with the booking. */
+        dueQuarter: number | null
+        /** The quarter its term ends (set when it goes live). */
+        endQuarter: number | null
+        prepaidLeftUsd: number
+      }
+    | 'spot'
+    | null
+  /** The tenant offers on the table this Plan phase. */
+  offers: { type: 'sovereign' | 'frontier_lab' | 'inference_platform' | 'eo_processor'; price: number; termQuarters: number }[]
+  /** The Capital slot (M29: own cash; M31.2: export credit, project debt, sovereign co-funding). */
+  capital: 'cash' | 'export_credit' | 'project_debt' | 'co_funding' | null
+  /** Co-funding (M31.2): the partner's share of the block's revenue. */
+  cofundShare?: number
+  buildDoneQuarter: number | null
+  liveQuarter: number | null
+  /** Sim-internal: the quarter it deorbits (live quarter + the future's true useful life). */
+  retireQuarter: number | null
+  /** Structural capacity share (debris, the cascade, storms). */
+  capacity: number
+  /** Cloud: working GPUs as a share of the block's need (1 + spares at launch; failures wear it down). */
+  gpuHealth: number
+  /** Insurance cover: bought before launch it runs to a year after going live (`untilQuarter` null until then). */
+  insured: { coverUsd: number; untilQuarter: number | null } | null
+  /** The current build's capex paid so far (build + launch), $. A lost launch writes it off. */
+  capexSpentUsd: number
+  /** Fleet telemetry: the failures it reported, as a yearly %, per live quarter (doc 33 §6.5). */
+  telemetry: { quarter: number; failurePctYr: number }[]
+  lostLaunches: number
+  /** Its EBITDA in the last quarter it was live (what a buyer values). */
+  lastEbitdaUsd?: number
+}
+
+/** Act IV (M29.2): a constellation licence in one shell (doc 33 §7.3). */
+export interface OrbitalLicence {
+  shell: OrbitalBlock['shell']
+  filedQuarter: number
+  approvedQuarter: number
+  filedMw: number
+  /** Political capital fast-tracked it (once per licence). */
+  fastTracked?: boolean
+  /** Its deployment milestone was checked (and the licence shrunk if missed). */
+  milestoneChecked?: boolean
+}
+
+/** Act IV (M29.2): the act's orbital business (absent before Act IV and until the first orbital action). */
+export interface Act4Orbit {
+  blocks: OrbitalBlock[]
+  licences: OrbitalLicence[]
+  registry: 'accords' | 'neutral'
+  /** Link units rented from ground-station networks, and optical ground stations at your own sites. */
+  linksRented: number
+  stations: { id: string; siteId: string; readyQuarter: number; units: number }[]
+  /** After a big industry loss the insurance market hardens until this quarter (doc 33 §8.3). */
+  hardMarketUntil: number | null
+  /** The cascade has hit the busy shell (once). */
+  cascadeDone: boolean
+  /** This quarter's planned orbit alerts (planned at END_PLAN). */
+  planned: { week: number; kind: 'orbit_conjunction' | 'orbit_storm'; blockId?: string }[]
+  /** Safe mode was chosen in a storm this quarter (live blocks lose 3 weeks' revenue). */
+  safeModeQuarter: number | null
+  nextN: number
+  /** M31.2: loans on orbital blocks (export credit, project debt). */
+  debts?: OrbitalDebt[]
+  /** M31.5: you bought Orrery Compute's blocks at its auction. */
+  orreryBought?: boolean
+}
+
+/** Act IV (M31.2): a loan on an orbital block (doc 33 §11.1). Interest joins it during the build; repaid once live. */
+export interface OrbitalDebt {
+  id: string
+  blockId: string
+  n: number
+  kind: 'export_credit' | 'project_debt'
+  apr: number
+  /** The most it lends (a share of the block's capex), drawn as the capex is paid. */
+  limitUsd: number
+  balanceUsd: number
+  tenorQuarters: number
+  /** Repaying: the block is live (or was lost); before that interest is added to the loan. */
+  amortizing: boolean
+  paidQuarters: number
+  /** Project debt's insurance covenant: a breach's cure runs to this quarter, or null. */
+  cureUntil: number | null
+  /** Repaid, called or settled: no longer owed. */
+  closed?: boolean
+}
+
+/** Act IV (M30.2): one lunar site you've claimed (doc 33 §9). Every step is a project card: no mining minigame. */
+export interface LunarClaim {
+  site: LunarSiteId
+  claimedQuarter: number
+  /** The claim holds only once you land hardware by this quarter (doc 33 §9.1). */
+  landBy: number
+  status: 'claimed' | 'held' | 'lost' | 'withdrawn' | 'sold'
+  landedQuarter: number | null
+  /** After a dispute settled by sharing: the other claimant, and your share of the resource. */
+  sharedWith?: LunarClaimantId
+  /** A claimant who gave way (you held, aligned with its bloc, or landed first). */
+  beatenClaimant?: LunarClaimantId
+  /** Prospect reports (doc 33 §9.2): your estimates of the site's resource, newest last. Never the truth. */
+  reports: { quarter: number; step: 'first' | 'second' | 'pilot'; estimateT: number; lowT: number; highT: number }[]
+  /** Power on the site (M30.4): a solar array, a leased reactor. */
+  solar: { kwe: number; readyQuarter: number } | null
+  reactor: { kwe: number; readyQuarter: number } | null
+  /** The pilot plant (M30.4): water processed so far (t), availability (dust), quarters run. */
+  pilot: {
+    decidedQuarter: number
+    readyQuarter: number
+    capexUsd: number
+    availability: number
+    maintained: boolean
+    runQuarters: number
+    processedT: number
+  } | null
+  /** The production decision (M30.4): capex drawn over the build; first output always after 2035. */
+  production: { decidedQuarter: number; capexUsd: number; drawnUsd: number; firstOutputQuarter: number } | null
+}
+
+/** Act IV (M30.3): a prospecting mission on its way to a claimed site. */
+export interface LunarMission {
+  id: string
+  site: LunarSiteId
+  launchedQuarter: number
+  arrivalQuarter: number
+  costUsd: number
+  status: 'en_route' | 'landed' | 'lost'
+  aborts: number
+}
+
+/** Act IV (M30.4): a lunar offtake contract (water at the surface, tonnes a year at a locked $/kg). */
+export interface LunarOfftake {
+  id: string
+  buyer: OfftakeBuyerId
+  volumeTYr: number
+  priceUsdKg: number
+  startQuarter: number
+  endQuarter: number
+  prepaidLeftUsd: number
+  deliveredT: number
+}
+
+/** Act IV (M30.2): the act's lunar programme (absent until the first lunar action). */
+export interface Act4Moon {
+  claims: LunarClaim[]
+  missions: LunarMission[]
+  /** Open disputes: another claimant on one of your sites, waiting for your answer (doc 33 §9.1). */
+  disputes: { site: LunarSiteId; claimant: LunarClaimantId; raisedQuarter: number }[]
+  offtakes: LunarOfftake[]
+  /** This quarter's offtake offers (M30.4). */
+  offers: { buyer: OfftakeBuyerId; volumeTYr: number; priceUsdKg: number; termQuarters: number }[]
+  /** The quarter a 1 MWe contract for after 2035 was signed (the production decision needs it), or null. */
+  megawattQuarter: number | null
+  /** The bloc you've aligned with (a dispute, a reactor lease), or null. */
+  alignedBloc: 'accords' | 'station' | null
+  /** The Flag on the Pole: extraction frozen through this quarter for operators outside the bloc partnership. */
+  freezeUntil: number | null
+  /** This quarter's planned lunar alerts. */
+  planned: { week: number; kind: 'lunar_landing' | 'lunar_dust'; missionId?: string; site?: LunarSiteId }[]
+  nextId: number
+  /** M31.3: this quarter's agency task order on offer ($), and accepted funding waiting for your next mission. */
+  taskOrderUsd?: number | null
+  missionCreditUsd?: number
+}
+
+/**
+ * Act IV's end record (M27.5: the walking skeleton's fields), stored once when the last quarter (2035Q4) is done or the
+ * game is over in Act IV. Built only by systems/act4End.ts; M32 adds the reveal (the future, the lunar grade), the
+ * reading score and the titles. The chapter report and the campaign finale read it.
+ */
+export interface Act4End {
+  futureId: FutureId
+  /** The last quarter played ("2035Q4", or the game-over quarter). */
+  endQuarter: string
+  gameOver: boolean
+  /** Founder stake × the last report's valuation (never below 0), and its multiple on the Act IV entry. */
+  founderNetWorthUsd: number
+  growthMultiple: number | null
+  // ---- M32.1: the reveal (absent on a record built before M32: the chapter report rebuilds it) ----
+  /** The future's name, its trigger quarter, its decoy window, and the reads you made. */
+  futureName?: string
+  triggerQuarter?: string
+  triggerQ?: number
+  decoy?: { indicator: string; quarters: string[]; fromQ: number; toQ: number }
+  signalReads?: { quarter: string; indicator: string }[]
+  /** The lunar grade, and per site of yours your last estimate against the truth. */
+  lunar?: {
+    grade: 'rich' | 'patchy' | 'dry'
+    sites: { site: string; status: string; estimateT: number | null; category: string; truthT: number }[]
+  }
+  /** The orbital fleet's true reliability in this future, against what your telemetry averaged. */
+  fleet?: { failurePctYr: number; lifeYears: number; telemetryAvgPctYr: number | null }
+  reading?: { score: number | null; base: number; penalty: number; perQuarter: { q: number; stance: number; ideal: number; weight: number; value: number }[] }
+  moves?: { q: number; kind: Act4MoveKind; sign: number; mark: 'match' | 'opposite' | 'decoy' | 'neutral' }[]
+  careerTitleId?: string
+  readingTitleId?: string | null
+  /** Where your megawatts ended up: earthbound, orbital, cislunar, selenian. */
+  frontierTitleId?: string
+  rivalFates?: { rival: string; valueUsd: number | null; failed: boolean }[]
+}
+
+/** Act IV (M32.1, doc 33 §6.7): one logged move; q is the Act IV quarter index (0–19). */
+export interface Act4Move {
+  q: number
+  kind: Act4MoveKind
+}
+/** Moves scored on orbital exposure (+1 adds it, −1 reduces it), and moves logged for the timeline only (0). */
+export type Act4MoveKind =
+  | 'orbit_commit'
+  | 'orbit_debt'
+  | 'launch_booking'
+  | 'orbit_buy'
+  | 'orbit_insure'
+  | 'orbit_sale'
+  | 'orbit_presale'
+  | 'launch_cancel'
+  | 'equity_raise'
+  | 'ground_move'
+  | 'lunar_move'
 
 /**
  * The Act III scenario reveal (M11.3), stored once when the last quarter is done: which scenario the
@@ -593,7 +1003,7 @@ export const inActII = (
  */
 export const inAct2Rules = (
   state: Pick<GameState, 'act'> | null | undefined,
-): boolean => state?.act === 2 || state?.act === 3
+): boolean => state?.act === 2 || state?.act === 3 || state?.act === 4
 
 /**
  * Whether an act number is Act III (M10.1: the walking skeleton only, no Act III game rules yet).
@@ -606,10 +1016,32 @@ export const inActIII = (
   state: Pick<GameState, 'act'> | null | undefined,
 ): boolean => isActIII(state?.act)
 
-/** Act III (M18.13): whether a leverage-covenant breach is open, which bars new debt (systems/covenant.ts). */
+/**
+ * Whether an act number is Act IV (M27.2, doc 33: 2031Q1–2035Q4). Every "is this Act IV?" check goes through here,
+ * the same pattern as isActII and isActIII.
+ */
+export const isActIV = (act: unknown): boolean => act === 4
+
+/** Whether a game (or none: null) is in Act IV. */
+export const inActIV = (
+  state: Pick<GameState, 'act'> | null | undefined,
+): boolean => isActIV(state?.act)
+
+/**
+ * Whether Act III's business rules apply in a game (M27.2, doc 33 §3.1 and §10): Act III, and Act IV, which runs
+ * Act III's ground systems (renewals, density, nuclear PPAs, political capital, the covenant, the standby facility) on
+ * its own market. The gate for every Act III system that runs on in Act IV; a system that stays Act III-only keeps
+ * inActIII. Each gate's answer is in dev-notes (M27.5).
+ */
+export const inAct3Rules = (
+  state: Pick<GameState, 'act'> | null | undefined,
+): boolean => state?.act === 3 || state?.act === 4
+
+/** Act III (M18.13): whether a leverage-covenant breach is open, which bars new debt (systems/covenant.ts). Act IV
+ *  continues the covenant (doc 33 §3.2, §11.4). */
 export const covenantBreached = (
   state: Pick<GameState, 'act' | 'covenantBreach'>,
-): boolean => inActIII(state) && state.covenantBreach !== undefined
+): boolean => inAct3Rules(state) && state.covenantBreach !== undefined
 
 /** A project that no longer holds its MW or earns: sold, or ended by selling its GPUs. */
 export const projectGone = (p: Project) =>
@@ -655,13 +1087,13 @@ export interface Auction {
 
 export interface GameState {
   /** Save-format version (save.ts SAVE_VERSION). Older saves are migrated step by step when loaded. */
-  version: 4
+  version: 5
   /**
    * The act being played: 0 = the prologue (2009Q1–2016Q4, quarter indices −32 … −1), 1 = Act I
-   * (2017Q1–2022Q3), 2 = Act II (2022Q4–2026Q4), 3 = Act III (M10 walking skeleton: 2 stub
-   * quarters, 2027Q1–2027Q2; unreachable from play, test/sim-harness only).
+   * (2017Q1–2022Q3, 0–22), 2 = Act II (2022Q4–2026Q4, 23–39), 3 = Act III (2027Q1–2030Q4, 40–55),
+   * 4 = Act IV (2031Q1–2035Q4, 56–75; M27).
    */
-  act: 0 | 1 | 2 | 3
+  act: 0 | 1 | 2 | 3 | 4
   /** The prologue's own state: only a prologue start has it (Alpha 0.3). */
   prologue?: PrologueState
   /** What a prologue start brought into Act I (its net worth for the growth multiple, custody). */
@@ -690,6 +1122,8 @@ export interface GameState {
   /** Funding rounds already taken (capital.json ladder ids). */
   raisesDone: string[]
   sites: Site[]
+  /** M33.1: the highest number ever given per site type (category or tier), so a left site's number isn't reused. */
+  siteSerials?: Record<string, number>
   machines: MachineLot[]
   siteOffers: SiteOffer[]
   /** The one equipment loan you can have at a time, or null. */
@@ -822,6 +1256,45 @@ export interface GameState {
   act3WildcardOpen?: { id: WildcardId; projectId?: string; siteId?: string } | null
   /** Act III (M17.4): the export rule wildcard's effects while they last. */
   act3ExportRule?: { from: number; until: number; exempt: boolean }
+  /**
+   * Act IV (M27.4, doc 33 §6.1): which of the four futures (f1–f4) this game plays, drawn once at the Act III → IV
+   * boundary on its own substream of `act4Seed`. Absent before Act IV. Like `scenarioId`, nothing a screen shows during
+   * play reads it (the leak guard); the market reads it through `scenarioOf`.
+   */
+  futureId?: FutureId
+  /** Act IV (M27.6): a tester forced the future (test builds only, `?future=`); the top bar says so. Absent otherwise. */
+  futureForced?: true
+  /** Act IV (M27.6): entered from a test build's quick-start company; the production build refuses its saves. */
+  act4QuickStart?: true
+  /** Act IV (M27.2): the salt for Act IV's own random streams (act4SeedOf); absent = the game's seed. */
+  act4Seed?: number
+  /** Act IV (M27.4): the company as it entered Act IV (shaped like `act3Entry`; the growth multiple and the finale). */
+  act4Entry?: Act4Entry
+  /** Act IV (M27.5): the end record, stored at 2035Q4's end (or a game over in Act IV). Absent until then. */
+  act4End?: Act4End
+  /**
+   * Act IV (M28.3, doc 33 §6.4): the act's lunar grade, drawn at the boundary (systems/lunarGeology.ts). HIDDEN, like
+   * `futureId`: no screen during play reads it (only prospect estimates, M30); the chapter report reveals it.
+   */
+  lunarGrade?: 'rich' | 'patchy' | 'dry'
+  /** Act IV (M29.2): the orbital business (blocks, licences, links, insurance market). Absent until first used. */
+  act4Orbit?: Act4Orbit
+  /** Act IV (M30.2): the lunar programme (claims, missions, disputes, power, plants, offtake). Absent until first used. */
+  act4Moon?: Act4Moon
+  /** M36 (doc 38 §5): energy ventures joined (Acts III-IV). Absent until the first. */
+  ventures?: Venture[]
+  /** M36: the venture types you've done diligence on (their reference-class estimates show). Absent until the first. */
+  ventureDiligence?: VentureType[]
+  /** Act IV (M32.1): the move log the reading score reads at the end of the act. */
+  act4Moves?: Act4Move[]
+  /** Act IV (M32.4): started at Act IV from a preset ("Start at Act IV"): the preset's id. Absent otherwise. */
+  act4Preset?: string
+  /** Act IV (M32.4): Scenario Mode: the player chose the future. Absent otherwise. */
+  act4ScenarioMode?: true
+  /** Act IV (M28.5): the two wildcards drawn at entry, each with the quarter it fires in (never shown in advance). */
+  act4Wildcards?: { id: WildcardIdIv; quarter: number; fired: boolean }[]
+  /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
+  act4SignalReads?: { quarter: string; indicator: SignalIdIv }[]
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
@@ -865,6 +1338,11 @@ export interface ActiveInterrupt {
   id: string
   /** Index of the week (0–12) the alert fired in. */
   week: number
+  /** Act IV orbit alerts (M29.4): the orbital block it's about. */
+  orbitBlockId?: string
+  /** Act IV lunar alerts (M30.3-4): the mission or the lunar site it's about. */
+  lunarMissionId?: string
+  lunarSite?: string
   coin: Coin
   /** The weekly price move that set it off, e.g. -0.27. */
   changePct: number
@@ -930,6 +1408,20 @@ export interface QuarterStats {
   aiFloorEbitdaUsd?: number
   /** Take-or-pay damages paid for late projects (counted in EBITDA). */
   lateDamagesUsd: number
+  /** Act IV (M29): orbital blocks' revenue, and their running costs (ops, links, insurance, lateness); in EBITDA. */
+  orbitRevenueUsd?: number
+  orbitCostUsd?: number
+  /** Act IV (M30): lunar sales (offtake deliveries) and running costs (maintenance, repairs, the reactor lease); in
+   *  EBITDA without a multiple (the resource term already values the deposit, doc 33 §11.3). */
+  moonRevenueUsd?: number
+  moonCostUsd?: number
+  /**
+   * M35 (doc 38 §4): energy assets' savings and earnings (bill offsets, demand-response credits, capacity payments) and
+   * their running costs (upkeep, repairs); in EBITDA. Absent in a quarter with no energy asset, so earlier sums are
+   * untouched.
+   */
+  energyRevenueUsd?: number
+  energyCostUsd?: number
   /** Extra power paid this quarter because of Heat rate hikes. */
   rateHikeUsd: number
   /** Winter Storm Uri's storm power charge (index contracts that kept mining). */
@@ -1004,6 +1496,22 @@ export interface QuarterReport {
   /** The part of the AI EBITDA valued at the contracted multiple floor (M6.0b); missing = 0. */
   aiFloorEbitdaUsd?: number
   lateDamagesUsd: number
+  /** Act IV (M29.4): the orbital unit: revenue, costs, EBITDA and the space multiple it was valued at. */
+  orbitRevenueUsd?: number
+  orbitCostUsd?: number
+  orbitEbitdaUsd?: number
+  orbitMultiple?: number
+  /** Act IV (M30.4): lunar sales, costs, their EBITDA (no multiple) and the lunar unit's value. */
+  moonRevenueUsd?: number
+  moonCostUsd?: number
+  moonEbitdaUsd?: number
+  lunarUsd?: number
+  /** M35 (doc 38 §4): energy assets' savings and earnings, and running costs (in EBITDA). Absent with none. */
+  energyRevenueUsd?: number
+  energyCostUsd?: number
+  /** M36 (doc 38 §5): your venture stakes and prepayments, and the fusion hype's effect. Absent without a venture. */
+  venturesUsd?: number
+  ventureHypeUsd?: number
   /** The valuation's Act II parts at quarter end: projects under construction (capex spent), the
    *  remaining contracted revenue (unweighted, as the top bar shows it) and its credit-weighted value. */
   constructionUsd: number
@@ -1105,6 +1613,14 @@ export function act3SeedOf(state: Pick<GameState, 'seed' | 'act3Seed'>): number 
   return state.act3Seed ?? state.seed
 }
 
+/**
+ * The seed every act4_* substream is keyed on (M27.2): `act4Seed` when a harness sets one, else the game's seed. New
+ * Act IV randomness only ever draws from substreams of this, so no earlier act's game changes.
+ */
+export function act4SeedOf(state: Pick<GameState, 'seed' | 'act4Seed'>): number {
+  return state.act4Seed ?? state.seed
+}
+
 export function drawScenario(seed: number): ScenarioId {
   const weights = BALANCE.act3.scenarioWeightsPct
   const roll = random(substream(seed, 'act3_scenario')) * 100
@@ -1149,10 +1665,56 @@ export function toAct3(
   return s
 }
 
+/**
+ * The future a game gets at the Act III → IV boundary (doc 33 §6.1, IV-D8: f1 25%, f2 30%, f3 20%, f4 25% ⚙). Its own
+ * substream(act4Seed, "act4_future"), so it never moves the main RNG and no earlier act's game changes.
+ */
+export function drawFuture(seed: number): FutureId {
+  const weights = BALANCE.act4.futureWeightsPct
+  const roll = random(substream(seed, 'act4_future')) * 100
+  let acc = 0
+  for (const id of FUTURE_IDS) {
+    acc += weights[id]
+    if (roll < acc) return id
+  }
+  return FUTURE_IDS[FUTURE_IDS.length - 1]
+}
+
+/**
+ * The Act III → IV boundary (M27.4): enters Act IV on the seed's drawn future, applying doc 33 §3.1–3.2's carry-over
+ * and drops (enterAct4). `options.future` forces a future: for tests, tools, a test build's `?future=` and Scenario Mode.
+ */
+export function toAct4(
+  state: GameState,
+  options: {
+    future?: FutureId
+    /** A tester chose the future (a test build's ?future=); marked on the state for the top bar. */
+    forced?: boolean
+    act4Seed?: number
+    /** A test build's quick-start company (marked so production refuses its saves). */
+    quickStart?: boolean
+    /** M32.4: Scenario Mode: the player chose `future` openly (the finale says "scenario known"). */
+    scenarioMode?: boolean
+    /** M32.4: "Start at Act IV": the preset's id. */
+    preset?: string
+  } = {},
+): GameState {
+  const base = options.act4Seed === undefined ? state : { ...state, act4Seed: options.act4Seed }
+  const s = enterAct4(base, options.future ?? drawFuture(act4SeedOf(base)))
+  // A harness's different act4Seed also re-seeds the main RNG (as act3Seed does); the default changes nothing.
+  if (options.act4Seed !== undefined && options.act4Seed !== state.seed)
+    s.rng = substream(options.act4Seed, 'act4_main').rng
+  if (options.forced && options.future) s.futureForced = true
+  if (options.quickStart) s.act4QuickStart = true
+  if (options.scenarioMode && options.future) s.act4ScenarioMode = true
+  if (options.preset) s.act4Preset = options.preset
+  return s
+}
+
 export function newGame(seed: number): GameState {
   const start = CONTENT.siteTiers.find((t) => t.id === BALANCE.startSite)!
   return {
-    version: 4,
+    version: 5,
     act: 1,
     seed,
     rng: seed | 0,
@@ -1169,12 +1731,15 @@ export function newGame(seed: number): GameState {
       {
         id: 'site-1',
         tier: start.id,
+        serial: 1,
+        acquiredQuarter: 0,
         readyQuarter: 0,
         rentUsdQ: start.rent_usd_q,
         powerPriceMult: 1,
         flaw: null,
       },
     ],
+    siteSerials: { [start.id]: 1 },
     machines: [],
     siteOffers: [],
     equipmentLoan: null,
@@ -1225,4 +1790,20 @@ export function newGame(seed: number): GameState {
 /** The quarter's label, e.g. "2017Q1". */
 export function quarterLabel(state: GameState): string {
   return CONTENT.quarters[state.quarter]
+}
+
+/**
+ * A quarter's label for a log line or a stored message (M27.3). An Act I–III game keeps its logs exactly as they were
+ * before Act IV's quarters joined the timeline: a quarter past 2030Q4 has no label there (`fallback`, "—"), as it had
+ * none then. An Act IV game labels every quarter to 2035Q4. (Screens may show the real label; only stored text keeps
+ * the old rule, so no Act I–III golden or sim output changes.)
+ */
+export function logQuarterLabel(
+  state: Pick<GameState, 'act'>,
+  quarter: number,
+  fallback = '—',
+): string {
+  const act3 = CONTENT.acts.find((a) => a.act === 3)!
+  if (state.act !== 4 && quarter > act3.lastQuarter) return fallback
+  return CONTENT.quarters[quarter] ?? fallback
 }

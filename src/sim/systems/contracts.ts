@@ -3,7 +3,7 @@
 // When the term ends, the next Plan phase has a renewal: negotiate it (see negotiation.ts),
 // or do nothing and the utility's opening offer (normal price × opening_mult) applies.
 // Texas can choose a fixed or an index contract; index prices move every quarter.
-import { BALANCE, CONTENT, type ScenarioId } from '../../content/index.ts'
+import { BALANCE, CONTENT, type MarketKey } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { substream, uniform } from '../rng.ts'
 import {
@@ -12,8 +12,10 @@ import {
   type GameState,
   type Site,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { scenarioOf } from './market.ts'
 import { getTier, isReady, normalPriceUsdKwh } from './sites.ts'
+import { siteParams } from './siteSerials.ts'
 
 /** Sites that buy power on contracts: every tier except the garage (household power). */
 export function hasContracts(site: Site): boolean {
@@ -30,7 +32,7 @@ export function openingOfferUsdKwh(
   site: Site,
   quarter: number,
   type: ContractType,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   return (
     normalPriceUsdKwh(site, quarter, type, scenario) *
@@ -68,10 +70,10 @@ export function signContract(
   }
   if (type === 'index') site.contract.indexMult = indexRoll(state, site)
   logEntry(state, 'log.contract_signed', {
-    tier: site.tier,
+    ...siteParams(site),
     contract: type,
     price: `${(price * 100).toFixed(2)}¢`,
-    quarter: CONTENT.quarters[state.quarter + term] ?? '—',
+    quarter: logQuarterLabel(state, state.quarter + term),
   })
 }
 
@@ -106,7 +108,7 @@ export function acceptBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (!renewalDue(state, site))
-    return { key: 'error.no_renewal', params: { tier: site.tier } }
+    return { key: 'error.no_renewal', params: { ...siteParams(site) } }
   if (!contractTypes(site).includes(type)) return { key: 'error.bad_choice' }
 }
 

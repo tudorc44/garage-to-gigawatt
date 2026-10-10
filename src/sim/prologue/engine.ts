@@ -12,6 +12,7 @@ import {
 } from '../../content/index.ts'
 import { binomial } from '../rng.ts'
 import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
+import { endQuarterEnergy } from '../systems/energy.ts'
 import { removeMachines } from '../systems/machines.ts'
 import { getModel, marketWeek } from '../systems/market.ts'
 import { expireOffers, orderSale } from './custody.ts'
@@ -226,6 +227,12 @@ export function prologueEndQuarter(s: GameState): void {
     // At 0 the household steps in: its card comes in week 1 of next quarter (move out now, or cut
     // the load to the threshold for that quarter: the default).
     if (p.patience <= 0 && s.quarter < actLastQuarter(0)) p.householdCard = true
+  }
+  // M35 (doc 38 §4.1-4.3): rooftop solar, small wind and a home battery: the bill offset, upkeep and chances, netted
+  // into the quarter's power line (none without an energy asset).
+  if (s.sites.some((site) => site.energy?.length)) {
+    const energy = endQuarterEnergy(s)
+    p.quarter.powerCostUsd += energy.costUsd - energy.revenueUsd
   }
   if (s.cash < 0) forcedSale(s, w)
   // A sell order can't outgrow the coins that are (or are heading) on the exchange.

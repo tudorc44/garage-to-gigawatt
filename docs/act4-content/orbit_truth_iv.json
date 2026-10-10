@@ -1,0 +1,18 @@
+{
+  "_meta": {
+    "schema": "orbit_truth_iv/1",
+    "doc33": "§6.2 (the futures' true orbital GPU failures and useful life), §6.5 (fleet telemetry), §6.8 (hidden files), IV-D16",
+    "author": "build, M28.3 (5 Oct 2026): doc 33 §6.2's values (owner default 9); designed around doc 31's 5-10% hard failures a year and 5-7-year node life [inference]; F2's 4 years is deliberately below them",
+    "DO_NOT_EXPOSE": "Hidden: each future's true orbital reliability. Read only by src/sim/systems/fleetReliability.ts (which draws each block's telemetry) and src/sim/systems/act4End.ts (the reveal), plus tests/ and tools/. Never by selectors, the UI during play, or player-like bots."
+  },
+  "planning_assumption": { "gpu_failure_pct_yr": 8, "useful_life_years": 5 },
+  "futures": {
+    "f1": { "gpu_failure_pct_yr": 6, "useful_life_years": 6 },
+    "f2": { "gpu_failure_pct_yr": 10, "useful_life_years": 4 },
+    "f3": { "gpu_failure_pct_yr": 7, "useful_life_years": 5 },
+    "f4": { "gpu_failure_pct_yr": 8, "useful_life_years": 5 }
+  },
+  "telemetry_noise_sd_pct_points": 3,
+  "space_ops_chief_noise_mult": 0.5,
+  "notes": "Each live orbital block reports its quarter's failures (M29): the future's true yearly rate / 4, plus seeded noise of the given sd (in yearly percentage points, scaled to the block's size: small blocks read noisier), narrowed by the Space Operations Chief. The planning assumption is what everyone (rivals, lenders, the player) prices on in 2031."
+}

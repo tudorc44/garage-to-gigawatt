@@ -130,3 +130,22 @@
   --heat-3: #9a4e1c;
   --shadow-card: 0 1px 0 #bcc6d1, 0 16px 36px rgba(24, 36, 52, 0.22);
 }
+/* Act IV (2031–35), M27.6: a light "orbit" theme in the same paper-ledger family (owner default 13: not doc 33's dark
+   mission-control paper). Cool white paper, deep navy ink, a teal accent; gain/loss/warn colours unchanged. */
+[data-theme='orbit'] {
+  --paper: #eef1f1;
+  --paper-grid: #d9e1e3;
+  --panel: #fafbfb;
+  --panel-sunk: #e2e8ea;
+  --line: #b9c5ca;
+  --line-soft: #d2dbde;
+  --ink: #131c2c;
+  --ink-muted: #435062;
+  --ink-disabled: #6a7381;
+  --on-action: #fafbfb;
+  --accent: #1d5d73;
+  --tape: #ebdca6;
+  --series-eth: #56688a;
+  --heat-3: #9a4e1c;
+  --shadow-card: 0 1px 0 #b9c5ca, 0 16px 36px rgba(19, 28, 44, 0.22);
+}

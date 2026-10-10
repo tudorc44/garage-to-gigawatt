@@ -22,12 +22,29 @@ export default defineConfig({
                 String.raw`src[\\/]content[\\/]market_(weekly_)?s${n}\.json`,
               ),
             })),
+            // Act IV's four futures (M27.3): one file each, likewise.
+            ...[1, 2, 3, 4].map((n) => ({
+              name: `market-iv-f${n}`,
+              test: new RegExp(
+                String.raw`src[\\/]content[\\/]market_(weekly_)?iv_f${n}\.json`,
+              ),
+            })),
             {
               name: 'market',
               test: /src[\\/]content[\\/]market_[^\\/]*\.json/,
             },
             { name: 'text', test: /src[\\/]i18n[\\/].*\.json/ },
             { name: 'content', test: /src[\\/]content[\\/].*\.json/ },
+            // M35: energy options and ventures (doc 38), and Act IV's orbit and Moon, in files of their own, so the
+            // rules' file stays under 500 KB.
+            {
+              name: 'sim-energy',
+              test: /src[\\/]sim[\\/](energyViews|ventureViews|systems[\\/](energy|energyAssets|texasPower|specialSites|overrun|ventures))[^\\/]*\.ts/,
+            },
+            {
+              name: 'sim-space',
+              test: /src[\\/]sim[\\/](orbitViews|moonViews|act4MoneyViews|systems[\\/](orbit|moon|lunar|fleetReliability))[^\\/]*\.ts/,
+            },
             // The game's rules (M16.3: the main file passed 500 KB with step 5's systems).
             { name: 'sim', test: /src[\\/]sim[\\/]/ },
           ],

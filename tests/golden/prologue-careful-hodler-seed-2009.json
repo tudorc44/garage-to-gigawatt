@@ -25,9 +25,16 @@
       "readyQuarter": -12,
       "rentUsdQ": 0,
       "powerPriceMult": 1,
-      "flaw": null
+      "flaw": null,
+      "serial": 1,
+      "acquiredQuarter": -12
     }
   ],
+  "siteSerials": {
+    "bedroom": 1,
+    "home_rig": 1,
+    "garage": 1
+  },
   "machines": [
     {
       "id": "lot-11",

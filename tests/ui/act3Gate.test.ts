@@ -26,6 +26,7 @@ import {
   recentMarket,
 } from '../../src/sim/selectors.ts'
 import { toAct3, type GameState } from '../../src/sim/state.ts'
+import { ACT4_PREVIEW_MARKER } from '../../src/ui/act4QuickStart.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import {
   PREVIEW_MARKER,
@@ -77,6 +78,10 @@ describe('the gate in the builds', () => {
     expect(assets).not.toMatch(/Act3Preview/)
     expect(production.text).not.toContain(PREVIEW_MARKER)
     expect(production.text).not.toContain(FORCING_MARKER)
+    // M27.6: Act IV likewise: its entry chunk ships, its quick starts don't.
+    expect(assets).toMatch(/Act4Entry/)
+    expect(assets).not.toMatch(/Act4Preview/)
+    expect(production.text).not.toContain(ACT4_PREVIEW_MARKER)
   })
 
   it('the main bundle stays under the 500 KB warning in production (Act III stays out of it)', () => {
@@ -91,6 +96,7 @@ describe('the gate in the builds', () => {
   it('the staging build has both: the quick starts (the marker) and the forcing code, with the Act III chunks', () => {
     expect(staging.text).toContain(PREVIEW_MARKER)
     expect(staging.text).toContain(FORCING_MARKER)
+    expect(staging.text).toContain(ACT4_PREVIEW_MARKER)
     expect(readdirSync(join(staging.dir, 'assets')).join(' ')).toMatch(
       /Act3Panels/,
     )

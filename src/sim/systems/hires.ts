@@ -13,7 +13,8 @@ import {
   type SiteTier,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inAct2Rules, inActIII, logEntry, type GameState } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inActIV, logEntry, type GameState } from '../state.ts'
+import { MONEY } from '../../content/moneyContent.ts'
 
 /**
  * Every hire the game knows: Act I's five, then Act II's new ones (hires_act2.json), then Act III's
@@ -24,12 +25,39 @@ export function allHires(): Hire[] {
     ...CONTENT.hires.list,
     ...CONTENT.hiresAct2.newHires,
     ...CONTENT.act3Hires,
+    ...ACT4_HIRES,
   ]
 }
+
+/** Act IV's four hires (hires_iv.json, M31.4; doc 33 §14.3), in the shared Hire shape. */
+const ACT4_HIRES: Hire[] = MONEY.hires.map((h) => ({
+  id: h.id,
+  name: '',
+  bio: '',
+  salary_usd_year: { '2017': h.salary_usd_yr, '2021': h.salary_usd_yr },
+  effect: h.effect,
+}))
 
 /** Hires that exist only in Act III (M17.3). */
 export function isAct3Hire(id: string): boolean {
   return CONTENT.act3Hires.some((h) => h.id === id)
+}
+
+/** Hires that exist only in Act IV (M31.4). */
+export function isAct4Hire(id: string): boolean {
+  return ACT4_HIRES.some((h) => h.id === id)
+}
+
+/** An Act IV hire's effect while on staff (M31.4): the number or flag, or undefined without that hire. */
+export function staffEffect(state: GameState, key: string): number | boolean | undefined {
+  for (const h of ACT4_HIRES) if (isHired(state, h.id) && h.effect[key] !== undefined) return h.effect[key] as number | boolean
+  return undefined
+}
+
+/** An Act IV hire's numeric effect, or `none` without it (a multiplier's 1, a bonus's 0). */
+export const staffNumber = (state: GameState, key: string, none: number): number => {
+  const v = staffEffect(state, key)
+  return typeof v === 'number' ? v : none
 }
 
 /** Hires that exist only in Act II (the Head of Development, the Capital Markets Lead). */
@@ -57,6 +85,8 @@ function staffHires(state: GameState): Hire[] {
 export function salaryUsdQ(hire: Hire, quarter: number): number {
   // Act III's Director: political_capital.json's salary a quarter (M17.3).
   if (isAct3Hire(hire.id)) return CONTENT.politicalCapital.hire.salaryUsdQ
+  // Act IV's hires: hires_iv.json's yearly salary (M31.4).
+  if (isAct4Hire(hire.id)) return hire.salary_usd_year['2021'] / 4
   const series = CONTENT.hiresAct2.salaryYr[hire.id]
   // Act III (M11.4c, mine, reversible): the file has no 2027+ salaries, so 2026Q4's holds.
   if (series && isAct2RulesQuarter(quarter))
@@ -210,7 +240,8 @@ export function hireBlocker(state: GameState, id: string): Message | undefined {
   if (!hire) return { key: 'error.unknown_hire' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (isAct2Hire(id) && !inAct2Rules(state)) return { key: 'error.act2_only' }
-  if (isAct3Hire(id) && !inActIII(state)) return { key: 'error.act3_only' }
+  if (isAct3Hire(id) && !inAct3Rules(state)) return { key: 'error.act3_only' }
+  if (isAct4Hire(id) && !inActIV(state)) return { key: 'error.act4_only' }
   if (isHired(state, id))
     return { key: 'error.already_hired', params: { hire: id } }
   if (

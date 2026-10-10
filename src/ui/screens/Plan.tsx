@@ -1,8 +1,9 @@
 // Plan dashboard: market, fleet & sites, sell slider | the quarter's to-do list | signals.
 // Reads the state through selectors and sends actions; no game rules here.
 import { useContext, useState } from 'preact/hooks'
-import { hasText, t, tDynamic, type Message } from '../../i18n/t.ts'
+import { hasText, siteShortName, t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
+import { specialSitesView } from '../../sim/energyViews.ts'
 import {
   BANDWIDTH_COST,
   HEAT_MARKS,
@@ -36,7 +37,9 @@ import {
   recentMarket,
   renewalViews,
   siteLadder,
+  siteListRow,
   siteViews,
+  type SiteFeeAction,
   topHeat,
   treasuryValue,
   whyNot,
@@ -46,11 +49,13 @@ import {
 import {
   inActII,
   inAct2Rules,
+  inAct3Rules,
   inActIII,
   type Coin,
   type GameState,
 } from '../../sim/state.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { Act4Panel } from '../components/act4Lazy.tsx'
 import { ActionRow, Icon, Pips, Sparkline, Tip } from '../components/basics.tsx'
 import { HeatBreakdown, heatTooltip } from '../components/heatBreakdown.tsx'
 import { Term } from '../components/term.tsx'
@@ -58,6 +63,18 @@ import { Delta, NavContext, Shell } from '../components/frame.tsx'
 import { MwBar, MwLegend } from '../components/mwbar.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
 import { Runway } from '../components/runway.tsx'
+import { SiteName } from '../components/siteName.tsx'
+import { SiteActionConfirm } from '../components/siteActionConfirm.tsx'
+import { groupSites } from '../components/siteGroups.tsx'
+
+/** M34.2 (owner, 9 Oct 2026, 3d): the dashboard's Fleet & sites panel shows each site's card up to 5 sites, then caps. */
+const FLEET_CARDS_UP_TO = 6
+import {
+  PlanPicker,
+  pickRows,
+  TALK_FROM_HEAT,
+  type PickKind,
+} from './planPickers.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -101,6 +118,9 @@ type Open =
   | 'auction'
   | 'community'
   | 'hosting'
+  | `hosting:${string}`
+  | `pick:${PickKind}`
+  | `confirm:${SiteFeeAction}:${string}`
   | `leave:${string}`
   | `renew:${string}`
   | `pitch:${string}`
@@ -120,7 +140,7 @@ function CommunityDealCard({ state, act }: ScreenProps) {
       <p class="num-s" style={{ margin: 0 }}>
         {t('ui.cdeal.body', {
           name: v.name,
-          tier: v.tier,
+          tier: siteName(v.site),
           target: v.targetHeat,
           heat: Math.round(v.heat),
           fade: v.fade,
@@ -181,8 +201,16 @@ export function PlanScreen({ state, act }: ScreenProps) {
           )}
           <CommunityDealCard state={state} act={act} />
 
-          {inActIII(state) && (
+          {inAct3Rules(state) && (
             <Act3Panel name="RenewalsDuePanel" state={state} act={act} />
+          )}
+          {/* Act IV (M29.5, A4-02): launches riding on too much uninsured value */}
+          {state.act === 4 && (
+            <Act4Panel name="OrbitExposurePanel" state={state} act={act} />
+          )}
+          {/* (M30.5) lunar disputes waiting for an answer */}
+          {state.act === 4 && (
+            <Act4Panel name="MoonDisputesPanel" state={state} act={act} />
           )}
           <div class="dash">
             <div class="col">
@@ -192,7 +220,8 @@ export function PlanScreen({ state, act }: ScreenProps) {
             </div>
             <TodoPanel state={state} act={act} open={setOpen} />
             <aside class="col" aria-label={t('ui.signals.title')}>
-              {inActIII(state) ? (
+              {/* (M27.6: Act IV's own Signals come in M28; Act III's panel shows nothing there) */}
+              {inAct3Rules(state) ? (
                 <Act3Panel name="Act3SignalsPanel" state={state} act={act} />
               ) : (
                 <SignalsPanel state={state} news={news} />
@@ -272,6 +301,32 @@ export function PlanScreen({ state, act }: ScreenProps) {
       )}
       {open === 'hosting' && (
         <HostingDialog state={state} act={act} onClose={() => setOpen(null)} />
+      )}
+      {open?.startsWith('hosting:') && (
+        <HostingDialog
+          state={state}
+          act={act}
+          siteId={open.slice('hosting:'.length)}
+          onClose={() => setOpen(null)}
+        />
+      )}
+      {open?.startsWith('confirm:') && (
+        <SiteActionConfirm
+          state={state}
+          act={act}
+          kind={open.split(':')[1] as SiteFeeAction}
+          siteId={open.split(':').slice(2).join(':')}
+          onClose={() => setOpen(null)}
+        />
+      )}
+      {open?.startsWith('pick:') && (
+        <PlanPicker
+          state={state}
+          act={act}
+          kind={open.slice('pick:'.length) as PickKind}
+          openDialog={setOpen}
+          onClose={() => setOpen(null)}
+        />
       )}
       {open?.startsWith('leave:') && (
         <LeaveDialog
@@ -521,6 +576,10 @@ export function FleetPanel({
   const readySites = sites.filter((s) => s.ready)
   const used = readySites.reduce((a, s) => a + s.usedKw, 0)
   const cap = readySites.reduce((a, s) => a + s.capacityKw, 0)
+  const nav = useContext(NavContext)
+  // M34.2 (owner, 9 Oct 2026, 3d): from 6 sites the dashboard caps the panel: one line per type ("Own site · 12 · 240 MW ·
+  // 31 MW free") and the way to Fleet & Sites, nothing else.
+  const capped = !breakdown && sites.length >= FLEET_CARDS_UP_TO
   return (
     <div class="panel p">
       {state.act === 1 && <Tip id="fleet" act={1} />}
@@ -528,14 +587,41 @@ export function FleetPanel({
         <h2 class="panel-title">{t('ui.fleet.title')}</h2>
         <span class="num-s muted">{`${fmt.power(used)} / ${fmt.power(cap)}`}</span>
       </div>
-      {sites.map((sv) => {
+      {capped && (
+        <div class="fleet-types" data-fleet-types>
+          {groupSites(state.sites.map((s) => siteListRow(state, s))).map((g) => (
+            <div key={g.label} class="num-s" data-fleet-type={g.label}>
+              {t('site.group.header', {
+                type: siteShortName(g.label),
+                n: g.items.length,
+                mw: fmt.power(g.items.reduce((kw, r) => kw + r.facts.energizedKw, 0)),
+                free: fmt.power(g.items.reduce((kw, r) => kw + r.facts.freeKw, 0)),
+              })}
+            </div>
+          ))}
+          {nav && (
+            <button
+              type="button"
+              class="btn btn-ghost"
+              style={{ alignSelf: 'flex-start' }}
+              data-fleet-link
+              onClick={() => nav.setSection('fleet')}
+            >
+              {t('site.fleet_link')}
+            </button>
+          )}
+        </div>
+      )}
+      {!capped && sites.map((sv) => {
         const siteLots = lots.filter((l) => l.lot.siteId === sv.site.id)
         return (
           <div key={sv.site.id}>
             <div class="fleet-row">
               <Icon name={tierIcon(sv.site.tier)} />
               <div>
-                <div class="site-head">{siteName(sv.site)}</div>
+                <div class="site-head">
+                  <SiteName state={state} site={sv.site} />
+                </div>
                 <div class="num-s muted">
                   {t('ui.fleet.site_sub', {
                     power: fmt.cents(sv.powerUsdKwh),
@@ -620,7 +706,7 @@ export function FleetPanel({
               />
             </div>
             <HeatMeter
-              tier={sv.site.tier}
+              name={siteName(sv.site)}
               heat={sv.heat}
               tooltip={heatTooltip(state, sv.site.id)}
             />
@@ -676,7 +762,7 @@ export function FleetPanel({
           </div>
         )
       })}
-      {lots.length === 0 && (
+      {!capped && lots.length === 0 && (
         <div class="num-s muted">{t('ui.fleet.empty')}</div>
       )}
     </div>
@@ -685,11 +771,12 @@ export function FleetPanel({
 
 /** A site's Heat, 0–100, with marks at the thresholds (danger from the moratorium up). */
 function HeatMeter({
-  tier,
+  name,
   heat,
   tooltip,
 }: {
-  tier: string
+  /** the site's short name (M33.1) */
+  name: string
   heat: number
   /** M21.2: the site's Heat breakdown, one line each (hover) */
   tooltip?: string
@@ -712,7 +799,7 @@ function HeatMeter({
         aria-valuemax={100}
         aria-valuenow={shown}
         aria-label={t('ui.fleet.heat_label', {
-          tier: tierName(tier),
+          tier: name,
           heat: shown,
         })}
       >
@@ -892,6 +979,26 @@ function TodoPanel({
       break // one locked rung is enough to show what's next
     }
   }
+  // M35.3 (doc 38 §4.4-4.6): the special sites on offer (hydro allocations, Iceland, flare pads).
+  for (const row of specialSitesView(state)) {
+    const a: Action = { type: 'SPECIAL_LEASE', kind: row.kind }
+    ladderRows.push(
+      <ActionRow
+        key={`special-${row.kind}`}
+        icon={row.kind === 'flare' ? 'own-site' : 'warehouse'}
+        name={t(`ui.energy.lease.${row.kind}`, {
+          mw: fmt.power(row.kw),
+          price: fmt.cents(row.priceUsdKwh),
+          quarters: row.buildQuarters,
+        })}
+        bandwidth={BANDWIDTH_COST.build}
+        bandwidthLeft={left}
+        price={fmt.money(row.costUsd)}
+        disabledReason={reason(a)}
+        onClick={() => act(a)}
+      />,
+    )
+  }
 
   return (
     <div class="panel p" style={{ gap: 0 }}>
@@ -972,7 +1079,7 @@ function TodoPanel({
           financed: true,
         }
         const name = t('ui.plan.phase', {
-          tier: tierName(p.site.tier),
+          tier: siteName(p.site),
           n: p.next.n,
           of: p.next.of,
           kw: fmt.power(p.next.kw),
@@ -1002,12 +1109,26 @@ function TodoPanel({
           />,
         ]
       })}
-      {transformerViews(state).map((u) =>
+      {/* M33.2 (doc 35): an action at 2+ sites is one row opening the site picker */}
+      {transformerViews(state).length >= 2 ? (
+        <ActionRow
+          icon="power"
+          name={t('site.group.transformer', {
+            n: transformerViews(state).length,
+          })}
+          price={t('ui.plan.from', {
+            value: fmt.money(
+              Math.min(...transformerViews(state).map((u) => u.costUsd)),
+            ),
+          })}
+          onClick={() => open('pick:transformer')}
+        />
+      ) : transformerViews(state).map((u) =>
         u.readyQuarter !== undefined ? (
           <ActionRow
             key={`transformer-${u.site.id}`}
             icon="power"
-            name={t('ui.plan.transformer', { tier: tierName(u.site.tier) })}
+            name={t('ui.plan.transformer', { tier: siteName(u.site) })}
             locked={t('ui.locked.transformer_underway', {
               quarter: fmt.quarter(quarterName(u.readyQuarter)),
             })}
@@ -1016,7 +1137,7 @@ function TodoPanel({
           <ActionRow
             key={`transformer-${u.site.id}`}
             icon="power"
-            name={t('ui.plan.transformer', { tier: tierName(u.site.tier) })}
+            name={t('ui.plan.transformer', { tier: siteName(u.site) })}
             bandwidth={u.bandwidth}
             bandwidthLeft={left}
             price={t('ui.plan.minus', { value: fmt.money(u.costUsd) })}
@@ -1024,19 +1145,30 @@ function TodoPanel({
               type: 'UPGRADE_TRANSFORMER',
               siteId: u.site.id,
             })}
-            onClick={() =>
-              act({ type: 'UPGRADE_TRANSFORMER', siteId: u.site.id })
-            }
+            onClick={() => open(`confirm:transformer:${u.site.id}`)}
           />
         ),
       )}
-      {siteViews(state).map(
+      {siteViews(state).filter((sv) => sv.leaving).length >= 2 ? (
+        <ActionRow
+          icon="close"
+          name={t('site.group.leave', {
+            n: pickRows(state, 'leave').filter((r) => !r.why).length,
+          })}
+          price={t('ui.plan.from', {
+            value: fmt.money(
+              Math.min(...pickRows(state, 'leave').map((r) => r.factSort)),
+            ),
+          })}
+          onClick={() => open('pick:leave')}
+        />
+      ) : siteViews(state).map(
         (sv) =>
           sv.leaving && (
             <ActionRow
               key={`leave-${sv.site.id}`}
               icon="close"
-              name={t('ui.plan.leave', { tier: tierName(sv.site.tier) })}
+              name={t('ui.plan.leave', { tier: siteName(sv.site) })}
               price={t('ui.plan.leave_price', {
                 value: fmt.money(sv.leaving.penaltyUsd),
               })}
@@ -1048,7 +1180,18 @@ function TodoPanel({
             />
           ),
       )}
-      {renewals.map((r) => (
+      {renewals.length >= 2 ? (
+        <ActionRow
+          icon="negotiate"
+          name={t('site.group.renewal', { n: renewals.length })}
+          price={t('ui.plan.from', {
+            value: fmt.cents(
+              Math.min(...pickRows(state, 'renewal').map((r) => r.factSort)),
+            ),
+          })}
+          onClick={() => open('pick:renewal')}
+        />
+      ) : renewals.map((r) => (
         <ActionRow
           key={`renew-${r.site.id}`}
           icon="negotiate"
@@ -1056,7 +1199,7 @@ function TodoPanel({
             state.negotiation?.siteId === r.site.id
               ? 'ui.plan.negotiating'
               : 'ui.plan.renewal',
-            { tier: tierName(r.site.tier) },
+            { tier: siteName(r.site) },
           )}
           price={t('ui.plan.renewal_price', {
             price: fmt.cents(
@@ -1076,7 +1219,7 @@ function TodoPanel({
           locked={
             next
               ? t('ui.locked.next_renewal', {
-                  tier: tierName(next.tier),
+                  tier: siteName(next.site),
                   quarter: fmt.quarter(next.quarter),
                 })
               : t('ui.locked.no_contracts')
@@ -1113,33 +1256,96 @@ function TodoPanel({
         })}
         onClick={() => open('hires')}
       />
-      <ActionRow
-        icon="outreach"
-        name={t('ui.plan.neighbours')}
-        bandwidth={communityView(state).outreachBandwidth}
-        bandwidthLeft={left}
-        price={t('ui.plan.hottest', {
-          tier: tierName(topHeat(state).tier),
-          heat: Math.round(topHeat(state).heat),
-        })}
-        onClick={() => open('community')}
-      />
-      <ActionRow
-        icon="outreach"
-        name={t('ui.plan.mitigation')}
-        price={t('ui.plan.from', {
-          value: fmt.money(
-            Math.min(...communityView(state).sites.map((x) => x.mitigationUsd)),
-          ),
-        })}
-        onClick={() => open('community')}
-      />
+      <TalkRow state={state} act={act} open={open} left={left} />
+      <MitigateRow state={state} act={act} open={open} left={left} />
 
       <div class="label group">{t('ui.plan.group.intel')}</div>
       {/* Act III reads the market through Signals instead (M13.2). */}
-      {!inActIII(state) && <ReadMarketRow state={state} act={act} />}
+      {!inAct3Rules(state) && <ReadMarketRow state={state} act={act} />}
       {!state.auction && <AuctionRow state={state} act={act} open={open} />}
     </div>
+  )
+}
+
+/**
+ * Talk to the neighbours (M33.2, doc 35): one site at Heat ≥ 30 is named and talked to at once; otherwise the row
+ * opens the site picker ("· N sites at Heat ≥ 30 ›"), hottest first.
+ */
+function TalkRow(props: ScreenProps & { open: (o: Open) => void; left: number }) {
+  const { state, open, left } = props
+  const v = communityView(state)
+  const hot = v.sites.filter(
+    (x) =>
+      x.heat >= TALK_FROM_HEAT &&
+      !x.outreachDone &&
+      !whyNot(state, { type: 'OUTREACH', siteId: x.site.id }),
+  )
+  const price = t('ui.plan.hottest', {
+    tier: siteName(topHeat(state).site),
+    heat: Math.round(topHeat(state).heat),
+  })
+  if (hot.length === 1) {
+    // (M34.2, 3f: one site is named, with its cost; clicking opens the confirm, never acts at once)
+    return (
+      <ActionRow
+        icon="outreach"
+        name={t('site.single.talk', { site: siteName(hot[0].site) })}
+        bandwidth={v.outreachBandwidth}
+        bandwidthLeft={left}
+        price={t('ui.plan.minus', { value: fmt.money(hot[0].outreachUsd) })}
+        onClick={() => open(`confirm:talk:${hot[0].site.id}`)}
+      />
+    )
+  }
+  return (
+    <ActionRow
+      icon="outreach"
+      name={
+        hot.length >= 2
+          ? t('site.group.talk', { n: hot.length })
+          : t('site.group.talk_any')
+      }
+      bandwidth={v.outreachBandwidth}
+      bandwidthLeft={left}
+      price={price}
+      onClick={() => open('pick:talk')}
+    />
+  )
+}
+
+/** Noise mitigation (M33.2): one site that can take it is named; otherwise the row opens the site picker. */
+function MitigateRow(
+  props: ScreenProps & { open: (o: Open) => void; left: number },
+) {
+  const { state, open, left } = props
+  const rows = pickRows(state, 'mitigate')
+  const can = rows.filter((r) => !r.why)
+  const v = communityView(state)
+  if (can.length === 1) {
+    return (
+      <ActionRow
+        icon="outreach"
+        name={t('site.single.mitigate', { site: siteName(can[0].site) })}
+        bandwidth={v.mitigationBandwidth}
+        bandwidthLeft={left}
+        price={t('ui.plan.minus', { value: can[0].fact })}
+        onClick={() => open(`confirm:mitigate:${can[0].site.id}`)}
+      />
+    )
+  }
+  return (
+    <ActionRow
+      icon="outreach"
+      name={
+        can.length >= 2
+          ? t('site.group.mitigate', { n: can.length })
+          : t('ui.plan.mitigation')
+      }
+      price={t('ui.plan.from', {
+        value: fmt.money(Math.min(...v.sites.map((x) => x.mitigationUsd))),
+      })}
+      onClick={() => open('pick:mitigate')}
+    />
   )
 }
 
@@ -1155,10 +1361,16 @@ function HostingRow({
   const v = hostingView(state)
   const free = v.sites.reduce((kw, x) => kw + x.freeKw, 0)
   const rate = v.sites[0]?.rateUsdKwh
+  // M33.2: with free power at 2+ sites, the row opens the site picker.
+  const withFree = v.sites.filter((x) => x.freeKw > 0).length
   return (
     <ActionRow
       icon="power"
-      name={t('ui.plan.hosting')}
+      name={
+        withFree >= 2
+          ? t('site.group.hosting', { n: withFree })
+          : t('ui.plan.hosting')
+      }
       bandwidth={free > 0 ? v.bandwidth : undefined}
       bandwidthLeft={state.bandwidth}
       price={
@@ -1171,7 +1383,7 @@ function HostingRow({
             ? undefined
             : t('ui.plan.hosting_none')
       }
-      onClick={() => open('hosting')}
+      onClick={() => open(withFree >= 2 ? 'pick:hosting' : 'hosting')}
     />
   )
 }
@@ -1220,7 +1432,7 @@ function FleetRow({ state, act }: ScreenProps) {
       name={t('ui.plan.distressed_fleet', {
         count: best.units,
         model: machineName(v.model),
-        tier: tierName(best.tier),
+        tier: siteName(best.site),
       })}
       bandwidth={v.bandwidth}
       bandwidthLeft={state.bandwidth}

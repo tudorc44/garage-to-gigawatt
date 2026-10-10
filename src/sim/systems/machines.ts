@@ -1,5 +1,6 @@
 // Machines: buying, selling and repairing batches ("lots") of identical units.
-import { CONTENT, type ScenarioId } from '../../content/index.ts'
+import { CONTENT, type MarketKey } from '../../content/index.ts'
+import { ENERGY } from '../../content/energyContent.ts'
 import type { Condition, GameState, MachineLot } from '../state.ts'
 import { getModel, leadTimeQuarters, scenarioOf, sellPrice } from './market.ts'
 
@@ -30,9 +31,11 @@ export function addMachines(
   siteId: string,
 ): MachineLot {
   const model = getModel(modelId)!
-  // Machines earn from the quarter after delivery (scope §2.4).
+  // Machines earn from the quarter after delivery (scope §2.4). M35.3: shipping to Iceland adds a quarter.
+  const site = state.sites.find((s) => s.id === siteId)
+  const shipping = site?.special ? (ENERGY.specialKinds[site.special].delivery_extra_quarters ?? 0) : 0
   const earnsFromQuarter =
-    state.quarter + leadTimeQuarters(model, state.quarter, condition) + 1
+    state.quarter + leadTimeQuarters(model, state.quarter, condition) + 1 + shipping
   const same = state.machines.find(
     (l) =>
       l.model === modelId &&
@@ -65,7 +68,7 @@ export function saleValueUsd(
   lot: MachineLot,
   count: number,
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const price = sellPrice(getModel(lot.model)!, quarter, scenario)
   const broken = Math.min(count, lot.failed)

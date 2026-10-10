@@ -5,7 +5,7 @@ import { useState } from 'preact/hooks'
 import { t } from '../../i18n/t.ts'
 import { quarterName } from '../../sim/selectors.ts'
 import type { ComponentChildren } from 'preact'
-import { inActII, inActIII, type GameState } from '../../sim/state.ts'
+import { inActII, inActIII, inActIV, type GameState } from '../../sim/state.ts'
 import { ImportBox, saveLabel } from '../components/saves.tsx'
 import { fmt } from '../format.ts'
 
@@ -14,8 +14,10 @@ export function actTag(s: GameState): string {
   return t(
     s.act === 0
       ? 'ui.title.tag_prologue'
-      : inActIII(s)
-        ? 'ui.title.tag_act3'
+      : inActIV(s)
+        ? 'ui.title.tag_act4'
+        : inActIII(s)
+          ? 'ui.title.tag_act3'
         : inActII(s)
           ? 'ui.title.tag_act2'
           : 'ui.title.tag_act1',
@@ -39,6 +41,8 @@ export function TitleScreen(props: {
   preview?: ComponentChildren
   /** Test builds only (M18.4, A3-12): "Start at Act III (2027)" with the preset cards, beside the other starts. */
   act3Start?: ComponentChildren
+  /** M32.4 (A4-13): "Start at Act IV (2031)" with the three preset companies. */
+  act4Start?: ComponentChildren
   /** Test builds only (M18.4, A3-12): Scenario Mode (locked or unlocked), opened from the title menu. */
   scenarioMode?: ComponentChildren
 }) {
@@ -164,6 +168,7 @@ export function TitleScreen(props: {
                 </div>
               </div>
               {props.act3Start}
+              {props.act4Start}
               <button
                 type="button"
                 class="btn btn-ghost"

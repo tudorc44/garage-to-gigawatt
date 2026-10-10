@@ -3,10 +3,11 @@
 //  1. Version steps: each change of format has a migration from version n to n + 1, run in turn.
 //  2. Small additions within a version: fields added since the save was made get their
 //     starting values, as in a new game.
-import { actFirstQuarter, actLastQuarter } from '../content/index.ts'
+import { CONTENT, actFirstQuarter, actLastQuarter } from '../content/index.ts'
 import type { Message } from '../i18n/t.ts'
 import { emptyEventState } from './systems/eventEffects.ts'
 import { assignCarriedTiers } from './systems/density.ts'
+import { numberUnnumbered } from './systems/siteSerials.ts'
 import { startPolitics } from './systems/politics.ts'
 import { drawWildcards } from './systems/wildcards.ts'
 import {
@@ -15,7 +16,7 @@ import {
   type GameState,
   type Phase,
 } from './state.ts'
-import { isActII, isActIII } from './state.ts'
+import { isActII, isActIII, isActIV } from './state.ts'
 
 const PHASES: Phase[] = [
   'plan',
@@ -28,7 +29,7 @@ const PHASES: Phase[] = [
 ]
 
 /** The save format this build writes (GameState.version). */
-export const SAVE_VERSION = 4
+export const SAVE_VERSION = 5
 
 type SaveData = Record<string, unknown>
 
@@ -51,6 +52,9 @@ const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
   // unreachable from play — a test/sim harness only). Nothing in a version-3 save changes: it was
   // act 0, 1 or 2 as before.
   3: (data) => ({ ...data, version: 4 }),
+  // 4 → 5 (Act IV, M27.2): a save can now be in act 4 (2031Q1–2035Q4) and carry the Act IV fields (futureId,
+  // act4Seed, act4Entry …). Nothing in a version-4 save changes: it was act 0–3 as before.
+  4: (data) => ({ ...data, version: 5 }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }
@@ -72,6 +76,12 @@ function actFitsQuarter(act: unknown, quarter: number): boolean {
   // Act III (M11.3): 2027Q1–2030Q4, plus Act II's last quarter for a boundary save.
   if (isActIII(act))
     return quarter >= actLastQuarter(2) && quarter <= actLastQuarter(3)
+  // Act IV (M27.2): 2031Q1–2035Q4, plus Act III's last quarter for a boundary save. Until the Act IV timeline exists
+  // (M27.3), no Act IV save can be valid.
+  if (isActIV(act)) {
+    const span = CONTENT.acts.find((a) => a.act === 4)
+    return span !== undefined && quarter >= actLastQuarter(3) && quarter <= span.lastQuarter
+  }
   return false
 }
 
@@ -103,6 +113,11 @@ export function restoreSave(raw: unknown): Loaded {
     return bad
   const fresh = newGame(data.seed)
   const state = { ...fresh, ...structuredClone(data) } as GameState
+  // M33.1: a save from before site numbers numbers its sites per type in acquisition order (not the new game's count).
+  if (!isObject(data.siteSerials)) state.siteSerials = {}
+  numberUnnumbered(state)
+  // M34.2 (3b): a site from before acquisition dates were stored has none (never shown as "unknown").
+  for (const site of state.sites) if (site.acquiredQuarter === undefined) site.acquiredQuarter = null
   // Nested records that gained fields: the quarter's running totals and each report.
   state.quarterStats = {
     ...emptyQuarterStats(),

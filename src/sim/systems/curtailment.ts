@@ -16,7 +16,9 @@ import {
   type Project,
   type Site,
 } from '../state.ts'
+import { bessMw } from './energyAssets.ts'
 import { addGrievance } from './heat.ts'
+import { forfeitOnRefusal } from './texasPower.ts'
 import { getModel, marketWeek, quarterWeeks, scenarioOf } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { mineWeek } from './mining.ts'
@@ -107,7 +109,10 @@ export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
     return { mw, forgoneUsd, creditUsd }
   const slaUsd = ai.reduce(
     (sum, p) =>
-      sum + monthlyChargeUsd(p) * CONTENT.projects.slaPenaltyShareMonth,
+      sum +
+      monthlyChargeUsd(p) *
+        CONTENT.projects.slaPenaltyShareMonth *
+        (1 - batteryCover(state, p)),
     0,
   )
   const sb6 = directCurtailment('ercot', state.quarter)
@@ -128,6 +133,20 @@ export function curtailOffer(state: GameState, w: MarketWeek): CurtailOffer {
     slaUsd,
     ...(forced ? { forced } : {}),
   }
+}
+
+/**
+ * M35.5 (doc 38 §4.8 (3)): the share of a live AI project a utility battery at its site rides through, so no SLA
+ * credit is owed on it: battery MW over the site's live AI MW, up to 1. 0 without a battery.
+ */
+function batteryCover(state: GameState, p: Project): number {
+  const site = state.sites.find((s) => s.id === p.siteId)
+  if (!site?.energy) return 0
+  const battery = bessMw(site, state.quarter)
+  const ai = curtailedProjects(state)
+    .filter((x) => x.siteId === site.id)
+    .reduce((mw, x) => mw + x.kw / 1000, 0)
+  return ai > 0 ? Math.min(1, battery / ai) : 0
 }
 
 /** A live AI project's monthly charge: a twelfth of its year's rent or GPU-hours. */
@@ -186,6 +205,8 @@ export function resolveCurtailment(
       if (isGridSite(state, site))
         addGrievance(state, site.id, CONTENT.heat.keepMining)
     }
+    // M35.4: refusing a call while enrolled in demand response forfeits the year's credit.
+    if (state.sites.some((s) => s.dr?.enrolled)) forfeitOnRefusal(state)
     logEntry(
       state,
       'log.curtail_declined',

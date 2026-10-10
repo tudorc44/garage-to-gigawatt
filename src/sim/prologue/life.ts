@@ -5,6 +5,7 @@ import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
 import { addMachines, removeMachines } from '../systems/machines.ts'
+import { addSite, numberSite, siteParams } from '../systems/siteSerials.ts'
 import { buyPrice, getModel } from '../systems/market.ts'
 import {
   P,
@@ -44,7 +45,7 @@ export function moveIntoGarage(s: GameState, readyQuarter: number): Site {
       powerPriceMult: 1,
       flaw: null,
     }
-    s.sites.push(garage)
+    addSite(s, garage)
   }
   const home = s.sites.filter((x) => householdTier(x.tier))
   let room = siteCapacityKw(garage) - siteLoadKw(s, garage.id)
@@ -125,6 +126,10 @@ export function moveBackHome(s: GameState, auto = false): Message | undefined {
         flaw: null,
       }),
     )
+  for (const site of home) {
+    numberSite(s, site)
+    site.acquiredQuarter = s.quarter
+  }
   s.sites = home
   // The machines fill the home sites, the biggest first room-wise; what doesn't fit is sold.
   const room = new Map(home.map((x) => [x.id, siteCapacityKw(x)]))
@@ -193,7 +198,7 @@ export function buildHomeRig(s: GameState): Message | undefined {
   if (bw) return bw
   s.cash -= t.capex_usd
   s.bandwidth -= P().bandwidth_costs.build
-  s.sites.push({
+  addSite(s, {
     id: `site-${s.nextId++}`,
     tier: t.id,
     readyQuarter: s.quarter,
@@ -226,7 +231,7 @@ export function buildSmallUnit(s: GameState): Message | undefined {
   const capex = typeof t.capex_usd === 'number' ? t.capex_usd : 0
   s.cash = roundCents(s.cash - capex)
   s.bandwidth -= P().bandwidth_costs.build
-  s.sites.push({
+  addSite(s, {
     id: `site-${s.nextId++}`,
     tier: t.id,
     readyQuarter: s.quarter + t.build_quarters,
@@ -328,7 +333,7 @@ export function takeUsedOffer(
   const freeKw = siteCapacityKw(site) - siteLoadKw(s, site.id)
   if (model.power_kw > freeKw + 1e-9)
     return fail('error.no_capacity', {
-      tier: site.tier,
+      ...siteParams(site),
       freeKw,
       neededKw: model.power_kw,
     })

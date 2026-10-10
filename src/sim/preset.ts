@@ -7,6 +7,7 @@ import { applyAction } from './actions.ts'
 import { advance } from './advance.ts'
 import { newGame, roundCents, type GameState, type Site } from './state.ts'
 import { signContract } from './systems/contracts.ts'
+import { addSite } from './systems/siteSerials.ts'
 import { recalcHeat } from './systems/heat.ts'
 import { defaultChoice } from './systems/interrupts.ts'
 import { getModel } from './systems/market.ts'
@@ -51,7 +52,7 @@ export function presetGame(seed: number): GameState {
         baseCapexUsd(tier) * tier.phases.cost_share,
       )
     }
-    s.sites.push(site)
+    addSite(s, site)
     const type = BALANCE.sites.defaultPowerOption
     signContract(
       s,

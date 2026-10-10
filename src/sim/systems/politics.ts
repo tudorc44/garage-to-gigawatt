@@ -8,11 +8,12 @@ import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
 import {
   act3SeedOf,
-  inActIII,
+  inAct3Rules,
   logEntry,
   type GameState,
   type Project,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { accelerateTarget } from './cardHalls.ts'
 import { isHired } from './hires.ts'
 import { addPc, adjustAnger } from './pcState.ts'
@@ -44,13 +45,13 @@ function used(state: GameState, id: string): boolean {
 /** The quarter `id` can be used again (for the reason line). */
 function againQuarter(state: GameState, id: string): string {
   const last = gov(state).lastUsed[id] ?? state.quarter
-  return CONTENT.quarters[last + PC.cooldownQuarters] ?? '—'
+  return logQuarterLabel(state, last + PC.cooldownQuarters)
 }
 
 // ---------- lobbying ----------
 
 export function lobbyBlocker(state: GameState, id: string): Message | undefined {
-  if (!inActIII(state)) return { key: 'error.act3_only' }
+  if (!inAct3Rules(state)) return { key: 'error.act3_only' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const a = C().lobbying.find((x) => x.id === id)
   if (!a) return { key: 'error.bad_choice' }
@@ -134,7 +135,7 @@ function gasRunning(state: GameState): boolean {
 }
 
 export function spendBlocker(state: GameState, id: string): Message | undefined {
-  if (!inActIII(state)) return { key: 'error.act3_only' }
+  if (!inAct3Rules(state)) return { key: 'error.act3_only' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const card = C().spend.find((x) => x.id === id)
   // pc_tariff_relief isn't offered in step 6 (no tariff to relieve; the step-7 list).
@@ -221,7 +222,7 @@ export function spendPc(state: GameState, id: string): void {
  * adds 3 and takes Anger 1 down, and the meter decays by 2; 0–100.
  */
 export function endQuarterPolitics(state: GameState): void {
-  if (!inActIII(state) || state.politicalCapital === undefined) return
+  if (!inAct3Rules(state) || state.politicalCapital === undefined) return
   const g = gov(state)
   const before = state.politicalCapital
   for (const x of g.pending) {

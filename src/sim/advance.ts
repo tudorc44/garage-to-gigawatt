@@ -28,6 +28,8 @@ import { payReservationWeek } from './systems/mwUse.ts'
 import { checkProjectEvents, settleProjectsWeek } from './systems/projects.ts'
 import { settleLegacyCloudWeek } from './systems/headStarts.ts'
 import { checkSpotAlerts } from './systems/spotMarket.ts'
+import { checkOrbitAlerts } from './systems/orbitOps.ts'
+import { checkLunarAlerts } from './systems/moon.ts'
 import { prologueWeek } from './prologue/engine.ts'
 
 export function advance(state: GameState): GameState {
@@ -127,6 +129,8 @@ export function advance(state: GameState): GameState {
   checkProjectEvents(s)
   checkGpuWaves(s)
   checkSpotAlerts(s, w)
+  checkOrbitAlerts(s)
+  checkLunarAlerts(s)
   checkComplaint(s)
   checkEvents(s)
   checkPriceAlert(s, w)

@@ -22,12 +22,17 @@
     {
       "id": "site-1",
       "tier": "garage",
+      "serial": 1,
+      "acquiredQuarter": 0,
       "readyQuarter": 0,
       "rentUsdQ": 0,
       "powerPriceMult": 1,
       "flaw": null
     }
   ],
+  "siteSerials": {
+    "garage": 1
+  },
   "machines": [
     {
       "id": "lot-2",

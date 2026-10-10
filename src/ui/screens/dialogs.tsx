@@ -38,6 +38,8 @@ import type {
 } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { HeatBreakdown } from '../components/heatBreakdown.tsx'
+import { SiteLabel, SiteName } from '../components/siteName.tsx'
+import { SitePicker } from '../components/sitePicker.tsx'
 import { fmt } from '../format.ts'
 import {
   flawName,
@@ -46,6 +48,8 @@ import {
   rivalCode,
   rivalName,
   say,
+  siteLong,
+  siteName,
   tierIcon,
   tierName,
 } from '../names.ts'
@@ -61,14 +65,21 @@ function cashChange(state: GameState, a: Action): number | null {
   return r.ok ? r.state.cash - state.cash : null
 }
 
-export function BuyDialog({ state, act, onClose }: DialogProps) {
+export function BuyDialog({
+  state,
+  act,
+  onClose,
+  siteId: initialSite,
+}: DialogProps & { siteId?: string }) {
   const market = machineMarket(state)
   const sites = siteViews(state)
   const firstOut = market.find((m) => m.isOut)!
   const [model, setModel] = useState(firstOut.id)
   const [condition, setCondition] = useState<Condition>('new')
   const [count, setCount] = useState(1)
-  const [siteId, setSiteId] = useState(bestSite(state).id)
+  // (M33.3: the site card's "Buy machines here" opens on its site)
+  const [siteId, setSiteId] = useState(initialSite ?? bestSite(state).id)
+  const [picking, setPicking] = useState(false)
 
   const m = market.find((x) => x.id === model)!
   const price = condition === 'new' ? m.newPriceUsd : m.usedPriceUsd
@@ -167,7 +178,7 @@ export function BuyDialog({ state, act, onClose }: DialogProps) {
         </tbody>
       </table>
       <p class="num-s muted" style={{ margin: 0 }}>
-        {t('ui.buy.profit_note', { site: tierName(bestSite(state).tier) })}
+        {t('ui.buy.profit_note', { site: siteName(bestSite(state)) })}
       </p>
 
       <div class="form-row">
@@ -211,22 +222,43 @@ export function BuyDialog({ state, act, onClose }: DialogProps) {
         <button type="button" class="btn" onClick={() => setCount(maxCount)}>
           {t('ui.buy.max', { n: maxCount })}
         </button>
-        <label class="field">
+        {/* M33.2 (doc 35): which site, through the site picker (cheapest power first) */}
+        <div class="field">
           <span class="label">{t('ui.buy.site')}</span>
-          <select
-            value={siteId}
-            onChange={(e) => setSiteId((e.target as HTMLSelectElement).value)}
-          >
-            {sites.map((s) => (
-              <option key={s.site.id} value={s.site.id}>
-                {t('ui.buy.site_option', {
-                  tier: tierName(s.site.tier),
-                  free: fmt.power(s.capacityKw - s.usedKw),
-                })}
-              </option>
-            ))}
-          </select>
-        </label>
+          <span class="site-field">
+            <SiteLabel state={state} site={site.site} />
+            {sites.length > 1 && (
+              <button
+                type="button"
+                class="btn"
+                data-buy-site
+                onClick={() => setPicking(true)}
+              >
+                {t('site.pick.change')}
+              </button>
+            )}
+          </span>
+        </div>
+        {picking && (
+          <SitePicker
+            state={state}
+            title={t('site.pick.title.buy')}
+            factLabel={t('site.pick.fact.power')}
+            actionLabel={t('site.pick.choose')}
+            rows={sites.map((s) => ({
+              site: s.site,
+              fact: fmt.cents(s.powerUsdKwh),
+              factSort: s.powerUsdKwh,
+              why:
+                s.capacityKw - s.usedKw <= 0 ? t('site.pick.no_free') : undefined,
+            }))}
+            onPick={(x) => {
+              setSiteId(x.id)
+              setPicking(false)
+            }}
+            onClose={() => setPicking(false)}
+          />
+        )}
       </div>
 
       <div class="row-between">
@@ -282,8 +314,8 @@ export function FleetDialog({ state, act, onClose }: DialogProps) {
               v={v}
               state={state}
               act={act}
-              siteName={tierName(
-                sites.find((s) => s.site.id === v.lot.siteId)!.site.tier,
+              siteName={siteName(
+                sites.find((s) => s.site.id === v.lot.siteId)!.site,
               )}
             />
           ))}
@@ -588,7 +620,7 @@ export function LeaveDialog({
   const { penaltyUsd, units, machinesUsd } = sv.leaving
   const a: Action = { type: 'LEAVE_SITE', siteId }
   const why = whyNot(state, a)
-  const tier = tierName(sv.site.tier)
+  const tier = siteLong(state, sv.site)
   const change = cashChange(state, a)
   return (
     <Dialog title={t('ui.leave.title', { tier })} onClose={onClose}>
@@ -997,7 +1029,7 @@ export function AuctionDialog({ state, act, onClose }: DialogProps) {
           >
             {state.sites.map((s) => (
               <option key={s.id} value={s.id}>
-                {tierName(s.tier)}
+                {siteName(s)}
               </option>
             ))}
           </select>
@@ -1014,7 +1046,7 @@ export function AuctionDialog({ state, act, onClose }: DialogProps) {
         <span class={profit >= 0 ? 'gain' : 'loss'}>
           {t('ui.auction.profit', {
             value: fmt.delta(profit, 'money'),
-            tier: tierName(site.tier),
+            tier: siteName(site),
           })}
         </span>
       </p>
@@ -1101,7 +1133,7 @@ export function CommunityDialog({ state, act, onClose }: DialogProps) {
                   }}
                 >
                   <Icon name={tierIcon(x.site.tier)} size={16} />
-                  {tierName(x.site.tier)}
+                  <SiteName state={state} site={x.site} />
                 </span>
                 {/* M21.2 (DT): the site's full Heat breakdown */}
                 <HeatBreakdown state={state} siteId={x.site.id} />
@@ -1156,7 +1188,7 @@ export function RenewalDialog({
     if (!site || !result) return null
     return (
       <Dialog
-        title={t('ui.renewal.title', { tier: tierName(site.tier) })}
+        title={t('ui.renewal.title', { tier: siteLong(state, site) })}
         onClose={onClose}
       >
         <p style={{ margin: 0 }}>{t(result.key, result.params)}</p>
@@ -1169,7 +1201,7 @@ export function RenewalDialog({
       </Dialog>
     )
   }
-  const tier = tierName(r.site.tier)
+  const tier = siteLong(state, r.site)
   if (state.negotiation?.siteId === siteId) {
     return (
       <Dialog title={t('ui.renewal.title', { tier })} onClose={onClose}>
@@ -1731,8 +1763,21 @@ export function HiresTable({ state, act }: ScreenProps) {
  * Act II hosting (scope 0.2 §2.4): per site, convert free energized kW (cost, rate, power price and
  * a quarter's margin per MW shown up front); then the contracts, each with what ending costs now.
  */
-export function HostingDialog({ state, act, onClose }: DialogProps) {
-  const v = hostingView(state)
+export function HostingDialog({
+  state,
+  act,
+  onClose,
+  siteId,
+}: DialogProps & { siteId?: string }) {
+  const all = hostingView(state)
+  // M33.2: opened from the site picker, it shows that site only (and its contracts).
+  const v = siteId
+    ? {
+        ...all,
+        sites: all.sites.filter((x) => x.site.id === siteId),
+        contracts: all.contracts.filter((c) => c.contract.siteId === siteId),
+      }
+    : all
   const [kw, setKw] = useState<Record<string, number>>(() =>
     Object.fromEntries(v.sites.map((x) => [x.site.id, Math.floor(x.freeKw)])),
   )
@@ -1774,7 +1819,7 @@ export function HostingDialog({ state, act, onClose }: DialogProps) {
                     }}
                   >
                     <Icon name={tierIcon(x.site.tier)} size={16} />
-                    {tierName(x.site.tier)}
+                    <SiteName state={state} site={x.site} />
                   </span>
                   <div class="num-s muted">
                     {t('ui.hosting.free', { value: fmt.power(x.freeKw) })}
@@ -1863,14 +1908,14 @@ export function HostingDialog({ state, act, onClose }: DialogProps) {
                 {c.live
                   ? t('ui.hosting.live', {
                       kw: fmt.power(c.contract.kw),
-                      tier: tierName(c.tier),
+                      tier: c.site ? siteName(c.site) : tierName(c.tier),
                       rate: fmt.cents(c.contract.rateUsdKwh),
                       quarter: fmt.quarter(c.termEnd),
                       fees: fmt.money(c.quarterFeesUsd),
                     })
                   : t('ui.hosting.converting', {
                       kw: fmt.power(c.contract.kw),
-                      tier: tierName(c.tier),
+                      tier: c.site ? siteName(c.site) : tierName(c.tier),
                       quarter: fmt.quarter(c.readyQuarter),
                     })}
               </span>

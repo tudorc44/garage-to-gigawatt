@@ -4,8 +4,9 @@
 import {
   BALANCE,
   CONTENT,
+  isAct4MarketKey,
   quarterInputs,
-  type ScenarioId,
+  type MarketKey,
 } from '../../content/index.ts'
 
 const F = () => CONTENT.finance
@@ -17,7 +18,7 @@ function act2Index(quarter: number): number {
 }
 
 /** SOFR that quarter, as a fraction (the market file). */
-export function sofr(quarter: number, scenario?: ScenarioId | null): number {
+export function sofr(quarter: number, scenario?: MarketKey | null): number {
   return (quarterInputs(quarter, scenario)?.sofrPct ?? 0) / 100
 }
 
@@ -27,15 +28,26 @@ function inAct3(quarter: number): boolean {
   return quarter >= act3.firstQuarter && quarter <= act3.lastQuarter
 }
 
+/** Whether a quarter is in Act IV and read with an Act IV key (M27.5: rates from the glided market, as Act III's). */
+function inAct4(quarter: number, scenario: MarketKey | null | undefined): boolean {
+  const act4 = CONTENT.acts.find((a) => a.act === 4)
+  return (
+    isAct4MarketKey(scenario) &&
+    act4 !== undefined &&
+    quarter >= act4.firstQuarter &&
+    quarter <= act4.lastQuarter
+  )
+}
+
 /**
  * Project debt's yearly rate if signed in `quarter` (lenders.json path: 10.5% → 8.5% → 7.0% → 7.5%).
  * In Act III: SOFR plus the scenario's high-yield spread (M11.4c: "SOFR and spreads from the scenario").
  */
 export function projectDebtRate(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
-  if (inAct3(quarter)) {
+  if (inAct3(quarter) || inAct4(quarter, scenario)) {
     const i = quarterInputs(quarter, scenario)!
     return i.sofrPct / 100 + i.hySpreadBps / 10_000
   }
@@ -64,10 +76,11 @@ export function isInvestmentGrade(rating: string): boolean {
 export function ddtlSpreadBps(
   quarter: number,
   investmentGrade: boolean,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   // Act III: the scenario's own spread column (M11.4c), whatever the tenant's credit.
-  if (inAct3(quarter)) return quarterInputs(quarter, scenario)!.ddtlSpreadBps ?? 0
+  if (inAct3(quarter) || inAct4(quarter, scenario))
+    return quarterInputs(quarter, scenario)!.ddtlSpreadBps ?? 0
   const split = BALANCE.finance.ddtl.spread2026Bps
   const label = CONTENT.quarters[quarter]
   if (label >= '2026Q1')
@@ -85,7 +98,7 @@ export function ddtlSpreadBps(
 export function ddtlRate(
   quarter: number,
   investmentGrade: boolean,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   return (
     sofr(quarter, scenario) +

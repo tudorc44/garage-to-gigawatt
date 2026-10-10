@@ -6,7 +6,7 @@
 // Vite replaces import.meta.env.MODE with a constant at build time; the app writes the check inline where
 // the bundler must drop code (the quick starts, the forcing), and a test builds the game and checks.
 import type { Message } from '../i18n/t.ts'
-import type { ScenarioId } from '../content/index.ts'
+import type { FutureId, ScenarioId } from '../content/index.ts'
 import type { GameState } from '../sim/state.ts'
 
 export const ACT3_PREVIEW: boolean = import.meta.env.MODE !== 'production'
@@ -32,7 +32,35 @@ export function guardTestBuildSave(
     (r.state.scenarioForced || r.state.act3QuickStart)
   )
     return { ok: false, error: { key: 'error.save_test_build' } }
+  // M27.6: an Act IV save made by a test build (a forced future, an Act IV quick start, or carrying a forced Act III
+  // scenario or quick start from before) loads only in a test build.
+  if (
+    r.ok &&
+    !preview &&
+    r.state.act === 4 &&
+    (r.state.futureForced ||
+      r.state.act4QuickStart ||
+      r.state.scenarioForced ||
+      r.state.act3QuickStart)
+  )
+    return { ok: false, error: { key: 'error.save_test_build' } }
   return r
+}
+
+const FUTURES: readonly FutureId[] = ['f1', 'f2', 'f3', 'f4']
+
+/**
+ * The tester's forced Act IV future (`?future=f1|f2|f3|f4`, M27.6): only in a test build; null otherwise (the future is
+ * drawn). The app calls it behind an inline mode check, so production drops it.
+ */
+export function forcedFuture(
+  search: string,
+  preview: boolean = ACT3_PREVIEW,
+): FutureId | null {
+  if (!preview) return null
+  const v = new URLSearchParams(search).get('future')
+  if (v === FORCING_MARKER) return null
+  return v && (FUTURES as readonly string[]).includes(v) ? (v as FutureId) : null
 }
 
 const SCENARIOS: readonly ScenarioId[] = ['s0', 's1', 's2', 's3']

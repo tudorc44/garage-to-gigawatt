@@ -11,14 +11,15 @@
 // GPUs' residual value, smallest first), their proceeds repaying debt, until it is. If even that falls short, the
 // lenders call what's left: it's paid from cash, and the existing rescue and game-over rules follow.
 // None of these are the player's moves: nothing here is logged to act3Moves.
-import { BALANCE, CONTENT } from '../../content/index.ts'
+import { BALANCE } from '../../content/index.ts'
 import {
-  inActIII,
+  inAct3Rules,
   logEntry,
   type GameState,
   type Project,
   type QuarterReport,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { debtUsd } from './loans.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import {
@@ -96,7 +97,7 @@ export function prepayDebt(state: GameState, usd: number): number {
  */
 export function covenantSweep(state: GameState): number {
   const b = state.covenantBreach
-  if (!inActIII(state) || !b || state.quarter <= b.fromQuarter) return 0
+  if (!inAct3Rules(state) || !b || state.quarter <= b.fromQuarter) return 0
   const st = state.quarterStats
   const flow = Math.max(0, ebitdaUsd(st) - st.interestUsd)
   const usd = prepayDebt(state, C().sweepShare * flow)
@@ -156,7 +157,7 @@ function covenantForcedSales(state: GameState, valuationUsd: number): number {
  * deadline forced sales and, if they fall short, the lenders call the rest). Fills `report.covenant`.
  */
 export function testCovenant(state: GameState, report: QuarterReport): void {
-  if (!inActIII(state)) return
+  if (!inAct3Rules(state)) return
   const limit = covenantLimit(state)
   const cure = covenantCureLtv(state)
   const ltv = companyLtv(state, report.valuationUsd)
@@ -192,7 +193,7 @@ export function testCovenant(state: GameState, report: QuarterReport): void {
       ltvPct: ltv,
       limitPct: limit,
       curePct: cure,
-      quarter: CONTENT.quarters[state.covenantBreach.untilQuarter] ?? '',
+      quarter: logQuarterLabel(state, state.covenantBreach.untilQuarter, ''),
     })
   }
   report.covenant = {

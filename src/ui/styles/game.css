@@ -1090,6 +1090,230 @@ tr.locked td {
 .heat-meter {
   margin: 6px 0 4px;
 }
+/* M33.1 (doc 35): a site's short name, and the facts after it in pickers and lists (free MW, Heat chip, flags). */
+.site-name {
+  white-space: nowrap;
+}
+/* M33.3: a site name opens the site's card */
+.site-link {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-underline-offset: 3px;
+}
+.site-link:hover {
+  text-decoration-style: solid;
+}
+.site-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.site-card-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: var(--border-hair) solid var(--line);
+  padding-top: var(--space-2);
+}
+.site-card-sec h3 {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.site-card-sec p {
+  margin: 0;
+}
+.site-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-3);
+}
+.site-card-action {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  max-width: 220px;
+}
+/* M35: the Power options dialog (doc 38 §4). */
+.energy-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 640px;
+}
+.energy-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-2) 0;
+}
+.energy-choice + .energy-choice {
+  border-top: var(--border-hair) solid var(--line);
+}
+.energy-choice-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.energy-toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+/* From 1280 px the card is a drawer on the right, the page still visible beside it; below, a dialog. */
+@media (min-width: 1280px) {
+  .site-card-scrim {
+    justify-content: flex-end;
+    align-items: stretch;
+    padding: 0;
+  }
+  .dialog.site-card {
+    width: 460px;
+    max-height: 100vh;
+    border-radius: 0;
+  }
+}
+.site-label,
+.site-extras {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px var(--space-2);
+}
+.site-extras {
+  font-family: var(--font-num);
+}
+.heat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+}
+.heat-swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.site-flag {
+  display: inline-flex;
+  color: var(--warn);
+}
+/* M34.2 (3d): the dashboard's capped Fleet & sites panel: one line per type, then the way to Fleet & Sites. */
+.fleet-types {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: var(--space-2);
+}
+/* M33.4 (doc 35): long site lists grouped by type, with sorts and filter chips. */
+.sites-list-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.filter-chip {
+  font: 12px/16px var(--font-ui);
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-pill);
+  background: var(--panel);
+  color: var(--ink);
+  cursor: pointer;
+}
+.filter-chip[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--on-action);
+}
+.site-group {
+  border-top: var(--border-hair) solid var(--line);
+}
+.site-group-head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: 8px 2px;
+  font: 600 12px/16px var(--font-ui);
+  letter-spacing: 0.04em;
+  text-align: left;
+  color: var(--ink);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.sites-table td {
+  padding: 5px 6px;
+}
+.sites-table td.sites-name {
+  white-space: normal;
+}
+.sites-flags {
+  width: 1%;
+}
+/* M33.2 (doc 35): the site picker. Its table scrolls inside the dialog; the reason a site can't wraps. */
+.picker-scroll {
+  overflow-x: auto;
+}
+.site-picker th {
+  padding: 4px 6px;
+}
+.sort-btn {
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 2px 2px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.site-picker td.picker-action {
+  white-space: normal;
+  min-width: 140px;
+}
+.site-field {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  min-height: 36px;
+}
+/* Playtest fix (10 Oct 2026): a picker's one-click batch ("Talk at every site at Heat 30+") and its one confirm. */
+.picker-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+.picker-filter {
+  font: 13px var(--font-ui);
+  padding: 6px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-2);
+  background: var(--panel);
+  color: var(--ink);
+  max-width: 260px;
+}
 /* Table cells with sentences (the People dialog): wrap instead of widening the table. */
 td.wrap {
   white-space: normal;
@@ -1132,6 +1356,9 @@ td.wrap {
   min-height: 0;
   align-items: start;
   overflow-y: auto;
+  /* Each row as tall as its panel. With auto rows, a section taller than the window squeezed a panel that scrolls
+     sideways (.panel:has(> table)) down to 24 px, and the next panel was drawn over it. (As .capital2.) */
+  grid-auto-rows: min-content;
 }
 .section.single {
   grid-template-columns: minmax(0, 1fr);
@@ -1210,11 +1437,69 @@ td.wrap {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  /* M27.6: keep its height in a short window (the intro card scrolls instead of squeezing the box) */
+  flex: none;
 }
 .act-intro-box td.r,
 .act-intro-box td.num-s {
   /* (M21.1: the "what's new" lines wrap too) */
   white-space: normal;
+}
+
+/* ===== Act IV: the chapter report's reveal timeline (M32.2, A4-11) ===== */
+.act4-reveal section,
+.act4-reveal > table {
+  overflow-x: auto;
+  /* keep their height in the card's column (the card scrolls instead of squeezing them, as the intro's boxes) */
+  flex: none;
+}
+.act4-timeline th,
+.act4-timeline td {
+  padding: 2px 3px;
+  text-align: center;
+  white-space: nowrap;
+}
+.act4-timeline th {
+  text-align: left;
+}
+.act4-timeline td.trigger {
+  outline: 1px solid var(--warn);
+}
+
+/* ===== Act IV: the campaign finale (M32.3, A4-12) ===== */
+.act4-finale section {
+  overflow-x: auto;
+  flex: none;
+}
+.epilogue-line {
+  font-style: italic;
+  margin: 0 0 var(--space-1);
+}
+
+/* ===== Act IV: the Orbit board (M29.5, A4-03 / A4-05; docs/wireframes/act4/README.md) ===== */
+.orbit-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+.orbit-slots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+.orbit-slot {
+  border: var(--border-hair) dashed var(--line);
+  border-radius: var(--radius-2);
+  padding: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+.orbit-slot select {
+  max-width: 100%;
 }
 
 /* ===== Act II: the MW-by-use bar (wireframes A2-03 / A2-06, component sheet) ===== */

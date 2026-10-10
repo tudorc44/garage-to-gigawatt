@@ -9,6 +9,7 @@ import {
   averagePrice,
   gameOverView,
   leagueScaleView,
+  leagueScaleIv,
   quarterName,
   rivalMovesView,
   siteViews,
@@ -29,6 +30,8 @@ import { CONTENT, actLastQuarter } from '../../content/index.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { SiteText } from '../components/siteText.tsx'
+import { Act4Panel } from '../components/act4Lazy.tsx'
 import { Tip } from '../components/basics.tsx'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -190,7 +193,9 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
         </div>
 
         <Act2Panel state={state} />
-        {state.act === 3 && <Act3Panel name="Act3ReportBlock" state={state} />}
+        {state.act >= 3 && <Act3Panel name="Act3ReportBlock" state={state} />}
+        {/* Act IV (M31.6, A4-10): orbit and Moon this quarter */}
+        {state.act === 4 && <Act4Panel name="Act4ReportPanel" state={state} />}
 
         <div class="report-grid">
           <CostChart state={state} coin={coin} />
@@ -222,9 +227,11 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
                 ? t(
                     state.act === 1
                       ? 'ui.report.finish'
-                      : state.act === 3
-                        ? 'ui.report.finish_act3'
-                        : 'ui.report.finish_act2',
+                      : state.act === 4
+                        ? 'ui.report.finish_act4'
+                        : state.act === 3
+                          ? 'ui.report.finish_act3'
+                          : 'ui.report.finish_act2',
                   )
                 : t('ui.report.continue', {
                     quarter: fmt.quarter(quarterName(state.quarter + 1)),
@@ -371,6 +378,14 @@ function CostChart({ state, coin }: { state: GameState; coin: Coin | null }) {
           {t('ui.report.hosting_line', { fees: fmt.money(r.hostingFeesUsd) })}
         </p>
       )}
+      {(r.energyRevenueUsd !== undefined || r.energyCostUsd !== undefined) && (
+        <p class="num-s muted" style={{ margin: 0 }} data-report-energy>
+          {t('ui.report.energy_line', {
+            earned: fmt.money(r.energyRevenueUsd ?? 0),
+            upkeep: fmt.money(r.energyCostUsd ?? 0),
+          })}
+        </p>
+      )}
       {r.reservationUsd > 0 && (
         <p class="num-s muted" style={{ margin: 0 }}>
           {t('ui.report.reservation_line', {
@@ -421,6 +436,8 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
   const coming = upcomingRivals(state.quarter)
   // Act II (M6.2): your AI and mining MW for the scale column, and the rivals' moves this quarter.
   const act2 = inAct2Rules(state) ? leagueScaleView(state) : null
+  // Act IV (M31.5): ground, orbit and lunar sites.
+  const iv = leagueScaleIv(state)
   const moves = rivalMovesView(state.quarter)
   return (
     <div class="panel p">
@@ -456,7 +473,13 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
                   {t('ui.report.you')}
                 </td>
                 <td class="num">
-                  {act2
+                  {iv
+                    ? t('ui.report.scale_act4', {
+                        ground: fmt.power(iv.groundMw * 1000),
+                        orbit: fmt.power(iv.orbitMw * 1000),
+                        sites: iv.sites,
+                      })
+                    : act2
                     ? t('ui.report.scale_act2', {
                         ai: fmt.power(act2.aiKw),
                         mining: fmt.power(act2.miningKw),
@@ -516,6 +539,12 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
 
 /** "16 MW · 0.07 EH/s", or null before the rival mines. Act II: "AI 590 MW · mining 560 MW". */
 function rivalScale(r: RivalSnapshot): string | null {
+  // Act IV (M31.5): orbital MW and lunar sites.
+  if (r.orbitMw !== undefined)
+    return t('ui.report.scale_act4_rival', {
+      orbit: fmt.power((r.orbitMw ?? 0) * 1000),
+      sites: r.lunarSites ?? 0,
+    })
   if (r.aiMw !== undefined || r.miningMw !== undefined)
     return t('ui.report.scale_act2', {
       ai: fmt.power((r.aiMw ?? 0) * 1000),
@@ -541,7 +570,13 @@ function Act2Panel({ state }: { state: GameState }) {
   return (
     <div class="panel p a2-report">
       <h2 class="panel-title">
-        {t(state.act === 3 ? 'ui.report.a3_title' : 'ui.report.a2_title')}
+        {t(
+          state.act === 4
+            ? 'ui.report.a4_title'
+            : state.act === 3
+              ? 'ui.report.a3_title'
+              : 'ui.report.a2_title',
+        )}
       </h2>
       <div class="a2-report-cols">
         <div>
@@ -644,7 +679,9 @@ function Act2Panel({ state }: { state: GameState }) {
               <div class="muted">{t('ui.report.a2_no_milestones')}</div>
             )}
             {v.milestones.map((e, i) => (
-              <div key={i}>{say(e)}</div>
+              <div key={i}>
+                <SiteText text={say(e)} />
+              </div>
             ))}
           </div>
           <span class="label">{t('ui.report.a2_tenants')}</span>
@@ -653,7 +690,9 @@ function Act2Panel({ state }: { state: GameState }) {
               <div class="muted">{t('ui.report.a2_no_tenants')}</div>
             )}
             {v.tenants.map((e, i) => (
-              <div key={i}>{say(e)}</div>
+              <div key={i}>
+                <SiteText text={say(e)} />
+              </div>
             ))}
           </div>
         </div>
@@ -683,7 +722,7 @@ function Notes({ state }: { state: GameState }) {
                   ? t('ui.report.note_end')
                   : t('ui.report.note_plan')}{' '}
             </span>
-            {say(e)}
+            <SiteText text={say(e)} />
           </div>
         ))}
       </div>

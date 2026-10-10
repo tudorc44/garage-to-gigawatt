@@ -1,0 +1,52 @@
+{
+  "_meta": {
+    "schema": "wildcards_iv/1",
+    "doc33": "§6.6 (wildcards: 2 of 6 drawn at entry), IV-D11",
+    "author": "build, M28.5 (5 Oct 2026): windows and magnitudes designed (doc 33 ⚙); each wildcard's effect is wired in the milestone named in `wired_in`",
+    "draw": 2
+  },
+  "wildcards": [
+    {
+      "id": "solar_storm",
+      "window": ["2031Q3", "2035Q2"],
+      "wired_in": "M29",
+      "effect": { "climbing_loss_share": 0.4, "safe_mode_weeks": 3, "ride_gpu_loss_share": 0.03 },
+      "basis": "Doc 33 §6.6: a G5-class storm like May 2024 [A]; Feb 2022 cost up to 40 of 49 freshly launched satellites [A]; magnitudes designed"
+    },
+    {
+      "id": "flag_on_the_pole",
+      "window": ["2033Q1", "2035Q2"],
+      "wired_in": "M30",
+      "effect": { "freeze_quarters": [2, 4] },
+      "basis": "Doc 33 §6.6: a bloc standoff over south-polar sites; designed"
+    },
+    {
+      "id": "launch_grounding",
+      "window": ["2031Q2", "2035Q2"],
+      "wired_in": "M29",
+      "effect": { "grounded_weeks": [2, 6], "slip_quarters": 1 },
+      "basis": "Doc 33 §6.6: the dominant launcher grounded after an accident [A, 2026 precedents]; designed"
+    },
+    {
+      "id": "chip_export_clampdown",
+      "window": ["2032Q1", "2034Q4"],
+      "wired_in": "M29",
+      "effect": { "duration_quarters": 4 },
+      "basis": "Doc 33 §6.6: new rules on space-qualified compute; the registry state matters (doc 31 §2.6 [C]); designed"
+    },
+    {
+      "id": "reactor_delay",
+      "window": ["2032Q1", "2033Q4"],
+      "wired_in": "M30",
+      "effect": { "reactor_from": "2036Q1" },
+      "basis": "Doc 33 §6.6, §9.3: the bloc fission programme slips again (the FY2030 target rated unlikely [B]); designed"
+    },
+    {
+      "id": "bitcoin_supercycle",
+      "window": ["2031Q2", "2035Q1"],
+      "wired_in": "M28",
+      "effect": { "mining_revenue_mult": 2, "quarters": 3 },
+      "basis": "Doc 33 §6.6: any leftover miners print money for 3 quarters (a nod to the garage); the multiple designed"
+    }
+  ]
+}

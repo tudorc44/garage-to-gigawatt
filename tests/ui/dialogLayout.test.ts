@@ -21,6 +21,11 @@ describe('dialog layout', () => {
     expect(notes?.[1]).toMatch(/white-space:\s*normal/)
   })
 
+  it('a left-nav section sizes each row to its panel, so a long page never squeezes a table panel (the Orbit board, owner playtest 6 Oct 2026)', () => {
+    const section = css.match(/\n\.section\s*\{([^}]*)\}/)
+    expect(section?.[1]).toMatch(/grid-auto-rows:\s*min-content/)
+  })
+
   it('the Plan dashboard keeps usable columns under tall panels; the main area scrolls, Start quarter stays pinned', () => {
     expect(css.match(/\.main:has\(> \.dash\)\s*\{([^}]*)\}/)?.[1]).toMatch(/overflow-y:\s*auto/)
     expect(css.match(/\.main > \.dash\s*\{([^}]*)\}/)?.[1]).toMatch(/min-height:\s*\d+px/)

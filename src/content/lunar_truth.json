@@ -1,0 +1,32 @@
+{
+  "_meta": {
+    "schema": "lunar_truth/1",
+    "doc33": "§6.4 (the lunar grade), §9.2 (prospect reports), §9.4 (pilot output), §6.8 (hidden files), IV-D9",
+    "author": "build, M28.3 (5 Oct 2026): designed per doc 33; anchored to LCROSS's 5.6 ± 2.9% water by weight [A]",
+    "DO_NOT_EXPOSE": "Hidden: the true lunar grade and how noisy each prospect is. Read only by src/sim/systems/lunarGeology.ts (which turns it into noisy prospect estimates) and src/sim/systems/act4End.ts (the reveal), plus tests/ and tools/. Never by selectors, the UI during play, or player-like bots."
+  },
+  "grade_weights_pct": { "rich": 20, "patchy": 50, "dry": 30 },
+  "grades": {
+    "rich": {
+      "water_wt_pct": 5.6,
+      "pilot_grade_factor": 1.0,
+      "resource_t_per_site": 2000000,
+      "note": "LCROSS-like grades in reachable, shallow deposits at good sites [C/D]"
+    },
+    "patchy": {
+      "water_wt_pct": 2.5,
+      "pilot_grade_factor": 0.5,
+      "resource_t_per_site": 800000,
+      "note": "ice in small cold traps, grades varying metre to metre [C]"
+    },
+    "dry": {
+      "water_wt_pct": 0.6,
+      "pilot_grade_factor": 0.15,
+      "resource_t_per_site": 150000,
+      "note": "mostly low-grade or deeply buried ice; extraction uneconomic before 2035 [C]"
+    }
+  },
+  "site_variance_sd_log": 0.25,
+  "prospect_noise_sd_log": { "first": 0.45, "second": 0.25, "pilot": 0.1 },
+  "notes": "Each site's true resource = the grade's tonnes per site × a per-site factor exp(N(0, site_variance_sd_log)), drawn on its own substream when the site is first claimed (M30). A prospect report = the true value × exp(N(0, sd)) for the report's step (first prospect, second, a pilot that has run two quarters): median-unbiased, narrowing with each step. Pilot output (doc 33 §9.4) = 1.2 t a year per kWe × pilot efficiency 0.3 × pilot_grade_factor (B11)."
+}

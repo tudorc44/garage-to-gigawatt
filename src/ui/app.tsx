@@ -8,17 +8,24 @@ import { advance } from '../sim/advance.ts'
 import { seedFromString } from '../sim/rng.ts'
 import {
   act3Finished,
+  act4FinishedSel,
   bandwidthMax,
   quarterName,
 } from '../sim/selectors.ts'
 import {
   inActII,
   inActIII,
+  inActIV,
+  toAct4,
   newGame,
   toAct3,
   type GameState,
 } from '../sim/state.ts'
-import { forcedScenario, guardTestBuildSave } from '../platform/preview.ts'
+import {
+  forcedFuture,
+  forcedScenario,
+  guardTestBuildSave,
+} from '../platform/preview.ts'
 import { presetGame } from '../sim/preset.ts'
 import { newPrologueGame } from '../sim/prologue/setup.ts'
 import type { PrologueProps } from './screens/Prologue.tsx'
@@ -37,8 +44,9 @@ import {
 } from './components/saves.tsx'
 import { NavContext } from './components/frame.tsx'
 import type { Section } from './screens/Sections.tsx'
+import { SiteCardHost } from './components/siteCard.tsx'
 import { readSettings, writeSettings } from '../platform/settings.ts'
-import type { ScenarioId } from '../content/index.ts'
+import type { FutureId, ScenarioId } from '../content/index.ts'
 import { play, setSfxSettings } from './audio/sfx.ts'
 import { soundsFor } from './audio/director.ts'
 
@@ -73,6 +81,27 @@ function LazyPrologue(props: PrologueProps) {
 
 type EntryModule = typeof import('./screens/Act3Entry.tsx')
 type PreviewModule = typeof import('./screens/Act3Preview.tsx')
+type Entry4Module = typeof import('./screens/Act4Entry.tsx')
+type Preview4Module = typeof import('./screens/Act4Preview.tsx')
+
+/** M27.6: Act IV's intro and chapter report, in every build, loaded lazily (their own chunk). */
+function useAct4Entry(): Entry4Module | null {
+  const [m, setM] = useState<Entry4Module | null>(null)
+  useEffect(() => {
+    void import('./screens/Act4Entry.tsx').then(setM)
+  }, [])
+  return m
+}
+
+/** M27.6: the Act IV quick starts, test builds only (the inline check lets production drop the file). */
+function useAct4Preview(): Preview4Module | null {
+  const [m, setM] = useState<Preview4Module | null>(null)
+  useEffect(() => {
+    if (import.meta.env.MODE !== 'production')
+      void import('./screens/Act4Preview.tsx').then(setM)
+  }, [])
+  return m
+}
 
 /**
  * The ways into Act III, its intro and chapter report (M20.2: every build), loaded lazily so they stay out of
@@ -114,7 +143,9 @@ function toSeed(text: string): number {
 const themeOf = (s: GameState | null) =>
   s?.act === 0
     ? 'bedroom'
-    : inActIII(s)
+    : inActIV(s)
+      ? 'orbit'
+      : inActIII(s)
       ? 'grid'
       : inActII(s)
         ? 'campus'
@@ -129,6 +160,10 @@ export function App() {
   const entry = useAct3Entry()
   const preview = useAct3Preview()
   const [act3Intro, setAct3Intro] = useState(false)
+  // Act IV's entry module (every build), quick starts (test builds), and the intro before 2031Q1's Plan (M27.6).
+  const entry4 = useAct4Entry()
+  const preview4 = useAct4Preview()
+  const [act4Intro, setAct4Intro] = useState(false)
   const [section, setSection] = useState<Section>('dashboard')
   // The latest state, so actions and timer ticks never work on a stale copy.
   const ref = useRef<GameState | null>(null)
@@ -151,6 +186,9 @@ export function App() {
     // M18.4 (DT): reaching an Act III chapter report (survived or out) unlocks Scenario Mode on this device.
     if (s && act3Finished(s) && !readSettings().act3Finished)
       writeSettings({ ...readSettings(), act3Finished: true })
+    // M32.4: reaching an Act IV chapter report unlocks Act IV's Scenario Mode.
+    if (s && act4FinishedSel(s) && !readSettings().act4Finished)
+      writeSettings({ ...readSettings(), act4Finished: true })
   }
   const saves: SaveApi = {
     current: () => ref.current,
@@ -252,8 +290,54 @@ export function App() {
     setAct3Intro(true)
   }
 
+  /**
+   * M27.6: an end-of-Act III company enters Act IV (the drawn future; in a test build only, the tester's ?future=),
+   * and the Act IV intro shows first. `quickStart` marks a test build's quick-start company.
+   */
+  const enterAct4 = (
+    end: GameState,
+    quickStart = false,
+    opts: { preset?: string; scenarioMode?: FutureId } = {},
+  ) => {
+    const forced =
+      import.meta.env.MODE !== 'production'
+        ? forcedFuture(window.location.search)
+        : null
+    setShowEnd(false)
+    commit(
+      toAct4(end, {
+        // M32.4: Scenario Mode plays the chosen future openly; else a tester's ?future=, else the draw.
+        ...(opts.scenarioMode
+          ? { future: opts.scenarioMode, scenarioMode: true }
+          : forced
+            ? { future: forced, forced: true }
+            : {}),
+        ...(quickStart ? { quickStart: true } : {}),
+        ...(opts.preset ? { preset: opts.preset } : {}),
+      }),
+    )
+    setAct4Intro(true)
+  }
+
   let screen
-  if (entry && game && inActIII(game) && act3Intro) {
+  if (entry4 && game && inActIV(game) && act4Intro) {
+    screen = <entry4.Act4Intro state={game} onEnter={() => setAct4Intro(false)} />
+  } else if (
+    entry4 &&
+    game &&
+    inActIV(game) &&
+    (game.phase === 'chapter' || (game.phase === 'gameover' && showEnd))
+  ) {
+    screen = (
+      <entry4.Act4Chapter
+        state={game}
+        onNew={() => {
+          setShowEnd(false)
+          commit(null)
+        }}
+      />
+    )
+  } else if (entry && game && inActIII(game) && act3Intro) {
     screen = (
       <entry.Act3Intro state={game} onEnter={() => setAct3Intro(false)} />
     )
@@ -270,6 +354,7 @@ export function App() {
           setShowEnd(false)
           commit(null)
         }}
+        onContinueAct4={() => enterAct4(game)}
       />
     )
   } else if (!game) {
@@ -291,19 +376,36 @@ export function App() {
         }}
         onLoad={saves.load}
         preview={
-          preview && (
-            <preview.QuickStart
-              onReady={(end) => enterAct3(end, undefined, true)}
-            />
+          (preview || preview4) && (
+            <>
+              {preview && (
+                <preview.QuickStart
+                  onReady={(end) => enterAct3(end, undefined, true)}
+                />
+              )}
+              {preview4 && (
+                <preview4.QuickStartAct4 onReady={(end) => enterAct4(end, true)} />
+              )}
+            </>
           )
         }
         act3Start={entry && <entry.StartAct3 onReady={(end) => enterAct3(end)} />}
+        act4Start={entry4 && <entry4.StartAct4 onReady={(end, preset) => enterAct4(end, false, { preset })} />}
         scenarioMode={
           entry && (
-            <entry.ScenarioMode
-              unlocked={readSettings().act3Finished}
-              onReady={(end, scenario) => enterAct3(end, scenario)}
-            />
+            <>
+              <entry.ScenarioMode
+                unlocked={readSettings().act3Finished}
+                onReady={(end, scenario) => enterAct3(end, scenario)}
+              />
+              {/* M32.4: Act IV's, unlocked by an Act IV finish */}
+              {entry4 && (
+                <entry4.ScenarioModeAct4
+                  unlocked={readSettings().act4Finished}
+                  onReady={(end, preset, future) => enterAct4(end, false, { preset, scenarioMode: future })}
+                />
+              )}
+            </>
           )
         }
       />
@@ -368,7 +470,14 @@ export function App() {
     <SaveContext.Provider value={saves}>
       <NavContext.Provider value={{ section, setSection, act }}>
         <div data-theme={themeOf(game)}>
-          {screen}
+          {/* M33.3: any site name opens that site's card */}
+          {game ? (
+            <SiteCardHost state={game} act={act}>
+              {screen}
+            </SiteCardHost>
+          ) : (
+            screen
+          )}
           <GlossaryHost />
         </div>
       </NavContext.Provider>

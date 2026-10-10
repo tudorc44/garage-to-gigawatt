@@ -15,6 +15,7 @@ import { logEntry, type GameState, type MachineLot } from '../state.ts'
 import { isHired } from './hires.ts'
 import { repairCostPerUnit } from './machines.ts'
 import { isEarning } from './mining.ts'
+import { siteParams } from './siteSerials.ts'
 
 /** A wave planned for this quarter at a site: the week it may hit, and its dice. */
 export interface PlannedWave {
@@ -96,7 +97,7 @@ export function checkFailureWaves(state: GameState): void {
       logEntry(
         state,
         'log.failure_wave_silent',
-        { units, tier: site.tier },
+        { units, ...siteParams(site) },
         weekNo,
       )
       continue
@@ -151,14 +152,14 @@ export function resolveFailureWave(
     logEntry(
       state,
       'log.failure_wave_repaired',
-      { units, tier: site?.tier ?? '', costUsd },
+      { units, ...siteParams(site), costUsd },
       active.week + 1,
     )
   } else {
     logEntry(
       state,
       'log.failure_wave_degraded',
-      { units, tier: site?.tier ?? '' },
+      { units, ...siteParams(site) },
       active.week + 1,
     )
   }

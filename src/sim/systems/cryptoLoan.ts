@@ -18,6 +18,7 @@ import {
   type Coin,
   type GameState,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { removeMachines, saleValueUsd } from './machines.ts'
 import { coinPrice, marketWeek, scenarioOf } from './market.ts'
 import { cryptoLoanCapUsd } from './liquidity.ts'
@@ -335,7 +336,7 @@ export function loansLocked(state: GameState): Message | undefined {
   ) {
     return {
       key: 'error.loans_locked',
-      params: { quarter: CONTENT.quarters[state.loansLockedUntil] ?? '—' },
+      params: { quarter: logQuarterLabel(state, state.loansLockedUntil) },
     }
   }
 }

@@ -1,6 +1,11 @@
 // Player decisions as plain action objects. applyAction checks an action against the
 // rules and returns either the new state or an error message (the old state is untouched).
-import { BALANCE, CONTENT, type SignalId } from '../content/index.ts'
+import {
+  BALANCE,
+  CONTENT,
+  type SignalId,
+  type SignalIdIv,
+} from '../content/index.ts'
 import {
   buildPhase,
   constructionLoanBlocker,
@@ -25,6 +30,8 @@ import {
   type ProjectKind,
   type Site,
 } from './state.ts'
+import { logQuarterLabel } from './state.ts'
+import { addSite, siteParams } from './systems/siteSerials.ts'
 import {
   addMachines,
   removeMachines,
@@ -86,6 +93,72 @@ import { planFailureWaves } from './systems/failureWave.ts'
 import { buyPriceNow, newGpusLocked } from './systems/eventEffects.ts'
 import { readMarket, readMarketBlocker } from './systems/readMarket.ts'
 import { readSignal, readSignalBlocker } from './systems/signals.ts'
+import { readSignalIv, readSignalIvBlocker } from './systems/signalsIv.ts'
+import {
+  arrangeOrbitalCapital,
+  arrangeOrbitalCapitalBlocker,
+  buildGroundStation,
+  buildGroundStationBlocker,
+  cancelOrbitalBlock,
+  cancelOrbitalBlockBlocker,
+  fastTrackLicence,
+  fastTrackLicenceBlocker,
+  fileLicence,
+  fileLicenceBlocker,
+  openOrbitalBlock,
+  openOrbitalBlockBlocker,
+  rentLinkUnits,
+  rentLinkUnitsBlocker,
+  setRegistry,
+  setRegistryBlocker,
+  signOrbitalTenant,
+  signOrbitalTenantBlocker,
+  type OpenBlock,
+} from './systems/orbit.ts'
+import type { ProviderId, RegistryId, ShellId } from '../content/orbitContent.ts'
+import type { CapitalKind } from './systems/orbitCapital.ts'
+import { buyOrrery, buyOrreryBlocker } from './systems/rivalsIv.ts'
+import { recordAct4Move } from './systems/act4Moves.ts'
+import {
+  bookLaunch,
+  bookLaunchBlocker,
+  buyInsurance,
+  buyInsuranceBlocker,
+  cancelLaunch,
+  cancelLaunchBlocker,
+  startOrbitalBuilds,
+} from './systems/orbitLaunch.ts'
+import { planOrbitAlerts, sellOrbitalBlock, sellOrbitalBlockBlocker } from './systems/orbitOps.ts'
+import {
+  claimSite,
+  claimSiteBlocker,
+  planLunarLandings,
+  resolveDispute,
+  resolveDisputeBlocker,
+  sendMission,
+  sendMissionBlocker,
+  type DisputeChoice,
+} from './systems/moon.ts'
+import type { LunarSiteId } from '../content/moonContent.ts'
+import {
+  buildSolar,
+  buildSolarBlocker,
+  decidePilot,
+  decideProduction,
+  leaseReactor,
+  leaseReactorBlocker,
+  maintainBlocker,
+  megawattBlocker,
+  pilotBlocker,
+  planLunarDust,
+  productionBlocker,
+  setMaintenance,
+  signMegawatt,
+  signOfftake,
+  signOfftakeBlocker,
+  acceptTaskOrder,
+  taskOrderBlocker,
+} from './systems/moonOps.ts'
 import {
   chooseRenewal,
   keepEmpty,
@@ -182,6 +255,19 @@ import {
   scoutAct2Blocker,
 } from './systems/scouting.ts'
 import { planSpotShock } from './systems/spotMarket.ts'
+import type { EnergyKind, SpecialSiteKind, VentureType } from '../content/energyContent.ts'
+import {
+  answerCall,
+  callBlocker,
+  diligenceBlocker,
+  doDiligence,
+  joinBlocker,
+  joinVenture,
+  settleVentureCalls,
+} from './systems/ventures.ts'
+import { buildEnergy, buildEnergyBlocker, repairEnergy, repairEnergyBlocker } from './systems/energy.ts'
+import { setTexas, setTexasBlocker } from './systems/texasPower.ts'
+import { leaseSpecial, leaseSpecialBlocker, relocate, relocateBlocker } from './systems/specialSites.ts'
 import { equityBlocker, raiseEquity } from './systems/equity.ts'
 import {
   backstopBlocker,
@@ -223,6 +309,22 @@ export type Action =
     }
   | { type: 'SELL_MACHINES'; lotId: string; count: number }
   | { type: 'REPAIR_MACHINES'; lotId: string }
+  /** M35 (doc 38 §4): build an energy asset at a site: size in kW (owned solar, wind), blocks (home battery), MW (the rest). */
+  | { type: 'ENERGY_BUILD'; siteId: string; kind: EnergyKind; size: number; hours?: number }
+  /** M35: repair a broken small wind turbine. */
+  | { type: 'ENERGY_REPAIR'; siteId: string; assetId: string }
+  /** M35.4: Texas demand response and 4CP at a site (each left out = unchanged). */
+  | { type: 'TEXAS_SET'; siteId: string; enrolled?: boolean; fourCp?: boolean }
+  /** M35.3: lease a hydro or Iceland allocation, or build a flare pad. */
+  | { type: 'SPECIAL_LEASE'; kind: SpecialSiteKind }
+  /** M35.3: move a flare pad to a new well. */
+  | { type: 'FLARE_RELOCATE'; siteId: string }
+  /** M36 (doc 38 §5.1): diligence on a venture type (1 Bandwidth, a fee): its reference-class estimate shows. */
+  | { type: 'VENTURE_DILIGENCE'; venture: VentureType }
+  /** M36: join a venture as equity (stake), offtaker (offtake share, prepay tier, campus) or both. */
+  | { type: 'VENTURE_JOIN'; venture: VentureType; stake: number; offtake: number; prepay: number; siteId?: string }
+  /** M36: answer a cash call: pay, dilute, walk, or let a partner or a government cover part. */
+  | { type: 'VENTURE_CALL'; ventureId: string; choice: 'pay' | 'dilute' | 'walk' | 'partner' | 'cost_share' }
   /** Share of mined coins to keep (0–1), for one coin, or for both if `coin` is left out. */
   | { type: 'SET_HODL'; pct: number; coin?: Coin }
   | { type: 'SCOUT_SITES'; tier: string }
@@ -324,6 +426,58 @@ export type Action =
   | { type: 'READ_MARKET' }
   /** Act III's Read the market: the sharp range of one Signals indicator for this quarter (1 Bandwidth). */
   | { type: 'READ_SIGNAL'; indicator: SignalId }
+  /** Act IV (M28.2): Read the market on one of Act IV's six indicators (1 BW, once a quarter). */
+  | { type: 'READ_SIGNAL_IV'; indicator: SignalIdIv }
+  /** Act IV (M29.2): open an orbital block card (0 BW): kind, size, shell, generation. */
+  | ({ type: 'OPEN_ORBITAL_BLOCK' } & OpenBlock)
+  /** Act IV: drop a block that hasn't started building (its deposit back only after a provider slip). */
+  | { type: 'CANCEL_ORBITAL_BLOCK'; blockId: string }
+  /** Act IV: fill the Tenant slot with an offer (its index) or spot (0 BW). */
+  | { type: 'SIGN_ORBITAL_TENANT'; blockId: string; offer: number | 'spot' }
+  /** Act IV: fill the Capital slot (1 BW): own cash (the default), export credit, project debt or co-funding. */
+  | { type: 'ARRANGE_ORBITAL_CAPITAL'; blockId: string; capital?: CapitalKind }
+  /** Act IV: file a constellation licence in a shell (1 BW, the fee). */
+  | { type: 'FILE_ORBITAL_LICENCE'; shell: ShellId }
+  /** Act IV: political capital takes a quarter off a pending licence. */
+  | { type: 'FAST_TRACK_LICENCE'; shell: ShellId }
+  /** Act IV: choose the registry state (free before the first filing, then 1 BW). */
+  | { type: 'SET_REGISTRY'; registry: RegistryId }
+  /** Act IV: set the link units you rent. */
+  | { type: 'RENT_LINK_UNITS'; units: number }
+  /** Act IV: build an optical ground station at one of your sites (1 BW, capex, a little Heat). */
+  | { type: 'BUILD_GROUND_STATION'; siteId: string }
+  /** Act IV (M29.3): book the block's launch (1 BW, 15% deposit, 2-6 quarters ahead). */
+  | { type: 'BOOK_ORBITAL_LAUNCH'; blockId: string; provider: ProviderId; quarter: number }
+  /** Act IV: give up a booking to rebook (the deposit back only after a provider slip). */
+  | { type: 'CANCEL_ORBITAL_LAUNCH'; blockId: string }
+  /** Act IV: insure a block (launch and first year before launch; a year's renewal in orbit). */
+  | { type: 'BUY_ORBITAL_INSURANCE'; blockId: string }
+  /** Act IV (M29.4): sell a live block (1 BW) at its value on the space multiple, less a quick sale's discount. */
+  | { type: 'SELL_ORBITAL_BLOCK'; blockId: string }
+  /** Act IV (M30.2): claim a polar site (1 BW, the fee, political capital); it holds once you land within 6 quarters. */
+  | { type: 'CLAIM_LUNAR_SITE'; site: LunarSiteId }
+  /** Act IV: answer a lunar dispute: hold (political capital), align with the claimant's bloc, share, or withdraw. */
+  | { type: 'RESOLVE_LUNAR_DISPUTE'; site: LunarSiteId; choice: DisputeChoice }
+  /** Act IV (M30.3): commission a prospecting mission to a claimed site (1 BW, paid now, 3-5 quarters' lead). */
+  | { type: 'SEND_LUNAR_MISSION'; site: LunarSiteId }
+  /** Act IV (M30.4): a solar array on a held site (1 BW, delivered mass + hardware; 2 quarters). */
+  | { type: 'BUILD_LUNAR_SOLAR'; site: LunarSiteId; kwe: number }
+  /** Act IV: lease a bloc's 100 kWe reactor (from 2034; 1 BW, set-up, a lease each quarter, the bloc's strings). */
+  | { type: 'LEASE_LUNAR_REACTOR'; site: LunarSiteId }
+  /** Act IV: contract 1 MWe of lunar power for delivery after 2035 (from 2034; the production decision needs it). */
+  | { type: 'SIGN_LUNAR_MEGAWATT' }
+  /** Act IV: decide a pilot plant (2 BW; needs indicated and 100 kWe). */
+  | { type: 'DECIDE_LUNAR_PILOT'; site: LunarSiteId }
+  /** Act IV: a maintenance crew for a pilot (a fee each quarter; without it, dust wears availability down). */
+  | { type: 'SET_LUNAR_MAINTENANCE'; site: LunarSiteId; on: boolean }
+  /** Act IV: decide a production plant (3 BW; needs measured and the 1 MWe contract; no output in the act). */
+  | { type: 'DECIDE_LUNAR_PRODUCTION'; site: LunarSiteId }
+  /** Act IV: sign this quarter's lunar offtake offer (2 BW; a share prepaid). */
+  | { type: 'SIGN_LUNAR_OFFTAKE'; offer: number }
+  /** Act IV (M31.3): accept this quarter's agency task order (0 BW): it part-funds your next mission. */
+  | { type: 'ACCEPT_TASK_ORDER' }
+  /** Act IV (M31.5): buy Orrery Compute's live blocks at its auction (1 BW; two quarters after its failure). */
+  | { type: 'BUY_ORRERY_BLOCKS' }
   /** Hire a person from hires.json (1 Bandwidth; needs a quarter's salary in cash). */
   | { type: 'HIRE'; hire: string }
   /** Let a person go (0 Bandwidth, severance). */
@@ -422,6 +576,8 @@ export function applyAction(state: GameState, action: Action): ActionResult {
   if (error) return { ok: false, error }
   // Act III (M14.2): a big move the player made goes into the move log.
   recordAct3Move(state, next, action)
+  // Act IV (M32.1): moves on orbital exposure (and ground and lunar ones for the timeline).
+  recordAct4Move(next, action)
   return { ok: true, state: next }
 }
 
@@ -449,6 +605,13 @@ function run(s: GameState, a: Action): Message | undefined {
       settleWildcards(s)
       // M19: a Community Deal left unsigned lapses ("Not this year").
       declineCommunityDeal(s)
+      // M36: a venture's cash call left unanswered takes the default (dilute).
+      if (s.ventures?.some((v) => v.call)) settleVentureCalls(s)
+      // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
+      startOrbitalBuilds(s)
+      planOrbitAlerts(s)
+      planLunarLandings(s)
+      planLunarDust(s)
       s.phase = 'live'
       s.week = 0
       scheduleComplaint(s)
@@ -554,13 +717,13 @@ function run(s: GameState, a: Action): Message | undefined {
       if (!site) return fail('error.unknown_site')
       if (underMoratorium(s, site.id))
         return fail('error.moratorium', {
-          tier: site.tier,
+          ...siteParams(site),
           at: CONTENT.heat.moratoriumAt,
         })
       const freeKw = capacityKw(site) - usedKw(s, site.id)
       const neededKw = model.power_kw * a.count
       if (neededKw > freeKw + 1e-9) {
-        return fail('error.no_capacity', { tier: site.tier, freeKw, neededKw })
+        return fail('error.no_capacity', { ...siteParams(site), freeKw, neededKw })
       }
       if (cost > s.cash)
         return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
@@ -644,6 +807,246 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = readSignalBlocker(s, a.indicator)
       if (blocked) return blocked
       readSignal(s, a.indicator)
+      return
+    }
+
+    case 'READ_SIGNAL_IV': {
+      const blocked = readSignalIvBlocker(s, a.indicator)
+      if (blocked) return blocked
+      readSignalIv(s, a.indicator)
+      return
+    }
+
+    case 'OPEN_ORBITAL_BLOCK': {
+      const o: OpenBlock = { kind: a.kind, mw: a.mw, shell: a.shell, gen: a.gen }
+      const blocked = openOrbitalBlockBlocker(s, o)
+      if (blocked) return blocked
+      openOrbitalBlock(s, o)
+      return
+    }
+
+    case 'CANCEL_ORBITAL_BLOCK': {
+      const blocked = cancelOrbitalBlockBlocker(s, a.blockId)
+      if (blocked) return blocked
+      cancelOrbitalBlock(s, a.blockId)
+      return
+    }
+
+    case 'SIGN_ORBITAL_TENANT': {
+      const blocked = signOrbitalTenantBlocker(s, a.blockId, a.offer)
+      if (blocked) return blocked
+      signOrbitalTenant(s, a.blockId, a.offer)
+      return
+    }
+
+    case 'ARRANGE_ORBITAL_CAPITAL': {
+      const blocked = arrangeOrbitalCapitalBlocker(s, a.blockId, a.capital)
+      if (blocked) return blocked
+      arrangeOrbitalCapital(s, a.blockId, a.capital)
+      return
+    }
+
+    case 'FILE_ORBITAL_LICENCE': {
+      const blocked = fileLicenceBlocker(s, a.shell)
+      if (blocked) return blocked
+      fileLicence(s, a.shell)
+      return
+    }
+
+    case 'FAST_TRACK_LICENCE': {
+      const blocked = fastTrackLicenceBlocker(s, a.shell)
+      if (blocked) return blocked
+      fastTrackLicence(s, a.shell)
+      return
+    }
+
+    case 'SET_REGISTRY': {
+      const blocked = setRegistryBlocker(s, a.registry)
+      if (blocked) return blocked
+      setRegistry(s, a.registry)
+      return
+    }
+
+    case 'RENT_LINK_UNITS': {
+      const blocked = rentLinkUnitsBlocker(s, a.units)
+      if (blocked) return blocked
+      rentLinkUnits(s, a.units)
+      return
+    }
+
+    case 'ENERGY_BUILD': {
+      const blocked = buildEnergyBlocker(s, a)
+      if (blocked) return blocked
+      buildEnergy(s, a)
+      return
+    }
+
+    case 'ENERGY_REPAIR': {
+      const blocked = repairEnergyBlocker(s, a.siteId, a.assetId)
+      if (blocked) return blocked
+      repairEnergy(s, a.siteId, a.assetId)
+      return
+    }
+
+    case 'TEXAS_SET': {
+      const blocked = setTexasBlocker(s, a)
+      if (blocked) return blocked
+      setTexas(s, a)
+      return
+    }
+
+    case 'SPECIAL_LEASE': {
+      const blocked = leaseSpecialBlocker(s, a.kind)
+      if (blocked) return blocked
+      leaseSpecial(s, a.kind)
+      return
+    }
+
+    case 'FLARE_RELOCATE': {
+      const blocked = relocateBlocker(s, a.siteId)
+      if (blocked) return blocked
+      relocate(s, a.siteId)
+      return
+    }
+
+    case 'VENTURE_DILIGENCE': {
+      const blocked = diligenceBlocker(s, a.venture)
+      if (blocked) return blocked
+      doDiligence(s, a.venture)
+      return
+    }
+
+    case 'VENTURE_JOIN': {
+      const j = { type: a.venture, stake: a.stake, offtake: a.offtake, prepay: a.prepay, siteId: a.siteId }
+      const blocked = joinBlocker(s, j)
+      if (blocked) return blocked
+      joinVenture(s, j)
+      return
+    }
+
+    case 'VENTURE_CALL': {
+      const blocked = callBlocker(s, a.ventureId, a.choice)
+      if (blocked) return blocked
+      answerCall(s, a.ventureId, a.choice)
+      return
+    }
+
+    case 'BUILD_GROUND_STATION': {
+      const blocked = buildGroundStationBlocker(s, a.siteId)
+      if (blocked) return blocked
+      buildGroundStation(s, a.siteId)
+      return
+    }
+
+    case 'BOOK_ORBITAL_LAUNCH': {
+      const blocked = bookLaunchBlocker(s, a.blockId, a.provider, a.quarter)
+      if (blocked) return blocked
+      bookLaunch(s, a.blockId, a.provider, a.quarter)
+      return
+    }
+
+    case 'CANCEL_ORBITAL_LAUNCH': {
+      const blocked = cancelLaunchBlocker(s, a.blockId)
+      if (blocked) return blocked
+      cancelLaunch(s, a.blockId)
+      return
+    }
+
+    case 'BUY_ORBITAL_INSURANCE': {
+      const blocked = buyInsuranceBlocker(s, a.blockId)
+      if (blocked) return blocked
+      buyInsurance(s, a.blockId)
+      return
+    }
+
+    case 'SELL_ORBITAL_BLOCK': {
+      const blocked = sellOrbitalBlockBlocker(s, a.blockId)
+      if (blocked) return blocked
+      sellOrbitalBlock(s, a.blockId)
+      return
+    }
+
+    case 'CLAIM_LUNAR_SITE': {
+      const blocked = claimSiteBlocker(s, a.site)
+      if (blocked) return blocked
+      claimSite(s, a.site)
+      return
+    }
+
+    case 'RESOLVE_LUNAR_DISPUTE': {
+      const blocked = resolveDisputeBlocker(s, a.site, a.choice)
+      if (blocked) return blocked
+      resolveDispute(s, a.site, a.choice)
+      return
+    }
+
+    case 'SEND_LUNAR_MISSION': {
+      const blocked = sendMissionBlocker(s, a.site)
+      if (blocked) return blocked
+      sendMission(s, a.site)
+      return
+    }
+
+    case 'BUILD_LUNAR_SOLAR': {
+      const blocked = buildSolarBlocker(s, a.site, a.kwe)
+      if (blocked) return blocked
+      buildSolar(s, a.site, a.kwe)
+      return
+    }
+
+    case 'LEASE_LUNAR_REACTOR': {
+      const blocked = leaseReactorBlocker(s, a.site)
+      if (blocked) return blocked
+      leaseReactor(s, a.site)
+      return
+    }
+
+    case 'SIGN_LUNAR_MEGAWATT': {
+      const blocked = megawattBlocker(s)
+      if (blocked) return blocked
+      signMegawatt(s)
+      return
+    }
+
+    case 'DECIDE_LUNAR_PILOT': {
+      const blocked = pilotBlocker(s, a.site)
+      if (blocked) return blocked
+      decidePilot(s, a.site)
+      return
+    }
+
+    case 'SET_LUNAR_MAINTENANCE': {
+      const blocked = maintainBlocker(s, a.site)
+      if (blocked) return blocked
+      setMaintenance(s, a.site, a.on)
+      return
+    }
+
+    case 'DECIDE_LUNAR_PRODUCTION': {
+      const blocked = productionBlocker(s, a.site)
+      if (blocked) return blocked
+      decideProduction(s, a.site)
+      return
+    }
+
+    case 'SIGN_LUNAR_OFFTAKE': {
+      const blocked = signOfftakeBlocker(s, a.offer)
+      if (blocked) return blocked
+      signOfftake(s, a.offer)
+      return
+    }
+
+    case 'ACCEPT_TASK_ORDER': {
+      const blocked = taskOrderBlocker(s)
+      if (blocked) return blocked
+      acceptTaskOrder(s)
+      return
+    }
+
+    case 'BUY_ORRERY_BLOCKS': {
+      const blocked = buyOrreryBlocker(s)
+      if (blocked) return blocked
+      buyOrrery(s)
       return
     }
 
@@ -842,15 +1245,15 @@ function run(s: GameState, a: Action): Message | undefined {
         )
       }
       s.cash += flawEffect(site, 'cash') ?? 0
-      s.sites.push(site)
+      addSite(s, site)
       recalcHeat(s, site)
       logEntry(s, 'log.site_built', {
-        tier: site.tier,
+        ...siteParams(site),
         costUsd: terms.capexUsd,
-        quarter: CONTENT.quarters[site.readyQuarter] ?? '—',
+        quarter: logQuarterLabel(s, site.readyQuarter),
       })
       if (site.flaw)
-        logEntry(s, 'log.site_flaw', { tier: site.tier, flaw: site.flaw })
+        logEntry(s, 'log.site_flaw', { ...siteParams(site), flaw: site.flaw })
       if ('offerId' in a)
         s.siteOffers = s.siteOffers.filter((o) => o.id !== a.offerId)
       return
@@ -1232,7 +1635,7 @@ function run(s: GameState, a: Action): Message | undefined {
       s.hosting = s.hosting.filter((h) => h.siteId !== site.id)
       s.sites = s.sites.filter((x) => x !== site)
       delete s.siteHeat[site.id]
-      logEntry(s, 'log.site_left', { tier: site.tier, penaltyUsd })
+      logEntry(s, 'log.site_left', { ...siteParams(site), penaltyUsd })
       return
     }
   }

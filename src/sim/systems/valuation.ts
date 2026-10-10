@@ -6,7 +6,7 @@ import {
   CONTENT,
   act1ValueQuarter,
   quarterInputs,
-  type ScenarioId,
+  type MarketKey,
 } from '../../content/index.ts'
 import type { QuarterReport } from '../state.ts'
 import { aiMultipleDelta } from './eventEffects.ts'
@@ -17,7 +17,7 @@ import { aiMultipleDelta } from './eventEffects.ts'
  */
 export function eraMultiple(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   // Act II, and Act III on its scenario's rebased column (M11.4c).
   const inputs = quarterInputs(quarter, scenario)
@@ -31,7 +31,7 @@ export function eraMultiple(
  */
 export function aiInfraMultiple(
   quarter: number,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const base = quarterInputs(quarter, scenario)?.multiple.aiInfra
   return base === undefined ? 0 : Math.max(0, base + aiMultipleDelta(quarter))
@@ -51,8 +51,14 @@ export function ebitdaUsd(q: {
   aiCostUsd?: number
   lateDamagesUsd?: number
   salariesUsd?: number
+  orbitRevenueUsd?: number
+  orbitCostUsd?: number
+  moonRevenueUsd?: number
+  moonCostUsd?: number
+  energyRevenueUsd?: number
+  energyCostUsd?: number
 }): number {
-  return (
+  const ebitda =
     q.revenueUsd +
     (q.gridCreditsUsd ?? 0) +
     (q.hostingFeesUsd ?? 0) +
@@ -62,7 +68,23 @@ export function ebitdaUsd(q: {
     q.powerCostUsd -
     q.rentUsd -
     (q.salariesUsd ?? 0)
-  )
+  // Act IV (M29, M30): the orbital blocks and the lunar sales (absent before Act IV, so earlier acts' sums are untouched).
+  const orbit = q.orbitRevenueUsd === undefined && q.orbitCostUsd === undefined ? ebitda : ebitda + orbitEbitdaUsd(q)
+  const moon = q.moonRevenueUsd === undefined && q.moonCostUsd === undefined ? orbit : orbit + moonEbitdaUsd(q)
+  // M35 (doc 38 §4): energy assets' savings, credits and upkeep (absent without one, so earlier sums are untouched).
+  return q.energyRevenueUsd === undefined && q.energyCostUsd === undefined
+    ? moon
+    : moon + (q.energyRevenueUsd ?? 0) - (q.energyCostUsd ?? 0)
+}
+
+/** Act IV: the lunar sales' EBITDA for a quarter (doc 33 §11.3: in EBITDA, valued with no multiple). */
+export function moonEbitdaUsd(q: { moonRevenueUsd?: number; moonCostUsd?: number }): number {
+  return (q.moonRevenueUsd ?? 0) - (q.moonCostUsd ?? 0)
+}
+
+/** Act IV: the orbital unit's EBITDA for a quarter (doc 33 §11.3). */
+export function orbitEbitdaUsd(q: { orbitRevenueUsd?: number; orbitCostUsd?: number }): number {
+  return (q.orbitRevenueUsd ?? 0) - (q.orbitCostUsd ?? 0)
 }
 
 /**
@@ -74,7 +96,7 @@ export function aiEnterpriseUsd(
   quarter: number,
   aiEbitdaUsd: number,
   floorUsd = 0,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   const ai = Math.max(0, aiEbitdaUsd)
   const floored = Math.min(ai, Math.max(0, floorUsd))
@@ -98,7 +120,16 @@ export interface ValuationParts {
   /** A card's premium on the operating value (the pivot premium's PR push, M5.8). */
   evMult?: number
   /** Act III: the scenario whose multiples apply (M11.4c). Absent in Acts I and II. */
-  scenario?: ScenarioId | null
+  scenario?: MarketKey | null
+  /** Act IV (M29.4): the orbital unit's quarter EBITDA (part of the total) and the space multiple it earns. */
+  orbitEbitdaUsd?: number
+  orbitMultiple?: number
+  /** Act IV (M30.4): the lunar sales' quarter EBITDA (part of the total, earning no multiple) and the lunar unit. */
+  moonEbitdaUsd?: number
+  lunarUsd?: number
+  /** M36 (doc 38 §5): your venture stakes and prepayments, and the fusion hype on your multiples (+1x, or −2x). */
+  venturesUsd?: number
+  multipleDelta?: number
 }
 
 /**
@@ -116,21 +147,33 @@ export function valuationUsd(
   parts: ValuationParts = {},
 ): number {
   const ai = parts.aiEbitdaUsd ?? 0
+  const orbit = parts.orbitEbitdaUsd ?? 0
+  const moon = parts.moonEbitdaUsd ?? 0
   const mining =
     eraMultiple(quarter, parts.scenario) +
     (parts.pivot ? BALANCE.projects.pivotPremium : 0)
   const enterprise =
-    (Math.max(0, (quarterEbitdaUsd - ai) * 4) * mining +
-      aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd, parts.scenario)) *
+    (Math.max(0, (quarterEbitdaUsd - ai - orbit - moon) * 4) * mining +
+      aiEnterpriseUsd(quarter, ai, parts.aiFloorEbitdaUsd, parts.scenario) +
+      Math.max(0, orbit) * 4 * (parts.orbitMultiple ?? 0)) *
     (parts.evMult ?? 1)
-  return (
+  const total =
     enterprise +
     cashUsd +
     treasuryUsd +
     (parts.constructionUsd ?? 0) +
-    (parts.weightedBacklogUsd ?? 0) -
+    (parts.weightedBacklogUsd ?? 0) +
+    (parts.lunarUsd ?? 0) -
     debtUsd
-  )
+  // M36: ventures (absent without one, so every earlier valuation is untouched).
+  if (parts.venturesUsd === undefined && parts.multipleDelta === undefined) return total
+  return total + (parts.venturesUsd ?? 0) + ventureHypeUsd(quarterEbitdaUsd - moon, parts.multipleDelta ?? 0)
+}
+
+/** The fusion hype's effect on the operating value (doc 38 §5.5): the multiple's delta × run-rate EBITDA, never below
+ *  zero EBITDA. */
+export function ventureHypeUsd(ebitdaUsd: number, delta: number): number {
+  return Math.max(0, ebitdaUsd) * 4 * delta
 }
 
 /**
@@ -141,7 +184,7 @@ export function valuationUsd(
 export function valuationSplit(
   r: QuarterReport,
   firstAiDealQuarter: number | null,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ) {
   const q = CONTENT.quarters.indexOf(r.quarter)
   const ai = aiEbitdaUsd(r)
@@ -149,28 +192,41 @@ export function valuationSplit(
   const miningMultiple =
     eraMultiple(q, scenario) + (pivot ? BALANCE.projects.pivotPremium : 0)
   const evMult = r.evMult ?? 1
+  const orbit = r.orbitEbitdaUsd ?? 0
   const miningEvUsd =
-    Math.max(0, (r.ebitdaUsd - ai) * 4) * miningMultiple * evMult
+    Math.max(0, (r.ebitdaUsd - ai - orbit - (r.moonEbitdaUsd ?? 0)) * 4) * miningMultiple * evMult
+  // Act IV (M30.4): the lunar unit (0 before Act IV).
+  const lunarUsd = r.lunarUsd ?? 0
+  // Act IV (M29.4): the orbital unit at the space multiple (0 before Act IV).
+  const orbitEvUsd = Math.max(0, orbit) * 4 * (r.orbitMultiple ?? 0) * evMult
   const aiEvUsd = aiEnterpriseUsd(q, ai, r.aiFloorEbitdaUsd, scenario) * evMult
   // The multiple the AI EBITDA earns overall (the era's, lifted by any contracted floor).
   const aiMultiple =
     ai > 0 ? aiEvUsd / evMult / (ai * 4) : aiInfraMultiple(q, scenario)
   const constructionUsd = r.constructionUsd ?? 0
   const weightedBacklogUsd = r.weightedBacklogUsd ?? 0
+  // M36: ventures and the fusion hype (0 without a venture).
+  const venturesUsd = (r.venturesUsd ?? 0) + (r.ventureHypeUsd ?? 0)
   return {
     miningMultiple,
     aiMultiple,
     aiEbitdaUsd: ai,
     miningEvUsd,
     aiEvUsd,
+    orbitEvUsd,
+    lunarUsd,
     constructionUsd,
     weightedBacklogUsd,
+    venturesUsd,
     treasuryUsd:
       r.valuationUsd -
       miningEvUsd -
       aiEvUsd -
+      orbitEvUsd -
+      lunarUsd -
       constructionUsd -
       weightedBacklogUsd -
+      venturesUsd -
       r.cash +
       r.debtUsd,
   }

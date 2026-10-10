@@ -65,6 +65,16 @@ if (args.includes('--prologue')) {
   await import('./prologue-runner.ts')
   process.exit(0)
 }
+// M36.3: the energy options' and ventures' E-B table (doc 38 §5.10) has its own.
+if (args.includes('--energy')) {
+  await import('./act4/energyRunner.ts')
+  process.exit(0)
+}
+// Act IV's archetypes and the B1-B14 table (M32.5) have theirs.
+if (args.includes('--act4')) {
+  await import('./act4/runner.ts')
+  process.exit(0)
+}
 // Act III step 7's presets scan and anchor harness (M18.3, M18.5) have theirs.
 if (args.includes('--act3-presets') || args.includes('--act3-anchors')) {
   await import('./act3-runner.ts')

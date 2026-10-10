@@ -7,10 +7,13 @@
 // - on-site gas: $/MW, a 2-quarter build, and Heat at the site while it runs (more with the
 //   air-permit flaw).
 // The project goes live when both its build and its power are done.
-import { BALANCE, CONTENT, type PowerRegion } from '../../content/index.ts'
+import { BALANCE, CONTENT, act4Row, type PowerRegion } from '../../content/index.ts'
+import { scenarioOf } from './market.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
-import type { GameState, PowerSource, Project, Site } from '../state.ts'
+import { act4SeedOf, inActIV, type GameState, type PowerSource, type Project, type Site } from '../state.ts'
+import { VENTURES } from '../../content/energyContent.ts'
+import { drawOverrun } from './overrun.ts'
 import { isHired } from './hires.ts'
 import { extraQueueQuarters, gridUpgradesHalted } from './regions.ts'
 import { flawEffect, regionOf } from './sites.ts'
@@ -35,7 +38,8 @@ export function gridQuarterRange(
   state: GameState,
   region: PowerRegion,
 ): [number, number] {
-  const [lo, hi] = POWER().grid.quartersByRegion[region]
+  // M36.4 (design thread, answer 9): Act IV reads doc 33's wait, the future's grid_wait_q × 0.8-1.2, in every region.
+  const [lo, hi] = inActIV(state) ? act4GridRange(state) : POWER().grid.quartersByRegion[region]
   // Act III (M17.3): with political capital under 15, new grid upgrades queue a quarter longer (designed).
   const lowPc = lowCapital(state)
     ? BALANCE.act3.politicalCapital.lowCapital.gridQueueExtraQuarters
@@ -43,6 +47,13 @@ export function gridQuarterRange(
   const shift =
     extraQueueQuarters(region, state.quarter) - exUtilityCut(state) + lowPc
   return [Math.max(1, lo + shift), Math.max(1, hi + shift)]
+}
+
+/** Act IV's grid wait before shifts: the future's grid_wait_q × the spread (16-24 at 20; 8-12 at 10). */
+function act4GridRange(state: GameState): [number, number] {
+  const gw = Number(act4Row(state.quarter, scenarioOf(state)).grid_wait_q)
+  const [a, b] = VENTURES.act4_power.grid_wait_spread
+  return [Math.round(gw * a), Math.round(gw * b)]
 }
 
 /** Why a project at this site can't bring this power now, or undefined. */
@@ -62,6 +73,9 @@ export function powerBlocker(
 /** Quarters until a new power source is energized, counted from the build start (grid: drawn). */
 export function drawPowerQuarters(state: GameState, p: Project): number {
   const site = state.sites.find((s) => s.id === p.siteId)!
+  // M36.4 (answer 9): Act IV's on-site gas waits for turbines, 6-10 quarters (its own stream).
+  if (p.power === 'gas' && inActIV(state))
+    return randomInt(substream(act4SeedOf(state), `gas_build:${CONTENT.quarters[state.quarter]}:${p.id}`), ...VENTURES.act4_power.gas_build_q)
   if (p.power === 'gas') return POWER().gas.buildQuarters
   if (p.power === 'nuclear') return nuclearPowerQuarters()
   const [lo, hi] = gridQuarterRange(state, regionOf(site)!)
@@ -75,10 +89,20 @@ export function drawPowerQuarters(state: GameState, p: Project): number {
 /** Quarters a proposed project's new power is expected to take (grid: the queue's short end). */
 export function expectedPowerQuarters(state: GameState, p: Project): number {
   if (!p.power) return 0
-  if (p.power === 'gas') return POWER().gas.buildQuarters
+  if (p.power === 'gas') return inActIV(state) ? VENTURES.act4_power.gas_build_q[0] : POWER().gas.buildQuarters
   if (p.power === 'nuclear') return nuclearPowerQuarters()
   const site = state.sites.find((s) => s.id === p.siteId)!
   return gridQuarterRange(state, regionOf(site)!)[0]
+}
+
+/**
+ * M36 (doc 38 §5.9): on-site gas in Act IV has a thermal-class overrun, drawn when the build starts, on its own
+ * substream (its 6-10 quarter wait is drawPowerQuarters's). Nothing outside Act IV.
+ */
+export function gasActIvDraw(state: GameState, p: Project): { slipQuarters: number; overrunUsd: number } {
+  if (p.power !== 'gas' || !inActIV(state)) return { slipQuarters: 0, overrunUsd: 0 }
+  const m = drawOverrun(substream(act4SeedOf(state), `gas_iv:${p.id}`), VENTURES.act4_power.gas_class)
+  return { slipQuarters: 0, overrunUsd: Math.round((m - 1) * powerCostUsd('gas', p.kw)) }
 }
 
 /** Heat from on-site gas running at a site in `quarter` (Act II): per plant, plus the air-permit flaw's. */

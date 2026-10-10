@@ -10,7 +10,7 @@ import {
   isAct2RulesQuarter,
   type PowerRegion,
 } from '../../content/index.ts'
-import { inActIII, type GameState } from '../state.ts'
+import { inAct3Rules, type GameState } from '../state.ts'
 import { ppaRegions } from './nuclear.ts'
 import { lowCapital } from './pcState.ts'
 import { getRegion } from './regions.ts'
@@ -41,7 +41,7 @@ export function regionAnger(
   )
   // Act III (M17.2, M17.3): −5 where you hold a nuclear PPA (once per region), and the company-wide
   // adjustment (the hire, lobbying, spends, cards, a wildcard); floor 0.
-  const adj = inActIII(state)
+  const adj = inAct3Rules(state)
     ? (ppaRegions(state, quarter).includes(region)
         ? BALANCE.act3.nuclear.angerDelta
         : 0) + (state.angerAdj ?? 0)

@@ -5,9 +5,11 @@
 // today's market only, and a renewal offer shows only once its renewal is open.
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
-import type { SignalId } from '../../content/index.ts'
+import type { SignalId, SignalIdIv } from '../../content/index.ts'
 import {
   act3ReportLines,
+  act4MwColumns,
+  signalsPanelIv,
   blendOffers,
   contractCalendar,
   contractsDueSoon,
@@ -36,6 +38,8 @@ export {
 import { PpaRowsPanel as PpaRows } from './Act3Government.tsx'
 // Step 7's Capital block (M18.2).
 export { CovenantPanel, StandbyPanel } from './Act3Capital.tsx'
+// M36 (doc 38 §5): the Ventures page (Acts III-IV), loaded with the other Act III panels.
+export { VenturesSection } from './Ventures.tsx'
 
 const tenantName = (id: string) => tDynamic(`tenant.${id}`, id)
 const tenantType = (type: string) => tDynamic(`ui.tenant_type.${type}`, type)
@@ -55,11 +59,25 @@ function Why(props: { why: Parameters<typeof say>[0] | null }) {
 
 /** Six short Signals labels with this quarter's value and arrow, and "Contracts due: N in next 4 Q". */
 export function Act3TopStrip({ state }: { state: GameState }) {
-  const v = signalsPanel(state)
+  // (M28.2: in Act IV, its own six Signals, and A4-02's megawatt strip in three theatres)
+  const v = signalsPanel(state) ?? signalsPanelIv(state)
   const due = contractsDueSoon(state)
+  const mw = act4MwColumns(state)
   if (!v) return null
   return (
     <>
+      {mw && (
+        <div class="stat" data-mw-columns>
+          <span class="label">{t('ui.act4.mw.label')}</span>
+          <span class="num-s">
+            {t('ui.act4.mw.value', {
+              ground: fmt.power(mw.groundMw * 1000),
+              orbit: fmt.power(mw.orbitMw * 1000),
+              moon: fmt.power(mw.moonKwe),
+            })}
+          </span>
+        </div>
+      )}
       <div class="stat" title={t('ui.act3.signals.title')}>
         <span class="label">{t('ui.act3.signals.title')}</span>
         <span class="num-s">
@@ -141,7 +159,8 @@ export function SignalSpark(props: { label: string; points: number[] }) {
 
 /** The Signals panel: six rows, Read the market (1 BW, a chooser), and your reads (newest first). */
 export function Act3SignalsPanel({ state, act }: ScreenProps) {
-  const v = signalsPanel(state)
+  // (M28.2: Act IV's six indicators, the same panel and rules)
+  const v = signalsPanel(state) ?? signalsPanelIv(state)
   const [choosing, setChoosing] = useState(false)
   if (!v) return null
   const reads = v.indicators
@@ -222,7 +241,7 @@ export function Act3SignalsPanel({ state, act }: ScreenProps) {
 
 /** Read the market (A3-03): pick one indicator; its true range for this quarter shows on its bar. */
 function ReadDialog(props: ScreenProps & { onClose: () => void }) {
-  const v = signalsPanel(props.state)!
+  const v = (signalsPanel(props.state) ?? signalsPanelIv(props.state))!
   const [pick, setPick] = useState<string>(v.indicators[0].id)
   const [error, setError] = useState<string | null>(null)
   return (
@@ -251,10 +270,11 @@ function ReadDialog(props: ScreenProps & { onClose: () => void }) {
         type="button"
         class="btn btn-primary"
         onClick={() => {
-          const e = props.act({
-            type: 'READ_SIGNAL',
-            indicator: pick as SignalId,
-          })
+          const e = props.act(
+            props.state.act === 4
+              ? { type: 'READ_SIGNAL_IV', indicator: pick as SignalIdIv }
+              : { type: 'READ_SIGNAL', indicator: pick as SignalId },
+          )
           if (e) setError(say(e))
           else props.onClose()
         }}

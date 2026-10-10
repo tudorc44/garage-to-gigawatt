@@ -12,14 +12,17 @@ import {
   openProjectView,
   projectsView,
   quarterName,
+  siteFacts,
   whyNot,
   type ProjectCardView,
 } from '../../sim/selectors.ts'
 import { BALANCE } from '../../content/index.ts'
 import type { PowerSource, ProjectKind } from '../../sim/state.ts'
 import { Dialog, Icon, Pips, Tip } from '../components/basics.tsx'
+import { groupInOrder, SiteGroup } from '../components/siteGroups.tsx'
+import { HeatChip } from '../components/siteName.tsx'
 import { fmt } from '../format.ts'
-import { say, siteName, tierIcon, tierName } from '../names.ts'
+import { projectName as siteProjectName, say, siteName, tierIcon } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 
 const kindName = (kind: string) => tDynamic(`project_kind.${kind}`, kind)
@@ -113,8 +116,9 @@ function TenantLine({ card }: { card: ProjectCardView }) {
   )
 }
 
+/** (M34.2, 3c: "Own site 3 · AI 1") */
 function projectName(card: ProjectCardView) {
-  return t('ui.projects.name', { tier: card.tier, n: card.project.n })
+  return siteProjectName(card.site, card.project.n)
 }
 
 // ---------- the Projects page (A2-04) ----------
@@ -520,7 +524,10 @@ function OpenProjectDialog(
             })
           : t('ui.projects.power_note.gas', {
               usd: fmt.money(site.gas.usdMw),
-              quarters: site.gas.quarters,
+              quarters:
+                site.gas.quarters[0] === site.gas.quarters[1]
+                  ? String(site.gas.quarters[0])
+                  : `${site.gas.quarters[0]}–${site.gas.quarters[1]}`,
               heat: site.gas.heat,
             })
   const why = whyNot(state, action)
@@ -534,27 +541,39 @@ function OpenProjectDialog(
       {v.sites.length === 0 ? (
         <p class="num-s muted">{t('ui.projects.no_sites')}</p>
       ) : (
-        [...shown, ...(showFolded ? folded : [])].map((x) => (
-          <label class="form-row" key={x.site.id} data-site={x.site.id}>
-            <input
-              type="radio"
-              name="project-site"
-              checked={x.site.id === siteId}
-              onChange={() => {
-                setSiteId(x.site.id)
-                setKw(Math.floor(x.freeKw))
-              }}
-            />
-            <Icon name={tierIcon(x.site.tier)} size={16} />
-            {siteName(x.site)}
-            {x.region && !x.site.category && (
-              <span class="tag">{regionName(x.region)}</span>
-            )}
-            <span class="num-s muted">
-              {t('ui.projects.free', { value: fmt.power(x.freeKw) })}
-            </span>
-          </label>
-        ))
+        // M33.4 (doc 35): grouped by type, keeping the most-free-power-first order within each group
+        [shown, showFolded ? folded : []].flatMap((part, i) =>
+          groupInOrder(part).map((g) => (
+            <SiteGroup
+              key={`${i}:${g.label}`}
+              screen={`new-project-${i}`}
+              label={g.label}
+              sites={g.items.map((x) => ({ facts: siteFacts(state, x.site) }))}
+              defaultOpen={g.items.some((x) => x.site.id === siteId)}
+            >
+              {g.items.map((x) => (
+                <label class="form-row" key={x.site.id} data-site={x.site.id}>
+                  <input
+                    type="radio"
+                    name="project-site"
+                    checked={x.site.id === siteId}
+                    onChange={() => {
+                      setSiteId(x.site.id)
+                      setKw(Math.floor(x.freeKw))
+                    }}
+                  />
+                  <Icon name={tierIcon(x.site.tier)} size={16} />
+                  {siteName(x.site)}
+                  {x.region && <span class="tag">{regionName(x.region)}</span>}
+                  <span class="num-s muted">
+                    {t('ui.projects.free', { value: fmt.power(x.freeKw) })}
+                  </span>
+                  <HeatChip heat={siteFacts(state, x.site).heat} />
+                </label>
+              ))}
+            </SiteGroup>
+          )),
+        )
       )}
       {folded.length > 0 && (
         <button
@@ -1128,7 +1147,7 @@ function DealBuilder(
           <>
             <div class="num-s">
               {t('ui.deal.power_line', {
-                tier: tierName(card.tier),
+                tier: siteName(card.site),
                 total: fmt.power(v.power.totalKw),
                 mining: fmt.power(v.power.miningKw),
                 free: fmt.power(v.power.freeKw),

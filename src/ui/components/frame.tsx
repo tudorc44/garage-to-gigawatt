@@ -28,9 +28,9 @@ import {
   ratingBacklogView,
   topHeat,
 } from '../../sim/selectors.ts'
-import { inAct2Rules, isActIII, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
-import { tierName } from '../names.ts'
+import { siteName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
 import { Term } from './term.tsx'
 import type { IconName } from '../icons.ts'
@@ -104,11 +104,11 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           />
         </span>
       </div>
-      {isActIII(s.act) && <Act3Panel name="PcStat" state={s} />}
+      {inAct3Rules(s) && <Act3Panel name="PcStat" state={s} />}
       <div class="stat">
         <span class="label">
           <Term id="heat">
-            {t('ui.top.heat', { tier: tierName(heat.tier).toLowerCase() })}
+            {t('ui.top.heat', { tier: siteName(heat.site) })}
           </Term>
         </span>
         <span class="num">
@@ -179,11 +179,17 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
           <span class="stat-note">{since}</span>
         </div>
       )}
-      {isActIII(s.act) && <Act3Panel name="Act3TopStrip" state={s} />}
+      {inAct3Rules(s) && <Act3Panel name="Act3TopStrip" state={s} />}
       {/* (M20.2: the forcing tag is test-build only; production refuses forced saves anyway) */}
       {import.meta.env.MODE !== 'production' && s.scenarioForced && (
         <div class="stat">
           <span class="tag">{t('ui.act3.forced_tag')}</span>
+        </div>
+      )}
+      {/* (M27.6: Act IV's ?future= forcing tag, test builds only like the scenario's) */}
+      {import.meta.env.MODE !== 'production' && s.futureForced && (
+        <div class="stat" data-future-forced-tag>
+          <span class="tag">{t('ui.act4.forced_tag')}</span>
         </div>
       )}
       {s.scenarioMode && (
@@ -211,13 +217,21 @@ const NAV: {
   key: Parameters<typeof t>[0]
   /** Only under Act II's rules (Act II and Act III). */
   act2?: boolean
-  /** Only in Act III. */
+  /** Only under Act III's rules (Act III and Act IV). */
   act3?: boolean
+  /** Only in Act IV. */
+  act4?: boolean
 }[] = [
   { id: 'dashboard', icon: 'dashboard', key: 'ui.nav.dashboard' },
   { id: 'projects', icon: 'power', key: 'ui.nav.projects', act2: true },
+  // Act IV (M29.5, A4-03): the Orbit board.
+  { id: 'orbit', icon: 'orbit', key: 'ui.nav.orbit', act4: true },
+  // (M30.5, A4-06): the Moon.
+  { id: 'moon', icon: 'moon', key: 'ui.nav.moon', act4: true },
   // Act III (M13.2, A3-04): every tenant contract by end quarter.
   { id: 'contracts', icon: 'loan', key: 'ui.nav.contracts', act3: true },
+  // M36 (doc 38 §5): energy ventures (Acts III-IV).
+  { id: 'ventures', icon: 'power', key: 'ui.nav.ventures', act3: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
   { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
   // Act III (M17.6, A3-09): political capital, the Director, lobbying, the spend cards.
@@ -245,7 +259,8 @@ export function Nav(props: { seed: number; plan: boolean; act: number }) {
       {NAV.filter(
         (item) =>
           (!item.act2 || inAct2Rules({ act: props.act as GameState['act'] })) &&
-          (!item.act3 || isActIII(props.act)),
+          (!item.act3 || inAct3Rules({ act: props.act as GameState['act'] })) &&
+          (!item.act4 || props.act === 4),
       ).map((item) => (
         <button
           key={item.key}

@@ -194,12 +194,15 @@ export function newPrologueGame(seed: number): GameState {
       {
         id: 'site-1',
         tier: s.site_tier,
+        serial: 1,
+        acquiredQuarter: first,
         readyQuarter: first,
         rentUsdQ: 0,
         powerPriceMult: 1,
         flaw: null,
       },
     ],
+    siteSerials: { [s.site_tier]: 1 },
     machines: s.machines.map((model, i) => ({
       id: `lot-${i + 1}`,
       model,

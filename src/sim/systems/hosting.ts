@@ -8,20 +8,24 @@ import {
   BALANCE,
   CONTENT,
   act2Quarter,
+  isAct4MarketKey,
   quarterInputs,
   type PowerRegion,
-  type ScenarioId,
+  type MarketKey,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, substream } from '../rng.ts'
 import {
   inAct2Rules,
-  inActIII,
+  inAct3Rules,
   logEntry,
   type GameState,
   type HostingContract,
 } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
+import { miningOnly } from './energyAssets.ts'
+import { siteParams } from './siteSerials.ts'
 import { scenarioOf } from './market.ts'
 import {
   poweredKw,
@@ -43,7 +47,7 @@ const HOSTING_MARGIN_ANCHOR = '2024Q1'
 export function hostingRateUsdKwh(
   quarter: number,
   region?: PowerRegion,
-  scenario?: ScenarioId | null,
+  scenario?: MarketKey | null,
 ): number {
   // Act III (M11.5a, DT): the all-in rate follows the region's power price in the scenario (quarterInputs)
   // plus Act II's hosting margin. Act II's margin = the file's last-year rate ($0.060, 2024's, held
@@ -51,11 +55,15 @@ export function hostingRateUsdKwh(
   // Act II itself is unchanged.
   const act3 = CONTENT.acts.find((a) => a.act === 3)!
   // (Only with a scenario: an Act II game looking a quarter ahead across the boundary keeps the file's rate.)
+  // (M27.5: and Act IV's quarters, read with an Act IV key)
+  const act4 = CONTENT.acts.find((a) => a.act === 4)
+  const lastQuarter =
+    isAct4MarketKey(scenario) && act4 ? act4.lastQuarter : act3.lastQuarter
   if (
     region &&
     scenario &&
     quarter >= act3.firstQuarter &&
-    quarter <= act3.lastQuarter
+    quarter <= lastQuarter
   ) {
     const anchorQ = CONTENT.quarters.indexOf(HOSTING_MARGIN_ANCHOR)
     const margin =
@@ -118,17 +126,19 @@ export function hostingBlocker(
   const site = state.sites.find((s) => s.id === siteId)
   if (!site) return { key: 'error.unknown_site' }
   if (site.tier === BALANCE.startSite) return { key: 'error.hosting_garage' }
+  // M35.3 (doc 38 §4.6): a flare pad is mining only.
+  if (miningOnly(site)) return { key: 'error.flare_mining_only' }
   if (!Number.isFinite(kw) || kw <= 0) return { key: 'error.bad_kw' }
   if (underMoratorium(state, siteId))
     return {
       key: 'error.moratorium',
-      params: { tier: site.tier, at: CONTENT.heat.moratoriumAt },
+      params: { ...siteParams(site), at: CONTENT.heat.moratoriumAt },
     }
   const freeKw = convertibleKw(state, siteId)
   if (kw > freeKw + 1e-9)
     return {
       key: 'error.no_hosting_room',
-      params: { tier: site.tier, freeKw, neededKw: kw },
+      params: { ...siteParams(site), freeKw, neededKw: kw },
     }
   const need = BALANCE.hosting.bandwidth
   if (state.bandwidth < need)
@@ -179,7 +189,7 @@ export function startHosting(
     site.hostingReletKw = (site.hostingReletKw ?? 0) - relet
     if (site.hostingReletKw <= 1e-9) delete site.hostingReletKw
     logEntry(state, 'log.hosting_relet', {
-      tier: site.tier,
+      ...siteParams(site),
       hostedKw: relet,
       rateCents: c.rateUsdKwh * 100,
     })
@@ -189,11 +199,11 @@ export function startHosting(
     const c = add(converted, state.quarter + 1 + CONTENT.hosting.buildQuarters)
     state.cash -= costUsd
     logEntry(state, 'log.hosting_started', {
-      tier: site.tier,
+      ...siteParams(site),
       hostedKw: converted,
       costUsd,
       rateCents: c.rateUsdKwh * 100,
-      quarter: CONTENT.quarters[c.readyQuarter] ?? '—',
+      quarter: logQuarterLabel(state, c.readyQuarter),
     })
   }
   return out
@@ -219,7 +229,7 @@ export function rollHostingDefaults(state: GameState): void {
     const site = state.sites.find((s) => s.id === h.siteId)
     if (site) site.hostingReletKw = (site.hostingReletKw ?? 0) + h.kw
     logEntry(state, 'log.hosting_default', {
-      tier: site?.tier ?? '',
+      ...siteParams(site),
       hostedKw: h.kw,
       feesUsd: quarterFeesUsd(h),
     })
@@ -268,7 +278,7 @@ export function endHosting(
   state.hosting = state.hosting.filter((h) => h.id !== contractId)
   const site = state.sites.find((s) => s.id === contract.siteId)!
   logEntry(state, 'log.hosting_ended', {
-    tier: site.tier,
+    ...siteParams(site),
     hostedKw: contract.kw,
     feeUsd,
   })
@@ -314,7 +324,7 @@ export function settleHostingWeek(state: GameState): {
 /** At the start of a quarter: contracts whose term has run out renew at the current rate. */
 export function renewHosting(state: GameState): void {
   // Act III (M11.5a, DT): every live contract reprices each quarter to the region's current rate.
-  if (inActIII(state))
+  if (inAct3Rules(state))
     for (const h of state.hosting) {
       const site = state.sites.find((s) => s.id === h.siteId)
       if (site)
@@ -335,10 +345,10 @@ export function renewHosting(state: GameState): void {
     h.termEndQuarter = state.quarter + BALANCE.hosting.termQuarters - 1
     const site = state.sites.find((s) => s.id === h.siteId)
     logEntry(state, 'log.hosting_renewed', {
-      tier: site?.tier ?? '',
+      ...siteParams(site),
       hostedKw: h.kw,
       rateCents: h.rateUsdKwh * 100,
-      quarter: CONTENT.quarters[h.termEndQuarter] ?? '—',
+      quarter: logQuarterLabel(state, h.termEndQuarter),
     })
   }
 }

@@ -5,7 +5,7 @@ import { t, tDynamic } from '../i18n/t.ts'
 import { chapterReport, gameOverView } from '../sim/selectors.ts'
 import type { GameState } from '../sim/state.ts'
 import { fmt } from './format.ts'
-import { rivalName, tierName } from './names.ts'
+import { rivalName, siteName } from './names.ts'
 
 type Chapter = ReturnType<typeof chapterReport>
 
@@ -52,7 +52,7 @@ export function momentLines(c: Chapter): string[] {
     lines.push(
       t('ui.chapter.m.sites', {
         sites: m.sites
-          .map((x) => `${tierName(x.tier)} (${fmt.quarter(x.quarter)})`)
+          .map((x) => `${siteName(x)} (${fmt.quarter(x.quarter)})`)
           .join(', '),
       }),
     )

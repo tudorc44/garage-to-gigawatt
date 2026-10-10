@@ -7,7 +7,9 @@
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
+import { logQuarterLabel } from '../state.ts'
 import { recalcHeat } from './heat.ts'
+import { addSite } from './siteSerials.ts'
 import { getTier, poweredKw } from './sites.ts'
 
 const L = () => CONTENT.lifeline
@@ -68,7 +70,7 @@ export function takeLifeline(state: GameState): void {
     flaw: null,
     region: BALANCE.lifeline.region,
   }
-  state.sites.push(site)
+  addSite(state, site)
   recalcHeat(state, site)
   state.cash += terms.loanUsd - terms.priceUsd
   state.bridgeLoan = {
@@ -84,7 +86,7 @@ export function takeLifeline(state: GameState): void {
     priceUsd: terms.priceUsd,
     loanUsd: terms.loanUsd,
     aprPct: terms.apr,
-    quarter: CONTENT.quarters[state.bridgeLoan.dueQuarter] ?? '—',
+    quarter: logQuarterLabel(state, state.bridgeLoan.dueQuarter),
   })
 }
 

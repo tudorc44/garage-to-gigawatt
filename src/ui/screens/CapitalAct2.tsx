@@ -12,6 +12,7 @@ import {
   valuationBreakdown,
 } from '../../sim/selectors.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
+import { Act4Panel } from '../components/act4Lazy.tsx'
 import { Tip } from '../components/basics.tsx'
 import { BridgePayment } from '../components/bridge.tsx'
 import { runwayTip } from '../components/runway.tsx'
@@ -30,10 +31,12 @@ export function CapitalAct2({ state, act }: ScreenProps) {
     <div class="capital2">
       <RatingCard state={state} />
       {/* Act III (M18.13): the leverage covenant */}
-      {state.act === 3 && <Act3Panel name="CovenantPanel" state={state} />}
+      {state.act >= 3 && <Act3Panel name="CovenantPanel" state={state} />}
       <DebtStack state={state} act={act} />
       {/* Act III (M18.2): the standby liquidity facility, from the lazily loaded Act III panels */}
-      {state.act === 3 && <Act3Panel name="StandbyPanel" state={state} act={act} />}
+      {state.act >= 3 && <Act3Panel name="StandbyPanel" state={state} act={act} />}
+      {/* Act IV (M31.6, A4-09): the space-equity window, orbital loans, insurance, lunar funding */}
+      {state.act === 4 && <Act4Panel name="Act4CapitalPanel" state={state} act={act} />}
       <Backlog state={state} />
       <Valuation state={state} />
       <Equity state={state} act={act} />
@@ -366,6 +369,19 @@ function Valuation({ state }: { state: ScreenProps['state'] }) {
             }),
             v.aiEnterpriseUsd,
           )}
+          {/* Act IV (M31.6): the orbital unit at the space multiple; the lunar unit on your estimates */}
+          {v.orbit &&
+            line(
+              t('ui.cap2.val.orbit', {
+                ebitda: fmt.money(v.orbit.ebitdaUsd * 4),
+                multiple: v.orbit.multiple.toFixed(1),
+              }),
+              v.orbit.evUsd,
+            )}
+          {v.lunarUsd !== null && line(t('ui.cap2.val.lunar'), v.lunarUsd)}
+          {/* M36.8: venture stakes marked to milestones, and the fusion hype on the multiples */}
+          {v.venturesUsd !== null && line(t('ui.cap2.val.ventures'), v.venturesUsd)}
+          {v.ventureHypeUsd !== null && line(t('ui.cap2.val.hype'), v.ventureHypeUsd)}
           {line(t('ui.section.val.cash'), v.cashUsd)}
           {line(t('ui.section.val.treasury'), v.treasuryUsd)}
           {line(t('ui.section.val.debt'), -v.debtUsd, 'loss')}

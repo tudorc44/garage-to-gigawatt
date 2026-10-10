@@ -5,8 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M25 merged into `main` at `f8cf61f` and pushed; M26 done on `m26`, not merged yet). The Prologue, Act I, Act II and
-Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M26" and "Milestone M18 close-out".
+Last updated: 10 Oct 2026 (M36.10 on `m35`, PR #3 into `main`). The Prologue, Act I, Act II and Act III are built and
+public on GitHub Pages. Act IV (M27–M34) and the energy options and ventures (doc 38, M35–M36) are built on the unmerged
+chain `m27`…`m35`. See "Next" and "Milestones M35-M36".
 
 ## How the owner works
 
@@ -134,7 +135,12 @@ prologue). Tables: `npm run sim -- --act2` / `--prologue`. **End of M18:** 1,229
 
 ## Open questions for the design thread
 
-None open. The Act III balance pass is closed (design thread, 4 Oct 2026): no more mechanics rounds unless the owner asks.
+- **Doc 33 Q16 (M34.3, 9 Oct 2026):** "Jade Arc Constellation" has no name clash, but "Jade" codes the real-world bloc
+  loudly. Kept for now; if the fictionalisation should hold, rename it Meridian Arc Constellation.
+- **M34.3:** the sovereign tenant's new name is the build's own choice, Ironwall Sovereign Compute: both of the design
+  thread's candidates clash (Rampart Technologies and Bulwark Dynamics are real defence companies). Confirm or replace.
+
+The Act III balance pass is closed (design thread, 4 Oct 2026): no more mechanics rounds unless the owner asks.
 
 None open from before: all five M11.4c questions below were answered by the design thread and built in M11.5a (1 scouting open, 2 ASIC prices from the scenario weekly files, 3 hashprice rebased, 4 hosting rate = region power price + Act II's margin, 5 accepted); kept here for the record:
 1. **Scouting and site offers in Act III** (`scouting.ts`, `sites.ts`): Act II's site categories are dated windows; with scouting off a company can't buy new sites in 2027–2030 (the bots can't grow by sites). Open it, or does Act III use other content?
@@ -148,9 +154,28 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 - ~~M13.2: the automated UI smoke test~~: unblocked in M15.2 (happy-dom and @testing-library/preact approved).
 - Balance tuning stays stopped by the owner's A1 answer.
+- ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
+  repo (M27.0); the run resumed at M27.1.
 
 ## Small follow-ups
 
+- (Done, 6 Oct 2026) **Dialog hotfixes 1 and 2** (owner bug reports): on `hotfix-dialog` from `main` (`1ca4e6b`,
+  `8c72e9a`), merged into `main` and pushed by the owner on 6 Oct 2026; cherry-picked onto `m32`. 1: `.dialog > *` keeps
+  `flex-shrink: 0`, so a dialog taller than the window scrolls instead of squeezing its `.seg` switches to 0 px (they were
+  3 px in a browser before, 39 px after). 2: `.deal-panel td.num-s` wraps, so the Deal builder fits its 760 px dialog (the
+  longest notes measured 1,265 px before); the capex note joins its parts with " · ", the utilisation note ends with a full
+  stop before the contract note, one year reads "1 yr" (`ui.deal.years_one`), a rating note reads "B+, rising". A sweep of
+  every dialog this Act II save reaches (11) at 1024 and 1280 px also found the fleet dialog ("Your machines", 876 px):
+  `.fleet-table` lets its batch name and working count wrap (mine, reversible). Tests: `tests/ui/dialogLayout.test.ts`
+  (the CSS rules; happy-dom has no layout) and `tests/ui/dealBuilderText.test.tsx`. On `m32` an Act IV game's 12 dialogs
+  (Read the market included) fit too. Not swept in a browser: the prologue's and Act I-only dialogs (coin sales, crypto
+  loans, the auction, renewals) and Act IV's prospect report (four short columns).
+- (Done, 6 Oct 2026) **New project dialog, shorter site list** (owner request): on `hotfix-dialog` (`c16f975`), cherry-picked
+  onto `m32`. Sites sort by free power, largest first, and the dialog picks the first. Sites with less free power than the
+  pilot's minimum size (`pilotSizes[0]`, the threshold: mine, reversible) fold under "Show N more sites" and can be shown
+  or hidden again (hiding a picked small site moves the pick back to the largest). If no site reaches the threshold, every
+  site shows and nothing folds (mine, reversible): the Act III presets are like that. UI only; test
+  `tests/ui/openProjectSites.test.tsx`.
 - An ear test of the sounds; the 4 sample fallbacks if a synth sound is wrong (owner task, DT C3 after M20).
 - (Done, 29 Sep 2026) The big JS chunk is split: `vite.config.ts` puts the market data, card text, other content JSON and
   libraries in their own files, and the prologue screens load only when a prologue game starts (`LazyPrologue` in `app.tsx`).
@@ -161,11 +186,195 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**M26 is done on `m26`, waiting for the owner's merge** (cleanup; see "Milestone M26"). After it: the owner's playtests, and the Act IV
-design brief in the design thread. M25 is done and merged (`main` = `f8cf61f`, pushed 5 Oct 2026); M24 at
-`ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at `7804dd0`,
-M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m25, m21.6, prologue-done) and deleted; the remote holds only `main`. Still open: the owner's tasks (the Act III
-playtest, the Act I playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+**Now (10 Oct 2026): M36.11 done; the owner merges PR #3** (`m35` carries the whole unmerged chain `m27`…`m35`: Act IV,
+its follow-ups, doc 38; after the merge tag each `m<n>-done` and delete the branches). The design thread recommends
+merging now. Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
+
+**Next small milestone (after the merge), design thread answer 1:** investigate the Perfect bot's in-play reading
+(F1 23, F3 55, below Passive's 53 and 58; the oracle gives 95/96). List its logged moves per quarter in one F1 run and
+one F3 run (kind, sign, the ideal stance that quarter) and say which kinds pull it below Passive. Hypothesis (DT):
+financing moves (raises, debt draws) taken to fund an offensive move score as defensive; if confirmed, propose "funding
+follows purpose" (a raise or loan in the same quarter as an offensive move takes its sign, Act IV; say whether Act III
+has the same effect). **Report before changing anything.**
+
+**Before (6 Oct 2026):** the owner playtested Act IV on `m32` (staging built from `m32`); the findings below.
+
+**Act IV playtest findings** (fixed on `m32` unless marked open; the staging snapshot needs a rebuild to show a fix):
+- (Fixed, 6 Oct 2026) Plan dashboard: a tall panel above it (Renewals due, also the wildcard and Act IV's alerts) squeezed
+  Market / to-do / Signals into small scroll boxes. Now the columns keep 460 px (mine, reversible), the main area scrolls,
+  and the news line with Start quarter stays pinned at its bottom; renewal cards are 640 px wide minimum, so the three
+  choices sit on one row. Then a compact renewal card (`dcb5df1`): the details left, the choices right (about 165 px tall
+  at 1440 px, was about 280), stacked as before on a narrow card; a negotiation spans the card. Both are on
+  `hotfix-plan` from `main` (`8278b19`, `726c21b`, pushed) for the owner to merge, as Act III is public.
+- (Done, 6 Oct 2026, owner request) `npm run staging` serves on the local network too (`--host`): open the printed Network
+  URL on another device. Saves stay per browser (and per address); restart the server to pick it up.
+- (Fixed, 6 Oct 2026) Orbit board and Moon page, window 1280 px and up: panels drawn over each other ("Launch manifest" and
+  "Licences and registry" cut to their titles, "Links to the ground" over them; "Polar sites" on the Moon). A section is a
+  grid with auto rows; a panel that scrolls sideways (`.panel:has(> table)`, M21.1) may shrink to 0 there, so in a page
+  taller than the window its row fell to 24 px. Fix: `.section { grid-auto-rows: min-content; }`, as `.capital2` already
+  has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
+  sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
+
+**`main` = `726c21b`** (pushed 6 Oct 2026): M26, the dialog hotfixes 1 and 2 and the shorter site list (`hotfix-dialog`),
+then the Plan dashboard fix and the compact renewal card (`hotfix-plan`); both hotfix branches are merged and deleted, and
+the same commits are cherry-picked on `m32`. Earlier: M26 at
+`209622e`, M25 at `f8cf61f`, M24 at `ebcda47`, M23 at `37a3535`, M22 at `6c623d3`, M21 / M21.6 at `48d16b4`, M19–M20 at
+`7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
+and deleted; the remote holds `main` and `m27`…`m32`. Still open: the owner's tasks (the Act III playtest, the Act I
+playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
+
+The design thread's handover of 9 Oct 2026: build doc 38 (`docs/game-project-files/claude_38-energy-ventures-design.md`;
+evidence docs 36, 37 and `docs/act5-research/cost_curves.csv`); E-D1…E-D15 approved; Act V is not in scope. Act I-III
+goldens and the `--act2 --act3` CSVs stay byte-identical (every feature is opt-in, with its own substreams; bots don't use
+the early-era options). Data and every designed value: `docs/energy-content/README.md`. Split (mine, reversible):
+- **M35.1 Data:** `market_energy.csv` (prices by year 2009-2040, one file for every act, not columns in each act's market
+  files: the series are by year and the same in every scenario; mine) and `energy.json`, `energyContent.ts`.
+- **M35.2 Early-era options:** rooftop solar, small wind, home battery (Prologue and Act I); special sites (hydro PUD,
+  muni, Québec, Iceland, flare pads); on-site solar and wind, firmness with storage.
+- **M35.3 Texas flexibility and batteries:** demand response, 4CP, the AI exclusion and the battery exit; utility battery
+  (BESS) and iron-air; the Power options dialog, the Plan's special-site rows, the report's energy line.
+- **M36.1 The venture mechanic** (Site, Offtake, Capital; diligence; overruns; three cash calls; slips; debt rules).
+- **M36.2 The venture set** (EGS, LWR SMR, advanced fission, fusion, pumped storage, iron-air, the solar+BESS control,
+  on-site gas's overrun and turbine slip in Act IV).
+- **M36.3 Bots and the E-B1…E-B5 checks, new Act IV goldens, the end checks and the report.**
+
+- M34.4 (closed here): the `--act2 --act3` CSVs are byte-identical to M33 (1,302 files, `bi-m34`), so M34 added no Act II/III
+  rule beyond `acquiredQuarter`. The owner's 1b decision (fix the Ground Holder bot or relax B3/B5) is still open.
+- M35.1-M35.3 built in one chunk (they share `energy.ts`, `en.json` and the site card). Every golden unchanged (91 checks).
+  New: `systems/energy.ts`, `energyAssets.ts`, `texasPower.ts`, `specialSites.ts`, `overrun.ts`, `sim/energyViews.ts`,
+  `ui/components/energyDialog.tsx`; tests `energy`, `texasPower`, `ui/energyDialog`. Vite splits `sim-energy`, `sim-space`.
+- Decisions (mine, reversible): Texas requires any fixed contract (the game has no 8-year PPA); refusing a grid call while
+  enrolled forfeits the year; 4CP at a site with AI halls needs a battery covering them; special sites lease like a
+  warehouse (1 Bandwidth) from a warehouse up, and show in the Plan's to-do; a home battery covers its machines' outages
+  fully; a battery fire costs 10% of capex (no offline week). The rest: `docs/energy-content/README.md`.
+- **For the design thread:** doc 38 §5.1's lognormal parameters don't give its stated tail shares (nuclear σ 0.70 → ~25%
+  at or under budget, not ~3%); built as written, E-B3 will report it.
+- M36.1-M36.2 built (one chunk): `ventures.json`, `systems/ventures.ts`, `sim/ventureViews.ts`, `ui/screens/Ventures.tsx` (a
+  Ventures page in Acts III-IV, lazy with the Act III panels); Act IV gas overrun and turbine slip (`power.ts`); tests
+  `ventures` (E-B3, E-B4). Goldens unchanged. Mine: see the venture rows in `docs/energy-content/README.md`.
+- M36.3: `npm run sim -- --energy` (tools/act4/energyRunner.ts), new goldens act4-energy-f2/f4, one venture per type. Run
+  `energy-m36` (10 seeds, 960 runs): E-B1 MISS (only on busts: venture-free 5 of 120 vs fusion's 2; within 15% of best in
+  all four futures), E-B2 PASS, E-B3 PASS on P(m>1.5) and the mean, P(m≤1) 25% not 3%, E-B4 PASS, E-B5 MISS (16-75 q).
+- End checks: `--act2 --act3` byte-identical to M34 (1,302 files, `bi-m35`); lint, 1,559 tests, build pass.
+- **M34.4 (design thread's answers of 9 Oct 2026, done on `m35`: no bot uses energy, ventures or gas, and every Act IV
+  golden is unchanged, so `m35`'s Act IV balance equals `m34`'s):** the Ground Holder borrows first (debt ≤ 4× trailing
+  EBITDA, inside the covenant), then raises (founder ≥ 50%), else skips; a company with no free MW buys one site ≤ 50% of
+  its energized MW. Run `act4-m344`: **table identical to M34**; Fortress skipped 800 offers (founder already 49% at
+  entry, so no equity; $17M EBITDA caps debt near $68M); Neocloud bought its site in all 40 runs but it never powered in
+  time; Ridge ($14M cash, no EBITDA) did nothing. B3 MISS 1.08× vs 1.21×; B5 MISS as written (ground 1.03× vs 1.07×).
+  The space-multiple knob is **not run**: the fix had no effect, so the owner decides first (report questions).
+- **Design thread answers after M34.4 + doc 38 (9 Oct 2026; owner: 11a).** Split (mine, reversible): **M36.4** (9) Act IV's
+  Power slot reads doc 33's waits; **M36.5** (1-3) Ground Holder: 15-point dilution budget, pro-forma leverage, powered
+  sites only if offered; **M36.6** (4) the F2 space-multiple knob; **M36.7** (6, 7, 8, 10) overrun refit, E-B5 and E-B1
+  redefined, Meridian Arc; **M36.8** (11a) ventures marked to milestones; **M36.9** runs and the report.
+- M36.4: Act IV grid upgrades wait grid_wait_q × 0.8-1.2 (16-24; F4 8-12 at 10; spread mine), shifted by policies and
+  hires as before; Act IV gas 6-10 q (replaces M36's 2-4 q slip; overrun kept). No golden changed (no golden script
+  builds Act IV ground power). Test `act4PowerWaits`.
+- M36.5 (tools only): Ground Holder dilution budget 15 points from the entry stake; pro-forma leverage on the project's
+  own EBITDA ((debt + loan) ÷ (trailing EBITDA + project EBITDA) ≤ 4×, DSCR sizing, covenant); powered sites only.
+  One seed: Fortress now builds 2 clouds (stake 49% → 35%); Act IV scouting offers no powered site, so Neocloud and Ridge renew only.
+- M36.7: overruns refitted (nuclear 3% uniform 0.85-1.00 else 1 + X, X median 0.6 σ 1.0; pumped hydro 10%, X median 0.58
+  σ 1.02, fitted by me): realised nuclear 2.4% / 57.2% / mean 1.93, pumped 10.4% / 48.8% / 9.7% at ≥ 3×. E-B1 (Fisher) and
+  E-B5 (≤ 60 q from 2028, falling) redefined; Meridian Arc. act4-energy-f2/f4 goldens changed (the SMR's draws: licensed a quarter earlier, an $80M call in 2035).
+- M36.8 (11a): ventures marked to milestones in the valuation (buy-in × 1.5 per milestone × 0.8 per slip, calls at par,
+  offtake savings to the act's end at first power), shown as "Ventures (marked to milestones)" on Capital and both chapter
+  reports. act4-energy goldens: ventures $512M → $934M, growth 0.90× → 1.32× (an operating EGS at ~4× its buy-in).
+- M36.6 (4): F2's space multiple **× 0.60** (the floor) from its 2033Q1 trigger, in `tools/act4/market.ts`. The search
+  was flawed: its runtime option scaled the shared F2 table once per scenario key (k⁴, so "0.60" tested ~0.13; fixed in
+  the runner). Measured on the written data: F2 Sprinter 1.05× vs Ground 1.03× → **B3 a recorded miss at the floor**;
+  no passed anchor broke (`act4-m366`). act4-f2 golden: the busy orbit script now goes bust in 2033Q1, as F3's does.
+- M36.9: venture, energy and Act IV gas draws use act4SeedOf (each Act IV run of a preset had drawn the same values).
+  Energy run `energy-m369`: E-B1 PASS (5/120 vs 36/720, p = 0.72), E-B2 MISS (EGS mean $65M vs control $2M; the control
+  never leaves its grid wait), E-B3/E-B4 PASS (tests), E-B5 PASS (31 q in 2028 → 16 q in 2035). Open questions: report.
+- **B3 recorded as a miss** (design thread, 10 Oct 2026; × 0.60 kept): "Ground can't expand in Act IV (power scarcity is
+  the act's premise, doc 31/33), so 'ground ≥ 1.2 × Sprinter in F2' can't be met; the honest check, 'ground doesn't lose to
+  orbit in the bust', holds (1.03× vs 1.05×)."
+- **M36.10** (design thread answers of 10 Oct 2026): Ground Holder builds only clouds that pay back by 2035Q4; marks × 1.25;
+  ventures on calendar dates (one developer per type, running from its start whether you join or not), slips and the SMR
+  cancellation calibrated to doc 38's P(power by 2035); a cash guard in the energy harness's bots; re-runs and the report.
+  Built: one developer per type from its doc 38 start (2027Q1; fusion 2028Q1), replayed quietly; joining takes it over as
+  it stands (milestones count after joining). Fitted (mine, to the targets, 2,000 games): EGS slip σ 0.2 → 1.14 (80.4%),
+  SMR slip 1.6 → 1.06 and cancel below 30% subscribed (was 80%) (56.1%), advanced 1.07 and 30% (38.8%), pumped 1.45 → 1.27 (13.6%), fusion 0% (the 2038 rule).
+- M36.10 runs: Act IV table unchanged from `act4-m366` (Fortress builds 2 clouds a run, holds 360 quarters); `--act2 --act3`
+  byte-identical to M34 (1,302 files). Energy (`energy-m3610b`, after the fusion-2038 fix): E-B1 PASS, **E-B2 MISS recorded**
+  (SMR mean $305M, advanced $254M vs control $35M; EGS −$0M), E-B3-E-B5 PASS; the cash guard: BTM game overs 15 → 2 of 120.
+- Playtest fix (owner, 10 Oct 2026: "click Talk, then Confirm, for each site is repetitive"): in the site list Talk and noise
+  mitigation act at once (each row shows its cost), plus "Talk at every site at Heat 30+" with one confirm; a lone to-do
+  row keeps its confirm (M34.2 3f, partly reversed). Test `ui/talkPicker`.
+- **M36.11** (design thread, 10 Oct 2026): venture offtake capped at 100 MW; EGS block 2 (`egs2`, from 2031Q1, $4,500/kW, 7 q;
+  slip median 1.0 fitted, mine: P(power by 2035Q4) 0.796); F2 reading counts quiet, unexposed quarters as matches (goldens
+  act4-f2 37 → 59, act4-energy-f2 55 → 100: that rule only). Ground Holder accepted as weak. Runs: Act IV table unchanged;
+  F2 reading Passive/Perfect 50 → 100, Lunar 61 → 68; **E-B2 still a recorded miss** with the cap (SMR $217M, advanced
+  $187M vs control $35M: scarce firm power is the act's premise); EGS2 operating 82/120; `--act2 --act3` identical to M34.
+- **Design thread after M36.11 (10 Oct 2026):** E-B2's miss is final (no second lever); F2's reading not telling cautious
+  players apart is intended; EGS block 1 is the Act III bet, block 2 the Act IV window. **Accepted as recorded misses:**
+  B4 (F3: Diversified 1.53× vs Sprinter 1.51×, needs 1.25×; Lunar 1.42×; review after the owner's Act IV playtest),
+  B6 (Rich: Lunar 1.20× vs Balanced 1.14×, needs 1.2× the ratio; Dry ratio passes, game overs 28% > 25%),
+  B8 (Perfect ≥ 1.15× Passive in F1 only, 1.54× vs 1.09×; F3 1.10× vs 1.11×; Over-reactor 1.00/0.95/1.00/1.00× Passive).
+
+## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
+
+The owner's answers to the three open questions after M33 (Act IV balance, orbit rule gaps, site-name follow-ups) and
+the names check. Chunks (CLAUDE.md: check once per chunk):
+- **M34.1 Rules and bots** (one chunk, one Act IV run): 1a orbital cloud returns carry the cost premium (rent premium
+  capped, orbital-only opex, true failure rate and useful life with zero residual, space multiple to ~6× F2 / ~8× F4 by
+  2034; a payback test); 1b the Ground Holder bot builds ground clouds and renews; 1c F3's cascade 40–60% destroyed,
+  shell shut 8 quarters, hard market on the rebuild; 1d the Lunar Bettor skips a pilot below breakeven; 1e B8/B9 reworded;
+  1f B13 accepted; 2b a block's sale price on its run-rate until a quarter is booked; 2c licence halving floored at MW in
+  use. Then `--act4 --seeds 10`, the 7×4 table and verdicts (relax B3/B5 as given if they still miss), new act4 goldens.
+- **M34.2 Presentation:** 2a the exposure line includes take-or-pay penalties through a rebuild; 3b `site.acquiredQuarter`;
+  3c project names "Own site 3 · AI 1"; 3d the dashboard's Fleet & sites panel capped from 6 sites; 3e site names linked
+  in alerts, the log and to-do rows; 3f one eligible site opens the confirm; 3g "the" dropped before site names.
+- **M34.3 Names:** Pallas → Dorado/Carrack (clash check), Aegis → Rampart/Bulwark; hire names checked against real
+  people; Jade Arc kept, flagged as doc 33 Q16.
+- **M34.4** End checks and the report.
+
+- M34.1–M34.3 built, in one commit (the chunks share `en.json`, `orbitViews.ts`, `Act4Panels.tsx` and the goldens). Payback
+  test: orbit 3.59 y vs ground 2.42 y × 1.58 (ratio 0.94). Act IV run, 10 seeds (`act4-m34`): ground 1.18/1.08/1.20/1.03,
+  sprinter 2.27/1.21/1.51/0.80, diversified 1.67/1.23/1.53/1.03, lunar 1.23/1.32/1.42/1.07 (28% GO), balanced
+  1.34/1.22/1.47/1.07, passive 1.09/1.01/1.11/0.98, perfect 1.54/1.01/1.10/0.98. PASS B1 B2 B7 B9–B12 B14; MISS B3 B4 B5
+  B6 B8 B13 (accepted). **1b had no effect** (Ground row unchanged): the Fortress has 71 MW free and GPU offers but $14M
+  cash (a 1 MW cloud needs ~$24M own); Neocloud and Ridge have no free MW. Owner's call before relaxing B3/B5 (report).
+  Goldens: Act I–III ×17 identical apart from `acquiredQuarter`; act4-f1…f4 changed (rules, rename). Names: Carrack,
+  Ironwall (mine); hires pass.
+
+## Milestone M33 (branch `m33`, from `m32` at `bd22812`; telling sites apart, design thread's doc 35 of 9 Oct 2026)
+
+The design thread's prompt calls it "M22"; that number is taken (`m22-done`), so it runs as **M33** on `m33`, from `m32`
+since `m32` isn't merged (mine, reversible). Presentation only: no rule changes. Invariants: goldens and `npm run sim`
+outputs byte-identical except the new stored serial (the goldens serialise state: their diff must be serial fields only,
+plus the serial added to site log entries so logs can name a site); tests green; main bundle under 500 KB.
+Sub-steps:
+- **M33.1 Naming:** a stored `site.serial` and `state.siteSerials` counter, set when a site is acquired (never reused);
+  a load-time migration; short names ("Own site 3", "Powered shell 2", "Garage") and long names ("Own site 3 · Georgia ·
+  20 MW") everywhere a site is named, logs included; pickers and lists show free MW, a Heat chip, flag icons.
+- **M33.2 SitePicker and grouped to-do rows:** one dialog component for one-action-many-sites (ground station, leave,
+  buy machines, hosting, power renewal); Plan to-do rows grouped per action kind.
+- **M33.3 Site card:** a drawer (≥ 1280 px) or dialog with a site's power, uses, money, Heat and actions.
+- **M33.4 Long lists:** Fleet & Sites and New project grouped by type, with sorts and filter chips.
+- **M33.5** End checks (byte-identity sim, browser check at 1024 and 1440 px with a 20-site save) and the report.
+
+- M33.1 done: `systems/siteSerials.ts` (`addSite` at every acquisition, `numberUnnumbered` on load, `siteParams` on ~50 log
+  lines and messages; `i18n/t.ts` renders `{tier}` with a number as the short name). Goldens: 21 changed, identical with the
+  serial fields stripped. Sentences name a site in plain text; table cells and lists use `<SiteName>` (tooltip = long name)
+  (mine, reversible). Prologue screens and the report's "Heat · site type" tile keep the type (reports store no site).
+- M33.2 done: `components/sitePicker.tsx`, `screens/planPickers.tsx`. Pickers: ground station (Orbit), leave, renewal,
+  transformer, talk, mitigation, hosting (a site with a contract stays pickable), Buy machines' site (fact: power price).
+  One eligible site is named inline and acts at once (talk, mitigation) (mine, reversible); facts and labels mine.
+- M33.3 done: `components/siteCard.tsx` (host mounted in `app.tsx`; `<SiteName>` is a link to it), `siteCardView`. No
+  acquired quarter is stored, so the header says "powered since/from" (mine, reversible). Drawer 460 px from 1280 px.
+- M33.4 done: `components/siteGroups.tsx`. Fleet & Sites shows the grouped list instead of the per-site cards with their
+  Heat breakdown (now in the site card) (mine, reversible); New project groups in its free-power order, the picked
+  site's group open whatever its size (mine, reversible). Folds: a module-level map, so "the session" = until reload.
+- M33.5 done (9 Oct 2026): `npm run sim -- --act2 --act3` on `m32` (`bd22812`) and `m33`: all 1,302 CSVs byte-identical.
+  Browser, a 20-site Act IV save at 1024 and 1440 px: Plan to-do (4 grouped rows), Orbit links (3 buttons, picker of 20),
+  Fleet & Sites (7 groups), the card (drawer at 1440, dialog at 1024), New project: no sideways scroll anywhere. Tests 1,502.
+- (Done, 9 Oct 2026) The design thread's Orbit launch-slot clarity fix, on `m33` after M33: `launchFit` in `orbitViews.ts`;
+  the launch slot explains "nothing fits" (mass vs the most free, the largest size that fits and from when), counts the
+  quarters left out for slots, and Open a block shows the mass and warns when too heavy. Test `tests/ui/launchFit.test.tsx`.
+- **Next:** the owner's review of M33 and its questions (the M33 report), then the Act IV playtest goes on.
 
 ## Milestone M19 (branch `m19`, from `main` at `f2e2e24`; Heat relief: the Community Relations Manager and the yearly Community Deal)
 
@@ -182,6 +391,136 @@ lines (the "faded" one is logged in the new quarter). Goldens unchanged. 1243 te
 **M19.3 done:** People card (via hires.json + en.json); the Plan deal card (all acts, wildcard-card style, "Not this year" tagged Default); the game had no
 Heat breakdown, so the Community dialog's site cell gains the two lines (mine). Forced-hire run (raise-climb × 10, from 2019Q1, every deal): Heat
 2019 20→15, 2020 15→7.9, 2021 37.7→23.7, 2022 30→19.8; complaints/quarter 0.130→0.090; 19 deals; but 2 of 10 seeds go bust (salary + deals). 1244 tests.
+
+## The Act IV run (M27–M32, the owner's unattended-run prompt of 5 Oct 2026: `docs/game-project-files/claude_34-act-iv-build-prompt.md`)
+
+Scope and rules: `docs/act4-scope.md` (doc 33 approved with the owner's 16 defaults; milestone plan; B1–B14; cut order;
+"Changes from doc 33"). Branches chain: `m27` from main, `m28` from `m27`, … (no merges during the run). Push after every
+sub-step commit.
+
+### Milestone M27 (branch `m27`, from main at `209622e`; setup and the walking skeleton)
+
+Split: M27.0 the design docs committed; M27.1 `docs/act4-scope.md` and the CLAUDE.md updates; M27.2 the act-aware refactor
+(act 4, `inActIV`, gates, save version 5 and its migration, the timeline to 2035Q4, `act4Seed`, `act4Entry`); M27.3
+`docs/act4-content/` (README, the four quarterly and four weekly market files, schemas, loader, copy test, B14 test);
+M27.4 the Act III → IV boundary (carry-over and drop rules, the future draw, the seam glide); M27.5 20 playable quarters
+with the ground systems and a stub chapter report; M27.6 the screens (the light `orbit` theme, "Continue to Act IV",
+A4-01, the test-build quick starts and `?future=`); M27.7 the byte-identity check and the M27 report.
+- **M27.0 done** (`f01f142`): docs 31–34 and the cost model committed as the owner placed them.
+- **M27.1 done.** `docs/act4-scope.md` written; CLAUDE.md: status, Act IV summary, key docs, scope guard, "Act IV rules that must hold".
+- **M27.2 done.** `act: 4`, `isActIV`/`inActIV`, new `inAct3Rules` (Act III or IV, for the Act III systems that run on), `inAct2Rules` and `covenantBreached` cover act 4; `FUTURE_IDS`/`MarketKey`; state fields `futureId`, `futureForced`, `act4QuickStart`, `act4Seed` (`act4SeedOf`), `act4Entry`; save version 5 (4 → 5 changes nothing; Act IV saves need the Act IV span). The Act III goldens are compared at their stored format 4, as Act I's are at 2 (no golden file changed).
+- **M27.3 done.** `tools/act4/market.ts` (`npm run content:act4`) generates `market_iv_f1–f4` + weekly into `docs/act4-content/` and `src/content/` (README flags every column); the loader adds 2031Q1–2035Q4 (56–75) and 16 glided markets keyed "s2.f3" via `scenarioOf`; `quarterRow`/`act4Row`; market params typed `MarketKey`; `logQuarterLabel` keeps Act I–III log text unchanged; Vite gives each future its own chunk. Tests: B14, the glide, copies. act4-scope §6 items 6–9.
+- **M27.4 done.** `systems/act4Entry.ts` (`buildAct4Entry`, `enterAct4`: doc 33 §3.1 carries, §3.2 open renewals resolve by default, blend offers lapse, Act III-only state drops) and `toAct4`/`drawFuture` in state.ts (future on substream `act4_future`, weights in `BALANCE.act4`); needs an Act III scenario (the seam reads it). Tests: `act4Entry.test.ts`, helpers `act4Helpers.ts`.
+- **M27.5 done.** Act IV plays 2031Q1–2035Q4 to the chapter phase (`act4End` stub, `systems/act4End.ts`; replay `through: 4`). **Gate review** (doc 33 §3.1): run on in Act IV via `inAct3Rules` — renewals, reopeners, blend-and-extend, the calendar and renewal wall (now the current act's span), density and retrofits, nuclear PPAs, political capital and lobbying, Anger, Act III hires, the covenant, the standby facility, lender cures, card payouts, capacity charges, hosting repricing, lab distress, "no random cards", "no Read the market" (Signals instead); **stay Act III-only** (`inActIII`) — Act III's wildcards, Signals panel and reads, move log, `act3End`/reveal, `act3Finished`. Act III spans extended to Act IV with an Act IV key: capacity charge, hosting rate, SOFR/HY project-debt and DDTL rates, the facility label; GPU contract rate × Act III's end value in Act IV (mine, reversible). An Act IV quarter read without an Act IV key finds nothing (Act III's behaviour kept). Goldens unchanged.
+- **M27.6 done** (`M27.6a` + this): Act III panels that run on show in Act IV; `screens/Act4Entry.tsx` (lazy: A4-01 intro, chapter stub); test-build quick starts `act4QuickStart.ts` + `Act4Preview.tsx` (designed recipes, mine, reversible: fortress texas-shell 3/s0, neocloud sign-then-raise 1/s3, ridge lifeline-shell 19/s0; all survive Act III) and `?future=` with its tag and save guard; "Continue to Act IV" on the Act III chapter report; the light `orbit` theme; `averagePrice` reads the market key (an Act IV report crashed without it); intro boxes no longer squeeze (`flex: none`). Tests: gate, grep (`toAct4`, `futureId`), screens; layout notes in `docs/wireframes/act4/README.md`. Browser-checked at 1024 px: quick start → intro → 2031Q1 Plan → report, no sideways scroll.
+
+### Milestone M32 (branch `m32`, from `m31`; scoring, finale, presets, bots, balance)
+
+Split: M32.0 branch and split; M32.1 the Act IV move log (doc 33 §6.7's orbital-exposure signs), the reading score
+(`readingScoreIv.ts`, the only reader of `reading_score_iv.json`) and `act4End`'s reveal (the future, the lunar grade and
+what the prospects said, the reading score and title, the career and frontier titles, the rivals' fates); M32.2 the
+chapter report A4-11 and its leak guards; M32.3 the campaign finale A4-12 (career ledger, multiple, megawatt line,
+epilogue pools); M32.4 the three presets (generated by the sim), A4-13 "Start at Act IV" and Scenario Mode for Act IV;
+M32.5 the seven bot archetypes, `npm run sim -- --act4` and the B1–B14 table; M32.6 the goldens `act4-f1..f4`; M32.7
+the balance pass (at most 3 rounds, each recorded); M32.8 the byte-identity check and the run's final report.
+- **M32.1 done.** `systems/act4Moves.ts` (the move log in `applyAction`: +1 capital committed / orbital debt / a launch booking / Orrery's blocks; −1 insurance, a block sold, a take-or-pay presale, a cancelled booking or block, an equity raise; 0 ground and lunar moves); `systems/readingScoreIv.ts` (Act III's rules on `reading_score_iv.json`, oracles; read only by `act4End`); `buildAct4End`'s reveal (future name, trigger, decoy, reads; lunar grade, each site's estimate beside its truth; the fleet's true failure rate and life beside your telemetry; reading score, marked moves, career, reading and frontier titles; rivals' fates) and `act4Outcome`. Tests `act4End.test.ts`; the hidden guard checks the reading score's importer.
+- **M32.2 done.** `screens/Act4Reveal.tsx` (A4-11, in the Act4Entry chunk): the future (name, lead, trigger, decoy), the reading score and title with a 20-quarter timeline (ideal vs you), the ice and each site's estimate beside the truth, the fleet's true reliability beside your telemetry, net worth, growth, career and frontier titles, the rivals' fates, and "The finale →" (a stub until M32.3). The leak guards exempt `Act4Reveal.tsx` exactly as `Act3Reveal.tsx`. Render-tested (`act4Screens`); the browser check waits for a faster way to 2035Q4 (M32.4's presets).
+- **M32.3 done.** `src/sim/finaleViews.ts` and `screens/Act4Finale.tsx` (A4-12, opened from the chapter report): the career ledger from stored records only (Act I: its 2022Q3 report when kept; Act II: `act3Entry`; Act III: `act4Entry` and `act3End`'s title; Act IV: the end), the start (bedroom $2,000 / 0.15 kW, garage $10,000 / 5 kW, or a preset), the career multiple, the megawatt line, the frontier title and a 2–5 line epilogue from authored pools (end state, the future, the ice, what comes after 2035; "scenario known" when the future or scenario was chosen). Test `tests/ui/act4Finale.test.tsx`.
+- **M32.4 done.** `tools/act4/presets.ts` (`npm run content:act4-presets`, 189 runs, 3 min) picked the first fits in sim-runner's bot order × seeds 1–20 × scenarios: **Ground Fortress** texas-shell 1/s0 ($602.8M, 118 MW, no debt, BBB), **Orbit-Ready Neocloud** overleveraged 1/s0 ($19.8B, 121 MW of clouds, $462.9M debt, BB), **Last Ridge** asic-retirer 10/s0 ($14.0M, 0.1 MW, one site, no debt); `presets_act4.json` (both copies; `PRESETS_IV`); A4-13 "Start at Act IV (2031)" in every build (as Act III's), Act IV Scenario Mode unlocked by an Act IV finish (`act4Finished` setting; `act4ScenarioMode`, "scenario known" in the finale), `act4Preset` on the state. Browser-checked: Start at Act IV → Last Ridge → 20 quarters → A4-11 → A4-12 at 1024 px (fixed: the reveal's sections squeezed; the intro's "arrives in a later build" lines). Test `tests/ui/act4Start.test.tsx`.
+- **M32.5 done.** `tools/act4/bots.ts` (Ground Holder, Orbit Sprinter, Orbit Diversified, Lunar Bettor, Balanced, Over-reactor, Passive, and the perfect reader for B8/B9; each tries its actions in order and keeps what succeeds; the ground side is the preset's own bot; a player's discipline: licence first, open only with licence room, fill slots only once the build is funded, raising equity in the space-equity window when short) and `tools/act4/runner.ts` (`npm run sim -- --act4 [--seeds N]`: 3 presets × 4 futures × 3 grades × 8 bots; bots that never touch the Moon are played once per future; `act4-runs.csv`, the B1–B14 table). **Baseline (1 seed):** the Sprinter is best in all 12 cells (F1 5.6×, F2 3.2×, F3 3.3×, F4 2.5× vs Ground 1.0–1.2×); PASS B2 B7 B9 (+ B10 B11 B12 B14 by tests); MISS B1 B3 B4 B5 B6 B8 B13. Diagnosis: orbital EBITDA on a 5-year asset valued at a 12–30× story multiple makes any block worth ~4–7× its capex in every future.
+- **M32.6 done (3 rounds; values in the act4-content README).** R1: orbital rent $8.5M → $6.0M/MW-yr, GPU-hour $4.2 → $3.6, space multiple 22× → 14× with harsher F2/F4 paths; R2: F2 lower still, lunar $/t 2,000 → 3,000 (per future), cascade loss 40% → 70%; R3: F2/F4 GPU-hours fall from their triggers, F3 shell closed 8 q. 1-seed after R2: PASS B1 B2 B7 B9 (+ B10 B11 B12 B14 by tests); MISS B3 B4 B5 B6 B8 B13, chiefly because orbital clouds earn like the game's ground GPU clouds (payback ~2 years) while the Ground Holder builds none. **10 seeds after R3 (2,880 runs, 28 min):** medians F1/F2/F3/F4 — Ground 1.18/1.08/1.20/1.03×, Sprinter 2.51/1.15/1.66/0.80×, Diversified 1.67/1.23/1.66/1.03×, Lunar 1.21/1.27/1.40/1.02× (28% game overs), Balanced 1.34/1.22/1.47/1.07×, Passive 1.09/1.01/1.11/0.98×, Perfect 1.55/1.01/1.10/0.98×. PASS B1 B2 B7 (+ B10 B11 B12 B14 by tests); MISS B3 (1.08 vs 1.15), B4 (Div = Sprinter 1.66), B5 (Balanced 1.07 > Ground 1.03), B6 (rich 1.20 vs 1.23; dry go 28%), B8 (perfect ≥1.15× in 1/4), B9 (F3 perfect 1.10 < passive 1.11), B13 (bots 2.3 decisions/q). No rounds left: reported as MISS.
+- **M32.7 done.** Goldens `act4-f1…f4` (a busy orbit + Moon strategy in high LEO; F3 ends in a game over after the cascade, by design of the strategy); Act I–III goldens unchanged.
+- **M32.8 byte-identity: passed.** `npm run sim -- --act2 --act3` on `m32` vs `main` (`209622e`): all 1302 CSVs identical (`cmp`); the summary log differs only by 40 added rows listing Act IV's cards at 0% in the card-frequency table (they can't occur before 2031).
+- **Run report (M27–M32)** is in the chat of 6 Oct 2026; the owner's playtest of `m32` via staging is next.
+- (mine, reversible) M32's order: the balance pass (M32.6) before the goldens (M32.7), so the goldens capture the balanced game.
+- (mine, reversible) The presets' descriptions as tests: Fortress no clouds, ≥ 40 MW, debt ≤ 25% of value, investment grade; Neocloud ≥ 5 MW of clouds, some debt, cash; Ridge one site, < $300M, debt ≤ 20%.
+- (mine, reversible) Act I's row shows no MW or title (not stored; doc 33 §15.2 allows it); a preset start's ledger begins at the preset.
+- (mine, reversible) Frontier titles: Selenian (a pilot processed water), Cislunar (a held lunar site and orbital MW), Orbital (≥ 10% of MW in orbit), else Earthbound; spot isn't a presale; arranging capital counts as committing the block.
+
+### Milestone M31 (branch `m31`, from `m30`; money and rivals)
+
+Split: M31.0 branch and split; M31.1 the content (`capital_iv.json`: export credit, orbital project debt and its
+insurance covenant, sovereign co-funding, the space-equity window, lunar task orders, fire-sale haircuts;
+`hires_iv.json`: the four hires; `rivals_iv.json`: the five fictional rivals per future, Orrery's failure and auction;
+schemas, loader, README); M31.2 the orbital Capital slot (export credit, project debt with the insurance covenant and
+its cure, co-funding; debt service at quarter end); M31.3 the space-equity window, lunar funding (task orders; no lunar
+debt), fire-sale haircuts in the rescue; M31.4 the four hires and Bandwidth; M31.5 the rivals and the league (Act III's
+retire; Orrery's auction); M31.6 the screens A4-09 (Capital) and A4-10 (quarter report additions); M31.7 tests and the
+M31 report.
+- **M31.1 done.** `tools/act4/money.ts` (`npm run content:act4-money`) writes `capital_iv.json`, `hires_iv.json`, `rivals_iv.json` (both copies; README section); zod and the rivals' per-quarter paths in `src/content/moneyContent.ts` (`MONEY`). Test `act4MoneyContent.test.ts` (rivals identical through 2032Q2; Orrery's failures).
+- **M31.2 done.** `systems/orbitCapital.ts`: `ARRANGE_ORBITAL_CAPITAL` takes `capital` (cash default, export credit, project debt, co-funding); loans drawn as capex is paid (`payCapex`, `ownShare`), interest added during the build, equal principal once live (or after a loss), the insurance covenant (cure 2 q, then called); co-funding's revenue share and bloc strings; lender paid first from insurance and sales; orbital debt in `debtUsd`; a rebuild borrows afresh. Tests `act4OrbitCapital.test.ts`.
+- **M31.3 done.** The space-equity window (`equity.ts`, Act IV only: `RAISE_EQUITY` shut below a 12× space multiple; blocks under way priced at capex × multiple ÷ 20); agency task orders (`ACCEPT_TASK_ORDER`, 0 BW: part-funds the next mission, Accords strings; never offered to a Station-aligned company; no lunar debt exists); `systems/fireSale.ts` in the rescue before the emergency raise (a live block × 0.4 on the space multiple, a lunar site × 0.2 or × 0.5 to a bloc that wants it; a `sold` claim status). Tests `act4Money.test.ts`.
+- **M31.4 done.** The four hires in `allHires()` (Act IV only; `staffEffect`/`staffNumber`): Launch Procurement Lead (−10% launch $/kg, no bumps), Space Operations Chief (GPU failures × 0.75, telemetry noise × the hidden file's 0.5), Lunar Programme Director (+10 landing points, pilot −1 q, +1 BW), Chief Risk Officer (premiums × 0.8, capacity × 1.25); fictional names and bios in en.json. Tests `act4Hires.test.ts`.
+- **M31.5 done.** `systems/rivalsIv.ts`: the league in Act IV is the five fictional rivals on the game's future (value, orbital MW, lunar sites landed; Orrery leaves after failing); the League's scale column shows ground / orbit / lunar sites; Orrery's failure news and its auction (`BUY_ORRERY_BLOCKS`, 1 BW, 50 MW live on spot with 12 quarters left, $6M/MW, two quarters), a panel on the Orbit board. Tests `act4Rivals.test.ts` (incl. B14 for the league).
+- **M31.6 done.** `src/sim/act4MoneyViews.ts` and `screens/Act4Money.tsx` (lazy chunk, now 27 KB): the Capital screen's Act IV block (A4-09), the report's orbit and Moon panel (A4-10), the deal card's four ways to pay, the Valuation panel's orbital and lunar rows; layout in `docs/wireframes/act4/README.md`. Browser-checked at 1024 px. Test `tests/ui/act4Money.test.tsx`.
+- **M31.7 done.** `act4Played.test.ts`: in every future a busy strategy (orbit on project debt or cash, insured, licences, launches; a lunar claim, missions, power, pilot, offtake) plays all 20 quarters to the chapter; every report's valuation equals the sum of its parts.
+- **M31 report.** Commits `8dfc4ec` M31.0, `e194b85` M31.1, `14dfbde` M31.2, `a4947ed` M31.3, `711d6d2` M31.4, `1485425` M31.5, `3ac0ebc` M31.6, M31.7 (this commit). Act I–III goldens unchanged; 1451 tests; main bundle 214.2 KB, Act4Panels 27.5 KB. See it: `npm run dev`, an Act IV game → Capital (space and lunar capital), the Orbit board's Capital slot, People (four new hires), the report's League and "Orbit and Moon this quarter".
+- (mine, reversible) Rivals' lunar sites count their scripted landings, whoever else holds the ridge; a bought Orrery block's life is the auction's stated 12 quarters (not the future's hidden life).
+- (mine, reversible) Capital terms designed inside doc 33's ranges (README); export credit needs the Accords registry; co-funding takes 30% of capex for 30% of revenue; the space-equity window opens at a 12× space multiple.
+
+### Milestone M30 (branch `m30`, from `m29`; the Moon)
+
+Split: M30.0 branch and split; M30.1 the lunar content (`lunar_iv.json`: 8 polar sites, claims, missions, power, pilot,
+production, offtake, dust; `lunar_claims_iv.json`: the rivals' and blocs' scripted claims per future; schemas, loader,
+README); M30.2 claims, the landing clock and disputes; M30.3 prospect missions, landings and prospect reports (the
+resource categories; `lunarGeology.ts` turns the truth into estimates); M30.4 lunar power (solar arrays; the reactor
+lease not before 2034, the Reactor Delay wildcard), the pilot plant (output per doc 33 §9.4, dust and night), offtake,
+the production decision (no output in the act), the Flag on the Pole, the lunar alerts, the lunar unit in the books;
+M30.5 the screens A4-06 (Moon, with the "after 2035" panel) and A4-07 (prospect report); M30.6 tests (B11) and the M30
+report. Act I–III state never gains a key.
+- **M30.1 done.** `tools/act4/moon.ts` (`npm run content:act4-moon`) writes `lunar_iv.json` and `lunar_claims_iv.json` (both copies; README section); zod in `src/content/moonContent.ts` (`MOON`). Test `act4MoonContent.test.ts`: claims identical through 2032Q2, B11's pilot band from the data, no production output possible in the act.
+- (mine, reversible) Lunar values designed inside doc 33's ranges (README lists each); an unprospected claim's estimate is one orbital figure (800,000 t) for every site and grade, so it can't hint at the grade.
+- **M30.2 done.** `state.act4Moon` (optional); `systems/moon.ts`: claim (1 BW, $5M, 5 PC; land within 6 q or it lapses), the scripted claims (`otherClaims`, `rivalOn`), disputes (raised when you claim a claimed site or a scripted claim arrives on yours; hold 15 PC, align with the claimant's bloc, share = half the resource, withdraw; unanswered, the first to land holds). Tests `act4Moon.test.ts`.
+- (mine, reversible) Disputes are answered in the Plan phase (a card), not as live alerts; an unanswered dispute stays open until someone lands.
+- **M30.3 done.** Missions (`SEND_LUNAR_MISSION`: 1 BW, 2 t at the market's delivery $/kg + $60M, lead 3–5 q seeded); the `lunar_landing` alert in its arrival quarter (commit = the market's landing rate; abort = +1 q, $10M; a landing that never came up lands at the quarter's end); success holds the claim and adds a prospect report (`lunarGeology.prospectReport`: truth × exp(N(0, sd)), 90% band; first/second/pilot sds); categories inferred → indicated → measured. `SpaceAlertCard` in Live serves orbit and lunar alerts (`spaceAlertView`). Tests in `act4Moon.test.ts`.
+- **M30.4 done.** `systems/moonOps.ts`: solar arrays (output × illumination), the reactor lease (2034Q1; never in the act after the Reactor Delay; aligns you with the Accords bloc), the 1 MWe contract; the pilot (gates, $300M + 8 t, 7 q, output per doc 33 §9.4, measured after 2 run quarters, dust −3%/q unless a $5M crew); offtake (an offer a quarter once you hold a site; 20% prepaid; water delivered in signing order); production (gates; $4B drawn over 24 q; first output 20–32 q on, after 2035); the Flag on the Pole's freeze; dust-fault alerts; the lunar unit (`lunarUnitUsd`) and lunar EBITDA (no multiple) in the report and valuation; the top strip's lunar kWe. Tests `act4MoonOps.test.ts`.
+- **M30.5 done.** `src/sim/moonViews.ts` (read-only: your estimates and observed output, never the grade) and `screens/Act4Moon.tsx` (re-exported by `Act4Panels`, same lazy chunk, now 23 KB): nav "Moon" (Act IV only) with the polar sites, programme cards, disputes (also on Plan), offtake, the megawatt contract, "after 2035", and the A4-07 report modal; a moon icon drawn like the orbit one. Browser-checked at 1024 px. Tests `tests/ui/act4Moon.test.tsx`; the hidden guard covers `moonViews.ts`.
+- **M30.6 done.** B11 test `act4B11.test.ts`, played at the first opportunity at the de Gerlache ridge (claim + mission 2031Q1, retry on failure, solar 100 kWe and the pilot on landing, crew on): the pilot runs from 2034Q1 and processes **Rich 27.5, Patchy 13.8, Dry 4.1 t a year** by 2035Q4 (bands 15–60, 5–30, 0–8); production decided 2034Q3 produces nothing in the act; launch prices never move with the Moon.
+- **M30 report.** Commits `27c8792` M30.0, `2ff1a9a` M30.1, `696e5b8` M30.2, `e7e4c99` M30.3, `4258ef0` M30.4, `6ffda7f` M30.5, M30.6 (this commit). Act I–III goldens unchanged; 1421 tests; main bundle 213.6 KB, Act4Panels 23.2 KB. See it: `npm run dev`, an Act IV game → Moon in the left nav.
+- (mine, reversible) Only landed (held) sites carry resource value (an unlanded claim adds nothing, so claiming isn't free paper value); offtake buys surface water only; a solar array per site, no upgrades.
+- (mine, reversible) Prospect missions are capitalised (they don't hit EBITDA); `lunarGeology` builds e^x from a series (no `Math.exp`, as the rest of the sim avoids engine-dependent maths).
+
+### Milestone M29 (branch `m29`, from `m28`; orbit)
+
+Split: M29.0 branch and split; M29.1 the orbit content (`launch_providers.json`, `satellites_iv.json`, `shells_iv.json`,
+`insurance_iv.json`, `licences_iv.json`, `tenants_iv.json`: schemas, loader, README); M29.2 orbital blocks and their
+slots (open a block: kind, size, shell, generation; the Tenant slot's offers; the Capital slot, cash in M29, M31 adds the
+rest), licences and the registry; M29.3 launch manifests (bookings, deposits, slips, the dominant launcher's bumps,
+failures, rebooking), insurance and the hard market, congestion, debris losses, the closed shell; M29.4 live operation
+(rent and GPU-hour revenue, opex, link units and optical ground stations, fleet telemetry from `orbit_truth_iv`, useful
+life), the books (optional quarter fields, orbital EBITDA at the space multiple), the storm, grounding and export-clampdown
+wildcards, the orbit interrupts; M29.5 the screens (A4-03 Orbit board, A4-04 Launch manifest, A4-05 the block's deal card,
+A4-08 Licences and registries, A4-02's exposure warnings) in a lazy `Act4Panels` chunk; M29.6 tests (B10's cost ratios,
+B12's single-failure rule) and the M29 report. Act I–III state never gains a key (new fields optional, set in Act IV only).
+- **M29.1 done.** Six orbit files (README section: values and flags; `launch_providers.json` hand-written, the rest from `tools/act4/orbit.ts`), zod-checked in `src/content/orbitContent.ts` (`ORBIT`); B10 test `act4OrbitCost.test.ts` (the data's cost ratios match the model in 2031, 2033 and 2035).
+- **M27.7 byte-identity: passed.** `npm run sim -- --act2 --act3` on `main` (`209622e`) and on `m27`: all 1302 CSVs identical (`cmp`), the logs equal apart from timings (Act III: 532 runs, 0 crashed, 489 chapter, 43 game over).
+- **M29.2 done.** `state.act4Orbit` (optional: blocks, licences, registry, links, insurance market); `systems/orbit.ts`: open a block (0 BW; size, shell, available generation; mass t/MW × MW × shielding), tenant offers (2 a quarter, own stream per block), sign (prepay credited) or spot, Capital = cash (1 BW), licences (1 BW + $1M, 200 MW, approval 2 q + registry + F2's +2 from 2033Q1 via `approval_extra_from`; fast track 10 PC, −1 q), registry (free before the first filing), link units, ground stations (1 BW, $15M, +3 Heat, 4 units next quarter). Tests `act4Orbit.test.ts`.
+- **M29.3 done.** `systems/orbitLaunch.ts`: bookings (1 BW, 15% deposit at the locked $/kg, 2–6 q ahead, capped by the quarter's slots less your other bookings; Kestrel ≤ 250 t; sovereign launcher waits for M31); the build at END_PLAN (cash, licence room; the launch waits for it); launches at quarter end (grounding, closed SSO, slips, Pallas bumps when slots < 1,000 t, then failures by provider year), live 2 quarters after launch; insurance (young/mature rates, capacity cap, payouts, the hard market); the clampdown's ×1.15 cloud capex. Debris moved to M29.4 with live operation. Tests `act4OrbitLaunch.test.ts`.
+- **M29.4 done.** `systems/orbitOps.ts`: live 2 q after launch (true life from `fleetReliability`, hidden), term ends to spot, deorbit; quarter-end revenue (shell rent, spot 80%, cloud GPU-hours × utilisation × health; links for interactive work; safe mode −3/13), ops and link rent, prepayments credited, lateness 3% of ACV a quarter, telemetry (truth + noise × √(10/MW)), GPU wear, debris by congestion, the SSO cascade, the 2035Q2 licence milestone; alerts `orbit_conjunction` (manoeuvre/accept) and `orbit_storm` (safe mode/ride; climbing blocks −40%); `SELL_ORBITAL_BLOCK`; Bandwidth +1 once live, max 9; report and valuation carry the orbital unit at the space multiple (Act I–III reports unchanged). Tests `act4OrbitOps.test.ts`.
+- **M29.5 done.** `src/sim/orbitViews.ts` (read-only views, blockers called directly) and `screens/Act4Panels.tsx` (lazy chunk via `components/act4Lazy.tsx`, 13 KB): nav "Orbit" (Act IV only) with the Orbit board, deal cards, manifest, licences and registry, links; the Plan screen's exposure warnings; `OrbitAlertCard` in Live; the top strip's orbit MW. Browser-checked at 1024 px (no sideways scroll). Layout in `docs/wireframes/act4/README.md`. Test `tests/ui/act4Orbit.test.tsx`; the hidden guard covers `orbitViews.ts`.
+- **M29.6 done.** B12 test `act4B12.test.ts`: in every future, shell and cloud, Pallas and Northgate, a company inside the rule loses its launch with no forced sale, no covenant breach, no game over. The exposure view now checks all three of the rule's conditions (uninsured share > 15% of equity, cash after the launch bill, leverage after the loss against the covenant limit) and the warning shows them.
+- **M29 report.** Commits `f17c563` M29.0, `a27182a` M29.1, `87c1ef7` M29.2, `cc86e54` M29.3, `5937dbb` M29.4, `1456848` M29.5, M29.6 (this commit). Act I–III goldens unchanged; 1390 tests; main bundle 213.4 KB, Act4Panels 13.4 KB. M27.7's byte-identity check passed (above); the next run is at the end of the Act IV run. See it: `npm run dev`, Act IV preview (test build) or a finished Act III → Continue to Act IV → Orbit in the left nav.
+- (mine, reversible) An orbit icon drawn in the design system's line style (the bundle has none); equity for the 15% rule = the latest report's valuation.
+- **Open question for M31:** a carried Act III company can have little cash (the seed-3 autosave: $6.6M) against a 5 MW block's $8M deposit and $72M build: orbit needs M31's capital (export credit, project debt, co-funding, equity) to be playable; check it in M32's bots.
+- (mine, reversible) Orbit revenue settles once at the quarter's end (not weekly); `conjunction_accept_hit_share: 0.25` and `sale_share_of_value: 0.8` added to the content; a live block's sale price is its last quarter's EBITDA × 4 × the space multiple × 0.8.
+- (mine, reversible) Launch slips and failures resolve at the quarter's end with a log line, not as live-quarter alerts (doc 33 §14.2 lists them as interrupts); a failed block goes back to "proposed" (tenant kept) to rebuild and rebook; insurance premiums count in orbital costs (EBITDA); `tight_below_slots_t_q: 1000` added to `launch_providers.json`.
+- (mine, reversible) M29 cuts the orbital tenant negotiation: offers are accepted as drawn (0 BW); a block's licence MW counts from its build start until it leaves orbit.
+
+### Milestone M28 (branch `m28`, from `m27` at `f5cc011`; the hidden future)
+
+Split: M28.0 branch and split (and M27.7's byte-identity result, recorded here when the runs end); M28.1 the Signals data
+(`signals_iv_f1–f4.json`, generated by `tools/act4/signals.ts`: six indicators, displayed values with seeded noise, one decoy
+each, triggers 2032Q2–2033Q3), schema, loader, hidden view `signalsHiddenIv.ts`; M28.2 Signals in play (Act IV's Read the
+market, the Signals panel and top strip; A4-02's three MW columns and the exposure-warning slot); M28.3 the lunar-grade
+draw and the three hidden files (`lunar_truth.json`, `orbit_truth_iv.json`, `reading_score_iv.json` first pass) with
+their guards; M28.4 `events_iv.json` (~45 cards) in the event engine; M28.5 `wildcards_iv.json` (2 of 6 drawn; the
+storm, grounding, Flag on the Pole and reactor-delay effects land with M29/M30's systems); M28.6 the M28 report.
+- **M28.1 done.** `tools/act4/signals.ts` (`npm run content:act4-signals`) writes `signals_iv_f1–f4.json` (README section; designed paths, decoys, triggers in `tools/act4/futures.ts`); `SIGNAL_IDS_IV`, `signalsIvFileSchema`, `CONTENT.signalsIv` (runtime fields only); hidden view `src/content/signalsHiddenIv.ts`; guard `tests/sim/act4Hidden.test.ts`; copy test extended.
+- **M28.2 done.** `act4SignalReads`, `READ_SIGNAL_IV` (`systems/signalsIv.ts`, Act III's rule: 1 BW, once a quarter), `signalsPanelIv` (Act III's shape), `act4MwColumns` (ground from the sites; orbit and Moon 0 until M29/M30); the Signals panel, Read dialog and top strip serve Act IV (short labels LQ FR OC GP DG RC; the strip adds "MW · ground / orbit / moon"). The exposure warnings (A4-02) need launches: they come with M29. Browser-checked at 1024 px.
+- **M28.3 done.** Hidden files `lunar_truth.json`, `orbit_truth_iv.json`, `reading_score_iv.json` (README: designed values); `systems/lunarGeology.ts` (zod-checked, `drawLunarGrade` on substream `act4_lunar_grade`, set at the boundary as hidden `state.lunarGrade`) and `systems/fleetReliability.ts` (`trueReliability`, for M29); guards in `act4Hidden.test.ts`; F3's decoy shortened to two quarters (mine, reversible).
+- **M28.4 done.** `tools/act4/events.ts` (`npm run content:act4-events`) writes `events_iv.json` + `text_iv.en.json` (a third text table `t()` merges; textKeys test covers it); `content/act4Cards.ts` (schema, opaque `a4_` ids, Act III's effect translation, no deferred effect allowed); 40 cards in Act IV's deck, filtered by `future`. The 5 lunar cards wait for M30 (mine, reversible).
+- **M28.5 done.** `wildcards_iv.json` (zod, `CONTENT.wildcardsIv`), `systems/wildcardsIv.ts`: 2 of 6 drawn at the boundary (`act4Wildcards`, stream `act4_wildcards`), each fires once at its quarter's start with a news line (also in the report's events block); the Bitcoin Supercycle doubles mining revenue for 3 quarters now; the storm, grounding and export clampdown get their effects in M29, the Flag and reactor delay in M30 (`wildcardFiredIv`).
+- **M28 report.** Commits `4c298dc` M28.0, `d05691b` M28.1, `f59b1be` M28.2, `c206487` M28.3, `7b15516` M28.4, `bf8c58b` + `fd34d2f` M28.5 (the fix: Act IV test files take no time limit; `bf8c58b` was pushed with that one test timing out under sim load). Act I–III goldens unchanged; 1336 tests; main bundle 211.5 KB. M27.7's `--act2 --act3` byte-identity runs are still going (started detached at M27.6's end); their result is recorded at M29.0.
 
 ## Milestone M26 (branch `m26`, from main at `f8cf61f`; cleanup)
 

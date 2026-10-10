@@ -14,7 +14,7 @@ import {
   type GameState,
   type Project,
 } from '../state.ts'
-import { covenantBreached, inAct2Rules } from '../state.ts'
+import { covenantBreached, inAct2Rules, logQuarterLabel } from '../state.ts'
 import {
   ddtlRate,
   isInvestmentGrade,
@@ -23,6 +23,7 @@ import {
   sofr,
 } from './finance.ts'
 import { spreadCut } from './hires.ts'
+import { siteParams } from './siteSerials.ts'
 import {
   companyServiceDue,
   isCompanyFacility,
@@ -389,7 +390,7 @@ export function startLenderCure(state: GameState, p: Project): void {
   p.lenderCure = { untilQuarter }
   logEntry(state, 'log.lender_cure_started', {
     n: p.n,
-    quarter: CONTENT.quarters[untilQuarter] ?? '—',
+    quarter: logQuarterLabel(state, untilQuarter),
   })
 }
 
@@ -450,7 +451,7 @@ function foreclose(state: GameState, p: Project): void {
   p.soldQuarter = state.quarter
   logEntry(state, 'log.project_foreclosed', {
     n: p.n,
-    tier: site?.tier ?? '',
+    ...siteParams(site),
     debtUsd,
   })
 }

@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "schema": "satellites_iv/1",
+    "doc33": "§7.1 (the orbital block: sizes, generations, build time, capex, life)",
+    "author": "build, M29.1: masses from the cost model’s paths (doc 31 §2.5); GPUs $33M/MW and 20% spares sourced (cost model); build time and opex designed"
+  },
+  "sizes_mw": [
+    5,
+    10,
+    25,
+    50,
+    100
+  ],
+  "generations": [
+    {
+      "id": "gen31",
+      "from": "2031Q1",
+      "t_mw": 18,
+      "market_column": null,
+      "note": "Gen 31: ships in every future (~18 t per MW IT)"
+    },
+    {
+      "id": "gen33",
+      "from": "2033Q1",
+      "t_mw": null,
+      "market_column": "gen33_t_mw",
+      "note": "Gen 33: announced at 13-15 t/MW in every future; delivered at 14 (16 in one future)"
+    },
+    {
+      "id": "gen35",
+      "from": "2034Q3",
+      "t_mw": null,
+      "market_column": "gen35_t_mw",
+      "note": "Gen 35 (\"hot radiators\", ~10-11 t/MW): arrives in only some futures"
+    }
+  ],
+  "gpus": {
+    "usd_per_mw": 33000000,
+    "spares_share": 0.2,
+    "gpus_per_mw": 600
+  },
+  "build_quarters": 2,
+  "ops_usd_mw_yr": 250000,
+  "design_life_years": 5,
+  "utilisation": {
+    "contracted": 0.85,
+    "spot": 0.7
+  },
+  "spot_shell_rent_share": 0.8,
+  "sale_share_of_value": 0.8
+}
