@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #9 merged: doc 42, doc 27's F-10 note; cleanup on `m44`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+Last updated: 10 Oct 2026 (PR #10 merged: docs 43-45, the Act V gate M43.0 and M43.0b; cleanup and M43.0c on `m45`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
 with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
 M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
 and "Milestone M41".
@@ -190,11 +190,13 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
-`docs/game-project-files/claude_42-act-v-concepts.md`, in `main`), doc 43 (the Act V design, "Firm", 2036-2040, v0.1) and
-doc 44 (the brief for the third research pass, doc 45), both committed on `m44`. The Act V content pack follows doc 45.
-F-10 closed (M42; doc 27 §16 marks it). PR #9 merged (`main` = `c08bb2c`); `m43` tagged `m43-done` and deleted; `m44` (from
-`main`) holds this cleanup.
+**Now (10 Oct 2026): the Act V gate, third try (M43.0c, doc 43 §0.7) on `m45`.** PR #10 merged (`main` = `4512775`): docs
+43 v1.1, 44, 45 and the gate prototypes M43.0 and M43.0b (both FAIL, STOPPED below); `m44` tagged `m44-done` and deleted.
+`m43a` (the Act IV test image, M43.A) has its own PR. Nothing else for Act V is built until the gate passes.
+
+**Before: no milestone open.** Doc 42 (concepts), doc 43 (the Act V design, "Firm", 2036-2040) and doc 44 (the brief for the
+third research pass, doc 45). F-10 closed (M42; doc 27 §16 marks it). PR #9 merged (`main` = `c08bb2c`); `m43` tagged
+`m43-done` and deleted.
 
 **Before: PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
 `m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
@@ -238,7 +240,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `c08bb2c`** (10 Oct 2026, PR #9 merged): doc 42, doc 27's F-10 note; `m43` tagged `m43-done` and deleted.
+**`main` = `4512775`** (10 Oct 2026, PR #10 merged): docs 43-45, the gate M43.0 and M43.0b; `m44` tagged `m44-done` and
+deleted. Before: `c08bb2c` (10 Oct 2026, PR #9 merged): doc 42, doc 27's F-10 note; `m43` tagged `m43-done` and deleted.
 Before: `4b633a7` (10 Oct 2026, PR #8 merged): M42 (notes only; F-10 closed); `m42` tagged `m42-done` and deleted.
 Before: `71f36cb` (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
 Before: `464a6ad` (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
@@ -277,6 +280,12 @@ the 2035Q4 companies as the energy runner; `gate.ts` the 20 stub V1 quarters, §
 - **M43.0b** (doc 43 v1.1 §0.6, `gate-b.ts`, 30 seeds, 2,160 runs per stub): **FAIL both**, V1 Holder ÷ Seller 1.040 (best cell
   Fortress F2 1.162), V3 Seller ÷ Holder 1.024. Gap = leases (V1 +3.1%, Fortress +8.6%); powered value 0 (median free MW 0);
   plants ≈ 0. act5Entry is leases 55% (Fortress), 10% (Neocloud, firm-heavy), 0% (Ridge). STOPPED for the design thread.
+- **M43.0c** (§0.7, `gate-c.ts`, branch `m45`, 30 seeds): **V1 passes, V3 fails**: V1 Fortress 1.400, Firm Builder 1.570 (475 of
+  2,160 runs qualify, all Fortress); V3 0.958 and 0.937. The Seller's fair-value site sale costs it 15-21% in both futures (its
+  cash earns nothing: five years of rent lost). Stop rule (V1 passes only where V3 fails): reported, not tuned. STOPPED.
+- **M43.0d** (owner's option A, `gate-d.ts`, 30 seeds; confirmation, no tuning): V1 targets pass (Holder ÷ Seller Fortress 1.295,
+  Firm Builder 1.398; Holder ÷ Locker 1.122, 1.131). V3 Locker ÷ Holder: Firm Builder 1.061 passes, **Fortress 1.031 misses
+  1.05**; info V3 Seller ÷ Holder 1.034, 1.047. Gate FAIL on one target by 0.019: the owner's call.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 

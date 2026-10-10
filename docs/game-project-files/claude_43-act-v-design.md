@@ -93,6 +93,14 @@ These define the sim-only prototype. Where the full game later needs more, the c
    - **V3:** trigger fixed at 2037Q4. `scarcity_index` 1.0 to the trigger, then → 0.8 at 2039Q4 and flat; powered value $300K to the trigger, then → $100K at 2040Q4; merchant plant multiple 7.5x, 6x from the trigger; capacity prices −50% and merchant power −30% from the trigger.
 6. **Firm-heavy start:** the same Balanced bot and cash guard, joining two ventures in 2031Q1 (EGS and SMR, 20% stakes, 50% offtake each). If two joins don't fit, the top quartile of the existing runs by plant value share.
 
+### 0.7 After the second gate run (M43.0b, 10 Oct 2026)
+**Finding:** V1 1.040, V3 1.024 against 1.2. A 2035 company in this game is mostly cash, orbit and spot GPU clusters: leases are 55% of the Ground Fortress start, about 10% of Neocloud and the firm-heavy start, 0% of Ridge, and the median company has no free energized MW. Lock-or-roll can only move the lease book, and only the part that renews before 2040. This is the same root as Act IV's B3 miss: the earlier acts don't produce ground-heavy companies.
+**Changes (designed [D], anchored to doc 45's powered-land and EV-per-MW evidence [C]):**
+1. **Scarcity moves what the market pays for ground MW, not only new rents.** In Act V the AI (ground) multiple = its market value × (1 + 0.5 × (`scarcity_index` − 1)): ×1.25 by 2040 in V1, ×0.90 in V3. Spot GPU rents move by the same factor.
+2. **The Seller cashes out its ground book.** Besides §0.6 (locks every lease long, sells free MW and plant stakes), it sells every leased ground site in 2036Q1 at its value that quarter (EBITDA × multiple + free MW × powered value). It keeps sites that serve its own GPU clusters. The Holder is unchanged.
+3. **V-B2 and V-B4 are judged on ground-heavy starts:** the Ground Fortress start and a Firm Builder start (leases ≥ 40% of act5Entry). Orbit- and cash-heavy starts are reported as information: a company with little ground isn't exposed to the hold-or-sell question, and that's an honest outcome.
+4. **Stop rule:** the 1.2 target stays. If the ground-heavy starts land at 1.10-1.19, the owner chooses between a lower margin (1.10) and a recorded miss; no further tuning of V1 or V3.
+
 ---
 
 ## 1. What Act V has to prove
