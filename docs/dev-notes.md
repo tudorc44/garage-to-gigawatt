@@ -156,6 +156,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 - ~~Act IV run stopped at step 0 (doc 33 not reachable)~~: resolved 5 Oct 2026, the owner put docs 31–34 and the cost model in the
   repo (M27.0); the run resumed at M27.1.
 - ~~M40.1's target~~ (Perfect's reading ≥ Passive's): resolved by M41.1's raise rule; all 12 cells meet Perfect ≥ Passive − 2.
+- **M42.1 (F-10):** "quarterly BTC = mean of its 13 weekly closes" not applied: it would replace the sourced quarter-end closes
+  (e.g. 2023Q1 28,478 → mean 23,203) and fail the load check `index.ts` (quarterly close = the weekly file's last week); the
+  sim never reads the quarterly BTC columns (`act2QuarterOf` omits them), so play can't change. Design thread's question.
 
 ## Small follow-ups
 
@@ -241,6 +244,14 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 `7804dd0`, M16–M18 at `e0846d3`. Every finished milestone branch is tagged `m<n>-done` (m9 … m26, m21.6, prologue-done)
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
+
+## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
+
+PR #8 (`m42`: the PR #7 cleanup and M41's run) opened for the owner. **M42.1** (F-10, Act II data): checked, not changed:
+STOPPED (below). Both issues are in the superseded v1 pack (`docs/game-project-files/claude_act2-content_market_*.csv`: weekly
+last week 85,889.70 vs quarterly 88,000; hashprice hand-drawn). The live files (`docs/act2-content/` = `src/content/`, rebuilt
+27 Sep 2026, README §"fixes of 27 Sep") already hold: 222/222 weekly rows on the formula; each quarterly BTC column = the
+sourced quarter close = its last week (2026Q4 88,000 both), quarterly hashprice on the formula (within 0.01).
 
 ## Milestone M41 (branch `m41`, from `main` at `464a6ad`; design thread answers to the M40 report, 10 Oct 2026)
 
