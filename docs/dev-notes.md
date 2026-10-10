@@ -191,9 +191,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 ## Next
 
 **Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
-`docs/game-project-files/claude_42-act-v-concepts.md`, not yet committed), then doc 43, both being written by the design
-thread. F-10 closed (M42). PR #8 merged (`main` = `4b633a7`); `m42` tagged `m42-done` and deleted; `m43` (from `main`) holds
-this cleanup. Doc 27 §16 still lists F-10 as open: the design thread's updated copy hasn't reached the repo.
+`docs/game-project-files/claude_42-act-v-concepts.md`, committed on `m43`), then doc 43 (being written by the design thread).
+F-10 closed (M42; doc 27 §16 marks it, the note added on `m43` at the owner's request). PR #8 merged (`main` = `4b633a7`);
+`m42` tagged `m42-done` and deleted; `m43` (from `main`) holds this cleanup.
 
 **Before: PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
 `m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
