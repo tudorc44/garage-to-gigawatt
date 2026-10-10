@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #9 merged: doc 42, doc 27's F-10 note; cleanup on `m44`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+Last updated: 10 Oct 2026 (PR #10 merged: docs 43-45, the Act V gate M43.0 and M43.0b; cleanup and M43.0c on `m45`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
 with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
 M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
 and "Milestone M41".
@@ -190,11 +190,13 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): no milestone open.** The next build work comes from the Act V design: doc 42 (concepts, v0.1 draft,
-`docs/game-project-files/claude_42-act-v-concepts.md`, in `main`), doc 43 (the Act V design, "Firm", 2036-2040, v0.1) and
-doc 44 (the brief for the third research pass, doc 45), both committed on `m44`. The Act V content pack follows doc 45.
-F-10 closed (M42; doc 27 §16 marks it). PR #9 merged (`main` = `c08bb2c`); `m43` tagged `m43-done` and deleted; `m44` (from
-`main`) holds this cleanup.
+**Now (10 Oct 2026): the Act V gate, third try (M43.0c, doc 43 §0.7) on `m45`.** PR #10 merged (`main` = `4512775`): docs
+43 v1.1, 44, 45 and the gate prototypes M43.0 and M43.0b (both FAIL, STOPPED below); `m44` tagged `m44-done` and deleted.
+`m43a` (the Act IV test image, M43.A) has its own PR. Nothing else for Act V is built until the gate passes.
+
+**Before: no milestone open.** Doc 42 (concepts), doc 43 (the Act V design, "Firm", 2036-2040) and doc 44 (the brief for the
+third research pass, doc 45). F-10 closed (M42; doc 27 §16 marks it). PR #9 merged (`main` = `c08bb2c`); `m43` tagged
+`m43-done` and deleted.
 
 **Before: PR #7 merged (`main` = `71f36cb`): M41 (the raise rule, Lantern Arc / Keelstone); `m41` tagged
 `m41-done` and deleted; `m42` (from `main`) holds this cleanup and M41's `--act4` results (merged before the run finished).**
@@ -238,7 +240,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `c08bb2c`** (10 Oct 2026, PR #9 merged): doc 42, doc 27's F-10 note; `m43` tagged `m43-done` and deleted.
+**`main` = `4512775`** (10 Oct 2026, PR #10 merged): docs 43-45, the gate M43.0 and M43.0b; `m44` tagged `m44-done` and
+deleted. Before: `c08bb2c` (10 Oct 2026, PR #9 merged): doc 42, doc 27's F-10 note; `m43` tagged `m43-done` and deleted.
 Before: `4b633a7` (10 Oct 2026, PR #8 merged): M42 (notes only; F-10 closed); `m42` tagged `m42-done` and deleted.
 Before: `71f36cb` (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
 Before: `464a6ad` (10 Oct 2026, PR #6 merged): M40; `m40` tagged `m40-done` and deleted.
