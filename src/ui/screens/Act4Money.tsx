@@ -4,7 +4,9 @@
 // orbit and Moon panel. Every number comes from src/sim/act4MoneyViews.ts.
 import { t, tDynamic, type Message } from '../../i18n/t.ts'
 import { capitalIvView, reportIvView } from '../../sim/act4MoneyViews.ts'
+import { CONTENT } from '../../content/index.ts'
 import type { GameState, QuarterReport } from '../../sim/state.ts'
+import { ArtFrame } from '../components/artFrame.tsx'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
@@ -90,11 +92,37 @@ export function Act4CapitalPanel({ state, act }: ScreenProps) {
 }
 
 /** A4-10: the quarter report's orbit and Moon panel. */
+/**
+ * M43.A: the block that made this report's quarter the first one with a block of yours live, or null. A block goes live
+ * at the start of its live quarter, so the company's earliest live quarter comes once per career: no flag is stored.
+ */
+function firstBlockLive(state: GameState, r: QuarterReport) {
+  const went = (state.act4Orbit?.blocks ?? []).filter((b) => b.liveQuarter !== null && b.stage !== 'climbing')
+  if (went.length === 0) return null
+  const first = Math.min(...went.map((b) => b.liveQuarter!))
+  if (CONTENT.quarters[first] !== r.quarter) return null
+  return went.filter((b) => b.liveQuarter === first).sort((a, b) => a.n - b.n)[0]
+}
+
+/** M43.A: the one-time "First block live" moment on the quarter report, with the test image. */
+function FirstBlockLive({ state, report }: { state: GameState; report: QuarterReport }) {
+  const b = firstBlockLive(state, report)
+  if (!b) return null
+  return (
+    <div class="panel p first-block-live" data-first-block-live>
+      <h2 class="panel-title">{t('ui.report_iv.first_block_title')}</h2>
+      <ArtFrame slot="orbit_first_block" caption={t('ui.report_iv.first_block', { n: b.n, mw: fmt.power(b.mw * 1000) })} />
+    </div>
+  )
+}
+
 export function Act4ReportPanel({ state, report }: { state: GameState; report?: QuarterReport }) {
   const r = report ?? state.reports.at(-1)
   const v = r ? reportIvView(state, r) : null
-  if (!v) return null
+  if (!v || !r) return null
   return (
+    <>
+    <FirstBlockLive state={state} report={r} />
     <div class="panel p" data-report-iv>
       <h2 class="panel-title">{t('ui.report_iv.title')}</h2>
       {v.orbit && (
@@ -126,5 +154,6 @@ export function Act4ReportPanel({ state, report }: { state: GameState; report?: 
         </ul>
       )}
     </div>
+    </>
   )
 }

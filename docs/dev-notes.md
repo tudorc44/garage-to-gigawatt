@@ -260,6 +260,9 @@ report panel, in Act IV's lazy chunk · **5** design · **6** checks (tests, bun
 - **1** done: one-off `npx sharp-cli@5.1.0` (no dependency), quality 85: 26 KB (1152 × 768) and 12 KB (640 × 427).
 - **2-3** done (one commit: the gate lives in the manifest, mine): `src/ui/art.ts` (`ART`, `artFor`, `SHOW_TEST_ART` = mode ≠
   production or `VITE_SHOW_TEST_ART=true`); alt and credit through `t()`; test `tests/ui/art.test.ts`.
+- **4-6** done: `components/artFrame.tsx` (panel frame, cover to 260 px, lazy img with srcset, credit, "Test art" tag, a fade
+  off under reduced motion); A4-01 banner above "Enter 2031 →"; the report's "First block live" panel on the quarter the first
+  block went live (worked out from `liveQuarter`, no state flag: mine). Main bundle 225.63 → 225.66 KB; browser 1024/1440 OK.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
