@@ -26,7 +26,6 @@ import {
   firmKw,
   flareOutput,
   fourCpOutputMult,
-  fourCpPriceMult,
   specialPriceUsdKwh,
 } from './energyAssets.ts'
 import { extraScoutOffers } from './hires.ts'
@@ -211,10 +210,9 @@ export function powerPriceUsdKwh(
     : normalPriceUsdKwh(site, quarter, undefined, scenario)
   const e = site.eventPowerMult
   const eventMult = e && quarter >= e.from && quarter <= e.until ? e.mult : 1
-  // M35.4: the year after a 4CP summer, 10% less (1 without 4CP).
-  const fourCp = site.dr ? fourCpPriceMult(site, quarter) : 1
+  // (M39.1: 4CP's saving is now a flat amount at each quarter's end, texasPower.ts, not a lower price)
   return (
-    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult * fourCp +
+    base * (site.rateMult ?? 1) * (site.surcharge ?? 1) * eventMult +
     regionPowerAdderUsdKwh(regionOf(site), quarter) +
     capacityChargeUsdKwh(site, quarter, scenario)
   )

@@ -14,7 +14,7 @@ import {
   type SiteAssetKind,
 } from '../../content/energyContent.ts'
 import type { Message } from '../../i18n/t.ts'
-import { book, bookSplit, roundCash, type Category, type LedgerRef } from '../ledger.ts'
+import { book, bookSplit, roundCash, siteBusiness, type Category, type LedgerRef } from '../ledger.ts'
 import { chance, substream, uniform } from '../rng.ts'
 // (Act IV's own seed when there is one, so each Act IV run draws afresh; the game's seed before: act4SeedOf)
 import { act4SeedOf, logEntry, roundCents, type EnergyAsset, type GameState, type Site } from '../state.ts'
@@ -412,9 +412,13 @@ export function endQuarterEnergy(state: GameState, pjmUsdMwDay?: number): Energy
   }
   const texas = endQuarterTexas(state)
   revenueUsd += texas.revenueUsd
-  revParts.push(['grid_credits', texas.revenueUsd, {}])
+  // M39.1 (doc 41): demand response is a grid credit; a fixed-price site's resale is energy income
+  for (const x of texas.drUsd) revParts.push(['grid_credits', x.usd, { site: x.siteId }])
+  for (const x of texas.resaleUsd) revParts.push(['energy_income', x.usd, { site: x.siteId }])
   bookSplit(state, revenueUsd, revParts)
   bookSplit(state, -costUsd, costParts)
+  // 4CP: next year's flat saving, a quarter each quarter, as a lower power cost
+  for (const x of texas.fourCpUsd) book(state, 'power', x.usd, { site: x.siteId, biz: siteBusiness(state, x.siteId) })
   roundCash(state)
   return { revenueUsd, costUsd }
 }

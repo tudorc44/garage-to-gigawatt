@@ -112,6 +112,12 @@ export function EnergyDialog(props: { state: GameState; act: Act; siteId: string
                 summer: tDynamic(`texas_summer.${v.texas.summer}`, v.texas.summer),
               })}
             </label>
+            {/* M39.1 (doc 41): the resale of that power, paid with the credit, on a fixed-price contract only */}
+            <p class="num-s">
+              {v.texas.fixedPrice
+                ? t('ui.energy.resale', { usd: fmt.money(v.texas.resaleUsd) })
+                : t('ui.energy.resale_none')}
+            </p>
             {v.texas.aiMw > 0 && (
               <p class="num-s">
                 {t('ui.energy.ai_excluded', {
@@ -128,10 +134,14 @@ export function EnergyDialog(props: { state: GameState; act: Act; siteId: string
                 disabled={(!!v.texas.blocked || !!v.texas.fourCpBlocked) && !v.texas.fourCp}
                 onChange={() => run({ type: 'TEXAS_SET', siteId, fourCp: !v.texas!.fourCp })}
               />
-              {t('ui.energy.four_cp')}
+              {t('ui.energy.four_cp', { usd: fmt.money(v.texas.fourCpUsdMw) })}
             </label>
             {v.texas.fourCpBlocked && <p class="num-s muted">{say(v.texas.fourCpBlocked)}</p>}
-            {v.texas.discountYear && <p class="num-s">{t('ui.energy.discount', { year: v.texas.discountYear })}</p>}
+            {v.texas.discountYear && (
+              <p class="num-s">
+                {t('ui.energy.discount', { year: v.texas.discountYear, usd: fmt.money(v.texas.fourCpSavingUsd) })}
+              </p>
+            )}
           </section>
         )}
 

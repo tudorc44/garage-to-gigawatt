@@ -51,11 +51,6 @@ export function fourCpOutputMult(site: Site, quarter: number): number {
   return 1 - ENERGY.texas.four_cp.q3_output_loss * (1 - cover)
 }
 
-/** 4CP: power at this site costs 10% less in the year after a 4CP summer. 1 otherwise. */
-export function fourCpPriceMult(site: Site, quarter: number): number {
-  return site.dr?.discountYear === label(quarter).slice(0, 4) ? ENERGY.texas.four_cp.next_year_price_mult : 1
-}
-
 /** A home battery's ride-through (doc 38 §4.3): the share of the site's working machines kept running in outages. */
 export function rideThroughShare(state: GameState, site: Site): number {
   const blocks = assetsOf(site, 'home_battery')

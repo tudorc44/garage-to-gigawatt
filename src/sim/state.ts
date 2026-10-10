@@ -197,8 +197,10 @@ export interface Venture {
 export interface SiteDemandResponse {
   enrolled: boolean
   fourCp: boolean
-  /** The year whose power is 10% cheaper after a 4CP summer (e.g. "2022"). */
+  /** The year whose power is cheaper after a 4CP summer (e.g. "2022"). */
   discountYear?: string
+  /** M39.1: that year's 4CP saving, $ (a quarter of it comes off each quarter's power). */
+  fourCpSavingUsd?: number
   /** The year whose credit was forfeited by refusing a grid call while enrolled. */
   forfeitYear?: string
 }

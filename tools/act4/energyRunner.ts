@@ -5,7 +5,7 @@
 // ventures don't touch the Moon). Writes energy-runs.csv and prints E-B1, E-B2 and E-B5; E-B3 and E-B4 are tests
 // (tests/sim/ventures.test.ts), and so is E-B5's first half (tests/sim/texasPower.test.ts).
 import { mkdirSync, writeFileSync } from 'node:fs'
-import { CONTENT, FUTURE_IDS, quarterInputs, type FutureId } from '../../src/content/index.ts'
+import { FUTURE_IDS, type FutureId } from '../../src/content/index.ts'
 import { ENERGY, energyYear, VENTURES, type VentureType } from '../../src/content/energyContent.ts'
 import { PRESETS_IV, type Act4PresetId } from '../../src/content/presetsAct4.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
@@ -14,6 +14,7 @@ import { toAct3, toAct4, type GameState } from '../../src/sim/state.ts'
 import { regionOf } from '../../src/sim/systems/sites.ts'
 import { buyInUsd, prepayUsd, ventureRegions } from '../../src/sim/systems/ventures.ts'
 import { buildCostUsd } from '../../src/sim/systems/energy.ts'
+import { fourCpSavingUsdMwYr } from '../../src/sim/systems/texasPower.ts'
 import { poweredKw } from '../../src/sim/systems/sites.ts'
 import { BOTS } from '../bots.ts'
 import { checkedLedger } from '../ledgerCheck.ts'
@@ -229,35 +230,51 @@ add(
   `control mean ${m$(ctrlMean)}, best ${m$(ctrlBest)}; ${ventureStats.map((s) => `${s.v} mean ${m$(s.mean)}, best ${m$(s.best)}`).join('; ')}; behind the meter mean ${m$(mean(contrib('btm')))}`,
 )
 
-// E-B5 (second half): a 4-hour battery sized to an ERCOT AI load pays back within 12 quarters in normal summers. What
-// it earns a year per MW: the normal summer's demand-response credit and 4CP's 10% off a year of AI power at the
-// ERCOT price (SLA cover in grid calls not counted). Capex: that year's US price × 4 hours.
-const ercotPrice = (label: string): number | undefined => {
-  const q = CONTENT.quarters.indexOf(label)
-  if (q < 0) return undefined
-  const key = label >= '2031Q1' ? ('s0.f2' as const) : label >= '2027Q1' ? ('s0' as const) : null
-  return quarterInputs(q, key)?.powerUsdKwh.ercot
+// E-B5 (second half): a 4-hour battery sized to an ERCOT AI load at a fixed-price site. M39 (doc 41): what each MW earns
+// a year in normal summers is the demand-response credit and the resale on the AI MW it lets curtail, 4CP's flat saving,
+// and ERCOT's ancillary-services income; the payback counts quarters of those earnings (year by year) until they cover
+// that year's capex (US price × 4 hours). Build time and SLA cover in grid calls are not counted.
+const ercotBatteryUsdMwYr = (y: number): number =>
+  ENERGY.site_assets.bess.ercot_ancillary_usd_mw_yr?.filter((s) => s.from <= String(y)).at(-1)?.usd ?? 0
+const earnPerMwYr = (y: number): number =>
+  ENERGY.texas.dr_usd_mw_yr.normal + ENERGY.texas.resale_usd_mw_yr.normal + fourCpSavingUsdMwYr(String(y)) + ercotBatteryUsdMwYr(y)
+/** Quarters a 4-hour ERCOT battery built in `label` takes to earn back its capex (null without a price that year). */
+function batteryPaybackQ(label: string): number | null {
+  const y0 = Number(label.slice(0, 4))
+  const bess = energyYear(y0).bess_usd_kwh_us
+  if (bess === null) return null
+  const capexPerMw = bess * 4 * 1000
+  let quarterOfYear = Number(label.slice(5)) - 1
+  let y = y0
+  let earned = 0
+  let n = 0
+  while (earned < capexPerMw && n < 400) {
+    earned += earnPerMwYr(y) / 4
+    n++
+    if (++quarterOfYear === 4) {
+      quarterOfYear = 0
+      y++
+    }
+  }
+  return n
 }
 // (redefined, design thread answer 7: within the battery's life, ≤ 60 quarters, for builds from 2028, falling with
 // battery prices)
 const paybacks: string[] = []
 const from2028: number[] = []
 for (let y = 2023; y <= 2035; y++) {
-  const price = ercotPrice(`${y}Q1`)
-  const bess = energyYear(y).bess_usd_kwh_us
-  if (price === undefined || bess === null) continue
-  const capexPerMw = bess * 4 * 1000
-  const earnPerMwYr = ENERGY.texas.dr_usd_mw_yr.normal + (1 - ENERGY.texas.four_cp.next_year_price_mult) * price * 8760 * 1000
-  const q = (capexPerMw / earnPerMwYr) * 4
+  const q = batteryPaybackQ(`${y}Q1`)
+  if (q === null) continue
   if (y >= 2028) from2028.push(q)
-  paybacks.push(`${y} ${Math.round(q)} q`)
+  paybacks.push(`${y} ${q} q`)
 }
+const named = ['2022Q4', '2024Q1', '2027Q1'].map((l) => `${l} ${batteryPaybackQ(l) ?? '—'} q`)
 const falling = from2028.every((q, i) => i === 0 || q <= from2028[i - 1] + 1e-9)
 add(
   'E-B5',
   'A battery sized to the AI load pays back within its life (≤ 60 quarters) for builds from 2028, falling with prices (credits lost without it: tested)',
   from2028.length > 0 && from2028.every((q) => q <= 60) && falling,
-  `payback by build year: ${paybacks.join(', ')}`,
+  `payback by build year: ${paybacks.join(', ')}; doc 41's builds: ${named.join(', ')}`,
 )
 
 console.log(`\nEnergy (--energy): ${runs.length} runs (${SEEDS} seeds), ${Math.round((performance.now() - t0) / 1000)} s. CSV in ${OUT}/energy-runs.csv`)

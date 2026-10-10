@@ -31,7 +31,16 @@ import {
   type SpecialStatus,
 } from './systems/specialSites.ts'
 import { normalPriceUsdKwh } from './systems/sites.ts'
-import { aiMw, curtailableMw, drCreditUsd, setTexasBlocker, summerOf, texasBlocker } from './systems/texasPower.ts'
+import {
+  aiMw,
+  curtailableMw,
+  drCreditUsd,
+  fourCpSavingUsdMwYr,
+  resaleUsd,
+  setTexasBlocker,
+  summerOf,
+  texasBlocker,
+} from './systems/texasPower.ts'
 import { bessMw } from './systems/energyAssets.ts'
 
 export interface EnergyAssetRow {
@@ -80,8 +89,14 @@ export interface TexasView {
   bessMw: number
   /** The year's credit at this summer's rate (and the year's summer type when it's known). */
   creditUsd: number
+  /** M39.1: the year's resale at this summer's rate (0 on a floating contract), and whether the contract is fixed. */
+  resaleUsd: number
+  fixedPrice: boolean
   summer: string
   discountYear: string | null
+  /** M39.1: 4CP's saving off the discount year's power, $, and next year's saving per MW enrolled, $. */
+  fourCpSavingUsd: number
+  fourCpUsdMw: number
   forfeited: boolean
   fourCpBlocked?: Message
 }
@@ -170,8 +185,12 @@ export function energyCardView(state: GameState, siteId: string): EnergyCardView
           aiMw: aiMw(state, site),
           bessMw: bessMw(site, state.quarter),
           creditUsd: drCreditUsd(state, site),
+          resaleUsd: resaleUsd(state, site),
+          fixedPrice: site.contract?.type === ENERGY.texas.resale_contract,
           summer: summerOf(year),
           discountYear: site.dr?.discountYear ?? null,
+          fourCpSavingUsd: site.dr?.fourCpSavingUsd ?? 0,
+          fourCpUsdMw: fourCpSavingUsdMwYr(String(Number(year) + 1)),
           forfeited: site.dr?.forfeitYear === year,
           ...(() => {
             const b = site.dr?.fourCp ? undefined : setTexasBlocker(state, { siteId, fourCp: true })

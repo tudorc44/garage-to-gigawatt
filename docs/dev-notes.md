@@ -228,6 +228,19 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Milestone M39 (branch `m38`; energy data fixes, doc 41 of 10 Oct 2026, from doc 40's research)
+
+Split (one commit per step; doc 41 numbers them M38.x, renumbered M39.x by the owner): **M39.1** Texas: the credit split
+into demand response (grid_credits) and fixed-price resale (energy_income), 4CP as a flat saving, the $30M-a-payment
+backlash · **M39.2** hydro timelines per kind (PUD ramp on existing load, muni overage, Québec grandfathering and block) ·
+**M39.3** Iceland (price locked at signing, 2018 every other quarter, 2021Q4 dry week) · **M39.4** owned generation and
+batteries (prices, ITC steps, small wind CF, battery losses, the PJM derate path, ERCOT battery income) · **M39.5**
+ventures (EGS prices and PPAs, nuclear running cost and CF ramp) · **M39.6** card text · **M39.7** provenance, README,
+tests, the E-B anchors, `--energy`, the 2,000-game venture table. Non-energy goldens and sims stay byte-identical.
+Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5 q; anchors and `--energy` = `energy-m37f`.
+- **M39.1** done: DR $8/18/30K (grid_credits) + fixed-price resale $10/30/75K (energy_income) at Q3; 4CP a flat $50K (2020-25),
+  $60K (2026+) per MW off next year, a quarter each quarter (power +); backlash on a $30M payment. Goldens unchanged.
+
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 
 Split (one commit per step): **M37.1** the ledger: `src/sim/ledger.ts` with `book()`, every cash change in `src/sim`

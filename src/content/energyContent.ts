@@ -165,10 +165,17 @@ const energySchema = z.object({
     from: quarterId,
     contract: z.enum(['fixed', 'index']),
     dr_usd_mw_yr: z.object({ mild: nonneg, normal: nonneg, hot: nonneg }),
+    /** M39.1 (doc 41): resale of a fixed-price site's curtailed power, paid with the DR credit. */
+    resale_usd_mw_yr: z.object({ mild: nonneg, normal: nonneg, hot: nonneg }),
+    resale_contract: z.enum(['fixed', 'index']),
     dr_paid_quarter_of_year: z.number().int().min(1).max(4),
     refusal_forfeits_year: z.boolean(),
-    four_cp: z.object({ q3_output_loss: share, next_year_price_mult: pos }),
-    backlash: z.object({ credits_usd_year: pos, heat: z.number(), anger: z.number() }),
+    four_cp: z.object({
+      q3_output_loss: share,
+      /** M39.1: the flat saving per enrolled MW off the next year's power, by that year (the last step at or before it). */
+      saving_usd_mw_yr: z.array(z.object({ from: z.string().regex(/^\d{4}$/), usd: nonneg })).min(1),
+    }),
+    backlash: z.object({ payment_usd: pos, heat: z.number(), anger: z.number() }),
   }),
   site_assets: z.object({
     bess: z.object({
@@ -191,6 +198,8 @@ const energySchema = z.object({
       fire_heat: z.number(),
       fire_repair_share: share,
       firm_share: share,
+      /** M39.4 (doc 41): ERCOT ancillary-services income per MW of battery power, $ a year, by year (paid quarterly). */
+      ercot_ancillary_usd_mw_yr: z.array(z.object({ from: z.string().regex(/^\d{4}$/), usd: nonneg })).optional(),
     }),
     btm_solar: z.object({
       from: quarterId,

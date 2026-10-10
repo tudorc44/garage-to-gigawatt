@@ -107,12 +107,18 @@
   "from": "2020Q1",
   "contract": "fixed",
   "contract_note": "doc 38 §4.7 asks for a fixed PPA of 8+ years; the game's contracts run 4 or 8 quarters, so any fixed contract qualifies",
-  "dr_usd_mw_yr": {"mild": 15000, "normal": 40000, "hot": 100000},
+  "dr_usd_mw_yr": {"mild": 8000, "normal": 18000, "hot": 30000},
+  "dr_source": "doc 40 §Q4 [B/C]; M39.1 (doc 41): demand response alone, booked as grid credits",
+  "resale_usd_mw_yr": {"mild": 10000, "normal": 30000, "hot": 75000},
+  "resale_contract": "fixed",
+  "resale_source": "doc 41 (DT): power resale for fixed-price sites only, paid with the DR credit, booked as energy income. Hot from Riot's 2023 resale ($52.6M ÷ 700 MW) [A → D]; mild and normal designed [D]",
   "dr_paid_quarter_of_year": 3,
   "refusal_forfeits_year": true,
-  "four_cp": {"q3_output_loss": 0.015, "next_year_price_mult": 0.9},
-  "backlash": {"credits_usd_year": 50000000, "heat": 5, "anger": 5},
-  "tuned": ["dr_usd_mw_yr", "four_cp"]
+  "four_cp": {"q3_output_loss": 0.015, "saving_usd_mw_yr": [{"from": "2020", "usd": 50000}, {"from": "2026", "usd": 60000}]},
+  "four_cp_source": "doc 40 §Q4 [B/C]: a flat saving per enrolled MW off next year's power, a quarter each quarter (was the next year's power × 0.9)",
+  "backlash": {"payment_usd": 30000000, "heat": 5, "anger": 5},
+  "backlash_source": "doc 41 (DT): DR + resale over $30M in one payment (was $50M a year)",
+  "tuned": ["dr_usd_mw_yr", "resale_usd_mw_yr", "four_cp"]
  },
  "site_assets": {
   "bess": {
