@@ -5,7 +5,7 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 10 Oct 2026 (PR #10 merged: docs 43-45, the Act V gate M43.0 and M43.0b; cleanup and M43.0c on `m45`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
+Last updated: 11 Oct 2026 (PRs #11 and #12 merged: the Act IV test image, doc 43 §0.7, the gate M43.0c and M43.0d; cleanup on `m46`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
 with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
 M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
 and "Milestone M41".
@@ -190,7 +190,12 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (10 Oct 2026): the Act V gate, third try (M43.0c, doc 43 §0.7) on `m45`.** PR #10 merged (`main` = `4512775`): docs
+**Now (11 Oct 2026): the Act V gate waits for the owner's call on M43.0d** (5 of 6 targets pass; Fortress's V3 Locker ÷
+Holder 1.031 misses 1.05). PR #11 (M43.A, the Act IV test image) and PR #12 (doc 43 §0.7, M43.0c, M43.0d) merged (`main` =
+`b8d766f`); `m43a` and `m45` tagged `m43a-done`, `m45-done` and deleted; `m46` (from `main`) holds this cleanup. Docs 46-48,
+`docs/act5-content/` and doc 43's latest edits are on disk, not yet committed.
+
+**Before (10 Oct 2026): the Act V gate, third try (M43.0c, doc 43 §0.7) on `m45`.** PR #10 merged (`main` = `4512775`): docs
 43 v1.1, 44, 45 and the gate prototypes M43.0 and M43.0b (both FAIL, STOPPED below); `m44` tagged `m44-done` and deleted.
 `m43a` (the Act IV test image, M43.A) has its own PR. Nothing else for Act V is built until the gate passes.
 
@@ -240,7 +245,8 @@ has the same effect). **Report before changing anything.**
   has. `main` isn't affected (its table panels sit inside wrapper columns; checked in a browser, no overlap); a browser
   sweep of every Act IV page at 1440×800 shows no overlap now. Test: `tests/ui/dialogLayout.test.ts`.
 
-**`main` = `4512775`** (10 Oct 2026, PR #10 merged): docs 43-45, the gate M43.0 and M43.0b; `m44` tagged `m44-done` and
+**`main` = `b8d766f`** (11 Oct 2026, PRs #11 and #12 merged): the Act IV test image; doc 43 §0.7, the gate M43.0c and M43.0d;
+`m43a` and `m45` tagged `-done` and deleted. Before: `4512775` (10 Oct 2026, PR #10 merged): docs 43-45, the gate M43.0 and M43.0b; `m44` tagged `m44-done` and
 deleted. Before: `c08bb2c` (10 Oct 2026, PR #9 merged): doc 42, doc 27's F-10 note; `m43` tagged `m43-done` and deleted.
 Before: `4b633a7` (10 Oct 2026, PR #8 merged): M42 (notes only; F-10 closed); `m42` tagged `m42-done` and deleted.
 Before: `71f36cb` (10 Oct 2026, PR #7 merged): M41; `m41` tagged `m41-done` and deleted.
