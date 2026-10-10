@@ -191,7 +191,8 @@ starts at `m37`'s tip (it carries M37's last dev-notes commit, `d4a28ef`, not ye
 answers on M37's four questions (the 120 s prologue timing line, prepayments, gains on sales, the report's revenue tile).
 Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
 
-**Next, M38 (the Perfect-bot investigation, design thread answer 1):** investigate the Perfect bot's in-play reading
+**M38 done (report below, "M38"); now M39 (energy data fixes, doc 41,
+`docs/game-project-files/claude_41-energy-data-fixes.md`).** M38's brief was (the Perfect-bot investigation, design thread answer 1):** investigate the Perfect bot's in-play reading
 (F1 23, F3 55, below Passive's 53 and 58; the oracle gives 95/96). List its logged moves per quarter in one F1 run and
 one F3 run (kind, sign, the ideal stance that quarter) and say which kinds pull it below Passive. Hypothesis (DT):
 financing moves (raises, debt draws) taken to fund an offensive move score as defensive; if confirmed, propose "funding
@@ -256,6 +257,9 @@ browser check (1024 and 1440 px; Acts I, II, IV). Sims: `--act2 --act3` (and the
 - **Prologue bulk buying** (owner, 10 Oct 2026; presentation only): each machine card has a count (− / +, 1 / 10 / Max (N)), the
   total and power, one Buy; N = `p0MaxBuy` (views.ts: cash and free power, confirmed by p0BuyBlocker). Act I's Buy dialog
   already had a count. The used offer and pre-orders are one unit or one order by their rules: unchanged. Goldens unchanged.
+- **M38** (Perfect-bot reading, report only, no change): a build quarter logs presale− debt+ booking+ insure− = net 0 (0.5, not
+  1); raises the quarter before a build score 0; the build's own −1 moves count as decoy moves (F1 penalty 30). Same-quarter
+  "funding follows purpose" alone barely helps (F1 41→41, 23→33, 6→6); hedges neutral too: 41→90. Act III: 10 of 209 build quarters.
 
 ## Milestones M35-M36 (branch `m35`, from `m34` at `b194400`; energy options and ventures, doc 38 of 9 Oct 2026)
 
