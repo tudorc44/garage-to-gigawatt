@@ -252,6 +252,9 @@ Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5
   $185/MWh under on-site solar and the utility battery (mine: those four kinds).
 - **M39.7**: `source` replaces `verify` where doc 40 answered (Québec's Rate LG and the flare pad stay `verify`); the energy README
   rows updated with a "Still gaps" list. Runs (`--energy`, the byte-identity sims, the venture table): below.
+- M39 runs: `--act2 --act3` = M34, `--act4` = M36.11, prologue CSV identical (102-103 s). `--energy`: E-B1/E-B5 PASS, E-B2 MISS as
+  before; battery payback 2022Q4 33 q, 2024Q1 31 q, 2027Q1 20 q (were 81, 67, 35); egs2 F2 median 1.13 → 1.26 (the mark scales with
+  the pitch). Venture table unchanged (EGS 0.804, block 2 0.796, SMR 0.561, advanced 0.388, pumped 0.136, fusion 0, control 1.0).
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 
