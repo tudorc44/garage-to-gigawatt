@@ -192,8 +192,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 **Now (11 Oct 2026): the Act V gate waits for the owner's call on M43.0d** (5 of 6 targets pass; Fortress's V3 Locker ÷
 Holder 1.031 misses 1.05). PR #11 (M43.A, the Act IV test image) and PR #12 (doc 43 §0.7, M43.0c, M43.0d) merged (`main` =
-`b8d766f`); `m43a` and `m45` tagged `m43a-done`, `m45-done` and deleted; `m46` (from `main`) holds this cleanup. Docs 46-48,
-`docs/act5-content/` and doc 43's latest edits are on disk, not yet committed.
+`b8d766f`); `m43a` and `m45` tagged `m43a-done`, `m45-done` and deleted; `m46` (from `main`) holds this cleanup and the design
+thread's docs: doc 43's latest edits, doc 46 (the content task), doc 47 (the Act V content pack, data in `docs/act5-content/`
+with its generators), doc 48 (new chips research).
 
 **Before (10 Oct 2026): the Act V gate, third try (M43.0c, doc 43 §0.7) on `m45`.** PR #10 merged (`main` = `4512775`): docs
 43 v1.1, 44, 45 and the gate prototypes M43.0 and M43.0b (both FAIL, STOPPED below); `m44` tagged `m44-done` and deleted.
