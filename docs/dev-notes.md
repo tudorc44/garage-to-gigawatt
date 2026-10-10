@@ -254,6 +254,18 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
+
+Split: **1** the asset (WebP 1152 and 640 px in `src/assets/art/`; the PNG original in `docs/art/incoming/`) · **2** the art
+manifest `src/ui/art.ts` · **3** test art only in dev and staging · **4** the A4-01 intro banner and the "First block live"
+report panel, in Act IV's lazy chunk · **5** design · **6** checks (tests, bundle, browser at 1024 and 1440 px).
+- **1** done: one-off `npx sharp-cli@5.1.0` (no dependency), quality 85: 26 KB (1152 × 768) and 12 KB (640 × 427).
+- **2-3** done (one commit: the gate lives in the manifest, mine): `src/ui/art.ts` (`ART`, `artFor`, `SHOW_TEST_ART` = mode ≠
+  production or `VITE_SHOW_TEST_ART=true`); alt and credit through `t()`; test `tests/ui/art.test.ts`.
+- **4-6** done: `components/artFrame.tsx` (panel frame, cover to 260 px, lazy img with srcset, credit, "Test art" tag, a fade
+  off under reduced motion); A4-01 banner above "Enter 2031 →"; the report's "First block live" panel on the quarter the first
+  block went live (worked out from `liveQuarter`, no state flag: mine). Main bundle 225.63 → 225.66 KB; browser 1024/1440 OK.
+
 ## Milestone M43.0 (branch `m44`; the Act V gate, doc 43 §19, design thread prompt of 10 Oct 2026)
 
 Sim-only prototype, no UI, nothing in `src/` (goldens and sim outputs unchanged): `tools/act5-gate/` (`states.ts` plays

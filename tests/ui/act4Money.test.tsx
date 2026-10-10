@@ -71,4 +71,27 @@ describe('Act IV money screens (M31.6)', () => {
     const none = playQuarter(orbitCompany('f1'))
     expect(render(<Act4ReportPanel state={none} />).container.querySelector('[data-report-iv]')).toBeNull()
   })
+
+  it('M43.A: "First block live" shows once, on the report of the quarter the first block went live', () => {
+    let s = orbitCompany('f1')
+    s = act(s, { type: 'OPEN_ORBITAL_BLOCK', kind: 'shell', mw: 10, shell: 'sso', gen: 'gen31' })
+    Object.assign(s.act4Orbit!.blocks[0], { stage: 'live', liveQuarter: s.quarter, retireQuarter: s.quarter + 20, tenant: 'spot', capexSpentUsd: 2e8 })
+    s = playQuarter(s)
+    const first = render(<Act4ReportPanel state={s} />).container.querySelector('[data-first-block-live]')!
+    expect(first.textContent).toContain('Your first orbital block is live: Block 1, 10 MW in orbit.')
+    expect(first.querySelector('img')!.getAttribute('alt')).toContain('Six satellites')
+    expect(first.querySelector('img')!.getAttribute('loading')).toBe('lazy')
+    expect(first.textContent).toContain('Test art')
+    cleanup()
+    // the next quarter, with a second block going live: no moment
+    s = act(s, { type: 'OPEN_ORBITAL_BLOCK', kind: 'shell', mw: 10, shell: 'sso', gen: 'gen31' })
+    Object.assign(s.act4Orbit!.blocks[1], { stage: 'live', liveQuarter: s.quarter, retireQuarter: s.quarter + 20, tenant: 'spot', capexSpentUsd: 2e8 })
+    s = playQuarter(s)
+    expect(render(<Act4ReportPanel state={s} />).container.querySelector('[data-report-iv]')).not.toBeNull()
+    expect(document.querySelector('[data-first-block-live]')).toBeNull()
+    cleanup()
+    // the first quarter's report, viewed again later, still has it (the moment belongs to that report)
+    const earlier = s.reports.at(-2)!
+    expect(render(<Act4ReportPanel state={s} report={earlier} />).container.querySelector('[data-first-block-live]')).not.toBeNull()
+  })
 })

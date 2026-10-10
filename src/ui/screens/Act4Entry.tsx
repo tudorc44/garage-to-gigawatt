@@ -12,6 +12,7 @@ import { PRESETS_IV } from '../../content/presetsAct4.ts'
 import { t, tDynamic, type MessageKey } from '../../i18n/t.ts'
 import type { GameState } from '../../sim/state.ts'
 import { presetAct4Company, type Act4PresetId } from '../act4PresetStart.ts'
+import { ArtFrame } from '../components/artFrame.tsx'
 import { fmt } from '../format.ts'
 
 /** The three preset cards (A4-13): name, valuation, MW, cloud MW, debt, rating and a line; one is picked. */
@@ -213,6 +214,7 @@ export function Act4Intro(props: { state: GameState; onEnter: () => void }) {
               </tbody>
             </table>
           </div>
+          <ArtFrame slot="orbit_first_block" />
           <div class="row-between">
             <span class="num-s muted">{t('ui.act4.intro.foot')}</span>
             <button type="button" class="btn btn-primary" onClick={props.onEnter}>
