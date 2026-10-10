@@ -66,6 +66,7 @@ interface Run {
   sites: number
   poweredOffered: number
   poweredBought: number
+  held: number
 }
 
 const runs: Run[] = []
@@ -197,7 +198,7 @@ console.log('\nGround Holder (M34.4, M36.5): per preset, over its runs: built / 
 for (const p of PRESETS_IV) {
   const g = sel({ preset: p.id, bot: 'ground', grade: 'rich' })
   const sum = (k: keyof Run) => g.reduce((n, r) => n + Number(r[k]), 0)
-  console.log(`  ${p.id.padEnd(10)} runs ${g.length}: built ${sum('built')}, borrowed ${sum('borrowed')}, raised ${sum('raised')}, skipped ${sum('skipped')}; powered offered ${sum('poweredOffered')}, bought ${sum('poweredBought')}; stake ${median(g.map((r) => r.stake)).toFixed(3)}`)
+  console.log(`  ${p.id.padEnd(10)} runs ${g.length}: built ${sum('built')}, borrowed ${sum('borrowed')}, raised ${sum('raised')}, held (no payback in the act) ${sum('held')}, skipped ${sum('skipped')}; powered offered ${sum('poweredOffered')}, bought ${sum('poweredBought')}; stake ${median(g.map((r) => r.stake)).toFixed(3)}`)
 }
 console.log('\nB1-B14:')
 for (const [id, target, ok, got] of rows) console.log(`  ${id.padEnd(4)} ${ok ? 'PASS' : 'MISS'}  ${target}\n         ${got}`)

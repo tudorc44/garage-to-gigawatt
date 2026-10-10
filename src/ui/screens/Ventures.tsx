@@ -36,7 +36,7 @@ export function VenturesSection({ state, act }: ScreenProps) {
               <span class="num-s">{t('ui.ventures.total', { value: fmt.money(v.totalValueUsd) })}</span>
             </div>
             <p class="num-s muted" style={{ margin: 0 }}>
-              {t('ui.ventures.marks_note')}
+              {t('ui.ventures.marks_note', { hit: String(v.marks.hit), slip: String(v.marks.slip) })}
             </p>
             {v.mine.map((m) => (
               <div key={m.id} class="venture-row" data-venture={m.type}>
@@ -134,6 +134,12 @@ function Offer(props: { state: GameState; o: VentureOfferView; run: (a: Action) 
       </div>
       <p class="num-s muted" style={{ margin: 0 }}>
         {t(`ui.ventures.what.${o.type}`)}
+      </p>
+      <p class="num-s" style={{ margin: 0 }} data-venture-developer>
+        {t('ui.ventures.developer', {
+          stage: tDynamic(`ui.ventures.stage.${o.developerStage}`, o.developerStage),
+          start: fmt.quarter(o.developerStart),
+        })}
       </p>
       <p class="num-s" style={{ margin: 0 }}>
         {t(o.type === 'fusion' ? 'ui.ventures.pitch_fusion' : o.pitchPpaUsdMwh === null ? 'ui.ventures.pitch_storage' : 'ui.ventures.pitch', {

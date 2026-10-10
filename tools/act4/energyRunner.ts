@@ -12,7 +12,8 @@ import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { playFrom, playGame, type Strategy } from '../../src/sim/replay.ts'
 import { toAct3, toAct4, type GameState } from '../../src/sim/state.ts'
 import { regionOf } from '../../src/sim/systems/sites.ts'
-import { ventureRegions } from '../../src/sim/systems/ventures.ts'
+import { buyInUsd, prepayUsd, ventureRegions } from '../../src/sim/systems/ventures.ts'
+import { buildCostUsd } from '../../src/sim/systems/energy.ts'
 import { poweredKw } from '../../src/sim/systems/sites.ts'
 import { BOTS } from '../bots.ts'
 import { act4Archetypes } from './bots.ts'
@@ -50,6 +51,17 @@ function campusFor(s: GameState, type: VentureType): string | null {
   return sites[0]?.id ?? null
 }
 
+/**
+ * M36.10 (design thread, answer 5): the cash guard. A bot builds, joins or pays only if its cash after the spend still
+ * covers two quarters of the company's fixed costs (salaries, rent, interest and debt service, from the last report).
+ */
+function guardOk(s: GameState, spendUsd: number): boolean {
+  const r = s.reports.at(-1)
+  const fixedQ = r ? r.salariesUsd + r.rentUsd + r.interestUsd + r.principalUsd : 0
+  return s.cash - spendUsd >= 2 * fixedQ
+}
+export const guardStats = { blocked: 0 }
+
 /** The variant's own moves this quarter: join once (stake, offtake when it can), answer calls; or build behind the meter. */
 function variantStep(s: GameState, v: Variant): Action[] {
   const out: Action[] = []
@@ -60,6 +72,11 @@ function variantStep(s: GameState, v: Variant): Action[] {
       .sort((a, b) => poweredKw(b, s.quarter) - poweredKw(a, s.quarter))[0]
     if (site && !site.energy?.length)
       for (const mw of [50, 20, 10, 5]) {
+        const cost = (buildCostUsd(s, site, 'btm_solar', mw) ?? Infinity) + (buildCostUsd(s, site, 'bess', mw, 4) ?? Infinity)
+        if (!guardOk(s, cost)) {
+          guardStats.blocked++
+          continue
+        }
         out.push({ type: 'ENERGY_BUILD', siteId: site.id, kind: 'btm_solar', size: mw })
         out.push({ type: 'ENERGY_BUILD', siteId: site.id, kind: 'bess', size: mw, hours: 4 })
       }
@@ -67,12 +84,22 @@ function variantStep(s: GameState, v: Variant): Action[] {
   }
   if (!(s.ventures ?? []).some((x) => x.type === v)) {
     const campus = v === 'pumped' ? null : v === 'fusion' ? 'any' : campusFor(s, v)
-    if (campus) out.push({ type: 'VENTURE_JOIN', venture: v, stake: 0.2, offtake: 0.5, prepay: 0, ...(campus !== 'any' ? { siteId: campus } : {}) })
-    out.push({ type: 'VENTURE_JOIN', venture: v, stake: 0.2, offtake: 0, prepay: 0 })
-    out.push({ type: 'VENTURE_JOIN', venture: v, stake: 0.1, offtake: 0, prepay: 0 })
+    const tries: { stake: number; offtake: number; siteId?: string }[] = [
+      ...(campus ? [{ stake: 0.2, offtake: 0.5, ...(campus !== 'any' ? { siteId: campus } : {}) }] : []),
+      { stake: 0.2, offtake: 0 },
+      { stake: 0.1, offtake: 0 },
+    ]
+    for (const t of tries) {
+      const cost = buyInUsd(s, { type: v, stake: t.stake }) + prepayUsd({ type: v, offtake: t.offtake, prepay: 0 })
+      if (!guardOk(s, cost)) {
+        guardStats.blocked++
+        continue
+      }
+      out.push({ type: 'VENTURE_JOIN', venture: v, prepay: 0, ...t })
+    }
   }
   for (const x of s.ventures ?? [])
-    if (x.call) out.push({ type: 'VENTURE_CALL', ventureId: x.id, choice: s.cash > x.call.dueUsd + 100e6 ? 'pay' : 'dilute' })
+    if (x.call) out.push({ type: 'VENTURE_CALL', ventureId: x.id, choice: guardOk(s, x.call.dueUsd) ? 'pay' : 'dilute' })
   return out
 }
 
@@ -243,6 +270,7 @@ for (const v of VARIANTS) {
   )
 }
 console.log(`\nVenture milestone targets (doc 38): ${VENTURE_VARIANTS.map((v) => `${v} P(2035) ${VENTURES.types[v].targets.p2035}`).join(', ')}`)
+console.log(`Cash guard (M36.10): ${guardStats.blocked} builds, joins or sizes held back for want of two quarters' fixed costs`)
 console.log('\nE-B1, E-B2, E-B5 (E-B3 and E-B4: tests/sim/ventures.test.ts):')
 for (const [id, target, ok, got] of rows) console.log(`  ${id.padEnd(5)} ${ok ? 'PASS' : 'MISS'}  ${target}\n         ${got}`)
 writeFileSync(`${OUT}/energy-btable.txt`, rows.map(([id, t, ok, got]) => `${id}\t${ok ? 'PASS' : 'MISS'}\t${t}\t${got}`).join('\n') + '\n')

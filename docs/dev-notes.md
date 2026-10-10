@@ -279,6 +279,15 @@ the early-era options). Data and every designed value: `docs/energy-content/READ
 - M36.9: venture, energy and Act IV gas draws use act4SeedOf (each Act IV run of a preset had drawn the same values).
   Energy run `energy-m369`: E-B1 PASS (5/120 vs 36/720, p = 0.72), E-B2 MISS (EGS mean $65M vs control $2M; the control
   never leaves its grid wait), E-B3/E-B4 PASS (tests), E-B5 PASS (31 q in 2028 → 16 q in 2035). Open questions: report.
+- **B3 recorded as a miss** (design thread, 10 Oct 2026; × 0.60 kept): "Ground can't expand in Act IV (power scarcity is
+  the act's premise, doc 31/33), so 'ground ≥ 1.2 × Sprinter in F2' can't be met; the honest check, 'ground doesn't lose to
+  orbit in the bust', holds (1.03× vs 1.05×)."
+- **M36.10** (design thread answers of 10 Oct 2026): Ground Holder builds only clouds that pay back by 2035Q4; marks × 1.25;
+  ventures on calendar dates (one developer per type, running from its start whether you join or not), slips and the SMR
+  cancellation calibrated to doc 38's P(power by 2035); a cash guard in the energy harness's bots; re-runs and the report.
+  Built: one developer per type from its doc 38 start (2027Q1; fusion 2028Q1), replayed quietly; joining takes it over as
+  it stands (milestones count after joining). Fitted (mine, to the targets, 2,000 games): EGS slip σ 0.2 → 1.14 (80.4%),
+  SMR slip 1.6 → 1.06 and cancel below 30% subscribed (was 80%) (56.1%), advanced 1.07 and 30% (38.8%), pumped 1.45 → 1.27 (13.6%), fusion 0% (the 2038 rule).
 
 ## Milestone M34 (branch `m34`, from `m33` at `1864da9`; the owner's answers after M33, 9 Oct 2026)
 

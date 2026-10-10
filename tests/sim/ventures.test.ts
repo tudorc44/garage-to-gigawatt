@@ -179,17 +179,17 @@ describe('E-B4: across 30 seeds an SMR is cancelled and a fusion venture folds (
 })
 
 describe('ventures marked to milestones (M36.8, design thread answer 11a)', () => {
-  it('buy-in × 1.5 per milestone × 0.8 per slip, scaled by dilution; calls at par; 0 once cancelled', () => {
+  it('buy-in × 1.25 per milestone × 0.8 per slip, scaled by dilution; calls at par; 0 once cancelled', () => {
     const s = company()
     const v = joinVenture(s, { type: 'egs', stake: 0.2, offtake: 0, prepay: 0 })
     const buyIn = v.buyInUsd!
     expect(venturesValueUsd(s)).toBe(buyIn)
     v.milestones = 2
     v.slips = 1
-    expect(venturesValueUsd(s)).toBeCloseTo(buyIn * 1.5 * 1.5 * 0.8)
+    expect(venturesValueUsd(s)).toBeCloseTo(buyIn * 1.25 * 1.25 * 0.8)
     v.stake = 0.1
     v.callsPaidUsd = 5e6
-    expect(venturesValueUsd(s)).toBeCloseTo(buyIn * 0.5 * 1.5 * 1.5 * 0.8 + 5e6)
+    expect(venturesValueUsd(s)).toBeCloseTo(buyIn * 0.5 * 1.25 * 1.25 * 0.8 + 5e6)
     v.stage = 'cancelled'
     expect(venturesValueUsd(s)).toBe(0)
   })

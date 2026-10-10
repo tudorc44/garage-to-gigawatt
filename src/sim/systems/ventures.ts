@@ -7,7 +7,7 @@
 // grid wait, and your stake revalues at the ground AI multiple. Fusion has four science gates instead, and never
 // delivers power before 2038. Every roll uses its own substream ("venture:…"), so a game without a venture plays as
 // before.
-import { CONTENT, act4Row, actLastQuarter } from '../../content/index.ts'
+import { CONTENT, actFirstQuarter, actLastQuarter } from '../../content/index.ts'
 import { ENERGY, VENTURES, VENTURE_TYPES, energyYear, type VentureType } from '../../content/energyContent.ts'
 import type { Message } from '../../i18n/t.ts'
 import { chance, randomInt, substream, uniform, type RngHolder } from '../rng.ts'
@@ -164,6 +164,10 @@ export function joinBlocker(state: GameState, j: VentureJoin): Message | undefin
   if (blocked) return blocked
   // One developer per type: you join it once while it lives (mine).
   if (liveVentures(state).some((v) => v.type === j.type)) return { key: 'error.venture_joined' }
+  // M36.10: the developer's project runs on its own calendar; a cancelled, folded or finished one takes no new money.
+  const dev = developerVenture(state, j.type)
+  if (dev.stage === 'cancelled' || dev.stage === 'folded') return { key: 'error.venture_gone' }
+  if (dev.stage === 'operating') return { key: 'error.venture_built' }
   if (j.stake !== 0 && !V.equity_shares.includes(j.stake)) return { key: 'error.bad_choice' }
   if (j.offtake !== 0 && !V.offtake_shares.includes(j.offtake)) return { key: 'error.bad_choice' }
   if (!(j.prepay >= 0 && j.prepay < V.prepay.length)) return { key: 'error.bad_choice' }
@@ -180,59 +184,84 @@ export function joinBlocker(state: GameState, j: VentureJoin): Message | undefin
   if (state.cash < cost) return { key: 'error.no_cash', params: { costUsd: cost, cashUsd: state.cash } }
 }
 
-/** Joins a venture: pays the buy-in and any prepayment; draws the hidden cost and schedule (doc 38 §5.1-5.8). */
-export function joinVenture(state: GameState, j: VentureJoin): Venture {
-  const id = `venture-${state.nextId++}`
-  // (Act IV's own seed when there is one, so each Act IV run draws afresh: act4SeedOf)
-  const r = substream(act4SeedOf(state), `venture:${id}`)
-  const t = T[j.type]
-  const q = state.quarter
-  const budget = budgetUsd(state, j.type)
-  const buyIn = buyInUsd(state, j)
-  const prepaid = prepayUsd(j)
-  const pitchPpa = pitchPpaUsdMwh(j.type) ?? 0
-  const cut = j.type === 'fusion' ? 0 : V.prepay[j.prepay].price_cut
+/** M36.10 (design thread, answer 4): a developer's project starts on its doc 38 date, whether or not you join. */
+export const developerStart = (type: VentureType) => qIndex(T[type].from)
+
+/**
+ * M36.10: the developer's project of a type as it stands at the start of quarter `upTo` (default: now), with nobody's
+ * stake or offtake: its hidden draws (one set per game and type) and its history replayed quietly from its start, so a
+ * late joiner buys into a project already under way, or finds it cancelled, folded or built. Pure: no logs or cash.
+ */
+export function developerVenture(state: GameState, type: VentureType, upTo = state.quarter): Venture {
+  const start = developerStart(type)
+  const t = T[type]
   const v: Venture = {
-    id,
-    type: j.type,
-    joinedQuarter: q,
+    id: `developer-${type}`,
+    type,
+    joinedQuarter: start,
     mw: t.mw,
-    pitchUsdKw: pitchUsdKw(state, j.type),
-    budgetUsd: roundCents(budget),
-    diligence: state.ventureDiligence?.includes(j.type) ?? false,
-    stake: j.stake,
-    paidUsd: buyIn,
-    offtakeMw: j.type === 'fusion' ? T.fusion.reservation_mw * j.offtake : t.mw * j.offtake,
-    ppaUsdMwh: roundCents(pitchPpa * (1 - cut)),
-    prepaidUsd: prepaid,
-    siteId: j.offtake > 0 && j.type !== 'fusion' ? (j.siteId ?? null) : null,
+    pitchUsdKw: pitchUsdKw(state, type),
+    budgetUsd: roundCents(budgetUsd(state, type)),
+    diligence: false,
+    stake: 0,
+    paidUsd: 0,
+    offtakeMw: 0,
+    ppaUsdMwh: pitchPpaUsdMwh(type) ?? 0,
+    prepaidUsd: 0,
+    siteId: null,
     m: 1,
     stage: 'construction',
-    licenceEnd: q,
-    buildStart: q,
-    buildEnd: q,
-    codQuarter: q,
+    licenceEnd: start,
+    buildStart: start,
+    buildEnd: start,
+    codQuarter: start,
     callsDone: 0,
     call: null,
     othersSubscribed: 0,
     partnerCut: 0,
+    pitchCodQuarter: pitchCodQuarter(type, start),
+  }
+  // (Act IV's own seed when there is one, so each Act IV run draws afresh: act4SeedOf)
+  drawSchedule(v, start, substream(act4SeedOf(state), `venture:${type}`))
+  for (let q = start; q < upTo && !isOver(v) && v.stage !== 'operating'; q++)
+    stepVenture(state, v, q, true)
+  return v
+}
+
+/** Joins a venture: pays the buy-in and any prepayment, and takes the developer's project over as it stands now. */
+export function joinVenture(state: GameState, j: VentureJoin): Venture {
+  const dev = developerVenture(state, j.type)
+  const t = T[j.type]
+  const buyIn = buyInUsd(state, j)
+  const prepaid = prepayUsd(j)
+  const cut = j.type === 'fusion' ? 0 : V.prepay[j.prepay].price_cut
+  const v: Venture = {
+    ...dev,
+    id: `venture-${state.nextId++}`,
+    joinedQuarter: state.quarter,
+    diligence: state.ventureDiligence?.includes(j.type) ?? false,
+    stake: j.stake,
+    paidUsd: buyIn,
+    offtakeMw: j.type === 'fusion' ? T.fusion.reservation_mw * j.offtake : t.mw * j.offtake,
+    ppaUsdMwh: roundCents((pitchPpaUsdMwh(j.type) ?? 0) * (1 - cut)),
+    prepaidUsd: prepaid,
+    siteId: j.offtake > 0 && j.type !== 'fusion' ? (j.siteId ?? null) : null,
     buyInUsd: buyIn,
     stakeAtJoin: j.stake,
     callsPaidUsd: 0,
+    // (only milestones and slips after you join count toward your mark)
     milestones: 0,
     slips: 0,
-    pitchCodQuarter: pitchCodQuarter(j.type, q),
   }
-  drawSchedule(state, v, r)
   state.cash = roundCents(state.cash - buyIn - prepaid)
   ;(state.ventures ??= []).push(v)
   logEntry(state, 'log.venture.joined', { ventureType: j.type, costUsd: buyIn + prepaid })
   return v
 }
 
-/** The hidden draws (doc 38 §5.1-5.7): the cost multiplier, the schedule and its slips, the type's own risks. */
-function drawSchedule(state: GameState, v: Venture, r: RngHolder): void {
-  const q = state.quarter
+/** The hidden draws (doc 38 §5.1-5.7): the cost multiple, the schedule from `start` and its slips, the type's risks. */
+function drawSchedule(v: Venture, start: number, r: RngHolder): void {
+  const q = start
   if (v.type === 'fusion') {
     const f = T.fusion
     v.stage = 'research'
@@ -263,15 +292,8 @@ function drawSchedule(state: GameState, v: Venture, r: RngHolder): void {
   }
   if (v.type === 'egs') v.weakField = chance(r, T.egs.weak_field.chance)
   v.buildEnd = v.buildStart + Math.max(1, build)
-  // The control waits for its grid connection after building (16-24 quarters; Act IV: the future's grid wait).
-  v.codQuarter =
-    v.type === 'control' ? v.buildEnd + gridWaitQuarters(state, r) : v.buildEnd
-}
-
-/** The grid wait for the control (doc 38 §5.8): Act IV's market column, else 16-24 quarters drawn. */
-function gridWaitQuarters(state: GameState, r: RngHolder): number {
-  const market = inActIV(state) ? act4Row(state.quarter, scenarioOf(state)).grid_wait_q : undefined
-  return typeof market === 'number' ? Math.round(market) : randomInt(r, ...T.control.grid_wait_q)
+  // The control waits for its grid connection after building (16-24 quarters, from its 2027 start: doc 38 §5.8).
+  v.codQuarter = v.type === 'control' ? v.buildEnd + randomInt(r, ...T.control.grid_wait_q) : v.buildEnd
 }
 
 // ---------- Cash calls ----------
@@ -367,36 +389,46 @@ export function endQuarterVentures(state: GameState): { revenueUsd: number } {
   const q = state.quarter
   for (const v of list) {
     if (isOver(v)) continue
-    const r = substream(act4SeedOf(state), `venture:${v.id}:q${q}`)
-    if (v.type === 'fusion') stepFusion(state, v, r)
-    else stepBuild(state, v, r)
+    stepVenture(state, v, q, false)
     if (v.stage === 'operating') revenueUsd += deliverySavingsUsd(state, v)
-    // M36.8: each full year past the pitched first power without it is a slip (from the pitched quarter itself).
-    else if (!isOver(v) && v.pitchCodQuarter !== undefined) {
-      const late = q + 1 - v.pitchCodQuarter
-      if (late >= 0 && late % 4 === 0) mark(v, 'slip')
-    }
   }
   syncVentureKw(state)
   state.cash = roundCents(state.cash + revenueUsd)
   return { revenueUsd }
 }
 
-function stepBuild(state: GameState, v: Venture, r: RngHolder): void {
-  const q = state.quarter
+/**
+ * One quarter's end for a venture (quarter `q`): its build, licence, gates and events, on the type's own stream for
+ * that quarter. `quiet` (the developer's replay before you join): no log lines, Heat, political capital or cash.
+ */
+function stepVenture(state: GameState, v: Venture, q: number, quiet: boolean): void {
+  const r = substream(act4SeedOf(state), `venture:${v.type}:q${q}`)
+  if (v.type === 'fusion') stepFusion(state, v, r, q, quiet)
+  else stepBuild(state, v, r, q, quiet)
+  // M36.8: each full year past the pitched first power without it is a slip (from the pitched quarter itself).
+  if (v.stage !== 'operating' && !isOver(v) && v.pitchCodQuarter !== undefined) {
+    const late = q + 1 - v.pitchCodQuarter
+    if (late >= 0 && late % 4 === 0) mark(v, 'slip')
+  }
+}
+
+function stepBuild(state: GameState, v: Venture, r: RngHolder, q: number, quiet: boolean): void {
+  const log: typeof logEntry = (...a) => {
+    if (!quiet) logEntry(...a)
+  }
   if (v.stage === 'licensing') {
     if (isNuclear(v.type)) {
       const c = T[v.type].cancel
       const subscribed = v.othersSubscribed + v.offtakeMw / v.mw
       if (subscribed < c.subscribed_min && chance(r, perQuarter(c.per_year))) {
-        end(state, v, 'cancelled')
+        end(state, v, 'cancelled', q, quiet)
         return
       }
     }
     if (q + 1 >= v.licenceEnd) {
       v.stage = 'construction'
       mark(v, 'milestone')
-      logEntry(state, 'log.venture.licensed', { ventureType: v.type })
+      log(state, 'log.venture.licensed', { ventureType: v.type })
     }
     return
   }
@@ -407,8 +439,8 @@ function stepBuild(state: GameState, v: Venture, r: RngHolder): void {
       v.codQuarter += T.egs.seismic.pause_q
       mark(v, 'slip')
       const site = state.sites.find((s) => s.id === v.siteId)
-      if (site) addGrievance(state, site.id, T.egs.seismic.heat)
-      logEntry(state, 'log.venture.seismic', { ventureType: v.type })
+      if (site && !quiet) addGrievance(state, site.id, T.egs.seismic.heat)
+      log(state, 'log.venture.seismic', { ventureType: v.type })
     }
     const span = Math.max(1, v.buildEnd - v.buildStart)
     const progress = (q + 1 - v.buildStart) / span
@@ -421,31 +453,32 @@ function stepBuild(state: GameState, v: Venture, r: RngHolder): void {
         v.call = {
           n: v.callsDone,
           dueUsd: due,
-          partnerShare: inActIV(state) ? Math.round(uniform(r, ...V.partner_cover) * 100) / 100 : null,
+          partnerShare: q >= actFirstQuarter(4) ? Math.round(uniform(r, ...V.partner_cover) * 100) / 100 : null,
           costShare:
             isNuclear(v.type) && chance(r, T[v.type].cost_share.chance)
               ? Math.round(uniform(r, ...T[v.type].cost_share.share) * 100) / 100
               : null,
         }
-        logEntry(state, 'log.venture.call', { ventureType: v.type, n: v.callsDone, costUsd: due })
+        log(state, 'log.venture.call', { ventureType: v.type, n: v.callsDone, costUsd: due })
       }
     }
     if (q + 1 >= v.buildEnd && v.callsDone >= 3) {
       if (v.type === 'control' && v.codQuarter > q + 1) {
         v.stage = 'grid_wait'
-        logEntry(state, 'log.venture.grid_wait', { ventureType: v.type, quarter: logQuarterLabel(state, v.codQuarter) })
-      } else firstPower(state, v)
+        log(state, 'log.venture.grid_wait', { ventureType: v.type, quarter: logQuarterLabel(state, v.codQuarter) })
+      } else firstPower(state, v, q, quiet)
     }
     return
   }
-  if (v.stage === 'grid_wait' && q + 1 >= v.codQuarter) firstPower(state, v)
+  if (v.stage === 'grid_wait' && q + 1 >= v.codQuarter) firstPower(state, v, q, quiet)
 }
 
 /** First power (doc 38 §5.1 point 6): delivery starts next quarter; EGS may find a weak well field. */
-function firstPower(state: GameState, v: Venture): void {
+function firstPower(state: GameState, v: Venture, q: number, quiet: boolean): void {
   v.stage = 'operating'
-  v.codQuarter = state.quarter + 1
+  v.codQuarter = q + 1
   mark(v, 'milestone')
+  if (quiet) return
   logEntry(state, 'log.venture.first_power', { ventureType: v.type })
   if (v.type === 'egs') {
     if (state.politicalCapital !== undefined && inActIII(state)) addPc(state, T.egs.pc_on_cod)
@@ -457,10 +490,11 @@ function firstPower(state: GameState, v: Venture): void {
   }
 }
 
-function end(state: GameState, v: Venture, stage: 'cancelled' | 'folded'): void {
+function end(state: GameState, v: Venture, stage: 'cancelled' | 'folded', q: number, quiet: boolean): void {
   v.stage = stage
-  v.endedQuarter = state.quarter
+  v.endedQuarter = q
   v.call = null
+  if (quiet) return
   // A fusion reservation is refundable only on a fold (doc 38 §5.5); an SMR prepayment is lost on cancellation.
   const refund = stage === 'folded' && v.type === 'fusion' ? v.prepaidUsd : 0
   state.cash = roundCents(state.cash + refund)
@@ -475,17 +509,16 @@ function end(state: GameState, v: Venture, stage: 'cancelled' | 'folded'): void 
  * A failed gate: half the time a pivot (8-12 quarters, a new raise at half the valuation: pay to keep your stake or be
  * diluted to half), else it folds. The last gate (90% availability) never comes before 2038.
  */
-function stepFusion(state: GameState, v: Venture, r: RngHolder): void {
+function stepFusion(state: GameState, v: Venture, r: RngHolder, q: number, quiet: boolean): void {
   const f = T.fusion
-  const q = state.quarter
   if (v.gate === undefined || v.gateDue === undefined || q + 1 < v.gateDue) return
   const gate = f.gates[v.gate]
   if (chance(r, gate.p)) {
-    logEntry(state, 'log.venture.gate_passed', { ventureGate: gate.id })
+    if (!quiet) logEntry(state, 'log.venture.gate_passed', { ventureGate: gate.id })
     mark(v, 'milestone')
     v.gate++
     if (v.gate >= f.gates.length) {
-      firstPower(state, v)
+      firstPower(state, v, q, quiet)
       return
     }
     const next = f.gates[v.gate]
@@ -498,12 +531,13 @@ function stepFusion(state: GameState, v: Venture, r: RngHolder): void {
   if (chance(r, f.pivot.chance)) {
     v.gateDue = q + 1 + randomInt(r, ...f.pivot.q)
     mark(v, 'slip')
+    if (quiet) return
     logEntry(state, 'log.venture.pivot', { ventureGate: gate.id })
     if (v.stake > 0) {
       // Keeping your stake through the down round costs half of what you paid in (mine); else it halves.
       v.call = { n: 5, dueUsd: roundCents(v.paidUsd * f.pivot.valuation_mult), partnerShare: null, costShare: null }
     }
-  } else end(state, v, 'folded')
+  } else end(state, v, 'folded', q, quiet)
 }
 
 /** The fusion hype (doc 38 §5.5): +1x on your multiples between first plasma and Q > 1, −2x for 4 quarters after a
@@ -578,7 +612,7 @@ function mark(v: Venture, kind: 'milestone' | 'slip'): void {
 
 /**
  * Your venture's value, marked to milestones (M36.8, design thread answer 11a), as a funding round would mark it: the
- * buy-in, scaled by any dilution since, × 1.5 per milestone hit × 0.8 per slip; cash calls paid at par; prepayments at
+ * buy-in, scaled by any dilution since, × 1.25 per milestone hit (M36.10; was 1.5) × 0.8 per slip; cash calls paid at par; prepayments at
  * cost; at first power an offtake adds its contracted power savings over the rest of the act. 0 once cancelled,
  * folded or walked away from (an offtake you keep still counts).
  */

@@ -11,7 +11,7 @@
 //   passive     Passive: no actions at all.
 //   perfect     The perfect reader (B8, B9): commits orbit in the quarters the future's ideal stance is +1, insures,
 //               presells and cancels in the −1 quarters, rests in the 0s. Reads the hidden ideal: tools only.
-import { CONTENT, actFirstQuarter, act4Row } from '../../src/content/index.ts'
+import { CONTENT, actFirstQuarter, actLastQuarter, act4Row } from '../../src/content/index.ts'
 import { MOON } from '../../src/content/moonContent.ts'
 import { openProjectView } from '../../src/sim/projectViews.ts'
 import { renewalsDue } from '../../src/sim/selectors.ts'
@@ -175,6 +175,8 @@ export const groundStats = {
   /** M36.5: quarters a scouting round offered a powered site (≤ half its energized MW), and powered sites bought. */
   poweredOffered: 0,
   poweredBought: 0,
+  /** M36.10: clouds on offer that wouldn't pay back inside the act, so it held. */
+  held: 0,
 }
 /** Pro-forma leverage cap (designed: 4×). */
 const LEVERAGE_CAP = 4
@@ -229,6 +231,7 @@ function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null 
   if (!site || !gpu) return null
   const freeMw = Math.floor(convertibleKw(s, site.id) / 1000)
   let offered = false
+  let held = false
   for (const mw of [40, 30, 20, 15, 10, 8, 5, 3, 2, 1].filter((m) => m <= freeMw)) {
     const open: Action = { type: 'PROJECT_OPEN', siteId: site.id, kw: mw * 1000, kind: 'cloud', gpu }
     const r = applyAction(s, open)
@@ -239,6 +242,12 @@ function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null 
     if (!offer) return null
     offered = true
     const signed = tryAll(r.state, [{ type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: offer.id }])
+    // M36.10 (design thread, answer 2): only a cloud that pays back inside the act: its own money ÷ its contracted
+    // yearly EBITDA ≤ the years left to the act's end (checked on the cheapest funding, with debt where it's allowed).
+    if (!paysBackInAct(signed.after, p.id)) {
+      held = true
+      continue
+    }
     const start = (st: GameState, extra: Action[]) =>
       tryAll(st, [...extra, { type: 'PROJECT_FUND_CASH', projectId: p.id }, { type: 'PROJECT_START', projectId: p.id }])
     const started = (t: { kept: Action[] }) => t.kept.some((a) => a.type === 'PROJECT_START')
@@ -280,8 +289,23 @@ function groundCloud(s: GameState): { kept: Action[]; after: GameState } | null 
       }
     }
   }
-  if (offered) groundStats.skipped++
+  // (a quarter counts once: held if no size paid back, else skipped for want of funds)
+  if (held) groundStats.held++
+  else if (offered) groundStats.skipped++
   return null
+}
+
+/** M36.10: the project's own money (after the debt the game would lend) pays back within the years left in the act. */
+function paysBackInAct(s: GameState, projectId: string): boolean {
+  const withDebt = tryAll(s, [
+    { type: 'PROJECT_DEBT', projectId, debt: 'project_debt', on: true },
+    { type: 'PROJECT_DEBT', projectId, debt: 'ddtl', on: true },
+  ]).after
+  const p = withDebt.projects.find((x) => x.id === projectId)!
+  const own = debtPlan(withDebt, p).equityUsd
+  const ebitdaYr = projectedReturn(withDebt, p).ebitdaUsd ?? 0
+  const yearsLeft = (actLastQuarter(4) - s.quarter + 1) / 4
+  return ebitdaYr > 0 && own / ebitdaYr <= yearsLeft
 }
 
 /** What starting a project still needs in cash, or null if it can't tell (the build blocker's figure, once the

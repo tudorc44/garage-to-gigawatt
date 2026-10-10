@@ -9,6 +9,8 @@ import { regionOf } from './systems/sites.ts'
 import {
   buyInUsd,
   callBlocker,
+  developerStart,
+  developerVenture,
   callDueUsd,
   diligenceBlocker,
   joinBlocker,
@@ -48,6 +50,9 @@ export interface VentureOfferView {
   equityOnly: boolean
   /** Doc 38's milestone chances (shown as the developer's record). */
   p2035: number
+  /** M36.10: where the developer's project stands now (it runs whether you join or not), and when it started. */
+  developerStage: VentureStage
+  developerStart: string
 }
 
 export interface MyVentureView {
@@ -85,6 +90,8 @@ export interface VenturesView {
   offers: VentureOfferView[]
   mine: MyVentureView[]
   totalValueUsd: number
+  /** The marks' multipliers (ventures.json), for the page's note. */
+  marks: { hit: number; slip: number }
 }
 
 /** The pitched first power's year for a venture joined in quarter `joined` (relative to joining: doc 38's dates assume
@@ -106,7 +113,10 @@ function offerView(state: GameState, type: VentureType): VentureOfferView {
     type,
     mw: t.mw,
     pitchUsdKw: pitchUsdKw(state, type),
-    pitchYear: pitchYear(type, state.quarter),
+    // (M36.10: the developer's own calendar date, from its start)
+    pitchYear: pitchYear(type, developerStart(type)),
+    developerStage: developerVenture(state, type).stage,
+    developerStart: CONTENT.quarters[developerStart(type)],
     pitchPpaUsdMwh: pitchPpaUsdMwh(type),
     referenceUsdKw: done ? referenceUsdKw(state, type) : null,
     overrunClass: 'class' in t ? t.class : 'fusion',
@@ -175,6 +185,7 @@ export function venturesView(state: GameState): VenturesView {
       : [],
     mine,
     totalValueUsd: mine.reduce((n, v) => n + v.valueUsd, 0),
+    marks: { hit: VENTURES.marks.milestone_mult, slip: VENTURES.marks.slip_mult },
   }
 }
 
