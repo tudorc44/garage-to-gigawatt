@@ -167,6 +167,8 @@ describe('E-B4: across 30 seeds an SMR is cancelled and a fusion venture folds (
       s.act = 4
       s.futureId = 'f2'
       stepTo(s, '2035Q4')
+      // (and 2035Q4's own end: the honesty rule must hold through the act's last quarter)
+      endQuarterVentures(s)
       cancelled += s.ventures!.filter((v) => v.type === 'smr' && v.stage === 'cancelled').length
       folded += s.ventures!.filter((v) => v.type === 'fusion' && v.stage === 'folded').length
       fusionPower += s.ventures!.filter((v) => v.type === 'fusion' && v.stage === 'operating').length

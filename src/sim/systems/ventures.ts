@@ -524,7 +524,7 @@ function stepFusion(state: GameState, v: Venture, r: RngHolder, q: number, quiet
     const next = f.gates[v.gate]
     v.gateDue = q + 1 + randomInt(r, ...next.q)
     // Honesty rule: no fusion power before 2038 (in Acts III-IV it never delivers).
-    if (v.gate === f.gates.length - 1) v.gateDue = Math.max(v.gateDue, qIndex(f.no_power_before) >= 0 ? qIndex(f.no_power_before) : actLastQuarter(4) + 1)
+    if (v.gate === f.gates.length - 1) v.gateDue = Math.max(v.gateDue, quarterIndexBeyond(f.no_power_before))
     return
   }
   v.hypeMinusUntil = q + 1 + f.hype.minus_q
@@ -538,6 +538,18 @@ function stepFusion(state: GameState, v: Venture, r: RngHolder, q: number, quiet
       v.call = { n: 5, dueUsd: roundCents(v.paidUsd * f.pivot.valuation_mult), partnerShare: null, costShare: null }
     }
   } else end(state, v, 'folded', q, quiet)
+}
+
+/**
+ * A quarter's index, counting on past the timeline's last quarter ("2038Q1" is 9 after 2035Q4), so a date beyond the
+ * game stays beyond it (M36.10: fusion's 2038 rule had fallen back to the quarter after the last).
+ */
+export function quarterIndexBeyond(id: string): number {
+  const i = qIndex(id)
+  if (i >= 0) return i
+  const n = (q: string) => Number(q.slice(0, 4)) * 4 + Number(q.slice(5)) - 1
+  const last = CONTENT.quarters.length - 1
+  return last + n(id) - n(CONTENT.quarters[last])
 }
 
 /** The fusion hype (doc 38 §5.5): +1x on your multiples between first plasma and Q > 1, −2x for 4 quarters after a
