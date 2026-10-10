@@ -18,8 +18,9 @@ import {
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, uniform } from '../rng.ts'
-import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
+import { logEntry, type Coin, type GameState } from '../state.ts'
 import { getModel } from '../systems/market.ts'
+import { book, oneOffCategory, roundCash } from '../ledger.ts'
 import { orderSale, withdrawAll } from './custody.ts'
 import { prologueEndQuarter } from './engine.ts'
 import { answerHousehold, attendConference, conferenceNow } from './life.ts'
@@ -231,7 +232,10 @@ function applyChoice(s: GameState, card: PrologueCard, choiceId: string): void {
     p0Choice: `${card.id}.choice.${choiceId}`,
   })
   if (fx.flag && !p.flags.includes(fx.flag)) p.flags.push(fx.flag)
-  if (fx.cash) s.cash = roundCents(s.cash + fx.cash)
+  if (fx.cash) {
+    book(s, oneOffCategory(fx.cash), fx.cash)
+    roundCash(s)
+  }
   if (fx.household_patience && p.livingAtHome)
     p.patience = Math.max(
       0,

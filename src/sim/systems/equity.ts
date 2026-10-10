@@ -5,6 +5,7 @@
 // pre-money × d ÷ (1 − d), so the new shares are exactly d of the company after the raise. 1 Bandwidth
 // each; up to 2 a quarter, both priced the same way.
 import { BALANCE, CONTENT } from '../../content/index.ts'
+import { book } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import { inAct2Rules, inActIV, logEntry, type GameState } from '../state.ts'
 import { MONEY } from '../../content/moneyContent.ts'
@@ -118,7 +119,7 @@ export function equityBlocker(
 /** Raises equity at `dilution` (assumes equityBlocker passed): cash in, founder diluted. */
 export function raiseEquity(state: GameState, dilution: number): void {
   const amountUsd = equityRaiseUsd(state, dilution)
-  state.cash += amountUsd
+  book(state, 'equity_raised', amountUsd)
   state.founderStake *= 1 - dilution
   state.bandwidth -= BALANCE.finance.bandwidth.equity
   const done = raisesThisQuarter(state)

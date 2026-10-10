@@ -18,6 +18,7 @@ import {
   quarterInputs,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import {
   logEntry,
   projectGone,
@@ -141,7 +142,7 @@ export function gpuSaleCard(
   const valueUsd = Math.round(
     gpuResidualUsd(p, state.quarter) * (1 - ownedShareOut(p)) * mult,
   )
-  state.cash += valueUsd
+  book(state, 'asset_sales', valueUsd, { site: p.siteId, project: p.id, biz: 'ai' })
   p.stage = 'ended'
   p.soldQuarter = state.quarter
   repayProjectFacilities(state, p.id)
@@ -197,7 +198,7 @@ export function accelerateCard(
     return
   }
   const costUsd = accelerateCostUsd(state, p, e)
-  state.cash -= costUsd
+  book(state, 'project_capex', -costUsd, { site: p.siteId, project: p.id })
   p.readyQuarter = Math.max(state.quarter + 1, p.readyQuarter! - e.quarters)
   // Its new power keeps up (mine, reversible: the card buys the equipment sooner too).
   const add = state.sites
@@ -278,7 +279,7 @@ export function rackCard(state: GameState, e: RackCard, weekNo: number): void {
     readyQuarter: state.quarter,
     soldQuarter: null,
   })
-  state.cash -= plan.costUsd
+  book(state, 'gpus', -plan.costUsd, { site: site.id, project: `project-${n}` })
   logEntry(
     state,
     'log.card_racks',

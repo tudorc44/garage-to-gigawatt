@@ -6,6 +6,7 @@
 // - the transformer upgrade (sites.json › flaws.undersized_transformer): pay to clear the flaw;
 // - the GPU shortage cap (machines.json › gpu_cap): GPU rigs per quarter, in kW.
 import { BALANCE, CONTENT, type SiteTier } from '../../content/index.ts'
+import { book } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
 import { logQuarterLabel } from '../state.ts'
@@ -102,7 +103,7 @@ export function buildPhase(
   const next = nextPhase(state, site)!
   state.bandwidth -= BALANCE.bandwidth.build
   if (financed) takeConstructionLoan(state, constructionLoanUsd(next.costUsd))
-  state.cash -= next.costUsd
+  book(state, 'site_builds', -next.costUsd, { site: siteId })
   const ready = state.quarter + next.quarters
   site.phases!.push(ready)
   logEntry(state, 'log.phase_started', {
@@ -152,7 +153,7 @@ export function constructionLoanUsd(costUsd: number): number {
 /** Takes a construction loan (cash in). Call constructionLoanBlocker first. */
 export function takeConstructionLoan(state: GameState, amountUsd: number) {
   const terms = CONTENT.constructionLoan
-  state.cash += amountUsd
+  book(state, 'debt_drawn', amountUsd)
   state.constructionLoans.push({
     amountUsd,
     balanceUsd: amountUsd,
@@ -183,7 +184,7 @@ export function repayConstructionLoan(state: GameState): Message | undefined {
       params: { costUsd: owed, cashUsd: state.cash },
     }
   }
-  state.cash -= owed
+  book(state, 'debt_repaid', -owed)
   logEntry(state, 'log.construction_loan_repaid', { amountUsd: owed })
   state.constructionLoans = []
 }
@@ -235,7 +236,7 @@ export function transformerUpgrade(site: Site) {
 export function upgradeTransformer(state: GameState, siteId: string): void {
   const site = state.sites.find((s) => s.id === siteId)!
   const u = transformerUpgrade(site)!
-  state.cash -= u.costUsd
+  book(state, 'site_builds', -u.costUsd, { site: siteId })
   state.bandwidth -= u.bandwidth
   site.upgradeReadyQuarter = state.quarter + u.quarters
   logEntry(state, 'log.transformer_upgrade', {

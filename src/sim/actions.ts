@@ -31,6 +31,7 @@ import {
   type Site,
 } from './state.ts'
 import { logQuarterLabel } from './state.ts'
+import { book, bookSplit } from './ledger.ts'
 import { addSite, siteParams } from './systems/siteSerials.ts'
 import {
   addMachines,
@@ -727,7 +728,7 @@ function run(s: GameState, a: Action): Message | undefined {
       }
       if (cost > s.cash)
         return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
-      s.cash -= cost
+      book(s, 'machines', -cost, { site: site.id })
       addMachines(s, a.model, a.condition, a.count, site.id)
       logEntry(s, 'log.bought', {
         count: a.count,
@@ -746,8 +747,9 @@ function run(s: GameState, a: Action): Message | undefined {
       if (a.count > lot.count)
         return fail('error.too_many_units', { have: lot.count })
       // hold_and_wait: parked GPU rigs fetch a scarcity premium in 2023Q2–Q4.
+      const lotSite = lot.siteId
       const valueUsd = removeMachines(s, lot, a.count) * rigResaleMult(s, lot)
-      s.cash += valueUsd
+      book(s, 'asset_sales', valueUsd, { site: lotSite })
       logEntry(s, 'log.sold', { count: a.count, model: lot.model, valueUsd })
       return
     }
@@ -759,7 +761,7 @@ function run(s: GameState, a: Action): Message | undefined {
       const cost = lot.failed * repairCostPerUnit(lot.model)
       if (cost > s.cash)
         return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
-      s.cash -= cost
+      book(s, 'repairs', -cost, { site: lot.siteId })
       logEntry(s, 'log.repaired', {
         count: lot.failed,
         model: lot.model,
@@ -776,7 +778,11 @@ function run(s: GameState, a: Action): Message | undefined {
       if (v.units === 0) return fail('error.nothing_to_repair')
       if (v.costUsd > s.cash)
         return fail('error.no_cash', { costUsd: v.costUsd, cashUsd: s.cash })
-      s.cash -= v.costUsd
+      bookSplit(
+        s,
+        -v.costUsd,
+        s.machines.map((lot) => ['repairs', -lot.failed * repairCostPerUnit(lot.model), { site: lot.siteId }] as const),
+      )
       for (const lot of s.machines) lot.failed = 0
       logEntry(s, 'log.repaired_all', { count: v.units, costUsd: v.costUsd })
       return
@@ -1216,7 +1222,7 @@ function run(s: GameState, a: Action): Message | undefined {
       }
       s.bandwidth -= cost
       if (financed) takeConstructionLoan(s, loanUsd)
-      s.cash -= buildUsd
+      book(s, 'site_builds', -buildUsd, { site: `site-${s.nextId}` })
       const site: Site = {
         id: `site-${s.nextId++}`,
         tier: terms.tier,
@@ -1244,7 +1250,7 @@ function run(s: GameState, a: Action): Message | undefined {
           0,
         )
       }
-      s.cash += flawEffect(site, 'cash') ?? 0
+      book(s, 'one_offs', flawEffect(site, 'cash') ?? 0, { site: site.id })
       addSite(s, site)
       recalcHeat(s, site)
       logEntry(s, 'log.site_built', {
@@ -1627,10 +1633,10 @@ function run(s: GameState, a: Action): Message | undefined {
       for (const lot of s.machines.filter((l) => l.siteId === site.id)) {
         const count = lot.count
         const valueUsd = removeMachines(s, lot, count)
-        s.cash += valueUsd
+        book(s, 'asset_sales', valueUsd, { site: site.id })
         logEntry(s, 'log.sold', { count, model: lot.model, valueUsd })
       }
-      s.cash -= penaltyUsd
+      book(s, 'one_offs', -penaltyUsd, { site: site.id })
       // Hosting there ends with the lease (the clients leave with it; no separate fee).
       s.hosting = s.hosting.filter((h) => h.siteId !== site.id)
       s.sites = s.sites.filter((x) => x !== site)

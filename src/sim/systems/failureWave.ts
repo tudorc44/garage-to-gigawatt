@@ -10,6 +10,7 @@
 // repair. With the cap full the units just break, without an alert.
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type GameState, type MachineLot } from '../state.ts'
 import { isHired } from './hires.ts'
@@ -144,7 +145,7 @@ export function resolveFailureWave(
   const units = (active.wave ?? []).reduce((n, d) => n + d.units, 0)
   if (choiceId === 'repair_now') {
     const costUsd = rushRepairUsd(state)
-    state.cash -= costUsd
+    book(state, 'repairs', -costUsd, { site: site?.id })
     for (const d of active.wave ?? []) {
       const lot = state.machines.find((l) => l.id === d.lotId)
       if (lot) lot.failed = Math.max(0, lot.failed - d.units)

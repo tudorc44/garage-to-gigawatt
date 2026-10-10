@@ -18,6 +18,7 @@ import {
 } from '../state.ts'
 import type { Message } from '../../i18n/t.ts'
 import { addMachines, removeMachines } from './machines.ts'
+import { book, bookSplit, type Category, type LedgerRef } from '../ledger.ts'
 import { act2Prices, getModel } from './market.ts'
 import { isShutDown } from './heat.ts'
 import { capacityKw, powerPriceUsdKwh, uptime, usedKw } from './sites.ts'
@@ -44,8 +45,9 @@ export function applyHeadStart(state: GameState): void {
   const rigs = state.machines.filter(isGpuRig)
   const sell = (lot: MachineLot) => {
     const count = lot.count
+    const site = lot.siteId
     const usd = removeMachines(state, lot, count)
-    state.cash += usd
+    book(state, 'asset_sales', usd, { site })
     entry.gpuRigsSold += count
     entry.gpuSaleUsd += usd
   }
@@ -91,7 +93,7 @@ function convertGpuHalls(
       bySite.set(site.id, (bySite.get(site.id) ?? 0) + kw)
     const count = lot.count
     const usd = removeMachines(state, lot, count)
-    state.cash += usd
+    book(state, 'asset_sales', usd, { site: site.id })
     entry.gpuRigsSold += count
     entry.gpuSaleUsd += usd
   }
@@ -100,7 +102,7 @@ function convertGpuHalls(
     const hosted = Math.min(kw, Math.max(0, affordable))
     if (hosted <= 0) continue
     const costUsd = Math.round(hosted * perKw)
-    state.cash -= costUsd
+    book(state, 'site_builds', -costUsd, { site: siteId, biz: 'hosting' })
     const contract: HostingContract = {
       id: `host-headstart-${siteId}`,
       siteId,
@@ -260,7 +262,7 @@ export function buyFleet(state: GameState, siteId: string): void {
   const o = fleetOffer(state)!
   const units = fleetUnitsFor(state, siteId)
   const costUsd = units * o.unitUsd
-  state.cash -= costUsd
+  book(state, 'machines', -costUsd, { site: siteId })
   state.bandwidth -= o.bandwidth
   addMachines(state, o.model, 'used', units, siteId)
   state.act2Entry!.fleetBought = true
@@ -307,6 +309,7 @@ export function settleLegacyCloudWeek(state: GameState): {
   const marginByTier: Record<string, number> = {}
   const hours = 24 * 7
   const c = H.legacyCloud
+  const parts: [Category, number, LedgerRef][] = []
   for (const lot of state.machines) {
     if (!lot.legacyCloud || state.quarter < lot.earnsFromQuarter) continue
     const site = state.sites.find((s) => s.id === lot.siteId)
@@ -324,7 +327,8 @@ export function settleLegacyCloudWeek(state: GameState): {
     revenueUsd += rev
     costUsd += cost
     marginByTier[site.tier] = (marginByTier[site.tier] ?? 0) + rev - cost
+    parts.push(['ai_cloud', rev, { site: site.id }], ['power', -cost, { site: site.id, biz: 'ai' }])
   }
-  state.cash += revenueUsd - costUsd
+  bookSplit(state, revenueUsd - costUsd, parts)
   return { revenueUsd, costUsd, marginByTier }
 }

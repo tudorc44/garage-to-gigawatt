@@ -14,6 +14,7 @@ import {
   type SiteAssetKind,
 } from '../../content/energyContent.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book, bookSplit, roundCash, type Category, type LedgerRef } from '../ledger.ts'
 import { chance, substream, uniform } from '../rng.ts'
 // (Act IV's own seed when there is one, so each Act IV run draws afresh; the game's seed before: act4SeedOf)
 import { act4SeedOf, logEntry, roundCents, type EnergyAsset, type GameState, type Site } from '../state.ts'
@@ -217,7 +218,8 @@ export function buildEnergy(state: GameState, b: EnergyBuild): void {
   }
   if (b.kind === 'iron_air' && chance(r, ENERGY.site_assets.iron_air.slip_chance))
     asset.readyQuarter += ENERGY.site_assets.iron_air.slip_quarters
-  state.cash = roundCents(state.cash - cost)
+  book(state, 'energy_assets', -cost, { site: site.id })
+  roundCash(state)
   ;(site.energy ??= []).push(asset)
   logEntry(state, 'log.energy.built', { ...siteParams(site), energyKind: b.kind, costUsd: cost })
   // The prologue's tape note (doc 38 §4.1): the year the roof pays for itself at a household's retail price (the
@@ -246,7 +248,8 @@ export function repairEnergy(state: GameState, siteId: string, assetId: string):
   const site = state.sites.find((s) => s.id === siteId)!
   const a = site.energy!.find((x) => x.id === assetId)!
   const cost = repairCostUsd(a)
-  state.cash = roundCents(state.cash - cost)
+  book(state, 'repairs', -cost, { site: siteId, biz: 'energy' })
+  roundCash(state)
   delete a.broken
   logEntry(state, 'log.energy.repaired', { ...siteParams(site), costUsd: cost })
 }
@@ -373,14 +376,19 @@ export interface EnergyQuarter {
 export function endQuarterEnergy(state: GameState, pjmUsdMwDay?: number): EnergyQuarter {
   let revenueUsd = 0
   let costUsd = 0
+  // (M37.1: each site's share, for the ledger; the cash moves by the totals, as before)
+  const revParts: [Category, number, LedgerRef][] = []
+  const costParts: [Category, number, LedgerRef][] = []
   for (const site of state.sites) {
     if (!site.energy?.length) continue
+    const revBefore = revenueUsd
+    const costBefore = costUsd
     const r = substream(act4SeedOf(state), `energy:q${state.quarter}:${site.id}`)
     for (const a of [...site.energy]) {
       if (a.readyQuarter === state.quarter) {
         // An overrun is capex, not EBITDA: paid from cash, added to the asset's cost.
         if (a.overrunUsd) {
-          state.cash -= a.overrunUsd
+          book(state, 'energy_assets', -a.overrunUsd, { site: site.id })
           a.capexUsd = roundCents(a.capexUsd + a.overrunUsd)
           logEntry(state, a.overrunUsd > 0 ? 'log.energy.overrun' : 'log.energy.underrun', {
             ...siteParams(site),
@@ -399,10 +407,15 @@ export function endQuarterEnergy(state: GameState, pjmUsdMwDay?: number): Energy
       rollAssetChances(state, site, a, r, (usd) => (costUsd += usd))
     }
     revenueUsd += billOffsetUsd(state, site)
+    if (revenueUsd !== revBefore) revParts.push(['energy_income', revenueUsd - revBefore, { site: site.id }])
+    if (costUsd !== costBefore) costParts.push(['energy_opex', costBefore - costUsd, { site: site.id }])
   }
   const texas = endQuarterTexas(state)
   revenueUsd += texas.revenueUsd
-  state.cash = roundCents(state.cash + revenueUsd - costUsd)
+  revParts.push(['grid_credits', texas.revenueUsd, {}])
+  bookSplit(state, revenueUsd, revParts)
+  bookSplit(state, -costUsd, costParts)
+  roundCash(state)
   return { revenueUsd, costUsd }
 }
 

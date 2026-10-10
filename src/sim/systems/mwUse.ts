@@ -3,6 +3,7 @@
 // AI cloud come with projects (M3); building = not energized yet, or being converted; idle = the rest.
 import { BALANCE, isAct2RulesQuarter } from '../../content/index.ts'
 import { projectGone, type GameState, type Site } from '../state.ts'
+import { bookSplit, siteBusiness, type Category, type LedgerRef } from '../ledger.ts'
 import { scenarioOf } from './market.ts'
 import {
   capacityKw,
@@ -100,8 +101,11 @@ export function payReservationWeek(state: GameState): number {
   const { share, hoursPerQuarter } = BALANCE.powerReservation
   const hours = hoursPerQuarter / BALANCE.weeksPerQuarter
   let usd = 0
+  const parts: [Category, number, LedgerRef][] = []
   for (const site of state.sites) {
     if (!regionOf(site)) continue
+    const before = usd
+    // (M37.1: the ledger books each site's share; the cash moves by the total, as before)
     const u = siteMwByUse(state, site, state.quarter)
     const pending = powerAddsKw(site) - powerAddsKw(site, state.quarter)
     // Act III (M17.0, DT): a card's new-hall MW cost nothing while the shell is only proposed; the
@@ -134,8 +138,9 @@ export function payReservationWeek(state: GameState): number {
         powerPriceUsdKwh(site, state.quarter, scenarioOf(state)) *
         Math.max(0, policy.reservationShare - share)
     }
+    if (usd !== before) parts.push(['power', before - usd, { site: site.id, biz: siteBusiness(state, site.id) }])
   }
-  state.cash -= usd
+  bookSplit(state, -usd, parts)
   return usd
 }
 

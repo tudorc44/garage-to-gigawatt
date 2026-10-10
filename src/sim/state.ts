@@ -18,6 +18,7 @@ import { enterAct4 } from './systems/act4Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { LunarClaimantId, LunarSiteId, OfftakeBuyerId } from '../content/moonContent.ts'
 import type { SiteHeat } from './systems/heat.ts'
+import type { Ledger } from './ledger.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { DealNegotiation } from './systems/dealNegotiation.ts'
 import type { PrologueCarry, PrologueState } from './prologue/types.ts'
@@ -1323,6 +1324,8 @@ export interface GameState {
   reports: QuarterReport[]
   /** What happened, as message keys for the UI: purchases, alerts, failures, forced sales… */
   log: LogEntry[]
+  /** M37.1 (doc 39): every cash movement by category, per quarter, for the whole career (ledger.ts). Absent until the first. */
+  ledger?: Ledger
 }
 
 export interface LogEntry {

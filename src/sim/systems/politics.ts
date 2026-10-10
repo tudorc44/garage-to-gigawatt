@@ -5,6 +5,7 @@
 // this goes into the move log.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { chance, substream } from '../rng.ts'
 import {
   act3SeedOf,
@@ -78,7 +79,7 @@ export function lobbyBlocker(state: GameState, id: string): Message | undefined 
 export function lobby(state: GameState, id: string): void {
   const a = C().lobbying.find((x) => x.id === id)!
   const g = gov(state)
-  state.cash -= a.costUsd
+  book(state, 'community', -a.costUsd)
   state.bandwidth -= PC.lobbyBandwidth
   const backfired =
     !!a.backfire &&
@@ -209,7 +210,7 @@ export function spendPc(state: GameState, id: string): void {
       break
     }
     case 'pc_grant':
-      state.cash += PC.grantUsd
+      book(state, 'other_income', PC.grantUsd)
       break
   }
   logEntry(state, 'log.pc_spent', { pcCard: id, pc: card.pcCost })

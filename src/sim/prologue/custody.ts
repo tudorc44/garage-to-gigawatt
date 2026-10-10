@@ -4,8 +4,9 @@
 // forum's "sell for almost nothing" offers; and the solo / pool switch.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { logEntry, roundCents, type Coin, type GameState } from '../state.ts'
+import { logEntry, type Coin, type GameState } from '../state.ts'
 import { P, poolsOpen } from './setup.ts'
+import { book, roundCash } from '../ledger.ts'
 
 const EPS = 1e-9
 const label = (q: number) => CONTENT.quarters[q] ?? ''
@@ -191,7 +192,8 @@ export function answerOffer(
   const fromExchange = Math.max(0, offer.btc - wallet)
   p.onExchange.BTC -= fromExchange
   s.treasury.BTC -= offer.btc
-  s.cash = roundCents(s.cash + offer.usd)
+  book(s, 'coins_sold', offer.usd)
+  roundCash(s)
   p.offersTaken.push(id)
   logEntry(s, 'log.p0_offer_taken', { btc: offer.btc, cashUsd: offer.usd })
   return undefined

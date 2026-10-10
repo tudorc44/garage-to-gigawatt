@@ -7,6 +7,7 @@ import { MONEY, type Act4RivalId } from '../../content/moneyContent.ts'
 import { MOON } from '../../content/moonContent.ts'
 import type { FutureId } from '../../content/schemas.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
 import { blockMassT, generationTMw, orbitOf } from './orbit.ts'
 import type { RivalSnapshot } from './rivals.ts'
@@ -68,7 +69,7 @@ export function buyOrreryBlocker(state: GameState): Message | undefined {
 export function buyOrrery(state: GameState): void {
   const a = orreryAuction(state)
   state.bandwidth -= A.bandwidth
-  state.cash -= a.priceUsd
+  book(state, 'orbit_capex', -a.priceUsd)
   const orbit = orbitOf(state)
   const n = orbit.nextN++
   const block: OrbitalBlock = {

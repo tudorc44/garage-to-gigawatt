@@ -23,6 +23,7 @@ import {
   type HostingContract,
 } from '../state.ts'
 import { logQuarterLabel } from '../state.ts'
+import { book, bookSplit, type Category, type LedgerRef } from '../ledger.ts'
 import { isShutDown, underMoratorium } from './heat.ts'
 import { miningOnly } from './energyAssets.ts'
 import { siteParams } from './siteSerials.ts'
@@ -197,7 +198,7 @@ export function startHosting(
   if (converted > 0) {
     const costUsd = hostingCostUsd(converted)
     const c = add(converted, state.quarter + 1 + CONTENT.hosting.buildQuarters)
-    state.cash -= costUsd
+    book(state, 'site_builds', -costUsd, { site: siteId, biz: 'hosting' })
     logEntry(state, 'log.hosting_started', {
       ...siteParams(site),
       hostedKw: converted,
@@ -274,7 +275,7 @@ export function endHosting(
       key: 'error.no_cash',
       params: { costUsd: feeUsd, cashUsd: state.cash },
     }
-  state.cash -= feeUsd
+  book(state, 'one_offs', -feeUsd, { site: contract.siteId, biz: 'hosting' })
   state.hosting = state.hosting.filter((h) => h.id !== contractId)
   const site = state.sites.find((s) => s.id === contract.siteId)!
   logEntry(state, 'log.hosting_ended', {
@@ -305,6 +306,7 @@ export function settleHostingWeek(state: GameState): {
   let feesUsd = 0
   let powerUsd = 0
   const marginByTier: Record<string, number> = {}
+  const parts: [Category, number, LedgerRef][] = []
   for (const h of state.hosting) {
     if (h.readyQuarter > state.quarter || isShutDown(state, h.siteId)) continue
     const site = state.sites.find((s) => s.id === h.siteId)
@@ -316,8 +318,9 @@ export function settleHostingWeek(state: GameState): {
     feesUsd += fees
     powerUsd += power
     marginByTier[site.tier] = (marginByTier[site.tier] ?? 0) + fees - power
+    parts.push(['hosting_fees', fees, { site: site.id }], ['power', -power, { site: site.id, biz: 'hosting' }])
   }
-  state.cash += feesUsd - powerUsd
+  bookSplit(state, feesUsd - powerUsd, parts)
   return { feesUsd, powerUsd, marginByTier }
 }
 

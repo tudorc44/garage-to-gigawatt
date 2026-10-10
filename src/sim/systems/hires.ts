@@ -14,6 +14,7 @@ import {
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { inAct2Rules, inAct3Rules, inActIV, logEntry, type GameState } from '../state.ts'
+import { book } from '../ledger.ts'
 import { MONEY } from '../../content/moneyContent.ts'
 
 /**
@@ -115,7 +116,7 @@ export function paySalariesWeek(state: GameState): number {
     (sum, h) => sum + salaryUsdQ(h, state.quarter) / BALANCE.weeksPerQuarter,
     0,
   )
-  state.cash -= usd
+  book(state, 'salaries', -usd)
   return usd
 }
 
@@ -298,7 +299,7 @@ export function fireBlocker(state: GameState, id: string): Message | undefined {
 export function fire(state: GameState, id: string): void {
   const h = getHire(id)!
   const severance = severanceUsd(h, state.quarter)
-  state.cash -= severance
+  book(state, 'one_offs', -severance)
   delete state.staff[id]
   state.firedQuarter[id] = state.quarter
   // M19: no more Community Deal offers (an offset already paid for stays and fades)

@@ -51,12 +51,12 @@ import {
   ppaSwitchCard,
 } from './cardPower.ts'
 import { drawCorporate } from './corporateDebt.ts'
+import { book, oneOffCategory, roundCash } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, random, substream, uniform } from '../rng.ts'
 import {
   logEntry,
   projectGone,
-  roundCents,
   type GameState,
   type Site,
 } from '../state.ts'
@@ -572,7 +572,7 @@ export function resolveEvent(
     const v = value as never
     switch (key) {
       case 'cash':
-        state.cash += Number(value)
+        book(state, oneOffCategory(Number(value)), Number(value), { site: site?.id })
         break
       case 'buy_machine': {
         const b = v as BuyMachine
@@ -583,7 +583,7 @@ export function resolveEvent(
           scenarioOf(state),
         )
         const target = siteWithRoom(state, b.model, b.count)!
-        state.cash -= (price ?? 0) * b.price_mult * b.count
+        book(state, 'machines', -((price ?? 0) * b.price_mult * b.count), { site: target.id })
         addMachines(state, b.model, b.condition, b.count, target.id)
         break
       }
@@ -623,15 +623,20 @@ export function resolveEvent(
       case 'sell_machines_pct':
         for (const lot of [...state.machines]) {
           const n = Math.floor(lot.count * Number(value))
-          if (n > 0) state.cash += removeMachines(state, lot, n)
+          if (n > 0) {
+            const lotSite = lot.siteId
+            book(state, 'asset_sales', removeMachines(state, lot, n), { site: lotSite })
+          }
         }
         break
       case 'flag':
         if (!ev.flags.includes(String(value))) ev.flags.push(String(value))
         break
       case 'sell_model':
-        for (const lot of state.machines.filter((l) => l.model === value))
-          state.cash += removeMachines(state, lot, lot.count)
+        for (const lot of state.machines.filter((l) => l.model === value)) {
+          const lotSite = lot.siteId
+          book(state, 'asset_sales', removeMachines(state, lot, lot.count), { site: lotSite })
+        }
         break
       case 'ipo_bandwidth': {
         const x = v as { bw: number; until: string }
@@ -640,7 +645,7 @@ export function resolveEvent(
       }
       case 'rent_racks': {
         const x = v as { per_mw: number; max_mw: number }
-        state.cash += x.per_mw * Math.min(spareKw(state) / 1000, x.max_mw)
+        book(state, 'other_income', x.per_mw * Math.min(spareKw(state) / 1000, x.max_mw))
         break
       }
       case 'repay_crypto_from_collateral': {
@@ -648,7 +653,7 @@ export function resolveEvent(
         if (!loan) break
         const price = coinPrice(w, loan.coin)
         const sold = Math.min(loan.collateral, loan.balanceUsd / price)
-        state.cash -= Math.max(0, loan.balanceUsd - sold * price)
+        book(state, 'debt_repaid', -Math.max(0, loan.balanceUsd - sold * price))
         state.treasury[loan.coin] += loan.collateral - sold
         state.cryptoLoan = null
         break
@@ -683,17 +688,17 @@ export function resolveEvent(
             sum + saleValueUsd(l, l.count, state.quarter, scenarioOf(state)),
           0,
         )
-        state.cash -= Math.max(x.min_usd, x.fleet_used_value_pct * fleet)
+        book(state, 'one_offs', -Math.max(x.min_usd, x.fleet_used_value_pct * fleet), { site: site?.id })
         break
       }
       case 'cash_rent_quarters':
-        state.cash += Number(value) * (site?.rentUsdQ ?? 0)
+        book(state, oneOffCategory(Number(value)), Number(value) * (site?.rentUsdQ ?? 0), { site: site?.id })
         break
       case 'rent_zero':
         if (site) site.rentUsdQ = 0
         break
       case 'tariff_pay_pct':
-        state.cash -= newAsicSpendUsd(state) * Number(value)
+        book(state, 'one_offs', -(newAsicSpendUsd(state) * Number(value)))
         break
       case 'tariff_delay_quarters':
         for (const lot of undeliveredAsics(state))
@@ -749,7 +754,7 @@ export function resolveEvent(
           )
           .reduce((sum, e) => sum + Number(e.params?.costUsd ?? 0), 0)
         const deposit = x.deposit_pct * usedSpend
-        state.cash -= deposit
+        book(state, 'one_offs', -deposit)
         const real = random(r) < x.success_p
         if (real) nextPlan(state).usedDiscount = x.discount
         logEntry(
@@ -774,14 +779,14 @@ export function resolveEvent(
       case 'chillers': {
         const x = v as { usd: number; per_mw: number }
         const mw = bigSites(state).reduce((m, s) => m + capacityKw(s) / 1000, 0)
-        state.cash -= x.usd * Math.max(1, mw / x.per_mw)
+        book(state, 'one_offs', -(x.usd * Math.max(1, mw / x.per_mw)))
         break
       }
       case 'stake_points':
         state.founderStake = Math.min(1, state.founderStake + Number(value))
         break
       case 'tax':
-        state.cash -= (v as { pct: number }).pct * taxBaseUsd(state)
+        book(state, 'taxes', -((v as { pct: number }).pct * taxBaseUsd(state)))
         break
       case 'tax_plan': {
         const x = v as {
@@ -790,7 +795,7 @@ export function resolveEvent(
           quarters: number
         }
         const base = taxBaseUsd(state)
-        state.cash -= x.now_pct * base
+        book(state, 'taxes', -(x.now_pct * base))
         if (base > 0)
           ev.taxPlan = {
             amountUsd: x.per_quarter_pct * base,
@@ -809,7 +814,7 @@ export function resolveEvent(
       }
       case 'cash_revenue_share':
         // A share of this quarter's mining revenue so far (the Ordinals fee spike).
-        state.cash += state.quarterStats.revenueUsd * Number(value)
+        book(state, 'other_income', state.quarterStats.revenueUsd * Number(value))
         break
       case 'valuation_mult': {
         const x = v as { mult: number; quarters: number }
@@ -923,7 +928,7 @@ export function resolveEvent(
         }
         const gpus = liveClusters(state).reduce((n, p) => n + p.gpuCount, 0)
         const failed = Math.round(gpus * uniform(r, x.share[0], x.share[1]))
-        state.cash -= failed * x.usd_per_gpu * x.cost_share
+        book(state, 'repairs', -(failed * x.usd_per_gpu * x.cost_share), { biz: 'ai' })
         break
       }
       case 'gpu_degraded': {
@@ -1038,7 +1043,7 @@ export function resolveEvent(
         throw new Error(`Event effect "${key}" is not implemented`)
     }
   }
-  state.cash = roundCents(state.cash)
+  roundCash(state)
   const cashUsd = state.cash - cashBefore
   logEntry(
     state,
@@ -1071,7 +1076,7 @@ export function startQuarterEvents(state: GameState): void {
     ev.bandwidthNext = 0
   }
   if (ev.taxPlan) {
-    state.cash -= ev.taxPlan.amountUsd
+    book(state, 'taxes', -ev.taxPlan.amountUsd)
     logEntry(state, 'log.event_tax_instalment', {
       amountUsd: ev.taxPlan.amountUsd,
     })

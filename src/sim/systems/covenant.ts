@@ -12,6 +12,7 @@
 // lenders call what's left: it's paid from cash, and the existing rescue and game-over rules follow.
 // None of these are the player's moves: nothing here is logged to act3Moves.
 import { BALANCE } from '../../content/index.ts'
+import { book } from '../ledger.ts'
 import {
   inAct3Rules,
   logEntry,
@@ -87,7 +88,7 @@ export function prepayDebt(state: GameState, usd: number): number {
     left -= paid
     total += paid
   }
-  state.cash -= total
+  book(state, 'debt_repaid', -total)
   return total
 }
 
@@ -142,7 +143,7 @@ function covenantForcedSales(state: GameState, valuationUsd: number): number {
     } else p.stage = 'ended'
     p.soldQuarter = state.quarter
     const cashBefore = state.cash
-    state.cash += priceUsd
+    book(state, 'asset_sales', priceUsd, { site: p.siteId, project: p.id, biz: 'ai' })
     repayProjectFacilities(state, p.id)
     // the rest of the proceeds repay other debt
     prepayDebt(state, Math.max(0, state.cash - Math.max(0, cashBefore)))
@@ -178,7 +179,7 @@ export function testCovenant(state: GameState, report: QuarterReport): void {
         const unpaid = called()
         state.facilities = []
         state.equipmentLoan = null
-        state.cash -= unpaid
+        book(state, 'debt_repaid', -unpaid)
         logEntry(state, 'log.covenant_called', { debtUsd: calledUsd })
       } else logEntry(state, 'log.covenant_cured', { ltvPct: after })
       delete state.covenantBreach

@@ -12,6 +12,7 @@ import {
   type GameState,
 } from '../state.ts'
 import { loansLocked } from './cryptoLoan.ts'
+import { book, bookSplit } from '../ledger.ts'
 import { debtFrozen } from './eventEffects.ts'
 import { ratingRank, sofr } from './finance.ts'
 import { spreadCut } from './hires.ts'
@@ -145,7 +146,7 @@ export function borrowBlocker(
 export function takeEquipmentLoan(state: GameState, amountUsd: number): void {
   const terms = equipmentTerms(state)!
   state.bandwidth -= BALANCE.bandwidth.loan
-  state.cash += amountUsd
+  book(state, 'debt_drawn', amountUsd)
   state.equipmentLoan = {
     amountUsd,
     balanceUsd: amountUsd,
@@ -173,7 +174,7 @@ export function repayEquipmentLoan(state: GameState): Message | undefined {
       params: { costUsd: loan.balanceUsd, cashUsd: state.cash },
     }
   }
-  state.cash -= loan.balanceUsd
+  book(state, 'debt_repaid', -loan.balanceUsd)
   logEntry(state, 'log.loan_repaid', { amountUsd: loan.balanceUsd })
   state.equipmentLoan = null
 }
@@ -223,7 +224,10 @@ function payOneWeek(
       : Math.min(loan.weeklyPrincipalUsd, loan.balanceUsd)
   loan.balanceUsd = roundCents(loan.balanceUsd - principalUsd)
   loan.weeksLeft--
-  state.cash -= interestUsd + principalUsd
+  bookSplit(state, -(interestUsd + principalUsd), [
+    ['interest', -interestUsd],
+    ['debt_repaid', -principalUsd],
+  ])
   return { interestUsd, principalUsd, paidOff: loan.balanceUsd <= 0 }
 }
 

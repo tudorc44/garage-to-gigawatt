@@ -12,6 +12,7 @@ import { playFrom, playGame } from '../../src/sim/replay.ts'
 import { toAct3, toAct4, type GameState } from '../../src/sim/state.ts'
 import { computeReadingIv } from '../../src/sim/systems/readingScoreIv.ts'
 import { BOTS } from '../bots.ts'
+import { checkedLedger } from '../ledgerCheck.ts'
 import { ACT4_ARCHETYPES, act4Archetypes, groundStats } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -96,7 +97,7 @@ for (const p of PRESETS_IV) {
             },
           }
           for (const k of Object.keys(groundStats) as (keyof typeof groundStats)[]) groundStats[k] = 0
-          const end = playFrom(start, counting, { through: 4 }).state
+          const end = checkedLedger(playFrom(start, counting, { through: 4 }).state, 'act4')
           const entry = end.act4Entry!.founderNetWorthUsd
           const nw = Math.max(0, end.founderStake * (end.reports.at(-1)?.valuationUsd ?? 0))
           runs.push({

@@ -9,6 +9,7 @@ import {
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream, uniform } from '../rng.ts'
+import { bookSplit } from '../ledger.ts'
 import {
   logEntry,
   type CurtailOffer,
@@ -231,7 +232,10 @@ export function applyCurtailment(
   if (!c || c.week !== state.week)
     return { lots, creditUsd: 0, slaUsd: 0, siteIds: [] }
   state.curtailment = null
-  state.cash += c.creditUsd - (c.slaUsd ?? 0)
+  bookSplit(state, c.creditUsd - (c.slaUsd ?? 0), [
+    ['grid_credits', c.creditUsd],
+    ['ai_opex', -(c.slaUsd ?? 0)],
+  ])
   const siteIds = state.sites
     .filter((s) => isGridSite(state, s))
     .map((s) => s.id)

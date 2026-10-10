@@ -4,6 +4,7 @@
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
+import { book, roundCash } from '../ledger.ts'
 import { addMachines, removeMachines } from '../systems/machines.ts'
 import { addSite, numberSite, siteParams } from '../systems/siteSerials.ts'
 import { buyPrice, getModel } from '../systems/market.ts'
@@ -54,14 +55,17 @@ export function moveIntoGarage(s: GameState, readyQuarter: number): Site {
   )) {
     const kw = getModel(lot.model)!.power_kw
     const fit = Math.max(0, Math.min(lot.count, Math.floor((room + 1e-9) / kw)))
-    if (fit < lot.count) s.cash += removeMachines(s, lot, lot.count - fit)
+    if (fit < lot.count) {
+      const site = lot.siteId
+      book(s, 'asset_sales', removeMachines(s, lot, lot.count - fit), { site })
+    }
     if (fit > 0) {
       lot.siteId = garage.id
       room -= fit * kw
     }
   }
   s.sites = s.sites.filter((x) => !householdTier(x.tier))
-  s.cash = roundCents(s.cash)
+  roundCash(s)
   return garage
 }
 
@@ -84,7 +88,8 @@ export function moveOut(s: GameState): Message | undefined {
   if (blocked) return blocked
   const p = s.prologue!
   const deposit = depositUsd(s.quarter)
-  s.cash = roundCents(s.cash - deposit)
+  book(s, 'one_offs', -deposit)
+  roundCash(s)
   s.bandwidth -= P().bandwidth_costs.build
   p.livingAtHome = false
   p.householdCard = false
@@ -148,7 +153,8 @@ export function moveBackHome(s: GameState, auto = false): Message | undefined {
       room.set(target!.id, room.get(target!.id)! - fit * kw)
     }
   }
-  s.cash = roundCents(s.cash + soldUsd)
+  book(s, 'asset_sales', soldUsd)
+  roundCash(s)
   p.livingAtHome = true
   p.movedBack = true
   p.patience = P().move_back.patience
@@ -196,7 +202,7 @@ export function buildHomeRig(s: GameState): Message | undefined {
     return fail('error.no_cash', { costUsd: t.capex_usd, cashUsd: s.cash })
   const bw = needBandwidth(s, P().bandwidth_costs.build)
   if (bw) return bw
-  s.cash -= t.capex_usd
+  book(s, 'site_builds', -t.capex_usd)
   s.bandwidth -= P().bandwidth_costs.build
   addSite(s, {
     id: `site-${s.nextId++}`,
@@ -229,7 +235,8 @@ export function buildSmallUnit(s: GameState): Message | undefined {
   if (blocked) return blocked
   const t = tier('small_unit')
   const capex = typeof t.capex_usd === 'number' ? t.capex_usd : 0
-  s.cash = roundCents(s.cash - capex)
+  book(s, 'site_builds', -capex)
+  roundCash(s)
   s.bandwidth -= P().bandwidth_costs.build
   addSite(s, {
     id: `site-${s.nextId++}`,
@@ -256,7 +263,7 @@ export function backUpWallet(s: GameState): Message | undefined {
       cashUsd: s.cash,
     })
   s.bandwidth -= rule.backup_bandwidth
-  s.cash -= rule.backup_cash_usd
+  book(s, 'other_opex', -rule.backup_cash_usd)
   p.backup = true
   logEntry(s, 'log.p0_backup')
   return undefined
@@ -299,7 +306,8 @@ export function attendConference(
   if (!c || c.id !== id) return fail('error.p0_no_conference')
   if (s.cash < c.cost_usd)
     return fail('error.no_cash', { costUsd: c.cost_usd, cashUsd: s.cash })
-  s.cash = roundCents(s.cash - c.cost_usd)
+  book(s, 'other_opex', -c.cost_usd)
+  roundCash(s)
   p.conferences.push(c.id)
   const model = conferenceOfferModel(s)
   if (model)
@@ -338,7 +346,8 @@ export function takeUsedOffer(
       neededKw: model.power_kw,
     })
   if (s.cash < cost) return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
-  s.cash = roundCents(s.cash - cost)
+  book(s, 'machines', -cost, { site: siteId })
+  roundCash(s)
   addMachines(s, model.id, 'used', 1, siteId)
   onMachineBought(s, model.id)
   p.usedOffer = null
@@ -359,7 +368,8 @@ export function buyVanity(s: GameState, id: string): Message | undefined {
   if (p.vanity.includes(id)) return fail('error.p0_have_vanity')
   if (s.cash < item.cost_usd)
     return fail('error.no_cash', { costUsd: item.cost_usd, cashUsd: s.cash })
-  s.cash = roundCents(s.cash - item.cost_usd)
+  book(s, 'other_opex', -item.cost_usd)
+  roundCash(s)
   p.vanity.push(id)
   logEntry(s, 'log.p0_vanity', { item: id, costUsd: item.cost_usd })
   return undefined

@@ -4,6 +4,7 @@
 // The rolls use their own stream (substream), so they don't change the rest of the game.
 import { CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { pick, randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, type Auction, type GameState } from '../state.ts'
 import { addMachines } from './machines.ts'
@@ -132,7 +133,7 @@ export function placeBid(
   state.bandwidth -= CONTENT.auction.bandwidth
   const top = topRivalBid(a)
   if (bidUsd > top.bidUsd) {
-    state.cash -= bidUsd
+    book(state, 'machines', -bidUsd, { site: siteId })
     addMachines(state, a.model, 'used', a.count, siteId)
     logEntry(state, 'log.auction_won', {
       count: a.count,

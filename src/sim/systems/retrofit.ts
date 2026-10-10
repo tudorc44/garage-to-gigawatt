@@ -12,6 +12,7 @@
 // place (and earn) at once, so a quarter the work only partly covers earns at their rate.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { inAct3Rules, logEntry, logQuarterLabel, type GameState, type Project } from '../state.ts'
 import {
   downtimeDoneQuarter,
@@ -109,7 +110,7 @@ export function startRetrofit(
   const p = getProject(state, projectId)!
   const plan = retrofitPlan(state, p)!
   const costUsd = Math.round(opts.costUsd ?? plan.costUsd)
-  state.cash -= costUsd
+  book(state, 'retrofits', -costUsd, { site: p.siteId, project: p.id })
   if (!opts.free) state.bandwidth -= D.retrofitBw
   p.downtime = {
     kind: 'retrofit',
@@ -214,7 +215,7 @@ export function refitGpus(
 ): void {
   const p = getProject(state, projectId)!
   const plan = refitPlan(state, p, gpu)!
-  state.cash -= plan.netUsd
+  book(state, 'gpus', -plan.netUsd, { site: p.siteId, project: p.id })
   state.bandwidth -= D.refitBw
   const newCapexUsd = Math.round(plan.newUsd)
   p.capexUsd += newCapexUsd - p.gpuCapexUsd

@@ -16,6 +16,7 @@ import { buyInUsd, prepayUsd, ventureRegions } from '../../src/sim/systems/ventu
 import { buildCostUsd } from '../../src/sim/systems/energy.ts'
 import { poweredKw } from '../../src/sim/systems/sites.ts'
 import { BOTS } from '../bots.ts'
+import { checkedLedger } from '../ledgerCheck.ts'
 import { act4Archetypes } from './bots.ts'
 
 const args = process.argv.slice(2)
@@ -139,7 +140,7 @@ for (const p of PRESETS_IV) {
             return [...base.kept, ...tryAll(base.after, variantStep(base.after, variant)).kept]
           },
         }
-        const end = playFrom(start, bot, { through: 4 }).state
+        const end = checkedLedger(playFrom(start, bot, { through: 4 }).state, 'energy')
         const entry = end.act4Entry!.founderNetWorthUsd
         const nw = Math.max(0, end.founderStake * (end.reports.at(-1)?.valuationUsd ?? 0))
         const v = end.ventures?.[0]

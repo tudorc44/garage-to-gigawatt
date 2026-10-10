@@ -10,6 +10,7 @@
 // - hire_card (sh_3): the hire through the normal path, at no Bandwidth.
 import { BALANCE, CONTENT } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { logEntry, projectGone, type GameState, type Ppa, type Project } from '../state.ts'
 import { getHire, isHired, salaryUsdQ } from './hires.ts'
 import {
@@ -113,7 +114,7 @@ export function ppaSiteCard(state: GameState, mw: number, weekNo: number): void 
 
 export function ppaSavingsCard(state: GameState, weekNo: number): void {
   const usd = Math.round(ppaSavingsUsd(state))
-  state.cash += usd
+  book(state, 'energy_income', usd)
   logEntry(state, 'log.ppa_savings', { amountUsd: usd }, weekNo)
 }
 

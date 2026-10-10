@@ -5,6 +5,7 @@
 // Undecided at END_PLAN, the first choice (the default) applies.
 import { BALANCE, CONTENT, quarterIndex } from '../../content/index.ts'
 import type { Message, MessageKey } from '../../i18n/t.ts'
+import { book } from '../ledger.ts'
 import { randomInt, substream } from '../rng.ts'
 import {
   act3SeedOf,
@@ -153,7 +154,7 @@ export function chooseWildcard(state: GameState, choice: 'c1' | 'c2'): void {
         const on = was && q >= was.from && q <= was.until
         site.eventPowerMult = { mult: (on ? was!.mult : 1) * mult, from: q, until: q }
       }
-      state.cash -= c.costUsd ?? 0
+      book(state, 'one_offs', -(c.costUsd ?? 0))
       if (c.heat) {
         const largest = [...state.sites].sort((a, b) => capacityKw(b) - capacityKw(a))[0]
         if (largest) addGrievance(state, largest.id, c.heat)
@@ -166,7 +167,7 @@ export function chooseWildcard(state: GameState, choice: 'c1' | 'c2'): void {
         const gpuUsd = state.projects
           .filter((x) => x.stage === 'building' && x.kind !== 'shell')
           .reduce((sum, x) => sum + x.gpuCapexUsd, 0)
-        state.cash -= Math.round(gpuUsd * (c.costUsdMult ?? 0))
+        book(state, 'gpus', -Math.round(gpuUsd * (c.costUsdMult ?? 0)))
       }
       state.act3ExportRule = { from: q, until: q + quarters - 1, exempt: choice === 'c2' }
       break
@@ -196,7 +197,7 @@ export function chooseWildcard(state: GameState, choice: 'c1' | 'c2'): void {
           t.servedQuarters +
           Math.max(W.minQuartersLeft, left - 4 * n(e.term_shortened_years))
       } else {
-        state.cash -= c.costUsd ?? 0
+        book(state, 'one_offs', -(c.costUsd ?? 0), p ? { site: p.siteId, project: p.id, biz: 'ai' } : undefined)
         extraShellOffers(state, -1)
         state.events.extraShellOffers!.until = q + W.fewerOffersQuarters
       }

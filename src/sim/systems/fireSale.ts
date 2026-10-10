@@ -5,6 +5,7 @@
 import { MONEY } from '../../content/moneyContent.ts'
 import { lunarSite } from '../../content/moonContent.ts'
 import { logEntry, type GameState } from '../state.ts'
+import { book, bookSplit } from '../ledger.ts'
 import { blockDebt, repayFromProceeds } from './orbitCapital.ts'
 import { orbitRow } from './orbit.ts'
 import { siteValueUsd } from './moonOps.ts'
@@ -42,12 +43,16 @@ export function act4FireSale(state: GameState, shortUsd: number): boolean {
   if (!pick) return false
   if (pick.kind === 'orbit') {
     const b = state.act4Orbit!.blocks.find((x) => x.id === pick.id)!
-    state.cash += repayFromProceeds(state, b, pick.priceUsd)
+    const netUsd = repayFromProceeds(state, b, pick.priceUsd)
+    bookSplit(state, netUsd, [
+      ['asset_sales', pick.priceUsd, { block: b.id, biz: 'orbit' }],
+      ['debt_repaid', -(pick.priceUsd - netUsd)],
+    ])
     b.stage = 'sold'
     logEntry(state, 'log.orbit.fire_sale', { n: b.n, priceUsd: pick.priceUsd, shortUsd })
   } else {
     const c = state.act4Moon!.claims.find((x) => x.site === pick.id && x.status === 'held')!
-    state.cash += pick.priceUsd
+    book(state, 'asset_sales', pick.priceUsd, { biz: 'moon' })
     c.status = 'sold'
     logEntry(state, 'log.moon.fire_sale', { lunarSite: c.site, priceUsd: pick.priceUsd, shortUsd })
   }

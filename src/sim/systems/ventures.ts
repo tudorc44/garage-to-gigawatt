@@ -24,6 +24,7 @@ import {
   type VentureCall,
 } from '../state.ts'
 import { addGrievance } from './heat.ts'
+import { book, bookSplit, roundCash, type Category, type LedgerRef } from '../ledger.ts'
 import { scenarioOf } from './market.ts'
 import { addPc } from './pcState.ts'
 import { drawOverrun, lognormal } from './overrun.ts'
@@ -117,7 +118,8 @@ export function diligenceBlocker(state: GameState, type: VentureType): Message |
 /** Diligence (doc 38 §5.1 point 2): 1 Bandwidth and a fee; the type's reference-class estimate and tail show. */
 export function doDiligence(state: GameState, type: VentureType): void {
   state.bandwidth -= V.diligence.bandwidth
-  state.cash = roundCents(state.cash - V.diligence.fee_usd)
+  book(state, 'other_opex', -V.diligence.fee_usd, { biz: 'energy' })
+  roundCash(state)
   ;(state.ventureDiligence ??= []).push(type)
   logEntry(state, 'log.venture.diligence', { ventureType: type, costUsd: V.diligence.fee_usd })
 }
@@ -263,7 +265,9 @@ export function joinVenture(state: GameState, j: VentureJoin): Venture {
     milestones: 0,
     slips: 0,
   }
-  state.cash = roundCents(state.cash - buyIn - prepaid)
+  book(state, 'venture_calls', -buyIn, { venture: v.id })
+  book(state, 'venture_calls', -prepaid, { venture: v.id })
+  roundCash(state)
   ;(state.ventures ??= []).push(v)
   logEntry(state, 'log.venture.joined', { ventureType: j.type, costUsd: buyIn + prepaid })
   return v
@@ -341,7 +345,8 @@ export function answerCall(state: GameState, ventureId: string, choice: string):
   const c = v.call!
   const due = callDueUsd(c, choice)
   if (choice === 'pay' || choice === 'partner' || choice === 'cost_share') {
-    state.cash = roundCents(state.cash - due)
+    book(state, 'venture_calls', -due, { venture: v.id })
+    roundCash(state)
     v.paidUsd = roundCents(v.paidUsd + due)
     v.callsPaidUsd = roundCents((v.callsPaidUsd ?? 0) + due)
     if (choice === 'partner') v.partnerCut = Math.min(1, v.partnerCut + (c.partnerShare ?? 0) / 3)
@@ -397,13 +402,19 @@ export function endQuarterVentures(state: GameState): { revenueUsd: number } {
   if (!list?.length) return { revenueUsd: 0 }
   let revenueUsd = 0
   const q = state.quarter
+  const parts: [Category, number, LedgerRef][] = []
   for (const v of list) {
     if (isOver(v)) continue
     stepVenture(state, v, q, false)
-    if (v.stage === 'operating') revenueUsd += deliverySavingsUsd(state, v)
+    if (v.stage === 'operating') {
+      const usd = deliverySavingsUsd(state, v)
+      revenueUsd += usd
+      parts.push(['energy_income', usd, { site: v.siteId, venture: v.id }])
+    }
   }
   syncVentureKw(state)
-  state.cash = roundCents(state.cash + revenueUsd)
+  bookSplit(state, revenueUsd, parts)
+  roundCash(state)
   return { revenueUsd }
 }
 
@@ -509,7 +520,8 @@ function end(state: GameState, v: Venture, stage: 'cancelled' | 'folded', q: num
   if (quiet) return
   // A fusion reservation is refundable only on a fold (doc 38 §5.5); an SMR prepayment is lost on cancellation.
   const refund = stage === 'folded' && v.type === 'fusion' ? v.prepaidUsd : 0
-  state.cash = roundCents(state.cash + refund)
+  book(state, 'venture_calls', refund, { venture: v.id })
+  roundCash(state)
   logEntry(state, stage === 'cancelled' ? 'log.venture.cancelled' : 'log.venture.folded', {
     ventureType: v.type,
     costUsd: v.paidUsd + v.prepaidUsd - refund,

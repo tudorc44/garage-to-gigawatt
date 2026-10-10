@@ -11,6 +11,7 @@ import { chance, randomInt, substream, uniform } from '../rng.ts'
 import { logEntry, roundCents, type GameState, type Site } from '../state.ts'
 import { addGrievance } from './heat.ts'
 import { addSite, siteParams } from './siteSerials.ts'
+import { book, roundCash } from '../ledger.ts'
 import { capacityKw, topTierIndex } from './sites.ts'
 
 const S = ENERGY.special_sites
@@ -116,7 +117,8 @@ export function leaseSpecial(state: GameState, kind: SpecialSiteKind): void {
   if (kind === 'flare') site.flare = { wellQuarter: site.readyQuarter }
   addSite(state, site)
   state.bandwidth -= BALANCE.bandwidth.build
-  state.cash = roundCents(state.cash - cost)
+  book(state, 'site_builds', -cost, { site: site.id })
+  roundCash(state)
   if (kind === 'flare') addGrievance(state, site.id, S.flare.heat_once)
   logEntry(state, 'log.special.leased', { ...siteParams(site), costUsd: cost })
 }
@@ -143,7 +145,8 @@ export function relocate(state: GameState, siteId: string): void {
   const site = state.sites.find((s) => s.id === siteId)!
   const cost = relocateCostUsd(site)
   const f = S.flare
-  state.cash = roundCents(state.cash - cost)
+  book(state, 'site_builds', -cost, { site: siteId })
+  roundCash(state)
   site.flare = { wellQuarter: state.quarter + f.relocate_downtime_quarters, relocatingUntil: state.quarter + f.relocate_downtime_quarters }
   logEntry(state, 'log.special.relocated', { ...siteParams(site), costUsd: cost })
 }
@@ -179,7 +182,8 @@ export function endQuarterSpecialSites(state: GameState): void {
         logEntry(state, 'log.special.genset', { ...siteParams(site) })
       }
       if (chance(r, perQuarter(S.flare.accident_per_year))) {
-        state.cash = roundCents(state.cash - S.flare.accident_usd)
+        book(state, 'one_offs', -S.flare.accident_usd, { site: site.id })
+        roundCash(state)
         addGrievance(state, site.id, S.flare.accident_heat)
         logEntry(state, 'log.special.accident', { ...siteParams(site), costUsd: S.flare.accident_usd })
       }
