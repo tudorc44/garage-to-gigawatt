@@ -242,6 +242,16 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Milestone M41 (branch `m41`, from `main` at `464a6ad`; design thread answers to the M40 report, 10 Oct 2026)
+
+Answers: 2 keep the quarter-level "that build's own"; 3 E-B2 stays a recorded miss (the reactors' fat tail, M40.2 numbers:
+smr mean $171M, best $5.2B; adv_fission $148M, $5.4B; control $35M; finished-plant valuation is an Act V design item).
+Split: **M41.1** rule (b) replaced: a raise takes the sign of the next scored move after it in Act IV, 0 with none (never a
+decoy); target Perfect ≥ Passive − 2 in all 12 cells, a short cell is a recorded miss · **M41.2** names: Lantern Arc
+Constellation (id `jade_arc` kept), Keelstone Sovereign Compute · then the `--act4` run and the PR.
+- **M41.1** done (`scoredSignsIv`): a raise takes the sign of the next non-raise ±1 move after it in the log (play order: a raise
+  logged after its quarter's build looks further on, mine, reversible); none: 0. Goldens: act4-energy-f2/f4 reading only.
+
 ## Milestone M40 (branch `m40`, from `main` at `ff442df`; design thread answers after M37.7-M39, 10 Oct 2026)
 
 The PR the answers asked for was already merged (PR #5), so `m40` starts at `main` (same content as `m38`). Answers 3 and 4

@@ -50,16 +50,21 @@ const isBuild = (k: Act4MoveKind) => k === 'orbit_commit' || k === 'orbit_debt'
  * (a) in a quarter where a build's capital is arranged (a commit or an orbital debt draw), the presale, insurance and
  *     debt draw count 0 and are never decoy moves (the log carries no block ids, so "that build's own" is read as "that
  *     quarter's": mine, reversible);
- * (b) an equity raise takes +1 when an offensive move (+1 after (a)) follows in the same quarter or the next one; else −1.
+ * (b) M41.1 (design thread, answers to the M40 report): an equity raise takes the sign of the next scored move after it
+ *     in the log (at any distance, within Act IV; moves at 0 and other raises skipped): +1 or −1; with none before the
+ *     act ends it counts 0 (so never a decoy move).
  * Every other move keeps its ACT4_MOVE_SIGN. The score is computed after the act, so the lookahead is fine.
  */
 export function scoredSignsIv(moves: readonly Pick<Act4Move, 'q' | 'kind'>[]): (-1 | 0 | 1)[] {
   const buildQ = new Set(moves.filter((m) => isBuild(m.kind)).map((m) => m.q))
-  const base = moves.map((m) => (buildQ.has(m.q) && BUILD_HEDGES.has(m.kind) ? 0 : ACT4_MOVE_SIGN[m.kind]))
-  const offensiveQ = new Set(moves.filter((_, i) => base[i] > 0).map((m) => m.q))
-  return moves.map((m, i) =>
-    m.kind === 'equity_raise' && (offensiveQ.has(m.q) || offensiveQ.has(m.q + 1)) ? 1 : base[i],
-  )
+  const signs = moves.map((m) => (buildQ.has(m.q) && BUILD_HEDGES.has(m.kind) ? 0 : ACT4_MOVE_SIGN[m.kind]))
+  // From the end: each raise takes the sign of the next non-raise move scored ±1 (the log is in play order).
+  let next: -1 | 0 | 1 = 0
+  for (let i = moves.length - 1; i >= 0; i--) {
+    if (moves[i].kind === 'equity_raise') signs[i] = next
+    else if (signs[i] !== 0) next = signs[i]
+  }
+  return signs
 }
 
 /** Orbital exposure held after quarter q, read from the log: blocks committed or bought, less blocks sold. */

@@ -82,12 +82,18 @@ describe('a build and its funding (M40.1, design thread answer 1 after M39)', ()
     expect(computeReadingIv([{ q: 3, kind: 'orbit_insure' }], 'f1').penalty).toBe(10)
   })
 
-  it('a raise takes + when an offensive move follows the same quarter or the next; else −1', () => {
-    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 2, kind: 'launch_booking' }])).toEqual([1, 1])
+  it('M41.1: a raise takes the sign of the next scored move after it, at any distance; 0 with none (never a decoy)', () => {
     expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 1, kind: 'orbit_commit' }])).toEqual([1, 1])
-    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 3, kind: 'launch_booking' }])).toEqual([-1, 1])
-    // a build's debt draw (0 after rule a) isn't an offensive move by itself
-    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 2, kind: 'orbit_debt' }])).toEqual([-1, 0])
+    // a run of raises saving up for a build two years on: all +
+    const savings = [1, 2, 3, 4, 5, 6, 7, 8].map((q) => ({ q, kind: 'equity_raise' as const }))
+    expect(scoredSignsIv([...savings, { q: 9, kind: 'launch_booking' }])).toEqual([1, 1, 1, 1, 1, 1, 1, 1, 1])
+    // followed by a sale: −1; ground and lunar moves (0) are skipped
+    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 2, kind: 'ground_move' }, { q: 6, kind: 'orbit_sale' }])).toEqual([-1, 0, -1])
+    // a build's own hedges and debt (0 after rule a) are skipped too
+    expect(scoredSignsIv([{ q: 1, kind: 'equity_raise' }, { q: 2, kind: 'orbit_debt' }, { q: 2, kind: 'orbit_insure' }])).toEqual([0, 0, 0])
+    // nothing scored after it: 0, never a decoy (F1's window is 2031Q4-2032Q2, wrong stance −1)
+    expect(scoredSignsIv([{ q: 3, kind: 'equity_raise' }])).toEqual([0])
+    expect(computeReadingIv([{ q: 3, kind: 'equity_raise' }], 'f1').penalty).toBe(0)
   })
 })
 

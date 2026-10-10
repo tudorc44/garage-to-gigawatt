@@ -8062,14 +8062,14 @@
         },
         {
           "q": 1,
-          "stance": -1,
+          "stance": 0,
           "ideal": -1,
           "weight": 1,
           "value": 1
         },
         {
           "q": 2,
-          "stance": -1,
+          "stance": 0,
           "ideal": -1,
           "weight": 1,
           "value": 1
@@ -8199,14 +8199,14 @@
       {
         "q": 1,
         "kind": "equity_raise",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       },
       {
         "q": 2,
         "kind": "equity_raise",
-        "sign": -1,
-        "mark": "match"
+        "sign": 0,
+        "mark": "neutral"
       }
     ],
     "careerTitleId": "contender",
