@@ -5,8 +5,9 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 5 Oct 2026 (M26 merged at `209622e`; the Act IV run is stopped at step 0 on `m27`, doc 33 missing). The Prologue, Act I, Act II and
-Act III are built and public on GitHub Pages; Act IV is not designed. See "Next", "Milestone M26" and "Milestone M18 close-out".
+Last updated: 10 Oct 2026 (M36.10 on `m35`, PR #3 into `main`). The Prologue, Act I, Act II and Act III are built and
+public on GitHub Pages. Act IV (M27–M34) and the energy options and ventures (doc 38, M35–M36) are built on the unmerged
+chain `m27`…`m35`. See "Next" and "Milestones M35-M36".
 
 ## How the owner works
 
@@ -185,10 +186,14 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now: the owner playtests Act IV on `m32`** (staging built from `m32` on 6 Oct 2026). The Act IV run (M27–M32) is finished
-(see "The Act IV run"): pushed on `m27`…`m32`, chained, none merged. After the playtest: a balance decision on the MISS
-targets (B3 B4 B5 B6 B8 B9 B13, mainly orbital GPU clouds earning like ground ones), the owner's check of the fictional
-names, then merging the chain into `main` (tag each `m<n>-done`, delete the branches).
+**Now (10 Oct 2026): M36.10's re-runs and report** (the Act IV table, the energy E-B table, the `--act2 --act3`
+byte-identity check), then the design thread's answers. `m35` carries the whole unmerged chain (`m27`…`m35`: Act IV,
+its follow-ups, doc 38); PR #3 merges it into `main` (the owner merges; tag each `m<n>-done`, delete the branches).
+Act IV targets standing: B3 a recorded miss (×0.60 kept on F2); B4, B6, B8 miss; B13 accepted; B5 passes relaxed.
+Open: the design thread's calls on the energy E-B results, and the F2 reading-versus-economics tension (Perfect = Passive
+in F2: its ideal stance is "reduce orbit" every quarter, while Lunar earns most).
+
+**Before (6 Oct 2026):** the owner playtested Act IV on `m32` (staging built from `m32`); the findings below.
 
 **Act IV playtest findings** (fixed on `m32` unless marked open; the staging snapshot needs a rebuild to show a fix):
 - (Fixed, 6 Oct 2026) Plan dashboard: a tall panel above it (Renewals due, also the wildcard and Act IV's alerts) squeezed

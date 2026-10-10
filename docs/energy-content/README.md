@@ -81,22 +81,42 @@ Grades follow doc 36: [A] primary, [B] reputable reporting, [C] analyst or forec
 | Cash calls | the overrun (m − 1) × budget × your stake, in thirds at 33/66/100% of the build; pay, dilute (stake × paid ÷ (paid + call)) or walk; unanswered: dilute | §5.1; the default mine |
 | Partner | Act IV only: covers 30-50% of a call; its string: a third of that share comes off your delivered MW | §5.1 ("strings: offtake priority"); the size of the string mine |
 | Debt | none before first power, for every type | §5.1 point 5 |
-| Value | before first power: what you paid in (plus prepayments); at operation: stake × the venture's EBITDA × 4 × the ground AI multiple; 0 if cancelled, folded or walked | §5.1 point 6; "book value before" mine |
+| Value | marked to milestones (M36.8, M36.10): buy-in (scaled by dilution) × 1.25 per milestone hit × 0.8 per slip, calls at par, prepayments at cost; at first power an offtake adds its power savings to the act's end; 0 if cancelled, folded or walked | design thread, answers 11a (10 Oct: × 1.25, was 1.5); the milestones and slips counted are mine (below) |
 | Delivery | firm MW at your site from first power, with no grid wait; you pay the PPA instead of the grid price (the saving is energy revenue) | §5.1 point 6; the settlement mine |
-| EGS | 100 MW block; $7,500/kW; PPA $80 (FOAK range $80-110, low end as the pitch); thermal class; 12 q × slip (median 1.15, σ 0.2); weak field 15% (CF 60% until $1,500/kW); seismicity 2%/yr (a quarter, Heat +5 at your campus); Act III political capital +2 at first power; delivers to Arizona | §5.2; size, σ and the region mine. Later blocks, the rig limit, NOAK costs and project debt after block 1 are not modelled (one block per venture) |
-| SMR | 300 MW; pitch $4,000/kW, first power 5 years on, PPA $90; nuclear class floored ×3; licence 10 q + build 20 q, × slip (median 1.6, σ 0.3); undersubscribed (others 20-70% + your offtake < 80%) while licensing: 40%/yr cancelled; a call has a 50% chance of a 30-50% government cost-share, else the PPA reopens at cost (60 years at 7%); one nuclear venture per 8 quarters; delivers to nuclear-eligible regions | §5.3; size, σ, others' share, the cost-share's chance mine. Units 2-4 not modelled. Public-opinion events and political capital for the licence slot not modelled |
-| Advanced fission | 345 MW; pitch $4,800/kW (+20%), build 24 q (+4), HALEU 20%: +2-4 q | §5.4 |
+| EGS | 100 MW block; $7,500/kW; PPA $80 (FOAK range $80-110, low end as the pitch); thermal class; 12 q × slip (median 1.15, σ 1.14: fitted, M36.10); weak field 15% (CF 60% until $1,500/kW); seismicity 2%/yr (a quarter, Heat +5 at your campus); Act III political capital +2 at first power; delivers to Arizona | §5.2; size, σ and the region mine. Later blocks, the rig limit, NOAK costs and project debt after block 1 are not modelled (one block per venture) |
+| SMR | 300 MW; pitch $4,000/kW, first power 2032, PPA $90; nuclear class floored ×3; licence 10 q + build 20 q, × slip (median 1.06, σ 0.3: fitted, M36.10; doc 38's 1.6 gives ~4% power by 2035); undersubscribed (others 20-70% + your offtake < 30%: fitted, M36.10, was 80%) while licensing: 40%/yr cancelled; a call has a 50% chance of a 30-50% government cost-share, else the PPA reopens at cost (60 years at 7%); one nuclear venture per 8 quarters; delivers to nuclear-eligible regions | §5.3; size, σ, others' share, the cost-share's chance mine. Units 2-4 not modelled. Public-opinion events and political capital for the licence slot not modelled |
+| Advanced fission | 345 MW; pitch $4,800/kW (+20%), first power 2033, build 24 q (+4), HALEU 20%: +2-4 q; slip median 1.07, cancellation below 30% (fitted, M36.10) | §5.4 |
 | Fusion | 50 MW pilot; capex $20,000/kW (its round); gates 0.90/0.70/0.60/0.80 at 4-8, 4-12, 8-12, 4-8 quarters; a fail: 50% pivot (8-12 q, a raise at half the valuation: pay half what you paid in to keep the stake, or it halves), else it folds; reservation 10% of a notional 15-year PPA for 50 MW at $40, refunded only on a fold; hype +1x on your multiples between first plasma and Q > 1, −2x for 4 quarters after a failed gate; the last gate never before 2038 | §5.5; size, the pivot's price mine |
-| Pumped storage | 1,000 MW, 10 h; pitch $1,000/kW over 4 years; real $4,000/kW × the dam class; 36 q × slip (median 1.45, σ 0.25); government funds 40-60% (the buy-in uses 50%); boring-machine event 25% over the build (+4 q, +10% budget); equity only; capacity revenue $110/kW-yr; Nordics and Arizona | §5.6; the event's chance, the capacity revenue and the regions mine; government loans with PIK interest not modelled |
-| Control | 100 MW utility solar + 4 h battery at that year's prices; 6 q + 1 q; then the grid wait (Act IV: the future's `grid_wait_q`; Act III: 16-24 q); PPA $55; delivers 30% of its MW as firm power | §5.8; the PPA and the firm share (the battery's 30%) mine |
-| On-site gas, Act IV | thermal-class overrun on the plant's cost and a 2-4 quarter turbine slip while the backlog lasts (to 2032Q4), both drawn when the build starts | §5.9; "to 2032" mine |
-| Pitched dates | relative to joining (SMR +5 years, advanced +6, fusion +3, EGS 12 q, pumped 4 years) | doc 38 gives them for a 2027 start |
+| Pumped storage | 1,000 MW, 10 h; pitch $1,000/kW over 4 years; real $4,000/kW × the dam class; 36 q × slip (median 1.27, σ 0.25: fitted, M36.10; was 1.45); government funds 40-60% (the buy-in uses 50%); boring-machine event 25% over the build (+4 q, +10% budget); equity only; capacity revenue $110/kW-yr; Nordics and Arizona | §5.6; the event's chance, the capacity revenue and the regions mine; government loans with PIK interest not modelled |
+| Control | 100 MW utility solar + 4 h battery at that year's prices; 6 q + 1 q; then the grid wait, 16-24 q drawn from its 2027 start; PPA $55; delivers 30% of its MW as firm power | §5.8; the PPA and the firm share (the battery's 30%) mine |
+| On-site gas, Act IV | 6-10 quarters to power (the turbine backlog) and a thermal-class overrun on the plant's cost | design thread, answer 9 (10 Oct); doc 33 §5 |
+| Grid upgrades, Act IV | the future's `grid_wait_q` × 0.8-1.2 (16-24 q at 20; F4 8-12 at 10), shifted by policies and hires | design thread, answer 9; the 0.8-1.2 spread mine |
+| Pitched dates | calendar dates (M36.10): EGS 2030, SMR 2032, advanced fission 2033, pumped 2031, fusion "by 2031", the control 2028 | design thread, answer 4 (10 Oct): the developer's date, not years from joining |
+
+### Calendar ventures (M36.10, design thread answer 4)
+
+Each type has one developer project per game, starting on its doc 38 date (2027Q1; fusion 2028Q1) whether or not the
+player joins. Its hidden draws are keyed by type, and its history is replayed quietly from the start, so the offer shows
+where it stands (licensing, building, waiting for the grid, research, cancelled, folded, built). Joining takes the
+project over as it stands: calls already past aren't yours, and only milestones and slips after joining count toward
+your mark (mine). A cancelled, folded or finished project takes no new money (mine). Slips and the nuclear cancellation
+threshold are fitted so P(first power by 2035Q4) lands within ±10 points of doc 38's targets (2,000 games): EGS 80.4%
+(0.80), SMR 56.1% (0.55), advanced fission 38.8% (0.40), pumped 13.6% (0.15), the control 100% (0.95), fusion 0% (0.10:
+the 2038 honesty rule).
+
+**Milestones and slips counted in the mark (mine):** milestones are a licence granted, each third of the build, first
+power and each fusion gate passed; slips are each full year past the pitched first power, a seismic pause and a fusion
+pivot.
 | Names | generic developers ("Small modular reactor"); the content pack names them with doc 33's clash check | doc 38 §9 |
 
 ### Overrun classes (doc 38 §5.1)
 
-Lognormal multipliers (median, σ, cap): nuclear 1.6/0.70/6.0, pumped hydro 1.5/0.80/6.0, thermal 1.03/0.35/3.0, wind
-1.02/0.30/2.5, transmission 0.98/0.20/2.0, solar 1.00/0.10/1.5. Kept as written. **Note for the design thread:** these
-parameters don't give all the tail shares doc 38's table states. Nuclear's σ 0.70 puts about 25% at or under budget (the
-table says ~3%), though its P(m > 1.5) ≈ 54% and mean ≈ 2.0 match. Pumped hydro's P(m ≤ 1) is ~31% (table ~10%) and
-P(m ≥ 3) ~19% (table ~10%). See dev-notes, M35.
+Lognormal multipliers (median, σ, cap): thermal 1.03/0.35/3.0, wind 1.02/0.30/2.5, transmission 0.98/0.20/2.0, solar
+1.00/0.10/1.5, as written.
+
+Nuclear and pumped hydro are refitted (M36.7, design thread answer 6, 9 Oct 2026): with chance p_under m is uniform in
+0.85-1.00, else m = 1 + X, X lognormal; capped at 6. Nuclear: p_under 0.03, X median 0.6, σ 1.0 (the design thread's).
+Pumped hydro: p_under 0.10, X median 0.58, σ 1.02 (mine, fitted to the table's ≥ 3× ≈ 10% and median 1.5). Realised
+over 1,000 draws: nuclear 2.4% at or under budget, 57.2% over 1.5×, mean 1.93; pumped hydro 10.4%, 48.8%, 9.7% at ≥ 3×.
+The class medians (1.6, 1.5) stay as the figures diligence quotes. (Doc 38's original σ 0.70 for nuclear put ~25% at or
+under budget, against its table's ~3%.)
