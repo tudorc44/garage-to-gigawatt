@@ -143,7 +143,10 @@ Doc 28 (`claude/act3-content/28-act-iii-content-pack.md`) delivered the full con
 2. **When to switch Act III on in the public build** (after 1 and the owner's playtests).
 3. **The S3 tension (§17.9):** the reading score rewards caution early in S3, but a levered company ends ahead there.
 4. **F-9:** the short verification pass on the ~10 `grounded: true` claims (non-blocking).
-5. **F-10:** the Act II data cleanup (non-blocking).
+5. ~~**F-10:** the Act II data cleanup (non-blocking).~~ **Closed (10 Oct 2026, M42):** already fixed by the 27 Sep 2026
+   rebuild of the live Act II files (`docs/act2-content/`): every weekly row follows the hashprice formula, and each
+   quarterly BTC value is the sourced quarter close, equal to the weekly file's last week. The mismatch was only in the
+   superseded v1 pack files. No `btc_usd_mean` column (the sim never reads quarterly BTC).
 
 ## 17. What the build and the balance pass changed (v1.2, 4 Oct 2026)
 
