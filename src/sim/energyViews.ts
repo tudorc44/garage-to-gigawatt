@@ -20,9 +20,9 @@ import {
 } from './systems/energy.ts'
 import { firmKw, flareOutput } from './systems/energyAssets.ts'
 import {
-  hydroMoratorium,
+  kindMoratorium,
+  kindTariffRamp,
   leaseSpecialBlocker,
-  newLoadTariff,
   relocateBlocker,
   relocateCostUsd,
   specialCostUsd,
@@ -245,9 +245,9 @@ export function specialSitesView(state: GameState): SpecialSiteRow[] {
       powerPriceMult: 1,
       flaw: null,
       special: kind,
-      tariffMult: newLoadTariff(state, kind),
+      tariffRamp: kindTariffRamp(state, kind),
     }
-    const m = k.queue === 'hydro' ? hydroMoratorium(state) : null
+    const m = kindMoratorium(kind)
     const blocked = leaseSpecialBlocker(state, kind)
     return {
       kind,
@@ -257,7 +257,8 @@ export function specialSitesView(state: GameState): SpecialSiteRow[] {
       costUsd: specialCostUsd(kind),
       rentUsdQ: k.rent_usd_q,
       buildQuarters: k.build_quarters,
-      moratoriumUntil: m && state.quarter >= m.from ? m.until : null,
+      // (the first quarter open again)
+      moratoriumUntil: m && state.quarter >= m.from && state.quarter <= m.until ? m.until + 1 : null,
       ...(blocked ? { blocked } : {}),
     }
   })

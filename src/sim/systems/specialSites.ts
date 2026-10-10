@@ -1,9 +1,12 @@
-// Special sites (M35.3, doc 38 §4.4-4.6, E-D3, E-D5): cheap hydro allocations (a Washington PUD county, an upstate New
-// York muni, Québec hosting), Iceland, and flare-gas pads. Designed values, to verify before the content pack (doc 38
-// §8 Q1-Q3). The hydro counties take one new allocation a quarter; the 2017Q4 application flood brings a moratorium
-// from 2018Q1 for 4-6 quarters, then a crypto tariff on new load (+60-100%) and +30% on existing contracts at renewal.
-// Iceland freezes new allocations in 2018Q1 for 2 quarters and from 2021Q4 for good. A flare pad is mining only: its
-// well declines after a year, and it can move to a new well. Rolls use their own substreams ("energy:hydro", …).
+// Special sites (M35.3, doc 38 §4.4-4.6, E-D3, E-D5; M39.2-M39.3, doc 41 from doc 40's research): cheap hydro
+// allocations (a Washington PUD county, an upstate New York muni, Québec hosting), Iceland, and flare-gas pads. The hydro
+// counties take one new allocation a quarter, after the 2017Q4 application flood; each kind has its own timeline: PUD
+// 2.6¢, a moratorium 2018Q1-2019Q1, then a crypto tariff from 2019Q2 rising to ×2.5-3.0 over 8-12 quarters on existing
+// load too; muni 2.0¢, no new sites for 6 quarters from 2018Q1 and the overage at market price from 2018Q1; Québec
+// 4.5¢ grandfathered, no new sites 2018Q2-2019Q3, then new ones curtailed 300 hours a year. Iceland locks its price
+// when taken, offers an allocation every other quarter in 2018, stops for good in 2021Q4 and loses a week to that dry
+// winter. A flare pad is mining only: its well declines after a year, and it can move to a new well. Rolls use their own
+// substreams ("energy:hydro", …).
 import { BALANCE, CONTENT, actLastQuarter } from '../../content/index.ts'
 import { ENERGY, SPECIAL_SITE_KINDS, type SpecialSiteKind } from '../../content/energyContent.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -19,14 +22,26 @@ const label = (q: number) => CONTENT.quarters[q]
 const qIndex = (id: string) => CONTENT.quarters.indexOf(id)
 const perQuarter = (pYear: number) => 1 - (1 - pYear) ** 0.25
 
-/** The hydro moratorium, drawn once per game from the seed: its first quarter, its end, and the new-load tariff. */
-export function hydroMoratorium(state: GameState): { from: number; until: number; tariffMult: number } {
-  const h = S.queues.hydro
+/**
+ * M39.2 (doc 41): a kind's moratorium on new sites (PUD 2018Q1-2019Q1, muni 6 quarters from 2018Q1, Québec 2018Q2-2019Q3),
+ * as quarter indices with `until` the last blocked quarter; null for a kind without one.
+ */
+export function kindMoratorium(kind: SpecialSiteKind): { from: number; until: number } | null {
+  const m = ENERGY.specialKinds[kind].moratorium
+  return m ? { from: qIndex(m.from), until: qIndex(m.until) } : null
+}
+
+/**
+ * M39.2: the PUD crypto tariff, drawn once per game from the seed (its own substream): the multiple the price rises to
+ * and the quarters it takes, from the ramp's first quarter.
+ */
+export function pudTariff(state: GameState): { from: number; mult: number; quarters: number } | null {
+  const ramp = ENERGY.specialKinds.pud.tariff_ramp
+  if (!ramp) return null
   const r = substream(state.seed, 'energy:hydro')
-  const length = randomInt(r, ...h.moratorium_quarters)
-  const tariffMult = Math.round(uniform(r, ...h.tariff_new_load_mult) * 100) / 100
-  const from = qIndex(h.moratorium_from)
-  return { from, until: from + length, tariffMult }
+  const mult = Math.round(uniform(r, ...ramp.mult) * 100) / 100
+  const quarters = randomInt(r, ...ramp.quarters)
+  return { from: qIndex(ramp.from), mult, quarters }
 }
 
 /** True when Iceland takes no new allocations in this quarter. */
@@ -45,10 +60,8 @@ export function specialStatus(state: GameState, kind: SpecialSiteKind): SpecialS
   const q = label(state.quarter)
   if (q < k.from) return 'not_yet'
   if (q > k.until) return 'closed'
-  if (k.queue === 'hydro') {
-    const m = hydroMoratorium(state)
-    if (state.quarter >= m.from && state.quarter < m.until) return 'moratorium'
-  }
+  const m = kindMoratorium(kind)
+  if (m && state.quarter >= m.from && state.quarter <= m.until) return 'moratorium'
   if (k.queue === 'iceland' && icelandFrozen(state.quarter)) return 'frozen'
   if (k.queue) {
     const perQ = S.queues[k.queue].per_quarter
@@ -60,11 +73,22 @@ export function specialStatus(state: GameState, kind: SpecialSiteKind): SpecialS
   return 'open'
 }
 
-/** The new-load tariff a hydro site leased now pays (1 before the moratorium ends). */
-export function newLoadTariff(state: GameState, kind: SpecialSiteKind): number {
-  if (ENERGY.specialKinds[kind].queue !== 'hydro') return 1
-  const m = hydroMoratorium(state)
-  return state.quarter >= m.until ? m.tariffMult : 1
+/** M39.2: the crypto tariff a site of this kind carries (PUD only; the same draw for every PUD site in the game). */
+export function kindTariffRamp(state: GameState, kind: SpecialSiteKind): Site['tariffRamp'] {
+  return kind === 'pud' ? (pudTariff(state) ?? undefined) : undefined
+}
+
+/**
+ * M39.3 (doc 41): the price an Iceland site locks in when it's taken (a proxy for the real 12-year contracts): 4.3¢ in
+ * 2017; drawn in 5.1-7.1¢ from 2018 (its own substream per site taken). Null for a kind without a lock.
+ */
+export function lockedPrice(state: GameState, kind: SpecialSiteKind): number | null {
+  const lock = ENERGY.specialKinds[kind].price_lock
+  const step = lock?.filter((s) => s.from <= label(state.quarter)).at(-1)
+  if (!step) return null
+  if (step.range[0] === step.range[1]) return step.range[0]
+  const r = substream(state.seed, `energy:lock:${kind}:${state.quarter}:${state.nextId}`)
+  return Math.round(uniform(r, ...step.range) * 10000) / 10000
 }
 
 /** What leasing (or, for a flare pad, building) a special site costs now. */
@@ -112,8 +136,10 @@ export function leaseSpecial(state: GameState, kind: SpecialSiteKind): void {
     kw: k.kw,
   }
   if (kind === 'iceland') site.region = 'nordics'
-  const tariff = newLoadTariff(state, kind)
-  if (tariff !== 1) site.tariffMult = tariff
+  const ramp = kindTariffRamp(state, kind)
+  if (ramp) site.tariffRamp = ramp
+  const locked = lockedPrice(state, kind)
+  if (locked !== null) site.lockedUsdKwh = locked
   if (kind === 'flare') site.flare = { wellQuarter: site.readyQuarter }
   addSite(state, site)
   state.bandwidth -= BALANCE.bandwidth.build
@@ -159,15 +185,14 @@ export function endQuarterSpecialSites(state: GameState): void {
   const specials = state.sites.filter((s) => s.special)
   if (specials.length === 0) return
   const h = S.queues.hydro
-  const m = hydroMoratorium(state)
   const hydro = specials.filter((s) => ENERGY.specialKinds[s.special!].queue === 'hydro')
-  if (label(state.quarter) === h.flood_quarter && hydro.length > 0)
-    logEntry(state, 'log.special.flood', { quarters: m.until - m.from })
-  if (state.quarter + 1 === m.until && hydro.length > 0) {
-    for (const site of hydro)
-      if (site.tariffMult === undefined) site.tariffMult = h.tariff_existing_mult
-    logEntry(state, 'log.special.tariff', { pct: Math.round((m.tariffMult - 1) * 100) })
-  }
+  const pud = kindMoratorium('pud')
+  if (label(state.quarter) === h.flood_quarter && hydro.length > 0 && pud)
+    logEntry(state, 'log.special.flood', { quarters: pud.until - pud.from + 1 })
+  // M39.2 (doc 41): the PUD crypto tariff starts next quarter, on existing PUD load too
+  const t = pudTariff(state)
+  if (t && state.quarter + 1 === t.from && specials.some((s) => s.special === 'pud'))
+    logEntry(state, 'log.special.tariff', { pct: Math.round((t.mult - 1) * 100), quarters: t.quarters })
   const r = substream(state.seed, `energy:special:${state.quarter}`)
   for (const site of specials) {
     const k = ENERGY.specialKinds[site.special!]

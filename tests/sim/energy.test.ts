@@ -17,8 +17,8 @@ import { firmKw, flareOutput } from '../../src/sim/systems/energyAssets.ts'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import { mineWeek } from '../../src/sim/systems/mining.ts'
 import { marketWeek } from '../../src/sim/systems/market.ts'
-import { capacityKw, normalPriceUsdKwh, poweredKw } from '../../src/sim/systems/sites.ts'
-import { hydroMoratorium, specialStatus } from '../../src/sim/systems/specialSites.ts'
+import { capacityKw, normalPriceUsdKwh, poweredKw, uptime } from '../../src/sim/systems/sites.ts'
+import { pudTariff, specialStatus } from '../../src/sim/systems/specialSites.ts'
 import { act2Company } from './act2Helpers.ts'
 import { act3ScenarioCompany } from './act3Helpers.ts'
 
@@ -170,25 +170,59 @@ describe('special sites (doc 38 §4.4-4.6)', () => {
     s = ok(s, { type: 'SPECIAL_LEASE', kind: 'pud' })
     const pud = s.sites.at(-1)!
     expect(pud.special).toBe('pud')
-    expect(normalPriceUsdKwh(pud, s.quarter)).toBeCloseTo(0.03 * 0.95)
+    expect(normalPriceUsdKwh(pud, s.quarter)).toBeCloseTo(0.026 * 0.95)
     expect(specialStatus(s, 'quebec')).toBe('queue_full')
     expect(applyAction(s, { type: 'SPECIAL_LEASE', kind: 'quebec' }).ok).toBe(false)
   })
 
-  it('the moratorium starts 2018Q1 for 4-6 quarters; new load after it pays a 60-100% tariff', () => {
+  it('PUD (M39.2): 2.6¢; no new sites 2018Q1-2019Q1; from 2019Q2 a tariff ramps to ×2.5-3.0 over 8-12 quarters, existing load too', () => {
+    expect(specialStatus(withWarehouse('2017Q4'), 'pud')).toBe('open')
+    expect(specialStatus(withWarehouse('2018Q1'), 'pud')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q1'), 'pud')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q2'), 'pud')).toBe('open')
     for (let seed = 1; seed <= 10; seed++) {
-      const m = hydroMoratorium(withWarehouse('2018Q1', seed))
-      expect(m.from).toBe(q('2018Q1'))
-      expect(m.until - m.from).toBeGreaterThanOrEqual(4)
-      expect(m.until - m.from).toBeLessThanOrEqual(6)
-      expect(m.tariffMult).toBeGreaterThanOrEqual(1.6)
-      expect(m.tariffMult).toBeLessThanOrEqual(2)
+      const t = pudTariff(withWarehouse('2017Q1', seed))!
+      expect(t.from).toBe(q('2019Q2'))
+      expect(t.mult).toBeGreaterThanOrEqual(2.5)
+      expect(t.mult).toBeLessThanOrEqual(3.0)
+      expect(t.quarters).toBeGreaterThanOrEqual(8)
+      expect(t.quarters).toBeLessThanOrEqual(12)
     }
-    const s = withWarehouse('2018Q2')
-    expect(specialStatus(s, 'muni')).toBe('moratorium')
-    const after = withWarehouse(CONTENT.quarters[hydroMoratorium(s).until])
-    const leased = ok(after, { type: 'SPECIAL_LEASE', kind: 'muni' })
-    expect(leased.sites.at(-1)!.tariffMult).toBe(hydroMoratorium(s).tariffMult)
+    // a site taken in 2017 (before the tariff) carries the ramp: the existing load pays it too, no renewal needed
+    const s = ok(withWarehouse('2017Q2'), { type: 'SPECIAL_LEASE', kind: 'pud' })
+    const pud = s.sites.at(-1)!
+    const t = pud.tariffRamp!
+    const base = 0.026 * 0.95
+    expect(normalPriceUsdKwh(pud, q('2019Q1'))).toBeCloseTo(base)
+    expect(normalPriceUsdKwh(pud, t.from)).toBeCloseTo(base * (1 + (t.mult - 1) / t.quarters))
+    expect(normalPriceUsdKwh(pud, t.from + t.quarters - 1)).toBeCloseTo(base * t.mult)
+    expect(normalPriceUsdKwh(pud, t.from + t.quarters + 4)).toBeCloseTo(base * t.mult)
+  })
+
+  it('muni (M39.2): 2.0¢ until 2017Q4; no new sites for 6 quarters from 2018Q1; from 2018Q1 the overage at market price', () => {
+    expect(specialStatus(withWarehouse('2019Q2'), 'muni')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q3'), 'muni')).toBe('open')
+    const s = ok(withWarehouse('2017Q2'), { type: 'SPECIAL_LEASE', kind: 'muni' })
+    const muni = s.sites.at(-1)!
+    expect(normalPriceUsdKwh(muni, q('2017Q4'))).toBeCloseTo(0.02)
+    // from 2018Q1: what a normal warehouse pays, if that's more
+    const market = (quarter: number) => normalPriceUsdKwh({ ...muni, special: undefined }, quarter)
+    for (const l of ['2018Q1', '2020Q2', '2022Q1'])
+      expect(normalPriceUsdKwh(muni, q(l))).toBeCloseTo(Math.max(0.02, market(q(l))))
+    expect(market(q('2018Q1'))).toBeGreaterThan(0.02)
+  })
+
+  it('Québec (M39.2): grandfathered at 4.5¢; no new sites 2018Q2-2019Q3; new ones from 2019Q4 lose 3.4% to curtailment', () => {
+    const early = ok(withWarehouse('2018Q1'), { type: 'SPECIAL_LEASE', kind: 'quebec' })
+    const old = early.sites.at(-1)!
+    expect(normalPriceUsdKwh(old, q('2021Q1'))).toBeCloseTo(0.045 * 0.95)
+    expect(uptime(old, q('2021Q1'))).toBe(1)
+    expect(specialStatus(withWarehouse('2018Q2'), 'quebec')).toBe('moratorium')
+    expect(specialStatus(withWarehouse('2019Q3'), 'quebec')).toBe('moratorium')
+    const late = ok(withWarehouse('2019Q4'), { type: 'SPECIAL_LEASE', kind: 'quebec' })
+    const curtailed = late.sites.at(-1)!
+    expect(normalPriceUsdKwh(curtailed, q('2021Q1'))).toBeCloseTo(0.045 * 0.95)
+    expect(uptime(curtailed, q('2021Q1'))).toBeCloseTo(1 - 0.034)
   })
 
   it('Iceland freezes in 2018Q1-Q2 and from 2021Q4; machines shipped there take a quarter longer', () => {

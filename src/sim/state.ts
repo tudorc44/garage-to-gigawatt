@@ -95,8 +95,14 @@ export interface Site {
   energy?: EnergyAsset[]
   /** M35.3 (doc 38 §4.4-4.6): a special site: a hydro or Iceland allocation, or a flare-gas pad. */
   special?: SpecialSiteKind
-  /** M35.3: the hydro crypto tariff on this site's power (new load after the moratorium, or existing at renewal). */
-  tariffMult?: number
+  /**
+   * M39.2 (doc 41): a PUD site's crypto tariff (the game's draw, the same for every PUD site): from quarter `from` the
+   * price rises in a straight line to × `mult` over `quarters` quarters. (M35.3's tariffMult is gone; an old save's is
+   * ignored.)
+   */
+  tariffRamp?: { from: number; mult: number; quarters: number }
+  /** M39.3 (doc 41): an Iceland site's price, locked when it was taken, $/kWh. */
+  lockedUsdKwh?: number
   /**
    * M35.3, a flare-gas pad: the quarter its current well started, the quarter a relocation ends (offline until then),
    * and a quarter that loses a week to a genset failure.

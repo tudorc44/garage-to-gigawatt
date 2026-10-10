@@ -55,6 +55,18 @@ const specialKindSchema = z.object({
   delivery_extra_quarters: quarters.optional(),
   mining_only: z.boolean().optional(),
   queue: z.enum(['hydro', 'iceland']).optional(),
+  /** M39.2 (doc 41): no new sites of this kind from `from` to `until` (both included). */
+  moratorium: z.object({ from: quarterId, until: quarterId }).optional(),
+  /** M39.2: a crypto tariff from `from`, rising in a straight line to × U(mult) over U{quarters}; existing load too. */
+  tariff_ramp: z.object({ from: quarterId, mult: range, quarters: z.tuple([quarters, quarters]) }).optional(),
+  /** M39.2: from this quarter every site of the kind pays max(its own price, what a normal warehouse pays). */
+  overage_from: quarterId.optional(),
+  /** M39.2: sites taken from `from` are curtailed: they lose this share of their output. */
+  curtail: z.object({ from: quarterId, output_loss: share }).optional(),
+  /** M39.3 (doc 41): a dry winter: sites already running lose `weeks` of that quarter's output. */
+  dry_winter: z.object({ quarter: quarterId, weeks: z.number().int().min(1).max(13) }).optional(),
+  /** M39.3: the price is locked when the site is taken: drawn in `range` ($/kWh) for a site taken from `from`. */
+  price_lock: z.array(z.object({ from: quarterId, range })).optional(),
 })
 
 /**
@@ -135,10 +147,6 @@ const energySchema = z.object({
       hydro: z.object({
         per_quarter: z.number().int().min(1),
         flood_quarter: quarterId,
-        moratorium_from: quarterId,
-        moratorium_quarters: z.tuple([quarters, quarters]),
-        tariff_new_load_mult: range,
-        tariff_existing_mult: pos,
       }),
       iceland: z.object({
         per_quarter: z.number().int().min(1),

@@ -240,6 +240,8 @@ tests, the E-B anchors, `--energy`, the 2,000-game venture table. Non-energy gol
 Before: battery payback (E-B5 formula) 2022Q4 81.3 q, 2024Q1 66.9 q, 2027Q1 34.5 q; anchors and `--energy` = `energy-m37f`.
 - **M39.1** done: DR $8/18/30K (grid_credits) + fixed-price resale $10/30/75K (energy_income) at Q3; 4CP a flat $50K (2020-25),
   $60K (2026+) per MW off next year, a quarter each quarter (power +); backlash on a $30M payment. Goldens unchanged.
+- **M39.2** done: per-kind hydro timelines (PUD 2.6¢, closed 2018Q1-2019Q1, tariff ramp from 2019Q2 on every PUD site; muni 2.0¢,
+  closed 6 q, overage = max(own, warehouse price) from 2018Q1; Québec 4.5¢, closed 2018Q2-2019Q3, −3.4% for sites from 2019Q4).
 
 ## Milestone M37 (branch `m37`, from `main` at `319a660`; Finances: the P&L and cash flow, doc 39 of 10 Oct 2026)
 
