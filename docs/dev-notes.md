@@ -302,6 +302,10 @@ the 2035Q4 companies as the energy runner; `gate.ts` the 20 stub V1 quarters, §
 - **M43.0d** (owner's option A, `gate-d.ts`, 30 seeds; confirmation, no tuning): V1 targets pass (Holder ÷ Seller Fortress 1.295,
   Firm Builder 1.398; Holder ÷ Locker 1.122, 1.131). V3 Locker ÷ Holder: Firm Builder 1.061 passes, **Fortress 1.031 misses
   1.05**; info V3 Seller ÷ Holder 1.034, 1.047. Gate FAIL on one target by 0.019: the owner's call.
+- **M43.0e** (doc 43 v1.2 §0.11: the gate passed; rerun on doc 47's market files, `gate-e.ts`, 30 seeds, no tuning; V1 and V3
+  judged, V2/V4 information; the seam glide from each company's 2035Q4): **every V1 target passes** (Holder ÷ Seller 1.311
+  Fortress, 1.463 Firm Builder; Holder ÷ Locker 1.137, 1.142). V3 Locker ÷ Holder: Firm Builder 1.074 passes; **Fortress
+  1.028, a recorded near-miss** (was 1.031; the balance pass owns it, §0.11's levers). Info V3 Seller ÷ Holder 1.031, 1.035.
 
 ## Milestone M42 (cleanup; design thread prompt of 10 Oct 2026)
 
