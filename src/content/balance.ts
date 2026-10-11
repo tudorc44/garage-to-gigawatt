@@ -825,5 +825,11 @@ export const BALANCE = {
      */
     seamGlideQuarters: 3,
     seamGlideSkip: ['btc_block_subsidy', 'btc_hashprice_usd_ph_day', 'btc_hashprice_usd_th_day'],
+    /**
+     * The queue's study bill (M53; doc 43 §0.4 and plants_v.json `queue.upgrade_bill.draw`, whose numbers are text
+     * there): the region's median × U(0.6, 1.4) (the content pack's spread, its README says mine), or with a 20% chance
+     * a tail of U(400, 600) $/kW (doc 45 §Q3 [A]). The study names it the quarter after the request (mine, reversible).
+     */
+    queueBill: { spread: [0.6, 1.4], tailChance: 0.2, tailUsdKw: [400, 600], studyQuarters: 1 },
   },
 } as const

@@ -32,6 +32,13 @@ export function act5MoveKind(a: Action): Act5MoveKind | null {
       return 'contract_plant_output'
     case 'COMMIT_FOLLOW_ON':
       return 'commit_follow_on_unit'
+    // M53 (doc 43 §14.1, §0.9 item 7): the queue (a site's power sale logs its own kind: with or without a position)
+    case 'PAY_UPGRADE':
+      return 'pay_network_upgrade'
+    case 'WITHDRAW_POSITION':
+      return 'withdraw_position'
+    case 'TAKE_FAST_LANE':
+      return 'take_fast_lane'
     default:
       return null
   }

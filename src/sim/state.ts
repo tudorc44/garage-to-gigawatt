@@ -276,6 +276,20 @@ export interface PowerAdd {
   card?: boolean
   /** Act III (M17.5): MW a card's PPA brought to the site (sh_2), held by that PPA, not a project. */
   ppaId?: string
+  /**
+   * Act V (M53, doc 43 §8 with §0.4): a grid request waiting in the queue is a position: when it was requested, the
+   * $/kW security held (a deposit, returned at energisation), the quarter its study names the upgrade bill and the bill,
+   * whether it's paid (paying buys no speed; an unpaid bill holds energisation), and the fast lane.
+   */
+  position?: {
+    requestQuarter: number
+    securityUsd: number
+    studyQuarter: number
+    billUsdKw: number
+    billPaid?: boolean
+    fastLane?: boolean
+    heldLogged?: boolean
+  }
 }
 
 /** Where a project's power comes from beyond the site's existing MW (scope 0.2 §2.5, A2-05). */

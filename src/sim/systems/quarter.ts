@@ -27,6 +27,7 @@ import { lunarHoldingUsd, poweredUsd } from './act5Entry.ts'
 import { recordAct5Exposure } from './act5Moves.ts'
 import { endQuarterPlants } from './plants.ts'
 import { payFlex } from './flex.ts'
+import { endQuarterQueue } from './queue.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { serviceOrbitalDebt } from './orbitCapital.ts'
@@ -104,8 +105,16 @@ export function endQuarter(state: GameState): void {
   // ventures move on, and those at operation deliver to your campus (their PPA saving is energy revenue).
   const energy = endQuarterEnergy(state, quarterInputs(state.quarter, scenarioOf(state))?.pjmCapacityUsdMwDay)
   energy.revenueUsd += endQuarterVentures(state).revenueUsd
-  // Act V (M52.5): V2's flex payment on enrolled curtailable MW (nothing elsewhere)
-  if (inActV(state)) energy.revenueUsd += payFlex(state)
+  // Act V (M52.5): V2's flex payment on enrolled curtailable MW (nothing elsewhere); (M53) the queue's positions move
+  // on, and the fast lane's output loss is an energy cost
+  if (inActV(state)) {
+    energy.revenueUsd += payFlex(state)
+    const loss = endQuarterQueue(state)
+    if (loss > 0) {
+      book(state, 'energy_opex', -loss)
+      energy.costUsd += loss
+    }
+  }
   bookEnergy(state, energy)
   // Act V (M52.2): operating plants pay your share of their cash after their debt's service (outside EBITDA).
   endQuarterPlants(state)

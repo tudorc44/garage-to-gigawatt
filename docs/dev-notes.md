@@ -370,6 +370,11 @@ README). `check.py` PASS.
   - **6** done: follow-on units (EGS at $4,000/kW, 7 q; SMR unit 2 at 0.85 × unit 1's realised cost, with unit 1's licence and build:
     mine), one per class, 2 BW, +1; the Ventures page's "Your plants" panel (the four actions); browser-checked at 1280 px. 1,697 tests.
   - **Sims:** M52 changes Act V only; the goldens (Acts I-IV byte-identical) cover it; no Act V sim runner exists yet.
+- **Step E (M53, branch `m53` on `m52`): the queue.** `queue.ts`: positions (regional wait × 0.8-1.2; $50/kW security returned at
+  energisation; the study's bill a quarter later, median × U(0.6,1.4) or a 20% $400-600 tail; paying buys no speed, an unpaid bill
+  holds the power); withdraw (0, the hall ends); V2's fast lane (enrols `flexKw`, −0.5% of the enrolled share's AI revenue: mine);
+  selling a site's free MW and positions (the leases go by PROJECT_SELL: mine); co-location shown; the Projects page's Queue panel.
+  Act IV's carried requests are adopted without a security (mine). 1,705 tests; main bundle 229 KB.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

@@ -72,6 +72,19 @@ const schema = z.object({
     }),
     fire_sale: z.object({ plant_stake: share, site_with_position: share }),
   }),
+  // M53 (doc 43 §8 with §0.4): the queue's security, study bills, regions and fast lane
+  queue: z.object({
+    security_usd_kw: nonNeg,
+    upgrade_bill: z.object({ median_col: z.record(z.string(), z.string()) }),
+    region_map: z.record(z.string(), z.enum(['pjm', 'ercot', 'other'])),
+    fast_lane: z.object({
+      col: z.string(),
+      curtail_h_yr_col: z.string(),
+      output_loss: share,
+      notice_hours: z.number().positive(),
+      future_only: z.string(),
+    }),
+  }),
 })
 
 export const PLANTS = schema.parse(raw)
