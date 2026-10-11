@@ -11,6 +11,7 @@ import {
   type ScenarioId,
   type SignalId,
   type SignalIdIv,
+  type SignalIdV,
   type WildcardIdIv,
 } from '../content/index.ts'
 import type { EnergyKind, SpecialSiteKind, VentureType } from '../content/energyContent.ts'
@@ -325,12 +326,29 @@ export interface LunarHolding {
   soldQuarter?: number
 }
 
-/** Act V's end record (M49: a skeleton; the reveal, reading score and titles come with the futures engine). */
+/** Act V's end record (M49 skeleton; M51 adds the reveal and the reading score; titles and the exit come later). */
 export interface Act5End {
   endQuarter: string
   gameOver: boolean
   founderNetWorthUsd: number
   growthMultiple: number | null
+  // ---- M51: the reveal (absent on a record built before M51: the chapter report rebuilds it) ----
+  vFutureId?: VFutureId
+  /** The future's name, its trigger, its decoy window and name, and the reads you made. */
+  futureName?: string
+  triggerQuarter?: string
+  triggerTitle?: string
+  triggerQ?: number
+  decoy?: { indicator: string; name: string; quarters: string[]; fromQ: number; toQ: number }
+  signalReads?: { quarter: string; indicator: string }[]
+  reading?: {
+    score: number | null
+    base: number
+    penalty: number
+    perQuarter: { q: number; stance: number; ideal: number; weight: number; value: number }[]
+  }
+  moves?: { q: number; kind: Act5MoveKind; sign: number; mark: 'match' | 'opposite' | 'decoy' | 'neutral' }[]
+  readingTitleId?: string | null
 }
 
 /**
@@ -585,6 +603,43 @@ export type Act4MoveKind =
   | 'equity_raise'
   | 'ground_move'
   | 'lunar_move'
+
+/** Act V (M51, doc 43 §6.7): one logged move; q is the Act V quarter index (0–19). */
+export interface Act5Move {
+  q: number
+  kind: Act5MoveKind
+}
+/**
+ * Moves on scarcity exposure (doc 43 §6.7 with §0.2), named as reading_score_v.json's `moves` rows (`equity_raise` is
+ * its `equity_raise_unfollowed` row). The log holds kinds only: their signs live in the hidden file, read at the end of
+ * the act by readingScoreV.ts. Each later milestone (plants, the queue, orbit replacement) logs its own actions.
+ */
+export const ACT5_MOVE_KINDS = [
+  'pay_network_upgrade',
+  'buy_site_with_position',
+  'commit_follow_on_unit',
+  'commit_new_firm_asset',
+  'buy_plant_stake',
+  'let_contract_roll_merchant',
+  'arrange_plant_debt',
+  'renew_short',
+  'sell_plant_stake_to_fund',
+  'sell_site_with_position',
+  'sell_site_free_mw',
+  'contract_plant_output',
+  'enrol_flexible',
+  'take_fast_lane',
+  'renew_long',
+  'blend_and_extend_long',
+  'equity_raise',
+  'request_grid_mw',
+  'withdraw_position',
+  'orbit_replace',
+  'orbit_extend',
+  'orbit_bring_home',
+  'sell_lunar_holding',
+] as const
+export type Act5MoveKind = (typeof ACT5_MOVE_KINDS)[number]
 
 /**
  * The Act III scenario reveal (M11.3), stored once when the last quarter is done: which scenario the
@@ -1368,6 +1423,16 @@ export interface GameState {
   act5Preset?: string
   /** Act V (M49): the end record, stored at 2040Q4's end (or a game over in Act V). Absent until then. */
   act5End?: Act5End
+  /** Act V (M51, doc 43 §6.7): the move log the reading score reads at the end of the act. */
+  act5Moves?: Act5Move[]
+  /** Act V (M51, doc 43 §6.3): the log of Read the market (Signals) reads, one indicator per quarter at most. */
+  act5SignalReads?: { quarter: string; indicator: SignalIdV }[]
+  /**
+   * Act V (M51, doc 43 §6.7, reading_score_v.json's `low_exposure_quiet`): the company's scarcity exposure (leases'
+   * value, free MW at the powered price, plant stakes) as a share of act5Entry's valuation, one entry per Act V quarter
+   * played, recorded at each quarter's end. Not hidden: it knows nothing about the future.
+   */
+  act5Exposure?: number[]
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */

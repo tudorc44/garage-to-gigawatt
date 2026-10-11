@@ -25,8 +25,9 @@ import type {
   SiteOffer,
   PowerContract,
 } from './state.ts'
-import { inAct2Rules, inAct3Rules, inActIII, inActIV, inAct4Rules } from './state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV, inAct4Rules, inActV } from './state.ts'
 import { readSignalIvBlocker } from './systems/signalsIv.ts'
+import { readSignalVBlocker } from './systems/signalsV.ts'
 import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
@@ -1325,6 +1326,41 @@ export function signalsPanelIv(state: GameState) {
       ? null
       : (readSignalIvBlocker(state, 'launch_quotes') ?? null),
     indicators: CONTENT.signalsIv[state.futureId].map((ind) => {
+      const current = ind.series.find((p) => p.quarter === now)
+      return {
+        id: ind.id as string,
+        label: ind.label,
+        higherMeans: ind.higher_means,
+        current: current ? { displayed: current.displayed, arrow: current.arrow } : null,
+        history: ind.series
+          .filter((p) => p.quarter < now)
+          .map((p) => ({ quarter: p.quarter, displayed: p.displayed, arrow: p.arrow })),
+        reads: reads
+          .filter((r) => r.indicator === ind.id)
+          .flatMap((r) => {
+            const p = ind.series.find((x) => x.quarter === r.quarter)
+            return p ? [{ quarter: p.quarter, ...p.sharp }] : []
+          }),
+      }
+    }),
+  }
+}
+
+/**
+ * Act V's Signals panel (M51, doc 43 §6.3): the same shape as signalsPanelIv, from Act V's own six indicators. Null
+ * outside Act V. Never a future quarter, never a hidden field (the future id only picks the file; nothing of it is
+ * returned).
+ */
+export function signalsPanelV(state: GameState) {
+  if (!inActV(state) || !state.vFutureId) return null
+  const now = CONTENT.quarters[state.quarter]
+  const reads = state.act5SignalReads ?? []
+  return {
+    quarter: now,
+    cost: SIGNAL_READ_BANDWIDTH,
+    readThisQuarter: reads.find((r) => r.quarter === now)?.indicator ?? null,
+    blocked: reads.some((r) => r.quarter === now) ? null : (readSignalVBlocker(state, 'grid_queue') ?? null),
+    indicators: CONTENT.signalsV[state.vFutureId].map((ind) => {
       const current = ind.series.find((p) => p.quarter === now)
       return {
         id: ind.id as string,

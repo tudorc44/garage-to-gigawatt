@@ -354,6 +354,9 @@ README). `check.py` PASS.
 - **Step B (M50, branch `m50`):** preset rescan per §0.13 (`presets_act5.json` renamed `presets_v.json`). **Firm Builder:**
   Fortress F2 seed 1 `[egs2]` (gate recipe 182 of 720), leases 57%, orbit 11%, V-B7 busts 0/12. **Orbital Landlord:** as M49.
   **Small Grid:** Ridge F1 seed 1 +queue, recipe 1; it fits §0.13's letter but holds 0.1 MW, orbit 88%, founder $0.7M (open question).
+- **Step C (M51, branch `m51` on `m50`): §19 item 3.** Signals (`signals_v_v1..v4` runtime view, `READ_SIGNAL_V`, the shared panel),
+  `signalsHiddenV.ts` + `readingScoreV.ts` read only by `act5End.ts` (the reveal, `Act5Reveal.tsx`), the move log `act5Moves.ts`
+  (kinds only; signs from the hidden file), M40.1/M41.1/low-exposure rules, leak and grep tests. `rivals_v.json` stays frozen (not cheap: item 6).
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

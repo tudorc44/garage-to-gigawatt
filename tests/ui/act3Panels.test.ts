@@ -195,7 +195,8 @@ describe('each button’s action works from what its panel shows', () => {
 
 describe('the scenario stays off the screen', () => {
   /** The chapter reports' reveals (M13.3; Act IV's, M32.2) are the UI files allowed to read the hidden views. */
-  const REVEAL = /screens[\\/]Act[34]Reveal\.tsx$/
+  // (M51: and Act V's, guarded on its own in tests/sim/act5Futures.test.ts)
+  const REVEAL = /screens[\\/]Act[345]Reveal\.tsx$/
   function files(dir: string): string[] {
     return readdirSync(dir).flatMap((n) => {
       const p = join(dir, n)

@@ -24,6 +24,7 @@ import { inAct2Rules, inAct3Rules, inActIII, inActIV, inActV } from '../state.ts
 import { buildAct4End } from './act4End.ts'
 import { buildAct5End } from './act5End.ts'
 import { lunarHoldingUsd, poweredUsd } from './act5Entry.ts'
+import { recordAct5Exposure } from './act5Moves.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { serviceOrbitalDebt } from './orbitCapital.ts'
@@ -163,6 +164,8 @@ export function endQuarter(state: GameState): void {
       })
   }
   state.reports.push(report)
+  // Act V (M51): the exposure line the reading score's low-exposure rule reads.
+  recordAct5Exposure(state, report)
   // Act III (M18.13): the leverage covenant test; debt the lenders call short of cash goes to the rescue.
   if (inAct3Rules(state)) {
     testCovenant(state, report)

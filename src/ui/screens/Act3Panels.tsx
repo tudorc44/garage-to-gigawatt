@@ -5,11 +5,12 @@
 // today's market only, and a renewal offer shows only once its renewal is open.
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
-import type { SignalId, SignalIdIv } from '../../content/index.ts'
+import type { SignalId, SignalIdIv, SignalIdV } from '../../content/index.ts'
 import {
   act3ReportLines,
   act4MwColumns,
   signalsPanelIv,
+  signalsPanelV,
   blendOffers,
   contractCalendar,
   contractsDueSoon,
@@ -59,8 +60,8 @@ function Why(props: { why: Parameters<typeof say>[0] | null }) {
 
 /** Six short Signals labels with this quarter's value and arrow, and "Contracts due: N in next 4 Q". */
 export function Act3TopStrip({ state }: { state: GameState }) {
-  // (M28.2: in Act IV, its own six Signals, and A4-02's megawatt strip in three theatres)
-  const v = signalsPanel(state) ?? signalsPanelIv(state)
+  // (M28.2: in Act IV, its own six Signals, and A4-02's megawatt strip in three theatres; M51: Act V's six)
+  const v = signalsPanel(state) ?? signalsPanelIv(state) ?? signalsPanelV(state)
   const due = contractsDueSoon(state)
   const mw = act4MwColumns(state)
   if (!v) return null
@@ -159,8 +160,8 @@ export function SignalSpark(props: { label: string; points: number[] }) {
 
 /** The Signals panel: six rows, Read the market (1 BW, a chooser), and your reads (newest first). */
 export function Act3SignalsPanel({ state, act }: ScreenProps) {
-  // (M28.2: Act IV's six indicators, the same panel and rules)
-  const v = signalsPanel(state) ?? signalsPanelIv(state)
+  // (M28.2: Act IV's six indicators, the same panel and rules; M51: Act V's)
+  const v = signalsPanel(state) ?? signalsPanelIv(state) ?? signalsPanelV(state)
   const [choosing, setChoosing] = useState(false)
   if (!v) return null
   const reads = v.indicators
@@ -241,7 +242,7 @@ export function Act3SignalsPanel({ state, act }: ScreenProps) {
 
 /** Read the market (A3-03): pick one indicator; its true range for this quarter shows on its bar. */
 function ReadDialog(props: ScreenProps & { onClose: () => void }) {
-  const v = (signalsPanel(props.state) ?? signalsPanelIv(props.state))!
+  const v = (signalsPanel(props.state) ?? signalsPanelIv(props.state) ?? signalsPanelV(props.state))!
   const [pick, setPick] = useState<string>(v.indicators[0].id)
   const [error, setError] = useState<string | null>(null)
   return (
@@ -271,9 +272,11 @@ function ReadDialog(props: ScreenProps & { onClose: () => void }) {
         class="btn btn-primary"
         onClick={() => {
           const e = props.act(
-            props.state.act === 4
-              ? { type: 'READ_SIGNAL_IV', indicator: pick as SignalIdIv }
-              : { type: 'READ_SIGNAL', indicator: pick as SignalId },
+            props.state.act === 5
+              ? { type: 'READ_SIGNAL_V', indicator: pick as SignalIdV }
+              : props.state.act === 4
+                ? { type: 'READ_SIGNAL_IV', indicator: pick as SignalIdIv }
+                : { type: 'READ_SIGNAL', indicator: pick as SignalId },
           )
           if (e) setError(say(e))
           else props.onClose()

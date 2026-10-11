@@ -66,6 +66,10 @@ import marketVChipsV2Raw from './market_v_chips_v2.json' with { type: 'json' }
 import marketVChipsV3Raw from './market_v_chips_v3.json' with { type: 'json' }
 import marketVChipsV4Raw from './market_v_chips_v4.json' with { type: 'json' }
 import gpusVRaw from './gpus_v.json' with { type: 'json' }
+import signalsVV1Raw from './signals_v_v1.json' with { type: 'json' }
+import signalsVV2Raw from './signals_v_v2.json' with { type: 'json' }
+import signalsVV3Raw from './signals_v_v3.json' with { type: 'json' }
+import signalsVV4Raw from './signals_v_v4.json' with { type: 'json' }
 import eventsAct2Raw from './events_act2.json' with { type: 'json' }
 import eventsAct3Raw from './events_act3.json' with { type: 'json' }
 import eventsIvRaw from './events_iv.json' with { type: 'json' }
@@ -139,6 +143,10 @@ import {
   type MarketQuarterAct4Row,
   type MarketWeekAct4,
   signalsIvFileSchema,
+  signalsVFileSchema,
+  SIGNAL_IDS_V,
+  type SignalIdV,
+  type SignalIndicatorV,
   wildcardsIvFileSchema,
   type WildcardIv,
   type WildcardIdIv,
@@ -196,7 +204,7 @@ import {
 
 export { BALANCE }
 export { SCENARIO_IDS }
-export { FUTURE_IDS, SIGNAL_IDS_IV, V_FUTURE_IDS }
+export { FUTURE_IDS, SIGNAL_IDS_IV, SIGNAL_IDS_V, V_FUTURE_IDS }
 export type {
   FutureId,
   VFutureId,
@@ -207,6 +215,8 @@ export type {
   MarketQuarterAct4Row,
   SignalIdIv,
   SignalIndicatorIv,
+  SignalIdV,
+  SignalIndicatorV,
   WildcardIv,
   WildcardIdIv,
 }
@@ -538,6 +548,11 @@ export interface Content {
   /** Gen 2037 (doc 49 via doc 43 §0.12; M49): the mainstream generation from 2037Q1, Act V only. Null without the file. */
   gen2037: { from: string; gpusPerMw: number; rackKw: number } | null
   /**
+   * Act V's authored Signals (M51, doc 43 §6.3), by future: the six indicators in file order, runtime fields only. The
+   * hidden authoring fields are never loaded here (see signalsHiddenV.ts).
+   */
+  signalsV: Record<VFutureId, SignalIndicatorV[]>
+  /**
    * Act IV's authored Signals (M28.1), by future: the six indicators in file order, runtime fields only. The hidden
    * authoring fields are never loaded here (see signalsHiddenIv.ts).
    */
@@ -782,6 +797,8 @@ export interface RawContent {
   act5Futures?: Record<VFutureId, { quarterly: unknown; weekly: unknown; chips: unknown }>
   /** Doc 49's Act V GPU generations (gpus_v.json; M49 reads Gen 2037). Optional, with act5Futures. */
   gpusV?: unknown
+  /** The four Act V signals files (M51). Optional, with act5Futures. */
+  signalsV?: Record<VFutureId, unknown>
   /** The four Act III signals files (M11.2), by scenario. */
   signals: Record<ScenarioId, unknown>
   capital: unknown
@@ -2204,6 +2221,21 @@ export function parseContent(raw: RawContent): Content {
       quarters.push(...labels)
     }
   }
+  // Act V's Signals (M51): runtime fields only; each file's future and its 20 quarters must match Act V's.
+  const signalsV = {} as Content['signalsV']
+  const act5Span = acts.find((a) => a.act === 5)
+  if (raw.signalsV && act5Span) {
+    const labels5 = quarters.slice(act5Span.firstQuarter, act5Span.lastQuarter + 1)
+    for (const v of V_FUTURE_IDS) {
+      const file = check(`signals_v_${v}.json`, signalsVFileSchema, raw.signalsV[v])
+      if (!file) continue
+      if (file.future !== v) problems.push(`signals_v_${v}.json › future: is ${file.future}, expected ${v}`)
+      for (const ind of file.indicators)
+        if (ind.series.map((p) => p.quarter).join() !== labels5.join())
+          problems.push(`signals_v_${v}.json › ${ind.id}: quarters differ from Act V's`)
+      signalsV[v] = file.indicators
+    }
+  }
   // Gen 2037 (doc 49 via doc 43 §0.12; M49): its first quarter, GPUs per MW and rack kW from gpus_v.json.
   let gen2037: Content['gen2037'] = null
   if (raw.gpusV) {
@@ -2378,6 +2410,7 @@ export function parseContent(raw: RawContent): Content {
     act5Markets,
     gen2037,
     signalsIv,
+    signalsV,
     wildcardsIv,
     signals,
     hosting,
@@ -2889,6 +2922,12 @@ export const CONTENT: Content = parseContent({
     v4: { quarterly: marketVV4Raw, weekly: marketWeeklyVV4Raw, chips: marketVChipsV4Raw },
   },
   gpusV: gpusVRaw,
+  signalsV: {
+    v1: signalsVV1Raw,
+    v2: signalsVV2Raw,
+    v3: signalsVV3Raw,
+    v4: signalsVV4Raw,
+  },
   signals: {
     s0: signalsS0Raw,
     s1: signalsS1Raw,
