@@ -6,10 +6,11 @@ import type { Message } from '../i18n/t.ts'
 import { applyAction, type Action } from './actions.ts'
 import {
   inAct3Rules,
-  inActIV,
+  inAct4Rules,
   projectGone,
   type GameState,
   type Project,
+  logQuarterLabel,
 } from './state.ts'
 import { VENTURES } from '../content/energyContent.ts'
 import { convertibleKw } from './systems/hosting.ts'
@@ -187,7 +188,7 @@ export function projectCard(state: GameState, p: Project) {
     /** Act III (M18.11): an open lender cure: re-contract or repay by this quarter, and why repaying is greyed. */
     lenderCure: p.lenderCure
       ? {
-          quarter: CONTENT.quarters[p.lenderCure.untilQuarter] ?? '—',
+          quarter: logQuarterLabel(state, p.lenderCure.untilQuarter),
           repayBlocked: cureRepayBlocker(state, p.id) ?? null,
         }
       : null,
@@ -240,7 +241,7 @@ export function openProjectView(state: GameState) {
           gas: {
             usdMw: P().power.gas.capexUsdMw,
             // (M36.4: Act IV's turbine backlog, 6-10 quarters; earlier acts' fixed build)
-            quarters: (inActIV(state)
+            quarters: (inAct4Rules(state)
               ? VENTURES.act4_power.gas_build_q
               : [P().power.gas.buildQuarters, P().power.gas.buildQuarters]) as [number, number],
             heat: P().power.gas.heatDelta,
@@ -432,7 +433,7 @@ const MATRIX = [
 function downtimeQuarters(state: GameState, weeks: number) {
   const W = BALANCE.weeksPerQuarter
   return Array.from({ length: Math.ceil(weeks / W) }, (_, k) => ({
-    quarter: CONTENT.quarters[state.quarter + k] ?? '—',
+    quarter: logQuarterLabel(state, state.quarter + k),
     share: Math.min(1, Math.max(0, 1 - (weeks - W * k) / W)),
   }))
 }
@@ -512,7 +513,7 @@ export function racksView(state: GameState) {
         downtime: p.downtime
           ? {
               kind: p.downtime.kind,
-              until: CONTENT.quarters[downtimeDoneQuarter(p.downtime)] ?? '—',
+              until: logQuarterLabel(state, downtimeDoneQuarter(p.downtime)),
             }
           : null,
       }

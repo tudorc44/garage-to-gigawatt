@@ -20,8 +20,10 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
-import { inAct2Rules, inAct3Rules, inActIII, inActIV } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV, inActV } from '../state.ts'
 import { buildAct4End } from './act4End.ts'
+import { buildAct5End } from './act5End.ts'
+import { lunarHoldingUsd, poweredUsd } from './act5Entry.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { serviceOrbitalDebt } from './orbitCapital.ts'
@@ -181,6 +183,8 @@ export function endQuarter(state: GameState): void {
       state.act3End = buildAct3End(state, true)
     // Act IV (M27.5): a game over gets its end record too (the reveal fills it in M32).
     if (inActIV(state)) state.act4End = buildAct4End(state, true)
+    // Act V (M49): likewise (a skeleton record; the reveal comes with the futures engine).
+    if (inActV(state)) state.act5End = buildAct5End(state, true)
   }
 }
 
@@ -243,7 +247,12 @@ function buildReport(
         moonEbitdaUsd: moonEbitdaUsd(st),
         lunarUsd: lunarUnitUsd(state),
       }
-    : null
+    : // Act V (M49): the Moon offstage, one holding (doc 43 §9.2), valued on its own and earning nothing in play.
+      state.lunarHolding
+      ? { moonRevenueUsd: 0, moonCostUsd: 0, moonEbitdaUsd: 0, lunarUsd: lunarHoldingUsd(state) }
+      : null
+  // Act V (M49, doc 43 §0.2): free energized MW at the powered-land price (absent before Act V).
+  const powered = inActV(state) ? { poweredUsd: poweredUsd(state) } : null
   const weightedBacklog = weightedBacklogUsd(state)
   // M36 (doc 38 §5): your venture stakes and the fusion hype (absent without a venture).
   const ventures = state.ventures?.length
@@ -282,10 +291,12 @@ function buildReport(
         ...(orbit ? { orbitEbitdaUsd: orbit.orbitEbitdaUsd, orbitMultiple: orbit.orbitMultiple } : {}),
         ...(moon ? { moonEbitdaUsd: moon.moonEbitdaUsd, lunarUsd: moon.lunarUsd } : {}),
         ...(ventures ?? {}),
+        ...(powered ?? {}),
       },
     ),
     ...(orbit ?? {}),
     ...(moon ?? {}),
+    ...(powered ?? {}),
     ...(ventures
       ? {
           venturesUsd: ventures.venturesUsd,
@@ -347,6 +358,13 @@ export function startNextQuarter(state: GameState): void {
       // The end of Act IV (doc 33 §15): the chapter report, with the end record stored now (M27.5: a stub; M32 adds
       // the reveal, the reading score and the titles). The campaign finale follows it.
       state.act4End = buildAct4End(state)
+      state.phase = 'chapter'
+      return
+    }
+    if (inActV(state)) {
+      // The end of Act V (doc 43 §15): the chapter report, with the end record stored now (M49: a skeleton; the reveal,
+      // the reading score and the exit come later). The campaign finale follows it.
+      state.act5End = buildAct5End(state)
       state.phase = 'chapter'
       return
     }

@@ -11,6 +11,8 @@ import {
   type RivalAct2,
   type MarketKey,
   isAct4MarketKey,
+  isAct5MarketKey,
+  actLastQuarter,
 } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
 import type { FutureId } from '../../content/schemas.ts'
@@ -121,6 +123,10 @@ export function activeRivals(
 ): RivalSnapshot[] {
   // Act IV (doc 33 §12.1): Act III's rivals retire at the boundary; Act IV's own five (M31.5), on the game's future.
   if (isAct4MarketKey(scenario)) return act4Rivals(scenario.split('.')[1] as FutureId, quarter)
+  // Act V (M49, the walking skeleton): Act IV's rivals at their 2035Q4 numbers until Act V's own (rivals_v.json, doc 43
+  // §12) arrive with the rivals milestone (mine, reversible).
+  if (isAct5MarketKey(scenario))
+    return act4Rivals(scenario.split('.')[1] as FutureId, Math.min(quarter, actLastQuarter(4)))
   // Act III (M11.5b): the same five, on the drawn scenario's numbers for this quarter only.
   if (isAct2RulesQuarter(quarter) && !isActIIQuarter(quarter))
     return scenario

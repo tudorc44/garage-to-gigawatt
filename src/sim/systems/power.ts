@@ -11,7 +11,7 @@ import { BALANCE, CONTENT, act4Row, type PowerRegion } from '../../content/index
 import { scenarioOf } from './market.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
-import { act4SeedOf, inActIV, type GameState, type PowerSource, type Project, type Site } from '../state.ts'
+import { act4SeedOf, inAct4Rules, type GameState, type PowerSource, type Project, type Site } from '../state.ts'
 import { VENTURES } from '../../content/energyContent.ts'
 import { drawOverrun } from './overrun.ts'
 import { isHired } from './hires.ts'
@@ -39,7 +39,7 @@ export function gridQuarterRange(
   region: PowerRegion,
 ): [number, number] {
   // M36.4 (design thread, answer 9): Act IV reads doc 33's wait, the future's grid_wait_q × 0.8-1.2, in every region.
-  const [lo, hi] = inActIV(state) ? act4GridRange(state) : POWER().grid.quartersByRegion[region]
+  const [lo, hi] = inAct4Rules(state) ? act4GridRange(state) : POWER().grid.quartersByRegion[region]
   // Act III (M17.3): with political capital under 15, new grid upgrades queue a quarter longer (designed).
   const lowPc = lowCapital(state)
     ? BALANCE.act3.politicalCapital.lowCapital.gridQueueExtraQuarters
@@ -74,7 +74,7 @@ export function powerBlocker(
 export function drawPowerQuarters(state: GameState, p: Project): number {
   const site = state.sites.find((s) => s.id === p.siteId)!
   // M36.4 (answer 9): Act IV's on-site gas waits for turbines, 6-10 quarters (its own stream).
-  if (p.power === 'gas' && inActIV(state))
+  if (p.power === 'gas' && inAct4Rules(state))
     return randomInt(substream(act4SeedOf(state), `gas_build:${CONTENT.quarters[state.quarter]}:${p.id}`), ...VENTURES.act4_power.gas_build_q)
   if (p.power === 'gas') return POWER().gas.buildQuarters
   if (p.power === 'nuclear') return nuclearPowerQuarters()
@@ -89,7 +89,7 @@ export function drawPowerQuarters(state: GameState, p: Project): number {
 /** Quarters a proposed project's new power is expected to take (grid: the queue's short end). */
 export function expectedPowerQuarters(state: GameState, p: Project): number {
   if (!p.power) return 0
-  if (p.power === 'gas') return inActIV(state) ? VENTURES.act4_power.gas_build_q[0] : POWER().gas.buildQuarters
+  if (p.power === 'gas') return inAct4Rules(state) ? VENTURES.act4_power.gas_build_q[0] : POWER().gas.buildQuarters
   if (p.power === 'nuclear') return nuclearPowerQuarters()
   const site = state.sites.find((s) => s.id === p.siteId)!
   return gridQuarterRange(state, regionOf(site)!)[0]
@@ -100,7 +100,7 @@ export function expectedPowerQuarters(state: GameState, p: Project): number {
  * substream (its 6-10 quarter wait is drawPowerQuarters's). Nothing outside Act IV.
  */
 export function gasActIvDraw(state: GameState, p: Project): { slipQuarters: number; overrunUsd: number } {
-  if (p.power !== 'gas' || !inActIV(state)) return { slipQuarters: 0, overrunUsd: 0 }
+  if (p.power !== 'gas' || !inAct4Rules(state)) return { slipQuarters: 0, overrunUsd: 0 }
   const m = drawOverrun(substream(act4SeedOf(state), `gas_iv:${p.id}`), VENTURES.act4_power.gas_class)
   return { slipQuarters: 0, overrunUsd: Math.round((m - 1) * powerCostUsd('gas', p.kw)) }
 }

@@ -8,7 +8,8 @@ import {
   isAct2RulesQuarter,
   nextQuarter,
   act3ScenarioOfKey,
-  isAct4MarketKey,
+  act4KeyOf,
+  isAct5MarketKey,
   type Machine,
   type MarketKey,
   type MarketWeek,
@@ -16,6 +17,7 @@ import {
 import {
   inActIII,
   inActIV,
+  inActV,
   type Coin,
   type Condition,
   type GameState,
@@ -67,11 +69,15 @@ export function quarterWeeks(
 ): MarketWeek[] | undefined {
   // Act IV (M27.3): prices exist only inside a scenario and future key ("s2.f3"), glided at the seam. Read without
   // one (an Act III game looking past 2030Q4) there is nothing, as before Act IV's quarters existed (marketWeek throws).
+  // M49: Act V likewise, inside an Act V key ("s2.f3.v1"); an Act V key reads Act IV's quarters through its Act IV part.
+  const act5 = CONTENT.acts.find((a) => a.act === 5)
+  if (act5 && quarter >= act5.firstQuarter && quarter <= act5.lastQuarter)
+    return isAct5MarketKey(scenario) ? CONTENT.act5Markets[scenario].weeks[quarter - act5.firstQuarter] : undefined
   const act4 = CONTENT.acts.find((a) => a.act === 4)
-  if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
-    return isAct4MarketKey(scenario)
-      ? CONTENT.act4Markets[scenario].weeks[quarter - act4.firstQuarter]
-      : undefined
+  if (act4 && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter) {
+    const k = act4KeyOf(scenario)
+    return k ? CONTENT.act4Markets[k].weeks[quarter - act4.firstQuarter] : undefined
+  }
   const first = actFirstQuarter(3)
   if (
     quarter >= first &&
@@ -92,8 +98,11 @@ export function quarterWeeks(
  * "s2.f3" (the seam glide starts from that scenario); none (the shared market) before Act III.
  */
 export function scenarioOf(
-  state: Pick<GameState, 'act' | 'scenarioId' | 'futureId'>,
+  state: Pick<GameState, 'act' | 'scenarioId' | 'futureId' | 'vFutureId'>,
 ): MarketKey | undefined {
+  // M49: in Act V, the Act IV key and the Act V future ("s2.f3.v1").
+  if (inActV(state) && state.scenarioId && state.futureId && state.vFutureId)
+    return `${state.scenarioId}.${state.futureId}.${state.vFutureId}`
   if (inActIV(state) && state.scenarioId && state.futureId)
     return `${state.scenarioId}.${state.futureId}`
   return inActIII(state) ? state.scenarioId : undefined

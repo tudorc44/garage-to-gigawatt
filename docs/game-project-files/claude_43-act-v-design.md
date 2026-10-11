@@ -1,4 +1,4 @@
-# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips)
+# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run)
 
 *Design thread. The recommended concept from doc 42 (Concept A, with B's exit and C's flexibility and Q-Day folded in), designed in the shape of doc 33. The owner approved doc 42's six recommendations on 10 Oct 2026 (V-D1 to V-D6 below). Built on doc 40 (second research pass, Part D), doc 37 (energy and 2040 dossier), doc 38 (energy ventures, especially §5-§6), doc 33 (Act IV as designed) and the game as built (dev-notes through M42, `main` = 71f36cb, `src/sim/state.ts`, `docs/energy-content/README.md`). The owner approved every recommendation in §21 on 10 Oct 2026 (V-D1 to V-D30). §22's open questions stay open; the design thread's recommendations on Q1 and Q2 are noted there. The content pack, scope doc and wireframe prompt come after approval, as for Acts III-IV.*
 
@@ -178,6 +178,16 @@ Also noted: GPU-hour rates and the newest generation stay at their 2036 values t
 - **Reading score:** every chips move and card logs 0 (§0.10, unchanged).
 - **Build placement (DT):** two parts. **Gen 2037** (the mainstream generation's columns and GPU entry) touches only Act V and lands with the first Act V milestone that sells GPUs. **The accelerator venture** touches Act IV (offered there from 2032Q1): Act IV energy goldens change; Acts I-III and non-energy games stay byte-identical; it comes after the plants and queue milestones and stays second in the cut order (after wildcards). Neither part affects the M43.0 gate.
 
+### 0.13 After the overnight run (M43.0e, M48, M49; 11 Oct 2026)
+*Design-thread decisions (DT) on the run's four questions.*
+- **M43.0e (the gate on doc 47's real files):** every V1 target passes (Holder ÷ Seller 1.311 Fortress / 1.463 Firm Builder; Holder ÷ Locker 1.137 / 1.142). V3 Locker ÷ Holder 1.074 on Firm Builder (pass) and 1.028 on Fortress (near-miss, was 1.031 on the stubs). The near-miss is stable across stubs and real files, which confirms §0.11's reading: it's structural. **The balance pass owns it**, with §0.11's levers in order; no tuning before then.
+- **Presets (§3.4 amended):** the scan found only Orbital Landlord. Hand-making a company would break "values set by the sim", so the descriptions change and the scan widens; values stay unset by design.
+  - **Firm Builder** becomes: a ground landlord with leases ≥ 40% of value (the gate's definition, so the preset is one of the companies V-B4 is judged on), at least one plant stake whose first power falls in 2035Q1-2038Q4 (a plant that has just switched on counts), offtake if its line has one, little orbit. The scan adds the recipes behind M43.0d/e's 475 Firm Builder runs, and may let the bot join one energy venture later (2032-33) so first power lands in Act V. Choosing recipes is allowed; choosing values isn't.
+  - **Small Grid** becomes: a small survivor with one or two sites and a queue position; a battery only if it survives. The scan tries the Ridge line without a battery and with a queue position bought in Act IV, then the neocloud line. **If nothing survives to 2035Q4, Small Grid is cut and Act V ships with two presets** (it isn't on the never-cut list). V-B7 (Firm Builder never goes bust when played passively) still applies.
+- **Generators stay in Python** (tools/act5/, `npm run content:act5`). Porting would only re-prove 21 byte-identical files. The game ships the committed outputs, so the site build never needs Python; the byte-identity test guards drift.
+- **Order of the next run:** unchanged. §19 item (3) (futures engine, Signals, hidden files and guards, reading score), then (4) plants, (5) the queue, then chips part 2 (§0.12), with the preset rescan first, and the long sim runs re-run, since M49 touched Act IV's rule gates.
+- **Live site:** the Act V entry points ("Continue to Act V", "Start at Act V") stay behind a dev flag until Act V is playable end to end; "Retire at 2035" and the rest of Act IV's chapter report ship as today. This lets the stacked PRs merge to main without exposing a skeleton act.
+
 ---
 
 ## 1. What Act V has to prove
@@ -225,6 +235,7 @@ As doc 33 §3.3, made general a second time:
 - **Carried columns:** the Act V market files continue every column the Act II-IV systems read, to 2040Q4 (renewal bands, RFP index, GPU prices and rents, nuclear PPA prices, PJM capacity prices, retrofit costs, launch and orbital columns, `grid_wait_q`, `gas_wait_q`), and `market_energy.csv` already runs to 2040.
 
 ### 3.4 Presets (bot-made, values set by the sim, not targeted)
+*Firm Builder and Small Grid descriptions amended in §0.13; §0.13 wins.*
 Three 2035Q4 companies, each a real bot + seed + Act IV future played from an Act IV preset:
 - **Firm Builder:** ground landlord with offtake from at least one venture that reaches first power in 2036-38, little orbit.
 - **Orbital Landlord:** an orbit-heavy company whose first blocks retire in 2036-37.

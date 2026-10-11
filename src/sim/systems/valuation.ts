@@ -130,6 +130,8 @@ export interface ValuationParts {
   /** M36 (doc 38 §5): your venture stakes and prepayments, and the fusion hype on your multiples (+1x, or −2x). */
   venturesUsd?: number
   multipleDelta?: number
+  /** Act V (M49, doc 43 §0.2): free energized MW × the powered-land price. Absent before Act V. */
+  poweredUsd?: number
 }
 
 /**
@@ -163,7 +165,8 @@ export function valuationUsd(
     treasuryUsd +
     (parts.constructionUsd ?? 0) +
     (parts.weightedBacklogUsd ?? 0) +
-    (parts.lunarUsd ?? 0) -
+    (parts.lunarUsd ?? 0) +
+    (parts.poweredUsd ?? 0) -
     debtUsd
   // M36: ventures (absent without one, so every earlier valuation is untouched).
   if (parts.venturesUsd === undefined && parts.multipleDelta === undefined) return total

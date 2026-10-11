@@ -13,7 +13,7 @@ import {
   type SiteTier,
 } from '../../content/index.ts'
 import type { Message } from '../../i18n/t.ts'
-import { inAct2Rules, inAct3Rules, inActIV, logEntry, type GameState } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inAct4Rules, logEntry, type GameState } from '../state.ts'
 import { book } from '../ledger.ts'
 import { MONEY } from '../../content/moneyContent.ts'
 
@@ -242,7 +242,7 @@ export function hireBlocker(state: GameState, id: string): Message | undefined {
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (isAct2Hire(id) && !inAct2Rules(state)) return { key: 'error.act2_only' }
   if (isAct3Hire(id) && !inAct3Rules(state)) return { key: 'error.act3_only' }
-  if (isAct4Hire(id) && !inActIV(state)) return { key: 'error.act4_only' }
+  if (isAct4Hire(id) && !inAct4Rules(state)) return { key: 'error.act4_only' }
   if (isHired(state, id))
     return { key: 'error.already_hired', params: { hire: id } }
   if (

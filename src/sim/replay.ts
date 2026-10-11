@@ -50,11 +50,11 @@ export interface Strategy {
  */
 export interface PlayOptions {
   /** (M27.5: 4 = Act IV's chapter report; an Act IV game is started with toAct4, as Act III's with toAct3.) */
-  through?: 0 | 1 | 2 | 3 | 4
+  through?: 0 | 1 | 2 | 3 | 4 | 5
 }
 
 /** Whether a played game stops here: game over, or the chapter report of the last act played. */
-function finished(state: GameState, through: 0 | 1 | 2 | 3 | 4): boolean {
+function finished(state: GameState, through: 0 | 1 | 2 | 3 | 4 | 5): boolean {
   if (state.phase === 'gameover') return true
   return state.phase === 'chapter' && state.act >= through
 }

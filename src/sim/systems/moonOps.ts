@@ -11,7 +11,7 @@ import { MOON, lunarSite, type LunarSiteId } from '../../content/moonContent.ts'
 import type { Message } from '../../i18n/t.ts'
 import { book, bookSplit } from '../ledger.ts'
 import { pick, randomInt, substream, uniform } from '../rng.ts'
-import { act4SeedOf, inActIV, logEntry, type GameState, type LunarClaim } from '../state.ts'
+import { act4SeedOf, inActIV, logEntry, logQuarterLabel, type GameState, type LunarClaim } from '../state.ts'
 import { pilotGradeFactor } from './lunarGeology.ts'
 import { scenarioOf } from './market.ts'
 import {
@@ -179,7 +179,7 @@ export function decidePilot(state: GameState, site: LunarSiteId): void {
   logEntry(state, 'log.moon.pilot', {
     lunarSite: site,
     costUsd: capexUsd,
-    quarter: CONTENT.quarters[state.quarter + pilotQuarters(state)] ?? '—',
+    quarter: logQuarterLabel(state, state.quarter + pilotQuarters(state)),
   })
 }
 
@@ -325,7 +325,7 @@ export function startQuarterMoonOps(state: GameState): void {
     const [lo, hi] = w.effect.freeze_quarters as [number, number]
     moon.freezeUntil = state.quarter + randomInt(substream(act4SeedOf(state), 'act4_flag_freeze'), lo, hi) - 1
     if (moon.alignedBloc !== 'station')
-      logEntry(state, 'log.moon.frozen', { quarter: CONTENT.quarters[moon.freezeUntil] ?? '—' })
+      logEntry(state, 'log.moon.frozen', { quarter: logQuarterLabel(state, moon.freezeUntil) })
   }
 }
 

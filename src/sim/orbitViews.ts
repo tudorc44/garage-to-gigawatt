@@ -14,7 +14,7 @@ import {
 } from '../content/orbitContent.ts'
 import type { Message } from '../i18n/t.ts'
 import type { Action } from './actions.ts'
-import { inActIV, type GameState, type OrbitalBlock } from './state.ts'
+import { inAct4Rules, type GameState, type OrbitalBlock } from './state.ts'
 import { companyLtv, covenantLimit } from './systems/covenant.ts'
 import { CAPITAL_KINDS, blockDebt, debtApr, ownShare } from './systems/orbitCapital.ts'
 import {
@@ -167,7 +167,7 @@ export function launchFit(
   exceptBlockId?: string,
 ) {
   const [lo, hi] = ORBIT.launch.lead_quarters
-  const lastQ = Math.min(state.quarter + hi, actLastQuarter(4))
+  const lastQ = Math.min(state.quarter + hi, actLastQuarter(state.act === 5 ? 5 : 4))
   const window: { q: number; freeT: number }[] = []
   for (let q = state.quarter + lo; q <= lastQ; q++)
     window.push({ q, freeT: Math.max(0, slotsTonnes(state, q) - bookedTonnes(state, q, exceptBlockId)) })
@@ -201,7 +201,7 @@ export type LaunchFit = NonNullable<ReturnType<typeof launchFit>>
 export function blockView(state: GameState, b: OrbitalBlock) {
   const t = b.tenant
   const [lo, hi] = ORBIT.launch.lead_quarters
-  const last = actLastQuarter(4)
+  const last = actLastQuarter(state.act === 5 ? 5 : 4)
   const bookingOptions =
     b.stage === 'proposed' && !b.launch
       ? PROVIDER_IDS.flatMap((provider) =>
@@ -307,12 +307,12 @@ export type BlockView = ReturnType<typeof blockView>
 
 /** The Orbit board (A4-03) with the licences (A4-08), the links and the launch manifest (A4-04). Null outside Act IV. */
 export function orbitBoardView(state: GameState) {
-  if (!inActIV(state)) return null
+  if (!inAct4Rules(state)) return null
   const o = state.act4Orbit
   const blocks = (o?.blocks ?? []).map((b) => blockView(state, b))
   const [lo, hi] = ORBIT.launch.lead_quarters
   const manifest = Array.from({ length: hi + 1 }, (_, i) => state.quarter + i)
-    .filter((q) => q <= actLastQuarter(4))
+    .filter((q) => q <= actLastQuarter(state.act === 5 ? 5 : 4))
     .map((q) => ({
       quarter: q,
       label: label(q)!,

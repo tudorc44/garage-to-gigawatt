@@ -17,7 +17,10 @@ py('./market.py', SRC, DOCS)
 for (const g of ['./signals.py', './events.py', './content.py', './text.py']) py(g, DOCS)
 py('./check.py', DOCS)
 
-/** The Act V data files (everything but the README and the chips add-on, which arrives with its own milestone). */
+/** The Act V data files (everything but the README), and from the chips add-on (doc 49) the files Gen 2037 needs
+ *  (M49: its market columns and its GPU entry; the accelerator venture's generator arrives in its own milestone). */
 const ACT5_FILES = readdirSync(DOCS).filter((f) => /\.(json|csv)$/.test(f))
 for (const f of ACT5_FILES) copyFileSync(`${DOCS}/${f}`, `${SRC}/${f}`)
-console.log(`copied ${ACT5_FILES.length} files to src/content/`)
+const CHIPS = readdirSync(`${DOCS}/chips`).filter((f) => /^market_v_chips_v\d\.csv$|^gpus_v\.json$/.test(f))
+for (const f of CHIPS) copyFileSync(`${DOCS}/chips/${f}`, `${SRC}/${f}`)
+console.log(`copied ${ACT5_FILES.length} + ${CHIPS.length} chips files to src/content/`)

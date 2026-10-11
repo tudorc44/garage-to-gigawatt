@@ -29,10 +29,19 @@ export default defineConfig({
                 String.raw`src[\\/]content[\\/]market_(weekly_)?iv_f${n}\.json`,
               ),
             })),
+            // Act V's four futures (M49), each with its Gen 2037 columns: one file each, likewise.
+            ...[1, 2, 3, 4].map((n) => ({
+              name: `market-v-v${n}`,
+              test: new RegExp(
+                String.raw`src[\\/]content[\\/]market_(weekly_v|v|v_chips)_v${n}\.json`,
+              ),
+            })),
             {
               name: 'market',
               test: /src[\\/]content[\\/]market_[^\\/]*\.json/,
             },
+            // M49: Act V's other content (its text and the Gen 2037 entry), so the content file stays under 500 KB.
+            { name: 'content-v', test: /src[\\/]content[\\/](text_v\.en|gpus_v)\.json/ },
             { name: 'text', test: /src[\\/]i18n[\\/].*\.json/ },
             { name: 'content', test: /src[\\/]content[\\/].*\.json/ },
             // M35: energy options and ventures (doc 38), and Act IV's orbit and Moon, in files of their own, so the

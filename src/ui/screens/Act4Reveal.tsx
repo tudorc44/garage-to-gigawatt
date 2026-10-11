@@ -15,7 +15,7 @@ const tonnes = (x: number) => Math.round(x).toLocaleString('en-US')
 const QUARTERS = Array.from({ length: 20 }, (_, i) => `${2031 + Math.floor(i / 4)}Q${(i % 4) + 1}`)
 
 /** A4-11, then (its button) A4-12 the campaign finale. */
-export function Act4Chapter(props: { state: GameState; onNew: () => void }) {
+export function Act4Chapter(props: { state: GameState; onNew: () => void; onContinueToAct5?: () => void }) {
   const [finale, setFinale] = useState(false)
   if (finale) return <Act4Finale state={props.state} onNew={props.onNew} />
   const o = act4Outcome(props.state)
@@ -196,8 +196,19 @@ export function Act4Chapter(props: { state: GameState; onNew: () => void }) {
             <button type="button" class="btn" onClick={props.onNew}>
               {t('ui.act4.back_to_title')}
             </button>
-            <button type="button" class="btn btn-primary" data-to-finale onClick={() => setFinale(true)}>
-              {t('ui.act4.reveal.to_finale')}
+            {/* M49 (doc 43 §2, V-D2): a finished Act IV continues to Act V, or retires at 2035 (today's finale). */}
+            {props.onContinueToAct5 && props.state.phase === 'chapter' && (
+              <button type="button" class="btn btn-primary" data-to-act5 onClick={props.onContinueToAct5}>
+                {t('ui.act4.reveal.to_act5')}
+              </button>
+            )}
+            <button
+              type="button"
+              class={props.onContinueToAct5 && props.state.phase === 'chapter' ? 'btn' : 'btn btn-primary'}
+              data-to-finale
+              onClick={() => setFinale(true)}
+            >
+              {t(props.onContinueToAct5 && props.state.phase === 'chapter' ? 'ui.act4.reveal.retire' : 'ui.act4.reveal.to_finale')}
             </button>
           </div>
         </div>

@@ -15,7 +15,7 @@ import {
 import type { Message, MessageKey } from '../../i18n/t.ts'
 import { book } from '../ledger.ts'
 import { chance, randomInt, substream } from '../rng.ts'
-import { act4SeedOf, inActIV, logEntry, type Act4Moon, type GameState, type LunarClaim } from '../state.ts'
+import { act4SeedOf, inActIV, logEntry, logQuarterLabel, type Act4Moon, type GameState, type LunarClaim } from '../state.ts'
 import { prospectReport } from './lunarGeology.ts'
 import { scenarioOf } from './market.ts'
 import { addPc, politicalCapital } from './pcState.ts'
@@ -116,7 +116,7 @@ export function claimSite(state: GameState, site: LunarSiteId): void {
     pilot: null,
     production: null,
   })
-  logEntry(state, 'log.moon.claimed', { lunarSite: site, quarter: CONTENT.quarters[state.quarter + c.land_within_quarters] ?? '—' })
+  logEntry(state, 'log.moon.claimed', { lunarSite: site, quarter: logQuarterLabel(state, state.quarter + c.land_within_quarters) })
   const rival = rivalOn(state, site)
   if (rival) openDispute(state, site, rival.claimant)
 }
@@ -228,7 +228,7 @@ export function sendMission(state: GameState, site: LunarSiteId): void {
     status: 'en_route',
     aborts: 0,
   })
-  logEntry(state, 'log.moon.mission', { lunarSite: site, costUsd, quarter: CONTENT.quarters[state.quarter + lead] ?? '—' })
+  logEntry(state, 'log.moon.mission', { lunarSite: site, costUsd, quarter: logQuarterLabel(state, state.quarter + lead) })
 }
 
 /** The category a site's resource is reported in (doc 33 §9.2): inferred, indicated, measured. */

@@ -5,7 +5,9 @@ import {
   CONTENT,
   SCENARIO_IDS,
   FUTURE_IDS,
+  V_FUTURE_IDS,
   type FutureId,
+  type VFutureId,
   type ScenarioId,
   type SignalId,
   type SignalIdIv,
@@ -15,6 +17,7 @@ import type { EnergyKind, SpecialSiteKind, VentureType } from '../content/energy
 import { random, substream } from './rng.ts'
 import { enterAct3 } from './systems/act3Entry.ts'
 import { enterAct4 } from './systems/act4Entry.ts'
+import { enterAct5 } from './systems/act5Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { LunarClaimantId, LunarSiteId, OfftakeBuyerId } from '../content/moonContent.ts'
 import type { SiteHeat } from './systems/heat.ts'
@@ -307,6 +310,28 @@ export interface Act3Entry {
 
 /** Act IV (M27.2): the company as it entered Act IV, measured at 2030Q4 (the same fields as Act III's entry). */
 export type Act4Entry = Act3Entry
+
+/** Act V's entry record (M49): Act IV's shape, plus the free energized MW and their powered value at entry (§0.2). */
+export interface Act5Entry extends Act3Entry {
+  freeMw: number
+  poweredValueUsd: number
+}
+
+/** Act V's lunar holding (M49, doc 43 §9.2): the Act IV programme's 2035Q4 value; its value now is that × the index. */
+export interface LunarHolding {
+  /** The lunar unit's value at 2035Q4 (the Act IV report's lunarUsd). */
+  value2035Usd: number
+  /** Sold (doc 43 §9.2: to a bloc or a rival): the quarter, or absent. */
+  soldQuarter?: number
+}
+
+/** Act V's end record (M49: a skeleton; the reveal, reading score and titles come with the futures engine). */
+export interface Act5End {
+  endQuarter: string
+  gameOver: boolean
+  founderNetWorthUsd: number
+  growthMultiple: number | null
+}
 
 /**
  * Act IV (M29.2, doc 33 §7): an orbital compute block, a project card with three slots (Launch, Tenant, Capital). A
@@ -1012,7 +1037,7 @@ export const inActII = (
  */
 export const inAct2Rules = (
   state: Pick<GameState, 'act'> | null | undefined,
-): boolean => state?.act === 2 || state?.act === 3 || state?.act === 4
+): boolean => state?.act === 2 || state?.act === 3 || state?.act === 4 || state?.act === 5
 
 /**
  * Whether an act number is Act III (M10.1: the walking skeleton only, no Act III game rules yet).
@@ -1044,7 +1069,25 @@ export const inActIV = (
  */
 export const inAct3Rules = (
   state: Pick<GameState, 'act'> | null | undefined,
-): boolean => state?.act === 3 || state?.act === 4
+): boolean => state?.act === 3 || state?.act === 4 || state?.act === 5
+
+/**
+ * Whether an act number is Act V (M49, doc 43: 2036Q1–2040Q4). Every "is this Act V?" check goes through here, the
+ * same pattern as isActII, isActIII and isActIV.
+ */
+export const isActV = (act: unknown): boolean => act === 5
+
+/** Whether a game (or none: null) is in Act V. */
+export const inActV = (state: Pick<GameState, 'act'> | null | undefined): boolean => isActV(state?.act)
+
+/**
+ * Whether Act IV's business rules apply in a game (M49, doc 43 §3.1 and §9.1): Act IV, and Act V, which keeps Act IV's
+ * orbital business running (blocks, licences, links, insurance) on its own market. The gate for every Act IV system
+ * that runs on in Act V; a system that stays Act IV-only (the Moon, Act IV's future, wildcards, Signals and moves)
+ * keeps inActIV. Each gate's answer is in dev-notes (M49).
+ */
+export const inAct4Rules = (state: Pick<GameState, 'act'> | null | undefined): boolean =>
+  state?.act === 4 || state?.act === 5
 
 /** Act III (M18.13): whether a leverage-covenant breach is open, which bars new debt (systems/covenant.ts). Act IV
  *  continues the covenant (doc 33 §3.2, §11.4). */
@@ -1096,13 +1139,13 @@ export interface Auction {
 
 export interface GameState {
   /** Save-format version (save.ts SAVE_VERSION). Older saves are migrated step by step when loaded. */
-  version: 5
+  version: 6
   /**
    * The act being played: 0 = the prologue (2009Q1–2016Q4, quarter indices −32 … −1), 1 = Act I
    * (2017Q1–2022Q3, 0–22), 2 = Act II (2022Q4–2026Q4, 23–39), 3 = Act III (2027Q1–2030Q4, 40–55),
-   * 4 = Act IV (2031Q1–2035Q4, 56–75; M27).
+   * 4 = Act IV (2031Q1–2035Q4, 56–75; M27), 5 = Act V (2036Q1–2040Q4, 76–95; M49).
    */
-  act: 0 | 1 | 2 | 3 | 4
+  act: 0 | 1 | 2 | 3 | 4 | 5
   /** The prologue's own state: only a prologue start has it (Alpha 0.3). */
   prologue?: PrologueState
   /** What a prologue start brought into Act I (its net worth for the growth multiple, custody). */
@@ -1304,6 +1347,27 @@ export interface GameState {
   act4Wildcards?: { id: WildcardIdIv; quarter: number; fired: boolean }[]
   /** Act IV (M28.2): the log of Read the market (Signals) reads, one indicator per quarter at most. */
   act4SignalReads?: { quarter: string; indicator: SignalIdIv }[]
+  /**
+   * Act V (M49, doc 43 §6.1): which of the four Act V futures (v1–v4) this game plays, drawn once at the Act IV → V
+   * boundary on its own substream of `act5Seed`, independently of Act IV's future (V-D5). HIDDEN, like `futureId`: no
+   * screen during play reads it (the leak guard); the market reads it through `scenarioOf`.
+   */
+  vFutureId?: VFutureId
+  /** Act V (M49): a tester forced the Act V future (test builds only). Absent otherwise. */
+  vFutureForced?: true
+  /** Act V (M49): the salt for Act V's own random streams (act5SeedOf); absent = the game's seed. */
+  act5Seed?: number
+  /**
+   * Act V (M49): the company as it entered Act V (Act IV's entry shape, doc 43 §3.1; §0.2: its valuation includes free
+   * energized MW × the powered value, so a company with idle MW shows no fake growth on day one).
+   */
+  act5Entry?: Act5Entry
+  /** Act V (M49, doc 43 §9.2 and §0.9 item 14): the Moon offstage, one holding valued at 2035Q4 × lunar_value_index. */
+  lunarHolding?: LunarHolding
+  /** Act V (M49): started at Act V from a preset ("Start at Act V"): the preset's id. Absent otherwise. */
+  act5Preset?: string
+  /** Act V (M49): the end record, stored at 2040Q4's end (or a game over in Act V). Absent until then. */
+  act5End?: Act5End
   /** Started from the standalone preset ("Start at Act II"): no Act I career behind it. */
   preset: boolean
   /** Event cards: what's due, what's been played, and their lasting effects. */
@@ -1517,6 +1581,8 @@ export interface QuarterReport {
   moonCostUsd?: number
   moonEbitdaUsd?: number
   lunarUsd?: number
+  /** Act V (M49, doc 43 §0.2): free energized MW × the powered-land price, in the valuation. Absent before Act V. */
+  poweredUsd?: number
   /** M35 (doc 38 §4): energy assets' savings and earnings, and running costs (in EBITDA). Absent with none. */
   energyRevenueUsd?: number
   energyCostUsd?: number
@@ -1739,10 +1805,44 @@ export function toAct4(
   return s
 }
 
+/** Act V (M49): the salt for Act V's own random streams; absent = the game's seed. */
+export function act5SeedOf(state: Pick<GameState, 'seed' | 'act5Seed'>): number {
+  return state.act5Seed ?? state.seed
+}
+
+/** Act V's future, drawn once at the boundary on its own substream (doc 43 §6.1, V-D5: independent of Act IV's). */
+export function drawVFuture(seed: number): VFutureId {
+  const weights = BALANCE.act5.futureWeightsPct
+  const roll = random(substream(seed, 'act5_future')) * 100
+  let acc = 0
+  for (const id of V_FUTURE_IDS) {
+    acc += weights[id]
+    if (roll < acc) return id
+  }
+  return V_FUTURE_IDS[V_FUTURE_IDS.length - 1]
+}
+
+/**
+ * The Act IV → V boundary (M49): enters Act V on the drawn future, applying doc 43 §3.1–3.2's carry-over and drops
+ * (enterAct5). `options.vfuture` forces a future: for tests, tools and a test build's forcing.
+ */
+export function toAct5(
+  state: GameState,
+  options: { vfuture?: VFutureId; forced?: boolean; act5Seed?: number; preset?: string } = {},
+): GameState {
+  const base = options.act5Seed === undefined ? state : { ...state, act5Seed: options.act5Seed }
+  const s = enterAct5(base, options.vfuture ?? drawVFuture(act5SeedOf(base)))
+  // A harness's different act5Seed also re-seeds the main RNG (as act3Seed and act4Seed do); the default changes nothing.
+  if (options.act5Seed !== undefined && options.act5Seed !== state.seed) s.rng = substream(options.act5Seed, 'act5_main').rng
+  if (options.forced && options.vfuture) s.vFutureForced = true
+  if (options.preset) s.act5Preset = options.preset
+  return s
+}
+
 export function newGame(seed: number): GameState {
   const start = CONTENT.siteTiers.find((t) => t.id === BALANCE.startSite)!
   return {
-    version: 5,
+    version: 6,
     act: 1,
     seed,
     rng: seed | 0,
@@ -1831,7 +1931,10 @@ export function logQuarterLabel(
   quarter: number,
   fallback = '—',
 ): string {
-  const act3 = CONTENT.acts.find((a) => a.act === 3)!
-  if (state.act !== 4 && quarter > act3.lastQuarter) return fallback
+  // A quarter past the game's act is "—" (M49: Act IV's labels stop at 2035Q4 although the timeline now runs to 2040Q4,
+  // so an Act IV log line is written exactly as before; Act V's stop at 2040Q4).
+  const lastAct = state.act === 5 ? 5 : state.act === 4 ? 4 : 3
+  const last = CONTENT.acts.find((a) => a.act === lastAct)!
+  if (quarter > last.lastQuarter) return fallback
   return CONTENT.quarters[quarter] ?? fallback
 }

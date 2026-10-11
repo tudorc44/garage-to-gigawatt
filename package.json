@@ -23,6 +23,7 @@
     "content:act4-money": "node tools/act4/money.ts",
     "content:act4-presets": "node tools/act4/presets.ts",
     "content:act5": "node tools/act5/run.ts",
+    "content:act5-presets": "node tools/act5/presets.ts",
     "release-check": "node tools/release-check.ts",
     "sim": "node tools/sim-runner.ts"
   },

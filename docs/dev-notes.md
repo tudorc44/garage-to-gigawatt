@@ -272,6 +272,85 @@ the previous branch. The morning report is at the end of this section.
 - **M48 (step 2) done:** doc 47's generators in `tools/act5/` (Python kept, mine, reversible; `npm run content:act5`); they
   reproduce all 21 files byte for byte; the §0.11 errata applied (raise rule 0, en dashes, exit bids hidden, flex rating, CC/CT
   flat); `check.py` PASS; the game's copies in `src/content/` (byte-identity test). README "Data changes" lists each change.
+- **M49 (step 3, §19 items 1-2) part 1:**
+  - **Content:** the timeline runs to 2040Q4 (76-95); 64 glided Act V markets ("s2.f3.v1"), the glide skipping the subsidy
+    and hashprice; Gen 2037's columns merged at load.
+  - **Sim:** act 5, `inActV`, `inAct4Rules`, save v6, `toAct5`/`enterAct5` (the Moon → one holding, Act IV-only state
+    dropped), `act5End`, and Gen 2037 from 2037Q1 in Act V only.
+  - **UI:** "Continue to Act V" / "Retire at 2035", the A5-01 intro and a skeleton chapter. Goldens byte-identical.
+- **M49 part 2, the presets:** `tools/act5/presetRun.ts` (a recipe: an Act IV preset line + future + seed, the Balanced bot
+  and the energy runner's joins or battery) and `presets.ts` (`npm run content:act5-presets`), and "Start at Act V".
+  - **Found:** only **Orbital Landlord** (Fortress line, F1, seed 1: orbit 62% of value).
+  - **Not found:** Firm Builder (the SMR reaches first power in 2035Q1 with no offtake, since there's no nuclear-region
+    site; ground 18% < 40%) and Small Grid (Ridge with a battery goes bust; Fortress has 4 sites). Not targeted; DT question.
+- **M49 gate review** (doc 43 §3.2: each Act IV-only gate's answer, mine, reversible):
+  - **Carry on in Act V (`inAct4Rules`):** the orbital business (blocks, launches, manifests, ops, orbital debt, fire
+    sales, ground stations), Act IV's grid and gas rules (until the queue milestone), the orbit Bandwidth bonus, Act IV's
+    hires, and the tenant default read through Act V's key.
+  - **Stay Act IV-only (`inActIV`):** the Moon (offstage), Act IV's Signals, wildcards, move log and Orrery's news and
+    auction, the space-equity window and its capital view (§11.1: it closes), and joining new ventures (follow-on units
+    come with plants).
+  - **Also:** `inAct2Rules` and `inAct3Rules` include act 5 (§3.2). End-of-act clamps use the current act. Log labels
+    past the game's act stay "—", so Act IV logs are unchanged.
+  - **Carry-over checked against `state.ts`:** every §3.1 field carries; dropped: act4Moves, act4Wildcards,
+    act4SignalReads, marketRead, act4Moon (→ lunarHolding).
+
+### Morning report (12 Oct 2026)
+
+**Steps done:**
+- **Step 0 (docs):** `m47`, PR #14.
+- **Step 1 (M43.0e):** `m47`, PR #14.
+- **Step 2 (M48, content fixes):** `m48`, PR #15.
+- **Step 3 (M49, act-aware refactor + walking skeleton + Gen 2037):** `m49`, PR #16.
+
+**Not reached:** steps 4 (futures engine, Signals, hidden files, reading score), 5 (plants), 6 (the queue) and 7 (chips
+part 2). Not stopped by a rule: time. Each is a milestone of its own, and step 3 took most of the night.
+
+**M43.0e (no tuning):**
+- **V1, Holder ÷ Seller:** Fortress 1.311, Firm Builder 1.463 (target ≥ 1.2).
+- **V1, Holder ÷ Locker:** 1.137 and 1.142 (target ≥ 1).
+- **V3, Locker ÷ Holder:** Firm Builder 1.074 (pass); Fortress 1.028, a recorded near-miss (target 1.05).
+- **Information, V3 Seller ÷ Holder:** 1.031 and 1.035.
+- **Gap, V1 Fortress, Holder − Seller:** multiple +9.4%, leases +7.1%, site sale +11.0%, cash yield −6.8%.
+- **Gap, V3 Fortress, Holder − Locker:** leases −4.6%.
+- **V2 and V4:** in `gate-e-summary.txt` (scratchpad) and the PR.
+
+**Content fixes (M48):** the generators reproduce the 21 files byte for byte, then only the errata change (listed in the
+README). `check.py` PASS.
+
+**Goldens and tests:**
+- **Every milestone:** all goldens (Acts I-IV and the prologue) byte-identical.
+- **M49:** the Act IV goldens are compared at format 5, as earlier format bumps were; Act IV log labels past 2035Q4 kept
+  as "—".
+- **Tests:** 1,646 after M48, 1,656 after M49.
+- **Main bundle:** 225.66 → 226.64 KB; Act V's markets in four chunks of 281 KB.
+
+**Assumptions (mine, reversible):**
+- the generators kept in Python;
+- the Locker and Seller rules as M43.0d;
+- the M43.0e glide on power, capacity, AI multiple and SOFR;
+- pumped storage's capacity path ∝ the PJM price;
+- Act V rivals = Act IV's frozen at 2035Q4 until the rivals milestone;
+- the act-gate answers above;
+- Act V borrows the orbit theme;
+- Gen 2037 contracts priced off its neocloud rent;
+- the preset fit tests in `tools/act5/presets.ts`.
+
+**Open questions for the design thread:**
+1. **Presets:** Firm Builder and Small Grid fit no company in the scan. A Fortress-line SMR switches on in 2035Q1 with no
+   offtake (no nuclear-region site), and no line has one site with a battery that survives. Change the descriptions, let
+   the preset scan add a later venture or a site, or ship with Orbital Landlord only?
+2. **Fortress's V3:** 1.028 on the real files; confirm the balance pass owns it (§0.11's levers).
+3. **Generators:** keep them in Python, or port them to TypeScript?
+
+## Second unattended run, 12 Oct 2026 (doc 43 v1.2 with §0.13; steps A-F)
+
+- **Step A:** doc 43 §0.13 committed. Act V's entry points sit behind a dev flag (§0.13):
+  - **How:** `Act5Entry.tsx` loads only when `import.meta.env.MODE !== 'production'` (mine, reversible: the codebase's
+    test-build pattern), so dev, staging and tests have Act V, and the GitHub Pages build drops the chunk.
+  - **The chapter report in production:** without it, Act IV's chapter report shows "The finale →" as today.
+  - **Saves:** production refuses an Act V save.
+  - **Tests:** act3Gate checks production has no `ACT5_ENTRY_MARKER` or Act5Entry chunk, and staging has both. 1,658 tests.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

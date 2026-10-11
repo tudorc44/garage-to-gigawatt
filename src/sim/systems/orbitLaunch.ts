@@ -10,7 +10,7 @@ import { ORBIT, PROVIDER_IDS, provider, shell, type ProviderId } from '../../con
 import type { Message } from '../../i18n/t.ts'
 import { book } from '../ledger.ts'
 import { chance, substream } from '../rng.ts'
-import { act4SeedOf, inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
+import { act4SeedOf, inAct4Rules, logEntry, logQuarterLabel, type GameState, type OrbitalBlock } from '../state.ts'
 import { licenceRoom, orbitBlock, orbitOf, orbitRow } from './orbit.ts'
 import { wildcardFiredIv } from './wildcardsIv.ts'
 import { buildCostMult, debtAfterLoss, ownShare, payCapex, repayFromProceeds } from './orbitCapital.ts'
@@ -61,7 +61,7 @@ export function bookedTonnes(state: GameState, quarter: number, except?: string)
 
 /** Third-party launch slots in a quarter (tonnes), from the market row. */
 export const slotsTonnes = (state: GameState, quarter: number): number =>
-  orbitRow(state, Math.min(quarter, actLastQuarter(4))).launch_slots_t_q
+  orbitRow(state, Math.min(quarter, actLastQuarter(state.act === 5 ? 5 : 4))).launch_slots_t_q
 
 export const LAUNCH_BOOKING_BANDWIDTH = 1
 /** A block launched at the end of quarter q climbs through q+1 and is live from q+2. */
@@ -73,7 +73,7 @@ export function bookLaunchBlocker(
   id: ProviderId,
   quarter: number,
 ): Message | undefined {
-  if (!inActIV(state)) return { key: 'error.orbit_unavailable' }
+  if (!inAct4Rules(state)) return { key: 'error.orbit_unavailable' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const block = orbitBlock(state, blockId)
   if (!block || !PROVIDER_IDS.includes(id)) return { key: 'error.orbit_bad_block' }
@@ -82,7 +82,7 @@ export function bookLaunchBlocker(
   const p = provider(id)
   if (p.needs !== null) return { key: 'error.orbit_provider_needs_partner' }
   const [lo, hi] = L.lead_quarters
-  if (quarter < state.quarter + lo || quarter > state.quarter + hi || quarter > actLastQuarter(4))
+  if (quarter < state.quarter + lo || quarter > state.quarter + hi || quarter > actLastQuarter(state.act === 5 ? 5 : 4))
     return { key: 'error.orbit_launch_window', params: { lo, hi } }
   if (p.max_tonnes_per_booking !== null && block.massT > p.max_tonnes_per_booking)
     return { key: 'error.orbit_launch_too_heavy', params: { max: p.max_tonnes_per_booking } }
@@ -116,7 +116,7 @@ export function bookLaunch(state: GameState, blockId: string, id: ProviderId, qu
 }
 
 export function cancelLaunchBlocker(state: GameState, blockId: string): Message | undefined {
-  if (!inActIV(state)) return { key: 'error.orbit_unavailable' }
+  if (!inAct4Rules(state)) return { key: 'error.orbit_unavailable' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const block = orbitBlock(state, blockId)
   if (!block || !block.launch) return { key: 'error.orbit_bad_block' }
@@ -182,10 +182,10 @@ export function startOrbitalBuilds(state: GameState): void {
     b.capexSpentUsd += costUsd + b.launch.depositUsd
     b.stage = 'building'
     b.buildDoneQuarter = state.quarter + SAT.build_quarters
-    logEntry(state, 'log.orbit.build_started', { n: b.n, costUsd, quarter: CONTENT.quarters[b.buildDoneQuarter] ?? '—' })
+    logEntry(state, 'log.orbit.build_started', { n: b.n, costUsd, quarter: logQuarterLabel(state, b.buildDoneQuarter) })
     if (b.launch.quarter < b.buildDoneQuarter) {
       b.launch.quarter = b.buildDoneQuarter
-      logEntry(state, 'log.orbit.launch_waits_build', { n: b.n, quarter: CONTENT.quarters[b.launch.quarter] ?? '—' })
+      logEntry(state, 'log.orbit.launch_waits_build', { n: b.n, quarter: logQuarterLabel(state, b.launch.quarter) })
     }
   }
 }
@@ -235,7 +235,7 @@ export function insuranceQuote(state: GameState, block: OrbitalBlock): { coverUs
 }
 
 export function buyInsuranceBlocker(state: GameState, blockId: string): Message | undefined {
-  if (!inActIV(state)) return { key: 'error.orbit_unavailable' }
+  if (!inAct4Rules(state)) return { key: 'error.orbit_unavailable' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const block = orbitBlock(state, blockId)
   if (!block) return { key: 'error.orbit_bad_block' }
@@ -292,7 +292,7 @@ const slipReason = (state: GameState, b: OrbitalBlock, roll: ReturnType<typeof s
 
 /** At the end of a quarter: each built block due to launch now either slips a quarter, launches, or is lost. */
 export function endQuarterLaunches(state: GameState): void {
-  if (!inActIV(state)) return
+  if (!inAct4Rules(state)) return
   for (const b of state.act4Orbit?.blocks ?? []) {
     if (b.stage !== 'awaiting_launch' || !b.launch || b.launch.quarter !== state.quarter) continue
     const roll = substream(act4SeedOf(state), `orbit_launch:${b.id}:${state.quarter}:${b.lostLaunches}`)
@@ -300,7 +300,7 @@ export function endQuarterLaunches(state: GameState): void {
     if (why) {
       b.launch.quarter++
       b.launch.slips++
-      logEntry(state, 'log.orbit.launch_slip', { n: b.n, slipReason: why, quarter: CONTENT.quarters[b.launch.quarter] ?? '—' })
+      logEntry(state, 'log.orbit.launch_slip', { n: b.n, slipReason: why, quarter: logQuarterLabel(state, b.launch.quarter) })
       continue
     }
     const restUsd = launchCostUsd(b) - b.launch.depositUsd
@@ -330,7 +330,7 @@ export function endQuarterLaunches(state: GameState): void {
     logEntry(state, 'log.orbit.launched', {
       n: b.n,
       providerName: b.launch.provider,
-      quarter: CONTENT.quarters[b.liveQuarter] ?? '—',
+      quarter: logQuarterLabel(state, b.liveQuarter),
     })
   }
 }
