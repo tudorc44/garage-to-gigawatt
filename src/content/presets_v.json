@@ -13,13 +13,13 @@
    "joins": [
     "egs2"
    ],
-   "valuation_usd_m": 2376.9,
-   "founder_net_worth_usd_m": 395.5,
+   "valuation_usd_m": 2345.8,
+   "founder_net_worth_usd_m": 390.3,
    "cash_usd_m": 53.5,
    "debt_usd_m": 0,
    "energized_mw": 115.1,
    "free_mw": 37.1,
-   "lease_share": 0.57,
+   "lease_share": 0.58,
    "orbit_share": 0.11,
    "rating": "BBB",
    "vb7_busts": 0,
@@ -39,23 +39,6 @@
    "free_mw": 16.1,
    "lease_share": 0.24,
    "orbit_share": 0.62,
-   "rating": "BBB"
-  },
-  {
-   "id": "small_grid",
-   "act4_preset": "ridge",
-   "act4_future": "f1",
-   "act4_seed": 1,
-   "joins": [],
-   "queue": true,
-   "valuation_usd_m": 759.5,
-   "founder_net_worth_usd_m": 0.7,
-   "cash_usd_m": 30.9,
-   "debt_usd_m": 45.3,
-   "energized_mw": 0.1,
-   "free_mw": 0,
-   "lease_share": 0,
-   "orbit_share": 0.88,
    "rating": "BBB"
   }
  ]

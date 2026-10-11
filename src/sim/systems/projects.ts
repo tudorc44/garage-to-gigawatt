@@ -1891,13 +1891,14 @@ export function sellBlocker(
 }
 
 /** Sells a live shell (2 Bandwidth; assumes sellBlocker passed): its MW leave the site with it. */
-export function sellProject(state: GameState, projectId: string): void {
+export function sellProject(state: GameState, projectId: string, payBandwidth = true): void {
   const p = getProject(state, projectId)!
   const priceUsd = Math.round(saleValueUsd(state, p))
   const site = state.sites.find((s) => s.id === p.siteId)!
   site.soldKw = (site.soldKw ?? 0) + p.kw
   book(state, 'asset_sales', priceUsd, { site: p.siteId, project: p.id, biz: 'ai' })
-  state.bandwidth -= BALANCE.projects.bandwidth.sell
+  // (M55: a whole-site sale pays its own Bandwidth once)
+  if (payBandwidth) state.bandwidth -= BALANCE.projects.bandwidth.sell
   p.stage = 'sold'
   p.soldQuarter = state.quarter
   logEntry(state, 'log.project_sold', { n: p.n, priceUsd })

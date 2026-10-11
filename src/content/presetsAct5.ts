@@ -6,7 +6,8 @@ import raw from './presets_v.json' with { type: 'json' }
 import { ACT4_PRESET_IDS } from './presetsAct4.ts'
 import { futureId } from './schemas.ts'
 
-export const ACT5_PRESET_IDS = ['firm_builder', 'orbital_landlord', 'small_grid'] as const
+// (doc 43 §0.14 item 1: Small Grid is cut; two presets ship)
+export const ACT5_PRESET_IDS = ['firm_builder', 'orbital_landlord'] as const
 export type Act5PresetId = (typeof ACT5_PRESET_IDS)[number]
 
 const schema = z.object({

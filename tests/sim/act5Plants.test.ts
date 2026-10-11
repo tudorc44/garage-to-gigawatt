@@ -95,6 +95,23 @@ describe('operating plants in Act V (M52.2)', () => {
     expect(s.cash).toBeCloseTo(cash + paid, 2)
   })
 
+  it('M55 (doc 43 §0.14 item 2): act5Entry is measured after the switch to earnings; Act IV keeps the mark', () => {
+    const s4 = firmBuilder2035()
+    const s5 = toAct5(s4, { vfuture: 'v2' })
+    const plant = s4.ventures!.find((v) => v.stage === 'operating' && v.stake > 0)!
+    const at = { ...s5, quarter: actFirstQuarter(5) }
+    const p5 = at.ventures!.find((v) => v.id === plant.id)!
+    const delta = plantStakeValueUsd(at, p5) - stakeMarkUsd(plant)
+    expect(s5.act5Entry!.plantsRevaluedUsd).toBeCloseTo(delta, 2)
+    expect(delta).toBeLessThan(0) // the Firm Builder's EGS stake: mark above earnings
+    // Act IV's record is untouched: its valuation is the 2035Q4 report's, with the mark
+    expect(s5.act4End!.founderNetWorthUsd).toBe(s4.act4End!.founderNetWorthUsd)
+    expect(s5.act5Entry!.valuationUsd).toBeCloseTo(
+      s4.reports.at(-1)!.valuationUsd + s5.act5Entry!.poweredValueUsd + delta,
+      0,
+    )
+  })
+
   it('nothing changes before Act V: the same venture in 2035Q4 is not a plant', () => {
     const s4 = firmBuilder2035()
     for (const v of s4.ventures ?? []) expect(isPlant(s4, v)).toBe(false)

@@ -381,6 +381,17 @@ README). `check.py` PASS.
   M54.2: the card behind Act V's dev flag (mine; gate test), a reservation deposit counts at cost. (d) E-B2 (`tools/act5/chipsEb2.ts`, 10 seeds,
   not tuned): mean −$9M (2035Q4) / $4M (2040Q4) vs control $37M / $192M: cap PASS; best $84M / $225M vs 3 × control best: MISS. 1,715 tests.
 
+## Third unattended run, 13 Oct 2026 (doc 43 v1.2 with §0.14; steps A-C)
+
+- **Step A (M55, branch `m55` on `m54`): §0.14 fixes.** Split: **1** cut Small Grid · **2** act5Entry after the switch to
+  earnings · **3** (developer contracts: no change) · **4** the fast lane's energy saving · **5** the whole-site sale · **6** the
+  accelerator diagnosis. Chunks: 1-5 · 6. Then merge #17-#21 and M55 to main in order.
+  - **1-5** done: two presets (Firm Builder valuation 2,376.9 → 2,345.8 M: the −$31.1M revaluation); `plantsRevaluedUsd` on A5-01
+    and the chapter report; fast lane saves 0.5% of the enrolled share's power cost; `SELL_SITE` (2 BW, one −1 move). 1,717 tests.
+  - **6** done (`tools/act5/chipsDiagnosis.ts`, 200 draws on `accelSeed`, Fortress f1, 10% stake: the guard refuses 20%). Built 56:
+    2040 value $386M vs paid-in $99M (3.91×); bought at a gain 33 (2.34×), at a loss 59 (0.62×), cancelled 52 (0). Sanity (built, all
+    calls paid, ≥ 3×): 31/41; the misses: 7 in V3 (units ×0.6, 15× multiple: the binding term), 2 in V4 (2.9-3.0×), 1 late volume (0.67×).
+
 ### Morning report (second run, 12 Oct 2026)
 
 **Steps done:** A (merges #14-#16, dev flag) · B `m50` · C `m51` · D `m52` · E `m53` · F `m54`; none stopped. PRs stacked on

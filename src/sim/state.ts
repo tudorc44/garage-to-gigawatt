@@ -352,6 +352,8 @@ export type Act4Entry = Act3Entry
 export interface Act5Entry extends Act3Entry {
   freeMw: number
   poweredValueUsd: number
+  /** Doc 43 §0.14 item 2: running plants revalued from their milestone mark to earnings at 2036Q1 (absent before M55). */
+  plantsRevaluedUsd?: number
 }
 
 /** Act V's lunar holding (M49, doc 43 §9.2): the Act IV programme's 2035Q4 value; its value now is that × the index. */
@@ -665,6 +667,8 @@ export interface Accelerator {
   blockedQuarters: number[]
   /** How it ended for you: cancelled, or sold to a buyer at a gain or a loss. */
   ended?: 'cancelled' | 'acquired_gain' | 'acquired_loss'
+  /** What a buyer paid you for the stake, if it was sold (M55: for the chapter report and the diagnosis). */
+  proceedsUsd?: number
   /** An allocation reservation: MW, the menu tier, the deposit and discount, and where it stands. */
   reservation?: {
     mw: number
@@ -1498,6 +1502,8 @@ export interface GameState {
   act5End?: Act5End
   /** M54 (doc 43 §0.12): your part in the accelerator venture (Act IV onward). Absent until you join or reserve. */
   accelerator?: Accelerator
+  /** M55 (doc 43 §0.14 item 5): tools only: the accelerator's draws on their own seed, decoupled from act4Seed. */
+  accelSeed?: number
   /** Act V (M51, doc 43 §6.7): the move log the reading score reads at the end of the act. */
   act5Moves?: Act5Move[]
   /** Act V (M51, doc 43 §6.3): the log of Read the market (Signals) reads, one indicator per quarter at most. */

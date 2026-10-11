@@ -82,7 +82,7 @@ export function QueuePanel(props: { state: GameState; act: (a: Action) => Messag
         </div>
       ))}
       {v.sites
-        .filter((s) => s.colocatedKw > 0 || s.saleUsd > 0)
+        .filter((s) => s.colocatedKw > 0 || s.saleUsd > 0 || s.wholeUsd > 0)
         .map((s) => (
           <div key={s.siteId} class="venture-row" data-queue-site={s.siteId}>
             <p class="num-s" style={{ margin: 0 }}>
@@ -99,6 +99,18 @@ export function QueuePanel(props: { state: GameState; act: (a: Action) => Messag
                 onClick={() => run({ type: 'SELL_SITE_POWER', siteId: s.siteId })}
               >
                 {t('ui.queue.sell', { usd: fmt.money(s.saleUsd) })}
+              </button>
+            )}
+            {/* (M55, doc 43 §0.14 item 8: the whole site, its pieces at their own prices) */}
+            {plan && s.wholeUsd > 0 && (
+              <button
+                type="button"
+                class="btn"
+                disabled={!!s.wholeBlocked}
+                title={s.wholeBlocked ? say(s.wholeBlocked) : undefined}
+                onClick={() => run({ type: 'SELL_SITE', siteId: s.siteId })}
+              >
+                {t('ui.queue.sell_whole', { usd: fmt.money(s.wholeUsd), n: s.wholeHalls })}
               </button>
             )}
           </div>

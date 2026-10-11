@@ -20,7 +20,7 @@ import { leasesOf } from '../act5-gate/gate-b.ts'
 import { playAct5Recipe, type Act5PresetRecipe } from './presetRun.ts'
 
 const ROOT = new URL('../../', import.meta.url)
-type Id = 'firm_builder' | 'orbital_landlord' | 'small_grid'
+type Id = 'firm_builder' | 'orbital_landlord'
 const first5 = actFirstQuarter(5)
 const Q = (label: string) => first5 - 4 + ['2035Q1', '2035Q2', '2035Q3', '2035Q4'].indexOf(label)
 const FIRST_POWER_FROM = Q('2035Q1')
@@ -95,16 +95,7 @@ const PRESETS: Record<Id, { scan: Act5PresetRecipe[]; fits: (p: Profile) => bool
     scan: recipes(['fortress', 'neocloud', 'ridge'], SEEDS_LATE, [[]]),
     fits: (p) => p.chapter && p.orbitShare >= 0.25 && p.firstLiveRetire >= first5 && p.firstLiveRetire <= first5 + 7,
   },
-  // a small survivor with one or two sites and a queue position; a battery only if it survives (§0.13): the Ridge line
-  // without a battery, then with one, then the Neocloud line
-  small_grid: {
-    scan: [
-      ...recipes(['ridge'], SEEDS_LATE, [[]], { queue: true }),
-      ...recipes(['ridge'], SEEDS_LATE, ['btm'], { queue: true }),
-      ...recipes(['neocloud'], SEEDS_LATE, [[]], { queue: true }),
-    ],
-    fits: (p) => p.chapter && p.poweredSites >= 1 && p.poweredSites <= 2 && p.queuePosition,
-  },
+  // (Small Grid is cut: doc 43 §0.14 item 1, two presets ship)
 }
 
 /** V-B7: the company, played passively through Act V on every future (act5 seeds 1-3), never goes bust. */
@@ -140,7 +131,7 @@ for (const id of Object.keys(PRESETS) as Id[]) {
     }
   }
   if (!hit) {
-    say(`${id}: no company fits after ${tried} recipes (${id === 'small_grid' ? 'cut, §0.13' : 'reported, not targeted'})`)
+    say(`${id}: no company fits after ${tried} recipes (reported, not targeted)`)
     continue
   }
   const { r, p } = hit

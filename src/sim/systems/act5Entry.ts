@@ -20,6 +20,8 @@ import { buildAct4Entry } from './act4Entry.ts'
 import { scenarioOf } from './market.ts'
 import { openRenewals, resolveRenewals } from './renewals.ts'
 import { poweredKw, usedKw } from './sites.ts'
+import { isPlant, plantStakeValueUsd } from './plants.ts'
+import { stakeMarkUsd } from './ventures.ts'
 
 /** Free energized MW (doc 43 §0.6 item 2): energized and used by no lease, project, hosting client or own machine. */
 export function freeEnergizedMw(state: GameState, quarter = state.quarter): number {
@@ -55,7 +57,8 @@ export function buildAct5Entry(state: GameState, vfuture: VFutureId): Act5Entry 
   const poweredMw = act5Row(first, key)?.powered_value_usd_mw ?? 0
   const freeMw = freeEnergizedMw(state)
   const poweredValueUsd = freeMw * poweredMw
-  const valuationUsd = base.valuationUsd + poweredValueUsd
+  const plantsRevaluedUsd = plantsRevaluedOnEntryUsd(state, vfuture)
+  const valuationUsd = base.valuationUsd + poweredValueUsd + plantsRevaluedUsd
   return {
     ...base,
     quarter: CONTENT.quarters[first],
@@ -63,7 +66,22 @@ export function buildAct5Entry(state: GameState, vfuture: VFutureId): Act5Entry 
     founderNetWorthUsd: Math.max(0, state.founderStake * valuationUsd),
     freeMw,
     poweredValueUsd,
+    plantsRevaluedUsd,
   }
+}
+
+/**
+ * Doc 43 §0.14 item 2: act5Entry is measured after the 2036Q1 switch of running plants from their milestone mark to their
+ * earnings value (§11.3), so Act V's growth multiple starts from the earnings value. The difference (earnings value at
+ * 2036Q1 − the 2035Q4 mark, over your stakes in running plants); 2036Q1's market is the common baseline in every future,
+ * so it reveals nothing. Act IV's own numbers (act4End, its chapter report, "Retire at 2035") keep the mark.
+ */
+export function plantsRevaluedOnEntryUsd(state: GameState, vfuture: VFutureId): number {
+  const s5 = { ...state, act: 5 as const, quarter: actFirstQuarter(5), vFutureId: vfuture }
+  return (state.ventures ?? []).reduce(
+    (sum, v) => (isPlant(s5, v) && v.stake > 0 ? sum + plantStakeValueUsd(s5, v) - stakeMarkUsd(v) : sum),
+    0,
+  )
 }
 
 /**

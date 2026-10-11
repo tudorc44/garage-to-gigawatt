@@ -27,7 +27,8 @@ import {
 } from '../state.ts'
 import { logAct5Move } from './act5Moves.ts'
 import { scenarioOf } from './market.ts'
-import { projectBuildQuarters } from './projects.ts'
+import { projectBuildQuarters, saleValueUsd, sellProject } from './projects.ts'
+import { repayProjectFacilities } from './facilities.ts'
 import { poweredKw, regionOf, usedKw } from './sites.ts'
 
 const Q = PLANTS.queue
@@ -65,11 +66,11 @@ function syncProject(state: GameState, p: Project | undefined, add: PowerAdd): v
 
 /**
  * At each Act V quarter's end: adopts new positions (security now; the study a quarter later), logs studies that came
- * in, holds energisation behind an unpaid bill, and returns securities at energisation. Returns the fast lane's output
- * loss this quarter (an energy cost).
+ * in, holds energisation behind an unpaid bill, and returns securities at energisation. (The fast lane's output loss and
+ * energy saving are fastLaneEffectUsd's, booked by the quarter's end.)
  */
-export function endQuarterQueue(state: GameState): number {
-  if (!inActV(state)) return 0
+export function endQuarterQueue(state: GameState): void {
+  if (!inActV(state)) return
   const first = actFirstQuarter(5)
   for (const site of state.sites) {
     for (const add of site.powerAdds ?? []) {
@@ -105,16 +106,22 @@ export function endQuarterQueue(state: GameState): number {
       }
     }
   }
-  return fastLaneLossUsd(state)
 }
 
-/** The fast lane's −0.5% output on the AI revenue of the enrolled share of your load, this quarter (mine). */
-function fastLaneLossUsd(state: GameState): number {
+/**
+ * The fast lane's −0.5% output this quarter (doc 43 §0.14 item 4): 0.5% of the enrolled share of your load's AI revenue
+ * is lost, and 0.5% of its energy cost is saved (the curtailed energy isn't bought). Returns both, $.
+ */
+export function fastLaneEffectUsd(state: GameState): { lossUsd: number; savingUsd: number } {
   const flexKw = state.sites.reduce((a, s) => a + (s.flexKw ?? 0), 0)
-  if (flexKw <= 0) return 0
+  if (flexKw <= 0) return { lossUsd: 0, savingUsd: 0 }
   const used = state.sites.reduce((a, s) => a + usedKw(state, s.id), 0)
   const share = used > 0 ? Math.min(1, flexKw / used) : 0
-  return roundCents(Q.fast_lane.output_loss * state.quarterStats.aiRevenueUsd * share)
+  const k = Q.fast_lane.output_loss * share
+  return {
+    lossUsd: roundCents(k * state.quarterStats.aiRevenueUsd),
+    savingUsd: roundCents(k * state.quarterStats.powerCostUsd),
+  }
 }
 
 // ---------- the Plan phase's actions ----------
@@ -241,10 +248,11 @@ export function sellSitePowerBlocker(state: GameState, siteId: string): Message 
  * positions with their half-built halls (at the queue premium plus the capex spent and the security: mine). The site's
  * leased halls are sold with PROJECT_SELL, as before. Returns whether a position went (the move's kind).
  */
-export function sellSitePower(state: GameState, siteId: string): boolean {
+export function sellSitePower(state: GameState, siteId: string, whole = false): boolean {
   const site = state.sites.find((s) => s.id === siteId)!
   const sale = sitePowerSale(state, site)
-  state.bandwidth -= 1
+  if (!whole) state.bandwidth -= 1
+  if (sale.totalUsd <= 0) return false
   site.soldKw = (site.soldKw ?? 0) + sale.freeKw
   for (const a of sale.positions) {
     const p = projectOf(state, a)
@@ -259,9 +267,57 @@ export function sellSitePower(state: GameState, siteId: string): boolean {
   }
   book(state, 'asset_sales', sale.totalUsd, { site: site.id })
   logEntry(state, 'log.queue.site_sold', { mw: Math.round((sale.freeKw + sale.posKw) / 100) / 10, priceUsd: sale.totalUsd })
-  // the move (doc 43 §6.7, §0.2): with a position, or free MW only (both −1)
-  logAct5Move(state, sale.positions.length > 0 ? 'sell_site_with_position' : 'sell_site_free_mw')
+  // the move (doc 43 §6.7, §0.2): with a position, or free MW only (both −1); a whole-site sale logs its own
+  if (!whole) logAct5Move(state, sale.positions.length > 0 ? 'sell_site_with_position' : 'sell_site_free_mw')
   return sale.positions.length > 0
+}
+
+// ---------- the whole-site sale (doc 43 §0.14 item 8) ----------
+
+/** The leased halls a whole-site sale takes: live shells with a tenant (PROJECT_SELL's). */
+function leasedHalls(state: GameState, siteId: string) {
+  return state.projects.filter((p) => p.siteId === siteId && p.stage === 'live' && p.kind === 'shell' && p.tenant)
+}
+
+/**
+ * What selling the whole site fetches: its pieces at their own prices (doc 43 §0.14 item 8, no new pricing rule): each
+ * leased hall at its lease-sale value (PROJECT_SELL's), and its free energized MW and queue positions (M53's site power
+ * sale). Anything else on the site (your own GPU halls, hosting, machines) stays.
+ */
+export function wholeSiteSale(state: GameState, site: Site) {
+  const halls = leasedHalls(state, site.id)
+  const leasesUsd = halls.reduce((a, p) => a + Math.round(saleValueUsd(state, p)), 0)
+  const power = sitePowerSale(state, site)
+  return { halls: halls.length, leasesUsd, powerUsd: power.totalUsd, positions: power.positions.length, totalUsd: leasesUsd + power.totalUsd }
+}
+
+export function sellSiteBlocker(state: GameState, siteId: string): Message | undefined {
+  if (!inActV(state)) return { key: 'error.queue_none' }
+  if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
+  const site = state.sites.find((s) => s.id === siteId)
+  if (!site) return { key: 'error.unknown_site' }
+  const sale = wholeSiteSale(state, site)
+  if (sale.totalUsd <= 0) return { key: 'error.queue_nothing_to_sell' }
+  for (const a of sitePowerSale(state, site).positions) {
+    const p = projectOf(state, a)
+    if (p && (p.tenant || (state.facilities ?? []).some((x) => x.projectId === p.id))) return { key: 'error.queue_committed' }
+  }
+  const need = BALANCE.projects.bandwidth.sell
+  if (state.bandwidth < need) return { key: 'error.no_bandwidth', params: { needed: need, have: state.bandwidth } }
+}
+
+/** Sells the whole site (one sale's Bandwidth): its leased halls, then its free MW and positions. One −1 move. */
+export function sellWholeSite(state: GameState, siteId: string): void {
+  const site = state.sites.find((s) => s.id === siteId)!
+  const before = wholeSiteSale(state, site)
+  for (const p of leasedHalls(state, siteId)) {
+    sellProject(state, p.id, false)
+    repayProjectFacilities(state, p.id)
+  }
+  const withPosition = sellSitePower(state, siteId, true)
+  state.bandwidth -= BALANCE.projects.bandwidth.sell
+  logEntry(state, 'log.queue.whole_site_sold', { n: before.halls, priceUsd: before.totalUsd })
+  logAct5Move(state, withPosition ? 'sell_site_with_position' : 'sell_site_free_mw')
 }
 
 /** The Queue panel's rows: every position you hold, and each site's co-located MW (a venture's, no wait). */
@@ -302,6 +358,9 @@ export function queueView(state: GameState) {
         freeKw: sale.freeKw,
         saleUsd: sale.totalUsd,
         saleBlocked: sellSitePowerBlocker(state, s.id) ?? null,
+        wholeUsd: wholeSiteSale(state, s).totalUsd,
+        wholeHalls: wholeSiteSale(state, s).halls,
+        wholeBlocked: sellSiteBlocker(state, s.id) ?? null,
       }
     })
   return { positions, sites, fastLaneQuarters: fastLaneQuarters(state) }

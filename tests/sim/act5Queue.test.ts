@@ -12,8 +12,15 @@ import { playFrom } from '../../src/sim/replay.ts'
 import { toAct5, type GameState } from '../../src/sim/state.ts'
 import { scenarioOf } from '../../src/sim/systems/market.ts'
 import { gridQuarterRange } from '../../src/sim/systems/power.ts'
-import { endQuarterQueue, queueView, sitePowerSale } from '../../src/sim/systems/queue.ts'
-import { regionOf } from '../../src/sim/systems/sites.ts'
+import {
+  endQuarterQueue,
+  fastLaneEffectUsd,
+  queueView,
+  sitePowerSale,
+  wholeSiteSale,
+} from '../../src/sim/systems/queue.ts'
+import { regionOf, usedKw } from '../../src/sim/systems/sites.ts'
+import { playAct5Recipe } from '../../tools/act5/presetRun.ts'
 import { act4Company } from './act4Helpers.ts'
 
 let end4: GameState | null = null
@@ -115,6 +122,14 @@ describe('Act V’s grid queue (M53)', () => {
     expect(site.powerAdds!.find((a) => a.projectId === projectId)!.readyQuarter).toBe(s.quarter + fast)
     expect(site.flexKw).toBe(kw)
     expect(after.act5Moves!.at(-1)!.kind).toBe('take_fast_lane')
+    // doc 43 §0.14 item 4: 0.5% of the enrolled share's AI revenue lost, and 0.5% of its energy cost saved
+    after.quarterStats.aiRevenueUsd = 1e8
+    after.quarterStats.powerCostUsd = 4e7
+    const used = after.sites.reduce((a, x) => a + usedKw(after, x.id), 0)
+    const share = Math.min(1, kw / used)
+    const fx = fastLaneEffectUsd(after)
+    expect(fx.lossUsd).toBeCloseTo(0.005 * share * 1e8, 0)
+    expect(fx.savingUsd).toBeCloseTo(0.005 * share * 4e7, 0)
   })
 
   it('selling a site’s power: free MW at the powered value, positions at the premium (with the hall’s capex): −1', () => {
@@ -126,6 +141,24 @@ describe('Act V’s grid queue (M53)', () => {
     expect(after.cash).toBeCloseTo(s.cash + sale.totalUsd, 2)
     expect(after.act5Moves!.at(-1)!.kind).toBe('sell_site_with_position')
     expect(queueView(after)!.positions.filter((p) => p.siteId === siteId)).toEqual([])
+  })
+
+  it('M55 (doc 43 §0.14 item 8): the whole-site sale bundles its leased halls (lease-sale value) and its power (−1)', () => {
+    const fb = playAct5Recipe({ act4_preset: 'fortress', act4_future: 'f2', act4_seed: 1, joins: ['egs2'] })
+    const s = toAct5(fb, { vfuture: 'v1' })
+    const site = [...s.sites].sort((a, b) => wholeSiteSale(s, b).halls - wholeSiteSale(s, a).halls)[0]
+    const sale = wholeSiteSale(s, site)
+    expect(sale.halls).toBeGreaterThan(0)
+    expect(sale.totalUsd).toBe(sale.leasesUsd + sale.powerUsd)
+    const bw = s.bandwidth
+    const after = ok(s, { type: 'SELL_SITE', siteId: site.id })
+    // the price comes in; any project debt on the halls is repaid out of it (as PROJECT_SELL)
+    expect(after.cash).toBeGreaterThan(s.cash)
+    expect(after.cash).toBeLessThanOrEqual(s.cash + sale.totalUsd + 1)
+    expect(after.bandwidth).toBe(bw - 2)
+    expect(after.projects.filter((p) => p.siteId === site.id && p.stage === 'sold').length).toBeGreaterThanOrEqual(sale.halls)
+    expect(after.act5Moves!.filter((m) => m.kind.startsWith('sell_site')).length).toBe(1)
+    expect(wholeSiteSale(after, after.sites.find((x) => x.id === site.id)!).halls).toBe(0)
   })
 
   it('the bill draw’s settings are the content’s (doc 43 §0.4)', () => {
