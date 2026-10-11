@@ -9,6 +9,7 @@ import { BALANCE, CONTENT, actFirstQuarter } from '../../content/index.ts'
 import { signalsHiddenV } from '../../content/signalsHiddenV.ts'
 import type { Act5End, GameState } from '../state.ts'
 import { computeReadingV, markMovesV } from './readingScoreV.ts'
+import { exitChoiceOf, exitNetWorthUsd, exitReveal } from './act5Exit.ts'
 
 /** The reading title (Act III's bands), or null with no score. */
 function readingTitleId(score: number | null): string | null {
@@ -18,13 +19,19 @@ function readingTitleId(score: number | null): string | null {
 
 export function buildAct5End(state: GameState, gameOver = false): Act5End {
   const valuation = state.reports.at(-1)?.valuationUsd ?? state.cash
-  const founderNetWorthUsd = Math.max(0, state.founderStake * valuation)
+  // M57.1 (doc 43 §15.2): net worth after the exit (sold at the bid, or held at the outlook factor)
+  const founderNetWorthUsd = exitNetWorthUsd(state, gameOver)
   const entry = state.act5Entry?.founderNetWorthUsd
+  const reveal = exitReveal(state)
   const base: Act5End = {
     endQuarter: CONTENT.quarters[state.quarter],
     gameOver,
     founderNetWorthUsd,
     growthMultiple: entry && entry > 0 ? founderNetWorthUsd / entry : null,
+    preExitNetWorthUsd: Math.max(0, state.founderStake * valuation),
+    exitChoice: gameOver ? null : exitChoiceOf(state),
+    outlookFactor: reveal.outlookFactor,
+    bidFactor: reveal.bidFactor,
   }
   const future = state.vFutureId
   if (!future) return base

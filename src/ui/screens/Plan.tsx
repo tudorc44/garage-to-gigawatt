@@ -76,6 +76,7 @@ import {
   type PickKind,
 } from './planPickers.tsx'
 import { fmt } from '../format.ts'
+import { ExitPanel } from './Act5Exit.tsx'
 import {
   flawName,
   headlines,
@@ -212,6 +213,8 @@ export function PlanScreen({ state, act }: ScreenProps) {
           {state.act === 4 && (
             <Act4Panel name="MoonDisputesPanel" state={state} act={act} />
           )}
+          {/* Act V (M57.1): the founder's exit, 2040Q3-Q4 */}
+          {state.act === 5 && <ExitPanel state={state} act={act} />}
           <div class="dash">
             <div class="col">
               <MarketPanel state={state} />

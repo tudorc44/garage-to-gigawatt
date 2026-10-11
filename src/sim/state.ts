@@ -371,6 +371,11 @@ export interface Act5End {
   gameOver: boolean
   founderNetWorthUsd: number
   growthMultiple: number | null
+  /** M57.1 (doc 43 §15.2): net worth before the exit, the exit taken, and its two factors (revealed now). */
+  preExitNetWorthUsd?: number
+  exitChoice?: 'sell_company' | 'sell_plants' | 'hold' | null
+  outlookFactor?: number
+  bidFactor?: number | null
   // ---- M51: the reveal (absent on a record built before M51: the chapter report rebuilds it) ----
   vFutureId?: VFutureId
   /** The future's name, its trigger, its decoy window and name, and the reads you made. */
@@ -930,6 +935,8 @@ export interface Renewal {
   reletRentMult?: number
   /** M13.2: a walked shell's MW are kept empty (no automatic re-let); the Deal builder can let them later. */
   keepEmpty?: boolean
+  /** Act V (M57.1, doc 43 §0.2): lock or roll: a long term at today's rate, or a short one back at market after. */
+  lockTerm?: 'long' | 'short'
 }
 
 /**
@@ -1509,6 +1516,11 @@ export interface GameState {
   accelerator?: Accelerator
   /** M55 (doc 43 §0.14 item 5): tools only: the accelerator's draws on their own seed, decoupled from act4Seed. */
   accelSeed?: number
+  /**
+   * Act V (M57.1, doc 43 §15.2): the founder's exit: the buyer's bid factor (drawn in 2040Q3; only the bid is shown),
+   * the choice (hold by default), and what selling the plants fetched.
+   */
+  act5Exit?: { bidFactor: number; drawnQuarter: number; choice?: 'sell_company' | 'sell_plants' | 'hold'; plantsSoldUsd?: number }
   /** Act V (M56.2, doc 43 §6.6): the two wildcards drawn at entry, each with its quarter (never shown in advance). */
   act5Wildcards?: DrawnWildcardV[]
   /** Act V (M56.3, doc 43 §9.1): orbital tenants brought home to a ground site, paying their rent to their term's end. */

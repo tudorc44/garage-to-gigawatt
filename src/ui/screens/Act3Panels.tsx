@@ -5,7 +5,7 @@
 // today's market only, and a renewal offer shows only once its renewal is open.
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
-import type { SignalId, SignalIdIv, SignalIdV } from '../../content/index.ts'
+import { BALANCE, type SignalId, type SignalIdIv, type SignalIdV } from '../../content/index.ts'
 import {
   act3ReportLines,
   act4MwColumns,
@@ -393,6 +393,23 @@ export function RenewalsDuePanel({ state, act }: ScreenProps) {
                         })}
                       </span>
                     </div>
+                    {/* (M57.1, doc 43 §0.2: Act V's lock or roll, on a shell renewal) */}
+                    {state.act === 5 && r.kind === 'shell' && (
+                      <div data-lock-or-roll>
+                        {(['long', 'short'] as const).map((term) => (
+                          <button
+                            key={term}
+                            type="button"
+                            class="btn"
+                            onClick={() => act({ type: 'RENEWAL_TERM', projectId: r.projectId, term })}
+                          >
+                            {t(`ui.act5.renewal.${term}`, {
+                              years: term === 'long' ? BALANCE.act5.lockOrRoll.longYears : BALANCE.act5.lockOrRoll.shortYears,
+                            })}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <div>
                       <BwButton
                         label={t('ui.act3.renewal.counter')}

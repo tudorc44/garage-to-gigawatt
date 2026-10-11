@@ -25,7 +25,8 @@ import {
   type Project,
   type Renewal,
 } from '../state.ts'
-import { logQuarterLabel } from '../state.ts'
+import { inActV, logQuarterLabel } from '../state.ts'
+import { logAct5Move } from './act5Moves.ts'
 import { contractEndQuarter, reopenerEligible } from './calendar.ts'
 import {
   gpuRenewalIndex,
@@ -151,6 +152,28 @@ export function renewalBlocker(
       params: { needed: R.reletBandwidth, have: state.bandwidth },
     }
   return undefined
+}
+
+/**
+ * Act V's lock or roll (M57.1, doc 43 §0.2): why this shell renewal can't take a long or short term now, or undefined.
+ * Only an open, unwalked shell renewal with an offer, in Act V's Plan phase, once.
+ */
+export function lockTermBlocker(state: GameState, projectId: string, term: string): Message | undefined {
+  if (!inActV(state)) return { key: 'error.lock_term_act5' }
+  if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
+  const r = openRenewal(state, projectId)
+  if (!r || r.kind !== 'shell' || !r.offer) return { key: 'error.no_tenant_renewal' }
+  if (r.walked) return { key: 'error.renewal_walked' }
+  if (r.lockTerm) return { key: 'error.renewal_chosen' }
+  if (term !== 'long' && term !== 'short') return { key: 'error.bad_choice' }
+}
+
+/** Takes the term (and accepts the offer): long at today's rate for 9 years, or short for 2, back at market after. */
+export function chooseLockTerm(state: GameState, projectId: string, term: 'long' | 'short'): void {
+  const r = openRenewal(state, projectId)!
+  r.lockTerm = term
+  r.choice = 'accept'
+  logAct5Move(state, term === 'long' ? 'renew_long' : 'renew_short')
 }
 
 /**
@@ -286,7 +309,9 @@ export function resolveRenewals(state: GameState): void {
       t.gpu.termQuarters = r.offer.termQuarters
     } else {
       t.priceMult = ((t.priceMult ?? 1) / haircut) * mult
-      t.termQuarters = r.offer.termQuarters
+      // (M57.1: Act V's lock or roll sets the term; without a choice, the offered term, as before)
+      const L = BALANCE.act5.lockOrRoll
+      t.termQuarters = r.lockTerm ? (r.lockTerm === 'long' ? L.longYears : L.shortYears) * 4 : r.offer.termQuarters
     }
     t.servedQuarters = 0
     t.signedQuarter = state.quarter

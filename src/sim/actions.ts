@@ -133,6 +133,7 @@ import {
 } from './systems/plants.ts'
 import { commitFollowOn, followOnBlocker, stakeMarkUsd } from './systems/ventures.ts'
 import { decideEol, eolBlocker, settleEol } from './systems/orbitEol.ts'
+import { chooseExit, exitBlocker } from './systems/act5Exit.ts'
 import {
   acceleratorCallBlocker,
   acceleratorJoinBlocker,
@@ -198,6 +199,8 @@ import {
 } from './systems/moonOps.ts'
 import {
   chooseRenewal,
+  chooseLockTerm,
+  lockTermBlocker,
   keepEmpty,
   keepEmptyBlocker,
   playerReopen,
@@ -473,6 +476,10 @@ export type Action =
   | { type: 'SELL_PLANT_STAKE'; ventureId: string; share: number }
   /** Act V (M52.4): sell `share` (≤ 0.8) of an operating plant's merchant output forward (1 BW). */
   | { type: 'CONTRACT_PLANT_OUTPUT'; ventureId: string; share: number }
+  /** Act V (M57.1, doc 43 §0.2): lock or roll a shell renewal (accepts the offer at a long or a short term). */
+  | { type: 'RENEWAL_TERM'; projectId: string; term: 'long' | 'short' }
+  /** Act V (M57.1, doc 43 §15.2): the founder's exit in 2040Q3-Q4: sell the company, sell the plants, or hold. */
+  | { type: 'EXIT_CHOOSE'; choice: 'sell_company' | 'sell_plants' | 'hold' }
   /** Act V (M56.3, doc 43 §9.1): an orbital block at its design end: replace, extend a year, bring home, or retire. */
   | { type: 'ORBIT_EOL'; blockId: string; choice: 'replace' | 'extend' | 'bring_home' | 'retire' }
   /** Act V (M53): the queue: pay a position's upgrade bill, withdraw it, take V2's fast lane (1 BW each). */
@@ -944,6 +951,20 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sellSitePowerBlocker(s, a.siteId)
       if (blocked) return blocked
       sellSitePower(s, a.siteId)
+      return
+    }
+
+    case 'RENEWAL_TERM': {
+      const blocked = lockTermBlocker(s, a.projectId, a.term)
+      if (blocked) return blocked
+      chooseLockTerm(s, a.projectId, a.term)
+      return
+    }
+
+    case 'EXIT_CHOOSE': {
+      const blocked = exitBlocker(s, a.choice)
+      if (blocked) return blocked
+      chooseExit(s, a.choice)
       return
     }
 

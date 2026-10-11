@@ -837,5 +837,7 @@ export const BALANCE = {
      * reversible: no refit cost is in the files); one extension per block (mine).
      */
     orbitExtend: { quarters: 4, failureMult: 1.5 },
+    /** Lock or roll (M57.1; doc 43 §0.2): at a shell renewal, long = 8-10 years (9: mine, the middle), short = 2 years. */
+    lockOrRoll: { longYears: 9, shortYears: 2 },
   },
 } as const

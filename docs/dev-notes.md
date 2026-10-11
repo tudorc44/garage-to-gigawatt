@@ -404,6 +404,11 @@ README). `check.py` PASS.
     extend (once; refit = a year's in-orbit insurance on capex: mine; failures ×1.5), bring home (contracted shells only, to the site with
     most free MW, rent to term: mine), retire (default). Neutral card text (the per-future bodies aren't shown: leak caution). 1,733 tests.
   - **Sims:** Act V only; goldens byte-identical. The rest of events_v.json's cards (incl. the triggers' cards) isn't wired: open question.
+- **Step C (M57, branch `m57` on `m56`): §19 item 7.** Split: **1** lock or roll + the exit · **2** scoring, chapter report, the 2040
+  finale · **3** bots, `--act5` sims, goldens act5-v1..v4 · **4** the §18 table and the balance pass. One chunk each.
+  - **1** done: RENEWAL_TERM (shell renewals: long 9 y −1, short 2 y +1; mine: 9 = the middle of 8-10; GPU contracts keep the offered
+    term); BLEND_ACCEPT logs −1; `act5Exit.ts` (bid drawn 2040Q3; sell / sell plants / hold; net worth after the exit in act5End;
+    the hidden part read only there); the Plan screen's exit panel. Mine: a sale settles on the 2040Q4 valuation. 1,739 tests.
 
 ### Morning report (second run, 12 Oct 2026)
 
