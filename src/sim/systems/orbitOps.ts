@@ -23,6 +23,7 @@ import {
 import { insuranceQuote, insuredNow, settleOrbitLoss } from './orbitLaunch.ts'
 import { repayFromProceeds } from './orbitCapital.ts'
 import { staffEffect, staffNumber } from './hires.ts'
+import { extendedFailureMult } from './orbitEol.ts'
 
 const SAT = ORBIT.satellites
 const DEB = ORBIT.shells.debris
@@ -253,7 +254,8 @@ export function endQuarterOrbit(state: GameState): void {
     const r = substream(act4SeedOf(state), `orbit_ops:${b.id}:${state.quarter}`)
     // (M31.4: the Space Operations Chief cuts failures 25% and halves the telemetry's noise)
     const chief = staffEffect(state, 'orbit_failure_mult') !== undefined
-    const failureShareYr = truth.failureShareYr * staffNumber(state, 'orbit_failure_mult', 1)
+    // (M56.3: an extended block's extra year fails × 1.5; × 1 otherwise)
+    const failureShareYr = truth.failureShareYr * staffNumber(state, 'orbit_failure_mult', 1) * extendedFailureMult(b)
     const sd = TELEMETRY.noiseSdPctPoints * Math.sqrt(10 / b.mw) * (chief ? TELEMETRY.spaceOpsNoiseMult : 1)
     b.telemetry.push({
       quarter: state.quarter,

@@ -69,7 +69,9 @@ export const orbitBlock = (state: GameState, id: string): OrbitalBlock | undefin
 export function generationTMw(state: GameState, gen: GenerationId, quarter = state.quarter): number | null {
   const g = SAT.generations.find((x) => x.id === gen)!
   if (g.t_mw !== null) return g.t_mw
-  return orbitRow(state, quarter)[g.market_column!] ?? null
+  // (M56.3: gen38's column exists only in Act V's rows; an Act IV row has none, so it's unavailable there)
+  const v = (orbitRow(state, quarter) as unknown as Record<string, number | null | undefined>)[g.market_column!]
+  return v ?? null
 }
 
 /** The generations you can open a block with now. */

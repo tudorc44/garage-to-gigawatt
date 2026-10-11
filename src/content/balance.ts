@@ -831,5 +831,11 @@ export const BALANCE = {
      * a tail of U(400, 600) $/kW (doc 45 §Q3 [A]). The study names it the quarter after the request (mine, reversible).
      */
     queueBill: { spread: [0.6, 1.4], tailChance: 0.2, tailUsdKw: [400, 600], studyQuarters: 1 },
+    /**
+     * Orbit's replacement cycle (M56.3; doc 43 §9.1): extending a block by a year raises its failures 50% (doc 43 ⚙); the
+     * refit costs a year of in-orbit insurance on the block's capex (the market's `insurance_rate_inorbit_pct`; mine,
+     * reversible: no refit cost is in the files); one extension per block (mine).
+     */
+    orbitExtend: { quarters: 4, failureMult: 1.5 },
   },
 } as const

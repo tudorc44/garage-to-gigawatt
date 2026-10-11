@@ -13,7 +13,10 @@ export const PROVIDER_IDS = ['pallas', 'northgate', 'kestrel', 'sovereign'] as c
 export type ProviderId = (typeof PROVIDER_IDS)[number]
 export const SHELL_IDS = ['sso', 'high_leo', 'high_orbit'] as const
 export type ShellId = (typeof SHELL_IDS)[number]
-export const GENERATION_IDS = ['gen31', 'gen33', 'gen35'] as const
+/** The generations in satellites_iv.json. */
+const FILE_GENERATION_IDS = ['gen31', 'gen33', 'gen35'] as const
+/** M56.3 (doc 43 §9.1): and Act V's replacement generation, gen38, priced by its market column (blank before 2038Q4). */
+export const GENERATION_IDS = ['gen31', 'gen33', 'gen35', 'gen38'] as const
 export type GenerationId = (typeof GENERATION_IDS)[number]
 export const ORBITAL_TENANT_IDS = ['sovereign', 'frontier_lab', 'inference_platform', 'eo_processor'] as const
 export type OrbitalTenantId = (typeof ORBITAL_TENANT_IDS)[number]
@@ -49,14 +52,14 @@ const satellitesSchema = z.object({
   generations: z
     .array(
       z.object({
-        id: z.enum(GENERATION_IDS),
+        id: z.enum(FILE_GENERATION_IDS),
         from: quarterId,
         t_mw: z.number().positive().nullable(),
         market_column: z.enum(['gen33_t_mw', 'gen35_t_mw']).nullable(),
         note: z.string(),
       }),
     )
-    .length(GENERATION_IDS.length),
+    .length(FILE_GENERATION_IDS.length),
   gpus: z.object({ usd_per_mw: z.number().positive(), spares_share: share, gpus_per_mw: z.number().positive() }),
   build_quarters: z.number().int().min(1),
   ops_usd_mw_yr: z.number().nonnegative(),
@@ -164,10 +167,33 @@ const tenantsSchema = z.object({
   }),
 })
 
+const satellitesFile = satellitesSchema.parse(satellitesRaw)
+/** A generation as the systems read it (the file's, or gen38 from Act V's market column). */
+export interface SatelliteGeneration {
+  id: GenerationId
+  from: string
+  t_mw: number | null
+  market_column: 'gen33_t_mw' | 'gen35_t_mw' | 'gen38_t_mw' | null
+  note: string
+}
+
 /** The orbit content, checked. */
 export const ORBIT = {
   launch: providersSchema.parse(providersRaw),
-  satellites: satellitesSchema.parse(satellitesRaw),
+  satellites: {
+    ...satellitesFile,
+    // M56.3 (doc 43 §9.1; doc 47's `gen38_t_mw`): the replacement generation, available where its column has a value
+    generations: [
+      ...satellitesFile.generations,
+      {
+        id: 'gen38',
+        from: '2036Q1',
+        t_mw: null,
+        market_column: 'gen38_t_mw',
+        note: "Act V's replacement generation; tonnes per MW from the Act V market file (from 2038Q4).",
+      },
+    ] as SatelliteGeneration[],
+  },
   shells: shellsSchema.parse(shellsRaw),
   insurance: insuranceSchema.parse(insuranceRaw),
   licences: licencesSchema.parse(licencesRaw),

@@ -14,6 +14,7 @@ import {
   type OrbitBoardView,
 } from '../../sim/orbitViews.ts'
 import { orreryAuctionView, siteFacts } from '../../sim/selectors.ts'
+import { eolView } from '../../sim/systems/orbitEol.ts'
 import { Pips } from '../components/basics.tsx'
 import { SitePicker, type PickRow } from '../components/sitePicker.tsx'
 import { SiteActionConfirm } from '../components/siteActionConfirm.tsx'
@@ -95,6 +96,38 @@ export function OrbitExposurePanel({ state }: ScreenProps) {
 
 // ---------- A4-03: the Orbit board ----------
 
+/**
+ * Act V (M56.3; doc 43 §9.1, the "A Block Reaches Its End" card): each block at its design end, with the four choices
+ * (the default, retire, applies when the Plan phase ends).
+ */
+function EolPanel({ state, act }: ScreenProps) {
+  const rows = eolView(state)
+  if (rows.length === 0 || state.phase !== 'plan') return null
+  return (
+    <div class="panel p" data-orbit-eol>
+      <h3 class="panel-title">{t('ui.orbit.eol.title')}</h3>
+      <p class="num-s muted">{t('ui.orbit.eol.body')}</p>
+      {rows.map((r) => (
+        <div key={r.id} class="energy-choice-row" data-eol={r.id}>
+          <span class="num-s">{t('ui.orbit.eol.block', { n: r.n, mw: fmt.power(r.mw * 1000) })}</span>
+          {r.choices.map((c) => (
+            <button
+              key={c.choice}
+              type="button"
+              class="btn"
+              disabled={!!c.blocked}
+              title={c.blocked ? say(c.blocked) : undefined}
+              onClick={() => act({ type: 'ORBIT_EOL', blockId: r.id, choice: c.choice })}
+            >
+              {t(`ui.orbit.eol.${c.choice}`, { refit: fmt.money(r.refitUsd), gen: t(`ui.orbit.gen.${r.newGen}`) })}
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export function OrbitSection({ state, act }: ScreenProps) {
   const v = orbitBoardView(state)
   if (!v) return null
@@ -113,6 +146,8 @@ export function OrbitSection({ state, act }: ScreenProps) {
         <OpenBlockForm v={v} act={act} state={state} />
       </div>
       {v.exposures.length > 0 && <OrbitExposurePanel state={state} act={act} />}
+      {/* (M56.3: Act V's end-of-life decisions) */}
+      <EolPanel state={state} act={act} />
       <OrreryAuction state={state} act={act} />
       {[...v.underway, ...v.live].map((b) => (
         <BlockCard key={b.id} b={b} act={act} />

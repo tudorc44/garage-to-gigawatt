@@ -400,6 +400,10 @@ README). `check.py` PASS.
   - **2** done: `wildcardsV.ts`, 2 of 5 drawn at the boundary. Mine: Q-Day = mining revenue and the treasury mark ×0.6 (coin sales
     still at the market price), then a week down and $250K; fusion = the lasting EV multiplier ×1.1 then ×0.95; dry year on pumped
     storage; moratorium blocks grid projects ≥ 50 MW in its region; transformer delay on grid requests. 1,728 tests.
+  - **3** done: `orbitEol.ts`: at a block's public design end, replace (new block, newest gen: gen38 from 2038Q4 via its market column),
+    extend (once; refit = a year's in-orbit insurance on capex: mine; failures ×1.5), bring home (contracted shells only, to the site with
+    most free MW, rent to term: mine), retire (default). Neutral card text (the per-future bodies aren't shown: leak caution). 1,733 tests.
+  - **Sims:** Act V only; goldens byte-identical. The rest of events_v.json's cards (incl. the triggers' cards) isn't wired: open question.
 
 ### Morning report (second run, 12 Oct 2026)
 
