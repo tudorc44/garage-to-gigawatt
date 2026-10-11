@@ -454,6 +454,14 @@ README). `check.py` PASS.
   - **2-3** done: re-measure (0 unreconciled): core V-B2, B4, B11 pass, V-B1 misses on FB (orbit never within 10%); V-B3's lever
     (V2 flex rating 0.5 → 0.75) moves it 1.030 → 1.032 only; full after-run below. 1,776 tests. PR #28.
 
+## M62: the Act V screens (doc 43 §0.18 and §17; branch `m62` from `main`)
+
+- **Done as one chunk:** the Orbit tab under Act IV's rules (Moon stays Act IV); the lunar holding panel and SELL_LUNAR_HOLDING (bloc
+  × 0.5, 1 BW, move 0); A5-02 dashboard (four-column MW strip, plants and queue at a glance), A5-03 (plants: output, CF), A5-06 (plants
+  panel and lunar holding in Capital), A5-07 (report panel), the queue's request hint; Act I-II rounds, loans and auctions hidden in
+  Act V; the header shows act5Entry until Act V's first report (the $7.1B was the 2035Q4 report's Act IV mark); Act V block sales and
+  the Orbit board on the remaining-life multiple; a reachability test. 1,784 tests; main bundle 244.8 KB (was 231.3). PR #30.
+
 ### Report (fifth run, 13 Oct 2026)
 
 **Steps:** A done (§0.16 as M60.0) · B done (M60, #27, merged) · C done (M61, #28, merged; this report on `m61-report`). §0.17 (mid-run

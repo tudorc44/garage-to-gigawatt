@@ -343,6 +343,9 @@ export function plantsView(state: GameState) {
         stake: v.stake,
         region: plantRegion(state, v),
         mwh: q.mwh,
+        // (M62.3, A5-03: the plant's MW and this quarter's capacity factor)
+        mw: v.mw,
+        cf: v.mw > 0 ? q.mwh / (v.mw * HOURS_Q) : 0,
         ebitdaUsd: q.ebitdaUsd,
         stakeEbitdaUsd: v.stake * q.ebitdaUsd,
         contractedShare: q.contractedShare,

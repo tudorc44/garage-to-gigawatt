@@ -353,10 +353,18 @@ export function blockPricingEbitdaUsd(state: GameState, b: OrbitalBlock): number
 
 /** What a buyer pays for a live block now: its run-rate EBITDA × the space multiple, at a quick sale's discount. */
 export function blockSaleUsd(state: GameState, b: OrbitalBlock): number {
-  return Math.max(
-    0,
-    blockPricingEbitdaUsd(state, b) * 4 * orbitRow(state).space_ev_ebitda_mult * SAT.sale_share_of_value,
-  )
+  return Math.max(0, blockPricingEbitdaUsd(state, b) * 4 * blockMultiple(state, b) * SAT.sale_share_of_value)
+}
+
+/**
+ * A block's multiple: the file's space multiple; in Act V at most its remaining design life in years (doc 43 §0.16 item
+ * 1, applied to a sale in M62 so a block sells on the footing it's valued on).
+ */
+export function blockMultiple(state: GameState, b: OrbitalBlock): number {
+  const m = orbitRow(state).space_ev_ebitda_mult
+  if (state.act !== 5 || b.liveQuarter === null) return m
+  const end = b.liveQuarter + Math.round(SAT.design_life_years * 4) + (b.extendedQuarters ?? 0)
+  return Math.min(m, Math.max(0, (end - state.quarter) / 4))
 }
 
 export function sellOrbitalBlockBlocker(state: GameState, blockId: string): Message | undefined {

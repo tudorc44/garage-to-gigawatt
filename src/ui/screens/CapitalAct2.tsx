@@ -8,6 +8,7 @@ import {
   backlogView,
   debtStackView,
   equityView,
+  headerValuationUsd,
   ratingView,
   valuationBreakdown,
 } from '../../sim/selectors.ts'
@@ -20,6 +21,8 @@ import { fmt } from '../format.ts'
 import { say } from '../names.ts'
 import { LoanDialog } from './dialogs.tsx'
 import type { ScreenProps } from './Plan.tsx'
+import { LunarHoldingPanel } from './Act5Screens.tsx'
+import { PlantsPanel } from './Ventures.tsx'
 import { BwButton } from './Projects.tsx'
 import { Term } from '../components/term.tsx'
 
@@ -37,6 +40,9 @@ export function CapitalAct2({ state, act }: ScreenProps) {
       {state.act >= 3 && <Act3Panel name="StandbyPanel" state={state} act={act} />}
       {/* Act IV (M31.6, A4-09): the space-equity window, orbital loans, insurance, lunar funding */}
       {state.act === 4 && <Act4Panel name="Act4CapitalPanel" state={state} act={act} />}
+      {/* Act V (M62.3, A5-06 and doc 43 §9.2): plant capital (debt, fund sales, output contracts) and the lunar holding */}
+      {state.act === 5 && <PlantsPanel state={state} run={(a) => act(a)} />}
+      {state.act === 5 && <LunarHoldingPanel state={state} act={act} />}
       <Backlog state={state} />
       <Valuation state={state} />
       <Equity state={state} act={act} />
@@ -397,6 +403,17 @@ function Valuation({ state }: { state: ScreenProps['state'] }) {
               <strong>{fmt.money(v.valuationUsd)}</strong>
             </td>
           </tr>
+          {/* (M62.5: at Act V's start, the entry valuation the header shows: after the 2036Q1 revaluations) */}
+          {state.act === 5 && state.act5Entry && headerValuationUsd(state) === state.act5Entry.valuationUsd && (
+            <tr data-act5-entry-row>
+              <td>
+                <strong>{t('ui.cap2.val.act5_entry')}</strong>
+              </td>
+              <td class="num r">
+                <strong>{fmt.money(state.act5Entry.valuationUsd)}</strong>
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
     </section>

@@ -1,6 +1,7 @@
 // Read-only views of Act IV's orbit for the UI (M29.5; doc 33 §17: A4-03 Orbit board, A4-04 Launch manifest, A4-05 the
 // block's deal card, A4-08 Licences and registries, A4-02's exposure warnings). No game rules here: every number comes
 // from systems/orbit*.ts. Nothing here reads the hidden reliability: a block shows its design life and its telemetry.
+import { orbitUnitMultiple } from './systems/orbitEol.ts'
 import { CONTENT, actLastQuarter } from '../content/index.ts'
 import {
   GENERATION_IDS,
@@ -54,7 +55,6 @@ import {
   linkShares,
   linkUnitsNeeded,
   sellOrbitalBlockBlocker,
-  spaceMultiple,
 } from './systems/orbitOps.ts'
 
 /** Why an orbit action can't be taken now (its blocker, read-only: no copy of the state per button). */
@@ -384,7 +384,8 @@ export function orbitBoardView(state: GameState) {
     },
     exposures: blocks.filter((b) => b.exposure?.warn),
     equityUsd: equityUsd(state),
-    spaceMultiple: spaceMultiple(state),
+    // (M62: in Act V the blocks' remaining-life multiple, doc 43 §0.16 item 1; the space multiple before)
+    spaceMultiple: orbitUnitMultiple(state),
     hardMarketUntil: label(o?.hardMarketUntil ?? null),
     providers: PROVIDER_IDS.map((id: ProviderId) => id),
   }

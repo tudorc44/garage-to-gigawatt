@@ -77,6 +77,7 @@ import {
 } from './planPickers.tsx'
 import { fmt } from '../format.ts'
 import { ExitPanel } from './Act5Exit.tsx'
+import { Act5Dashboard } from './Act5Screens.tsx'
 import {
   flawName,
   headlines,
@@ -196,7 +197,8 @@ export function PlanScreen({ state, act }: ScreenProps) {
     <div class="screen">
       <Shell state={state}>
         <main class="main">
-          {inAct2Rules(state) && <MwPanel state={state} />}
+          {/* (M62.3, A5-02: Act V's four-column strip with plants and the queue at a glance replaces Act IV's) */}
+          {state.act === 5 ? <Act5Dashboard state={state} /> : inAct2Rules(state) && <MwPanel state={state} />}
           {inActIII(state) && (
             <Act3Panel name="WildcardPanel" state={state} act={act} />
           )}
@@ -205,8 +207,8 @@ export function PlanScreen({ state, act }: ScreenProps) {
           {inAct3Rules(state) && (
             <Act3Panel name="RenewalsDuePanel" state={state} act={act} />
           )}
-          {/* Act IV (M29.5, A4-02): launches riding on too much uninsured value */}
-          {state.act === 4 && (
+          {/* Act IV (M29.5, A4-02): launches riding on too much uninsured value (and in Act V: M62.1) */}
+          {state.act >= 4 && (
             <Act4Panel name="OrbitExposurePanel" state={state} act={act} />
           )}
           {/* (M30.5) lunar disputes waiting for an answer */}
@@ -1009,6 +1011,8 @@ function TodoPanel({
     )
   }
 
+  // Act I-II actions that can never unlock in Act V (M62.4): hidden there
+  const neverHere = state.act === 5
   return (
     <div class="panel p" style={{ gap: 0 }}>
       {state.act === 1 && <Tip id="todo" act={1} />}
@@ -1020,7 +1024,7 @@ function TodoPanel({
       </div>
 
       <div class="label group">{t('ui.plan.group.operations')}</div>
-      {state.auction && <AuctionRow state={state} act={act} open={open} />}
+      {state.auction && !neverHere && <AuctionRow state={state} act={act} open={open} />}
       <ActionRow
         icon="buy"
         name={t('ui.plan.buy_machines')}
@@ -1239,13 +1243,18 @@ function TodoPanel({
       <div class="label group">{t('ui.plan.group.capital')}</div>
       <BridgePayment state={state} />
       <Runway state={state} />
-      <RaiseRow state={state} act={act} open={open} round="friends_family" />
-      <EquipmentLoanRow state={state} act={act} open={open} />
-      <ConstructionLoanRow state={state} act={act} />
-      <CryptoLoanRow state={state} act={act} open={open} />
-      <RaiseRow state={state} act={act} open={open} round="seed" />
-      <RaiseRow state={state} act={act} open={open} round="series_a" />
-      <RaiseRow state={state} act={act} open={open} round="ipo_spac" />
+      {/* (M62.4, doc 43 §0.18: in Act V the Act I-II rounds and loans can never unlock: hidden, not struck through) */}
+      {!neverHere && (
+        <>
+          <RaiseRow state={state} act={act} open={open} round="friends_family" />
+          <EquipmentLoanRow state={state} act={act} open={open} />
+          <ConstructionLoanRow state={state} act={act} />
+          <CryptoLoanRow state={state} act={act} open={open} />
+          <RaiseRow state={state} act={act} open={open} round="seed" />
+          <RaiseRow state={state} act={act} open={open} round="series_a" />
+          <RaiseRow state={state} act={act} open={open} round="ipo_spac" />
+        </>
+      )}
 
       <div class="label group">{t('ui.plan.group.people')}</div>
       <ActionRow
@@ -1271,7 +1280,7 @@ function TodoPanel({
       <div class="label group">{t('ui.plan.group.intel')}</div>
       {/* Act III reads the market through Signals instead (M13.2). */}
       {!inAct3Rules(state) && <ReadMarketRow state={state} act={act} />}
-      {!state.auction && <AuctionRow state={state} act={act} open={open} />}
+      {!state.auction && !neverHere && <AuctionRow state={state} act={act} open={open} />}
     </div>
   )
 }

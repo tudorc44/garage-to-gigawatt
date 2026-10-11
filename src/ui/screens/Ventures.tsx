@@ -204,7 +204,7 @@ function AcceleratorCard(props: { state: GameState; run: (a: Action) => void }) 
  * Act V's plants (M52, doc 43 §7, §11, §14.1): each running plant you hold a stake in, what it earns and what your
  * stake is worth, with its three actions (plant debt, a fund sale, an output contract); then the developers' next units.
  */
-function PlantsPanel(props: { state: GameState; run: (a: Action) => void }) {
+export function PlantsPanel(props: { state: GameState; run: (a: Action) => void }) {
   const plants = plantsView(props.state)
   const followOns = followOnOffers(props.state)
   const plan = props.state.phase === 'plan'
@@ -219,6 +219,8 @@ function PlantsPanel(props: { state: GameState; run: (a: Action) => void }) {
             <span class="num-s">{t('ui.plants.value', { value: fmt.money(p.stakeValueUsd), stake: pct(p.stake) })}</span>
           </div>
           <p class="num-s" style={{ margin: 0 }}>
+            {/* (M62.3, A5-03: the plant's output and capacity factor this quarter) */}
+            {t('ui.plants.output', { mwh: Math.round(p.mwh).toLocaleString('en-US'), cf: `${Math.round(p.cf * 100)}%`, mw: fmt.power(p.mw * 1000) })}{' '}
             {t('ui.plants.line', {
               ebitda: fmt.money(p.stakeEbitdaUsd),
               contracted: pct(p.contractedShare),

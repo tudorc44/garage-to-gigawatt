@@ -1,6 +1,7 @@
 // Player decisions as plain action objects. applyAction checks an action against the
 // rules and returns either the new state or an error message (the old state is untouched).
 import { enrolBlocker, enrolFlexible } from './systems/flex.ts'
+import { sellLunarBlocker, sellLunarHolding } from './systems/lunarHolding.ts'
 import { act5CardPickBlocker, pickAct5Card } from './systems/act5Cards.ts'
 import {
   BALANCE,
@@ -494,6 +495,8 @@ export type Action =
   | { type: 'SELL_SITE'; siteId: string }
   /** Act V (M58.3, doc 43 §0.15 fix 3): enrol a site's running load as curtailable (1 BW; every future). */
   | { type: 'ENROL_FLEXIBLE'; siteId: string }
+  /** Act V (M62.2, doc 43 §9.2): sell the lunar holding to a bloc at half its value (1 BW). */
+  | { type: 'SELL_LUNAR_HOLDING' }
   /** Act V (M60.7, doc 43 §0.16 (c)): on a card with a fund's or a buyer's bid, the stake or site to sell (0 BW). */
   | { type: 'ACT5_CARD_PICK'; target: string }
   /** M54 (doc 43 §0.12): the accelerator venture: buy a stake, reserve chips, answer a call, vote on a buyer. */
@@ -993,6 +996,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sellSiteBlocker(s, a.siteId)
       if (blocked) return blocked
       sellWholeSite(s, a.siteId)
+      return
+    }
+
+    case 'SELL_LUNAR_HOLDING': {
+      const blocked = sellLunarBlocker(s)
+      if (blocked) return blocked
+      sellLunarHolding(s)
       return
     }
 

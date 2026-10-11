@@ -21,14 +21,14 @@ import {
   actTurn,
   bandwidthTotal,
   currentMarket,
-  lastReport,
+  headerValuationUsd,
   priceChanges,
   quarterName,
   treasuryValue,
   ratingBacklogView,
   topHeat,
 } from '../../sim/selectors.ts'
-import { inAct2Rules, inAct3Rules, type GameState } from '../../sim/state.ts'
+import { inAct2Rules, inAct3Rules, inAct4Rules, type GameState } from '../../sim/state.ts'
 import { fmt } from '../format.ts'
 import { siteName } from '../names.ts'
 import { Icon, Pips } from './basics.tsx'
@@ -56,7 +56,7 @@ export function TopBar(props: { state: GameState; paused?: boolean }) {
     s.treasury.BTC > 0 ? fmt.crypto(s.treasury.BTC, 'BTC') : null,
     s.treasury.ETH > 0 ? fmt.crypto(s.treasury.ETH, 'ETH') : null,
   ].filter(Boolean)
-  const valuation = lastReport(s)?.valuationUsd
+  const valuation = headerValuationUsd(s)
   const heat = topHeat(s)
   const total = bandwidthTotal(s)
   const act2 = act2MarketView(s)
@@ -221,11 +221,13 @@ const NAV: {
   act3?: boolean
   /** Only in Act IV. */
   act4?: boolean
+  /** Under Act IV's rules (Acts IV and V: M62.1, doc 43 §0.18: the Orbit board carries into Act V; the Moon doesn't). */
+  act4Rules?: boolean
 }[] = [
   { id: 'dashboard', icon: 'dashboard', key: 'ui.nav.dashboard' },
   { id: 'projects', icon: 'power', key: 'ui.nav.projects', act2: true },
   // Act IV (M29.5, A4-03): the Orbit board.
-  { id: 'orbit', icon: 'orbit', key: 'ui.nav.orbit', act4: true },
+  { id: 'orbit', icon: 'orbit', key: 'ui.nav.orbit', act4Rules: true },
   // (M30.5, A4-06): the Moon.
   { id: 'moon', icon: 'moon', key: 'ui.nav.moon', act4: true },
   // Act III (M13.2, A3-04): every tenant contract by end quarter.
@@ -262,7 +264,8 @@ export function Nav(props: { seed: number; plan: boolean; act: number }) {
         (item) =>
           (!item.act2 || inAct2Rules({ act: props.act as GameState['act'] })) &&
           (!item.act3 || inAct3Rules({ act: props.act as GameState['act'] })) &&
-          (!item.act4 || props.act === 4),
+          (!item.act4 || props.act === 4) &&
+          (!item.act4Rules || inAct4Rules({ act: props.act as GameState['act'] })),
       ).map((item) => (
         <button
           key={item.key}

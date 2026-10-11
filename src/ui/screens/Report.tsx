@@ -39,6 +39,7 @@ import { Finances } from '../components/financesLazy.tsx'
 import { useState } from 'preact/hooks'
 import { rivalCode, rivalName, say, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
+import { Act5ReportPanel } from './Act5Screens.tsx'
 
 /** The coin that earned more this quarter (for "cost per coin"). */
 function mainCoin(r: QuarterReport, state: GameState): Coin | null {
@@ -222,7 +223,10 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
         <Act2Panel state={state} />
         {state.act >= 3 && <Act3Panel name="Act3ReportBlock" state={state} />}
         {/* Act IV (M31.6, A4-10): orbit and Moon this quarter */}
-        {state.act === 4 && <Act4Panel name="Act4ReportPanel" state={state} />}
+        {/* (M62.1: orbit carries into Act V; the Moon is a holding there) */}
+        {state.act >= 4 && <Act4Panel name="Act4ReportPanel" state={state} />}
+        {/* Act V (M62.3, A5-07): plants and the queue this quarter */}
+        {state.act === 5 && <Act5ReportPanel state={state} />}
 
         <div class="report-grid">
           <CostChart state={state} coin={coin} />
@@ -254,7 +258,9 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
                 ? t(
                     state.act === 1
                       ? 'ui.report.finish'
-                      : state.act === 4
+                      : state.act === 5
+                        ? 'ui.report.finish_act5'
+                        : state.act === 4
                         ? 'ui.report.finish_act4'
                         : state.act === 3
                           ? 'ui.report.finish_act3'
@@ -611,7 +617,9 @@ function Act2Panel({ state }: { state: GameState }) {
     <div class="panel p a2-report">
       <h2 class="panel-title">
         {t(
-          state.act === 4
+          state.act === 5
+            ? 'ui.report.a5_title'
+            : state.act === 4
             ? 'ui.report.a4_title'
             : state.act === 3
               ? 'ui.report.a3_title'

@@ -136,7 +136,7 @@ export function OrbitSection({ state, act }: ScreenProps) {
       <div class="panel p">
         <h2 class="panel-title">{t('ui.orbit.title')}</h2>
         <p class="num-s muted">
-          {t('ui.orbit.lead', {
+          {t(state.act === 5 ? 'ui.orbit.lead_act5' : 'ui.orbit.lead', {
             live: v.live.length,
             underway: v.underway.length,
             mult: v.spaceMultiple.toFixed(1),
