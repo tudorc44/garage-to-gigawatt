@@ -357,6 +357,19 @@ README). `check.py` PASS.
 - **Step C (M51, branch `m51` on `m50`): §19 item 3.** Signals (`signals_v_v1..v4` runtime view, `READ_SIGNAL_V`, the shared panel),
   `signalsHiddenV.ts` + `readingScoreV.ts` read only by `act5End.ts` (the reveal, `Act5Reveal.tsx`), the move log `act5Moves.ts`
   (kinds only; signs from the hidden file), M40.1/M41.1/low-exposure rules, leak and grep tests. `rivals_v.json` stays frozen (not cheap: item 6).
+- **Step D (M52, branch `m52` on `m51`): plants.** Split: **1** scarcity repricing (§0.2, §0.7, §0.9 item 2) · **2** plant operations and
+  valuation · **3** plant debt and its covenants · **4** fund sales and contracted output · **5** the V2 flex payment · **6** follow-on
+  units. Chunks: 1 · 2-4 · 5 · 6. Act V only: Acts I-IV and their goldens unchanged.
+  - **1** done: `scarcity.ts`; rents (RFP, renewal bands, GPU renewal indices, GPU contracts) × s; the AI multiple and spot rents ×
+    (1 + 0.5(s − 1)); the market panel shows them repriced, the old demand index × s (mine, reversible). 1,683 tests.
+  - **2-4** done: `plants.ts` (operations, stake × EBITDA × 4 × plant multiple, distributions outside EBITDA, plant debt with lock-up /
+    restructure / lenders take, fund sales × `infra_bid_index`, output contracts) and `plantsContent.ts`. Mine: developer contracts at the
+    base multiple (term not in files), 15-year contracted debt, 12-year output contracts, a plant's region = its campus's. 1,693 tests.
+  - **5** done: `flex.ts`, V2's flex payment on enrolled curtailable MW (`site.flexKw`, set by step E's fast lane, plus Texas DR sites'
+    curtailable MW: mine) as a grid credit. No carried load qualifies on its own, so it pays only once step E enrols load. 1,694 tests.
+  - **6** done: follow-on units (EGS at $4,000/kW, 7 q; SMR unit 2 at 0.85 × unit 1's realised cost, with unit 1's licence and build:
+    mine), one per class, 2 BW, +1; the Ventures page's "Your plants" panel (the four actions); browser-checked at 1280 px. 1,697 tests.
+  - **Sims:** M52 changes Act V only; the goldens (Acts I-IV byte-identical) cover it; no Act V sim runner exists yet.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

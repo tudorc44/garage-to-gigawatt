@@ -25,6 +25,8 @@ import { buildAct4End } from './act4End.ts'
 import { buildAct5End } from './act5End.ts'
 import { lunarHoldingUsd, poweredUsd } from './act5Entry.ts'
 import { recordAct5Exposure } from './act5Moves.ts'
+import { endQuarterPlants } from './plants.ts'
+import { payFlex } from './flex.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { serviceOrbitalDebt } from './orbitCapital.ts'
@@ -102,7 +104,11 @@ export function endQuarter(state: GameState): void {
   // ventures move on, and those at operation deliver to your campus (their PPA saving is energy revenue).
   const energy = endQuarterEnergy(state, quarterInputs(state.quarter, scenarioOf(state))?.pjmCapacityUsdMwDay)
   energy.revenueUsd += endQuarterVentures(state).revenueUsd
+  // Act V (M52.5): V2's flex payment on enrolled curtailable MW (nothing elsewhere)
+  if (inActV(state)) energy.revenueUsd += payFlex(state)
   bookEnergy(state, energy)
+  // Act V (M52.2): operating plants pay your share of their cash after their debt's service (outside EBITDA).
+  endQuarterPlants(state)
   endQuarterSpecialSites(state)
   // Act III (M12.2): the renewals opened this quarter are settled (the new terms start next quarter).
   resolveRenewals(state)

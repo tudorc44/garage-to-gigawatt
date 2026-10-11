@@ -20,6 +20,7 @@ import {
 } from '../../content/index.ts'
 import { scenarioOf } from './market.ts'
 import { rfpMid } from './leaseIndex.ts'
+import { scarcityMultipleFactor, scarcityRentFactor } from './scarcity.ts'
 import { book, bookSplit, type Category, type LedgerRef } from '../ledger.ts'
 import { siteParams } from './siteSerials.ts'
 import { startLenderCure } from './facilities.ts'
@@ -153,17 +154,21 @@ export function neocloudUsdHr(
   quarter: number,
   scenario?: MarketKey | null,
 ): number | undefined {
-  if (gpu === 'gen2037') return gen2037Row(quarter, scenario)?.gen2037_neocloud_usd_hr ?? undefined
-  return heldBack(
-    quarter,
-    (q) =>
-      gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
-        ? q.gpuRentalUsdHr[gpu].neocloud
-        : isRubin(gpu)
-          ? rubinRent(q.act3?.gpuRentalUsdHr[gpu].neocloud, gpu)
-          : null,
-    scenario,
-  )
+  const base =
+    gpu === 'gen2037'
+      ? (gen2037Row(quarter, scenario)?.gen2037_neocloud_usd_hr ?? undefined)
+      : heldBack(
+          quarter,
+          (q) =>
+            gpu === 'h100' || gpu === 'h200' || gpu === 'b200'
+              ? q.gpuRentalUsdHr[gpu].neocloud
+              : isRubin(gpu)
+                ? rubinRent(q.act3?.gpuRentalUsdHr[gpu].neocloud, gpu)
+                : null,
+          scenario,
+        )
+  // M52.1 (doc 43 §0.7 item 1): in Act V spot rents move with the multiple's scarcity factor (1 before).
+  return base === undefined ? undefined : base * scarcityMultipleFactor(quarter, scenario)
 }
 
 /** A Rubin rent × its M18.6 K1 factor (null without a price). */
@@ -314,7 +319,9 @@ export function gpuContractUsdHr(
     base *
     (gpu === 'h200' ? c.h200Mult : 1) *
     (c.termFactor[termYears] ?? 1) *
-    gpuContractRateMult(quarter)
+    gpuContractRateMult(quarter) *
+    // M52.1 (doc 43 §0.2): in Act V a new GPU contract prices × the scarcity index (1 before).
+    scarcityRentFactor(quarter, scenario)
   )
 }
 

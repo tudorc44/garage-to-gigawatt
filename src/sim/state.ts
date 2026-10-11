@@ -114,6 +114,8 @@ export interface Site {
   flare?: { wellQuarter: number; relocatingUntil?: number; offlineQuarter?: number }
   /** M35.4 (doc 38 §4.7): Texas demand response and 4CP at an ERCOT site (systems/texasPower.ts). */
   dr?: SiteDemandResponse
+  /** Act V (M52.5): kW enrolled as curtailable load (the queue's fast lane enrols them); they earn V2's flex payment. */
+  flexKw?: number
   /** M36 (doc 38 §5.1 point 6): firm kW a venture at commercial operation delivers here, with no grid wait. */
   ventureKw?: number
 }
@@ -201,6 +203,26 @@ export interface Venture {
   milestones?: number
   slips?: number
   pitchCodQuarter?: number
+  /**
+   * Act V (M52.3, doc 43 §11 with §0.4): your share of the operating plant's non-recourse debt, serviced from its cash
+   * flow: contracted or merchant terms, the balance and what was drawn, the spread, the term, and the covenant's count
+   * of quarters below DSCR 1.0 (a lock-up below 1.15; a restructure, once, after 4; the lenders take it after 8).
+   */
+  plantDebt?: {
+    kind: 'contracted' | 'merchant'
+    principalUsd: number
+    originalUsd: number
+    spreadBps: number
+    drawnQuarter: number
+    endQuarter: number
+    quartersBelow1: number
+    lockedUp?: boolean
+    restructured?: boolean
+  }
+  /** Act V (M52.4): your forward sale of a share of the plant's merchant output: the price and its last quarter. */
+  outputContract?: { share: number; priceUsdMwh: number; endQuarter: number }
+  /** Act V (M52.6, doc 43 §7.4): a follow-on unit: the id of the unit it follows. */
+  followOnOf?: string
 }
 
 /** M35.4 (doc 38 §4.7): a Texas site's demand-response enrolment and 4CP choice. */

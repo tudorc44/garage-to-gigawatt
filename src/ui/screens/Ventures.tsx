@@ -6,6 +6,8 @@ import { t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import { offtakePrepayUsd, tailShare, venturesView, type VentureOfferView } from '../../sim/ventureViews.ts'
 import type { GameState } from '../../sim/state.ts'
+import { plantsView } from '../../sim/systems/plants.ts'
+import { followOnOffers } from '../../sim/systems/ventures.ts'
 import { SiteName } from '../components/siteName.tsx'
 import { fmt } from '../format.ts'
 import { say, siteName } from '../names.ts'
@@ -108,11 +110,108 @@ export function VenturesSection({ state, act }: ScreenProps) {
         )}
       </div>
       <div class="col">
+        {/* (M52: in Act V, your running plants and the developers' next units) */}
+        {state.act === 5 && <PlantsPanel state={state} run={run} />}
         {v.offers.map((o) => (
           <Offer key={o.type} state={state} o={o} run={run} />
         ))}
       </div>
     </div>
+  )
+}
+
+/**
+ * Act V's plants (M52, doc 43 §7, §11, §14.1): each running plant you hold a stake in, what it earns and what your
+ * stake is worth, with its three actions (plant debt, a fund sale, an output contract); then the developers' next units.
+ */
+function PlantsPanel(props: { state: GameState; run: (a: Action) => void }) {
+  const plants = plantsView(props.state)
+  const followOns = followOnOffers(props.state)
+  const plan = props.state.phase === 'plan'
+  if (plants.length === 0 && followOns.length === 0) return null
+  return (
+    <section class="panel p" data-plants>
+      <h3 class="panel-title">{t('ui.plants.title')}</h3>
+      {plants.map((p) => (
+        <div key={p.id} class="venture-row" data-plant={p.type}>
+          <div class="row-between">
+            <strong class="num-s">{typeName(p.type)}</strong>
+            <span class="num-s">{t('ui.plants.value', { value: fmt.money(p.stakeValueUsd), stake: pct(p.stake) })}</span>
+          </div>
+          <p class="num-s" style={{ margin: 0 }}>
+            {t('ui.plants.line', {
+              ebitda: fmt.money(p.stakeEbitdaUsd),
+              contracted: pct(p.contractedShare),
+              multiple: `${p.multiple.toFixed(1)}×`,
+            })}
+            {p.debtUsd > 0 && ` · ${t('ui.plants.debt', { debt: fmt.money(p.debtUsd) })}`}
+            {p.lockedUp && ` · ${t('ui.plants.locked')}`}
+          </p>
+          {plan && (
+            <div class="energy-choice-row">
+              <button
+                type="button"
+                class="btn"
+                disabled={!!p.debtBlocked}
+                title={p.debtBlocked ? say(p.debtBlocked) : undefined}
+                onClick={() => props.run({ type: 'ARRANGE_PLANT_DEBT', ventureId: p.id })}
+              >
+                {t(`ui.plants.debt_btn.${p.debtKind}`, { usd: fmt.money(p.debtOfferUsd) })}
+              </button>
+              <button
+                type="button"
+                class="btn"
+                disabled={!!p.saleBlocked}
+                title={p.saleBlocked ? say(p.saleBlocked) : undefined}
+                onClick={() => props.run({ type: 'SELL_PLANT_STAKE', ventureId: p.id, share: 0.5 })}
+              >
+                {t('ui.plants.sell_half', { usd: fmt.money(p.bidHalfUsd) })}
+              </button>
+              <button
+                type="button"
+                class="btn"
+                disabled={!!p.saleBlocked}
+                title={p.saleBlocked ? say(p.saleBlocked) : undefined}
+                onClick={() => props.run({ type: 'SELL_PLANT_STAKE', ventureId: p.id, share: 1 })}
+              >
+                {t('ui.plants.sell_all', { usd: fmt.money(p.bidAllUsd) })}
+              </button>
+              <button
+                type="button"
+                class="btn"
+                disabled={!!p.contractBlocked}
+                title={p.contractBlocked ? say(p.contractBlocked) : undefined}
+                onClick={() => props.run({ type: 'CONTRACT_PLANT_OUTPUT', ventureId: p.id, share: p.contractShare })}
+              >
+                {t('ui.plants.contract_btn', { share: pct(p.contractShare) })}
+              </button>
+            </div>
+          )}
+        </div>
+      ))}
+      {followOns.map((f) => (
+        <div key={f.cls} class="venture-row" data-follow-on={f.cls}>
+          <p class="num-s" style={{ margin: 0 }}>
+            {t('ui.plants.follow_line', {
+              type: typeName(f.type),
+              mw: fmt.power(f.mw * 1000),
+              pitch: `$${Math.round(f.pitchUsdKw).toLocaleString('en-US')}`,
+            })}
+          </p>
+          {plan && (
+            <button
+              type="button"
+              class="btn"
+              disabled={!!f.blocked}
+              title={f.blocked ? say(f.blocked) : undefined}
+              onClick={() => props.run({ type: 'COMMIT_FOLLOW_ON', venture: f.type, stake: f.stake, offtake: 0, prepay: 0 })}
+            >
+              {t('ui.plants.follow_btn', { stake: pct(f.stake), usd: fmt.money(f.buyInUsd) })}
+            </button>
+          )}
+        </div>
+      ))}
+    </section>
   )
 }
 

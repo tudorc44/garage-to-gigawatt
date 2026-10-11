@@ -124,6 +124,15 @@ import { recordAct4Move } from './systems/act4Moves.ts'
 import { recordAct5Move } from './systems/act5Moves.ts'
 import { readSignalV, readSignalVBlocker } from './systems/signalsV.ts'
 import {
+  arrangePlantDebt,
+  contractPlantOutput,
+  fundSaleBlocker,
+  outputContractBlocker,
+  plantDebtBlocker,
+  sellPlantStake,
+} from './systems/plants.ts'
+import { commitFollowOn, followOnBlocker, stakeMarkUsd } from './systems/ventures.ts'
+import {
   bookLaunch,
   bookLaunchBlocker,
   buyInsurance,
@@ -434,6 +443,14 @@ export type Action =
   | { type: 'READ_SIGNAL_IV'; indicator: SignalIdIv }
   /** Act V (M51): Read the market on one of Act V's six indicators (1 BW, once a quarter). */
   | { type: 'READ_SIGNAL_V'; indicator: SignalIdV }
+  /** Act V (M52.3): draw non-recourse debt on your stake in an operating plant (1 BW). */
+  | { type: 'ARRANGE_PLANT_DEBT'; ventureId: string }
+  /** Act V (M52.4): sell `share` (0-1] of your stake in a venture to an infrastructure fund (1 BW). */
+  | { type: 'SELL_PLANT_STAKE'; ventureId: string; share: number }
+  /** Act V (M52.4): sell `share` (≤ 0.8) of an operating plant's merchant output forward (1 BW). */
+  | { type: 'CONTRACT_PLANT_OUTPUT'; ventureId: string; share: number }
+  /** Act V (M52.6): commit to a developer's next unit (EGS or SMR) with doc 38's roles (2 BW). */
+  | { type: 'COMMIT_FOLLOW_ON'; venture: VentureType; stake: number; offtake: number; prepay: number; siteId?: string }
   /** Act IV (M29.2): open an orbital block card (0 BW): kind, size, shell, generation. */
   | ({ type: 'OPEN_ORBITAL_BLOCK' } & OpenBlock)
   /** Act IV: drop a block that hasn't started building (its deposit back only after a provider slip). */
@@ -834,6 +851,36 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = readSignalVBlocker(s, a.indicator)
       if (blocked) return blocked
       readSignalV(s, a.indicator)
+      return
+    }
+
+    case 'ARRANGE_PLANT_DEBT': {
+      const blocked = plantDebtBlocker(s, a.ventureId)
+      if (blocked) return blocked
+      arrangePlantDebt(s, a.ventureId)
+      return
+    }
+
+    case 'SELL_PLANT_STAKE': {
+      const blocked = fundSaleBlocker(s, a.ventureId, a.share)
+      if (blocked) return blocked
+      const v = s.ventures!.find((x) => x.id === a.ventureId)!
+      sellPlantStake(s, a.ventureId, a.share, stakeMarkUsd(v))
+      return
+    }
+
+    case 'CONTRACT_PLANT_OUTPUT': {
+      const blocked = outputContractBlocker(s, a.ventureId, a.share)
+      if (blocked) return blocked
+      contractPlantOutput(s, a.ventureId, a.share)
+      return
+    }
+
+    case 'COMMIT_FOLLOW_ON': {
+      const j = { type: a.venture, stake: a.stake, offtake: a.offtake, prepay: a.prepay, siteId: a.siteId }
+      const blocked = followOnBlocker(s, j)
+      if (blocked) return blocked
+      commitFollowOn(s, j)
       return
     }
 

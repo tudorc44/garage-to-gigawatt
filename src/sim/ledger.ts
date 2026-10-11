@@ -62,6 +62,9 @@ export const CATEGORIES = {
   orbit_capex: { section: 'investing', biz: 'orbit', cash: true },
   lunar_capex: { section: 'investing', biz: 'moon', cash: true },
   venture_calls: { section: 'investing', biz: 'energy', cash: true },
+  // Act V (M52.2): your share of an operating plant's cash after its debt service (outside EBITDA: the stake is valued
+  // on the plant's own earnings)
+  plant_distributions: { section: 'investing', biz: 'energy', cash: true },
   energy_assets: { section: 'investing', biz: 'energy', cash: true },
   asset_sales: { section: 'investing', biz: 'corporate', cash: true },
   // Financing (cash flow only)

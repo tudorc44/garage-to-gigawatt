@@ -26,7 +26,7 @@ beforeAll(() => preloadAct3Panels(), 0)
 
 const act = () => null
 const noop = () => {}
-const SECTIONS: Section[] = ['projects', 'contracts', 'government', 'fleet', 'capital', 'people', 'league', 'log']
+const SECTIONS: Section[] = ['projects', 'contracts', 'government', 'ventures', 'fleet', 'capital', 'finances', 'people', 'league', 'log']
 
 /** Every future's name, decoy name and trigger title, from the hidden files, plus the reveal's own words. */
 const words = V_FUTURE_IDS.flatMap((v) => {
