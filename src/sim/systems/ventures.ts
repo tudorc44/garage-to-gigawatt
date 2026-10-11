@@ -30,6 +30,7 @@ import { scenarioOf } from './market.ts'
 import { addPc } from './pcState.ts'
 import { drawOverrun, lognormal } from './overrun.ts'
 import { powerPriceUsdKwh, regionOf, usedKw } from './sites.ts'
+import { isPlant, plantStakeValueUsd } from './plants.ts'
 
 const V = VENTURES
 const T = V.types
@@ -674,15 +675,22 @@ function mark(v: Venture, kind: 'milestone' | 'slip'): void {
  */
 export function ventureValueUsd(state: GameState, v: Venture): number {
   if (isOver(v)) return 0
-  const M = V.marks
   let value = v.prepaidUsd
-  if (v.stake > 0) {
-    const buyIn = v.buyInUsd ?? v.paidUsd
-    const share = v.stakeAtJoin && v.stakeAtJoin > 0 ? v.stake / v.stakeAtJoin : 1
-    value += buyIn * share * M.milestone_mult ** (v.milestones ?? 0) * M.slip_mult ** (v.slips ?? 0) + (v.callsPaidUsd ?? 0)
-  }
+  if (v.stake > 0)
+    // M52.2 (doc 43 §11.3): in Act V an operating plant's stake is valued on its earnings (gross of your plant debt,
+    // which counts with the company's debt); before first power, and before Act V, the milestone mark.
+    value += isPlant(state, v) ? plantStakeValueUsd(state, v) : stakeMarkUsd(v)
   if (v.stage === 'operating' && v.offtakeMw > 0) value += deliverySavingsUsd(state, v) * quartersLeftInAct(state)
   return Math.max(0, value)
+}
+
+/** Your stake's milestone mark (M36.8): the buy-in scaled by dilution × 1.25 per milestone × 0.8 per slip, plus calls. */
+export function stakeMarkUsd(v: Venture): number {
+  if (v.stake <= 0) return 0
+  const M = V.marks
+  const buyIn = v.buyInUsd ?? v.paidUsd
+  const share = v.stakeAtJoin && v.stakeAtJoin > 0 ? v.stake / v.stakeAtJoin : 1
+  return buyIn * share * M.milestone_mult ** (v.milestones ?? 0) * M.slip_mult ** (v.slips ?? 0) + (v.callsPaidUsd ?? 0)
 }
 
 /** Quarters left in the current act after this one. */

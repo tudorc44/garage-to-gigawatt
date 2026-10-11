@@ -22,6 +22,7 @@ import { scenarioOf } from './market.ts'
 import { gpuResidualUsd } from './projects.ts'
 import { ratingInputs } from './rating.ts'
 import { orbitalDebtUsd } from './orbitCapital.ts'
+import { plantDebtUsd } from './plants.ts'
 
 /** An equipment loan offer: LTV and yearly rate (fractions), the term, and in Act II the rating it's priced on. */
 export interface LoanTerms {
@@ -240,6 +241,8 @@ export function debtUsd(state: GameState): number {
     (state.cryptoLoan?.balanceUsd ?? 0) +
     (state.facilities ?? []).reduce((sum, f) => sum + f.balanceUsd, 0) +
     // Act IV (M31.2): loans on orbital blocks (none before Act IV: nothing is added)
-    (state.act4Orbit ? orbitalDebtUsd(state) : 0)
+    (state.act4Orbit ? orbitalDebtUsd(state) : 0) +
+    // Act V (M52.3, doc 43 §11.4): your share of plant debt (non-recourse, but the corporate covenant counts it)
+    (state.ventures?.some((v) => v.plantDebt) ? plantDebtUsd(state) : 0)
   )
 }

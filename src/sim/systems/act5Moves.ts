@@ -23,6 +23,13 @@ export function act5MoveKind(a: Action): Act5MoveKind | null {
       return 'sell_site_free_mw'
     case 'PROJECT_OPEN':
       return a.power === 'grid' ? 'request_grid_mw' : null
+    // M52 (doc 43 §14.1): the plant actions
+    case 'ARRANGE_PLANT_DEBT':
+      return 'arrange_plant_debt'
+    case 'SELL_PLANT_STAKE':
+      return 'sell_plant_stake_to_fund'
+    case 'CONTRACT_PLANT_OUTPUT':
+      return 'contract_plant_output'
     default:
       return null
   }

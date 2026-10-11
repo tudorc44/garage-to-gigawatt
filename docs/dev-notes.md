@@ -362,6 +362,9 @@ README). `check.py` PASS.
   units. Chunks: 1 · 2-4 · 5 · 6. Act V only: Acts I-IV and their goldens unchanged.
   - **1** done: `scarcity.ts`; rents (RFP, renewal bands, GPU renewal indices, GPU contracts) × s; the AI multiple and spot rents ×
     (1 + 0.5(s − 1)); the market panel shows them repriced, the old demand index × s (mine, reversible). 1,683 tests.
+  - **2-4** done: `plants.ts` (operations, stake × EBITDA × 4 × plant multiple, distributions outside EBITDA, plant debt with lock-up /
+    restructure / lenders take, fund sales × `infra_bid_index`, output contracts) and `plantsContent.ts`. Mine: developer contracts at the
+    base multiple (term not in files), 15-year contracted debt, 12-year output contracts, a plant's region = its campus's. 1,693 tests.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 
