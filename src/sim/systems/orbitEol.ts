@@ -9,6 +9,7 @@
 //   the block's MW free there: the scarce thing in V1) and pays its rent there for the rest of its term; the block retires;
 // - Retire it: deorbit, no value.
 // Orbit moves score 0 (doc 43 §6.7); the money judges them.
+import { eolBodyKey } from './act5Cards.ts'
 import { BALANCE, CONTENT, actFirstQuarter } from '../../content/index.ts'
 import { ORBIT, tenantType } from '../../content/orbitContent.ts'
 import type { Message } from '../../i18n/t.ts'
@@ -159,5 +160,7 @@ export function eolView(state: GameState) {
         blocked: eolBlocker(state, b.id, c) ?? null,
       })),
       since: CONTENT.quarters[actFirstQuarter(5)],
+      // (M58.5, doc 43 §0.15 fix 5: the card's body: neutral before the future's trigger card has played, its own after)
+      bodyKey: eolBodyKey(state),
     }))
 }

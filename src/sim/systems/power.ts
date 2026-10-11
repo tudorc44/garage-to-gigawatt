@@ -90,8 +90,13 @@ export function powerBlocker(
 export function drawPowerQuarters(state: GameState, p: Project): number {
   const site = state.sites.find((s) => s.id === p.siteId)!
   // M36.4 (answer 9): Act IV's on-site gas waits for turbines, 6-10 quarters (its own stream).
+  // (M58.4: Act V's turbine-slot card takes quarters off an on-site gas build; 0 elsewhere)
   if (p.power === 'gas' && inAct4Rules(state))
-    return randomInt(substream(act4SeedOf(state), `gas_build:${CONTENT.quarters[state.quarter]}:${p.id}`), ...VENTURES.act4_power.gas_build_q)
+    return Math.max(
+      1,
+      randomInt(substream(act4SeedOf(state), `gas_build:${CONTENT.quarters[state.quarter]}:${p.id}`), ...VENTURES.act4_power.gas_build_q) -
+        (state.act5GasWaitCutQ ?? 0),
+    )
   if (p.power === 'gas') return POWER().gas.buildQuarters
   if (p.power === 'nuclear') return nuclearPowerQuarters()
   const [lo, hi] = gridQuarterRange(state, regionOf(site)!)

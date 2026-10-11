@@ -42,6 +42,9 @@ export function act5MoveKind(a: Action): Act5MoveKind | null {
       return 'withdraw_position'
     case 'TAKE_FAST_LANE':
       return 'take_fast_lane'
+    // M58.3 (doc 43 §0.15 fix 3)
+    case 'ENROL_FLEXIBLE':
+      return 'enrol_flexible'
     default:
       return null
   }

@@ -82,14 +82,28 @@ export function QueuePanel(props: { state: GameState; act: (a: Action) => Messag
         </div>
       ))}
       {v.sites
-        .filter((s) => s.colocatedKw > 0 || s.saleUsd > 0 || s.wholeUsd > 0)
+        .filter((s) => s.colocatedKw > 0 || s.saleUsd > 0 || s.wholeUsd > 0 || s.enrollableKw > 0 || s.flexKw > 0)
         .map((s) => (
           <div key={s.siteId} class="venture-row" data-queue-site={s.siteId}>
             <p class="num-s" style={{ margin: 0 }}>
               <SiteName state={props.state} site={site(s.siteId)} />
               {s.colocatedKw > 0 && ` · ${t('ui.queue.colocated', { mw: fmt.power(s.colocatedKw) })}`}
               {s.freeKw > 0 && ` · ${t('ui.queue.free', { mw: fmt.power(s.freeKw) })}`}
+              {s.flexKw > 0 && ` · ${t('ui.queue.flex_enrolled', { mw: fmt.power(s.flexKw) })}`}
             </p>
+            {/* (M58.3, doc 43 §0.15 fix 3: enrol the site's running load as curtailable; every future) */}
+            {plan && s.enrollableKw > 0 && (
+              <button
+                type="button"
+                class="btn"
+                data-enrol={s.siteId}
+                disabled={!!s.enrolBlocked}
+                title={s.enrolBlocked ? say(s.enrolBlocked) : t('ui.queue.enrol_body')}
+                onClick={() => run({ type: 'ENROL_FLEXIBLE', siteId: s.siteId })}
+              >
+                {t('ui.queue.enrol', { kwKw: s.enrollableKw })}
+              </button>
+            )}
             {plan && s.saleUsd > 0 && (
               <button
                 type="button"

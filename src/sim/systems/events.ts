@@ -8,6 +8,8 @@
 //   quarter's random slot when their condition is first met: the Heat 70 moratorium and the
 //   rate_class flaw's rate hike (which, if the cap is full, comes in week 1 of next quarter).
 // Rolls use their own streams ("events:<quarter>", "event_roll:…"), so other systems are unchanged.
+import { applyAct5Card, scheduleAct5Cards } from './act5Cards.ts'
+import type { Act5CardEffect } from '../../content/act5Cards.ts'
 import {
   BALANCE,
   CONTENT,
@@ -60,7 +62,7 @@ import {
   type GameState,
   type Site,
 } from '../state.ts'
-import { inActII, inAct3Rules } from '../state.ts'
+import { inActII, inAct3Rules, inActV } from '../state.ts'
 import { getStep, unmetRequirement } from './capital.ts'
 import { absWeek, aiDemandDelta } from './eventEffects.ts'
 import type { ScheduledEvent } from './eventEffects.ts'
@@ -320,6 +322,8 @@ function schedule(
 export function scheduleEvents(state: GameState): void {
   const ev = state.events
   ev.queue = []
+  // Act V (M58.4): its own deck and rules (act5Cards.ts); nothing else plays in Act V
+  if (inActV(state)) return scheduleAct5Cards(state)
   const deck = CONTENT.events.cards.filter((c) => c.act === state.act)
   // Scripted: their own week, when `requires` holds.
   for (const card of deck) {
@@ -974,6 +978,10 @@ export function resolveEvent(
         break
       case 'free_read':
         freeRead(state, value as SignalId, weekNo)
+        break
+      // Act V (M58.4): a card's authored effect, carried whole to Act V's card system
+      case 'act5_card':
+        applyAct5Card(state, card.id, value as Act5CardEffect, weekNo)
         break
       case 'revenue_share_at_end':
         revenueShareAtEnd(state, Number(value))

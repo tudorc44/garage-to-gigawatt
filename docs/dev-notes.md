@@ -428,6 +428,9 @@ README). `check.py` PASS.
   - **1-2** done: Act V shell renewals at the lease's 2035Q4 rent × `scarcity_index` (signed in Act V: ÷ the index at signing), walks ÷
     the index (GPU contracts keep the GPU index; mine: the walk rule applies to them too); cash earns SOFR ÷ 4, booked as net interest.
     Act V goldens updated (intended); Acts I-IV byte-identical. 1,763 tests.
+  - **3-5** done: ENROL_FLEXIBLE (a site's running load, 1 BW, −1, every future; Queue panel); all 43 cards in Act V's deck
+    (`act5Cards.ts`: effects through the Plan systems, the sign logged once; interrupts: trips 15%, transformer 10%; the call and
+    end-of-life cards are their Plan panels: mine); EOL body neutral until the trigger. Trigger cards show the hidden trigger titles (Q). 1,770 tests.
 - **Step C (M59, branch `m59` from `m58`):** diagnose (OL decomposition, OL V3 move list), re-measure, balance pass.
 
 ### Report (third run, 13 Oct 2026)

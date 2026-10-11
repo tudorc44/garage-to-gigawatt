@@ -75,6 +75,7 @@ import eventsAct3Raw from './events_act3.json' with { type: 'json' }
 import eventsIvRaw from './events_iv.json' with { type: 'json' }
 import wildcardsIvRaw from './wildcards_iv.json' with { type: 'json' }
 import { eventsIvFileSchema, toEngineCardIv } from './act4Cards.ts'
+import { ACT5_CARDS, ACT5_EFFECT_KEYS, act5CardEngineId } from './act5Cards.ts'
 import { eventsAct3FileSchema, toEngineCard } from './act3Cards.ts'
 import rivalsRaw from './rivals.json' with { type: 'json' }
 import heatRaw from './heat.json' with { type: 'json' }
@@ -743,7 +744,12 @@ export type EventCard = EventCardRaw & {
   weekIndex?: number
   /** The act whose deck it's in: events.json is Act I's, events_act2.json Act II's, events_act3.json Act III's,
    *  events_iv.json Act IV's (M28.4). */
-  act: 1 | 2 | 3 | 4
+  act: 1 | 2 | 3 | 4 | 5
+  /** Act V only (M58.4): the Act V future whose game plays it ('all' = every one), its role and its window
+   *  (quarter indices; equal for a fixed-quarter card). Engine-only. */
+  futureV?: VFutureId | 'all'
+  act5Role?: string
+  act5Window?: [number, number]
   /** Act III only: the scenario whose game plays it ('all' = every scenario). Engine-only (M11.5c). */
   scenario?: ScenarioId | 'all'
   /** Act IV only (M28.4): the future whose game plays it ('all' = every future). Engine-only. */
@@ -2323,6 +2329,55 @@ export function parseContent(raw: RawContent): Content {
         const engineCard: EventCard = { ...card, act: 4, quarterIndex: qi, weekIndex: 1 }
         events.cards.push(engineCard)
         events.byId[engineCard.id] = engineCard
+      }
+    }
+  }
+  // Act V's cards (M58.4, doc 43 §0.15 fix 4): engine cards in Act V's deck, each in week 2 of its quarter (its window's
+  // first for an interrupt or end-of-life card). Checks: a window inside Act V, a default among the choices, opaque ids
+  // that don't collide, only the effect keys Act V's card system knows, and reading signs keyed by real choice labels.
+  if (act5Futures.v1) {
+    const first = acts.find((a) => a.act === 5)?.firstQuarter
+    if (first !== undefined) {
+      const seen = new Set<string>()
+      for (const c of ACT5_CARDS) {
+        const from = quarters.indexOf(c.window[0])
+        const to = quarters.indexOf(c.window[1])
+        if (from < first || to < from || to > first + 19)
+          problems.push(`events_v.json › ${c.id}: window ${c.window.join('–')} isn't inside Act V`)
+        if (!c.choices.some((ch) => ch.label === c.default))
+          problems.push(`events_v.json › ${c.id}: default "${c.default}" isn't one of its choices`)
+        for (const label of Object.keys(c.reading_sign ?? {}))
+          if (!c.choices.some((ch) => ch.label === label))
+            problems.push(`events_v.json › ${c.id}: reading_sign names "${label}", not one of its choices`)
+        for (const ch of c.choices)
+          for (const k of Object.keys(ch.effect))
+            if (!(ACT5_EFFECT_KEYS as readonly string[]).includes(k))
+              problems.push(`events_v.json › ${c.id}: unknown effect "${k}"`)
+        const id = act5CardEngineId(c.id)
+        if (seen.has(id)) problems.push(`events_v.json › ${c.id}: engine id ${id} collides`)
+        seen.add(id)
+        const def = c.choices.findIndex((ch) => ch.label === c.default)
+        const card: EventCard = {
+          id,
+          type: 'scripted',
+          quarter: c.window[0],
+          week_of: act5Futures.v1.weeks[from - first]?.[1]?.week ?? '',
+          default: def < 0 ? '' : `c${def + 1}`,
+          choices: c.choices.map((ch, i) => ({
+            id: `c${i + 1}`,
+            effects: {
+              act5_card: { card: c.id, role: c.role, choice: i + 1, effect: ch.effect, sign: c.reading_sign?.[ch.label] ?? 0 },
+            },
+          })),
+          act: 5,
+          quarterIndex: from,
+          weekIndex: 1,
+          futureV: c.future,
+          act5Role: c.role,
+          act5Window: [from, to],
+        } as EventCard
+        events.cards.push(card)
+        events.byId[card.id] = card
       }
     }
   }
