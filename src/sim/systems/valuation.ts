@@ -10,6 +10,7 @@ import {
 } from '../../content/index.ts'
 import type { QuarterReport } from '../state.ts'
 import { aiMultipleDelta } from './eventEffects.ts'
+import { scarcityMultipleFactor } from './scarcity.ts'
 
 /**
  * The era's EV/EBITDA multiple for a quarter index: Act I's from capital.json, then Act II's
@@ -34,7 +35,10 @@ export function aiInfraMultiple(
   scenario?: MarketKey | null,
 ): number {
   const base = quarterInputs(quarter, scenario)?.multiple.aiInfra
-  return base === undefined ? 0 : Math.max(0, base + aiMultipleDelta(quarter))
+  // M52.1 (doc 43 §0.7 item 1): in Act V the ground multiple × (1 + 0.5 × (scarcity − 1)); × 1 before.
+  return base === undefined
+    ? 0
+    : Math.max(0, base + aiMultipleDelta(quarter)) * scarcityMultipleFactor(quarter, scenario)
 }
 
 /**

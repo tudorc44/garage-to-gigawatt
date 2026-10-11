@@ -357,6 +357,11 @@ README). `check.py` PASS.
 - **Step C (M51, branch `m51` on `m50`): §19 item 3.** Signals (`signals_v_v1..v4` runtime view, `READ_SIGNAL_V`, the shared panel),
   `signalsHiddenV.ts` + `readingScoreV.ts` read only by `act5End.ts` (the reveal, `Act5Reveal.tsx`), the move log `act5Moves.ts`
   (kinds only; signs from the hidden file), M40.1/M41.1/low-exposure rules, leak and grep tests. `rivals_v.json` stays frozen (not cheap: item 6).
+- **Step D (M52, branch `m52` on `m51`): plants.** Split: **1** scarcity repricing (§0.2, §0.7, §0.9 item 2) · **2** plant operations and
+  valuation · **3** plant debt and its covenants · **4** fund sales and contracted output · **5** the V2 flex payment · **6** follow-on
+  units. Chunks: 1 · 2-4 · 5 · 6. Act V only: Acts I-IV and their goldens unchanged.
+  - **1** done: `scarcity.ts`; rents (RFP, renewal bands, GPU renewal indices, GPU contracts) × s; the AI multiple and spot rents ×
+    (1 + 0.5(s − 1)); the market panel shows them repriced, the old demand index × s (mine, reversible). 1,683 tests.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

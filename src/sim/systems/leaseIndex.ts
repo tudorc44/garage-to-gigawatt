@@ -6,6 +6,7 @@ import {
   type CarriedQuarterRow,
   type MarketKey,
 } from '../../content/index.ts'
+import { scarcityRentFactor } from './scarcity.ts'
 
 // (M27.3: Act IV's rows carry the same columns; quarterRow reads either act through the state's market key.)
 function row(
@@ -25,7 +26,8 @@ export function rfpMid(
   if (!r) return null
   const lo = r.rfp_new_lease_index_low
   const hi = r.rfp_new_lease_index_high
-  return lo === null || hi === null ? null : (lo + hi) / 2
+  // (M52.1: in Act V × the scarcity index, doc 43 §0.2; 1 before)
+  return lo === null || hi === null ? null : ((lo + hi) / 2) * scarcityRentFactor(quarter, scenario)
 }
 
 /** Band(q): doc 27's D5 renewal band, [renewal_shell_index_low, renewal_shell_index_high]. */
@@ -37,7 +39,10 @@ export function renewalBand(
   if (!r) return null
   const lo = r.renewal_shell_index_low
   const hi = r.renewal_shell_index_high
-  return lo === null || hi === null ? null : { lo, hi }
+  if (lo === null || hi === null) return null
+  // (M52.1: in Act V the renewal band × the scarcity index, doc 43 §0.2)
+  const s = scarcityRentFactor(quarter, scenario)
+  return { lo: lo * s, hi: hi * s }
 }
 
 /** The offered renewal term in years: a shell's rounded to the nearest year; a GPU contract's
@@ -83,11 +88,14 @@ export function gpuRenewalIndex(
 ): number | null {
   const r = row(quarter, scenario)
   if (!r) return null
-  return gpu === 'b200' ||
+  const index =
+    gpu === 'b200' ||
     gpu === 'gb200' ||
     gpu === 'rubin_nvl144' ||
     gpu === 'rubin_ultra' ||
     gpu === 'gen2037'
-    ? r.renewal_b200_gpu_index_vs_2025q4
-    : r.renewal_h100_gpu_index_vs_2025q4
+      ? r.renewal_b200_gpu_index_vs_2025q4
+      : r.renewal_h100_gpu_index_vs_2025q4
+  // (M52.1: in Act V × the scarcity index, doc 43 §0.2)
+  return index === null ? null : index * scarcityRentFactor(quarter, scenario)
 }

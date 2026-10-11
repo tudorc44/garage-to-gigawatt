@@ -28,6 +28,7 @@ import type {
 import { inAct2Rules, inAct3Rules, inActIII, inActIV, inAct4Rules, inActV } from './state.ts'
 import { readSignalIvBlocker } from './systems/signalsIv.ts'
 import { readSignalVBlocker } from './systems/signalsV.ts'
+import { scarcityMultipleFactor, scarcityRentFactor } from './systems/scarcity.ts'
 import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {
@@ -2307,18 +2308,24 @@ export function act2MarketView(state: GameState) {
     state.phase === 'plan' ? 0 : Math.max(state.week - 1, 0),
     scenarioOf(state),
   )
-  const spot = w.gpu_h100_spot_usd_hr
-  const prevSpot = prev?.gpu_h100_spot_usd_hr ?? null
+  // M52.1 (doc 43 §0.2, §0.7): in Act V the scarcity-neutral columns show repriced as the systems use them (rents and
+  // the demand index × the scarcity index; spot rents × the multiple's factor); × 1 before Act V.
+  const key = scenarioOf(state)
+  const rent = scarcityRentFactor(state.quarter, key)
+  const spotF = scarcityMultipleFactor(state.quarter, key)
+  const spot = w.gpu_h100_spot_usd_hr === null ? null : w.gpu_h100_spot_usd_hr * spotF
+  const prevSpot = prev?.gpu_h100_spot_usd_hr == null ? null : prev.gpu_h100_spot_usd_hr * spotF
+  const prevQ = inputsAt(state, state.quarter - 1)?.aiDemandIndex
   return {
     h100SpotUsdHr: spot,
     h100SpotChange:
       spot !== null && prevSpot !== null && prevSpot > 0
         ? spot / prevSpot - 1
         : null,
-    h100Contract1yUsdHr: q.gpuRentalUsdHr.h100.contract1y,
-    h100NeocloudUsdHr: q.gpuRentalUsdHr.h100.neocloud,
-    aiDemandIndex: q.aiDemandIndex,
-    aiDemandPrev: inputsAt(state, state.quarter - 1)?.aiDemandIndex ?? null,
+    h100Contract1yUsdHr: q.gpuRentalUsdHr.h100.contract1y === null ? null : q.gpuRentalUsdHr.h100.contract1y * rent,
+    h100NeocloudUsdHr: q.gpuRentalUsdHr.h100.neocloud === null ? null : q.gpuRentalUsdHr.h100.neocloud * spotF,
+    aiDemandIndex: q.aiDemandIndex * rent,
+    aiDemandPrev: prevQ === undefined ? null : prevQ * scarcityRentFactor(state.quarter - 1, key),
   }
 }
 
