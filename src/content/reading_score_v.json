@@ -1,0 +1,406 @@
+{
+  "_meta": {
+    "schema": "reading_score_v/1",
+    "doc43": "§6.7 as amended by §0.2 (scarcity exposure; long lease −1, short +1), §6.8 (hidden), V-D21",
+    "author": "content pack (doc 47): designed per doc 43 §6.7's ideal stances; Act III/IV scoring rules unchanged; the oracle values are computed and asserted by the sim (V-B8, V-B9)",
+    "DO_NOT_EXPOSE": "Hidden content: the ideal stance per quarter reveals the future. Read only by readingScore.ts and act5End.ts (plus tests/ and tools/); never by selectors, the UI during play, or player-like bots.",
+    "quarters": [
+      "2036Q1",
+      "2036Q2",
+      "2036Q3",
+      "2036Q4",
+      "2037Q1",
+      "2037Q2",
+      "2037Q3",
+      "2037Q4",
+      "2038Q1",
+      "2038Q2",
+      "2038Q3",
+      "2038Q4",
+      "2039Q1",
+      "2039Q2",
+      "2039Q3",
+      "2039Q4",
+      "2040Q1",
+      "2040Q2",
+      "2040Q3",
+      "2040Q4"
+    ],
+    "stance": "scarcity exposure: +1 adds exposure (a bet that firm ground power stays scarce and dear), -1 sells or hedges it, 0 logged for the reveal timeline only"
+  },
+  "scoring": {
+    "match": 1,
+    "calm_and_quiet": 0.7,
+    "one_neutral": 0.5,
+    "opposite": 0,
+    "decoy_penalty_per_move": 10,
+    "decoy_penalty_cap": 30,
+    "calm_in_decoy_window": 1,
+    "low_exposure_quiet": {
+      "value": 1,
+      "threshold_share": 0.15,
+      "why": "Mine (as Act IV's M36.11 quiet_no_exposure): a quarter with no scored move while the exposure line (leases + free MW + plants) is under 15% of act5Entry counts as a match in every future, so an orbit- or cash-heavy company is not punished for a question that barely touches it (doc 43 §0.8)."
+    }
+  },
+  "moves": [
+    {
+      "id": "pay_network_upgrade",
+      "sign": 1,
+      "source": "doc 43 §14.1, §0.4 (paying stays +1)"
+    },
+    {
+      "id": "buy_site_with_position",
+      "sign": 1,
+      "source": "doc 43 §6.7 (buying a queue position with a site)"
+    },
+    {
+      "id": "commit_follow_on_unit",
+      "sign": 1,
+      "source": "doc 43 §7.4, §14.1"
+    },
+    {
+      "id": "commit_new_firm_asset",
+      "sign": 1,
+      "source": "doc 43 §6.7 (gas, long storage)"
+    },
+    {
+      "id": "buy_plant_stake",
+      "sign": 1,
+      "source": "doc 43 §6.7"
+    },
+    {
+      "id": "let_contract_roll_merchant",
+      "sign": 1,
+      "source": "doc 43 §6.7"
+    },
+    {
+      "id": "arrange_plant_debt",
+      "sign": 1,
+      "source": "doc 43 §14.1"
+    },
+    {
+      "id": "renew_short",
+      "sign": 1,
+      "source": "doc 43 §0.2 (lock or roll: short = +1)"
+    },
+    {
+      "id": "sell_plant_stake_to_fund",
+      "sign": -1,
+      "source": "doc 43 §14.1"
+    },
+    {
+      "id": "sell_site_with_position",
+      "sign": -1,
+      "source": "doc 43 §14.1 (also selling free energized MW, §0.2)"
+    },
+    {
+      "id": "sell_site_free_mw",
+      "sign": -1,
+      "source": "doc 43 §0.2 (sell a site: leases' value + free MW × powered value)"
+    },
+    {
+      "id": "contract_plant_output",
+      "sign": -1,
+      "source": "doc 43 §14.1"
+    },
+    {
+      "id": "enrol_flexible",
+      "sign": -1,
+      "source": "doc 43 §6.7 (enrolling load as curtailable)"
+    },
+    {
+      "id": "take_fast_lane",
+      "sign": -1,
+      "source": "doc 43 §14.1"
+    },
+    {
+      "id": "renew_long",
+      "sign": -1,
+      "source": "doc 43 §0.2 (lock or roll: long = −1)"
+    },
+    {
+      "id": "blend_and_extend_long",
+      "sign": -1,
+      "source": "doc 43 §0.2"
+    },
+    {
+      "id": "equity_raise_unfollowed",
+      "sign": 0,
+      "source": "doc 43 §6.7, the M41 rule (doc 43 §0.11 erratum 1): a raise takes the sign of the next scored move at any distance, 0 if none follows before the act ends"
+    },
+    {
+      "id": "request_grid_mw",
+      "sign": 0,
+      "source": "doc 43 §14.1"
+    },
+    {
+      "id": "withdraw_position",
+      "sign": 0,
+      "source": "doc 43 §0.9 item 7: withdrawing is usually a cost decision after a high study bill"
+    },
+    {
+      "id": "orbit_replace",
+      "sign": 0,
+      "source": "doc 43 §9.1, §14.1"
+    },
+    {
+      "id": "orbit_extend",
+      "sign": 0,
+      "source": "doc 43 §9.1"
+    },
+    {
+      "id": "orbit_bring_home",
+      "sign": 0,
+      "source": "doc 43 §9.1"
+    },
+    {
+      "id": "sell_lunar_holding",
+      "sign": 0,
+      "source": "doc 43 §14.1"
+    },
+    {
+      "id": "read_the_market",
+      "sign": 0,
+      "source": "as Act III"
+    },
+    {
+      "id": "founder_exit",
+      "sign": null,
+      "source": "doc 43 §15.2: not scored (the money judges it)"
+    }
+  ],
+  "rules": {
+    "same_quarter_hedges": "A build's own hedges and debt count 0 in its quarter (M40-41 rule, carried).",
+    "raise": "An equity raise takes the sign of the next scored move, at any distance; 0 if none follows before the act ends (M41).",
+    "lease_offers": "Lock-or-roll applies at each renewal or blend-and-extend offer: long (8-10 years) −1, short (2 years) +1; letting a lease run on its existing term logs nothing."
+  },
+  "futures": {
+    "v1": {
+      "why": "Queue is King: add scarcity exposure throughout (short renewals, hold free MW, pay upgrades, keep plants merchant).",
+      "ideal": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "weight": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "decoy": {
+        "indicator": "firm_buildout",
+        "quarters": [
+          "2037Q1",
+          "2037Q2",
+          "2037Q3"
+        ],
+        "wrong_stance": -1,
+        "why": "The SMR wave tempts selling scarcity (the Demand Plateau reading) just as the queue locks up."
+      }
+    },
+    "v2": {
+      "why": "Flexible Lane: exposure pays before the trigger; from 2038Q1 flexibility beats firmness, so hedge (fast lane, enrol, sell firmness forward).",
+      "ideal": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "weight": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "decoy": {
+        "indicator": "firm_buildout",
+        "quarters": [
+          "2037Q2",
+          "2037Q3",
+          "2037Q4"
+        ],
+        "wrong_stance": -1,
+        "why": "The SMR wave tempts selling scarcity early, before the trigger, when V2 still pays for exposure."
+      }
+    },
+    "v3": {
+      "why": "Demand Plateau: calm before the trigger; defensive from 2037Q4 (lock leases long, contract output, sell to funds).",
+      "ideal": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "weight": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "decoy": {
+        "indicator": "capacity_market",
+        "quarters": [
+          "2037Q1",
+          "2037Q2"
+        ],
+        "wrong_stance": 1,
+        "why": "A record auction tempts buying scarcity (the Queue is King reading) just before demand plateaus."
+      }
+    },
+    "v4": {
+      "why": "Up and Out: calm while the ground holds; defensive from 2039 as orbit takes the marginal gigawatt.",
+      "ideal": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        -1
+      ],
+      "weight": [
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1
+      ],
+      "decoy": {
+        "indicator": "firm_buildout",
+        "quarters": [
+          "2037Q3",
+          "2037Q4",
+          "2038Q1"
+        ],
+        "wrong_stance": -1,
+        "why": "The SMR wave tempts selling the ground early for the wrong reason; the softening comes in 2039, from orbit."
+      }
+    }
+  }
+}

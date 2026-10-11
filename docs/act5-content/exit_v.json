@@ -11,6 +11,14 @@
   ],
   "default": "hold",
   "public": {
+    "draw": "uniform in the future's hidden range on substream act5_exit_bid, drawn once at 2040Q3; only the drawn bid is shown",
+    "options": {
+      "sell_company": "net worth = founder stake × valuation × bid factor",
+      "sell_plants": "plant stakes sold at stake × plant value × infra_bid_index; the rest held at valuation × outlook",
+      "hold": "net worth = founder stake × valuation × outlook factor"
+    }
+  },
+  "hidden": {
     "bid_factor_range": {
       "v1": [
         1.15,
@@ -29,18 +37,7 @@
         1.25
       ]
     },
-    "draw": "uniform in the future's range on substream act5_exit_bid, drawn once at 2040Q3 and shown",
-    "market_columns": [
-      "exit_bid_low",
-      "exit_bid_high"
-    ],
-    "options": {
-      "sell_company": "net worth = founder stake × valuation × bid factor",
-      "sell_plants": "plant stakes sold at stake × plant value × infra_bid_index; the rest held at valuation × outlook",
-      "hold": "net worth = founder stake × valuation × outlook factor"
-    }
-  },
-  "hidden": {
+    "bid_source": "doc 43 §0.9 item 5: the bid ranges left the market files (they gave the future away)",
     "outlook_factor": {
       "v1": 1.15,
       "v2": 1.0,

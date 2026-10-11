@@ -265,6 +265,14 @@ the same commits are cherry-picked on `m32`. Earlier: M26 at
 and deleted; the remote holds `main` (and the working milestone branch). Still open: the owner's tasks (the Act III playtest, the Act I
 playtests, the ear test of the sounds). (D15 resolved by the owner in M20.1.)
 
+## Overnight run, 11-12 Oct 2026 (owner asleep; doc 43 v1.2; stacked branches, no merges)
+
+Branches stack: `m47` (step 0 docs, step 1 M43.0e) → `m48` (step 2 content fixes) → `m49` (step 3) → … one PR each, base =
+the previous branch. The morning report is at the end of this section.
+- **M48 (step 2) done:** doc 47's generators in `tools/act5/` (Python kept, mine, reversible; `npm run content:act5`); they
+  reproduce all 21 files byte for byte; the §0.11 errata applied (raise rule 0, en dashes, exit bids hidden, flex rating, CC/CT
+  flat); `check.py` PASS; the game's copies in `src/content/` (byte-identity test). README "Data changes" lists each change.
+
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 
 Split: **1** the asset (WebP 1152 and 640 px in `src/assets/art/`; the PNG original in `docs/art/incoming/`) · **2** the art

@@ -257,3 +257,22 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
 ## Data changes
 
 - **Doc 47, 10 Oct 2026:** first version of every file above.
+- **M48, 11 Oct 2026 (doc 43 §0.11 errata, build thread):**
+  - **Generators:** they now live in `tools/act5/` (kept in Python, as delivered; `npm run content:act5` runs them, then
+    `check.py`, then copies the data files into `src/content/`). `generators/` here stays as delivered.
+  - **Unchanged regeneration:** the generators reproduce all 21 files byte for byte before any fix.
+  - **Changes, and only these:**
+    - **The raise rule (erratum 1):** `reading_score_v.json`'s `equity_raise_unfollowed` row −1 → **0**, `rules.raise`
+      and `events_v.json`'s `_meta.note` reworded. The M41 rule: a raise takes the sign of the next scored move at any
+      distance, 0 if none follows before the act ends.
+    - **En dashes → hyphens (erratum 2):** the Signals notes in `signals_v_v1..v4.json` (120 each, from one line of
+      `signals.py`).
+    - **Exit bids (§0.9 item 5):** `exit_bid_low` and `exit_bid_high` leave the market files. The ranges move to
+      `exit_v.json`'s hidden part (`hidden.bid_factor_range`); `check.py` now fails a market file carrying `exit_bid`.
+    - **Flex payment (§0.9 item 8):** a new column `flex_capacity_rating`, 0.5 in V2 from its trigger (2038Q1) and blank
+      otherwise; the payment rule is in `plants_v.json` (`queue.flex_payment`).
+    - **Ratings (§0.9 item 6):** `capacity_rating_cc` and `capacity_rating_ct` flat at 0.78 and 0.70.
+    - **Withdrawing a position (§0.9 item 7):** scores 0 (it already did; its source line now cites §0.9).
+    - **Weekly power columns (§0.9 item 12):** the weekly files already carry the six columns; the loader change is the
+      build's (M49).
+  - **`check.py`:** PASS.

@@ -1,0 +1,222 @@
+{
+  "_meta": {
+    "schema": "plants_v/1",
+    "doc43": "§0.4 (doc 45's corrections), §7 (plants), §11 (finance, valuation), §0.6 (gate rules)",
+    "author": "content pack (doc 47). Grades: [A] primary, [B] reputable reporting, [C] analyst, [D] designed. Every value's source is in the README ('plants_v.json')."
+  },
+  "classes": {
+    "smr": {
+      "fixed_usd_kw_yr": 107,
+      "single_unit_fixed_mult": 1.3,
+      "var_usd_mwh": 9,
+      "fuel": "in var",
+      "cf": {
+        "ramp_quarters": 8,
+        "ramp_cf": 0.8,
+        "mature_cf": 0.92
+      },
+      "contracted_share_at_cod": 0.9,
+      "capacity_rating_col": "capacity_rating_nuclear",
+      "follow_on": {
+        "cost_mult_of_unit1_realised": 0.85,
+        "first_offer": "the quarter after unit 1's first power"
+      }
+    },
+    "adv_fission": {
+      "fixed_usd_kw_yr": 107,
+      "single_unit_fixed_mult": 1.3,
+      "var_usd_mwh": 9,
+      "fuel": "in var",
+      "cf": {
+        "ramp_quarters": 8,
+        "ramp_cf": 0.8,
+        "mature_cf": 0.92
+      },
+      "contracted_share_at_cod": 0.9,
+      "capacity_rating_col": "capacity_rating_nuclear",
+      "follow_on": null
+    },
+    "egs": {
+      "fixed_usd_kw_yr": 0,
+      "var_usd_mwh": 20,
+      "fuel": null,
+      "cf": {
+        "normal": 0.9,
+        "weak_field": 0.6,
+        "weak_field_fix_usd_kw": 1500
+      },
+      "contracted_share_at_cod": 0.9,
+      "capacity_rating": 0.9,
+      "follow_on": {
+        "cost_usd_kw": 4000,
+        "quarters": 7
+      }
+    },
+    "fusion_pilot": {
+      "fixed_usd_kw_yr": 107,
+      "single_unit_fixed_mult": 1.3,
+      "var_usd_mwh": 9,
+      "fuel": "in var",
+      "cf": {
+        "pilot": 0.3
+      },
+      "contracted_share_at_cod": 0.9,
+      "capacity_rating": 0.3,
+      "never_before": "2038Q1",
+      "follow_on": null
+    },
+    "pumped": {
+      "fixed_usd_kw_yr": 18,
+      "var_usd_mwh": 0.5,
+      "hours": 10,
+      "round_trip": 0.8,
+      "revenue": "capacity price × capacity_rating_storage_10h × 365 / 1000 ($/kW-yr) + 10 h/day × 365 × peak_spread_10h_usd_mwh × 0.80",
+      "contracted_share_at_cod": 0.5,
+      "capacity_rating_col": "capacity_rating_storage_10h",
+      "capacity_regions": [
+        "pjm",
+        "ohio"
+      ],
+      "follow_on": null
+    },
+    "gas_cc": {
+      "fixed_usd_kw_yr": 15,
+      "var_usd_mwh": 2.5,
+      "heat_rate_mmbtu_mwh": 6.4,
+      "fuel_col": "gas_usd_mmbtu",
+      "cf": {
+        "merchant_dispatch": 0.55,
+        "on_site": "follows the site's load"
+      },
+      "contracted_share_at_cod": 0,
+      "capacity_rating_col": "capacity_rating_cc"
+    },
+    "gas_ct": {
+      "fixed_usd_kw_yr": 10,
+      "var_usd_mwh": 5,
+      "heat_rate_mmbtu_mwh": 9.9,
+      "fuel_col": "gas_usd_mmbtu",
+      "cf": {
+        "merchant_dispatch": 0.1,
+        "on_site": "backup and peaks"
+      },
+      "contracted_share_at_cod": 0,
+      "capacity_rating_col": "capacity_rating_ct"
+    },
+    "battery": {
+      "as_energy_json": true,
+      "capacity_rating": {
+        "4h": "energy.json's derate path (0.25 from 2035)",
+        "8h": "capacity_rating_storage_8h"
+      },
+      "contracted_share_at_cod": 0.8
+    },
+    "iron_air": {
+      "as_energy_json": true,
+      "capacity_rating_col": "capacity_rating_storage_10h",
+      "contracted_share_at_cod": 0.8
+    }
+  },
+  "sales": {
+    "order": "offtake shares at their PPA prices → the developer's contracted share at its contract price → merchant at power_usd_kwh_<region> × 1000 ($/MWh)",
+    "contract_price": "the PPA price the venture pitched (ventures.json) for the contracted share",
+    "capacity_revenue": "pjm_capacity_price_usd_mwday × rating × nameplate MW × 91.25 a quarter, in PJM and Ohio only"
+  },
+  "valuation": {
+    "multiple": "contracted share × plant_mult_contracted + merchant share × plant_mult_merchant (market columns)",
+    "contract_tail": {
+      "years_left_le": 8,
+      "mult": 8,
+      "years_left_ge": 15,
+      "mult_long": 11
+    },
+    "formula": "stake × plant EBITDA × 4 × multiple − stake × plant debt",
+    "before_first_power": "Act IV's milestone mark, unchanged"
+  },
+  "finance": {
+    "debt_contracted": {
+      "min_contracted_share": 0.7,
+      "max_ltv": 0.65,
+      "spread_bps": 200,
+      "tenor_years": [
+        15,
+        18
+      ],
+      "sculpted_dscr": 1.3
+    },
+    "debt_merchant": {
+      "max_ltv": 0.4,
+      "spread_bps": 275,
+      "tenor_years": 7,
+      "amort_pct_yr": 1,
+      "cash_sweep": 0.5
+    },
+    "covenants": {
+      "lock_up_below_dscr": 1.15,
+      "restructure_after_q_below_1": 4,
+      "restructure_stake_mult": 0.5,
+      "lenders_take_after_q_below_1": 8
+    },
+    "fund_sale": "stake × plant value × infra_bid_index",
+    "contract_output": {
+      "max_share": 0.8,
+      "years": [
+        10,
+        15
+      ],
+      "price_vs_market": -0.1,
+      "with_power_trader": -0.05
+    },
+    "no_debt_before_first_power": true,
+    "fire_sale": {
+      "plant_stake": 0.6,
+      "site_with_position": 0.7
+    }
+  },
+  "queue": {
+    "security_usd_kw": 50,
+    "security_source": "Texas: $50,000/MW to hold a large-load position (doc 45 §Q3) [B]; doc 43 §0.2",
+    "upgrade_bill": {
+      "median_col": {
+        "pjm": "upgrade_usd_kw_median_pjm",
+        "miso": "upgrade_usd_kw_median_pjm",
+        "ercot": "upgrade_usd_kw_median_ercot",
+        "spp": "upgrade_usd_kw_median_ercot",
+        "other": "upgrade_usd_kw_median_pjm"
+      },
+      "draw": "median × U(0.6, 1.4), or with 20% chance U(400, 600) $/kW",
+      "pay_buys_speed": false,
+      "source": "doc 45 §Q3 [A]; the ×U(0.6, 1.4) spread is mine"
+    },
+    "wait_draw": "grid_wait_q_<region> × U(0.8, 1.2) at request (Act IV's rule)",
+    "region_map": {
+      "pjm": "pjm",
+      "ohio": "pjm",
+      "ercot": "ercot",
+      "georgia": "other",
+      "arizona": "other",
+      "nordics": "other"
+    },
+    "fast_lane": {
+      "col": "fast_lane_q",
+      "curtail_h_yr_col": "fast_lane_curtail_h_yr",
+      "output_loss": 0.005,
+      "notice_hours": 24,
+      "future_only": "v2"
+    },
+    "flex_payment": {
+      "rating_col": "flex_capacity_rating",
+      "price_col": "pjm_capacity_price_usd_mwday",
+      "rule": "enrolled curtailable MW earn the PJM capacity price × flex_capacity_rating each day (0.5 in V2 from its trigger, none otherwise)",
+      "source": "doc 43 §0.9 item 8: demand response already clears in PJM's capacity auctions [A]; the 0.5 rating is designed [D]"
+    },
+    "co_location": "a site taking offtake from an operating plant in its region connects behind it with no wait, up to the plant's delivered firm MW (doc 43 §8.2)",
+    "transfer": "a position moves only with its site (doc 45 §Q3 [A/C])",
+    "rival_withdrawal_col": "queue_withdrawal_pct_yr"
+  },
+  "clean_credit": {
+    "modelled": false,
+    "rule": "None for any plant starting construction after 2035; plants started by 2033 keep their credit (2034: 75%, 2035: 50%)",
+    "note": "The game has never modelled the federal production credit (ventures.json has none). Recommended: keep it unmodelled so both sides of the cliff are treated alike; the v_sh_3 card tells the player. Open question 9."
+  }
+}
