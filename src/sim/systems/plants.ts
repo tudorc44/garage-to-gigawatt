@@ -18,6 +18,7 @@ import { HOURS_Q } from './energy.ts'
 import { scenarioOf } from './market.ts'
 import { regionOf } from './sites.ts'
 import { ventureCf, ventureRegions } from './ventures.ts'
+import { dryYearMult } from './wildcardsV.ts'
 
 const C = PLANTS.classes
 const F = PLANTS.finance
@@ -94,7 +95,8 @@ export function plantQuarter(state: GameState, v: Venture, quarter = state.quart
     // 10 hours a day at the 10-hour peak spread × the round trip (doc 43 §0.4, §7.3); the contracted half counts in
     // the multiple only (the files give pumped storage no contract price: mine, reversible).
     const mwh = v.mw * C.pumped.hours * DAYS_Q
-    const energyUsd = mwh * (row?.peak_spread_10h_usd_mwh ?? 0) * C.pumped.round_trip
+    // (M56.2: the dry year's ×0.75 on pumped storage in its region)
+    const energyUsd = mwh * (row?.peak_spread_10h_usd_mwh ?? 0) * C.pumped.round_trip * dryYearMult(state, region)
     const costUsd = (kw * C.pumped.fixed_usd_kw_yr) / 4 + mwh * C.pumped.var_usd_mwh
     return { mwh, marketUsdMwh, energyUsd, capacityUsd, costUsd, ebitdaUsd: energyUsd + capacityUsd - costUsd, contractedShare: contracted }
   }

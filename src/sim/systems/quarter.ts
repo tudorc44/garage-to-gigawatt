@@ -36,6 +36,8 @@ import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
 import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
 import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.ts'
 import { startQuarterRivalsIv } from './rivalsIv.ts'
+import { fireWildcardsV } from './wildcardsV.ts'
+import { endQuarterHomed, startQuarterOrbitEol } from './orbitEol.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -127,6 +129,8 @@ export function endQuarter(state: GameState): void {
   bookEnergy(state, energy)
   // Act V (M52.2): operating plants pay your share of their cash after their debt's service (outside EBITDA).
   endQuarterPlants(state)
+  // (M56.3: orbital tenants brought home pay their ground rent)
+  endQuarterHomed(state)
   endQuarterSpecialSites(state)
   // Act III (M12.2): the renewals opened this quarter are settled (the new terms start next quarter).
   resolveRenewals(state)
@@ -440,12 +444,16 @@ export function startNextQuarter(state: GameState): void {
   startQuarterOrbitOffers(state)
   startQuarterOrbitBuilds(state)
   startQuarterOrbitLive(state)
+  // Act V (M56.3): blocks at their design end wait for a decision.
+  startQuarterOrbitEol(state)
   // Act IV (M30.2): scripted lunar claims arrive; landing clocks run out.
   startQuarterMoonClaims(state)
   // (M30.4) lunar offtake offers; the Flag on the Pole's freeze.
   startQuarterMoonOps(state)
   // (M31.5) a rival's failure makes the news.
   startQuarterRivalsIv(state)
+  // Act V (M56.2): a drawn wildcard fires in its quarter.
+  fireWildcardsV(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

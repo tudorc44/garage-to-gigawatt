@@ -566,6 +566,19 @@ export function League({ state, r }: { state: GameState; r: QuarterReport }) {
 
 /** "16 MW · 0.07 EH/s", or null before the rival mines. Act II: "AI 590 MW · mining 560 MW". */
 function rivalScale(r: RivalSnapshot): string | null {
+  // Act V (M56): orbital and firm MW; the firm-power developer's orderbook against units delivered.
+  if (r.firmMw !== undefined) {
+    if (r.orderbookUnits !== undefined && (r.orderbookUnits ?? 0) > 0)
+      return t('ui.report.scale_act5_orderbook', {
+        firm: fmt.power((r.firmMw ?? 0) * 1000),
+        delivered: Math.round(r.deliveredUnits ?? 0),
+        ordered: Math.round(r.orderbookUnits ?? 0),
+      })
+    return t('ui.report.scale_act5_rival', {
+      orbit: fmt.power((r.orbitMw ?? 0) * 1000),
+      firm: fmt.power((r.firmMw ?? 0) * 1000),
+    })
+  }
   // Act IV (M31.5): orbital MW and lunar sites.
   if (r.orbitMw !== undefined)
     return t('ui.report.scale_act4_rival', {

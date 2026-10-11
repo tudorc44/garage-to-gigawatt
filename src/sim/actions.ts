@@ -132,6 +132,7 @@ import {
   sellPlantStake,
 } from './systems/plants.ts'
 import { commitFollowOn, followOnBlocker, stakeMarkUsd } from './systems/ventures.ts'
+import { decideEol, eolBlocker, settleEol } from './systems/orbitEol.ts'
 import {
   acceleratorCallBlocker,
   acceleratorJoinBlocker,
@@ -472,6 +473,8 @@ export type Action =
   | { type: 'SELL_PLANT_STAKE'; ventureId: string; share: number }
   /** Act V (M52.4): sell `share` (≤ 0.8) of an operating plant's merchant output forward (1 BW). */
   | { type: 'CONTRACT_PLANT_OUTPUT'; ventureId: string; share: number }
+  /** Act V (M56.3, doc 43 §9.1): an orbital block at its design end: replace, extend a year, bring home, or retire. */
+  | { type: 'ORBIT_EOL'; blockId: string; choice: 'replace' | 'extend' | 'bring_home' | 'retire' }
   /** Act V (M53): the queue: pay a position's upgrade bill, withdraw it, take V2's fast lane (1 BW each). */
   | { type: 'PAY_UPGRADE'; projectId: string }
   | { type: 'WITHDRAW_POSITION'; projectId: string }
@@ -670,6 +673,8 @@ function run(s: GameState, a: Action): Message | undefined {
       if (s.ventures?.some((v) => v.call)) settleVentureCalls(s)
       // M54: the accelerator's open call (dilute) and buyer (sell) take their defaults
       if (s.accelerator) settleAccelerator(s)
+      // M56.3: an orbital block's end of life waits for nobody: retire (the default)
+      if (s.act4Orbit?.blocks.some((b) => b.eolPending)) settleEol(s)
       // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
       startOrbitalBuilds(s)
       planOrbitAlerts(s)
@@ -939,6 +944,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sellSitePowerBlocker(s, a.siteId)
       if (blocked) return blocked
       sellSitePower(s, a.siteId)
+      return
+    }
+
+    case 'ORBIT_EOL': {
+      const blocked = eolBlocker(s, a.blockId, a.choice)
+      if (blocked) return blocked
+      decideEol(s, a.blockId, a.choice)
       return
     }
 

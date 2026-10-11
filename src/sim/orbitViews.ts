@@ -343,7 +343,11 @@ export function orbitBoardView(state: GameState) {
       kinds: ['shell', 'cloud'] as const,
       sizes: ORBIT.satellites.sizes_mw,
       shells: SHELL_IDS,
-      generations: GENERATION_IDS.map((g) => ({ id: g, available: availableGenerations(state).includes(g) })),
+      // (M56.3: gen38 is listed only once it exists, so Act IV's screen is as it was)
+      generations: GENERATION_IDS.filter((g) => g !== 'gen38' || availableGenerations(state).includes(g)).map((g) => ({
+        id: g,
+        available: availableGenerations(state).includes(g),
+      })),
     },
     manifest,
     licences,

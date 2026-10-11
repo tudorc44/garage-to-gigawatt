@@ -22,6 +22,7 @@ import { enterAct5 } from './systems/act5Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { LunarClaimantId, LunarSiteId, OfftakeBuyerId } from '../content/moonContent.ts'
 import type { SiteHeat } from './systems/heat.ts'
+import type { DrawnWildcardV } from './systems/wildcardsV.ts'
 import type { Ledger } from './ledger.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { DealNegotiation } from './systems/dealNegotiation.ts'
@@ -401,7 +402,7 @@ export interface OrbitalBlock {
   kind: 'shell' | 'cloud'
   mw: number
   shell: 'sso' | 'high_leo' | 'high_orbit'
-  gen: 'gen31' | 'gen33' | 'gen35'
+  gen: 'gen31' | 'gen33' | 'gen35' | 'gen38'
   stage: 'proposed' | 'building' | 'awaiting_launch' | 'climbing' | 'live' | 'retired' | 'sold'
   openedQuarter: number
   /** Whole mass to launch, tonnes (the generation's t/MW × MW × the shell's shielding). */
@@ -453,6 +454,10 @@ export interface OrbitalBlock {
   lostLaunches: number
   /** Its EBITDA in the last quarter it was live (what a buyer values). */
   lastEbitdaUsd?: number
+  /** Act V (M56.3, doc 43 §9.1): at its design end, a decision waits (replace, extend, bring home, retire). */
+  eolPending?: true
+  /** Act V (M56.3): quarters added by an extension (once; failures × 1.5 meanwhile). */
+  extendedQuarters?: number
 }
 
 /** Act IV (M29.2): a constellation licence in one shell (doc 33 §7.3). */
@@ -1504,6 +1509,17 @@ export interface GameState {
   accelerator?: Accelerator
   /** M55 (doc 43 §0.14 item 5): tools only: the accelerator's draws on their own seed, decoupled from act4Seed. */
   accelSeed?: number
+  /** Act V (M56.2, doc 43 §6.6): the two wildcards drawn at entry, each with its quarter (never shown in advance). */
+  act5Wildcards?: DrawnWildcardV[]
+  /** Act V (M56.3, doc 43 §9.1): orbital tenants brought home to a ground site, paying their rent to their term's end. */
+  act5Homed?: {
+    id: string
+    siteId: string
+    kw: number
+    rentUsdMwYr: number
+    endQuarter: number
+    tenant: 'sovereign' | 'frontier_lab' | 'inference_platform' | 'eo_processor'
+  }[]
   /** Act V (M51, doc 43 §6.7): the move log the reading score reads at the end of the act. */
   act5Moves?: Act5Move[]
   /** Act V (M51, doc 43 §6.3): the log of Read the market (Signals) reads, one indicator per quarter at most. */

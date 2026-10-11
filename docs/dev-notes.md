@@ -391,6 +391,19 @@ README). `check.py` PASS.
   - **6** done (`tools/act5/chipsDiagnosis.ts`, 200 draws on `accelSeed`, Fortress f1, 10% stake: the guard refuses 20%). Built 56:
     2040 value $386M vs paid-in $99M (3.91×); bought at a gain 33 (2.34×), at a loss 59 (0.62×), cancelled 52 (0). Sanity (built, all
     calls paid, ≥ 3×): 31/41; the misses: 7 in V3 (units ×0.6, 15× multiple: the binding term), 2 in V4 (2.9-3.0×), 1 late volume (0.67×).
+  - **Merged:** #17-#22 to `main` in order (merge commits), full suite green after each (1,658 → 1,717); `main` = `63ae112`;
+    m50-m55 tagged `-done` and deleted from the remote.
+- **Step B (M56, branch `m56` from `main`): §19 item 6.** Split: **1** rivals_v.json (league, Orrery gating, V3 auction) · **2** the
+  Act V wildcards (2 of 5) · **3** the orbit replacement cycle. One chunk each.
+  - **1** done: `rivalsVContent.ts`, `act5Rivals` (six; Orrery after F1/F3; firm MW and Ironvale's orderbook in the league), the V3
+    Orrery auction through BUY_ORRERY_BLOCKS. Fates stay out of the runtime view (step C's chapter report).
+  - **2** done: `wildcardsV.ts`, 2 of 5 drawn at the boundary. Mine: Q-Day = mining revenue and the treasury mark ×0.6 (coin sales
+    still at the market price), then a week down and $250K; fusion = the lasting EV multiplier ×1.1 then ×0.95; dry year on pumped
+    storage; moratorium blocks grid projects ≥ 50 MW in its region; transformer delay on grid requests. 1,728 tests.
+  - **3** done: `orbitEol.ts`: at a block's public design end, replace (new block, newest gen: gen38 from 2038Q4 via its market column),
+    extend (once; refit = a year's in-orbit insurance on capex: mine; failures ×1.5), bring home (contracted shells only, to the site with
+    most free MW, rent to term: mine), retire (default). Neutral card text (the per-future bodies aren't shown: leak caution). 1,733 tests.
+  - **Sims:** Act V only; goldens byte-identical. The rest of events_v.json's cards (incl. the triggers' cards) isn't wired: open question.
 
 ### Morning report (second run, 12 Oct 2026)
 

@@ -7,6 +7,7 @@ import type { Coin, GameState } from '../state.ts'
 import { coinPrice } from './market.ts'
 import type { LotWeek } from './mining.ts'
 import { accrue, book, bookSplit, siteBusiness, type Category, type LedgerRef } from '../ledger.ts'
+import { qDayTreasuryMult } from './wildcardsV.ts'
 
 const COINS: Coin[] = ['BTC', 'ETH']
 
@@ -109,5 +110,7 @@ export function sellTreasury(
 }
 
 export function treasuryValueUsd(state: GameState, w: MarketWeek): number {
-  return COINS.reduce((sum, c) => sum + state.treasury[c] * coinPrice(w, c), 0)
+  // (M56.2: Act V's Q-Day scare marks bitcoin ×0.6 while it lasts; × 1 otherwise)
+  const btc = qDayTreasuryMult(state)
+  return COINS.reduce((sum, c) => sum + state.treasury[c] * coinPrice(w, c) * (c === 'BTC' ? btc : 1), 0)
 }

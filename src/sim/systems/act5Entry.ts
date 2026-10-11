@@ -22,6 +22,7 @@ import { openRenewals, resolveRenewals } from './renewals.ts'
 import { poweredKw, usedKw } from './sites.ts'
 import { isPlant, plantStakeValueUsd } from './plants.ts'
 import { stakeMarkUsd } from './ventures.ts'
+import { drawWildcardsV } from './wildcardsV.ts'
 
 /** Free energized MW (doc 43 §0.6 item 2): energized and used by no lease, project, hosting client or own machine. */
 export function freeEnergizedMw(state: GameState, quarter = state.quarter): number {
@@ -113,6 +114,8 @@ export function enterAct5(state: GameState, vfuture: VFutureId): GameState {
   }
   // Open orbital tenant offers lapse (their default); the blocks keep running.
   for (const b of s.act4Orbit?.blocks ?? []) b.offers = []
+  // M56.2 (doc 43 §6.6): two of Act V's five wildcards, drawn now on their own stream.
+  s.act5Wildcards = drawWildcardsV(s)
 
   // Dropped: Act IV-only state (doc 43 §3.2), kept inside act4End.
   delete s.act4Moves

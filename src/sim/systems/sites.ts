@@ -138,7 +138,9 @@ export function usedKw(state: GameState, siteId: string): number {
   return (
     machinesKw(state, siteId) +
     hostingKw(state, siteId) +
-    projectsKw(state, siteId)
+    projectsKw(state, siteId) +
+    // (M56.3: an orbital tenant brought home takes its MW at the site; 0 before Act V)
+    (state.act5Homed?.length ? state.act5Homed.filter((h) => h.siteId === siteId).reduce((a, h) => a + h.kw, 0) : 0)
   )
 }
 
