@@ -434,7 +434,9 @@ README). `check.py` PASS.
   - **6** done: Orbit Replacer carries each new block through (Act IV's `orbitStep`, newest generation) and opens one more when cash ≥
     $500M (mine); Builder (Holder + every follow-on unit, 20% else 10%); V-B5 judged on OL, V-B9 on FB, V-B6 reported as Builder − Holder
     (Act V has no control). 1,770 tests; main bundle 230.9 KB. PR #25.
-- **Step C (M59, branch `m59` from `m58`):** diagnose (OL decomposition, OL V3 move list), re-measure, balance pass.
+- **Step C (M59, branch `m59` on `m58`):** split: **1** diagnostics (`tools/act5/diagnose.ts`) · **2** the re-measure · **3** balance pass.
+  - **1** done: OL's halving is its orbit book aging out (all 5 blocks retire by 2040; orbit $4.36B of $7.05B → 0 for Passive, V4 too);
+    OL V3's −21 is no scoring bug: the perfect reader made ±1 moves in ideal-0 quarters; it now rests there (as Act IV's). act5-v3/v4 goldens move.
 
 ### Report (third run, 13 Oct 2026)
 
