@@ -285,3 +285,9 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
     hazards only (cancel 0.105 → 0.1051, gain 0.055 → 0.0525, loss 0.09 → 0.0876 a year); `calibration_check` from
     20,000 games; `demand_trim` removed; blocking a sale at a gain needs the 49% stake; the epilogue's "in 2032 shipped"
     and the diligence line's "P(volume within 8 years) ≈ 0.30"; the cards' windows follow the later start.
+- **M59.3, 13 Oct 2026 (doc 43 §0.15's balance pass, §0.11 lever b, V-B4 on Firm Builder):**
+  - **Generator:** `tools/act5/market.py` › `scarcity`: V3's path ends at 0.75 (was 0.80) from 2039Q4 (`(15, 0.75)`).
+  - **Changes:** `market_v_v3.csv` › `scarcity_index` only (2038Q1-2040Q4: e.g. 2038Q4 0.9 → 0.875, 2040Q4 0.8 → 0.75);
+    every other column and file byte for byte as before (`npm run content:act5`, then `npm run content:market` for the JSON
+    the game reads). `check.py`: PASS. Lever c (V3's merchant power fall two quarters earlier) was tried and reverted: it
+    left V-B4 unchanged (1.039 to three places) and only added a pre-trigger price drop.
