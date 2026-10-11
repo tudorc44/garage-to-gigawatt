@@ -147,8 +147,10 @@ import {
   fastLaneBlocker,
   payUpgrade,
   payUpgradeBlocker,
+  sellSiteBlocker,
   sellSitePower,
   sellSitePowerBlocker,
+  sellWholeSite,
   takeFastLane,
   withdrawBlocker,
   withdrawPosition,
@@ -476,6 +478,8 @@ export type Action =
   | { type: 'TAKE_FAST_LANE'; projectId: string }
   /** Act V (M53): sell a site's free energized MW and its queue positions (1 BW). */
   | { type: 'SELL_SITE_POWER'; siteId: string }
+  /** Act V (M55, doc 43 §0.14 item 8): sell the whole site: its leased halls, free MW and positions (2 BW). */
+  | { type: 'SELL_SITE'; siteId: string }
   /** M54 (doc 43 §0.12): the accelerator venture: buy a stake, reserve chips, answer a call, vote on a buyer. */
   | { type: 'ACCEL_JOIN'; stake: number }
   | { type: 'ACCEL_RESERVE'; mw: number; tier: number }
@@ -935,6 +939,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sellSitePowerBlocker(s, a.siteId)
       if (blocked) return blocked
       sellSitePower(s, a.siteId)
+      return
+    }
+
+    case 'SELL_SITE': {
+      const blocked = sellSiteBlocker(s, a.siteId)
+      if (blocked) return blocked
+      sellWholeSite(s, a.siteId)
       return
     }
 

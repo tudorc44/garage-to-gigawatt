@@ -27,7 +27,7 @@ import { lunarHoldingUsd, poweredUsd } from './act5Entry.ts'
 import { recordAct5Exposure } from './act5Moves.ts'
 import { endQuarterPlants } from './plants.ts'
 import { payFlex } from './flex.ts'
-import { endQuarterQueue } from './queue.ts'
+import { endQuarterQueue, fastLaneEffectUsd } from './queue.ts'
 import { acceleratorValueUsd, endQuarterAccelerator } from './accelerator.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
@@ -112,10 +112,16 @@ export function endQuarter(state: GameState): void {
   // on, and the fast lane's output loss is an energy cost
   if (inActV(state)) {
     energy.revenueUsd += payFlex(state)
-    const loss = endQuarterQueue(state)
-    if (loss > 0) {
-      book(state, 'energy_opex', -loss)
-      energy.costUsd += loss
+    endQuarterQueue(state)
+    // (doc 43 §0.14 item 4: the lost output is an energy cost; the curtailed energy not bought, a lower power bill)
+    const fast = fastLaneEffectUsd(state)
+    if (fast.lossUsd > 0) {
+      book(state, 'energy_opex', -fast.lossUsd)
+      energy.costUsd += fast.lossUsd
+    }
+    if (fast.savingUsd > 0) {
+      book(state, 'power', fast.savingUsd)
+      state.quarterStats.powerCostUsd -= fast.savingUsd
     }
   }
   bookEnergy(state, energy)

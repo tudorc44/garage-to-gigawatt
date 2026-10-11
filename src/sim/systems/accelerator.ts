@@ -43,9 +43,16 @@ export interface AcceleratorDraws {
   lossMult: number
 }
 
+/**
+ * The venture's seed: the game's Act IV seed, unless a tool decoupled it (`accelSeed`, doc 43 §0.14 item 5's diagnosis:
+ * independent draws of the venture on the same company). No game sets it.
+ */
+const accelSeedOf = (state: Pick<GameState, 'seed' | 'act4Seed' | 'accelSeed'>) =>
+  state.accelSeed ?? act4SeedOf(state as GameState)
+
 /** One set per game (doc 49: "one slip draw per game"). Pure. */
-export function acceleratorDraws(state: Pick<GameState, 'seed' | 'act4Seed'>): AcceleratorDraws {
-  const r = substream(act4SeedOf(state as GameState), 'accelerator')
+export function acceleratorDraws(state: Pick<GameState, 'seed' | 'act4Seed' | 'accelSeed'>): AcceleratorDraws {
+  const r = substream(accelSeedOf(state), 'accelerator')
   const s = A.slip
   const k = Math.min(s.cap, Math.max(s.floor, lognormal(r, s.median, s.sigma)))
   const s0 = start()
@@ -79,7 +86,7 @@ export type AcceleratorOutcome = 'cancelled' | 'acquired_gain' | 'acquired_loss'
 
 /** The hazard roll at the end of quarter `q` (before volume): an outcome or null. */
 function hazardAt(state: GameState, q: number): AcceleratorOutcome | null {
-  const x = random(substream(act4SeedOf(state), `accelerator:q${q}`))
+  const x = random(substream(accelSeedOf(state), `accelerator:q${q}`))
   if (x < H.cancel / 4) return 'cancelled'
   if (x < (H.cancel + H.acquired_gain) / 4) return 'acquired_gain'
   if (x < (H.cancel + H.acquired_gain + H.acquired_loss) / 4) return 'acquired_loss'
@@ -248,6 +255,7 @@ export function settleAccelerator(state: GameState): void {
 function sellToBuyer(state: GameState, priceUsd: number): void {
   const a = state.accelerator!
   if (priceUsd > 0) book(state, 'asset_sales', priceUsd, { venture: 'accelerator' })
+  a.proceedsUsd = priceUsd
   refundReservation(state)
   a.stake = 0
   a.ended = 'acquired_gain'
@@ -357,6 +365,7 @@ export function endQuarterAccelerator(state: GameState): void {
     if (h === 'acquired_loss') {
       const usd = held ? roundCents(a.paidUsd * d.lossMult) : 0
       if (usd > 0) book(state, 'asset_sales', usd, { venture: 'accelerator' })
+      a.proceedsUsd = usd
       refundReservation(state)
       a.ended = 'acquired_loss'
       a.stake = 0
