@@ -434,7 +434,95 @@ README). `check.py` PASS.
   - **6** done: Orbit Replacer carries each new block through (Act IV's `orbitStep`, newest generation) and opens one more when cash ≥
     $500M (mine); Builder (Holder + every follow-on unit, 20% else 10%); V-B5 judged on OL, V-B9 on FB, V-B6 reported as Builder − Holder
     (Act V has no control). 1,770 tests; main bundle 230.9 KB. PR #25.
-- **Step C (M59, branch `m59` from `m58`):** diagnose (OL decomposition, OL V3 move list), re-measure, balance pass.
+- **Step C (M59, branch `m59` on `m58`):** split: **1** diagnostics (`tools/act5/diagnose.ts`) · **2** the re-measure · **3** balance pass.
+  - **1** done: OL's halving is its orbit book aging out (all 5 blocks retire by 2040; orbit $4.36B of $7.05B → 0 for Passive, V4 too);
+    OL V3's −21 is no scoring bug: the perfect reader made ±1 moves in ideal-0 quarters; it now rests there (as Act IV's). act5-v3/v4 goldens move.
+  - **2** done: the re-measure (2,400 runs, 0 unreconciled): V-B1, B2, B5, B7, B9, B10, B11 pass; B3, B4 (FB 1.025), B8 miss.
+  - **3** done: §0.11 lever b (V3 scarcity end 0.80 → 0.75): V-B4 FB 1.025 → 1.039, still a miss; lever c tried, no effect, reverted;
+    V1 targets unchanged; act5-v3 golden moves. Full re-run (2,400 runs): table below. 1,770 tests; main bundle 230.9 KB. PR #26.
+
+### Report (fourth run, 13 Oct 2026)
+
+**Steps:** A done (#23, #24 merged before the run; §0.15 as M58.0) · B done (M58, [PR #25](https://github.com/tudorc44/garage-to-gigawatt/pull/25),
+open, base `main`) · C done (M59, PR #26, open, base `m58`). Nothing stopped.
+
+**Per milestone:** Acts I-IV goldens byte-identical throughout; Act V goldens moved by design (renewals and interest; the cards; the
+perfect reader's rest; lever b). M58: 1,770 tests, 230.9 KB. M59: 1,770 tests, 230.9 KB. Long sims: Act V only (Acts I-IV untouched).
+
+**Renewals before/after** (Firm Builder, a 10 MW hall leased at $18.00M a year): V1 2038Q4 offer ×0.749 ($13.49M) → ×1.233
+($22.20M), walk 1.7% → 1.3%; V3 2039Q4 ×0.486 ($8.75M) → ×0.800 ($14.40M), walk 4.4% → 5.5% (before lever b; ×0.75 after it).
+
+**OL decomposition** (2035Q4 $7.05B: orbit $4.36B, AI $1.44B, lunar $0.59B, construction $0.55B, cash $0.12B; medians of 5 seeds):
+all five live blocks reach their 5-year design end inside the act and retire. Passive loses the whole orbit book (−$4.36B) in every
+future, V4 included; cash grows +$1.30-1.33B, construction −$0.43B, AI +$0.78B (V1) to −$0.10B (V3), lunar −$59M to +$59M. Multiples
+0.62 / 0.57 / 0.48 / 0.53. The Orbit Replacer (13 new blocks, 10 live by 2040) keeps −$1.96B to −$3.76B of orbit; in V4 the
+multiple 16× → 20× adds +$0.48B, in V1-V3 it falls to 9× / 7.5× / 6× (−$0.85B to −$0.99B); it borrows ($0.2-0.4B). Multiples 0.72 /
+0.52 / 0.38 / 0.74. The founder stake is unchanged (0.158). Cause: an orbit-heavy 2035 company's fleet ages out by 2040; no rule bug.
+
+**OL V3 move list:** −21 wasn't a scoring bug. The perfect reader took the Balanced habits in ideal-0 quarters (19 short renewals,
++1, 10 of them in the decoy window: penalty 30). Fixed in the bot (rests in 0s): seed 1 now scores 93 against Passive's 60, its 8 moves
+all −1 in q7-q8, all marked "match".
+
+**§18 table** (medians, 2040Q4 before the exit ÷ act5Entry, 30 seeds; before = M59.2, after = M59.3; FB / OL, v1 v2 v3 v4):
+
+| Bot | FB before | FB after | OL before | OL after |
+|---|---|---|---|---|
+| Holder | 1.631 1.230 0.931 1.063 | 1.631 1.230 0.891 1.063 | 0.691 0.532 0.438 0.482 | 0.691 0.532 0.422 0.482 |
+| Flex | 1.625 1.267 0.904 1.032 | 1.625 1.267 0.866 1.032 | 0.654 0.564 0.415 0.458 | 0.654 0.564 0.400 0.458 |
+| Seller | 1.192 1.186 1.180 1.203 | same | 0.556 0.551 0.547 0.564 | same |
+| Locker | 1.482 1.202 0.954 1.046 | 1.482 1.202 0.926 1.046 | 0.640 0.541 0.440 0.486 | 0.640 0.541 0.429 0.486 |
+| Orbit Replacer | 1.560 1.134 0.778 1.291 | 1.560 1.134 0.742 1.291 | 0.719 0.519 0.380 0.738 | 0.719 0.519 0.363 0.738 |
+| Builder | 1.501 1.099 0.798 0.932 | 1.501 1.099 0.759 0.932 | 0.650 0.490 0.395 0.440 | 0.650 0.490 0.379 0.440 |
+| Passive | 1.409 1.275 1.038 1.139 | 1.409 1.275 1.004 1.139 | 0.617 0.573 0.481 0.528 | 0.617 0.573 0.467 0.528 |
+| Perfect | 1.627 1.212 1.106 1.270 | same | 0.654 0.563 0.534 0.592 | same |
+| Over-reactor | 1.173 1.177 0.932 1.047 | 1.173 1.177 0.893 1.047 | 0.534 0.529 0.433 0.461 | 0.534 0.529 0.417 0.461 |
+
+| # | After the balance pass | Verdict |
+|---|---|---|
+| V-B1 | best FB: holder, flex, seller, orbit; OL: orbit, flex, seller, orbit; each within 10% in ≥ 2 | PASS |
+| V-B2 | FB V1 Holder ÷ Seller 1.368, Holder ÷ Locker 1.100 (OL info 1.242 / 1.079) | PASS |
+| V-B3 | V2 Flex ÷ Holder FB 1.030, OL 1.061 (≥ 1.15) | MISS |
+| V-B4 | FB V3 Locker ÷ Holder 1.039 (was 1.025; ≥ 1.05), no busts; Seller ÷ Holder 1.324 | MISS (0.011 short) |
+| V-B5 | OL V4 Orbit Replacer ÷ Holder 1.530 (FB info 1.215) | PASS |
+| V-B6 | Builder − Holder: FB −0.13, OL −0.04 in every future and seed (the follow-ons: EGS runs, the SMR unit is cancelled) | information |
+| V-B7 | 0 busts in 120 | PASS |
+| V-B8 | Perfect ÷ Passive FB 1.155 / 0.951 / 1.101 / 1.115; OL 1.061 / 0.983 / 1.143 / 1.121; Over-reactor ≤ 0.924 everywhere | MISS (perfect) |
+| V-B9 | FB +28 / +40 / +33 / +19 (OL info +33 / +47 / +33 / +19) | PASS |
+| V-B10 | no fusion before 2038; EGS2 first power 1.00 | PASS |
+| V-B11 | hold ÷ sell FB 0.922 / 0.880 / 0.824 / 0.813; OL 0.942 / 0.866 / 0.833 / 0.810 | PASS |
+| V-B12, B14 | by tests | PASS |
+| V-B13 | 20 Plan phases | information |
+
+**Balance changes:** one. §0.11 lever b, V3's `scarcity_index` end 0.80 → 0.75 (`tools/act5/market.py`, `market_v_v3.csv` and its
+JSON, README logged): V-B4 FB 1.025 → 1.039. Lever c (V3's merchant fall two quarters earlier) moved nothing (EGS2 is 90% contracted;
+2040's value sees the same end price) and was reverted. Lever a (the lease-term mix) is no value in any file: not applied. V-B2's and
+V-B11's levers weren't triggered (both pass). Every V1 target still passes.
+
+**Misses and proposed fixes** (no lever left):
+1. V-B4 (FB 1.039): proposed, the V3 renewal factor one more step (0.75 → 0.70), or judge V3 on Seller ÷ Holder (1.32), which already
+   rewards the hedge.
+2. V-B3 (FB 1.030, OL 1.061): flexibility earns only V2's capacity payment × 0.5 on enrolled MW, and enrolment costs 0.5% of output.
+   Proposed: V2's `flex_capacity_rating` 0.5 → 1.0 after its trigger, or a lower grid wait for flexible requests.
+3. V-B8 (Perfect ÷ Passive in V2 0.95-0.98): V2's ideal is +1 for 8 quarters, then −1; the +1 moves (short renewals) earn less than the
+   offered terms Passive keeps. Proposed: re-check V2's ideal stances against the V2 economics, or let V2's early scarcity rise (1.07)
+   reach renewals faster.
+
+**Assumptions (mine, reversible), this run:** walks ÷ scarcity apply to GPU renewals too; interest is net interest below EBITDA;
+enrolment takes a site's whole running load, with no un-enrolling; card choices act as their Plan actions without Bandwidth; the cash-call
+and end-of-life cards are their Plan panels (not second interrupts); a fund bid takes the largest stake, a site bid the most valuable site;
+a bought position is 20 MW at the biggest site; a lease lock touches leases ending within 4 quarters; the trip cost is the stake's lost
+energy revenue; the licensing clock shifts SMRs still licensing; the follow-on card takes a 10% stake, its 5% discount as a rebate;
+the space window's raise is 10%; the launch-slot reservation is noted only; Orbit Replacer opens blocks at cash ≥ $500M (20 MW,
+newest generation, project debt); the Builder takes 20% stakes (else 10%); the perfect reader rests in 0 quarters.
+
+**Open questions for the design thread:**
+1. The four trigger cards' titles are the hidden trigger titles, and V2's names its future ("The Flexible Lane Opens"); they play from
+   the trigger quarter as §0.15 asks. Keep, or give them neutral titles in doc 47's generator?
+2. V-B4 at 1.039: take a further step (0.70), accept the near-miss, or judge V3 on Seller ÷ Holder?
+3. V-B3 and V-B8: which of the proposed fixes, if any?
+4. V-B6: Act V has no control venture; is Builder − Holder (negative: the SMR follow-on is cancelled in every run) the measure you want?
+5. The launch-slot reservation (V4 card) has no system; build one (e.g. a faster replacement launch), or leave it a note?
+6. The live site: by §0.15's recommendation the core targets (V-B1, B2, B4, B11) still miss on B4; keep the flag on until settled?
 
 ### Report (third run, 13 Oct 2026)
 

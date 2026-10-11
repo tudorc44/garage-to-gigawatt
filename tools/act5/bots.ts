@@ -17,7 +17,9 @@
 //   overreactor  Balanced, except in the future's decoy quarters it does the decoy's wrong stance hard.
 //   passive  Passive: no actions at all (every card and offer at its default).
 //   perfect  The perfect reader (V-B8, V-B9): the +1 moves in quarters whose ideal stance is +1, the −1 moves in the −1
-//            quarters, the Balanced habits in the 0s. Reads the hidden ideal: tools only.
+//            quarters, and in the 0s it rests (calls and block replacements only, which score 0), as Act IV's perfect
+//            reader does (M59.1: it used the Balanced habits there, whose short renewals and contracts are ±1 moves).
+//            Reads the hidden ideal: tools only.
 import { CONTENT, actFirstQuarter } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { Strategy } from '../../src/sim/replay.ts'
@@ -158,6 +160,8 @@ const ORBIT_OPEN_CASH_USD = 500e6
 const PLUS: ((s: GameState) => Action[])[] = [calls, renewals('short'), payUpgrades, requestGridMw, payUpgrades]
 const MINUS: ((s: GameState) => Action[])[] = [calls, renewals('long'), contractOutput(0.8), sellStakes, sellSites]
 const BALANCED: ((s: GameState) => Action[])[] = [calls, renewals('short'), payUpgrades, contractOutput(0.5), replaceBlocks]
+/** A quarter with no stance: only what scores 0 (calls, block replacements). */
+const REST: ((s: GameState) => Action[])[] = [calls, replaceBlocks]
 
 const strategy = (plan: (s: GameState) => Action[]): Strategy => ({ plan })
 
@@ -208,7 +212,7 @@ export function act5Bot(name: Act5Archetype): Strategy {
     case 'perfect':
       return strategy((s) => {
         const ideal = s.vFutureId ? idealStancesV(s.vFutureId)[q5(s)] : 0
-        return chain(s, ideal === 1 ? PLUS : ideal === -1 ? MINUS : BALANCED)
+        return chain(s, ideal === 1 ? PLUS : ideal === -1 ? MINUS : REST)
       })
   }
 }
