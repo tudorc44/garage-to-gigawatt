@@ -1011,8 +1011,8 @@ function TodoPanel({
     )
   }
 
-  // Act I-II actions that can never unlock in Act V (M62.4): hidden there
-  const neverHere = state.act === 5
+  // Act I-II actions that can never unlock from Act III on (M62.4 in Act V; M63.5, doc 43 §0.19 item 7: Acts III-IV too)
+  const neverHere = state.act >= 3
   return (
     <div class="panel p" style={{ gap: 0 }}>
       {state.act === 1 && <Tip id="todo" act={1} />}
@@ -1243,7 +1243,7 @@ function TodoPanel({
       <div class="label group">{t('ui.plan.group.capital')}</div>
       <BridgePayment state={state} />
       <Runway state={state} />
-      {/* (M62.4, doc 43 §0.18: in Act V the Act I-II rounds and loans can never unlock: hidden, not struck through) */}
+      {/* (M62.4, M63.5: from Act III on the Act I-II rounds and loans can never unlock: hidden, not struck through) */}
       {!neverHere && (
         <>
           <RaiseRow state={state} act={act} open={open} round="friends_family" />

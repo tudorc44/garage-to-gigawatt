@@ -173,8 +173,14 @@ if (FUTURES.includes('v1') && has('holder') && has('seller') && has('locker'))
     const hl = ratio(p, 'v1', 'holder', 'locker')
     say(`V-B2 ${p}${GROUND.includes(p) ? '' : ' (information)'}: V1 Holder ÷ Seller ${f3(hs)} (≥ 1.2), Holder ÷ Locker ${f3(hl)} (≥ 1.0) → ${verdict(hs >= 1.2 && hl >= 1)}`)
   }
-if (FUTURES.includes('v2') && has('flex') && has('holder'))
-  for (const p of PRESETS) say(`V-B3 ${p}: V2 Flex ÷ Holder ${f3(ratio(p, 'v2', 'flex', 'holder'))} (≥ 1.15) → ${verdict(ratio(p, 'v2', 'flex', 'holder') >= 1.15)}`)
+// (doc 43 §0.19 item 2: V-B3 is "in V2, the Flex Operator is the best of the strategy archetypes")
+const STRATEGIES: Act5Archetype[] = (['holder', 'flex', 'seller', 'locker', 'orbit', 'builder'] as const).filter(has)
+if (FUTURES.includes('v2') && has('flex'))
+  for (const p of PRESETS) {
+    const best = STRATEGIES.map((b) => ({ b, m: med(p, 'v2', b) })).sort((x, y) => y.m - x.m)
+    const second = best.find((x) => x.b !== 'flex')!
+    say(`V-B3 ${p}: V2 best ${best[0].b} ${f3(best[0].m)}; Flex ${f3(med(p, 'v2', 'flex'))}, next ${second.b} ${f3(second.m)} → ${verdict(best[0].b === 'flex')}`)
+  }
 // (doc 43 §0.16 item 3: V-B4 is V3 Seller ≥ 1.2 × Holder, and Locker > Holder, on the ground-heavy start; Holder's
 // game-over rate ≤ 30% as before)
 if (FUTURES.includes('v3') && has('seller') && has('locker') && has('holder'))

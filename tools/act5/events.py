@@ -215,11 +215,13 @@ V4 = [
          [NOTE, {"label": "Reserve replacement launch slots", "effect": {"bandwidth": -1, "orbit_booking": {"deposit_share": 0.15}}}],
          "Note it", "Doc 40 §D3: launch below $200/kg needs ~180 heavy launches a year [C]",
          {"Note it": 0, "Reserve replacement launch slots": 0}),
-    card("v_v4_c2", "v4", "2037Q4", "decoy", "A Reactor in Every Region",
-         "Ironvale Power and two utilities announce a twenty-reactor orderbook and promise abundant firm power by the mid-2040s. A broker offers to buy one of your sites now, before the supply arrives.",
-         [NOTE, {"label": "Sell a site while ground is dear", "effect": {"offer": {"kind": "site_bid", "premium_mult": 1.0}}}],
-         "Note it", "Doc 43 §6.4: the SMR wave decoy [A/B for its basis]",
-         {"Note it": 0, "Sell a site while ground is dear": -1}),
+    # (M63.3, doc 43 §0.19 item 3: V4's decoy is now scarcity-up, like V3's record auction; the SMR-wave decoy pointed the
+    # right way in V4, where ground rents do soften)
+    card("v_v4_c2", "v4", "2037Q4", "decoy", "Firm Power Runs Short",
+         "Three utilities file for emergency capacity after a hot summer, and the capacity auction clears at the cap. Brokers say ground power will be the scarcest thing of the decade.",
+         [NOTE, {"label": "Buy a queue-holding site before prices run", "effect": {"offer": {"kind": "site_buy", "premium_mult": 1.0}}}],
+         "Note it", "Doc 43 §0.19 item 3: V4's scarcity-up decoy (designed), shaped like V3's record auction",
+         {"Note it": 0, "Buy a queue-holding site before prices run": 1}),
     card("v_v4_c3", "v4", "2038Q1", "signal", "Northgate Matches the Price",
          "Northgate matches Carrack's third-party price for the first time, and lighter satellites are due within months. Orbital compute builders start booking a year of launches at a time.",
          [NOTE], "Note it", "Doc 40 §D3: Forethought ~$100/kg competitive [C]; doc 33 (Northgate, the second launcher)"),

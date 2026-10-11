@@ -1,6 +1,6 @@
 // Act V's lunar holding (M62.2; doc 43 §9.2 with §0.18): the Act IV Moon programme as one holding, worth its 2035Q4 value
 // × the future's `lunar_value_index`. One action: sell it to a bloc at half its value (1 Bandwidth; a move that scores 0).
-// The distress sale to a rival (× 0.3) isn't offered (mine, reversible: §9.2 ties it to distress, which no rule defines).
+// The distress sale to a rival (§9.2's × 0.3) is dropped (doc 43 §0.19 item 6): the bloc sale is the one way out.
 // The view shows the first-tonnes outlook as the public range only: the year drawn at the boundary stays hidden until the
 // finale's epilogue.
 import { BALANCE, act5Row } from '../../content/index.ts'

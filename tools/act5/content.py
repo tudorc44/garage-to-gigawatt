@@ -137,7 +137,8 @@ DECOYW = {
     "v1": (["2037Q1", "2037Q2", "2037Q3"], -1, "firm_buildout", "The SMR wave tempts selling scarcity (the Demand Plateau reading) just as the queue locks up."),
     "v2": (["2037Q2", "2037Q3", "2037Q4"], -1, "firm_buildout", "The SMR wave tempts selling scarcity early, before the trigger, when V2 still pays for exposure."),
     "v3": (["2037Q1", "2037Q2"], 1, "capacity_market", "A record auction tempts buying scarcity (the Queue is King reading) just before demand plateaus."),
-    "v4": (["2037Q3", "2037Q4", "2038Q1"], -1, "firm_buildout", "The SMR wave tempts selling the ground early for the wrong reason; the softening comes in 2039, from orbit."),
+    # (M63.3, doc 43 §0.19 item 3: V4's decoy tempts buying scarcity, as V3's does; its quarters unchanged)
+    "v4": (["2037Q3", "2037Q4", "2038Q1"], 1, "capacity_market", "A capacity squeeze tempts buying ground scarcity just before orbit takes the marginal gigawatt and ground rents soften."),
 }
 WHY = {
     "v1": "Queue is King: add scarcity exposure throughout (short renewals, hold free MW, pay upgrades, keep plants merchant).",
@@ -236,7 +237,7 @@ PLANTS = {
         "region_map": {"pjm": "pjm", "ohio": "pjm", "ercot": "ercot", "georgia": "other", "arizona": "other", "nordics": "other"},
         "fast_lane": {"col": "fast_lane_q", "curtail_h_yr_col": "fast_lane_curtail_h_yr", "output_loss": 0.005, "notice_hours": 24, "future_only": "v2"},
         "flex_payment": {"rating_col": "flex_capacity_rating", "price_col": "pjm_capacity_price_usd_mwday",
-                         "rule": "enrolled curtailable MW earn the PJM capacity price × flex_capacity_rating each day (0.75 in V2 from its trigger, none otherwise)",
+                         "rule": "enrolled curtailable MW earn the PJM capacity price × flex_capacity_rating each day (0.5 in V2 from its trigger, none otherwise)",
                          "source": "doc 43 §0.9 item 8: demand response already clears in PJM's capacity auctions [A]; the 0.5 rating is designed [D]"},
         "co_location": "a site taking offtake from an operating plant in its region connects behind it with no wait, up to the plant's delivered firm MW (doc 43 §8.2)",
         "transfer": "a position moves only with its site (doc 45 §Q3 [A/C])",

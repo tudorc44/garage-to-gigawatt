@@ -454,6 +454,13 @@ README). `check.py` PASS.
   - **2-3** done: re-measure (0 unreconciled): core V-B2, B4, B11 pass, V-B1 misses on FB (orbit never within 10%); V-B3's lever
     (V2 flex rating 0.5 → 0.75) moves it 1.030 → 1.032 only; full after-run below. 1,776 tests. PR #28.
 
+## M63: doc 43 §0.19 (branch `m63` from `main`)
+
+- **1-6** done: orbit unit economics (V4 post-trigger 3.5-5.1× capex: no cost change); the Orbit Replacer's bug found: it never rented
+  ground-link units, so its interactive tenants earned nothing (V4 FB 1.030 → 1.238); V-B3 "Flex best in V2"; flex rating back to 0.5;
+  V4's decoy "Firm Power Runs Short" (+1); lunar distress sale dropped; Act I-II rows hidden from Act III on; Act III/IV content chunks
+  (largest chunk 245 KB). 1,784 tests. Re-measure below.
+
 ## M62: the Act V screens (doc 43 §0.18 and §17; branch `m62` from `main`)
 
 - **Done as one chunk:** the Orbit tab under Act IV's rules (Moon stays Act IV); the lunar holding panel and SELL_LUNAR_HOLDING (bloc
