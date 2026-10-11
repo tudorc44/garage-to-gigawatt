@@ -97,11 +97,15 @@ function useAct4Entry(): Entry4Module | null {
 
 type Entry5Module = typeof import('./screens/Act5Entry.tsx')
 
-/** M49: Act V's intro and chapter report, loaded lazily (their own chunk), as Act IV's. */
+/**
+ * M49: Act V's intro, chapter report and "Start at Act V", loaded lazily (their own chunk), as Act IV's. Doc 43 §0.13:
+ * behind a dev flag until Act V is playable end to end: `npm run dev`, staging and the tests have it; the production
+ * build (GitHub Pages) drops the module (the inline check), so it shows no Act V entry point.
+ */
 function useAct5Entry(): Entry5Module | null {
   const [m, setM] = useState<Entry5Module | null>(null)
   useEffect(() => {
-    void import('./screens/Act5Entry.tsx').then(setM)
+    if (import.meta.env.MODE !== 'production') void import('./screens/Act5Entry.tsx').then(setM)
   }, [])
   return m
 }
@@ -364,12 +368,17 @@ export function App() {
           setShowEnd(false)
           commit(null)
         }}
-        // M49 (doc 43 §2, V-D2): a finished Act IV continues to Act V (the intro first), or retires at 2035.
-        onContinueToAct5={() => {
-          setShowEnd(false)
-          commit(toAct5(game))
-          setAct5Intro(true)
-        }}
+        // M49 (doc 43 §2, V-D2): a finished Act IV continues to Act V (the intro first), or retires at 2035. §0.13: only
+        // where Act V's module loads (not in the production build), so the live site shows "Retire" as today's finale.
+        onContinueToAct5={
+          entry5
+            ? () => {
+                setShowEnd(false)
+                commit(toAct5(game))
+                setAct5Intro(true)
+              }
+            : undefined
+        }
       />
     )
   } else if (entry && game && inActIII(game) && act3Intro) {

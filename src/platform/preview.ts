@@ -44,6 +44,8 @@ export function guardTestBuildSave(
       r.state.act3QuickStart)
   )
     return { ok: false, error: { key: 'error.save_test_build' } }
+  // M49 (doc 43 §0.13): Act V is behind a dev flag until it is playable end to end, so any Act V save is a test build's.
+  if (r.ok && !preview && r.state.act === 5) return { ok: false, error: { key: 'error.save_test_build' } }
   return r
 }
 

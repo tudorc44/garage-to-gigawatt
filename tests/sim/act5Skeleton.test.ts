@@ -17,6 +17,7 @@ import { activeRivals } from '../../src/sim/systems/rivals.ts'
 import { buildAct5Entry } from '../../src/sim/systems/act5Entry.ts'
 import { PRESETS_V } from '../../src/content/presetsAct5.ts'
 import { playAct5Recipe } from '../../tools/act5/presetRun.ts'
+import { guardTestBuildSave } from '../../src/platform/preview.ts'
 import { act4Company } from './act4Helpers.ts'
 
 let end4: GameState | null = null
@@ -140,6 +141,14 @@ describe('Act V presets (M49, doc 43 §3.4): real companies, values set by the s
       const s5 = toAct5(end, { preset: p.id })
       expect([s5.act, s5.act5Preset, s5.futureId]).toEqual([5, p.id, p.act4_future])
     }
+  })
+})
+
+describe('Act V behind the dev flag (doc 43 §0.13)', () => {
+  it('production refuses an Act V save (a test build made it); a test build loads it', () => {
+    const s5 = toAct5(act4Finished(), { vfuture: 'v1' })
+    expect(guardTestBuildSave({ ok: true, state: s5 }, false).ok).toBe(false)
+    expect(guardTestBuildSave({ ok: true, state: s5 }, true).ok).toBe(true)
   })
 })
 

@@ -343,6 +343,15 @@ README). `check.py` PASS.
 2. **Fortress's V3:** 1.028 on the real files; confirm the balance pass owns it (§0.11's levers).
 3. **Generators:** keep them in Python, or port them to TypeScript?
 
+## Second unattended run, 12 Oct 2026 (doc 43 v1.2 with §0.13; steps A-F)
+
+- **Step A:** doc 43 §0.13 committed. Act V's entry points sit behind a dev flag (§0.13):
+  - **How:** `Act5Entry.tsx` loads only when `import.meta.env.MODE !== 'production'` (mine, reversible: the codebase's
+    test-build pattern), so dev, staging and tests have Act V, and the GitHub Pages build drops the chunk.
+  - **The chapter report in production:** without it, Act IV's chapter report shows "The finale →" as today.
+  - **Saves:** production refuses an Act V save.
+  - **Tests:** act3Gate checks production has no `ACT5_ENTRY_MARKER` or Act5Entry chunk, and staging has both. 1,658 tests.
+
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 
 Split: **1** the asset (WebP 1152 and 640 px in `src/assets/art/`; the PNG original in `docs/art/incoming/`) · **2** the art

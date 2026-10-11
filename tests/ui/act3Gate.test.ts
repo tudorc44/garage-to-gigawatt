@@ -27,6 +27,7 @@ import {
 } from '../../src/sim/selectors.ts'
 import { toAct3, type GameState } from '../../src/sim/state.ts'
 import { ACT4_PREVIEW_MARKER } from '../../src/ui/act4QuickStart.ts'
+import { ACT5_ENTRY_MARKER } from '../../src/ui/screens/Act5Entry.tsx'
 import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import {
   PREVIEW_MARKER,
@@ -82,6 +83,13 @@ describe('the gate in the builds', () => {
     expect(assets).toMatch(/Act4Entry/)
     expect(assets).not.toMatch(/Act4Preview/)
     expect(production.text).not.toContain(ACT4_PREVIEW_MARKER)
+  })
+
+  it('M49 (doc 43 §0.13): the production build shows no Act V entry point; staging has them', () => {
+    expect(production.text).not.toContain(ACT5_ENTRY_MARKER)
+    expect(readdirSync(join(production.dir, 'assets')).join(' ')).not.toMatch(/Act5Entry/)
+    expect(staging.text).toContain(ACT5_ENTRY_MARKER)
+    expect(readdirSync(join(staging.dir, 'assets')).join(' ')).toMatch(/Act5Entry/)
   })
 
   it('the main bundle stays under the 500 KB warning in production (Act III stays out of it)', () => {

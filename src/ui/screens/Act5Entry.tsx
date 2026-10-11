@@ -10,6 +10,12 @@ import { fmt } from '../format.ts'
 
 const tx = (key: string, params?: Record<string, string | number>) => tDynamic(key, key, params)
 
+/**
+ * Marks Act V's entry points (doc 43 §0.13: behind a dev flag until Act V is playable end to end). This module loads
+ * only outside the production build, so the GitHub Pages build carries neither it nor this string (act3Gate.test.ts).
+ */
+export const ACT5_ENTRY_MARKER = 'g2g-act5-entry'
+
 /** A5-01: what the company carries into Act V, and "Start 2036". */
 export function Act5Intro(props: { state: GameState; onEnter: () => void }) {
   const e = props.state.act5Entry
@@ -26,7 +32,7 @@ export function Act5Intro(props: { state: GameState; onEnter: () => void }) {
   return (
     <div class="screen">
       <div class="center-page">
-        <div class="panel end-card chapter-card act-intro" data-act5-intro>
+        <div class="panel end-card chapter-card act-intro" data-act5-intro data-flag={ACT5_ENTRY_MARKER}>
           <div class="label">{tx('a5.intro.years')}</div>
           <h1 class="screen-title">{tx('a5.intro.title')}</h1>
           <p class="num-s">{tx('a5.intro.lead')}</p>
@@ -76,7 +82,7 @@ export function StartAct5(props: { onReady: (end: GameState, preset: Act5PresetI
     }, 30)
   }
   return (
-    <div class="panel p start-card" data-start-act5>
+    <div class="panel p start-card" data-start-act5 data-flag={ACT5_ENTRY_MARKER}>
       <button type="button" class={`btn${open ? ' btn-primary' : ''}`} aria-expanded={open} onClick={() => setOpen(!open)}>
         {tx('ui.title.start_act5')}
       </button>
