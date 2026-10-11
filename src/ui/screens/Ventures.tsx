@@ -278,6 +278,12 @@ function PlantsPanel(props: { state: GameState; run: (a: Action) => void }) {
               pitch: `$${Math.round(f.pitchUsdKw).toLocaleString('en-US')}`,
             })}
           </p>
+          {/* (doc 43 §0.17 item 4: the SMR's next unit is a bet carried past 2040) */}
+          {f.cls === 'smr' && (
+            <p class="num-s muted" style={{ margin: 0 }} data-follow-on-after-2040>
+              {t('ui.plants.follow_after_2040')}
+            </p>
+          )}
           {plan && (
             <button
               type="button"

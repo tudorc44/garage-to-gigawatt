@@ -160,9 +160,9 @@ T = {
     # ---- A5-11 Start at Act V, and Act IV's chapter report
     "a5.start.title": "Start at Act V",
     "a5.start.firm_builder": "Firm Builder",
-    "a5.start.firm_builder.line": "A ground landlord with power coming from a plant that switches on in 2036-38.",
+    "a5.start.firm_builder.line": "A ground landlord whose first geothermal plant has just switched on.",
     "a5.start.orbital_landlord": "Orbital Landlord",
-    "a5.start.orbital_landlord.line": "An orbit-heavy company whose first satellites retire in 2036-37.",
+    "a5.start.orbital_landlord.line": "A ground-and-orbit company whose five orbital blocks all reach end of life inside the act: replacing them is its game.",
     "a5.start.small_grid": "Small Grid",
     "a5.start.small_grid.line": "One site, a battery and a place in the queue: the cheap seat.",
     "a5.start.scenario_mode": "Scenario Mode: pick the future openly (unlocked after one Act V finish).",

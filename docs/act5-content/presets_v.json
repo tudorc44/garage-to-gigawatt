@@ -7,6 +7,7 @@
  "presets": [
   {
    "id": "firm_builder",
+   "description": "a ground landlord whose first geothermal plant has just switched on",
    "act4_preset": "fortress",
    "act4_future": "f2",
    "act4_seed": 1,
@@ -27,6 +28,7 @@
   },
   {
    "id": "orbital_landlord",
+   "description": "a ground-and-orbit company whose five orbital blocks all reach end of life inside the act: replacing them is its game",
    "act4_preset": "fortress",
    "act4_future": "f1",
    "act4_seed": 1,

@@ -14,6 +14,8 @@ const schema = z.object({
   presets: z.array(
     z.object({
       id: z.enum(ACT5_PRESET_IDS),
+      /** Doc 43 §0.17 item 2: the preset's description (the Start at Act V screen's line). */
+      description: z.string().optional(),
       act4_preset: z.enum(ACT4_PRESET_IDS),
       act4_future: futureId,
       act4_seed: z.number().int(),
