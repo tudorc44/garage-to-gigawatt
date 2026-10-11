@@ -28,6 +28,7 @@ import { recordAct5Exposure } from './act5Moves.ts'
 import { endQuarterPlants } from './plants.ts'
 import { payFlex } from './flex.ts'
 import { endQuarterQueue } from './queue.ts'
+import { acceleratorValueUsd, endQuarterAccelerator } from './accelerator.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { serviceOrbitalDebt } from './orbitCapital.ts'
@@ -105,6 +106,8 @@ export function endQuarter(state: GameState): void {
   // ventures move on, and those at operation deliver to your campus (their PPA saving is energy revenue).
   const energy = endQuarterEnergy(state, quarterInputs(state.quarter, scenarioOf(state))?.pjmCapacityUsdMwDay)
   energy.revenueUsd += endQuarterVentures(state).revenueUsd
+  // M54: the accelerator venture's milestones, calls and outcome (only with a stake or a reservation)
+  endQuarterAccelerator(state)
   // Act V (M52.5): V2's flex payment on enrolled curtailable MW (nothing elsewhere); (M53) the queue's positions move
   // on, and the fast lane's output loss is an energy cost
   if (inActV(state)) {
@@ -273,9 +276,15 @@ function buildReport(
   const powered = inActV(state) ? { poweredUsd: poweredUsd(state) } : null
   const weightedBacklog = weightedBacklogUsd(state)
   // M36 (doc 38 §5): your venture stakes and the fusion hype (absent without a venture).
+  // (M54: with your stake in the accelerator venture, when you hold one)
   const ventures = state.ventures?.length
-    ? { venturesUsd: venturesValueUsd(state), multipleDelta: fusionHypeDelta(state) }
-    : null
+    ? {
+        venturesUsd: venturesValueUsd(state) + (state.accelerator ? acceleratorValueUsd(state) : 0),
+        multipleDelta: fusionHypeDelta(state),
+      }
+    : state.accelerator
+      ? { venturesUsd: acceleratorValueUsd(state), multipleDelta: 0 }
+      : null
   return {
     quarter: CONTENT.quarters[state.quarter],
     hashrate: hashrate(state),

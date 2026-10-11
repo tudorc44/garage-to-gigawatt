@@ -133,6 +133,17 @@ import {
 } from './systems/plants.ts'
 import { commitFollowOn, followOnBlocker, stakeMarkUsd } from './systems/ventures.ts'
 import {
+  acceleratorCallBlocker,
+  acceleratorJoinBlocker,
+  answerAcceleratorCall,
+  answerSaleVote,
+  joinAccelerator,
+  reserveBlocker,
+  reserveChips,
+  saleVoteBlocker,
+  settleAccelerator,
+} from './systems/accelerator.ts'
+import {
   fastLaneBlocker,
   payUpgrade,
   payUpgradeBlocker,
@@ -465,6 +476,11 @@ export type Action =
   | { type: 'TAKE_FAST_LANE'; projectId: string }
   /** Act V (M53): sell a site's free energized MW and its queue positions (1 BW). */
   | { type: 'SELL_SITE_POWER'; siteId: string }
+  /** M54 (doc 43 §0.12): the accelerator venture: buy a stake, reserve chips, answer a call, vote on a buyer. */
+  | { type: 'ACCEL_JOIN'; stake: number }
+  | { type: 'ACCEL_RESERVE'; mw: number; tier: number }
+  | { type: 'ACCEL_CALL'; choice: 'pay' | 'dilute' | 'walk' }
+  | { type: 'ACCEL_SALE_VOTE'; choice: 'sell' | 'block' }
   /** Act V (M52.6): commit to a developer's next unit (EGS or SMR) with doc 38's roles (2 BW). */
   | { type: 'COMMIT_FOLLOW_ON'; venture: VentureType; stake: number; offtake: number; prepay: number; siteId?: string }
   /** Act IV (M29.2): open an orbital block card (0 BW): kind, size, shell, generation. */
@@ -648,6 +664,8 @@ function run(s: GameState, a: Action): Message | undefined {
       declineCommunityDeal(s)
       // M36: a venture's cash call left unanswered takes the default (dilute).
       if (s.ventures?.some((v) => v.call)) settleVentureCalls(s)
+      // M54: the accelerator's open call (dilute) and buyer (sell) take their defaults
+      if (s.accelerator) settleAccelerator(s)
       // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
       startOrbitalBuilds(s)
       planOrbitAlerts(s)
@@ -917,6 +935,34 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sellSitePowerBlocker(s, a.siteId)
       if (blocked) return blocked
       sellSitePower(s, a.siteId)
+      return
+    }
+
+    case 'ACCEL_JOIN': {
+      const blocked = acceleratorJoinBlocker(s, a.stake)
+      if (blocked) return blocked
+      joinAccelerator(s, a.stake)
+      return
+    }
+
+    case 'ACCEL_RESERVE': {
+      const blocked = reserveBlocker(s, a.mw, a.tier)
+      if (blocked) return blocked
+      reserveChips(s, a.mw, a.tier)
+      return
+    }
+
+    case 'ACCEL_CALL': {
+      const blocked = acceleratorCallBlocker(s, a.choice)
+      if (blocked) return blocked
+      answerAcceleratorCall(s, a.choice)
+      return
+    }
+
+    case 'ACCEL_SALE_VOTE': {
+      const blocked = saleVoteBlocker(s, a.choice)
+      if (blocked) return blocked
+      answerSaleVote(s, a.choice)
       return
     }
 

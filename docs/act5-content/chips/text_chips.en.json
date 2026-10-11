@@ -1,6 +1,6 @@
 {
   "chips.venture.title": "Halyard Silicon: an AI chip",
-  "chips.venture.pitch": "Halyard Silicon is designing a chip built only for AI work. It promises a third more work per watt than the next mainstream generation, in volume by 2034, for an $800M budget.",
+  "chips.venture.pitch": "Halyard Silicon is designing a chip built only for AI work. It promises a third more work per watt than the next mainstream generation, in volume by 2035, for an $800M budget.",
   "chips.venture.how": "New chips go through four steps: the design is sent to a factory, the first chips come back and are tested, customers qualify them, then the factory makes them in volume.",
   "chips.venture.risk.respin": "Most first designs need at least one fix. A fix sends the design back to the factory for one or two quarters and costs new masks.",
   "chips.venture.risk.base_rate": "Most AI-chip start-ups never reach volume. Some are bought, a few for much more than they raised, more for less; many close.",
@@ -11,7 +11,8 @@
   "chips.venture.reservation.deposit": "Deposit: {share}% of the reserved chips' price today: ${amount}.",
   "chips.venture.reservation.delivery": "Delivered in the first two quarters of volume, ahead of everyone else. Take delivery within a year or lose the deposit.",
   "chips.venture.value": "Until volume, your stake is marked like a funding round: up at each milestone, down for each slip. After volume, it is valued on what Halyard earns.",
-  "chips.venture.diligence": "Diligence shows what chips like this usually cost and how often they ship.",
+  "chips.venture.diligence": "Diligence shows what chips like this usually cost and how often they ship: P(volume within 8 years) ≈ 0.30.",
+  "chips.venture.block": "Only the 49% lead stake can vote down a sale; smaller stakes are sold with the rest at the offer price.",
   "chips.report.tape_out": "Halyard Silicon sent its design to the factory.",
   "chips.report.first_silicon": "Halyard's first chips work. Qualification has started.",
   "chips.report.respin": "Halyard's first chips need a fix: {q} more quarters and a cash call.",
@@ -27,6 +28,6 @@
   "glossary.respin": "Respin: fixing a chip design that came back with a flaw and sending it to the factory again. It costs months and new masks.",
   "glossary.foundry_allocation": "Foundry allocation: how much of a factory's capacity a chip maker gets. When capacity is tight, the biggest customers come first.",
   "glossary.perf_per_watt": "Performance per watt: how much computing a chip does for each unit of power. Better chips earn more from the same megawatt.",
-  "epilogue.chip.shipped": "The chip you backed in 2031 shipped. Somewhere a hall full of Halyard Bowlines is still running models.",
+  "epilogue.chip.shipped": "The chip you backed in 2032 shipped. Somewhere a hall full of Halyard Bowlines is still running models.",
   "epilogue.chip.never": "Halyard never shipped. You learned what every chip investor learns: first silicon is the easy part."
 }

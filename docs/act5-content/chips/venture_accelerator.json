@@ -1,24 +1,24 @@
 {
   "_meta": {
     "schema": "ventures/1 (accelerator type)",
-    "doc": "doc 43 §0.10 as corrected by doc 49 Part A",
-    "note": "Same mechanic as ventures.json (doc 38 §5): a calendar developer project, stakes paid in as a share of the pitched budget, cash calls in thirds, pay/dilute/walk, milestone marks. Every value carries its grade in `provenance`.",
-    "DO_NOT_EXPOSE": "demand_trim and the hazard split are rules the engine reads; the player sees only the pitch, the diligence estimate and the news."
+    "doc": "doc 43 §0.10 as corrected by doc 49 Part A and doc 43 §0.12 (v1.2)",
+    "note": "Same mechanic as ventures.json (doc 38 §5): a calendar developer project, stakes paid in as a share of the pitched budget, cash calls in thirds, pay/dilute/walk, milestone marks. Every value carries its grade in `provenance`. Written by tools/act5/chips.py (npm run content:act5).",
+    "DO_NOT_EXPOSE": "The hazard split and the draws are rules the engine reads; the player sees only the pitch, the diligence estimate and the news."
   },
   "types": {
     "accelerator": {
       "developer": "Halyard Silicon",
       "chip": "Halyard Bowline",
-      "from": "2031Q1",
+      "from": "2032Q1",
       "pitch": {
         "budget_usd": 800000000,
-        "volume": "2034Q3",
-        "line": "A purpose-built AI chip with a third more work per watt than the next mainstream generation, in volume by 2034."
+        "volume": "2035Q3",
+        "line": "A purpose-built AI chip with a third more work per watt than the next mainstream generation, in volume by 2035."
       },
       "diligence": {
         "bandwidth": 1,
         "fee_usd": 2000000,
-        "shows": "pitch × the class median (cost ×1.25), P(volume by 2038Q4) ≈ 0.30, the industry's 14% first-silicon success rate"
+        "shows": "pitch × the class median (cost ×1.25), P(volume within 8 years) ≈ 0.30, the industry's 14% first-silicon success rate"
       },
       "overrun_class": {
         "id": "semiconductor",
@@ -37,25 +37,25 @@
         {
           "id": "tape_out",
           "label": "Design sent to the factory",
-          "pitched": "2033Q1",
+          "pitched": "2034Q1",
           "pitch_q_from_start": 8
         },
         {
           "id": "first_silicon",
           "label": "First working silicon",
-          "pitched": "2033Q2",
+          "pitched": "2034Q2",
           "pitch_q_after_previous": 1
         },
         {
           "id": "qualification",
           "label": "Qualified with customers",
-          "pitched": "2034Q1",
+          "pitched": "2035Q1",
           "pitch_q_after_previous": 3
         },
         {
           "id": "volume",
           "label": "Volume",
-          "pitched": "2034Q3",
+          "pitched": "2035Q3",
           "pitch_q_after_previous": 2
         }
       ],
@@ -77,17 +77,18 @@
         "counts_as_slip": true
       },
       "hazard_per_year_before_volume": {
-        "cancel": 0.105,
-        "acquired_gain": 0.055,
-        "acquired_loss": 0.09
+        "cancel": 0.1051,
+        "acquired_gain": 0.0525,
+        "acquired_loss": 0.0876
       },
+      "hazard_note": "Re-tuned in M54 (doc 43 §0.12: hazards only) from doc 49's cancel 0.105 / gain 0.055 / loss 0.09, with the start moved to 2032Q1.",
       "acquisition": {
         "gain": {
           "stake_paid_mark_mult": [
             1.5,
             3.0
           ],
-          "player_can_block_with_stake_ge": 0.3,
+          "player_can_block_with_stake_ge": 0.49,
           "card": "chips_c4"
         },
         "loss": {
@@ -176,18 +177,10 @@
         ],
         "slips": "each full year past the pitched volume quarter, and each respin"
       },
-      "demand_trim": {
-        "v1": 0,
-        "v2": 0,
-        "v3": 0.02,
-        "v4": 0,
-        "phase_in_q": 4,
-        "note": "On success, ai_demand_index_v × (1 − trim), phased in over 4 quarters from volume (doc 49 Q7)."
-      },
       "reading_score": 0,
       "targets": {
-        "p_volume_by_2038Q4": 0.3,
-        "outcome_shares_by_2038Q4": {
+        "p_volume_within_8_years": 0.3,
+        "outcome_shares_within_8_years": {
           "built": 0.3,
           "acquired_gain": 0.15,
           "acquired_loss": 0.25,
@@ -195,33 +188,39 @@
         }
       },
       "calibration_check": {
-        "built": 0.293,
-        "acquired_gain": 0.157,
-        "acquired_loss": 0.254,
-        "cancelled": 0.291,
-        "still_building": 0.004,
+        "built": 0.301,
+        "acquired_gain": 0.151,
+        "acquired_loss": 0.248,
+        "cancelled": 0.295,
+        "still_building": 0.005,
+        "p_volume_within_8_years": 0.301,
         "volume_quarter_p10_p50_p90": [
-          "2034Q2",
           "2035Q2",
-          "2037Q1"
+          "2036Q2",
+          "2038Q1"
         ],
-        "share_of_successes_in_act5": 0.3,
-        "p_volume_by_2035Q4": 0.205,
-        "respin_share": 0.506
+        "p_volume_in_act4": 0.097,
+        "share_of_successes_in_act5": 0.677,
+        "respin_share": 0.503,
+        "games": 20000,
+        "hazards": {
+          "cancel": 0.1051,
+          "acquired_gain": 0.0525,
+          "acquired_loss": 0.0876
+        }
       },
       "provenance": {
         "budget": "[B/C → D] cost to volume $0.5-1.5B (startups raised $0.7-1.75B before material revenue; IBS design cost $449-725M at 5-2 nm [C]); pitch $800M, realised ×1.25 median",
         "overrun_class": "[D] designed: respins (mask sets $20-40M at 3 nm [C]) and burn; Graphcore spent ~$700M without volume [B]",
         "milestones": "[A/B → D] new team design-to-tape-out 18-30 months; tape-out to first silicon ~1 quarter; first silicon to volume 9-18 months for startups (doc 49 Q1)",
-        "slip": "[D] fitted: founding to first volume 3.5-5 years for 2016-17 startups [B]; median realised volume 2035Q2",
+        "slip": "[D] fitted: founding to first volume 3.5-5 years for 2016-17 startups [B]",
         "respin": "[A/B → D] 14% of ASIC projects had first-silicon success in 2024 [A/B]; a usable first pass with workarounds ~40-50% [D]; a respin costs 1-2 quarters [C]",
-        "hazards": "[C/D] JPR: 146 startups, ~75% expected gone by 2030 [C]; outcome shares from a 27-company sample (doc 49 Q2) [D]",
-        "acquisition": "[B → D] gains 10-17x money raised before volume (Nervana, Habana) [B]; losses 0.3-0.9x (Wave, Graphcore) [B]",
+        "hazards": "[C/D] JPR: 146 startups, ~75% expected gone by 2030 [C]; outcome shares from a 27-company sample (doc 49 Q2) [D]; re-tuned to doc 43 §0.12's targets (M54)",
+        "acquisition": "[B → D] gains 10-17x money raised before volume (Nervana, Habana) [B]; losses 0.3-0.9x (Wave, Graphcore) [B]; blocking needs the 49% lead stake (doc 43 §0.12, O)",
         "reservation": "[A/B → D] deposits/loans ~5-10% of contract value (OpenAI-Cerebras $1B against $10-20B) [B]; no published discount; warrants ~10% equity as the equivalent [A/B]",
         "foundry": "[C → D] top four buyers took >90% of CoWoS and HBM in 2025 [C]; startups buy on purchase orders [A]",
         "after_volume": "[A → D] Cerebras gross margin 11.7% → 33.5% → 41.1% (2022-H1 2024) with large losses [A]; EBITDA shares designed",
-        "multiple": "[A/C → D] Damodaran semiconductors EV/EBITDA ~35x (Jan 2026, boom) [A/C]; 20x chosen for a single-product newcomer [D]",
-        "demand_trim": "[A/C → D] IEA High Efficiency case −15-20% by 2035 for the whole fleet with no rebound [A]; one chip's share ≤ ~2% (doc 49 Q7)"
+        "multiple": "[A/C → D] Damodaran semiconductors EV/EBITDA ~35x (Jan 2026, boom) [A/C]; 20x chosen for a single-product newcomer [D]"
       }
     }
   }

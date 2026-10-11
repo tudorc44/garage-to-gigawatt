@@ -168,7 +168,7 @@ export function refitPlan(
 
 /** The generations a live cloud or pilot could change to now: on sale, fitting its tier, not its own. */
 export function refitChoices(state: GameState, p: Project): string[] {
-  return availableGpus(state.quarter, scenarioOf(state))
+  return availableGpus(state.quarter, scenarioOf(state), state)
     .map((g) => g.id)
     .filter((g) => g !== p.gpu && p.tier !== undefined && fits(g, p.tier))
 }
@@ -185,7 +185,7 @@ export function refitBlocker(
   if (blocked) return blocked
   if (gpu === p!.gpu) return { key: 'error.refit_same_gpu' }
   if (
-    !availableGpus(state.quarter, scenarioOf(state)).some((g) => g.id === gpu)
+    !availableGpus(state.quarter, scenarioOf(state), state).some((g) => g.id === gpu)
   )
     return { key: 'error.gpu_not_available', params: { gpu } }
   if (!p!.tier || !fits(gpu, p!.tier))

@@ -1,0 +1,163 @@
+{
+  "_meta": {
+    "schema": "events_v/1",
+    "doc": "doc 49 Part B with doc 43 §0.12",
+    "note": "Venture cards fire on the developer's drawn milestones inside their windows; reading_sign as events_v.json (venture moves 0, doc 43 §0.10)."
+  },
+  "event_cards": [
+    {
+      "id": "chips_c1",
+      "future": "all",
+      "window": [
+        "2033Q3",
+        "2037Q4"
+      ],
+      "trigger": "the developer's tape-out milestone (drawn)",
+      "role": "venture",
+      "title": "Design Sent to the Factory",
+      "body": "Halyard Silicon has sent its first chip design to the foundry. If the first wafers work, it will have silicon in about a quarter; most first designs need at least one fix.",
+      "choices": [
+        {
+          "label": "Note it",
+          "effect": {}
+        },
+        {
+          "label": "Reserve chips from the first run",
+          "effect": {
+            "open": "accelerator_reservation"
+          }
+        }
+      ],
+      "default": "Note it",
+      "basis": "Doc 49 Q1: tape-out to first silicon ~1 quarter [B]; 14% first-silicon success [A/B]",
+      "reading_sign": {
+        "Note it": 0,
+        "Reserve chips from the first run": 0
+      }
+    },
+    {
+      "id": "chips_c2",
+      "future": "all",
+      "window": [
+        "2033Q4",
+        "2038Q2"
+      ],
+      "trigger": "first silicon (drawn): working, or a respin",
+      "role": "venture",
+      "title": "First Silicon",
+      "variants": {
+        "working": {
+          "title": "First Silicon Works",
+          "body": "Halyard's first chips boot and run real models. Qualification with customers starts now; volume is still a year or so away."
+        },
+        "respin": {
+          "title": "Back to the Factory",
+          "body": "Halyard's first chips have a flaw that software can't route around. A corrected design goes back to the factory: one or two quarters lost, and a cash call for the new masks."
+        }
+      },
+      "choices": [
+        {
+          "label": "Pay your share",
+          "effect": {
+            "venture_call": "pay"
+          }
+        },
+        {
+          "label": "Dilute",
+          "effect": {
+            "venture_call": "dilute"
+          }
+        },
+        {
+          "label": "Walk",
+          "effect": {
+            "venture_call": "walk"
+          }
+        }
+      ],
+      "choices_only_on": "respin",
+      "default": "Dilute",
+      "basis": "Doc 49 Q1: a respin costs 1-2 quarters and a mask set ($20-40M at 3 nm) plus burn [C]",
+      "reading_sign": {
+        "Pay your share": 0,
+        "Dilute": 0,
+        "Walk": 0
+      }
+    },
+    {
+      "id": "chips_c3",
+      "future": "all",
+      "window": [
+        "2034Q4",
+        "2039Q4"
+      ],
+      "trigger": "volume or cancellation (drawn)",
+      "role": "venture",
+      "variants": {
+        "volume": {
+          "title": "Halyard Ships in Volume",
+          "body": "Halyard Silicon's chip is in volume production. Backers with a reservation get the first deliveries at their discount; everyone else waits for whatever the foundry can make."
+        },
+        "volume_capped": {
+          "title": "Volume, Rationed",
+          "body": "Halyard is in production, but the foundry gave it half the wafers it asked for. Reservation holders are served first; the rest of the year's orders wait."
+        },
+        "cancelled": {
+          "title": "Halyard Shuts Down",
+          "body": "Halyard Silicon ran out of runway before its chip reached volume. The team is being hired away and the designs go to auction; stakes and deposits are lost."
+        }
+      },
+      "choices": [
+        {
+          "label": "Note it",
+          "effect": {}
+        }
+      ],
+      "default": "Note it",
+      "basis": "Doc 49 Q2 (outcome shares) and Q4 (allocation: the top four buyers took >90% of advanced packaging in 2025 [C])",
+      "reading_sign": {
+        "Note it": 0
+      }
+    },
+    {
+      "id": "chips_c4",
+      "future": "all",
+      "window": [
+        "2032Q1",
+        "2039Q4"
+      ],
+      "trigger": "the acquired_gain hazard (drawn), before volume",
+      "role": "venture",
+      "title": "A Buyer for Halyard",
+      "body": "One of the largest cloud companies offers to buy Halyard Silicon outright, mostly for its team and designs. Your stake would be paid out now at well above its last mark.",
+      "choices": [
+        {
+          "label": "Sell your stake",
+          "effect": {
+            "venture_sale": {
+              "mark_mult": [
+                1.5,
+                3.0
+              ]
+            }
+          }
+        },
+        {
+          "label": "Vote against the sale",
+          "effect": {
+            "venture_block": {
+              "min_stake": 0.49
+            }
+          }
+        }
+      ],
+      "default": "Sell your stake",
+      "basis": "Doc 49 Q2: pre-volume buyouts at 10-17x money raised (Nervana 2016, Habana 2019) [B]; licence-and-hire deals (Groq 2025, Enfabrica 2025) [B]",
+      "reading_sign": {
+        "Sell your stake": 0,
+        "Vote against the sale": 0
+      },
+      "note": "Blocking needs the 49% lead stake (doc 43 §0.12, O); otherwise the other holders carry the vote and the stake is sold."
+    }
+  ]
+}

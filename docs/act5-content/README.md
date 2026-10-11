@@ -276,3 +276,12 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
     - **Weekly power columns (§0.9 item 12):** the weekly files already carry the six columns; the loader change is the
       build's (M49).
   - **`check.py`:** PASS.
+- **M54, 12 Oct 2026 (doc 43 §0.12, the accelerator venture; the chips add-on in `chips/`):**
+  - **Generator:** `chips/generators/chips.py` (doc 49, as delivered) is ported to `tools/act5/chips.py` (still Python);
+    `npm run content:act5` runs it into `chips/` and copies its eight data files into `src/content/`.
+  - **Unchanged:** `gpus_v.json` and `market_v_chips_v1..v4.csv` come out byte for byte as before.
+  - **Changes (§0.12):** the developer starts in 2032Q1 (pitched milestones 2034Q1, 2034Q2, 2035Q1, 2035Q3); the
+    target is P(volume within 8 years) = 0.30 with shares 0.30 / 0.15 / 0.25 / 0.30, reached by re-tuning the three
+    hazards only (cancel 0.105 → 0.1051, gain 0.055 → 0.0525, loss 0.09 → 0.0876 a year); `calibration_check` from
+    20,000 games; `demand_trim` removed; blocking a sale at a gain needs the 49% stake; the epilogue's "in 2032 shipped"
+    and the diligence line's "P(volume within 8 years) ≈ 0.30"; the cards' windows follow the later start.

@@ -375,6 +375,9 @@ README). `check.py` PASS.
   holds the power); withdraw (0, the hall ends); V2's fast lane (enrols `flexKw`, −0.5% of the enrolled share's AI revenue: mine);
   selling a site's free MW and positions (the leases go by PROJECT_SELL: mine); co-location shown; the Projects page's Queue panel.
   Act IV's carried requests are adopted without a security (mine). 1,705 tests; main bundle 229 KB.
+- **Step F (M54, branch `m54` on `m53`): chips part 2.** (a) `tools/act5/chips.py` (ported, Python): start 2032Q1, hazards re-tuned
+  only: `calibration_check` (20,000 games) volume 0.301, gain 0.151, loss 0.248, cancelled 0.295, still building 0.005; median volume 2036Q2.
+  (b) `accelerator.ts` (its own system, not a VentureType: mine), Ventures-page card, Bowline gated on the game's draw. (c) 9 tests. 1,714 tests.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

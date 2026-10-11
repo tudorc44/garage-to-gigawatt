@@ -42,7 +42,11 @@ export default defineConfig({
             },
             // M49: Act V's other content (its text and the Gen 2037 entry), so the content file stays under 500 KB.
             // (M51: and its four Signals files; M52: its plants)
-            { name: 'content-v', test: /src[\\/]content[\\/](text_v\.en|gpus_v|signals_v_v[1-4]|plants_v)\.json/ },
+            // (M54: and the chips' venture and text)
+            {
+              name: 'content-v',
+              test: /src[\\/]content[\\/](text_v\.en|gpus_v|signals_v_v[1-4]|plants_v|venture_accelerator|text_chips\.en|events_chips)\.json/,
+            },
             { name: 'text', test: /src[\\/]i18n[\\/].*\.json/ },
             { name: 'content', test: /src[\\/]content[\\/].*\.json/ },
             // M35: energy options and ventures (doc 38), and Act IV's orbit and Moon, in files of their own, so the

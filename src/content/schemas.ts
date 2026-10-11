@@ -343,6 +343,17 @@ export const marketQuarterChipsSchema = z.object({
   gen2037_1yr_contract_usd_hr: nullableNonNeg,
   gen2037_unit_purchase_usd: nullableNonNeg,
   gen2037_rack_usd: nullableNonNeg,
+  // M54 (doc 49 with doc 43 §0.12): the accelerator's columns (Halyard Bowline's rents and price, the developer's units
+  // and margin, the chip-company multiple); read only once the chip is on sale (masked before)
+  accel_hyperscaler_usd_hr: nullableNonNeg,
+  accel_neocloud_usd_hr: nullableNonNeg,
+  accel_spot_usd_hr: nullableNonNeg,
+  accel_1yr_contract_usd_hr: nullableNonNeg,
+  accel_unit_purchase_usd: nullableNonNeg,
+  accel_rack_usd: nullableNonNeg,
+  accel_units_full_ramp_q: nullableNonNeg,
+  accel_margin_usd_unit_mature: nullableNonNeg,
+  chip_ev_ebitda_mult: nullableNonNeg,
 })
 export const marketQuarterlyChipsSchema = z.array(marketQuarterChipsSchema).min(1)
 
