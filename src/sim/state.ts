@@ -114,6 +114,8 @@ export interface Site {
   flare?: { wellQuarter: number; relocatingUntil?: number; offlineQuarter?: number }
   /** M35.4 (doc 38 §4.7): Texas demand response and 4CP at an ERCOT site (systems/texasPower.ts). */
   dr?: SiteDemandResponse
+  /** Act V (M52.5): kW enrolled as curtailable load (the queue's fast lane enrols them); they earn V2's flex payment. */
+  flexKw?: number
   /** M36 (doc 38 §5.1 point 6): firm kW a venture at commercial operation delivers here, with no grid wait. */
   ventureKw?: number
 }

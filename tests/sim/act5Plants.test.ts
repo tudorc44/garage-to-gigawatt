@@ -24,6 +24,7 @@ import {
   plantValueUsd,
 } from '../../src/sim/systems/plants.ts'
 import { stakeMarkUsd, ventureValueUsd } from '../../src/sim/systems/ventures.ts'
+import { flexMw, flexPayments } from '../../src/sim/systems/flex.ts'
 import { playAct5Recipe } from '../../tools/act5/presetRun.ts'
 
 let fb: GameState | null = null
@@ -166,5 +167,30 @@ describe('plant debt, fund sales and output contracts (M52.3-M52.4)', () => {
 
   it('the Act V first quarter is 2036Q1 (a sanity check on the helper)', () => {
     expect(actFirstQuarter(5)).toBe(76)
+  })
+})
+
+describe('the V2 flex payment (M52.5, doc 43 §0.9 item 8)', () => {
+  it('pays enrolled curtailable MW the PJM capacity price × flex_capacity_rating a day, in V2 after its trigger only', () => {
+    const at = (v: 'v1' | 'v2', n: number) => {
+      const s = toAct5(firmBuilder2035(), { vfuture: v })
+      s.quarter = actFirstQuarter(5) + n
+      // 10 MW enrolled as curtailable at the first site (the queue's fast lane sets this in play)
+      s.sites[0].flexKw = 10_000
+      return s
+    }
+    const late = at('v2', 19)
+    const row = act5Row(late.quarter, scenarioOf(late))!
+    expect(row.flex_capacity_rating).toBe(0.5)
+    const pays = flexPayments(late)
+    expect(pays.length).toBeGreaterThan(0)
+    for (const p of pays) {
+      const site = late.sites.find((x) => x.id === p.siteId)!
+      expect(p.usd).toBeCloseTo(flexMw(late, site) * row.pjm_capacity_price_usd_mwday * 0.5 * 91.25, 4)
+    }
+    expect(flexMw(late, late.sites[0])).toBeGreaterThanOrEqual(10)
+    // before V2's trigger, and in V1, nothing
+    expect(flexPayments(at('v2', 0))).toEqual([])
+    expect(flexPayments(at('v1', 19))).toEqual([])
   })
 })

@@ -365,6 +365,8 @@ README). `check.py` PASS.
   - **2-4** done: `plants.ts` (operations, stake × EBITDA × 4 × plant multiple, distributions outside EBITDA, plant debt with lock-up /
     restructure / lenders take, fund sales × `infra_bid_index`, output contracts) and `plantsContent.ts`. Mine: developer contracts at the
     base multiple (term not in files), 15-year contracted debt, 12-year output contracts, a plant's region = its campus's. 1,693 tests.
+  - **5** done: `flex.ts`, V2's flex payment on enrolled curtailable MW (`site.flexKw`, set by step E's fast lane, plus Texas DR sites'
+    curtailable MW: mine) as a grid credit. No carried load qualifies on its own, so it pays only once step E enrols load. 1,694 tests.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 
