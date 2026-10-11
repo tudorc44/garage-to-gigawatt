@@ -375,6 +375,49 @@ README). `check.py` PASS.
   holds the power); withdraw (0, the hall ends); V2's fast lane (enrols `flexKw`, −0.5% of the enrolled share's AI revenue: mine);
   selling a site's free MW and positions (the leases go by PROJECT_SELL: mine); co-location shown; the Projects page's Queue panel.
   Act IV's carried requests are adopted without a security (mine). 1,705 tests; main bundle 229 KB.
+- **Step F (M54, branch `m54` on `m53`): chips part 2.** (a) `tools/act5/chips.py` (ported, Python): start 2032Q1, hazards re-tuned
+  only: `calibration_check` (20,000 games) volume 0.301, gain 0.151, loss 0.248, cancelled 0.295, still building 0.005; median volume 2036Q2.
+  (b) `accelerator.ts` (its own system, not a VentureType: mine), Ventures-page card, Bowline gated on the game's draw. (c) 9 tests. 1,714 tests.
+  M54.2: the card behind Act V's dev flag (mine; gate test), a reservation deposit counts at cost. (d) E-B2 (`tools/act5/chipsEb2.ts`, 10 seeds,
+  not tuned): mean −$9M (2035Q4) / $4M (2040Q4) vs control $37M / $192M: cap PASS; best $84M / $225M vs 3 × control best: MISS. 1,715 tests.
+
+### Morning report (second run, 12 Oct 2026)
+
+**Steps done:** A (merges #14-#16, dev flag) · B `m50` · C `m51` · D `m52` · E `m53` · F `m54`; none stopped. PRs stacked on
+each other (m50 → main, m51 → m50 … m54 → m53), unmerged.
+
+**Long-sim drift (M49's gate changes):** none. Act II/III 1,302 CSVs byte-identical to M39; Act IV identical to M41;
+energy identical to M40.2; prologue runs identical (only the summary's timing line: 123 s vs 103 s, machine busy).
+
+**Presets:** Firm Builder found (Fortress F2 seed 1 [egs2], leases 57%, orbit 11%; V-B7 0/12 busts). Small Grid kept by
+§0.13's letter (Ridge F1 +queue) but it's 0.1 MW, 88% orbit, founder $0.7M, and its "position" is a proposed project's
+grid request (no wait until its build starts): see open questions.
+
+**Per milestone (all goldens byte-identical; Act IV energy goldens didn't move: no bot joins the accelerator):**
+- **M50:** presets rescan + labels. 1,658 tests; main 226.4 KB.
+- **M51:** Signals, hidden files and guards, move log, reading score, reveal. 1,679; 226.4 KB. Oracles: perfect/passive/
+  opposite V1 100/50/0, V2 100/50/0, V3 93/60/28, V4 86/67/46.
+- **M52:** scarcity repricing, plants (operations, valuation, debt and covenants, fund sales, output contracts), V2 flex
+  payment, follow-on units, plants panel. 1,697; 226.4 KB.
+- **M53:** the queue and its panel. 1,705; 229.0 KB.
+- **M54:** chips part 2. `calibration_check` (20,000 games): volume 0.301, gain 0.151, loss 0.248, cancelled 0.295,
+  still building 0.005 (hazards 0.1051 / 0.0525 / 0.0876). E-B2: cap PASS, best case MISS (above). 1,715; 229.0 KB.
+
+**Mine, reversible (beyond the lines above):** Signals' short labels GQ/CM/AD/RD/LC/FB; PROJECT_SELL scores as
+`sell_site_free_mw`; low-exposure = AI book EBITDA × 4 × multiple + powered + ventures over act5Entry; operating plants
+switch from mark to earnings at 2036Q1 (the Firm Builder's EGS stake dips $137.5M → $106M on day one); a lock-up sweeps
+all distributions into the debt; withdrawing a position ends its hall (capex sunk); the accelerator card behind the dev
+flag; reservation deposits priced at the 2036Q1 baseline; foundry ration closes Bowline to non-reservers for 4 quarters.
+
+**Open questions for the design thread:**
+1. Small Grid: keep the letter-fit preset, require "little orbit" and a started grid build, or cut it (two presets)?
+2. The 2036Q1 seam for operating plants (mark → earnings): accept the dip, or measure act5Entry with the earnings value?
+3. Developer contract terms (for the contract-tail multiple) aren't in the files: base multiple for now. A term to add?
+4. The fast lane's −0.5% output: modelled as 0.5% of the enrolled share's AI revenue. Right reading?
+5. E-B2 for the accelerator misses its best case (0.15× vs 3×): accept, or apply §0.12's levers in reverse?
+6. Should the accelerator be offered on the live Act IV before Act V ships, or wait (as now)?
+7. `rivals_v.json` still frozen (Act IV's rivals at 2035Q4): wire it with item (6)?
+8. Selling a site is "its free MW and positions" + PROJECT_SELL for its leases: enough, or a whole-site sale?
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

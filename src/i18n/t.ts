@@ -10,6 +10,7 @@ import en from './en.json' with { type: 'json' }
 import contentText from './content.en.json' with { type: 'json' }
 import textIv from '../content/text_iv.en.json' with { type: 'json' }
 import textV from '../content/text_v.en.json' with { type: 'json' }
+import textChips from '../content/text_chips.en.json' with { type: 'json' }
 import { fmt } from '../ui/format.ts'
 
 export type MessageKey = keyof typeof en
@@ -23,7 +24,8 @@ export interface Message {
 
 // (M28.4: and Act IV's card text, src/content/text_iv.en.json, written with the cards by tools/act4/events.ts)
 // (M49: and Act V's text, src/content/text_v.en.json, written by tools/act5/text.py from doc 47)
-const table: Record<string, string> = { ...contentText, ...textIv, ...textV, ...en }
+// (M54: and the chips' text, src/content/text_chips.en.json, written by tools/act5/chips.py from doc 49)
+const table: Record<string, string> = { ...contentText, ...textIv, ...textV, ...textChips, ...en }
 
 /** String params that hold content ids get translated through these key prefixes. */
 const ID_PARAMS: Record<string, string> = {

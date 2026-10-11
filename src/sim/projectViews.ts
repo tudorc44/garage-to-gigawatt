@@ -268,7 +268,7 @@ export function openProjectView(state: GameState) {
             : null,
         }
       }),
-    gpus: availableGpus(state.quarter, scenarioOf(state)).map((g) => g.id),
+    gpus: availableGpus(state.quarter, scenarioOf(state), state).map((g) => g.id),
     /**
      * Act III (M16.2/M16.5): a new hall is mid tier unless built to top; the GPUs that fit each, and what the
      * top-tier build adds. Null outside Act III.
@@ -281,10 +281,10 @@ export function openProjectView(state: GameState) {
             BALANCE.act3.density.topNewBuildRetrofitShare *
             midToTopUsdMw(state),
           topExtraQuarters: BALANCE.act3.density.topNewBuildExtraQuarters,
-          gpusMid: availableGpus(state.quarter, scenarioOf(state))
+          gpusMid: availableGpus(state.quarter, scenarioOf(state), state)
             .map((g) => g.id)
             .filter((g) => fits(g, 'mid')),
-          gpusTop: availableGpus(state.quarter, scenarioOf(state)).map(
+          gpusTop: availableGpus(state.quarter, scenarioOf(state), state).map(
             (g) => g.id,
           ),
         }
@@ -447,7 +447,7 @@ export function racksView(state: GameState) {
   if (!inAct3Rules(state)) return null
   const G = CONTENT.act3Gpus
   const label = CONTENT.quarters[state.quarter]
-  const onSale = availableGpus(state.quarter, scenarioOf(state)).map((g) => g.id)
+  const onSale = availableGpus(state.quarter, scenarioOf(state), state).map((g) => g.id)
   const fitting = (tier: 'low' | 'mid' | 'top') =>
     RACK_GENS.filter((g) => fits(g, tier))
   const rows = state.projects

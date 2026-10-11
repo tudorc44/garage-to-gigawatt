@@ -304,6 +304,12 @@ export type Act5QuarterRow = MarketQuarterAct5Row & {
   gen2037_1yr_contract_usd_hr: number | null
   gen2037_unit_purchase_usd: number | null
   gen2037_rack_usd: number | null
+  /** M54: the accelerator's columns (doc 49 with doc 43 §0.12), read only once Halyard Bowline is on sale. */
+  accel_neocloud_usd_hr: number | null
+  accel_1yr_contract_usd_hr: number | null
+  accel_unit_purchase_usd: number | null
+  accel_units_full_ramp_q: number | null
+  chip_ev_ebitda_mult: number | null
 }
 
 /** One Act V market (M49): the shape of an Act IV market, so the carried systems read it unchanged. */
@@ -342,7 +348,7 @@ export interface TenantCard {
  * Rubin Ultra from gpus_act3.json, buyable in Act III only).
  */
 export interface GpuGeneration {
-  id: 'h100' | 'h200' | 'b200' | 'rubin_nvl144' | 'rubin_ultra' | 'gen2037'
+  id: 'h100' | 'h200' | 'b200' | 'rubin_nvl144' | 'rubin_ultra' | 'gen2037' | 'bowline'
   from: string
   gpusPerMw: number
   /** Act II's last lead time in weeks (gpus.json; the Rubin GPUs read the scenario's newest-gen column). */
@@ -547,6 +553,8 @@ export interface Content {
   act5Markets: Record<Act5MarketKey, Act5Market>
   /** Gen 2037 (doc 49 via doc 43 §0.12; M49): the mainstream generation from 2037Q1, Act V only. Null without the file. */
   gen2037: { from: string; gpusPerMw: number; rackKw: number } | null
+  /** Halyard Bowline (M54, doc 49): GPUs per MW and rack kW; on sale only in a game whose venture ships. */
+  bowline: { gpusPerMw: number; rackKw: number } | null
   /**
    * Act V's authored Signals (M51, doc 43 §6.3), by future: the six indicators in file order, runtime fields only. The
    * hidden authoring fields are never loaded here (see signalsHiddenV.ts).
@@ -2182,6 +2190,11 @@ export function parseContent(raw: RawContent): Content {
           gen2037_1yr_contract_usd_hr: c?.gen2037_1yr_contract_usd_hr ?? null,
           gen2037_unit_purchase_usd: c?.gen2037_unit_purchase_usd ?? null,
           gen2037_rack_usd: c?.gen2037_rack_usd ?? null,
+          accel_neocloud_usd_hr: c?.accel_neocloud_usd_hr ?? null,
+          accel_1yr_contract_usd_hr: c?.accel_1yr_contract_usd_hr ?? null,
+          accel_unit_purchase_usd: c?.accel_unit_purchase_usd ?? null,
+          accel_units_full_ramp_q: c?.accel_units_full_ramp_q ?? null,
+          chip_ev_ebitda_mult: c?.chip_ev_ebitda_mult ?? null,
         }
       })
       act5Futures[v] = { quarterly: rows, weeks }
@@ -2238,11 +2251,17 @@ export function parseContent(raw: RawContent): Content {
   }
   // Gen 2037 (doc 49 via doc 43 §0.12; M49): its first quarter, GPUs per MW and rack kW from gpus_v.json.
   let gen2037: Content['gen2037'] = null
+  // M54: and Halyard Bowline's GPUs per MW and rack kW (its first quarter is the game's: max(volume + 1, 2036Q1)).
+  let bowline: Content['bowline'] = null
   if (raw.gpusV) {
-    const g = (raw.gpusV as { generations?: { id: string; available_from: string; gpus_per_mw: number; rack_kw: number }[] })
-      .generations?.find((x) => x.id === 'gen2037')
+    const gens = (raw.gpusV as { generations?: { id: string; available_from: string; gpus_per_mw: number; rack_kw: number }[] })
+      .generations
+    const g = gens?.find((x) => x.id === 'gen2037')
     if (!g) problems.push('gpus_v.json: no gen2037 generation')
     else gen2037 = { from: g.available_from, gpusPerMw: g.gpus_per_mw, rackKw: g.rack_kw }
+    const b = gens?.find((x) => x.id === 'bowline')
+    if (!b) problems.push('gpus_v.json: no bowline generation')
+    else bowline = { gpusPerMw: b.gpus_per_mw, rackKw: b.rack_kw }
   }
   // Act III's rivals (M11.5b): the same five ids as Act II's, 16 quarters matching the Act III timeline
   // and no negative MW. Only the numeric series are kept; the fates stay in rivalsHidden.ts.
@@ -2409,6 +2428,7 @@ export function parseContent(raw: RawContent): Content {
     act5Futures,
     act5Markets,
     gen2037,
+    bowline,
     signalsIv,
     signalsV,
     wildcardsIv,

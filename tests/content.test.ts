@@ -302,8 +302,18 @@ describe('content loads', () => {
     // 21 from doc 47, and the presets (tools/act5/presets.ts; M49's presets_act5.json, renamed presets_v.json in M50)
     expect(names.length).toBe(22)
     for (const name of names) expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act5-content/${name}`))
-    // M49: the chips add-on's Gen 2037 files (doc 49, docs/act5-content/chips/)
-    for (const name of ['gpus_v.json', 'market_v_chips_v1.csv', 'market_v_chips_v2.csv', 'market_v_chips_v3.csv', 'market_v_chips_v4.csv'])
+    // M49: the chips add-on's Gen 2037 files (doc 49, docs/act5-content/chips/); M54: and the accelerator's venture,
+    // cards and text (tools/act5/chips.py)
+    for (const name of [
+      'gpus_v.json',
+      'market_v_chips_v1.csv',
+      'market_v_chips_v2.csv',
+      'market_v_chips_v3.csv',
+      'market_v_chips_v4.csv',
+      'venture_accelerator.json',
+      'events_chips.json',
+      'text_chips.en.json',
+    ])
       expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act5-content/chips/${name}`))
   })
 

@@ -640,6 +640,43 @@ export type Act4MoveKind =
   | 'ground_move'
   | 'lunar_move'
 
+/**
+ * M54 (doc 43 §0.12, doc 49): your part in Halyard Silicon, the accelerator venture (created when you join, reserve or
+ * vote; the developer's own project is replayed from the seed, systems/accelerator.ts). Its draws are never stored here.
+ */
+export interface Accelerator {
+  stake: number
+  stakeAtJoin?: number
+  buyInUsd?: number
+  /** Paid in (buy-in and calls paid), and the calls alone. */
+  paidUsd: number
+  callsPaidUsd: number
+  joinedQuarter?: number
+  walked?: boolean
+  /** Milestones and slips since you joined (the mark). */
+  milestones: number
+  slips: number
+  /** A cash call waiting for an answer. */
+  call: { dueUsd: number } | null
+  /** The mark when volume came (the floor on the first 4 quarters' value). */
+  markAtVolumeUsd?: number
+  /** A buyer at a gain your 49% stake may vote down, and the quarters you did. */
+  saleOffer?: { quarter: number; priceUsd: number }
+  blockedQuarters: number[]
+  /** How it ended for you: cancelled, or sold to a buyer at a gain or a loss. */
+  ended?: 'cancelled' | 'acquired_gain' | 'acquired_loss'
+  /** An allocation reservation: MW, the menu tier, the deposit and discount, and where it stands. */
+  reservation?: {
+    mw: number
+    tier: number
+    depositUsd: number
+    discount: number
+    status: 'waiting' | 'delivered' | 'used' | 'lost' | 'refunded' | 'expired'
+    usedMw: number
+    deliveredQuarter?: number
+  }
+}
+
 /** Act V (M51, doc 43 §6.7): one logged move; q is the Act V quarter index (0–19). */
 export interface Act5Move {
   q: number
@@ -1459,6 +1496,8 @@ export interface GameState {
   act5Preset?: string
   /** Act V (M49): the end record, stored at 2040Q4's end (or a game over in Act V). Absent until then. */
   act5End?: Act5End
+  /** M54 (doc 43 §0.12): your part in the accelerator venture (Act IV onward). Absent until you join or reserve. */
+  accelerator?: Accelerator
   /** Act V (M51, doc 43 §6.7): the move log the reading score reads at the end of the act. */
   act5Moves?: Act5Move[]
   /** Act V (M51, doc 43 §6.3): the log of Read the market (Signals) reads, one indicator per quarter at most. */

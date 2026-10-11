@@ -93,7 +93,8 @@ export function gpuRenewalIndex(
     gpu === 'gb200' ||
     gpu === 'rubin_nvl144' ||
     gpu === 'rubin_ultra' ||
-    gpu === 'gen2037'
+    gpu === 'gen2037' ||
+    gpu === 'bowline'
       ? r.renewal_b200_gpu_index_vs_2025q4
       : r.renewal_h100_gpu_index_vs_2025q4
   // (M52.1: in Act V × the scarcity index, doc 43 §0.2)

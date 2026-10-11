@@ -90,6 +90,9 @@ describe('the gate in the builds', () => {
     expect(readdirSync(join(production.dir, 'assets')).join(' ')).not.toMatch(/Act5Entry/)
     expect(staging.text).toContain(ACT5_ENTRY_MARKER)
     expect(readdirSync(join(staging.dir, 'assets')).join(' ')).toMatch(/Act5Entry/)
+    // M54: the accelerator venture's card sits behind the same flag (its payoff is in Act V)
+    expect(production.text).not.toContain('data-accelerator')
+    expect(staging.text).toContain('data-accelerator')
   })
 
   it('the main bundle stays under the 500 KB warning in production (Act III stays out of it)', () => {

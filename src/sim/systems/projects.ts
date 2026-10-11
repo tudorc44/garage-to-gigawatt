@@ -21,6 +21,8 @@ import {
 import { scenarioOf } from './market.ts'
 import { rfpMid } from './leaseIndex.ts'
 import { scarcityMultipleFactor, scarcityRentFactor } from './scarcity.ts'
+import { acceleratorDraws, bowlineOnSale, reservationTerms, useReservation } from './accelerator.ts'
+import { ACCELERATOR } from '../../content/acceleratorContent.ts'
 import { book, bookSplit, type Category, type LedgerRef } from '../ledger.ts'
 import { siteParams } from './siteSerials.ts'
 import { startLenderCure } from './facilities.ts'
@@ -101,8 +103,25 @@ export function gpuGeneration(id: string): GpuGeneration | undefined {
   return (
     P().gpus.find((g) => g.id === id) ??
     CONTENT.act3Gpus.generations.find((g) => g.id === id) ??
-    (id === 'gen2037' ? gen2037Generation() : undefined)
+    (id === 'gen2037' ? gen2037Generation() : id === 'bowline' ? bowlineGeneration() : undefined)
   )
+}
+
+/**
+ * Halyard Bowline (M54; doc 49 with doc 43 §0.12): a GPU class only in a game whose accelerator venture ships, from
+ * max(volume + 1, 2036Q1) (`availableGpus` with the game's state gates it). Its prices are the accelerator columns.
+ */
+function bowlineGeneration(): GpuGeneration | undefined {
+  const b = CONTENT.bowline
+  return b ? { id: 'bowline', from: CONTENT.quarters[actFirstQuarter(5)], gpusPerMw: b.gpusPerMw } : undefined
+}
+
+/** Whether a game may buy Bowline GPUs now: on sale, and past the foundry's ration unless your reservation came in. */
+function bowlineBuyable(state: GameState, quarter: number): boolean {
+  if (!bowlineOnSale(state, quarter)) return false
+  const d = acceleratorDraws(state)
+  const rationed = d.foundryCapped && quarter < d.vol + ACCELERATOR.foundry_allocation.quarters
+  return !rationed || state.accelerator?.reservation?.status === 'delivered'
 }
 
 /**
@@ -131,6 +150,8 @@ export function gpuPriceUsd(
 ): number | undefined {
   // M49: Gen 2037's unit price from its own column (flat after launch: doc 47's scarcity-neutral rule).
   if (gpu === 'gen2037') return gen2037Row(quarter, scenario)?.gen2037_unit_purchase_usd ?? undefined
+  // M54: Halyard Bowline's from the accelerator's column (read only once it's on sale: availableGpus gates it)
+  if (gpu === 'bowline') return gen2037Row(quarter, scenario)?.accel_unit_purchase_usd ?? undefined
   return heldBack(
     quarter,
     (q) => {
@@ -157,6 +178,8 @@ export function neocloudUsdHr(
   const base =
     gpu === 'gen2037'
       ? (gen2037Row(quarter, scenario)?.gen2037_neocloud_usd_hr ?? undefined)
+      : gpu === 'bowline'
+        ? (gen2037Row(quarter, scenario)?.accel_neocloud_usd_hr ?? undefined)
       : heldBack(
           quarter,
           (q) =>
@@ -183,11 +206,14 @@ function rubinRent(usdHr: number | null | undefined, gpu: string): number | null
 export function availableGpus(
   quarter: number,
   scenario?: MarketKey | null,
+  state?: GameState,
 ): GpuGeneration[] {
   const label = CONTENT.quarters[quarter]
   // M49: Gen 2037 joins in Act V from 2037Q1 (priced only through an Act V key, so nothing changes before Act V).
   const gen2037 = gen2037Generation()
-  return [...P().gpus, ...CONTENT.act3Gpus.generations, ...(gen2037 ? [gen2037] : [])].filter(
+  // M54: Halyard Bowline joins only in a game (`state`) whose venture shipped, from max(volume + 1, 2036Q1).
+  const bowline = state && bowlineBuyable(state, quarter) ? bowlineGeneration() : undefined
+  return [...P().gpus, ...CONTENT.act3Gpus.generations, ...(gen2037 ? [gen2037] : []), ...(bowline ? [bowline] : [])].filter(
     (g) =>
       g.from <= label && gpuPriceUsd(g.id, quarter, scenario) !== undefined,
   )
@@ -305,6 +331,9 @@ export function gpuContractUsdHr(
     // M49: Gen 2037 prices like the B200 and Rubin, off its own neocloud series (doc 49).
     gpu === 'gen2037'
       ? (gen2037Row(quarter, scenario)?.gen2037_neocloud_usd_hr ?? undefined)
+      : // M54: Halyard Bowline off its own neocloud series, like Gen 2037
+        gpu === 'bowline'
+        ? (gen2037Row(quarter, scenario)?.accel_neocloud_usd_hr ?? undefined)
       : gpu === 'b200'
       ? heldBack(quarter, (q) => q.gpuRentalUsdHr.b200.neocloud, scenario)
       : isRubin(gpu)
@@ -538,6 +567,12 @@ export function projectCapex(
       (gpuPriceUsd(p.gpu, quarter, scenarioOf(state)) ?? 0) *
       mult *
       gpuPriceMultNow(state, quarter)
+    // M54 (doc 49): a delivered Halyard reservation takes its discount on the reserved MW and credits its deposit
+    const res = reservationTerms(state, p.gpu)
+    if (res.discount > 0) {
+      const covered = Math.min(1, (state.accelerator!.reservation!.mw * 1000) / Math.max(1, p.kw))
+      gpuUsd = Math.max(0, gpuUsd * (1 - res.discount * covered) - res.creditUsd)
+    }
   }
   // A region's policy can raise the cost of projects started now (Arizona's paused incentives, +5%).
   const policyMult = projectPolicy(
@@ -726,7 +761,7 @@ export function openBlocker(
     const gpu = a.kind === 'pilot' ? P().pilot.gpu : a.gpu
     if (
       !gpu ||
-      !availableGpus(state.quarter, scenarioOf(state)).some((g) => g.id === gpu)
+      !availableGpus(state.quarter, scenarioOf(state), state).some((g) => g.id === gpu)
     )
       return { key: 'error.gpu_not_available', params: { gpu: gpu ?? '' } }
   }
@@ -1051,6 +1086,8 @@ export function buildBlocker(
 export function startBuild(state: GameState, projectId: string): void {
   const p = getProject(state, projectId)!
   const cost = projectCapex(state, p)
+  // M54: a delivered Halyard reservation is used by this order (its discount and deposit are in the quote)
+  if (p.gpu === 'bowline') useReservation(state)
   p.capexUsd = Math.round(cost.totalUsd)
   p.gpuCapexUsd = Math.round(cost.gpuUsd)
   p.gpuCount = cost.gpuCount

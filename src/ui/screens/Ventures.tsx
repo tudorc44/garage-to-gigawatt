@@ -7,6 +7,7 @@ import type { Action } from '../../sim/actions.ts'
 import { offtakePrepayUsd, tailShare, venturesView, type VentureOfferView } from '../../sim/ventureViews.ts'
 import type { GameState } from '../../sim/state.ts'
 import { plantsView } from '../../sim/systems/plants.ts'
+import { acceleratorView } from '../../sim/systems/accelerator.ts'
 import { followOnOffers } from '../../sim/systems/ventures.ts'
 import { SiteName } from '../components/siteName.tsx'
 import { fmt } from '../format.ts'
@@ -112,11 +113,90 @@ export function VenturesSection({ state, act }: ScreenProps) {
       <div class="col">
         {/* (M52: in Act V, your running plants and the developers' next units) */}
         {state.act === 5 && <PlantsPanel state={state} run={run} />}
+        {/* (M54: Halyard Silicon, the accelerator venture, from 2032Q1; behind Act V's dev flag, doc 43 §0.13: it pays
+            off in Act V, so the live Act IV doesn't offer it until Act V ships: mine, reversible) */}
+        {import.meta.env.MODE !== 'production' && <AcceleratorCard state={state} run={run} />}
         {v.offers.map((o) => (
           <Offer key={o.type} state={state} o={o} run={run} />
         ))}
       </div>
     </div>
+  )
+}
+
+/**
+ * Halyard Silicon (M54; doc 43 §0.12, doc 49): the pitch, the risks and the base rate; buy a stake (10-49%); your stake,
+ * its mark and its calls; a buyer your 49% stake may vote down; an allocation reservation. Public facts only.
+ */
+function AcceleratorCard(props: { state: GameState; run: (a: Action) => void }) {
+  const v = acceleratorView(props.state)
+  if (!v) return null
+  const plan = props.state.phase === 'plan'
+  const btn = (label: string, blocked: Message | null, action: Action, key?: string) => (
+    <button key={key} type="button" class="btn" disabled={!!blocked} title={blocked ? say(blocked) : undefined} onClick={() => props.run(action)}>
+      {label}
+    </button>
+  )
+  return (
+    <section class="panel p" data-accelerator>
+      <h3 class="panel-title">{tDynamic('chips.venture.title', 'Halyard Silicon')}</h3>
+      <p class="num-s" style={{ margin: 0 }}>{tDynamic('chips.venture.pitch', '')}</p>
+      <p class="num-s muted" style={{ margin: 0 }}>{tDynamic('chips.venture.how', '')}</p>
+      <p class="num-s muted" style={{ margin: 0 }}>
+        {tDynamic('chips.venture.risk.respin', '')} {tDynamic('chips.venture.risk.base_rate', '')}{' '}
+        {tDynamic('chips.venture.diligence', '')}
+      </p>
+      {v.stake > 0 && (
+        <p class="num-s" style={{ margin: 0 }} data-accel-stake>
+          {t('ui.accel.stake', { stake: pct(v.stake), value: fmt.money(v.valueUsd), hit: v.milestones, slips: v.slips })}
+        </p>
+      )}
+      {v.ended && <p class="num-s muted">{t(`ui.accel.ended.${v.ended}`)}</p>}
+      {plan && v.call && (
+        <div class="energy-choice-row" data-accel-call>
+          <span class="num-s warn">{t('ui.accel.call', { due: fmt.money(v.call.dueUsd) })}</span>
+          {(['pay', 'dilute', 'walk'] as const).map((c) =>
+            btn(t(`ui.ventures.choice.${c}`, { pay: fmt.money(v.call!.dueUsd), share: '' }), null, { type: 'ACCEL_CALL', choice: c }, c),
+          )}
+        </div>
+      )}
+      {plan && v.saleOffer && (
+        <div class="energy-choice-row" data-accel-offer>
+          <span class="num-s warn">{t('ui.accel.offer', { price: fmt.money(v.saleOffer.priceUsd) })}</span>
+          {btn(t('ui.accel.sell'), null, { type: 'ACCEL_SALE_VOTE', choice: 'sell' }, 'sell')}
+          {btn(t('ui.accel.block'), null, { type: 'ACCEL_SALE_VOTE', choice: 'block' }, 'block')}
+        </div>
+      )}
+      {plan && v.open && v.stake <= 0 && (
+        <div class="energy-choice-row" data-accel-join>
+          {v.shares.map((s) =>
+            btn(t('ui.accel.join', { stake: pct(s.stake), usd: fmt.money(s.buyInUsd) }), s.blocked, { type: 'ACCEL_JOIN', stake: s.stake }, String(s.stake)),
+          )}
+          <span class="num-s muted">{tDynamic('chips.venture.block', '')}</span>
+        </div>
+      )}
+      {v.reservation ? (
+        <p class="num-s" style={{ margin: 0 }}>
+          {t(`ui.accel.reservation.${v.reservation.status}`, { mw: v.reservation.mw, pct: Math.round(v.reservation.discount * 100) })}
+        </p>
+      ) : (
+        plan &&
+        v.open && (
+          <div class="energy-choice-row" data-accel-reserve>
+            <span class="num-s muted">{tDynamic('chips.venture.reservation.plain', '')}</span>
+            {v.reserveMenu.map((r) =>
+              btn(
+                t('ui.accel.reserve', { mw: r.mw, deposit: r.depositPct, discount: r.discountPct, usd: fmt.money(r.depositUsd) }),
+                r.blocked,
+                { type: 'ACCEL_RESERVE', mw: r.mw, tier: r.tier },
+                `${r.tier}-${r.mw}`,
+              ),
+            )}
+          </div>
+        )
+      )}
+      {v.bowlineOnSale && <p class="num-s gain">{t('ui.accel.on_sale')}</p>}
+    </section>
   )
 }
 

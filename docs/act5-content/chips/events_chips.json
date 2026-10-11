@@ -1,7 +1,7 @@
 {
   "_meta": {
     "schema": "events_v/1",
-    "doc": "doc 49 Part B",
+    "doc": "doc 49 Part B with doc 43 §0.12",
     "note": "Venture cards fire on the developer's drawn milestones inside their windows; reading_sign as events_v.json (venture moves 0, doc 43 §0.10)."
   },
   "event_cards": [
@@ -9,8 +9,8 @@
       "id": "chips_c1",
       "future": "all",
       "window": [
-        "2032Q3",
-        "2036Q4"
+        "2033Q3",
+        "2037Q4"
       ],
       "trigger": "the developer's tape-out milestone (drawn)",
       "role": "venture",
@@ -39,8 +39,8 @@
       "id": "chips_c2",
       "future": "all",
       "window": [
-        "2032Q4",
-        "2037Q2"
+        "2033Q4",
+        "2038Q2"
       ],
       "trigger": "first silicon (drawn): working, or a respin",
       "role": "venture",
@@ -88,8 +88,8 @@
       "id": "chips_c3",
       "future": "all",
       "window": [
-        "2033Q4",
-        "2038Q4"
+        "2034Q4",
+        "2039Q4"
       ],
       "trigger": "volume or cancellation (drawn)",
       "role": "venture",
@@ -124,7 +124,7 @@
       "future": "all",
       "window": [
         "2032Q1",
-        "2038Q4"
+        "2039Q4"
       ],
       "trigger": "the acquired_gain hazard (drawn), before volume",
       "role": "venture",
@@ -146,7 +146,7 @@
           "label": "Vote against the sale",
           "effect": {
             "venture_block": {
-              "min_stake": 0.3
+              "min_stake": 0.49
             }
           }
         }
@@ -157,7 +157,7 @@
         "Sell your stake": 0,
         "Vote against the sale": 0
       },
-      "note": "Blocking needs a stake of 30% or more (mine); otherwise the other holders carry the vote and the stake is sold."
+      "note": "Blocking needs the 49% lead stake (doc 43 §0.12, O); otherwise the other holders carry the vote and the stake is sold."
     }
   ]
 }
