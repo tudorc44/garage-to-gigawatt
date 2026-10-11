@@ -1,7 +1,8 @@
 // Live quarter: 13 weeks tick by (~1.5 s each at 1×). Pause, 1×/2×/4×, skip.
 // Interrupts open as a modal and pause time. The sim does the work in advance().
 import { useEffect, useState } from 'preact/hooks'
-import { t, tDynamic, type MessageKey } from '../../i18n/t.ts'
+import { siteShortName, t, tDynamic, type MessageKey } from '../../i18n/t.ts'
+import { act5CardPicks } from '../../sim/systems/act5Cards.ts'
 import { choicePreview } from '../../sim/systems/interrupts.ts'
 import {
   MAX_INTERRUPTS,
@@ -805,6 +806,24 @@ function MarginWarningCard({ state, act }: ScreenProps) {
   )
 }
 
+/** Act V (M60.7, doc 43 §0.16 (c)): on a card with a fund's or a buyer's bid, which stake or site it's for. */
+function Act5Pick({ state, act }: ScreenProps) {
+  const p = act5CardPicks(state)
+  if (!p) return null
+  return (
+    <label class="num-s" data-act5-pick>
+      {t(p.kind === 'stake' ? 'ui.event.pick_stake' : 'ui.event.pick_site')}{' '}
+      <select value={p.chosen} onChange={(e) => act({ type: 'ACT5_CARD_PICK', target: (e.target as HTMLSelectElement).value })}>
+        {p.options.map((o) => (
+          <option key={o.id} value={o.id}>
+            {o.ventureType ? tDynamic(`venture_type.${o.ventureType}`, o.ventureType) : siteShortName(o.siteTier ?? '', o.serial)} · {fmt.money(o.usd)}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
 /** An event card (events.json): a Reigns-style card with the story and 2–4 answers. */
 function EventCard({ state, act }: ScreenProps) {
   const v = eventCardView(state)
@@ -848,6 +867,7 @@ function EventCard({ state, act }: ScreenProps) {
           {text('title')}
         </h2>
         <p class="event-body">{text(v.bodyKey)}</p>
+        <Act5Pick state={state} act={act} />
         {v.choices.map((c) => (
           <button
             key={c.id}

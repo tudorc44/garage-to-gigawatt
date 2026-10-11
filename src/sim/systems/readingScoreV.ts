@@ -17,6 +17,8 @@ const futureSchema = z.object({
   ideal: z.array(stance).length(20),
   weight: z.array(z.number().nonnegative()).length(20),
   decoy: z.object({ indicator: z.string(), quarters: z.array(z.string()).min(1), wrong_stance: stance }),
+  /** M60.4 (doc 43 §0.16 item 5): from `from_q` only these kinds are scored; the others count 0 (V2's flexibility). */
+  scored_kinds: z.object({ from_q: z.number().int(), kinds: z.array(z.string()).min(1) }).optional(),
 })
 const FILE = z
   .object({
@@ -63,6 +65,20 @@ const sign = (x: number) => (x > 0 ? 1 : x < 0 ? -1 : 0)
 const BUILD_HEDGES: ReadonlySet<Act5MoveKind> = new Set(['contract_plant_output', 'arrange_plant_debt'])
 const isBuild = (k: Act5MoveKind) => k === 'commit_follow_on_unit' || k === 'commit_new_firm_asset'
 
+/** Each move's sign in a future: scoredSignsV, then the future's `scored_kinds` (other kinds count 0 from its quarter). */
+function futureSignsV(moves: readonly Pick<Act5Move, 'q' | 'kind'>[], future: VFutureId): (-1 | 0 | 1)[] {
+  const signs = scoredSignsV(moves)
+  const only = FILE.futures[future].scored_kinds
+  if (!only) return signs
+  return signs.map((s, i) => (moves[i].q >= only.from_q && !only.kinds.includes(moves[i].kind) ? 0 : s))
+}
+
+/** Whether a kind is scored in this future's quarter (tools: the perfect reader's V2 flexibility). */
+export function scoredKindsAtV(future: VFutureId, q: number): readonly string[] | null {
+  const only = FILE.futures[future].scored_kinds
+  return only && q >= only.from_q ? only.kinds : null
+}
+
 /** Each move's scored sign, in log order (the build-quarter rule, then the raise rule from the end of the log). */
 export function scoredSignsV(moves: readonly Pick<Act5Move, 'q' | 'kind'>[]): (-1 | 0 | 1)[] {
   const buildQ = new Set(moves.filter((m) => isBuild(m.kind)).map((m) => m.q))
@@ -94,7 +110,7 @@ export function computeReadingV(
 ): ReadingV {
   const f = FILE.futures[future]
   const decoy = decoyQuarters(future)
-  const signs = scoredSignsV(moves)
+  const signs = futureSignsV(moves, future)
   const perQuarter: ReadingV['perQuarter'] = []
   let sumW = 0
   let sumWV = 0
@@ -137,7 +153,7 @@ export function markMovesV(
 ): { q: number; kind: Act5MoveKind; sign: -1 | 0 | 1; mark: 'match' | 'opposite' | 'decoy' | 'neutral' }[] {
   const f = FILE.futures[future]
   const decoy = decoyQuarters(future)
-  const signs = scoredSignsV(moves)
+  const signs = futureSignsV(moves, future)
   return moves.map((m, i) => {
     const s = signs[i]
     const mark =
@@ -155,12 +171,16 @@ export function markMovesV(
 /** Oracle logs for tools/ and tests: no moves, and one move matching (or opposing) each non-zero ideal quarter. */
 export function oracleLogsV(future: VFutureId): { passive: Act5Move[]; perfect: Act5Move[]; opposite: Act5Move[] } {
   const ideal = FILE.futures[future].ideal
-  const kindOf = (s: number): Act5MoveKind => (s > 0 ? 'buy_plant_stake' : 'sell_plant_stake_to_fund')
+  const only = FILE.futures[future].scored_kinds
+  // (M60.4: where only flexibility is scored, the perfect log enrols; its opposite has no +1 flexibility move, so it
+  // stays a plant purchase, which counts 0 there)
+  const kindOf = (s: number, q = 0): Act5MoveKind =>
+    s < 0 && only && q >= only.from_q ? (only.kinds[0] as Act5MoveKind) : s > 0 ? 'buy_plant_stake' : 'sell_plant_stake_to_fund'
   const nonZero = ideal.flatMap((v, q) => (v === 0 ? [] : [{ q, v }]))
   return {
     passive: [],
-    perfect: nonZero.map(({ q, v }) => ({ q, kind: kindOf(v) })),
-    opposite: nonZero.map(({ q, v }) => ({ q, kind: kindOf(-v) })),
+    perfect: nonZero.map(({ q, v }) => ({ q, kind: kindOf(v, q) })),
+    opposite: nonZero.map(({ q, v }) => ({ q, kind: kindOf(-v, q) })),
   }
 }
 

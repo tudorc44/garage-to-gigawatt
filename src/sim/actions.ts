@@ -1,6 +1,7 @@
 // Player decisions as plain action objects. applyAction checks an action against the
 // rules and returns either the new state or an error message (the old state is untouched).
 import { enrolBlocker, enrolFlexible } from './systems/flex.ts'
+import { act5CardPickBlocker, pickAct5Card } from './systems/act5Cards.ts'
 import {
   BALANCE,
   CONTENT,
@@ -493,6 +494,8 @@ export type Action =
   | { type: 'SELL_SITE'; siteId: string }
   /** Act V (M58.3, doc 43 §0.15 fix 3): enrol a site's running load as curtailable (1 BW; every future). */
   | { type: 'ENROL_FLEXIBLE'; siteId: string }
+  /** Act V (M60.7, doc 43 §0.16 (c)): on a card with a fund's or a buyer's bid, the stake or site to sell (0 BW). */
+  | { type: 'ACT5_CARD_PICK'; target: string }
   /** M54 (doc 43 §0.12): the accelerator venture: buy a stake, reserve chips, answer a call, vote on a buyer. */
   | { type: 'ACCEL_JOIN'; stake: number }
   | { type: 'ACCEL_RESERVE'; mw: number; tier: number }
@@ -717,6 +720,14 @@ function run(s: GameState, a: Action): Message | undefined {
         s.week++
         if (!s.interrupt) endQuarter(s)
       }
+      return
+    }
+
+    // (M60.7: on an open Act V card, live phase)
+    case 'ACT5_CARD_PICK': {
+      const blocked = act5CardPickBlocker(s, a.target)
+      if (blocked) return blocked
+      pickAct5Card(s, a.target)
       return
     }
 

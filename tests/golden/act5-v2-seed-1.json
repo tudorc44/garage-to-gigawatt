@@ -6,8 +6,8 @@
   "phase": "chapter",
   "quarter": 95,
   "week": 13,
-  "cash": 2588999961.85,
-  "bandwidth": 5,
+  "cash": 764441864.3,
+  "bandwidth": 6,
   "hodlPct": {
     "BTC": 0,
     "ETH": 0
@@ -39,8 +39,7 @@
       "readyQuarter": 0,
       "rentUsdQ": 0,
       "powerPriceMult": 1,
-      "flaw": null,
-      "soldKw": 5
+      "flaw": null
     },
     {
       "id": "site-3",
@@ -56,8 +55,7 @@
         "price": 0.167607,
         "startQuarter": 94,
         "endQuarter": 98
-      },
-      "soldKw": 100
+      }
     },
     {
       "id": "site-9",
@@ -73,8 +71,7 @@
         "price": 0.14725245699999998,
         "startQuarter": 94,
         "endQuarter": 98
-      },
-      "soldKw": 1000
+      }
     },
     {
       "id": "site-14",
@@ -91,7 +88,7 @@
         "startQuarter": 94,
         "endQuarter": 98
       },
-      "soldKw": 20000
+      "flexKw": 3000
     },
     {
       "id": "site-22",
@@ -116,7 +113,8 @@
       },
       "serial": 1,
       "acquiredQuarter": 17,
-      "soldKw": 99000
+      "soldKw": 6000,
+      "flexKw": 75000
     }
   ],
   "siteSerials": {
@@ -169,17 +167,19 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 29,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 29,
+        "signedQuarter": 92,
         "readyByQuarter": 33,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 52,
-        "blendOfferedQuarter": 81
+        "servedQuarters": 3,
+        "blendOfferedQuarter": 81,
+        "priceMult": 1.08125,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -188,7 +188,7 @@
       "gpuCount": 0,
       "startQuarter": 29,
       "readyQuarter": 33,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "low"
     },
     {
@@ -199,20 +199,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 30,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 59,
         "lateQuarters": 0,
         "walkRolled": true,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.60148125,
-        "termQuarters": 8,
-        "blendOfferedQuarter": 75,
-        "reopenedQuarter": 78
+        "servedQuarters": 8,
+        "priceMult": 0.6315553125,
+        "termQuarters": 24,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87
       },
       "spot": false,
       "capital": "cash",
@@ -221,7 +221,7 @@
       "gpuCount": 0,
       "startQuarter": 30,
       "readyQuarter": 33,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "low",
       "emptyUntil": 58
     },
@@ -233,19 +233,19 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 33,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 33,
+        "signedQuarter": 95,
         "readyByQuarter": 37,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 49,
+        "servedQuarters": 0,
         "blendOfferedQuarter": 84,
-        "priceMult": 0.8830886333333334,
-        "termQuarters": 84
+        "priceMult": 1.1,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -254,7 +254,7 @@
       "gpuCount": 0,
       "startQuarter": 33,
       "readyQuarter": 36,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -265,20 +265,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 34,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_frontier_intelligence",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 38,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.6866662499999999,
-        "termQuarters": 8,
-        "blendOfferedQuarter": 74,
-        "reopenedQuarter": 78
+        "servedQuarters": 8,
+        "priceMult": 0.7209995625,
+        "termQuarters": 24,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87
       },
       "spot": false,
       "capital": "cash",
@@ -287,7 +287,7 @@
       "gpuCount": 0,
       "startQuarter": 34,
       "readyQuarter": 38,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -298,7 +298,7 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 37,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
@@ -307,8 +307,8 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 42,
-        "blendOfferedQuarter": 83
+        "servedQuarters": 53,
+        "blendOfferedQuarter": 91
       },
       "spot": false,
       "capital": "cash",
@@ -317,7 +317,7 @@
       "gpuCount": 0,
       "startQuarter": 37,
       "readyQuarter": 43,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -328,20 +328,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 40,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 43,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.5966136,
-        "blendOfferedQuarter": 77,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.62644428,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -350,7 +350,7 @@
       "gpuCount": 0,
       "startQuarter": 40,
       "readyQuarter": 43,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -361,20 +361,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 42,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 45,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.7124999999999999,
-        "blendOfferedQuarter": 70,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.7481249999999999,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -383,7 +383,7 @@
       "gpuCount": 0,
       "startQuarter": 42,
       "readyQuarter": 45,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -394,21 +394,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 45,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 50,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.6326666666666667,
-        "blendOfferedQuarter": 75,
-        "reopenedQuarter": 78,
-        "termQuarters": 8,
-        "distressedQuarter": 80
+        "servedQuarters": 8,
+        "priceMult": 0.6643000000000001,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -417,7 +416,7 @@
       "gpuCount": 0,
       "startQuarter": 45,
       "readyQuarter": 50,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -428,20 +427,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 48,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 54,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.564375,
-        "blendOfferedQuarter": 72,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.59259375,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -450,7 +449,7 @@
       "gpuCount": 0,
       "startQuarter": 48,
       "readyQuarter": 51,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -461,20 +460,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 51,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 55,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.75,
-        "blendOfferedQuarter": 74,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.7875000000000001,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -483,7 +482,7 @@
       "gpuCount": 0,
       "startQuarter": 51,
       "readyQuarter": 54,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -494,20 +493,21 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 54,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 58,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.75,
-        "blendOfferedQuarter": 74,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.7875000000000001,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24,
+        "distressedQuarter": 95
       },
       "spot": false,
       "capital": "cash",
@@ -516,7 +516,7 @@
       "gpuCount": 0,
       "startQuarter": 54,
       "readyQuarter": 58,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -589,20 +589,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 60,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 64,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.85034,
-        "blendOfferedQuarter": 75,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.892857,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -611,7 +611,7 @@
       "gpuCount": 0,
       "startQuarter": 60,
       "readyQuarter": 63,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -622,21 +622,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 62,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 66,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.886015,
-        "blendOfferedQuarter": 77,
-        "reopenedQuarter": 78,
-        "termQuarters": 8,
-        "distressedQuarter": 81
+        "servedQuarters": 8,
+        "priceMult": 0.93031575,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -645,7 +644,7 @@
       "gpuCount": 0,
       "startQuarter": 62,
       "readyQuarter": 65,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -656,20 +655,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 63,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 68,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.9038550000000001,
-        "blendOfferedQuarter": 72,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.9490477500000001,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -678,7 +677,7 @@
       "gpuCount": 0,
       "startQuarter": 63,
       "readyQuarter": 68,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -689,20 +688,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 64,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_meridian_labs",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 67,
         "lateQuarters": 2,
         "walkRolled": true,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.921695,
-        "blendOfferedQuarter": 77,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 0.96777975,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -711,7 +710,7 @@
       "gpuCount": 0,
       "startQuarter": 64,
       "readyQuarter": 69,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -722,21 +721,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 65,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_frontier_intelligence",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 68,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.939555,
-        "blendOfferedQuarter": 72,
-        "reopenedQuarter": 78,
-        "termQuarters": 8,
-        "distressedQuarter": 80
+        "servedQuarters": 8,
+        "priceMult": 0.9865327500000001,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -745,7 +743,7 @@
       "gpuCount": 0,
       "startQuarter": 65,
       "readyQuarter": 68,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -756,20 +754,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 66,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_frontier_intelligence",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 69,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 77,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 1.00523325,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -778,7 +776,7 @@
       "gpuCount": 0,
       "startQuarter": 66,
       "readyQuarter": 69,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -789,20 +787,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 67,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 78,
+        "signedQuarter": 87,
         "readyByQuarter": 73,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 74,
-        "reopenedQuarter": 78,
-        "termQuarters": 8
+        "servedQuarters": 8,
+        "priceMult": 1.00523325,
+        "blendOfferedQuarter": 92,
+        "reopenedQuarter": 87,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -811,7 +809,7 @@
       "gpuCount": 0,
       "startQuarter": 67,
       "readyQuarter": 70,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -822,19 +820,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 68,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_frontier_intelligence",
-        "signedQuarter": 80,
+        "signedQuarter": 89,
         "readyByQuarter": 72,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 4,
-        "priceMult": 0.9707681100000001,
-        "reopenedQuarter": 80,
-        "termQuarters": 8
+        "servedQuarters": 6,
+        "priceMult": 1.0172003125,
+        "reopenedQuarter": 89,
+        "termQuarters": 24,
+        "blendOfferedQuarter": 94
       },
       "spot": false,
       "capital": "cash",
@@ -843,7 +842,7 @@
       "gpuCount": 0,
       "startQuarter": 68,
       "readyQuarter": 72,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -854,19 +853,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 69,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 80,
+        "signedQuarter": 89,
         "readyByQuarter": 75,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 4,
-        "priceMult": 0.9707681100000001,
-        "reopenedQuarter": 80,
-        "termQuarters": 8
+        "servedQuarters": 6,
+        "priceMult": 1.0172003125,
+        "reopenedQuarter": 89,
+        "termQuarters": 24,
+        "blendOfferedQuarter": 94
       },
       "spot": false,
       "capital": "cash",
@@ -875,7 +875,7 @@
       "gpuCount": 0,
       "startQuarter": 69,
       "readyQuarter": 72,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -886,20 +886,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 70,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_frontier_intelligence",
-        "signedQuarter": 82,
+        "signedQuarter": 91,
         "readyByQuarter": 74,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 2,
-        "priceMult": 0.9975743300000001,
-        "blendOfferedQuarter": 78,
-        "reopenedQuarter": 82,
-        "termQuarters": 8
+        "servedQuarters": 4,
+        "priceMult": 1.0291673749999999,
+        "blendOfferedQuarter": 87,
+        "reopenedQuarter": 91,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -908,7 +908,7 @@
       "gpuCount": 0,
       "startQuarter": 70,
       "readyQuarter": 74,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -919,20 +919,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 71,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 82,
+        "signedQuarter": 91,
         "readyByQuarter": 76,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 2,
-        "priceMult": 0.9975743300000001,
-        "blendOfferedQuarter": 78,
-        "reopenedQuarter": 82,
-        "termQuarters": 8
+        "servedQuarters": 4,
+        "priceMult": 1.0291673749999999,
+        "blendOfferedQuarter": 87,
+        "reopenedQuarter": 91,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -941,7 +941,7 @@
       "gpuCount": 0,
       "startQuarter": 71,
       "readyQuarter": 74,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -952,19 +952,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 72,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 72,
+        "signedQuarter": 85,
         "readyByQuarter": 76,
         "lateQuarters": 1,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 8,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 81,
-        "reopenedQuarter": 85
+        "servedQuarters": 10,
+        "priceMult": 1.01799492545,
+        "blendOfferedQuarter": 94,
+        "reopenedQuarter": 85,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -973,7 +974,7 @@
       "gpuCount": 0,
       "startQuarter": 72,
       "readyQuarter": 77,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -984,19 +985,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 73,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 73,
+        "signedQuarter": 85,
         "readyByQuarter": 77,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 8,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 81,
-        "reopenedQuarter": 85
+        "servedQuarters": 10,
+        "priceMult": 1.01799492545,
+        "blendOfferedQuarter": 94,
+        "reopenedQuarter": 85,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -1005,7 +1007,7 @@
       "gpuCount": 0,
       "startQuarter": 73,
       "readyQuarter": 77,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -1016,19 +1018,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 74,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_enterprise_render",
-        "signedQuarter": 74,
+        "signedQuarter": 85,
         "readyByQuarter": 78,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 8,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 81,
-        "reopenedQuarter": 85
+        "servedQuarters": 10,
+        "priceMult": 1.01799492545,
+        "blendOfferedQuarter": 94,
+        "reopenedQuarter": 85,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -1037,7 +1040,7 @@
       "gpuCount": 0,
       "startQuarter": 74,
       "readyQuarter": 77,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     },
     {
@@ -1048,18 +1051,20 @@
       "kind": "shell",
       "gpu": null,
       "openedQuarter": 75,
-      "stage": "sold",
+      "stage": "live",
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 75,
+        "signedQuarter": 86,
         "readyByQuarter": 80,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 7,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 82
+        "servedQuarters": 9,
+        "priceMult": 1.01161887455,
+        "blendOfferedQuarter": 95,
+        "reopenedQuarter": 86,
+        "termQuarters": 24
       },
       "spot": false,
       "capital": "cash",
@@ -1068,7 +1073,7 @@
       "gpuCount": 0,
       "startQuarter": 75,
       "readyQuarter": 78,
-      "soldQuarter": 85,
+      "soldQuarter": null,
       "tier": "mid"
     }
   ],
@@ -1167,32 +1172,32 @@
       "shutdownSince": null
     },
     "site-3": {
-      "value": null,
-      "load": null,
+      "value": 10,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
     },
     "site-9": {
-      "value": null,
-      "load": null,
+      "value": 20,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
     },
     "site-14": {
-      "value": null,
-      "load": null,
+      "value": 26.875,
+      "load": 1.875,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
     },
     "site-22": {
-      "value": 30,
-      "load": 10,
+      "value": 27.97872340425532,
+      "load": 7.9787234042553195,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
@@ -1215,7 +1220,10 @@
       "BTC": 0,
       "ETH": 0
     },
-    "marginByTier": {},
+    "marginByTier": {
+      "texas_site": 25856593.367256925,
+      "own_site": 1126690.521530063
+    },
     "failures": 0,
     "treasurySoldUsd": 0,
     "priceAlerts": 0,
@@ -1224,15 +1232,15 @@
     "gridCreditsUsd": 0,
     "hostingFeesUsd": 0,
     "reservationUsd": 0,
-    "aiRevenueUsd": 0,
-    "aiCostUsd": 0,
+    "aiRevenueUsd": 32707010.77428725,
+    "aiCostUsd": 5723726.885500269,
     "lateDamagesUsd": 0,
     "rateHikeUsd": 0,
     "stormChargeUsd": 0,
     "salariesUsd": 0,
     "interestUsd": 0,
     "principalUsd": 0,
-    "startCash": 2566179575.85,
+    "startCash": 726968848.16,
     "startTreasuryUsd": 0,
     "weeks": [
       {
@@ -1250,7 +1258,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566176933.93
+        "cash": 729041843.46
       },
       {
         "week": 2,
@@ -1267,7 +1275,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566174292.01
+        "cash": 731114838.76
       },
       {
         "week": 3,
@@ -1284,7 +1292,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566171650.09
+        "cash": 733187834.06
       },
       {
         "week": 4,
@@ -1301,7 +1309,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566169008.17
+        "cash": 735260829.36
       },
       {
         "week": 5,
@@ -1318,7 +1326,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566166366.25
+        "cash": 737333824.66
       },
       {
         "week": 6,
@@ -1335,7 +1343,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566163724.33
+        "cash": 739406819.96
       },
       {
         "week": 7,
@@ -1352,7 +1360,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566161082.41
+        "cash": 741479815.26
       },
       {
         "week": 8,
@@ -1369,7 +1377,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566158440.49
+        "cash": 743552810.56
       },
       {
         "week": 9,
@@ -1386,7 +1394,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566155798.57
+        "cash": 745625805.86
       },
       {
         "week": 10,
@@ -1403,7 +1411,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566153156.65
+        "cash": 747698801.16
       },
       {
         "week": 11,
@@ -1420,7 +1428,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566150514.73
+        "cash": 749771796.46
       },
       {
         "week": 12,
@@ -1437,7 +1445,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566147872.81
+        "cash": 751844791.76
       },
       {
         "week": 13,
@@ -1454,11 +1462,12 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2566145230.89
+        "cash": 753917787.06
       }
     ],
-    "energyRevenueUsd": 0,
-    "energyCostUsd": 0,
+    "aiFloorEbitdaUsd": 5160375.78890625,
+    "energyRevenueUsd": 1232039.25,
+    "energyCostUsd": 163535.05,
     "orbitRevenueUsd": 0,
     "orbitCostUsd": 0
   },
@@ -7162,11 +7171,11 @@
       "marginByTier": {
         "texas_site": 21972255.091496885
       },
-      "valuationUsd": 2446883581.4053507,
+      "valuationUsd": 2356000768.9053507,
       "orbitRevenueUsd": 27378906.25,
       "orbitCostUsd": 1250000,
       "orbitEbitdaUsd": 26128906.25,
-      "orbitMultiple": 3,
+      "orbitMultiple": 2.1304380325908205,
       "moonRevenueUsd": 0,
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
@@ -7246,11 +7255,11 @@
       "marginByTier": {
         "texas_site": 24661613.047121886
       },
-      "valuationUsd": 2484306864.0529785,
+      "valuationUsd": 2347349832.8029785,
       "orbitRevenueUsd": 13878906.25,
       "orbitCostUsd": 625000,
       "orbitEbitdaUsd": 13253906.25,
-      "orbitMultiple": 4.833333333333333,
+      "orbitMultiple": 2.25,
       "moonRevenueUsd": 0,
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
@@ -7331,11 +7340,11 @@
         "texas_site": 24661613.047121886,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2367779115.000617,
+      "valuationUsd": 2333676061.287839,
       "orbitRevenueUsd": 6666666.666666668,
       "orbitCostUsd": 1864000,
       "orbitEbitdaUsd": 4802666.666666668,
-      "orbitMultiple": 6.666666666666666,
+      "orbitMultiple": 2,
       "moonRevenueUsd": 0,
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
@@ -7360,8 +7369,8 @@
       "aiFloorEbitdaUsd": 12376446.637500007,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 672056780.5483334,
-      "weightedBacklogUsd": 122861816.061,
+      "backlogUsd": 1023721521.6066667,
+      "weightedBacklogUsd": 178408540.126,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7416,7 +7425,7 @@
         "texas_site": 24661613.047121886,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2321862333.971033,
+      "valuationUsd": 2377409058.0360336,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7442,11 +7451,11 @@
       "reservationUsd": 0,
       "aiRevenueUsd": 31185307.049541663,
       "aiCostUsd": 5457428.73366979,
-      "aiFloorEbitdaUsd": 5347154.5875,
+      "aiFloorEbitdaUsd": 12585970.85625,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 637130222.8704166,
-      "weightedBacklogUsd": 116944670.61025,
+      "backlogUsd": 988794963.92875,
+      "weightedBacklogUsd": 172491394.67525005,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7501,7 +7510,7 @@
         "texas_site": 24364447.705090627,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2326463236.706589,
+      "valuationUsd": 2386037659.912869,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7527,11 +7536,11 @@
       "reservationUsd": 0,
       "aiRevenueUsd": 30825106.634958334,
       "aiCostUsd": 5394393.661117708,
-      "aiFloorEbitdaUsd": 5347154.5875,
+      "aiFloorEbitdaUsd": 12585970.85625,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 541681417.5685,
-      "weightedBacklogUsd": 99461038.19014001,
+      "backlogUsd": 915284219.4621667,
+      "weightedBacklogUsd": 159035461.39642,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7586,7 +7595,7 @@
         "texas_site": 23962856.361908764,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2334140993.7248855,
+      "valuationUsd": 2391522529.8061657,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7612,11 +7621,11 @@
       "reservationUsd": 0,
       "aiRevenueUsd": 30338329.249283344,
       "aiCostUsd": 5309207.618624583,
-      "aiFloorEbitdaUsd": 4280889.318750001,
+      "aiFloorEbitdaUsd": 12600898.570012502,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 503586808.5831667,
-      "weightedBacklogUsd": 93044619.33306,
+      "backlogUsd": 862570362.9768333,
+      "weightedBacklogUsd": 150426155.41434002,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7671,7 +7680,7 @@
         "texas_site": 22119559.718685012,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2134262842.680212,
+      "valuationUsd": 2197805397.823572,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7697,11 +7706,11 @@
       "reservationUsd": 0,
       "aiRevenueUsd": 28104030.28780001,
       "aiCostUsd": 6539024.899631667,
-      "aiFloorEbitdaUsd": 4033610.5456730775,
+      "aiFloorEbitdaUsd": 11713619.085300002,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 411039086.8398333,
-      "weightedBacklogUsd": 75962062.35452001,
+      "backlogUsd": 814713971.2175,
+      "weightedBacklogUsd": 139504617.49788,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7756,7 +7765,7 @@
         "texas_site": 24041309.790905014,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2394679646.569007,
+      "valuationUsd": 2458222201.712367,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7782,11 +7791,11 @@
       "reservationUsd": 0,
       "aiRevenueUsd": 30433424.314733334,
       "aiCostUsd": 5325849.2550783325,
-      "aiFloorEbitdaUsd": 3214624.0500000003,
+      "aiFloorEbitdaUsd": 12645681.711300002,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 377217665.9805,
-      "weightedBacklogUsd": 70187988.83356,
+      "backlogUsd": 780892550.3581667,
+      "weightedBacklogUsd": 133730543.97692,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7835,13 +7844,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 470211688.69,
-      "ebitdaUsd": 24812809.990404997,
+      "cash": 366352985.4,
+      "ebitdaUsd": 26460934.064655002,
       "marginByTier": {
-        "texas_site": 23780889.72165501,
+        "texas_site": 24041309.790905014,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2423279165.1738276,
+      "valuationUsd": 2535601193.1265287,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7850,28 +7859,28 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 264420544.7507192,
-      "poweredUsd": 11840000,
-      "venturesUsd": 0,
+      "poweredUsd": 11873599.999999998,
+      "venturesUsd": 106102891.44000001,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1539871.125,
+      "energyCostUsd": 152167.12,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 441248024.41,
+      "startCash": 333961452.55,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 30117763.62473333,
-      "aiCostUsd": 5270608.634328331,
-      "aiFloorEbitdaUsd": 4810453.980749999,
+      "aiRevenueUsd": 30433424.314733334,
+      "aiCostUsd": 5325849.2550783325,
+      "aiFloorEbitdaUsd": 12274431.711299997,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 397148120.97116673,
-      "weightedBacklogUsd": 75164290.4826,
+      "backlogUsd": 747071129.4988334,
+      "weightedBacklogUsd": 127956470.45596,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7886,7 +7895,7 @@
         "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 37000
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -7920,10 +7929,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2369651210.31,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2633230985.942015,
+      "cash": 400762009.59,
+      "ebitdaUsd": 26306840.189655002,
+      "marginByTier": {
+        "texas_site": 24041309.790905014,
+        "own_site": 1066265.2687500003
+      },
+      "valuationUsd": 2542880382.6552224,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7932,42 +7944,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 263579775.6320153,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 10574925,
+      "venturesUsd": 106141220.64000002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1385777.25,
+      "energyCostUsd": 152167.12,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2348767153.69,
+      "startCash": 368219846.4,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 30433424.314733334,
+      "aiCostUsd": 5325849.2550783325,
+      "aiFloorEbitdaUsd": 12274431.711299997,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 668663007.16162,
+      "weightedBacklogUsd": 112750096.32453302,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8001,10 +8014,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2390721265.56,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2653462958.23663,
+      "cash": 434262646.02,
+      "ebitdaUsd": 26322386.998984743,
+      "marginByTier": {
+        "texas_site": 24211626.830234744,
+        "own_site": 1066265.2687500003
+      },
+      "valuationUsd": 2562911755.9021244,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8013,42 +8029,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 262741692.67662993,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 9276250,
+      "venturesUsd": 106179549.84000002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 153199.35,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2369651210.31,
+      "startCash": 401408230.59,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 30639869.2108906,
+      "aiCostUsd": 5361977.111905853,
+      "aiFloorEbitdaUsd": 11305783.027904063,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 601467000.8784516,
+      "weightedBacklogUsd": 100306107.68765563,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8082,10 +8099,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2411978975.99,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2673879899.547926,
+      "cash": 476341167.11,
+      "ebitdaUsd": 26382446.041764807,
+      "marginByTier": {
+        "texas_site": 24211626.830234744,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2615970528.1050014,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8094,42 +8114,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 261900923.557926,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 7977574.999999999,
+      "venturesUsd": 106217879.04000002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 153565.56,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2390721265.56,
+      "startCash": 443054265.02,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 30713111.941533096,
+      "aiCostUsd": 5374794.589768291,
+      "aiFloorEbitdaUsd": 11366208.28068413,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 700017103.8281376,
+      "weightedBacklogUsd": 114791370.78146575,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8163,10 +8184,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2433426012.9,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2694486167.3392224,
+      "cash": 511264875.71,
+      "ebitdaUsd": 27709945.85929277,
+      "marginByTier": {
+        "texas_site": 25547221.157762706,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2732871507.050781,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8175,42 +8199,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 261060154.43922213,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 6678899.999999999,
+      "venturesUsd": 106257741.40799999,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 161660.07,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2411978975.99,
+      "startCash": 476341167.11,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 32332014.15671851,
+      "aiCostUsd": 5658102.477425739,
+      "aiFloorEbitdaUsd": 10617100.684084129,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 663761287.2804275,
+      "weightedBacklogUsd": 108658503.57996339,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8244,10 +8269,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2455064062.48,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2715286133.9638367,
+      "cash": 547516747.5,
+      "ebitdaUsd": 27709945.85929277,
+      "marginByTier": {
+        "texas_site": 25547221.157762706,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2770454357.6732745,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8256,42 +8284,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 260222071.48383674,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 6519867.97,
+      "venturesUsd": 106296070.608,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 161660.07,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2433426012.9,
+      "startCash": 512272046.71,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 32332014.15671851,
+      "aiCostUsd": 5658102.477425739,
+      "aiFloorEbitdaUsd": 10617100.684084129,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 647946888.8714675,
+      "weightedBacklogUsd": 105756858.137261,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8325,10 +8354,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2476894825.94,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2736276128.305133,
+      "cash": 579406632.83,
+      "ebitdaUsd": 24072644.19585773,
+      "marginByTier": {
+        "texas_site": 23647731.328690425,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2565710559.074538,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8337,42 +8369,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 259381302.36513284,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 6360873.045,
+      "venturesUsd": 106334399.808,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 150148.01,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2455064062.48,
+      "startCash": 547516747.5,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 30029602.242691495,
+      "aiCostUsd": 7004504.286833764,
+      "aiFloorEbitdaUsd": 10932829.300546315,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 611594725.50357,
+      "weightedBacklogUsd": 99608761.17333864,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8406,10 +8439,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2498920019.64,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2757463239.0497475,
+      "cash": 616458916.84,
+      "ebitdaUsd": 27780669.06761135,
+      "marginByTier": {
+        "texas_site": 25618375.606081292,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2843905969.9481354,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8418,42 +8454,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 258543219.40974748,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 6201841.015,
+      "venturesUsd": 106372729.008,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 162091.31,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2476894825.94,
+      "startCash": 580803236.83,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 32418261.972862244,
+      "aiCostUsd": 5673195.845250894,
+      "aiFloorEbitdaUsd": 9860354.451764438,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 602504487.8756723,
+      "weightedBacklogUsd": 97218915.40071626,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8487,10 +8524,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2521141375.22,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2778843825.5110435,
+      "cash": 652767686.8,
+      "ebitdaUsd": 27841937.457536984,
+      "marginByTier": {
+        "texas_site": 25680017.58600692,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2905638621.826453,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8499,42 +8539,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 257702450.29104355,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 6042808.984999999,
+      "venturesUsd": 106412591.37599999,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 162464.9,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2498920019.64,
+      "startCash": 616458916.84,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 32492979.52428725,
+      "aiCostUsd": 5686271.416750268,
+      "aiFloorEbitdaUsd": 9879899.094140623,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 682838863.9817749,
+      "weightedBacklogUsd": 114413623.52142388,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8568,10 +8609,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2543560639.75,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2800425007.085658,
+      "cash": 689703297.19,
+      "ebitdaUsd": 28141749.962536983,
+      "marginByTier": {
+        "texas_site": 25981658.21100692,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2960152697.747173,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8580,42 +8624,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 256864367.33565822,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 5883776.954999999,
+      "venturesUsd": 106450920.57600002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 164293.02,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2521141375.22,
+      "startCash": 652767686.8,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 32858604.52428725,
+      "aiCostUsd": 5750255.791750268,
+      "aiFloorEbitdaUsd": 6293282.636953125,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 646032615.0878775,
+      "weightedBacklogUsd": 108180206.64213149,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8649,10 +8694,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2566179575.85,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2822203174.066954,
+      "cash": 726968848.16,
+      "ebitdaUsd": 28141749.962536983,
+      "marginByTier": {
+        "texas_site": 25981658.21100692,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 2995499359.366247,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8661,42 +8709,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 256023598.2169543,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 5724782.029999999,
+      "venturesUsd": 106489249.776,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 164293.02,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2543560639.75,
+      "startCash": 689703297.19,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 32858604.52428725,
+      "aiCostUsd": 5750255.791750268,
+      "aiFloorEbitdaUsd": 6293282.636953125,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 609226366.1939801,
+      "weightedBacklogUsd": 101946789.76283914,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -8730,10 +8779,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2588999961.85,
-      "ebitdaUsd": -34345,
-      "marginByTier": {},
-      "valuationUsd": 2844185477.111569,
+      "cash": 764441864.3,
+      "ebitdaUsd": 28017443.08878698,
+      "marginByTier": {
+        "texas_site": 25856593.367256925,
+        "own_site": 1126690.521530063
+      },
+      "valuationUsd": 3036636558.1244516,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8742,42 +8794,43 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 255185515.26156893,
-      "poweredUsd": 0,
-      "venturesUsd": 0,
+      "poweredUsd": 5565749.999999999,
+      "venturesUsd": 106527578.976,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 0,
-      "energyCostUsd": 0,
+      "energyRevenueUsd": 1232039.25,
+      "energyCostUsd": 163535.05,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2566179575.85,
+      "startCash": 726968848.16,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 0,
-      "aiCostUsd": 0,
+      "aiRevenueUsd": 32707010.77428725,
+      "aiCostUsd": 5723726.885500269,
+      "aiFloorEbitdaUsd": 5160375.78890625,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 0,
-      "weightedBacklogUsd": 0,
+      "backlogUsd": 640235117.3000824,
+      "weightedBacklogUsd": 109449622.88354677,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 30,
+      "heat": 27.97872340425532,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 1000,
+        "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 0
+        "idle": 37105
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -19230,7 +19283,7 @@
         "n": 3,
         "tenant": "tc_enterprise_render",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19241,7 +19294,7 @@
         "n": 5,
         "tenant": "tc_frontier_intelligence",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19252,7 +19305,7 @@
         "n": 7,
         "tenant": "tc_enterprise_render",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19263,7 +19316,7 @@
         "n": 8,
         "tenant": "tc_enterprise_render",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19274,7 +19327,7 @@
         "n": 9,
         "tenant": "tc_enterprise_render",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19285,7 +19338,7 @@
         "n": 10,
         "tenant": "tc_north_azure_cloud",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19296,7 +19349,7 @@
         "n": 11,
         "tenant": "tc_north_azure_cloud",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19307,7 +19360,7 @@
         "n": 12,
         "tenant": "tc_enterprise_render",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19318,7 +19371,7 @@
         "n": 15,
         "tenant": "tc_enterprise_render",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19329,7 +19382,7 @@
         "n": 16,
         "tenant": "tc_enterprise_render",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19340,7 +19393,7 @@
         "n": 17,
         "tenant": "tc_north_azure_cloud",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19351,7 +19404,7 @@
         "n": 18,
         "tenant": "tc_meridian_labs",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19362,7 +19415,7 @@
         "n": 19,
         "tenant": "tc_frontier_intelligence",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19373,7 +19426,7 @@
         "n": 20,
         "tenant": "tc_frontier_intelligence",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19384,7 +19437,7 @@
         "n": 21,
         "tenant": "tc_north_azure_cloud",
         "multPct": 0,
-        "years": 2
+        "years": 7
       }
     },
     {
@@ -19495,7 +19548,7 @@
         "n": 22,
         "tenant": "tc_frontier_intelligence",
         "multPct": 0.014000000000000012,
-        "years": 2
+        "years": 6
       }
     },
     {
@@ -19506,7 +19559,7 @@
         "n": 23,
         "tenant": "tc_north_azure_cloud",
         "multPct": 0.014000000000000012,
-        "years": 2
+        "years": 6
       }
     },
     {
@@ -19700,7 +19753,7 @@
         "n": 24,
         "tenant": "tc_frontier_intelligence",
         "multPct": 0.04200000000000004,
-        "years": 2
+        "years": 6
       }
     },
     {
@@ -19711,7 +19764,7 @@
         "n": 25,
         "tenant": "tc_north_azure_cloud",
         "multPct": 0.04200000000000004,
-        "years": 2
+        "years": 6
       }
     },
     {
@@ -19728,10 +19781,175 @@
       "week": null,
       "key": "log.blend_offer",
       "params": {
+        "n": 3,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 5,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
         "n": 6,
         "tenant": "tc_north_azure_cloud",
         "years": 6,
         "multPct": -0.10153998545454546
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 7,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 8,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 9,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 10,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 11,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 12,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 15,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 16,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 17,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 18,
+        "tenant": "tc_meridian_labs",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 19,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 20,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.09307832000000005
+      }
+    },
+    {
+      "quarter": 83,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 21,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09307832000000005
       }
     },
     {
@@ -19767,66 +19985,21 @@
     {
       "quarter": 84,
       "week": null,
-      "key": "log.blend_signed",
+      "key": "log.flex.enrolled",
       "params": {
-        "n": 4,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": -0.11691136666666657,
-        "years": 9
+        "kwKw": 3000,
+        "tier": "own_site",
+        "serial": 1
       }
     },
     {
       "quarter": 84,
       "week": null,
-      "key": "log.plant.contracted",
+      "key": "log.flex.enrolled",
       "params": {
-        "ventureType": "egs2",
-        "pct": 80
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.plant.sold",
-      "params": {
-        "ventureType": "egs2",
-        "priceUsd": 107252971.86
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 0,
-        "priceUsd": 1600
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 0,
-        "priceUsd": 1600
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 0.1,
-        "priceUsd": 32000
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 0,
-        "priceUsd": 32000
+        "kwKw": 75000,
+        "tier": "texas_site",
+        "serial": 1
       }
     },
     {
@@ -19887,298 +20060,32 @@
     {
       "quarter": 85,
       "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 22,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.09845864669999993
+      }
+    },
+    {
+      "quarter": 85,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 23,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09845864669999993
+      }
+    },
+    {
+      "quarter": 85,
+      "week": null,
       "key": "log.wildcard_v.dry_year",
       "params": {
         "region": "nordics",
         "quarters": 4
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 1,
-        "priceUsd": 285000
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 0,
-        "priceUsd": 285000
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 29,
-        "priceUsd": 71984153
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 17,
-        "priceUsd": 4845000
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 1,
-        "priceUsd": 76829153
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 2,
-        "priceUsd": 250632911
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 3,
-        "priceUsd": 36850244
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 4,
-        "priceUsd": 132798645
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 5,
-        "priceUsd": 27727409
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 6,
-        "priceUsd": 25063291
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 7,
-        "priceUsd": 18276012
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 8,
-        "priceUsd": 21825949
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 9,
-        "priceUsd": 9690211
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 10,
-        "priceUsd": 14145095
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 11,
-        "priceUsd": 18797468
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 12,
-        "priceUsd": 22974684
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 15,
-        "priceUsd": 52096780
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 16,
-        "priceUsd": 40711828
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 17,
-        "priceUsd": 407764458
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 18,
-        "priceUsd": 133470770
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 19,
-        "priceUsd": 18969497
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 20,
-        "priceUsd": 38658156
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 21,
-        "priceUsd": 47989435
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 22,
-        "priceUsd": 39199371
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 23,
-        "priceUsd": 72991931
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 24,
-        "priceUsd": 80563598
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 25,
-        "priceUsd": 75007488
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 26,
-        "priceUsd": 47989435
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 27,
-        "priceUsd": 71984153
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 28,
-        "priceUsd": 87980632
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 19,
-        "priceUsd": 5415000
-      }
-    },
-    {
-      "quarter": 85,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 25,
-        "priceUsd": 1799574451
       }
     },
     {
@@ -20206,10 +20113,55 @@
     {
       "quarter": 85,
       "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 26,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.06333000000000011,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 85,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 27,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.06333000000000011,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 85,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 28,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.06333000000000011,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 85,
+      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
         "deltaPc": 0
+      }
+    },
+    {
+      "quarter": 86,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 29,
+        "tenant": "tc_north_azure_cloud",
+        "feeUsd": 646221,
+        "multPct": 0.05667,
+        "years": 6
       }
     },
     {
@@ -20251,10 +20203,234 @@
     {
       "quarter": 86,
       "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 29,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.05667,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 86,
+      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
         "deltaPc": 0
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 3,
+        "tenant": "tc_enterprise_render",
+        "feeUsd": 330815,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 5,
+        "tenant": "tc_frontier_intelligence",
+        "feeUsd": 248917,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 7,
+        "tenant": "tc_enterprise_render",
+        "feeUsd": 164069,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 8,
+        "tenant": "tc_enterprise_render",
+        "feeUsd": 195937,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 9,
+        "tenant": "tc_enterprise_render",
+        "feeUsd": 173983,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 10,
+        "tenant": "tc_north_azure_cloud",
+        "feeUsd": 126984,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 11,
+        "tenant": "tc_north_azure_cloud",
+        "feeUsd": 168750,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 12,
+        "tenant": "tc_enterprise_render",
+        "feeUsd": 206250,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 15,
+        "tenant": "tc_enterprise_render",
+        "feeUsd": 467687,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 16,
+        "tenant": "tc_enterprise_render",
+        "feeUsd": 730962,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 17,
+        "tenant": "tc_north_azure_cloud",
+        "feeUsd": 3660613,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 18,
+        "tenant": "tc_meridian_labs",
+        "feeUsd": 1198204,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 19,
+        "tenant": "tc_frontier_intelligence",
+        "feeUsd": 340589,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 20,
+        "tenant": "tc_frontier_intelligence",
+        "feeUsd": 347045,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 21,
+        "tenant": "tc_north_azure_cloud",
+        "feeUsd": 430814,
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 6,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.11446845000000005
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 24,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.10406222727272729
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 25,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.10406222727272729
       }
     },
     {
@@ -20280,6 +20456,171 @@
     {
       "quarter": 87,
       "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 3,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 5,
+        "tenant": "tc_frontier_intelligence",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 7,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 8,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 9,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 10,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 11,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 12,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 15,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 16,
+        "tenant": "tc_enterprise_render",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 17,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 18,
+        "tenant": "tc_meridian_labs",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 19,
+        "tenant": "tc_frontier_intelligence",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 20,
+        "tenant": "tc_frontier_intelligence",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 21,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.050000000000000044,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 87,
+      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
@@ -20293,6 +20634,30 @@
       "params": {
         "pc": 0,
         "deltaPc": 0
+      }
+    },
+    {
+      "quarter": 89,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 22,
+        "tenant": "tc_frontier_intelligence",
+        "feeUsd": 351903,
+        "multPct": 0.04783037475345164,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 89,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 23,
+        "tenant": "tc_north_azure_cloud",
+        "feeUsd": 655268,
+        "multPct": 0.04783037475345164,
+        "years": 6
       }
     },
     {
@@ -20318,10 +20683,65 @@
     {
       "quarter": 89,
       "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 22,
+        "tenant": "tc_frontier_intelligence",
+        "multPct": 0.04783037475345164,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 89,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 23,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.04783037475345164,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 89,
+      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
         "deltaPc": 0
+      }
+    },
+    {
+      "quarter": 90,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 26,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09618022159090911
+      }
+    },
+    {
+      "quarter": 90,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 27,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09618022159090911
+      }
+    },
+    {
+      "quarter": 90,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 28,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09618022159090911
       }
     },
     {
@@ -20381,10 +20801,273 @@
     {
       "quarter": 91,
       "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 24,
+        "tenant": "tc_frontier_intelligence",
+        "feeUsd": 723241,
+        "multPct": 0.03166986564299412,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 91,
+      "week": null,
+      "key": "log.reopener_tenant",
+      "params": {
+        "n": 25,
+        "tenant": "tc_north_azure_cloud",
+        "feeUsd": 673363,
+        "multPct": 0.03166986564299412,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 91,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 6,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.11434241666666667
+      }
+    },
+    {
+      "quarter": 91,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 29,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09355288636363635
+      }
+    },
+    {
+      "quarter": 91,
+      "week": null,
+      "key": "log.plant.trip",
+      "params": {
+        "ventureType": "egs2",
+        "weeks": 1
+      }
+    },
+    {
+      "quarter": 91,
+      "week": 2,
+      "key": "log.event_choice_cash",
+      "params": {
+        "eventTitle": "a5_5687feaa.title",
+        "eventChoice": "a5_5687feaa.choice.c1",
+        "cashUsd": -270288.1399999857
+      }
+    },
+    {
+      "quarter": 91,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 24,
+        "tenant": "tc_frontier_intelligence",
+        "multPct": 0.03166986564299412,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 91,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 25,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.03166986564299412,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 91,
+      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
         "deltaPc": 0
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.renewal_offer",
+      "params": {
+        "n": 2,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.08125000000000004,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 3,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 5,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 7,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 8,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 9,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 10,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 11,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 12,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 15,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 16,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 17,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 18,
+        "tenant": "tc_meridian_labs",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 19,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 20,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.09092555113636358
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 21,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09092555113636358
       }
     },
     {
@@ -20405,6 +21088,17 @@
         "eventTitle": "a5_43378100.title",
         "eventChoice": "a5_43378100.choice.c1",
         "cashUsd": 0
+      }
+    },
+    {
+      "quarter": 92,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 2,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.08125000000000004,
+        "years": 6
       }
     },
     {
@@ -20440,9 +21134,64 @@
     {
       "quarter": 94,
       "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 22,
+        "tenant": "tc_frontier_intelligence",
+        "years": 6,
+        "multPct": -0.08567088068181805
+      }
+    },
+    {
+      "quarter": 94,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 23,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.08567088068181805
+      }
+    },
+    {
+      "quarter": 94,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 26,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.0942379687499999
+      }
+    },
+    {
+      "quarter": 94,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 27,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.0942379687499999
+      }
+    },
+    {
+      "quarter": 94,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 28,
+        "tenant": "tc_enterprise_render",
+        "years": 6,
+        "multPct": -0.0942379687499999
+      }
+    },
+    {
+      "quarter": 94,
+      "week": null,
       "key": "log.exit.bid",
       "params": {
-        "bidUsd": 2999887901.6645894
+        "bidUsd": 3170992346.7270045
       }
     },
     {
@@ -20498,6 +21247,48 @@
       "params": {
         "pc": 0,
         "deltaPc": 0
+      }
+    },
+    {
+      "quarter": 95,
+      "week": null,
+      "key": "log.tenant_distress",
+      "params": {
+        "n": 12,
+        "tenant": "tc_enterprise_render"
+      }
+    },
+    {
+      "quarter": 95,
+      "week": null,
+      "key": "log.renewal_offer",
+      "params": {
+        "n": 4,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.10000000000000009,
+        "years": 6
+      }
+    },
+    {
+      "quarter": 95,
+      "week": null,
+      "key": "log.blend_offer",
+      "params": {
+        "n": 29,
+        "tenant": "tc_north_azure_cloud",
+        "years": 6,
+        "multPct": -0.09134789999999993
+      }
+    },
+    {
+      "quarter": 95,
+      "week": null,
+      "key": "log.renewal_signed",
+      "params": {
+        "n": 4,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": 0.10000000000000009,
+        "years": 6
       }
     },
     {
@@ -28989,30 +29780,26 @@
         "q": 84,
         "startCash": 333961452.55,
         "lines": {
-          "asset_sales": 107286571.86,
           "rent": -34345,
-          "ai_shell_rent": 30117763.624733366,
-          "ai_opex": -5270608.634328326,
-          "interest": 4150854.31
+          "ai_shell_rent": 30433424.31473337,
+          "ai_opex": -5325849.255078326,
+          "grid_credits": 1539871.125,
+          "energy_opex": -152167.12,
+          "interest": 3210011.88,
+          "plant_distributions": 2720586.9600000004
         },
         "byBiz": {},
         "byRef": {
-          "venture:venture-36": {
-            "asset_sales": 107252971.86
-          },
-          "site:site-1": {
-            "asset_sales": 1600
-          },
           "site:site-3": {
-            "asset_sales": 32000,
             "rent": -6000.000000000001
           },
           "site:site-9": {
             "rent": -28345.000000000007
           },
           "site:site-22": {
-            "ai_shell_rent": 28825320.87473335,
-            "ai_opex": -5044431.153078326
+            "ai_shell_rent": 29140981.564733356,
+            "ai_opex": -5099671.773828328,
+            "grid_credits": 1480645.3125
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
@@ -29023,8 +29810,8 @@
             "ai_opex": -81049.59843749998
           },
           "project:project-4": {
-            "ai_shell_rent": 2384339.31,
-            "ai_opex": -417259.37925
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
           },
           "project:project-5": {
             "ai_shell_rent": 348483.1218749999,
@@ -29116,28 +29903,32 @@
           },
           "site:site-14": {
             "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
+            "ai_opex": -226177.48124999992,
+            "grid_credits": 59225.81249999999
           },
           "project:project-29": {
             "ai_shell_rent": 1292442.75,
             "ai_opex": -226177.48124999992
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2720586.9600000004
           }
         },
-        "rounding": -0.020405173301696777,
+        "rounding": -0.05465495586395264,
         "weeks": [
-          443156702.1,
-          445065379.79,
-          446974057.48,
-          448882735.17,
-          450791412.86,
-          452700090.55,
-          454608768.24,
-          456517445.93,
-          458426123.62,
-          460334801.31,
-          462243479,
-          464152156.69,
-          466060834.38
+          335890162.55,
+          337818872.55,
+          339747582.55,
+          341676292.55,
+          343605002.55,
+          345533712.55,
+          347462422.55,
+          349391132.55,
+          351319842.55,
+          353248552.55,
+          355177262.55,
+          357105972.55,
+          359034682.55
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -29170,136 +29961,358 @@
       },
       {
         "q": 85,
-        "startCash": 470211688.69,
+        "startCash": 366352985.4,
         "lines": {
           "other_income": 1866861,
-          "asset_sales": 1876688604,
           "rent": -34345,
-          "interest": 20918401.58
+          "ai_shell_rent": 30433424.31473337,
+          "ai_opex": -5325849.255078326,
+          "grid_credits": 1385777.25,
+          "energy_opex": -152167.12,
+          "interest": 3513753.3,
+          "plant_distributions": 2721569.7600000002
         },
         "byBiz": {
           "ai": {
-            "other_income": 1866861,
-            "asset_sales": 1866143604
+            "other_income": 1866861
           }
         },
         "byRef": {
           "site:site-22": {
             "other_income": 1866861,
-            "asset_sales": 1799574451
+            "ai_shell_rent": 29140981.564733356,
+            "ai_opex": -5099671.773828328,
+            "grid_credits": 1332478.125
           },
           "project:project-26": {
             "other_income": 430814,
-            "asset_sales": 47989435
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-27": {
             "other_income": 646221,
-            "asset_sales": 71984153
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992
           },
           "project:project-28": {
             "other_income": 789826,
-            "asset_sales": 87980632
-          },
-          "site:site-9": {
-            "asset_sales": 285000,
-            "rent": -28345.000000000007
-          },
-          "site:site-14": {
-            "asset_sales": 76829153
-          },
-          "project:project-29": {
-            "asset_sales": 71984153
-          },
-          "project:project-2": {
-            "asset_sales": 250632911
-          },
-          "project:project-3": {
-            "asset_sales": 36850244
-          },
-          "project:project-4": {
-            "asset_sales": 132798645
-          },
-          "project:project-5": {
-            "asset_sales": 27727409
-          },
-          "project:project-6": {
-            "asset_sales": 25063291
-          },
-          "project:project-7": {
-            "asset_sales": 18276012
-          },
-          "project:project-8": {
-            "asset_sales": 21825949
-          },
-          "project:project-9": {
-            "asset_sales": 9690211
-          },
-          "project:project-10": {
-            "asset_sales": 14145095
-          },
-          "project:project-11": {
-            "asset_sales": 18797468
-          },
-          "project:project-12": {
-            "asset_sales": 22974684
-          },
-          "project:project-15": {
-            "asset_sales": 52096780
-          },
-          "project:project-16": {
-            "asset_sales": 40711828
-          },
-          "project:project-17": {
-            "asset_sales": 407764458
-          },
-          "project:project-18": {
-            "asset_sales": 133470770
-          },
-          "project:project-19": {
-            "asset_sales": 18969497
-          },
-          "project:project-20": {
-            "asset_sales": 38658156
-          },
-          "project:project-21": {
-            "asset_sales": 47989435
-          },
-          "project:project-22": {
-            "asset_sales": 39199371
-          },
-          "project:project-23": {
-            "asset_sales": 72991931
-          },
-          "project:project-24": {
-            "asset_sales": 80563598
-          },
-          "project:project-25": {
-            "asset_sales": 75007488
+            "ai_shell_rent": 1105756.5749999997,
+            "ai_opex": -193507.4006249999
           },
           "site:site-3": {
             "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4499999.999999999,
+            "ai_opex": -787500.0000000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
+          },
+          "project:project-10": {
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
+          },
+          "project:project-11": {
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
+          },
+          "project:project-12": {
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
+          },
+          "project:project-15": {
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
+          },
+          "project:project-16": {
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
+          },
+          "project:project-19": {
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
+          },
+          "project:project-20": {
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
+          },
+          "project:project-21": {
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
+          },
+          "project:project-22": {
+            "ai_shell_rent": 492664.8158249999,
+            "ai_opex": -86216.34276937498
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1310536.9485000004,
+            "ai_opex": -229343.96598750007
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1012537.9449499997,
+            "ai_opex": -177194.14036624998
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1346725.3455000003,
+            "ai_opex": -235676.93546250003
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992,
+            "grid_credits": 53299.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2721569.7600000002
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": -0.059654951095581055,
         "weeks": [
-          2348764511.77,
-          2348761869.85,
-          2348759227.93,
-          2348756586.01,
-          2348753944.09,
-          2348751302.17,
-          2348748660.25,
-          2348746018.33,
-          2348743376.41,
-          2348740734.49,
-          2348738092.57,
-          2348735450.65,
-          2348732808.73
+          370148556.4,
+          372077266.4,
+          374005976.4,
+          375934686.4,
+          377863396.4,
+          379792106.4,
+          381720816.4,
+          383649526.4,
+          385578236.4,
+          387506946.4,
+          389435656.4,
+          391364366.4,
+          393293076.4
         ],
         "parents": {
           "project:project-26": "site-22",
           "project:project-27": "site-22",
           "project:project-28": "site-22",
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-29": "site-14"
+        }
+      },
+      {
+        "q": 86,
+        "startCash": 400762009.59,
+        "lines": {
+          "other_income": 646221,
+          "rent": -34345,
+          "ai_shell_rent": 30639869.210890632,
+          "ai_opex": -5361977.111905848,
+          "grid_credits": 1232039.25,
+          "energy_opex": -153199.35,
+          "interest": 3809475.81,
+          "plant_distributions": 2722552.5600000005
+        },
+        "byBiz": {
+          "ai": {
+            "other_income": 646221
+          }
+        },
+        "byRef": {
+          "site:site-14": {
+            "other_income": 646221,
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "other_income": 646221,
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992
+          },
+          "site:site-3": {
+            "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          },
+          "site:site-22": {
+            "ai_shell_rent": 29347426.460890613,
+            "ai_opex": -5135799.630655848,
+            "grid_credits": 1184653.125
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4499999.999999999,
+            "ai_opex": -787500.0000000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
+          },
+          "project:project-10": {
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
+          },
+          "project:project-11": {
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
+          },
+          "project:project-12": {
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
+          },
+          "project:project-15": {
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
+          },
+          "project:project-16": {
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
+          },
+          "project:project-19": {
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
+          },
+          "project:project-20": {
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
+          },
+          "project:project-21": {
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
+          },
+          "project:project-22": {
+            "ai_shell_rent": 492664.8158249999,
+            "ai_opex": -86216.34276937498
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1310536.9485000004,
+            "ai_opex": -229343.96598750007
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1012537.9449499997,
+            "ai_opex": -177194.14036624998
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1346725.3455000003,
+            "ai_opex": -235676.93546250003
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2722552.5600000005
+          }
+        },
+        "rounding": 0.06101572513580322,
+        "weeks": [
+          403350041.91,
+          405291853.23,
+          407233664.55,
+          409175475.87,
+          411117287.19,
+          413059098.51,
+          415000909.83,
+          416942721.15,
+          418884532.47,
+          420826343.79,
+          422768155.11,
+          424709966.43,
+          426651777.75
+        ],
+        "parents": {
           "project:project-29": "site-14",
           "project:project-2": "site-22",
           "project:project-3": "site-22",
@@ -29322,81 +30335,227 @@
           "project:project-22": "site-22",
           "project:project-23": "site-22",
           "project:project-24": "site-22",
-          "project:project-25": "site-22"
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22"
         }
       },
       {
-        "q": 86,
-        "startCash": 2369651210.31,
-        "lines": {
-          "rent": -34345,
-          "interest": 21104400.21
-        },
-        "byBiz": {},
-        "byRef": {
-          "site:site-3": {
-            "rent": -6000.000000000001
-          },
-          "site:site-9": {
-            "rent": -28345.000000000007
-          }
-        },
-        "rounding": 0.04000234603881836,
-        "weeks": [
-          2369648568.39,
-          2369645926.47,
-          2369643284.55,
-          2369640642.63,
-          2369638000.71,
-          2369635358.79,
-          2369632716.87,
-          2369630074.95,
-          2369627433.03,
-          2369624791.11,
-          2369622149.19,
-          2369619507.27,
-          2369616865.35
-        ]
-      },
-      {
         "q": 87,
-        "startCash": 2390721265.56,
+        "startCash": 434262646.02,
         "lines": {
+          "other_income": 8791619,
           "rent": -34345,
-          "interest": 21292055.39
+          "ai_shell_rent": 30713111.941533126,
+          "ai_opex": -5374794.589768285,
+          "grid_credits": 1232039.25,
+          "energy_opex": -153565.56,
+          "interest": 4180920.71,
+          "plant_distributions": 2723535.3600000003
         },
-        "byBiz": {},
+        "byBiz": {
+          "ai": {
+            "other_income": 8791619
+          }
+        },
         "byRef": {
+          "site:site-22": {
+            "other_income": 8791619,
+            "ai_shell_rent": 29347426.460890613,
+            "ai_opex": -5135799.630655848,
+            "grid_credits": 1184653.125
+          },
+          "project:project-3": {
+            "other_income": 330815,
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
+          },
+          "project:project-5": {
+            "other_income": 248917,
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
+          },
+          "project:project-7": {
+            "other_income": 164069,
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
+          },
+          "project:project-8": {
+            "other_income": 195937,
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
+          },
+          "project:project-9": {
+            "other_income": 173983,
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
+          },
+          "project:project-10": {
+            "other_income": 126984,
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
+          },
+          "project:project-11": {
+            "other_income": 168750,
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
+          },
+          "project:project-12": {
+            "other_income": 206250,
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
+          },
+          "project:project-15": {
+            "other_income": 467687,
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
+          },
+          "project:project-16": {
+            "other_income": 730962,
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
+          },
+          "project:project-17": {
+            "other_income": 3660613,
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
+          },
+          "project:project-18": {
+            "other_income": 1198204,
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
+          },
+          "project:project-19": {
+            "other_income": 340589,
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
+          },
+          "project:project-20": {
+            "other_income": 347045,
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
+          },
+          "project:project-21": {
+            "other_income": 430814,
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
+          },
           "site:site-3": {
             "rent": -6000.000000000001
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4499999.999999999,
+            "ai_opex": -787500.0000000001
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-22": {
+            "ai_shell_rent": 492664.8158249999,
+            "ai_opex": -86216.34276937498
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1310536.9485000004,
+            "ai_opex": -229343.96598750007
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1012537.9449499997,
+            "ai_opex": -177194.14036624998
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1346725.3455000003,
+            "ai_opex": -235676.93546250003
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2723535.3600000003
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": -0.02176457643508911,
         "weeks": [
-          2390718623.64,
-          2390715981.72,
-          2390713339.8,
-          2390710697.88,
-          2390708055.96,
-          2390705414.04,
-          2390702772.12,
-          2390700130.2,
-          2390697488.28,
-          2390694846.36,
-          2390692204.44,
-          2390689562.52,
-          2390686920.6
-        ]
+          445000724.43,
+          446947183.84,
+          448893643.25,
+          450840102.66,
+          452786562.07,
+          454733021.48,
+          456679480.89,
+          458625940.3,
+          460572399.71,
+          462518859.12,
+          464465318.53,
+          466411777.94,
+          468358237.35
+        ],
+        "parents": {
+          "project:project-3": "site-22",
+          "project:project-5": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-2": "site-22",
+          "project:project-4": "site-22",
+          "project:project-6": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       },
       {
         "q": 88,
-        "startCash": 2411978975.99,
+        "startCash": 476341167.11,
         "lines": {
           "rent": -34345,
-          "interest": 21481381.87
+          "ai_shell_rent": 32332014.156718545,
+          "ai_opex": -5658102.477425739,
+          "grid_credits": 1232039.25,
+          "energy_opex": -161660.07,
+          "interest": 4489205.23,
+          "plant_distributions": 2724557.472
         },
         "byBiz": {},
         "byRef": {
@@ -29405,64 +30564,372 @@
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "site:site-22": {
+            "ai_shell_rent": 30966328.67607604,
+            "ai_opex": -5419107.518313304,
+            "grid_credits": 1184653.125
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4499999.999999999,
+            "ai_opex": -787500.0000000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 486297.59062499995,
+            "ai_opex": -85102.07835937501
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 365907.2779687499,
+            "ai_opex": -64033.77364453124
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 241181.04779999988,
+            "ai_opex": -42206.68336499999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 288028.12500000006,
+            "ai_opex": -50404.921874999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 255755.5,
+            "ai_opex": -44757.21250000001
+          },
+          "project:project-10": {
+            "ai_shell_rent": 266667.18749999994,
+            "ai_opex": -46666.7578125
+          },
+          "project:project-11": {
+            "ai_shell_rent": 354374.99999999994,
+            "ai_opex": -62015.62500000003
+          },
+          "project:project-12": {
+            "ai_shell_rent": 303187.49999999994,
+            "ai_opex": -53057.81250000001
+          },
+          "project:project-15": {
+            "ai_shell_rent": 687499.8899999999,
+            "ai_opex": -120312.48075000002
+          },
+          "project:project-16": {
+            "ai_shell_rent": 1074514.6912499997,
+            "ai_opex": -188040.07096874996
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7687286.774999999,
+            "ai_opex": -1345275.1856249997
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1761359.1450000003,
+            "ai_opex": -308237.85037500004
+          },
+          "project:project-19": {
+            "ai_shell_rent": 500665.37062500004,
+            "ai_opex": -87616.43985937498
+          },
+          "project:project-20": {
+            "ai_shell_rent": 510155.87437500013,
+            "ai_opex": -89277.27801562498
+          },
+          "project:project-21": {
+            "ai_shell_rent": 904709.9249999998,
+            "ai_opex": -158324.236875
+          },
+          "project:project-22": {
+            "ai_shell_rent": 492664.8158249999,
+            "ai_opex": -86216.34276937498
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1310536.9485000004,
+            "ai_opex": -229343.96598750007
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1012537.9449499997,
+            "ai_opex": -177194.14036624998
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1346725.3455000003,
+            "ai_opex": -235676.93546250003
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2724557.472
           }
         },
-        "rounding": 0.04000282287597656,
+        "rounding": 0.03870725631713867,
         "weeks": [
-          2411976334.07,
-          2411973692.15,
-          2411971050.23,
-          2411968408.31,
-          2411965766.39,
-          2411963124.47,
-          2411960482.55,
-          2411957840.63,
-          2411955198.71,
-          2411952556.79,
-          2411949914.87,
-          2411947272.95,
-          2411944631.03
-        ]
+          478390364.55,
+          480439561.99,
+          482488759.43,
+          484537956.87,
+          486587154.31,
+          488636351.75,
+          490685549.19,
+          492734746.63,
+          494783944.07,
+          496833141.51,
+          498882338.95,
+          500931536.39,
+          502980733.83
+        ],
+        "parents": {
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       },
       {
         "q": 89,
-        "startCash": 2433426012.9,
+        "startCash": 511264875.71,
         "lines": {
+          "other_income": 1007171,
           "rent": -34345,
-          "interest": 21672394.54
+          "ai_shell_rent": 32332014.156718545,
+          "ai_opex": -5658102.477425739,
+          "grid_credits": 1232039.25,
+          "energy_opex": -161660.07,
+          "interest": 4809214.62,
+          "plant_distributions": 2725540.272
         },
-        "byBiz": {},
+        "byBiz": {
+          "ai": {
+            "other_income": 1007171
+          }
+        },
         "byRef": {
+          "site:site-22": {
+            "other_income": 1007171,
+            "ai_shell_rent": 30966328.67607604,
+            "ai_opex": -5419107.518313304,
+            "grid_credits": 1184653.125
+          },
+          "project:project-22": {
+            "other_income": 351903,
+            "ai_shell_rent": 492664.8158249999,
+            "ai_opex": -86216.34276937498
+          },
+          "project:project-23": {
+            "other_income": 655268,
+            "ai_shell_rent": 1310536.9485000004,
+            "ai_opex": -229343.96598750007
+          },
           "site:site-3": {
             "rent": -6000.000000000001
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4499999.999999999,
+            "ai_opex": -787500.0000000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 486297.59062499995,
+            "ai_opex": -85102.07835937501
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 365907.2779687499,
+            "ai_opex": -64033.77364453124
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 241181.04779999988,
+            "ai_opex": -42206.68336499999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 288028.12500000006,
+            "ai_opex": -50404.921874999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 255755.5,
+            "ai_opex": -44757.21250000001
+          },
+          "project:project-10": {
+            "ai_shell_rent": 266667.18749999994,
+            "ai_opex": -46666.7578125
+          },
+          "project:project-11": {
+            "ai_shell_rent": 354374.99999999994,
+            "ai_opex": -62015.62500000003
+          },
+          "project:project-12": {
+            "ai_shell_rent": 303187.49999999994,
+            "ai_opex": -53057.81250000001
+          },
+          "project:project-15": {
+            "ai_shell_rent": 687499.8899999999,
+            "ai_opex": -120312.48075000002
+          },
+          "project:project-16": {
+            "ai_shell_rent": 1074514.6912499997,
+            "ai_opex": -188040.07096874996
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7687286.774999999,
+            "ai_opex": -1345275.1856249997
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1761359.1450000003,
+            "ai_opex": -308237.85037500004
+          },
+          "project:project-19": {
+            "ai_shell_rent": 500665.37062500004,
+            "ai_opex": -87616.43985937498
+          },
+          "project:project-20": {
+            "ai_shell_rent": 510155.87437500013,
+            "ai_opex": -89277.27801562498
+          },
+          "project:project-21": {
+            "ai_shell_rent": 904709.9249999998,
+            "ai_opex": -158324.236875
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1012537.9449499997,
+            "ai_opex": -177194.14036624998
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1346725.3455000003,
+            "ai_opex": -235676.93546250003
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2725540.272
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": 0.038707435131073,
         "weeks": [
-          2433423370.98,
-          2433420729.06,
-          2433418087.14,
-          2433415445.22,
-          2433412803.3,
-          2433410161.38,
-          2433407519.46,
-          2433404877.54,
-          2433402235.62,
-          2433399593.7,
-          2433396951.78,
-          2433394309.86,
-          2433391667.94
-        ]
+          514321244.15,
+          516370441.59,
+          518419639.03,
+          520468836.47,
+          522518033.91,
+          524567231.35,
+          526616428.79,
+          528665626.23,
+          530714823.67,
+          532764021.11,
+          534813218.55,
+          536862415.99,
+          538911613.43
+        ],
+        "parents": {
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       },
       {
         "q": 90,
-        "startCash": 2455064062.48,
+        "startCash": 547516747.5,
         "lines": {
           "rent": -34345,
-          "interest": 21865108.42
+          "ai_shell_rent": 30029602.24269155,
+          "ai_opex": -7004504.286833768,
+          "grid_credits": 1232039.25,
+          "energy_opex": -150148.01,
+          "interest": 5090718.02,
+          "plant_distributions": 2726523.072
         },
         "byBiz": {},
         "byRef": {
@@ -29471,64 +30938,373 @@
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "site:site-22": {
+            "ai_shell_rent": 28663916.762049045,
+            "ai_opex": -5016185.433358579,
+            "grid_credits": 1184653.125
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4153846.1538461526,
+            "ai_opex": -726923.076923077
+          },
+          "project:project-3": {
+            "ai_shell_rent": 448890.0836538461,
+            "ai_opex": -78555.76463942308
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2492307.6923076925,
+            "ai_opex": -436153.84615384624
+          },
+          "project:project-5": {
+            "ai_shell_rent": 337760.5642788461,
+            "ai_opex": -59108.09874879807
+          },
+          "project:project-6": {
+            "ai_shell_rent": 415384.61538461543,
+            "ai_opex": -72692.30769230769
+          },
+          "project:project-7": {
+            "ai_shell_rent": 222628.6595076922,
+            "ai_opex": -38960.015413846144
+          },
+          "project:project-8": {
+            "ai_shell_rent": 265872.11538461543,
+            "ai_opex": -46527.62019230768
+          },
+          "project:project-9": {
+            "ai_shell_rent": 236082,
+            "ai_opex": -41314.350000000006
+          },
+          "project:project-10": {
+            "ai_shell_rent": 246154.32692307688,
+            "ai_opex": -43077.00721153846
+          },
+          "project:project-11": {
+            "ai_shell_rent": 327115.38461538457,
+            "ai_opex": -57245.192307692334
+          },
+          "project:project-12": {
+            "ai_shell_rent": 279865.38461538457,
+            "ai_opex": -48976.44230769231
+          },
+          "project:project-15": {
+            "ai_shell_rent": 634615.283076923,
+            "ai_opex": -111057.67453846155
+          },
+          "project:project-16": {
+            "ai_shell_rent": 991859.7149999997,
+            "ai_opex": -173575.45012499997
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7095957.023076923,
+            "ai_opex": -1241792.4790384613
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1625869.9800000002,
+            "ai_opex": -284527.2465
+          },
+          "project:project-19": {
+            "ai_shell_rent": 462152.64980769233,
+            "ai_opex": -80876.71371634613
+          },
+          "project:project-20": {
+            "ai_shell_rent": 470913.1148076924,
+            "ai_opex": -82409.79509134614
+          },
+          "project:project-21": {
+            "ai_shell_rent": 835116.8538461537,
+            "ai_opex": -146145.44942307693
+          },
+          "project:project-22": {
+            "ai_shell_rent": 476519.2233173078,
+            "ai_opex": -83390.86408052885
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1267588.0817307692,
+            "ai_opex": -221827.91430288463
+          },
+          "project:project-24": {
+            "ai_shell_rent": 934650.4107230767,
+            "ai_opex": -163563.82187653845
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1243131.0881538463,
+            "ai_opex": -217547.9404269231
+          },
+          "project:project-26": {
+            "ai_shell_rent": 845718.8611430773,
+            "ai_opex": -148000.80070003847
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1268578.2917146154,
+            "ai_opex": -222001.20105005766
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1085339.2051336153,
+            "ai_opex": -189934.36089838264
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2726523.072
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": 0.04214179515838623,
         "weeks": [
-          2455061420.56,
-          2455058778.64,
-          2455056136.72,
-          2455053494.8,
-          2455050852.88,
-          2455048210.96,
-          2455045569.04,
-          2455042927.12,
-          2455040285.2,
-          2455037643.28,
-          2455035001.36,
-          2455032359.44,
-          2455029717.52
-        ]
+          549571418.36,
+          551626089.22,
+          553680760.08,
+          555735430.94,
+          557790101.8,
+          559844772.66,
+          561899443.52,
+          560234146.2,
+          562288817.06,
+          564343487.92,
+          566398158.78,
+          568452829.64,
+          570507500.5
+        ],
+        "parents": {
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       },
       {
         "q": 91,
-        "startCash": 2476894825.94,
+        "startCash": 579406632.83,
         "lines": {
+          "other_income": 1396604,
           "rent": -34345,
-          "interest": 22059538.66
+          "ai_shell_rent": 32418261.97286231,
+          "ai_opex": -5673195.845250898,
+          "energy_opex": -432379.45,
+          "grid_credits": 1232039.25,
+          "interest": 5417793.16,
+          "plant_distributions": 2727505.872
         },
-        "byBiz": {},
+        "byBiz": {
+          "ai": {
+            "other_income": 1396604
+          }
+        },
         "byRef": {
+          "site:site-22": {
+            "other_income": 1396604,
+            "ai_shell_rent": 31052576.492219806,
+            "ai_opex": -5434200.8861384615,
+            "grid_credits": 1184653.125
+          },
+          "project:project-24": {
+            "other_income": 723241,
+            "ai_shell_rent": 1012537.9449499997,
+            "ai_opex": -177194.14036624998
+          },
+          "project:project-25": {
+            "other_income": 673363,
+            "ai_shell_rent": 1346725.3455000003,
+            "ai_opex": -235676.93546250003
+          },
           "site:site-3": {
             "rent": -6000.000000000001
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4499999.999999999,
+            "ai_opex": -787500.0000000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 486297.59062499995,
+            "ai_opex": -85102.07835937501
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 365907.2779687499,
+            "ai_opex": -64033.77364453124
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 241181.04779999988,
+            "ai_opex": -42206.68336499999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 288028.12500000006,
+            "ai_opex": -50404.921874999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 255755.5,
+            "ai_opex": -44757.21250000001
+          },
+          "project:project-10": {
+            "ai_shell_rent": 266667.18749999994,
+            "ai_opex": -46666.7578125
+          },
+          "project:project-11": {
+            "ai_shell_rent": 354374.99999999994,
+            "ai_opex": -62015.62500000003
+          },
+          "project:project-12": {
+            "ai_shell_rent": 303187.49999999994,
+            "ai_opex": -53057.81250000001
+          },
+          "project:project-15": {
+            "ai_shell_rent": 687499.8899999999,
+            "ai_opex": -120312.48075000002
+          },
+          "project:project-16": {
+            "ai_shell_rent": 1074514.6912499997,
+            "ai_opex": -188040.07096874996
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7687286.774999999,
+            "ai_opex": -1345275.1856249997
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1761359.1450000003,
+            "ai_opex": -308237.85037500004
+          },
+          "project:project-19": {
+            "ai_shell_rent": 500665.37062500004,
+            "ai_opex": -87616.43985937498
+          },
+          "project:project-20": {
+            "ai_shell_rent": 510155.87437500013,
+            "ai_opex": -89277.27801562498
+          },
+          "project:project-21": {
+            "ai_shell_rent": 904709.9249999998,
+            "ai_opex": -158324.236875
+          },
+          "project:project-22": {
+            "ai_shell_rent": 516229.15859375015,
+            "ai_opex": -90340.10275390625
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1373220.421875,
+            "ai_opex": -240313.57382812502
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "energy_opex": -270288.14,
+            "plant_distributions": 2727505.872
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": 0.05038809776306152,
         "weeks": [
-          2476892184.02,
-          2476889542.1,
-          2476886900.18,
-          2476884258.26,
-          2476881616.34,
-          2476878974.42,
-          2476876332.5,
-          2476873690.58,
-          2476871048.66,
-          2476868406.74,
-          2476865764.82,
-          2476863122.9,
-          2476860480.98
-        ]
+          582857907.69,
+          584912578.55,
+          586696961.27,
+          588751632.13,
+          590806302.99,
+          592860973.85,
+          594915644.71,
+          596970315.57,
+          599024986.43,
+          601079657.29,
+          603134328.15,
+          605188999.01,
+          607243669.87
+        ],
+        "parents": {
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       },
       {
         "q": 92,
-        "startCash": 2498920019.64,
+        "startCash": 616458916.84,
         "lines": {
           "rent": -34345,
-          "interest": 22255700.54
+          "ai_shell_rent": 32492979.524287324,
+          "ai_opex": -5686271.416750273,
+          "grid_credits": 1232039.25,
+          "energy_opex": -162464.9,
+          "interest": 5738304.48,
+          "plant_distributions": 2728527.9839999997
         },
         "byBiz": {},
         "byRef": {
@@ -29537,31 +31313,181 @@
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "site:site-22": {
+            "ai_shell_rent": 31127294.043644816,
+            "ai_opex": -5447276.457637835,
+            "grid_credits": 1184653.125
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4499999.999999999,
+            "ai_opex": -787500.0000000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 486297.59062499995,
+            "ai_opex": -85102.07835937501
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 365907.2779687499,
+            "ai_opex": -64033.77364453124
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 241181.04779999988,
+            "ai_opex": -42206.68336499999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 288028.12500000006,
+            "ai_opex": -50404.921874999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 255755.5,
+            "ai_opex": -44757.21250000001
+          },
+          "project:project-10": {
+            "ai_shell_rent": 266667.18749999994,
+            "ai_opex": -46666.7578125
+          },
+          "project:project-11": {
+            "ai_shell_rent": 354374.99999999994,
+            "ai_opex": -62015.62500000003
+          },
+          "project:project-12": {
+            "ai_shell_rent": 303187.49999999994,
+            "ai_opex": -53057.81250000001
+          },
+          "project:project-15": {
+            "ai_shell_rent": 687499.8899999999,
+            "ai_opex": -120312.48075000002
+          },
+          "project:project-16": {
+            "ai_shell_rent": 1074514.6912499997,
+            "ai_opex": -188040.07096874996
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7687286.774999999,
+            "ai_opex": -1345275.1856249997
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1761359.1450000003,
+            "ai_opex": -308237.85037500004
+          },
+          "project:project-19": {
+            "ai_shell_rent": 500665.37062500004,
+            "ai_opex": -87616.43985937498
+          },
+          "project:project-20": {
+            "ai_shell_rent": 510155.87437500013,
+            "ai_opex": -89277.27801562498
+          },
+          "project:project-21": {
+            "ai_shell_rent": 904709.9249999998,
+            "ai_opex": -158324.236875
+          },
+          "project:project-22": {
+            "ai_shell_rent": 516229.15859375015,
+            "ai_opex": -90340.10275390625
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1373220.421875,
+            "ai_opex": -240313.57382812502
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1044604.8856250001,
+            "ai_opex": -182805.85498437495
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1389375.9562500003,
+            "ai_opex": -243140.79234374998
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2728527.9839999997
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": 0.03846287727355957,
         "weeks": [
-          2498917377.72,
-          2498914735.8,
-          2498912093.88,
-          2498909451.96,
-          2498906810.04,
-          2498904168.12,
-          2498901526.2,
-          2498898884.28,
-          2498896242.36,
-          2498893600.44,
-          2498890958.52,
-          2498888316.6,
-          2498885674.68
-        ]
+          618518329.39,
+          620577741.94,
+          622637154.49,
+          624696567.04,
+          626755979.59,
+          628815392.14,
+          630874804.69,
+          632934217.24,
+          634993629.79,
+          637053042.34,
+          639112454.89,
+          641171867.44,
+          643231279.99
+        ],
+        "parents": {
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       },
       {
         "q": 93,
-        "startCash": 2521141375.22,
+        "startCash": 652767686.8,
         "lines": {
           "rent": -34345,
-          "interest": 22453609.49
+          "ai_shell_rent": 32858604.524287328,
+          "ai_opex": -5750255.791750273,
+          "grid_credits": 1232039.25,
+          "energy_opex": -164293.02,
+          "interest": 6064349.67,
+          "plant_distributions": 2729510.7840000005
         },
         "byBiz": {},
         "byRef": {
@@ -29570,31 +31496,181 @@
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "site:site-22": {
+            "ai_shell_rent": 31492919.043644816,
+            "ai_opex": -5511260.832637834,
+            "grid_credits": 1184653.125
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4865624.999999999,
+            "ai_opex": -851484.3750000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 486297.59062499995,
+            "ai_opex": -85102.07835937501
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 365907.2779687499,
+            "ai_opex": -64033.77364453124
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 241181.04779999988,
+            "ai_opex": -42206.68336499999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 288028.12500000006,
+            "ai_opex": -50404.921874999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 255755.5,
+            "ai_opex": -44757.21250000001
+          },
+          "project:project-10": {
+            "ai_shell_rent": 266667.18749999994,
+            "ai_opex": -46666.7578125
+          },
+          "project:project-11": {
+            "ai_shell_rent": 354374.99999999994,
+            "ai_opex": -62015.62500000003
+          },
+          "project:project-12": {
+            "ai_shell_rent": 303187.49999999994,
+            "ai_opex": -53057.81250000001
+          },
+          "project:project-15": {
+            "ai_shell_rent": 687499.8899999999,
+            "ai_opex": -120312.48075000002
+          },
+          "project:project-16": {
+            "ai_shell_rent": 1074514.6912499997,
+            "ai_opex": -188040.07096874996
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7687286.774999999,
+            "ai_opex": -1345275.1856249997
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1761359.1450000003,
+            "ai_opex": -308237.85037500004
+          },
+          "project:project-19": {
+            "ai_shell_rent": 500665.37062500004,
+            "ai_opex": -87616.43985937498
+          },
+          "project:project-20": {
+            "ai_shell_rent": 510155.87437500013,
+            "ai_opex": -89277.27801562498
+          },
+          "project:project-21": {
+            "ai_shell_rent": 904709.9249999998,
+            "ai_opex": -158324.236875
+          },
+          "project:project-22": {
+            "ai_shell_rent": 516229.15859375015,
+            "ai_opex": -90340.10275390625
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1373220.421875,
+            "ai_opex": -240313.57382812502
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1044604.8856250001,
+            "ai_opex": -182805.85498437495
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1389375.9562500003,
+            "ai_opex": -243140.79234374998
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2729510.7840000005
           }
         },
-        "rounding": 0.04000282287597656,
+        "rounding": -0.026536941528320312,
         "weeks": [
-          2521138733.3,
-          2521136091.38,
-          2521133449.46,
-          2521130807.54,
-          2521128165.62,
-          2521125523.7,
-          2521122881.78,
-          2521120239.86,
-          2521117597.94,
-          2521114956.02,
-          2521112314.1,
-          2521109672.18,
-          2521107030.26
-        ]
+          654850302.47,
+          656932918.14,
+          659015533.81,
+          661098149.48,
+          663180765.15,
+          665263380.82,
+          667345996.49,
+          669428612.16,
+          671511227.83,
+          673593843.5,
+          675676459.17,
+          677759074.84,
+          679841690.51
+        ],
+        "parents": {
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       },
       {
         "q": 94,
-        "startCash": 2543560639.75,
+        "startCash": 689703297.19,
         "lines": {
           "rent": -34345,
-          "interest": 22653281.06
+          "ai_shell_rent": 32858604.524287328,
+          "ai_opex": -5750255.791750273,
+          "grid_credits": 1232039.25,
+          "energy_opex": -164293.02,
+          "interest": 6393307.45,
+          "plant_distributions": 2730493.584
         },
         "byBiz": {},
         "byRef": {
@@ -29603,32 +31679,182 @@
           },
           "site:site-9": {
             "rent": -28345.000000000007
+          },
+          "site:site-22": {
+            "ai_shell_rent": 31492919.043644816,
+            "ai_opex": -5511260.832637834,
+            "grid_credits": 1184653.125
+          },
+          "project:project-2": {
+            "ai_shell_rent": 4865624.999999999,
+            "ai_opex": -851484.3750000001
+          },
+          "project:project-3": {
+            "ai_shell_rent": 486297.59062499995,
+            "ai_opex": -85102.07835937501
+          },
+          "project:project-4": {
+            "ai_shell_rent": 2700000,
+            "ai_opex": -472500.0000000001
+          },
+          "project:project-5": {
+            "ai_shell_rent": 365907.2779687499,
+            "ai_opex": -64033.77364453124
+          },
+          "project:project-6": {
+            "ai_shell_rent": 450000.00000000006,
+            "ai_opex": -78750
+          },
+          "project:project-7": {
+            "ai_shell_rent": 241181.04779999988,
+            "ai_opex": -42206.68336499999
+          },
+          "project:project-8": {
+            "ai_shell_rent": 288028.12500000006,
+            "ai_opex": -50404.921874999985
+          },
+          "project:project-9": {
+            "ai_shell_rent": 255755.5,
+            "ai_opex": -44757.21250000001
+          },
+          "project:project-10": {
+            "ai_shell_rent": 266667.18749999994,
+            "ai_opex": -46666.7578125
+          },
+          "project:project-11": {
+            "ai_shell_rent": 354374.99999999994,
+            "ai_opex": -62015.62500000003
+          },
+          "project:project-12": {
+            "ai_shell_rent": 303187.49999999994,
+            "ai_opex": -53057.81250000001
+          },
+          "project:project-15": {
+            "ai_shell_rent": 687499.8899999999,
+            "ai_opex": -120312.48075000002
+          },
+          "project:project-16": {
+            "ai_shell_rent": 1074514.6912499997,
+            "ai_opex": -188040.07096874996
+          },
+          "project:project-17": {
+            "ai_shell_rent": 7687286.774999999,
+            "ai_opex": -1345275.1856249997
+          },
+          "project:project-18": {
+            "ai_shell_rent": 1761359.1450000003,
+            "ai_opex": -308237.85037500004
+          },
+          "project:project-19": {
+            "ai_shell_rent": 500665.37062500004,
+            "ai_opex": -87616.43985937498
+          },
+          "project:project-20": {
+            "ai_shell_rent": 510155.87437500013,
+            "ai_opex": -89277.27801562498
+          },
+          "project:project-21": {
+            "ai_shell_rent": 904709.9249999998,
+            "ai_opex": -158324.236875
+          },
+          "project:project-22": {
+            "ai_shell_rent": 516229.15859375015,
+            "ai_opex": -90340.10275390625
+          },
+          "project:project-23": {
+            "ai_shell_rent": 1373220.421875,
+            "ai_opex": -240313.57382812502
+          },
+          "project:project-24": {
+            "ai_shell_rent": 1044604.8856250001,
+            "ai_opex": -182805.85498437495
+          },
+          "project:project-25": {
+            "ai_shell_rent": 1389375.9562500003,
+            "ai_opex": -243140.79234374998
+          },
+          "project:project-26": {
+            "ai_shell_rent": 916195.4329050004,
+            "ai_opex": -160334.200758375
+          },
+          "project:project-27": {
+            "ai_shell_rent": 1374293.1493575,
+            "ai_opex": -240501.30113756246
+          },
+          "project:project-28": {
+            "ai_shell_rent": 1175784.1388947498,
+            "ai_opex": -205762.2243065812
+          },
+          "site:site-14": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756,
+            "grid_credits": 47386.12499999999
+          },
+          "project:project-29": {
+            "ai_shell_rent": 1365685.4806425003,
+            "ai_opex": -238994.95911243756
+          },
+          "venture:venture-36": {
+            "plant_distributions": 2730493.584
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": -0.026537179946899414,
         "weeks": [
-          2543557997.83,
-          2543555355.91,
-          2543552713.99,
-          2543550072.07,
-          2543547430.15,
-          2543544788.23,
-          2543542146.31,
-          2543539504.39,
-          2543536862.47,
-          2543534220.55,
-          2543531578.63,
-          2543528936.71,
-          2543526294.79
-        ]
+          691785912.86,
+          693868528.53,
+          695951144.2,
+          698033759.87,
+          700116375.54,
+          702198991.21,
+          704281606.88,
+          706364222.55,
+          708446838.22,
+          710529453.89,
+          712612069.56,
+          714694685.23,
+          716777300.9
+        ],
+        "parents": {
+          "project:project-2": "site-22",
+          "project:project-3": "site-22",
+          "project:project-4": "site-22",
+          "project:project-5": "site-22",
+          "project:project-6": "site-22",
+          "project:project-7": "site-22",
+          "project:project-8": "site-22",
+          "project:project-9": "site-22",
+          "project:project-10": "site-22",
+          "project:project-11": "site-22",
+          "project:project-12": "site-22",
+          "project:project-15": "site-22",
+          "project:project-16": "site-22",
+          "project:project-17": "site-22",
+          "project:project-18": "site-22",
+          "project:project-19": "site-22",
+          "project:project-20": "site-22",
+          "project:project-21": "site-22",
+          "project:project-22": "site-22",
+          "project:project-23": "site-22",
+          "project:project-24": "site-22",
+          "project:project-25": "site-22",
+          "project:project-26": "site-22",
+          "project:project-27": "site-22",
+          "project:project-28": "site-22",
+          "project:project-29": "site-14"
+        }
       }
     ],
     "current": {
       "q": 95,
-      "startCash": 2566179575.85,
+      "startCash": 726968848.16,
       "lines": {
         "rent": -34345,
-        "interest": 22854730.96
+        "ai_shell_rent": 32707010.774287324,
+        "ai_opex": -5723726.885500274,
+        "grid_credits": 1232039.25,
+        "energy_opex": -163535.05,
+        "interest": 6724096.66,
+        "plant_distributions": 2731476.3839999996
       },
       "byBiz": {},
       "byRef": {
@@ -29637,24 +31863,169 @@
         },
         "site:site-9": {
           "rent": -28345.000000000007
+        },
+        "site:site-22": {
+          "ai_shell_rent": 31341325.293644816,
+          "ai_opex": -5484731.926387835,
+          "grid_credits": 1184653.125
+        },
+        "project:project-2": {
+          "ai_shell_rent": 4865624.999999999,
+          "ai_opex": -851484.3750000001
+        },
+        "project:project-3": {
+          "ai_shell_rent": 486297.59062499995,
+          "ai_opex": -85102.07835937501
+        },
+        "project:project-4": {
+          "ai_shell_rent": 2700000,
+          "ai_opex": -472500.0000000001
+        },
+        "project:project-5": {
+          "ai_shell_rent": 365907.2779687499,
+          "ai_opex": -64033.77364453124
+        },
+        "project:project-6": {
+          "ai_shell_rent": 450000.00000000006,
+          "ai_opex": -78750
+        },
+        "project:project-7": {
+          "ai_shell_rent": 241181.04779999988,
+          "ai_opex": -42206.68336499999
+        },
+        "project:project-8": {
+          "ai_shell_rent": 288028.12500000006,
+          "ai_opex": -50404.921874999985
+        },
+        "project:project-9": {
+          "ai_shell_rent": 255755.5,
+          "ai_opex": -44757.21250000001
+        },
+        "project:project-10": {
+          "ai_shell_rent": 266667.18749999994,
+          "ai_opex": -46666.7578125
+        },
+        "project:project-11": {
+          "ai_shell_rent": 354374.99999999994,
+          "ai_opex": -62015.62500000003
+        },
+        "project:project-12": {
+          "ai_shell_rent": 151593.74999999997,
+          "ai_opex": -26528.906250000004
+        },
+        "project:project-15": {
+          "ai_shell_rent": 687499.8899999999,
+          "ai_opex": -120312.48075000002
+        },
+        "project:project-16": {
+          "ai_shell_rent": 1074514.6912499997,
+          "ai_opex": -188040.07096874996
+        },
+        "project:project-17": {
+          "ai_shell_rent": 7687286.774999999,
+          "ai_opex": -1345275.1856249997
+        },
+        "project:project-18": {
+          "ai_shell_rent": 1761359.1450000003,
+          "ai_opex": -308237.85037500004
+        },
+        "project:project-19": {
+          "ai_shell_rent": 500665.37062500004,
+          "ai_opex": -87616.43985937498
+        },
+        "project:project-20": {
+          "ai_shell_rent": 510155.87437500013,
+          "ai_opex": -89277.27801562498
+        },
+        "project:project-21": {
+          "ai_shell_rent": 904709.9249999998,
+          "ai_opex": -158324.236875
+        },
+        "project:project-22": {
+          "ai_shell_rent": 516229.15859375015,
+          "ai_opex": -90340.10275390625
+        },
+        "project:project-23": {
+          "ai_shell_rent": 1373220.421875,
+          "ai_opex": -240313.57382812502
+        },
+        "project:project-24": {
+          "ai_shell_rent": 1044604.8856250001,
+          "ai_opex": -182805.85498437495
+        },
+        "project:project-25": {
+          "ai_shell_rent": 1389375.9562500003,
+          "ai_opex": -243140.79234374998
+        },
+        "project:project-26": {
+          "ai_shell_rent": 916195.4329050004,
+          "ai_opex": -160334.200758375
+        },
+        "project:project-27": {
+          "ai_shell_rent": 1374293.1493575,
+          "ai_opex": -240501.30113756246
+        },
+        "project:project-28": {
+          "ai_shell_rent": 1175784.1388947498,
+          "ai_opex": -205762.2243065812
+        },
+        "site:site-14": {
+          "ai_shell_rent": 1365685.4806425003,
+          "ai_opex": -238994.95911243756,
+          "grid_credits": 47386.12499999999
+        },
+        "project:project-29": {
+          "ai_shell_rent": 1365685.4806425003,
+          "ai_opex": -238994.95911243756
+        },
+        "venture:venture-36": {
+          "plant_distributions": 2731476.3839999996
         }
       },
-      "rounding": 0.04000234603881836,
+      "rounding": 0.00721287727355957,
       "weeks": [
-        2566176933.93,
-        2566174292.01,
-        2566171650.09,
-        2566169008.17,
-        2566166366.25,
-        2566163724.33,
-        2566161082.41,
-        2566158440.49,
-        2566155798.57,
-        2566153156.65,
-        2566150514.73,
-        2566147872.81,
-        2566145230.89
-      ]
+        729041843.46,
+        731114838.76,
+        733187834.06,
+        735260829.36,
+        737333824.66,
+        739406819.96,
+        741479815.26,
+        743552810.56,
+        745625805.86,
+        747698801.16,
+        749771796.46,
+        751844791.76,
+        753917787.06
+      ],
+      "parents": {
+        "project:project-2": "site-22",
+        "project:project-3": "site-22",
+        "project:project-4": "site-22",
+        "project:project-5": "site-22",
+        "project:project-6": "site-22",
+        "project:project-7": "site-22",
+        "project:project-8": "site-22",
+        "project:project-9": "site-22",
+        "project:project-10": "site-22",
+        "project:project-11": "site-22",
+        "project:project-12": "site-22",
+        "project:project-15": "site-22",
+        "project:project-16": "site-22",
+        "project:project-17": "site-22",
+        "project:project-18": "site-22",
+        "project:project-19": "site-22",
+        "project:project-20": "site-22",
+        "project:project-21": "site-22",
+        "project:project-22": "site-22",
+        "project:project-23": "site-22",
+        "project:project-24": "site-22",
+        "project:project-25": "site-22",
+        "project:project-26": "site-22",
+        "project:project-27": "site-22",
+        "project:project-28": "site-22",
+        "project:project-29": "site-14"
+      }
     }
   },
   "scenarioId": "s0",
@@ -29676,7 +32047,14 @@
     "lastUsed": {},
     "once": []
   },
-  "act3BlendOffers": [],
+  "act3BlendOffers": [
+    {
+      "projectId": "project-29",
+      "openedQuarter": 95,
+      "mult": 0.9086521000000001,
+      "extendQuarters": 24
+    }
+  ],
   "act3Payouts": [],
   "act3End": {
     "scenarioId": "s0",
@@ -30204,7 +32582,7 @@
       "pitchUsdKw": 5500,
       "budgetUsd": 550000000,
       "diligence": false,
-      "stake": 0,
+      "stake": 0.2,
       "paidUsd": 110000000,
       "offtakeMw": 0,
       "ppaUsdMwh": 90,
@@ -30226,12 +32604,7 @@
       "stakeAtJoin": 0.2,
       "callsPaidUsd": 0,
       "milestones": 4,
-      "slips": 3,
-      "outputContract": {
-        "share": 0.8,
-        "priceUsdMwh": 73.85,
-        "endQuarter": 132
-      }
+      "slips": 3
     }
   ],
   "act4End": {
@@ -30689,8 +33062,8 @@
   "vFutureId": "v2",
   "act5Entry": {
     "quarter": "2036Q1",
-    "valuationUsd": 2345757738.1898003,
-    "founderNetWorthUsd": 390286788.22178763,
+    "valuationUsd": 2272405294.9527693,
+    "founderNetWorthUsd": 378082420.7318634,
     "cashUsd": 53510283.04,
     "debtUsd": 0,
     "energizedMw": 115.105,
@@ -30698,7 +33071,8 @@
     "creditRating": "BBB",
     "freeMw": 37.105,
     "poweredValueUsd": 11131499.999999998,
-    "plantsRevaluedUsd": -31176332.368000016
+    "plantsRevaluedUsd": -31176332.368000016,
+    "orbitRevaluedUsd": -73352443.23703097
   },
   "lunarHolding": {
     "value2035Usd": 268616331.8542831
@@ -30721,156 +33095,44 @@
   "act5Preset": "firm_builder",
   "act5CardTargets": {},
   "act5Exposure": [
-    0.5686176316428051,
-    0.6562782104236776,
-    0.7077307133849023,
-    0.7329708062450319,
-    0.7298876227653893,
-    0.7238819976661369,
-    0.6347093778930268,
-    0.7354858301824122,
-    0.687830041006544,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
+    0.5869724086895294,
+    0.677462640104741,
+    0.7305760117548609,
+    0.7566308459302532,
+    0.7534481383728935,
+    0.7472486538088817,
+    0.6551975732503067,
+    0.7592270539552679,
+    0.7641267876496654,
+    0.7612772587548605,
+    0.7632313284342555,
+    0.7620637140174428,
+    0.8013141649440848,
+    0.8035455922523406,
+    0.7023360813649392,
+    0.8100317291462437,
+    0.8140279851299291,
+    0.8248995608159521,
+    0.8271682127410821,
+    0.8258378026875443
   ],
+  "act5Trips": {
+    "venture-36": 91
+  },
   "act5Moves": [
     {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 2,
-      "kind": "renew_short"
-    },
-    {
-      "q": 4,
-      "kind": "renew_short"
-    },
-    {
-      "q": 4,
-      "kind": "renew_short"
-    },
-    {
-      "q": 6,
-      "kind": "renew_short"
-    },
-    {
-      "q": 6,
-      "kind": "renew_short"
+      "q": 8,
+      "kind": "enrol_flexible"
     },
     {
       "q": 8,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 8,
-      "kind": "contract_plant_output"
-    },
-    {
-      "q": 8,
-      "kind": "sell_plant_stake_to_fund"
-    },
-    {
-      "q": 8,
-      "kind": "sell_site_free_mw"
-    },
-    {
-      "q": 8,
-      "kind": "sell_site_free_mw"
-    },
-    {
-      "q": 9,
-      "kind": "renew_long"
-    },
-    {
-      "q": 9,
-      "kind": "renew_long"
-    },
-    {
-      "q": 9,
-      "kind": "renew_long"
-    },
-    {
-      "q": 9,
-      "kind": "sell_site_free_mw"
-    },
-    {
-      "q": 9,
-      "kind": "sell_site_free_mw"
-    },
-    {
-      "q": 9,
-      "kind": "sell_site_free_mw"
+      "kind": "enrol_flexible"
     },
     {
       "q": 9,
       "kind": "pay_network_upgrade"
     }
   ],
-  "act5Trips": {
-    "venture-36": 78
-  },
   "act5Exit": {
     "bidFactor": 1.0712259368039667,
     "drawnQuarter": 94
@@ -30878,9 +33140,9 @@
   "act5End": {
     "endQuarter": "2040Q4",
     "gameOver": false,
-    "founderNetWorthUsd": 473215113.7762166,
-    "growthMultiple": 1.2124804837290661,
-    "preExitNetWorthUsd": 473215113.7762166,
+    "founderNetWorthUsd": 505235093.10975665,
+    "growthMultiple": 1.3363094008226057,
+    "preExitNetWorthUsd": 505235093.10975665,
     "exitChoice": "hold",
     "outlookFactor": 1,
     "bidFactor": 1.0712259368039667,
@@ -30902,65 +33164,65 @@
     },
     "signalReads": [],
     "reading": {
-      "score": 88,
-      "base": 88,
+      "score": 65,
+      "base": 65,
       "penalty": 0,
       "perQuarter": [
         {
           "q": 0,
           "stance": 0,
-          "ideal": 1,
+          "ideal": 0,
           "weight": 1,
-          "value": 0.5
+          "value": 0.7
         },
         {
           "q": 1,
           "stance": 0,
-          "ideal": 1,
+          "ideal": 0,
           "weight": 1,
-          "value": 0.5
+          "value": 0.7
         },
         {
           "q": 2,
-          "stance": 1,
-          "ideal": 1,
+          "stance": 0,
+          "ideal": 0,
           "weight": 1,
-          "value": 1
+          "value": 0.7
         },
         {
           "q": 3,
           "stance": 0,
-          "ideal": 1,
+          "ideal": 0,
           "weight": 1,
-          "value": 0.5
+          "value": 0.7
         },
         {
           "q": 4,
-          "stance": 1,
-          "ideal": 1,
+          "stance": 0,
+          "ideal": 0,
           "weight": 1,
-          "value": 1
+          "value": 0.7
         },
         {
           "q": 5,
           "stance": 0,
-          "ideal": 1,
+          "ideal": 0,
           "weight": 1,
-          "value": 0.5
+          "value": 1
         },
         {
           "q": 6,
-          "stance": 1,
-          "ideal": 1,
+          "stance": 0,
+          "ideal": 0,
           "weight": 1,
           "value": 1
         },
         {
           "q": 7,
           "stance": 0,
-          "ideal": 1,
+          "ideal": 0,
           "weight": 1,
-          "value": 0.5
+          "value": 1
         },
         {
           "q": 8,
@@ -30971,287 +33233,119 @@
         },
         {
           "q": 9,
-          "stance": -1,
+          "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 10,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 11,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 12,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 13,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 14,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 15,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 16,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 17,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 18,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         },
         {
           "q": 19,
           "stance": 0,
           "ideal": -1,
           "weight": 1,
-          "value": 1
+          "value": 0.5
         }
       ]
     },
     "moves": [
       {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 2,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 4,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 4,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 6,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
-        "q": 6,
-        "kind": "renew_short",
-        "sign": 1,
-        "mark": "match"
-      },
-      {
         "q": 8,
-        "kind": "blend_and_extend_long",
+        "kind": "enrol_flexible",
         "sign": -1,
         "mark": "match"
       },
       {
         "q": 8,
-        "kind": "contract_plant_output",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 8,
-        "kind": "sell_plant_stake_to_fund",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 8,
-        "kind": "sell_site_free_mw",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 8,
-        "kind": "sell_site_free_mw",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 9,
-        "kind": "renew_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 9,
-        "kind": "renew_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 9,
-        "kind": "renew_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 9,
-        "kind": "sell_site_free_mw",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 9,
-        "kind": "sell_site_free_mw",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 9,
-        "kind": "sell_site_free_mw",
+        "kind": "enrol_flexible",
         "sign": -1,
         "mark": "match"
       },
       {
         "q": 9,
         "kind": "pay_network_upgrade",
-        "sign": 1,
-        "mark": "opposite"
+        "sign": 0,
+        "mark": "neutral"
       }
     ],
-    "readingTitleId": "cassandra",
-    "careerTitleId": "developer",
+    "readingTitleId": "signal_reader",
+    "careerTitleId": "scale_up",
     "megawatts": {
-      "firm": 1,
-      "flexible": 0,
+      "firm": 20,
+      "flexible": 78,
       "orbital": 0,
-      "landlord": 0,
-      "titleId": "firm"
+      "landlord": 37.105000000000004,
+      "titleId": "flexible"
     },
     "ventureFates": [
       {
         "type": "egs2",
         "fate": "built",
         "firstPower": "2035Q1",
-        "stake": 0,
-        "valueUsd": 0
+        "stake": 0.2,
+        "valueUsd": 106527578.976
       }
     ],
     "rivalFates": [

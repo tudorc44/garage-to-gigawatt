@@ -32,8 +32,12 @@ function profile(s: GameState) {
   const r = s.reports.at(-1)!
   const aiMult = aiInfraMultiple(s.quarter, scenarioOf(s))
   // The gate's definition (M43.0c-e): the live leases' margin × 4 × the AI multiple, over act5Entry.
-  const leaseShare = e.valuationUsd > 0 ? leasesOf(s).reduce((a, l) => a + l.marginNowQ * 4 * aiMult, 0) / e.valuationUsd : 0
-  const orbit = Math.max(0, r.orbitEbitdaUsd ?? 0) * 4 * (r.orbitMultiple ?? 0)
+  const orbitMark = Math.max(0, r.orbitEbitdaUsd ?? 0) * 4 * (r.orbitMultiple ?? 0)
+  // (M60.1, doc 43 §0.16 item 1: the stored figures are on act5Entry's footing, orbital blocks on their remaining life;
+  // the scan still chooses on Act IV's 2035Q4 marks, so the same two companies stay the presets: mine, reversible)
+  const orbit = orbitMark + (e.orbitRevaluedUsd ?? 0)
+  const markUsd = e.valuationUsd - (e.orbitRevaluedUsd ?? 0)
+  const leasesUsd = leasesOf(s).reduce((a, l) => a + l.marginNowQ * 4 * aiMult, 0)
   const firstLiveRetire = Math.min(
     ...(s.act4Orbit?.blocks ?? []).filter((b) => b.retireQuarter !== null && b.stage === 'live').map((b) => b.retireQuarter!),
   )
@@ -52,8 +56,10 @@ function profile(s: GameState) {
   return {
     e,
     chapter: s.phase === 'chapter',
-    leaseShare,
+    leaseShare: e.valuationUsd > 0 ? leasesUsd / e.valuationUsd : 0,
     orbitShare: e.valuationUsd > 0 ? orbit / e.valuationUsd : 0,
+    scanLeaseShare: markUsd > 0 ? leasesUsd / markUsd : 0,
+    scanOrbitShare: markUsd > 0 ? orbitMark / markUsd : 0,
     firstLiveRetire,
     plantInWindow,
     poweredSites,
@@ -88,12 +94,12 @@ const PRESETS: Record<Id, { scan: Act5PresetRecipe[]; fits: (p: Profile) => bool
       ...recipes(['fortress'], SEEDS_LATE, LATE, { join_from: '2032Q1' }),
       ...recipes(['fortress'], SEEDS_LATE, LATE, { join_from: '2033Q1' }),
     ],
-    fits: (p) => p.chapter && p.leaseShare >= 0.4 && p.plantInWindow && p.orbitShare < 0.25,
+    fits: (p) => p.chapter && p.scanLeaseShare >= 0.4 && p.plantInWindow && p.scanOrbitShare < 0.25,
   },
   // an orbit-heavy company whose first blocks retire in 2036-37
   orbital_landlord: {
     scan: recipes(['fortress', 'neocloud', 'ridge'], SEEDS_LATE, [[]]),
-    fits: (p) => p.chapter && p.orbitShare >= 0.25 && p.firstLiveRetire >= first5 && p.firstLiveRetire <= first5 + 7,
+    fits: (p) => p.chapter && p.scanOrbitShare >= 0.25 && p.firstLiveRetire >= first5 && p.firstLiveRetire <= first5 + 7,
   },
   // (Small Grid is cut: doc 43 §0.14 item 1, two presets ship)
 }

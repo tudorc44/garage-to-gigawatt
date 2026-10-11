@@ -107,7 +107,8 @@ describe('operating plants in Act V (M52.2)', () => {
     // Act IV's record is untouched: its valuation is the 2035Q4 report's, with the mark
     expect(s5.act4End!.founderNetWorthUsd).toBe(s4.act4End!.founderNetWorthUsd)
     expect(s5.act5Entry!.valuationUsd).toBeCloseTo(
-      s4.reports.at(-1)!.valuationUsd + s5.act5Entry!.poweredValueUsd + delta,
+      // (M60.1: and the orbital blocks revalued on their remaining life, doc 43 §0.16 item 1)
+      s4.reports.at(-1)!.valuationUsd + s5.act5Entry!.poweredValueUsd + delta + (s5.act5Entry!.orbitRevaluedUsd ?? 0),
       0,
     )
   })

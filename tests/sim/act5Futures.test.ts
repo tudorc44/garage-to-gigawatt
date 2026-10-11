@@ -168,12 +168,15 @@ describe('the Act V reading score (M51, doc 43 §6.7; reading_score_v.json)', ()
       const opposite = computeReadingV(o.opposite, v, high).score!
       lines.push(`${v}: perfect ${perfect}, passive ${passive}, opposite ${opposite}`)
       expect(perfect).toBeGreaterThan(passive)
-      expect(opposite).toBeLessThan(passive)
+      // (M60.4, doc 43 §0.16 item 5: V2 scores only flexibility moves after its trigger, and none of them is +1, so its
+      // opposite log is as calm as passive)
+      if (v === 'v2') expect(opposite).toBeLessThanOrEqual(passive)
+      else expect(opposite).toBeLessThan(passive)
     }
     expect(lines).toMatchInlineSnapshot(`
       [
         "v1: perfect 100, passive 50, opposite 0",
-        "v2: perfect 100, passive 50, opposite 0",
+        "v2: perfect 93, passive 63, opposite 63",
         "v3: perfect 93, passive 60, opposite 28",
         "v4: perfect 86, passive 67, opposite 46",
       ]

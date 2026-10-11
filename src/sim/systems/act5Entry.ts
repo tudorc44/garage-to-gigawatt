@@ -18,6 +18,7 @@ import { act5SeedOf, emptyQuarterStats, type Act5Entry, type GameState } from '.
 import { randomInt, substream } from '../rng.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { buildAct4Entry } from './act4Entry.ts'
+import { orbitUnitMultiple } from './orbitEol.ts'
 import { scenarioOf } from './market.ts'
 import { openRenewals, resolveRenewals } from './renewals.ts'
 import { poweredKw, usedKw } from './sites.ts'
@@ -60,7 +61,8 @@ export function buildAct5Entry(state: GameState, vfuture: VFutureId): Act5Entry 
   const freeMw = freeEnergizedMw(state)
   const poweredValueUsd = freeMw * poweredMw
   const plantsRevaluedUsd = plantsRevaluedOnEntryUsd(state, vfuture)
-  const valuationUsd = base.valuationUsd + poweredValueUsd + plantsRevaluedUsd
+  const orbitRevaluedUsd = orbitRevaluedOnEntryUsd(state, vfuture)
+  const valuationUsd = base.valuationUsd + poweredValueUsd + plantsRevaluedUsd + orbitRevaluedUsd
   return {
     ...base,
     quarter: CONTENT.quarters[first],
@@ -69,7 +71,20 @@ export function buildAct5Entry(state: GameState, vfuture: VFutureId): Act5Entry 
     freeMw,
     poweredValueUsd,
     plantsRevaluedUsd,
+    orbitRevaluedUsd,
   }
+}
+
+/**
+ * Doc 43 §0.16 item 1: act5Entry is measured after the 2036Q1 switch of orbital blocks to their remaining-life multiple
+ * (min(the file's multiple, years of design life left)): the 2035Q4 orbital EBITDA × 4 × (the new unit multiple − the
+ * 2035Q4 one). Act IV's own numbers keep the old mark. 2036Q1's market is the common baseline: it reveals nothing.
+ */
+export function orbitRevaluedOnEntryUsd(state: GameState, vfuture: VFutureId): number {
+  const r = state.reports.at(-1)
+  if (!r || r.orbitEbitdaUsd === undefined) return 0
+  const s5 = { ...state, act: 5 as const, quarter: actFirstQuarter(5), vFutureId: vfuture }
+  return Math.max(0, r.orbitEbitdaUsd) * 4 * (orbitUnitMultiple(s5) - (r.orbitMultiple ?? 0)) * (r.evMult ?? 1)
 }
 
 /**
