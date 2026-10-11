@@ -351,6 +351,9 @@ README). `check.py` PASS.
   - **The chapter report in production:** without it, Act IV's chapter report shows "The finale →" as today.
   - **Saves:** production refuses an Act V save.
   - **Tests:** act3Gate checks production has no `ACT5_ENTRY_MARKER` or Act5Entry chunk, and staging has both. 1,658 tests.
+- **Step B (M50, branch `m50`):** preset rescan per §0.13 (`presets_act5.json` renamed `presets_v.json`). **Firm Builder:**
+  Fortress F2 seed 1 `[egs2]` (gate recipe 182 of 720), leases 57%, orbit 11%, V-B7 busts 0/12. **Orbital Landlord:** as M49.
+  **Small Grid:** Ridge F1 seed 1 +queue, recipe 1; it fits §0.13's letter but holds 0.1 MW, orbit 88%, founder $0.7M (open question).
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

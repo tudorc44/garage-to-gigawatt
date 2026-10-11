@@ -4,7 +4,7 @@
 // offtake to the biggest eligible site when there is one; calls paid when cash allows, else diluted) or building solar
 // and a 4-hour battery behind the meter; the result is the company at its 2035Q4 chapter report, carrying its Act IV
 // future into Act V. Used by tools/act5/presets.ts (the scan) and by the game's "Start at Act V" (lazily, like Act IV's).
-import type { FutureId } from '../../src/content/index.ts'
+import { CONTENT, type FutureId } from '../../src/content/index.ts'
 import type { VentureType } from '../../src/content/energyContent.ts'
 import { PRESETS_IV, type Act4PresetId } from '../../src/content/presetsAct4.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
@@ -24,6 +24,13 @@ export interface Act5PresetRecipe {
   act4_future: FutureId
   act4_seed: number
   joins: Act5PresetJoins
+  /** Doc 43 §0.13: the ventures are joined from this quarter (e.g. "2032Q1"), so first power can land in Act V. */
+  join_from?: string
+  /**
+   * Doc 43 §0.13 (Small Grid): from 2034Q1 the company requests new grid MW at its biggest site (a small shell project
+   * with a grid upgrade, its Power slot), which becomes a queue position at the boundary (§8.1). Mine, reversible.
+   */
+  queue?: boolean
 }
 
 function tryAll(state: GameState, actions: Action[]): { kept: Action[]; after: GameState } {
@@ -54,8 +61,20 @@ function campusFor(s: GameState, type: VentureType): string | null {
   return sites[0]?.id ?? null
 }
 
-function joinsStep(s: GameState, joins: Act5PresetJoins): Action[] {
+/** A grid request at the biggest site, once, from 2034Q1 (the recipe's queue position). */
+function queueStep(s: GameState): Action[] {
+  if (s.quarter < CONTENT.quarters.indexOf('2034Q1')) return []
+  if (s.sites.some((x) => (x.powerAdds ?? []).some((a) => a.source === 'grid'))) return []
+  const site = s.sites
+    .filter((x) => x.tier !== 'garage')
+    .sort((a, b) => poweredKw(b, s.quarter) - poweredKw(a, s.quarter))[0]
+  if (!site) return []
+  return [5000, 2000, 1000].map((kw) => ({ type: 'PROJECT_OPEN', siteId: site.id, kw, kind: 'shell', power: 'grid' }) as const)
+}
+
+function joinsStep(s: GameState, joins: Act5PresetJoins, joinFrom?: string): Action[] {
   const out: Action[] = []
+  if (joinFrom !== undefined && s.quarter < CONTENT.quarters.indexOf(joinFrom)) return out
   if (joins === 'btm') {
     const site = s.sites
       .filter((x) => x.tier === 'own_site' || x.tier === 'texas_site' || x.category)
@@ -111,7 +130,10 @@ export function playAct5Recipe(r: Act5PresetRecipe): GameState {
   const bot: Strategy = {
     plan: (s) => {
       const base = tryAll(s, balanced.plan(s))
-      return [...base.kept, ...tryAll(base.after, joinsStep(base.after, r.joins)).kept]
+      const joined = tryAll(base.after, joinsStep(base.after, r.joins, r.join_from))
+      // (the first grid request that the rules accept is kept; the larger ones fail on cash or MW first)
+      const queued = r.queue ? tryAll(joined.after, queueStep(joined.after).slice(0, 3)) : { kept: [] as Action[] }
+      return [...base.kept, ...joined.kept, ...queued.kept.slice(0, 1)]
     },
   }
   return playFrom(start, bot, { through: 4 }).state
