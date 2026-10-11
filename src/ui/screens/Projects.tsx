@@ -2,8 +2,9 @@
 // Sold), the Open-a-project dialog, and the Deal builder (A2-05) with its three slots and the
 // projected return. Everything comes from the project views; no game rules here.
 import { useState } from 'preact/hooks'
-import { t, tDynamic } from '../../i18n/t.ts'
+import { t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
+import { QueuePanel } from './Act5Queue.tsx'
 import {
   PROJECT_COLUMNS,
   dealCapitalView,
@@ -188,6 +189,8 @@ export function ProjectsSection({ state, act }: ScreenProps) {
           </div>
         ))}
       </div>
+      {/* (M53: in Act V, the grid queue) */}
+      {state.act === 5 && <QueuePanel state={state} act={act as (a: Action) => Message | null} />}
       {opening && (
         <OpenProjectDialog
           state={state}

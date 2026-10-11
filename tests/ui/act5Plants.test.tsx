@@ -9,6 +9,8 @@ import { PRESETS_V } from '../../src/content/presetsAct5.ts'
 import type { Action } from '../../src/sim/actions.ts'
 import { toAct5 } from '../../src/sim/state.ts'
 import { VenturesSection } from '../../src/ui/screens/Ventures.tsx'
+import { QueuePanel } from '../../src/ui/screens/Act5Queue.tsx'
+import { endQuarterQueue } from '../../src/sim/systems/queue.ts'
 import { playAct5Recipe } from '../../tools/act5/presetRun.ts'
 
 afterEach(cleanup)
@@ -33,5 +35,22 @@ describe('Act V plants on the Ventures page (M52)', () => {
     button(/Sell half/).click()
     button(/Contract 80%/).click()
     expect(sent.map((a) => a.type)).toEqual(['ARRANGE_PLANT_DEBT', 'SELL_PLANT_STAKE', 'CONTRACT_PLANT_OUTPUT'])
+  })
+
+  it('M53: the Projects page shows the grid queue in Act V: a position with its study bill and actions', () => {
+    const p = PRESETS_V.find((x) => x.id === 'firm_builder')!
+    const s = toAct5(playAct5Recipe({ act4_preset: p.act4_preset, act4_future: p.act4_future, act4_seed: p.act4_seed, joins: p.joins as 'btm' }), { vfuture: 'v1' })
+    const site = s.sites.find((x) => x.tier !== 'garage')!
+    s.projects.push({ ...structuredClone(s.projects[0]), id: 'pq', n: 99, siteId: site.id, kw: 5000, stage: 'building', tenant: null, startQuarter: s.quarter, readyQuarter: s.quarter + 12 } as never)
+    ;(site.powerAdds ??= []).push({ projectId: 'pq', kw: 5000, source: 'grid', readyQuarter: s.quarter + 12 })
+    endQuarterQueue(s)
+    s.quarter += 1
+    const sent: Action[] = []
+    const v = render(<QueuePanel state={s} act={(a) => (sent.push(a), null)} />)
+    const row = v.container.querySelector('[data-position="pq"]')!
+    expect(row.textContent).toMatch(/Hall #99/)
+    expect(row.textContent).toMatch(/upgrade bill/)
+    ;[...row.querySelectorAll('button')].find((b) => /Pay the upgrades/.test(b.textContent ?? ''))!.click()
+    expect(sent).toEqual([{ type: 'PAY_UPGRADE', projectId: 'pq' }])
   })
 })

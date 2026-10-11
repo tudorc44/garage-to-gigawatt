@@ -133,6 +133,16 @@ import {
 } from './systems/plants.ts'
 import { commitFollowOn, followOnBlocker, stakeMarkUsd } from './systems/ventures.ts'
 import {
+  fastLaneBlocker,
+  payUpgrade,
+  payUpgradeBlocker,
+  sellSitePower,
+  sellSitePowerBlocker,
+  takeFastLane,
+  withdrawBlocker,
+  withdrawPosition,
+} from './systems/queue.ts'
+import {
   bookLaunch,
   bookLaunchBlocker,
   buyInsurance,
@@ -449,6 +459,12 @@ export type Action =
   | { type: 'SELL_PLANT_STAKE'; ventureId: string; share: number }
   /** Act V (M52.4): sell `share` (≤ 0.8) of an operating plant's merchant output forward (1 BW). */
   | { type: 'CONTRACT_PLANT_OUTPUT'; ventureId: string; share: number }
+  /** Act V (M53): the queue: pay a position's upgrade bill, withdraw it, take V2's fast lane (1 BW each). */
+  | { type: 'PAY_UPGRADE'; projectId: string }
+  | { type: 'WITHDRAW_POSITION'; projectId: string }
+  | { type: 'TAKE_FAST_LANE'; projectId: string }
+  /** Act V (M53): sell a site's free energized MW and its queue positions (1 BW). */
+  | { type: 'SELL_SITE_POWER'; siteId: string }
   /** Act V (M52.6): commit to a developer's next unit (EGS or SMR) with doc 38's roles (2 BW). */
   | { type: 'COMMIT_FOLLOW_ON'; venture: VentureType; stake: number; offtake: number; prepay: number; siteId?: string }
   /** Act IV (M29.2): open an orbital block card (0 BW): kind, size, shell, generation. */
@@ -873,6 +889,34 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = outputContractBlocker(s, a.ventureId, a.share)
       if (blocked) return blocked
       contractPlantOutput(s, a.ventureId, a.share)
+      return
+    }
+
+    case 'PAY_UPGRADE': {
+      const blocked = payUpgradeBlocker(s, a.projectId)
+      if (blocked) return blocked
+      payUpgrade(s, a.projectId)
+      return
+    }
+
+    case 'WITHDRAW_POSITION': {
+      const blocked = withdrawBlocker(s, a.projectId)
+      if (blocked) return blocked
+      withdrawPosition(s, a.projectId)
+      return
+    }
+
+    case 'TAKE_FAST_LANE': {
+      const blocked = fastLaneBlocker(s, a.projectId)
+      if (blocked) return blocked
+      takeFastLane(s, a.projectId)
+      return
+    }
+
+    case 'SELL_SITE_POWER': {
+      const blocked = sellSitePowerBlocker(s, a.siteId)
+      if (blocked) return blocked
+      sellSitePower(s, a.siteId)
       return
     }
 
