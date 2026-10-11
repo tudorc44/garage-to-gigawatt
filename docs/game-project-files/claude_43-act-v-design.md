@@ -1,4 +1,4 @@
-# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run)
+# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run; §0.15: after the third run)
 
 *Design thread. The recommended concept from doc 42 (Concept A, with B's exit and C's flexibility and Q-Day folded in), designed in the shape of doc 33. The owner approved doc 42's six recommendations on 10 Oct 2026 (V-D1 to V-D6 below). Built on doc 40 (second research pass, Part D), doc 37 (energy and 2040 dossier), doc 38 (energy ventures, especially §5-§6), doc 33 (Act IV as designed) and the game as built (dev-notes through M42, `main` = 71f36cb, `src/sim/state.ts`, `docs/energy-content/README.md`). The owner approved every recommendation in §21 on 10 Oct 2026 (V-D1 to V-D30). §22's open questions stay open; the design thread's recommendations on Q1 and Q2 are noted there. The content pack, scope doc and wireframe prompt come after approval, as for Acts III-IV.*
 
@@ -198,6 +198,33 @@ Also noted: GPU-hour rates and the newest generation stay at their 2036 values t
 6. **The accelerator stays behind the Act V dev flag until Act V ships.** Its payoff and Bowline exist only in Act V; offered live in Act IV, it would be a bet whose result a "Retire at 2035" player never sees (doc 38 §6's Moon problem).
 7. **rivals_v.json is wired with build item 6** (orbit replacement, wildcards, rivals), as planned.
 8. **Selling a site: add one whole-site sale** that bundles the existing pieces at their own prices (the leases at the lease-sale value, free energized MW and queue positions as M53's site power sale); no new pricing rule. Keep the piece-by-piece actions. Reason: the Seller archetype the gate passed sells whole sites (M43.0d: leased sites, free MW at $300K, plant stakes), and item 7's bots need the same action in the game.
+
+### 0.15 After the third unattended run (M55-M57; 11 Oct 2026)
+*Design-thread decisions (DT) on the run's eleven questions. Read the §18 table first: in V2-V4 every holding bot loses value, the Seller is flat (≈1.02) and best on the Firm Builder in three futures, and Orbital Landlord roughly halves in every future, V4 included. That isn't the design's shape (§6.2: V1 rewards holding, V2 flexibility, V3 selling or hedging, V4 orbit). The report itself names the likeliest common cause: lease renewal offers sit at 0.4-0.9 of the old rent even in V1, where §0.2 and §0.6 say renewals reprice up with `scarcity_index`. So the order is: fix what departs from the spec, wire what's missing, re-measure, and only then use balance levers. No ⚙ value changes before the re-measure.*
+
+**Fixes (they depart from the spec or the gate as built):**
+1. **Lease renewals (Q1).** Ground and shell leases (power and space rent) renew at the 2035Q4 rent × the file's `scarcity_index` path (the gate's §0.6 lock path), not at a GPU renewal index. GPU-hour contracts keep the GPU index. **Walks fall with scarcity** ⚙: the renewal walk chance is the Act IV base ÷ `scarcity_index` (fewer walks in V1, more in V3). The lease-lock cards keep their own terms (10 years where the card says ten; 8 for "a long extension"); the generic long lock stays 9 years.
+2. **Cash earns SOFR in Act V (Q7).** The gate validated the design with the Seller's leftover proceeds earning SOFR; the game must match the gate. From 2036Q1, a positive cash balance earns the market file's SOFR ÷ 4 each quarter. Act V only, so Acts I-IV stay byte-identical.
+3. **Enrol existing load as curtailable (Q2).** A new action, offered in every future from 2036Q1 (offering it only in V2 would reveal V2): enrol existing AI halls or miners as curtailable; they earn the flex payment where `flex_capacity_rating` > 0 (V2 after its trigger) and give up 0.5% of the enrolled share's AI revenue, minus the energy not bought. Reading sign −1 (`enrol_flexible`). The miners' halving card and "Enrol a test hall as flexible" use it.
+4. **Wire every events_v.json card (Q8)**, the triggers' cards first, then signals, decoys, aftermaths, winners and the shared cards, with their reading signs. The futures' story, the decoys V-B8 measures and several bot choices (lock offers, fund bids, contract offers) run through these cards, so the table can't be read without them.
+5. **End-of-life card bodies (Q9):** a neutral body before the future's trigger has fired ("One of your orbital blocks reaches the end of its design life. Replace it, run it another year, bring the compute home to a ground hall, or retire it."); the per-future body only after the trigger (by then the trigger card has told the story). Orbital Landlord's blocks retiring in 2036-37 will see the neutral one.
+6. **Orbit Replacer bot (Q3):** its row is identical to the Holder's in every cell, so it isn't doing its job. Per §18 it replaces every retiring block **and adds orbit** (new launches when cash allows). Orbit valuation stays as built (cost until live, then earnings × the file's orbital multiple); no story multiple at launch (the B3 lesson).
+7. **A Builder bot for V-B6 (Q10):** the Firm Holder plus every follow-on unit offered. The accelerator stays measured by its diagnosis and E-B2 (it's an Act IV decision; presets start at 2035Q4).
+
+**Judging rules:**
+8. **V-B5 is judged on the orbit-heavy start (Orbital Landlord)**, the mirror of V-B2 and V-B4 on ground-heavy starts. Firm Builder's V-B5 is information.
+9. **V-B9 is judged on ground-heavy starts (Q5)**: the reading score measures scarcity exposure, and an 88%-orbit company has little. Orbital Landlord's is information, but the run reports one OL V3 seed's move list so a scoring bug can be ruled out (−21 is large).
+10. **Orbital Landlord's halving needs a decomposition before any judgement:** its 2036→2040 change split into orbit blocks (live, retired, replaced), the lunar holding, the multiple, cash and debt, per future. V4 is meant to be orbit's future, so a 0.36 there needs an explanation, not a lever.
+
+**Accepted as built:** the accelerator diagnosis (built median 3.91× buy-in plus calls, 31 of 41 pass the sanity target; the misses are mostly V3 doing its job; expected return about 1.7× capital), no change; the run's assumptions (9-year long lock, exit sale settles on the 2040Q4 valuation, the megawatt split, epilogue fit, Q-Day on mining revenue and the treasury mark, refit = a year's in-orbit insurance, bring-home to the site with the most free MW, the 10% diagnosis stake). Bots doing no ground growth is accepted for the targets (they're ratios), but absolute multiples are read with that in mind.
+
+**Levers after the re-measure, in order, smallest step first (the balance pass may use only these; every V1 target must still pass):**
+- V-B2, if V1 Holder ÷ Locker < 1.0 after fix 1: V1's merchant multiple after the trigger 8.5× → 10.5× ⚙ (merchant firm power at least as valuable as contracted when scarcity is rising; designed, [D]).
+- V-B11, if FB V3 hold ÷ sell < 0.80: V3's bid top 1.10 → 1.08. The hidden outlook factors stay as they are.
+- Fortress's V3 lock (§0.11) and the accelerator (§0.12) levers as before.
+- V-B3, V-B4, V-B5, V-B8: no levers; report.
+
+**Live site (Q11), owner's call; recommendation:** keep Act V behind the flag until the re-measured table meets the core targets (V-B1, B2, B4, B11) and the owner has played Act V once end to end. It's a 55-60 minute chapter no human has played yet.
 
 ---
 
