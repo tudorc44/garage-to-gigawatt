@@ -12,10 +12,11 @@ import {
   type MarketKey,
   isAct4MarketKey,
   isAct5MarketKey,
-  actLastQuarter,
+  actFirstQuarter,
 } from '../../content/index.ts'
 import type { GameState } from '../state.ts'
-import type { FutureId } from '../../content/schemas.ts'
+import type { FutureId, VFutureId } from '../../content/schemas.ts'
+import { RIVALS_V } from '../../content/rivalsVContent.ts'
 import { scenarioOf } from './market.ts'
 import { act4Rivals } from './rivalsIv.ts'
 
@@ -33,6 +34,32 @@ export interface RivalSnapshot {
   /** Act IV (M31.5): orbital MW and lunar sites (the league's columns, doc 33 §12.1). */
   orbitMw?: number | null
   lunarSites?: number
+  /** Act V (M56): firm MW (and the firm-power developer's orderbook against units delivered). */
+  firmMw?: number | null
+  orderbookUnits?: number | null
+  deliveredUnits?: number | null
+}
+
+/** The rivals in Act V's league at the end of a quarter (M56): the Act V future's curves; a failed one has left. */
+export function act5Rivals(key: `${string}.${string}.${string}`, quarter: number): RivalSnapshot[] {
+  const [, f, v] = key.split('.') as [string, FutureId, VFutureId]
+  const i = quarter - actFirstQuarter(5)
+  if (i < 0 || i > 19) return []
+  return RIVALS_V.filter((r) => !r.presentIfAct4Future || r.presentIfAct4Future.includes(f))
+    .map((r) => {
+      const p = r.futures[v]
+      return {
+        id: r.id,
+        hashrateEhs: null,
+        mw: null,
+        valueUsd: p.value[i],
+        btcHeld: null,
+        orbitMw: p.orbitMw[i],
+        firmMw: p.firmMw[i],
+        ...(p.orderbookUnits ? { orderbookUnits: p.orderbookUnits[i], deliveredUnits: p.deliveredUnits?.[i] ?? null } : {}),
+      }
+    })
+    .filter((r) => r.valueUsd !== null)
 }
 
 export function getRival(id: string): Rival | undefined {
@@ -123,10 +150,9 @@ export function activeRivals(
 ): RivalSnapshot[] {
   // Act IV (doc 33 §12.1): Act III's rivals retire at the boundary; Act IV's own five (M31.5), on the game's future.
   if (isAct4MarketKey(scenario)) return act4Rivals(scenario.split('.')[1] as FutureId, quarter)
-  // Act V (M49, the walking skeleton): Act IV's rivals at their 2035Q4 numbers until Act V's own (rivals_v.json, doc 43
-  // §12) arrive with the rivals milestone (mine, reversible).
-  if (isAct5MarketKey(scenario))
-    return act4Rivals(scenario.split('.')[1] as FutureId, Math.min(quarter, actLastQuarter(4)))
+  // Act V (M56, doc 43 §12 with §0.9 item 11): Act V's own six on the game's Act V future (rivals_v.json); Orrery only
+  // after Act IV's F1 or F3.
+  if (isAct5MarketKey(scenario)) return act5Rivals(scenario, quarter)
   // Act III (M11.5b): the same five, on the drawn scenario's numbers for this quarter only.
   if (isAct2RulesQuarter(quarter) && !isActIIQuarter(quarter))
     return scenario

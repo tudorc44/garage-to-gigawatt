@@ -8,7 +8,8 @@ import { MOON } from '../../content/moonContent.ts'
 import type { FutureId } from '../../content/schemas.ts'
 import type { Message } from '../../i18n/t.ts'
 import { book } from '../ledger.ts'
-import { inActIV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
+import { inActIV, inActV, logEntry, type GameState, type OrbitalBlock } from '../state.ts'
+import { ORRERY_AUCTION_V3 } from '../../content/rivalsVContent.ts'
 import { blockMassT, generationTMw, orbitOf } from './orbit.ts'
 import type { RivalSnapshot } from './rivals.ts'
 
@@ -45,21 +46,37 @@ export function orreryFailsAt(state: GameState): number | null {
 
 /** At the start of an Act IV quarter: the news of Orrery's failure, in its quarter. */
 export function startQuarterRivalsIv(state: GameState): void {
-  if (!inActIV(state)) return
-  if (orreryFailsAt(state) === state.quarter) logEntry(state, 'log.rival.orrery_failed', { mw: A.mw })
+  if (!inActIV(state) && !inActV(state)) return
+  // (M56: and Act V's V3 failure of an Orrery that survived Act IV)
+  const { at, A: terms } = orreryTerms(state)
+  if (at === state.quarter) logEntry(state, 'log.rival.orrery_failed', { mw: terms.mw })
+}
+
+/**
+ * The auction in play and when it opens: Act IV's (Orrery's failure in its futures), or (M56) Act V's in V3, where an
+ * Orrery that survived Act IV fails again and its blocks go to auction (rivals_v.json `orrery_auction_v3`).
+ */
+function orreryTerms(state: GameState): { at: number | null; A: typeof A } {
+  if (inActV(state)) {
+    const present = state.futureId === 'f1' || state.futureId === 'f3'
+    const at = present && state.vFutureId === 'v3' ? Q(ORRERY_AUCTION_V3.quarter) : null
+    return { at, A: { ...A, ...ORRERY_AUCTION_V3 } }
+  }
+  return { at: orreryFailsAt(state), A }
 }
 
 /** Orrery's auction: open for two quarters from its failure, until you buy. */
 export function orreryAuction(state: GameState) {
-  const at = orreryFailsAt(state)
+  const { at, A } = orreryTerms(state)
   const open = at !== null && state.quarter >= at && state.quarter < at + A.open_quarters && !state.act4Orbit?.orreryBought
   return { open, mw: A.mw, priceUsd: A.mw * A.price_usd_per_mw, lifeLeftQuarters: A.life_left_quarters }
 }
 
 export function buyOrreryBlocker(state: GameState): Message | undefined {
-  if (!inActIV(state)) return { key: 'error.orbit_unavailable' }
+  if (!inActIV(state) && !inActV(state)) return { key: 'error.orbit_unavailable' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   const a = orreryAuction(state)
+  const { A } = orreryTerms(state)
   if (!a.open) return { key: 'error.orrery_closed' }
   if (state.bandwidth < A.bandwidth) return { key: 'error.no_bandwidth', params: { needed: A.bandwidth, have: state.bandwidth } }
   if (state.cash < a.priceUsd) return { key: 'error.no_cash', params: { costUsd: a.priceUsd, cashUsd: state.cash } }
@@ -68,6 +85,7 @@ export function buyOrreryBlocker(state: GameState): Message | undefined {
 /** Buys Orrery's live blocks: one live block in your fleet, on spot, with the life its satellites have left. */
 export function buyOrrery(state: GameState): void {
   const a = orreryAuction(state)
+  const { A } = orreryTerms(state)
   state.bandwidth -= A.bandwidth
   book(state, 'orbit_capex', -a.priceUsd)
   const orbit = orbitOf(state)

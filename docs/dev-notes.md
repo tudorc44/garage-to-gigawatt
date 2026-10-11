@@ -391,6 +391,12 @@ README). `check.py` PASS.
   - **6** done (`tools/act5/chipsDiagnosis.ts`, 200 draws on `accelSeed`, Fortress f1, 10% stake: the guard refuses 20%). Built 56:
     2040 value $386M vs paid-in $99M (3.91×); bought at a gain 33 (2.34×), at a loss 59 (0.62×), cancelled 52 (0). Sanity (built, all
     calls paid, ≥ 3×): 31/41; the misses: 7 in V3 (units ×0.6, 15× multiple: the binding term), 2 in V4 (2.9-3.0×), 1 late volume (0.67×).
+  - **Merged:** #17-#22 to `main` in order (merge commits), full suite green after each (1,658 → 1,717); `main` = `63ae112`;
+    m50-m55 tagged `-done` and deleted from the remote.
+- **Step B (M56, branch `m56` from `main`): §19 item 6.** Split: **1** rivals_v.json (league, Orrery gating, V3 auction) · **2** the
+  Act V wildcards (2 of 5) · **3** the orbit replacement cycle. One chunk each.
+  - **1** done: `rivalsVContent.ts`, `act5Rivals` (six; Orrery after F1/F3; firm MW and Ironvale's orderbook in the league), the V3
+    Orrery auction through BUY_ORRERY_BLOCKS. Fates stay out of the runtime view (step C's chapter report).
 
 ### Morning report (second run, 12 Oct 2026)
 
