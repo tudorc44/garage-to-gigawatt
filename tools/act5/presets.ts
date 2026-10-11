@@ -85,6 +85,12 @@ const GATE_STARTS: VentureType[][] = [['egs'], ['egs2'], ['smr'], ['adv_fission'
 const LATE: VentureType[][] = [['smr'], ['egs'], ['egs2'], ['adv_fission']]
 
 /** Doc 43 §3.4 as amended by §0.13 (and §0.8: the Firm Builder from the Fortress line). */
+/** The descriptions shown on "Start at Act V" (doc 43 §0.17 item 2: reworded; the companies are unchanged). */
+const DESCRIPTION: Record<Id, string> = {
+  firm_builder: 'a ground landlord whose first geothermal plant has just switched on',
+  orbital_landlord: 'a ground-and-orbit company whose five orbital blocks all reach end of life inside the act: replacing them is its game',
+}
+
 const PRESETS: Record<Id, { scan: Act5PresetRecipe[]; fits: (p: Profile) => boolean }> = {
   // a ground landlord: leases ≥ 40% of value, a plant stake switching on in 2035Q1-2038Q4, offtake if the line has one,
   // little orbit
@@ -147,6 +153,7 @@ for (const id of Object.keys(PRESETS) as Id[]) {
   const m = (x: number) => Math.round(x / 1e5) / 10
   found.push({
     id,
+    description: DESCRIPTION[id],
     act4_preset: r.act4_preset,
     act4_future: r.act4_future,
     act4_seed: r.act4_seed,
