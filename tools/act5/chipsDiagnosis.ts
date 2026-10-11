@@ -72,6 +72,8 @@ interface Row {
   chipMult: number
   qSinceVolume: number | null
   ebitdaQUsd: number
+  vFuture: string
+  capped: boolean
 }
 
 const base = presetLine2030('fortress')
@@ -138,6 +140,8 @@ for (let draw = 1; draw <= DRAWS; draw++) {
     chipMult: row?.chip_ev_ebitda_mult ?? 0,
     qSinceVolume: since,
     ebitdaQUsd: since === null ? 0 : acceleratorEbitdaUsd(s),
+    vFuture: s.vFutureId ?? '-',
+    capped: d.foundryCapped,
   })
   if (draw % 25 === 0) console.log(`  ${draw} draws (${Math.round((performance.now() - t0) / 1000)} s)`)
 }
@@ -160,6 +164,10 @@ const best = [...built].sort((a, b) => b.valueUsd - a.valueUsd)[0]
 if (best)
   console.log(
     `  best built: draw ${best.draw}, volume ${best.volumeQ}, ${best.qSinceVolume} quarters since volume at the end; units ${best.units}/q at full ramp; EBITDA share ${best.ebitdaShare}; multiple ${best.chipMult}×; quarter EBITDA ${m$(best.ebitdaQUsd)}; stake ${(best.stakeLeft * 100).toFixed(1)}%; value ${m$(best.valueUsd)} vs paid-in ${m$(best.paidUsd)} (${best.multiple.toFixed(2)}×)`,
+  )
+for (const r of allPaid.filter((x) => x.multiple < 3))
+  console.log(
+    `  under 3×: draw ${r.draw} (Act V future ${r.vFuture}${r.capped ? ', foundry-rationed' : ''}), volume ${r.volumeQ}, ${r.qSinceVolume} q since; units ${r.units}/q, EBITDA share ${r.ebitdaShare}, multiple ${r.chipMult}×, quarter EBITDA ${m$(r.ebitdaQUsd)}: ${r.multiple.toFixed(2)}×`,
   )
 const pass = allPaid.filter((r) => r.multiple >= 3).length
 console.log(

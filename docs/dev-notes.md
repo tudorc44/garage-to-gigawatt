@@ -388,6 +388,9 @@ README). `check.py` PASS.
   accelerator diagnosis. Chunks: 1-5 · 6. Then merge #17-#21 and M55 to main in order.
   - **1-5** done: two presets (Firm Builder valuation 2,376.9 → 2,345.8 M: the −$31.1M revaluation); `plantsRevaluedUsd` on A5-01
     and the chapter report; fast lane saves 0.5% of the enrolled share's power cost; `SELL_SITE` (2 BW, one −1 move). 1,717 tests.
+  - **6** done (`tools/act5/chipsDiagnosis.ts`, 200 draws on `accelSeed`, Fortress f1, 10% stake: the guard refuses 20%). Built 56:
+    2040 value $386M vs paid-in $99M (3.91×); bought at a gain 33 (2.34×), at a loss 59 (0.62×), cancelled 52 (0). Sanity (built, all
+    calls paid, ≥ 3×): 31/41; the misses: 7 in V3 (units ×0.6, 15× multiple: the binding term), 2 in V4 (2.9-3.0×), 1 late volume (0.67×).
 
 ### Morning report (second run, 12 Oct 2026)
 
