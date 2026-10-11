@@ -38,6 +38,7 @@ import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.
 import { startQuarterRivalsIv } from './rivalsIv.ts'
 import { fireWildcardsV } from './wildcardsV.ts'
 import { endQuarterHomed, startQuarterOrbitEol } from './orbitEol.ts'
+import { startQuarterExit } from './act5Exit.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -454,6 +455,8 @@ export function startNextQuarter(state: GameState): void {
   startQuarterRivalsIv(state)
   // Act V (M56.2): a drawn wildcard fires in its quarter.
   fireWildcardsV(state)
+  // Act V (M57.1): in 2040Q3 the buyer's bid arrives (the exit).
+  startQuarterExit(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

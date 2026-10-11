@@ -32,6 +32,9 @@ export function act5MoveKind(a: Action): Act5MoveKind | null {
       return 'contract_plant_output'
     case 'COMMIT_FOLLOW_ON':
       return 'commit_follow_on_unit'
+    // M57.1 (doc 43 §0.2): a blend-and-extend locks a lease long (−1); RENEWAL_TERM logs its own (long or short)
+    case 'BLEND_ACCEPT':
+      return 'blend_and_extend_long'
     // M53 (doc 43 §14.1, §0.9 item 7): the queue (a site's power sale logs its own kind: with or without a position)
     case 'PAY_UPGRADE':
       return 'pay_network_upgrade'

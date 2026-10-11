@@ -29,6 +29,10 @@ import { inAct2Rules, inAct3Rules, inActIII, inActIV, inAct4Rules, inActV } from
 import { readSignalIvBlocker } from './systems/signalsIv.ts'
 import { readSignalVBlocker } from './systems/signalsV.ts'
 import { scarcityMultipleFactor, scarcityRentFactor } from './systems/scarcity.ts'
+import { exitView } from './systems/act5Exit.ts'
+
+/** Act V's exit panel (M57.1): the bid, the plants' fund value and the choice; nothing of the outlook factor. */
+export const act5ExitView = (state: GameState) => exitView(state)
 import { buildCalendar } from './systems/calendar.ts'
 import { SIGNAL_READ_BANDWIDTH, readSignalBlocker } from './systems/signals.ts'
 import {

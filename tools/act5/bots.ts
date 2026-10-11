@@ -1,0 +1,186 @@
+// M57.3 (doc 43 §18 with §0.3, §0.6-§0.8): Act V's bot archetypes for the sim-runner. Each is a Strategy (src/sim/replay.ts)
+// built only from the game's own Act V actions; every action is tried in order on a scratch copy and kept only if it
+// succeeds, so a bot never fails a step (as Act IV's bots). No bot grows the ground book (no Act II/III habits in Act V:
+// mine, reversible); every bot holds at the exit (the default), and the runner prices the sale from the same run.
+//   holder   Firm Holder (§0.3): keeps every site and stake, renews short, keeps free MW, stays merchant, pays calls and
+//            any position's upgrade bill.
+//   flex     Flex Operator: renews short, requests new grid MW for a leased hall once a year when cash allows, takes the
+//            fast lane where it's open (enrolling the load as curtailable) or pays the bill, sells 80% of plant output forward.
+//   seller   Seller (§0.3, §0.7): from 2036Q1, locks every renewal and blend long, sells every plant stake to funds, sells
+//            every leased site that serves no GPU cluster of its own (the whole-site sale), and the free MW of the rest.
+//   locker   Locker (§0.8): keeps every site and stake, locks every renewal and blend long, contracts 80% of plant output.
+//   orbit    Orbit Replacer: the Holder's ground, and every orbital block at its design end replaced (else extended).
+//   balanced Balanced: renews short, pays calls when cash allows, contracts half of plant output, replaces blocks.
+//   overreactor  Balanced, except in the future's decoy quarters it does the decoy's wrong stance hard.
+//   passive  Passive: no actions at all (every card and offer at its default).
+//   perfect  The perfect reader (V-B8, V-B9): the +1 moves in quarters whose ideal stance is +1, the −1 moves in the −1
+//            quarters, the Balanced habits in the 0s. Reads the hidden ideal: tools only.
+import { CONTENT, actFirstQuarter } from '../../src/content/index.ts'
+import { applyAction, type Action } from '../../src/sim/actions.ts'
+import type { Strategy } from '../../src/sim/replay.ts'
+import type { GameState } from '../../src/sim/state.ts'
+import type { VFutureId } from '../../src/content/schemas.ts'
+import { idealStancesV } from '../../src/sim/systems/readingScoreV.ts'
+import { queueView } from '../../src/sim/systems/queue.ts'
+import { isPlant } from '../../src/sim/systems/plants.ts'
+import readingRaw from '../../src/content/reading_score_v.json' with { type: 'json' }
+
+/** Tries each action in order on a copy; returns the ones that succeeded (in order) and the state after them. */
+function tryAll(state: GameState, actions: Action[]): { kept: Action[]; after: GameState } {
+  let s = state
+  const kept: Action[] = []
+  for (const a of actions) {
+    const r = applyAction(s, a)
+    if (r.ok) {
+      s = r.state
+      kept.push(a)
+    }
+  }
+  return { kept, after: s }
+}
+
+const q5 = (s: GameState) => s.quarter - actFirstQuarter(5)
+/** Cash kept back before paying for anything optional (mine, reversible). */
+const BUFFER_USD = 100e6
+
+/** Applies a list of steps, each built on the state the previous ones left; returns every kept action. */
+function chain(state: GameState, steps: ((s: GameState) => Action[])[]): Action[] {
+  let s = state
+  const kept: Action[] = []
+  for (const step of steps) {
+    const r = tryAll(s, step(s))
+    s = r.after
+    kept.push(...r.kept)
+  }
+  return kept
+}
+
+// ---------- the moves ----------
+
+/** Every open shell renewal taken long or short (a blend-and-extend offer accepted when long). */
+const renewals = (term: 'long' | 'short') => (s: GameState): Action[] => [
+  ...(s.act3Renewals ?? []).map((r): Action => ({ type: 'RENEWAL_TERM', projectId: r.projectId, term })),
+  ...(term === 'long' ? (s.act3BlendOffers ?? []).map((b): Action => ({ type: 'BLEND_ACCEPT', projectId: b.projectId })) : []),
+]
+
+/** A venture's and the accelerator's cash calls: paid when cash allows, else diluted. */
+const calls = (s: GameState): Action[] => [
+  ...(s.ventures ?? [])
+    .filter((v) => v.call)
+    .map((v): Action => ({ type: 'VENTURE_CALL', ventureId: v.id, choice: s.cash > v.call!.dueUsd + BUFFER_USD ? 'pay' : 'dilute' })),
+  ...(s.accelerator?.call ? [{ type: 'ACCEL_CALL', choice: s.cash > s.accelerator.call.dueUsd + BUFFER_USD ? 'pay' : 'dilute' } as Action] : []),
+]
+
+/** Pays every position's study bill (paying buys no speed, but an unpaid bill holds the power). */
+const payUpgrades = (s: GameState): Action[] =>
+  (queueView(s)?.positions ?? []).filter((p) => p.billUsd !== null && !p.billPaid && s.cash > p.billUsd + BUFFER_USD).map((p) => ({ type: 'PAY_UPGRADE', projectId: p.projectId }))
+
+/** The fast lane on every waiting position where it's open; else its bill paid. */
+const fastLane = (s: GameState): Action[] =>
+  (queueView(s)?.positions ?? []).flatMap((p): Action[] =>
+    p.fastBlocked === null ? [{ type: 'TAKE_FAST_LANE', projectId: p.projectId }] : [],
+  )
+
+const operatingPlants = (s: GameState) => (s.ventures ?? []).filter((v) => v.stake > 0 && isPlant(s, v))
+/** Sells `share` of every operating plant's merchant output forward. */
+const contractOutput = (share: number) => (s: GameState): Action[] =>
+  operatingPlants(s).map((v) => ({ type: 'CONTRACT_PLANT_OUTPUT', ventureId: v.id, share }))
+
+/** Sells every venture stake to funds (running plants and ventures before first power). */
+const sellStakes = (s: GameState): Action[] =>
+  (s.ventures ?? []).filter((v) => v.stake > 0).map((v) => ({ type: 'SELL_PLANT_STAKE', ventureId: v.id, share: 1 }))
+
+/** A site serving a GPU cluster of the company's own (a live cloud) is kept; the rest are sold whole. */
+const servesOwnCloud = (s: GameState, siteId: string) =>
+  s.projects.some((p) => p.siteId === siteId && p.kind === 'cloud' && (p.stage === 'live' || p.stage === 'building'))
+const sellSites = (s: GameState): Action[] =>
+  s.sites.flatMap((site): Action[] =>
+    servesOwnCloud(s, site.id) ? [{ type: 'SELL_SITE_POWER', siteId: site.id }] : [{ type: 'SELL_SITE', siteId: site.id }],
+  )
+
+/** Every live block at its design end: replaced (else extended). */
+const replaceBlocks = (s: GameState): Action[] =>
+  (s.act4Orbit?.blocks ?? []).flatMap((b): Action[] => [
+    { type: 'ORBIT_EOL', blockId: b.id, choice: 'replace' },
+    { type: 'ORBIT_EOL', blockId: b.id, choice: 'extend' },
+  ])
+
+/**
+ * Requests new grid MW (a position) for a leased hall: the biggest size the site can take that cash covers, its best tenant
+ * offer signed, funded from cash and started (mine, reversible: 10-40 MW, at most one a year, cash ≥ the cost + buffer).
+ */
+function requestGridMw(s: GameState): Action[] {
+  if (q5(s) % 4 !== 0 && q5(s) !== 1) return []
+  for (const site of s.sites.filter((x) => x.tier !== CONTENT.siteTiers[0].id)) {
+    for (const mw of [40, 20, 10]) {
+      const open: Action = { type: 'PROJECT_OPEN', siteId: site.id, kw: mw * 1000, kind: 'shell', power: 'grid' }
+      const r = applyAction(s, open)
+      if (!r.ok) continue
+      const p = r.state.projects.at(-1)!
+      const offer = [...p.offers].sort((a, b) => (b.priceMult ?? 1) - (a.priceMult ?? 1))[0]
+      if (!offer) continue
+      const done = tryAll(r.state, [
+        { type: 'PROJECT_SIGN_TENANT', projectId: p.id, offerId: offer.id },
+        { type: 'PROJECT_FUND_CASH', projectId: p.id },
+        { type: 'PROJECT_START', projectId: p.id },
+      ])
+      if (done.kept.some((a) => a.type === 'PROJECT_START') && done.after.cash > BUFFER_USD) return [open, ...done.kept]
+    }
+  }
+  return []
+}
+
+// ---------- the archetypes ----------
+
+/** The +1 quarter (scarcity pays): renew short, pay bills, request MW. The −1 quarter: lock long, contract, sell. */
+const PLUS: ((s: GameState) => Action[])[] = [calls, renewals('short'), payUpgrades, requestGridMw, payUpgrades]
+const MINUS: ((s: GameState) => Action[])[] = [calls, renewals('long'), contractOutput(0.8), sellStakes, sellSites]
+const BALANCED: ((s: GameState) => Action[])[] = [calls, renewals('short'), payUpgrades, contractOutput(0.5), replaceBlocks]
+
+const strategy = (plan: (s: GameState) => Action[]): Strategy => ({ plan })
+
+/** The future's decoy quarters (act quarters) and the wrong stance in each: the opposite of the ideal, or of the next one. */
+function decoyStance(v: VFutureId): Map<number, number> {
+  const f = (readingRaw as unknown as { futures: Record<string, { decoy: { quarters: string[] } }> }).futures[v]
+  const ideal = idealStancesV(v)
+  const first = actFirstQuarter(5)
+  const m = new Map<number, number>()
+  for (const label of f.decoy.quarters) {
+    const q = CONTENT.quarters.indexOf(label) - first
+    const next = ideal[q] !== 0 ? ideal[q] : (ideal.slice(q).find((x) => x !== 0) ?? 1)
+    m.set(q, -next)
+  }
+  return m
+}
+
+export const ACT5_ARCHETYPES = ['holder', 'flex', 'seller', 'locker', 'orbit', 'balanced', 'overreactor', 'passive', 'perfect'] as const
+export type Act5Archetype = (typeof ACT5_ARCHETYPES)[number]
+
+export function act5Bot(name: Act5Archetype): Strategy {
+  switch (name) {
+    case 'holder':
+      return strategy((s) => chain(s, [calls, renewals('short'), payUpgrades]))
+    case 'flex':
+      return strategy((s) => chain(s, [calls, renewals('short'), fastLane, payUpgrades, contractOutput(0.8), requestGridMw, fastLane]))
+    case 'seller':
+      return strategy((s) => chain(s, MINUS))
+    case 'locker':
+      return strategy((s) => chain(s, [calls, renewals('long'), contractOutput(0.8)]))
+    case 'orbit':
+      return strategy((s) => chain(s, [replaceBlocks, calls, renewals('short'), payUpgrades]))
+    case 'balanced':
+      return strategy((s) => chain(s, BALANCED))
+    case 'overreactor':
+      return strategy((s) => {
+        const wrong = s.vFutureId ? decoyStance(s.vFutureId).get(q5(s)) : undefined
+        return chain(s, wrong === 1 ? PLUS : wrong === -1 ? MINUS : BALANCED)
+      })
+    case 'passive':
+      return strategy(() => [])
+    case 'perfect':
+      return strategy((s) => {
+        const ideal = s.vFutureId ? idealStancesV(s.vFutureId)[q5(s)] : 0
+        return chain(s, ideal === 1 ? PLUS : ideal === -1 ? MINUS : BALANCED)
+      })
+  }
+}

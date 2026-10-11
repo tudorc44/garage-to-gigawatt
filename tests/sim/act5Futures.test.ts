@@ -78,8 +78,8 @@ describe('Act V’s hidden files (M51, doc 43 §6.8, V-D29): each read only wher
     for (const f of src.filter((x) => /[\\/]ui[\\/]/.test(x) && !/Act5Reveal\.tsx$/.test(x))) {
       expect(code(f), f).not.toMatch(/\bvFutureId\b|a5\.reveal\.|act5End\.ts|readingScoreV|signalsHiddenV/)
     }
-    // the selectors and views read the future only to pick the Signals file
-    for (const f of src.filter((x) => /selectors\.ts$|Views\.ts$/.test(x)))
+    // the selectors and views read the future only to pick the Signals file (the finale reveals, as Act IV's, M57.2)
+    for (const f of src.filter((x) => /selectors\.ts$|Views\.ts$/.test(x) && !/finaleViews\.ts$/.test(x)))
       expect(code(f), f).not.toMatch(/readingScoreV|signalsHiddenV|act5End/)
   })
 })

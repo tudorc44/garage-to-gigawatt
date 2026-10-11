@@ -404,6 +404,99 @@ README). `check.py` PASS.
     extend (once; refit = a year's in-orbit insurance on capex: mine; failures ×1.5), bring home (contracted shells only, to the site with
     most free MW, rent to term: mine), retire (default). Neutral card text (the per-future bodies aren't shown: leak caution). 1,733 tests.
   - **Sims:** Act V only; goldens byte-identical. The rest of events_v.json's cards (incl. the triggers' cards) isn't wired: open question.
+- **Step C (M57, branch `m57` on `m56`): §19 item 7.** Split: **1** lock or roll + the exit · **2** scoring, chapter report, the 2040
+  finale · **3** bots, `--act5` sims, goldens act5-v1..v4 · **4** the §18 table and the balance pass. One chunk each.
+  - **1** done: RENEWAL_TERM (shell renewals: long 9 y −1, short 2 y +1; mine: 9 = the middle of 8-10; GPU contracts keep the offered
+    term); BLEND_ACCEPT logs −1; `act5Exit.ts` (bid drawn 2040Q3; sell / sell plants / hold; net worth after the exit in act5End;
+    the hidden part read only there); the Plan screen's exit panel. Mine: a sale settles on the 2040Q4 valuation. 1,739 tests.
+  - **2** done: act5End adds the career, reading and megawatt titles, venture and rival fates (`rivalsHiddenV.ts`, act5End only); the chapter
+    report's exit (outlook revealed), titles, fates; `Act5Finale.tsx` (2035 + 2040 rows, epilogue_v.json, the chip line). Mine: the MW split
+    (firm = the rest of energized ground + plant share); bedroom/garage/fusion lines only where they fit. 1,743 tests.
+  - **3** done: `tools/act5/bots.ts` (holder, flex, seller, locker, orbit, balanced, overreactor, passive, perfect: the game's Act V actions
+    only, no ground growth, all hold at the exit: mine), `tools/act5/runner.ts` (`npm run sim -- --act5`, ~1.1 s a run), goldens act5-v1..v4
+    (Firm Builder, the perfect reader, act5Seed 1). Acts I-IV goldens byte-identical. 1,759 tests.
+  - **4** done: `npm run sim -- --act5 --seeds 30` (2,160 runs, 43 min, 0 unreconciled). **No balance change:** §0.11's levers apply
+    only if V-B4 misses on the ground-heavy start (Firm Builder passes, 1.137); §0.12's only if the accelerator is too rich (it isn't).
+    Every miss is reported below with a proposed fix (no listed lever).
+
+### Report (third run, 13 Oct 2026)
+
+**Steps:** A done (M55; #17-#22 merged, `main` = `63ae112`) · B done (M56, PR #23, open, base `main`) · C done (M57, PR #24, open,
+base `m56`). Nothing stopped. Not reached: nothing in the prompt; the open gaps are listed under the questions.
+
+**Per milestone** (Acts I-IV goldens byte-identical in all three; main bundle 230.4 KB):
+- M55: Small Grid cut, act5Entry after the earnings switch, fast-lane saving, whole-site sale, accelerator diagnosis. 1,717 tests.
+- M56: rivals_v.json, 2 of 5 wildcards, the orbit end-of-life cycle. 1,733 tests.
+- M57: lock or roll, the exit, titles and fates, the 2040 finale, bots, `--act5`, new goldens act5-v1..v4. 1,759 tests.
+- Long sims: M55-M57 change Act V only (Act IV energy goldens unchanged), so `--act2 --act3/--act4/--energy` weren't re-run.
+
+**Accelerator diagnosis** (§0.14 item 5; 200 draws, Fortress f1, 10% stake, the most the cash guard allows): built 56 at 3.91×
+median (2040 value ÷ buy-in plus calls), acquired at a gain 33 at 2.34×, at a loss 59 at 0.62×, cancelled 52 at 0×. Sanity target
+(built, calls paid, ≥ 3×): 31 of 41 pass. The misses: 7 in V3 (the binding term: units ×0.6 with the 15× multiple from the trigger),
+2 in V4 (2.87-2.97×), 1 late volume (2040Q1, 0.67×). Best built: draw 28, 6.25×. Not tuned.
+
+**§18 table** (medians, 2040Q4 before the exit ÷ act5Entry, 30 seeds; FB = Firm Builder, OL = Orbital Landlord):
+
+| Bot | FB v1 | v2 | v3 | v4 | OL v1 | v2 | v3 | v4 |
+|---|---|---|---|---|---|---|---|---|
+| Holder | 1.140 | 0.827 | 0.644 | 0.736 | 0.502 | 0.385 | 0.326 | 0.361 |
+| Flex | 1.146 | 0.884 | 0.651 | 0.740 | 0.491 | 0.427 | 0.323 | 0.357 |
+| Seller | 1.024 | 1.019 | 1.013 | 1.036 | 0.487 | 0.482 | 0.478 | 0.495 |
+| Locker | 1.288 | 0.912 | 0.732 | 0.802 | 0.545 | 0.410 | 0.339 | 0.374 |
+| Orbit Replacer | 1.140 | 0.827 | 0.644 | 0.736 | 0.502 | 0.385 | 0.326 | 0.361 |
+| Balanced | 1.139 | 0.826 | 0.646 | 0.736 | 0.502 | 0.385 | 0.326 | 0.361 |
+| Over-reactor | 0.940 | 0.949 | 0.646 | 0.728 | 0.439 | 0.434 | 0.329 | 0.356 |
+| Passive | 1.160 | 0.915 | 0.749 | 0.823 | 0.506 | 0.417 | 0.352 | 0.388 |
+| Perfect | 1.148 | 0.982 | 0.928 | 0.938 | 0.491 | 0.465 | 0.434 | 0.441 |
+
+| # | Result | Verdict |
+|---|---|---|
+| V-B1 | Best per future FB: flex, seller, seller, seller; OL: holder, seller ×3; each of the four within 10% in ≥ 1 | PASS |
+| V-B2 | FB V1 Holder ÷ Seller 1.113 (≥ 1.2), Holder ÷ Locker 0.885 (≥ 1.0); OL (information) 1.033 / 0.921 | MISS |
+| V-B3 | V2 Flex ÷ Holder FB 1.069, OL 1.109 (≥ 1.15) | MISS |
+| V-B4 | FB V3 Locker ÷ Holder 1.137 (≥ 1.05), Holder busts 0%; OL (information) 1.041; Seller ÷ Holder 1.57 / 1.47 | PASS |
+| V-B5 | V4 Orbit Replacer ÷ Holder 1.000 on both | MISS |
+| V-B6 | Not re-measured (no Act V bot joins a venture); the M54 E-B2 cap passes; the diagnosis above | not measured |
+| V-B7 | Firm Builder passive: 0 busts in 120 | PASS |
+| V-B8 | Perfect ÷ Passive FB 0.99/1.07/1.24/1.14, OL 0.97/1.11/1.23/1.14; Over-reactor ÷ Passive FB V2 1.038, OL V2 1.040 | MISS |
+| V-B9 | Perfect − Passive reading FB +28/+38/+7/+12; OL +33/+45/−21/−3 | FB PASS, OL MISS |
+| V-B10 | No fusion output before 2038; EGS2 first power 1.00 (120 held); waits by tests | PASS |
+| V-B11 | Hold ÷ sell FB 0.949/0.888/**0.791**/0.805, OL 0.956/0.875/0.816/0.807 (0.80-1.25) | FB MISS (V3, 0.009 short) |
+| V-B12 | By the plant tests, not the runner | by test |
+| V-B13 | 20 Plan phases; Balanced 2.6 actions a phase (bot count) | information |
+| V-B14 | By `act5Futures.test.ts` | PASS (test) |
+
+The medians barely move with the seed: Act V's own draws matter little to these bots; the company and the future decide.
+
+**Balance changes:** none (see chunk 4). **Misses and proposed fixes** (for the design thread; nothing changed):
+1. V-B2: the Locker beats the Holder in V1 because contracting the EGS plant's output lifts it from the merchant multiple (8.5× after
+   V1's trigger) to the contracted 10×; renewal offers stay below the old rents even in V1 (price multiples 0.4-0.9), and short terms add
+   walks (9 against 4). Proposed: V1's merchant multiple ≥ the contracted one after the trigger, and renewal offers that carry the full
+   `scarcity_index` rise.
+2. V-B3: the only way to enrol flexible load is the fast lane on a new position; the `enrol_flexible` move exists in the reading score
+   but no action enrols existing load. Proposed: an "enrol existing load as curtailable" action in V2 (−1), paid by `flex_capacity_rating`.
+3. V-B5: few blocks reach design end live inside the act (OL: 1 of 5 by 2039Q1), and a replacement is valued at cost. Proposed: judge
+   V-B5 on an orbit-heavy start, or let a replacement carry V4's orbital multiple from launch.
+4. V-B8: selling pays in V2-V4 (Seller ≈ 1.02 flat while holders fall), so the over-reactor's V2 decoy (sell) helps; Perfect can't beat
+   Passive in V1, where Passive's default terms are already near-best. Proposed: V2's early ideal (+1) needs a payoff (the flex fix).
+5. V-B9 (OL): the orbit-heavy start reads −21 in V3; its few ground moves fall in low-exposure quarters. Proposed: report on ground-heavy
+   starts only, as V-B2/B4.
+6. V-B11 (FB V3 0.791): proposed: V3's outlook factor up 0.01-0.02 (exit_v.json, hidden), or the V3 bid range's top 1.10 → 1.08.
+
+**Assumptions (mine, reversible), this run:** M55: Fortress at a 10% stake for the diagnosis; act5Entry includes the revaluation.
+M56: Q-Day hits mining revenue and the treasury mark, not coin sales; refit = a year's in-orbit insurance; bring-home to the site with
+most free MW; neutral EOL card text. M57: long = 9 years; a sale at the exit settles on the 2040Q4 valuation; the megawatt split;
+epilogue lines naming the bedroom, garage or fusion only where they fit; bots use only Act V actions (no ground growth) and all hold at
+the exit, the sale priced from the same run (V-B11); judged on Firm Builder for V-B2/B4 (OL's lease share is 24%).
+
+**Open questions for the design thread:**
+1. The misses above: which fixes, if any (none has a listed lever)?
+2. §0.8/§0.11 adopted "proceeds repay debt, the rest earns SOFR" for the Seller; the game pays no interest on cash. A game rule for
+   every Act V company, or a gate-only assumption?
+3. events_v.json's cards beyond end of life (including the triggers' cards) aren't wired. Wire them, and in which milestone?
+4. Per-future end-of-life card bodies are hidden (they'd hint at the future). Keep them neutral?
+5. V-B6 in Act V needs bots that join ventures in Act V (follow-on units, the accelerator). Add them, or keep E-B2 as the measure?
+6. Should the Act V entry points leave the dev flag once these misses are settled, or only after the owner's playtest?
 
 ### Morning report (second run, 12 Oct 2026)
 

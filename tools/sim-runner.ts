@@ -73,6 +73,11 @@ if (args.includes('--energy')) {
   process.exit(0)
 }
 // Act IV's archetypes and the B1-B14 table (M32.5) have theirs.
+// M57.3: Act V's archetypes and the V-B1..V-B14 table have theirs.
+if (args.includes('--act5')) {
+  await import('./act5/runner.ts')
+  process.exit(0)
+}
 if (args.includes('--act4')) {
   await import('./act4/runner.ts')
   process.exit(0)
