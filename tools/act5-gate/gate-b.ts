@@ -42,6 +42,14 @@ export interface Stub {
   capacityMult: (t: number) => number
   plantMerchantMultiple: (t: number) => number
   spreadUsdMwh: (t: number) => number
+  /**
+   * M43.0e (the real market files), optional: absolute prices in place of the multipliers above (a region's power
+   * $/kWh, the PJM capacity $/MW-day), the contracted plant multiple, and the walk chance at renewal by tenant type.
+   */
+  powerUsdKwh?: (region: string, t: number) => number
+  pjmCapacityUsdMwDay?: (t: number) => number
+  plantContractedMultiple?: (t: number) => number
+  walkProb?: (tenantType: string, t: number) => number
 }
 export const STUBS: Record<StubId, Stub> = {
   v1: {
@@ -93,6 +101,7 @@ export interface Lease {
   marketRate: number
   endQ: number
   walkProb: number
+  tenantType: string
 }
 
 export function leasesOf(s: GameState): Lease[] {
@@ -106,7 +115,8 @@ export function leasesOf(s: GameState): Lease[] {
     const end = contractEndQuarter(s, p)
     if (end === null) continue
     const ours = 1 - ownedShareOut(p)
-    const walkProb = walkProbAtRenewal(s.quarter, scenario, tenantCard(t.card)?.type ?? 'ai_lab')
+    const tenantType = tenantCard(t.card)?.type ?? 'ai_lab'
+    const walkProb = walkProbAtRenewal(s.quarter, scenario, tenantType)
     if (t.gpu) {
       const g = t.gpu
       const base = Math.max(t.signedQuarter, CONTENT.quarters.indexOf('2027Q1'))
@@ -124,6 +134,7 @@ export function leasesOf(s: GameState): Lease[] {
         marketRate,
         endQ: end,
         walkProb,
+        tenantType,
       })
     } else {
       const rateNow = annualContractUsd(p)
@@ -139,6 +150,7 @@ export function leasesOf(s: GameState): Lease[] {
         marketRate,
         endQ: end,
         walkProb,
+        tenantType,
       })
     }
   }
@@ -156,7 +168,8 @@ export function leasePath(l: Lease, bot: 'holder' | 'seller', stub: Stub, seed: 
     const q = first + t
     if (q > nextEnd) {
       // An end date (or a holdover): the walk roll, then a renewal or a re-let after a quarter empty.
-      const walked = chance(substream(seed, `act5gate:walk:${l.id}:${nextEnd}`), l.walkProb)
+      const walkP = stub.walkProb ? stub.walkProb(l.tenantType, t) : l.walkProb
+      const walked = chance(substream(seed, `act5gate:walk:${l.id}:${nextEnd}`), walkP)
       if (walked) {
         vacantUntil = q
         const reletT = t + 1
@@ -214,11 +227,14 @@ function plantEbitdaQ(s: GameState, v: Venture, m: Market, stub: Stub, t: number
   const mwh = v.mw * cf * HOURS_Q
   const off = Math.min(1, v.offtakeMw / v.mw)
   const powerUsdMwh = (m.powerUsdKwh[region as keyof Market['powerUsdKwh']] ?? m.powerUsdKwh.ercot) * 1000
+  // The merchant price and the PJM capacity price in quarter u: the stub's multiplier on 2035Q4, or (M43.0e) the file's.
+  const merchantUsdMwh = (u: number) => (stub.powerUsdKwh ? stub.powerUsdKwh(region, u) * 1000 : powerUsdMwh * stub.merchantMult(u))
+  const capacityAt = (u: number) => (stub.pjmCapacityUsdMwDay ? stub.pjmCapacityUsdMwDay(u) : capBase * stub.capacityMult(u))
   const revenue =
     mwh * off * v.ppaUsdMwh +
     mwh * Math.max(0, contracted - off) * T.ppa_usd_mwh +
-    mwh * merchant * powerUsdMwh * blend(stub.merchantMult(t), stub.merchantMult(0)) +
-    capBase * PLANT.capacityRating[type] * v.mw * 91.25 * (contracted + merchant * blend(stub.capacityMult(t), stub.capacityMult(0)))
+    mwh * merchant * blend(merchantUsdMwh(t), merchantUsdMwh(0)) +
+    (capBase > 0 ? PLANT.capacityRating[type] * v.mw * 91.25 * (contracted * capBase + merchant * blend(capacityAt(t), capacityAt(0))) : 0)
   const cost =
     v.type === 'smr' || v.type === 'adv_fission'
       ? (PLANT.reactorFixedUsdKwYr * v.mw * 1000) / 4 + mwh * PLANT.reactorVarUsdMwh
@@ -229,7 +245,7 @@ function plantEbitdaQ(s: GameState, v: Venture, m: Market, stub: Stub, t: number
 const plantMultiple = (v: Venture, stub: Stub, t: number, lock = 0) => {
   const c0 = Math.max(Math.min(1, v.offtakeMw / v.mw), PLANT.contractedShare[v.type as FirmType])
   const c = c0 + lock * (1 - c0)
-  return c * PLANT.contractedMultiple + (1 - c) * stub.plantMerchantMultiple(t)
+  return c * (stub.plantContractedMultiple?.(t) ?? PLANT.contractedMultiple) + (1 - c) * stub.plantMerchantMultiple(t)
 }
 
 /** Calls still to come on a stake, and an unfixed weak field's fix (the Holder pays them; the Seller sold). */
