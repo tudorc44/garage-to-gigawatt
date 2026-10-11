@@ -22,6 +22,7 @@ import { enterAct5 } from './systems/act5Entry.ts'
 import type { MessageKey, MessageParams } from '../i18n/t.ts'
 import type { LunarClaimantId, LunarSiteId, OfftakeBuyerId } from '../content/moonContent.ts'
 import type { SiteHeat } from './systems/heat.ts'
+import type { DrawnWildcardV } from './systems/wildcardsV.ts'
 import type { Ledger } from './ledger.ts'
 import type { PowerNegotiation } from './systems/negotiation.ts'
 import type { DealNegotiation } from './systems/dealNegotiation.ts'
@@ -1504,6 +1505,8 @@ export interface GameState {
   accelerator?: Accelerator
   /** M55 (doc 43 §0.14 item 5): tools only: the accelerator's draws on their own seed, decoupled from act4Seed. */
   accelSeed?: number
+  /** Act V (M56.2, doc 43 §6.6): the two wildcards drawn at entry, each with its quarter (never shown in advance). */
+  act5Wildcards?: DrawnWildcardV[]
   /** Act V (M51, doc 43 §6.7): the move log the reading score reads at the end of the act. */
   act5Moves?: Act5Move[]
   /** Act V (M51, doc 43 §6.3): the log of Read the market (Signals) reads, one indicator per quarter at most. */

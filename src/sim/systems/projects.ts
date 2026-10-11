@@ -23,6 +23,7 @@ import { rfpMid } from './leaseIndex.ts'
 import { scarcityMultipleFactor, scarcityRentFactor } from './scarcity.ts'
 import { acceleratorDraws, bowlineOnSale, reservationTerms, useReservation } from './accelerator.ts'
 import { ACCELERATOR } from '../../content/acceleratorContent.ts'
+import { moratoriumBlocker } from './wildcardsV.ts'
 import { book, bookSplit, type Category, type LedgerRef } from '../ledger.ts'
 import { siteParams } from './siteSerials.ts'
 import { startLenderCure } from './facilities.ts'
@@ -776,6 +777,9 @@ export function openBlocker(
       return { key: 'error.bad_choice' }
     const blocked = powerBlocker(state, site, a.power)
     if (blocked) return blocked
+    // M56.2: Act V's large-load moratorium (new grid connections of 50 MW or more in its region)
+    const paused = a.power === 'grid' ? moratoriumBlocker(state, site, a.kw) : undefined
+    if (paused) return paused
   } else {
     const freeKw = convertibleKw(state, a.siteId)
     if (a.kw > freeKw + 1e-9)

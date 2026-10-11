@@ -9,6 +9,7 @@
 // The project goes live when both its build and its power are done.
 import { BALANCE, CONTENT, act4Row, act5Row, type PowerRegion } from '../../content/index.ts'
 import { PLANTS } from '../../content/plantsContent.ts'
+import { transformerDelayQuarters } from './wildcardsV.ts'
 import { scenarioOf } from './market.ts'
 import type { Message } from '../../i18n/t.ts'
 import { randomInt, substream } from '../rng.ts'
@@ -98,7 +99,8 @@ export function drawPowerQuarters(state: GameState, p: Project): number {
     state.seed,
     `grid_queue:${CONTENT.quarters[state.quarter]}:${p.id}`,
   )
-  return randomInt(r, lo, hi)
+  // (M56.2: Act V's transformer shortage adds 2 quarters, 4 one time in 2.5; 0 otherwise)
+  return randomInt(r, lo, hi) + transformerDelayQuarters(state, p.id)
 }
 
 /** Quarters a proposed project's new power is expected to take (grid: the queue's short end). */

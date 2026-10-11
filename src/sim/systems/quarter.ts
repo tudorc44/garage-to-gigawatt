@@ -36,6 +36,7 @@ import { endQuarterLaunches, startQuarterOrbitBuilds } from './orbitLaunch.ts'
 import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
 import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.ts'
 import { startQuarterRivalsIv } from './rivalsIv.ts'
+import { fireWildcardsV } from './wildcardsV.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
@@ -446,6 +447,8 @@ export function startNextQuarter(state: GameState): void {
   startQuarterMoonOps(state)
   // (M31.5) a rival's failure makes the news.
   startQuarterRivalsIv(state)
+  // Act V (M56.2): a drawn wildcard fires in its quarter.
+  fireWildcardsV(state)
   // M19: the Community Relations Manager's yearly Community Deal, when due and a site qualifies.
   openCommunityDeal(state)
 }

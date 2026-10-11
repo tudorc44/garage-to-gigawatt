@@ -397,6 +397,9 @@ README). `check.py` PASS.
   Act V wildcards (2 of 5) · **3** the orbit replacement cycle. One chunk each.
   - **1** done: `rivalsVContent.ts`, `act5Rivals` (six; Orrery after F1/F3; firm MW and Ironvale's orderbook in the league), the V3
     Orrery auction through BUY_ORRERY_BLOCKS. Fates stay out of the runtime view (step C's chapter report).
+  - **2** done: `wildcardsV.ts`, 2 of 5 drawn at the boundary. Mine: Q-Day = mining revenue and the treasury mark ×0.6 (coin sales
+    still at the market price), then a week down and $250K; fusion = the lasting EV multiplier ×1.1 then ×0.95; dry year on pumped
+    storage; moratorium blocks grid projects ≥ 50 MW in its region; transformer delay on grid requests. 1,728 tests.
 
 ### Morning report (second run, 12 Oct 2026)
 
