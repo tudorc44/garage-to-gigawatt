@@ -743,6 +743,18 @@ export function lastReport(state: GameState) {
   return state.reports.at(-1)
 }
 
+/**
+ * The header's valuation (M62.5, doc 43 §0.18): the last quarter report's, except at the start of Act V, before any
+ * Act V report: then act5Entry's (measured after the 2036Q1 revaluations of plants and orbital blocks; the 2035Q4 report
+ * keeps Act IV's marks, so showing it there overstated an orbit-heavy company by half).
+ */
+export function headerValuationUsd(state: GameState): number | undefined {
+  const r = state.reports.at(-1)
+  if (state.act === 5 && state.act5Entry && (!r || CONTENT.quarters.indexOf(r.quarter) < actFirstQuarter(5)))
+    return state.act5Entry.valuationUsd
+  return r?.valuationUsd
+}
+
 /** Weekly move that sets off a price alert (content value, for the event card's footnote). */
 export const PRICE_ALERT_THRESHOLD = BALANCE.priceAlert.threshold
 

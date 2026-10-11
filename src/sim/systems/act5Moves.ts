@@ -45,6 +45,9 @@ export function act5MoveKind(a: Action): Act5MoveKind | null {
     // M58.3 (doc 43 §0.15 fix 3)
     case 'ENROL_FLEXIBLE':
       return 'enrol_flexible'
+    // M62.2 (doc 43 §9.2, §14.1: a move that scores 0)
+    case 'SELL_LUNAR_HOLDING':
+      return 'sell_lunar_holding'
     default:
       return null
   }

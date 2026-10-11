@@ -27,6 +27,8 @@ export function QueuePanel(props: { state: GameState; act: (a: Action) => Messag
       </p>
       {error && <p class="num-s warn">{say(error)}</p>}
       {v.positions.length === 0 && <p class="num-s muted">{t('ui.queue.none')}</p>}
+      {/* (M62.3, A5-04: a position is requested by opening a project whose Power slot is a grid upgrade) */}
+      <p class="num-s muted" style={{ margin: 0 }} data-queue-request>{t('ui.queue.request_hint')}</p>
       {v.positions.map((p) => (
         <div key={p.projectId} class="venture-row" data-position={p.projectId}>
           <p class="num-s" style={{ margin: 0 }}>
