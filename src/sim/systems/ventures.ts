@@ -31,6 +31,7 @@ import { addPc } from './pcState.ts'
 import { drawOverrun, lognormal } from './overrun.ts'
 import { powerPriceUsdKwh, regionOf, usedKw } from './sites.ts'
 import { isPlant, plantStakeValueUsd } from './plants.ts'
+import { PLANTS } from '../../content/plantsContent.ts'
 
 const V = VENTURES
 const T = V.types
@@ -310,6 +311,150 @@ function drawSchedule(v: Venture, start: number, r: RngHolder): void {
   v.buildEnd = v.buildStart + Math.max(1, build)
   // The control waits for its grid connection after building (16-24 quarters, from its 2027 start: doc 38 §5.8).
   v.codQuarter = v.type === 'control' ? v.buildEnd + randomInt(r, ...T.control.grid_wait_q) : v.buildEnd
+}
+
+// ---------- Act V: follow-on units (M52.6, doc 43 §7.4, V-D13) ----------
+
+/** The classes a developer offers a next unit for in Act V (advanced fission and fusion: none in-act). */
+export type FollowOnClass = 'egs' | 'smr'
+const followOnClassOf = (type: VentureType): FollowOnClass | null =>
+  isEgs(type) ? 'egs' : type === 'smr' ? 'smr' : null
+
+/**
+ * The unit a follow-on follows: the class's first project once it has reached first power before this quarter (yours
+ * if you hold one, else the developer's own), or null. The offer stands from the quarter after first power.
+ */
+export function followOnUnit1(state: GameState, cls: FollowOnClass): Venture | null {
+  const types: VentureType[] = cls === 'egs' ? ['egs', 'egs2'] : ['smr']
+  for (const t of types) {
+    const own = state.ventures?.find((v) => v.type === t && !v.followOnOf && v.stage === 'operating')
+    if (own && own.codQuarter < state.quarter) return own
+  }
+  for (const t of types) {
+    const dev = developerVenture(state, t)
+    if (dev.stage === 'operating' && dev.codQuarter < state.quarter) return dev
+  }
+  return null
+}
+
+/**
+ * The follow-on's pitch, $/kW (doc 43 §7.4, plants_v.json): EGS at the NOAK cost; SMR unit 2 at × 0.85 of unit 1's
+ * realised cost (its pitch × its realised multiple).
+ */
+export function followOnPitchUsdKw(cls: FollowOnClass, unit1: Venture): number {
+  const f = PLANTS.classes[cls].follow_on!
+  return cls === 'egs' ? f.cost_usd_kw! : f.cost_mult_of_unit1_realised! * unit1.pitchUsdKw * unit1.m
+}
+
+/** The buy-in for a follow-on stake: its share of the follow-on's budget. */
+export function followOnBuyInUsd(cls: FollowOnClass, unit1: Venture, stake: number): number {
+  return roundCents(stake * followOnPitchUsdKw(cls, unit1) * unit1.mw * 1000)
+}
+
+/** Why this follow-on can't be committed now, or undefined (2 Bandwidth; the roles and campus as doc 38's joins). */
+export function followOnBlocker(state: GameState, j: VentureJoin): Message | undefined {
+  const cls = followOnClassOf(j.type)
+  if (!inActV(state) || !cls) return { key: 'error.follow_on_none' }
+  if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
+  const unit1 = followOnUnit1(state, cls)
+  if (!unit1) return { key: 'error.follow_on_none' }
+  if (state.ventures?.some((v) => v.followOnOf && followOnClassOf(v.type) === cls)) return { key: 'error.follow_on_done' }
+  if (j.stake !== 0 && !V.equity_shares.includes(j.stake)) return { key: 'error.bad_choice' }
+  if (j.offtake !== 0 && !V.offtake_shares.includes(j.offtake)) return { key: 'error.bad_choice' }
+  if (!(j.prepay >= 0 && j.prepay < V.prepay.length)) return { key: 'error.bad_choice' }
+  if (j.stake <= 0 && j.offtake <= 0) return { key: 'error.venture_no_role' }
+  if (j.offtake > 0) {
+    const site = state.sites.find((s) => s.id === j.siteId)
+    if (!site) return { key: 'error.venture_needs_campus' }
+    const regions = ventureRegions(j.type)
+    if (regions !== 'any' && !regions.includes(regionOf(site) ?? '')) return { key: 'error.venture_region' }
+  }
+  if (state.bandwidth < 2) return { key: 'error.no_bandwidth', params: { needed: 2, have: state.bandwidth } }
+  const cost = followOnBuyInUsd(cls, unit1, j.stake) + prepayUsd(j)
+  if (state.cash < cost) return { key: 'error.no_cash', params: { costUsd: cost, cashUsd: state.cash } }
+}
+
+/**
+ * Commits to a follow-on unit (2 Bandwidth): a new venture of the same type, at the follow-on's pitch, on its own draws
+ * (`substream(act4Seed, "follow_on:<class>")`): the class's overrun, a slip on its schedule (EGS: the files' 7 quarters,
+ * no licence; SMR: a licence and a build as unit 1's, mine: the files give unit 2 no schedule), EGS's weak-field chance,
+ * an SMR's undersubscription. Calls in thirds as doc 38. Call only when unblocked.
+ */
+export function commitFollowOn(state: GameState, j: VentureJoin): Venture {
+  const cls = followOnClassOf(j.type)!
+  const unit1 = followOnUnit1(state, cls)!
+  const pitch = followOnPitchUsdKw(cls, unit1)
+  const buyIn = followOnBuyInUsd(cls, unit1, j.stake)
+  const prepaid = prepayUsd(j)
+  const cut = V.prepay[j.prepay].price_cut
+  const t = T[j.type as 'egs' | 'egs2' | 'smr']
+  const r = substream(act4SeedOf(state), `follow_on:${cls}`)
+  const q = state.quarter
+  const slip = t.slip.sigma > 0 ? lognormal(r, t.slip.median, t.slip.sigma) : t.slip.median
+  const licenceQ = cls === 'smr' ? Math.round(T.smr.licence_q * slip) : 0
+  const buildQ = Math.max(1, Math.round((cls === 'egs' ? PLANTS.classes.egs.follow_on!.quarters! : T.smr.build_q) * slip))
+  const v: Venture = {
+    id: `venture-${state.nextId++}`,
+    type: j.type,
+    joinedQuarter: q,
+    mw: unit1.mw,
+    pitchUsdKw: roundCents(pitch),
+    budgetUsd: roundCents(pitch * unit1.mw * 1000),
+    diligence: true,
+    stake: j.stake,
+    paidUsd: buyIn,
+    offtakeMw: offtakeMwOf(j.type, j.offtake),
+    ppaUsdMwh: roundCents((pitchPpaUsdMwh(j.type) ?? 0) * (1 - cut)),
+    prepaidUsd: prepaid,
+    siteId: j.offtake > 0 ? (j.siteId ?? null) : null,
+    m: drawOverrun(r, t.class),
+    stage: licenceQ > 0 ? 'licensing' : 'construction',
+    licenceEnd: q + licenceQ,
+    buildStart: q + licenceQ,
+    buildEnd: q + licenceQ + buildQ,
+    codQuarter: q + licenceQ + buildQ,
+    callsDone: 0,
+    call: null,
+    othersSubscribed: cls === 'smr' ? Math.round(uniform(r, ...T.smr.cancel.others_subscribed) * 100) / 100 : 0,
+    partnerCut: 0,
+    pitchCodQuarter: q + licenceQ + buildQ,
+    buyInUsd: buyIn,
+    stakeAtJoin: j.stake,
+    callsPaidUsd: 0,
+    milestones: 0,
+    slips: 0,
+    followOnOf: unit1.id,
+  }
+  if (cls === 'egs') v.weakField = chance(r, T[j.type as 'egs' | 'egs2'].weak_field.chance)
+  state.bandwidth -= 2
+  book(state, 'venture_calls', -buyIn, { venture: v.id })
+  book(state, 'venture_calls', -prepaid, { venture: v.id })
+  roundCash(state)
+  ;(state.ventures ??= []).push(v)
+  logEntry(state, 'log.venture.follow_on', { ventureType: j.type, costUsd: buyIn + prepaid })
+  return v
+}
+
+/** Act V's follow-on offers on the table (one per class with a running first unit), for the Ventures page. */
+export function followOnOffers(state: GameState) {
+  if (!inActV(state)) return []
+  return (['egs', 'smr'] as FollowOnClass[]).flatMap((cls) => {
+    const unit1 = followOnUnit1(state, cls)
+    if (!unit1) return []
+    const stake = V.equity_shares[0]
+    const j = { type: unit1.type, stake, offtake: 0, prepay: 0 }
+    return [
+      {
+        cls,
+        type: unit1.type,
+        pitchUsdKw: followOnPitchUsdKw(cls, unit1),
+        mw: unit1.mw,
+        stake,
+        buyInUsd: followOnBuyInUsd(cls, unit1, stake),
+        blocked: followOnBlocker(state, j) ?? null,
+      },
+    ]
+  })
 }
 
 // ---------- Cash calls ----------

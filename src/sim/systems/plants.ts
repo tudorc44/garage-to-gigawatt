@@ -350,6 +350,15 @@ export function plantsView(state: GameState) {
         lockedUp: v.plantDebt?.lockedUp ?? false,
         outputContract: v.outputContract ?? null,
         label: CONTENT.quarters[v.codQuarter],
+        // what the Plan phase offers, and why not
+        debtOfferUsd: plantDebtTerms(state, v).principalUsd,
+        debtKind: plantDebtTerms(state, v).kind,
+        debtBlocked: plantDebtBlocker(state, v.id) ?? null,
+        bidHalfUsd: fundBidUsd(state, v, 0.5, 0),
+        bidAllUsd: fundBidUsd(state, v, 1, 0),
+        saleBlocked: fundSaleBlocker(state, v.id, 1) ?? null,
+        contractShare: F.contract_output.max_share,
+        contractBlocked: outputContractBlocker(state, v.id, F.contract_output.max_share) ?? null,
       }
     })
 }

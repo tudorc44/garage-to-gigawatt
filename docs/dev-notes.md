@@ -367,6 +367,9 @@ README). `check.py` PASS.
     base multiple (term not in files), 15-year contracted debt, 12-year output contracts, a plant's region = its campus's. 1,693 tests.
   - **5** done: `flex.ts`, V2's flex payment on enrolled curtailable MW (`site.flexKw`, set by step E's fast lane, plus Texas DR sites'
     curtailable MW: mine) as a grid credit. No carried load qualifies on its own, so it pays only once step E enrols load. 1,694 tests.
+  - **6** done: follow-on units (EGS at $4,000/kW, 7 q; SMR unit 2 at 0.85 × unit 1's realised cost, with unit 1's licence and build:
+    mine), one per class, 2 BW, +1; the Ventures page's "Your plants" panel (the four actions); browser-checked at 1280 px. 1,697 tests.
+  - **Sims:** M52 changes Act V only; the goldens (Acts I-IV byte-identical) cover it; no Act V sim runner exists yet.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

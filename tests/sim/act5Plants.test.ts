@@ -23,7 +23,12 @@ import {
   plantStakeValueUsd,
   plantValueUsd,
 } from '../../src/sim/systems/plants.ts'
-import { stakeMarkUsd, ventureValueUsd } from '../../src/sim/systems/ventures.ts'
+import {
+  followOnPitchUsdKw,
+  followOnUnit1,
+  stakeMarkUsd,
+  ventureValueUsd,
+} from '../../src/sim/systems/ventures.ts'
 import { flexMw, flexPayments } from '../../src/sim/systems/flex.ts'
 import { playAct5Recipe } from '../../tools/act5/presetRun.ts'
 
@@ -167,6 +172,35 @@ describe('plant debt, fund sales and output contracts (M52.3-M52.4)', () => {
 
   it('the Act V first quarter is 2036Q1 (a sanity check on the helper)', () => {
     expect(actFirstQuarter(5)).toBe(76)
+  })
+})
+
+describe('follow-on units (M52.6, doc 43 §7.4)', () => {
+  it('a running EGS unit brings an offer of the next at the NOAK $4,000/kW; committing is +1 and costs 2 BW', () => {
+    const s = toAct5(firmBuilder2035(), { vfuture: 'v1' })
+    s.cash += 100_000_000 // (enough for any stake: the test is about the offer, not the cash)
+    const unit1 = followOnUnit1(s, 'egs')!
+    expect(unit1).not.toBeNull()
+    expect(followOnPitchUsdKw('egs', unit1)).toBe(4000)
+    const bw = s.bandwidth
+    const after = ok(s, { type: 'COMMIT_FOLLOW_ON', venture: unit1.type, stake: 0.1, offtake: 0, prepay: 0 })
+    const v = after.ventures!.at(-1)!
+    expect(v.followOnOf).toBe(unit1.id)
+    expect(v.buyInUsd).toBeCloseTo(0.1 * 4000 * unit1.mw * 1000, 2)
+    expect(after.cash).toBeCloseTo(s.cash - v.buyInUsd!, 2)
+    expect(after.bandwidth).toBe(bw - 2)
+    expect(after.act5Moves!.at(-1)!.kind).toBe('commit_follow_on_unit')
+    // one per class; none for a class without a running first unit; none before Act V
+    expect(applyAction(after, { type: 'COMMIT_FOLLOW_ON', venture: unit1.type, stake: 0.1, offtake: 0, prepay: 0 }).ok).toBe(false)
+    expect(applyAction(s, { type: 'COMMIT_FOLLOW_ON', venture: 'adv_fission', stake: 0.1, offtake: 0, prepay: 0 }).ok).toBe(false)
+    expect(applyAction(firmBuilder2035(), { type: 'COMMIT_FOLLOW_ON', venture: unit1.type, stake: 0.1, offtake: 0, prepay: 0 }).ok).toBe(false)
+    // its value before first power is the milestone mark (the buy-in, here)
+    expect(ventureValueUsd(after, v)).toBeCloseTo(v.buyInUsd!, 2)
+  })
+
+  it('an SMR unit 2 would cost 0.85 × unit 1’s realised cost', () => {
+    const unit1 = { pitchUsdKw: 4000, m: 1.5, mw: 300 } as Venture
+    expect(followOnPitchUsdKw('smr', unit1)).toBeCloseTo(0.85 * 4000 * 1.5, 10)
   })
 })
 

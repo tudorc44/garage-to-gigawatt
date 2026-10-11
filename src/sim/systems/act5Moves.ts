@@ -30,6 +30,8 @@ export function act5MoveKind(a: Action): Act5MoveKind | null {
       return 'sell_plant_stake_to_fund'
     case 'CONTRACT_PLANT_OUTPUT':
       return 'contract_plant_output'
+    case 'COMMIT_FOLLOW_ON':
+      return 'commit_follow_on_unit'
     default:
       return null
   }
