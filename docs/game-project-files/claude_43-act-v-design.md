@@ -1,4 +1,4 @@
-# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run; §0.15: after the third run; §0.16: after the fourth run; §0.17: mid-run answers)
+# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run; §0.15: after the third run; §0.16: after the fourth run; §0.17: mid-run answers; §0.18: the first Act V screen)
 
 *Design thread. The recommended concept from doc 42 (Concept A, with B's exit and C's flexibility and Q-Day folded in), designed in the shape of doc 33. The owner approved doc 42's six recommendations on 10 Oct 2026 (V-D1 to V-D6 below). Built on doc 40 (second research pass, Part D), doc 37 (energy and 2040 dossier), doc 38 (energy ventures, especially §5-§6), doc 33 (Act IV as designed) and the game as built (dev-notes through M42, `main` = 71f36cb, `src/sim/state.ts`, `docs/energy-content/README.md`). The owner approved every recommendation in §21 on 10 Oct 2026 (V-D1 to V-D30). §22's open questions stay open; the design thread's recommendations on Q1 and Q2 are noted there. The content pack, scope doc and wireframe prompt come after approval, as for Acts III-IV.*
 
@@ -247,6 +247,14 @@ Also noted: GPU-hour rates and the newest generation stay at their 2036 values t
 3. **V2's opposite oracle equal to Passive is acceptable.** Un-enrolling isn't built, and adding it only to give the oracle a +1 move would be a mechanic for a test's sake.
 4. **The SMR follow-on is a bet carried past 2040**, as V-D13 and the V3 card ("first power after 2040") already say: licensing plus construction can't finish inside the act. It is valued at its milestone mark, and its fate is told in the finale. The offer dialog says so plainly: "First power expected after 2040; valued at its milestone mark until then."
 5. **The launch-slot deposit estimate is fine as built.** The deposit is credited against the real launch, so the estimate only sizes it.
+
+### 0.18 The owner's first Act V screen (11 Oct 2026)
+*From the owner's first preset game (Orbital Landlord, 2036Q1). Design-thread findings (DT), checked against the code on main.*
+- **The Moon tab is gone by design** (V-D4, §3: the Moon becomes one lunar holding). But the holding is only a line in Capital's valuation, and `sell_lunar_holding` has no button. Fix: a small **Lunar holding** panel (in Capital, or Ventures): 2035Q4 value, today's index and value, the first-tonnes outlook, and Sell.
+- **The Orbit tab is missing by mistake.** `frame.tsx`'s nav shows `act4: true` items only when `act === 4`; M49 carried orbit's rules into Act V (`inAct4Rules`) but not its nav item. In Act V the player can't reach the Orbit board, so the replacement cycle (§9.1), the end-of-life Plan panels and the launch-slot booking are unreachable; V-B5 tests a decision no human can make. Fix: Orbit uses `inAct4Rules`; Moon stays Act IV-only.
+- **The bots exercised the systems; the screens weren't built.** The dashboard is Act IV's (Mining / Hosting / AI shell / AI cloud strip), not A5-02's four MW columns with plants and queue at a glance; A5-03 (Plants board), A5-04 (Queue) and A5-06 (Capital additions) need checking. §17's list is the spec. Act I-II actions (friends-and-family raise, crypto-backed loan, Series A, IPO) show struck through in Act V's Plan: hide actions that can never unlock in the current act.
+- **Header check:** cash shows $49.2B against a $7.1B valuation. Either a formatting or a valuation bug; find which. (The $7.1B also suggests a build from before M60, which cut this preset's entry value to $3.46B; restart the dev server on current main.)
+- **Rule (new):** every Act V player action in `state.ts` has a reachable UI entry point; a test asserts it. The owner's playthrough waits for this milestone.
 
 ---
 
