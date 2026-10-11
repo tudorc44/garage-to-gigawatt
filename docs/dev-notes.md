@@ -460,6 +460,10 @@ README). `check.py` PASS.
   ground-link units, so its interactive tenants earned nothing (V4 FB 1.030 → 1.238); V-B3 "Flex best in V2"; flex rating back to 0.5;
   V4's decoy "Firm Power Runs Short" (+1); lunar distress sale dropped; Act I-II rows hidden from Act III on; Act III/IV content chunks
   (largest chunk 245 KB). 1,784 tests. Re-measure below.
+- **7** done (2,400 runs, 0 unreconciled; FB / OL medians v1-v4): Orbit Replacer FB 1.726 / 1.303 / 0.876 / 1.238, OL 1.554 / 1.192 /
+  0.914 / 1.202. **Pass:** V-B1 (both), B2, B4, B5 (OL 1.222), B7, B9, B10, B11 (0.806-0.988); the over-reactor is ≤ 0.97 of Passive
+  everywhere now. **Miss:** V-B3 on OL (the Orbit Replacer 1.192 beats Flex 1.151 in V2; FB passes, Flex 1.308 against 1.303); V-B8's
+  perfect-reader clause (≥ 1.15 only FB V1). FB's V-B5 (information) 1.128.
 
 ## M62: the Act V screens (doc 43 §0.18 and §17; branch `m62` from `main`)
 
