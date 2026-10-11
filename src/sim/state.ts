@@ -363,6 +363,11 @@ export interface LunarHolding {
   value2035Usd: number
   /** Sold (doc 43 §9.2: to a bloc or a rival): the quarter, or absent. */
   soldQuarter?: number
+  /**
+   * M57.2 (doc 43 §9.2): a production plant decided in Act IV: its first tonnes' year, a hidden draw at the boundary
+   * (2039-43), told only in the finale's epilogue. Absent without a production decision.
+   */
+  firstTonnesYear?: number
 }
 
 /** Act V's end record (M49 skeleton; M51 adds the reveal and the reading score; titles and the exit come later). */
@@ -393,6 +398,11 @@ export interface Act5End {
   }
   moves?: { q: number; kind: Act5MoveKind; sign: number; mark: 'match' | 'opposite' | 'decoy' | 'neutral' }[]
   readingTitleId?: string | null
+  // ---- M57.2 (doc 43 §15.1): the titles and the fates ----
+  careerTitleId?: string
+  megawatts?: { firm: number; flexible: number; orbital: number; landlord: number; titleId: string }
+  ventureFates?: { type: string; fate: string; firstPower: string | null; stake: number; valueUsd: number }[]
+  rivalFates?: { rival: string; fate: string; valueUsd: number | null; failed: boolean }[]
 }
 
 /**

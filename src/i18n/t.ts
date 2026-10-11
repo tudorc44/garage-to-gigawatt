@@ -108,6 +108,11 @@ function fill(text: string, params: MessageParams): string {
   })
 }
 
+/** Fills a content file's own text (M57.2: the 2040 epilogue's authored lines) with params, as t() does. */
+export function fillText(text: string, params: MessageParams = {}): string {
+  return fill(text, params)
+}
+
 export function t(key: MessageKey, params: MessageParams = {}): string {
   return fill(table[key] ?? key, params)
 }

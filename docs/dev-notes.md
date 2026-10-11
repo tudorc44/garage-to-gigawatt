@@ -409,6 +409,9 @@ README). `check.py` PASS.
   - **1** done: RENEWAL_TERM (shell renewals: long 9 y −1, short 2 y +1; mine: 9 = the middle of 8-10; GPU contracts keep the offered
     term); BLEND_ACCEPT logs −1; `act5Exit.ts` (bid drawn 2040Q3; sell / sell plants / hold; net worth after the exit in act5End;
     the hidden part read only there); the Plan screen's exit panel. Mine: a sale settles on the 2040Q4 valuation. 1,739 tests.
+  - **2** done: act5End adds the career, reading and megawatt titles, venture and rival fates (`rivalsHiddenV.ts`, act5End only); the chapter
+    report's exit (outlook revealed), titles, fates; `Act5Finale.tsx` (2035 + 2040 rows, epilogue_v.json, the chip line). Mine: the MW split
+    (firm = the rest of energized ground + plant share); bedroom/garage/fusion lines only where they fit. 1,743 tests.
 
 ### Morning report (second run, 12 Oct 2026)
 

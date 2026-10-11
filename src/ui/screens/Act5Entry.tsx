@@ -8,7 +8,8 @@ import { tDynamic } from '../../i18n/t.ts'
 import type { GameState } from '../../sim/state.ts'
 import { presetAct5Company, type Act5PresetId } from '../act5PresetStart.ts'
 import { fmt } from '../format.ts'
-import { Act5Reveal } from './Act5Reveal.tsx'
+import { Act5Outcome, Act5Reveal } from './Act5Reveal.tsx'
+import { Act5Finale } from './Act5Finale.tsx'
 
 const tx = (key: string, params?: Record<string, string | number>) => tDynamic(key, key, params)
 
@@ -132,9 +133,15 @@ export function StartAct5(props: { onReady: (end: GameState, preset: Act5PresetI
   )
 }
 
-/** The Act V chapter report (M49 skeleton; M51 the reveal): the net worth, the growth multiple, the future revealed. */
+/**
+ * The Act V chapter report (M49 skeleton; M51 the reveal; M57.2 doc 43 §15): the net worth after the exit and the growth
+ * multiple, the future revealed, the exit (with the outlook it was held at), the three titles, the ventures' and the
+ * rivals' fates; then the 2040 finale.
+ */
 export function Act5Chapter(props: { state: GameState; onNew: () => void }) {
+  const [finale, setFinale] = useState(false)
   const end = props.state.act5End
+  if (finale) return <Act5Finale state={props.state} onNew={props.onNew} />
   return (
     <div class="screen">
       <div class="center-page">
@@ -156,11 +163,13 @@ export function Act5Chapter(props: { state: GameState; onNew: () => void }) {
               {tx('ui.act5.plants_revalued', { usd: fmt.money(props.state.act5Entry.plantsRevaluedUsd) })}
             </p>
           ) : null}
-          <p class="num-s muted">{tx('ui.act5.chapter.skeleton')}</p>
+          {end && <Act5Outcome end={end} />}
           <div class="row-between">
-            <span />
-            <button type="button" class="btn btn-primary" onClick={props.onNew}>
+            <button type="button" class="btn" onClick={props.onNew}>
               {tx('ui.act4.back_to_title')}
+            </button>
+            <button type="button" class="btn btn-primary" data-to-finale onClick={() => setFinale(true)}>
+              {tx('ui.act4.reveal.to_finale')}
             </button>
           </div>
         </div>

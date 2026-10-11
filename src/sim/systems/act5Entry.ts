@@ -14,7 +14,8 @@
 // 2035Q4): the Act IV move log, wildcards and Signals reads; the last Read the market. Act IV's future doesn't continue:
 // Act V draws its own (toAct5 in state.ts, V-D5).
 import { BALANCE, CONTENT, actFirstQuarter, act5Row, type VFutureId } from '../../content/index.ts'
-import { emptyQuarterStats, type Act5Entry, type GameState } from '../state.ts'
+import { act5SeedOf, emptyQuarterStats, type Act5Entry, type GameState } from '../state.ts'
+import { randomInt, substream } from '../rng.ts'
 import { bandwidthForQuarter } from './bandwidth.ts'
 import { buildAct4Entry } from './act4Entry.ts'
 import { scenarioOf } from './market.ts'
@@ -110,6 +111,11 @@ export function enterAct5(state: GameState, vfuture: VFutureId): GameState {
   // The Moon goes offstage (V-D4): one holding at its 2035Q4 value; claims, prospects and pilots stop being playable.
   if (s.act4Moon) {
     s.lunarHolding = { value2035Usd: state.reports.at(-1)?.lunarUsd ?? 0 }
+    // M57.2 (§9.2): a production plant's first tonnes, drawn now on its own stream, told only in the finale
+    if (s.act4Moon.claims.some((c) => c.production)) {
+      const [lo, hi] = BALANCE.act5.lunarPlantFirstTonnesYears
+      s.lunarHolding.firstTonnesYear = randomInt(substream(act5SeedOf(s), 'act5_lunar_plant'), lo, hi)
+    }
     delete s.act4Moon
   }
   // Open orbital tenant offers lapse (their default); the blocks keep running.

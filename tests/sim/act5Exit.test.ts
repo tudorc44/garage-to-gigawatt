@@ -88,7 +88,8 @@ describe('exit_v.json’s hidden part (M57.1, doc 43 §6.8)', () => {
     expect(src.filter((f) => /exit_v\.json/.test(code(f))).map((f) => f.split('/').slice(-3).join('/'))).toEqual([
       'sim/systems/act5Exit.ts',
     ])
-    for (const f of src.filter((x) => /[\\/]ui[\\/]/.test(x))) expect(code(f), f).not.toMatch(/act5Exit\.ts|outlook|bidFactor/)
+    // (the chapter report's reveal, Act5Reveal.tsx, shows the outlook once the act is over: M57.2)
+    for (const f of src.filter((x) => /[\\/]ui[\\/]/.test(x) && !/Act5Reveal\.tsx$/.test(x))) expect(code(f), f).not.toMatch(/act5Exit\.ts|outlook|bidFactor/)
   })
 })
 

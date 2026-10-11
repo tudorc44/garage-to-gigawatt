@@ -839,5 +839,7 @@ export const BALANCE = {
     orbitExtend: { quarters: 4, failureMult: 1.5 },
     /** Lock or roll (M57.1; doc 43 §0.2): at a shell renewal, long = 8-10 years (9: mine, the middle), short = 2 years. */
     lockOrRoll: { longYears: 9, shortYears: 2 },
+    /** The lunar production plant's first tonnes (doc 43 §9.2: 2039-43, doc 31's 5-8 years), drawn at the boundary. */
+    lunarPlantFirstTonnesYears: [2039, 2043],
   },
 } as const
