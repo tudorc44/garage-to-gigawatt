@@ -27,6 +27,35 @@ const median = (xs: number[]) => {
   return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2
 }
 
+// (3) M60.3 (§0.16 item 4), `--flex`: the Flex Operator in V2 on both presets: the MW it requested, how many took the fast
+// lane, connected (energized) and leased by 2040Q4, and the rent those halls earned (the ledger's ai_shell_rent on them).
+if (args.includes('--flex')) {
+  const { ledgerQuarters } = await import('../../src/sim/ledger.ts')
+  for (const id of ['firm_builder', 'orbital_landlord'] as const) {
+    const pr = PRESETS_V.find((x) => x.id === id)!
+    const b0 = playAct5Recipe({ act4_preset: pr.act4_preset, act4_future: pr.act4_future, act4_seed: pr.act4_seed, joins: pr.joins as never })
+    for (let seed = 1; seed <= SEEDS; seed++) {
+      const start = toAct5(structuredClone(b0), { vfuture: 'v2', act5Seed: seed })
+      const before = new Set(start.projects.map((x) => x.id))
+      const s = playFrom(start, act5Bot('flex'), { through: 5 }).state
+      const fresh = s.projects.filter((x) => !before.has(x.id))
+      const adds = s.sites.flatMap((x) => x.powerAdds ?? []).filter((a) => fresh.some((f) => f.id === a.projectId))
+      const fast = adds.filter((a) => a.position?.fastLane)
+      const connected = adds.filter((a) => a.readyQuarter !== null && a.readyQuarter <= s.quarter)
+      const leased = fresh.filter((x) => x.stage === 'live' && x.tenant)
+      let rent = 0
+      for (const lq of ledgerQuarters(s)) for (const f of fresh) rent += lq.byRef[`project:${f.id}`]?.ai_shell_rent ?? 0
+      const flexMw = s.sites.reduce((a, x) => a + (x.flexKw ?? 0), 0) / 1000
+      console.log(
+        `  ${id} v2 seed ${seed}: halls requested ${fresh.length} (${adds.reduce((a, x) => a + x.kw, 0) / 1000} MW); fast lane ${fast.length} ` +
+          `(${fast.reduce((a, x) => a + x.kw, 0) / 1000} MW); connected ${connected.reduce((a, x) => a + x.kw, 0) / 1000} MW; leased ${leased.length} ` +
+          `(${leased.reduce((a, x) => a + x.kw, 0) / 1000} MW); their rent $${(rent / 1e6).toFixed(1)}M; enrolled ${flexMw} MW; cash $${(s.cash / 1e6).toFixed(0)}M`,
+      )
+    }
+  }
+  process.exit(0)
+}
+
 const p = PRESETS_V.find((x) => x.id === 'orbital_landlord')!
 const base = playAct5Recipe({ act4_preset: p.act4_preset, act4_future: p.act4_future, act4_seed: p.act4_seed, joins: p.joins as never })
 

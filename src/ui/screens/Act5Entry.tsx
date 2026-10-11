@@ -52,6 +52,11 @@ export function Act5Intro(props: { state: GameState; onEnter: () => void }) {
             </table>
             <span class="num-s muted">{tx('a5.intro.carry')}</span>
             {/* (doc 43 §0.14 item 2: the switch from milestone mark to earnings, shown, not hidden) */}
+            {e?.orbitRevaluedUsd ? (
+              <p class="num-s muted" data-orbit-revalued>
+                {tx('ui.act5.orbit_revalued', { usd: fmt.money(e.orbitRevaluedUsd) })}
+              </p>
+            ) : null}
             {e?.plantsRevaluedUsd ? (
               <p class="num-s" data-plants-revalued>
                 {tx('ui.act5.plants_revalued', { usd: fmt.money(e.plantsRevaluedUsd) })}
@@ -158,6 +163,11 @@ export function Act5Chapter(props: { state: GameState; onNew: () => void }) {
               })}
             </p>
           )}
+          {props.state.act5Entry?.orbitRevaluedUsd ? (
+            <p class="num-s muted" data-orbit-revalued>
+              {tx('ui.act5.orbit_revalued', { usd: fmt.money(props.state.act5Entry.orbitRevaluedUsd) })}
+            </p>
+          ) : null}
           {props.state.act5Entry?.plantsRevaluedUsd ? (
             <p class="num-s muted" data-plants-revalued>
               {tx('ui.act5.plants_revalued', { usd: fmt.money(props.state.act5Entry.plantsRevaluedUsd) })}

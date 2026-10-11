@@ -291,3 +291,12 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
     every other column and file byte for byte as before (`npm run content:act5`, then `npm run content:market` for the JSON
     the game reads). `check.py`: PASS. Lever c (V3's merchant power fall two quarters earlier) was tried and reverted: it
     left V-B4 unchanged (1.039 to three places) and only added a pre-trigger price drop.
+- **M60, 13 Oct 2026 (doc 43 §0.16):**
+  - **`reading_score_v.json`** (`tools/act5/content.py` › `stance`): V2's ideal is 0 before its trigger and −1 after it,
+    and V2 gains `scored_kinds` (from the trigger quarter only `enrol_flexible` and `take_fast_lane` are scored; other
+    moves count 0); V2's `why` line follows. Item 5.
+  - **`presets_v.json`** (`tools/act5/presets.ts`): the stored figures are on act5Entry's footing after item 1 (orbital
+    blocks on their remaining life): Firm Builder valuation 2,345.8 → 2,272.4 M, founder 390.3 → 378.1 M, leases 0.58 →
+    0.60, orbit 0.11 → 0.08; Orbital Landlord valuation 7,056 → 3,459.6 M, founder 1,118.2 → 548.3 M, leases 0.24 → 0.48,
+    orbit 0.62 → 0.22. The scan still chooses on Act IV's 2035Q4 marks, so the recipes are unchanged.
+  - `check.py`: PASS.

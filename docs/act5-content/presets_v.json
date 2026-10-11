@@ -13,14 +13,14 @@
    "joins": [
     "egs2"
    ],
-   "valuation_usd_m": 2345.8,
-   "founder_net_worth_usd_m": 390.3,
+   "valuation_usd_m": 2272.4,
+   "founder_net_worth_usd_m": 378.1,
    "cash_usd_m": 53.5,
    "debt_usd_m": 0,
    "energized_mw": 115.1,
    "free_mw": 37.1,
-   "lease_share": 0.58,
-   "orbit_share": 0.11,
+   "lease_share": 0.6,
+   "orbit_share": 0.08,
    "rating": "BBB",
    "vb7_busts": 0,
    "vb7_runs": 12
@@ -31,14 +31,14 @@
    "act4_future": "f1",
    "act4_seed": 1,
    "joins": [],
-   "valuation_usd_m": 7056,
-   "founder_net_worth_usd_m": 1118.2,
+   "valuation_usd_m": 3459.6,
+   "founder_net_worth_usd_m": 548.3,
    "cash_usd_m": 118.2,
    "debt_usd_m": 0,
    "energized_mw": 112.1,
    "free_mw": 16.1,
-   "lease_share": 0.24,
-   "orbit_share": 0.62,
+   "lease_share": 0.48,
+   "orbit_share": 0.22,
    "rating": "BBB"
   }
  ]

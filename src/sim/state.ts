@@ -355,6 +355,8 @@ export interface Act5Entry extends Act3Entry {
   poweredValueUsd: number
   /** Doc 43 §0.14 item 2: running plants revalued from their milestone mark to earnings at 2036Q1 (absent before M55). */
   plantsRevaluedUsd?: number
+  /** Doc 43 §0.16 item 1: orbital blocks revalued from the 2035Q4 multiple to their remaining life at 2036Q1 (M60.1). */
+  orbitRevaluedUsd?: number
 }
 
 /** Act V's lunar holding (M49, doc 43 §9.2): the Act IV programme's 2035Q4 value; its value now is that × the index. */
@@ -1539,8 +1541,11 @@ export interface GameState {
   act5Trips?: Record<string, number>
   /** Act V (M58.4, the V1 turbine card): quarters off an on-site gas build's wait. */
   act5GasWaitCutQ?: number
-  /** Act V (M58.4, the V4 launch-slot card): replacement launch slots reserved (noted; no system reads it yet). */
-  act5LaunchReserved?: boolean
+  /**
+   * Act V (M60.6, doc 43 §0.16 item 7, the V4 launch-slot card): a deposit held for the next replacement's launch: that
+   * block (once a replacement opens) books its launch a quarter sooner and the deposit is credited against it.
+   */
+  act5LaunchReserve?: { depositUsd: number; blockId?: string }
   /** Act V (M56.3, doc 43 §9.1): orbital tenants brought home to a ground site, paying their rent to their term's end. */
   act5Homed?: {
     id: string

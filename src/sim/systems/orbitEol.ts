@@ -108,6 +108,8 @@ export function decideEol(state: GameState, blockId: string, choice: EolChoice):
   if (choice === 'replace') {
     const gen = availableGenerations(state).at(-1)!
     const nb = openOrbitalBlock(state, { kind: b.kind, mw: b.mw, shell: b.shell, gen })
+    // (M60.6: the first replacement after the launch-slot card takes its reservation)
+    if (state.act5LaunchReserve && !state.act5LaunchReserve.blockId) state.act5LaunchReserve.blockId = nb.id
     logEntry(state, 'log.orbit.replaced', { n: b.n, newN: nb.n })
     logAct5Move(state, 'orbit_replace')
     return
@@ -163,4 +165,26 @@ export function eolView(state: GameState) {
       // (M58.5, doc 43 §0.15 fix 5: the card's body: neutral before the future's trigger card has played, its own after)
       bodyKey: eolBodyKey(state),
     }))
+}
+
+/**
+ * M60.1 (doc 43 §0.16 item 1): in Act V an orbital block is valued on its remaining life: its multiple is min(the file's
+ * orbital multiple, its remaining design life in years), new blocks included. The unit's multiple is the live blocks'
+ * EBITDA-weighted average (the file's when none earns, or outside Act V).
+ */
+export function orbitUnitMultiple(state: GameState): number {
+  const m = orbitRow(state).space_ev_ebitda_mult
+  if (!inActV(state)) return m
+  let w = 0
+  let sum = 0
+  for (const b of state.act4Orbit?.blocks ?? []) {
+    if (b.stage !== 'live') continue
+    const e = Math.max(0, b.lastEbitdaUsd ?? 0)
+    if (e <= 0) continue
+    const end = designEndQuarter(b)
+    const yearsLeft = end === null ? 0 : Math.max(0, (end - state.quarter) / 4)
+    w += e
+    sum += e * Math.min(m, yearsLeft)
+  }
+  return w > 0 ? sum / w : m
 }

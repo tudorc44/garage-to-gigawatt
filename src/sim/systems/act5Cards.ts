@@ -14,6 +14,7 @@ import { BALANCE, CONTENT, act5Row, actFirstQuarter, type EventCard } from '../.
 import type { Act5CardEffect } from '../../content/act5Cards.ts'
 import { book, oneOffCategory } from '../ledger.ts'
 import { chance, substream } from '../rng.ts'
+import type { Message } from '../../i18n/t.ts'
 import { act5SeedOf, inActV, logEntry, roundCents, type Act5MoveKind, type GameState } from '../state.ts'
 import { idleOldAsics } from './cardContracts.ts'
 import { equityBlocker, raiseEquity } from './equity.ts'
@@ -30,6 +31,8 @@ import {
   sellPlantStake,
 } from './plants.ts'
 import { gridQuarterRange } from './power.ts'
+import { launchPriceUsdKg } from './orbitLaunch.ts'
+import { designEndQuarter } from './orbitEol.ts'
 import {
   delayPosition,
   fastLaneBlocker,
@@ -220,7 +223,7 @@ export function applyAct5Card(state: GameState, cardId: string, e: Act5CardEffec
         if (target) delayPosition(state, target, num(value) ?? 0)
         break
       case 'offer':
-        applyOffer(state, value as { kind: string; premium_mult?: number; bid_mult?: number })
+        applyOffer(state, value as { kind: string; premium_mult?: number; bid_mult?: number }, target)
         break
       case 'lease_lock_offer':
         lockLeases(state, value as { years: number; rent_index?: number })
@@ -300,8 +303,7 @@ export function applyAct5Card(state: GameState, cardId: string, e: Act5CardEffec
         })
         break
       case 'orbit_booking':
-        // reserving replacement launch slots: the reservation is noted; no launch system takes it yet (mine, reversible)
-        state.act5LaunchReserved = true
+        reserveLaunch(state, num((value as { deposit_share?: unknown }).deposit_share) ?? 0)
         break
       // (labels and screens: the credit cliff while credits are unmodelled, the flex study, the flex capacity bid
       // (the flex payment already runs on every enrolled MW), "open the exit dialog", an end-of-life choice)
@@ -314,7 +316,8 @@ export function applyAct5Card(state: GameState, cardId: string, e: Act5CardEffec
     }
   }
   const bw = num(ef.bandwidth)
-  if (bw !== null) state.bandwidth = Math.max(0, state.bandwidth + bw)
+  // (§0.16 (a): a card's stated Bandwidth is charged: cards play in the live quarter, so it comes off the next Plan)
+  if (bw !== null) state.events.bandwidthNext += bw
   // the choice's reading sign, unless one of its systems logged its own move
   if (e.sign !== 0 && (state.act5Moves?.length ?? 0) === before) {
     const kind = cardMoveKind(ef)
@@ -322,22 +325,50 @@ export function applyAct5Card(state: GameState, cardId: string, e: Act5CardEffec
   }
 }
 
+/**
+ * The V4 launch-slot card (§0.16 item 7): a deposit of `share` of the next replacement's launch cost, held as a
+ * prepayment. The next replacement is estimated as the live block nearest its design end, on the dominant provider at
+ * today's price (mine, reversible). Once only; not without the cash.
+ */
+function reserveLaunch(state: GameState, share: number): void {
+  if (state.act5LaunchReserve || share <= 0) return
+  const next = (state.act4Orbit?.blocks ?? [])
+    .filter((b) => b.stage === 'live')
+    .sort((a, b) => (designEndQuarter(a) ?? Infinity) - (designEndQuarter(b) ?? Infinity))[0]
+  if (!next) return
+  const depositUsd = roundCents(share * next.massT * 1000 * launchPriceUsdKg(state, 'pallas', next.shell))
+  if (depositUsd <= 0 || state.cash < depositUsd) return
+  book(state, 'prepayments', -depositUsd, { biz: 'orbit' })
+  state.act5LaunchReserve = { depositUsd }
+  logEntry(state, 'log.orbit.slots_reserved', { depositUsd })
+}
+
+/** At 2040Q4's end: an unused launch-slot deposit comes back half (the other half is lost). */
+export function settleLaunchReserve(state: GameState): void {
+  const r = state.act5LaunchReserve
+  if (!r || r.blockId) return
+  const lostUsd = roundCents(r.depositUsd / 2)
+  book(state, 'prepayments', r.depositUsd, { biz: 'orbit' })
+  book(state, 'one_offs', -lostUsd, { biz: 'orbit' })
+  delete state.act5LaunchReserve
+  logEntry(state, 'log.orbit.slots_refunded', { usd: r.depositUsd - lostUsd })
+}
+
 /** The space window's raise (mine, reversible: a 10% dilution, the smallest the raise allows). */
 const EQUITY_WINDOW_DILUTION = 0.1
 
 /** A buyer's or a seller's offer (doc 47 README): the whole-site sale, a fund's bid, or a queue-holding site bought. */
-function applyOffer(state: GameState, o: { kind: string; premium_mult?: number; bid_mult?: number }): void {
+function applyOffer(state: GameState, o: { kind: string; premium_mult?: number; bid_mult?: number }, pick?: string): void {
   if (o.kind === 'site_bid') {
-    // the site that fetches most (mine, reversible), at its whole-site value × the premium
-    const best = state.sites
-      .map((s) => ({ s, usd: wholeSiteSale(state, s).totalUsd }))
-      .filter((x) => x.usd > 0)
-      .sort((a, b) => b.usd - a.usd)
-      .find((x) => {
-        let ok = false
-        asPlan(state, () => (ok = !sellSiteBlocker(state, x.s.id)))
-        return ok
-      })
+    // the site you picked (§0.16 (c)), else the one that fetches most, at its whole-site value × the premium
+    const opts = siteOptions(state)
+    const sellable = (x: (typeof opts)[number]) => {
+      let ok = false
+      asPlan(state, () => (ok = !sellSiteBlocker(state, x.s.id)))
+      return ok
+    }
+    const picked = opts.find((x) => x.s.id === pick)
+    const best = picked && sellable(picked) ? picked : opts.find(sellable)
     if (!best) return
     asPlan(state, () => sellWholeSite(state, best.s.id))
     const extra = roundCents(best.usd * ((o.premium_mult ?? 1) - 1))
@@ -345,10 +376,9 @@ function applyOffer(state: GameState, o: { kind: string; premium_mult?: number; 
     return
   }
   if (o.kind === 'fund_bid') {
-    // the stake that fetches most (mine, reversible)
-    const v = (state.ventures ?? [])
-      .filter((x) => x.stake > 0)
-      .sort((a, b) => fundBidUsd(state, b, 1, stakeMarkUsd(b)) - fundBidUsd(state, a, 1, stakeMarkUsd(a)))[0]
+    // the stake you picked (§0.16 (c)), else the one that fetches most
+    const opts = stakeOptions(state)
+    const v = (opts.find((x) => x.id === pick) ?? opts[0])?.v
     if (!v) return
     let usd = 0
     asPlan(state, () => {
@@ -373,6 +403,54 @@ function applyOffer(state: GameState, o: { kind: string; premium_mult?: number; 
     ;(site.powerAdds ??= []).push({ projectId: `bought-${state.quarter}`, kw, source: 'grid', readyQuarter: state.quarter + wait })
     logEntry(state, 'log.queue.bought', { kwKw: kw, tier: site.tier, serial: site.serial ?? 0, costUsd: cost })
   }
+}
+
+/** The sites a buyer can bid for, most valuable first. */
+function siteOptions(state: GameState) {
+  return state.sites
+    .map((s) => ({ s, usd: wholeSiteSale(state, s).totalUsd }))
+    .filter((x) => x.usd > 0)
+    .sort((a, b) => b.usd - a.usd)
+}
+
+/** The stakes a fund can bid for, the highest bid first. */
+function stakeOptions(state: GameState) {
+  return (state.ventures ?? [])
+    .filter((x) => x.stake > 0)
+    .map((v) => ({ id: v.id, v, usd: fundBidUsd(state, v, 1, stakeMarkUsd(v)) }))
+    .sort((a, b) => b.usd - a.usd)
+}
+
+/**
+ * §0.16 (c): on an open Act V card with a fund's or a buyer's bid, the stakes or sites to pick from (the largest first,
+ * the default) and the one picked; null for any other card.
+ */
+export function act5CardPicks(state: GameState) {
+  const id = state.interrupt?.event
+  const card = id ? CONTENT.events.byId[id] : undefined
+  if (!card || card.act !== 5) return null
+  const kinds = card.choices.map((c) => ((c.effects as { act5_card?: Act5CardEffect }).act5_card?.effect.offer as { kind?: string } | undefined)?.kind)
+  const kind = kinds.includes('fund_bid') ? 'stake' : kinds.includes('site_bid') ? 'site' : null
+  if (!kind) return null
+  const options =
+    kind === 'stake'
+      ? stakeOptions(state).map((x) => ({ id: x.id, ventureType: x.v.type as string, siteTier: null as string | null, serial: 0, usd: x.usd }))
+      : siteOptions(state).map((x) => ({ id: x.s.id, ventureType: null as string | null, siteTier: x.s.tier as string, serial: x.s.serial ?? 0, usd: x.usd }))
+  if (options.length === 0) return null
+  const chosen = state.act5CardTargets?.[id!]
+  return { kind, options, chosen: options.some((o) => o.id === chosen) ? chosen! : options[0].id }
+}
+
+/** Why this pick can't be made now, or undefined. */
+export function act5CardPickBlocker(state: GameState, target: string): Message | undefined {
+  if (state.phase !== 'live') return { key: 'error.wrong_phase' }
+  const p = act5CardPicks(state)
+  if (!p || !p.options.some((o) => o.id === target)) return { key: 'error.bad_choice' }
+}
+
+/** Records the stake or site picked for the open card. */
+export function pickAct5Card(state: GameState, target: string): void {
+  ;(state.act5CardTargets ??= {})[state.interrupt!.event!] = target
 }
 
 /** Locks every shell lease ending within 4 quarters at today's market rent (± rent_index) for `years` from now. */

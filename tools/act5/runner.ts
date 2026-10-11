@@ -175,13 +175,15 @@ if (FUTURES.includes('v1') && has('holder') && has('seller') && has('locker'))
   }
 if (FUTURES.includes('v2') && has('flex') && has('holder'))
   for (const p of PRESETS) say(`V-B3 ${p}: V2 Flex ÷ Holder ${f3(ratio(p, 'v2', 'flex', 'holder'))} (≥ 1.15) → ${verdict(ratio(p, 'v2', 'flex', 'holder') >= 1.15)}`)
-if (FUTURES.includes('v3') && has('locker') && has('holder'))
+// (doc 43 §0.16 item 3: V-B4 is V3 Seller ≥ 1.2 × Holder, and Locker > Holder, on the ground-heavy start; Holder's
+// game-over rate ≤ 30% as before)
+if (FUTURES.includes('v3') && has('seller') && has('locker') && has('holder'))
   for (const p of PRESETS) {
+    const sh = ratio(p, 'v3', 'seller', 'holder')
     const lh = ratio(p, 'v3', 'locker', 'holder')
     const busts = of(p, 'v3', 'holder')
     const rate = busts.filter((r) => r.gameOver).length / Math.max(1, busts.length)
-    const sh = has('seller') ? ratio(p, 'v3', 'seller', 'holder') : NaN
-    say(`V-B4 ${p}${GROUND.includes(p) ? '' : ' (information)'}: V3 Locker ÷ Holder ${f3(lh)} (≥ 1.05); Holder busts ${(rate * 100).toFixed(0)}% (≤ 30%); Seller ÷ Holder ${f3(sh)} (information) → ${verdict(lh >= 1.05 && rate <= 0.3)}`)
+    say(`V-B4 ${p}${GROUND.includes(p) ? '' : ' (information)'}: V3 Seller ÷ Holder ${f3(sh)} (≥ 1.2), Locker ÷ Holder ${f3(lh)} (> 1); Holder busts ${(rate * 100).toFixed(0)}% (≤ 30%) → ${verdict(sh >= 1.2 && lh > 1 && rate <= 0.3)}`)
   }
 // (doc 43 §0.15 rule 8: V-B5 is judged on the orbit-heavy start, Orbital Landlord; Firm Builder's is information)
 if (FUTURES.includes('v4') && has('orbit') && has('holder'))

@@ -25,7 +25,7 @@ import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { Strategy } from '../../src/sim/replay.ts'
 import type { GameState } from '../../src/sim/state.ts'
 import type { VFutureId } from '../../src/content/schemas.ts'
-import { idealStancesV } from '../../src/sim/systems/readingScoreV.ts'
+import { idealStancesV, scoredKindsAtV } from '../../src/sim/systems/readingScoreV.ts'
 import { queueView } from '../../src/sim/systems/queue.ts'
 import { isPlant } from '../../src/sim/systems/plants.ts'
 import { availableGenerations } from '../../src/sim/systems/orbit.ts'
@@ -160,6 +160,10 @@ const ORBIT_OPEN_CASH_USD = 500e6
 const PLUS: ((s: GameState) => Action[])[] = [calls, renewals('short'), payUpgrades, requestGridMw, payUpgrades]
 const MINUS: ((s: GameState) => Action[])[] = [calls, renewals('long'), contractOutput(0.8), sellStakes, sellSites]
 const BALANCED: ((s: GameState) => Action[])[] = [calls, renewals('short'), payUpgrades, contractOutput(0.5), replaceBlocks]
+/** Enrols every site's running load as curtailable (1 BW each). */
+const enrolAll = (s: GameState): Action[] => s.sites.map((x) => ({ type: 'ENROL_FLEXIBLE', siteId: x.id }))
+/** V2's scored −1 moves after its trigger: enrol load, take the fast lane, pay the calls. */
+const FLEX: ((s: GameState) => Action[])[] = [calls, fastLane, enrolAll]
 /** A quarter with no stance: only what scores 0 (calls, block replacements). */
 const REST: ((s: GameState) => Action[])[] = [calls, replaceBlocks]
 
@@ -167,15 +171,11 @@ const strategy = (plan: (s: GameState) => Action[]): Strategy => ({ plan })
 
 /** The future's decoy quarters (act quarters) and the wrong stance in each: the opposite of the ideal, or of the next one. */
 function decoyStance(v: VFutureId): Map<number, number> {
-  const f = (readingRaw as unknown as { futures: Record<string, { decoy: { quarters: string[] } }> }).futures[v]
-  const ideal = idealStancesV(v)
+  // (M60.4: the decoy's wrong stance as the file states it; it was inferred from the ideal, which read V4's decoy as +1)
+  const f = (readingRaw as unknown as { futures: Record<string, { decoy: { quarters: string[]; wrong_stance: number } }> }).futures[v]
   const first = actFirstQuarter(5)
   const m = new Map<number, number>()
-  for (const label of f.decoy.quarters) {
-    const q = CONTENT.quarters.indexOf(label) - first
-    const next = ideal[q] !== 0 ? ideal[q] : (ideal.slice(q).find((x) => x !== 0) ?? 1)
-    m.set(q, -next)
-  }
+  for (const label of f.decoy.quarters) m.set(CONTENT.quarters.indexOf(label) - first, f.decoy.wrong_stance)
   return m
 }
 
@@ -212,6 +212,8 @@ export function act5Bot(name: Act5Archetype): Strategy {
     case 'perfect':
       return strategy((s) => {
         const ideal = s.vFutureId ? idealStancesV(s.vFutureId)[q5(s)] : 0
+        // (M60.4: where only flexibility is scored, V2 after its trigger, the −1 moves are enrolling and the fast lane)
+        if (ideal === -1 && s.vFutureId && scoredKindsAtV(s.vFutureId, q5(s))) return chain(s, FLEX)
         return chain(s, ideal === 1 ? PLUS : ideal === -1 ? MINUS : REST)
       })
   }

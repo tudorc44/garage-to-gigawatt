@@ -126,8 +126,8 @@ def stance(f):
     t0 = TRIGGER[f]
     if f == "v1":
         return [1] * 20
-    if f == "v2":
-        return [1 if t < t0 else -1 for t in range(20)]
+    if f == "v2":  # M60.4 (doc 43 §0.16 item 5): calm before the trigger; after it, -1 scored on flexibility moves only
+        return [0 if t < t0 else -1 for t in range(20)]
     if f == "v3":
         return [0 if t < t0 else -1 for t in range(20)]
     return [0 if t < 12 else -1 for t in range(20)]  # V4: calm, defensive from 2039 (act quarter 12)
@@ -141,7 +141,7 @@ DECOYW = {
 }
 WHY = {
     "v1": "Queue is King: add scarcity exposure throughout (short renewals, hold free MW, pay upgrades, keep plants merchant).",
-    "v2": "Flexible Lane: exposure pays before the trigger; from 2038Q1 flexibility beats firmness, so hedge (fast lane, enrol, sell firmness forward).",
+    "v2": "Flexible Lane: calm before the trigger (a 7% scarcity rise can't pay a bet); from 2038Q1 flexibility pays, so enrol load and take the fast lane (lease moves score 0 here).",
     "v3": "Demand Plateau: calm before the trigger; defensive from 2037Q4 (lock leases long, contract output, sell to funds).",
     "v4": "Up and Out: calm while the ground holds; defensive from 2039 as orbit takes the marginal gigawatt.",
 }
@@ -171,6 +171,8 @@ for f in FUTURES:
     q, wrong, ind, why = DECOYW[f]
     READING["futures"][f] = {"why": WHY[f], "ideal": stance(f), "weight": [1] * 20,
                              "decoy": {"indicator": ind, "quarters": q, "wrong_stance": wrong, "why": why}}
+    if f == "v2":  # M60.4 (doc 43 §0.16 item 5): from the trigger only flexibility moves are scored; other moves count 0
+        READING["futures"][f]["scored_kinds"] = {"from_q": TRIGGER[f], "kinds": ["enrol_flexible", "take_fast_lane"]}
 
 # ------------------------------------------------------------------ plants
 PLANTS = {

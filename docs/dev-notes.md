@@ -441,6 +441,16 @@ README). `check.py` PASS.
   - **3** done: §0.11 lever b (V3 scarcity end 0.80 → 0.75): V-B4 FB 1.025 → 1.039, still a miss; lever c tried, no effect, reverted;
     V1 targets unchanged; act5-v3 golden moves. Full re-run (2,400 runs): table below. 1,770 tests; main bundle 230.9 KB. PR #26.
 
+## Fifth unattended run (doc 43 §0.16; steps A-C)
+
+- **Step A:** #25 and #26 were merged before the run (`main` = `554a393`); §0.16 committed as M60.0 on `m60`.
+- **Step B (M60, branch `m60` from `main`): the §0.16 fixes, as one chunk.** 1 orbit on remaining life · 2 V-B4's form · 3 the Flex
+  diagnosis · 4 V2's stances · 5 follow-on units · 6 the launch-slot card · 7 the card rules · 8 the trigger guard.
+  - **1-8** done: OL act5Entry $7.06B → $3.46B (orbit −$3.60B; FB −$73M); Flex builds (FB 20 MW, OL 50 MW through the fast lane);
+    follow-ons drew on the fixed act4Seed (FB's SMR unit undersubscribed in all 240 runs): now Act V's seed; V2 scores flexibility
+    only after its trigger; the slot reserve, card Bandwidth to the next Plan, bid picks, a trigger guard test. 1,776 tests. PR #27.
+- **Step C (M61, branch `m61` on `m60`):** the re-measure and the balance pass.
+
 ### Report (fourth run, 13 Oct 2026)
 
 **Steps:** A done (#23, #24 merged before the run; §0.15 as M58.0) · B done (M58, [PR #25](https://github.com/tudorc44/garage-to-gigawatt/pull/25),

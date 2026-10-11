@@ -16,6 +16,7 @@ import {
   inActIII,
   inActIV,
   inActV,
+  act5SeedOf,
   logEntry,
   logQuarterLabel,
   roundCents,
@@ -388,7 +389,9 @@ export function commitFollowOn(state: GameState, j: VentureJoin): Venture {
   const prepaid = prepayUsd(j)
   const cut = V.prepay[j.prepay].price_cut
   const t = T[j.type as 'egs' | 'egs2' | 'smr']
-  const r = substream(act4SeedOf(state), `follow_on:${cls}`)
+  // (M60.5, doc 43 §0.16 item 6: Act V's own seed, so each Act V game draws its own unit; on act4Seed every game of a
+  // preset drew the same, and Firm Builder's SMR unit was undersubscribed and cancelled in all of them)
+  const r = substream(act5SeedOf(state), `follow_on:${cls}`)
   const q = state.quarter
   const slip = t.slip.sigma > 0 ? lognormal(r, t.slip.median, t.slip.sigma) : t.slip.median
   const licenceQ = cls === 'smr' ? Math.round(T.smr.licence_q * slip) : 0
@@ -570,7 +573,8 @@ export function endQuarterVentures(state: GameState): { revenueUsd: number } {
  * that quarter. `quiet` (the developer's replay before you join): no log lines, Heat, political capital or cash.
  */
 function stepVenture(state: GameState, v: Venture, q: number, quiet: boolean): void {
-  const r = substream(act4SeedOf(state), `venture:${v.type}:q${q}`)
+  // (M60.5: in Act V the quarter's draws come from Act V's seed, as the follow-on's; Acts IV and earlier unchanged)
+  const r = substream(inActV(state) ? act5SeedOf(state) : act4SeedOf(state), `venture:${v.type}:q${q}`)
   if (v.type === 'fusion') stepFusion(state, v, r, q, quiet)
   else stepBuild(state, v, r, q, quiet)
   // M36.8: each full year past the pitched first power without it is a slip (from the pitched quarter itself).

@@ -81,7 +81,9 @@ export function bookLaunchBlocker(
   if (block.launch) return { key: 'error.orbit_slot_filled' }
   const p = provider(id)
   if (p.needs !== null) return { key: 'error.orbit_provider_needs_partner' }
-  const [lo, hi] = L.lead_quarters
+  // (M60.6, doc 43 §0.16 item 7: a reserved replacement books a quarter sooner)
+  const [lo0, hi] = L.lead_quarters
+  const lo = state.act5LaunchReserve?.blockId === blockId ? Math.max(1, lo0 - 1) : lo0
   if (quarter < state.quarter + lo || quarter > state.quarter + hi || quarter > actLastQuarter(state.act === 5 ? 5 : 4))
     return { key: 'error.orbit_launch_window', params: { lo, hi } }
   if (p.max_tonnes_per_booking !== null && block.massT > p.max_tonnes_per_booking)
@@ -105,6 +107,12 @@ export function bookLaunch(state: GameState, blockId: string, id: ProviderId, qu
   state.bandwidth -= LAUNCH_BOOKING_BANDWIDTH
   book(state, 'orbit_capex', -depositUsd, { block: blockId })
   block.launch = { provider: id, quarter, priceUsdKg: launchPriceUsdKg(state, id, block.shell), depositUsd, slips: 0 }
+  // (M60.6: the launch-slot deposit is credited against this launch)
+  const reserve = state.act5LaunchReserve
+  if (reserve?.blockId === blockId) {
+    book(state, 'prepayments', reserve.depositUsd, { block: blockId, biz: 'orbit' })
+    delete state.act5LaunchReserve
+  }
   if (block.tenant && block.tenant !== 'spot' && block.tenant.dueQuarter === null)
     block.tenant.dueQuarter = quarter + LIVE_AFTER_LAUNCH
   logEntry(state, 'log.orbit.launch_booked', {

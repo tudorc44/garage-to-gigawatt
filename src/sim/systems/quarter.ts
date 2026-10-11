@@ -38,7 +38,8 @@ import { endQuarterMissions, startQuarterMoonClaims } from './moon.ts'
 import { endQuarterMoonOps, lunarUnitUsd, startQuarterMoonOps } from './moonOps.ts'
 import { startQuarterRivalsIv } from './rivalsIv.ts'
 import { fireWildcardsV } from './wildcardsV.ts'
-import { endQuarterHomed, startQuarterOrbitEol } from './orbitEol.ts'
+import { endQuarterHomed, orbitUnitMultiple, startQuarterOrbitEol } from './orbitEol.ts'
+import { settleLaunchReserve } from './act5Cards.ts'
 import { startQuarterExit } from './act5Exit.ts'
 import { rollAuction } from './auctions.ts'
 import { startQuarterEvents } from './events.ts'
@@ -86,7 +87,7 @@ import {
   weightedBacklogUsd,
 } from './projects.ts'
 import { aiEbitdaUsd, ebitdaUsd, moonEbitdaUsd, orbitEbitdaUsd, valuationUsd, ventureHypeUsd } from './valuation.ts'
-import { endQuarterOrbit, orbitConstructionUsd, spaceMultiple, startQuarterOrbitLive } from './orbitOps.ts'
+import { endQuarterOrbit, orbitConstructionUsd, startQuarterOrbitLive } from './orbitOps.ts'
 import { depreciationAudit, lasting } from './eventEffects.ts'
 import { siteParams } from './siteSerials.ts'
 
@@ -130,6 +131,8 @@ export function endQuarter(state: GameState): void {
     // M58.2 (doc 43 §0.15 fix 2): in Act V a positive cash balance earns SOFR ÷ 4 a quarter (net interest, below EBITDA)
     const interestUsd = roundCents(Math.max(0, state.cash) * (sofr(state.quarter, scenarioOf(state)) / 4))
     if (interestUsd > 0) book(state, 'interest', interestUsd)
+    // (M60.6: an unused launch-slot deposit comes back half at the act's end)
+    if (state.quarter === actLastQuarter(5)) settleLaunchReserve(state)
   }
   bookEnergy(state, energy)
   // Act V (M52.2): operating plants pay your share of their cash after their debt's service (outside EBITDA).
@@ -268,7 +271,8 @@ function buildReport(
         orbitRevenueUsd: st.orbitRevenueUsd ?? 0,
         orbitCostUsd: st.orbitCostUsd ?? 0,
         orbitEbitdaUsd: orbitEbitdaUsd(st),
-        orbitMultiple: spaceMultiple(state),
+        // (M60.1, doc 43 §0.16 item 1: in Act V the blocks' remaining-life multiple; the file's before)
+        orbitMultiple: orbitUnitMultiple(state),
       }
     : null
   const constructionUsd = orbit

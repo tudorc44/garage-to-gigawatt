@@ -233,16 +233,16 @@
       }
     },
     "v2": {
-      "why": "Flexible Lane: exposure pays before the trigger; from 2038Q1 flexibility beats firmness, so hedge (fast lane, enrol, sell firmness forward).",
+      "why": "Flexible Lane: calm before the trigger (a 7% scarcity rise can't pay a bet); from 2038Q1 flexibility pays, so enrol load and take the fast lane (lease moves score 0 here).",
       "ideal": [
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         -1,
         -1,
         -1,
@@ -287,6 +287,13 @@
         ],
         "wrong_stance": -1,
         "why": "The SMR wave tempts selling scarcity early, before the trigger, when V2 still pays for exposure."
+      },
+      "scored_kinds": {
+        "from_q": 8,
+        "kinds": [
+          "enrol_flexible",
+          "take_fast_lane"
+        ]
       }
     },
     "v3": {
