@@ -299,7 +299,7 @@ describe('content loads', () => {
   it('the Act V content files are byte-identical copies of docs/act5-content/ (M48, doc 47 with doc 43 §0.11 errata)', () => {
     const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
     const names = readdirSync(new URL('../docs/act5-content/', import.meta.url)).filter((f) => /\.(json|csv)$/.test(f))
-    // 21 from doc 47, and M49's presets_act5.json (tools/act5/presets.ts)
+    // 21 from doc 47, and the presets (tools/act5/presets.ts; M49's presets_act5.json, renamed presets_v.json in M50)
     expect(names.length).toBe(22)
     for (const name of names) expect(read(`../src/content/${name}`), name).toBe(read(`../docs/act5-content/${name}`))
     // M49: the chips add-on's Gen 2037 files (doc 49, docs/act5-content/chips/)

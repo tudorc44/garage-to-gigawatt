@@ -133,7 +133,15 @@ describe('Act V presets (M49, doc 43 §3.4): real companies, values set by the s
   it('each preset recipe replays to its stored 2035Q4 figures and carries its Act IV future into Act V', () => {
     expect(PRESETS_V.length).toBeGreaterThan(0)
     for (const p of PRESETS_V) {
-      const end = playAct5Recipe({ act4_preset: p.act4_preset, act4_future: p.act4_future, act4_seed: p.act4_seed, joins: p.joins as 'btm' })
+      // (M50, doc 43 §0.13: a recipe may join later or buy a queue position)
+      const end = playAct5Recipe({
+        act4_preset: p.act4_preset,
+        act4_future: p.act4_future,
+        act4_seed: p.act4_seed,
+        joins: p.joins as 'btm',
+        ...(p.join_from ? { join_from: p.join_from } : {}),
+        ...(p.queue ? { queue: true } : {}),
+      })
       expect(end.phase).toBe('chapter')
       expect(end.futureId).toBe(p.act4_future)
       const e = buildAct5Entry(end, 'v1')

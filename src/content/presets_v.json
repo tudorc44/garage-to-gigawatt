@@ -1,0 +1,62 @@
+{
+ "_meta": {
+  "schema": "presets_v/1",
+  "doc43": "§3.4 as amended by §0.13 (2035Q4 companies, bot-made; values set by the sim), §0.8 (the Firm Builder from the Fortress line), §0.9 item 11 (each carries its Act IV future)",
+  "note": "Written by npm run content:act5-presets (tools/act5/presets.ts): the first company in each preset's scan order that fits its description. Figures are that company's at 2035Q4, with free MW at the 2036 powered price. vb7_*: the Firm Builder played passively through Act V (4 futures × 3 seeds)."
+ },
+ "presets": [
+  {
+   "id": "firm_builder",
+   "act4_preset": "fortress",
+   "act4_future": "f2",
+   "act4_seed": 1,
+   "joins": [
+    "egs2"
+   ],
+   "valuation_usd_m": 2376.9,
+   "founder_net_worth_usd_m": 395.5,
+   "cash_usd_m": 53.5,
+   "debt_usd_m": 0,
+   "energized_mw": 115.1,
+   "free_mw": 37.1,
+   "lease_share": 0.57,
+   "orbit_share": 0.11,
+   "rating": "BBB",
+   "vb7_busts": 0,
+   "vb7_runs": 12
+  },
+  {
+   "id": "orbital_landlord",
+   "act4_preset": "fortress",
+   "act4_future": "f1",
+   "act4_seed": 1,
+   "joins": [],
+   "valuation_usd_m": 7056,
+   "founder_net_worth_usd_m": 1118.2,
+   "cash_usd_m": 118.2,
+   "debt_usd_m": 0,
+   "energized_mw": 112.1,
+   "free_mw": 16.1,
+   "lease_share": 0.24,
+   "orbit_share": 0.62,
+   "rating": "BBB"
+  },
+  {
+   "id": "small_grid",
+   "act4_preset": "ridge",
+   "act4_future": "f1",
+   "act4_seed": 1,
+   "joins": [],
+   "queue": true,
+   "valuation_usd_m": 759.5,
+   "founder_net_worth_usd_m": 0.7,
+   "cash_usd_m": 30.9,
+   "debt_usd_m": 45.3,
+   "energized_mw": 0.1,
+   "free_mw": 0,
+   "lease_share": 0,
+   "orbit_share": 0.88,
+   "rating": "BBB"
+  }
+ ]
+}
