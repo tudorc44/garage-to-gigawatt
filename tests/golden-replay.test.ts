@@ -22,6 +22,10 @@ import { act4Company } from './sim/act4Helpers.ts'
 import { BOTS } from '../tools/bots.ts'
 import { PROLOGUE_BOTS } from '../tools/prologueBots.ts'
 import type { GameState } from '../src/sim/state.ts'
+import { PRESETS_V } from '../src/content/presetsAct5.ts'
+import { toAct5 } from '../src/sim/state.ts'
+import { act5Bot } from '../tools/act5/bots.ts'
+import { playAct5Recipe } from '../tools/act5/presetRun.ts'
 import { unreconciled } from '../src/sim/ledger.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
@@ -556,6 +560,48 @@ describe.each(['f2', 'f4'] as const)('golden replay: act4-energy-%s (2031Q1 → 
     await expect(JSON.stringify({ ...run.state, version: 5 }, null, 2) + '\n').toMatchFileSnapshot(
       `./golden/act4-energy-${future}-seed-${ACT4_SEED}.json`,
     )
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
+})
+
+/**
+ * Act V (M57.3, doc 43 §18): one golden per future. The Firm Builder preset (its recipe played from 2017, as "Start at
+ * Act V") enters Act V on each future with act5Seed 1 and plays all 20 quarters with the perfect reader (tools/act5/bots.ts):
+ * it switches between the +1 moves (renew short, request grid MW, pay bills) and the −1 moves (lock long, contract
+ * output, sell stakes and sites) by the future's ideal stance, so it exercises the act's systems in every future.
+ */
+const ACT5_SEED = 1
+let firmBuilder: GameState | null = null
+function firmBuilderStart(): GameState {
+  if (!firmBuilder) {
+    const p = PRESETS_V.find((x) => x.id === 'firm_builder')!
+    firmBuilder = playAct5Recipe({ act4_preset: p.act4_preset, act4_future: p.act4_future, act4_seed: p.act4_seed, joins: p.joins as never })
+  }
+  return structuredClone(firmBuilder)
+}
+describe.each(['v1', 'v2', 'v3', 'v4'] as const)('golden replay: act5-%s (2036Q1 → the chapter phase)', (vfuture) => {
+  const start = () => toAct5(firmBuilderStart(), { vfuture, act5Seed: ACT5_SEED, preset: 'firm_builder' })
+  const run = playFrom(start(), act5Bot('perfect'), { through: 5 })
+
+  it('plays to 2040Q4 with the act’s record', () => {
+    expect(run.state.phase).toBe('chapter')
+    expect(run.state.act).toBe(5)
+    expect(run.state.vFutureId).toBe(vfuture)
+    expect(run.state.reports.at(-1)!.quarter).toBe('2040Q4')
+    expect(run.state.act5End?.vFutureId).toBe(vfuture)
+    expect((run.state.act5Moves ?? []).length).toBeGreaterThan(0)
+  })
+
+  it('same seed + the same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playFrom(start(), act5Bot('perfect'), { through: 5 }).state).toEqual(run.state)
+    expect(run.log.reduce(applyStep, start())).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/act5-${vfuture}-seed-${ACT5_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {

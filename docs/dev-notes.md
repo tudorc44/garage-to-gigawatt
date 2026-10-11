@@ -412,6 +412,9 @@ README). `check.py` PASS.
   - **2** done: act5End adds the career, reading and megawatt titles, venture and rival fates (`rivalsHiddenV.ts`, act5End only); the chapter
     report's exit (outlook revealed), titles, fates; `Act5Finale.tsx` (2035 + 2040 rows, epilogue_v.json, the chip line). Mine: the MW split
     (firm = the rest of energized ground + plant share); bedroom/garage/fusion lines only where they fit. 1,743 tests.
+  - **3** done: `tools/act5/bots.ts` (holder, flex, seller, locker, orbit, balanced, overreactor, passive, perfect: the game's Act V actions
+    only, no ground growth, all hold at the exit: mine), `tools/act5/runner.ts` (`npm run sim -- --act5`, ~1.1 s a run), goldens act5-v1..v4
+    (Firm Builder, the perfect reader, act5Seed 1). Acts I-IV goldens byte-identical. 1,759 tests.
 
 ### Morning report (second run, 12 Oct 2026)
 
