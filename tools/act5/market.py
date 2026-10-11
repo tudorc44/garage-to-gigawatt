@@ -434,7 +434,7 @@ def value(col, f, t):
     if col == "capacity_rating_storage_10h":
         return 0.72
     if col == "flex_capacity_rating":  # doc 43 §0.9 item 8: V2 pays enrolled curtailable MW from its trigger [D]
-        return 0.5 if f == "v2" and t >= TRIGGER["v2"] else None
+        return 0.75 if f == "v2" and t >= TRIGGER["v2"] else None  # M61.3 (doc 43 §0.16 item 4 lever): 0.5 -> 0.75
     if col == "lunar_value_index":
         return lin_end(f, t, 1.0, {"v1": 1.0, "v2": 0.95, "v3": 0.90, "v4": 1.10})
     if col == "gas_usd_mmbtu":  # AEO2025 Henry Hub ref ($2.19 2024 -> $4.80 2050, 2024$) interpolated + $0.35 basis

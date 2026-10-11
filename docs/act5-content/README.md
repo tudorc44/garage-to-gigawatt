@@ -305,3 +305,6 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
   `a5.start.orbital_landlord.line` (`tools/act5/text.py`). Firm Builder: "a ground landlord whose first geothermal plant has
   just switched on"; Orbital Landlord: "a ground-and-orbit company whose five orbital blocks all reach end of life inside
   the act: replacing them is its game". Every other value byte for byte as before.
+- **M61.3, 13 Oct 2026 (doc 43 §0.16 item 4's lever, V-B3):** `tools/act5/market.py` › `flex_capacity_rating`: V2 after its
+  trigger 0.5 → 0.75 (one step); `market_v_v2.csv` (and its JSON) › that column only, and `plants_v.json`'s rule text. V-B3:
+  Firm Builder 1.030 → 1.032, Orbital Landlord 1.061 → 1.065 (still a miss; no further step by §0.16). `check.py`: PASS.

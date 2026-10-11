@@ -449,7 +449,10 @@ README). `check.py` PASS.
   - **1-8** done: OL act5Entry $7.06B → $3.46B (orbit −$3.60B; FB −$73M); Flex builds (FB 20 MW, OL 50 MW through the fast lane);
     follow-ons drew on the fixed act4Seed (FB's SMR unit undersubscribed in all 240 runs): now Act V's seed; V2 scores flexibility
     only after its trigger; the slot reserve, card Bandwidth to the next Plan, bid picks, a trigger guard test. 1,776 tests. PR #27.
-- **Step C (M61, branch `m61` on `m60`):** the re-measure and the balance pass.
+- **Step C (M61, branch `m61` on `m60`):** split: **0** §0.17 · **1** descriptions + the SMR note · **2** re-measure · **3** balance pass.
+  - **0-1** done: §0.17 committed; preset descriptions reworded (presets_v.json, text_v, Start screen); "First power expected after 2040".
+  - **2-3** done: re-measure (0 unreconciled): core V-B2, B4, B11 pass, V-B1 misses on FB (orbit never within 10%); V-B3's lever
+    (V2 flex rating 0.5 → 0.75) moves it 1.030 → 1.032 only; full after-run below. 1,776 tests. PR #28.
 
 ### Report (fourth run, 13 Oct 2026)
 

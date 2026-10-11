@@ -236,7 +236,7 @@ PLANTS = {
         "region_map": {"pjm": "pjm", "ohio": "pjm", "ercot": "ercot", "georgia": "other", "arizona": "other", "nordics": "other"},
         "fast_lane": {"col": "fast_lane_q", "curtail_h_yr_col": "fast_lane_curtail_h_yr", "output_loss": 0.005, "notice_hours": 24, "future_only": "v2"},
         "flex_payment": {"rating_col": "flex_capacity_rating", "price_col": "pjm_capacity_price_usd_mwday",
-                         "rule": "enrolled curtailable MW earn the PJM capacity price × flex_capacity_rating each day (0.5 in V2 from its trigger, none otherwise)",
+                         "rule": "enrolled curtailable MW earn the PJM capacity price × flex_capacity_rating each day (0.75 in V2 from its trigger, none otherwise)",
                          "source": "doc 43 §0.9 item 8: demand response already clears in PJM's capacity auctions [A]; the 0.5 rating is designed [D]"},
         "co_location": "a site taking offtake from an operating plant in its region connects behind it with no wait, up to the plant's delivered firm MW (doc 43 §8.2)",
         "transfer": "a position moves only with its site (doc 45 §Q3 [A/C])",
