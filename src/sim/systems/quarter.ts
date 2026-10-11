@@ -20,7 +20,8 @@ import {
   type GameState,
   type QuarterReport,
 } from '../state.ts'
-import { inAct2Rules, inAct3Rules, inActIII, inActIV, inActV } from '../state.ts'
+import { inAct2Rules, inAct3Rules, inActIII, inActIV, inActV, roundCents } from '../state.ts'
+import { sofr } from './finance.ts'
 import { buildAct4End } from './act4End.ts'
 import { buildAct5End } from './act5End.ts'
 import { lunarHoldingUsd, poweredUsd } from './act5Entry.ts'
@@ -126,6 +127,9 @@ export function endQuarter(state: GameState): void {
       book(state, 'power', fast.savingUsd)
       state.quarterStats.powerCostUsd -= fast.savingUsd
     }
+    // M58.2 (doc 43 §0.15 fix 2): in Act V a positive cash balance earns SOFR ÷ 4 a quarter (net interest, below EBITDA)
+    const interestUsd = roundCents(Math.max(0, state.cash) * (sofr(state.quarter, scenarioOf(state)) / 4))
+    if (interestUsd > 0) book(state, 'interest', interestUsd)
   }
   bookEnergy(state, energy)
   // Act V (M52.2): operating plants pay your share of their cash after their debt's service (outside EBITDA).

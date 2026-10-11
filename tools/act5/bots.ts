@@ -9,7 +9,10 @@
 //   seller   Seller (§0.3, §0.7): from 2036Q1, locks every renewal and blend long, sells every plant stake to funds, sells
 //            every leased site that serves no GPU cluster of its own (the whole-site sale), and the free MW of the rest.
 //   locker   Locker (§0.8): keeps every site and stake, locks every renewal and blend long, contracts 80% of plant output.
-//   orbit    Orbit Replacer: the Holder's ground, and every orbital block at its design end replaced (else extended).
+//   orbit    Orbit Replacer (§18, §0.15 fix 6): the Holder's ground; every block at its design end replaced (else extended),
+//            each new block carried through (tenant, capital with project debt, launch, insurance) with Act IV's orbit step,
+//            and a new block opened in its shell whenever cash allows (mine: cash ≥ $500M, up to 20 MW, the newest generation).
+//   builder  Builder (V-B6, §0.15 fix 7): the Firm Holder plus every follow-on unit offered (a 20% stake, else 10%).
 //   balanced Balanced: renews short, pays calls when cash allows, contracts half of plant output, replaces blocks.
 //   overreactor  Balanced, except in the future's decoy quarters it does the decoy's wrong stance hard.
 //   passive  Passive: no actions at all (every card and offer at its default).
@@ -23,6 +26,8 @@ import type { VFutureId } from '../../src/content/schemas.ts'
 import { idealStancesV } from '../../src/sim/systems/readingScoreV.ts'
 import { queueView } from '../../src/sim/systems/queue.ts'
 import { isPlant } from '../../src/sim/systems/plants.ts'
+import { availableGenerations } from '../../src/sim/systems/orbit.ts'
+import { orbitStep } from '../act4/bots.ts'
 import readingRaw from '../../src/content/reading_score_v.json' with { type: 'json' }
 
 /** Tries each action in order on a copy; returns the ones that succeeded (in order) and the state after them. */
@@ -130,6 +135,23 @@ function requestGridMw(s: GameState): Action[] {
   return []
 }
 
+/** Every follow-on unit offered (EGS, SMR): a 20% stake, else 10%, no offtake. */
+const followOns = (): Action[] =>
+  (['egs', 'smr'] as const).flatMap((venture): Action[] => [
+    { type: 'COMMIT_FOLLOW_ON', venture, stake: 0.2, offtake: 0, prepay: 0 },
+    { type: 'COMMIT_FOLLOW_ON', venture, stake: 0.1, offtake: 0, prepay: 0 },
+  ])
+
+/** Orbit growth: carry every proposed block through, and open one more in the busiest shell when cash allows. */
+function orbitGrowth(s: GameState): { kept: Action[]; after: GameState } {
+  const blocks = s.act4Orbit?.blocks ?? []
+  const shells = blocks.filter((b) => b.stage === 'live').map((b) => b.shell)
+  const shell = [...(['high_leo', 'sso', 'high_orbit'] as const)].sort((a, b) => shells.filter((x) => x === b).length - shells.filter((x) => x === a).length)[0]
+  const gen = availableGenerations(s).at(-1)
+  return orbitStep(s, { kind: 'shell', shell, contractOnly: false, insure: true, debt: true, maxMw: 20, open: s.cash >= ORBIT_OPEN_CASH_USD, gen })
+}
+const ORBIT_OPEN_CASH_USD = 500e6
+
 // ---------- the archetypes ----------
 
 /** The +1 quarter (scarcity pays): renew short, pay bills, request MW. The −1 quarter: lock long, contract, sell. */
@@ -153,7 +175,7 @@ function decoyStance(v: VFutureId): Map<number, number> {
   return m
 }
 
-export const ACT5_ARCHETYPES = ['holder', 'flex', 'seller', 'locker', 'orbit', 'balanced', 'overreactor', 'passive', 'perfect'] as const
+export const ACT5_ARCHETYPES = ['holder', 'flex', 'seller', 'locker', 'orbit', 'builder', 'balanced', 'overreactor', 'passive', 'perfect'] as const
 export type Act5Archetype = (typeof ACT5_ARCHETYPES)[number]
 
 export function act5Bot(name: Act5Archetype): Strategy {
@@ -167,7 +189,13 @@ export function act5Bot(name: Act5Archetype): Strategy {
     case 'locker':
       return strategy((s) => chain(s, [calls, renewals('long'), contractOutput(0.8)]))
     case 'orbit':
-      return strategy((s) => chain(s, [replaceBlocks, calls, renewals('short'), payUpgrades]))
+      return strategy((s) => {
+        const kept = chain(s, [replaceBlocks, calls, renewals('short'), payUpgrades])
+        const after = tryAll(s, kept).after
+        return [...kept, ...orbitGrowth(after).kept]
+      })
+    case 'builder':
+      return strategy((s) => chain(s, [calls, renewals('short'), payUpgrades, followOns]))
     case 'balanced':
       return strategy((s) => chain(s, BALANCED))
     case 'overreactor':

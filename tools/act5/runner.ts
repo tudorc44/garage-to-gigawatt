@@ -183,9 +183,22 @@ if (FUTURES.includes('v3') && has('locker') && has('holder'))
     const sh = has('seller') ? ratio(p, 'v3', 'seller', 'holder') : NaN
     say(`V-B4 ${p}${GROUND.includes(p) ? '' : ' (information)'}: V3 Locker ÷ Holder ${f3(lh)} (≥ 1.05); Holder busts ${(rate * 100).toFixed(0)}% (≤ 30%); Seller ÷ Holder ${f3(sh)} (information) → ${verdict(lh >= 1.05 && rate <= 0.3)}`)
   }
+// (doc 43 §0.15 rule 8: V-B5 is judged on the orbit-heavy start, Orbital Landlord; Firm Builder's is information)
 if (FUTURES.includes('v4') && has('orbit') && has('holder'))
-  for (const p of PRESETS) say(`V-B5 ${p}: V4 Orbit Replacer ÷ Holder ${f3(ratio(p, 'v4', 'orbit', 'holder'))} (≥ 1.15) → ${verdict(ratio(p, 'v4', 'orbit', 'holder') >= 1.15)}`)
-say('V-B6: ventures vs the control at 2040 on earnings: not re-measured by this runner (no bot joins a venture in Act V); see the accelerator diagnosis and E-B2')
+  for (const p of PRESETS)
+    say(`V-B5 ${p}${p === 'orbital_landlord' ? '' : ' (information)'}: V4 Orbit Replacer ÷ Holder ${f3(ratio(p, 'v4', 'orbit', 'holder'))} (≥ 1.15) → ${verdict(ratio(p, 'v4', 'orbit', 'holder') >= 1.15)}`)
+// (§0.15 fix 7: the Builder is the Holder plus every follow-on unit; its gain over the Holder is the units' contribution.
+// Act V has no control venture, so the 1.5× and 3× clauses can't be judged here: the contribution is reported)
+if (has('builder') && has('holder'))
+  for (const p of PRESETS) {
+    const parts = FUTURES.map((v) => {
+      const b = of(p, v, 'builder').map((r) => r.multiple)
+      const h = of(p, v, 'holder').map((r) => r.multiple)
+      const gains = b.map((x, i) => x - (h[i] ?? x))
+      return `${v} median ${f3(median(gains))}, best ${f3(Math.max(...gains))}`
+    })
+    say(`V-B6 ${p}: the follow-on units' contribution (Builder − Holder, in multiples of act5Entry): ${parts.join('; ')} (information: no Act V control)`)
+  }
 if (PRESETS.includes('firm_builder') && has('passive')) {
   const pr = runs.filter((r) => r.preset === 'firm_builder' && r.bot === 'passive')
   say(`V-B7: Firm Builder played passively: ${pr.filter((r) => r.gameOver).length} busts in ${pr.length} runs → ${verdict(pr.every((r) => !r.gameOver))}`)
@@ -202,7 +215,8 @@ if (has('perfect') && has('passive'))
   for (const p of PRESETS) {
     const rd = (v: VFutureId, b: Act5Archetype) => median(of(p, v, b).map((r) => r.reading ?? 0))
     const gaps = FUTURES.map((v) => rd(v, 'perfect') - rd(v, 'passive'))
-    say(`V-B9 ${p}: Perfect − Passive reading ${gaps.map((g) => g.toFixed(1)).join(' / ')} (≥ −2 in all) → ${verdict(gaps.every((g) => g >= -2))}`)
+    // (§0.15 rule 9: judged on ground-heavy starts; Orbital Landlord's is information)
+    say(`V-B9 ${p}${GROUND.includes(p) ? '' : ' (information)'}: Perfect − Passive reading ${gaps.map((g) => g.toFixed(1)).join(' / ')} (≥ −2 in all) → ${verdict(gaps.every((g) => g >= -2))}`)
   }
 {
   const fusion = runs.filter((r) => r.fusionBefore2038).length

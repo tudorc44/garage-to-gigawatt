@@ -106,7 +106,7 @@ function EolPanel({ state, act }: ScreenProps) {
   return (
     <div class="panel p" data-orbit-eol>
       <h3 class="panel-title">{t('ui.orbit.eol.title')}</h3>
-      <p class="num-s muted">{t('ui.orbit.eol.body')}</p>
+      <p class="num-s muted" data-eol-body>{tDynamic(rows[0].bodyKey, t('ui.orbit_eol.neutral_body'))}</p>
       {rows.map((r) => (
         <div key={r.id} class="energy-choice-row" data-eol={r.id}>
           <span class="num-s">{t('ui.orbit.eol.block', { n: r.n, mw: fmt.power(r.mw * 1000) })}</span>

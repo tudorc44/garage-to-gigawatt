@@ -837,6 +837,10 @@ export const BALANCE = {
      * reversible: no refit cost is in the files); one extension per block (mine).
      */
     orbitExtend: { quarters: 4, failureMult: 1.5 },
+    /** M58.4 (doc 47 README, "Interrupt frequencies", mine ⚙): Act V's interrupt cards. A plant trip: 15% a quarter per
+     *  operating plant, at most once per plant in 8 quarters; a transformer delay: 10% a quarter per position due to
+     *  energise within 2 quarters. A bought position (the V3 decoy's queue-holding site): 20 MW (mine). */
+    cards: { tripChance: 0.15, tripGapQuarters: 8, transformerChance: 0.1, transformerWithinQuarters: 2, boughtPositionMw: 20 },
     /** Lock or roll (M57.1; doc 43 §0.2): at a shell renewal, long = 8-10 years (9: mine, the middle), short = 2 years. */
     lockOrRoll: { longYears: 9, shortYears: 2 },
     /** The lunar production plant's first tonnes (doc 43 §9.2: 2039-43, doc 31's 5-8 years), drawn at the boundary. */

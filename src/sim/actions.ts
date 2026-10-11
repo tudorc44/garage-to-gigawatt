@@ -1,5 +1,6 @@
 // Player decisions as plain action objects. applyAction checks an action against the
 // rules and returns either the new state or an error message (the old state is untouched).
+import { enrolBlocker, enrolFlexible } from './systems/flex.ts'
 import {
   BALANCE,
   CONTENT,
@@ -490,6 +491,8 @@ export type Action =
   | { type: 'SELL_SITE_POWER'; siteId: string }
   /** Act V (M55, doc 43 §0.14 item 8): sell the whole site: its leased halls, free MW and positions (2 BW). */
   | { type: 'SELL_SITE'; siteId: string }
+  /** Act V (M58.3, doc 43 §0.15 fix 3): enrol a site's running load as curtailable (1 BW; every future). */
+  | { type: 'ENROL_FLEXIBLE'; siteId: string }
   /** M54 (doc 43 §0.12): the accelerator venture: buy a stake, reserve chips, answer a call, vote on a buyer. */
   | { type: 'ACCEL_JOIN'; stake: number }
   | { type: 'ACCEL_RESERVE'; mw: number; tier: number }
@@ -979,6 +982,14 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = sellSiteBlocker(s, a.siteId)
       if (blocked) return blocked
       sellWholeSite(s, a.siteId)
+      return
+    }
+
+    case 'ENROL_FLEXIBLE': {
+      const blocked = enrolBlocker(s, a.siteId)
+      if (blocked) return blocked
+      s.bandwidth -= 1
+      enrolFlexible(s, a.siteId)
       return
     }
 

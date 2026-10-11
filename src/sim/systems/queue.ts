@@ -30,6 +30,7 @@ import { scenarioOf } from './market.ts'
 import { projectBuildQuarters, saleValueUsd, sellProject } from './projects.ts'
 import { repayProjectFacilities } from './facilities.ts'
 import { poweredKw, regionOf, usedKw } from './sites.ts'
+import { enrolBlocker, enrollableKw } from './flex.ts'
 
 const Q = PLANTS.queue
 const B = BALANCE.act5.queueBill
@@ -361,7 +362,19 @@ export function queueView(state: GameState) {
         wholeUsd: wholeSiteSale(state, s).totalUsd,
         wholeHalls: wholeSiteSale(state, s).halls,
         wholeBlocked: sellSiteBlocker(state, s.id) ?? null,
+        // (M58.3: its running load enrolled as curtailable, and what's left to enrol)
+        flexKw: s.flexKw ?? 0,
+        enrollableKw: enrollableKw(state, s),
+        enrolBlocked: enrolBlocker(state, s.id) ?? null,
       }
     })
   return { positions, sites, fastLaneQuarters: fastLaneQuarters(state) }
+}
+
+/** Moves a waiting position's energisation by `quarters` (never before next quarter); its hall's go-live follows. */
+export function delayPosition(state: GameState, projectId: string, quarters: number): void {
+  const f = findPosition(state, projectId)
+  if (!f || f.add.readyQuarter === null || f.add.readyQuarter === undefined) return
+  f.add.readyQuarter = Math.max(state.quarter + 1, f.add.readyQuarter + quarters)
+  syncProject(state, projectOf(state, f.add), f.add)
 }

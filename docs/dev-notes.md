@@ -419,6 +419,23 @@ README). `check.py` PASS.
     only if V-B4 misses on the ground-heavy start (Firm Builder passes, 1.137); §0.12's only if the accelerator is too rich (it isn't).
     Every miss is reported below with a proposed fix (no listed lever).
 
+## Fourth unattended run (doc 43 §0.15; steps A-C)
+
+- **Step A:** #23 and #24 were merged before the run (`main` = `cd4d3b2`); §0.15 committed as M58.0 on `m58`.
+- **Step B (M58, branch `m58` from `main`): the §0.15 fixes, no ⚙ change.** Split: **1** lease renewals · **2** interest on cash ·
+  **3** enrol existing load · **4** events_v.json cards · **5** end-of-life bodies · **6** bots (Orbit Replacer adds orbit, Builder)
+  and the judging rules. Chunks: 1-2 · 3 · 4-5 · 6.
+  - **1-2** done: Act V shell renewals at the lease's 2035Q4 rent × `scarcity_index` (signed in Act V: ÷ the index at signing), walks ÷
+    the index (GPU contracts keep the GPU index; mine: the walk rule applies to them too); cash earns SOFR ÷ 4, booked as net interest.
+    Act V goldens updated (intended); Acts I-IV byte-identical. 1,763 tests.
+  - **3-5** done: ENROL_FLEXIBLE (a site's running load, 1 BW, −1, every future; Queue panel); all 43 cards in Act V's deck
+    (`act5Cards.ts`: effects through the Plan systems, the sign logged once; interrupts: trips 15%, transformer 10%; the call and
+    end-of-life cards are their Plan panels: mine); EOL body neutral until the trigger. Trigger cards show the hidden trigger titles (Q). 1,770 tests.
+  - **6** done: Orbit Replacer carries each new block through (Act IV's `orbitStep`, newest generation) and opens one more when cash ≥
+    $500M (mine); Builder (Holder + every follow-on unit, 20% else 10%); V-B5 judged on OL, V-B9 on FB, V-B6 reported as Builder − Holder
+    (Act V has no control). 1,770 tests; main bundle 230.9 KB. PR #25.
+- **Step C (M59, branch `m59` from `m58`):** diagnose (OL decomposition, OL V3 move list), re-measure, balance pass.
+
 ### Report (third run, 13 Oct 2026)
 
 **Steps:** A done (M55; #17-#22 merged, `main` = `63ae112`) · B done (M56, PR #23, open, base `main`) · C done (M57, PR #24, open,

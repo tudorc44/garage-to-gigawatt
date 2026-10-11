@@ -1533,6 +1533,14 @@ export interface GameState {
   act5Exit?: { bidFactor: number; drawnQuarter: number; choice?: 'sell_company' | 'sell_plants' | 'hold'; plantsSoldUsd?: number }
   /** Act V (M56.2, doc 43 §6.6): the two wildcards drawn at entry, each with its quarter (never shown in advance). */
   act5Wildcards?: DrawnWildcardV[]
+  /** Act V (M58.4): this quarter's interrupt cards' subjects (engine card id → venture or position id). */
+  act5CardTargets?: Record<string, string>
+  /** Act V (M58.4): the quarter each plant last tripped (a plant trips at most once in 8 quarters). */
+  act5Trips?: Record<string, number>
+  /** Act V (M58.4, the V1 turbine card): quarters off an on-site gas build's wait. */
+  act5GasWaitCutQ?: number
+  /** Act V (M58.4, the V4 launch-slot card): replacement launch slots reserved (noted; no system reads it yet). */
+  act5LaunchReserved?: boolean
   /** Act V (M56.3, doc 43 §9.1): orbital tenants brought home to a ground site, paying their rent to their term's end. */
   act5Homed?: {
     id: string
