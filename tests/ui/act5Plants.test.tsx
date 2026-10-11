@@ -11,6 +11,8 @@ import { toAct5 } from '../../src/sim/state.ts'
 import { VenturesSection } from '../../src/ui/screens/Ventures.tsx'
 import { QueuePanel } from '../../src/ui/screens/Act5Queue.tsx'
 import { endQuarterQueue } from '../../src/sim/systems/queue.ts'
+import { CONTENT } from '../../src/content/index.ts'
+import { act4Company } from '../sim/act4Helpers.ts'
 import { playAct5Recipe } from '../../tools/act5/presetRun.ts'
 
 afterEach(cleanup)
@@ -35,6 +37,20 @@ describe('Act V plants on the Ventures page (M52)', () => {
     button(/Sell half/).click()
     button(/Contract 80%/).click()
     expect(sent.map((a) => a.type)).toEqual(['ARRANGE_PLANT_DEBT', 'SELL_PLANT_STAKE', 'CONTRACT_PLANT_OUTPUT'])
+  })
+
+  it('M54: in Act IV from 2032Q1 the Ventures page offers Halyard Silicon (stakes 10-49%); a button dispatches', () => {
+    const s = act4Company('s0', 'f1')
+    s.quarter = CONTENT.quarters.indexOf('2032Q1')
+    s.cash = 2e9
+    const sent: Action[] = []
+    const v = render(<VenturesSection state={s} act={((a: Action) => (sent.push(a), null)) as never} />)
+    const card = v.container.querySelector('[data-accelerator]')!
+    expect(card.textContent).toMatch(/Halyard Silicon/)
+    const join = [...card.querySelectorAll('[data-accel-join] button')]
+    expect(join.map((b) => b.textContent)).toEqual(['Buy 10%: $80.0M', 'Buy 20%: $160.0M', 'Buy 30%: $240.0M', 'Buy 49%: $392.0M'])
+    ;(join[1] as HTMLButtonElement).click()
+    expect(sent).toEqual([{ type: 'ACCEL_JOIN', stake: 0.2 }])
   })
 
   it('M53: the Projects page shows the grid queue in Act V: a position with its study bill and actions', () => {

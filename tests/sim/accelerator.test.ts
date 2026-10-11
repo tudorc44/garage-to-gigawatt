@@ -124,6 +124,8 @@ describe('your roles (M54)', () => {
       const after = r.state
       const deposit = after.accelerator!.reservation!.depositUsd
       expect(after.cash).toBeCloseTo(s.cash - deposit, 2)
+      // the deposit is an asset at cost while it can be credited or refunded (no stake here)
+      expect(acceleratorValueUsd(after)).toBeCloseTo(deposit, 2)
       for (after.quarter = d.tape; after.quarter < start + 36 && after.accelerator!.reservation!.status === 'waiting'; after.quarter++)
         endQuarterAccelerator(after)
       return { status: after.accelerator!.reservation!.status, cash: after.cash, before: s.cash, deposit }

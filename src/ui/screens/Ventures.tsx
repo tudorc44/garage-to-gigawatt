@@ -113,8 +113,9 @@ export function VenturesSection({ state, act }: ScreenProps) {
       <div class="col">
         {/* (M52: in Act V, your running plants and the developers' next units) */}
         {state.act === 5 && <PlantsPanel state={state} run={run} />}
-        {/* (M54: Halyard Silicon, the accelerator venture, from 2032Q1) */}
-        <AcceleratorCard state={state} run={run} />
+        {/* (M54: Halyard Silicon, the accelerator venture, from 2032Q1; behind Act V's dev flag, doc 43 §0.13: it pays
+            off in Act V, so the live Act IV doesn't offer it until Act V ships: mine, reversible) */}
+        {import.meta.env.MODE !== 'production' && <AcceleratorCard state={state} run={run} />}
         {v.offers.map((o) => (
           <Offer key={o.type} state={state} o={o} run={run} />
         ))}

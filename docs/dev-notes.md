@@ -378,6 +378,8 @@ README). `check.py` PASS.
 - **Step F (M54, branch `m54` on `m53`): chips part 2.** (a) `tools/act5/chips.py` (ported, Python): start 2032Q1, hazards re-tuned
   only: `calibration_check` (20,000 games) volume 0.301, gain 0.151, loss 0.248, cancelled 0.295, still building 0.005; median volume 2036Q2.
   (b) `accelerator.ts` (its own system, not a VentureType: mine), Ventures-page card, Bowline gated on the game's draw. (c) 9 tests. 1,714 tests.
+  M54.2: the card behind Act V's dev flag (mine; gate test), a reservation deposit counts at cost. (d) E-B2 (`tools/act5/chipsEb2.ts`, 10 seeds,
+  not tuned): mean −$9M (2035Q4) / $4M (2040Q4) vs control $37M / $192M: cap PASS; best $84M / $225M vs 3 × control best: MISS. 1,715 tests.
 
 ## Milestone M43.A (branch `m43a`, from `main` at `c08bb2c`; an Act IV test image, presentation only)
 

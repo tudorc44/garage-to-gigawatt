@@ -292,8 +292,20 @@ export function acceleratorEbitdaUsd(state: GameState, quarter = state.quarter):
   return units * (row.accel_unit_purchase_usd ?? 0) * shares[Math.min(Math.floor(since / 4), shares.length - 1)]
 }
 
-/** Your stake's value now (a valuation part, with the energy ventures'). */
+/**
+ * Your part's value now (a valuation part, with the energy ventures'): the stake, plus a reservation's deposit at cost
+ * while it can still be credited or refunded (as the energy ventures' prepayments).
+ */
 export function acceleratorValueUsd(state: GameState): number {
+  const a = state.accelerator
+  if (!a) return 0
+  const res = a.reservation
+  const deposit = res && (res.status === 'waiting' || res.status === 'delivered') ? res.depositUsd : 0
+  return deposit + acceleratorStakeValueUsd(state)
+}
+
+/** Your stake's value now: the mark before volume; after, the earnings value (the first 4 quarters at least the mark). */
+export function acceleratorStakeValueUsd(state: GameState): number {
   const a = state.accelerator
   if (!a || a.stake <= 0 || a.ended) return 0
   const d = acceleratorDraws(state)
@@ -433,7 +445,7 @@ export function acceleratorView(state: GameState) {
     pVolume: A.targets.p_volume_within_8_years,
     shares: A.equity_shares.map((s) => ({ stake: s, buyInUsd: acceleratorBuyInUsd(s), blocked: acceleratorJoinBlocker(state, s) ?? null })),
     stake: a?.stake ?? 0,
-    valueUsd: acceleratorValueUsd(state),
+    valueUsd: acceleratorStakeValueUsd(state),
     milestones: a?.milestones ?? 0,
     slips: a?.slips ?? 0,
     ended: a?.ended ?? null,
