@@ -43,6 +43,7 @@ import {
   tenantCard,
 } from './projects.ts'
 import { shellTierRentMult } from './density.ts'
+import { scarcityIndex } from './scarcity.ts'
 
 const R = BALANCE.act3.renewals
 
@@ -57,7 +58,8 @@ export function openRenewal(
 export function renewalWalkChance(state: GameState, p: Project): number {
   const t = p.tenant!
   const type = tenantCard(t.card)!.type
-  const base = walkProbAtRenewal(state.quarter, scenarioOf(state), type)
+  // (M58.1, doc 43 §0.15 fix 1: in Act V walks fall with scarcity: the base ÷ scarcity_index)
+  const base = walkProbAtRenewal(state.quarter, scenarioOf(state), type) / (inActV(state) ? scarcityIndex(state.quarter, scenarioOf(state)) : 1)
   return t.distressedQuarter !== undefined
     ? Math.min(R.distressWalkCap, base * R.distressWalkMult)
     : base
@@ -81,6 +83,15 @@ export function renewalOffer(
     const mult = Math.min(band.hi, Math.max(band.lo, ratio))
     const years = offeredTermYears(state.quarter, scenario, 'gpu') ?? 1
     return { mult, termQuarters: years * 4 }
+  }
+  // M58.1 (doc 43 §0.15 fix 1, the gate's §0.6 path): in Act V a shell lease renews at its 2035Q4 rent × scarcity_index.
+  // Its 2035Q4 rent is what it pays now if it was signed before 2036, else its rent ÷ the index the quarter it was signed.
+  if (inActV(state)) {
+    const first = actFirstQuarter(5)
+    const sNow = scarcityIndex(state.quarter, scenario)
+    const sSigned = t.signedQuarter < first ? 1 : scarcityIndex(t.signedQuarter, scenario)
+    const years = offeredTermYears(state.quarter, scenario, 'shell') ?? 1
+    return { mult: sSigned > 0 ? sNow / sSigned : 1, termQuarters: years * 4 }
   }
   const position = R.positionByType[tenantCard(t.card)!.type] ?? 0
   // M16.2 (DT): × the hall's tier multiple from 2027Q3, after the Band.

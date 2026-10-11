@@ -419,6 +419,17 @@ README). `check.py` PASS.
     only if V-B4 misses on the ground-heavy start (Firm Builder passes, 1.137); §0.12's only if the accelerator is too rich (it isn't).
     Every miss is reported below with a proposed fix (no listed lever).
 
+## Fourth unattended run (doc 43 §0.15; steps A-C)
+
+- **Step A:** #23 and #24 were merged before the run (`main` = `cd4d3b2`); §0.15 committed as M58.0 on `m58`.
+- **Step B (M58, branch `m58` from `main`): the §0.15 fixes, no ⚙ change.** Split: **1** lease renewals · **2** interest on cash ·
+  **3** enrol existing load · **4** events_v.json cards · **5** end-of-life bodies · **6** bots (Orbit Replacer adds orbit, Builder)
+  and the judging rules. Chunks: 1-2 · 3 · 4-5 · 6.
+  - **1-2** done: Act V shell renewals at the lease's 2035Q4 rent × `scarcity_index` (signed in Act V: ÷ the index at signing), walks ÷
+    the index (GPU contracts keep the GPU index; mine: the walk rule applies to them too); cash earns SOFR ÷ 4, booked as net interest.
+    Act V goldens updated (intended); Acts I-IV byte-identical. 1,763 tests.
+- **Step C (M59, branch `m59` from `m58`):** diagnose (OL decomposition, OL V3 move list), re-measure, balance pass.
+
 ### Report (third run, 13 Oct 2026)
 
 **Steps:** A done (M55; #17-#22 merged, `main` = `63ae112`) · B done (M56, PR #23, open, base `main`) · C done (M57, PR #24, open,

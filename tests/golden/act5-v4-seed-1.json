@@ -6,7 +6,7 @@
   "phase": "chapter",
   "quarter": 95,
   "week": 13,
-  "cash": 1905610775.68,
+  "cash": 2691208856.31,
   "bandwidth": 5,
   "hodlPct": {
     "BTC": 0,
@@ -209,7 +209,7 @@
         "walkRolled": true,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 0,
-        "priceMult": 0.25512030510282013,
+        "priceMult": 0.36391011061500006,
         "termQuarters": 24
       },
       "spot": false,
@@ -271,7 +271,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.4364701887942571,
+        "priceMult": 0.6866662499999999,
         "termQuarters": 8,
         "blendOfferedQuarter": 74,
         "reopenedQuarter": 78
@@ -334,7 +334,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.3792294300604135,
+        "priceMult": 0.5966136,
         "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -367,7 +367,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.4528910653696875,
+        "priceMult": 0.7124999999999999,
         "blendOfferedQuarter": 70,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -400,7 +400,7 @@
         "walkRolled": true,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 0,
-        "priceMult": 0.3714155086283201,
+        "priceMult": 0.4503270720000001,
         "termQuarters": 24
       },
       "spot": false,
@@ -432,7 +432,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.3086576818723125,
+        "priceMult": 0.564375,
         "blendOfferedQuarter": 72,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -465,7 +465,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.41017632142500005,
+        "priceMult": 0.75,
         "blendOfferedQuarter": 74,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -498,7 +498,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.47672743723125005,
+        "priceMult": 0.75,
         "blendOfferedQuarter": 74,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -593,7 +593,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.5405072119669615,
+        "priceMult": 0.85034,
         "blendOfferedQuarter": 75,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -626,7 +626,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.5631835470645946,
+        "priceMult": 0.886015,
         "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -659,7 +659,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.49431989200212456,
+        "priceMult": 0.9038550000000001,
         "blendOfferedQuarter": 72,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -692,7 +692,7 @@
         "walkRolled": true,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.5858630603451427,
+        "priceMult": 0.921695,
         "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -725,7 +725,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.5972155297170761,
+        "priceMult": 0.939555,
         "blendOfferedQuarter": 72,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -758,7 +758,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.608536217259861,
+        "priceMult": 0.957365,
         "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -791,7 +791,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.5235846052813935,
+        "priceMult": 0.957365,
         "blendOfferedQuarter": 74,
         "reopenedQuarter": 78,
         "termQuarters": 8
@@ -824,7 +824,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 0,
-        "priceMult": 0.5143277182215443,
+        "priceMult": 0.8616285000000001,
         "reopenedQuarter": 80,
         "termQuarters": 36
       },
@@ -856,7 +856,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 0,
-        "priceMult": 0.44252749707455097,
+        "priceMult": 0.8616285000000001,
         "reopenedQuarter": 80,
         "termQuarters": 36
       },
@@ -888,7 +888,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 6,
-        "priceMult": 0.7488942477003749,
+        "priceMult": 0.971725475,
         "blendOfferedQuarter": 78,
         "reopenedQuarter": 82,
         "termQuarters": 8
@@ -921,7 +921,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 6,
-        "priceMult": 0.69465739031325,
+        "priceMult": 0.971725475,
         "blendOfferedQuarter": 78,
         "reopenedQuarter": 82,
         "termQuarters": 8
@@ -954,7 +954,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 3,
-        "priceMult": 0.7049232630765,
+        "priceMult": 0.9860859500000001,
         "blendOfferedQuarter": 81,
         "reopenedQuarter": 85,
         "termQuarters": 8
@@ -987,7 +987,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 3,
-        "priceMult": 0.7049232630765,
+        "priceMult": 0.9860859500000001,
         "blendOfferedQuarter": 81,
         "reopenedQuarter": 85,
         "termQuarters": 8
@@ -1020,7 +1020,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 3,
-        "priceMult": 0.7599616503757501,
+        "priceMult": 0.9860859500000001,
         "blendOfferedQuarter": 81,
         "reopenedQuarter": 85,
         "termQuarters": 8
@@ -1053,7 +1053,7 @@
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
         "servedQuarters": 2,
-        "priceMult": 0.68439151755,
+        "priceMult": 0.957365,
         "blendOfferedQuarter": 82,
         "reopenedQuarter": 86,
         "termQuarters": 8
@@ -1229,7 +1229,7 @@
     "salariesUsd": 0,
     "interestUsd": 0,
     "principalUsd": 0,
-    "startCash": 1905645120.64,
+    "startCash": 2667486208.11,
     "startTreasuryUsd": 0,
     "weeks": [
       {
@@ -1247,7 +1247,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905642478.72
+        "cash": 2667483566.19
       },
       {
         "week": 2,
@@ -1264,7 +1264,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905639836.8
+        "cash": 2667480924.27
       },
       {
         "week": 3,
@@ -1281,7 +1281,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905637194.88
+        "cash": 2667478282.35
       },
       {
         "week": 4,
@@ -1298,7 +1298,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905634552.96
+        "cash": 2667475640.43
       },
       {
         "week": 5,
@@ -1315,7 +1315,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905631911.04
+        "cash": 2667472998.51
       },
       {
         "week": 6,
@@ -1332,7 +1332,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905629269.12
+        "cash": 2667470356.59
       },
       {
         "week": 7,
@@ -1349,7 +1349,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905626627.2
+        "cash": 2667467714.67
       },
       {
         "week": 8,
@@ -1366,7 +1366,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905623985.28
+        "cash": 2667465072.75
       },
       {
         "week": 9,
@@ -1383,7 +1383,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905621343.36
+        "cash": 2667462430.83
       },
       {
         "week": 10,
@@ -1400,7 +1400,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905618701.44
+        "cash": 2667459788.91
       },
       {
         "week": 11,
@@ -1417,7 +1417,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905616059.52
+        "cash": 2667457146.99
       },
       {
         "week": 12,
@@ -1434,7 +1434,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905613417.6
+        "cash": 2667454505.07
       },
       {
         "week": 13,
@@ -1451,7 +1451,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 1905610775.68
+        "cash": 2667451863.15
       }
     ],
     "energyRevenueUsd": 0,
@@ -7154,12 +7154,12 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 104183539.15,
+      "cash": 104854578.76,
       "ebitdaUsd": 47963420.92149688,
       "marginByTier": {
         "texas_site": 21972255.091496885
       },
-      "valuationUsd": 2446910948.959351,
+      "valuationUsd": 2447581988.5693507,
       "orbitRevenueUsd": 27378906.25,
       "orbitCostUsd": 1250000,
       "orbitEbitdaUsd": 26128906.25,
@@ -7238,12 +7238,12 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 143667016.46,
+      "cash": 145481405.62,
       "ebitdaUsd": 37881174.29712189,
       "marginByTier": {
         "texas_site": 24661613.047121886
       },
-      "valuationUsd": 2483244459.008979,
+      "valuationUsd": 2485058848.1689787,
       "orbitRevenueUsd": 13878906.25,
       "orbitCostUsd": 625000,
       "orbitEbitdaUsd": 13253906.25,
@@ -7260,7 +7260,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 104183539.15,
+      "startCash": 104854578.76,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -7322,13 +7322,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 184555362.79,
+      "cash": 187962730.96,
       "ebitdaUsd": 30496199.98253854,
       "marginByTier": {
         "texas_site": 24661613.047121886,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2360620788.117295,
+      "valuationUsd": 2368858366.548617,
       "orbitRevenueUsd": 6666666.666666668,
       "orbitCostUsd": 1864000,
       "orbitEbitdaUsd": 4802666.666666668,
@@ -7345,7 +7345,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 152458635.46,
+      "startCash": 154273024.62,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -7357,8 +7357,8 @@
       "aiFloorEbitdaUsd": 12376446.637500007,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 642559992.5527982,
-      "weightedBacklogUsd": 118031605.7996781,
+      "backlogUsd": 672056780.5483334,
+      "weightedBacklogUsd": 122861816.061,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7407,13 +7407,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 209208091.59,
-      "ebitdaUsd": 23053977.01247626,
+      "cash": 217148043.99,
+      "ebitdaUsd": 25693533.315871872,
       "marginByTier": {
-        "texas_site": 22022056.743726257,
+        "texas_site": 24661613.047121886,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2146442934.9168978,
+      "valuationUsd": 2323000887.871033,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7430,20 +7430,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 184555362.79,
+      "startCash": 187962730.96,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 27985844.86360759,
-      "aiCostUsd": 4897522.851131328,
+      "aiRevenueUsd": 31185307.049541663,
+      "aiCostUsd": 5457428.73366979,
       "aiFloorEbitdaUsd": 5347154.5875,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 611320533.3743234,
-      "weightedBacklogUsd": 112718236.63159335,
+      "backlogUsd": 637130222.8704166,
+      "weightedBacklogUsd": 116944670.61025,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7492,13 +7492,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 234608993.75,
-      "ebitdaUsd": 22808884.448604733,
+      "cash": 247295589.05,
+      "ebitdaUsd": 25396367.973840624,
       "marginByTier": {
-        "texas_site": 21776964.179854717,
+        "texas_site": 24364447.705090627,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2144273689.9345384,
+      "valuationUsd": 2322773147.961493,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7515,20 +7515,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 210201357.59,
+      "startCash": 218141309.99,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 27688762.96800573,
-      "aiCostUsd": 4845533.519401,
+      "aiRevenueUsd": 30825106.634958334,
+      "aiCostUsd": 5394393.661117708,
       "aiFloorEbitdaUsd": 5347154.5875,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 515714270.0339711,
-      "weightedBacklogUsd": 95176911.4679152,
+      "backlogUsd": 541538387.2375,
+      "weightedBacklogUsd": 99438429.05830002,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7577,13 +7577,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 258277883.59,
-      "ebitdaUsd": 22070138.05800386,
+      "cash": 276291033.85,
+      "ebitdaUsd": 24981572.712414064,
       "marginByTier": {
-        "texas_site": 21038217.789253857,
+        "texas_site": 23949652.443664063,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2121302721.7958431,
+      "valuationUsd": 2325030798.003955,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7600,20 +7600,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 234608993.75,
+      "startCash": 247295589.05,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 26793312.797580436,
-      "aiCostUsd": 4688829.7395765735,
+      "aiRevenueUsd": 30322324.499895833,
+      "aiCostUsd": 5306406.78748177,
       "aiFloorEbitdaUsd": 4280889.318750001,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 482405225.563316,
-      "weightedBacklogUsd": 89540681.42263865,
+      "backlogUsd": 503461657.04354167,
+      "weightedBacklogUsd": 93024836.3427,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7662,13 +7662,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 280333850.48,
-      "ebitdaUsd": 19031845.912571326,
+      "cash": 303489741.32,
+      "ebitdaUsd": 21519366.09551122,
       "marginByTier": {
-        "texas_site": 19419893.34392664,
+        "texas_site": 22107371.486459136,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 1940532464.840842,
+      "valuationUsd": 2123400359.023103,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7685,20 +7685,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 259618194.59,
+      "startCash": 277631344.85,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 24831707.409305017,
-      "aiCostUsd": 5765516.49673369,
+      "aiRevenueUsd": 28089256.67298077,
+      "aiCostUsd": 6535545.57746955,
       "aiFloorEbitdaUsd": 4033610.5456730775,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 387718349.8999172,
-      "weightedBacklogUsd": 72237958.57008697,
+      "backlogUsd": 410352799.7395833,
+      "weightedBacklogUsd": 75865284.2414,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7747,13 +7747,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 304556280.4,
-      "ebitdaUsd": 21602979.26150834,
+      "cash": 334043723.32,
+      "ebitdaUsd": 25009591.79419845,
       "marginByTier": {
-        "texas_site": 20571058.99275834,
+        "texas_site": 23977671.525448438,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2126135310.3559215,
+      "valuationUsd": 2372772805.272696,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7770,20 +7770,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 280333850.48,
+      "startCash": 303489741.32,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 26227059.710919198,
-      "aiCostUsd": 4589735.44941086,
+      "aiRevenueUsd": 30356287.023270845,
+      "aiCostUsd": 5312350.229072395,
       "aiFloorEbitdaUsd": 3214624.0500000003,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 358683491.01172245,
-      "weightedBacklogUsd": 67239429.34447488,
+      "backlogUsd": 376621634.465625,
+      "weightedBacklogUsd": 70104014.51995,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7832,13 +7832,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 328863768.07,
-      "ebitdaUsd": 21602979.26150834,
+      "cash": 364955642.01,
+      "ebitdaUsd": 25009591.79419845,
       "marginByTier": {
-        "texas_site": 20571058.99275834,
+        "texas_site": 23977671.525448438,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2150492052.261915,
+      "valuationUsd": 2403501647.274192,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7855,20 +7855,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 304556280.4,
+      "startCash": 334043723.32,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 26227059.710919198,
-      "aiCostUsd": 4589735.44941086,
+      "aiRevenueUsd": 30356287.023270845,
+      "aiCostUsd": 5312350.229072395,
       "aiFloorEbitdaUsd": 2843374.05,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 329648632.12352777,
-      "weightedBacklogUsd": 62240900.11886283,
+      "backlogUsd": 342890469.19166666,
+      "weightedBacklogUsd": 64342744.7985,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7917,13 +7917,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 355038116.74,
-      "ebitdaUsd": 21602979.26150834,
+      "cash": 398026357.7,
+      "ebitdaUsd": 25009591.79419845,
       "marginByTier": {
-        "texas_site": 20571058.99275834,
+        "texas_site": 23977671.525448438,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2154284567.320229,
+      "valuationUsd": 2415418110.2141886,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7940,20 +7940,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 330730629.07,
+      "startCash": 366822503.01,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 26227059.710919198,
-      "aiCostUsd": 4589735.44941086,
+      "aiRevenueUsd": 30356287.023270845,
+      "aiCostUsd": 5312350.229072395,
       "aiFloorEbitdaUsd": 2843374.05,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 183462859.25566995,
-      "weightedBacklogUsd": 34811283.045570135,
+      "backlogUsd": 200054159.05770832,
+      "weightedBacklogUsd": 37610299.01555,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -8002,13 +8002,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 379335129.63,
-      "ebitdaUsd": 20946283.570570886,
+      "cash": 430241497.42,
+      "ebitdaUsd": 25090272.532867186,
       "marginByTier": {
-        "texas_site": 19914363.30182089,
+        "texas_site": 24058352.264117196,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2114714320.6440566,
+      "valuationUsd": 2435051716.801351,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8025,20 +8025,20 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 355684337.74,
+      "startCash": 398672578.7,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 25431064.934025317,
-      "aiCostUsd": 4450436.363454429,
+      "aiRevenueUsd": 30454081.85802083,
+      "aiCostUsd": 5329464.325153644,
       "aiFloorEbitdaUsd": 1066265.2687500003,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 174848354.58653086,
-      "weightedBacklogUsd": 30377767.36199338,
+      "backlogUsd": 243225071.91875002,
+      "weightedBacklogUsd": 41721163.157474995,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -8087,13 +8087,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 400410638.16,
-      "ebitdaUsd": 18371000.142699238,
+      "cash": 462229044.77,
+      "ebitdaUsd": 25226526.932398453,
       "marginByTier": {
-        "texas_site": 17643104.090027925,
-        "own_site": 762241.0526713126
+        "texas_site": 24194606.663648453,
+        "own_site": 1066265.2687500003
       },
-      "valuationUsd": 1944186270.0178893,
+      "valuationUsd": 2432080010.500428,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8110,19 +8110,19 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 379335129.63,
+      "startCash": 430241497.42,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 22309509.263877865,
-      "aiCostUsd": 3904164.1211786265,
+      "aiRevenueUsd": 30619238.705937516,
+      "aiCostUsd": 5358366.773539063,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 150188355.97974584,
-      "weightedBacklogUsd": 26141130.406765968,
+      "backlogUsd": 209145956.58562502,
+      "weightedBacklogUsd": 35928311.028400004,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -8171,13 +8171,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 522817046.4,
-      "ebitdaUsd": 18371000.142699238,
+      "cash": 596758946.28,
+      "ebitdaUsd": 25226526.932398453,
       "marginByTier": {
-        "texas_site": 17643104.090027925,
-        "own_site": 762241.0526713126
+        "texas_site": 24194606.663648453,
+        "own_site": 1066265.2687500003
       },
-      "valuationUsd": 1933430974.6327794,
+      "valuationUsd": 2426016763.7806983,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8194,19 +8194,19 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 504446046.22,
+      "startCash": 566264452.8299999,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 22309509.263877865,
-      "aiCostUsd": 3904164.1211786265,
+      "aiRevenueUsd": 30619238.705937516,
+      "aiCostUsd": 5358366.773539063,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 160459147.1763662,
-      "weightedBacklogUsd": 27279776.998749778,
+      "backlogUsd": 239430490.2025,
+      "weightedBacklogUsd": 40309568.22732499,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -8255,10 +8255,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 1905816845.44,
+      "cash": 2551977459.37,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2191221698.035176,
+      "valuationUsd": 2837382311.9651756,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8275,7 +8275,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 1905851190.4,
+      "startCash": 2529483894.2799997,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8336,10 +8336,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 1905782500.48,
+      "cash": 2574671357.77,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2192866205.1492653,
+      "valuationUsd": 2861755062.4392653,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8356,7 +8356,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 1905816845.44,
+      "startCash": 2551977459.37,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8417,10 +8417,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 1905748155.52,
+      "cash": 2597567373.71,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2194510712.2633543,
+      "valuationUsd": 2886329930.4533544,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8437,7 +8437,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 1905782500.48,
+      "startCash": 2574671357.77,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8498,10 +8498,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 1905713810.56,
+      "cash": 2620667307.29,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2196155219.3774433,
+      "valuationUsd": 2911108716.107444,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8518,7 +8518,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 1905748155.52,
+      "startCash": 2597567373.71,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8579,10 +8579,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 1905679465.6,
+      "cash": 2643972974.65,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2197799726.491533,
+      "valuationUsd": 2936093235.541533,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8599,7 +8599,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 1905713810.56,
+      "startCash": 2620667307.29,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8660,10 +8660,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 1905645120.64,
+      "cash": 2667486208.11,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2199444233.6056223,
+      "valuationUsd": 2961285321.075622,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8680,7 +8680,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 1905679465.6,
+      "startCash": 2643972974.65,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8741,10 +8741,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 1905610775.68,
+      "cash": 2691208856.31,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2201088740.7197113,
+      "valuationUsd": 2986686821.3497114,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8761,7 +8761,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 1905645120.64,
+      "startCash": 2667486208.11,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -18944,7 +18944,7 @@
         "n": 3,
         "tenant": "tc_enterprise_render",
         "feeUsd": 330815,
-        "multPct": -0.29894691666666673,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -18956,7 +18956,7 @@
         "n": 5,
         "tenant": "tc_frontier_intelligence",
         "feeUsd": 248917,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -18968,7 +18968,7 @@
         "n": 7,
         "tenant": "tc_enterprise_render",
         "feeUsd": 164069,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -18980,7 +18980,7 @@
         "n": 8,
         "tenant": "tc_enterprise_render",
         "feeUsd": 195937,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -18992,7 +18992,7 @@
         "n": 9,
         "tenant": "tc_enterprise_render",
         "feeUsd": 173983,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19004,7 +19004,7 @@
         "n": 10,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 126984,
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19016,7 +19016,7 @@
         "n": 11,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 168750,
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19028,7 +19028,7 @@
         "n": 12,
         "tenant": "tc_enterprise_render",
         "feeUsd": 206250,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19040,7 +19040,7 @@
         "n": 15,
         "tenant": "tc_enterprise_render",
         "feeUsd": 467687,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19052,7 +19052,7 @@
         "n": 16,
         "tenant": "tc_enterprise_render",
         "feeUsd": 730962,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19064,7 +19064,7 @@
         "n": 17,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 3660613,
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19076,7 +19076,7 @@
         "n": 18,
         "tenant": "tc_meridian_labs",
         "feeUsd": 1198204,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19088,7 +19088,7 @@
         "n": 19,
         "tenant": "tc_frontier_intelligence",
         "feeUsd": 340589,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19100,7 +19100,7 @@
         "n": 20,
         "tenant": "tc_frontier_intelligence",
         "feeUsd": 347045,
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19112,7 +19112,7 @@
         "n": 21,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 430814,
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 7
       }
     },
@@ -19190,7 +19190,7 @@
       "params": {
         "n": 3,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.29894691666666673,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19201,7 +19201,7 @@
       "params": {
         "n": 5,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19212,7 +19212,7 @@
       "params": {
         "n": 7,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19223,7 +19223,7 @@
       "params": {
         "n": 8,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19234,7 +19234,7 @@
       "params": {
         "n": 9,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19245,7 +19245,7 @@
       "params": {
         "n": 10,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19256,7 +19256,7 @@
       "params": {
         "n": 11,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19267,7 +19267,7 @@
       "params": {
         "n": 12,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19278,7 +19278,7 @@
       "params": {
         "n": 15,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19289,7 +19289,7 @@
       "params": {
         "n": 16,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19300,7 +19300,7 @@
       "params": {
         "n": 17,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19311,7 +19311,7 @@
       "params": {
         "n": 18,
         "tenant": "tc_meridian_labs",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19322,7 +19322,7 @@
       "params": {
         "n": 19,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19333,7 +19333,7 @@
       "params": {
         "n": 20,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.17523166666666667,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19344,7 +19344,7 @@
       "params": {
         "n": 21,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.2349633333333333,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -19411,7 +19411,7 @@
         "n": 22,
         "tenant": "tc_frontier_intelligence",
         "feeUsd": 347045,
-        "multPct": -0.22546157500000008,
+        "multPct": 0.004999999999999893,
         "years": 6
       }
     },
@@ -19423,7 +19423,7 @@
         "n": 23,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 646221,
-        "multPct": -0.28155565000000005,
+        "multPct": 0.004999999999999893,
         "years": 6
       }
     },
@@ -19445,7 +19445,7 @@
       "params": {
         "n": 22,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.22546157500000008,
+        "multPct": 0.004999999999999893,
         "years": 2
       }
     },
@@ -19456,7 +19456,7 @@
       "params": {
         "n": 23,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28155565000000005,
+        "multPct": 0.004999999999999893,
         "years": 2
       }
     },
@@ -19551,7 +19551,7 @@
         "n": 24,
         "tenant": "tc_frontier_intelligence",
         "feeUsd": 694090,
-        "multPct": -0.21775472500000004,
+        "multPct": 0.014999999999999902,
         "years": 6
       }
     },
@@ -19563,7 +19563,7 @@
         "n": 25,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 646221,
-        "multPct": -0.27440695000000004,
+        "multPct": 0.014999999999999902,
         "years": 6
       }
     },
@@ -19630,7 +19630,7 @@
       "params": {
         "n": 24,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.21775472500000004,
+        "multPct": 0.014999999999999902,
         "years": 2
       }
     },
@@ -19641,7 +19641,7 @@
       "params": {
         "n": 25,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.27440695000000004,
+        "multPct": 0.014999999999999902,
         "years": 2
       }
     },
@@ -19702,7 +19702,7 @@
         "n": 26,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 430814,
-        "multPct": -0.26368389999999997,
+        "multPct": 0.030000000000000027,
         "years": 6
       }
     },
@@ -19714,7 +19714,7 @@
         "n": 27,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 646221,
-        "multPct": -0.26368389999999997,
+        "multPct": 0.030000000000000027,
         "years": 6
       }
     },
@@ -19726,7 +19726,7 @@
         "n": 28,
         "tenant": "tc_enterprise_render",
         "feeUsd": 789826,
-        "multPct": -0.20619444999999992,
+        "multPct": 0.030000000000000027,
         "years": 6
       }
     },
@@ -19758,7 +19758,7 @@
       "params": {
         "n": 26,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.26368389999999997,
+        "multPct": 0.030000000000000027,
         "years": 2
       }
     },
@@ -19769,7 +19769,7 @@
       "params": {
         "n": 27,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.26368389999999997,
+        "multPct": 0.030000000000000027,
         "years": 2
       }
     },
@@ -19780,7 +19780,7 @@
       "params": {
         "n": 28,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.20619444999999992,
+        "multPct": 0.030000000000000027,
         "years": 2
       }
     },
@@ -19811,7 +19811,7 @@
       "params": {
         "n": 5,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19822,7 +19822,7 @@
       "params": {
         "n": 7,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19833,7 +19833,7 @@
       "params": {
         "n": 8,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19855,7 +19855,7 @@
       "params": {
         "n": 10,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19866,7 +19866,7 @@
       "params": {
         "n": 11,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19877,7 +19877,7 @@
       "params": {
         "n": 12,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19888,7 +19888,7 @@
       "params": {
         "n": 15,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19899,7 +19899,7 @@
       "params": {
         "n": 16,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19910,7 +19910,7 @@
       "params": {
         "n": 17,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19921,7 +19921,7 @@
       "params": {
         "n": 18,
         "tenant": "tc_meridian_labs",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19932,7 +19932,7 @@
       "params": {
         "n": 19,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19943,7 +19943,7 @@
       "params": {
         "n": 20,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19954,7 +19954,7 @@
       "params": {
         "n": 21,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -19966,7 +19966,7 @@
         "n": 29,
         "tenant": "tc_north_azure_cloud",
         "feeUsd": 646221,
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 6
       }
     },
@@ -20023,7 +20023,7 @@
       "params": {
         "n": 5,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20034,7 +20034,7 @@
       "params": {
         "n": 7,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20045,7 +20045,7 @@
       "params": {
         "n": 8,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20066,7 +20066,7 @@
       "params": {
         "n": 10,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20077,7 +20077,7 @@
       "params": {
         "n": 11,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20088,7 +20088,7 @@
       "params": {
         "n": 12,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20099,7 +20099,7 @@
       "params": {
         "n": 15,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20110,7 +20110,7 @@
       "params": {
         "n": 16,
         "tenant": "tc_enterprise_render",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20121,7 +20121,7 @@
       "params": {
         "n": 17,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20132,7 +20132,7 @@
       "params": {
         "n": 18,
         "tenant": "tc_meridian_labs",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20143,7 +20143,7 @@
       "params": {
         "n": 19,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20154,7 +20154,7 @@
       "params": {
         "n": 20,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.22931499999999994,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20165,7 +20165,7 @@
       "params": {
         "n": 21,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20176,7 +20176,7 @@
       "params": {
         "n": 29,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.28513,
+        "multPct": 0,
         "years": 2
       }
     },
@@ -20216,7 +20216,7 @@
       "params": {
         "n": 22,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.3063834999999999,
+        "multPct": -0.10447761194029836,
         "years": 6
       }
     },
@@ -20227,7 +20227,7 @@
       "params": {
         "n": 23,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.35661699999999996,
+        "multPct": -0.10447761194029836,
         "years": 6
       }
     },
@@ -20283,7 +20283,7 @@
       "params": {
         "n": 22,
         "tenant": "tc_frontier_intelligence",
-        "multPct": -0.3063834999999999,
+        "multPct": -0.10447761194029836,
         "years": 9
       }
     },
@@ -20294,7 +20294,7 @@
       "params": {
         "n": 23,
         "tenant": "tc_north_azure_cloud",
-        "multPct": -0.35661699999999996,
+        "multPct": -0.10447761194029836,
         "years": 9
       }
     },
@@ -20314,7 +20314,7 @@
       "params": {
         "n": 3,
         "tenant": "tc_enterprise_render",
-        "rentUsd": 1122529.3424524085,
+        "rentUsd": 1601204.4867060003,
         "years": 6
       }
     },
@@ -20325,7 +20325,7 @@
       "params": {
         "n": 9,
         "tenant": "tc_enterprise_render",
-        "rentUsd": 817114.1189823042,
+        "rentUsd": 990719.5584000002,
         "years": 6
       }
     },
@@ -20361,7 +20361,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 29,
-        "priceUsd": 51459312
+        "priceUsd": 71984153
       }
     },
     {
@@ -20379,7 +20379,7 @@
       "key": "log.queue.whole_site_sold",
       "params": {
         "n": 1,
-        "priceUsd": 56134312
+        "priceUsd": 76659153
       }
     },
     {
@@ -20397,7 +20397,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 3,
-        "priceUsd": 15630155
+        "priceUsd": 22295252
       }
     },
     {
@@ -20415,7 +20415,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 5,
-        "priceUsd": 17624556
+        "priceUsd": 27727409
       }
     },
     {
@@ -20433,7 +20433,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 7,
-        "priceUsd": 11616902
+        "priceUsd": 18276012
       }
     },
     {
@@ -20442,7 +20442,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 8,
-        "priceUsd": 13873372
+        "priceUsd": 21825949
       }
     },
     {
@@ -20451,7 +20451,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 9,
-        "priceUsd": 11377538
+        "priceUsd": 13794829
       }
     },
     {
@@ -20460,7 +20460,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 10,
-        "priceUsd": 7735977
+        "priceUsd": 14145095
       }
     },
     {
@@ -20469,7 +20469,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 11,
-        "priceUsd": 10280369
+        "priceUsd": 18797468
       }
     },
     {
@@ -20478,7 +20478,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 12,
-        "priceUsd": 14603549
+        "priceUsd": 22974684
       }
     },
     {
@@ -20487,7 +20487,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 15,
-        "priceUsd": 33114619
+        "priceUsd": 52096780
       }
     },
     {
@@ -20496,7 +20496,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 16,
-        "priceUsd": 51755855
+        "priceUsd": 81423657
       }
     },
     {
@@ -20505,7 +20505,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 17,
-        "priceUsd": 223007101
+        "priceUsd": 407764458
       }
     },
     {
@@ -20514,7 +20514,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 18,
-        "priceUsd": 84838904
+        "priceUsd": 133470770
       }
     },
     {
@@ -20523,7 +20523,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 19,
-        "priceUsd": 24115412
+        "priceUsd": 37938993
       }
     },
     {
@@ -20532,7 +20532,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 20,
-        "priceUsd": 24572538
+        "priceUsd": 38658156
       }
     },
     {
@@ -20541,7 +20541,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 21,
-        "priceUsd": 26245507
+        "priceUsd": 47989435
       }
     },
     {
@@ -20550,7 +20550,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 22,
-        "priceUsd": 20768423
+        "priceUsd": 34792341
       }
     },
     {
@@ -20559,7 +20559,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 23,
-        "priceUsd": 33273586
+        "priceUsd": 64785738
       }
     },
     {
@@ -20568,7 +20568,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 24,
-        "priceUsd": 60480320
+        "priceUsd": 78476057
       }
     },
     {
@@ -20577,7 +20577,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 25,
-        "priceUsd": 52231201
+        "priceUsd": 73063915
       }
     },
     {
@@ -20586,7 +20586,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 26,
-        "priceUsd": 35335394
+        "priceUsd": 49429119
       }
     },
     {
@@ -20595,7 +20595,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 27,
-        "priceUsd": 53003091
+        "priceUsd": 74143678
       }
     },
     {
@@ -20604,7 +20604,7 @@
       "key": "log.project_sold",
       "params": {
         "n": 28,
-        "priceUsd": 69839514
+        "priceUsd": 90620051
       }
     },
     {
@@ -20622,7 +20622,7 @@
       "key": "log.queue.whole_site_sold",
       "params": {
         "n": 25,
-        "priceUsd": 1326624832
+        "priceUsd": 1855790795
       }
     },
     {
@@ -20744,7 +20744,7 @@
       "week": null,
       "key": "log.exit.bid",
       "params": {
-        "bidUsd": 2354340070.918394
+        "bidUsd": 3145219226.7867684
       }
     },
     {
@@ -27770,6 +27770,7 @@
           "ai_shell_rent": 26633036.47454173,
           "ai_opex": -4660781.383044786,
           "one_offs": -103395.42,
+          "interest": 671039.61,
           "plant_distributions": 2709835.1280000005,
           "orbit_revenue": 27378906.25,
           "orbit_opex": -1250000
@@ -27938,12 +27939,13 @@
       },
       {
         "q": 77,
-        "startCash": 104183539.15,
+        "startCash": 104854578.76,
         "lines": {
           "rent": -34345,
           "prepayments": -1105756.5749999997,
           "ai_shell_rent": 29892864.29954175,
           "ai_opex": -5231251.252419783,
+          "interest": 1143349.55,
           "plant_distributions": 2708059.5360000003,
           "orbit_revenue": 13878906.25,
           "orbit_opex": -625000
@@ -28074,21 +28076,21 @@
             "orbit_opex": -625000
           }
         },
-        "rounding": 0.05187816917896271,
+        "rounding": 0.051878154277801514,
         "weeks": [
-          105992886.19,
-          107802233.23,
-          109611580.27,
-          111420927.31,
-          113230274.35,
-          115039621.39,
-          116848968.43,
-          118658315.47,
-          120467662.51,
-          122277009.55,
-          124086356.59,
-          125895703.63,
-          127705050.67
+          106663925.8,
+          108473272.84,
+          110282619.88,
+          112091966.92,
+          113901313.96,
+          115710661,
+          117520008.04,
+          119329355.08,
+          121138702.12,
+          122948049.16,
+          124757396.2,
+          126566743.24,
+          128376090.28
         ],
         "parents": {
           "project:project-28": "site-22",
@@ -28120,13 +28122,14 @@
       },
       {
         "q": 78,
-        "startCash": 143667016.46,
+        "startCash": 145481405.62,
         "lines": {
           "other_income": 8791619,
           "rent": -34345,
           "prepayments": -1105756.5749999997,
           "ai_shell_rent": 31185307.049541764,
           "ai_opex": -5457428.733669781,
+          "interest": 1592979.01,
           "plant_distributions": 2706283.944,
           "orbit_revenue": 6666666.666666668,
           "orbit_opex": -625000,
@@ -28287,21 +28290,21 @@
             "insurance": -1239000
           }
         },
-        "rounding": -0.02153828740119934,
+        "rounding": -0.021538257598876953,
         "weeks": [
-          154350002.9,
-          156241370.34,
-          158132737.78,
-          160024105.22,
-          161915472.66,
-          163806840.1,
-          165698207.54,
-          167589574.98,
-          169480942.42,
-          171372309.86,
-          173263677.3,
-          175155044.74,
-          177046412.18
+          156164392.06,
+          158055759.5,
+          159947126.94,
+          161838494.38,
+          163729861.82,
+          165621229.26,
+          167512596.7,
+          169403964.14,
+          171295331.58,
+          173186699.02,
+          175078066.46,
+          176969433.9,
+          178860801.34
         ],
         "parents": {
           "project:project-3": "site-22",
@@ -28334,12 +28337,13 @@
       },
       {
         "q": 79,
-        "startCash": 184555362.79,
+        "startCash": 187962730.96,
         "lines": {
           "rent": -34345,
           "prepayments": -1105756.5749999997,
-          "ai_shell_rent": 27985844.863607597,
-          "ai_opex": -4897522.851131324,
+          "ai_shell_rent": 31185307.049541764,
+          "ai_opex": -5457428.733669781,
+          "interest": 1893027.96,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {
@@ -28356,8 +28360,8 @@
           },
           "site:site-22": {
             "prepayments": -1105756.5749999997,
-            "ai_shell_rent": 26693402.11360759,
-            "ai_opex": -4671345.369881325
+            "ai_shell_rent": 29892864.29954175,
+            "ai_opex": -5231251.252419783
           },
           "project:project-28": {
             "prepayments": -1105756.5749999997,
@@ -28369,72 +28373,72 @@
             "ai_opex": -787500.0000000001
           },
           "project:project-3": {
-            "ai_shell_rent": 324686.1193573593,
-            "ai_opex": -56820.070887537884
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
           },
           "project:project-4": {
             "ai_shell_rent": 2700000,
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 287417.8436236406,
-            "ai_opex": -50298.12263413711
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 189446.18173865994,
-            "ai_opex": -33153.081804265494
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 226244.2634375,
-            "ai_opex": -39592.74610156249
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-9": {
-            "ai_shell_rent": 200894.32140555556,
-            "ai_opex": -35156.506245972225
+            "ai_shell_rent": 243576.66666666663,
+            "ai_opex": -42625.916666666664
           },
           "project:project-10": {
-            "ai_shell_rent": 194295.40593749998,
-            "ai_opex": -34001.6960390625
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 258199.875,
-            "ai_opex": -45184.978125000016
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 238151.85624999998,
-            "ai_opex": -41676.57484375
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 540026.7985163333,
-            "ai_opex": -94504.68974035836
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 844024.4676613751,
-            "ai_opex": -147704.28184074056
+            "ai_shell_rent": 1023347.3250000002,
+            "ai_opex": -179085.781875
           },
           "project:project-17": {
-            "ai_shell_rent": 5601005.952435001,
-            "ai_opex": -980176.0416761249
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1383536.4251648334,
-            "ai_opex": -242118.8744038459
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 393269.4697981875,
-            "ai_opex": -68822.1572146828
+            "ai_shell_rent": 476824.16249999986,
+            "ai_opex": -83444.22843749999
           },
           "project:project-20": {
-            "ai_shell_rent": 400724.20023664576,
-            "ai_opex": -70126.735041413
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 659177.3955450001,
-            "ai_opex": -115356.044220375
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
             "ai_shell_rent": 485862.7375,
@@ -28472,21 +28476,21 @@
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": 0.010524004697799683,
+        "rounding": -0.02287161350250244,
         "weeks": [
-          186243687.44,
-          187932012.09,
-          189620336.74,
-          191308661.39,
-          192996986.04,
-          194685310.69,
-          196373635.34,
-          198061959.99,
-          199750284.64,
-          201438609.29,
-          203126933.94,
-          204815258.59,
-          206503583.24
+          189854098.4,
+          191745465.84,
+          193636833.28,
+          195528200.72,
+          197419568.16,
+          199310935.6,
+          201202303.04,
+          203093670.48,
+          204985037.92,
+          206876405.36,
+          208767772.8,
+          210659140.24,
+          212550507.68
         ],
         "parents": {
           "project:project-28": "site-22",
@@ -28519,13 +28523,14 @@
       },
       {
         "q": 80,
-        "startCash": 209208091.59,
+        "startCash": 217148043.99,
         "lines": {
           "other_income": 993266,
           "rent": -34345,
           "prepayments": -1105756.5749999997,
-          "ai_shell_rent": 27688762.968005735,
-          "ai_opex": -4845533.519400995,
+          "ai_shell_rent": 30825106.634958416,
+          "ai_opex": -5394393.661117697,
+          "interest": 2159159.3,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {
@@ -28538,8 +28543,8 @@
           "site:site-22": {
             "other_income": 993266,
             "prepayments": -1105756.5749999997,
-            "ai_shell_rent": 26396320.218005728,
-            "ai_opex": -4619356.038150998
+            "ai_shell_rent": 29532663.8849584,
+            "ai_opex": -5168216.179867699
           },
           "project:project-22": {
             "other_income": 347045,
@@ -28567,72 +28572,72 @@
             "ai_opex": -787500.0000000001
           },
           "project:project-3": {
-            "ai_shell_rent": 324686.1193573593,
-            "ai_opex": -56820.070887537884
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
           },
           "project:project-4": {
             "ai_shell_rent": 2700000,
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 287417.8436236406,
-            "ai_opex": -50298.12263413711
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 189446.18173865994,
-            "ai_opex": -33153.081804265494
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 226244.2634375,
-            "ai_opex": -39592.74610156249
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-9": {
-            "ai_shell_rent": 100447.16070277778,
-            "ai_opex": -17578.253122986112
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
           },
           "project:project-10": {
-            "ai_shell_rent": 194295.40593749998,
-            "ai_opex": -34001.6960390625
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 258199.875,
-            "ai_opex": -45184.978125000016
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 238151.85624999998,
-            "ai_opex": -41676.57484375
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 540026.7985163333,
-            "ai_opex": -94504.68974035836
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 844024.4676613751,
-            "ai_opex": -147704.28184074056
+            "ai_shell_rent": 1023347.3250000002,
+            "ai_opex": -179085.781875
           },
           "project:project-17": {
-            "ai_shell_rent": 5601005.952435001,
-            "ai_opex": -980176.0416761249
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1383536.4251648334,
-            "ai_opex": -242118.8744038459
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 196634.73489909375,
-            "ai_opex": -34411.0786073414
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
           },
           "project:project-20": {
-            "ai_shell_rent": 400724.20023664576,
-            "ai_opex": -70126.735041413
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 659177.3955450001,
-            "ai_opex": -115356.044220375
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-24": {
             "ai_shell_rent": 971725.475,
@@ -28662,21 +28667,21 @@
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": -0.06560447812080383,
+        "rounding": 0.009159624576568604,
         "weeks": [
-          211870828.96,
-          213540300.33,
-          215209771.7,
-          216879243.07,
-          218548714.44,
-          220218185.81,
-          221887657.18,
-          223557128.55,
-          225226599.92,
-          226896071.29,
-          228565542.66,
-          230235014.03,
-          231904485.4
+          220009818.56,
+          221878327.13,
+          223746835.7,
+          225615344.27,
+          227483852.84,
+          229352361.41,
+          231220869.98,
+          233089378.55,
+          234957887.12,
+          236826395.69,
+          238694904.26,
+          240563412.83,
+          242431921.4
         ],
         "parents": {
           "project:project-22": "site-22",
@@ -28709,12 +28714,13 @@
       },
       {
         "q": 81,
-        "startCash": 234608993.75,
+        "startCash": 247295589.05,
         "lines": {
           "rent": -34345,
           "prepayments": -1105756.5749999997,
-          "ai_shell_rent": 26793312.79758044,
-          "ai_opex": -4688829.739576574,
+          "ai_shell_rent": 30322324.49989589,
+          "ai_opex": -5306406.787481761,
+          "interest": 2415120.33,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {
@@ -28731,8 +28737,8 @@
           },
           "site:site-22": {
             "prepayments": -1105756.5749999997,
-            "ai_shell_rent": 25500870.04758044,
-            "ai_opex": -4462652.258326573
+            "ai_shell_rent": 29029881.749895874,
+            "ai_opex": -5080229.306231761
           },
           "project:project-28": {
             "prepayments": -1105756.5749999997,
@@ -28744,80 +28750,80 @@
             "ai_opex": -787500.0000000001
           },
           "project:project-3": {
-            "ai_shell_rent": 324686.1193573593,
-            "ai_opex": -56820.070887537884
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
           },
           "project:project-4": {
             "ai_shell_rent": 2700000,
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 287417.8436236406,
-            "ai_opex": -50298.12263413711
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 189446.18173865994,
-            "ai_opex": -33153.081804265494
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 226244.2634375,
-            "ai_opex": -39592.74610156249
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-9": {
-            "ai_shell_rent": 100447.16070277778,
-            "ai_opex": -17578.253122986112
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
           },
           "project:project-10": {
-            "ai_shell_rent": 194295.40593749998,
-            "ai_opex": -34001.6960390625
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 258199.875,
-            "ai_opex": -45184.978125000016
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 238151.85624999998,
-            "ai_opex": -41676.57484375
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 540026.7985163333,
-            "ai_opex": -94504.68974035836
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 422012.23383068753,
-            "ai_opex": -73852.14092037028
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
           },
           "project:project-17": {
-            "ai_shell_rent": 5601005.952435001,
-            "ai_opex": -980176.0416761249
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1383536.4251648334,
-            "ai_opex": -242118.8744038459
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 196634.73489909375,
-            "ai_opex": -34411.0786073414
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
           },
           "project:project-20": {
-            "ai_shell_rent": 400724.20023664576,
-            "ai_opex": -70126.735041413
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 659177.3955450001,
-            "ai_opex": -115356.044220375
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
-            "ai_shell_rent": 376319.35946943844,
-            "ai_opex": -65855.8879071517
+            "ai_shell_rent": 488292.05118749995,
+            "ai_opex": -85451.1089578125
           },
           "project:project-23": {
-            "ai_shell_rent": 928548.1914359621,
-            "ai_opex": -162495.93350129342
+            "ai_shell_rent": 1298904.96375,
+            "ai_opex": -227308.36865624995
           },
           "project:project-24": {
             "ai_shell_rent": 971725.475,
@@ -28847,21 +28853,21 @@
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": 0.004996359348297119,
+        "rounding": -0.019413918256759644,
         "weeks": [
-          236221638.48,
-          237834283.21,
-          239446927.94,
-          241059572.67,
-          242672217.4,
-          244284862.13,
-          245897506.86,
-          247510151.59,
-          249122796.32,
-          250735441.05,
-          252348085.78,
-          253960730.51,
-          255573375.24
+          249132190.29,
+          250968791.53,
+          252805392.77,
+          254641994.01,
+          256478595.25,
+          258315196.49,
+          260151797.73,
+          261988398.97,
+          263825000.21,
+          265661601.45,
+          267498202.69,
+          269334803.93,
+          271171405.17
         ],
         "parents": {
           "project:project-28": "site-22",
@@ -28894,13 +28900,14 @@
       },
       {
         "q": 82,
-        "startCash": 258277883.59,
+        "startCash": 276291033.85,
         "lines": {
           "other_income": 1340311,
           "rent": -34345,
           "prepayments": -1020698.3769230767,
-          "ai_shell_rent": 24831707.409305025,
-          "ai_opex": -5765516.496733689,
+          "ai_shell_rent": 28089256.67298082,
+          "ai_opex": -6535545.577469542,
+          "interest": 2655220.42,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {
@@ -28913,8 +28920,8 @@
           "site:site-22": {
             "other_income": 1340311,
             "prepayments": -1020698.3769230767,
-            "ai_shell_rent": 23539264.659305025,
-            "ai_opex": -4119371.3153783763
+            "ai_shell_rent": 26796813.922980804,
+            "ai_opex": -4689442.436521627
           },
           "project:project-24": {
             "other_income": 694090,
@@ -28942,80 +28949,80 @@
             "ai_opex": -726923.076923077
           },
           "project:project-3": {
-            "ai_shell_rent": 299710.26402217784,
-            "ai_opex": -52449.296203881124
+            "ai_shell_rent": 427514.36538461543,
+            "ai_opex": -74815.01394230768
           },
           "project:project-4": {
             "ai_shell_rent": 2492307.6923076925,
             "ai_opex": -436153.84615384624
           },
           "project:project-5": {
-            "ai_shell_rent": 265308.7787295144,
-            "ai_opex": -46429.03627766502
+            "ai_shell_rent": 321676.7278846153,
+            "ai_opex": -56293.42737980768
           },
           "project:project-6": {
             "ai_shell_rent": 415384.61538461543,
             "ai_opex": -72692.30769230769
           },
           "project:project-7": {
-            "ai_shell_rent": 174873.3985279938,
-            "ai_opex": -30602.844742398916
+            "ai_shell_rent": 212027.2947692308,
+            "ai_opex": -37104.77658461538
           },
           "project:project-8": {
-            "ai_shell_rent": 208840.8585576923,
-            "ai_opex": -36547.15024759614
+            "ai_shell_rent": 253211.5384615384,
+            "ai_opex": -44312.01923076922
           },
           "project:project-9": {
-            "ai_shell_rent": 92720.45603333334,
-            "ai_opex": -16226.079805833333
+            "ai_shell_rent": 112419.99999999999,
+            "ai_opex": -19673.5
           },
           "project:project-10": {
-            "ai_shell_rent": 179349.6054807692,
-            "ai_opex": -31386.18095913462
+            "ai_shell_rent": 234432.69230769228,
+            "ai_opex": -41025.721153846134
           },
           "project:project-11": {
-            "ai_shell_rent": 238338.34615384616,
-            "ai_opex": -41709.21057692309
+            "ai_shell_rent": 311538.46153846156,
+            "ai_opex": -54519.23076923078
           },
           "project:project-12": {
-            "ai_shell_rent": 219832.48269230768,
-            "ai_opex": -38470.68447115384
+            "ai_shell_rent": 266538.46153846156,
+            "ai_opex": -46644.23076923078
           },
           "project:project-15": {
-            "ai_shell_rent": 498486.27555353846,
-            "ai_opex": -87235.09822186925
+            "ai_shell_rent": 604395.5076923076,
+            "ai_opex": -105769.2138461538
           },
           "project:project-16": {
-            "ai_shell_rent": 389549.75430525,
-            "ai_opex": -68171.20700341872
+            "ai_shell_rent": 472314.1500000001,
+            "ai_opex": -82654.97624999999
           },
           "project:project-17": {
-            "ai_shell_rent": 5170159.340709232,
-            "ai_opex": -904777.8846241153
+            "ai_shell_rent": 6758054.307692307,
+            "ai_opex": -1182659.5038461538
           },
           "project:project-18": {
-            "ai_shell_rent": 1277110.546306,
-            "ai_opex": -223494.34560355006
+            "ai_shell_rent": 1548447.6000000003,
+            "ai_opex": -270978.32999999996
           },
           "project:project-19": {
-            "ai_shell_rent": 181508.98606070192,
-            "ai_opex": -31764.072560622826
+            "ai_shell_rent": 220072.69038461533,
+            "ai_opex": -38512.72081730769
           },
           "project:project-20": {
-            "ai_shell_rent": 369899.2617569038,
-            "ai_opex": -64732.37080745816
+            "ai_shell_rent": 448488.68076923076,
+            "ai_opex": -78485.51913461539
           },
           "project:project-21": {
-            "ai_shell_rent": 608471.4420415385,
-            "ai_opex": -106482.50235726923
+            "ai_shell_rent": 795349.3846153846,
+            "ai_opex": -139186.1423076923
           },
           "project:project-22": {
-            "ai_shell_rent": 347371.71643332776,
-            "ai_opex": -60790.05037583234
+            "ai_shell_rent": 450731.1241730769,
+            "ai_opex": -78877.94673028846
           },
           "project:project-23": {
-            "ai_shell_rent": 857121.4074793496,
-            "ai_opex": -149996.24630888624
+            "ai_shell_rent": 1198989.1973076924,
+            "ai_opex": -209823.1095288461
           },
           "project:project-26": {
             "ai_shell_rent": 795349.3846153846,
@@ -29037,21 +29044,21 @@
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": 0.0023517608642578125,
+        "rounding": -0.020588457584381104,
         "weeks": [
-          261230839.32,
-          262843484.05,
-          264456128.78,
-          266068773.51,
-          267681418.24,
-          269294062.97,
-          270906707.7,
-          272519352.43,
-          274131997.16,
-          272791407.94,
-          274404052.67,
-          276016697.4,
-          277629342.13
+          279467946.09,
+          281304547.33,
+          283141148.57,
+          284977749.81,
+          286814351.05,
+          288650952.29,
+          290487553.53,
+          292324154.77,
+          294160756.01,
+          292620208.83,
+          294456810.07,
+          296293411.31,
+          298130012.55
         ],
         "parents": {
           "project:project-24": "site-22",
@@ -29084,12 +29091,13 @@
       },
       {
         "q": 83,
-        "startCash": 280333850.48,
+        "startCash": 303489741.32,
         "lines": {
           "rent": -34345,
           "prepayments": -85057.7480769182,
-          "ai_shell_rent": 26227059.710919198,
-          "ai_opex": -4589735.449410858,
+          "ai_shell_rent": 30356287.02327089,
+          "ai_opex": -5312350.229072386,
+          "interest": 2924939.64,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {
@@ -29106,8 +29114,8 @@
           },
           "site:site-22": {
             "prepayments": -85057.7480769182,
-            "ai_shell_rent": 24934616.96091919,
-            "ai_opex": -4363557.968160859
+            "ai_shell_rent": 29063844.273270875,
+            "ai_opex": -5086172.747822387
           },
           "project:project-28": {
             "prepayments": -85057.7480769182,
@@ -29119,88 +29127,88 @@
             "ai_opex": -787500.0000000001
           },
           "project:project-3": {
-            "ai_shell_rent": 324686.1193573593,
-            "ai_opex": -56820.070887537884
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
           },
           "project:project-4": {
             "ai_shell_rent": 2700000,
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 287417.8436236406,
-            "ai_opex": -50298.12263413711
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 189446.18173865994,
-            "ai_opex": -33153.081804265494
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 226244.2634375,
-            "ai_opex": -39592.74610156249
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-9": {
-            "ai_shell_rent": 100447.16070277778,
-            "ai_opex": -17578.253122986112
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
           },
           "project:project-10": {
-            "ai_shell_rent": 194295.40593749998,
-            "ai_opex": -34001.6960390625
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 258199.875,
-            "ai_opex": -45184.978125000016
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 238151.85624999998,
-            "ai_opex": -41676.57484375
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 540026.7985163333,
-            "ai_opex": -94504.68974035836
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 422012.23383068753,
-            "ai_opex": -73852.14092037028
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
           },
           "project:project-17": {
-            "ai_shell_rent": 5601005.952435001,
-            "ai_opex": -980176.0416761249
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1383536.4251648334,
-            "ai_opex": -242118.8744038459
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 196634.73489909375,
-            "ai_opex": -34411.0786073414
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
           },
           "project:project-20": {
-            "ai_shell_rent": 400724.20023664576,
-            "ai_opex": -70126.735041413
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 659177.3955450001,
-            "ai_opex": -115356.044220375
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
-            "ai_shell_rent": 376319.35946943844,
-            "ai_opex": -65855.8879071517
+            "ai_shell_rent": 488292.05118749995,
+            "ai_opex": -85451.1089578125
           },
           "project:project-23": {
-            "ai_shell_rent": 928548.1914359621,
-            "ai_opex": -162495.93350129342
+            "ai_shell_rent": 1298904.96375,
+            "ai_opex": -227308.36865624995
           },
           "project:project-24": {
-            "ai_shell_rent": 760127.6614158805,
-            "ai_opex": -133022.34074777912
+            "ai_shell_rent": 986301.3571249997,
+            "ai_opex": -172602.73749687496
           },
           "project:project-25": {
-            "ai_shell_rent": 937787.4769228873,
-            "ai_opex": -164112.80846150528
+            "ai_shell_rent": 1311829.39125,
+            "ai_opex": -229570.14346874988
           },
           "project:project-26": {
             "ai_shell_rent": 861628.5,
@@ -29222,21 +29230,21 @@
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": 0.05456894636154175,
+        "rounding": -0.03812110424041748,
         "weeks": [
-          281910560.37,
-          283572328.01,
-          285234095.65,
-          286895863.29,
-          288557630.93,
-          290219398.57,
-          291881166.21,
-          293542933.85,
-          295204701.49,
-          296866469.13,
-          298528236.77,
-          300190004.41,
-          301851772.05
+          305328498.33,
+          307252313.08,
+          309176127.83,
+          311099942.58,
+          313023757.33,
+          314947572.08,
+          316871386.83,
+          318795201.58,
+          320719016.33,
+          322642831.08,
+          324566645.83,
+          326490460.58,
+          328414275.33
         ],
         "parents": {
           "project:project-28": "site-22",
@@ -29269,11 +29277,12 @@
       },
       {
         "q": 84,
-        "startCash": 304556280.4,
+        "startCash": 334043723.32,
         "lines": {
           "rent": -34345,
-          "ai_shell_rent": 26227059.710919198,
-          "ai_opex": -4589735.449410858,
+          "ai_shell_rent": 30356287.02327089,
+          "ai_opex": -5312350.229072386,
+          "interest": 3197818.59,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {},
@@ -29285,96 +29294,96 @@
             "rent": -28345.000000000007
           },
           "site:site-22": {
-            "ai_shell_rent": 24934616.96091919,
-            "ai_opex": -4363557.968160859
+            "ai_shell_rent": 29063844.273270875,
+            "ai_opex": -5086172.747822387
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
             "ai_opex": -787500.0000000001
           },
           "project:project-3": {
-            "ai_shell_rent": 324686.1193573593,
-            "ai_opex": -56820.070887537884
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
           },
           "project:project-4": {
             "ai_shell_rent": 2700000,
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 287417.8436236406,
-            "ai_opex": -50298.12263413711
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 189446.18173865994,
-            "ai_opex": -33153.081804265494
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 226244.2634375,
-            "ai_opex": -39592.74610156249
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-9": {
-            "ai_shell_rent": 100447.16070277778,
-            "ai_opex": -17578.253122986112
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
           },
           "project:project-10": {
-            "ai_shell_rent": 194295.40593749998,
-            "ai_opex": -34001.6960390625
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 258199.875,
-            "ai_opex": -45184.978125000016
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 238151.85624999998,
-            "ai_opex": -41676.57484375
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 540026.7985163333,
-            "ai_opex": -94504.68974035836
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 422012.23383068753,
-            "ai_opex": -73852.14092037028
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
           },
           "project:project-17": {
-            "ai_shell_rent": 5601005.952435001,
-            "ai_opex": -980176.0416761249
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1383536.4251648334,
-            "ai_opex": -242118.8744038459
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 196634.73489909375,
-            "ai_opex": -34411.0786073414
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
           },
           "project:project-20": {
-            "ai_shell_rent": 400724.20023664576,
-            "ai_opex": -70126.735041413
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 659177.3955450001,
-            "ai_opex": -115356.044220375
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
-            "ai_shell_rent": 376319.35946943844,
-            "ai_opex": -65855.8879071517
+            "ai_shell_rent": 488292.05118749995,
+            "ai_opex": -85451.1089578125
           },
           "project:project-23": {
-            "ai_shell_rent": 928548.1914359621,
-            "ai_opex": -162495.93350129342
+            "ai_shell_rent": 1298904.96375,
+            "ai_opex": -227308.36865624995
           },
           "project:project-24": {
-            "ai_shell_rent": 760127.6614158805,
-            "ai_opex": -133022.34074777912
+            "ai_shell_rent": 986301.3571249997,
+            "ai_opex": -172602.73749687496
           },
           "project:project-25": {
-            "ai_shell_rent": 937787.4769228873,
-            "ai_opex": -164112.80846150528
+            "ai_shell_rent": 1311829.39125,
+            "ai_opex": -229570.14346874988
           },
           "project:project-26": {
             "ai_shell_rent": 861628.5,
@@ -29400,21 +29409,21 @@
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": 0.05649209022521973,
+        "rounding": -0.04619801044464111,
         "weeks": [
-          306218048.04,
-          307879815.68,
-          309541583.32,
-          311203350.96,
-          312865118.6,
-          314526886.24,
-          316188653.88,
-          317850421.52,
-          319512189.16,
-          321173956.8,
-          322835724.44,
-          324497492.08,
-          326159259.72
+          335967538.07,
+          337891352.82,
+          339815167.57,
+          341738982.32,
+          343662797.07,
+          345586611.82,
+          347510426.57,
+          349434241.32,
+          351358056.07,
+          353281870.82,
+          355205685.57,
+          357129500.32,
+          359053315.07
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -29447,12 +29456,13 @@
       },
       {
         "q": 85,
-        "startCash": 328863768.07,
+        "startCash": 364955642.01,
         "lines": {
           "other_income": 1866861,
           "rent": -34345,
-          "ai_shell_rent": 26227059.710919198,
-          "ai_opex": -4589735.449410858,
+          "ai_shell_rent": 30356287.02327089,
+          "ai_opex": -5312350.229072386,
+          "interest": 3489754.59,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {
@@ -29463,8 +29473,8 @@
         "byRef": {
           "site:site-22": {
             "other_income": 1866861,
-            "ai_shell_rent": 24934616.96091919,
-            "ai_opex": -4363557.968160859
+            "ai_shell_rent": 29063844.273270875,
+            "ai_opex": -5086172.747822387
           },
           "project:project-26": {
             "other_income": 430814,
@@ -29492,88 +29502,88 @@
             "ai_opex": -787500.0000000001
           },
           "project:project-3": {
-            "ai_shell_rent": 324686.1193573593,
-            "ai_opex": -56820.070887537884
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
           },
           "project:project-4": {
             "ai_shell_rent": 2700000,
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 287417.8436236406,
-            "ai_opex": -50298.12263413711
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 189446.18173865994,
-            "ai_opex": -33153.081804265494
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 226244.2634375,
-            "ai_opex": -39592.74610156249
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-9": {
-            "ai_shell_rent": 100447.16070277778,
-            "ai_opex": -17578.253122986112
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
           },
           "project:project-10": {
-            "ai_shell_rent": 194295.40593749998,
-            "ai_opex": -34001.6960390625
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 258199.875,
-            "ai_opex": -45184.978125000016
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 238151.85624999998,
-            "ai_opex": -41676.57484375
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 540026.7985163333,
-            "ai_opex": -94504.68974035836
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 422012.23383068753,
-            "ai_opex": -73852.14092037028
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
           },
           "project:project-17": {
-            "ai_shell_rent": 5601005.952435001,
-            "ai_opex": -980176.0416761249
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1383536.4251648334,
-            "ai_opex": -242118.8744038459
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 196634.73489909375,
-            "ai_opex": -34411.0786073414
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
           },
           "project:project-20": {
-            "ai_shell_rent": 400724.20023664576,
-            "ai_opex": -70126.735041413
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 659177.3955450001,
-            "ai_opex": -115356.044220375
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
-            "ai_shell_rent": 376319.35946943844,
-            "ai_opex": -65855.8879071517
+            "ai_shell_rent": 488292.05118749995,
+            "ai_opex": -85451.1089578125
           },
           "project:project-23": {
-            "ai_shell_rent": 928548.1914359621,
-            "ai_opex": -162495.93350129342
+            "ai_shell_rent": 1298904.96375,
+            "ai_opex": -227308.36865624995
           },
           "project:project-24": {
-            "ai_shell_rent": 760127.6614158805,
-            "ai_opex": -133022.34074777912
+            "ai_shell_rent": 986301.3571249997,
+            "ai_opex": -172602.73749687496
           },
           "project:project-25": {
-            "ai_shell_rent": 937787.4769228873,
-            "ai_opex": -164112.80846150528
+            "ai_shell_rent": 1311829.39125,
+            "ai_opex": -229570.14346874988
           },
           "site:site-14": {
             "ai_shell_rent": 1292442.75,
@@ -29587,21 +29597,21 @@
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": 0.05649209022521973,
+        "rounding": -0.04619801044464111,
         "weeks": [
-          332392396.71,
-          334054164.35,
-          335715931.99,
-          337377699.63,
-          339039467.27,
-          340701234.91,
-          342363002.55,
-          344024770.19,
-          345686537.83,
-          347348305.47,
-          349010073.11,
-          350671840.75,
-          352333608.39
+          368746317.76,
+          370670132.51,
+          372593947.26,
+          374517762.01,
+          376441576.76,
+          378365391.51,
+          380289206.26,
+          382213021.01,
+          384136835.76,
+          386060650.51,
+          387984465.26,
+          389908280.01,
+          391832094.76
         ],
         "parents": {
           "project:project-26": "site-22",
@@ -29634,12 +29644,13 @@
       },
       {
         "q": 86,
-        "startCash": 355038116.74,
+        "startCash": 398026357.7,
         "lines": {
           "other_income": 646221,
           "rent": -34345,
-          "ai_shell_rent": 25431064.9340253,
-          "ai_opex": -4450436.3634544285,
+          "ai_shell_rent": 30454081.858020876,
+          "ai_opex": -5329464.3251536405,
+          "interest": 3774137.89,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {
@@ -29665,128 +29676,128 @@
             "rent": -28345.000000000007
           },
           "site:site-22": {
-            "ai_shell_rent": 24138622.18402529,
-            "ai_opex": -4224258.882204429
+            "ai_shell_rent": 29161639.10802086,
+            "ai_opex": -5103286.843903642
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
             "ai_opex": -787500.0000000001
           },
           "project:project-3": {
-            "ai_shell_rent": 324686.1193573593,
-            "ai_opex": -56820.070887537884
+            "ai_shell_rent": 463140.56250000006,
+            "ai_opex": -81049.59843749998
           },
           "project:project-4": {
             "ai_shell_rent": 2700000,
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 287417.8436236406,
-            "ai_opex": -50298.12263413711
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 189446.18173865994,
-            "ai_opex": -33153.081804265494
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 226244.2634375,
-            "ai_opex": -39592.74610156249
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-9": {
-            "ai_shell_rent": 100447.16070277778,
-            "ai_opex": -17578.253122986112
+            "ai_shell_rent": 121788.33333333331,
+            "ai_opex": -21312.958333333332
           },
           "project:project-10": {
-            "ai_shell_rent": 194295.40593749998,
-            "ai_opex": -34001.6960390625
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 258199.875,
-            "ai_opex": -45184.978125000016
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 238151.85624999998,
-            "ai_opex": -41676.57484375
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 540026.7985163333,
-            "ai_opex": -94504.68974035836
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 422012.23383068753,
-            "ai_opex": -73852.14092037028
+            "ai_shell_rent": 511673.6625000001,
+            "ai_opex": -89542.8909375
           },
           "project:project-17": {
-            "ai_shell_rent": 5601005.952435001,
-            "ai_opex": -980176.0416761249
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1383536.4251648334,
-            "ai_opex": -242118.8744038459
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 196634.73489909375,
-            "ai_opex": -34411.0786073414
+            "ai_shell_rent": 238412.08124999993,
+            "ai_opex": -41722.11421874999
           },
           "project:project-20": {
-            "ai_shell_rent": 400724.20023664576,
-            "ai_opex": -70126.735041413
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 659177.3955450001,
-            "ai_opex": -115356.044220375
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
-            "ai_shell_rent": 376319.35946943844,
-            "ai_opex": -65855.8879071517
+            "ai_shell_rent": 488292.05118749995,
+            "ai_opex": -85451.1089578125
           },
           "project:project-23": {
-            "ai_shell_rent": 928548.1914359621,
-            "ai_opex": -162495.93350129342
+            "ai_shell_rent": 1298904.96375,
+            "ai_opex": -227308.36865624995
           },
           "project:project-24": {
-            "ai_shell_rent": 760127.6614158805,
-            "ai_opex": -133022.34074777912
+            "ai_shell_rent": 986301.3571249997,
+            "ai_opex": -172602.73749687496
           },
           "project:project-25": {
-            "ai_shell_rent": 937787.4769228873,
-            "ai_opex": -164112.80846150528
+            "ai_shell_rent": 1311829.39125,
+            "ai_opex": -229570.14346874988
           },
           "project:project-26": {
-            "ai_shell_rent": 634430.93676885,
-            "ai_opex": -111025.41393454873
+            "ai_shell_rent": 887477.355,
+            "ai_opex": -155308.53712500003
           },
           "project:project-27": {
-            "ai_shell_rent": 951646.405153275,
-            "ai_opex": -166538.12090182316
+            "ai_shell_rent": 1331216.0325000002,
+            "ai_opex": -232962.80568750005
           },
           "project:project-28": {
-            "ai_shell_rent": 877755.7061839916,
-            "ai_opex": -153607.2485821985
+            "ai_shell_rent": 1138929.2722500002,
+            "ai_opex": -199312.62264375007
           },
           "venture:venture-36": {
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": -0.03257113695144653,
+        "rounding": -0.05486685037612915,
         "weeks": [
-          357295590.32,
-          358906842.9,
-          360518095.48,
-          362129348.06,
-          363740600.64,
-          365351853.22,
-          366963105.8,
-          368574358.38,
-          370185610.96,
-          371796863.54,
-          373408116.12,
-          375019368.7,
-          376630621.28
+          400602599.66,
+          402532620.62,
+          404462641.58,
+          406392662.54,
+          408322683.5,
+          410252704.46,
+          412182725.42,
+          414112746.38,
+          416042767.34,
+          417972788.3,
+          419902809.26,
+          421832830.22,
+          423762851.18
         ],
         "parents": {
           "project:project-29": "site-14",
@@ -29819,11 +29830,12 @@
       },
       {
         "q": 87,
-        "startCash": 379335129.63,
+        "startCash": 430241497.42,
         "lines": {
           "rent": -34345,
-          "ai_shell_rent": 22309509.26387786,
-          "ai_opex": -3904164.1211786275,
+          "ai_shell_rent": 30619238.705937553,
+          "ai_opex": -5358366.773539057,
+          "interest": 4056512.09,
           "plant_distributions": 2704508.3520000004
         },
         "byBiz": {},
@@ -29835,8 +29847,8 @@
             "rent": -28345.000000000007
           },
           "site:site-22": {
-            "ai_shell_rent": 21385580.71518537,
-            "ai_opex": -3742476.6251574396
+            "ai_shell_rent": 29326795.95593754,
+            "ai_opex": -5132189.292289059
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
@@ -29847,116 +29859,116 @@
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 221508.62081308546,
-            "ai_opex": -38764.00864228996
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 146003.33057325924,
-            "ai_opex": -25550.58285032036
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 174363.06016732962,
-            "ai_opex": -30513.535529282697
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-10": {
-            "ai_shell_rent": 138895.95684254068,
-            "ai_opex": -24306.792447444608
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 184579.34464125003,
-            "ai_opex": -32301.385312218747
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 183540.06333403126,
-            "ai_opex": -32119.51108345548
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 416190.5532145602,
-            "ai_opex": -72833.34681254807
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 650476.9968596067,
-            "ai_opex": -113833.4744504312
+            "ai_shell_rent": 1023347.3250000002,
+            "ai_opex": -179085.781875
           },
           "project:project-17": {
-            "ai_shell_rent": 4003991.12521721,
-            "ai_opex": -700698.4469130116
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1066270.7698281594,
-            "ai_opex": -186597.3847199279
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 303086.8813314161,
-            "ai_opex": -53040.20423299783
+            "ai_shell_rent": 476824.16249999986,
+            "ai_opex": -83444.22843749999
           },
           "project:project-20": {
-            "ai_shell_rent": 308832.13025937934,
-            "ai_opex": -54045.62279539138
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 471226.1447532543,
-            "ai_opex": -82464.57533181948
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
-            "ai_shell_rent": 376319.35946943844,
-            "ai_opex": -65855.8879071517
+            "ai_shell_rent": 488292.05118749995,
+            "ai_opex": -85451.1089578125
           },
           "project:project-23": {
-            "ai_shell_rent": 928548.1914359621,
-            "ai_opex": -162495.93350129342
+            "ai_shell_rent": 1298904.96375,
+            "ai_opex": -227308.36865624995
           },
           "project:project-24": {
-            "ai_shell_rent": 760127.6614158805,
-            "ai_opex": -133022.34074777912
+            "ai_shell_rent": 986301.3571249997,
+            "ai_opex": -172602.73749687496
           },
           "project:project-25": {
-            "ai_shell_rent": 937787.4769228873,
-            "ai_opex": -164112.80846150528
+            "ai_shell_rent": 1311829.39125,
+            "ai_opex": -229570.14346874988
           },
           "project:project-26": {
-            "ai_shell_rent": 634430.93676885,
-            "ai_opex": -111025.41393454873
+            "ai_shell_rent": 887477.355,
+            "ai_opex": -155308.53712500003
           },
           "project:project-27": {
-            "ai_shell_rent": 951646.405153275,
-            "ai_opex": -166538.12090182316
+            "ai_shell_rent": 1331216.0325000002,
+            "ai_opex": -232962.80568750005
           },
           "project:project-28": {
-            "ai_shell_rent": 877755.7061839916,
-            "ai_opex": -153607.2485821985
+            "ai_shell_rent": 1138929.2722500002,
+            "ai_opex": -199312.62264375007
           },
           "site:site-14": {
-            "ai_shell_rent": 923928.5486925005,
-            "ai_opex": -161687.49602118751
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992
           },
           "project:project-29": {
-            "ai_shell_rent": 923928.5486925005,
-            "ai_opex": -161687.49602118751
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992
           },
           "venture:venture-36": {
             "plant_distributions": 2704508.3520000004
           }
         },
-        "rounding": 0.0353008508682251,
+        "rounding": -0.02439802885055542,
         "weeks": [
-          380748283.49,
-          382161437.35,
-          383574591.21,
-          384987745.07,
-          386400898.93,
-          387814052.79,
-          389227206.65,
-          390640360.51,
-          392053514.37,
-          393466668.23,
-          394879822.09,
-          396292975.95,
-          397706129.81
+          432181999.49,
+          434122501.56,
+          436063003.63,
+          438003505.7,
+          439944007.77,
+          441884509.84,
+          443825011.91,
+          445765513.98,
+          447706016.05,
+          449646518.12,
+          451587020.19,
+          453527522.26,
+          455468024.33
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -29987,12 +29999,13 @@
       },
       {
         "q": 88,
-        "startCash": 400410638.16,
+        "startCash": 462229044.77,
         "lines": {
           "asset_sales": 104035408.06,
           "rent": -34345,
-          "ai_shell_rent": 22309509.26387786,
-          "ai_opex": -3904164.1211786275
+          "ai_shell_rent": 30619238.705937553,
+          "ai_opex": -5358366.773539057,
+          "interest": 5267966.54
         },
         "byBiz": {},
         "byRef": {
@@ -30010,8 +30023,8 @@
             "rent": -28345.000000000007
           },
           "site:site-22": {
-            "ai_shell_rent": 21385580.71518537,
-            "ai_opex": -3742476.6251574396
+            "ai_shell_rent": 29326795.95593754,
+            "ai_opex": -5132189.292289059
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
@@ -30022,113 +30035,113 @@
             "ai_opex": -472500.0000000001
           },
           "project:project-5": {
-            "ai_shell_rent": 221508.62081308546,
-            "ai_opex": -38764.00864228996
+            "ai_shell_rent": 348483.1218749999,
+            "ai_opex": -60984.54632812499
           },
           "project:project-6": {
             "ai_shell_rent": 450000.00000000006,
             "ai_opex": -78750
           },
           "project:project-7": {
-            "ai_shell_rent": 146003.33057325924,
-            "ai_opex": -25550.58285032036
+            "ai_shell_rent": 229696.23600000003,
+            "ai_opex": -40196.84129999999
           },
           "project:project-8": {
-            "ai_shell_rent": 174363.06016732962,
-            "ai_opex": -30513.535529282697
+            "ai_shell_rent": 274312.49999999994,
+            "ai_opex": -48004.687499999985
           },
           "project:project-10": {
-            "ai_shell_rent": 138895.95684254068,
-            "ai_opex": -24306.792447444608
+            "ai_shell_rent": 253968.74999999997,
+            "ai_opex": -44444.53124999998
           },
           "project:project-11": {
-            "ai_shell_rent": 184579.34464125003,
-            "ai_opex": -32301.385312218747
+            "ai_shell_rent": 337500,
+            "ai_opex": -59062.500000000015
           },
           "project:project-12": {
-            "ai_shell_rent": 183540.06333403126,
-            "ai_opex": -32119.51108345548
+            "ai_shell_rent": 288750,
+            "ai_opex": -50531.250000000015
           },
           "project:project-15": {
-            "ai_shell_rent": 416190.5532145602,
-            "ai_opex": -72833.34681254807
+            "ai_shell_rent": 654761.7999999999,
+            "ai_opex": -114583.31499999994
           },
           "project:project-16": {
-            "ai_shell_rent": 650476.9968596067,
-            "ai_opex": -113833.4744504312
+            "ai_shell_rent": 1023347.3250000002,
+            "ai_opex": -179085.781875
           },
           "project:project-17": {
-            "ai_shell_rent": 4003991.12521721,
-            "ai_opex": -700698.4469130116
+            "ai_shell_rent": 7321225.499999999,
+            "ai_opex": -1281214.4625
           },
           "project:project-18": {
-            "ai_shell_rent": 1066270.7698281594,
-            "ai_opex": -186597.3847199279
+            "ai_shell_rent": 1677484.9000000004,
+            "ai_opex": -293559.8574999999
           },
           "project:project-19": {
-            "ai_shell_rent": 303086.8813314161,
-            "ai_opex": -53040.20423299783
+            "ai_shell_rent": 476824.16249999986,
+            "ai_opex": -83444.22843749999
           },
           "project:project-20": {
-            "ai_shell_rent": 308832.13025937934,
-            "ai_opex": -54045.62279539138
+            "ai_shell_rent": 485862.7375,
+            "ai_opex": -85025.9790625
           },
           "project:project-21": {
-            "ai_shell_rent": 471226.1447532543,
-            "ai_opex": -82464.57533181948
+            "ai_shell_rent": 861628.5,
+            "ai_opex": -150784.9875
           },
           "project:project-22": {
-            "ai_shell_rent": 376319.35946943844,
-            "ai_opex": -65855.8879071517
+            "ai_shell_rent": 488292.05118749995,
+            "ai_opex": -85451.1089578125
           },
           "project:project-23": {
-            "ai_shell_rent": 928548.1914359621,
-            "ai_opex": -162495.93350129342
+            "ai_shell_rent": 1298904.96375,
+            "ai_opex": -227308.36865624995
           },
           "project:project-24": {
-            "ai_shell_rent": 760127.6614158805,
-            "ai_opex": -133022.34074777912
+            "ai_shell_rent": 986301.3571249997,
+            "ai_opex": -172602.73749687496
           },
           "project:project-25": {
-            "ai_shell_rent": 937787.4769228873,
-            "ai_opex": -164112.80846150528
+            "ai_shell_rent": 1311829.39125,
+            "ai_opex": -229570.14346874988
           },
           "project:project-26": {
-            "ai_shell_rent": 634430.93676885,
-            "ai_opex": -111025.41393454873
+            "ai_shell_rent": 887477.355,
+            "ai_opex": -155308.53712500003
           },
           "project:project-27": {
-            "ai_shell_rent": 951646.405153275,
-            "ai_opex": -166538.12090182316
+            "ai_shell_rent": 1331216.0325000002,
+            "ai_opex": -232962.80568750005
           },
           "project:project-28": {
-            "ai_shell_rent": 877755.7061839916,
-            "ai_opex": -153607.2485821985
+            "ai_shell_rent": 1138929.2722500002,
+            "ai_opex": -199312.62264375007
           },
           "site:site-14": {
-            "ai_shell_rent": 923928.5486925005,
-            "ai_opex": -161687.49602118751
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992
           },
           "project:project-29": {
-            "ai_shell_rent": 923928.5486925005,
-            "ai_opex": -161687.49602118751
+            "ai_shell_rent": 1292442.75,
+            "ai_opex": -226177.48124999992
           }
         },
-        "rounding": 0.03730076551437378,
+        "rounding": -0.022398710250854492,
         "weeks": [
-          505859200.08,
-          507272353.94,
-          508685507.8,
-          510098661.66,
-          511511815.52,
-          512924969.38,
-          514338123.24,
-          515751277.1,
-          517164430.96,
-          518577584.82,
-          519990738.68,
-          521403892.54,
-          522817046.4
+          568204954.9,
+          570145456.97,
+          572085959.04,
+          574026461.11,
+          575966963.18,
+          577907465.25,
+          579847967.32,
+          581788469.39,
+          583728971.46,
+          585669473.53,
+          587609975.6,
+          589550477.67,
+          591490979.74
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -30159,14 +30172,15 @@
       },
       {
         "q": 89,
-        "startCash": 522817046.4,
+        "startCash": 596758946.28,
         "lines": {
-          "asset_sales": 1383034144,
-          "rent": -34345
+          "asset_sales": 1932724948,
+          "rent": -34345,
+          "interest": 22527910.05
         },
         "byBiz": {
           "ai": {
-            "asset_sales": 1372859144
+            "asset_sales": 1922549948
           }
         },
         "byRef": {
@@ -30175,108 +30189,108 @@
             "rent": -28345.000000000007
           },
           "site:site-14": {
-            "asset_sales": 56134312
+            "asset_sales": 76659153
           },
           "project:project-29": {
-            "asset_sales": 51459312
+            "asset_sales": 71984153
           },
           "site:site-22": {
-            "asset_sales": 1326624832
+            "asset_sales": 1855790795
           },
           "project:project-2": {
             "asset_sales": 250632911
           },
           "project:project-3": {
-            "asset_sales": 15630155
+            "asset_sales": 22295252
           },
           "project:project-4": {
             "asset_sales": 150379747
           },
           "project:project-5": {
-            "asset_sales": 17624556
+            "asset_sales": 27727409
           },
           "project:project-6": {
             "asset_sales": 25063291
           },
           "project:project-7": {
-            "asset_sales": 11616902
+            "asset_sales": 18276012
           },
           "project:project-8": {
-            "asset_sales": 13873372
+            "asset_sales": 21825949
           },
           "project:project-9": {
-            "asset_sales": 11377538
+            "asset_sales": 13794829
           },
           "project:project-10": {
-            "asset_sales": 7735977
+            "asset_sales": 14145095
           },
           "project:project-11": {
-            "asset_sales": 10280369
+            "asset_sales": 18797468
           },
           "project:project-12": {
-            "asset_sales": 14603549
+            "asset_sales": 22974684
           },
           "project:project-15": {
-            "asset_sales": 33114619
+            "asset_sales": 52096780
           },
           "project:project-16": {
-            "asset_sales": 51755855
+            "asset_sales": 81423657
           },
           "project:project-17": {
-            "asset_sales": 223007101
+            "asset_sales": 407764458
           },
           "project:project-18": {
-            "asset_sales": 84838904
+            "asset_sales": 133470770
           },
           "project:project-19": {
-            "asset_sales": 24115412
+            "asset_sales": 37938993
           },
           "project:project-20": {
-            "asset_sales": 24572538
+            "asset_sales": 38658156
           },
           "project:project-21": {
-            "asset_sales": 26245507
+            "asset_sales": 47989435
           },
           "project:project-22": {
-            "asset_sales": 20768423
+            "asset_sales": 34792341
           },
           "project:project-23": {
-            "asset_sales": 33273586
+            "asset_sales": 64785738
           },
           "project:project-24": {
-            "asset_sales": 60480320
+            "asset_sales": 78476057
           },
           "project:project-25": {
-            "asset_sales": 52231201
+            "asset_sales": 73063915
           },
           "project:project-26": {
-            "asset_sales": 35335394
+            "asset_sales": 49429119
           },
           "project:project-27": {
-            "asset_sales": 53003091
+            "asset_sales": 74143678
           },
           "project:project-28": {
-            "asset_sales": 69839514
+            "asset_sales": 90620051
           },
           "site:site-3": {
             "rent": -6000.000000000001
           }
         },
-        "rounding": 0.03999924659729004,
+        "rounding": 0.04000234603881836,
         "weeks": [
-          1905848548.48,
-          1905845906.56,
-          1905843264.64,
-          1905840622.72,
-          1905837980.8,
-          1905835338.88,
-          1905832696.96,
-          1905830055.04,
-          1905827413.12,
-          1905824771.2,
-          1905822129.28,
-          1905819487.36,
-          1905816845.44
+          2529481252.36,
+          2529478610.44,
+          2529475968.52,
+          2529473326.6,
+          2529470684.68,
+          2529468042.76,
+          2529465400.84,
+          2529462758.92,
+          2529460117,
+          2529457475.08,
+          2529454833.16,
+          2529452191.24,
+          2529449549.32
         ],
         "parents": {
           "project:project-29": "site-14",
@@ -30309,9 +30323,10 @@
       },
       {
         "q": 90,
-        "startCash": 1905816845.44,
+        "startCash": 2551977459.37,
         "lines": {
-          "rent": -34345
+          "rent": -34345,
+          "interest": 22728243.36
         },
         "byBiz": {},
         "byRef": {
@@ -30322,28 +30337,29 @@
             "rent": -28345.000000000007
           }
         },
-        "rounding": 0.03999924659729004,
+        "rounding": 0.04000234603881836,
         "weeks": [
-          1905814203.52,
-          1905811561.6,
-          1905808919.68,
-          1905806277.76,
-          1905803635.84,
-          1905800993.92,
-          1905798352,
-          1905795710.08,
-          1905793068.16,
-          1905790426.24,
-          1905787784.32,
-          1905785142.4,
-          1905782500.48
+          2551974817.45,
+          2551972175.53,
+          2551969533.61,
+          2551966891.69,
+          2551964249.77,
+          2551961607.85,
+          2551958965.93,
+          2551956324.01,
+          2551953682.09,
+          2551951040.17,
+          2551948398.25,
+          2551945756.33,
+          2551943114.41
         ]
       },
       {
         "q": 91,
-        "startCash": 1905782500.48,
+        "startCash": 2574671357.77,
         "lines": {
-          "rent": -34345
+          "rent": -34345,
+          "interest": 22930360.9
         },
         "byBiz": {},
         "byRef": {
@@ -30354,28 +30370,29 @@
             "rent": -28345.000000000007
           }
         },
-        "rounding": 0.03999924659729004,
+        "rounding": 0.04000234603881836,
         "weeks": [
-          1905779858.56,
-          1905777216.64,
-          1905774574.72,
-          1905771932.8,
-          1905769290.88,
-          1905766648.96,
-          1905764007.04,
-          1905761365.12,
-          1905758723.2,
-          1905756081.28,
-          1905753439.36,
-          1905750797.44,
-          1905748155.52
+          2574668715.85,
+          2574666073.93,
+          2574663432.01,
+          2574660790.09,
+          2574658148.17,
+          2574655506.25,
+          2574652864.33,
+          2574650222.41,
+          2574647580.49,
+          2574644938.57,
+          2574642296.65,
+          2574639654.73,
+          2574637012.81
         ]
       },
       {
         "q": 92,
-        "startCash": 1905748155.52,
+        "startCash": 2597567373.71,
         "lines": {
-          "rent": -34345
+          "rent": -34345,
+          "interest": 23134278.54
         },
         "byBiz": {},
         "byRef": {
@@ -30386,28 +30403,29 @@
             "rent": -28345.000000000007
           }
         },
-        "rounding": 0.03999924659729004,
+        "rounding": 0.04000234603881836,
         "weeks": [
-          1905745513.6,
-          1905742871.68,
-          1905740229.76,
-          1905737587.84,
-          1905734945.92,
-          1905732304,
-          1905729662.08,
-          1905727020.16,
-          1905724378.24,
-          1905721736.32,
-          1905719094.4,
-          1905716452.48,
-          1905713810.56
+          2597564731.79,
+          2597562089.87,
+          2597559447.95,
+          2597556806.03,
+          2597554164.11,
+          2597551522.19,
+          2597548880.27,
+          2597546238.35,
+          2597543596.43,
+          2597540954.51,
+          2597538312.59,
+          2597535670.67,
+          2597533028.75
         ]
       },
       {
         "q": 93,
-        "startCash": 1905713810.56,
+        "startCash": 2620667307.29,
         "lines": {
-          "rent": -34345
+          "rent": -34345,
+          "interest": 23340012.32
         },
         "byBiz": {},
         "byRef": {
@@ -30418,28 +30436,29 @@
             "rent": -28345.000000000007
           }
         },
-        "rounding": 0.03999924659729004,
+        "rounding": 0.04000234603881836,
         "weeks": [
-          1905711168.64,
-          1905708526.72,
-          1905705884.8,
-          1905703242.88,
-          1905700600.96,
-          1905697959.04,
-          1905695317.12,
-          1905692675.2,
-          1905690033.28,
-          1905687391.36,
-          1905684749.44,
-          1905682107.52,
-          1905679465.6
+          2620664665.37,
+          2620662023.45,
+          2620659381.53,
+          2620656739.61,
+          2620654097.69,
+          2620651455.77,
+          2620648813.85,
+          2620646171.93,
+          2620643530.01,
+          2620640888.09,
+          2620638246.17,
+          2620635604.25,
+          2620632962.33
         ]
       },
       {
         "q": 94,
-        "startCash": 1905679465.6,
+        "startCash": 2643972974.65,
         "lines": {
-          "rent": -34345
+          "rent": -34345,
+          "interest": 23547578.42
         },
         "byBiz": {},
         "byRef": {
@@ -30450,29 +30469,30 @@
             "rent": -28345.000000000007
           }
         },
-        "rounding": 0.03999948501586914,
+        "rounding": 0.04000234603881836,
         "weeks": [
-          1905676823.68,
-          1905674181.76,
-          1905671539.84,
-          1905668897.92,
-          1905666256,
-          1905663614.08,
-          1905660972.16,
-          1905658330.24,
-          1905655688.32,
-          1905653046.4,
-          1905650404.48,
-          1905647762.56,
-          1905645120.64
+          2643970332.73,
+          2643967690.81,
+          2643965048.89,
+          2643962406.97,
+          2643959765.05,
+          2643957123.13,
+          2643954481.21,
+          2643951839.29,
+          2643949197.37,
+          2643946555.45,
+          2643943913.53,
+          2643941271.61,
+          2643938629.69
         ]
       }
     ],
     "current": {
       "q": 95,
-      "startCash": 1905645120.64,
+      "startCash": 2667486208.11,
       "lines": {
-        "rent": -34345
+        "rent": -34345,
+        "interest": 23756993.16
       },
       "byBiz": {},
       "byRef": {
@@ -30483,21 +30503,21 @@
           "rent": -28345.000000000007
         }
       },
-      "rounding": 0.03999924659729004,
+      "rounding": 0.04000234603881836,
       "weeks": [
-        1905642478.72,
-        1905639836.8,
-        1905637194.88,
-        1905634552.96,
-        1905631911.04,
-        1905629269.12,
-        1905626627.2,
-        1905623985.28,
-        1905621343.36,
-        1905618701.44,
-        1905616059.52,
-        1905613417.6,
-        1905610775.68
+        2667483566.19,
+        2667480924.27,
+        2667478282.35,
+        2667475640.43,
+        2667472998.51,
+        2667470356.59,
+        2667467714.67,
+        2667465072.75,
+        2667462430.83,
+        2667459788.91,
+        2667457146.99,
+        2667454505.07,
+        2667451863.15
       ]
     }
   },
@@ -31749,16 +31769,16 @@
     0.5689223604357075,
     0.6566120813103635,
     0.708093726365372,
-    0.6632825928741028,
-    0.6582915940756481,
-    0.6400959895967111,
-    0.560291349066781,
-    0.6305032426759225,
-    0.6319394231188853,
-    0.6333756035618483,
-    0.6073232133419417,
-    0.5267327196190419,
-    0.4687645841729166,
+    0.7333629613192851,
+    0.7271611719124619,
+    0.7177812373361799,
+    0.6268304784618723,
+    0.7218534547343346,
+    0.7235157495635806,
+    0.7251780443928268,
+    0.7173463535708119,
+    0.704196976252871,
+    0.6416784752520323,
     0,
     0,
     0,
@@ -31774,9 +31794,9 @@
   "act5End": {
     "endQuarter": "2040Q4",
     "gameOver": false,
-    "founderNetWorthUsd": 347905944.9148754,
-    "growthMultiple": 0.8914110223920043,
-    "preExitNetWorthUsd": 366216784.1209215,
+    "founderNetWorthUsd": 472078240.8830627,
+    "growthMultiple": 1.2095675670548078,
+    "preExitNetWorthUsd": 496924464.0874345,
     "exitChoice": "hold",
     "outlookFactor": 0.95,
     "bidFactor": 1.0712259368039667,
