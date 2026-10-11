@@ -86,10 +86,11 @@ function fund(s: GameState, needUsd: number): Action[] {
 /** The actions that open one block (if none is planning), funding its build with equity if cash is short. */
 function orbitActions(
   s: GameState,
-  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean },
+  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string },
 ): Action[] {
   const out: Action[] = []
-  const gen = generationTMw(s, 'gen33') !== null ? 'gen33' : 'gen31'
+  // (M58.6: Act V's Orbit Replacer passes the newest generation; Act IV's bots keep their own)
+  const gen = (o.gen ?? (generationTMw(s, 'gen33') !== null ? 'gen33' : 'gen31')) as 'gen31'
   if (!(s.act4Orbit?.licences ?? []).some((l) => l.shell === o.shell)) out.push({ type: 'FILE_ORBITAL_LICENCE', shell: o.shell })
   const planning = (s.act4Orbit?.blocks ?? []).filter((b) => b.stage === 'proposed')
   if (o.open && planning.length === 0) {
@@ -147,9 +148,9 @@ function fillActions(
  * only with licence room; fill its slots (tenant, capital, launch) only once its build and deposit are funded (raising
  * equity first when short), so no tenant's clock runs on a block that can't start.
  */
-function orbitStep(
+export function orbitStep(
   s: GameState,
-  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean },
+  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string },
 ): { kept: Action[]; after: GameState } {
   const room = licensedMw(s, o.shell) - usedLicenceMw(s, o.shell)
   if (room <= 0) {

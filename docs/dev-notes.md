@@ -431,6 +431,9 @@ README). `check.py` PASS.
   - **3-5** done: ENROL_FLEXIBLE (a site's running load, 1 BW, −1, every future; Queue panel); all 43 cards in Act V's deck
     (`act5Cards.ts`: effects through the Plan systems, the sign logged once; interrupts: trips 15%, transformer 10%; the call and
     end-of-life cards are their Plan panels: mine); EOL body neutral until the trigger. Trigger cards show the hidden trigger titles (Q). 1,770 tests.
+  - **6** done: Orbit Replacer carries each new block through (Act IV's `orbitStep`, newest generation) and opens one more when cash ≥
+    $500M (mine); Builder (Holder + every follow-on unit, 20% else 10%); V-B5 judged on OL, V-B9 on FB, V-B6 reported as Builder − Holder
+    (Act V has no control). 1,770 tests; main bundle 230.9 KB. PR #25.
 - **Step C (M59, branch `m59` from `m58`):** diagnose (OL decomposition, OL V3 move list), re-measure, balance pass.
 
 ### Report (third run, 13 Oct 2026)
