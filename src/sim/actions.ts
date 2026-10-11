@@ -5,6 +5,7 @@ import {
   CONTENT,
   type SignalId,
   type SignalIdIv,
+  type SignalIdV,
 } from '../content/index.ts'
 import {
   buildPhase,
@@ -120,6 +121,8 @@ import type { ProviderId, RegistryId, ShellId } from '../content/orbitContent.ts
 import type { CapitalKind } from './systems/orbitCapital.ts'
 import { buyOrrery, buyOrreryBlocker } from './systems/rivalsIv.ts'
 import { recordAct4Move } from './systems/act4Moves.ts'
+import { recordAct5Move } from './systems/act5Moves.ts'
+import { readSignalV, readSignalVBlocker } from './systems/signalsV.ts'
 import {
   bookLaunch,
   bookLaunchBlocker,
@@ -429,6 +432,8 @@ export type Action =
   | { type: 'READ_SIGNAL'; indicator: SignalId }
   /** Act IV (M28.2): Read the market on one of Act IV's six indicators (1 BW, once a quarter). */
   | { type: 'READ_SIGNAL_IV'; indicator: SignalIdIv }
+  /** Act V (M51): Read the market on one of Act V's six indicators (1 BW, once a quarter). */
+  | { type: 'READ_SIGNAL_V'; indicator: SignalIdV }
   /** Act IV (M29.2): open an orbital block card (0 BW): kind, size, shell, generation. */
   | ({ type: 'OPEN_ORBITAL_BLOCK' } & OpenBlock)
   /** Act IV: drop a block that hasn't started building (its deposit back only after a provider slip). */
@@ -579,6 +584,8 @@ export function applyAction(state: GameState, action: Action): ActionResult {
   recordAct3Move(state, next, action)
   // Act IV (M32.1): moves on orbital exposure (and ground and lunar ones for the timeline).
   recordAct4Move(next, action)
+  // Act V (M51): moves on scarcity exposure.
+  recordAct5Move(next, action)
   return { ok: true, state: next }
 }
 
@@ -820,6 +827,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = readSignalIvBlocker(s, a.indicator)
       if (blocked) return blocked
       readSignalIv(s, a.indicator)
+      return
+    }
+
+    case 'READ_SIGNAL_V': {
+      const blocked = readSignalVBlocker(s, a.indicator)
+      if (blocked) return blocked
+      readSignalV(s, a.indicator)
       return
     }
 

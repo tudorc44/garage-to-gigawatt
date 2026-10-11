@@ -421,6 +421,36 @@ export const signalsIvFileSchema = z.object({
 })
 export type SignalIndicatorIv = z.output<typeof signalsIvFileSchema>['indicators'][number]
 
+// ---------- signals_v_v1–v4.json (M51: Act V's authored Signals, doc 43 §6.3) ----------
+// The RUNTIME view only, as Act III's and Act IV's: zod drops the hidden authoring fields (future_name, reasoning,
+// trigger, decoy, authoring_latent, role_tag). The hidden view is src/content/signalsHiddenV.ts (tests, tools and
+// act5End only).
+export const SIGNAL_IDS_V = [
+  'grid_queue',
+  'capacity_market',
+  'ai_demand',
+  'reform_docket',
+  'launch_cadence',
+  'firm_buildout',
+] as const
+export type SignalIdV = (typeof SIGNAL_IDS_V)[number]
+export const signalIdV = z.enum(SIGNAL_IDS_V)
+
+export const signalsVFileSchema = z.object({
+  future: vFutureId,
+  indicators: z
+    .array(
+      z.object({
+        id: signalIdV,
+        label: z.string().min(1),
+        higher_means: z.string().min(1),
+        series: z.array(signalPoint).min(1),
+      }),
+    )
+    .length(SIGNAL_IDS_V.length),
+})
+export type SignalIndicatorV = z.output<typeof signalsVFileSchema>['indicators'][number]
+
 // ---------- wildcards_iv.json (M28.5: Act IV's six wildcards, 2 drawn at entry, doc 33 §6.6) ----------
 export const WILDCARD_IDS_IV = [
   'solar_storm',

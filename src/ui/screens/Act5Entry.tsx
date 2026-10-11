@@ -1,12 +1,14 @@
 // Act V's entry screens (M49, the walking skeleton; doc 43 §2, §17): A5-01 the intro (what the company carries in, and
 // how much of it the futures can move, §0.8), and the chapter report (a skeleton: the reveal, the reading score and the
-// exit come with their milestones). Loaded lazily, in their own chunk, like Act IV's. Nothing here reads the future.
+// exit come with their milestones). Loaded lazily, in their own chunk, like Act IV's. Nothing here reads the future: the
+// chapter report's reveal lives in Act5Reveal.tsx (M51), the one Act V screen allowed to.
 import { useState } from 'preact/hooks'
 import { PRESETS_V } from '../../content/presetsAct5.ts'
 import { tDynamic } from '../../i18n/t.ts'
 import type { GameState } from '../../sim/state.ts'
 import { presetAct5Company, type Act5PresetId } from '../act5PresetStart.ts'
 import { fmt } from '../format.ts'
+import { Act5Reveal } from './Act5Reveal.tsx'
 
 const tx = (key: string, params?: Record<string, string | number>) => tDynamic(key, key, params)
 
@@ -124,15 +126,16 @@ export function StartAct5(props: { onReady: (end: GameState, preset: Act5PresetI
   )
 }
 
-/** The Act V chapter report (M49 skeleton): the net worth and the growth multiple since 2036Q1. */
+/** The Act V chapter report (M49 skeleton; M51 the reveal): the net worth, the growth multiple, the future revealed. */
 export function Act5Chapter(props: { state: GameState; onNew: () => void }) {
   const end = props.state.act5End
   return (
     <div class="screen">
       <div class="center-page">
-        <div class="panel end-card chapter-card" data-act5-chapter>
+        <div class="panel end-card chapter-card act4-reveal" data-act5-chapter>
           <div class="label">{tx('ui.act5.chapter.label')}</div>
           <h1 class="screen-title">{tx('ui.act5.chapter.title')}</h1>
+          <Act5Reveal state={props.state} />
           {end && (
             <p class="num-s">
               {tx('ui.act5.chapter.net_worth', {
