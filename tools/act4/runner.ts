@@ -75,7 +75,7 @@ const t0 = performance.now()
 /** Bots that never touch the Moon: the lunar grade can't change their game, so they're played once per future. */
 const GRADE_FREE = new Set(['ground', 'sprinter', 'diversified', 'passive', 'perfect'])
 for (const p of PRESETS_IV) {
-  const bots = act4Archetypes(p.bot)
+  const bots = act4Archetypes(p.bot, { rentLinks: true }) // (M64.3: the Act IV sim's bots rent the links their tenants need)
   for (const future of FUTURES)
     for (const grade of GRADES)
       for (const bot of BOT_NAMES)

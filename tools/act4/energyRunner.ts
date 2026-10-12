@@ -129,7 +129,7 @@ interface Run {
 const runs: Run[] = []
 const t0 = performance.now()
 for (const p of PRESETS_IV) {
-  const balanced = act4Archetypes(p.bot).balanced
+  const balanced = act4Archetypes(p.bot, { rentLinks: true }).balanced // (M64.3: as the Act IV sim)
   for (const future of FUTURE_IDS)
     for (const variant of VARIANTS)
       for (let seed = 1; seed <= SEEDS; seed++) {

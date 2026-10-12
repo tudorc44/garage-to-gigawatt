@@ -30,6 +30,7 @@ import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { Strategy } from '../../src/sim/replay.ts'
 import type { GameState } from '../../src/sim/state.ts'
 import { blockMassT, generationTMw, licenceRoom, licensedMw, usedLicenceMw } from '../../src/sim/systems/orbit.ts'
+import { linkUnitsNeeded } from '../../src/sim/systems/orbitOps.ts'
 import { bookedTonnes, buildCostUsd, launchPriceUsdKg, slotsTonnes } from '../../src/sim/systems/orbitLaunch.ts'
 import { idealStancesIv } from '../../src/sim/systems/readingScoreIv.ts'
 import { BOTS } from '../bots.ts'
@@ -86,7 +87,7 @@ function fund(s: GameState, needUsd: number): Action[] {
 /** The actions that open one block (if none is planning), funding its build with equity if cash is short. */
 function orbitActions(
   s: GameState,
-  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string },
+  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string; noEquity?: boolean },
 ): Action[] {
   const out: Action[] = []
   // (M58.6: Act V's Orbit Replacer passes the newest generation; Act IV's bots keep their own)
@@ -99,7 +100,10 @@ function orbitActions(
       const tMw = generationTMw(s, gen)!
       const probe = { massT: blockMassT(tMw, mw, o.shell), kind: o.kind, mw, shell: o.shell, capital: 'cash' } as Parameters<typeof buildCostUsd>[1]
       // the build's own share (40% with project debt) plus the launch deposit and a margin
-      out.push(...fund(s, buildCostUsd(s, probe) * (o.debt ? 0.5 : 1.1) + 20e6))
+      const needUsd = buildCostUsd(s, probe) * (o.debt ? 0.5 : 1.1) + 20e6
+      // (M64.2: `noEquity` runs on cash only, so a block is opened only when cash already covers it)
+      if (o.noEquity && s.cash < needUsd) return out
+      if (!o.noEquity) out.push(...fund(s, needUsd))
       out.push({ type: 'OPEN_ORBITAL_BLOCK', kind: o.kind, mw, shell: o.shell, gen })
     }
   }
@@ -109,14 +113,14 @@ function orbitActions(
 /** Fills the slots of planning blocks once their build and deposit are funded (after any open above has been applied). */
 function fillActions(
   s: GameState,
-  o: { contractOnly: boolean; insure: boolean; debt: boolean; onlyInsure?: boolean },
+  o: { contractOnly: boolean; insure: boolean; debt: boolean; onlyInsure?: boolean; noEquity?: boolean },
 ): Action[] {
   const out: Action[] = []
   for (const b of (s.act4Orbit?.blocks ?? []).filter((x) => x.stage === 'proposed' && !o.onlyInsure)) {
     const ownShare = o.debt ? 0.4 : 1
     const needUsd = buildCostUsd(s, b) * ownShare + 0.15 * b.massT * 1000 * launchPriceUsdKg(s, 'pallas', b.shell) + 10e6
     if (s.cash < needUsd) {
-      out.push(...fund(s, needUsd))
+      if (!o.noEquity) out.push(...fund(s, needUsd))
       continue
     }
     if (b.tenant === null) {
@@ -148,10 +152,35 @@ function fillActions(
  * only with licence room; fill its slots (tenant, capital, launch) only once its build and deposit are funded (raising
  * equity first when short), so no tenant's clock runs on a block that can't start.
  */
-export function orbitStep(
-  s: GameState,
-  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string },
-): { kept: Action[]; after: GameState } {
+export function orbitStep(s: GameState, o: OrbitStepOptions): { kept: Action[]; after: GameState } {
+  const step = orbitStepActions(s, o)
+  if (!o.rentLinks) return step
+  // (M64.3, doc 43 §0.20 item 5: rent the ground-link units its interactive tenants need; without them those blocks earn
+  // nothing, which a player would not do. Off by default: only the Act IV and energy sims turn it on.)
+  const need = (step.after.act4Orbit?.blocks ?? [])
+    .filter((b) => b.stage === 'live' || b.stage === 'climbing' || b.stage === 'awaiting_launch')
+    .reduce((a, b) => a + linkUnitsNeeded(b), 0)
+  if (need === (step.after.act4Orbit?.linksRented ?? 0)) return step
+  const links = tryAll(step.after, [{ type: 'RENT_LINK_UNITS', units: Math.ceil(need) }])
+  return { kept: [...step.kept, ...links.kept], after: links.after }
+}
+
+export type OrbitStepOptions = {
+  kind: Kind
+  shell: ShellId
+  contractOnly: boolean
+  insure: boolean
+  debt: boolean
+  maxMw: number
+  open: boolean
+  gen?: string
+  /** M64.2: run on cash only (no equity raise). */
+  noEquity?: boolean
+  /** M64.3: rent the ground-link units the blocks' interactive tenants need (default off). */
+  rentLinks?: boolean
+}
+
+function orbitStepActions(s: GameState, o: OrbitStepOptions): { kept: Action[]; after: GameState } {
   const room = licensedMw(s, o.shell) - usedLicenceMw(s, o.shell)
   if (room <= 0) {
     const licence = tryAll(s, orbitActions(s, { ...o, open: false }))
@@ -433,7 +462,9 @@ function moonActions(s: GameState, sites: number, pilots: boolean): Action[] {
 const strategy = (plan: (s: GameState) => Action[]): Strategy => ({ plan })
 
 /** The archetypes for a preset whose ground bot is `groundBot`. */
-export function act4Archetypes(groundBot: string): Record<string, Strategy> {
+export function act4Archetypes(groundBot: string, opts: { rentLinks?: boolean } = {}): Record<string, Strategy> {
+  // (M64.3: `rentLinks` is on only where the Act IV and energy sims build their bots; the preset scan and the Act V tools keep it off)
+  const step = (g: GameState, o: OrbitStepOptions) => orbitStep(g, { ...o, rentLinks: opts.rentLinks })
   const withGround = (s: GameState, more: (after: GameState) => Action[]): Action[] => {
     const g = tryAll(s, groundPlan(groundBot, s))
     const m = tryAll(g.after, more(g.after))
@@ -441,7 +472,7 @@ export function act4Archetypes(groundBot: string): Record<string, Strategy> {
   }
   const balanced = (s: GameState): Action[] => {
     const shell: ShellId = q4(s) % 2 === 0 ? 'sso' : 'high_leo'
-    const orbit = orbitStep(s, { kind: 'shell', shell, contractOnly: true, insure: true, debt: false, maxMw: 10, open: q4(s) < 12 && q4(s) % 2 === 0 })
+    const orbit = step(s, { kind: 'shell', shell, contractOnly: true, insure: true, debt: false, maxMw: 10, open: q4(s) < 12 && q4(s) % 2 === 0 })
     const moon = tryAll(orbit.after, moonActions(orbit.after, 1, false))
     return [...orbit.kept, ...moon.kept]
   }
@@ -453,19 +484,19 @@ export function act4Archetypes(groundBot: string): Record<string, Strategy> {
       return [...g.kept, ...groundCloudStep(g.after).kept]
     }),
     sprinter: strategy((s) =>
-      withGround(s, (g) => orbitStep(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept),
+      withGround(s, (g) => step(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept),
     ),
     diversified: strategy((s) => {
       const shells: ShellId[] = ['high_leo', 'high_orbit', 'sso']
       const shell = shells[Math.floor(q4(s) / 2) % 3]
       return withGround(s, (g) =>
-        orbitStep(g, { kind: 'shell', shell, contractOnly: true, insure: true, debt: true, maxMw: 25, open: q4(s) % 2 === 0 }).kept,
+        step(g, { kind: 'shell', shell, contractOnly: true, insure: true, debt: true, maxMw: 25, open: q4(s) % 2 === 0 }).kept,
       )
     }),
     lunar: strategy((s) =>
       withGround(s, (g) => {
         const moon = tryAll(g, moonActions(g, 2, true))
-        const orbit = orbitStep(moon.after, { kind: 'shell', shell: 'high_leo', contractOnly: true, insure: true, debt: false, maxMw: 10, open: (moon.after.act4Orbit?.blocks.length ?? 0) === 0 })
+        const orbit = step(moon.after, { kind: 'shell', shell: 'high_leo', contractOnly: true, insure: true, debt: false, maxMw: 10, open: (moon.after.act4Orbit?.blocks.length ?? 0) === 0 })
         return [...moon.kept, ...orbit.kept]
       }),
     ),
@@ -478,13 +509,13 @@ export function act4Archetypes(groundBot: string): Record<string, Strategy> {
       if (!h.decoy.quarters.includes(label)) return []
       // the decoy reads as the wrong future: its wrong stance, hard
       if (idealWrong(g) > 0)
-        return orbitStep(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept
+        return step(g, { kind: 'cloud', shell: 'sso', contractOnly: false, insure: false, debt: true, maxMw: 50, open: true }).kept
       return exposureDown(g)
     }),
     perfect: strategy((g) => {
       const ideal = idealStancesIv(g.futureId!)[q4(g)] ?? 0
       if (ideal > 0)
-        return orbitStep(g, { kind: 'shell', shell: 'high_leo', contractOnly: true, insure: true, debt: true, maxMw: 25, open: true }).kept
+        return step(g, { kind: 'shell', shell: 'high_leo', contractOnly: true, insure: true, debt: true, maxMw: 25, open: true }).kept
       if (ideal < 0) return exposureDown(g)
       return []
     }),

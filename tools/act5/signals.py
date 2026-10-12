@@ -54,11 +54,11 @@ DECOY = {
            "reason": "A capacity auction clears at the cap with a record uncapped price, after a run of old plant retirements. It looks like the squeeze of Queue is King; it is a one-off on the supply side.",
            "tell": "The Capacity Market spikes while AI Demand slides and the Grid Queue starts to shorten. A real squeeze needs new load; this auction was driven by plants retiring, and the next one clears lower.",
            "wrong_reading": "v1"},
-    "v4": {"indicator": "firm_buildout", "quarters": ["2037Q3", "2037Q4", "2038Q1"], "peak_quarter": "2037Q4",
-           "name": "The SMR wave",
-           "reason": "A wave of reactor orderbooks promises abundant firm power on the ground. The ground does soften in 2039, but because orbit takes the new load, not because reactors arrive.",
-           "tell": "Firm Build-out jumps on announcements while delivered firm MW stay flat and Launch Cadence climbs every quarter. The pressure on the ground is coming from above, not from reactors.",
-           "wrong_reading": "v3"},
+    "v4": {"indicator": "capacity_market", "quarters": ["2037Q3", "2037Q4", "2038Q1"], "peak_quarter": "2037Q4",
+           "name": "The capacity squeeze",
+           "reason": "A hot summer and three emergency capacity filings send the auction to the cap. It looks like Queue is King, but it is weather and timing; the new load is already booking launches.",
+           "tell": "The Capacity Market spikes while Launch Cadence climbs every quarter and AI Demand on the ground flattens. A real squeeze needs new ground load; this one fades as orbit takes the marginal gigawatt.",
+           "wrong_reading": "v1"},
 }
 
 H = {  # one headline per quarter in which a series moves (|change| >= 3), the decoy quarters and the trigger quarter
@@ -146,6 +146,10 @@ H = {  # one headline per quarter in which a series moves (|change| >= 3), the d
         "2038Q2": "Firm projects in development fall for the first time since 2029.",
     },
     ("v4", "capacity_market"): {
+        "2037Q3": "Three utilities file for emergency capacity after a record heat wave.",
+        "2037Q4": "The capacity auction clears at the cap; brokers call ground power the scarcest thing of the decade.",
+        "2038Q1": "The next auction clears below the cap as summer demand fades.",
+        "2038Q2": "Capacity prices settle back to their 2037 level.",
         "2039Q1": "Ground capacity prices ease as new compute load lands in orbit.",
         "2039Q2": "The capacity auction clears a quarter below the cap.",
     },
@@ -156,13 +160,6 @@ H = {  # one headline per quarter in which a series moves (|change| >= 3), the d
         "2038Q1": "Northgate matches Carrack's price for the first time.",
         "2038Q2": "Launch Breaks $200: a third-party price under $200 a kilogram.",
         "2038Q3": "Orbital compute operators book a year of launches in a single quarter.",
-    },
-    ("v4", "firm_buildout"): {
-        "2037Q3": "Ironvale Power and two utilities announce a twenty-reactor orderbook.",
-        "2037Q4": "\"A reactor in every region by 2045\": the orderbooks top 8 GW.",
-        "2038Q1": "No orderbook has reached a funded construction start.",
-        "2038Q2": "Ironvale's first unit slips a year.",
-        "2038Q3": "Delivered firm MW this year: one geothermal block.",
     },
 }
 

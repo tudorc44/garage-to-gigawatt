@@ -13,17 +13,17 @@
     "quarters_of_warning": 4
   },
   "decoy": {
-    "indicator": "firm_buildout",
+    "indicator": "capacity_market",
     "quarters": [
       "2037Q3",
       "2037Q4",
       "2038Q1"
     ],
     "peak_quarter": "2037Q4",
-    "name": "The SMR wave",
-    "reason": "A wave of reactor orderbooks promises abundant firm power on the ground. The ground does soften in 2039, but because orbit takes the new load, not because reactors arrive.",
-    "tell": "Firm Build-out jumps on announcements while delivered firm MW stay flat and Launch Cadence climbs every quarter. The pressure on the ground is coming from above, not from reactors.",
-    "wrong_reading": "v3"
+    "name": "The capacity squeeze",
+    "reason": "A hot summer and three emergency capacity filings send the auction to the cap. It looks like Queue is King, but it is weather and timing; the new load is already booking launches.",
+    "tell": "The Capacity Market spikes while Launch Cadence climbs every quarter and AI Demand on the ground flattens. A real squeeze needs new ground load; this one fades as orbit takes the marginal gigawatt.",
+    "wrong_reading": "v1"
   },
   "indicators": [
     {
@@ -286,10 +286,10 @@
         51,
         51,
         52,
+        64,
+        76,
+        62,
         52,
-        52,
-        51,
-        51,
         50,
         50,
         46,
@@ -370,47 +370,51 @@
         },
         {
           "quarter": "2037Q3",
-          "displayed": 50,
-          "arrow": "flat",
-          "role_tag": "signal_window",
+          "displayed": 62,
+          "arrow": "up",
+          "role_tag": "decoy",
           "sharp": {
-            "low": 49,
-            "high": 55,
-            "note": "Auction results read against the cap: 49-55. Above 50, firm capacity is getting scarcer."
-          }
+            "low": 61,
+            "high": 67,
+            "note": "Auction results read against the cap: 61-67. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "Three utilities file for emergency capacity after a record heat wave."
         },
         {
           "quarter": "2037Q4",
-          "displayed": 51,
-          "arrow": "flat",
-          "role_tag": "signal_window",
+          "displayed": 75,
+          "arrow": "up",
+          "role_tag": "decoy",
+          "sharp": {
+            "low": 73,
+            "high": 79,
+            "note": "Auction results read against the cap: 73-79. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "The capacity auction clears at the cap; brokers call ground power the scarcest thing of the decade."
+        },
+        {
+          "quarter": "2038Q1",
+          "displayed": 58,
+          "arrow": "down",
+          "role_tag": "decoy",
+          "sharp": {
+            "low": 59,
+            "high": 65,
+            "note": "Auction results read against the cap: 59-65. Above 50, firm capacity is getting scarcer."
+          },
+          "headline": "The next auction clears below the cap as summer demand fades."
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 48,
+          "arrow": "down",
+          "role_tag": "aftermath",
           "sharp": {
             "low": 49,
             "high": 55,
             "note": "Auction results read against the cap: 49-55. Above 50, firm capacity is getting scarcer."
-          }
-        },
-        {
-          "quarter": "2038Q1",
-          "displayed": 47,
-          "arrow": "down",
-          "role_tag": "signal_window",
-          "sharp": {
-            "low": 48,
-            "high": 54,
-            "note": "Auction results read against the cap: 48-54. Above 50, firm capacity is getting scarcer."
-          }
-        },
-        {
-          "quarter": "2038Q2",
-          "displayed": 47,
-          "arrow": "flat",
-          "role_tag": "aftermath",
-          "sharp": {
-            "low": 48,
-            "high": 54,
-            "note": "Auction results read against the cap: 48-54. Above 50, firm capacity is getting scarcer."
-          }
+          },
+          "headline": "Capacity prices settle back to their 2037 level."
         },
         {
           "quarter": "2038Q3",
@@ -1290,10 +1294,10 @@
         52,
         52,
         53,
-        67,
-        78,
-        64,
+        53,
+        53,
         52,
+        51,
         49,
         48,
         48,
@@ -1374,63 +1378,58 @@
         },
         {
           "quarter": "2037Q3",
-          "displayed": 64,
-          "arrow": "up",
-          "role_tag": "decoy",
+          "displayed": 50,
+          "arrow": "down",
+          "role_tag": "signal_window",
           "sharp": {
-            "low": 64,
-            "high": 70,
-            "note": "Announced and delivered firm MW, read together: 64-70. Above 50, firm power looks set to get more plentiful."
-          },
-          "headline": "Ironvale Power and two utilities announce a twenty-reactor orderbook."
+            "low": 50,
+            "high": 56,
+            "note": "Announced and delivered firm MW, read together: 50-56. Above 50, firm power looks set to get more plentiful."
+          }
         },
         {
           "quarter": "2037Q4",
-          "displayed": 74,
-          "arrow": "up",
-          "role_tag": "decoy",
+          "displayed": 49,
+          "arrow": "flat",
+          "role_tag": "signal_window",
           "sharp": {
-            "low": 75,
-            "high": 81,
-            "note": "Announced and delivered firm MW, read together: 75-81. Above 50, firm power looks set to get more plentiful."
-          },
-          "headline": "\"A reactor in every region by 2045\": the orderbooks top 8 GW."
+            "low": 50,
+            "high": 56,
+            "note": "Announced and delivered firm MW, read together: 50-56. Above 50, firm power looks set to get more plentiful."
+          }
         },
         {
           "quarter": "2038Q1",
-          "displayed": 62,
-          "arrow": "down",
-          "role_tag": "decoy",
-          "sharp": {
-            "low": 61,
-            "high": 67,
-            "note": "Announced and delivered firm MW, read together: 61-67. Above 50, firm power looks set to get more plentiful."
-          },
-          "headline": "No orderbook has reached a funded construction start."
-        },
-        {
-          "quarter": "2038Q2",
-          "displayed": 52,
-          "arrow": "down",
-          "role_tag": "aftermath",
+          "displayed": 50,
+          "arrow": "flat",
+          "role_tag": "signal_window",
           "sharp": {
             "low": 49,
             "high": 55,
             "note": "Announced and delivered firm MW, read together: 49-55. Above 50, firm power looks set to get more plentiful."
-          },
-          "headline": "Ironvale's first unit slips a year."
+          }
+        },
+        {
+          "quarter": "2038Q2",
+          "displayed": 51,
+          "arrow": "flat",
+          "role_tag": "aftermath",
+          "sharp": {
+            "low": 48,
+            "high": 54,
+            "note": "Announced and delivered firm MW, read together: 48-54. Above 50, firm power looks set to get more plentiful."
+          }
         },
         {
           "quarter": "2038Q3",
           "displayed": 49,
-          "arrow": "down",
+          "arrow": "flat",
           "role_tag": "aftermath",
           "sharp": {
             "low": 46,
             "high": 52,
             "note": "Announced and delivered firm MW, read together: 46-52. Above 50, firm power looks set to get more plentiful."
-          },
-          "headline": "Delivered firm MW this year: one geothermal block."
+          }
         },
         {
           "quarter": "2038Q4",

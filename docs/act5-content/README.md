@@ -317,3 +317,11 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
   - **Item 3:** `events.py` › `v_v4_c2` is now "Firm Power Runs Short" (2037Q4, decoy; "Note it" 0, "Buy a queue-holding site before
     prices run" +1 with v_v3_c1's site_buy); `content.py` › V4's decoy in `reading_score_v.json`: wrong stance +1, indicator
     `capacity_market`, quarters unchanged (2037Q3-2038Q1). `events_v.json`, `reading_score_v.json` regenerated. `check.py`: PASS.
+- **M64.1, 12 Oct 2026 (doc 43 §0.20 item 3):** V4's Signals decoy matches its card. `signals.py` › DECOY v4: indicator
+  `capacity_market`, name "The capacity squeeze", wrong_reading `v1`, the §0.20 reason and tell (quarters 2037Q3-2038Q1, peak 2037Q4
+  as before); the whole V4 `firm_buildout` headline dict removed; four V4 `capacity_market` headlines added (2037Q3, 2037Q4, 2038Q1,
+  2038Q2). `signal_paths.py` › V4 act quarters 6-9: `capacity_market` 64, 76, 62, 52; `firm_buildout` 53, 53, 52, 51. Changed:
+  `signals_v_v4.json` (both copies) only. No other quarter needed a new headline. `check.py`: PASS (day-one baseline unchanged).
+- **M64.2, 12 Oct 2026 (doc 43 §0.20 item 2):** V3's ideal stance in `content.py` › `stance()`: 0 for act quarters 0-3 and -1 from
+  `SIGNAL_START["v3"]` (act quarter 4, 2037Q1), not from the trigger (7); WHY v3 reworded as the doc says. Changed:
+  `reading_score_v.json` (both copies) only (V3's `ideal` and `why`). V1, V2 and V4 stances unchanged; `check.py`: PASS.

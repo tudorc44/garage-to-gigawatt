@@ -6,7 +6,7 @@
   "phase": "chapter",
   "quarter": 95,
   "week": 13,
-  "cash": 2351885774.4,
+  "cash": 2466211826.85,
   "bandwidth": 5,
   "hodlPct": {
     "BTC": 0,
@@ -178,8 +178,10 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 51,
-        "blendOfferedQuarter": 81
+        "servedQuarters": 48,
+        "blendOfferedQuarter": 81,
+        "priceMult": 0.8471233333333333,
+        "termQuarters": 84
       },
       "spot": false,
       "capital": "cash",
@@ -188,7 +190,7 @@
       "gpuCount": 0,
       "startQuarter": 29,
       "readyQuarter": 33,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "low"
     },
     {
@@ -208,10 +210,10 @@
         "lateQuarters": 0,
         "walkRolled": true,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.532516913578125,
-        "termQuarters": 52,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.60148125,
+        "termQuarters": 28,
+        "blendOfferedQuarter": 75,
         "reopenedQuarter": 78
       },
       "spot": false,
@@ -221,7 +223,7 @@
       "gpuCount": 0,
       "startQuarter": 30,
       "readyQuarter": 33,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "low",
       "emptyUntil": 58
     },
@@ -242,9 +244,9 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 48,
-        "blendOfferedQuarter": 84,
-        "priceMult": 0.8310673958333334,
+        "servedQuarters": 45,
+        "blendOfferedQuarter": 80,
+        "priceMult": 0.862411,
         "termQuarters": 84
       },
       "spot": false,
@@ -254,7 +256,7 @@
       "gpuCount": 0,
       "startQuarter": 33,
       "readyQuarter": 36,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -274,10 +276,10 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.6079348144406249,
-        "termQuarters": 52,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.6866662499999999,
+        "termQuarters": 28,
+        "blendOfferedQuarter": 74,
         "reopenedQuarter": 78
       },
       "spot": false,
@@ -287,7 +289,7 @@
       "gpuCount": 0,
       "startQuarter": 34,
       "readyQuarter": 38,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -307,10 +309,8 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 41,
-        "blendOfferedQuarter": 83,
-        "priceMult": 0.8749190909090909,
-        "termQuarters": 84
+        "servedQuarters": 38,
+        "blendOfferedQuarter": 79
       },
       "spot": false,
       "capital": "cash",
@@ -319,7 +319,7 @@
       "gpuCount": 0,
       "startQuarter": 37,
       "readyQuarter": 43,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -339,11 +339,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.528207376158,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.5966136,
+        "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -352,7 +352,7 @@
       "gpuCount": 0,
       "startQuarter": 40,
       "readyQuarter": 43,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -372,11 +372,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.63080653125,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.7124999999999999,
+        "blendOfferedQuarter": 70,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -385,7 +385,7 @@
       "gpuCount": 0,
       "startQuarter": 42,
       "readyQuarter": 45,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -405,11 +405,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.5601266883333333,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.6326666666666667,
+        "blendOfferedQuarter": 75,
         "reopenedQuarter": 78,
-        "termQuarters": 52,
+        "termQuarters": 28,
         "distressedQuarter": 80
       },
       "spot": false,
@@ -419,7 +419,7 @@
       "gpuCount": 0,
       "startQuarter": 45,
       "readyQuarter": 50,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -439,11 +439,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.4996651734375,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.564375,
+        "blendOfferedQuarter": 72,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -452,7 +452,7 @@
       "gpuCount": 0,
       "startQuarter": 48,
       "readyQuarter": 51,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -472,11 +472,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.664006875,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.75,
+        "blendOfferedQuarter": 74,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -485,7 +485,7 @@
       "gpuCount": 0,
       "startQuarter": 51,
       "readyQuarter": 54,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -505,11 +505,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.664006875,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.75,
+        "blendOfferedQuarter": 74,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -518,7 +518,7 @@
       "gpuCount": 0,
       "startQuarter": 54,
       "readyQuarter": 58,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -600,11 +600,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.7528421414500001,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.85034,
+        "blendOfferedQuarter": 75,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -613,7 +613,7 @@
       "gpuCount": 0,
       "startQuarter": 60,
       "readyQuarter": 63,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -633,11 +633,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.7844267351375,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.886015,
+        "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
-        "termQuarters": 52,
+        "termQuarters": 28,
         "distressedQuarter": 81
       },
       "spot": false,
@@ -647,7 +647,7 @@
       "gpuCount": 0,
       "startQuarter": 62,
       "readyQuarter": 65,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -667,11 +667,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.8002212453375,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.9038550000000001,
+        "blendOfferedQuarter": 72,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -680,7 +680,7 @@
       "gpuCount": 0,
       "startQuarter": 63,
       "readyQuarter": 68,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -700,11 +700,11 @@
         "lateQuarters": 2,
         "walkRolled": true,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.8160157555375,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.921695,
+        "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -713,7 +713,7 @@
       "gpuCount": 0,
       "startQuarter": 64,
       "readyQuarter": 69,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -733,11 +733,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.8318279725875001,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.939555,
+        "blendOfferedQuarter": 72,
         "reopenedQuarter": 78,
-        "termQuarters": 52,
+        "termQuarters": 28,
         "distressedQuarter": 80
       },
       "spot": false,
@@ -747,7 +747,7 @@
       "gpuCount": 0,
       "startQuarter": 65,
       "readyQuarter": 68,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -767,11 +767,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.8475959225125,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.957365,
+        "blendOfferedQuarter": 77,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -780,7 +780,7 @@
       "gpuCount": 0,
       "startQuarter": 66,
       "readyQuarter": 69,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -800,11 +800,11 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 5,
-        "priceMult": 0.8475959225125,
-        "blendOfferedQuarter": 83,
+        "servedQuarters": 2,
+        "priceMult": 0.957365,
+        "blendOfferedQuarter": 74,
         "reopenedQuarter": 78,
-        "termQuarters": 52
+        "termQuarters": 28
       },
       "spot": false,
       "capital": "cash",
@@ -813,7 +813,7 @@
       "gpuCount": 0,
       "startQuarter": 67,
       "readyQuarter": 70,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -833,10 +833,10 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 3,
+        "servedQuarters": 0,
         "priceMult": 0.957365,
         "reopenedQuarter": 80,
-        "termQuarters": 24
+        "termQuarters": 36
       },
       "spot": false,
       "capital": "cash",
@@ -845,7 +845,7 @@
       "gpuCount": 0,
       "startQuarter": 68,
       "readyQuarter": 72,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -865,10 +865,10 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 3,
+        "servedQuarters": 0,
         "priceMult": 0.957365,
         "reopenedQuarter": 80,
-        "termQuarters": 24
+        "termQuarters": 36
       },
       "spot": false,
       "capital": "cash",
@@ -877,7 +877,7 @@
       "gpuCount": 0,
       "startQuarter": 69,
       "readyQuarter": 72,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -892,16 +892,14 @@
       "offers": [],
       "tenant": {
         "card": "tc_frontier_intelligence",
-        "signedQuarter": 82,
+        "signedQuarter": 70,
         "readyByQuarter": 74,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 1,
+        "servedQuarters": 7,
         "priceMult": 0.957365,
-        "blendOfferedQuarter": 78,
-        "reopenedQuarter": 82,
-        "termQuarters": 24
+        "blendOfferedQuarter": 78
       },
       "spot": false,
       "capital": "cash",
@@ -910,7 +908,7 @@
       "gpuCount": 0,
       "startQuarter": 70,
       "readyQuarter": 74,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -925,16 +923,14 @@
       "offers": [],
       "tenant": {
         "card": "tc_north_azure_cloud",
-        "signedQuarter": 82,
+        "signedQuarter": 71,
         "readyByQuarter": 76,
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 1,
+        "servedQuarters": 7,
         "priceMult": 0.957365,
-        "blendOfferedQuarter": 78,
-        "reopenedQuarter": 82,
-        "termQuarters": 24
+        "blendOfferedQuarter": 78
       },
       "spot": false,
       "capital": "cash",
@@ -943,7 +939,7 @@
       "gpuCount": 0,
       "startQuarter": 71,
       "readyQuarter": 74,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -963,9 +959,10 @@
         "lateQuarters": 1,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 7,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 81
+        "servedQuarters": 4,
+        "priceMult": 0.8915035535075001,
+        "blendOfferedQuarter": 81,
+        "termQuarters": 84
       },
       "spot": false,
       "capital": "cash",
@@ -974,7 +971,7 @@
       "gpuCount": 0,
       "startQuarter": 72,
       "readyQuarter": 77,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -994,9 +991,10 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 7,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 81
+        "servedQuarters": 4,
+        "priceMult": 0.8915035535075001,
+        "blendOfferedQuarter": 81,
+        "termQuarters": 84
       },
       "spot": false,
       "capital": "cash",
@@ -1005,7 +1003,7 @@
       "gpuCount": 0,
       "startQuarter": 73,
       "readyQuarter": 77,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -1024,10 +1022,11 @@
         "readyByQuarter": 78,
         "lateQuarters": 0,
         "walkRolled": false,
-        "prepaymentLeftUsd": 0,
-        "servedQuarters": 7,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 81
+        "prepaymentLeftUsd": 2211512.6999999955,
+        "servedQuarters": 4,
+        "priceMult": 0.8475959225125,
+        "blendOfferedQuarter": 81,
+        "termQuarters": 52
       },
       "spot": false,
       "capital": "cash",
@@ -1036,7 +1035,7 @@
       "gpuCount": 0,
       "startQuarter": 74,
       "readyQuarter": 77,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     },
     {
@@ -1056,9 +1055,8 @@
         "lateQuarters": 0,
         "walkRolled": false,
         "prepaymentLeftUsd": 0,
-        "servedQuarters": 6,
-        "priceMult": 0.957365,
-        "blendOfferedQuarter": 82
+        "servedQuarters": 3,
+        "priceMult": 0.957365
       },
       "spot": false,
       "capital": "cash",
@@ -1067,7 +1065,7 @@
       "gpuCount": 0,
       "startQuarter": 75,
       "readyQuarter": 78,
-      "soldQuarter": 84,
+      "soldQuarter": 81,
       "tier": "mid"
     }
   ],
@@ -1231,7 +1229,7 @@
     "salariesUsd": 0,
     "interestUsd": 0,
     "principalUsd": 0,
-    "startCash": 2331158544.46,
+    "startCash": 2444475368.94,
     "startTreasuryUsd": 0,
     "weeks": [
       {
@@ -1249,7 +1247,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331155902.54
+        "cash": 2444472727.02
       },
       {
         "week": 2,
@@ -1266,7 +1264,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331153260.62
+        "cash": 2444470085.1
       },
       {
         "week": 3,
@@ -1283,7 +1281,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331150618.7
+        "cash": 2444467443.18
       },
       {
         "week": 4,
@@ -1300,7 +1298,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331147976.78
+        "cash": 2444464801.26
       },
       {
         "week": 5,
@@ -1317,7 +1315,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331145334.86
+        "cash": 2444462159.34
       },
       {
         "week": 6,
@@ -1334,7 +1332,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331142692.94
+        "cash": 2444459517.42
       },
       {
         "week": 7,
@@ -1351,7 +1349,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331140051.02
+        "cash": 2444456875.5
       },
       {
         "week": 8,
@@ -1368,7 +1366,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331137409.1
+        "cash": 2444454233.58
       },
       {
         "week": 9,
@@ -1385,7 +1383,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331134767.18
+        "cash": 2444451591.66
       },
       {
         "week": 10,
@@ -1402,7 +1400,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331132125.26
+        "cash": 2444448949.74
       },
       {
         "week": 11,
@@ -1419,7 +1417,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331129483.34
+        "cash": 2444446307.82
       },
       {
         "week": 12,
@@ -1436,7 +1434,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331126841.42
+        "cash": 2444443665.9
       },
       {
         "week": 13,
@@ -1453,7 +1451,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 2331124199.5
+        "cash": 2444441023.98
       }
     ],
     "energyRevenueUsd": 0,
@@ -7494,13 +7492,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 247086074.56,
-      "ebitdaUsd": 25396367.973840624,
+      "cash": 352115923.22,
+      "ebitdaUsd": 25089888.47634062,
       "marginByTier": {
-        "texas_site": 24364447.705090627,
+        "texas_site": 24057968.20759063,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2373817989.569488,
+      "valuationUsd": 2367651180.321188,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7509,28 +7507,28 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 266937479.78019384,
-      "poweredUsd": 11131499.999999998,
-      "venturesUsd": 105908179.104,
+      "poweredUsd": 11100000,
+      "venturesUsd": 0,
       "ventureHypeUsd": 0,
       "energyRevenueUsd": 0,
       "energyCostUsd": 0,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 217922656.89,
+      "startCash": 325023442.65,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 30825106.634958334,
-      "aiCostUsd": 5394393.661117708,
-      "aiFloorEbitdaUsd": 12585970.85625,
+      "aiRevenueUsd": 30453616.33495833,
+      "aiCostUsd": 5329382.858617708,
+      "aiFloorEbitdaUsd": 14506991.358750004,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 914616744.5841666,
-      "weightedBacklogUsd": 158929952.11450002,
+      "backlogUsd": 988767011.3841667,
+      "weightedBacklogUsd": 172760516.41450003,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
@@ -7545,7 +7543,7 @@
         "aiShell": 78000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 37105
+        "idle": 37000
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -7579,13 +7577,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 276083338.52,
-      "ebitdaUsd": 24974237.20227813,
-      "marginByTier": {
-        "texas_site": 23942316.93352813,
-        "own_site": 1066265.2687500003
-      },
-      "valuationUsd": 2366241187.2404866,
+      "cash": 2178760764.82,
+      "ebitdaUsd": -34345,
+      "marginByTier": {},
+      "valuationUsd": 2444019392.526105,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7594,43 +7589,42 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 265258627.70610458,
-      "poweredUsd": 11131499.999999998,
-      "venturesUsd": 105908179.104,
+      "poweredUsd": 0,
+      "venturesUsd": 0,
       "ventureHypeUsd": 0,
       "energyRevenueUsd": 0,
       "energyCostUsd": 0,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 247086074.56,
+      "startCash": 2159561818.2200003,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 30313432.972458337,
-      "aiCostUsd": 5304850.770180207,
-      "aiFloorEbitdaUsd": 12585970.85625,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 861930699.5520834,
-      "weightedBacklogUsd": 150325042.35250002,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.97872340425532,
+      "heat": 30,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 78000,
+        "aiShell": 1000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 37105
+        "idle": 0
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -7664,13 +7658,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 303284951.71,
-      "ebitdaUsd": 21513091.488479495,
-      "marginByTier": {
-        "texas_site": 22100600.24633366,
-        "own_site": 1066265.2687500003
-      },
-      "valuationUsd": 2164914152.371518,
+      "cash": 2198130702.04,
+      "ebitdaUsd": -34345,
+      "marginByTier": {},
+      "valuationUsd": 2461710477.672015,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7679,43 +7670,42 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 263579775.6320153,
-      "poweredUsd": 11131499.999999998,
-      "venturesUsd": 105908179.104,
+      "poweredUsd": 0,
+      "venturesUsd": 0,
       "ventureHypeUsd": 0,
       "energyRevenueUsd": 0,
       "energyCostUsd": 0,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 277423649.52,
+      "startCash": 2178760764.82,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 28081049.10919231,
-      "aiCostUsd": 6533612.620712819,
-      "aiFloorEbitdaUsd": 11699839.657211538,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 811400052.27,
-      "weightedBacklogUsd": 139035401.42299998,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.97872340425532,
+      "heat": 30,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 78000,
+        "aiShell": 1000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 37105
+        "idle": 0
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -7749,13 +7739,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 431937897.3,
-      "ebitdaUsd": 23597009.359639235,
-      "marginByTier": {
-        "texas_site": 22565089.090889238,
-        "own_site": 1066265.2687500003
-      },
-      "valuationUsd": 2360312623.787405,
+      "cash": 2217673152.76,
+      "ebitdaUsd": -34345,
+      "marginByTier": {},
+      "valuationUsd": 2479574076.3179264,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7764,7 +7751,7 @@
       "moonCostUsd": 0,
       "moonEbitdaUsd": 0,
       "lunarUsd": 261900923.557926,
-      "poweredUsd": 11100000,
+      "poweredUsd": 0,
       "venturesUsd": 0,
       "ventureHypeUsd": 0,
       "energyRevenueUsd": 0,
@@ -7772,35 +7759,34 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 404612958.15999997,
+      "startCash": 2198130702.04,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
       "gridCreditsUsd": 0,
       "hostingFeesUsd": 0,
       "reservationUsd": 0,
-      "aiRevenueUsd": 28644065.8904718,
-      "aiCostUsd": 5012711.530832567,
-      "aiFloorEbitdaUsd": 11709549.992415797,
+      "aiRevenueUsd": 0,
+      "aiCostUsd": 0,
       "lateDamagesUsd": 0,
       "constructionUsd": 0,
-      "backlogUsd": 1090161290.4739947,
-      "weightedBacklogUsd": 183613053.41114724,
+      "backlogUsd": 0,
+      "weightedBacklogUsd": 0,
       "rateHikeUsd": 0,
       "stormChargeUsd": 0,
       "salariesUsd": 0,
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 27.97872340425532,
+      "heat": 30,
       "heatTier": "texas_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
-        "aiShell": 78000,
+        "aiShell": 1000,
         "aiCloud": 0,
         "building": 0,
-        "idle": 37000
+        "idle": 0
       },
       "forcedSale": null,
       "politicalCapital": 0,
@@ -7834,10 +7820,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2133687859.01,
+      "cash": 2237389653.43,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2393909930.493837,
+      "valuationUsd": 2497611724.9138365,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7854,7 +7840,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2114886799.3,
+      "startCash": 2217673152.76,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -7915,10 +7901,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2152656365.66,
+      "cash": 2257281754.19,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2411199585.0697474,
+      "valuationUsd": 2515824973.5997477,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7935,7 +7921,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2133687859.01,
+      "startCash": 2237389653.43,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -7996,10 +7982,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2171793810.57,
+      "cash": 2277351018.97,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2428658177.9056582,
+      "valuationUsd": 2534215386.305658,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8016,7 +8002,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2152656365.66,
+      "startCash": 2257281754.19,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8077,10 +8063,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2191101698.35,
+      "cash": 2297599025.64,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2446287213.611569,
+      "valuationUsd": 2552784540.901569,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8097,7 +8083,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2171793810.57,
+      "startCash": 2277351018.97,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8158,10 +8144,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2210581547.01,
+      "cash": 2318027366.12,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2464088210.1974797,
+      "valuationUsd": 2571534029.3074794,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8178,7 +8164,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2191101698.35,
+      "startCash": 2297599025.64,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8239,10 +8225,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2230234888.07,
+      "cash": 2338637646.5,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2482062699.1833906,
+      "valuationUsd": 2590465457.6133904,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8259,7 +8245,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2210581547.01,
+      "startCash": 2318027366.12,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8320,10 +8306,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2250063266.7,
+      "cash": 2359431487.19,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2500212225.7393007,
+      "valuationUsd": 2609580446.229301,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8340,7 +8326,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2230234888.07,
+      "startCash": 2338637646.5,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8401,10 +8387,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2270068241.82,
+      "cash": 2380410523.03,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2518538348.785212,
+      "valuationUsd": 2628880629.995212,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8421,7 +8407,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2250063266.7,
+      "startCash": 2359431487.19,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8482,10 +8468,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2290251386.25,
+      "cash": 2401576403.41,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2537042641.141123,
+      "valuationUsd": 2648367658.3011227,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8502,7 +8488,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2270068241.82,
+      "startCash": 2380410523.03,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8563,10 +8549,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2310614286.81,
+      "cash": 2422930792.41,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2555726689.627033,
+      "valuationUsd": 2668043195.227033,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8583,7 +8569,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2290251386.25,
+      "startCash": 2401576403.41,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8644,10 +8630,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2331158544.46,
+      "cash": 2444475368.94,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2574592095.2029443,
+      "valuationUsd": 2687908919.6829443,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8664,7 +8650,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2310614286.81,
+      "startCash": 2422930792.41,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8725,10 +8711,10 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 2351885774.4,
+      "cash": 2466211826.85,
       "ebitdaUsd": -34345,
       "marginByTier": {},
-      "valuationUsd": 2593640473.068855,
+      "valuationUsd": 2707966525.5188546,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8745,7 +8731,7 @@
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 2331158544.46,
+      "startCash": 2444475368.94,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -19484,6 +19470,71 @@
     },
     {
       "quarter": 80,
+      "week": null,
+      "key": "log.blend_signed",
+      "params": {
+        "n": 4,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": -0.13758899999999996,
+        "years": 10
+      }
+    },
+    {
+      "quarter": 80,
+      "week": null,
+      "key": "log.plant.contracted",
+      "params": {
+        "ventureType": "egs2",
+        "pct": 80
+      }
+    },
+    {
+      "quarter": 80,
+      "week": null,
+      "key": "log.plant.sold",
+      "params": {
+        "ventureType": "egs2",
+        "priceUsd": 107069285.76
+      }
+    },
+    {
+      "quarter": 80,
+      "week": null,
+      "key": "log.queue.site_sold",
+      "params": {
+        "mw": 0,
+        "priceUsd": 1500
+      }
+    },
+    {
+      "quarter": 80,
+      "week": null,
+      "key": "log.queue.whole_site_sold",
+      "params": {
+        "n": 0,
+        "priceUsd": 1500
+      }
+    },
+    {
+      "quarter": 80,
+      "week": null,
+      "key": "log.queue.site_sold",
+      "params": {
+        "mw": 0.1,
+        "priceUsd": 30000
+      }
+    },
+    {
+      "quarter": 80,
+      "week": null,
+      "key": "log.queue.whole_site_sold",
+      "params": {
+        "n": 0,
+        "priceUsd": 30000
+      }
+    },
+    {
+      "quarter": 80,
       "week": 2,
       "key": "log.event_choice",
       "params": {
@@ -19500,7 +19551,7 @@
         "n": 22,
         "tenant": "tc_frontier_intelligence",
         "multPct": 0,
-        "years": 6
+        "years": 9
       }
     },
     {
@@ -19511,7 +19562,7 @@
         "n": 23,
         "tenant": "tc_north_azure_cloud",
         "multPct": 0,
-        "years": 6
+        "years": 9
       }
     },
     {
@@ -19579,6 +19630,338 @@
     {
       "quarter": 81,
       "week": null,
+      "key": "log.blend_signed",
+      "params": {
+        "n": 2,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": -0.15287666666666666,
+        "years": 9
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.blend_signed",
+      "params": {
+        "n": 26,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": -0.06879449999999987,
+        "years": 20
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.blend_signed",
+      "params": {
+        "n": 27,
+        "tenant": "tc_north_azure_cloud",
+        "multPct": -0.06879449999999987,
+        "years": 20
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.blend_signed",
+      "params": {
+        "n": 28,
+        "tenant": "tc_enterprise_render",
+        "multPct": -0.11465749999999997,
+        "years": 12
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.queue.site_sold",
+      "params": {
+        "mw": 1,
+        "priceUsd": 300000
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.queue.whole_site_sold",
+      "params": {
+        "n": 0,
+        "priceUsd": 300000
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 29,
+        "priceUsd": 71984153
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.queue.site_sold",
+      "params": {
+        "mw": 17,
+        "priceUsd": 5100000
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.queue.whole_site_sold",
+      "params": {
+        "n": 1,
+        "priceUsd": 77084153
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 2,
+        "priceUsd": 212316987
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 3,
+        "priceUsd": 36850244
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 4,
+        "priceUsd": 129689148
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 5,
+        "priceUsd": 27727409
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 6,
+        "priceUsd": 25063291
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 7,
+        "priceUsd": 18276012
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 8,
+        "priceUsd": 21825949
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 9,
+        "priceUsd": 9690211
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 10,
+        "priceUsd": 14145095
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 11,
+        "priceUsd": 18797468
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 12,
+        "priceUsd": 22974684
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 15,
+        "priceUsd": 52096780
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 16,
+        "priceUsd": 40711828
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 17,
+        "priceUsd": 407764458
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 18,
+        "priceUsd": 133470770
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 19,
+        "priceUsd": 18969497
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 20,
+        "priceUsd": 38658156
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 21,
+        "priceUsd": 47989435
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 22,
+        "priceUsd": 38658156
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 23,
+        "priceUsd": 71984153
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 24,
+        "priceUsd": 77316313
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 25,
+        "priceUsd": 71984153
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 26,
+        "priceUsd": 44688026
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 27,
+        "priceUsd": 67032039
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.project_sold",
+      "params": {
+        "n": 28,
+        "priceUsd": 75681480
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.queue.site_sold",
+      "params": {
+        "mw": 19,
+        "priceUsd": 5700000
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
+      "key": "log.queue.whole_site_sold",
+      "params": {
+        "n": 25,
+        "priceUsd": 1730061742
+      }
+    },
+    {
+      "quarter": 81,
+      "week": null,
       "key": "log.contract_signed",
       "params": {
         "tier": "texas_site",
@@ -19605,41 +19988,6 @@
       "params": {
         "pc": 0,
         "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 82,
-      "week": null,
-      "key": "log.reopener_tenant",
-      "params": {
-        "n": 24,
-        "tenant": "tc_frontier_intelligence",
-        "feeUsd": 694090,
-        "multPct": 0,
-        "years": 6
-      }
-    },
-    {
-      "quarter": 82,
-      "week": null,
-      "key": "log.reopener_tenant",
-      "params": {
-        "n": 25,
-        "tenant": "tc_north_azure_cloud",
-        "feeUsd": 646221,
-        "multPct": 0,
-        "years": 6
-      }
-    },
-    {
-      "quarter": 82,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 29,
-        "tenant": "tc_north_azure_cloud",
-        "years": 6,
-        "multPct": -0.06879449999999987
       }
     },
     {
@@ -19700,438 +20048,10 @@
     {
       "quarter": 82,
       "week": null,
-      "key": "log.renewal_signed",
-      "params": {
-        "n": 24,
-        "tenant": "tc_frontier_intelligence",
-        "multPct": 0,
-        "years": 6
-      }
-    },
-    {
-      "quarter": 82,
-      "week": null,
-      "key": "log.renewal_signed",
-      "params": {
-        "n": 25,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": 0,
-        "years": 6
-      }
-    },
-    {
-      "quarter": 82,
-      "week": null,
       "key": "log.pc_quarter",
       "params": {
         "pc": 0,
         "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 3,
-        "tenant": "tc_enterprise_render",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 5,
-        "tenant": "tc_frontier_intelligence",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 6,
-        "tenant": "tc_north_azure_cloud",
-        "years": 6,
-        "multPct": -0.12508090909090908
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 7,
-        "tenant": "tc_enterprise_render",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 8,
-        "tenant": "tc_enterprise_render",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 9,
-        "tenant": "tc_enterprise_render",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 10,
-        "tenant": "tc_north_azure_cloud",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 11,
-        "tenant": "tc_north_azure_cloud",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 12,
-        "tenant": "tc_enterprise_render",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 15,
-        "tenant": "tc_enterprise_render",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 16,
-        "tenant": "tc_enterprise_render",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 17,
-        "tenant": "tc_north_azure_cloud",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 18,
-        "tenant": "tc_meridian_labs",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 19,
-        "tenant": "tc_frontier_intelligence",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 20,
-        "tenant": "tc_frontier_intelligence",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 21,
-        "tenant": "tc_north_azure_cloud",
-        "years": 6,
-        "multPct": -0.11465749999999997
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 3,
-        "tenant": "tc_enterprise_render",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 5,
-        "tenant": "tc_frontier_intelligence",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 6,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": -0.12508090909090908,
-        "years": 11
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 7,
-        "tenant": "tc_enterprise_render",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 8,
-        "tenant": "tc_enterprise_render",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 9,
-        "tenant": "tc_enterprise_render",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 10,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 11,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 12,
-        "tenant": "tc_enterprise_render",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 15,
-        "tenant": "tc_enterprise_render",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 16,
-        "tenant": "tc_enterprise_render",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 17,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 18,
-        "tenant": "tc_meridian_labs",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 19,
-        "tenant": "tc_frontier_intelligence",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 20,
-        "tenant": "tc_frontier_intelligence",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 21,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": -0.11465749999999997,
-        "years": 12
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.plant.contracted",
-      "params": {
-        "ventureType": "egs2",
-        "pct": 80
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.plant.sold",
-      "params": {
-        "ventureType": "egs2",
-        "priceUsd": 101296506.45
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 0,
-        "priceUsd": 1500
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 0,
-        "priceUsd": 1500
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 0.1,
-        "priceUsd": 30000
-      }
-    },
-    {
-      "quarter": 83,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 0,
-        "priceUsd": 30000
       }
     },
     {
@@ -20151,316 +20071,6 @@
       "params": {
         "pc": 0,
         "deltaPc": 0
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.blend_offer",
-      "params": {
-        "n": 4,
-        "tenant": "tc_north_azure_cloud",
-        "years": 6,
-        "multPct": -0.16893260416666656
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.blend_signed",
-      "params": {
-        "n": 4,
-        "tenant": "tc_north_azure_cloud",
-        "multPct": -0.16893260416666656,
-        "years": 9
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 1,
-        "priceUsd": 283333
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 0,
-        "priceUsd": 283333
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 29,
-        "priceUsd": 69069815
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 17,
-        "priceUsd": 4816661
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 1,
-        "priceUsd": 73886476
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 2,
-        "priceUsd": 240485830
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 3,
-        "priceUsd": 31304233
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 4,
-        "priceUsd": 119915959
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 5,
-        "priceUsd": 23554397
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 6,
-        "priceUsd": 21040564
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 7,
-        "priceUsd": 15525448
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 8,
-        "priceUsd": 18541115
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 9,
-        "priceUsd": 8231821
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 10,
-        "priceUsd": 12016239
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 11,
-        "priceUsd": 15968424
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 12,
-        "priceUsd": 19516963
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 15,
-        "priceUsd": 44256145
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 16,
-        "priceUsd": 34584644
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 17,
-        "priceUsd": 346395367
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 18,
-        "priceUsd": 113383242
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 19,
-        "priceUsd": 16114562
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 20,
-        "priceUsd": 32840053
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 21,
-        "priceUsd": 40766962
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 22,
-        "priceUsd": 37093049
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 23,
-        "priceUsd": 69069815
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 24,
-        "priceUsd": 74186098
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 25,
-        "priceUsd": 69069815
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 26,
-        "priceUsd": 46046543
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 27,
-        "priceUsd": 69069815
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.project_sold",
-      "params": {
-        "n": 28,
-        "priceUsd": 84418663
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.site_sold",
-      "params": {
-        "mw": 19,
-        "priceUsd": 5383327
-      }
-    },
-    {
-      "quarter": 84,
-      "week": null,
-      "key": "log.queue.whole_site_sold",
-      "params": {
-        "n": 25,
-        "priceUsd": 1608779093
       }
     },
     {
@@ -20742,7 +20352,7 @@
       "week": null,
       "key": "log.exit.bid",
       "params": {
-        "bidUsd": 2468626125.0473576
+        "bidUsd": 2577114822.6547885
       }
     },
     {
@@ -28536,12 +28146,12 @@
         "startCash": 216929390.89,
         "lines": {
           "other_income": 993266,
+          "asset_sales": 107100785.76,
           "rent": -34345,
           "prepayments": -1105756.5749999997,
-          "ai_shell_rent": 30825106.634958416,
-          "ai_opex": -5394393.661117697,
-          "interest": 2157211.92,
-          "plant_distributions": 2715594.336
+          "ai_shell_rent": 30453616.334958408,
+          "ai_opex": -5329382.858617696,
+          "interest": 3108348.71
         },
         "byBiz": {
           "ai": {
@@ -28553,8 +28163,8 @@
           "site:site-22": {
             "other_income": 993266,
             "prepayments": -1105756.5749999997,
-            "ai_shell_rent": 29532663.8849584,
-            "ai_opex": -5168216.179867699
+            "ai_shell_rent": 29161173.584958397,
+            "ai_opex": -5103205.3773676995
           },
           "project:project-22": {
             "other_income": 347045,
@@ -28566,7 +28176,14 @@
             "ai_shell_rent": 1292442.75,
             "ai_opex": -226177.48124999992
           },
+          "venture:venture-36": {
+            "asset_sales": 107069285.76
+          },
+          "site:site-1": {
+            "asset_sales": 1500
+          },
           "site:site-3": {
+            "asset_sales": 30000,
             "rent": -6000.000000000001
           },
           "site:site-9": {
@@ -28586,8 +28203,8 @@
             "ai_opex": -81049.59843749998
           },
           "project:project-4": {
-            "ai_shell_rent": 2700000,
-            "ai_opex": -472500.0000000001
+            "ai_shell_rent": 2328509.7000000007,
+            "ai_opex": -407489.19750000007
           },
           "project:project-5": {
             "ai_shell_rent": 348483.1218749999,
@@ -28672,26 +28289,23 @@
           "project:project-29": {
             "ai_shell_rent": 1292442.75,
             "ai_opex": -226177.48124999992
-          },
-          "venture:venture-36": {
-            "plant_distributions": 2715594.336
           }
         },
-        "rounding": 0.015159666538238525,
+        "rounding": -0.041340649127960205,
         "weeks": [
-          219791165.46,
-          221659674.03,
-          223528182.6,
-          225396691.17,
-          227265199.74,
-          229133708.31,
-          231002216.88,
-          232870725.45,
-          234739234.02,
-          236607742.59,
-          238476251.16,
-          240344759.73,
-          242213268.3
+          326868375.87,
+          328713309.09,
+          330558242.31,
+          332403175.53,
+          334248108.75,
+          336093041.97,
+          337937975.19,
+          339782908.41,
+          341627841.63,
+          343472774.85,
+          345317708.07,
+          347162641.29,
+          349007574.51
         ],
         "parents": {
           "project:project-22": "site-22",
@@ -28724,692 +28338,125 @@
       },
       {
         "q": 81,
-        "startCash": 247086074.56,
+        "startCash": 352115923.22,
         "lines": {
+          "asset_sales": 1807445895,
           "rent": -34345,
-          "prepayments": -1105756.5749999997,
-          "ai_shell_rent": 30313432.972458415,
-          "ai_opex": -5304850.770180197,
-          "interest": 2413189.01,
-          "plant_distributions": 2715594.336
+          "interest": 19233291.56
         },
         "byBiz": {
           "ai": {
-            "prepayments": -1105756.5749999997
-          }
-        },
-        "byRef": {
-          "site:site-3": {
-            "rent": -6000.000000000001
-          },
-          "site:site-9": {
-            "rent": -28345.000000000007
-          },
-          "site:site-22": {
-            "prepayments": -1105756.5749999997,
-            "ai_shell_rent": 29020990.2224584,
-            "ai_opex": -5078673.288930198
-          },
-          "project:project-28": {
-            "prepayments": -1105756.5749999997,
-            "ai_shell_rent": 1105756.5749999997,
-            "ai_opex": -193507.4006249999
-          },
-          "project:project-2": {
-            "ai_shell_rent": 4499999.999999999,
-            "ai_opex": -787500.0000000001
-          },
-          "project:project-3": {
-            "ai_shell_rent": 463140.56250000006,
-            "ai_opex": -81049.59843749998
-          },
-          "project:project-4": {
-            "ai_shell_rent": 2700000,
-            "ai_opex": -472500.0000000001
-          },
-          "project:project-5": {
-            "ai_shell_rent": 348483.1218749999,
-            "ai_opex": -60984.54632812499
-          },
-          "project:project-6": {
-            "ai_shell_rent": 450000.00000000006,
-            "ai_opex": -78750
-          },
-          "project:project-7": {
-            "ai_shell_rent": 229696.23600000003,
-            "ai_opex": -40196.84129999999
-          },
-          "project:project-8": {
-            "ai_shell_rent": 274312.49999999994,
-            "ai_opex": -48004.687499999985
-          },
-          "project:project-9": {
-            "ai_shell_rent": 121788.33333333331,
-            "ai_opex": -21312.958333333332
-          },
-          "project:project-10": {
-            "ai_shell_rent": 253968.74999999997,
-            "ai_opex": -44444.53124999998
-          },
-          "project:project-11": {
-            "ai_shell_rent": 337500,
-            "ai_opex": -59062.500000000015
-          },
-          "project:project-12": {
-            "ai_shell_rent": 288750,
-            "ai_opex": -50531.250000000015
-          },
-          "project:project-15": {
-            "ai_shell_rent": 654761.7999999999,
-            "ai_opex": -114583.31499999994
-          },
-          "project:project-16": {
-            "ai_shell_rent": 511673.6625000001,
-            "ai_opex": -89542.8909375
-          },
-          "project:project-17": {
-            "ai_shell_rent": 7321225.499999999,
-            "ai_opex": -1281214.4625
-          },
-          "project:project-18": {
-            "ai_shell_rent": 1677484.9000000004,
-            "ai_opex": -293559.8574999999
-          },
-          "project:project-19": {
-            "ai_shell_rent": 238412.08124999993,
-            "ai_opex": -41722.11421874999
-          },
-          "project:project-20": {
-            "ai_shell_rent": 485862.7375,
-            "ai_opex": -85025.9790625
-          },
-          "project:project-21": {
-            "ai_shell_rent": 861628.5,
-            "ai_opex": -150784.9875
-          },
-          "project:project-22": {
-            "ai_shell_rent": 485862.7375,
-            "ai_opex": -85025.9790625
-          },
-          "project:project-23": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "project:project-24": {
-            "ai_shell_rent": 971725.475,
-            "ai_opex": -170051.958125
-          },
-          "project:project-25": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "project:project-26": {
-            "ai_shell_rent": 861628.5,
-            "ai_opex": -150784.9875
-          },
-          "project:project-27": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "site:site-14": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "project:project-29": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "venture:venture-36": {
-            "plant_distributions": 2715594.336
-          }
-        },
-        "rounding": -0.013277888298034668,
-        "weeks": [
-          248922111.53,
-          250758148.5,
-          252594185.47,
-          254430222.44,
-          256266259.41,
-          258102296.38,
-          259938333.35,
-          261774370.32,
-          263610407.29,
-          265446444.26,
-          267282481.23,
-          269118518.2,
-          270954555.17
-        ],
-        "parents": {
-          "project:project-28": "site-22",
-          "project:project-2": "site-22",
-          "project:project-3": "site-22",
-          "project:project-4": "site-22",
-          "project:project-5": "site-22",
-          "project:project-6": "site-22",
-          "project:project-7": "site-22",
-          "project:project-8": "site-22",
-          "project:project-9": "site-22",
-          "project:project-10": "site-22",
-          "project:project-11": "site-22",
-          "project:project-12": "site-22",
-          "project:project-15": "site-22",
-          "project:project-16": "site-22",
-          "project:project-17": "site-22",
-          "project:project-18": "site-22",
-          "project:project-19": "site-22",
-          "project:project-20": "site-22",
-          "project:project-21": "site-22",
-          "project:project-22": "site-22",
-          "project:project-23": "site-22",
-          "project:project-24": "site-22",
-          "project:project-25": "site-22",
-          "project:project-26": "site-22",
-          "project:project-27": "site-22",
-          "project:project-29": "site-14"
-        }
-      },
-      {
-        "q": 82,
-        "startCash": 276083338.52,
-        "lines": {
-          "other_income": 1340311,
-          "rent": -34345,
-          "prepayments": -1020698.3769230767,
-          "ai_shell_rent": 28081049.10919238,
-          "ai_opex": -6533612.62071281,
-          "interest": 2653314.75,
-          "plant_distributions": 2715594.336
-        },
-        "byBiz": {
-          "ai": {
-            "other_income": 1340311,
-            "prepayments": -1020698.3769230767
-          }
-        },
-        "byRef": {
-          "site:site-22": {
-            "other_income": 1340311,
-            "prepayments": -1020698.3769230767,
-            "ai_shell_rent": 26788606.359192364,
-            "ai_opex": -4688006.112858646
-          },
-          "project:project-24": {
-            "other_income": 694090,
-            "ai_shell_rent": 896977.3615384615,
-            "ai_opex": -156971.03826923078
-          },
-          "project:project-25": {
-            "other_income": 646221,
-            "ai_shell_rent": 1193024.076923077,
-            "ai_opex": -208779.2134615384
-          },
-          "site:site-3": {
-            "rent": -6000.000000000001
-          },
-          "site:site-9": {
-            "rent": -28345.000000000007
-          },
-          "project:project-28": {
-            "prepayments": -1020698.3769230767,
-            "ai_shell_rent": 1020698.3769230767,
-            "ai_opex": -178622.21596153837
-          },
-          "project:project-2": {
-            "ai_shell_rent": 4153846.1538461526,
-            "ai_opex": -726923.076923077
-          },
-          "project:project-3": {
-            "ai_shell_rent": 427514.36538461543,
-            "ai_opex": -74815.01394230768
-          },
-          "project:project-4": {
-            "ai_shell_rent": 2492307.6923076925,
-            "ai_opex": -436153.84615384624
-          },
-          "project:project-5": {
-            "ai_shell_rent": 321676.7278846153,
-            "ai_opex": -56293.42737980768
-          },
-          "project:project-6": {
-            "ai_shell_rent": 415384.61538461543,
-            "ai_opex": -72692.30769230769
-          },
-          "project:project-7": {
-            "ai_shell_rent": 212027.2947692308,
-            "ai_opex": -37104.77658461538
-          },
-          "project:project-8": {
-            "ai_shell_rent": 253211.5384615384,
-            "ai_opex": -44312.01923076922
-          },
-          "project:project-9": {
-            "ai_shell_rent": 112419.99999999999,
-            "ai_opex": -19673.5
-          },
-          "project:project-10": {
-            "ai_shell_rent": 234432.69230769228,
-            "ai_opex": -41025.721153846134
-          },
-          "project:project-11": {
-            "ai_shell_rent": 311538.46153846156,
-            "ai_opex": -54519.23076923078
-          },
-          "project:project-12": {
-            "ai_shell_rent": 266538.46153846156,
-            "ai_opex": -46644.23076923078
-          },
-          "project:project-15": {
-            "ai_shell_rent": 604395.5076923076,
-            "ai_opex": -105769.2138461538
-          },
-          "project:project-16": {
-            "ai_shell_rent": 472314.1500000001,
-            "ai_opex": -82654.97624999999
-          },
-          "project:project-17": {
-            "ai_shell_rent": 6758054.307692307,
-            "ai_opex": -1182659.5038461538
-          },
-          "project:project-18": {
-            "ai_shell_rent": 1548447.6000000003,
-            "ai_opex": -270978.32999999996
-          },
-          "project:project-19": {
-            "ai_shell_rent": 220072.69038461533,
-            "ai_opex": -38512.72081730769
-          },
-          "project:project-20": {
-            "ai_shell_rent": 448488.68076923076,
-            "ai_opex": -78485.51913461539
-          },
-          "project:project-21": {
-            "ai_shell_rent": 795349.3846153846,
-            "ai_opex": -139186.1423076923
-          },
-          "project:project-22": {
-            "ai_shell_rent": 448488.68076923076,
-            "ai_opex": -78485.51913461539
-          },
-          "project:project-23": {
-            "ai_shell_rent": 1193024.076923077,
-            "ai_opex": -208779.2134615384
-          },
-          "project:project-26": {
-            "ai_shell_rent": 795349.3846153846,
-            "ai_opex": -139186.1423076923
-          },
-          "project:project-27": {
-            "ai_shell_rent": 1193024.076923077,
-            "ai_opex": -208779.2134615384
-          },
-          "site:site-14": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "project:project-29": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "venture:venture-36": {
-            "plant_distributions": 2715594.336
-          }
-        },
-        "rounding": -0.007556498050689697,
-        "weeks": [
-          279259686.49,
-          281095723.46,
-          282931760.43,
-          284767797.4,
-          286603834.37,
-          288439871.34,
-          290275908.31,
-          292111945.28,
-          293947982.25,
-          292407931.71,
-          294243968.68,
-          296080005.65,
-          297916042.62
-        ],
-        "parents": {
-          "project:project-24": "site-22",
-          "project:project-25": "site-22",
-          "project:project-28": "site-22",
-          "project:project-2": "site-22",
-          "project:project-3": "site-22",
-          "project:project-4": "site-22",
-          "project:project-5": "site-22",
-          "project:project-6": "site-22",
-          "project:project-7": "site-22",
-          "project:project-8": "site-22",
-          "project:project-9": "site-22",
-          "project:project-10": "site-22",
-          "project:project-11": "site-22",
-          "project:project-12": "site-22",
-          "project:project-15": "site-22",
-          "project:project-16": "site-22",
-          "project:project-17": "site-22",
-          "project:project-18": "site-22",
-          "project:project-19": "site-22",
-          "project:project-20": "site-22",
-          "project:project-21": "site-22",
-          "project:project-22": "site-22",
-          "project:project-23": "site-22",
-          "project:project-26": "site-22",
-          "project:project-27": "site-22",
-          "project:project-29": "site-14"
-        }
-      },
-      {
-        "q": 83,
-        "startCash": 303284951.71,
-        "lines": {
-          "asset_sales": 101328006.45,
-          "rent": -34345,
-          "prepayments": -85057.7480769182,
-          "ai_shell_rent": 28644065.890471864,
-          "ai_opex": -5012711.530832563,
-          "interest": 3812987.48
-        },
-        "byBiz": {
-          "ai": {
-            "prepayments": -85057.7480769182
-          }
-        },
-        "byRef": {
-          "venture:venture-36": {
-            "asset_sales": 101296506.45
-          },
-          "site:site-1": {
-            "asset_sales": 1500
-          },
-          "site:site-3": {
-            "asset_sales": 30000,
-            "rent": -6000.000000000001
-          },
-          "site:site-9": {
-            "rent": -28345.000000000007
-          },
-          "site:site-22": {
-            "prepayments": -85057.7480769182,
-            "ai_shell_rent": 27351623.14047184,
-            "ai_opex": -4786534.049582564
-          },
-          "project:project-28": {
-            "prepayments": -85057.7480769182,
-            "ai_shell_rent": 1105756.5749999997,
-            "ai_opex": -193507.4006249999
-          },
-          "project:project-2": {
-            "ai_shell_rent": 4499999.999999999,
-            "ai_opex": -787500.0000000001
-          },
-          "project:project-3": {
-            "ai_shell_rent": 410038.0234551563,
-            "ai_opex": -71756.65410465235
-          },
-          "project:project-4": {
-            "ai_shell_rent": 2700000,
-            "ai_opex": -472500.0000000001
-          },
-          "project:project-5": {
-            "ai_shell_rent": 308526.9183286171,
-            "ai_opex": -53992.210707508006
-          },
-          "project:project-6": {
-            "ai_shell_rent": 393713.59090909094,
-            "ai_opex": -68899.87840909092
-          },
-          "project:project-7": {
-            "ai_shell_rent": 203359.83982082992,
-            "ai_opex": -35587.97196864524
-          },
-          "project:project-8": {
-            "ai_shell_rent": 242860.51453125005,
-            "ai_opex": -42500.590042968746
-          },
-          "project:project-9": {
-            "ai_shell_rent": 107824.38750416668,
-            "ai_opex": -18869.267813229166
-          },
-          "project:project-10": {
-            "ai_shell_rent": 224849.32804687493,
-            "ai_opex": -39348.63240820313
-          },
-          "project:project-11": {
-            "ai_shell_rent": 298803.09375000006,
-            "ai_opex": -52290.54140625001
-          },
-          "project:project-12": {
-            "ai_shell_rent": 255642.64687499992,
-            "ai_opex": -44737.46320312498
-          },
-          "project:project-15": {
-            "ai_shell_rent": 579688.4489165,
-            "ai_opex": -101445.4785603875
-          },
-          "project:project-16": {
-            "ai_shell_rent": 453006.4395419064,
-            "ai_opex": -79276.1269198336
-          },
-          "project:project-17": {
-            "ai_shell_rent": 6481792.08723375,
-            "ai_opex": -1134313.615265906
-          },
-          "project:project-18": {
-            "ai_shell_rent": 1485148.67507825,
-            "ai_opex": -259901.01813869382
-          },
-          "project:project-19": {
-            "ai_shell_rent": 211076.34804407816,
-            "ai_opex": -36938.36090771367
-          },
-          "project:project-20": {
-            "ai_shell_rent": 430154.9306750937,
-            "ai_opex": -75277.11286814138
-          },
-          "project:project-21": {
-            "ai_shell_rent": 762836.33026125,
-            "ai_opex": -133496.35779571877
-          },
-          "project:project-22": {
-            "ai_shell_rent": 485862.7375,
-            "ai_opex": -85025.9790625
-          },
-          "project:project-23": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "project:project-24": {
-            "ai_shell_rent": 971725.475,
-            "ai_opex": -170051.958125
-          },
-          "project:project-25": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "project:project-26": {
-            "ai_shell_rent": 861628.5,
-            "ai_opex": -150784.9875
-          },
-          "project:project-27": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "site:site-14": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          },
-          "project:project-29": {
-            "ai_shell_rent": 1292442.75,
-            "ai_opex": -226177.48124999992
-          }
-        },
-        "rounding": 0.048437535762786865,
-        "weeks": [
-          406343054.98,
-          408158209.55,
-          409973364.12,
-          411788518.69,
-          413603673.26,
-          415418827.83,
-          417233982.4,
-          419049136.97,
-          420864291.54,
-          422679446.11,
-          424494600.68,
-          426309755.25,
-          428124909.82
-        ],
-        "parents": {
-          "project:project-28": "site-22",
-          "project:project-2": "site-22",
-          "project:project-3": "site-22",
-          "project:project-4": "site-22",
-          "project:project-5": "site-22",
-          "project:project-6": "site-22",
-          "project:project-7": "site-22",
-          "project:project-8": "site-22",
-          "project:project-9": "site-22",
-          "project:project-10": "site-22",
-          "project:project-11": "site-22",
-          "project:project-12": "site-22",
-          "project:project-15": "site-22",
-          "project:project-16": "site-22",
-          "project:project-17": "site-22",
-          "project:project-18": "site-22",
-          "project:project-19": "site-22",
-          "project:project-20": "site-22",
-          "project:project-21": "site-22",
-          "project:project-22": "site-22",
-          "project:project-23": "site-22",
-          "project:project-24": "site-22",
-          "project:project-25": "site-22",
-          "project:project-26": "site-22",
-          "project:project-27": "site-22",
-          "project:project-29": "site-14"
-        }
-      },
-      {
-        "q": 84,
-        "startCash": 431937897.3,
-        "lines": {
-          "asset_sales": 1682948902,
-          "rent": -34345,
-          "interest": 18835404.67
-        },
-        "byBiz": {
-          "ai": {
-            "asset_sales": 1672465581
+            "asset_sales": 1796345895
           }
         },
         "byRef": {
           "site:site-9": {
-            "asset_sales": 283333,
+            "asset_sales": 300000,
             "rent": -28345.000000000007
           },
           "site:site-14": {
-            "asset_sales": 73886476
+            "asset_sales": 77084153
           },
           "project:project-29": {
-            "asset_sales": 69069815
+            "asset_sales": 71984153
           },
           "site:site-22": {
-            "asset_sales": 1608779093
+            "asset_sales": 1730061742
           },
           "project:project-2": {
-            "asset_sales": 240485830
+            "asset_sales": 212316987
           },
           "project:project-3": {
-            "asset_sales": 31304233
+            "asset_sales": 36850244
           },
           "project:project-4": {
-            "asset_sales": 119915959
+            "asset_sales": 129689148
           },
           "project:project-5": {
-            "asset_sales": 23554397
+            "asset_sales": 27727409
           },
           "project:project-6": {
-            "asset_sales": 21040564
+            "asset_sales": 25063291
           },
           "project:project-7": {
-            "asset_sales": 15525448
+            "asset_sales": 18276012
           },
           "project:project-8": {
-            "asset_sales": 18541115
+            "asset_sales": 21825949
           },
           "project:project-9": {
-            "asset_sales": 8231821
+            "asset_sales": 9690211
           },
           "project:project-10": {
-            "asset_sales": 12016239
+            "asset_sales": 14145095
           },
           "project:project-11": {
-            "asset_sales": 15968424
+            "asset_sales": 18797468
           },
           "project:project-12": {
-            "asset_sales": 19516963
+            "asset_sales": 22974684
           },
           "project:project-15": {
-            "asset_sales": 44256145
+            "asset_sales": 52096780
           },
           "project:project-16": {
-            "asset_sales": 34584644
+            "asset_sales": 40711828
           },
           "project:project-17": {
-            "asset_sales": 346395367
+            "asset_sales": 407764458
           },
           "project:project-18": {
-            "asset_sales": 113383242
+            "asset_sales": 133470770
           },
           "project:project-19": {
-            "asset_sales": 16114562
+            "asset_sales": 18969497
           },
           "project:project-20": {
-            "asset_sales": 32840053
+            "asset_sales": 38658156
           },
           "project:project-21": {
-            "asset_sales": 40766962
+            "asset_sales": 47989435
           },
           "project:project-22": {
-            "asset_sales": 37093049
+            "asset_sales": 38658156
           },
           "project:project-23": {
-            "asset_sales": 69069815
+            "asset_sales": 71984153
           },
           "project:project-24": {
-            "asset_sales": 74186098
+            "asset_sales": 77316313
           },
           "project:project-25": {
-            "asset_sales": 69069815
+            "asset_sales": 71984153
           },
           "project:project-26": {
-            "asset_sales": 46046543
+            "asset_sales": 44688026
           },
           "project:project-27": {
-            "asset_sales": 69069815
+            "asset_sales": 67032039
           },
           "project:project-28": {
-            "asset_sales": 84418663
+            "asset_sales": 75681480
           },
           "site:site-3": {
             "rent": -6000.000000000001
           }
         },
-        "rounding": 0.03999924659729004,
+        "rounding": 0.04000234603881836,
         "weeks": [
-          2114884157.38,
-          2114881515.46,
-          2114878873.54,
-          2114876231.62,
-          2114873589.7,
-          2114870947.78,
-          2114868305.86,
-          2114865663.94,
-          2114863022.02,
-          2114860380.1,
-          2114857738.18,
-          2114855096.26,
-          2114852454.34
+          2159559176.3,
+          2159556534.38,
+          2159553892.46,
+          2159551250.54,
+          2159548608.62,
+          2159545966.7,
+          2159543324.78,
+          2159540682.86,
+          2159538040.94,
+          2159535399.02,
+          2159532757.1,
+          2159530115.18,
+          2159527473.26
         ],
         "parents": {
           "project:project-29": "site-14",
@@ -29441,77 +28488,11 @@
         }
       },
       {
-        "q": 85,
-        "startCash": 2133687859.01,
+        "q": 82,
+        "startCash": 2178760764.82,
         "lines": {
           "rent": -34345,
-          "interest": 19002851.61
-        },
-        "byBiz": {},
-        "byRef": {
-          "site:site-3": {
-            "rent": -6000.000000000001
-          },
-          "site:site-9": {
-            "rent": -28345.000000000007
-          }
-        },
-        "rounding": 0.03999924659729004,
-        "weeks": [
-          2133685217.09,
-          2133682575.17,
-          2133679933.25,
-          2133677291.33,
-          2133674649.41,
-          2133672007.49,
-          2133669365.57,
-          2133666723.65,
-          2133664081.73,
-          2133661439.81,
-          2133658797.89,
-          2133656155.97,
-          2133653514.05
-        ]
-      },
-      {
-        "q": 86,
-        "startCash": 2152656365.66,
-        "lines": {
-          "rent": -34345,
-          "interest": 19171789.87
-        },
-        "byBiz": {},
-        "byRef": {
-          "site:site-3": {
-            "rent": -6000.000000000001
-          },
-          "site:site-9": {
-            "rent": -28345.000000000007
-          }
-        },
-        "rounding": 0.04000282287597656,
-        "weeks": [
-          2152653723.74,
-          2152651081.82,
-          2152648439.9,
-          2152645797.98,
-          2152643156.06,
-          2152640514.14,
-          2152637872.22,
-          2152635230.3,
-          2152632588.38,
-          2152629946.46,
-          2152627304.54,
-          2152624662.62,
-          2152622020.7
-        ]
-      },
-      {
-        "q": 87,
-        "startCash": 2171793810.57,
-        "lines": {
-          "rent": -34345,
-          "interest": 19342232.74
+          "interest": 19404282.18
         },
         "byBiz": {},
         "byRef": {
@@ -29524,27 +28505,27 @@
         },
         "rounding": 0.04000234603881836,
         "weeks": [
-          2171791168.65,
-          2171788526.73,
-          2171785884.81,
-          2171783242.89,
-          2171780600.97,
-          2171777959.05,
-          2171775317.13,
-          2171772675.21,
-          2171770033.29,
-          2171767391.37,
-          2171764749.45,
-          2171762107.53,
-          2171759465.61
+          2178758122.9,
+          2178755480.98,
+          2178752839.06,
+          2178750197.14,
+          2178747555.22,
+          2178744913.3,
+          2178742271.38,
+          2178739629.46,
+          2178736987.54,
+          2178734345.62,
+          2178731703.7,
+          2178729061.78,
+          2178726419.86
         ]
       },
       {
-        "q": 88,
-        "startCash": 2191101698.35,
+        "q": 83,
+        "startCash": 2198130702.04,
         "lines": {
           "rent": -34345,
-          "interest": 19514193.62
+          "interest": 19576795.68
         },
         "byBiz": {},
         "byRef": {
@@ -29557,60 +28538,27 @@
         },
         "rounding": 0.04000282287597656,
         "weeks": [
-          2191099056.43,
-          2191096414.51,
-          2191093772.59,
-          2191091130.67,
-          2191088488.75,
-          2191085846.83,
-          2191083204.91,
-          2191080562.99,
-          2191077921.07,
-          2191075279.15,
-          2191072637.23,
-          2191069995.31,
-          2191067353.39
+          2198128060.12,
+          2198125418.2,
+          2198122776.28,
+          2198120134.36,
+          2198117492.44,
+          2198114850.52,
+          2198112208.6,
+          2198109566.68,
+          2198106924.76,
+          2198104282.84,
+          2198101640.92,
+          2198098999,
+          2198096357.08
         ]
       },
       {
-        "q": 89,
-        "startCash": 2210581547.01,
+        "q": 84,
+        "startCash": 2217673152.76,
         "lines": {
           "rent": -34345,
-          "interest": 19687686.02
-        },
-        "byBiz": {},
-        "byRef": {
-          "site:site-3": {
-            "rent": -6000.000000000001
-          },
-          "site:site-9": {
-            "rent": -28345.000000000007
-          }
-        },
-        "rounding": 0.04000234603881836,
-        "weeks": [
-          2210578905.09,
-          2210576263.17,
-          2210573621.25,
-          2210570979.33,
-          2210568337.41,
-          2210565695.49,
-          2210563053.57,
-          2210560411.65,
-          2210557769.73,
-          2210555127.81,
-          2210552485.89,
-          2210549843.97,
-          2210547202.05
-        ]
-      },
-      {
-        "q": 90,
-        "startCash": 2230234888.07,
-        "lines": {
-          "rent": -34345,
-          "interest": 19862723.59
+          "interest": 19750845.63
         },
         "byBiz": {},
         "byRef": {
@@ -29623,27 +28571,27 @@
         },
         "rounding": 0.040001869201660156,
         "weeks": [
-          2230232246.15,
-          2230229604.23,
-          2230226962.31,
-          2230224320.39,
-          2230221678.47,
-          2230219036.55,
-          2230216394.63,
-          2230213752.71,
-          2230211110.79,
-          2230208468.87,
-          2230205826.95,
-          2230203185.03,
-          2230200543.11
+          2217670510.84,
+          2217667868.92,
+          2217665227,
+          2217662585.08,
+          2217659943.16,
+          2217657301.24,
+          2217654659.32,
+          2217652017.4,
+          2217649375.48,
+          2217646733.56,
+          2217644091.64,
+          2217641449.72,
+          2217638807.8
         ]
       },
       {
-        "q": 91,
-        "startCash": 2250063266.7,
+        "q": 85,
+        "startCash": 2237389653.43,
         "lines": {
           "rent": -34345,
-          "interest": 20039320.08
+          "interest": 19926445.72
         },
         "byBiz": {},
         "byRef": {
@@ -29656,27 +28604,225 @@
         },
         "rounding": 0.04000282287597656,
         "weeks": [
-          2250060624.78,
-          2250057982.86,
-          2250055340.94,
-          2250052699.02,
-          2250050057.1,
-          2250047415.18,
-          2250044773.26,
-          2250042131.34,
-          2250039489.42,
-          2250036847.5,
-          2250034205.58,
-          2250031563.66,
-          2250028921.74
+          2237387011.51,
+          2237384369.59,
+          2237381727.67,
+          2237379085.75,
+          2237376443.83,
+          2237373801.91,
+          2237371159.99,
+          2237368518.07,
+          2237365876.15,
+          2237363234.23,
+          2237360592.31,
+          2237357950.39,
+          2237355308.47
+        ]
+      },
+      {
+        "q": 86,
+        "startCash": 2257281754.19,
+        "lines": {
+          "rent": -34345,
+          "interest": 20103609.74
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          }
+        },
+        "rounding": 0.04000234603881836,
+        "weeks": [
+          2257279112.27,
+          2257276470.35,
+          2257273828.43,
+          2257271186.51,
+          2257268544.59,
+          2257265902.67,
+          2257263260.75,
+          2257260618.83,
+          2257257976.91,
+          2257255334.99,
+          2257252693.07,
+          2257250051.15,
+          2257247409.23
+        ]
+      },
+      {
+        "q": 87,
+        "startCash": 2277351018.97,
+        "lines": {
+          "rent": -34345,
+          "interest": 20282351.63
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          }
+        },
+        "rounding": 0.04000234603881836,
+        "weeks": [
+          2277348377.05,
+          2277345735.13,
+          2277343093.21,
+          2277340451.29,
+          2277337809.37,
+          2277335167.45,
+          2277332525.53,
+          2277329883.61,
+          2277327241.69,
+          2277324599.77,
+          2277321957.85,
+          2277319315.93,
+          2277316674.01
+        ]
+      },
+      {
+        "q": 88,
+        "startCash": 2297599025.64,
+        "lines": {
+          "rent": -34345,
+          "interest": 20462685.44
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          }
+        },
+        "rounding": 0.04000234603881836,
+        "weeks": [
+          2297596383.72,
+          2297593741.8,
+          2297591099.88,
+          2297588457.96,
+          2297585816.04,
+          2297583174.12,
+          2297580532.2,
+          2297577890.28,
+          2297575248.36,
+          2297572606.44,
+          2297569964.52,
+          2297567322.6,
+          2297564680.68
+        ]
+      },
+      {
+        "q": 89,
+        "startCash": 2318027366.12,
+        "lines": {
+          "rent": -34345,
+          "interest": 20644625.34
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          }
+        },
+        "rounding": 0.04000234603881836,
+        "weeks": [
+          2318024724.2,
+          2318022082.28,
+          2318019440.36,
+          2318016798.44,
+          2318014156.52,
+          2318011514.6,
+          2318008872.68,
+          2318006230.76,
+          2318003588.84,
+          2318000946.92,
+          2317998305,
+          2317995663.08,
+          2317993021.16
+        ]
+      },
+      {
+        "q": 90,
+        "startCash": 2338637646.5,
+        "lines": {
+          "rent": -34345,
+          "interest": 20828185.65
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          }
+        },
+        "rounding": 0.04000234603881836,
+        "weeks": [
+          2338635004.58,
+          2338632362.66,
+          2338629720.74,
+          2338627078.82,
+          2338624436.9,
+          2338621794.98,
+          2338619153.06,
+          2338616511.14,
+          2338613869.22,
+          2338611227.3,
+          2338608585.38,
+          2338605943.46,
+          2338603301.54
+        ]
+      },
+      {
+        "q": 91,
+        "startCash": 2359431487.19,
+        "lines": {
+          "rent": -34345,
+          "interest": 21013380.8
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "rent": -6000.000000000001
+          },
+          "site:site-9": {
+            "rent": -28345.000000000007
+          }
+        },
+        "rounding": 0.04000234603881836,
+        "weeks": [
+          2359428845.27,
+          2359426203.35,
+          2359423561.43,
+          2359420919.51,
+          2359418277.59,
+          2359415635.67,
+          2359412993.75,
+          2359410351.83,
+          2359407709.91,
+          2359405067.99,
+          2359402426.07,
+          2359399784.15,
+          2359397142.23
         ]
       },
       {
         "q": 92,
-        "startCash": 2270068241.82,
+        "startCash": 2380410523.03,
         "lines": {
           "rent": -34345,
-          "interest": 20217489.39
+          "interest": 21200225.34
         },
         "byBiz": {},
         "byRef": {
@@ -29687,29 +28833,29 @@
             "rent": -28345.000000000007
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": 0.040001869201660156,
         "weeks": [
-          2270065599.9,
-          2270062957.98,
-          2270060316.06,
-          2270057674.14,
-          2270055032.22,
-          2270052390.3,
-          2270049748.38,
-          2270047106.46,
-          2270044464.54,
-          2270041822.62,
-          2270039180.7,
-          2270036538.78,
-          2270033896.86
+          2380407881.11,
+          2380405239.19,
+          2380402597.27,
+          2380399955.35,
+          2380397313.43,
+          2380394671.51,
+          2380392029.59,
+          2380389387.67,
+          2380386745.75,
+          2380384103.83,
+          2380381461.91,
+          2380378819.99,
+          2380376178.07
         ]
       },
       {
         "q": 93,
-        "startCash": 2290251386.25,
+        "startCash": 2401576403.41,
         "lines": {
           "rent": -34345,
-          "interest": 20397245.52
+          "interest": 21388733.96
         },
         "byBiz": {},
         "byRef": {
@@ -29722,27 +28868,27 @@
         },
         "rounding": 0.04000234603881836,
         "weeks": [
-          2290248744.33,
-          2290246102.41,
-          2290243460.49,
-          2290240818.57,
-          2290238176.65,
-          2290235534.73,
-          2290232892.81,
-          2290230250.89,
-          2290227608.97,
-          2290224967.05,
-          2290222325.13,
-          2290219683.21,
-          2290217041.29
+          2401573761.49,
+          2401571119.57,
+          2401568477.65,
+          2401565835.73,
+          2401563193.81,
+          2401560551.89,
+          2401557909.97,
+          2401555268.05,
+          2401552626.13,
+          2401549984.21,
+          2401547342.29,
+          2401544700.37,
+          2401542058.45
         ]
       },
       {
         "q": 94,
-        "startCash": 2310614286.81,
+        "startCash": 2422930792.41,
         "lines": {
           "rent": -34345,
-          "interest": 20578602.61
+          "interest": 21578921.49
         },
         "byBiz": {},
         "byRef": {
@@ -29753,30 +28899,30 @@
             "rent": -28345.000000000007
           }
         },
-        "rounding": 0.04000234603881836,
+        "rounding": 0.04000282287597656,
         "weeks": [
-          2310611644.89,
-          2310609002.97,
-          2310606361.05,
-          2310603719.13,
-          2310601077.21,
-          2310598435.29,
-          2310595793.37,
-          2310593151.45,
-          2310590509.53,
-          2310587867.61,
-          2310585225.69,
-          2310582583.77,
-          2310579941.85
+          2422928150.49,
+          2422925508.57,
+          2422922866.65,
+          2422920224.73,
+          2422917582.81,
+          2422914940.89,
+          2422912298.97,
+          2422909657.05,
+          2422907015.13,
+          2422904373.21,
+          2422901731.29,
+          2422899089.37,
+          2422896447.45
         ]
       }
     ],
     "current": {
       "q": 95,
-      "startCash": 2331158544.46,
+      "startCash": 2444475368.94,
       "lines": {
         "rent": -34345,
-        "interest": 20761574.9
+        "interest": 21770802.87
       },
       "byBiz": {},
       "byRef": {
@@ -29789,19 +28935,19 @@
       },
       "rounding": 0.04000234603881836,
       "weeks": [
-        2331155902.54,
-        2331153260.62,
-        2331150618.7,
-        2331147976.78,
-        2331145334.86,
-        2331142692.94,
-        2331140051.02,
-        2331137409.1,
-        2331134767.18,
-        2331132125.26,
-        2331129483.34,
-        2331126841.42,
-        2331124199.5
+        2444472727.02,
+        2444470085.1,
+        2444467443.18,
+        2444464801.26,
+        2444462159.34,
+        2444459517.42,
+        2444456875.5,
+        2444454233.58,
+        2444451591.66,
+        2444448949.74,
+        2444446307.82,
+        2444443665.9,
+        2444441023.98
       ]
     }
   },
@@ -30377,8 +29523,8 @@
       "slips": 3,
       "outputContract": {
         "share": 0.8,
-        "priceUsdMwh": 58.17,
-        "endQuarter": 131
+        "priceUsdMwh": 72.7,
+        "endQuarter": 128
       }
     }
   ],
@@ -30874,10 +30020,10 @@
     0.677462640104741,
     0.7305760117548609,
     0.7566308459302532,
-    0.7484864108055803,
-    0.7369170378106723,
-    0.6420571307623307,
-    0.6525511768573625,
+    0.69346663837062,
+    0,
+    0,
+    0,
     0,
     0,
     0,
@@ -30896,99 +30042,59 @@
   },
   "act5Moves": [
     {
-      "q": 7,
+      "q": 4,
+      "kind": "renew_long"
+    },
+    {
+      "q": 4,
+      "kind": "renew_long"
+    },
+    {
+      "q": 4,
       "kind": "blend_and_extend_long"
     },
     {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
-      "kind": "blend_and_extend_long"
-    },
-    {
-      "q": 7,
+      "q": 4,
       "kind": "contract_plant_output"
     },
     {
-      "q": 7,
+      "q": 4,
       "kind": "sell_plant_stake_to_fund"
     },
     {
-      "q": 7,
+      "q": 4,
       "kind": "sell_site_free_mw"
     },
     {
-      "q": 7,
+      "q": 4,
       "kind": "sell_site_free_mw"
     },
     {
-      "q": 8,
+      "q": 5,
       "kind": "blend_and_extend_long"
     },
     {
-      "q": 8,
+      "q": 5,
+      "kind": "blend_and_extend_long"
+    },
+    {
+      "q": 5,
+      "kind": "blend_and_extend_long"
+    },
+    {
+      "q": 5,
+      "kind": "blend_and_extend_long"
+    },
+    {
+      "q": 5,
       "kind": "sell_site_free_mw"
     },
     {
-      "q": 8,
+      "q": 5,
       "kind": "sell_site_free_mw"
     },
     {
-      "q": 8,
+      "q": 5,
       "kind": "sell_site_free_mw"
     }
   ],
@@ -30999,9 +30105,9 @@
   "act5End": {
     "endQuarter": "2040Q4",
     "gameOver": false,
-    "founderNetWorthUsd": 366800055.4885307,
-    "growthMultiple": 0.9701589795645797,
-    "preExitNetWorthUsd": 431529477.0453302,
+    "founderNetWorthUsd": 382968372.8855932,
+    "growthMultiple": 1.0129229815664846,
+    "preExitNetWorthUsd": 450551026.9242273,
     "exitChoice": "hold",
     "outlookFactor": 0.85,
     "bidFactor": 0.9659194526029751,
@@ -31022,8 +30128,8 @@
     },
     "signalReads": [],
     "reading": {
-      "score": 93,
-      "base": 93,
+      "score": 94,
+      "base": 94,
       "penalty": 0,
       "perQuarter": [
         {
@@ -31056,35 +30162,35 @@
         },
         {
           "q": 4,
-          "stance": 0,
-          "ideal": 0,
-          "weight": 1,
-          "value": 1
-        },
-        {
-          "q": 5,
-          "stance": 0,
-          "ideal": 0,
-          "weight": 1,
-          "value": 1
-        },
-        {
-          "q": 6,
-          "stance": 0,
-          "ideal": 0,
-          "weight": 1,
-          "value": 0.7
-        },
-        {
-          "q": 7,
           "stance": -1,
           "ideal": -1,
           "weight": 1,
           "value": 1
         },
         {
-          "q": 8,
+          "q": 5,
           "stance": -1,
+          "ideal": -1,
+          "weight": 1,
+          "value": 1
+        },
+        {
+          "q": 6,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 1,
+          "value": 1
+        },
+        {
+          "q": 7,
+          "stance": 0,
+          "ideal": -1,
+          "weight": 1,
+          "value": 1
+        },
+        {
+          "q": 8,
+          "stance": 0,
           "ideal": -1,
           "weight": 1,
           "value": 1
@@ -31170,145 +30276,85 @@
     },
     "moves": [
       {
-        "q": 7,
+        "q": 4,
+        "kind": "renew_long",
+        "sign": -1,
+        "mark": "match"
+      },
+      {
+        "q": 4,
+        "kind": "renew_long",
+        "sign": -1,
+        "mark": "match"
+      },
+      {
+        "q": 4,
         "kind": "blend_and_extend_long",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
-        "kind": "blend_and_extend_long",
-        "sign": -1,
-        "mark": "match"
-      },
-      {
-        "q": 7,
+        "q": 4,
         "kind": "contract_plant_output",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 7,
+        "q": 4,
         "kind": "sell_plant_stake_to_fund",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 7,
+        "q": 4,
         "kind": "sell_site_free_mw",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 7,
+        "q": 4,
         "kind": "sell_site_free_mw",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 8,
+        "q": 5,
         "kind": "blend_and_extend_long",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 8,
+        "q": 5,
+        "kind": "blend_and_extend_long",
+        "sign": -1,
+        "mark": "match"
+      },
+      {
+        "q": 5,
+        "kind": "blend_and_extend_long",
+        "sign": -1,
+        "mark": "match"
+      },
+      {
+        "q": 5,
+        "kind": "blend_and_extend_long",
+        "sign": -1,
+        "mark": "match"
+      },
+      {
+        "q": 5,
         "kind": "sell_site_free_mw",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 8,
+        "q": 5,
         "kind": "sell_site_free_mw",
         "sign": -1,
         "mark": "match"
       },
       {
-        "q": 8,
+        "q": 5,
         "kind": "sell_site_free_mw",
         "sign": -1,
         "mark": "match"

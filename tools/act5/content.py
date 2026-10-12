@@ -2,7 +2,7 @@
 Generated from the dicts below so every file is valid JSON. Usage: python3 -I content.py <out dir>"""
 import json, sys
 sys.path.insert(0, __file__.rsplit("/", 1)[0])
-from futures import QUARTERS, FUTURES, TRIGGER, NAMES, WEIGHTS
+from futures import QUARTERS, FUTURES, TRIGGER, NAMES, WEIGHTS, SIGNAL_START
 
 OUT = sys.argv[1]
 
@@ -128,8 +128,8 @@ def stance(f):
         return [1] * 20
     if f == "v2":  # M60.4 (doc 43 §0.16 item 5): calm before the trigger; after it, -1 scored on flexibility moves only
         return [0 if t < t0 else -1 for t in range(20)]
-    if f == "v3":
-        return [0 if t < t0 else -1 for t in range(20)]
+    if f == "v3":  # M64.2 (doc 43 §0.20 item 2): -1 from the Signals' start (act quarter 4), not from the trigger (7)
+        return [0 if t < SIGNAL_START["v3"] else -1 for t in range(20)]
     return [0 if t < 12 else -1 for t in range(20)]  # V4: calm, defensive from 2039 (act quarter 12)
 
 
@@ -143,7 +143,7 @@ DECOYW = {
 WHY = {
     "v1": "Queue is King: add scarcity exposure throughout (short renewals, hold free MW, pay upgrades, keep plants merchant).",
     "v2": "Flexible Lane: calm before the trigger (a 7% scarcity rise can't pay a bet); from 2038Q1 flexibility pays, so enrol load and take the fast lane (lease moves score 0 here).",
-    "v3": "Demand Plateau: calm before the trigger; defensive from 2037Q4 (lock leases long, contract output, sell to funds).",
+    "v3": "Demand Plateau: calm until the Signals turn (2037Q1); defensive from then (lock leases long, contract output, sell to funds).",
     "v4": "Up and Out: calm while the ground holds; defensive from 2039 as orbit takes the marginal gigawatt.",
 }
 

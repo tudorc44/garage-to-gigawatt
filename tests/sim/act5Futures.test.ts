@@ -177,7 +177,7 @@ describe('the Act V reading score (M51, doc 43 §6.7; reading_score_v.json)', ()
       [
         "v1: perfect 100, passive 50, opposite 0",
         "v2: perfect 93, passive 63, opposite 63",
-        "v3: perfect 93, passive 60, opposite 28",
+        "v3: perfect 94, passive 54, opposite 0",
         "v4: perfect 86, passive 67, opposite 46",
       ]
     `)
