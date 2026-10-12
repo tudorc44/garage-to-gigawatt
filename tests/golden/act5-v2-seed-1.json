@@ -6,7 +6,7 @@
   "phase": "chapter",
   "quarter": 95,
   "week": 13,
-  "cash": 772532272.27,
+  "cash": 764441864.3,
   "bandwidth": 6,
   "hodlPct": {
     "BTC": 0,
@@ -1240,7 +1240,7 @@
     "salariesUsd": 0,
     "interestUsd": 0,
     "principalUsd": 0,
-    "startCash": 734371817.38,
+    "startCash": 726968848.16,
     "startTreasuryUsd": 0,
     "weeks": [
       {
@@ -1258,7 +1258,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 736444812.68
+        "cash": 729041843.46
       },
       {
         "week": 2,
@@ -1275,7 +1275,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 738517807.98
+        "cash": 731114838.76
       },
       {
         "week": 3,
@@ -1292,7 +1292,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 740590803.28
+        "cash": 733187834.06
       },
       {
         "week": 4,
@@ -1309,7 +1309,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 742663798.58
+        "cash": 735260829.36
       },
       {
         "week": 5,
@@ -1326,7 +1326,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 744736793.88
+        "cash": 737333824.66
       },
       {
         "week": 6,
@@ -1343,7 +1343,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 746809789.18
+        "cash": 739406819.96
       },
       {
         "week": 7,
@@ -1360,7 +1360,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 748882784.48
+        "cash": 741479815.26
       },
       {
         "week": 8,
@@ -1377,7 +1377,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 750955779.78
+        "cash": 743552810.56
       },
       {
         "week": 9,
@@ -1394,7 +1394,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 753028775.08
+        "cash": 745625805.86
       },
       {
         "week": 10,
@@ -1411,7 +1411,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 755101770.38
+        "cash": 747698801.16
       },
       {
         "week": 11,
@@ -1428,7 +1428,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 757174765.68
+        "cash": 749771796.46
       },
       {
         "week": 12,
@@ -1445,7 +1445,7 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 759247760.98
+        "cash": 751844791.76
       },
       {
         "week": 13,
@@ -1462,11 +1462,11 @@
           "ETH": 0
         },
         "priceAlert": false,
-        "cash": 761320756.28
+        "cash": 753917787.06
       }
     ],
     "aiFloorEbitdaUsd": 5160375.78890625,
-    "energyRevenueUsd": 1848058.875,
+    "energyRevenueUsd": 1232039.25,
     "energyCostUsd": 163535.05,
     "orbitRevenueUsd": 0,
     "orbitCostUsd": 0
@@ -7844,13 +7844,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 367129778.2,
-      "ebitdaUsd": 27230869.627155002,
+      "cash": 366352985.4,
+      "ebitdaUsd": 26460934.064655002,
       "marginByTier": {
         "texas_site": 24041309.790905014,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2559399059.245279,
+      "valuationUsd": 2535601193.1265287,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7862,7 +7862,7 @@
       "poweredUsd": 11873599.999999998,
       "venturesUsd": 106102891.44000001,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 2309806.6875,
+      "energyRevenueUsd": 1539871.125,
       "energyCostUsd": 152167.12,
       "priceAlerts": 0,
       "marginCalls": 0,
@@ -7929,13 +7929,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 402244780.36,
-      "ebitdaUsd": 26999728.814655002,
+      "cash": 400762009.59,
+      "ebitdaUsd": 26306840.189655002,
       "marginByTier": {
         "texas_site": 24041309.790905014,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2565080523.312722,
+      "valuationUsd": 2542880382.6552224,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -7947,12 +7947,12 @@
       "poweredUsd": 10574925,
       "venturesUsd": 106141220.64000002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 2078665.875,
+      "energyRevenueUsd": 1385777.25,
       "energyCostUsd": 152167.12,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 368996639.2,
+      "startCash": 368219846.4,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8014,13 +8014,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 436380128.78,
-      "ebitdaUsd": 26938406.623984743,
+      "cash": 434262646.02,
+      "ebitdaUsd": 26322386.998984743,
       "marginByTier": {
         "texas_site": 24211626.830234744,
         "own_site": 1066265.2687500003
       },
-      "valuationUsd": 2583448225.449624,
+      "valuationUsd": 2562911755.9021244,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8032,12 +8032,12 @@
       "poweredUsd": 9276250,
       "venturesUsd": 106179549.84000002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 153199.35,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 402891001.36,
+      "startCash": 401408230.59,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8099,13 +8099,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 479099014.75,
-      "ebitdaUsd": 26998465.666764807,
+      "cash": 476341167.11,
+      "ebitdaUsd": 26382446.041764807,
       "marginByTier": {
         "texas_site": 24211626.830234744,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 2637147362.5325017,
+      "valuationUsd": 2615970528.1050014,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8117,12 +8117,12 @@
       "poweredUsd": 7977574.999999999,
       "venturesUsd": 106217879.04000002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 153565.56,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 445171747.78,
+      "startCash": 443054265.02,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8184,13 +8184,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 514668791.48,
-      "ebitdaUsd": 28325965.48429277,
+      "cash": 511264875.71,
+      "ebitdaUsd": 27709945.85929277,
       "marginByTier": {
         "texas_site": 25547221.157762706,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 2754694409.6082807,
+      "valuationUsd": 2732871507.050781,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8202,12 +8202,12 @@
       "poweredUsd": 6678899.999999999,
       "venturesUsd": 106257741.40799999,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 161660.07,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 479099014.75,
+      "startCash": 476341167.11,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8269,13 +8269,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 551572485.45,
-      "ebitdaUsd": 28325965.48429277,
+      "cash": 547516747.5,
+      "ebitdaUsd": 27709945.85929277,
       "marginByTier": {
         "texas_site": 25547221.157762706,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 2792929082.4107747,
+      "valuationUsd": 2770454357.6732745,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8287,12 +8287,12 @@
       "poweredUsd": 6519867.97,
       "venturesUsd": 106296070.608,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 161660.07,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 515675962.48,
+      "startCash": 512272046.71,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8354,13 +8354,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 584119998.25,
-      "ebitdaUsd": 24688663.82085773,
+      "cash": 579406632.83,
+      "ebitdaUsd": 24072644.19585773,
       "marginByTier": {
         "texas_site": 23647731.328690425,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 2588842911.282038,
+      "valuationUsd": 2565710559.074538,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8372,12 +8372,12 @@
       "poweredUsd": 6360873.045,
       "venturesUsd": 106334399.808,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 150148.01,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 551572485.45,
+      "startCash": 547516747.5,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8439,13 +8439,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 621835766.72,
-      "ebitdaUsd": 28396688.69261135,
+      "cash": 616458916.84,
+      "ebitdaUsd": 27780669.06761135,
       "marginByTier": {
         "texas_site": 25618375.606081292,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 2867701806.615635,
+      "valuationUsd": 2843905969.9481354,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8457,12 +8457,12 @@
       "poweredUsd": 6201841.015,
       "venturesUsd": 106372729.008,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 162091.31,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 585516602.25,
+      "startCash": 580803236.83,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8524,13 +8524,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 658813930.31,
-      "ebitdaUsd": 28457957.082536984,
+      "cash": 652767686.8,
+      "ebitdaUsd": 27841937.457536984,
       "marginByTier": {
         "texas_site": 25680017.58600692,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 2930103852.123953,
+      "valuationUsd": 2905638621.826453,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8542,12 +8542,12 @@
       "poweredUsd": 6042808.984999999,
       "venturesUsd": 106412591.37599999,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 162464.9,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 621835766.72,
+      "startCash": 616458916.84,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8609,13 +8609,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 696424896.11,
-      "ebitdaUsd": 28757769.587536983,
+      "cash": 689703297.19,
+      "ebitdaUsd": 28141749.962536983,
       "marginByTier": {
         "texas_site": 25981658.21100692,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 2985293283.454673,
+      "valuationUsd": 2960152697.747173,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8627,12 +8627,12 @@
       "poweredUsd": 5883776.954999999,
       "venturesUsd": 106450920.57600002,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 164293.02,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 658813930.31,
+      "startCash": 652767686.8,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8694,13 +8694,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 734371817.38,
-      "ebitdaUsd": 28757769.587536983,
+      "cash": 726968848.16,
+      "ebitdaUsd": 28141749.962536983,
       "marginByTier": {
         "texas_site": 25981658.21100692,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 3021321315.3737473,
+      "valuationUsd": 2995499359.366247,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8712,12 +8712,12 @@
       "poweredUsd": 5724782.029999999,
       "venturesUsd": 106489249.776,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 164293.02,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 696424896.11,
+      "startCash": 689703297.19,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -8779,13 +8779,13 @@
         "ETH": 0
       },
       "treasuryValueUsd": 0,
-      "cash": 772532272.27,
-      "ebitdaUsd": 28633462.71378698,
+      "cash": 764441864.3,
+      "ebitdaUsd": 28017443.08878698,
       "marginByTier": {
         "texas_site": 25856593.367256925,
         "own_site": 1126690.521530063
       },
-      "valuationUsd": 3063145952.8819513,
+      "valuationUsd": 3036636558.1244516,
       "orbitRevenueUsd": 0,
       "orbitCostUsd": 0,
       "orbitEbitdaUsd": 0,
@@ -8797,12 +8797,12 @@
       "poweredUsd": 5565749.999999999,
       "venturesUsd": 106527578.976,
       "ventureHypeUsd": 0,
-      "energyRevenueUsd": 1848058.875,
+      "energyRevenueUsd": 1232039.25,
       "energyCostUsd": 163535.05,
       "priceAlerts": 0,
       "marginCalls": 0,
       "founderStake": 0.16637983619014654,
-      "startCash": 734371817.38,
+      "startCash": 726968848.16,
       "startTreasuryUsd": 0,
       "soldUsd": 0,
       "treasurySoldUsd": 0,
@@ -21191,7 +21191,7 @@
       "week": null,
       "key": "log.exit.bid",
       "params": {
-        "bidUsd": 3197923594.2033215
+        "bidUsd": 3170992346.7270045
       }
     },
     {
@@ -29783,9 +29783,9 @@
           "rent": -34345,
           "ai_shell_rent": 30433424.31473337,
           "ai_opex": -5325849.255078326,
-          "grid_credits": 2309806.6875,
+          "grid_credits": 1539871.125,
           "energy_opex": -152167.12,
-          "interest": 3216869.12,
+          "interest": 3210011.88,
           "plant_distributions": 2720586.9600000004
         },
         "byBiz": {},
@@ -29799,7 +29799,7 @@
           "site:site-22": {
             "ai_shell_rent": 29140981.564733356,
             "ai_opex": -5099671.773828328,
-            "grid_credits": 2220967.96875
+            "grid_credits": 1480645.3125
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
@@ -29904,7 +29904,7 @@
           "site:site-14": {
             "ai_shell_rent": 1292442.75,
             "ai_opex": -226177.48124999992,
-            "grid_credits": 88838.71875
+            "grid_credits": 59225.81249999999
           },
           "project:project-29": {
             "ai_shell_rent": 1292442.75,
@@ -29914,7 +29914,7 @@
             "plant_distributions": 2720586.9600000004
           }
         },
-        "rounding": -0.057154953479766846,
+        "rounding": -0.05465495586395264,
         "weeks": [
           335890162.55,
           337818872.55,
@@ -29961,15 +29961,15 @@
       },
       {
         "q": 85,
-        "startCash": 367129778.2,
+        "startCash": 366352985.4,
         "lines": {
           "other_income": 1866861,
           "rent": -34345,
           "ai_shell_rent": 30433424.31473337,
           "ai_opex": -5325849.255078326,
-          "grid_credits": 2078665.875,
+          "grid_credits": 1385777.25,
           "energy_opex": -152167.12,
-          "interest": 3526842.65,
+          "interest": 3513753.3,
           "plant_distributions": 2721569.7600000002
         },
         "byBiz": {
@@ -29982,7 +29982,7 @@
             "other_income": 1866861,
             "ai_shell_rent": 29140981.564733356,
             "ai_opex": -5099671.773828328,
-            "grid_credits": 1998717.1875
+            "grid_credits": 1332478.125
           },
           "project:project-26": {
             "other_income": 430814,
@@ -30096,7 +30096,7 @@
           "site:site-14": {
             "ai_shell_rent": 1292442.75,
             "ai_opex": -226177.48124999992,
-            "grid_credits": 79948.68749999999
+            "grid_credits": 53299.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1292442.75,
@@ -30106,21 +30106,21 @@
             "plant_distributions": 2721569.7600000002
           }
         },
-        "rounding": -0.0646548867225647,
+        "rounding": -0.059654951095581055,
         "weeks": [
-          370925349.2,
-          372854059.2,
-          374782769.2,
-          376711479.2,
-          378640189.2,
-          380568899.2,
-          382497609.2,
-          384426319.2,
-          386355029.2,
-          388283739.2,
-          390212449.2,
-          392141159.2,
-          394069869.2
+          370148556.4,
+          372077266.4,
+          374005976.4,
+          375934686.4,
+          377863396.4,
+          379792106.4,
+          381720816.4,
+          383649526.4,
+          385578236.4,
+          387506946.4,
+          389435656.4,
+          391364366.4,
+          393293076.4
         ],
         "parents": {
           "project:project-26": "site-22",
@@ -30153,15 +30153,15 @@
       },
       {
         "q": 86,
-        "startCash": 402244780.36,
+        "startCash": 400762009.59,
         "lines": {
           "other_income": 646221,
           "rent": -34345,
           "ai_shell_rent": 30639869.210890632,
           "ai_opex": -5361977.111905848,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -153199.35,
-          "interest": 3828168.17,
+          "interest": 3809475.81,
           "plant_distributions": 2722552.5600000005
         },
         "byBiz": {
@@ -30174,7 +30174,7 @@
             "other_income": 646221,
             "ai_shell_rent": 1292442.75,
             "ai_opex": -226177.48124999992,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "other_income": 646221,
@@ -30190,7 +30190,7 @@
           "site:site-22": {
             "ai_shell_rent": 29347426.460890613,
             "ai_opex": -5135799.630655848,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
@@ -30296,21 +30296,21 @@
             "plant_distributions": 2722552.5600000005
           }
         },
-        "rounding": 0.06601566076278687,
+        "rounding": 0.06101572513580322,
         "weeks": [
-          404832812.68,
-          406774624,
-          408716435.32,
-          410658246.64,
-          412600057.96,
-          414541869.28,
-          416483680.6,
-          418425491.92,
-          420367303.24,
-          422309114.56,
-          424250925.88,
-          426192737.2,
-          428134548.52
+          403350041.91,
+          405291853.23,
+          407233664.55,
+          409175475.87,
+          411117287.19,
+          413059098.51,
+          415000909.83,
+          416942721.15,
+          418884532.47,
+          420826343.79,
+          422768155.11,
+          424709966.43,
+          426651777.75
         ],
         "parents": {
           "project:project-29": "site-14",
@@ -30343,15 +30343,15 @@
       },
       {
         "q": 87,
-        "startCash": 436380128.78,
+        "startCash": 434262646.02,
         "lines": {
           "other_income": 8791619,
           "rent": -34345,
           "ai_shell_rent": 30713111.941533126,
           "ai_opex": -5374794.589768285,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -153565.56,
-          "interest": 4205265.96,
+          "interest": 4180920.71,
           "plant_distributions": 2723535.3600000003
         },
         "byBiz": {
@@ -30364,7 +30364,7 @@
             "other_income": 8791619,
             "ai_shell_rent": 29347426.460890613,
             "ai_opex": -5135799.630655848,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-3": {
             "other_income": 330815,
@@ -30490,7 +30490,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -30500,21 +30500,21 @@
             "plant_distributions": 2723535.3600000003
           }
         },
-        "rounding": -0.016764581203460693,
+        "rounding": -0.02176457643508911,
         "weeks": [
-          447118207.19,
-          449064666.6,
-          451011126.01,
-          452957585.42,
-          454904044.83,
-          456850504.24,
-          458796963.65,
-          460743423.06,
-          462689882.47,
-          464636341.88,
-          466582801.29,
-          468529260.7,
-          470475720.11
+          445000724.43,
+          446947183.84,
+          448893643.25,
+          450840102.66,
+          452786562.07,
+          454733021.48,
+          456679480.89,
+          458625940.3,
+          460572399.71,
+          462518859.12,
+          464465318.53,
+          466411777.94,
+          468358237.35
         ],
         "parents": {
           "project:project-3": "site-22",
@@ -30547,14 +30547,14 @@
       },
       {
         "q": 88,
-        "startCash": 479099014.75,
+        "startCash": 476341167.11,
         "lines": {
           "rent": -34345,
           "ai_shell_rent": 32332014.156718545,
           "ai_opex": -5658102.477425739,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -161660.07,
-          "interest": 4519253.73,
+          "interest": 4489205.23,
           "plant_distributions": 2724557.472
         },
         "byBiz": {},
@@ -30568,7 +30568,7 @@
           "site:site-22": {
             "ai_shell_rent": 30966328.67607604,
             "ai_opex": -5419107.518313304,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
@@ -30673,7 +30673,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -30683,21 +30683,21 @@
             "plant_distributions": 2724557.472
           }
         },
-        "rounding": 0.043707311153411865,
+        "rounding": 0.03870725631713867,
         "weeks": [
-          481148212.19,
-          483197409.63,
-          485246607.07,
-          487295804.51,
-          489345001.95,
-          491394199.39,
-          493443396.83,
-          495492594.27,
-          497541791.71,
-          499590989.15,
-          501640186.59,
-          503689384.03,
-          505738581.47
+          478390364.55,
+          480439561.99,
+          482488759.43,
+          484537956.87,
+          486587154.31,
+          488636351.75,
+          490685549.19,
+          492734746.63,
+          494783944.07,
+          496833141.51,
+          498882338.95,
+          500931536.39,
+          502980733.83
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -30730,15 +30730,15 @@
       },
       {
         "q": 89,
-        "startCash": 514668791.48,
+        "startCash": 511264875.71,
         "lines": {
           "other_income": 1007171,
           "rent": -34345,
           "ai_shell_rent": 32332014.156718545,
           "ai_opex": -5658102.477425739,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -161660.07,
-          "interest": 4845017.17,
+          "interest": 4809214.62,
           "plant_distributions": 2725540.272
         },
         "byBiz": {
@@ -30751,7 +30751,7 @@
             "other_income": 1007171,
             "ai_shell_rent": 30966328.67607604,
             "ai_opex": -5419107.518313304,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-22": {
             "other_income": 351903,
@@ -30864,7 +30864,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -30874,21 +30874,21 @@
             "plant_distributions": 2725540.272
           }
         },
-        "rounding": 0.04370725154876709,
+        "rounding": 0.038707435131073,
         "weeks": [
-          517725159.92,
-          519774357.36,
-          521823554.8,
-          523872752.24,
-          525921949.68,
-          527971147.12,
-          530020344.56,
-          532069542,
-          534118739.44,
-          536167936.88,
-          538217134.32,
-          540266331.76,
-          542315529.2
+          514321244.15,
+          516370441.59,
+          518419639.03,
+          520468836.47,
+          522518033.91,
+          524567231.35,
+          526616428.79,
+          528665626.23,
+          530714823.67,
+          532764021.11,
+          534813218.55,
+          536862415.99,
+          538911613.43
         ],
         "parents": {
           "project:project-22": "site-22",
@@ -30921,14 +30921,14 @@
       },
       {
         "q": 90,
-        "startCash": 551572485.45,
+        "startCash": 547516747.5,
         "lines": {
           "rent": -34345,
           "ai_shell_rent": 30029602.24269155,
           "ai_opex": -7004504.286833768,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -150148.01,
-          "interest": 5132325.86,
+          "interest": 5090718.02,
           "plant_distributions": 2726523.072
         },
         "byBiz": {},
@@ -30942,7 +30942,7 @@
           "site:site-22": {
             "ai_shell_rent": 28663916.762049045,
             "ai_opex": -5016185.433358579,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-2": {
             "ai_shell_rent": 4153846.1538461526,
@@ -31047,7 +31047,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -31057,21 +31057,21 @@
             "plant_distributions": 2726523.072
           }
         },
-        "rounding": 0.0471416711807251,
+        "rounding": 0.04214179515838623,
         "weeks": [
-          553627156.31,
-          555681827.17,
-          557736498.03,
-          559791168.89,
-          561845839.75,
-          563900510.61,
-          565955181.47,
-          564289884.15,
-          566344555.01,
-          568399225.87,
-          570453896.73,
-          572508567.59,
-          574563238.45
+          549571418.36,
+          551626089.22,
+          553680760.08,
+          555735430.94,
+          557790101.8,
+          559844772.66,
+          561899443.52,
+          560234146.2,
+          562288817.06,
+          564343487.92,
+          566398158.78,
+          568452829.64,
+          570507500.5
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -31104,15 +31104,15 @@
       },
       {
         "q": 91,
-        "startCash": 584119998.25,
+        "startCash": 579406632.83,
         "lines": {
           "other_income": 1396604,
           "rent": -34345,
           "ai_shell_rent": 32418261.97286231,
           "ai_opex": -5673195.845250898,
           "energy_opex": -432379.45,
-          "grid_credits": 1848058.875,
-          "interest": 5465257.99,
+          "grid_credits": 1232039.25,
+          "interest": 5417793.16,
           "plant_distributions": 2727505.872
         },
         "byBiz": {
@@ -31125,7 +31125,7 @@
             "other_income": 1396604,
             "ai_shell_rent": 31052576.492219806,
             "ai_opex": -5434200.8861384615,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-24": {
             "other_income": 723241,
@@ -31238,7 +31238,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -31249,21 +31249,21 @@
             "plant_distributions": 2727505.872
           }
         },
-        "rounding": 0.05538809299468994,
+        "rounding": 0.05038809776306152,
         "weeks": [
-          587571273.11,
-          589625943.97,
-          591410326.69,
-          593464997.55,
-          595519668.41,
-          597574339.27,
-          599629010.13,
-          601683680.99,
-          603738351.85,
-          605793022.71,
-          607847693.57,
-          609902364.43,
-          611957035.29
+          582857907.69,
+          584912578.55,
+          586696961.27,
+          588751632.13,
+          590806302.99,
+          592860973.85,
+          594915644.71,
+          596970315.57,
+          599024986.43,
+          601079657.29,
+          603134328.15,
+          605188999.01,
+          607243669.87
         ],
         "parents": {
           "project:project-24": "site-22",
@@ -31296,14 +31296,14 @@
       },
       {
         "q": 92,
-        "startCash": 621835766.72,
+        "startCash": 616458916.84,
         "lines": {
           "rent": -34345,
           "ai_shell_rent": 32492979.524287324,
           "ai_opex": -5686271.416750273,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -162464.9,
-          "interest": 5791678.48,
+          "interest": 5738304.48,
           "plant_distributions": 2728527.9839999997
         },
         "byBiz": {},
@@ -31317,7 +31317,7 @@
           "site:site-22": {
             "ai_shell_rent": 31127294.043644816,
             "ai_opex": -5447276.457637835,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-2": {
             "ai_shell_rent": 4499999.999999999,
@@ -31422,7 +31422,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -31432,21 +31432,21 @@
             "plant_distributions": 2728527.9839999997
           }
         },
-        "rounding": 0.04346287250518799,
+        "rounding": 0.03846287727355957,
         "weeks": [
-          623895179.27,
-          625954591.82,
-          628014004.37,
-          630073416.92,
-          632132829.47,
-          634192242.02,
-          636251654.57,
-          638311067.12,
-          640370479.67,
-          642429892.22,
-          644489304.77,
-          646548717.32,
-          648608129.87
+          618518329.39,
+          620577741.94,
+          622637154.49,
+          624696567.04,
+          626755979.59,
+          628815392.14,
+          630874804.69,
+          632934217.24,
+          634993629.79,
+          637053042.34,
+          639112454.89,
+          641171867.44,
+          643231279.99
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -31479,14 +31479,14 @@
       },
       {
         "q": 93,
-        "startCash": 658813930.31,
+        "startCash": 652767686.8,
         "lines": {
           "rent": -34345,
           "ai_shell_rent": 32858604.524287328,
           "ai_opex": -5750255.791750273,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -164293.02,
-          "interest": 6123685.45,
+          "interest": 6064349.67,
           "plant_distributions": 2729510.7840000005
         },
         "byBiz": {},
@@ -31500,7 +31500,7 @@
           "site:site-22": {
             "ai_shell_rent": 31492919.043644816,
             "ai_opex": -5511260.832637834,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-2": {
             "ai_shell_rent": 4865624.999999999,
@@ -31605,7 +31605,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -31615,21 +31615,21 @@
             "plant_distributions": 2729510.7840000005
           }
         },
-        "rounding": -0.021537065505981445,
+        "rounding": -0.026536941528320312,
         "weeks": [
-          660896545.98,
-          662979161.65,
-          665061777.32,
-          667144392.99,
-          669227008.66,
-          671309624.33,
-          673392240,
-          675474855.67,
-          677557471.34,
-          679640087.01,
-          681722702.68,
-          683805318.35,
-          685887934.02
+          654850302.47,
+          656932918.14,
+          659015533.81,
+          661098149.48,
+          663180765.15,
+          665263380.82,
+          667345996.49,
+          669428612.16,
+          671511227.83,
+          673593843.5,
+          675676459.17,
+          677759074.84,
+          679841690.51
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -31662,14 +31662,14 @@
       },
       {
         "q": 94,
-        "startCash": 696424896.11,
+        "startCash": 689703297.19,
         "lines": {
           "rent": -34345,
           "ai_shell_rent": 32858604.524287328,
           "ai_opex": -5750255.791750273,
-          "grid_credits": 1848058.875,
+          "grid_credits": 1232039.25,
           "energy_opex": -164293.02,
-          "interest": 6458658.12,
+          "interest": 6393307.45,
           "plant_distributions": 2730493.584
         },
         "byBiz": {},
@@ -31683,7 +31683,7 @@
           "site:site-22": {
             "ai_shell_rent": 31492919.043644816,
             "ai_opex": -5511260.832637834,
-            "grid_credits": 1776979.6875
+            "grid_credits": 1184653.125
           },
           "project:project-2": {
             "ai_shell_rent": 4865624.999999999,
@@ -31788,7 +31788,7 @@
           "site:site-14": {
             "ai_shell_rent": 1365685.4806425003,
             "ai_opex": -238994.95911243756,
-            "grid_credits": 71079.1875
+            "grid_credits": 47386.12499999999
           },
           "project:project-29": {
             "ai_shell_rent": 1365685.4806425003,
@@ -31798,21 +31798,21 @@
             "plant_distributions": 2730493.584
           }
         },
-        "rounding": -0.021537065505981445,
+        "rounding": -0.026537179946899414,
         "weeks": [
-          698507511.78,
-          700590127.45,
-          702672743.12,
-          704755358.79,
-          706837974.46,
-          708920590.13,
-          711003205.8,
-          713085821.47,
-          715168437.14,
-          717251052.81,
-          719333668.48,
-          721416284.15,
-          723498899.82
+          691785912.86,
+          693868528.53,
+          695951144.2,
+          698033759.87,
+          700116375.54,
+          702198991.21,
+          704281606.88,
+          706364222.55,
+          708446838.22,
+          710529453.89,
+          712612069.56,
+          714694685.23,
+          716777300.9
         ],
         "parents": {
           "project:project-2": "site-22",
@@ -31846,14 +31846,14 @@
     ],
     "current": {
       "q": 95,
-      "startCash": 734371817.38,
+      "startCash": 726968848.16,
       "lines": {
         "rent": -34345,
         "ai_shell_rent": 32707010.774287324,
         "ai_opex": -5723726.885500274,
-        "grid_credits": 1848058.875,
+        "grid_credits": 1232039.25,
         "energy_opex": -163535.05,
-        "interest": 6795515.78,
+        "interest": 6724096.66,
         "plant_distributions": 2731476.3839999996
       },
       "byBiz": {},
@@ -31867,7 +31867,7 @@
         "site:site-22": {
           "ai_shell_rent": 31341325.293644816,
           "ai_opex": -5484731.926387835,
-          "grid_credits": 1776979.6875
+          "grid_credits": 1184653.125
         },
         "project:project-2": {
           "ai_shell_rent": 4865624.999999999,
@@ -31972,7 +31972,7 @@
         "site:site-14": {
           "ai_shell_rent": 1365685.4806425003,
           "ai_opex": -238994.95911243756,
-          "grid_credits": 71079.1875
+          "grid_credits": 47386.12499999999
         },
         "project:project-29": {
           "ai_shell_rent": 1365685.4806425003,
@@ -31982,21 +31982,21 @@
           "plant_distributions": 2731476.3839999996
         }
       },
-      "rounding": 0.012212872505187988,
+      "rounding": 0.00721287727355957,
       "weeks": [
-        736444812.68,
-        738517807.98,
-        740590803.28,
-        742663798.58,
-        744736793.88,
-        746809789.18,
-        748882784.48,
-        750955779.78,
-        753028775.08,
-        755101770.38,
-        757174765.68,
-        759247760.98,
-        761320756.28
+        729041843.46,
+        731114838.76,
+        733187834.06,
+        735260829.36,
+        737333824.66,
+        739406819.96,
+        741479815.26,
+        743552810.56,
+        745625805.86,
+        747698801.16,
+        749771796.46,
+        751844791.76,
+        753917787.06
       ],
       "parents": {
         "project:project-2": "site-22",
@@ -33140,9 +33140,9 @@
   "act5End": {
     "endQuarter": "2040Q4",
     "gameOver": false,
-    "founderNetWorthUsd": 509645721.8670094,
-    "growthMultiple": 1.3479751872104386,
-    "preExitNetWorthUsd": 509645721.8670094,
+    "founderNetWorthUsd": 505235093.10975665,
+    "growthMultiple": 1.3363094008226057,
+    "preExitNetWorthUsd": 505235093.10975665,
     "exitChoice": "hold",
     "outlookFactor": 1,
     "bidFactor": 1.0712259368039667,

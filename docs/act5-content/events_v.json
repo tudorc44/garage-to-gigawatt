@@ -1107,28 +1107,28 @@
     "2037Q4"
    ],
    "role": "decoy",
-   "title": "A Reactor in Every Region",
-   "body": "Ironvale Power and two utilities announce a twenty-reactor orderbook and promise abundant firm power by the mid-2040s. A broker offers to buy one of your sites now, before the supply arrives.",
+   "title": "Firm Power Runs Short",
+   "body": "Three utilities file for emergency capacity after a hot summer, and the capacity auction clears at the cap. Brokers say ground power will be the scarcest thing of the decade.",
    "choices": [
     {
      "label": "Note it",
      "effect": {}
     },
     {
-     "label": "Sell a site while ground is dear",
+     "label": "Buy a queue-holding site before prices run",
      "effect": {
       "offer": {
-       "kind": "site_bid",
+       "kind": "site_buy",
        "premium_mult": 1.0
       }
      }
     }
    ],
    "default": "Note it",
-   "basis": "Doc 43 §6.4: the SMR wave decoy [A/B for its basis]",
+   "basis": "Doc 43 §0.19 item 3: V4's scarcity-up decoy (designed), shaped like V3's record auction",
    "reading_sign": {
     "Note it": 0,
-    "Sell a site while ground is dear": -1
+    "Buy a queue-holding site before prices run": 1
    }
   },
   {

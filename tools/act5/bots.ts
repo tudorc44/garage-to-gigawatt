@@ -11,7 +11,8 @@
 //   locker   Locker (§0.8): keeps every site and stake, locks every renewal and blend long, contracts 80% of plant output.
 //   orbit    Orbit Replacer (§18, §0.15 fix 6): the Holder's ground; every block at its design end replaced (else extended),
 //            each new block carried through (tenant, capital with project debt, launch, insurance) with Act IV's orbit step,
-//            and a new block opened in its shell whenever cash allows (mine: cash ≥ $500M, up to 20 MW, the newest generation).
+//            and a new block opened in its shell whenever cash allows (mine: cash ≥ $500M, up to 20 MW, the newest generation);
+//            it rents the ground-link units its interactive tenants need (M63.1).
 //   builder  Builder (V-B6, §0.15 fix 7): the Firm Holder plus every follow-on unit offered (a 20% stake, else 10%).
 //   balanced Balanced: renews short, pays calls when cash allows, contracts half of plant output, replaces blocks.
 //   overreactor  Balanced, except in the future's decoy quarters it does the decoy's wrong stance hard.
@@ -29,6 +30,7 @@ import { idealStancesV, scoredKindsAtV } from '../../src/sim/systems/readingScor
 import { queueView } from '../../src/sim/systems/queue.ts'
 import { isPlant } from '../../src/sim/systems/plants.ts'
 import { availableGenerations } from '../../src/sim/systems/orbit.ts'
+import { linkUnitsNeeded } from '../../src/sim/systems/orbitOps.ts'
 import { orbitStep } from '../act4/bots.ts'
 import readingRaw from '../../src/content/reading_score_v.json' with { type: 'json' }
 
@@ -150,7 +152,14 @@ function orbitGrowth(s: GameState): { kept: Action[]; after: GameState } {
   const shells = blocks.filter((b) => b.stage === 'live').map((b) => b.shell)
   const shell = [...(['high_leo', 'sso', 'high_orbit'] as const)].sort((a, b) => shells.filter((x) => x === b).length - shells.filter((x) => x === a).length)[0]
   const gen = availableGenerations(s).at(-1)
-  return orbitStep(s, { kind: 'shell', shell, contractOnly: false, insure: true, debt: true, maxMw: 20, open: s.cash >= ORBIT_OPEN_CASH_USD, gen })
+  const step = orbitStep(s, { kind: 'shell', shell, contractOnly: false, insure: true, debt: true, maxMw: 20, open: s.cash >= ORBIT_OPEN_CASH_USD, gen })
+  // (M63.1: rent the ground-link units its interactive tenants need; without them those blocks earn nothing)
+  const need = (step.after.act4Orbit?.blocks ?? [])
+    .filter((b) => b.stage === 'live' || b.stage === 'climbing' || b.stage === 'awaiting_launch')
+    .reduce((a, b) => a + linkUnitsNeeded(b), 0)
+  if (need === (step.after.act4Orbit?.linksRented ?? 0)) return step
+  const links = tryAll(step.after, [{ type: 'RENT_LINK_UNITS', units: Math.ceil(need) }])
+  return { kept: [...step.kept, ...links.kept], after: links.after }
 }
 const ORBIT_OPEN_CASH_USD = 500e6
 

@@ -233,12 +233,12 @@ describe('the V2 flex payment (M52.5, doc 43 §0.9 item 8)', () => {
     }
     const late = at('v2', 19)
     const row = act5Row(late.quarter, scenarioOf(late))!
-    expect(row.flex_capacity_rating).toBe(0.75) // (M61.3: the V-B3 lever, 0.5 → 0.75)
+    expect(row.flex_capacity_rating).toBe(0.5) // (M63.2: M61.3's 0.75 reverted, doc 43 §0.19 item 2)
     const pays = flexPayments(late)
     expect(pays.length).toBeGreaterThan(0)
     for (const p of pays) {
       const site = late.sites.find((x) => x.id === p.siteId)!
-      expect(p.usd).toBeCloseTo(flexMw(late, site) * row.pjm_capacity_price_usd_mwday * 0.75 * 91.25, 4)
+      expect(p.usd).toBeCloseTo(flexMw(late, site) * row.pjm_capacity_price_usd_mwday * 0.5 * 91.25, 4)
     }
     expect(flexMw(late, late.sites[0])).toBeGreaterThanOrEqual(10)
     // before V2's trigger, and in V1, nothing

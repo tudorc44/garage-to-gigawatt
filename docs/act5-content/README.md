@@ -308,3 +308,12 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
 - **M61.3, 13 Oct 2026 (doc 43 §0.16 item 4's lever, V-B3):** `tools/act5/market.py` › `flex_capacity_rating`: V2 after its
   trigger 0.5 → 0.75 (one step); `market_v_v2.csv` (and its JSON) › that column only, and `plants_v.json`'s rule text. V-B3:
   Firm Builder 1.030 → 1.032, Orbital Landlord 1.061 → 1.065 (still a miss; no further step by §0.16). `check.py`: PASS.
+- **M63, 13 Oct 2026 (doc 43 §0.19):**
+  - **Item 1 (orbit unit economics):** `tools/act5/orbitUnits.ts` tabulates a 20 MW block of the newest generation opened in each
+    quarter 2037Q1-2040Q4 per future. V4 after its trigger returns 3.5-5.1× its capex over its design life (≥ 1.0), so V4's orbital
+    cost path is **unchanged**.
+  - **Item 2:** `market.py` › `flex_capacity_rating`: V2 after its trigger back to 0.5 (M61.3's 0.75 reverted); `market_v_v2.csv`
+    (and its JSON) › that column, and `plants_v.json`'s rule text.
+  - **Item 3:** `events.py` › `v_v4_c2` is now "Firm Power Runs Short" (2037Q4, decoy; "Note it" 0, "Buy a queue-holding site before
+    prices run" +1 with v_v3_c1's site_buy); `content.py` › V4's decoy in `reading_score_v.json`: wrong stance +1, indicator
+    `capacity_market`, quarters unchanged (2037Q3-2038Q1). `events_v.json`, `reading_score_v.json` regenerated. `check.py`: PASS.

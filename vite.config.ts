@@ -47,6 +47,16 @@ export default defineConfig({
               name: 'content-v',
               test: /src[\\/]content[\\/](text_v\.en|gpus_v|signals_v_v[1-4]|plants_v|venture_accelerator|text_chips\.en|events_chips)\.json/,
             },
+            // M63.6 (doc 43 §0.19 item 8): Act III's and Act IV's content in files of their own, so the shared content file
+            // stays under 500 KB (they still load at start-up: CONTENT is built synchronously; mine, reversible)
+            {
+              name: 'content-iii',
+              test: /src[\\/]content[\\/]([^\\/]*act3[^\\/]*|signals_s[0-3]|reading_score)\.json/,
+            },
+            {
+              name: 'content-iv',
+              test: /src[\\/]content[\\/]([^\\/]*_iv[^\\/]*|signals_iv_f[1-4]|text_iv\.en|launch_providers|orbit_[^\\/]*|lunar_[^\\/]*|moon_[^\\/]*|satellites_iv)\.json/,
+            },
             { name: 'text', test: /src[\\/]i18n[\\/].*\.json/ },
             { name: 'content', test: /src[\\/]content[\\/].*\.json/ },
             // M35: energy options and ventures (doc 38), and Act IV's orbit and Moon, in files of their own, so the

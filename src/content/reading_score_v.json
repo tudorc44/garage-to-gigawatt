@@ -399,14 +399,14 @@
         1
       ],
       "decoy": {
-        "indicator": "firm_buildout",
+        "indicator": "capacity_market",
         "quarters": [
           "2037Q3",
           "2037Q4",
           "2038Q1"
         ],
-        "wrong_stance": -1,
-        "why": "The SMR wave tempts selling the ground early for the wrong reason; the softening comes in 2039, from orbit."
+        "wrong_stance": 1,
+        "why": "A capacity squeeze tempts buying ground scarcity just before orbit takes the marginal gigawatt and ground rents soften."
       }
     }
   }
