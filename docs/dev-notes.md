@@ -26,6 +26,36 @@ See "Next".
   mean building the Act V part of `CONTENT` after load (a loader that `Act5Entry`, a save load, `toAct5` and the sim's tests all await): the async seam §0.20 item 4 and §0.21 decision 5 rule out.
   **Correction to the M64 note:** the Act V chunks in the preload list (`content-v` plus the four `market-v-v*`) are **91.8 kB gzip**, not 41; the sum stays **785.4 kB** (same method, nothing changed).
 
+- **M65.3 done (Act IV B1 diagnosis; `--act4 --seeds 30`, rentLinks off on a checkout of `800b965`, on with this branch; 3 presets × 4 futures × 3 grades; 1 game over in the on run's 360 Sprinter runs):**
+  - **B1-B14, off → on:** B1 **PASS → MISS**; B2 2.38× → 3.21× (vs Ground 1.13×); B3 "1.03× vs 0.98×" → "1.03× vs 1.07×"; B4 div 1.44× / lunar 1.41× / sprinter 1.40× → 1.53× / 1.42× / **2.60×**;
+    B5 best other 1.07× → 1.11× (Sprinter game overs 11% → 1%); B6 "1.18× vs 1.20×" → "1.21× vs 1.33×"; B9 f1 1.48× → 1.81×; B3-B6, B8, B13 MISS in both; B7, B9-B12, B14 PASS in both.
+  - **Best archetype per B1 cell (future × grade; wins):** off sprinter 3 (all f1), lunar 4 (f2 ×3, f4/patchy), balanced 5 (f3 ×3, f4/dry, f4/rich); on **sprinter 6 (f1 ×3, f3 ×3)**, lunar 3 (f2 ×3), balanced 3 (f4 ×3).
+    By preset × future: off sprinter 6, diversified 3, passive 1, balanced 1, ground 1; on **sprinter 8**, diversified 3, ground 1 (Ridge/f2).
+    **The "9 or more of 12" trigger is not met at 30 seeds** (6 of 12 B1 cells; 8 of 12 by preset × future). The 10-seed 9 was noise.
+  - **Why B1 flips:** its third clause needs Ground within 10% of the best somewhere. Ground is 0.98 in all three f4 cells; with the links on, Balanced rose 1.07 → 1.11, so the line is 0.999 and Ground misses it by 0.019. Nothing else changed (Diversified, Lunar and Balanced stay within 10% somewhere).
+  - **Sprinter, links on, medians of its 2035Q4 split (rich grade, 360 runs):** all runs: link rent over the act $9M, interactive-block revenue over the act $369M (a Plan-phase estimate), blocks live 2.0, launched 3.0, orbit value $5.2B, cash $0.7B, debt $1.1B,
+    valuation $7.5B; mining EV and AI EV $0. By future: f1 rent $14M, revenue $1,023M, 5 live of 6 launched, orbit $38.7B, cash $3.3B, debt $2.2B, valuation $41.5B, multiple 3.21; f2 $6M, $353M, 2 of 2, $1.2B, $0.2B, $0.6B, $3.0B, 1.07;
+    f3 $0M, $0M, 1 of 1, $5.6B, $0.9B, $0.9B, $8.1B, 2.60 (no interactive tenant); f4 $12M, $858M, 2 of 4, $3.7B, $0.5B, $0.8B, $5.8B, 1.08. By preset: Fortress multiple 1.69 (orbit $5.1B, AI EV $0.5B), Neocloud 1.87 (rent $29M, revenue $2.0B, 7.5 blocks live, orbit $20.9B, valuation $37.0B), Ridge 0.79 (no orbit).
+    The columns are in `act4-runs.csv` (`linkCostUsd`, `linkRevUsd`, `blocksLive`, `launched`, `orbitValueUsd`, `miningEvUsd`, `aiEvUsd`, `cashUsd`, `debtUsd`, `valuationUsd`; 0 for the other bots), added to `tools/act4/runner.ts` as reporting only (a seed-1 run's multiple is unchanged).
+  - **The link content:** `src/content/tenants_iv.json` lines 52-61, a byte-identical copy of `docs/act4-content/tenants_iv.json`: `units_per_mw_interactive` 0.2 (line 53), `rent_unit_usd_yr` 800,000 (line 54), `ground_station` capex $15M, 4 units, 3 Heat, 1 quarter, 1 Bandwidth (lines 55-60).
+    The rent is charged each quarter at units × $0.8M ÷ 4 (`src/sim/systems/orbitOps.ts:282`); there is no lease term, minimum or cap: a player sets the number of units in any Plan phase (`RENT_LINK_UNITS`). A station's 4 units replace $3.2M a year of rent for $15M (about 4.7 years).
+    Source: `docs/act4-content/README.md` lines 204-207 ("Links: 1 unit per 5 MW of interactive work, rented at $0.8M a unit-year or from an optical ground station ... (designed)"); doc 33 §7.4 sets the mechanic and puts the station's Heat in ⚙. Every value is **designed**; nothing is sourced or derived.
+  - No change to Act IV content, rules or bots.
+
+**Commits (branch `m65`):** M65.0 doc 43 §0.21 (byte-identical to the project copy; header and §0.21 only) and the chunk split · M65.1 V-B8 restated · M65.2 the preload report · M65.3 this diagnosis and the runner columns.
+No golden, no file in `src/sim/` or the content folders changed; no lever. 1,800 tests (was 1,796: the four V-B8 cases).
+
+**Assumptions (mine, reversible):** (1) "Rent off" runs on a checkout of `800b965` (before `rentLinks` existed), not a flag in the runner, so no runner switch was added. (2) The Sprinter's "link-rental income" is the Plan-phase estimate of the quarterly revenue of its interactive-tenant blocks
+(`blockRevenueUsd` at the link share the quarter will play with), summed over the act: the rent is a cost, the revenue is what the links unlock. (3) Cells are B1's own (future × grade, medians over presets and seeds), and preset × future is added.
+
+**STOPPED:** none. M65.2 changed nothing by design (more than moving imports).
+
+**Open questions for the design thread:**
+1. At 30 seeds the Sprinter wins 6 of 12 B1 cells (8 of 12 by preset × future), under the 9-of-12 line. B1 fails only because Ground sits 0.019 below the within-10% line in f4. Record B1 as a miss like B3-B13, or reword its third clause?
+2. The link price is designed, about 1-2% of the revenue it unlocks (Neocloud: $29M of rent against $2.0B), and the Sprinter's value is almost all orbit (f1: $38.7B of $41.5B). Is the link meant to be a cost that bites? A content change moves public play and the Act IV goldens (owner sign-off).
+3. Act IV's own B8 still asks for Perfect ≥ 1.15 × Passive in F1 and F3 and misses (F1 1.66×, F3 0.99×: Perfect and Passive both 1.10-1.11×) for the structural reason §0.21 gave for Act V. Restate it as a sign check too?
+4. M65.2: leave Act V's 91.8 kB preload (a loader that builds the Act V part of `CONTENT` after load, awaited by `Act5Entry`, save loads and `toAct5`), or schedule it as its own milestone? The M64 note's "41 kB" was wrong.
+
 ## M64: doc 43 §0.20 (merged, PR #32; branch `m64` from `main` at `800b965`)
 
 - **Split (unattended run, the owner's prompt of 12 Oct 2026):** M64.0 doc 43 §0.20 (committed; the file is byte-identical to the
