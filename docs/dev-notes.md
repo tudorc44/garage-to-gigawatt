@@ -31,6 +31,56 @@ See "Next".
 - **M64.5 done (housekeeping):** `git branch -d` removed m51-m63 and m61-report (none refused); the two stale worktrees were removed and pruned.
 - **M64.6 done (refresh):** CLAUDE.md now has Act V (status, commands, the sim-runner flag order, key docs, layout, act5 goldens, "Act V rules");
   dev-notes header, "Where the build stands" and "Next" refreshed, M62 and M63 moved under M64. Descriptions only: no rule changed.
+- **M64.7 done (the re-measure, once, at the end):** `--act5`: 2,400 runs, 0 unreconciled (81 min under load). `--act2 --act3`: byte-identical to `main` (1,302
+  files each, `diff -r` empty; `main` run in a separate checkout). No stop rule fired. 1,796 tests (was 1,784: the three-file decoy test, 12 cases). No lever used.
+
+**Commits (branch `m64`):** M64.0 doc 43 §0.20 (byte-identical to the project copy; header and §0.20 only) and the chunk split · M64.1 V4's Signals decoy · M64.2 V3's ideal
+stance and the V4 perfect reader · M64.3 Act IV's `rentLinks` · M64.4-5 load size and housekeeping · M64.6 CLAUDE.md and dev-notes · M64.7 this section.
+
+**§18 table** (medians, 2040Q4 before the exit ÷ act5Entry; FB / OL; v1 v2 v3 v4). Changed from the fifth-run table by M63 (orbit rows, flex 0.5) and M64 (Perfect):
+
+| Bot | Firm Builder | Orbital Landlord |
+|---|---|---|
+| Holder | 1.683 1.270 0.920 1.097 | 1.408 1.085 0.860 0.984 |
+| Flex | 1.677 1.308 0.894 1.066 | 1.334 1.151 0.816 0.935 |
+| Seller | 1.230 1.224 1.218 1.242 | 1.134 1.124 1.115 1.150 |
+| Locker | 1.530 1.240 0.956 1.079 | 1.305 1.103 0.875 0.990 |
+| Orbit Replacer | 1.726 1.303 0.876 1.238 | 1.554 1.192 0.914 1.202 |
+| Builder | 1.682 1.267 0.918 1.095 | 1.432 1.107 0.879 1.005 |
+| Passive | 1.454 1.317 1.036 1.176 | 1.257 1.168 0.953 1.076 |
+| Perfect | 1.679 1.336 **1.192** **1.284** (was 1.141, 1.311) | 1.334 1.184 **1.063** **1.391** (was 1.089, 1.207) |
+| Over-reactor | 1.211 1.215 0.921 1.081 | 1.090 1.079 0.851 0.941 |
+
+**Perfect ÷ Seller / ÷ Orbit Replacer / ÷ Passive** (v1 v2 v3 v4): FB 1.365 1.092 0.979 1.034 / 0.973 1.025 1.361 1.037 / 1.155 1.015 1.150 1.092;
+OL 1.176 1.053 0.953 1.210 / 0.858 0.993 1.163 1.157 / 1.061 1.014 1.116 1.292.
+
+**Verdicts:** V-B1 PASS (both; best per future FB orbit, flex, seller, seller) · V-B2 PASS (FB Holder ÷ Seller 1.368, ÷ Locker 1.100) · **V-B3 PASS on Firm Builder, by 0.4%** (Flex 1.308
+against 1.303); OL (information) MISS, Orbit Replacer 1.192 over Flex 1.151 · V-B4 PASS (FB Seller ÷ Holder 1.324, Locker ÷ Holder 1.039) · V-B5 PASS on OL 1.222 (FB information 1.128) ·
+V-B6 information (Builder − Holder: FB median 0.000, OL +0.02) · V-B7 PASS (0 busts in 120) · **V-B8 MISS** on both presets (FB ≥ 1.15 in one future: V1 1.155; V3 is 1.150, missing by under
+0.001; OL only V4 1.292); Over-reactor ÷ Passive ≤ 0.97 in all, both presets · V-B9 PASS (FB Perfect − Passive reading +28 / +2 / +40 / +19; OL +33 / +2 / +40 / +19) · V-B10 PASS · V-B11 PASS (FB
+0.988 / 0.876 / 0.817 / 0.806; OL 0.941 / 0.879 / 0.821 / 0.806: V4 sits 0.006 above the 0.80 floor) · V-B13 20 Plan phases, Balanced median 2.6 actions · V-B12, V-B14 by tests.
+
+**V-B8 after the bot change (§0.20 item 2: report and stop, no tuning).** V3 went 1.141 → 1.192 (Perfect ÷ Seller 0.937 → 0.979) with the new stance, and on FB Perfect ÷ Passive 1.101 → 1.150.
+V4 split by preset: OL 1.207 → 1.391, but **FB 1.311 → 1.284** (Perfect ÷ Passive 1.115 → 1.092): growing orbit on cash costs a ground-heavy company more than it earns by 2040.
+
+**Perfect-reader moves added (V3 and V4; the golden's moves, seed 1):** V3 from act quarter 4: renew_long ×2, blend_and_extend_long, contract_plant_output, sell_plant_stake_to_fund, sell_site_free_mw ×2 (q4);
+blend_and_extend_long ×4, sell_site_free_mw ×3 (q5): all -1 in -1 quarters. V4: q12 contract_plant_output, sell_plant_stake_to_fund, sell_site_free_mw ×2; q13 renew_long ×2, sell_site_free_mw ×3: all -1. Orbit growth adds no
+logged move (open, tenant, capital, launch, insurance, link rental log nothing, `orbit_replace` is 0). No +1 in a -1 quarter, no -1 in a 0 quarter (no raise before quarter 12: `orbitStep`'s new `noEquity`). V4 seed 1 ends
+with 8 orbit blocks and 2 link units rented (was 3 blocks, none).
+
+**Assumptions (mine, reversible):** (1) M64.0 applied with Edit to the repo copy (only the header and §0.20 differ), then compared byte-for-byte with the project copy, instead of Write of the whole file. (2) V4's perfect
+reader also runs `replaceBlocks` (0) every V4 quarter, so blocks reaching their end in a -1 quarter are replaced. (3) With `noEquity` a block is opened only when cash covers its build, so none sits proposed. (4)
+`--act4` and `--energy` baselines at 10 seeds (CLAUDE.md's command; the Act IV runner's default is 30). (5) Load size counts every file `dist/index.html` references (24 preloads included).
+
+**STOPPED:** none. **Not stops, reported:** Act IV B1 flipped PASS → MISS after the rental fix (gate 1: kept, no lever); V-B3 on OL; V-B8.
+
+**Open questions for the design thread:**
+1. V-B8 misses in both presets after the two bot changes. The remaining gaps are structural (V2 ≈ 1.015: flexibility moves little; V3 1.150: Seller sells from quarter 0). Accept "3 of 4" as unreachable for FB (V1 and V3 at the edge) or change the bar?
+2. V4 on Firm Builder: the orbit-growing perfect reader is 1.092 against Passive 1.176 (OL 1.292). Is that the right shape (orbit pays more to an orbit company), or should the perfect reader's orbit growth depend on the company?
+3. Act IV B1 flipped to MISS with the rental fix: Sprinter now best in 9 of 12 cells and Ground is no longer within 10% anywhere. Accept it as the honest result of a bot that can do what a player can, or revisit B1's wording?
+4. The V-B11 floor: V4 hold ÷ sell is 0.806 on both presets, 0.006 above 0.80. Any change that touches V4 values will trip it; keep the floor as it is?
+5. The production page preloads Act V's content and four market chunks (about 41 kB gzip) although the flag hides Act V. Worth a lazy load behind the flag, or leave (the sum is 785 kB, under the 1 MB line)?
+6. Chunk C's rental fix lives in Act IV's bots only; the Act V preset companies are still built by bots that never rented links. Re-base the presets on the fixed bots (it reopens §18), or leave them as they are?
 
 ## M63: doc 43 §0.19 (merged, PR #31, tag `m63-done`)
 
