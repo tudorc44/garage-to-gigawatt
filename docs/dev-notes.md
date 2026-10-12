@@ -16,6 +16,10 @@ See "Next".
 - **Split (unattended run, the owner's prompt of 12 Oct 2026):** M65.0 doc 43 §0.21 (committed; the file is byte-identical to the project copy; header and §0.21 only) ·
   **M65.1 (A)** V-B8 restated, no sim · **M65.2 (B)** Act V's production preload · **M65.3 (C)** Act IV B1 diagnosis (`--act4` at 30 seeds, `rentLinks` off and on).
 
+- **M65.1 done (V-B8 restated, no sim):** the new form is "Perfect > Passive in every future on both presets; Over-reactor ≤ 0.97 × Passive in every future". On M64's table
+  it **PASSES on both presets**. Perfect ÷ Passive: FB 1.155 / 1.015 / 1.150 / 1.092, OL 1.061 / 1.014 / 1.116 / 1.292 (all 8 above 1; V2's margin 1.014-1.015 is thin);
+  Over-reactor ÷ Passive: FB 0.833 / 0.923 / 0.889 / 0.919, OL 0.866 / 0.924 / 0.893 / 0.874 (all ≤ 0.97). The `--act5` runner prints the new form (`tools/act5/verdicts.ts`, reporting only); test `act5Verdicts`.
+
 ## M64: doc 43 §0.20 (merged, PR #32; branch `m64` from `main` at `800b965`)
 
 - **Split (unattended run, the owner's prompt of 12 Oct 2026):** M64.0 doc 43 §0.20 (committed; the file is byte-identical to the
