@@ -20,6 +20,7 @@
 //   perfect  The perfect reader (V-B8, V-B9): the +1 moves in quarters whose ideal stance is +1, the −1 moves in the −1
 //            quarters, and in the 0s it rests (calls and block replacements only, which score 0), as Act IV's perfect
 //            reader does (M59.1: it used the Balanced habits there, whose short renewals and contracts are ±1 moves).
+//            In V4 it also replaces and grows orbit every quarter, on cash before act quarter 12 (M64.2: those moves score 0).
 //            Reads the hidden ideal: tools only.
 import { CONTENT, actFirstQuarter } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
@@ -147,12 +148,12 @@ const followOns = (): Action[] =>
   ])
 
 /** Orbit growth: carry every proposed block through, and open one more in the busiest shell when cash allows. */
-function orbitGrowth(s: GameState): { kept: Action[]; after: GameState } {
+function orbitGrowth(s: GameState, noEquity = false): { kept: Action[]; after: GameState } {
   const blocks = s.act4Orbit?.blocks ?? []
   const shells = blocks.filter((b) => b.stage === 'live').map((b) => b.shell)
   const shell = [...(['high_leo', 'sso', 'high_orbit'] as const)].sort((a, b) => shells.filter((x) => x === b).length - shells.filter((x) => x === a).length)[0]
   const gen = availableGenerations(s).at(-1)
-  const step = orbitStep(s, { kind: 'shell', shell, contractOnly: false, insure: true, debt: true, maxMw: 20, open: s.cash >= ORBIT_OPEN_CASH_USD, gen })
+  const step = orbitStep(s, { kind: 'shell', shell, contractOnly: false, insure: true, debt: true, maxMw: 20, open: s.cash >= ORBIT_OPEN_CASH_USD, gen, noEquity })
   // (M63.1: rent the ground-link units its interactive tenants need; without them those blocks earn nothing)
   const need = (step.after.act4Orbit?.blocks ?? [])
     .filter((b) => b.stage === 'live' || b.stage === 'climbing' || b.stage === 'awaiting_launch')
@@ -223,7 +224,15 @@ export function act5Bot(name: Act5Archetype): Strategy {
         const ideal = s.vFutureId ? idealStancesV(s.vFutureId)[q5(s)] : 0
         // (M60.4: where only flexibility is scored, V2 after its trigger, the −1 moves are enrolling and the fast lane)
         if (ideal === -1 && s.vFutureId && scoredKindsAtV(s.vFutureId, q5(s))) return chain(s, FLEX)
-        return chain(s, ideal === 1 ? PLUS : ideal === -1 ? MINUS : REST)
+        const plan = chain(s, ideal === 1 ? PLUS : ideal === -1 ? MINUS : REST)
+        // (M64.2, doc 43 §0.20 item 2: V4's perfect reader replaces and grows orbit as the Orbit Replacer does, every quarter;
+        // those moves score 0. In its calm quarters (act quarters 0-11) it runs on cash: a raise there would take the -1 of
+        // the first sale and score as a -1 move in a 0 quarter. Its short renewals and upgrade bills (+1) are not copied.)
+        if (s.vFutureId !== 'v4') return plan
+        const after = tryAll(s, plan).after
+        const replaced = tryAll(after, replaceBlocks(after))
+        const growth = orbitGrowth(replaced.after, q5(s) < 12)
+        return [...plan, ...replaced.kept, ...growth.kept]
       })
   }
 }

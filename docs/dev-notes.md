@@ -18,6 +18,9 @@ and "Milestone M41".
   **M64.4 (D)** load size · **M64.5 (E)** housekeeping · **M64.6 (F)** CLAUDE.md and dev-notes refresh · **M64.7 (G)** the re-measure.
 - **M64.1 done:** V4's Signals decoy is `capacity_market` ("The capacity squeeze"), latents and headlines as §0.20; only `signals_v_v4.json`
   changed; new test `act5DecoyConsistency` (4 futures); act5-v4 golden moved only in its reveal (decoy indicator and name). 1,796 tests.
+- **M64.2 done:** V3's ideal is -1 from act quarter 4 (`content.py`); V4's perfect reader replaces and grows orbit every quarter (cash only before
+  quarter 12: `orbitStep` gets a `noEquity` option, default off). Goldens act5-v3 (sells in quarter 4) and act5-v4 (8 orbit blocks, was 3) moved by
+  design; V3 oracle snapshot v3 line changed. Moves added: orbit actions log nothing (0), replace 0; no +1 in a -1 quarter, no -1 in a 0 quarter.
 
 ## How the owner works
 

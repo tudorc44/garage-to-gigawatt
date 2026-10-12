@@ -322,3 +322,6 @@ low (< 15%) and high (≥ 40%) variants, and the "scenarios, not forecasts" sent
   as before); the whole V4 `firm_buildout` headline dict removed; four V4 `capacity_market` headlines added (2037Q3, 2037Q4, 2038Q1,
   2038Q2). `signal_paths.py` › V4 act quarters 6-9: `capacity_market` 64, 76, 62, 52; `firm_buildout` 53, 53, 52, 51. Changed:
   `signals_v_v4.json` (both copies) only. No other quarter needed a new headline. `check.py`: PASS (day-one baseline unchanged).
+- **M64.2, 12 Oct 2026 (doc 43 §0.20 item 2):** V3's ideal stance in `content.py` › `stance()`: 0 for act quarters 0-3 and -1 from
+  `SIGNAL_START["v3"]` (act quarter 4, 2037Q1), not from the trigger (7); WHY v3 reworded as the doc says. Changed:
+  `reading_score_v.json` (both copies) only (V3's `ideal` and `why`). V1, V2 and V4 stances unchanged; `check.py`: PASS.

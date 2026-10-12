@@ -86,7 +86,7 @@ function fund(s: GameState, needUsd: number): Action[] {
 /** The actions that open one block (if none is planning), funding its build with equity if cash is short. */
 function orbitActions(
   s: GameState,
-  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string },
+  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string; noEquity?: boolean },
 ): Action[] {
   const out: Action[] = []
   // (M58.6: Act V's Orbit Replacer passes the newest generation; Act IV's bots keep their own)
@@ -99,7 +99,10 @@ function orbitActions(
       const tMw = generationTMw(s, gen)!
       const probe = { massT: blockMassT(tMw, mw, o.shell), kind: o.kind, mw, shell: o.shell, capital: 'cash' } as Parameters<typeof buildCostUsd>[1]
       // the build's own share (40% with project debt) plus the launch deposit and a margin
-      out.push(...fund(s, buildCostUsd(s, probe) * (o.debt ? 0.5 : 1.1) + 20e6))
+      const needUsd = buildCostUsd(s, probe) * (o.debt ? 0.5 : 1.1) + 20e6
+      // (M64.2: `noEquity` runs on cash only, so a block is opened only when cash already covers it)
+      if (o.noEquity && s.cash < needUsd) return out
+      if (!o.noEquity) out.push(...fund(s, needUsd))
       out.push({ type: 'OPEN_ORBITAL_BLOCK', kind: o.kind, mw, shell: o.shell, gen })
     }
   }
@@ -109,14 +112,14 @@ function orbitActions(
 /** Fills the slots of planning blocks once their build and deposit are funded (after any open above has been applied). */
 function fillActions(
   s: GameState,
-  o: { contractOnly: boolean; insure: boolean; debt: boolean; onlyInsure?: boolean },
+  o: { contractOnly: boolean; insure: boolean; debt: boolean; onlyInsure?: boolean; noEquity?: boolean },
 ): Action[] {
   const out: Action[] = []
   for (const b of (s.act4Orbit?.blocks ?? []).filter((x) => x.stage === 'proposed' && !o.onlyInsure)) {
     const ownShare = o.debt ? 0.4 : 1
     const needUsd = buildCostUsd(s, b) * ownShare + 0.15 * b.massT * 1000 * launchPriceUsdKg(s, 'pallas', b.shell) + 10e6
     if (s.cash < needUsd) {
-      out.push(...fund(s, needUsd))
+      if (!o.noEquity) out.push(...fund(s, needUsd))
       continue
     }
     if (b.tenant === null) {
@@ -150,7 +153,7 @@ function fillActions(
  */
 export function orbitStep(
   s: GameState,
-  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string },
+  o: { kind: Kind; shell: ShellId; contractOnly: boolean; insure: boolean; debt: boolean; maxMw: number; open: boolean; gen?: string; noEquity?: boolean },
 ): { kept: Action[]; after: GameState } {
   const room = licensedMw(s, o.shell) - usedLicenceMw(s, o.shell)
   if (room <= 0) {

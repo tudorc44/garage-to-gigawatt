@@ -297,15 +297,15 @@
       }
     },
     "v3": {
-      "why": "Demand Plateau: calm before the trigger; defensive from 2037Q4 (lock leases long, contract output, sell to funds).",
+      "why": "Demand Plateau: calm until the Signals turn (2037Q1); defensive from then (lock leases long, contract output, sell to funds).",
       "ideal": [
         0,
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        -1,
+        -1,
+        -1,
         -1,
         -1,
         -1,
