@@ -32075,8 +32075,8 @@
     "triggerTitle": "Launch Breaks $200",
     "triggerQ": 9,
     "decoy": {
-      "indicator": "firm_buildout",
-      "name": "The SMR wave",
+      "indicator": "capacity_market",
+      "name": "The capacity squeeze",
       "quarters": [
         "2037Q3",
         "2037Q4",

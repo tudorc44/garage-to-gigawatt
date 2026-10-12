@@ -16,6 +16,8 @@ and "Milestone M41".
   project copy, made with Edit on the repo copy because only the header and §0.20 differ: mine, reversible) · **M64.1 (A)** V4 Signals decoy ·
   **M64.2 (B)** V3's ideal stance and the V4 perfect reader · **M64.3 (C)** Act IV bots' link rental (`rentLinks`, default off) ·
   **M64.4 (D)** load size · **M64.5 (E)** housekeeping · **M64.6 (F)** CLAUDE.md and dev-notes refresh · **M64.7 (G)** the re-measure.
+- **M64.1 done:** V4's Signals decoy is `capacity_market` ("The capacity squeeze"), latents and headlines as §0.20; only `signals_v_v4.json`
+  changed; new test `act5DecoyConsistency` (4 futures); act5-v4 golden moved only in its reveal (decoy indicator and name). 1,796 tests.
 
 ## How the owner works
 
