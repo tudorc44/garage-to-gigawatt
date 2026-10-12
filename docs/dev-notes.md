@@ -20,6 +20,12 @@ See "Next".
   it **PASSES on both presets**. Perfect ÷ Passive: FB 1.155 / 1.015 / 1.150 / 1.092, OL 1.061 / 1.014 / 1.116 / 1.292 (all 8 above 1; V2's margin 1.014-1.015 is thin);
   Over-reactor ÷ Passive: FB 0.833 / 0.923 / 0.889 / 0.919, OL 0.866 / 0.924 / 0.893 / 0.874 (all ≤ 0.97). The `--act5` runner prints the new form (`tools/act5/verdicts.ts`, reporting only); test `act5Verdicts`.
 
+- **M65.2 done (Act V preload): no change, it is more than moving imports.** Cause: `src/content/index.ts` imports every Act V JSON statically (lines 56-72: the four market, weekly and
+  chips files, `gpus_v`, the four signals files) and builds `CONTENT` synchronously (`act5Futures` / `act5Markets`, about line 2150); `src/i18n/t.ts` and the sim systems `market`, `plants`, `queue`,
+  `ventures`, `flex`, `act5Cards`, `act5End` read those tables. So the entry script's static graph includes the Act V chunks and Vite preloads them. Moving them behind `Act5Entry`'s dynamic import would
+  mean building the Act V part of `CONTENT` after load (a loader that `Act5Entry`, a save load, `toAct5` and the sim's tests all await): the async seam §0.20 item 4 and §0.21 decision 5 rule out.
+  **Correction to the M64 note:** the Act V chunks in the preload list (`content-v` plus the four `market-v-v*`) are **91.8 kB gzip**, not 41; the sum stays **785.4 kB** (same method, nothing changed).
+
 ## M64: doc 43 §0.20 (merged, PR #32; branch `m64` from `main` at `800b965`)
 
 - **Split (unattended run, the owner's prompt of 12 Oct 2026):** M64.0 doc 43 §0.20 (committed; the file is byte-identical to the
