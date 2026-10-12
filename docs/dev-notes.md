@@ -5,10 +5,11 @@ any Claude account or machine can pick up the work with no chat history. **Read 
 file.** The full history (every finished step, balance review, milestone and report, with the decisions in detail)
 is in `docs/dev-notes-archive.md`: read it only when a task needs it.
 
-Last updated: 11 Oct 2026 (PR #13 merged: docs 43 (latest), 46-48, the Act V content pack; cleanup on `m47`). The Prologue, Act I, Act II, Act III and Act IV (M27–M34)
-with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes (doc 41, M39) and the
-M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
-and "Milestone M41".
+Last updated: 12 Oct 2026 (M64 on branch `m64`, one PR open to `main`; `main` = `800b965`, M63 merged). The Prologue, Act I, Act II,
+Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37), the energy data fixes
+(doc 41, M39) and the M40-M41 answers are merged into `main` and public on GitHub Pages. **Act V ("Firm", doc 43 with §0.1-§0.20)
+is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
+See "Next".
 
 ## M64: doc 43 §0.20 (branch `m64` from `main` at `800b965`)
 
@@ -24,6 +25,27 @@ and "Milestone M41".
 - **M64.4 done (load size):** the files `dist/index.html` references (entry script, 24 modulepreloads, 2 CSS) sum to **785.4 kB gzip**
   (786.0 with the HTML; under the 1 MB reopen line). Note: the production page also preloads Act V's content and four market chunks (about 41 kB).
 - **M64.5 done (housekeeping):** `git branch -d` removed m51-m63 and m61-report (none refused); the two stale worktrees were removed and pruned.
+- **M64.6 done (refresh):** CLAUDE.md now has Act V (status, commands, the sim-runner flag order, key docs, layout, act5 goldens, "Act V rules");
+  dev-notes header, "Where the build stands" and "Next" refreshed, M62 and M63 moved under M64. Descriptions only: no rule changed.
+
+## M63: doc 43 §0.19 (merged, PR #31, tag `m63-done`)
+
+- **1-6** done: orbit unit economics (V4 post-trigger 3.5-5.1× capex: no cost change); the Orbit Replacer's bug found: it never rented
+  ground-link units, so its interactive tenants earned nothing (V4 FB 1.030 → 1.238); V-B3 "Flex best in V2"; flex rating back to 0.5;
+  V4's decoy "Firm Power Runs Short" (+1); lunar distress sale dropped; Act I-II rows hidden from Act III on; Act III/IV content chunks
+  (main bundle 245 KB, largest chunk `sim-energy` 392 KB). 1,784 tests. Re-measure below.
+- **7** done (2,400 runs, 0 unreconciled; FB / OL medians v1-v4): Orbit Replacer FB 1.726 / 1.303 / 0.876 / 1.238, OL 1.554 / 1.192 /
+  0.914 / 1.202. **Pass:** V-B1 (both), B2, B4, B5 (OL 1.222), B7, B9, B10, B11 (0.806-0.988); the over-reactor is ≤ 0.97 of Passive
+  everywhere now. **Miss:** V-B3 on OL (the Orbit Replacer 1.192 beats Flex 1.151 in V2; FB passes, Flex 1.308 against 1.303); V-B8's
+  perfect-reader clause (≥ 1.15 only FB V1). FB's V-B5 (information) 1.128.
+
+## M62: the Act V screens (doc 43 §0.18 and §17; merged, PR #30, tag `m62-done`)
+
+- **Done as one chunk:** the Orbit tab under Act IV's rules (Moon stays Act IV); the lunar holding panel and SELL_LUNAR_HOLDING (bloc
+  × 0.5, 1 BW, move 0); A5-02 dashboard (four-column MW strip, plants and queue at a glance), A5-03 (plants: output, CF), A5-06 (plants
+  panel and lunar holding in Capital), A5-07 (report panel), the queue's request hint; Act I-II rounds, loans and auctions hidden in
+  Act V; the header shows act5Entry until Act V's first report (the $7.1B was the 2035Q4 report's Act IV mark); Act V block sales and
+  the Orbit board on the remaining-life multiple; a reachability test. 1,784 tests; main bundle 244.8 KB (was 231.3). PR #30.
 
 ## How the owner works
 
@@ -77,6 +99,11 @@ See `CLAUDE.md` for the full list. The main ones:
   the Deal builder's return net of a JV partner; prologue auto-play starts at 2×; measurement decisions (below).
 **Act III (doc 27 v1.2): built, balance pass closed** (M10–M18; D16 steps 1–7, scoring and the chapter report). The design record of
 every change from the real sim is doc 27 §17 (`docs/game-project-files/claude_27-act-iii-design.md`).
+
+**Act IV (doc 33, `docs/act4-scope.md`): built and public** (M27–M34; energy options and ventures M35–M36; Finances M37; data fixes M39;
+M40-M41 answers). **Act V (doc 43): built through M63, behind the dev flag** (M43–M63: the gate, content generators, futures engine and
+reading score, plants, grid queue, chips, orbit replacement, exit, the Act V screens). Its sim table (V-B1..V-B14) and the open misses are in
+the M63 and M64 sections above; the targets are doc 43 §18 as amended by §0.15-§0.20. 1,796 tests at M64.
 
 **Numbers (end of M8.7):** 721 tests pass; lint and build pass; the 11 Act I goldens and both prologue goldens unchanged.
 Act II §5 (50 seeds): 9 PASS, 3 accepted MISS (good path, lifeline, preset), 1 MISS (overleveraged, accepted as a known design risk).
@@ -205,7 +232,12 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Next
 
-**Now (11 Oct 2026): the Act V gate waits for the owner's call on M43.0d** (5 of 6 targets pass; Fortress's V3 Locker ÷
+**Now (12 Oct 2026): M64's PR waits for the owner's review and merge; then the design thread answers its open questions (M64 section).**
+The owner can play Act V on staging (`npm run staging:build`, owner only; "Start at Act V"); the dev flag flips only on the owner's word.
+Open owner item: the Prologue "End Quarter leaves the Plan screen on the page" report (no reproduction on main; the build thread asked for the
+browser, a hard-reload result, console errors and window width).
+
+**Before (11 Oct 2026): the Act V gate waited for the owner's call on M43.0d (since passed: doc 43 §0.11)** (5 of 6 targets pass; Fortress's V3 Locker ÷
 Holder 1.031 misses 1.05). PR #11 (M43.A, the Act IV test image) and PR #12 (doc 43 §0.7, M43.0c, M43.0d) merged (`main` =
 `b8d766f`); `m43a` and `m45` tagged `m43a-done`, `m45-done` and deleted. PR #13 merged (`main` = `4557f43`): doc 43's latest
 edits, doc 46 (the content task), doc 47 (the Act V content pack, data in `docs/act5-content/` with its generators), doc 48
@@ -468,25 +500,6 @@ README). `check.py` PASS.
   - **0-1** done: §0.17 committed; preset descriptions reworded (presets_v.json, text_v, Start screen); "First power expected after 2040".
   - **2-3** done: re-measure (0 unreconciled): core V-B2, B4, B11 pass, V-B1 misses on FB (orbit never within 10%); V-B3's lever
     (V2 flex rating 0.5 → 0.75) moves it 1.030 → 1.032 only; full after-run below. 1,776 tests. PR #28.
-
-## M63: doc 43 §0.19 (branch `m63` from `main`)
-
-- **1-6** done: orbit unit economics (V4 post-trigger 3.5-5.1× capex: no cost change); the Orbit Replacer's bug found: it never rented
-  ground-link units, so its interactive tenants earned nothing (V4 FB 1.030 → 1.238); V-B3 "Flex best in V2"; flex rating back to 0.5;
-  V4's decoy "Firm Power Runs Short" (+1); lunar distress sale dropped; Act I-II rows hidden from Act III on; Act III/IV content chunks
-  (largest chunk 245 KB). 1,784 tests. Re-measure below.
-- **7** done (2,400 runs, 0 unreconciled; FB / OL medians v1-v4): Orbit Replacer FB 1.726 / 1.303 / 0.876 / 1.238, OL 1.554 / 1.192 /
-  0.914 / 1.202. **Pass:** V-B1 (both), B2, B4, B5 (OL 1.222), B7, B9, B10, B11 (0.806-0.988); the over-reactor is ≤ 0.97 of Passive
-  everywhere now. **Miss:** V-B3 on OL (the Orbit Replacer 1.192 beats Flex 1.151 in V2; FB passes, Flex 1.308 against 1.303); V-B8's
-  perfect-reader clause (≥ 1.15 only FB V1). FB's V-B5 (information) 1.128.
-
-## M62: the Act V screens (doc 43 §0.18 and §17; branch `m62` from `main`)
-
-- **Done as one chunk:** the Orbit tab under Act IV's rules (Moon stays Act IV); the lunar holding panel and SELL_LUNAR_HOLDING (bloc
-  × 0.5, 1 BW, move 0); A5-02 dashboard (four-column MW strip, plants and queue at a glance), A5-03 (plants: output, CF), A5-06 (plants
-  panel and lunar holding in Capital), A5-07 (report panel), the queue's request hint; Act I-II rounds, loans and auctions hidden in
-  Act V; the header shows act5Entry until Act V's first report (the $7.1B was the 2035Q4 report's Act IV mark); Act V block sales and
-  the Orbit board on the remaining-life multiple; a reachability test. 1,784 tests; main bundle 244.8 KB (was 231.3). PR #30.
 
 ### Report (fifth run, 13 Oct 2026)
 
