@@ -22,6 +22,10 @@ See "Next".
 - **M64.2 done:** V3's ideal is -1 from act quarter 4 (`content.py`); V4's perfect reader replaces and grows orbit every quarter (cash only before
   quarter 12: `orbitStep` gets a `noEquity` option, default off). Goldens act5-v3 (sells in quarter 4) and act5-v4 (8 orbit blocks, was 3) moved by
   design; V3 oracle snapshot v3 line changed. Moves added: orbit actions log nothing (0), replace 0; no +1 in a -1 quarter, no -1 in a 0 quarter.
+- **M64.3 done (Act IV bots):** `orbitStep` has a `rentLinks` option (default off); `act4Archetypes(bot, { rentLinks })` passes it, and only the `--act4` and
+  `--energy` runners turn it on. `content:act5-presets` regenerated `presets_v.json` byte-identical to main (no pin needed). Act IV (10 seeds, before → after):
+  **B1 PASS → MISS** (Sprinter best in 9 of 12 cells, was 3; Ground no longer within 10%: gate 1, fix kept, no lever); B2 "2.27× vs 1.13×" → "3.17× vs 1.13×"; B3 "1.03× vs 1.05×" → "1.03× vs 1.23×" (MISS both; the
+  Sprinter's side rose); B4, B5, B6, B8, B13 MISS both; B9 PASS both; B7, B10-B12, B14 PASS both. Energy: E-B1 and E-B5 PASS, E-B2 MISS both (control mean $35M → $39M; egs best $29M → $97M).
 - **M64.4 done (load size):** the files `dist/index.html` references (entry script, 24 modulepreloads, 2 CSS) sum to **785.4 kB gzip**
   (786.0 with the HTML; under the 1 MB reopen line). Note: the production page also preloads Act V's content and four market chunks (about 41 kB).
 - **M64.5 done (housekeeping):** `git branch -d` removed m51-m63 and m61-report (none refused); the two stale worktrees were removed and pruned.
