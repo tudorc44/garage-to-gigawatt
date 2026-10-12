@@ -10,6 +10,13 @@ with the energy options and ventures (doc 38, M35–M36), Finances (doc 39, M37)
 M40-M41 answers (Act IV reading, venture delivery at CF, names) are merged into `main` and public on GitHub Pages. See "Next"
 and "Milestone M41".
 
+## M64: doc 43 §0.20 (branch `m64` from `main` at `800b965`)
+
+- **Split (unattended run, the owner's prompt of 12 Oct 2026):** M64.0 doc 43 §0.20 (committed; the file is byte-identical to the
+  project copy, made with Edit on the repo copy because only the header and §0.20 differ: mine, reversible) · **M64.1 (A)** V4 Signals decoy ·
+  **M64.2 (B)** V3's ideal stance and the V4 perfect reader · **M64.3 (C)** Act IV bots' link rental (`rentLinks`, default off) ·
+  **M64.4 (D)** load size · **M64.5 (E)** housekeeping · **M64.6 (F)** CLAUDE.md and dev-notes refresh · **M64.7 (G)** the re-measure.
+
 ## How the owner works
 
 - The owner is a beginner programmer. Explain every change in plain language, say how to see or test it.
