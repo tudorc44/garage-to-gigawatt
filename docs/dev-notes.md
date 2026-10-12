@@ -21,6 +21,9 @@ and "Milestone M41".
 - **M64.2 done:** V3's ideal is -1 from act quarter 4 (`content.py`); V4's perfect reader replaces and grows orbit every quarter (cash only before
   quarter 12: `orbitStep` gets a `noEquity` option, default off). Goldens act5-v3 (sells in quarter 4) and act5-v4 (8 orbit blocks, was 3) moved by
   design; V3 oracle snapshot v3 line changed. Moves added: orbit actions log nothing (0), replace 0; no +1 in a -1 quarter, no -1 in a 0 quarter.
+- **M64.4 done (load size):** the files `dist/index.html` references (entry script, 24 modulepreloads, 2 CSS) sum to **785.4 kB gzip**
+  (786.0 with the HTML; under the 1 MB reopen line). Note: the production page also preloads Act V's content and four market chunks (about 41 kB).
+- **M64.5 done (housekeeping):** `git branch -d` removed m51-m63 and m61-report (none refused); the two stale worktrees were removed and pruned.
 
 ## How the owner works
 
