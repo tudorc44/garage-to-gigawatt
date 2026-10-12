@@ -11,7 +11,12 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
-## M64: doc 43 §0.20 (branch `m64` from `main` at `800b965`)
+## M65: doc 43 §0.21 (branch `m65` from `main` at `27a1455`, M64 merged as PR #32)
+
+- **Split (unattended run, the owner's prompt of 12 Oct 2026):** M65.0 doc 43 §0.21 (committed; the file is byte-identical to the project copy; header and §0.21 only) ·
+  **M65.1 (A)** V-B8 restated, no sim · **M65.2 (B)** Act V's production preload · **M65.3 (C)** Act IV B1 diagnosis (`--act4` at 30 seeds, `rentLinks` off and on).
+
+## M64: doc 43 §0.20 (merged, PR #32; branch `m64` from `main` at `800b965`)
 
 - **Split (unattended run, the owner's prompt of 12 Oct 2026):** M64.0 doc 43 §0.20 (committed; the file is byte-identical to the
   project copy, made with Edit on the repo copy because only the header and §0.20 differ: mine, reversible) · **M64.1 (A)** V4 Signals decoy ·
