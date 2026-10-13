@@ -11,7 +11,12 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
-## M66-docs: doc 43 §0.22 (branch `m66-docs` from `main` at `4d3c848`; docs only)
+## M66: doc 43 §0.22 and §0.23 (branch `m66` from `main` at `82bdf24`)
+
+- **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
+  §0.23 only: mine, reversible) · **M66.1 (A)** Act IV notes · **M66.2 (B)** the rating in Act V and the `isAct2RulesQuarter` audit · **M66.3 (C)** copy and formatting · **M66.4 (D)** mining tiles · **M66.5 (E)** the Act V screen check (dev build) · **M66.6 (F)** the re-measure.
+
+## M66-docs: doc 43 §0.22 (merged, PR #34, tag `m66-docs-done`; docs only)
 
 - **Act V's balance loop is closed per doc 43 §0.22.** Every core target passes (V-B1, B2, B4, B11); no balance run is scheduled, no lever is allowed. The next Act V input is the owner's playthrough on staging (rebuild it first: the owner
   runs `npm run staging:build`); the flag flips only on the owner's word. A drop of V4's hold ÷ sell below 0.80 in any later run is a stop.
