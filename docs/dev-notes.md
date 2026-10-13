@@ -54,6 +54,40 @@ Rows to decide on (reported, not changed): the power reservation, Anger and regi
     (2) **Both presets draw V1 on a default start.** Firm Builder and Orbital Landlord both drew V1 ("Seed 1"): `toAct5(end, { preset })` draws from the preset company's fixed seed, so the preset start is the same future every time. (3) The report header still shows the ETH price after 2022Q3 (kept on purpose: a price, not a mining tile).
   - **Screenshots** (tool-result paths, under `/Users/tmacbookair/.claude/projects/-Users-tmacbookair-dev-garage-to-gigawatt/5c74bdda-c811-4fc4-bd64-5184b768f53e/tool-results/`): `mcp-Claude_Browser-blob-1791889382219-e6midr.jpg` (OL V4, 2038Q2 Plan, signals strip), `...-1791889390339-0rn4bf.jpg` (trigger card), `...-1791889421249-k2tvul.jpg` (decoy card), `...-1791889472143-bdoir1.jpg` (Firm Builder Live screen).
 
+- **M66.6 done (the re-measure after chunk B; `--act5`, 2,400 runs, 0 unreconciled, 57 min):** **every cell equals M64's: the runs CSV is byte-identical** (multiples, readings, moves). The rating now moves in Act V (the golden's V4 Perfect run falls to CCC- in 2038, the Passive company stays BBB), but nothing the bots do reads it: loans are hidden in Act V and plant debt is priced elsewhere.
+  `--act2 --act3` was also run because chunk B touched `quarter.ts` and `ventures.ts`, which Acts II-IV run through: **byte-identical to `main`'s outputs** (1,302 files each, `diff -r` empty, no unreconciled runs). `--act4` and `--energy` were not run: no Act IV rule or bot changed (Act IV's report line is UI text).
+
+**Commits (branch `m66`):** M66.0 doc 43 §0.22-§0.23 and the chunk split · M66.1-2 the rating in Act V, the audit, the four Act V goldens · M66.3 copy and formatting · M66.4 mining tiles · M66.5 the screen check · M66.6 this section.
+
+**§18 table** (medians, 2040Q4 before the exit ÷ act5Entry; FB / OL; v1 v2 v3 v4): identical to M64's:
+
+| Bot | Firm Builder | Orbital Landlord |
+|---|---|---|
+| Holder | 1.683 1.270 0.920 1.097 | 1.408 1.085 0.860 0.984 |
+| Flex | 1.677 1.308 0.894 1.066 | 1.334 1.151 0.816 0.935 |
+| Seller | 1.230 1.224 1.218 1.242 | 1.134 1.124 1.115 1.150 |
+| Locker | 1.530 1.240 0.956 1.079 | 1.305 1.103 0.875 0.990 |
+| Orbit Replacer | 1.726 1.303 0.876 1.238 | 1.554 1.192 0.914 1.202 |
+| Builder | 1.682 1.267 0.918 1.095 | 1.432 1.107 0.879 1.005 |
+| Passive | 1.454 1.317 1.036 1.176 | 1.257 1.168 0.953 1.076 |
+| Perfect | 1.679 1.336 1.192 1.284 | 1.334 1.184 1.063 1.391 |
+| Over-reactor | 1.211 1.215 0.921 1.081 | 1.090 1.079 0.851 0.941 |
+
+**Verdicts:** V-B1 PASS both · V-B2 PASS (FB Holder ÷ Seller 1.368, ÷ Locker 1.100) · V-B3 PASS on Firm Builder by 0.4% (Flex 1.308 against 1.303; OL information MISS) · V-B4 PASS (FB 1.324 / 1.039) · V-B5 PASS on OL 1.222 (FB information 1.128) · V-B6 information · V-B7 PASS (0 busts in 120) ·
+**V-B8 (§0.21 form) PASS on both presets**: Perfect ÷ Passive FB 1.155 / 1.015 / 1.150 / 1.092, OL 1.061 / 1.014 / 1.116 / 1.292 (V2's 1.014-1.015 is the thin cell; none at or below 1.00); Over-reactor ÷ Passive ≤ 0.97 in all 8 · V-B9 PASS (+28 / +2 / +40 / +19 FB) · V-B10 PASS · V-B11 PASS (V4 0.806 on both presets, floor 0.80, not a stop) · V-B13 20 Plan phases · V-B12, V-B14 by tests.
+
+**Assumptions (mine, reversible):** (1) M66.0 applied with Edit, byte-compared with the project copy; §0.22 was already on `main` from PR #34, so the commit adds the header's "§0.23: the staging check" and §0.23 only. (2) The rating gate is `isAct2RulesQuarter(quarter) || inActV(state)`; the covenant already ran in Act V through `inAct3Rules`. (3) In Act V the Ventures intro text replaces both the intro paragraph and the "closed" line; the join error key is chosen by act in the sim.
+(4) After 2022Q3 the Live chart is kept as "BTC this quarter" (not hidden) for companies that mine, and the ETH half of the hold note is dropped; the report header's ETH price stays. (5) The report hides "Cost per coin" in every act and quarter when nothing was mined. (6) The V4 screen check used a console-set future (Act V has no URL forcing) and a passive script. (7) M66.1 needed no commit: §0.22's Act IV notes were already on `main`.
+
+**STOPPED:** none.
+
+**Open questions for the design thread:**
+1. **Headlines:** the 71 authored Signals headlines (including the four new V4 capacity ones) are never shown in Act V. Wire them into the Signals panel (a "Headline" line per indicator that moved, as the files' note says), or cut them? Wiring is a build task; the leak guard and the V4 decoy's "no tell" rule apply.
+2. **Presets always draw V1:** both preset starts use the preset company's fixed seed, so "Start at Act V" always plays V1. Intended (a known company, a known future), or should a preset start draw from a fresh seed (the presets' numbers in §18 are measured per forced future, so none would change)?
+3. **The isAct2RulesQuarter audit** (table above): the power reservation (idle and building MW pay nothing in Act V), regional Anger and Heat, ERCOT curtailment, staff salaries (Act I's formula) and ASIC prices (Act I's table) all change at the Act IV to V boundary. §3.2 says Heat and Anger carry. Which should continue? Each changes Act V's economics and moves Act V goldens and the sim table, so it needs its own run.
+4. **The rating has no economic effect in Act V** (display and log only). Fine as a status line, or should it price something (plant debt spread, the covenant)?
+5. **The report header's ETH price after 2022Q3:** leave it (it is a price), or hide it with the ETH mining views?
+
 ## M66-docs: doc 43 §0.22 (merged, PR #34, tag `m66-docs-done`; docs only)
 
 - **Act V's balance loop is closed per doc 43 §0.22.** Every core target passes (V-B1, B2, B4, B11); no balance run is scheduled, no lever is allowed. The next Act V input is the owner's playthrough on staging (rebuild it first: the owner
