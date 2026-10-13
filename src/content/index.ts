@@ -2898,10 +2898,13 @@ export function isAct2RulesQuarter(quarter: number): boolean {
   const act3 = CONTENT.acts.find((a) => a.act === 3)!
   // M27.3: and Act IV's (doc 33 §3.1: Act II's business rules run on in Act IV).
   const act4 = CONTENT.acts.find((a) => a.act === 4)
+  // M67.4 (doc 43 §0.24 item 3, §3.2): and Act V's, whose files carry every column these systems read.
+  const act5 = CONTENT.acts.find((a) => a.act === 5)
   return (
     isActIIQuarter(quarter) ||
     (quarter >= act3.firstQuarter && quarter <= act3.lastQuarter) ||
-    (act4 !== undefined && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter)
+    (act4 !== undefined && quarter >= act4.firstQuarter && quarter <= act4.lastQuarter) ||
+    (act5 !== undefined && quarter >= act5.firstQuarter && quarter <= act5.lastQuarter)
   )
 }
 
