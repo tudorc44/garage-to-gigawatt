@@ -82,7 +82,10 @@ checks need one run per flag set. Add `--out <dir>` to keep outputs apart (and `
   `docs/act3-content/` and its **README** (the source files; every data change is logged there), `docs/wireframes/act3/`
   (A3-01 … A3-12), `docs/act3-carryover-audit.md`.
 - **The Prologue:** `docs/alpha-0.3-scope.md` (wins over `claude_26-alpha-0_3-scope.md`), `docs/prologue-content/`,
-  `docs/wireframes/prologue/`.
+  `docs/wireframes/prologue/`. **Reference only, nothing built from them:** `docs/game-project-files/claude_50-roadmap-ideas.md`
+  (doc 50, the parking lot of unscheduled ideas), `claude_51-prologue-expansion-design.md` (doc 51, a draft design for a
+  Prologue pool, mining club and altcoins, awaiting research) and `claude_52-prologue-expansion-research-prompt.md` (doc 52,
+  its research prompt). Doc 51's opt-out invariance rule: a Prologue game that never touches the features stays byte-identical.
 - **Act IV:** `docs/act4-scope.md` (**source of truth for Act IV scope**: the owner's approval, defaults, milestone plan,
   targets B1–B14, cut order and "Changes from doc 33"); `docs/game-project-files/claude_33-act-iv-design.md` (doc 33, the
   design, IV-D1–IV-D33), `claude_31-act-iv-research-dossier.md` (doc 31, the evidence), `claude_32-act-iv-concepts.md`

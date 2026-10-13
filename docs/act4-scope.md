@@ -173,3 +173,4 @@ Every place the build differs from doc 33, with the reason. (Added to as the bui
     0.98 against the 0.999 line in f4 after the link-rental bot fix; doc 43 §0.22). B8 stays a recorded miss (F3 Perfect ÷ Passive
     0.99; doc 43 §0.22). B3, B4, B5, B6 and B13 miss as before (B5 was not on the earlier recorded list; flagged to the design thread, M66-docs). Act IV's balance pass stays closed; no change to Act IV content,
     rules or the link price.
+22. **B5 recorded as a miss (F4: Ground Holder not best in M64-M65; doc 43 §0.24).** Beside B1 and B8 above. No change to Act IV.

@@ -15,6 +15,8 @@ See "Next".
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M67.0 doc 43 §0.24 (byte-identical to the project copy; header and §0.24 only) · **M67.1 (A)** Act IV note (B5) and docs 50-52 · **M67.2 (B)** Signals headlines · **M67.3 (C)** preset seeds · **M67.4 (D)** the Act II rules gate in Act V · **M67.5 (E)** the ETH header · **M67.6 (F)** the re-measure.
 
+- **M67.1 done (Act IV note and new docs):** B5 recorded as a miss (F4: Ground Holder not best in M64-M65; doc 43 §0.24), in `docs/act4-scope.md` §6 item 22; the Act IV recorded-misses list is now B1, B3, B4, B5, B6, B8, B13, E-B2. Docs 50, 51 and 52 copied byte-identically into `docs/game-project-files/` and listed in CLAUDE.md under the Prologue (reference only; nothing built from doc 51).
+
 ## M66: doc 43 §0.22 and §0.23 (merged, PR #35, tag `m66-done`; was branch `m66` from `main` at `82bdf24`)
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
