@@ -5,7 +5,7 @@ import { useState } from 'preact/hooks'
 import { t, tDynamic, type Message } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
 import { offtakePrepayUsd, tailShare, venturesView, type VentureOfferView } from '../../sim/ventureViews.ts'
-import type { GameState } from '../../sim/state.ts'
+import { inActV, type GameState } from '../../sim/state.ts'
 import { plantsView } from '../../sim/systems/plants.ts'
 import { acceleratorView } from '../../sim/systems/accelerator.ts'
 import { followOnOffers } from '../../sim/systems/ventures.ts'
@@ -27,10 +27,11 @@ export function VenturesSection({ state, act }: ScreenProps) {
         <section class="panel p">
           <h2 class="panel-title">{t('ui.ventures.title')}</h2>
           <p class="num-s muted" style={{ margin: 0 }}>
-            {t('ui.ventures.intro')}
+            {/* (M66.3, doc 43 §0.23 item 3: in Act V new ventures are closed; the page manages what you hold) */}
+            {inActV(state) ? t('ui.ventures.intro_v') : t('ui.ventures.intro')}
           </p>
           {error && <p class="num-s warn">{say(error)}</p>}
-          {!v.open && <p class="num-s muted">{t('ui.ventures.closed')}</p>}
+          {!v.open && !inActV(state) && <p class="num-s muted">{t('ui.ventures.closed')}</p>}
         </section>
         {v.mine.length > 0 && (
           <section class="panel p" data-my-ventures>

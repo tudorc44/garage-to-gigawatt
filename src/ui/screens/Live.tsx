@@ -31,6 +31,8 @@ import { fmt } from '../format.ts'
 import { machineName, say, siteName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { MarketReadText } from './Plan.tsx'
+import { Act5Dashboard, Act5ReportPanel } from './Act5Screens.tsx'
+import { ethMiningOver, showsMiningTiles } from '../mining.ts'
 import { readSettings } from '../../platform/settings.ts'
 
 const WEEK_MS = 1500
@@ -99,10 +101,19 @@ export function LiveScreen(
         <div class="live-main">
           <WeekStrip current={current} flags={flags} notes={notes} />
           {state.act === 1 && <Tip id="live" act={1} />}
-          <div class="live-grid">
-            <Totals state={state} />
-            <PriceChart weeks={weeks} current={current} />
-          </div>
+          {showsMiningTiles(state) ? (
+            <div class="live-grid">
+              <Totals state={state} />
+              <PriceChart weeks={weeks} current={current} eth={!ethMiningOver(state.quarter)} />
+            </div>
+          ) : (
+            /* M66.4 (doc 43 §0.23 item 4): Act V with no machines: A5-02's four-column MW strip, plants and queue, and the
+               plants' output this quarter, in place of coins mined, power and rent, "each machine now" and the BTC chart */
+            <>
+              <Act5Dashboard state={state} />
+              <Act5ReportPanel state={state} />
+            </>
+          )}
           {state.marketRead?.quarter === state.quarter && (
             <p class="num-s" style={{ margin: 0 }}>
               <Icon name="read-market" size={16} />{' '}
@@ -247,10 +258,12 @@ function Totals({ state }: { state: GameState }) {
           </div>
         ))}
         <span class="num-s muted">
-          {t('ui.live.hodl_note', {
-            btc: fmt.pct(1 - state.hodlPct.BTC),
-            eth: fmt.pct(1 - state.hodlPct.ETH),
-          })}
+          {ethMiningOver(state.quarter)
+            ? t('ui.live.hodl_note_btc', { btc: fmt.pct(1 - state.hodlPct.BTC) })
+            : t('ui.live.hodl_note', {
+                btc: fmt.pct(1 - state.hodlPct.BTC),
+                eth: fmt.pct(1 - state.hodlPct.ETH),
+              })}
         </span>
       </div>
     </div>
@@ -261,15 +274,18 @@ function Totals({ state }: { state: GameState }) {
 function PriceChart({
   weeks,
   current,
+  eth: showEth = true,
 }: {
   weeks: WeekSummary[]
   current: number
+  /** M66.4: false after the Merge (2022Q3): BTC only, no ETH line, label or legend. */
+  eth?: boolean
 }) {
   const W = 620
   const x = (week: number) => 50 + ((week - 1) * 550) / 12
   const base = weeks[0]
   const btc = weeks.map((w) => (base ? w.btcUsd / base.btcUsd - 1 : 0))
-  const eth = weeks.map((w) => (base ? w.ethUsd / base.ethUsd - 1 : 0))
+  const eth = showEth ? weeks.map((w) => (base ? w.ethUsd / base.ethUsd - 1 : 0)) : []
   const lo = Math.min(0, ...btc, ...eth)
   const hi = Math.max(0.05, ...btc, ...eth)
   const y = (p: number) => 170 - ((p - lo) / (hi - lo || 1)) * 146
@@ -281,7 +297,7 @@ function PriceChart({
   return (
     <div class="panel p chart">
       <div class="row-between">
-        <h2 class="panel-title">{t('ui.live.chart_title')}</h2>
+        <h2 class="panel-title">{t(showEth ? 'ui.live.chart_title' : 'ui.live.chart_title_btc')}</h2>
         <span class="num-s muted">
           {base
             ? t('ui.live.chart_vs', { date: fmt.date(base.date, false) })
@@ -292,7 +308,7 @@ function PriceChart({
         class="live-svg"
         viewBox={`0 0 ${W} 196`}
         role="img"
-        aria-label={t('ui.live.chart_title')}
+        aria-label={t(showEth ? 'ui.live.chart_title' : 'ui.live.chart_title_btc')}
       >
         {grid.map((g, i) => (
           <g key={i}>
@@ -313,11 +329,11 @@ function PriceChart({
           />
         )}
         {weeks.length > 1 && <polyline class="c-btc-line" points={line(btc)} />}
-        {weeks.length > 1 && <polyline class="c-eth-line" points={line(eth)} />}
+        {showEth && weeks.length > 1 && <polyline class="c-eth-line" points={line(eth)} />}
         {last >= 0 && (
           <>
             <circle class="c-btc" cx={x(last + 1)} cy={y(btc[last])} r={4} />
-            <circle class="c-eth" cx={x(last + 1)} cy={y(eth[last])} r={4} />
+            {showEth && <circle class="c-eth" cx={x(last + 1)} cy={y(eth[last])} r={4} />}
             <text
               class="c-val"
               x={x(last + 1) - 6}
@@ -326,14 +342,16 @@ function PriceChart({
             >
               {`BTC ${label(btc[last])}`}
             </text>
-            <text
-              class="c-val"
-              x={x(last + 1) - 6}
-              y={y(eth[last]) + 16}
-              text-anchor="end"
-            >
-              {`ETH ${label(eth[last])}`}
-            </text>
+            {showEth && (
+              <text
+                class="c-val"
+                x={x(last + 1) - 6}
+                y={y(eth[last]) + 16}
+                text-anchor="end"
+              >
+                {`ETH ${label(eth[last])}`}
+              </text>
+            )}
           </>
         )}
         {[1, 3, 5, 7, 9, 11, 13].map((n) => (
@@ -350,12 +368,14 @@ function PriceChart({
             </svg>
             {`BTC ${fmt.money(base.btcUsd)} → ${fmt.money(weeks[last].btcUsd)}`}
           </span>
-          <span>
-            <svg width="16" height="12" aria-hidden="true">
-              <line class="c-eth-line" x1={0} y1={6} x2={16} y2={6} />
-            </svg>
-            {`ETH ${fmt.money(base.ethUsd)} → ${fmt.money(weeks[last].ethUsd)}`}
-          </span>
+          {showEth && (
+            <span>
+              <svg width="16" height="12" aria-hidden="true">
+                <line class="c-eth-line" x1={0} y1={6} x2={16} y2={6} />
+              </svg>
+              {`ETH ${fmt.money(base.ethUsd)} → ${fmt.money(weeks[last].ethUsd)}`}
+            </span>
+          )}
         </div>
       )}
     </div>

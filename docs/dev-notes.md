@@ -11,7 +11,84 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
-## M66-docs: doc 43 §0.22 (branch `m66-docs` from `main` at `4d3c848`; docs only)
+## M66: doc 43 §0.22 and §0.23 (branch `m66` from `main` at `82bdf24`)
+
+- **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
+  §0.23 only: mine, reversible) · **M66.1 (A)** Act IV notes · **M66.2 (B)** the rating in Act V and the `isAct2RulesQuarter` audit · **M66.3 (C)** copy and formatting · **M66.4 (D)** mining tiles · **M66.5 (E)** the Act V screen check (dev build) · **M66.6 (F)** the re-measure.
+
+- **M66.1 done (Act IV notes):** nothing to add: B1 and B8 were recorded by the docs-only PR #34 (`docs/act4-scope.md` §6 item 21 and the M66-docs notes below), worded as §0.22 gives them.
+- **M66.2 done (the rating in Act V):** `quarter.ts` reviews the rating when `isAct2RulesQuarter(quarter) || inActV(state)` (only that gate; `isAct2RulesQuarter` is unchanged); `Report.tsx` never prints "null" (`ui.report.a2_rating_none`, "none yet"). The covenant needs no fix: it runs through
+  `inAct3Rules`, which already includes act 5. Tests `tests/ui/act5Rating.test.tsx` (3; two fail on the old gate). **The four Act V goldens moved**: each report now carries `creditRating` and `ratingWhy`, the log gains `rating_changed` lines (V4 seed 1 falls to CCC- in 2038), and the end state's rating differs in two of the four; no other field. Acts I-IV goldens unchanged.
+
+**`isAct2RulesQuarter` audit (doc 43 §0.23 item 1; true for Act II, III and IV quarters, false for Act V; nothing here changed except the rating):**
+
+| Call site | Rule it gates | Continues in Act V per doc 43? | What happens in Act V now |
+|---|---|---|---|
+| `quarter.ts:184` | quarterly credit rating review | yes: §3.1 "creditRating", §11.4 | **fixed (M66.2)** |
+| `quarter.ts:177` | Q4 depreciation audit (card ec18, aggressive depreciation) | not named; §3.1 carries "lasting events" | no audit; a lasting depreciation card would never restate |
+| `mwUse.ts:100` | power reservation: idle and building kW pay a share of full-load power (Act II owner decision A2) | not named; §3.1 carries ground, sites and projects | **idle and building MW pay nothing in Act V** (115 MW at Firm Builder: 37 idle, 11 building) |
+| `anger.ts:28` | regional Anger from energized MW and policy bumps | yes: §3.2 "Heat, Anger ... carry" | Anger is 0 in Act V |
+| `regions.ts:42, 54, 59, 100` | regional power adders, regional Heat modifier, national Heat deltas, project reservation share and capex multiplier | Heat carries (§3.2); policies are dated content | all neutral in Act V (adder 0, Heat multiplier 1, delta 0, no policy) |
+| `curtailment.ts:46, 109` | Act II's ERCOT sites are grid sites; AI halls there go dark and owe SLA credits | "Texas enrolment" carries (§3.1) | AI halls in ERCOT are never curtailed in Act V |
+| `loans.ts:72` | equipment loan terms: SOFR + the rating band, 8 quarters | §3.1 "every loan and facility" carries; new loans are hidden in Act V (M62) | falls back to Act I's era terms (`eraTerms`) if an equipment loan is ever opened |
+| `cryptoLoan.ts:35` | crypto loans offered from 2023Q3 | no (hidden in Act V, M62) | never offered: matches the UI |
+| `hires.ts:93` | Act II salaries, 2026Q4's held in Act III-IV | §3.1 "staff" carries | **salaries fall back to Act I's formula** (`to` × `salary2022Mult`) |
+| `market.ts:165` | ASIC purchase and resale prices from the scenario's weekly tiers | not named | Act I's frozen 2022Q3 table is used for machines bought in Act V |
+| `market.ts:245` | ETH GPU rigs' resale curve | no (ETH mining ended in 2022) | irrelevant |
+| `rivals.ts:157` | Act III's five rivals | no: Act V has its own six (`act5Rivals` is chosen first) | correct |
+
+Rows to decide on (reported, not changed): the power reservation, Anger and regional Heat, ERCOT curtailment, staff salaries and ASIC prices all change at the Act IV to V boundary; §3.2 says Heat and Anger carry. The reservation and the salaries move money inside the Act V sim.
+
+- **M66.3 done (copy and formatting):** the orbit line on the shared report panel uses `fmt.signed` ("+$11.3M"), checked on the act4-f1 and act5-v4 golden reports (Act IV's public report gets the fix too; UI text only). Ventures in Act V: `ui.ventures.intro_v` (replaces the intro and the closed line) and
+  `error.venture_closed_v` (sim picks the key by act; Acts III-IV keep theirs). The Halyard diligence line already shows "P(volume within 8 years) ≈ 0.30" from `text_chips.en.json`; a test pins it. Tests `tests/ui/act5Copy.test.tsx` (4). No golden moved.
+
+- **M66.4 done (mining tiles; UI only, no sim state or golden):** `src/ui/mining.ts`. Act V with no machines: the Live screen shows `Act5Dashboard` and `Act5ReportPanel` (A5-02's strip, plants, queue, plants' output) in place of the mining tiles and the chart; with miners it keeps them. The report hides "Cost per coin" when nothing was mined (any act) and the cost chart when
+  nothing was mined after 2022Q3. After 2022Q3, in any act, the Live chart is "BTC this quarter" (no ETH line, label or legend) and the note drops its ETH half (new keys `ui.live.chart_title_btc`, `ui.live.hodl_note_btc`). **This changes public Acts II-IV UI text, not their sim state.** Tests `tests/ui/miningTiles.test.tsx` (5). (Mine, reversible: the report header's ETH price stays; it is a price, not a mining tile.)
+
+- **M66.5 done (Act V screen check, dev build on :5173; nothing fixed, only reported):**
+  - **How V4 was reached:** Act V has no URL forcing (`?future=` is Act IV's; `toAct5(end, { preset })` draws). I started Orbital Landlord, then in the console set `vFutureId = 'v4'` and `vFutureForced = true` on the 2036Q1 Plan state and `g2g.load` it (the future enters Act V's state only as that field and the market key `scenarioOf` builds from it). Played passively with a script that took each default to 2038Q2.
+  - **Signals (V4, Orbital Landlord; displayed Capacity Market / Firm Build-out / Launch Cadence):** 2037Q2 51 / 53 / 54; **2037Q3 62▲ / 50 / 69▲; 2037Q4 75▲ / 49 / 70; 2038Q1 58▼ / 50 / 73▲; 2038Q2 48▼ / 51 / 85▲**. The Capacity Market squeeze is there, Firm Build-out stays flat, Launch Cadence climbs every quarter.
+  - **The decoy card** "Firm Power Runs Short" plays in 2037Q4 week 2 (choices "Note it" default, "Buy a queue-holding site before prices run", -$2.0M); the **trigger card** "Launch Breaks $200" plays in 2038Q2 week 2 (its own quarter, §0.21). Rating BBB every quarter. **No leak:** a regex for the four future names, the decoy names, the trigger titles, "decoy" and "false alarm" matched nothing on any Plan, Live or Report screen through 2038Q1 (the V3 stance is a hidden file and no screen shows it; `act5Leak.test.tsx` also covers it).
+  - **Firm Builder, one quarter, items B to D confirmed on screen:** rating row "BBB, unchanged since last quarter" (no "null"); orbit line "EBITDA +$26.1M"; Ventures intro in Act V wording, no "Acts III and IV", diligence "P(volume within 8 years) ≈ 0.30"; the Live screen shows the MW strip, plants and queue and no mining tiles; the report has no "Cost per coin" and no ETH chart.
+  - **Other visible defects (reported, not fixed):** (1) **Act V's Signals headlines never reach the player.** The Signals panel (`Plan.tsx` `SignalsPanel`) shows each indicator's value and arrow and Act I's `news.<quarter>` lines; the 71 authored headlines in `signals_v_*.json` (the four new V4 capacity ones among them) are dropped by the runtime schema (`signalPoint` in `schemas.ts` has no `headline`) and read by no code. §0.22 and the files' own note say headlines are shown in play.
+    (2) **Both presets draw V1 on a default start.** Firm Builder and Orbital Landlord both drew V1 ("Seed 1"): `toAct5(end, { preset })` draws from the preset company's fixed seed, so the preset start is the same future every time. (3) The report header still shows the ETH price after 2022Q3 (kept on purpose: a price, not a mining tile).
+  - **Screenshots** (tool-result paths, under `/Users/tmacbookair/.claude/projects/-Users-tmacbookair-dev-garage-to-gigawatt/5c74bdda-c811-4fc4-bd64-5184b768f53e/tool-results/`): `mcp-Claude_Browser-blob-1791889382219-e6midr.jpg` (OL V4, 2038Q2 Plan, signals strip), `...-1791889390339-0rn4bf.jpg` (trigger card), `...-1791889421249-k2tvul.jpg` (decoy card), `...-1791889472143-bdoir1.jpg` (Firm Builder Live screen).
+
+- **M66.6 done (the re-measure after chunk B; `--act5`, 2,400 runs, 0 unreconciled, 57 min):** **every cell equals M64's: the runs CSV is byte-identical** (multiples, readings, moves). The rating now moves in Act V (the golden's V4 Perfect run falls to CCC- in 2038, the Passive company stays BBB), but nothing the bots do reads it: loans are hidden in Act V and plant debt is priced elsewhere.
+  `--act2 --act3` was also run because chunk B touched `quarter.ts` and `ventures.ts`, which Acts II-IV run through: **byte-identical to `main`'s outputs** (1,302 files each, `diff -r` empty, no unreconciled runs). `--act4` and `--energy` were not run: no Act IV rule or bot changed (Act IV's report line is UI text).
+
+**Commits (branch `m66`):** M66.0 doc 43 §0.22-§0.23 and the chunk split · M66.1-2 the rating in Act V, the audit, the four Act V goldens · M66.3 copy and formatting · M66.4 mining tiles · M66.5 the screen check · M66.6 this section.
+
+**§18 table** (medians, 2040Q4 before the exit ÷ act5Entry; FB / OL; v1 v2 v3 v4): identical to M64's:
+
+| Bot | Firm Builder | Orbital Landlord |
+|---|---|---|
+| Holder | 1.683 1.270 0.920 1.097 | 1.408 1.085 0.860 0.984 |
+| Flex | 1.677 1.308 0.894 1.066 | 1.334 1.151 0.816 0.935 |
+| Seller | 1.230 1.224 1.218 1.242 | 1.134 1.124 1.115 1.150 |
+| Locker | 1.530 1.240 0.956 1.079 | 1.305 1.103 0.875 0.990 |
+| Orbit Replacer | 1.726 1.303 0.876 1.238 | 1.554 1.192 0.914 1.202 |
+| Builder | 1.682 1.267 0.918 1.095 | 1.432 1.107 0.879 1.005 |
+| Passive | 1.454 1.317 1.036 1.176 | 1.257 1.168 0.953 1.076 |
+| Perfect | 1.679 1.336 1.192 1.284 | 1.334 1.184 1.063 1.391 |
+| Over-reactor | 1.211 1.215 0.921 1.081 | 1.090 1.079 0.851 0.941 |
+
+**Verdicts:** V-B1 PASS both · V-B2 PASS (FB Holder ÷ Seller 1.368, ÷ Locker 1.100) · V-B3 PASS on Firm Builder by 0.4% (Flex 1.308 against 1.303; OL information MISS) · V-B4 PASS (FB 1.324 / 1.039) · V-B5 PASS on OL 1.222 (FB information 1.128) · V-B6 information · V-B7 PASS (0 busts in 120) ·
+**V-B8 (§0.21 form) PASS on both presets**: Perfect ÷ Passive FB 1.155 / 1.015 / 1.150 / 1.092, OL 1.061 / 1.014 / 1.116 / 1.292 (V2's 1.014-1.015 is the thin cell; none at or below 1.00); Over-reactor ÷ Passive ≤ 0.97 in all 8 · V-B9 PASS (+28 / +2 / +40 / +19 FB) · V-B10 PASS · V-B11 PASS (V4 0.806 on both presets, floor 0.80, not a stop) · V-B13 20 Plan phases · V-B12, V-B14 by tests.
+
+**Assumptions (mine, reversible):** (1) M66.0 applied with Edit, byte-compared with the project copy; §0.22 was already on `main` from PR #34, so the commit adds the header's "§0.23: the staging check" and §0.23 only. (2) The rating gate is `isAct2RulesQuarter(quarter) || inActV(state)`; the covenant already ran in Act V through `inAct3Rules`. (3) In Act V the Ventures intro text replaces both the intro paragraph and the "closed" line; the join error key is chosen by act in the sim.
+(4) After 2022Q3 the Live chart is kept as "BTC this quarter" (not hidden) for companies that mine, and the ETH half of the hold note is dropped; the report header's ETH price stays. (5) The report hides "Cost per coin" in every act and quarter when nothing was mined. (6) The V4 screen check used a console-set future (Act V has no URL forcing) and a passive script. (7) M66.1 needed no commit: §0.22's Act IV notes were already on `main`.
+
+**STOPPED:** none.
+
+**Open questions for the design thread:**
+1. **Headlines:** the 71 authored Signals headlines (including the four new V4 capacity ones) are never shown in Act V. Wire them into the Signals panel (a "Headline" line per indicator that moved, as the files' note says), or cut them? Wiring is a build task; the leak guard and the V4 decoy's "no tell" rule apply.
+2. **Presets always draw V1:** both preset starts use the preset company's fixed seed, so "Start at Act V" always plays V1. Intended (a known company, a known future), or should a preset start draw from a fresh seed (the presets' numbers in §18 are measured per forced future, so none would change)?
+3. **The isAct2RulesQuarter audit** (table above): the power reservation (idle and building MW pay nothing in Act V), regional Anger and Heat, ERCOT curtailment, staff salaries (Act I's formula) and ASIC prices (Act I's table) all change at the Act IV to V boundary. §3.2 says Heat and Anger carry. Which should continue? Each changes Act V's economics and moves Act V goldens and the sim table, so it needs its own run.
+4. **The rating has no economic effect in Act V** (display and log only). Fine as a status line, or should it price something (plant debt spread, the covenant)?
+5. **The report header's ETH price after 2022Q3:** leave it (it is a price), or hide it with the ETH mining views?
+
+## M66-docs: doc 43 §0.22 (merged, PR #34, tag `m66-docs-done`; docs only)
 
 - **Act V's balance loop is closed per doc 43 §0.22.** Every core target passes (V-B1, B2, B4, B11); no balance run is scheduled, no lever is allowed. The next Act V input is the owner's playthrough on staging (rebuild it first: the owner
   runs `npm run staging:build`); the flag flips only on the owner's word. A drop of V4's hold ÷ sell below 0.80 in any later run is a stop.

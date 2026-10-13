@@ -99,7 +99,8 @@ export function referenceUsdKw(state: GameState, type: VentureType): number {
 
 /** Why a type can't be joined now (or diligence done), or undefined. */
 function typeBlocker(state: GameState, type: VentureType): Message | undefined {
-  if (!venturesOpen(state)) return { key: 'error.venture_closed' }
+  // (M66.3, doc 43 §0.23 item 3: in Act V the wording is the true one; the key for Acts III-IV is unchanged)
+  if (!venturesOpen(state)) return { key: inActV(state) ? 'error.venture_closed_v' : 'error.venture_closed' }
   if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
   if (!VENTURE_TYPES.includes(type)) return { key: 'error.bad_choice' }
   if (label(state.quarter) < T[type].from) return { key: 'error.venture_not_yet' }

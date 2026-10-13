@@ -131,7 +131,7 @@ export function Act4ReportPanel({ state, report }: { state: GameState; report?: 
             live: v.orbit.live,
             underway: v.orbit.underway,
             revenue: fmt.money(v.orbit.revenueUsd),
-            ebitda: fmt.signedDollars(v.orbit.ebitdaUsd),
+            ebitda: fmt.signed(v.orbit.ebitdaUsd), // (M66.3, doc 43 §0.23 item 2: "+$26.1M", beside the revenue's "$27.4M")
             mult: v.orbit.multiple.toFixed(1),
             ev: fmt.money(v.orbit.evUsd),
           })}

@@ -27,6 +27,7 @@ import {
   type QuarterReport,
 } from '../../sim/state.ts'
 import { CONTENT, actLastQuarter } from '../../content/index.ts'
+import { ethMiningOver } from '../mining.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
@@ -169,20 +170,23 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
               rent: fmt.money(r.rentUsd),
             })}
           />
-          <Tile
-            label={t('ui.report.cost_per_coin')}
-            value={coin && cost !== null ? `${fmt.money(cost)}/${coin}` : '—'}
-            sub={
-              cost !== null && prevCost !== null && prev
-                ? `${fmt.delta(cost - prevCost, 'money')} ${t('ui.report.vs_prev', { quarter: fmt.quarter(prev.quarter).slice(0, 2), value: fmt.money(prevCost) })}`
-                : t('ui.report.power_only')
-            }
-            tone={
-              cost !== null && prevCost !== null
-                ? toneOf(cost - prevCost, true)
-                : 'muted'
-            }
-          />
+          {/* M66.4 (doc 43 §0.23 item 4): no cost per coin when nothing was mined this quarter */}
+          {coin !== null && (
+            <Tile
+              label={t('ui.report.cost_per_coin')}
+              value={cost !== null ? `${fmt.money(cost)}/${coin}` : '—'}
+              sub={
+                cost !== null && prevCost !== null && prev
+                  ? `${fmt.delta(cost - prevCost, 'money')} ${t('ui.report.vs_prev', { quarter: fmt.quarter(prev.quarter).slice(0, 2), value: fmt.money(prevCost) })}`
+                  : t('ui.report.power_only')
+              }
+              tone={
+                cost !== null && prevCost !== null
+                  ? toneOf(cost - prevCost, true)
+                  : 'muted'
+              }
+            />
+          )}
           <Tile
             label={t('ui.report.cash')}
             value={fmt.money(r.cash)}
@@ -229,7 +233,8 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
         {state.act === 5 && <Act5ReportPanel state={state} />}
 
         <div class="report-grid">
-          <CostChart state={state} coin={coin} />
+          {/* (M66.4: ETH mining ended with the Merge, so after 2022Q3 the chart shows only when BTC was mined) */}
+          {(coin !== null || !ethMiningOver(state.quarter)) && <CostChart state={state} coin={coin} />}
           <League state={state} r={r} />
           <Notes state={state} />
         </div>
@@ -684,7 +689,7 @@ function Act2Panel({ state }: { state: GameState }) {
             <span class="label">{t('ui.report.a2_rating')}</span>
             <span class="num-kpi">
               {v.prevRating !== null && v.prevRating !== v.rating
-                ? `${v.prevRating} → ${v.rating}`
+                ? `${v.prevRating} → ${v.rating ?? t('ui.report.a2_rating_none')}`
                 : (v.rating ?? t('ui.report.a2_rating_none'))}
             </span>
             <span class="num-s muted">
