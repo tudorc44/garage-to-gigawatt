@@ -1,4 +1,4 @@
-# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run; §0.15: after the third run; §0.16: after the fourth run; §0.17: mid-run answers; §0.18: the first Act V screen; §0.19: after M61-M62; §0.20: after M63; §0.21: after M64)
+# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run; §0.15: after the third run; §0.16: after the fourth run; §0.17: mid-run answers; §0.18: the first Act V screen; §0.19: after M61-M62; §0.20: after M63; §0.21: after M64; §0.22: after M65)
 
 *Design thread. The recommended concept from doc 42 (Concept A, with B's exit and C's flexibility and Q-Day folded in), designed in the shape of doc 33. The owner approved doc 42's six recommendations on 10 Oct 2026 (V-D1 to V-D6 below). Built on doc 40 (second research pass, Part D), doc 37 (energy and 2040 dossier), doc 38 (energy ventures, especially §5-§6), doc 33 (Act IV as designed) and the game as built (dev-notes through M42, `main` = 71f36cb, `src/sim/state.ts`, `docs/energy-content/README.md`). The owner approved every recommendation in §21 on 10 Oct 2026 (V-D1 to V-D30). §22's open questions stay open; the design thread's recommendations on Q1 and Q2 are noted there. The content pack, scope doc and wireframe prompt come after approval, as for Acts III-IV.*
 
@@ -327,6 +327,27 @@ Also noted: GPU-hour rates and the newest generation stay at their 2036 values t
 **Levers allowed next run:** none. Measurement (decision 3) and one build tidy-up (decision 5) only.
 
 **Playthrough and flag:** unchanged. The owner can play Act V on staging now (after PR #32 merges); the flag flips only on the owner's word.
+
+### 0.22 After M65 (13 Oct 2026)
+*Design-thread decisions (DT) on the M65 report's four questions and the post-M65 handover's fifth. M65 is accepted as built: V-B8 restated and passing on both presets (`tools/act5/verdicts.ts`, test `act5Verdicts`), the preload left as is with its cause recorded, the Act IV diagnosis and the runner's reporting columns, with all three listed assumptions. Correction: Act V's share of the production preload is 91.8 kB gzip, not 41 kB (M64's note and §0.21 decision 5).*
+
+**Findings first:**
+- **The Sprinter doesn't dominate Act IV.** At 30 seeds it wins 6 of 12 B1 cells with links on (8 of 12 by preset × future), under §0.21's 9-of-12 line. The 10-seed 9 was noise.
+- **B1 flips for a reason unrelated to the Sprinter.** With links on, Balanced rises in f4 (1.07 → 1.11), which lifts the within-10% line to 0.999, and Ground sits at 0.98 in all three f4 cells. That's a miss by 0.019 on the "Ground within 10%" clause. The other two clauses still hold.
+- **The link is a gate, not a cost.** Rent is about 1-2% of the revenue it unlocks (Neocloud $29M against $2.0B). The Sprinter's value is almost all orbit valuation (f1: $38.7B of $41.5B), so even a tenfold link price would barely touch the cells B1 measures. Every link value is designed ([D], `tenants_iv.json:52-61`, README 204-207); there's no source to move it toward.
+- **Act IV's B8 fails even a sign check in F3:** Perfect ÷ Passive is 0.99 there. The structural argument behind §0.21 decision 1 doesn't carry over to Act IV unexamined.
+
+**Decisions:**
+1. **Act IV B1 is recorded as a miss, like B3-B13 (DT).** Its wording stays. Rewording a clause that misses by 0.019 to make it pass would be fitting the target to the result. The miss is a near-miss of the kind §0.11 described: the sign is right, the gap is small, and it has a named cause (a bot playing better, not a rule breaking). Add it to Act IV's recorded misses in `docs/act4-scope.md`'s balance notes and in dev-notes.
+2. **No change to the link price (DT).** The link does its job as a gate: interactive tenants need it, and a player who forgets it loses the tenant's revenue, which was the bots' bug. Making it bite would mean inventing a number with no source, changing public play and the Act IV goldens, and it wouldn't change what B1 measures. Not proposed. The owner can still ask for it.
+3. **Act IV B8 stays a recorded miss; no restatement (DT).** §0.21 restated Act V's V-B8 after diagnosing why the magnitude was out of reach. Act IV's F3 misses even the sign (0.99), so restating it would only relabel the miss. Act IV's balance pass is closed with its misses accepted (dev-notes, M35-M36), and one more recorded miss doesn't reopen it.
+4. **Leave Act V's preload; no loader milestone (DT).** 91.8 kB sits inside the 785.4 kB sum, under §0.20's 1 MB line, and the fix needs the async seam §0.20 item 4 ruled out. Once the flag flips, Act V's content is part of the game anyway. Reopen only if the sum passes 1 MB.
+
+5. **V-B11's floor: confirmed (DT).** §0.21 decision 4 stands: a run in which any Act V value change drops V4's hold ÷ sell below 0.80 on either preset stops, and reports which change moved it and by how much. 0.806 is a pass, not a margin to defend, and no lever exists to protect it.
+
+**Status:** Act V's balance loop is closed for now. Every core target passes (V-B1, B2, B4, B11), and V-B3 (Firm Builder, 0.4% margin), V-B5, V-B7, V-B8 (new form), V-B9 and V-B10 pass. Recorded as information: V-B3 on OL, V-B5 on FB, V-B6. No balance run is scheduled. The next Act V input is the owner's playthrough on staging; the flag flips only on the owner's word.
+
+**For the next run, whatever it is:** commit this section first (as §0.20 and §0.21 were), and record decisions 1 and 3 in the Act IV notes.
 
 ---
 

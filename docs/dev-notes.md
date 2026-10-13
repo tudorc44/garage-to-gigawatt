@@ -11,7 +11,15 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
-## M65: doc 43 §0.21 (branch `m65` from `main` at `27a1455`, M64 merged as PR #32)
+## M66-docs: doc 43 §0.22 (branch `m66-docs` from `main` at `4d3c848`; docs only)
+
+- **Act V's balance loop is closed per doc 43 §0.22.** Every core target passes (V-B1, B2, B4, B11); no balance run is scheduled, no lever is allowed. The next Act V input is the owner's playthrough on staging (rebuild it first: the owner
+  runs `npm run staging:build`); the flag flips only on the owner's word. A drop of V4's hold ÷ sell below 0.80 in any later run is a stop.
+- **Act IV recorded misses** (also in `docs/act4-scope.md` §6 item 21): B1 recorded as a miss (M65, 30 seeds: Ground 0.98 against the 0.999 line in f4 after the link-rental bot fix; doc 43 §0.22).
+  B8 stays a recorded miss (F3 Perfect ÷ Passive 0.99; doc 43 §0.22). With B3, B4, B6, B13 and E-B2 that makes the list: B1, B3, B4, B6, B8, B13, E-B2. **Flag for the design thread:** B5 (F4: Ground best, Sprinter game overs ≤ 40%) also misses in every M64-M65 run (links off and on: Ground 0.98, best other 1.07 off and 1.11 on), but it was not on the older recorded list and §0.22 does not name it; record it, or note why it passes elsewhere. No change to the link price or the preload (§0.22 decisions 2 and 4).
+- No code, content or golden changed.
+
+## M65: doc 43 §0.21 (merged, PR #33, tag `m65-done`; was branch `m65` from `main` at `27a1455`, M64 merged as PR #32)
 
 - **Split (unattended run, the owner's prompt of 12 Oct 2026):** M65.0 doc 43 §0.21 (committed; the file is byte-identical to the project copy; header and §0.21 only) ·
   **M65.1 (A)** V-B8 restated, no sim · **M65.2 (B)** Act V's production preload · **M65.3 (C)** Act IV B1 diagnosis (`--act4` at 30 seeds, `rentLinks` off and on).
@@ -364,7 +372,7 @@ price, Iceland's 2018 warning as a row reason).**
 **Before: M37 Finances merged (PR #4, `main` = `3e67c1d`), live; `m37` tagged `m37-done` and deleted.** `m38`
 starts at `m37`'s tip (it carries M37's last dev-notes commit, `d4a28ef`, not yet on `main`). Open: the design thread's
 answers on M37's four questions (the 120 s prologue timing line, prepayments, gains on sales, the report's revenue tile).
-Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36").
+Recorded misses (balance targets, not defects): B3, B4, B6, B8, B13, E-B2 (numbers in "Milestones M35-M36"); since M65 also B1 (see "M66-docs" at the top). B5 also misses in the M64 and M65 tables (10 and 30 seeds, links off and on) though it is not on this older list: not covered by §0.22, flagged in "M66-docs".
 
 **M38 done (report below, "M38"); now M39 (energy data fixes, doc 41,
 `docs/game-project-files/claude_41-energy-data-fixes.md`).** M38's brief was (the Perfect-bot investigation, design thread answer 1):** investigate the Perfect bot's in-play reading
