@@ -169,3 +169,7 @@ Every place the build differs from doc 33, with the reason. (Added to as the bui
 20. **The balance pass (§18, M32.6):** the orbital rents, GPU-hour prices and the space multiple were lowered from the
     first authored paths (orbit was worth 4–7× its capex in every future); the lunar value per tonne raised; the F3
     cascade's loss 40% → 70%, its closure 6 → 8 quarters. Every value stays inside doc 33's anchors or its ⚙ ranges.
+21. **Recorded misses after the link-rental bot fix (M64-M65, doc 43 §0.20-§0.22):** B1 recorded as a miss (M65, 30 seeds: Ground
+    0.98 against the 0.999 line in f4 after the link-rental bot fix; doc 43 §0.22). B8 stays a recorded miss (F3 Perfect ÷ Passive
+    0.99; doc 43 §0.22). B3, B4, B5, B6 and B13 miss as before (B5 was not on the earlier recorded list; flagged to the design thread, M66-docs). Act IV's balance pass stays closed; no change to Act IV content,
+    rules or the link price.
