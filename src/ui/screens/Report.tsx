@@ -684,7 +684,7 @@ function Act2Panel({ state }: { state: GameState }) {
             <span class="label">{t('ui.report.a2_rating')}</span>
             <span class="num-kpi">
               {v.prevRating !== null && v.prevRating !== v.rating
-                ? `${v.prevRating} → ${v.rating}`
+                ? `${v.prevRating} → ${v.rating ?? t('ui.report.a2_rating_none')}`
                 : (v.rating ?? t('ui.report.a2_rating_none'))}
             </span>
             <span class="num-s muted">

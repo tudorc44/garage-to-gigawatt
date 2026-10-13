@@ -7220,6 +7220,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7304,6 +7312,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7389,6 +7405,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7474,6 +7498,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7559,6 +7591,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7644,6 +7684,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7729,6 +7777,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7814,6 +7870,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7899,6 +7963,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -7984,6 +8056,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8069,6 +8149,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8154,6 +8242,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8239,6 +8335,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8324,6 +8428,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8409,6 +8521,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8494,6 +8614,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8579,6 +8707,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8664,6 +8800,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8749,6 +8893,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,
@@ -8834,6 +8986,14 @@
       },
       "forcedSale": null,
       "politicalCapital": 0,
+      "creditRating": "BBB",
+      "ratingWhy": {
+        "debtToEbitda": 0,
+        "band": "lt2",
+        "quality": "strong",
+        "shortRunway": false,
+        "eventNotches": 0
+      },
       "covenant": {
         "ltv": 0,
         "limit": 0.75,

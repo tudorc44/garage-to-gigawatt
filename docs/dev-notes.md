@@ -16,6 +16,29 @@ See "Next".
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
   §0.23 only: mine, reversible) · **M66.1 (A)** Act IV notes · **M66.2 (B)** the rating in Act V and the `isAct2RulesQuarter` audit · **M66.3 (C)** copy and formatting · **M66.4 (D)** mining tiles · **M66.5 (E)** the Act V screen check (dev build) · **M66.6 (F)** the re-measure.
 
+- **M66.1 done (Act IV notes):** nothing to add: B1 and B8 were recorded by the docs-only PR #34 (`docs/act4-scope.md` §6 item 21 and the M66-docs notes below), worded as §0.22 gives them.
+- **M66.2 done (the rating in Act V):** `quarter.ts` reviews the rating when `isAct2RulesQuarter(quarter) || inActV(state)` (only that gate; `isAct2RulesQuarter` is unchanged); `Report.tsx` never prints "null" (`ui.report.a2_rating_none`, "none yet"). The covenant needs no fix: it runs through
+  `inAct3Rules`, which already includes act 5. Tests `tests/ui/act5Rating.test.tsx` (3; two fail on the old gate). **The four Act V goldens moved**: each report now carries `creditRating` and `ratingWhy`, the log gains `rating_changed` lines (V4 seed 1 falls to CCC- in 2038), and the end state's rating differs in two of the four; no other field. Acts I-IV goldens unchanged.
+
+**`isAct2RulesQuarter` audit (doc 43 §0.23 item 1; true for Act II, III and IV quarters, false for Act V; nothing here changed except the rating):**
+
+| Call site | Rule it gates | Continues in Act V per doc 43? | What happens in Act V now |
+|---|---|---|---|
+| `quarter.ts:184` | quarterly credit rating review | yes: §3.1 "creditRating", §11.4 | **fixed (M66.2)** |
+| `quarter.ts:177` | Q4 depreciation audit (card ec18, aggressive depreciation) | not named; §3.1 carries "lasting events" | no audit; a lasting depreciation card would never restate |
+| `mwUse.ts:100` | power reservation: idle and building kW pay a share of full-load power (Act II owner decision A2) | not named; §3.1 carries ground, sites and projects | **idle and building MW pay nothing in Act V** (115 MW at Firm Builder: 37 idle, 11 building) |
+| `anger.ts:28` | regional Anger from energized MW and policy bumps | yes: §3.2 "Heat, Anger ... carry" | Anger is 0 in Act V |
+| `regions.ts:42, 54, 59, 100` | regional power adders, regional Heat modifier, national Heat deltas, project reservation share and capex multiplier | Heat carries (§3.2); policies are dated content | all neutral in Act V (adder 0, Heat multiplier 1, delta 0, no policy) |
+| `curtailment.ts:46, 109` | Act II's ERCOT sites are grid sites; AI halls there go dark and owe SLA credits | "Texas enrolment" carries (§3.1) | AI halls in ERCOT are never curtailed in Act V |
+| `loans.ts:72` | equipment loan terms: SOFR + the rating band, 8 quarters | §3.1 "every loan and facility" carries; new loans are hidden in Act V (M62) | falls back to Act I's era terms (`eraTerms`) if an equipment loan is ever opened |
+| `cryptoLoan.ts:35` | crypto loans offered from 2023Q3 | no (hidden in Act V, M62) | never offered: matches the UI |
+| `hires.ts:93` | Act II salaries, 2026Q4's held in Act III-IV | §3.1 "staff" carries | **salaries fall back to Act I's formula** (`to` × `salary2022Mult`) |
+| `market.ts:165` | ASIC purchase and resale prices from the scenario's weekly tiers | not named | Act I's frozen 2022Q3 table is used for machines bought in Act V |
+| `market.ts:245` | ETH GPU rigs' resale curve | no (ETH mining ended in 2022) | irrelevant |
+| `rivals.ts:157` | Act III's five rivals | no: Act V has its own six (`act5Rivals` is chosen first) | correct |
+
+Rows to decide on (reported, not changed): the power reservation, Anger and regional Heat, ERCOT curtailment, staff salaries and ASIC prices all change at the Act IV to V boundary; §3.2 says Heat and Anger carry. The reservation and the salaries move money inside the Act V sim.
+
 ## M66-docs: doc 43 §0.22 (merged, PR #34, tag `m66-docs-done`; docs only)
 
 - **Act V's balance loop is closed per doc 43 §0.22.** Every core target passes (V-B1, B2, B4, B11); no balance run is scheduled, no lever is allowed. The next Act V input is the owner's playthrough on staging (rebuild it first: the owner

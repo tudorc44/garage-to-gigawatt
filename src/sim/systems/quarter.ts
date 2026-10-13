@@ -180,8 +180,9 @@ export function endQuarter(state: GameState): void {
   const report = buildReport(state, w, forcedSale)
   if (inAct3Rules(state) && state.politicalCapital !== undefined)
     report.politicalCapital = state.politicalCapital
-  // The credit rating is reviewed each quarter in Act III too (M11.4c: YES, same formula).
-  if (isAct2RulesQuarter(state.quarter)) {
+  // The credit rating is reviewed each quarter in Act III too (M11.4c: YES, same formula), and in Act V (M66.2, doc 43 §0.23
+  // item 1, §3.1 and §11.4: "rating and the leverage covenant continue"). Only this gate widens: isAct2RulesQuarter doesn't.
+  if (isAct2RulesQuarter(state.quarter) || inActV(state)) {
     const previous = state.creditRating
     const inputs = ratingInputs(state, report)
     state.creditRating = inputs.rating
