@@ -17,6 +17,9 @@ See "Next".
 
 - **M67.1 done (Act IV note and new docs):** B5 recorded as a miss (F4: Ground Holder not best in M64-M65; doc 43 §0.24), in `docs/act4-scope.md` §6 item 22; the Act IV recorded-misses list is now B1, B3, B4, B5, B6, B8, B13, E-B2. Docs 50, 51 and 52 copied byte-identically into `docs/game-project-files/` and listed in CLAUDE.md under the Prologue (reference only; nothing built from doc 51).
 
+- **M67.2 done (Signals headlines):** Acts III and IV carry no Signals headlines (their files have none); Acts III-V share `Act3SignalsPanel`, and `SignalsPanel` serves Acts I-II only, so Act V's headlines show in `Act3SignalsPanel` in the same news markup ("Headline · Q3 2037"), from `signalsPanelV(...).headlines` (this quarter's only; the schema keeps `headline`). The leak test (`tests/sim/act5Headlines.test.ts`, all four futures) found no leak:
+  no headline before its trigger quarter names a future, a trigger card or a decoy or quotes the decoy's reason or tell. `act5Futures.test.ts`'s "no future name in the runtime Signals content" now ignores the `headline` field (a trigger-quarter headline may name its trigger, e.g. V2's "The Flexible Lane Opens"). UI test `act5Headlines.test.tsx`. No golden moved. 1,823 tests.
+
 ## M66: doc 43 §0.22 and §0.23 (merged, PR #35, tag `m66-done`; was branch `m66` from `main` at `82bdf24`)
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
