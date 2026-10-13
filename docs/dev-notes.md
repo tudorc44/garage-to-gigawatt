@@ -42,6 +42,9 @@ Rows to decide on (reported, not changed): the power reservation, Anger and regi
 - **M66.3 done (copy and formatting):** the orbit line on the shared report panel uses `fmt.signed` ("+$11.3M"), checked on the act4-f1 and act5-v4 golden reports (Act IV's public report gets the fix too; UI text only). Ventures in Act V: `ui.ventures.intro_v` (replaces the intro and the closed line) and
   `error.venture_closed_v` (sim picks the key by act; Acts III-IV keep theirs). The Halyard diligence line already shows "P(volume within 8 years) ≈ 0.30" from `text_chips.en.json`; a test pins it. Tests `tests/ui/act5Copy.test.tsx` (4). No golden moved.
 
+- **M66.4 done (mining tiles; UI only, no sim state or golden):** `src/ui/mining.ts`. Act V with no machines: the Live screen shows `Act5Dashboard` and `Act5ReportPanel` (A5-02's strip, plants, queue, plants' output) in place of the mining tiles and the chart; with miners it keeps them. The report hides "Cost per coin" when nothing was mined (any act) and the cost chart when
+  nothing was mined after 2022Q3. After 2022Q3, in any act, the Live chart is "BTC this quarter" (no ETH line, label or legend) and the note drops its ETH half (new keys `ui.live.chart_title_btc`, `ui.live.hodl_note_btc`). **This changes public Acts II-IV UI text, not their sim state.** Tests `tests/ui/miningTiles.test.tsx` (5). (Mine, reversible: the report header's ETH price stays; it is a price, not a mining tile.)
+
 ## M66-docs: doc 43 §0.22 (merged, PR #34, tag `m66-docs-done`; docs only)
 
 - **Act V's balance loop is closed per doc 43 §0.22.** Every core target passes (V-B1, B2, B4, B11); no balance run is scheduled, no lever is allowed. The next Act V input is the owner's playthrough on staging (rebuild it first: the owner

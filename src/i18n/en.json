@@ -2174,6 +2174,8 @@
   "ui.live.nothing_running": "Nothing is mining yet.",
   "ui.live.hodl_note": "Selling {btc} of mined BTC and {eth} of mined ETH as they come in.",
   "ui.live.chart_title": "BTC and ETH this quarter",
+  "ui.live.chart_title_btc": "BTC this quarter",
+  "ui.live.hodl_note_btc": "Selling {btc} of mined BTC as it comes in.",
   "ui.live.chart_vs": "% change vs {date}",
   "ui.live.note.alert": "price alert",
   "ui.live.note.failure": "breakdown",
