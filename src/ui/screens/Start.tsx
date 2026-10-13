@@ -46,7 +46,7 @@ export function TitleScreen(props: {
   /** M32.4 (A4-13): "Start at Act IV (2031)" with the three preset companies. */
   act4Start?: ComponentChildren
   /** M49 (doc 43 §3.4): "Start at Act V (2036)" with the preset companies. */
-  act5Start?: ComponentChildren
+  act5Start?: (seedText: string) => ComponentChildren
   /** Test builds only (M18.4, A3-12): Scenario Mode (locked or unlocked), opened from the title menu. */
   scenarioMode?: ComponentChildren
 }) {
@@ -173,7 +173,7 @@ export function TitleScreen(props: {
               </div>
               {props.act3Start}
               {props.act4Start}
-              {props.act5Start}
+              {props.act5Start?.(seed.trim())}
               <button
                 type="button"
                 class="btn btn-ghost"

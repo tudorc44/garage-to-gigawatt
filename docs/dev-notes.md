@@ -20,6 +20,8 @@ See "Next".
 - **M67.2 done (Signals headlines):** Acts III and IV carry no Signals headlines (their files have none); Acts III-V share `Act3SignalsPanel`, and `SignalsPanel` serves Acts I-II only, so Act V's headlines show in `Act3SignalsPanel` in the same news markup ("Headline · Q3 2037"), from `signalsPanelV(...).headlines` (this quarter's only; the schema keeps `headline`). The leak test (`tests/sim/act5Headlines.test.ts`, all four futures) found no leak:
   no headline before its trigger quarter names a future, a trigger card or a decoy or quotes the decoy's reason or tell. `act5Futures.test.ts`'s "no future name in the runtime Signals content" now ignores the `headline` field (a trigger-quarter headline may name its trigger, e.g. V2's "The Flexible Lane Opens"). UI test `act5Headlines.test.tsx`. No golden moved. 1,823 tests.
 
+- **M67.3 done (preset seeds):** a "Start at Act V" preset start draws its future from `toSeed(the title screen's seed field)` (empty = random, as a new game) passed as `act5Seed` to `toAct5`; the preset's 2035Q4 company is unchanged (`act5Seed` only re-seeds Act V's draws). `toSeed` moved to `src/ui/seed.ts`; `TitleScreen`'s `act5Start` is now `(seedText) => node`. Test `act5PresetSeed.test.tsx` (4: seeds 1-40 draw more than one future; the company is the same). No golden moved (they force their futures); no test relied on the fixed draw. 1,827 tests.
+
 ## M66: doc 43 §0.22 and §0.23 (merged, PR #35, tag `m66-done`; was branch `m66` from `main` at `82bdf24`)
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
