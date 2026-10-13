@@ -40,9 +40,13 @@ export const projectName = (
   n: number,
 ) => t('ui.projects.name', { site: siteName(site), n })
 
-/** The long name of a company site, from the game state. */
+/**
+ * The long name of a company site, from the game state. A Prologue room (act 0) has no region and its size comes from
+ * prologue.json's household tiers, not Act I's tier table (siteFacts would throw on it: the owner's "Power options"
+ * crash, 13 Oct 2026), so it keeps its short name.
+ */
 export const siteLong = (state: GameState, site: Site) =>
-  siteLongName(site, siteFacts(state, site))
+  state.act === 0 ? siteName(site) : siteLongName(site, siteFacts(state, site))
 export const flawName = (id: string) =>
   hasText(`flaw.${id}`) ? tDynamic(`flaw.${id}`, id) : tDynamic(`flaw_act2.${id}`, id)
 export const rivalName = (id: string) => tDynamic(`rival.${id}`, id)

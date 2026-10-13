@@ -389,6 +389,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Small follow-ups
 
+- (Done, 13 Oct 2026) **Prologue "Power options" crash** (owner bug report, with the console log): opening Power options on the home rig threw `Cannot read properties of undefined (reading 'capacity_kw')` and no dialog opened. `EnergyDialog`'s title used `siteLong`, whose `siteFacts` reads the room's size from Act I's tier table (`getTier(site.tier)!` in `nominalKw`); the Prologue's bedroom and home rig are household tiers in `prologue.json`.
+  Fix in `src/ui/names.ts`: in act 0 `siteLong` returns the room's short name. Test `tests/ui/prologuePowerOptions.test.tsx` (2; both fail without the fix). Checked in a dev build: the dialog opens, no console errors, End Quarter moves to the Live screen. Not reproduced: the owner's stuck End Quarter after the crash (it moved on normally in the dev build).
+
 - (Done, 6 Oct 2026) **Dialog hotfixes 1 and 2** (owner bug reports): on `hotfix-dialog` from `main` (`1ca4e6b`,
   `8c72e9a`), merged into `main` and pushed by the owner on 6 Oct 2026; cherry-picked onto `m32`. 1: `.dialog > *` keeps
   `flex-shrink: 0`, so a dialog taller than the window scrolls instead of squeezing its `.seg` switches to 0 px (they were
