@@ -11,7 +11,11 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
-## M66: doc 43 §0.22 and §0.23 (branch `m66` from `main` at `82bdf24`)
+## M67: doc 43 §0.24 (branch `m67` from `main` at `7a5605e`)
+
+- **Split (unattended run, the owner's prompt of 13 Oct 2026):** M67.0 doc 43 §0.24 (byte-identical to the project copy; header and §0.24 only) · **M67.1 (A)** Act IV note (B5) and docs 50-52 · **M67.2 (B)** Signals headlines · **M67.3 (C)** preset seeds · **M67.4 (D)** the Act II rules gate in Act V · **M67.5 (E)** the ETH header · **M67.6 (F)** the re-measure.
+
+## M66: doc 43 §0.22 and §0.23 (merged, PR #35, tag `m66-done`; was branch `m66` from `main` at `82bdf24`)
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
   §0.23 only: mine, reversible) · **M66.1 (A)** Act IV notes · **M66.2 (B)** the rating in Act V and the `isAct2RulesQuarter` audit · **M66.3 (C)** copy and formatting · **M66.4 (D)** mining tiles · **M66.5 (E)** the Act V screen check (dev build) · **M66.6 (F)** the re-measure.
