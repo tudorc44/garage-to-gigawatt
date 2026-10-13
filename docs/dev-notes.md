@@ -389,6 +389,9 @@ None open from before: all five M11.4c questions below were answered by the desi
 
 ## Small follow-ups
 
+- (Done, 14 Oct 2026, branch `fix-sell-amounts`) **Exact amounts when selling** (owner request, UI only; no sim, content or golden change). Machines: the Prologue Rig screen's Sell on a stack of several opens a count picker (default 1; quick picks 1, 10, half, all; a number field capped at the stack; the cash shown on the button through `cashChange`); a stack of 1 sells at once. It is Act I's count control, extracted to `components/sellCount.tsx` and used by both.
+  Coins: "Sell treasury coins" (`SellCoinsDialog`) gains an exact amount field beside 25 / 50 / 75 / 100% (BTC to 8 decimals, ETH to 4; typing clears the buttons, a button fills the field); the action stays `SELL_TREASURY { coin, pct }` with pct = amount ÷ holding, and zero, negatives, too many decimals and more than the holding show an inline message. Tests `prologueSellCount.test.tsx`, `sellCoinsExact.test.tsx`.
+
 - (Done, 13 Oct 2026) **Prologue "Power options" crash** (owner bug report, with the console log): opening Power options on the home rig threw `Cannot read properties of undefined (reading 'capacity_kw')` and no dialog opened. `EnergyDialog`'s title used `siteLong`, whose `siteFacts` reads the room's size from Act I's tier table (`getTier(site.tier)!` in `nominalKw`); the Prologue's bedroom and home rig are household tiers in `prologue.json`.
   Fix in `src/ui/names.ts`: in act 0 `siteLong` returns the room's short name. Test `tests/ui/prologuePowerOptions.test.tsx` (2; both fail without the fix). Checked in a dev build: the dialog opens, no console errors, End Quarter moves to the Live screen. Not reproduced: the owner's stuck End Quarter after the crash (it moved on normally in the dev build).
 

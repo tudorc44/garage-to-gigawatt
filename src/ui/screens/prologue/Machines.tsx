@@ -12,6 +12,7 @@ import {
 import type { GameState } from '../../../sim/state.ts'
 import { quarterName } from '../../../sim/selectors.ts'
 import { ActionRow, Icon, MachineCard, Tip } from '../../components/basics.tsx'
+import { SellCount } from '../../components/sellCount.tsx'
 import { fmt } from '../../format.ts'
 import { machineName, say, tierName } from '../../names.ts'
 import {
@@ -102,6 +103,7 @@ export function Machines({ state, act }: PrologueProps) {
   const e = useError(act)
   const ready = v.sites.filter((s) => s.site.readyQuarter <= state.quarter)
   const [siteId, setSiteId] = useState(ready.at(-1)?.site.id ?? '')
+  const [selling, setSelling] = useState<string | null>(null)
   const site = ready.find((s) => s.site.id === siteId) ?? ready.at(-1)
   const buy = site ? prologueBuyView(state, site.site.id) : []
   return (
@@ -162,21 +164,48 @@ export function Machines({ state, act }: PrologueProps) {
                       {t('ui.p0.repair')}
                     </button>
                   )}
-                  <button
-                    type="button"
-                    class="btn"
-                    title={t('ui.p0.sell_for', { value: fmt.money(sellUsd) })}
-                    onClick={() =>
-                      e.run({
-                        type: 'SELL_MACHINES',
-                        lotId: lot.id,
-                        count: lot.count,
-                      })
-                    }
-                  >
-                    {t('ui.p0.sell_all', { value: fmt.money(sellUsd) })}
-                  </button>
+                  {lot.count > 1 ? (
+                    // (a stack of several opens a count picker: 1, 10, half, all or a number; the cash shows before Sell)
+                    <button
+                      type="button"
+                      class="btn"
+                      aria-expanded={selling === lot.id}
+                      onClick={() => setSelling(selling === lot.id ? null : lot.id)}
+                    >
+                      {t('ui.p0.sell_some')}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      class="btn"
+                      title={t('ui.p0.sell_for', { value: fmt.money(sellUsd) })}
+                      onClick={() =>
+                        e.run({
+                          type: 'SELL_MACHINES',
+                          lotId: lot.id,
+                          count: lot.count,
+                        })
+                      }
+                    >
+                      {t('ui.p0.sell_all', { value: fmt.money(sellUsd) })}
+                    </button>
+                  )}
                 </span>
+                {selling === lot.id && lot.count > 1 && (
+                  <div class="p0-sell" style={{ gridColumn: '1 / -1' }}>
+                    <SellCount
+                      state={state}
+                      lotId={lot.id}
+                      stack={lot.count}
+                      prologue
+                      run={(a) => {
+                        const ok = e.run(a)
+                        if (ok) setSelling(null)
+                        return ok
+                      }}
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>

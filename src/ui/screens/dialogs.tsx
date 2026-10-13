@@ -2,7 +2,7 @@
 // Previews come from dry-running the action through the sim (applyAction / whyNot).
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
-import { applyAction, type Action } from '../../sim/actions.ts'
+import type { Action } from '../../sim/actions.ts'
 import {
   BANDWIDTH_COST,
   SELL_TREASURY_BANDWIDTH,
@@ -38,6 +38,7 @@ import type {
 } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { HeatBreakdown } from '../components/heatBreakdown.tsx'
+import { cashChange, SellCount } from '../components/sellCount.tsx'
 import { SiteLabel, SiteName } from '../components/siteName.tsx'
 import { SitePicker } from '../components/sitePicker.tsx'
 import { fmt } from '../format.ts'
@@ -58,12 +59,6 @@ import type { ScreenProps } from './Plan.tsx'
 type DialogProps = ScreenProps & { onClose: () => void }
 
 const hashUnit = (coin: 'BTC' | 'ETH') => (coin === 'ETH' ? 'MH' : 'TH')
-
-/** Cash change if this action ran now (null if it isn't allowed). */
-function cashChange(state: GameState, a: Action): number | null {
-  const r = applyAction(state, a)
-  return r.ok ? r.state.cash - state.cash : null
-}
 
 export function BuyDialog({
   state,
@@ -335,10 +330,7 @@ function FleetRow(props: {
   siteName: string
 }) {
   const { v, state, act } = props
-  const [count, setCount] = useState(1)
-  const sell: Action = { type: 'SELL_MACHINES', lotId: v.lot.id, count }
   const repair: Action = { type: 'REPAIR_MACHINES', lotId: v.lot.id }
-  const gets = cashChange(state, sell)
   const repairWhy = v.lot.failed > 0 ? whyNot(state, repair) : null
   return (
     <tr>
@@ -383,44 +375,8 @@ function FleetRow(props: {
         )}
       </td>
       <td class="r">
-        <span
-          style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }}
-        >
-          <input
-            type="number"
-            min={1}
-            max={v.lot.count}
-            value={count}
-            aria-label={t('ui.fleet_dialog.sell_count')}
-            style={{
-              width: '64px',
-              font: '13px var(--font-num)',
-              padding: '6px',
-              border: '1.5px solid var(--ink)',
-              borderRadius: 'var(--radius-2)',
-            }}
-            onInput={(e) =>
-              setCount(
-                Math.max(
-                  0,
-                  Math.floor(Number((e.target as HTMLInputElement).value)),
-                ),
-              )
-            }
-          />
-          <button
-            type="button"
-            class="btn"
-            disabled={gets === null}
-            onClick={() => {
-              if (!act(sell)) setCount(1)
-            }}
-          >
-            {gets === null
-              ? t('ui.fleet_dialog.sell')
-              : t('ui.fleet_dialog.sell_for', { value: fmt.money(gets) })}
-          </button>
-        </span>
+        {/* (M67 side fix: the count control is shared with the Prologue's Rig screen: components/sellCount.tsx) */}
+        <SellCount state={state} lotId={v.lot.id} stack={v.lot.count} run={(a) => !act(a)} />
       </td>
     </tr>
   )
@@ -770,18 +726,57 @@ export function LoanDialog({ state, act, onClose }: DialogProps) {
 
 const SELL_SHARES = [0.25, 0.5, 0.75, 1] as const
 
+/** The most decimal places an exact amount may have (a satoshi for BTC; ETH to 4). */
+const COIN_DP: Record<Coin, number> = { BTC: 8, ETH: 4 }
+
+/** A coin amount as the field shows it: at most the coin's decimals, no trailing zeros. */
+const coinText = (amount: number, coin: Coin): string =>
+  amount > 0 ? amount.toFixed(COIN_DP[coin]).replace(/\.?0+$/, '') : ''
+
+/** An exact amount for the preview line: grouped, never rounded to a whole number. */
+const exactCoins = (amount: number, coin: Coin): string =>
+  `${amount.toLocaleString('en-US', { maximumFractionDigits: COIN_DP[coin] })} ${coin}`
+
+/** Checks a typed amount against the holding: the amount, or the reason it is refused (text, not a silent disabled button). */
+function checkAmount(text: string, holding: number, coin: Coin): { amount: number } | { problem: string } {
+  const s = text.trim()
+  if (s === '' || !/^-?\d*\.?\d*$/.test(s) || s === '-' || s === '.') return { problem: t('ui.sell_coins.err_number') }
+  const n = Number(s)
+  if (!(n > 0)) return { problem: t('ui.sell_coins.err_positive') }
+  const dp = s.includes('.') ? s.split('.')[1].length : 0
+  if (dp > COIN_DP[coin]) return { problem: t('ui.sell_coins.err_decimals', { coin, dp: COIN_DP[coin] }) }
+  if (n > holding) return { problem: t('ui.sell_coins.err_over', { holding: exactCoins(holding, coin) }) }
+  return { amount: n }
+}
+
 /** Sell part of one coin in the treasury: pick the coin and a share. 1 Bandwidth. */
 export function SellCoinsDialog({ state, act, onClose }: DialogProps) {
   const holdings = treasuryHoldings(state)
   const [coin, setCoin] = useState<Coin>(
     holdings.find((h) => h.amount > 0)?.coin ?? 'BTC',
   )
-  const [pct, setPct] = useState<number>(0.25)
+  // A share button sets `share`; typing an exact amount (in coins) clears it. Either way the action carries a share of the
+  // holding (`pct`), so SELL_TREASURY { coin, pct } is unchanged: a typed amount is amount ÷ holding.
+  const [share, setShare] = useState<number | null>(0.25)
+  const [text, setText] = useState(() => coinText(0.25 * (holdings.find((h) => h.amount > 0)?.amount ?? 0), coin))
   const held = holdings.find((h) => h.coin === coin)!
+  const typed = share === null ? checkAmount(text, held.amount, coin) : null
+  const typedAmount = typed && 'amount' in typed ? typed.amount : null
+  const pct = share !== null ? share : typedAmount !== null ? typedAmount / held.amount : 0
   const a: Action = { type: 'SELL_TREASURY', coin, pct }
-  const why = whyNot(state, a)
+  const problem: string | null = typed && 'problem' in typed ? typed.problem : null
+  const why = problem ? null : whyNot(state, a)
   const valueUsd = held.valueUsd * pct
-  const amount = fmt.crypto(held.amount * pct, coin)
+  const amount = share === null && typedAmount !== null ? exactCoins(typedAmount, coin) : fmt.crypto(held.amount * pct, coin)
+  const pickShare = (p: number) => {
+    setShare(p)
+    setText(coinText(held.amount * p, coin))
+  }
+  const pickCoin = (c: Coin) => {
+    setCoin(c)
+    setShare(0.25)
+    setText(coinText(0.25 * (holdings.find((h) => h.coin === c)?.amount ?? 0), c))
+  }
   return (
     <Dialog title={t('ui.sell_coins.title')} onClose={onClose}>
       <p class="num-s muted" style={{ margin: 0 }}>
@@ -797,7 +792,7 @@ export function SellCoinsDialog({ state, act, onClose }: DialogProps) {
                 type="button"
                 aria-pressed={coin === h.coin}
                 disabled={h.amount <= 0}
-                onClick={() => setCoin(h.coin)}
+                onClick={() => pickCoin(h.coin)}
               >
                 {h.coin}{' '}
                 {t('ui.sell_coins.holding', {
@@ -815,18 +810,39 @@ export function SellCoinsDialog({ state, act, onClose }: DialogProps) {
               <button
                 key={p}
                 type="button"
-                aria-pressed={pct === p}
-                onClick={() => setPct(p)}
+                aria-pressed={share === p}
+                onClick={() => pickShare(p)}
               >
                 {fmt.pct(p)}
               </button>
             ))}
           </div>
+          <input
+            type="text"
+            inputMode="decimal"
+            data-sell-amount
+            value={text}
+            aria-label={t('ui.sell_coins.exact', { coin })}
+            placeholder={t('ui.sell_coins.exact', { coin })}
+            style={{
+              width: '180px',
+              marginTop: '6px',
+              font: '13px var(--font-num)',
+              padding: '6px',
+              border: '1.5px solid var(--ink)',
+              borderRadius: 'var(--radius-2)',
+            }}
+            onInput={(e) => {
+              setText((e.target as HTMLInputElement).value)
+              setShare(null)
+            }}
+          />
         </div>
       </div>
       <p class="num-s" style={{ margin: 0 }}>
         {t('ui.sell_coins.preview', { amount, value: fmt.money(valueUsd) })}
       </p>
+      {problem && <p class="num-s loss" data-sell-problem>{problem}</p>}
       {why && <p class="num-s loss">{say(why)}</p>}
       <div class="row-between">
         <button type="button" class="btn" onClick={onClose}>
@@ -835,7 +851,7 @@ export function SellCoinsDialog({ state, act, onClose }: DialogProps) {
         <button
           type="button"
           class="btn btn-primary"
-          disabled={!!why}
+          disabled={!!why || !!problem}
           onClick={() => {
             if (!act(a)) onClose()
           }}

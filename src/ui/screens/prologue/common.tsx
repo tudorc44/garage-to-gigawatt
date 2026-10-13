@@ -93,7 +93,12 @@ export function useError(act: PrologueProps['act']) {
   const [error, setError] = useState<Message | null>(null)
   return {
     error,
-    run: (a: Action) => setError(act(a)),
+    // (returns true when the action went through: the sell picker closes on it)
+    run: (a: Action): boolean => {
+      const m = act(a)
+      setError(m)
+      return m === null
+    },
     view: error ? <p class="num-s loss">{say(error)}</p> : null,
   }
 }
