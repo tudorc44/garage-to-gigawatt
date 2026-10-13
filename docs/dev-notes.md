@@ -28,6 +28,8 @@ See "Next".
   (9) crypto-loan availability (`BALANCE` only) and the ETH GPU resale curve (irrelevant). Rivals are unchanged (Act V's own are chosen first). **No column was missing**: Act V's weekly and quarterly files carry every column Act IV's do. Loans stay hidden from Act V's Plan UI.
   **Instruments that read the rating in Act V now:** `equipmentTerms` (loan-to-value and APR by rating band; hidden in the UI), the corporate debt in `corporateDebt.ts` (spread by `ratingLoanBand(loanRating)`, three sites), and the Capital screen's rating and refinancing views (`capitalViews.ts`). Plant debt is not one of them (priced on its contracted share). Tests `tests/sim/act5Act2Rules.test.ts` (5). 1,832 tests.
 
+- **M67.5 done (ETH header):** the quarter report's header shows the ETH price only when the company holds ETH in its treasury or mined some this quarter (`holdsEth`, `src/ui/mining.ts`; mine, reversible: the mined-this-quarter clause keeps an Act I-II ETH miner's price). The top bar already shows no ETH from Act II on (H100 spot replaces it) and is unchanged. Test `ethHeader.test.tsx` (3). UI only; no golden moved.
+
 ## M66: doc 43 §0.22 and §0.23 (merged, PR #35, tag `m66-done`; was branch `m66` from `main` at `82bdf24`)
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
