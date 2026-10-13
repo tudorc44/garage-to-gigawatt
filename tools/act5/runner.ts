@@ -13,6 +13,7 @@ import { toAct5, type GameState } from '../../src/sim/state.ts'
 import { unreconciled } from '../../src/sim/ledger.ts'
 import { ACT5_ARCHETYPES, act5Bot, type Act5Archetype } from './bots.ts'
 import { playAct5Recipe } from './presetRun.ts'
+import { vb8Passes } from './verdicts.ts'
 
 const args = process.argv.slice(2)
 const argValue = (flag: string, fallback: string) => {
@@ -216,7 +217,8 @@ if (has('perfect') && has('passive') && has('overreactor'))
     const pp = FUTURES.map((v) => ratio(p, v, 'perfect', 'passive'))
     const op = FUTURES.map((v) => ratio(p, v, 'overreactor', 'passive'))
     say(
-      `V-B8 ${p}: Perfect ÷ Passive ${pp.map(f3).join(' / ')} (≥ 1.15 in ≥ 3); Over-reactor ÷ Passive ${op.map(f3).join(' / ')} (≤ 0.97 in all) → ${verdict(pp.filter((x) => x >= 1.15).length >= 3 && op.every((x) => x <= 0.97))}`,
+      // (M65.1, doc 43 §0.21 decision 1: a sign check; the 1.15 magnitude in 3 of 4 futures is dropped)
+      `V-B8 ${p}: Perfect ÷ Passive ${pp.map(f3).join(' / ')} (> 1 in all); Over-reactor ÷ Passive ${op.map(f3).join(' / ')} (≤ 0.97 in all) → ${verdict(vb8Passes(pp, op))}`,
     )
   }
 if (has('perfect') && has('passive'))

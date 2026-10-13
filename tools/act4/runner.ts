@@ -11,6 +11,10 @@ import { PRESETS_IV, type Act4PresetId } from '../../src/content/presetsAct4.ts'
 import { playFrom, playGame } from '../../src/sim/replay.ts'
 import { toAct3, toAct4, type GameState } from '../../src/sim/state.ts'
 import { computeReadingIv } from '../../src/sim/systems/readingScoreIv.ts'
+import { ORBIT } from '../../src/content/orbitContent.ts'
+import { applyAction } from '../../src/sim/actions.ts'
+import { blockRevenueUsd, linkShares, linkUnitsNeeded } from '../../src/sim/systems/orbitOps.ts'
+import { breakdown } from '../valuation-breakdown.ts'
 import { BOTS } from '../bots.ts'
 import { checkedLedger } from '../ledgerCheck.ts'
 import { ACT4_ARCHETYPES, act4Archetypes, groundStats } from './bots.ts'
@@ -68,6 +72,18 @@ interface Run {
   poweredOffered: number
   poweredBought: number
   held: number
+  /** M65.3 (doc 43 §0.21 decision 3), reporting only, Sprinter runs (0 for the other bots): the link rent paid over the act, the
+   *  quarterly revenue of the interactive-tenant blocks at each Plan phase summed over the act (an estimate), and the 2035Q4 split. */
+  linkCostUsd: number
+  linkRevUsd: number
+  blocksLive: number
+  launched: number
+  orbitValueUsd: number
+  miningEvUsd: number
+  aiEvUsd: number
+  cashUsd: number
+  debtUsd: number
+  valuationUsd: number
 }
 
 const runs: Run[] = []
@@ -88,11 +104,25 @@ for (const p of PRESETS_IV) {
           const start = toAct4(structuredClone(presetEnd.get(p.id)!), { future, act4Seed: seed })
           start.lunarGrade = grade
           let decisions = 0
+          let linkCostUsd = 0
+          let linkRevUsd = 0
           const counting = {
             ...bots[bot],
             plan: (s: GameState) => {
               const a = bots[bot].plan(s)
               decisions += a.length
+              if (bot === 'sprinter') {
+                // (M65.3, reporting only: the state the quarter will play, on a scratch copy)
+                let t = s
+                for (const act of a) {
+                  const r = applyAction(t, act)
+                  if (r.ok) t = r.state
+                }
+                linkCostUsd += ((t.act4Orbit?.linksRented ?? 0) * ORBIT.tenants.links.rent_unit_usd_yr) / 4
+                const shares = linkShares(t)
+                for (const b of (t.act4Orbit?.blocks ?? []).filter((x) => x.stage === 'live' && linkUnitsNeeded(x) > 0))
+                  linkRevUsd += blockRevenueUsd(t, b, shares.get(b.id) ?? 1)
+              }
               return a
             },
           }
@@ -100,6 +130,9 @@ for (const p of PRESETS_IV) {
           const end = checkedLedger(playFrom(start, counting, { through: 4 }).state, 'act4')
           const entry = end.act4Entry!.founderNetWorthUsd
           const nw = Math.max(0, end.founderStake * (end.reports.at(-1)?.valuationUsd ?? 0))
+          const last = end.reports.at(-1)
+          const split = bot === 'sprinter' && last ? breakdown(end, last) : null
+          const blocks = end.act4Orbit?.blocks ?? []
           runs.push({
             preset: p.id,
             future,
@@ -116,6 +149,16 @@ for (const p of PRESETS_IV) {
             frontier: end.act4End?.frontierTitleId ?? '',
             stake: end.founderStake,
             ...groundStats,
+            linkCostUsd,
+            linkRevUsd,
+            blocksLive: bot === 'sprinter' ? blocks.filter((b) => b.stage === 'live').length : 0,
+            launched: bot === 'sprinter' ? blocks.filter((b) => ['climbing', 'live', 'retired', 'sold'].includes(b.stage)).length : 0,
+            orbitValueUsd: bot === 'sprinter' && last ? (last.orbitEbitdaUsd ?? 0) * 4 * (last.orbitMultiple ?? 0) : 0,
+            miningEvUsd: split?.miningEv ?? 0,
+            aiEvUsd: split?.aiEv ?? 0,
+            cashUsd: split?.cash ?? 0,
+            debtUsd: split?.debt ?? 0,
+            valuationUsd: split?.valuation ?? 0,
           })
         }
   console.log(`  ${p.id}: done (${Math.round((performance.now() - t0) / 1000)} s)`)
