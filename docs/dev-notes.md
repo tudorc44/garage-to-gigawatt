@@ -30,6 +30,40 @@ See "Next".
 
 - **M67.5 done (ETH header):** the quarter report's header shows the ETH price only when the company holds ETH in its treasury or mined some this quarter (`holdsEth`, `src/ui/mining.ts`; mine, reversible: the mined-this-quarter clause keeps an Act I-II ETH miner's price). The top bar already shows no ETH from Act II on (H100 spot replaces it) and is unchanged. Test `ethHeader.test.tsx` (3). UI only; no golden moved.
 
+- **M67.6 done (the re-measure after chunk D; `--act5`, 2,400 runs, 0 unreconciled, 70 min):** all 2,400 runs moved (Act II's rules cost money: reservation, salaries, Heat and Anger), by **-0.85% on average**; Seller -0.1% (it sells in 2036), Firm Builder's holding bots -1.2% to -2.0%, Orbital Landlord's -0.5% to -0.6%, the largest fall the FB V4 Orbit Replacer -4.7%. No bust. No stop rule fired.
+  `--act2 --act3` was run (chunk D touched `src/content/index.ts`): **byte-identical to `main`'s outputs** (1,302 files each, `diff -r` empty, 0 unreconciled). 1,835 tests.
+
+**Commits (branch `m67`):** M67.0 doc 43 §0.24 and the chunk split · M67.1 B5 recorded and docs 50-52 · M67.2 Signals headlines · M67.3 preset seeds · M67.4 the Act II rules gate in Act V (the four Act V goldens moved) · M67.5 the ETH header · M67.6 this section.
+
+**§18 table** (medians, 2040Q4 before the exit ÷ act5Entry; v1 v2 v3 v4; change against M66's table in brackets):
+
+| Bot | Firm Builder | Orbital Landlord |
+|---|---|---|
+| Holder | 1.664 1.251 0.905 1.079 (-1.2% -1.5% -1.7% -1.6%) | 1.402 1.079 0.854 0.978 (-0.5% -0.6% -0.6% -0.6%) |
+| Flex | 1.657 1.295 0.899 1.073 | 1.350 1.138 0.811 0.929 |
+| Seller | 1.229 1.223 1.217 1.241 (-0.1%) | 1.133 1.124 1.114 1.150 (-0.1%) |
+| Locker | 1.510 1.222 0.940 1.062 | 1.299 1.096 0.870 0.985 |
+| Orbit Replacer | 1.684 1.270 0.869 1.180 (-2.4% -2.5% -0.8% -4.7%) | 1.548 1.186 0.909 1.196 (-0.4% -0.5% -0.6% -0.5%) |
+| Builder | 1.662 1.248 0.899 1.075 | 1.425 1.101 0.875 0.999 |
+| Passive | 1.434 1.298 1.021 1.158 (-1.4% -1.4% -1.5% -1.5%) | 1.251 1.162 0.948 1.070 (-0.5% -0.5% -0.6% -0.6%) |
+| Perfect | 1.659 1.304 1.186 1.271 (-1.2% -2.4% -0.4% -1.0%) | 1.350 1.170 1.061 1.387 (+1.2% -1.2% -0.2% -0.3%) |
+| Over-reactor | 1.206 1.209 0.906 1.063 | 1.088 1.077 0.846 0.935 |
+
+**Verdicts (V-B8 in its §0.21 form):** V-B1 PASS both · V-B2 PASS (FB Holder ÷ Seller 1.354, ÷ Locker 1.101) · **V-B3 PASS on Firm Builder, margin now 2.0%** (Flex 1.295 against the Orbit Replacer 1.270; was 0.4%); OL (information) MISS (1.138 against 1.186) · V-B4 PASS (FB Seller ÷ Holder 1.346, Locker ÷ Holder 1.039) · V-B5 PASS on OL 1.223 (FB information 1.093) · V-B6 information · V-B7 PASS (0 busts in 120) ·
+**V-B8 PASS on both presets:** Perfect ÷ Passive FB 1.157 / **1.005** / 1.162 / 1.098, OL 1.079 / 1.007 / 1.120 / 1.296; Over-reactor ÷ Passive at most 0.931 in all 8 (limit 0.97). **V2 is down to 1.005 (FB) and 1.007 (OL): above 1.00 by half a percent** · V-B9 PASS (FB +28 / +2 / +40 / +19) · V-B10 PASS · V-B11 PASS (FB 0.988 / 0.875 / 0.815 / 0.810; OL 0.956 / 0.884 / 0.821 / 0.806: V4 still above 0.80) · V-B13 20 Plan phases · V-B12, V-B14 by tests.
+
+**Assumptions (mine, reversible):** (1) M67.0 applied with Edit and compared byte for byte with the project copy. (2) Headlines show in `Act3SignalsPanel` (the Signals panel Acts III-V share), not `SignalsPanel` (Acts I-II), because Acts III-IV have no headlines and `SignalsPanel` is not rendered in Act V; the news markup is the same. (3) A preset start's seed is the title screen's seed field, else random (as a new game); `toSeed` moved to `src/ui/seed.ts`.
+(4) The ETH header rule shows the price to a company with ETH in its treasury or mining ETH this quarter (the second clause keeps an Act I-II ETH miner's price). (5) The existing check "no future name in the runtime Signals content" ignores the `headline` field, because a trigger-quarter headline may name its trigger (V2's "The Flexible Lane Opens"); the new test covers headlines. (6) An untracked file `docs/prologue-content/52-prologue-expansion-research.md` appeared in the working tree during the run; it is not mine and is not committed.
+
+**STOPPED:** none. **Not stops:** V-B8's V2 cell is 1.005 (above 1.00).
+
+**Open questions for the design thread:**
+1. **Heat in Act V:** with regional Heat and Anger on, the Perfect run's Heat ends at about 54 (V1) and 53 (V4), was 28 and 30; 50 is Act I's rate-hike tier. No bust and no number moved more than 5%, but does Act V mean to reach Heat consequences (rate hike at 50, moratorium at 70)?
+2. **V-B8's V2 cell is 1.005 (FB) and 1.007 (OL):** any further cost the Act II rules add moves it to 1.00 or below (reported, not a stop). Keep the sign check as it is, or revisit?
+3. **The rating:** it now moves and is read by the corporate debt spread (three sites), the equipment-loan terms (hidden in the UI) and the Capital views; plant debt is unaffected. No bot reads it. Fine as it is (§0.24 item 4)?
+4. **The Signals headlines are shown only in the Signals panel.** The news band at the foot of the Plan screen still shows Act I-era text and nothing in Act V. Show the quarter's first headline there too, or leave it?
+5. **Who put `docs/prologue-content/52-prologue-expansion-research.md` in the repo?** It looks like doc 52's research dossier (doc 51's numbering). It is untracked: commit it in its own docs PR, or leave it out?
+
 ## M66: doc 43 §0.22 and §0.23 (merged, PR #35, tag `m66-done`; was branch `m66` from `main` at `82bdf24`)
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M66.0 doc 43 §0.22-§0.23 (the file is byte-identical to the project copy; §0.22 was already on `main` through the docs-only PR #34, so this commit adds the header's "§0.23: the staging check" and
