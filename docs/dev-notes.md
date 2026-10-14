@@ -11,6 +11,17 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M69: your own pool (doc 51 §3) and Heat in Act V (doc 43 §0.26) (branch `m69` from `main` at `bbb5874`, M68 merged as PR #39)
+
+Split (docs 43 §0.26, 51 v1.1 §12 and 54 are in the repo; only the pool is built, the club waits):
+- M69.0 doc 43 §0.26, doc 51 v1.1, doc 54
+- M69.1 (A) X-B7 restated: paired-seed check per feature in the Prologue runner, a sell-as-mined-scrypt variant (reporting only)
+- M69.2 (B) pool data and content: pools_player.json wired through the generator and a schema, the 5 pool_ cards and text keys merged
+- M69.3 (C) the pool in the sim: actions, the outside-miners model, risks, boycott, sale and handover, save format 8
+- M69.4 (D) screens: the Ventures nav item and pool panel, reachability coverage
+- M69.5 (E) Heat in Act V: the Perfect bot's habit (talk at 45, then noise mitigation); Act V goldens that play Perfect move here
+- M69.6 (F) bots (pool-operator, pps-operator), the prologue-pool golden, `--prologue`, `--act5` and `--act2 --act3` runs
+
 ## M68: doc 43 §0.25 and the Prologue's altcoins (doc 51 v1.0) (branch `m68` from `main` at `4cf8373`)
 
 Split (the owner approved doc 51 v1.0 and the Prologue scope changes in its §9 by pasting the prompt; this milestone builds only
