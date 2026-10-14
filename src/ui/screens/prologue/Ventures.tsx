@@ -8,6 +8,7 @@ import { prologuePoolView } from '../../../sim/prologue/views.ts'
 import { Icon } from '../../components/basics.tsx'
 import { fmt } from '../../format.ts'
 import { say } from '../../names.ts'
+import { ClubPanel } from './Club.tsx'
 import { Bar, Tile, useError, type PrologueProps } from './common.tsx'
 
 type Method = 'PPLNS' | 'PPS'
@@ -64,7 +65,8 @@ function Settings(props: {
   )
 }
 
-export function Ventures({ state, act }: PrologueProps) {
+export function Ventures(props: PrologueProps) {
+  const { state, act, ...rest } = props
   const v = prologuePoolView(state)
   const e = useError(act)
   const [method, setMethod] = useState<Method>(v?.pool?.method ?? 'PPLNS')
@@ -258,6 +260,7 @@ export function Ventures({ state, act }: PrologueProps) {
             </section>
           </>
         )}
+        <ClubPanel state={state} act={act} {...rest} />
       </div>
     </div>
   )

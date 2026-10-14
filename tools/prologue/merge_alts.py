@@ -209,7 +209,7 @@ CLUB_GAME = {  # id: (type, extra fields, default, [(choice id, effects)])
     # club_form is the offer: in the game it is a headline (type 'news': display only, so a game that never joins is unchanged);
     # the joining itself is the action P0_JOIN_CLUB in 2013Q1's Plan phase, from the Ventures screen (mine, reversible)
     'club_form': ('news', {'quarter': '2013Q1'}, 'noted', [('noted', {})]),
-    'club_power_bill': ('random', {'requires': ['club_member'], 'from': '2013Q2', 'weight': 1}, 'argue',
+    'club_power_bill': ('random', {'requires': ['club_member'], 'from': '2013Q2', 'weight': 1, 'pauses_autoplay': True}, 'argue',
                         [('split', {'club': {'cost_split': 'shares'}}), ('pay', {'cash': 'club_power_quarter'}), ('argue', {'club': {'dispute': True}})]),
     'club_peak_cashout': ('scripted', {'quarter': '2013Q4', 'week_of': '2013-12-02', 'requires': ['club_member']}, 'wait',
                           [('buy_out', {'club': {'buy_out': 'teo'}}), ('let_sell', {'club': {'member_sells': 'teo'}}),
@@ -218,7 +218,7 @@ CLUB_GAME = {  # id: (type, extra fields, default, [(choice id, effects)])
                       [('sell', {'club': {'sell_gpus_mult': 1.5}}), ('keep', {})]),
     'club_scrypt_box': ('scripted', {'quarter': '2014Q2', 'requires': ['club_member']}, 'pass',
                         [('buy', {'club': {'preorder': 'scrypt_box_share'}}), ('pass', {})]),
-    'club_cloud_contract': ('random', {'requires': ['club_member'], 'quarters': ['2014Q3', '2014Q4'], 'weight': 1}, 'pass',
+    'club_cloud_contract': ('random', {'requires': ['club_member'], 'quarters': ['2014Q3', '2014Q4'], 'weight': 1, 'pauses_autoplay': True}, 'pass',
                             [('invest', {'club': {'cloud_contract': True}}), ('pass', {})]),
     'club_breakup': ('scripted', {'quarter': '2015Q1', 'requires': ['club_member']}, 'carry_on',
                      [('buy_out', {'club': {'end': 'buy_out'}}), ('dissolve', {'club': {'end': 'dissolve'}}), ('carry_on', {})]),

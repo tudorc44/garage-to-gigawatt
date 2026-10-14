@@ -80,6 +80,8 @@ export interface PrologueReport {
   alts?: { mined: AltAmounts; soldUsd: AltAmounts; held: AltAmounts }
   /** M69.3: only in a game with an open pool. */
   pool?: PoolReport
+  /** M70.4: only in a game with the club: the quarter's output, and your share of it. */
+  club?: { outputUsd: number; yourShareUsd: number; hostingUsd: number }
 }
 
 /**
@@ -131,7 +133,76 @@ export interface PoolReport {
   reputation: number
 }
 
+/** The mining club (M70.4, doc 51 v1.2 §4). Absent from a game that never joins it. */
+export type ClubMember = 'you' | 'mara' | 'teo' | 'jun'
+export const CLUB_FRIENDS: readonly ClubMember[] = ['mara', 'teo', 'jun']
+/** What a member holds in the club's custody: cash and coins. */
+export interface ClubBalance {
+  cash: number
+  BTC: number
+  LTC: number
+  DOGE: number
+}
+/** A club machine: an ASIC from the group buy, one of Teo's GPUs, or a share of a scrypt box. */
+export interface ClubLot {
+  id: string
+  kind: 'asic' | 'gpu' | 'box'
+  model: string
+  count: number
+  /** The first quarter it earns (the quarter after it arrives). */
+  earnsFrom: number
+}
+/** A club order with a vendor: the group buy's unit or the scrypt-box share; its delivery was rolled when it was placed. */
+export interface ClubOrder {
+  id: string
+  kind: 'group_buy' | 'scrypt_box'
+  paidUsd: number
+  orderedQuarter: number
+  outcome: 'on_time' | 'late' | 'very_late' | 'never'
+  deliverQuarter: number | null
+  delivered: boolean
+}
+export interface Club {
+  joinedQuarter: number
+  /** Shares by value put in (they sum to 1 over the members still in). */
+  shares: Record<ClubMember, number>
+  members: ClubMember[]
+  stakeUsd: number
+  keys: 'player' | 'jun'
+  hosting: 'your_place' | 'friends_flat'
+  hostSiteId: string
+  bal: Record<ClubMember, ClubBalance>
+  lots: ClubLot[]
+  orders: ClubOrder[]
+  /** The coin Teo's GPUs mine (the coin selector, as for your own). */
+  gpuCoin: 'BTC' | 'LTC' | 'DOGE'
+  /** Recorded (a refusal costs one); nothing reads it yet (doc 51 v1.2 gives it no effect). */
+  friendship: number
+  cloud: { investedUsd: number; sinceQuarter: number } | null
+  /** Hosting fees the friends could not pay yet. */
+  feeDebtUsd: number
+  /** What happens at the handover if the club is still open. */
+  ending: 'buy_out' | 'dissolve'
+  nextId: number
+  /** This quarter's figures for the report. */
+  quarter: { outputUsd: number; yourShareUsd: number; hostingUsd: number }
+  /** Dollars lost to Jun's keys over the club's life. */
+  lostUsd: number
+}
+/** Setup the player chose for the offer, joined in the Plan phase (P0_JOIN_CLUB carries it; kept for the screen). */
+export interface ClubEnded {
+  kind: 'buy_out' | 'dissolve'
+  quarter: number
+  /** What the player paid the friends (buy out) or the whole club was worth when it was split (dissolve). */
+  usd: number
+  early: boolean
+}
+
 export interface PrologueState {
+  /** M70.4: the mining club (absent until you join). */
+  club?: Club
+  /** M70.4: how the club ended, for the chapter report. */
+  clubEnded?: ClubEnded
   /** M69.3: your own pool (absent until one is opened). */
   ownPool?: OwnPool
   /** M69.3: an own pool sold or closed: when, for how much, and whether the handover sold it (the chapter report's line). */

@@ -31,6 +31,7 @@ import {
 import { placePreorder } from './preorders.ts'
 import { cancelAltSale, isAltCoin, sellAlt, setAltHodl, setLotCoin } from './alts.ts'
 import type { AltCoin } from './types.ts'
+import { joinClub, setEnding, setGpuCoin } from './club.ts'
 import { buyColdStorage, buyProtection, closePool, openPool, sellPool, setPoolSettings } from './pool.ts'
 import { P, siteCapacityKw, siteLoadKw } from './setup.ts'
 import { siteParams } from '../systems/siteSerials.ts'
@@ -66,6 +67,12 @@ export type PrologueAction =
   | { type: 'P0_POOL_COLD_STORAGE' }
   | { type: 'P0_SELL_POOL' }
   | { type: 'P0_CLOSE_POOL' }
+  /** M70.4 (doc 51 v1.2 §4): join the mining club in 2013Q1's Plan phase: your stake, who holds the keys, where it runs (1 Bandwidth). */
+  | { type: 'P0_JOIN_CLUB'; stake: number; keys: 'player' | 'jun'; hosting: 'your_place' | 'friends_flat' }
+  /** The coin the club's GPUs mine; free. */
+  | { type: 'P0_CLUB_GPU_COIN'; coin: 'BTC' | 'LTC' | 'DOGE' }
+  /** How the club ends at the handover if it is still open; free. */
+  | { type: 'P0_CLUB_ENDING'; kind: 'buy_out' | 'dissolve' }
   /** M68.4: the keep share of an altcoin's newly mined coins (1 = keep all), as bitcoin's keep/sell %. */
   | { type: 'P0_SET_ALT_HODL'; coin: AltCoin; hodl: number }
   | { type: 'P0_BACKUP' }
@@ -212,6 +219,12 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       return sellPool(s)
     case 'P0_CLOSE_POOL':
       return closePool(s)
+    case 'P0_JOIN_CLUB':
+      return joinClub(s, a.stake, a.keys, a.hosting)
+    case 'P0_CLUB_GPU_COIN':
+      return setGpuCoin(s, a.coin)
+    case 'P0_CLUB_ENDING':
+      return setEnding(s, a.kind)
     case 'P0_OFFER':
       return answerOffer(s, a.id, a.accept)
     case 'P0_PREORDER':

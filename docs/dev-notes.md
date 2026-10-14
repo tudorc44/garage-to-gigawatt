@@ -20,8 +20,8 @@ Split (docs 43 §0.27 and 51 v1.2 §13 are in the repo):
 - M70.2 (B) name what raises Heat in 2040Q4; Perfect's Heat at 2040Q3 and 2040Q4; verdict (and, only if it is ordinary grievances, the habit on every site and an Act V run)
 - M70.3 done: `club.json` and `preorders_additions.json` generated into the pack and `src/content/` (schemas `clubFileSchema`, `preordersAdditionsFileSchema`, `CONTENT.prologue.club`); the 7 club_ cards and 3 text keys merged in each file's own format (logged in the pack README); effect key `club{}`, `cash` may be `club_power_quarter`. Goldens unchanged.
   **`club_form` is a headline (type `news`) in the game, and joining is the action `P0_JOIN_CLUB` from the Ventures screen in 2013Q1's Plan phase (mine, reversible):** the card fires after that quarter's Plan phase and the next Plan phase is 2013Q4, past the group buy's window; a pausing card would also change every game that never joins.
-- M70.4 (D) the club in the sim: join, shares, group buy, keys, hosting, cards, endings, save format 9
-- M70.5 (E) the club panel in Ventures, reachability
+- M70.4 done: the club in the sim (`src/sim/prologue/club.ts`, `clubLoad.ts`): actions `P0_JOIN_CLUB`, `P0_CLUB_GPU_COIN`, `P0_CLUB_ENDING`; state `prologue.club` and `prologue.clubEnded` (absent unless you join); save format 9 (identity migration); Jun's key loss on its own substream; the 6 random cards pause auto-play. 23 tests in `tests/sim/prologueClub.test.ts`. All goldens unchanged.
+- M70.5 done: the club panel (`Club.tsx`, inside Ventures; `prologueClubView`), the club line in the chapter report; component tests in `tests/ui/prologueClub.test.tsx`; the reachability test passes. The panel's quarter table is the club's report row (the Prologue has no separate quarter report screen).
 - M70.6 (F) club bots, prologue-club golden, `--prologue`, `--act2 --act3`
 
 ## M69: your own pool (doc 51 §3) and Heat in Act V (doc 43 §0.26) (branch `m69` from `main` at `bbb5874`, M68 merged as PR #39)

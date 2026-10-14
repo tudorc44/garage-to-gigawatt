@@ -345,7 +345,7 @@ describe('saves', () => {
   it('a version-7 Prologue save loads at version 8 with no pool; an open pool survives export and import', () => {
     const s = planAt('2013Q4')
     const r = restoreSave(JSON.parse(JSON.stringify({ ...structuredClone(s), version: 7 })))
-    expect(r.ok && r.state.version).toBe(8)
+    expect(r.ok && r.state.version).toBe(9)
     expect(r.ok && r.state.prologue!.ownPool).toBeUndefined()
     const withPool = playWeek(startQuarter(open(planAt('2013Q4'))))
     const back = decodeSave(encodeSave(withPool))

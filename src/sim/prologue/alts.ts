@@ -117,9 +117,18 @@ export function altIncome(
   working: number,
 ): { coins: AltAmounts; usd: number } | null {
   const coin = lot.altCoin
+  if (!coin) return null
+  return altIncomeKhs(s, coin, working * scryptKhs(lot.model))
+}
+
+/** The same for any scrypt hashrate in kH/s on a coin (the club's machines use it too, M70.4). */
+export function altIncomeKhs(
+  s: GameState,
+  coin: AltCoin,
+  khs: number,
+): { coins: AltAmounts; usd: number } | null {
   const row = altWeek(s.quarter, s.week)
-  if (!coin || !row || !altOpen(row, coin)) return null
-  const khs = working * scryptKhs(lot.model)
+  if (!row || !altOpen(row, coin)) return null
   const coins = zero()
   let usd = 0
   const earn = (c: AltCoin) => {

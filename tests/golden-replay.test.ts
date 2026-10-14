@@ -435,7 +435,8 @@ describe('golden replay: prologue-pool', () => {
   })
 
   it('matches the stored golden end state', async () => {
-    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-pool-seed-${PROLOGUE_SEED}.json`)
+    // (format 9, the Prologue's mining club, M70.4, changes nothing in a game without the club: compared at format 8, as above)
+    await expect(JSON.stringify({ ...run.state, version: 8 }, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-pool-seed-${PROLOGUE_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {

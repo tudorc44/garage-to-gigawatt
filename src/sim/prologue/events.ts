@@ -27,7 +27,7 @@ import { answerHousehold, attendConference, conferenceNow } from './life.ts'
 import { placePreorder } from './preorders.ts'
 import { hasScryptGpus, loseAltWallet, sellScryptGpus } from './alts.ts'
 import { applyPoolEffect, poolRiskCards } from './pool.ts'
-import { applyClubEffect, payClubPowerBill } from './club.ts'
+import { applyClubEffect, clubQuarterStart, loseClubWallet, payClubPowerBill } from './club.ts'
 import { P, householdTier, isDecisionQuarterFor, rollStream } from './setup.ts'
 
 const W = () => BALANCE.weeksPerQuarter
@@ -72,6 +72,8 @@ function holds(s: GameState, req: string): boolean {
       return hasScryptGpus(s)
     case 'pool_open':
       return !!p.ownPool
+    case 'club_member':
+      return !!p.club
   }
   if (req.startsWith('flag:')) return p.flags.includes(req.slice(5))
   return false
@@ -100,6 +102,8 @@ export function schedulePrologueEvents(s: GameState): void {
       p.cardQueue.push({ id: c.id, week: c.weekIndex! + 1 })
   // M69.3: an open pool's risks (a DDoS, a theft), rolled on their own streams
   poolRiskCards(s)
+  // M70.4: Jun's keys may be lost (a chance a quarter), on their own stream
+  clubQuarterStart(s)
   if (label(s.quarter) < rules.random_start) return
   const r = rollStream(s.seed, `p0events:${s.quarter}`)
   const [w0, w1] = rules.random_week_range
@@ -186,6 +190,7 @@ function loseWallet(s: GameState, share: number): void {
   }
   p.moves = p.moves.filter((m) => m.amount > 1e-12)
   loseAltWallet(s, share)
+  loseClubWallet(s, share)
 }
 
 /**
