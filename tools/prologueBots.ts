@@ -4,6 +4,7 @@
 import { CONTENT, quarterIndex } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { altWeek, lotAltChoices, scryptKhs } from '../src/sim/prologue/alts.ts'
+import { poolUnlocked } from '../src/sim/prologue/pool.ts'
 import { walletCoins } from '../src/sim/prologue/engine.ts'
 import { prologueCard } from '../src/sim/prologue/events.ts'
 import { sellable } from '../src/sim/prologue/custody.ts'
@@ -51,6 +52,12 @@ export interface PrologueBotSettings {
    * that pays most per kH/s; at the 2014Q3 card it sells every GPU. Absent for every earlier bot (opt-out invariance).
    */
   scrypt?: boolean
+  /**
+   * M69.6 (doc 51 v1.1 §6): run your own pool. Opens in the first Plan phase it can (2011Q2 on, when it has a home rig and the
+   * cash), with this payout method and fee, and buys cold storage if asked. An open pool is sold at the handover. Absent for
+   * every earlier bot (opt-out invariance).
+   */
+  ownPool?: { method: 'PPLNS' | 'PPS'; feePct: number; coldStorage: boolean }
 }
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
@@ -125,6 +132,15 @@ function scryptMoves(s: GameState): Action[] {
     const best = [...open].sort((a, b) => pays(b) - pays(a))[0]
     if (lot.altCoin !== best) out.push({ type: 'P0_SET_LOT_COIN', lotId: lot.id, coin: best })
   }
+  return out
+}
+
+/** The pool operator's moves (M69.6): open as soon as it can, then cold storage. (Each is sent only if the sim would accept it.) */
+function poolMoves(s: GameState, pool: NonNullable<PrologueBotSettings['ownPool']>): Action[] {
+  const out: Action[] = []
+  if (!s.prologue!.ownPool && !s.prologue!.poolEnded && poolUnlocked(s)) out.push({ type: 'P0_OPEN_POOL', method: pool.method, feePct: pool.feePct })
+  const t = apply(s, out)
+  if (t.prologue!.ownPool && pool.coldStorage && !t.prologue!.ownPool.coldStorage) out.push({ type: 'P0_POOL_COLD_STORAGE' })
   return out
 }
 
@@ -274,6 +290,17 @@ export const PROLOGUE_SETTINGS: Record<string, PrologueBotSettings> = {
   },
   /** A careful hodler in the group buy (2013Q1). */
   'preorder-group': { ...NORMAL, preorder: 'group_buy' },
+  /** M69.1 (doc 51 v1.1 §12 item 1): the sell-as-mined bot with the altcoins, for the paired X-B7 check. */
+  'sell-as-mined-scrypt': { ...NORMAL, sellPct: 1, custody: 'exchange', scrypt: true },
+  /**
+   * M69.6 (doc 51 v1.1 §6, X-B2, X-B3, X-B7): the sell-as-mined bot with its own pool: opens in 2011Q2 at 1% PPLNS, cold storage,
+   * sold at the handover. (The ratio X-B2 asks for is against the sell-as-mined bot, so this bot sells as it mines too: mine, reversible.)
+   */
+  'pool-operator': { ...NORMAL, sellPct: 1, custody: 'exchange', ownPool: { method: 'PPLNS', feePct: 0.01, coldStorage: true } },
+  /** M69.6 (X-B8): the pool operator that also chases scrypt, for the pacing numbers of a bot using the features there are. */
+  'pool-and-scrypt': { ...NORMAL, sellPct: 1, custody: 'exchange', scrypt: true, ownPool: { method: 'PPLNS', feePct: 0.01, coldStorage: true } },
+  /** M69.6 (X-B3): the same with PPS at a 2% fee and no cold storage: the risky pool. */
+  'pps-operator': { ...NORMAL, sellPct: 1, custody: 'exchange', ownPool: { method: 'PPS', feePct: 0.02, coldStorage: false } },
   /** M68.6 (doc 51 v1.0 §6): a careful hodler that chases scrypt coins with its GPUs from 2013Q2 and sells them at the 2014Q3 card. */
   'scrypt-switcher': { ...NORMAL, scrypt: true },
 }
@@ -301,6 +328,7 @@ export function prologueBot(
         actions.push(...buys(apply(s, actions), set))
       }
       if (set.scrypt) actions.push(...scryptMoves(apply(s, actions)))
+      if (set.ownPool) actions.push(...poolMoves(apply(s, actions), set.ownPool))
       // The backup last: a new PC-class machine would lapse it.
       const t = apply(s, actions)
       if (

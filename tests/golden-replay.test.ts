@@ -405,7 +405,37 @@ describe('golden replay: prologue-alts', () => {
   })
 
   it('matches the stored golden end state', async () => {
-    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-alts-seed-${PROLOGUE_SEED}.json`)
+    // (format 8, the Prologue's own pool, M69.3, changes nothing in a game without a pool: compared at format 7, as above)
+    await expect(JSON.stringify({ ...run.state, version: 7 }, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-alts-seed-${PROLOGUE_SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
+})
+
+/**
+ * The Prologue's own pool (M69.6, doc 51 v1.1): one golden, one seed, the pool-operator bot (opens in 2011Q2 at 1% PPLNS, cold
+ * storage, sold at the handover). The earlier Prologue goldens stay as they were: a game that never opens a pool is unchanged.
+ */
+describe('golden replay: prologue-pool', () => {
+  const bot = PROLOGUE_BOTS['pool-operator']
+  const run = playPrologue(PROLOGUE_SEED, bot, { through: 0 })
+
+  it('plays to its chapter report with a pool opened, run and sold at the handover', () => {
+    expect(run.state.phase).toBe('chapter')
+    expect(run.state.prologue!.ownPool).toBeUndefined()
+    expect(run.state.prologue!.poolEnded).toMatchObject({ kind: 'handover' })
+    expect(run.state.prologue!.reports.filter((r) => r.pool).length).toBeGreaterThan(20)
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playPrologue(PROLOGUE_SEED, bot, { through: 0 }).state).toEqual(run.state)
+    expect(replayPrologue(PROLOGUE_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-pool-seed-${PROLOGUE_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {

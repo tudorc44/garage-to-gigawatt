@@ -1,4 +1,4 @@
-# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.0, 13 Oct 2026
+# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.1, 14 Oct 2026 (v1.0 13 Oct; §12 after M68)
 
 *Design thread. v0.1 (13 Oct) was the draft; v1.0 takes in the research dossier (doc 53, saved by the research thread as doc 52) and the owner's answers. The content pack is in `claude/prologue-expansion-content/` with its generators. Built on the Prologue as built: `docs/alpha-0.3-scope.md` (wins over doc 26 and doc 23), `docs/prologue-content/`.*
 
@@ -89,7 +89,7 @@ At the handover, or at `club_breakup`: **buy the friends out** (their share at t
 | X-B4 | A pool at or below the median fee in 2014Q2 gains outside miners in ≥ 80% of runs | The boycott decision pays visibly |
 | X-B5 | Club bot (joins with $2,000, holds the keys, buys out) returns 0.8-1.5× the same cash in a solo group-buy share | Friends aren't a free lunch |
 | X-B6 | A 2010 GPU on scrypt earns ≥ 10× the same GPU on BTC in 2013Q4, and its scrypt income falls ≥ 95% from 2014Q1 to 2014Q4 (pack: 20.8×, -97.5%) | The real arc |
-| X-B7 | No new bot beats careful-hodler's median net worth | None becomes the way to get rich |
+| X-B7 | Paired seeds: each feature, added to the sell-as-mined bot, lifts its 2016Q4 net worth by at most 3×, and the bot with it stays below careful-hodler's median (§12 item 1) | None becomes the way to get rich |
 | X-B8 | ≤ 14 Plan phases; ≤ 30 cards needing a choice per run, measured for a bot using all three features; 10-15 minutes | Pacing |
 
 ## 7. Content files (the pack, `claude/prologue-expansion-content/`)
@@ -134,3 +134,11 @@ At the handover, or at `club_breakup`: **buy the friends out** (their share at t
 3. **The club:** the club panel, the group-buy share, keys and hosting, cards, endings.
 4. **Bots and balance:** X-B1 to X-B8 on 50 seeds, levers only on ⚙ values, smallest step first.
 The second research pass can run alongside milestones 1-3; its numbers drop into the generators before milestone 4.
+
+## 12. After M68 (14 Oct 2026)
+*Design-thread decisions (DT) on the M68 handover's five Prologue questions. M68 is accepted as built, with its eight "(mine, reversible)" decisions: P0_ action names, the opt-in 2014Q3 decision quarter, news cards display-only, continuous slippage, forced sales including altcoins, a card with no week taking its quarter's first, LF line endings, the altcoin market chunk. X-B1 and X-B6 pass (13.5×, -98.2%).*
+1. **X-B7 is re-measured where it can bite (DT).** Against careful-hodler's $1B+ paper wealth nothing a GPU earns registers, so the old test said nothing. The risk the target guards against is a feature that turns a modest player into a rich one. New X-B7, per feature, on paired seeds: the sell-as-mined bot with the feature against the same bot and seed without it; the feature may lift 2016Q4 net worth by at most 3× (the same ceiling as X-B2), and the bot with it stays below careful-hodler's median. The scrypt-switcher's +$116K over careful-hodler is reported, not judged.
+2. **2014Q3 stays opt-in (DT).** A player with no GPU on scrypt has nothing to decide that quarter, so making it a decision quarter for everyone would add a stop with no choice in it, and re-accept two goldens for nothing. §2's "13 → 14" reads "13, or 14 for a player with a GPU on scrypt".
+3. **The later-price clause goes in when the second research pass dates the closes (O, §8 item 3).** The TODO stays until then.
+4. **Continuous slippage (DT).** Accepted: smoother, and no step a player can game by splitting sales at 0.5% boundaries.
+5. **The second research pass:** prompt in doc 54. Its numbers drop into tools/prologue/ before the balance milestone (§11 item 4); nothing waits on it before then.

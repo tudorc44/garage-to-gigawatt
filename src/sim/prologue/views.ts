@@ -45,6 +45,18 @@ import {
   lotAltChoices,
 } from './alts.ts'
 import { ALT_COINS, type AltCoin } from './types.ts'
+import {
+  currentFee,
+  feeRange,
+  medianFee,
+  poolReserveUsd,
+  poolSaleOpen,
+  poolSalePriceUsd,
+  poolUnlocked,
+  protectionBill,
+  serverBill,
+} from './pool.ts'
+import { applyAction, type Action } from '../actions.ts'
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
 
@@ -546,6 +558,82 @@ export function prologueLostLedger(state: GameState) {
     totalBtc: rows
       .filter((r) => r.coin === 'BTC')
       .reduce((n, r) => n + r.amount, 0),
+  }
+}
+
+/**
+ * M69.4 (doc 51 v1.1 §3): the Ventures screen's pool panel: whether the pool can be opened, its settings, how big it is, its
+ * reputation and luck, the quarter's income and bills, what it costs to protect, what it sells for. Null without the pool file.
+ */
+export function prologuePoolView(state: GameState) {
+  const f = CONTENT.prologue.pool
+  if (!f) return null
+  const p = state.prologue!
+  const pool = p.ownPool
+  const luckExpected = pool?.luck.reduce((a, l) => a + l.expected, 0) ?? 0
+  const luckFound = pool?.luck.reduce((a, l) => a + l.found, 0) ?? 0
+  const closed = poolBlockers(state)
+  return {
+    unlockQuarter: f.unlock.quarter,
+    unlocked: poolUnlocked(state),
+    setupUsd: f.open_action.setup_cash_usd.value,
+    openBandwidth: f.open_action.bandwidth,
+    settingsBandwidth: f.change_settings_bandwidth,
+    feeRange: { PPLNS: feeRange('PPLNS'), PPS: feeRange('PPS') },
+    medianFee: medianFee(state.quarter),
+    reserveUsd: poolReserveUsd(state),
+    serverBillUsd: serverBill(state.quarter),
+    protection: {
+      availableFrom: f.ddos_protection.available_from,
+      billUsd: protectionBill(state.quarter),
+      bandwidth: f.ddos_protection.action_bandwidth,
+    },
+    coldBandwidth: f.cold_storage.action_bandwidth,
+    saleFrom: f.sale.from_quarter,
+    saleOpen: poolSaleOpen(state),
+    defaultName: f.names.default_pool_name,
+    blockers: closed,
+    ended: p.poolEnded ?? null,
+    pool: pool
+      ? {
+          name: pool.name,
+          method: pool.method,
+          feePct: pool.feePct,
+          feeNow: currentFee(pool, state.quarter),
+          feeOverrideUntil: pool.feeOverride ? CONTENT.quarters[pool.feeOverride.until] : null,
+          reputation: pool.reputation,
+          outsideTh: pool.outsideTh,
+          pull: pool.pull,
+          luck: luckExpected > 0 ? luckFound / luckExpected : null,
+          unluckyRun: pool.unluckyRun,
+          coldStorage: pool.coldStorage,
+          protectedFrom: pool.protectionFrom !== null ? CONTENT.quarters[pool.protectionFrom] : null,
+          boycottOpen: !!pool.boycott && state.quarter >= pool.boycott.from && state.quarter <= pool.boycott.until,
+          quarter: { ...pool.quarter },
+          feeHistory: [...pool.feeUsdQuarters],
+          salePriceUsd: poolSalePriceUsd(pool),
+        }
+      : null,
+  }
+}
+
+/** Why each pool action is refused now (null: it would go through). The screen shows the reason on the button. */
+function poolBlockers(state: GameState) {
+  const f = CONTENT.prologue.pool!
+  const why = (a: Action) => {
+    const r = applyAction(state, a)
+    return r.ok ? null : r.error
+  }
+  const pool = state.prologue!.ownPool
+  const method = pool?.method ?? 'PPLNS'
+  return {
+    open: why({ type: 'P0_OPEN_POOL', method: 'PPLNS', feePct: Math.max(feeRange('PPLNS')[0], 0.01) }),
+    openPps: why({ type: 'P0_OPEN_POOL', method: 'PPS', feePct: feeRange('PPS')[0] }),
+    settings: pool ? why({ type: 'P0_POOL_SETTINGS', method, feePct: pool.feePct }) : null,
+    protection: pool ? why({ type: 'P0_POOL_DDOS_PROTECTION' }) : null,
+    cold: pool ? why({ type: 'P0_POOL_COLD_STORAGE' }) : null,
+    sell: pool ? why({ type: 'P0_SELL_POOL' }) : null,
+    ppsReserve: f ? state.cash < poolReserveUsd(state) : false,
   }
 }
 

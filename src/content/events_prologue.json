@@ -73,6 +73,11 @@
   {"id": "news_alt_exchange_collapse", "type": "news", "quarter": "2014Q4", "week_of": "2014-10-06", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
   {"id": "news_ltc_halving", "type": "news", "quarter": "2015Q3", "week_of": "2015-08-24", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
   {"id": "news_cloud_ponzi", "type": "news", "quarter": "2015Q4", "week_of": "2015-11-30", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
-  {"id": "news_alt_exchange_stuck", "type": "news", "quarter": "2016Q1", "week_of": "2016-01-11", "default": "noted", "choices": [{"id": "noted", "effects": {}}]}
+  {"id": "news_alt_exchange_stuck", "type": "news", "quarter": "2016Q1", "week_of": "2016-01-11", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "pool_ddos", "type": "trigger", "requires": ["pool_open"], "default": "ride", "choices": [{"id": "protect", "effects": {"pool": {"outage": true, "buy_ddos_protection": true}, "bandwidth_next": -1}}, {"id": "ride", "effects": {"pool": {"outage": true}}}]},
+  {"id": "pool_theft", "type": "trigger", "requires": ["pool_open"], "default": "repay", "choices": [{"id": "repay", "effects": {"pool": {"theft": true, "repay_from_cash": true}}}, {"id": "explain", "effects": {"pool": {"theft": true, "repay_from_cash": false, "reputation": -30}}}]},
+  {"id": "pool_pps_crunch", "type": "trigger", "requires": ["pool_open"], "default": "keep", "choices": [{"id": "to_pplns", "effects": {"pool": {"set_method": "PPLNS"}, "bandwidth_next": -1}}, {"id": "keep", "effects": {}}]},
+  {"id": "pool_boycott_2014", "type": "scripted", "quarter": "2014Q2", "week_of": "2014-06-09", "requires": ["pool_open"], "default": "keep_fee", "choices": [{"id": "cut_fee", "effects": {"pool": {"fee_override": 0.0, "duration_quarters": 2, "boycott_eligible": true}}}, {"id": "keep_fee", "effects": {"pool": {"boycott_eligible": "if_fee_at_or_below_median"}}}]},
+  {"id": "pool_sale_offer", "type": "random", "requires": ["pool_open"], "from": "2013Q1", "weight": 0.5, "default": "keep", "choices": [{"id": "sell", "effects": {"pool": {"sell": true}}}, {"id": "keep", "effects": {}}]}
  ]
 }

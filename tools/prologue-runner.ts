@@ -70,6 +70,9 @@ interface Run {
   crashed: string | null
 }
 
+/** M69.6: one row per run that opened a pool (written to prologue-pool-runs.csv, not the main CSV). */
+const poolExtras: Record<string, string | number>[] = []
+
 function playOne(bot: string, seed: number): Run {
   const strategy = PROLOGUE_BOTS[bot]
   const run: Run = {
@@ -98,6 +101,28 @@ function playOne(bot: string, seed: number): Run {
     run.lostWalletBtc = p.lost.wallet.BTC
     run.planPhases = p.reports.filter((r) => !r.auto).length
     run.cardsShown = p.cardsShown
+    // M69.6: the own pool's figures, kept apart from the main CSV (its columns are what X-B1 compares)
+    const poolQs = p.reports.filter((r) => r.pool)
+    if (poolQs.length > 0) {
+      const share = (q: string) => {
+        const r = p.reports.find((x) => x.quarter === q)
+        const qi = quarterIndex(q)
+        return r?.pool && qi !== undefined ? r.pool.outsideTh / (marketWeek(qi, 12).btc_hashrate_EHs * 1e6) : NaN
+      }
+      poolExtras.push({
+        bot,
+        seed,
+        poolQuarters: poolQs.length,
+        feeUsd: poolQs.reduce((a, r) => a + r.pool!.feeUsd, 0),
+        thefts: p.reports.flatMap((r) => r.cards).filter((c) => c.id === 'pool_theft').length,
+        ddos: p.reports.flatMap((r) => r.cards).filter((c) => c.id === 'pool_ddos').length,
+        insolvent: r0.log.some((e) => e.key === 'log.p0_pool_insolvent') ? 1 : 0,
+        coldStorage: poolQs.length > 0 && r0.log.some((e) => e.key === 'log.p0_pool_cold') ? 1 : 0,
+        shareBoycottFrom: share('2014Q1'),
+        shareBoycottTo: share('2014Q3'),
+        saleUsd: p.poolEnded?.usd ?? 0,
+      })
+    }
     const collapseQ = quarterIndex(P().exchange.gox_collapse.quarter)!
     const before = p.reports.find(
       (r) => r.quarter === CONTENT.quarters[collapseQ - 1],
@@ -368,7 +393,9 @@ if (baselineCsv) {
   const base = readFileSync(baselineCsv, 'utf8').split('\n')
   const mine = readFileSync(`${OUT}/prologue-runs.csv`, 'utf8').split('\n')
   const rowsOf = (lines: string[], bot: string) => lines.filter((l) => l.startsWith(`${bot},`))
-  const bots = Object.keys(PROLOGUE_BOTS).filter((b) => b !== 'scrypt-switcher')
+  // (every bot the baseline run has: a bot added since has no rows there)
+  const inBase = new Set(base.map((l) => l.split(',')[0]))
+  const bots = Object.keys(PROLOGUE_BOTS).filter((b) => inBase.has(b))
   const diffs = bots.filter((b) => rowsOf(base, b).join('\n') !== rowsOf(mine, b).join('\n'))
   check(
     base[0] === mine[0] && diffs.length === 0 && bots.every((b) => rowsOf(base, b).length === SEEDS),
@@ -386,16 +413,73 @@ check(
 const sw = of('scrypt-switcher')
 const swUsd = median(sw.map((r) => r.prologueUsd))
 const chUsd = median(of('careful-hodler').map((r) => r.prologueUsd))
-check(
-  swUsd < chUsd,
-  'X-B7 the scrypt-switcher ends 2016Q4 below the careful-hodler (median net worth)',
-  `scrypt-switcher ${usd(swUsd)} vs careful-hodler ${usd(chUsd)} (${usd(swUsd - chUsd)}; ${sw.length} runs); median gap per seed ${usd(median(sw.map((r, i) => r.prologueUsd - of('careful-hodler')[i].prologueUsd)))}`,
+// (M69.1: the scrypt-switcher's gap to careful-hodler is reported, not judged: doc 51 v1.1 §12 item 1)
+lines.push(
+  `      scrypt-switcher vs careful-hodler (reported, not judged): ${usd(swUsd)} vs ${usd(chUsd)} (${usd(swUsd - chUsd)}); median gap per seed ${usd(median(sw.map((r, i) => r.prologueUsd - of('careful-hodler')[i].prologueUsd)))}`,
 )
+// X-B7 (doc 51 v1.1 §12 item 1), per feature on paired seeds: the sell-as-mined bot with the feature against the same bot
+// and seed without it. The feature may lift 2016Q4 net worth by at most 3x, and the bot with it stays below careful-hodler's median.
+const FEATURE_PAIRS: { feature: string; base: string; withFeature: string }[] = [
+  { feature: 'altcoins', base: 'sell-as-mined', withFeature: 'sell-as-mined-scrypt' },
+  { feature: 'pool', base: 'sell-as-mined', withFeature: 'pool-operator' },
+]
+for (const f of FEATURE_PAIRS) {
+  if (!PROLOGUE_BOTS[f.withFeature]) continue
+  const a = of(f.base)
+  const b = of(f.withFeature)
+  const lifts = b.map((r) => {
+    const base = a.find((x) => x.seed === r.seed)
+    return base && base.prologueUsd > 0 ? r.prologueUsd / base.prologueUsd : NaN
+  }).filter(Number.isFinite)
+  const lift = median(lifts)
+  const withUsd = median(b.map((r) => r.prologueUsd))
+  check(
+    lift <= 3 && withUsd < chUsd,
+    `X-B7 (${f.feature}) paired seeds: ${f.withFeature} vs ${f.base}`,
+    `median lift ${x(lift)} (p10 ${x(pct(lifts, 0.1))}, p90 ${x(pct(lifts, 0.9))}; target at most 3×); ${f.withFeature} median ${usd(withUsd)} vs ${f.base} ${usd(median(a.map((r) => r.prologueUsd)))}; careful-hodler ${usd(chUsd)}; ${lifts.length} pairs`,
+  )
+}
 check(
   Math.max(...sw.map((r) => r.planPhases)) <= 14,
   'pacing: the scrypt-switcher has ≤ 14 Plan phases',
   `Plan phases median ${median(sw.map((r) => r.planPhases))}, max ${Math.max(...sw.map((r) => r.planPhases))}; cards needing a choice median ${median(sw.map((r) => r.cardsShown))}, max ${Math.max(...sw.map((r) => r.cardsShown))} (careful-hodler: median ${median(cards)}, max ${Math.max(...cards)})`,
 )
+// ---------- M69.6 (doc 51 v1.1 §6): the pool's checks ----------
+if (poolExtras.length > 0) {
+  writeFileSync(
+    `${OUT}/prologue-pool-runs.csv`,
+    [Object.keys(poolExtras[0]).join(','), ...poolExtras.map((r) => Object.values(r).join(','))].join('\n') + '\n',
+  )
+  const po = of('pool-operator')
+  const sam2 = of('sell-as-mined')
+  const ratio = median(po.map((r) => r.prologueUsd)) / median(sam2.map((r) => r.prologueUsd))
+  check(
+    ratio >= 1.2 && ratio <= 3,
+    'X-B2 the pool-operator ends at 1.2-3× the sell-as-mined bot',
+    `${x(ratio)} (pool-operator median ${usd(median(po.map((r) => r.prologueUsd)))} vs sell-as-mined ${usd(median(sam2.map((r) => r.prologueUsd)))}; p10 ${usd(pct(po.map((r) => r.prologueUsd), 0.1))}, p90 ${usd(pct(po.map((r) => r.prologueUsd), 0.9))})`,
+  )
+  const pps = poolExtras.filter((r) => r.bot === 'pps-operator')
+  const ppsRuns = of('pps-operator')
+  const theftShare = pps.length ? pps.filter((r) => Number(r.thefts) > 0).length / pps.length : NaN
+  const insolvent = ppsRuns.length ? ppsRuns.filter((r) => pps.find((e) => e.seed === r.seed)?.insolvent === 1).length / ppsRuns.length : NaN
+  check(
+    theftShare >= 0.1 && insolvent >= 0.05,
+    'X-B3 the risks are real: ≥ 10% of pools without cold storage see a theft; a PPS pool at 2% ends insolvent in ≥ 5% of runs',
+    `theft in ${(theftShare * 100).toFixed(0)}% of the ${pps.length} pps-operator runs (no cold storage); insolvent in ${(insolvent * 100).toFixed(0)}% of ${ppsRuns.length}; game over in ${ppsRuns.filter((r) => r.end.startsWith('gameover')).length}; the pool-operator (cold storage) saw a theft in ${poolExtras.filter((r) => r.bot === 'pool-operator' && Number(r.thefts) > 0).length}/${poolExtras.filter((r) => r.bot === 'pool-operator').length}`,
+  )
+  const po2 = poolExtras.filter((r) => r.bot === 'pool-operator')
+  const gained = po2.filter((r) => Number(r.shareBoycottTo) > Number(r.shareBoycottFrom)).length
+  check(
+    po2.length > 0 && gained / po2.length >= 0.8,
+    'X-B4 a pool at or below the median fee in 2014Q2 gains outside miners (their share of the network, 2014Q1 end → 2014Q3 end) in ≥ 80% of runs',
+    `${gained}/${po2.length} (${((gained / (po2.length || 1)) * 100).toFixed(0)}%); median share ${(median(po2.map((r) => Number(r.shareBoycottFrom))) * 100).toFixed(3)}% → ${(median(po2.map((r) => Number(r.shareBoycottTo))) * 100).toFixed(3)}%`,
+  )
+  for (const bot of ['pool-operator', 'pps-operator', 'pool-and-scrypt'] as const) {
+    const rs = of(bot)
+    if (rs.length === 0) continue
+    lines.push(`      ${bot}: Plan phases median ${median(rs.map((r) => r.planPhases))} (max ${Math.max(...rs.map((r) => r.planPhases))}), cards needing a choice median ${median(rs.map((r) => r.cardsShown))} (max ${Math.max(...rs.map((r) => r.cardsShown))}; target ≤ 14 and ≤ 30), prologue net worth median ${usd(median(rs.map((r) => r.prologueUsd)))}`)
+  }
+}
 check(
   thousandMs < 120_000,
   '1,000 prologue runs in reasonable time (CSV out)',

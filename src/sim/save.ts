@@ -30,7 +30,7 @@ const PHASES: Phase[] = [
 ]
 
 /** The save format this build writes (GameState.version). */
-export const SAVE_VERSION = 7
+export const SAVE_VERSION = 8
 
 type SaveData = Record<string, unknown>
 
@@ -62,6 +62,9 @@ const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
   // 6 → 7 (the Prologue's altcoins, M68.4): a Prologue GPU lot can mine Litecoin or Dogecoin (`altCoin`) and the Prologue
   // can hold them (`prologue.alts`). Nothing in a version-6 save changes: every lot loads on its machine's own coin.
   6: (data) => ({ ...data, version: 7 }),
+  // 7 → 8 (the Prologue's own pool, M69.3): a Prologue game can carry an open pool (`prologue.ownPool`) and the note of one sold
+  // or closed (`prologue.poolEnded`). Nothing in a version-7 save changes: a game without a pool has neither.
+  7: (data) => ({ ...data, version: 8 }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }

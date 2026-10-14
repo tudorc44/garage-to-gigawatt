@@ -26,6 +26,7 @@ import { prologueEndQuarter } from './engine.ts'
 import { answerHousehold, attendConference, conferenceNow } from './life.ts'
 import { placePreorder } from './preorders.ts'
 import { hasScryptGpus, loseAltWallet, sellScryptGpus } from './alts.ts'
+import { applyPoolEffect, poolRiskCards } from './pool.ts'
 import { P, householdTier, isDecisionQuarterFor, rollStream } from './setup.ts'
 
 const W = () => BALANCE.weeksPerQuarter
@@ -68,6 +69,8 @@ function holds(s: GameState, req: string): boolean {
       )
     case 'scrypt_gpus':
       return hasScryptGpus(s)
+    case 'pool_open':
+      return !!p.ownPool
   }
   if (req.startsWith('flag:')) return p.flags.includes(req.slice(5))
   return false
@@ -94,6 +97,8 @@ export function schedulePrologueEvents(s: GameState): void {
       (c.requires ?? []).every((req) => holds(s, req))
     )
       p.cardQueue.push({ id: c.id, week: c.weekIndex! + 1 })
+  // M69.3: an open pool's risks (a DDoS, a theft), rolled on their own streams
+  poolRiskCards(s)
   if (label(s.quarter) < rules.random_start) return
   const r = rollStream(s.seed, `p0events:${s.quarter}`)
   const [w0, w1] = rules.random_week_range
@@ -265,6 +270,7 @@ function applyChoice(s: GameState, card: PrologueCard, choiceId: string): void {
   }
   if (fx.withdraw_all) withdrawAll(s)
   if (fx.sell_scrypt_gpus) sellScryptGpus(s)
+  if (fx.pool) applyPoolEffect(s, fx.pool)
   if (fx.open_buy) openPanel(s, `buy:${fx.open_buy}`)
   if (fx.open_preorders) openPanel(s, 'preorders')
   if (fx.open_wallet) openPanel(s, 'wallet')

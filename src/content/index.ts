@@ -10,6 +10,7 @@ import marketAct2Raw from './market_weekly_act2.json' with { type: 'json' }
 import marketPrologueRaw from './market_weekly_prologue.json' with { type: 'json' }
 import marketPrologueAltsRaw from './market_weekly_prologue_alts.json' with { type: 'json' }
 import marketQuarterlyPrologueAltsRaw from './market_quarterly_prologue_alts.json' with { type: 'json' }
+import poolsPlayerRaw from './pools_player.json' with { type: 'json' }
 import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
@@ -131,6 +132,8 @@ import {
   marketQuarterlyAct4Schema,
   marketPrologueAltsSchema,
   marketQuarterlyPrologueAltsSchema,
+  poolsPlayerFileSchema,
+  type PoolsPlayerFile,
   type marketWeekPrologueAltsSchema,
   marketAct5Schema,
   marketQuarterlyAct5Schema,
@@ -729,6 +732,8 @@ export interface Content {
      * the same alignment as `market` (a 14th week dropped, a 12-week quarter repeats its last). Absent without the files.
      */
     alts?: { weekly: Record<number, PrologueAltWeek[]> }
+    /** M69.2: your own pool's rules (pools_player.json), absent without the file. */
+    pool?: PoolsPlayerFile
   }
   /** Community Heat rules (heat.json). */
   heat: HeatRules
@@ -817,6 +822,8 @@ export interface RawContent {
   /** M68.2 (doc 51 v1.0 §5): the Prologue's Litecoin and Dogecoin series, weekly and quarterly. Optional: without them there are no altcoins. */
   marketPrologueAlts?: unknown
   marketQuarterlyPrologueAlts?: unknown
+  /** M69.2 (doc 51 v1.1 §3): the Prologue's own pool (pools_player.json). Optional: without it there is no pool. */
+  poolsPlayer?: unknown
   /** The four Act III scenarios' market files (M11.1): quarterly (market_sN) and weekly. */
   act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
   /** The four Act IV futures' market files (M27.3). Optional: without them the timeline ends at 2030Q4. */
@@ -924,6 +931,8 @@ export function parseContent(raw: RawContent): Content {
   if (raw.marketQuarterlyPrologueAlts !== undefined)
     check('market_quarterly_prologue_alts', marketQuarterlyPrologueAltsSchema, raw.marketQuarterlyPrologueAlts)
   let prologueAlts: { weekly: Record<number, PrologueAltWeek[]> } | undefined
+  const poolsPlayerFile =
+    raw.poolsPlayer === undefined ? undefined : check('pools_player.json', poolsPlayerFileSchema, raw.poolsPlayer)
   const marketAct2Rows = check(
     'market_weekly_act2',
     marketAct2Schema,
@@ -2593,6 +2602,7 @@ export function parseContent(raw: RawContent): Content {
       rules: prologueFile,
       events: prologueEvents,
       ...(prologueAlts ? { alts: prologueAlts } : {}),
+      ...(poolsPlayerFile ? { pool: poolsPlayerFile } : {}),
     },
     auction,
     curtailment,
@@ -3022,6 +3032,7 @@ export const CONTENT: Content = parseContent({
   marketPrologue: marketPrologueRaw,
   marketPrologueAlts: marketPrologueAltsRaw,
   marketQuarterlyPrologueAlts: marketQuarterlyPrologueAltsRaw,
+  poolsPlayer: poolsPlayerRaw,
   act3Scenarios: {
     s0: { quarterly: marketS0Raw, weekly: marketWeeklyS0Raw },
     s1: { quarterly: marketS1Raw, weekly: marketWeeklyS1Raw },
