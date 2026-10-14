@@ -32,6 +32,7 @@ import { queueView } from '../../src/sim/systems/queue.ts'
 import { isPlant } from '../../src/sim/systems/plants.ts'
 import { availableGenerations } from '../../src/sim/systems/orbit.ts'
 import { linkUnitsNeeded } from '../../src/sim/systems/orbitOps.ts'
+import { complaintChoices, resolveComplaint, siteHeatValue } from '../../src/sim/systems/heat.ts'
 import { orbitStep } from '../act4/bots.ts'
 import readingRaw from '../../src/content/reading_score_v.json' with { type: 'json' }
 
@@ -259,9 +260,29 @@ export function heatHabit(s: GameState): Action[] {
   return out
 }
 
+/**
+ * M71.5 (doc 43 §0.28): the perfect reader answers the neighbour complaint (the other interrupts keep their answers). It takes the
+ * answer that leaves the site's Heat lowest (a payment or noise walls, whichever the cash allows; its own cost included), and the
+ * cheaper one on a tie; ignoring (grievance +10) is the answer of last resort.
+ */
+export function complaintAnswer(s: GameState): string | undefined {
+  if (s.interrupt?.id !== 'neighbour_complaint' || !s.interrupt.siteId) return undefined
+  const siteId = s.interrupt.siteId
+  let best: { id: string; heat: number; cash: number } | undefined
+  for (const id of complaintChoices(s)) {
+    const t = structuredClone(s)
+    resolveComplaint(t, id)
+    const heat = siteHeatValue(t, siteId)
+    const pick = { id, heat: Number.isFinite(heat) ? heat : 0, cash: t.cash }
+    if (!best || pick.heat < best.heat - 1e-9 || (Math.abs(pick.heat - best.heat) <= 1e-9 && pick.cash > best.cash)) best = pick
+  }
+  return best?.id
+}
+
 function withHeatHabit(base: Strategy): Strategy {
   return {
     ...base,
+    answer: (s) => complaintAnswer(s) ?? base.answer?.(s),
     plan: (s) => {
       const plan = base.plan(s)
       const after = tryAll(s, plan).after
