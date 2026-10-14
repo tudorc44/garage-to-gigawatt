@@ -65,10 +65,11 @@ for (const botName of ['perfect', 'holder'] as Act5Archetype[])
       const hit = firstOver.filter((q) => q !== null) as number[]
       const startS = runs.map((r) => r[0])
       const partsEnd = PARTS.map((p) => [p, median(last.map((x) => x.parts[p] ?? 0))] as const).filter(([, v2]) => Math.abs(v2) >= 0.05)
+      const partsStart = PARTS.map((p) => [p, median(startS.map((x) => x.parts[p] ?? 0))] as const).filter(([, v2]) => Math.abs(v2) >= 0.05)
       console.log(
         `${botName.padEnd(7)} ${id.padEnd(16)} ${v}: Heat ${median(startS.map((x) => x.maxHeat)).toFixed(0)} → ${median(last.map((x) => x.maxHeat)).toFixed(0)} ` +
           `(over 50 in ${hit.length}/${SEEDS} runs${hit.length ? `, first ${CONTENT.quarters[median(hit)]}` : ''}); MW ${median(startS.map((x) => x.mw)).toFixed(0)} → ${median(last.map((x) => x.mw)).toFixed(0)}, ` +
-          `sites ${median(startS.map((x) => x.sites)).toFixed(0)} → ${median(last.map((x) => x.sites)).toFixed(0)}; end parts: ${partsEnd.map(([p, v2]) => `${p} ${v2.toFixed(1)}`).join(', ')}`,
+          `sites ${median(startS.map((x) => x.sites)).toFixed(0)} → ${median(last.map((x) => x.sites)).toFixed(0)}; start parts: ${partsStart.map(([p, v2]) => `${p} ${v2.toFixed(1)}`).join(', ')}; end parts: ${partsEnd.map(([p, v2]) => `${p} ${v2.toFixed(1)}`).join(', ')}`,
       )
     }
   }

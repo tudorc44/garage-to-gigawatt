@@ -383,6 +383,37 @@ describe.each([
 })
 
 /**
+ * The Prologue's altcoins (M68.6, doc 51 v1.0): one golden, one seed, the scrypt-switcher bot (every GPU on Litecoin from
+ * 2013Q2, then the best scrypt coin each quarter, sold at the 2014Q3 card; the coins sold over 2016Q4). The earlier
+ * Prologue goldens above stay as they were: a game that never touches an altcoin is unchanged.
+ */
+describe('golden replay: prologue-alts', () => {
+  const bot = PROLOGUE_BOTS['scrypt-switcher']
+  const run = playPrologue(PROLOGUE_SEED, bot, { through: 0 })
+
+  it('plays to its chapter report with altcoins mined and sold', () => {
+    expect(run.state.phase).toBe('chapter')
+    expect(run.state.prologue!.alts!.mined.LTC).toBeGreaterThan(0)
+    expect(run.state.prologue!.alts!.mined.DOGE).toBeGreaterThan(0)
+    expect(run.state.prologue!.alts!.handover).toBeDefined()
+    expect(run.state.prologue!.alts!.held).toEqual({ LTC: 0, DOGE: 0 })
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playPrologue(PROLOGUE_SEED, bot, { through: 0 }).state).toEqual(run.state)
+    expect(replayPrologue(PROLOGUE_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-alts-seed-${PROLOGUE_SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
+})
+
+/**
  * Act III (M11.3): one golden per scenario. Each plays a fixed seed through all 16 quarters
  * (2027Q1–2030Q4) with a "do nothing" plan, from an Act II company with a working S21 fleet (so the
  * scenario's own market decides the numbers), and snapshots the end state. It replaces M10's

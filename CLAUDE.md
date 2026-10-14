@@ -52,9 +52,10 @@ npm run play      # the terminal game (Act I, then Act II; options: -- --seed 42
 npm run sim       # sim-runner: bots × 50 seeds → CSVs + summary in sim-output/; add --out <dir>
 npm run sim -- --act2 --act3   # also Act II to 2026Q4 and every Act III run (~55 min); the byte-identity check
 npm run sim -- --act3-anchors  # Act III archetypes × scenarios × 30 seeds, the anchor table (~15 min)
-npm run sim -- --prologue      # the prologue bots and the scope 0.3 §5 table
+npm run sim -- --prologue      # the prologue bots and the scope 0.3 §5 table; add --baseline <main's prologue-runs.csv> for X-B1
 npm run sim -- --act4 --seeds 10  # Act IV archetypes × presets × futures × lunar grades, the B1-B14 table (~30 min)
 npm run content:market  # regenerate the market JSON files after editing a market CSV
+npm run content:prologue-expansion  # regenerate the Prologue expansion's data (tools/prologue/*.py → docs/prologue-expansion-content/, the live altcoin CSVs, and the merge into the Prologue files); never hand-edit it
 npm run content:act5    # regenerate Act V's data (tools/act5/*.py → docs/act5-content/, copied into src/content/); never hand-edit it
 npm run content:act5-presets  # replay the two Act V preset companies from Act IV bots, writes presets_v.json (~7 min)
 npm run sim -- --act5   # Act V: bots × 2 presets × 4 futures × 30 seeds, the V-B1..V-B14 table (~1 hour)
@@ -82,10 +83,15 @@ checks need one run per flag set. Add `--out <dir>` to keep outputs apart (and `
   `docs/act3-content/` and its **README** (the source files; every data change is logged there), `docs/wireframes/act3/`
   (A3-01 … A3-12), `docs/act3-carryover-audit.md`.
 - **The Prologue:** `docs/alpha-0.3-scope.md` (wins over `claude_26-alpha-0_3-scope.md`), `docs/prologue-content/`,
-  `docs/wireframes/prologue/`. **Reference only, nothing built from them:** `docs/game-project-files/claude_50-roadmap-ideas.md`
-  (doc 50, the parking lot of unscheduled ideas), `claude_51-prologue-expansion-design.md` (doc 51, a draft design for a
-  Prologue pool, mining club and altcoins, awaiting research) and `claude_52-prologue-expansion-research-prompt.md` (doc 52,
-  its research prompt). Doc 51's opt-out invariance rule: a Prologue game that never touches the features stays byte-identical.
+  `docs/wireframes/prologue/`. **The Prologue expansion** (doc 51 v1.0, approved 14 Oct 2026; only its altcoins, §11 item 1, are
+  built, in M68): `docs/game-project-files/claude_51-prologue-expansion-design.md` (the design; its §9 lists the scope changes),
+  `claude_53-prologue-expansion-research.md` (doc 53, the research dossier), `docs/prologue-expansion-content/` and its
+  **README** (the pack: altcoin files in use, pool and club files waiting; its merge log records every change to the Prologue
+  files), `tools/prologue/` (the generators: `npm run content:prologue-expansion`; never hand-edit what they write). Doc 51's
+  opt-out invariance rule: a Prologue game that never touches the features stays byte-identical (the Prologue goldens and
+  `tests/golden/prologue-alts-seed-2009.json`, the scrypt-switcher bot's golden). **Reference only, nothing built from them:**
+  `claude_50-roadmap-ideas.md` (doc 50, the parking lot of unscheduled ideas) and `claude_52-prologue-expansion-research-prompt.md`
+  (doc 52, the research prompt).
 - **Act IV:** `docs/act4-scope.md` (**source of truth for Act IV scope**: the owner's approval, defaults, milestone plan,
   targets B1–B14, cut order and "Changes from doc 33"); `docs/game-project-files/claude_33-act-iv-design.md` (doc 33, the
   design, IV-D1–IV-D33), `claude_31-act-iv-research-dossier.md` (doc 31, the evidence), `claude_32-act-iv-concepts.md`
@@ -182,7 +188,7 @@ checks need one run per flag set. Add `--out <dir>` to keep outputs apart (and `
 - **Every Act V player action in `state.ts` has a reachable UI entry point** (a test asserts it).
 
 ### Standing invariants (check them at every milestone)
-- **Goldens:** Act I ×11, the prologue ×2, Act II, act3-s0…s3, act4-f1…f4 and act5-v1…v4 (`tests/golden/`; the Act V ones
+- **Goldens:** Act I ×11, the prologue ×2 (+ prologue-alts, M68), Act II, act3-s0…s3, act4-f1…f4 and act5-v1…v4 (`tests/golden/`; the Act V ones
   play the perfect-reader bot, so a change to that bot or to Act V's reading file moves them). A golden change must be the intended
   effect of the sub-step and be explained; accept it with `npm test -- -u tests/golden-replay.test.ts`.
 - **Byte-identity:** `npm run sim -- --act2 --act3` CSVs stay byte-identical across changes that add no rule.

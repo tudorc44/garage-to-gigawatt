@@ -3,6 +3,7 @@
 // an Act I / II bot after 2016Q4. Like every bot it only sends actions, so it can't break a rule.
 import { CONTENT, quarterIndex } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
+import { altWeek, lotAltChoices, scryptKhs } from '../src/sim/prologue/alts.ts'
 import { walletCoins } from '../src/sim/prologue/engine.ts'
 import { prologueCard } from '../src/sim/prologue/events.ts'
 import { sellable } from '../src/sim/prologue/custody.ts'
@@ -45,6 +46,11 @@ export interface PrologueBotSettings {
   goxAnswer: 'withdraw' | 'accept'
   /** Stop at every quarter report (a Plan phase every quarter). */
   stopEvery: boolean
+  /**
+   * M68.6 (doc 51 v1.0 §6): chase scrypt coins. From 2013Q2 every GPU lot mines Litecoin, then each quarter the scrypt coin
+   * that pays most per kH/s; at the 2014Q3 card it sells every GPU. Absent for every earlier bot (opt-out invariance).
+   */
+  scrypt?: boolean
 }
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
@@ -100,6 +106,28 @@ function buys(s: GameState, set: PrologueBotSettings): Action[] {
   return out
 }
 
+/**
+ * The scrypt switcher's coin choices (M68.6): from 2013Q2 each GPU lot points at the open scrypt coin that pays most per kH/s
+ * this quarter's first week (Litecoin also earns Dogecoin once merged mining starts). Nothing before 2013Q2.
+ */
+function scryptMoves(s: GameState): Action[] {
+  if (label(s.quarter) < '2013Q2') return []
+  const row = altWeek(s.quarter, 0)
+  if (!row) return []
+  const pays = (c: 'LTC' | 'DOGE') =>
+    c === 'LTC'
+      ? (row.ltc_rev_usd_khs_day ?? 0) + (row.doge_merged_mining === true ? (row.doge_rev_usd_khs_day ?? 0) : 0)
+      : (row.doge_rev_usd_khs_day ?? 0)
+  const out: Action[] = []
+  for (const lot of s.machines) {
+    const open = lotAltChoices(s, lot)
+    if (open.length === 0) continue
+    const best = [...open].sort((a, b) => pays(b) - pays(a))[0]
+    if (lot.altCoin !== best) out.push({ type: 'P0_SET_LOT_COIN', lotId: lot.id, coin: best })
+  }
+  return out
+}
+
 /** The state after these actions (refused ones skipped). */
 function apply(s: GameState, actions: Action[]): GameState {
   let t = s
@@ -111,7 +139,7 @@ function apply(s: GameState, actions: Action[]): GameState {
 }
 
 /** Sells BTC machines far less efficient (hash per kW) than the best one on sale, to make room. */
-function obsolete(s: GameState): Action[] {
+function obsolete(s: GameState, keepScryptGpus = false): Action[] {
   const efficiency = (id: string) => {
     const m = CONTENT.prologue.machines.find((x) => x.id === id)
     return m && m.coin === 'BTC' ? m.hashrate / m.power_kw : null
@@ -125,6 +153,7 @@ function obsolete(s: GameState): Action[] {
   const best = Math.max(0, ...onSale.map((m) => m.hashrate / m.power_kw))
   return s.machines
     .filter((l) => {
+      if (keepScryptGpus && scryptKhs(l.model) > 0) return false
       const e = efficiency(l.model)
       return e !== null && e < 0.25 * best
     })
@@ -245,6 +274,8 @@ export const PROLOGUE_SETTINGS: Record<string, PrologueBotSettings> = {
   },
   /** A careful hodler in the group buy (2013Q1). */
   'preorder-group': { ...NORMAL, preorder: 'group_buy' },
+  /** M68.6 (doc 51 v1.0 §6): a careful hodler that chases scrypt coins with its GPUs from 2013Q2 and sells them at the 2014Q3 card. */
+  'scrypt-switcher': { ...NORMAL, scrypt: true },
 }
 
 export const PROLOGUE_BOTS: Record<string, Strategy> = Object.fromEntries(
@@ -264,10 +295,12 @@ export function prologueBot(
       if (s.act !== 0) return after.plan(s)
       const actions = prologuePlan(s, set)
       if (set.buy) {
-        actions.push(...obsolete(s))
+        // (the scrypt switcher keeps its GPUs: they are what it mines scrypt with)
+        actions.push(...obsolete(s, set.scrypt === true))
         // Buy on the state the other actions leave (cash spent, a new site built).
         actions.push(...buys(apply(s, actions), set))
       }
+      if (set.scrypt) actions.push(...scryptMoves(apply(s, actions)))
       // The backup last: a new PC-class machine would lapse it.
       const t = apply(s, actions)
       if (
@@ -282,6 +315,7 @@ export function prologueBot(
       if (s.act !== 0) return after.answer?.(s)
       const card = prologueCard(s.interrupt?.event ?? '')
       if (card?.id === 'mtgox_collapse') return set.goxAnswer
+      if (card?.id === 'scrypt_boxes_ship' && set.scrypt) return 'sell_gpus'
       // The household's card: move out once the bot's moving-out quarter has come.
       if (card?.id === 'household')
         return set.moveOutFrom !== null &&

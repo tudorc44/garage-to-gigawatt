@@ -3,10 +3,11 @@
 // row per run, and prints the scope's §5 checks as PASS / MISS with their numbers. Also: the solo
 // fade (a gaming GPU's chance of a block per quarter), the pre-order multiples by outcome, the
 // interaction count, and 1,000 prologue-only runs for timing.
-import { writeFileSync, mkdirSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { CONTENT, quarterIndex } from '../src/content/index.ts'
 import { playFrom, playPrologue } from '../src/sim/replay.ts'
 import { schedulePrologueEvents } from '../src/sim/prologue/events.ts'
+import { altWeek, scryptKhs } from '../src/sim/prologue/alts.ts'
 import { shipsQuarter } from '../src/sim/prologue/preorders.ts'
 import { P, newPrologueGame, poolFee } from '../src/sim/prologue/setup.ts'
 import { chapterReport } from '../src/sim/selectors.ts'
@@ -334,6 +335,66 @@ const allMult = runs
   .filter((m) => Number.isFinite(m))
 lines.push(
   `      Act I growth multiples (all prologue bots): p10 ${x(pct(allMult, 0.1))}, median ${x(median(allMult))}, p90 ${x(pct(allMult, 0.9))}`,
+)
+// ---------- M68.6 (doc 51 v1.0 §6): the altcoin checks ----------
+
+/** One gaming GPU's income over a quarter, in dollars: on bitcoin (pool, game series) and on each scrypt coin. */
+function gpuQuarterUsd(q: number) {
+  const gpu = getModel('gpu_gaming_2010')!
+  const khs = scryptKhs('gpu_gaming_2010')
+  let btc = 0
+  let ltc = 0
+  let doge = 0
+  for (let w = 0; w < W; w++) {
+    const wk = marketWeek(q, w)
+    const net = wk.btc_hashrate_EHs * 1e6
+    const perBlock = wk.btc_block_subsidy / Math.max(0.01, 1 - wk.btc_fee_share)
+    btc += (gpu.hashrate / (gpu.hashrate + net)) * P().blocks_per_week * perBlock * (1 - poolFee(q)) * wk.btc_usd
+    const row = altWeek(q, w)
+    if (row?.ltc_rev_usd_khs_day) {
+      ltc += khs * row.ltc_rev_usd_khs_day * 7
+      // merged mining: the same work also pays Dogecoin
+      if (row.doge_merged_mining === true && row.doge_rev_usd_khs_day) ltc += khs * row.doge_rev_usd_khs_day * 7
+    }
+    if (row?.doge_rev_usd_khs_day) doge += khs * row.doge_rev_usd_khs_day * 7
+  }
+  return { btc, ltc, doge, scrypt: Math.max(ltc, doge) }
+}
+const gq = (label: string) => gpuQuarterUsd(quarterIndex(label)!)
+
+// X-B1: every earlier prologue bot's output is byte-identical to the baseline run (npm run sim -- --prologue on main)
+const baselineCsv = argValue('--baseline', '')
+if (baselineCsv) {
+  const base = readFileSync(baselineCsv, 'utf8').split('\n')
+  const mine = readFileSync(`${OUT}/prologue-runs.csv`, 'utf8').split('\n')
+  const rowsOf = (lines: string[], bot: string) => lines.filter((l) => l.startsWith(`${bot},`))
+  const bots = Object.keys(PROLOGUE_BOTS).filter((b) => b !== 'scrypt-switcher')
+  const diffs = bots.filter((b) => rowsOf(base, b).join('\n') !== rowsOf(mine, b).join('\n'))
+  check(
+    base[0] === mine[0] && diffs.length === 0 && bots.every((b) => rowsOf(base, b).length === SEEDS),
+    'X-B1 opt-out invariance: every earlier prologue bot\'s rows are byte-identical to main\'s',
+    diffs.length === 0 ? `${bots.length} bots × ${SEEDS} seeds identical (header too)` : `differs: ${diffs.join(', ')}`,
+  )
+} else lines.push('      X-B1: not checked (pass --baseline <main\'s prologue-runs.csv>)')
+const q4 = gq('2013Q4')
+const fall = 1 - gq('2014Q4').scrypt / gq('2014Q1').scrypt
+check(
+  q4.scrypt / q4.btc >= 10 && fall >= 0.95,
+  'X-B6 scrypt pays far more than bitcoin to a 2010 GPU in 2013Q4, then collapses through 2014',
+  `2013Q4: scrypt $${q4.scrypt.toFixed(0)} vs bitcoin $${q4.btc.toFixed(2)} a quarter (${(q4.scrypt / q4.btc).toFixed(1)}×, target ≥ 10×); scrypt income 2014Q1 $${gq('2014Q1').scrypt.toFixed(0)} → 2014Q4 $${gq('2014Q4').scrypt.toFixed(1)} (fall ${(fall * 100).toFixed(1)}%, target ≥ 95%)`,
+)
+const sw = of('scrypt-switcher')
+const swUsd = median(sw.map((r) => r.prologueUsd))
+const chUsd = median(of('careful-hodler').map((r) => r.prologueUsd))
+check(
+  swUsd < chUsd,
+  'X-B7 the scrypt-switcher ends 2016Q4 below the careful-hodler (median net worth)',
+  `scrypt-switcher ${usd(swUsd)} vs careful-hodler ${usd(chUsd)} (${usd(swUsd - chUsd)}; ${sw.length} runs); median gap per seed ${usd(median(sw.map((r, i) => r.prologueUsd - of('careful-hodler')[i].prologueUsd)))}`,
+)
+check(
+  Math.max(...sw.map((r) => r.planPhases)) <= 14,
+  'pacing: the scrypt-switcher has ≤ 14 Plan phases',
+  `Plan phases median ${median(sw.map((r) => r.planPhases))}, max ${Math.max(...sw.map((r) => r.planPhases))}; cards needing a choice median ${median(sw.map((r) => r.cardsShown))}, max ${Math.max(...sw.map((r) => r.cardsShown))} (careful-hodler: median ${median(cards)}, max ${Math.max(...cards)})`,
 )
 check(
   thousandMs < 120_000,

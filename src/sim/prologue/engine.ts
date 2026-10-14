@@ -36,6 +36,7 @@ import {
   P,
   emptyPrologueQuarter,
   householdTier,
+  isDecisionQuarter,
   isDecisionQuarterFor,
   netWorthUsd,
   poisson,
@@ -365,7 +366,8 @@ export function prologueNextQuarter(s: GameState, stopHere = false): void {
   deliverPreorders(s)
   if (isDecisionQuarterFor(s, s.quarter) || stopHere || p.stopNext) {
     p.stopNext = false
-    if (!isDecisionQuarterFor(s, s.quarter)) p.flags.push('planned_now')
+    // (an opt-in decision quarter, 2014Q3, is "planned" too: the GPUs a card sells there must not turn it into an auto-played one)
+    if (!isDecisionQuarter(s.quarter)) p.flags.push('planned_now')
     s.phase = 'plan'
     p.quarter = emptyPrologueQuarter()
   } else beginPrologueLive(s)
