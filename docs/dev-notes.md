@@ -23,7 +23,7 @@ Split (docs 43 §0.26, 51 v1.1 §12 and 54 are in the repo; only the pool is bui
 - M69.4 done: Ventures in the Prologue nav (`Ventures.tsx`: open with method and fee, outside hashrate, luck, reputation, the quarter's fees and bills, settings, protection, cold storage, sell or close), the quarter report's pool row and the chapter report's pool-sale line; `tests/ui/prologueReachability.test.tsx` (every P0_ action is sent by a Prologue screen, plus the panel's flows). Checked in the browser.
 - M69.5 done: the Act V Perfect bot's Heat habit (`heatHabit` in `tools/act5/bots.ts`: talk to the neighbours at Heat 45+, noise mitigation if it talked there last quarter and it is still 45+; sent after its other moves); no other bot or Heat value changes; `tests/sim/act5HeatHabit.test.ts`.
   The four act5-v goldens moved, each the same way and no other: its cash is lower by the outreach and mitigation bills (v1: $317.80M to $317.51M at the end), the hottest site's Heat is lower (v1 report quarters 47.2 to 38.9) and the valuation follows the cash; their stored `siteHeat` now carries the outreach quarter.
-- M69.6 (F) bots (pool-operator, pps-operator), the prologue-pool golden, `--prologue`, `--act5` and `--act2 --act3` runs
+- M69.6 code done: bots `pool-operator`, `pps-operator` (both sell as mined, so X-B2's ratio is against sell-as-mined: mine, reversible), `pool-and-scrypt` (pacing), the runner's X-B2, X-B3, X-B4 and pool CSV (`prologue-pool-runs.csv`, apart from the main CSV), `--baseline` compares every bot the baseline has, golden `prologue-pool-seed-2009`. Sims and results: see "M69 results" below.
 
 ## M68: doc 43 §0.25 and the Prologue's altcoins (doc 51 v1.0) (branch `m68` from `main` at `4cf8373`)
 
