@@ -274,6 +274,8 @@ export const PROLOGUE_SETTINGS: Record<string, PrologueBotSettings> = {
   },
   /** A careful hodler in the group buy (2013Q1). */
   'preorder-group': { ...NORMAL, preorder: 'group_buy' },
+  /** M69.1 (doc 51 v1.1 §12 item 1): the sell-as-mined bot with the altcoins, for the paired X-B7 check. */
+  'sell-as-mined-scrypt': { ...NORMAL, sellPct: 1, custody: 'exchange', scrypt: true },
   /** M68.6 (doc 51 v1.0 §6): a careful hodler that chases scrypt coins with its GPUs from 2013Q2 and sells them at the 2014Q3 card. */
   'scrypt-switcher': { ...NORMAL, scrypt: true },
 }

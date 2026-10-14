@@ -386,11 +386,32 @@ check(
 const sw = of('scrypt-switcher')
 const swUsd = median(sw.map((r) => r.prologueUsd))
 const chUsd = median(of('careful-hodler').map((r) => r.prologueUsd))
-check(
-  swUsd < chUsd,
-  'X-B7 the scrypt-switcher ends 2016Q4 below the careful-hodler (median net worth)',
-  `scrypt-switcher ${usd(swUsd)} vs careful-hodler ${usd(chUsd)} (${usd(swUsd - chUsd)}; ${sw.length} runs); median gap per seed ${usd(median(sw.map((r, i) => r.prologueUsd - of('careful-hodler')[i].prologueUsd)))}`,
+// (M69.1: the scrypt-switcher's gap to careful-hodler is reported, not judged: doc 51 v1.1 §12 item 1)
+lines.push(
+  `      scrypt-switcher vs careful-hodler (reported, not judged): ${usd(swUsd)} vs ${usd(chUsd)} (${usd(swUsd - chUsd)}); median gap per seed ${usd(median(sw.map((r, i) => r.prologueUsd - of('careful-hodler')[i].prologueUsd)))}`,
 )
+// X-B7 (doc 51 v1.1 §12 item 1), per feature on paired seeds: the sell-as-mined bot with the feature against the same bot
+// and seed without it. The feature may lift 2016Q4 net worth by at most 3x, and the bot with it stays below careful-hodler's median.
+const FEATURE_PAIRS: { feature: string; base: string; withFeature: string }[] = [
+  { feature: 'altcoins', base: 'sell-as-mined', withFeature: 'sell-as-mined-scrypt' },
+  { feature: 'pool', base: 'sell-as-mined', withFeature: 'sell-as-mined-pool' },
+]
+for (const f of FEATURE_PAIRS) {
+  if (!PROLOGUE_BOTS[f.withFeature]) continue
+  const a = of(f.base)
+  const b = of(f.withFeature)
+  const lifts = b.map((r) => {
+    const base = a.find((x) => x.seed === r.seed)
+    return base && base.prologueUsd > 0 ? r.prologueUsd / base.prologueUsd : NaN
+  }).filter(Number.isFinite)
+  const lift = median(lifts)
+  const withUsd = median(b.map((r) => r.prologueUsd))
+  check(
+    lift <= 3 && withUsd < chUsd,
+    `X-B7 (${f.feature}) paired seeds: ${f.withFeature} vs ${f.base}`,
+    `median lift ${x(lift)} (p10 ${x(pct(lifts, 0.1))}, p90 ${x(pct(lifts, 0.9))}; target at most 3×); ${f.withFeature} median ${usd(withUsd)} vs ${f.base} ${usd(median(a.map((r) => r.prologueUsd)))}; careful-hodler ${usd(chUsd)}; ${lifts.length} pairs`,
+  )
+}
 check(
   Math.max(...sw.map((r) => r.planPhases)) <= 14,
   'pacing: the scrypt-switcher has ≤ 14 Plan phases',
