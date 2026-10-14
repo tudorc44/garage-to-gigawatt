@@ -23,6 +23,7 @@ doc 51 §11 item 1, altcoins for old GPUs; no pools or club yet):
 - M68.5 (E) screens: coin selector on the Rig, LTC and DOGE in the treasury and sell dialog, news headlines
 - M68.1 done: the Plan news band in Acts III-V (`src/sim/planNews.ts`: Act V's first Signals headline; Acts III-IV the quarter's first shared card title or nothing; test `tests/ui/planNewsBand.test.tsx`); Heat's meter and mitigation rows added to the Act V reachability test (all reachable, nothing to fix).
   Heat report: `node tools/act5/heatReport.ts` (10 seeds, Perfect and Holder, both presets, four futures; output kept for the final M68 section). Heat values unchanged.
+- M68.2 done: generators in `tools/prologue/` (`npm run content:prologue-expansion`; they write the docs folder and the two live CSVs, LF line endings, outputs identical to the delivered values); `market_*_prologue_alts.csv/.json` in `src/content/` (JSON via `npm run content:market`), schemas, `tests/prologueExpansionContent.test.ts`.
 - M68.6 (F) the `scrypt-switcher` bot, `npm run sim -- --prologue` and the X-B table, the `prologue-alts` golden, the `--act2 --act3` byte-identity run
 
 ## M67: doc 43 §0.24 (branch `m67` from `main` at `7a5605e`)

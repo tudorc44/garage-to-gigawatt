@@ -1,9 +1,10 @@
 """Generates the Prologue's Litecoin and Dogecoin market files (doc 51 v1.0, doc 53).
 Inputs are the anchors below; outputs are written next to this folder. Re-run after the second research pass replaces anchors.
-Usage: python3 -I tools/gen_alts.py <path to docs/prologue-content>"""
+Usage: npm run content:prologue-expansion  (python3 -I tools/prologue/gen_alts.py <path to docs/prologue-content>)
+In the repo (M68.2) it lives in tools/prologue/ and writes into docs/prologue-expansion-content/; the CSVs use LF line endings."""
 import csv, math, sys, datetime as dt
 SRC = sys.argv[1]
-OUT = __file__.rsplit('/tools/', 1)[0]
+OUT = __file__.rsplit('/tools/', 1)[0] + '/docs/prologue-expansion-content'
 
 # Quarterly price anchors (doc 53 content pack; CoinLore [C] from 28 Apr 2013 for LTC and Dec 2013 for DOGE; earlier LTC [D]).
 # quarter: (open, close, high, low, avg, estimate, grade)
@@ -74,8 +75,10 @@ for w in weeks:
     rows.append(r)
 cols = ['week', 'quarter', 'ltc_usd', 'ltc_hashrate_GHs', 'ltc_block_reward', 'ltc_rev_usd_khs_day', 'doge_usd', 'doge_hashrate_GHs',
         'doge_block_reward_expected', 'doge_rev_usd_khs_day', 'doge_merged_mining', 'estimate']
-with open(f'{OUT}/market_weekly_prologue_alts.csv', 'w', newline='') as f:
-    wr = csv.DictWriter(f, cols); wr.writeheader(); wr.writerows(rows)
+LIVE = __file__.rsplit('/tools/', 1)[0] + '/src/content'  # the game reads its copies here (a test checks they stay identical)
+for d in (OUT, LIVE):
+    with open(f'{d}/market_weekly_prologue_alts.csv', 'w', newline='') as f:
+        wr = csv.DictWriter(f, cols, lineterminator='\n'); wr.writeheader(); wr.writerows(rows)
 
 qcols = ['quarter', 'weeks'] + [f'{c}_{k}' for c in ('ltc', 'doge') for k in ('usd_open', 'usd_close', 'usd_high', 'usd_low', 'usd_avg', 'hashrate_GHs_avg', 'block_reward_q_start', 'price_grade')] + ['estimate']
 qrows = []
@@ -88,8 +91,9 @@ for qq in quarters:
                       f'{c}_hashrate_GHs_avg': H[q], f'{c}_block_reward_q_start': rw(dt.date(int(q[:4]), 3 * int(q[5]) - 2, 1)), f'{c}_price_grade': g})
     r['estimate'] = est
     qrows.append(r)
-with open(f'{OUT}/market_quarterly_prologue_alts.csv', 'w', newline='') as f:
-    wr = csv.DictWriter(f, qcols); wr.writeheader(); wr.writerows(qrows)
+for d in (OUT, LIVE):
+    with open(f'{d}/market_quarterly_prologue_alts.csv', 'w', newline='') as f:
+        wr = csv.DictWriter(f, qcols, lineterminator='\n'); wr.writeheader(); wr.writerows(qrows)
 
 # X-B6 check on the game's own BTC series: a 2010 gaming GPU, 390 MH/s on BTC (machines_prologue.json) vs 400 kH/s on scrypt [B/D].
 print('quarter, GPU $/day on LTC, on DOGE, on BTC (game series), LTC/BTC ratio')

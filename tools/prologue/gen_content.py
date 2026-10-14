@@ -1,7 +1,7 @@
 """Writes the Prologue expansion's JSON content (doc 51 v1.0). Values carry {value, grade, source} like the existing files.
-Usage: python3 -I tools/gen_content.py"""
+Usage: npm run content:prologue-expansion  (python3 -I tools/prologue/gen_content.py; writes into docs/prologue-expansion-content/)"""
 import json
-OUT = __file__.rsplit('/tools/', 1)[0]
+OUT = __file__.rsplit('/tools/', 1)[0] + '/docs/prologue-expansion-content'
 def V(value, grade, source): return {'value': value, 'grade': grade, 'source': source}
 def save(name, obj):
     with open(f'{OUT}/{name}', 'w') as f: json.dump(obj, f, indent=1, ensure_ascii=False); f.write('\n')

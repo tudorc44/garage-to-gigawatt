@@ -5,9 +5,9 @@ Draft content for the three Prologue additions: your own pool, the mining club, 
 **Status: draft.** The structure is final for the build to code against. Values marked placeholder change after the second research pass (doc 51 v1.0 §10); re-run the generators and nothing else changes shape.
 
 ## Generators (never hand-edit their outputs)
-- `tools/gen_alts.py <path to docs/prologue-content>` writes the two market files from the anchors at its top and prints the X-B6 check on the game's own BTC series.
-- `tools/gen_content.py` writes every JSON file below.
-- Run with `python3 -I`. In the repo they belong in `tools/prologue/`, with an npm script, as Act V's generators do.
+- The generators live in `tools/prologue/` (moved there in M68.2; the pack's copy was identical): `gen_alts.py <path to docs/prologue-content>` writes the two market files from the anchors at its top and prints the X-B6 check on the game's own BTC series; `gen_content.py` writes every JSON file below.
+- Run both with `npm run content:prologue-expansion` (it runs them with `python3 -I`). They write into this folder only.
+- Change log (M68.2): the two moved generators write into `docs/prologue-expansion-content/` by an explicit path, and the CSVs now end their lines with LF (the repo keeps LF everywhere; the delivered copies had CRLF, which git normalised). No value changed.
 
 ## Files
 | File | What it is | Goes where |

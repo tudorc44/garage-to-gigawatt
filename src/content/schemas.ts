@@ -268,6 +268,48 @@ export const marketQuarterAct4Schema = z.object({
 export const marketQuarterlyAct4Schema = z.array(marketQuarterAct4Schema).min(1)
 export type MarketQuarterAct4Row = z.output<typeof marketQuarterAct4Schema>
 
+// ---------- the Prologue's altcoin series (M68.2, doc 51 v1.0 §5; generated from the two *_prologue_alts.csv files) ----------
+// Empty before a coin exists (LTC from 2011Q4, DOGE from 2013Q4), so null.
+
+export const marketWeekPrologueAltsSchema = z.object({
+  week: isoDate,
+  quarter: quarterId,
+  ltc_usd: nullableNonNeg,
+  ltc_hashrate_GHs: nullableNonNeg,
+  ltc_block_reward: nullableNonNeg,
+  ltc_rev_usd_khs_day: nullableNonNeg,
+  doge_usd: nullableNonNeg,
+  doge_hashrate_GHs: nullableNonNeg,
+  doge_block_reward_expected: nullableNonNeg,
+  doge_rev_usd_khs_day: nullableNonNeg,
+  doge_merged_mining: z.boolean().nullable(),
+  estimate: z.boolean(),
+})
+export const marketPrologueAltsSchema = z.array(marketWeekPrologueAltsSchema).min(1)
+
+export const marketQuarterPrologueAltsSchema = z.object({
+  quarter: quarterId,
+  weeks: z.number().int().min(12).max(14),
+  ltc_usd_open: nullableNonNeg,
+  ltc_usd_close: nullableNonNeg,
+  ltc_usd_high: nullableNonNeg,
+  ltc_usd_low: nullableNonNeg,
+  ltc_usd_avg: nullableNonNeg,
+  ltc_hashrate_GHs_avg: nullableNonNeg,
+  ltc_block_reward_q_start: nullableNonNeg,
+  ltc_price_grade: z.enum(['', 'A', 'B', 'C', 'D']),
+  doge_usd_open: nullableNonNeg,
+  doge_usd_close: nullableNonNeg,
+  doge_usd_high: nullableNonNeg,
+  doge_usd_low: nullableNonNeg,
+  doge_usd_avg: nullableNonNeg,
+  doge_hashrate_GHs_avg: nullableNonNeg,
+  doge_block_reward_q_start: nullableNonNeg,
+  doge_price_grade: z.enum(['', 'A', 'B', 'C', 'D']),
+  estimate: z.boolean(),
+})
+export const marketQuarterlyPrologueAltsSchema = z.array(marketQuarterPrologueAltsSchema).min(1)
+
 export const marketWeekAct4Schema = marketWeekAct3Schema
   .omit({ scenario: true })
   .extend({ future: futureId })

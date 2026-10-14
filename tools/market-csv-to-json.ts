@@ -43,6 +43,10 @@ export const MARKET_FILES = [
   ),
   // M35.1 (doc 38): the energy series by year, 2009-2040, the same in every scenario and future (docs/energy-content/README.md).
   ['market_energy.csv', 'market_energy.json'],
+  // M68.2 (doc 51 v1.0 §5): the Prologue's Litecoin and Dogecoin series (`npm run content:prologue-expansion` writes the CSVs
+  // into docs/prologue-expansion-content/ and src/content/, identical).
+  ['market_weekly_prologue_alts.csv', 'market_weekly_prologue_alts.json'],
+  ['market_quarterly_prologue_alts.csv', 'market_quarterly_prologue_alts.json'],
 ] as const
 
 type Cell = string | number | boolean | null
@@ -64,7 +68,9 @@ export function csvToRows(csv: string): Record<string, Cell>[] {
         col === 'scenario' ||
         col === 'phase' ||
         col === 'future' ||
-        col === 'texas_summer'
+        col === 'texas_summer' ||
+        col === 'ltc_price_grade' ||
+        col === 'doge_price_grade'
       )
         row[col] = cell
       else if (cell === '') row[col] = null
