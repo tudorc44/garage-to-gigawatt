@@ -58,6 +58,12 @@ export interface PrologueBotSettings {
    * every earlier bot (opt-out invariance).
    */
   ownPool?: { method: 'PPLNS' | 'PPS'; feePct: number; coldStorage: boolean }
+  /**
+   * M70.6 (doc 51 v1.2 §4): join the mining club in 2013Q1's Plan phase with this stake, keys and hosting, and buy the club out at
+   * the handover. `traps`: take the scrypt-box and cloud-contract offers (the trusting player) instead of passing. Absent for every
+   * earlier bot (opt-out invariance).
+   */
+  club?: { stake: number; keys: 'player' | 'jun'; hosting: 'your_place' | 'friends_flat'; traps: boolean }
 }
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
@@ -141,6 +147,16 @@ function poolMoves(s: GameState, pool: NonNullable<PrologueBotSettings['ownPool'
   if (!s.prologue!.ownPool && !s.prologue!.poolEnded && poolUnlocked(s)) out.push({ type: 'P0_OPEN_POOL', method: pool.method, feePct: pool.feePct })
   const t = apply(s, out)
   if (t.prologue!.ownPool && pool.coldStorage && !t.prologue!.ownPool.coldStorage) out.push({ type: 'P0_POOL_COLD_STORAGE' })
+  return out
+}
+
+/** The club bot's moves (M70.6): join in 2013Q1, and ask to buy the friends out at the handover. (Refused ones are skipped.) */
+function clubMoves(s: GameState, club: NonNullable<PrologueBotSettings['club']>): Action[] {
+  const out: Action[] = []
+  const p = s.prologue!
+  if (!p.club && !p.clubEnded && label(s.quarter) === '2013Q1')
+    out.push({ type: 'P0_JOIN_CLUB', stake: club.stake, keys: club.keys, hosting: club.hosting })
+  if (p.club && p.club.ending !== 'buy_out') out.push({ type: 'P0_CLUB_ENDING', kind: 'buy_out' })
   return out
 }
 
@@ -301,6 +317,21 @@ export const PROLOGUE_SETTINGS: Record<string, PrologueBotSettings> = {
   'pool-and-scrypt': { ...NORMAL, sellPct: 1, custody: 'exchange', scrypt: true, ownPool: { method: 'PPLNS', feePct: 0.01, coldStorage: true } },
   /** M69.6 (X-B3): the same with PPS at a 2% fee and no cold storage: the risky pool. */
   'pps-operator': { ...NORMAL, sellPct: 1, custody: 'exchange', ownPool: { method: 'PPS', feePct: 0.02, coldStorage: false } },
+  /** M70.6 (X-B5): the sell-as-mined bot alone in the group buy (2013Q1), the club bot's solo comparison. */
+  'group-solo': { ...NORMAL, sellPct: 1, custody: 'exchange', preorder: 'group_buy' },
+  /** M70.6 (X-B5, X-B7): the sell-as-mined bot in the club with $2,000, its own keys, in your place; passes both traps, buys the friends out. */
+  'club-bot': { ...NORMAL, sellPct: 1, custody: 'exchange', club: { stake: 2000, keys: 'player', hosting: 'your_place', traps: false } },
+  /** M70.6: the trusting player: Jun holds the keys, both traps taken (the scrypt box and the cloud contract). */
+  'club-trusting': { ...NORMAL, sellPct: 1, custody: 'exchange', club: { stake: 2000, keys: 'jun', hosting: 'your_place', traps: true } },
+  /** M70.6 (X-B8): a bot using all three features (altcoins, own pool, club), for the pacing numbers. */
+  'club-all': {
+    ...NORMAL,
+    sellPct: 1,
+    custody: 'exchange',
+    scrypt: true,
+    ownPool: { method: 'PPLNS', feePct: 0.01, coldStorage: true },
+    club: { stake: 2000, keys: 'player', hosting: 'your_place', traps: false },
+  },
   /** M68.6 (doc 51 v1.0 §6): a careful hodler that chases scrypt coins with its GPUs from 2013Q2 and sells them at the 2014Q3 card. */
   'scrypt-switcher': { ...NORMAL, scrypt: true },
 }
@@ -329,6 +360,7 @@ export function prologueBot(
       }
       if (set.scrypt) actions.push(...scryptMoves(apply(s, actions)))
       if (set.ownPool) actions.push(...poolMoves(apply(s, actions), set.ownPool))
+      if (set.club) actions.push(...clubMoves(apply(s, actions), set.club))
       // The backup last: a new PC-class machine would lapse it.
       const t = apply(s, actions)
       if (
@@ -344,6 +376,14 @@ export function prologueBot(
       const card = prologueCard(s.interrupt?.event ?? '')
       if (card?.id === 'mtgox_collapse') return set.goxAnswer
       if (card?.id === 'scrypt_boxes_ship' && set.scrypt) return 'sell_gpus'
+      if (set.club) {
+        if (card?.id === 'club_scrypt_box') return set.club.traps ? 'buy' : 'pass'
+        if (card?.id === 'club_cloud_contract') return set.club.traps ? 'invest' : 'pass'
+        if (card?.id === 'club_power_bill') return 'split'
+        if (card?.id === 'club_peak_cashout') return 'wait'
+        if (card?.id === 'club_gpu_flip') return 'keep'
+        if (card?.id === 'club_breakup') return 'buy_out'
+      }
       // The household's card: move out once the bot's moving-out quarter has come.
       if (card?.id === 'household')
         return set.moveOutFrom !== null &&

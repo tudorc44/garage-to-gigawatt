@@ -8,6 +8,7 @@ import {
   prologueChapterView,
   prologueHandoverView,
 } from '../../../sim/prologue/views.ts'
+import { prologueClubView } from '../../../sim/prologue/views.ts'
 import { Icon } from '../../components/basics.tsx'
 import { ActFinances } from '../../components/financeSummary.tsx'
 import { fmt } from '../../format.ts'
@@ -130,10 +131,22 @@ function Report({ state, next }: PrologueProps & { next: () => void }) {
             // M69.4 (doc 51 v1.1 §3.4): the pool's sale, in the chapter report
             <span class="num-s" data-pool-sold>
               {tDynamic(
-                state.prologue.poolEnded.kind === 'handover' ? 'chapter.p0.pool_sold_handover' : 'chapter.p0.pool_sold',
+                state.prologue.poolEnded.kind === 'handover'
+                  ? 'chapter.p0.pool_sold_handover'
+                  : state.prologue.poolEnded.kind === 'insolvent'
+                    ? 'chapter.p0.pool_insolvent'
+                    : 'chapter.p0.pool_sold',
                 '',
                 { pool: state.prologue.poolEnded.name, value: fmt.money(state.prologue.poolEnded.usd) },
               )}
+            </span>
+          )}
+          {state.prologue?.clubEnded && (
+            // M70.5 (doc 51 v1.2 §4.5): how the club ended, in the chapter report
+            <span class="num-s" data-club-ended>
+              {state.prologue.clubEnded.kind === 'buy_out'
+                ? tDynamic('chapter.p0.club_buyout', '', { names: prologueClubView(state)?.cast.map((c) => c.name).join(', ') ?? '' })
+                : tDynamic('chapter.p0.club_dissolved', '', { value: fmt.money(state.prologue.clubEnded.usd) })}
             </span>
           )}
           <Kv

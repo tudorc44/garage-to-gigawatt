@@ -1,4 +1,4 @@
-# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.1, 14 Oct 2026 (v1.0 13 Oct; §12 after M68)
+# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.2, 14 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69)
 
 *Design thread. v0.1 (13 Oct) was the draft; v1.0 takes in the research dossier (doc 53, saved by the research thread as doc 52) and the owner's answers. The content pack is in `claude/prologue-expansion-content/` with its generators. Built on the Prologue as built: `docs/alpha-0.3-scope.md` (wins over doc 26 and doc 23), `docs/prologue-content/`.*
 
@@ -142,3 +142,17 @@ The second research pass can run alongside milestones 1-3; its numbers drop into
 3. **The later-price clause goes in when the second research pass dates the closes (O, §8 item 3).** The TODO stays until then.
 4. **Continuous slippage (DT).** Accepted: smoother, and no step a player can game by splitting sales at 0.5% boundaries.
 5. **The second research pass:** prompt in doc 54. Its numbers drop into tools/prologue/ before the balance milestone (§11 item 4); nothing waits on it before then.
+
+## 13. After M69 (14 Oct 2026)
+*Design-thread decisions (DT) on the M69 handover. M69 is accepted as built, with its "(mine, reversible)" decisions, which become the spec: P0_POOL_SETTINGS (P0_SET_POOL already meant joining a pool); new outside miners each quarter = start_pull × fee factor × reputation × luck (luck under PPLNS only, clamped 0.5-1.5), with 5% leaving; an unlucky week is one with under half the expected blocks when at least one was expected; the risk cards rolled by the pool system on their own streams; the sale at the last four completed quarters of fee income × 2; the default answers. X-B1, X-B4, X-B6 and X-B7 (altcoins, 0.76×) pass.*
+
+**Findings first:**
+- **The pool is too rich (X-B2 4.95×, X-B7 pool 5.14×), but the main input is a placeholder.** Outside miners scale with `small_pool_share_by_year`, a designed number the second research pass (doc 54 item 4) replaces, and the server bill is also due from that pass. Tuning before then would fit a guess.
+- **PPS at 2% going bust is realistic; the game over isn't.** Real PPS pools charged 5-10% (DeepBit 10%, BTC Guild 5-7.5%, doc 53 B1) because the operator carries the luck, so a 2% PPS pool should fail often. X-B3's insolvency clause passes (68% against at least 5%). What's wrong is that 31 of 50 runs end in a game over: a side venture's failure ends the whole Prologue.
+- **X-B3's theft clause is measured on cut-short runs.** Theft at 1% a quarter gives about 20% over a full 2011-2016 run; 6% comes from runs that ended early.
+
+**Decisions:**
+1. **Pool balance waits for the second research pass (DT).** No lever now. At the balance milestone (§11 item 4), in order, smallest step first ⚙: (a) drop in the sourced small-pool share and server costs; (b) if X-B2 or X-B7 still misses, `start_pull` 0.005 → 0.0025; (c) then the fee elasticity -8% → -12% per point. The 3× ceiling stays.
+2. **PPS insolvency closes the pool; it doesn't end the game (DT).** When PPS cash runs out: the pool pays what it owes miners from the player's cash down to zero, closes, sells for nothing, and the chapter report says so ("Halfblock Pool ran out of money under PPS and closed"). Reputation no longer matters after that. A game over still happens only through the Prologue's existing rules (cash below zero after the automatic move back home). PPS's reserve rule and the crunch card stay as they are.
+3. **X-B3 is re-measured after decision 2 (DT).** With runs no longer cut short, theft should land near 20% without cold storage. The 1% rate stays; if the full-run figure is still under 10%, report it and the balance milestone decides.
+4. **The club is next** (§11 item 3), with decision 2 in the same run.

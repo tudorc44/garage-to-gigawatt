@@ -162,14 +162,14 @@ describe('Act V behind the dev flag (doc 43 §0.13)', () => {
 
 describe('save format 6 (M49)', () => {
   it('a version-5 save (any act up to IV) migrates to 6 with nothing else changed; an Act V save round-trips', () => {
-    expect(SAVE_VERSION).toBe(8)
+    expect(SAVE_VERSION).toBe(9)
     const json = (x: unknown) => JSON.parse(JSON.stringify(x))
     const s4 = act4Finished()
     // (the loader also fills fields older formats lacked, as it always has: compared on what the migration touches)
     const r4 = restoreSave(json({ ...s4, version: 5 }))
     expect(r4.ok).toBe(true)
     if (!r4.ok) return
-    expect([r4.state.version, r4.state.act, r4.state.quarter, r4.state.cash]).toEqual([8, 4, s4.quarter, s4.cash])
+    expect([r4.state.version, r4.state.act, r4.state.quarter, r4.state.cash]).toEqual([9, 4, s4.quarter, s4.cash])
     const s5 = toAct5(s4, { vfuture: 'v2' })
     const r5 = restoreSave(json(s5))
     expect(r5.ok).toBe(true)

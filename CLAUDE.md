@@ -92,7 +92,7 @@ checks need one run per flag set. Add `--out <dir>` to keep outputs apart (and `
   files), `tools/prologue/` (the generators: `npm run content:prologue-expansion`; never hand-edit what they write). Doc 51's
   opt-out invariance rule: a Prologue game that never touches the features stays byte-identical (the Prologue goldens and
   `tests/golden/prologue-alts-seed-2009.json` (the scrypt-switcher bot's golden) and `prologue-pool-seed-2009.json` (the
-  pool-operator bot's)). **Reference only, nothing built from them:**
+  pool-operator bot's) and `prologue-club-seed-2009.json` (the club-trusting bot's)). **Reference only, nothing built from them:**
   `claude_50-roadmap-ideas.md` (doc 50, the parking lot of unscheduled ideas) and `claude_52-prologue-expansion-research-prompt.md`
   (doc 52, the research prompt).
 - **Act IV:** `docs/act4-scope.md` (**source of truth for Act IV scope**: the owner's approval, defaults, milestone plan,
@@ -191,7 +191,7 @@ checks need one run per flag set. Add `--out <dir>` to keep outputs apart (and `
 - **Every Act V player action in `state.ts` has a reachable UI entry point** (a test asserts it).
 
 ### Standing invariants (check them at every milestone)
-- **Goldens:** Act I ×11, the prologue ×2 (+ prologue-alts, M68, and prologue-pool, M69), Act II, act3-s0…s3, act4-f1…f4 and act5-v1…v4 (`tests/golden/`; the Act V ones
+- **Goldens:** Act I ×11, the prologue ×2 (+ prologue-alts, M68, prologue-pool, M69, and prologue-club, M70), Act II, act3-s0…s3, act4-f1…f4 and act5-v1…v4 (`tests/golden/`; the Act V ones
   play the perfect-reader bot, so a change to that bot or to Act V's reading file moves them). A golden change must be the intended
   effect of the sub-step and be explained; accept it with `npm test -- -u tests/golden-replay.test.ts`.
 - **Byte-identity:** `npm run sim -- --act2 --act3` CSVs stay byte-identical across changes that add no rule.

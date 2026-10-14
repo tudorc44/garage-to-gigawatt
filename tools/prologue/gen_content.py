@@ -4,7 +4,7 @@ import json
 OUT = __file__.rsplit('/tools/', 1)[0] + '/docs/prologue-expansion-content'
 def V(value, grade, source): return {'value': value, 'grade': grade, 'source': source}
 LIVE = __file__.rsplit('/tools/', 1)[0] + '/src/content'
-LIVE_COPIES = {'pools_player.json'}  # the files the game reads as they are (a test checks the copy is identical); M69.2
+LIVE_COPIES = {'pools_player.json', 'club.json', 'preorders_additions.json'}  # the files the game reads as they are (a test checks the copy is identical); M69.2
 def save(name, obj):
     for d in ([OUT, LIVE] if name in LIVE_COPIES else [OUT]):
         with open(f'{d}/{name}', 'w') as f: json.dump(obj, f, indent=1, ensure_ascii=False); f.write('\n')
@@ -150,6 +150,7 @@ save('text_prologue_expansion.en.json', {
  'glossary.ddos': 'DDoS: a flood of junk traffic that knocks a server offline.',
  'chapter.p0.pool_sold': 'You sold {pool} for {value}.',
  'chapter.p0.pool_sold_handover': 'You sold {pool} when you moved on, for {value}.',
+ 'chapter.p0.pool_insolvent': '{pool} ran out of money under PPS and closed.',
  'chapter.p0.club_buyout': 'You bought out {names}. In Act I, they are the crew who helped you start.',
  'chapter.p0.club_dissolved': 'The club sold up and split {value}.',
  'chapter.p0.alts_sold': 'You sold {amount} {coin} in 2016 for {value}. At {later_date} those coins were worth {later_value}.'})

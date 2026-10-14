@@ -44,6 +44,21 @@ describe('the perfect reader\'s Heat habit (M69.5)', () => {
     expect(heatHabit(m)).toEqual([{ type: 'OUTREACH', siteId: mid }])
   })
 
+  it('acts on every site at or above 45, the hottest first (M70.2)', () => {
+    const s = start()
+    expect(s.sites.length).toBeGreaterThanOrEqual(2)
+    const [a, b] = s.sites
+    for (const site of s.sites) s.siteHeat[site.id] = { value: 0, load: 0, grievance: 0, mitigated: false, outreachQuarter: null, shutdownSince: null }
+    s.siteHeat[a.id].value = 47
+    s.siteHeat[b.id].value = 61
+    s.siteHeat[b.id].outreachQuarter = s.quarter - 1
+    for (const extra of s.sites.slice(2)) s.siteHeat[extra.id].value = 44 // (a site just under the line is left alone)
+    expect(heatHabit(s)).toEqual([
+      { type: 'MITIGATE_NOISE', siteId: b.id },
+      { type: 'OUTREACH', siteId: a.id },
+    ])
+  })
+
   it('both actions are ones the player has (the sim accepts them)', () => {
     const s = start()
     const id = setHeat(s, 60)

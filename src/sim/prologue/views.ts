@@ -57,6 +57,7 @@ import {
   serverBill,
 } from './pool.ts'
 import { applyAction, type Action } from '../actions.ts'
+import { clubAssetsUsd, joinBlocker, memberValueUsd } from './club.ts'
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
 
@@ -657,4 +658,59 @@ export function prologueAltsSold(state: GameState): { coin: AltCoin; amount: num
   const h = state.prologue?.alts?.handover
   if (!h) return []
   return ALT_COINS.filter((c) => h[c].amount > 0).map((coin) => ({ coin, amount: h[coin].amount, usd: h[coin].usd }))
+}
+
+/**
+ * M70.5 (doc 51 v1.2 §4): the Ventures screen's club panel: the offer (2013Q1), the members and their shares, the machines and
+ * orders, the keys and the hosting, the quarter's split, how it will end. Null without the club file.
+ */
+export function prologueClubView(state: GameState) {
+  const cf = CONTENT.prologue.club
+  if (!cf) return null
+  const f = cf.rules
+  const p = state.prologue!
+  const club = p.club
+  const name = (id: string) => f.cast.find((c) => c.id === id)?.name ?? 'You'
+  const offerOpen = label(state.quarter) === f.offer.quarter && !club && !p.clubEnded
+  return {
+    offerQuarter: f.offer.quarter,
+    offerOpen,
+    stake: f.player_contribution_usd,
+    joinBandwidth: f.offer.join_bandwidth,
+    cast: f.cast.map((c) => ({ id: c.id, name: c.name, role: c.role })),
+    friendsCashUsd: f.friends_cash_usd.value,
+    joinBlocker: (stake: number) => joinBlocker(state, stake) ?? null,
+    ended: p.clubEnded ?? null,
+    club: club
+      ? {
+          keys: club.keys,
+          hosting: club.hosting,
+          gpuCoin: club.gpuCoin,
+          ending: club.ending,
+          friendship: club.friendship,
+          stakeUsd: club.stakeUsd,
+          assetsUsd: clubAssetsUsd(state, club),
+          yourValueUsd: memberValueUsd(state, club, 'you'),
+          members: club.members.map((m) => ({
+            id: m,
+            name: m === 'you' ? '' : name(m),
+            share: club.shares[m],
+            valueUsd: memberValueUsd(state, club, m),
+          })),
+          lots: club.lots.map((l) => ({ id: l.id, kind: l.kind, model: l.model, count: l.count, earning: state.quarter >= l.earnsFrom })),
+          orders: club.orders.map((o) => ({
+            id: o.id,
+            kind: o.kind,
+            paidUsd: o.paidUsd,
+            delivered: o.delivered,
+            // (the roll itself stays hidden until the box or the unit arrives; the screen says only "ordered")
+            lateWords: o.delivered ? null : state.quarter > o.orderedQuarter + 1,
+          })),
+          cloud: club.cloud ? { investedUsd: club.cloud.investedUsd } : null,
+          feeDebtUsd: club.feeDebtUsd,
+          lostUsd: club.lostUsd,
+          quarter: { ...club.quarter },
+        }
+      : null,
+  }
 }

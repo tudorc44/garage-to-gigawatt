@@ -435,7 +435,8 @@ describe('golden replay: prologue-pool', () => {
   })
 
   it('matches the stored golden end state', async () => {
-    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-pool-seed-${PROLOGUE_SEED}.json`)
+    // (format 9, the Prologue's mining club, M70.4, changes nothing in a game without the club: compared at format 8, as above)
+    await expect(JSON.stringify({ ...run.state, version: 8 }, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-pool-seed-${PROLOGUE_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
@@ -726,5 +727,35 @@ describe('balance anchors (scope §5)', () => {
       )
       expect(floor).toBeLessThan(seedUsd * 0.5)
     }
+  })
+})
+
+/**
+ * The Prologue's mining club (M70.6, doc 51 v1.2 §4): one golden, one seed, the club-trusting bot (joins in 2013Q1 with $2,000,
+ * Jun holds the keys, takes the scrypt box and the cloud contract, buys the friends out at the handover). The earlier Prologue
+ * goldens stay as they were: a game that never joins the club is unchanged.
+ */
+describe('golden replay: prologue-club', () => {
+  const bot = PROLOGUE_BOTS['club-trusting']
+  const run = playPrologue(PROLOGUE_SEED, bot, { through: 0 })
+
+  it('plays to its chapter report with the club joined and ended', () => {
+    expect(run.state.phase).toBe('chapter')
+    expect(run.state.prologue!.club).toBeUndefined()
+    expect(run.state.prologue!.clubEnded).toBeDefined()
+    expect(run.state.prologue!.reports.filter((r) => r.club).length).toBeGreaterThan(4)
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playPrologue(PROLOGUE_SEED, bot, { through: 0 }).state).toEqual(run.state)
+    expect(replayPrologue(PROLOGUE_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-club-seed-${PROLOGUE_SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
   })
 })

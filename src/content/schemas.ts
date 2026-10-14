@@ -378,6 +378,65 @@ export const poolsPlayerFileSchema = z.object({
 })
 export type PoolsPlayerFile = z.output<typeof poolsPlayerFileSchema>
 
+// ---------- the Prologue's mining club (M70.3, doc 51 v1.2 §4; club.json and preorders_additions.json, generated) ----------
+
+export const clubFileSchema = z.object({
+  schema_version: z.literal(1),
+  notes: z.string(),
+  offer: z.object({ card: z.string(), quarter: quarterId, join_bandwidth: z.number().int().min(0) }),
+  cast: z.array(z.object({ id: z.string(), name: z.string(), role: z.string() })).length(3),
+  friends_cash_usd: gradedNum,
+  player_contribution_usd: z.object({ min: nonNeg, max: nonNeg, step: z.number().positive(), grade: z.string() }),
+  teo_gpus: z.object({ model: z.string(), count: z.number().int().positive(), valued_at: z.string(), grade: z.string() }),
+  shares: z.string(),
+  buys: z.object({ vendor: z.string(), how: z.string() }),
+  keys: z.object({
+    choice: z.tuple([z.literal('player'), z.literal('jun')]),
+    player: z.string(),
+    jun: z.object({ loss_chance_quarter: gradedNum, loss_share: gradedValue(z.tuple([z.number(), z.number()])) }),
+  }),
+  hosting: z.object({
+    choice: z.tuple([z.literal('your_place'), z.literal('friends_flat')]),
+    your_place: z.object({ counts_against_household_patience: z.literal(true), fee_from_club_usd_kw_quarter: gradedNum }),
+    friends_flat: z.object({ counts_against_household_patience: z.literal(false), fee_to_mara_usd_kw_quarter: gradedNum }),
+  }),
+  gpus_coin: z.string(),
+  endings: z.object({
+    early: z.string(),
+    at_handover: z.tuple([z.literal('buy_out'), z.literal('dissolve')]),
+    buy_out: z.string(),
+    dissolve: z.string(),
+    chapter_report: z.string(),
+  }),
+})
+export type ClubFile = z.output<typeof clubFileSchema>
+
+export const preordersAdditionsFileSchema = z.object({
+  schema_version: z.literal(1),
+  notes: z.string(),
+  vendors: z
+    .array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        order_window: z.tuple([quarterId, quarterId]),
+        unit_model: z.string(),
+        share_of_unit: z.number().positive().max(1),
+        price_usd: gradedNum,
+        hashrate_share_khs: gradedNum,
+        power_kw_share: gradedNum,
+        promised_delivery_quarters_after_order: z.number().int().min(0),
+        delay_roll: gradedValue(
+          z.object({ on_time: nonNeg, one_quarter_late: nonNeg, two_quarters_late: nonNeg, three_quarters_late: nonNeg }),
+        ),
+        real_basis: z.string(),
+        source: z.string(),
+      }),
+    )
+    .min(1),
+})
+export type PreordersAdditionsFile = z.output<typeof preordersAdditionsFileSchema>
+
 export const marketWeekAct4Schema = marketWeekAct3Schema
   .omit({ scenario: true })
   .extend({ future: futureId })
@@ -2249,7 +2308,8 @@ const prologueEffects = z
     open_offers: z.literal(true),
     open_wallet: z.literal(true),
     preorder: z.string(),
-    cash: z.number(),
+    // (M70.3: a card may charge a named amount: 'club_power_quarter' is a quarter of the club's power bill)
+    cash: z.union([z.number(), z.literal('club_power_quarter')]),
     household_patience: z.number(),
     slowdown: z.object({
       mult: z.number().min(0).max(1),
@@ -2263,6 +2323,23 @@ const prologueEffects = z
     household: z.enum(['move_out', 'cut_load']),
     /** M68.3 (doc 51 v1.0 §5): the 2014Q3 card sells every GPU lot that mines Litecoin or Dogecoin, at the used price. */
     sell_scrypt_gpus: z.literal(true),
+    /** M70.3 (doc 51 v1.2 §4.2): what a club card's answer does to the club (the club system reads it). */
+    club: z
+      .object({
+        join: z.boolean(),
+        cost_split: z.literal('shares'),
+        dispute: z.boolean(),
+        buy_out: z.literal('teo'),
+        member_sells: z.literal('teo'),
+        refuse: z.literal('teo'),
+        friendship: z.number(),
+        sell_gpus_mult: z.number().positive(),
+        preorder: z.string(),
+        cloud_contract: z.boolean(),
+        end: z.enum(['buy_out', 'dissolve']),
+      })
+      .partial()
+      .strict(),
     /** M69.2 (doc 51 v1.1 §3.3): what a pool card's answer does to your pool (the pool system reads it). */
     pool: z
       .object({

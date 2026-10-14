@@ -1,5 +1,6 @@
 // M69.3 (doc 51 v1.1 §3; pools_player.json): your own bitcoin pool in the Prologue: the unlock, the actions, the outside-miners
 // model, PPLNS and PPS, the bills, the risks and their cards, the 2014 boycott, the sale and the handover, the save format.
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { CONTENT, quarterIndex } from '../../src/content/index.ts'
 import { decodeSave, encodeSave } from '../../src/platform/saves.ts'
@@ -224,12 +225,45 @@ describe('risks and cards', () => {
       if (s.interrupt?.event === 'pool_pps_crunch') seen = true
     }
     expect(seen).toBe(true)
+  })
+})
+
+describe('PPS insolvency (M70.1, doc 51 v1.2 §13)', () => {
+  it('a PPS pool whose cash is below zero closes at once and sells for nothing; the game goes on', () => {
     const broke = open(planAt('2013Q4', 1e9), 'PPS', 0.02)
     broke.cash = -10
-    const pull = broke.prologue!.ownPool!.pull
     const after = playWeek(startQuarter(broke))
-    expect(after.prologue!.ownPool!.pull).toBeLessThan(pull * 0.55)
-    expect(after.prologue!.ownPool!.reputation).toBeLessThanOrEqual(20)
+    expect(after.prologue!.ownPool).toBeUndefined()
+    expect(after.prologue!.poolEnded).toMatchObject({ kind: 'insolvent', usd: 0, name: 'Halfblock Pool' })
+    expect(after.phase).toBe('live') // (not a game over)
+    expect(after.log.some((l) => l.key === 'log.p0_pool_insolvent')).toBe(true)
+  })
+
+  it('the shortfall is paid from cash down to zero, then the pool closes', () => {
+    // a PPS pool with a lot of outside hashrate and a week with no blocks: it owes miners more than the player has
+    let closed = 0
+    for (let seed = 1; seed <= 20; seed++) {
+      let s = open(planAt('2013Q4', 1e9, seed), 'PPS', 0.02)
+      s.prologue!.ownPool!.pull = 0.5
+      s.cash = 50
+      s = playWeek(startQuarter(s))
+      expect(s.cash, `seed ${seed}`).toBeGreaterThanOrEqual(0)
+      expect(s.phase).not.toBe('gameover')
+      if (s.prologue!.poolEnded?.kind === 'insolvent') closed++
+    }
+    expect(closed).toBeGreaterThan(0) // (a week without the blocks the miners were promised)
+  })
+
+  it('a PLNS pool is never closed by cash (only PPS carries the luck)', () => {
+    const s = open(planAt('2013Q4', 1e9), 'PPLNS', 0.01)
+    s.cash = -10
+    const after = playWeek(startQuarter(s))
+    expect(after.prologue!.ownPool).toBeDefined()
+  })
+
+  it('the chapter report line has its own text, and the pool is gone before the handover sale', () => {
+    const text = JSON.parse(readFileSync(new URL('../../src/i18n/content.en.json', import.meta.url), 'utf8')) as Record<string, string>
+    expect(text['chapter.p0.pool_insolvent']).toBe('{pool} ran out of money under PPS and closed.')
   })
 })
 
@@ -311,7 +345,7 @@ describe('saves', () => {
   it('a version-7 Prologue save loads at version 8 with no pool; an open pool survives export and import', () => {
     const s = planAt('2013Q4')
     const r = restoreSave(JSON.parse(JSON.stringify({ ...structuredClone(s), version: 7 })))
-    expect(r.ok && r.state.version).toBe(8)
+    expect(r.ok && r.state.version).toBe(9)
     expect(r.ok && r.state.prologue!.ownPool).toBeUndefined()
     const withPool = playWeek(startQuarter(open(planAt('2013Q4'))))
     const back = decodeSave(encodeSave(withPool))

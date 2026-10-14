@@ -25,6 +25,7 @@ import {
 } from './events.ts'
 import { deliverPreorders } from './preorders.ts'
 import { ownPoolWeek, poolQuarterEnd } from './pool.ts'
+import { clubQuarterEnd, clubWeek, deliverClubOrders } from './club.ts'
 import {
   altIncome,
   convertLeftoverAlts,
@@ -178,6 +179,8 @@ export function prologueWeek(s: GameState): void {
   p.blocksFound += blocks
   p.quarter.blocksFound += blocks
   if (altCoins) landAlts(s, altCoins)
+  // M70.4: the mining club's machines mine, the output is split by shares, the hosting is paid
+  if (p.club) clubWeek(s)
 
   // 5. Selling: up to the week's cap, from the exchange, each sale pushing the price down.
   const soldUsd = sellWeek(s, w) + sellAltWeek(s)
@@ -269,6 +272,8 @@ export function prologueEndQuarter(s: GameState): void {
   }
   // M69.3: your own pool's bills, its pull and reputation, and (in the handover quarter) its sale
   const poolReport = poolQuarterEnd(s)
+  // M70.4: the club's cloud contract, its report figures, and its ending in the handover quarter
+  const clubReport = clubQuarterEnd(s)
   // M68.4: the handover quarter's leftover altcoins convert at its last week's price x the haircut
   convertLeftoverAlts(s)
   if (s.cash < 0) forcedSale(s, w)
@@ -307,6 +312,7 @@ export function prologueEndQuarter(s: GameState): void {
     cards: [...p.quarter.cards],
     ...(p.alts ? { alts: reportAlts(s) } : {}),
     ...(poolReport ? { pool: poolReport } : {}),
+    ...(clubReport ? { club: clubReport } : {}),
   })
   p.flags = p.flags.filter((f) => f !== 'planned_now')
   s.phase = s.cash < 0 ? 'gameover' : 'report'
@@ -369,6 +375,7 @@ export function prologueNextQuarter(s: GameState, stopHere = false): void {
   s.events.bandwidthNext = 0
   if (p.usedOffer && p.usedOffer.quarter < s.quarter) p.usedOffer = null
   deliverPreorders(s)
+  deliverClubOrders(s)
   if (isDecisionQuarterFor(s, s.quarter) || stopHere || p.stopNext) {
     p.stopNext = false
     // (an opt-in decision quarter, 2014Q3, is "planned" too: the GPUs a card sells there must not turn it into an auto-played one)

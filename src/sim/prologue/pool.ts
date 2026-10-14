@@ -240,20 +240,20 @@ export function ownPoolWeek(s: GameState, ownTh: number, perBlock: number, weekN
   if (lam >= 1 && blocks < 0.5 * lam) pool.unluckyRun++
   else pool.unluckyRun = 0
   if (pool.method === 'PPLNS' && pool.unluckyRun > 3) pool.pull *= 0.85
-  // PPS with no cash left: half the outside miners leave each week and the pool's name takes the blow
-  if (pool.method === 'PPS' && s.cash < 0) {
-    pool.pull *= 0.5
-    pool.reputation = clampRep(pool.reputation - 30)
-    pool.incident = true
-    logEntry(s, 'log.p0_pool_insolvent', { name: pool.name }, weekNo)
-  }
   // the PPS crunch card: cash under the reserve (once a quarter)
   if (pool.method === 'PPS' && pool.crunchQuarter !== s.quarter && s.cash < poolReserveUsd(s)) {
     pool.crunchQuarter = s.quarter
     p.cardQueue.push({ id: 'pool_pps_crunch', week: weekNo })
   }
   const net = ownBtc + operator
-  if (net >= 0) return net
+  if (net >= 0) {
+    // (PPS with no cash left, whatever drained it: the pool closes)
+    if (pool.method === 'PPS' && s.cash < 0) {
+      closeInsolvent(s, weekNo)
+      return 0
+    }
+    return net
+  }
   // a PPS payout beyond what the blocks brought: coins from the wallet first, then cash at the week's price
   const need = -net
   const wallet = Math.max(0, s.treasury.BTC - p.onExchange.BTC)
@@ -263,8 +263,24 @@ export function ownPoolWeek(s: GameState, ownTh: number, perBlock: number, weekN
     accrue(s, 'mining_btc', -fromWallet * w.btc_usd)
   }
   const usd = (need - fromWallet) * w.btc_usd
-  if (usd > 0) book(s, 'other_opex', -usd)
+  if (usd > 0) {
+    // (doc 51 v1.2 §13: what the pool owes its miners comes out of your cash down to zero; past that it can't pay and closes)
+    const pay = Math.min(usd, Math.max(0, s.cash))
+    if (pay > 0) book(s, 'other_opex', -pay)
+    roundCash(s)
+    if (pay < usd - 1e-9 || s.cash <= 0) closeInsolvent(s, weekNo)
+  }
   return 0
+}
+
+/** A PPS pool that has run out of money (doc 51 v1.2 §13): it closes and sells for nothing; the chapter report says so. The game goes on. */
+function closeInsolvent(s: GameState, weekNo: number): void {
+  const p = s.prologue!
+  const pool = p.ownPool
+  if (!pool) return
+  p.poolEnded = { name: pool.name, quarter: s.quarter, usd: 0, kind: 'insolvent' }
+  delete p.ownPool
+  logEntry(s, 'log.p0_pool_insolvent', { name: pool.name }, weekNo)
 }
 
 // ---------- the quarter ----------

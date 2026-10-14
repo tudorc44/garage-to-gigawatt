@@ -25,7 +25,6 @@
 import { CONTENT, actFirstQuarter } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { Strategy } from '../../src/sim/replay.ts'
-import { topHeat } from '../../src/sim/selectors.ts'
 import type { GameState } from '../../src/sim/state.ts'
 import type { VFutureId } from '../../src/content/schemas.ts'
 import { idealStancesV, scoredKindsAtV } from '../../src/sim/systems/readingScoreV.ts'
@@ -242,17 +241,22 @@ export function act5Bot(name: Act5Archetype): Strategy {
 export const HEAT_HABIT_AT = 45
 
 /**
- * M69.5 (doc 43 §0.26): the perfect reader's one housekeeping habit, the player's own tools. When its hottest site's Heat is at
- * or above 45 it talks to the neighbours there; if it talked there last quarter and the site is still at or above 45, it pays for
- * noise mitigation (once a site). Sent after the plan's other moves, so it never takes Bandwidth from the reading.
+ * M69.5 (doc 43 §0.26), widened in M70.2 (§0.27): the perfect reader's one housekeeping habit, the player's own tools. At every
+ * site (the hottest first) whose Heat is at or above 45 it talks to the neighbours; if it talked there last quarter and the site
+ * is still at or above 45, it pays for noise mitigation (once a site). Sent after the plan's other moves, so it never takes
+ * Bandwidth from the reading.
  */
 export function heatHabit(s: GameState): Action[] {
-  const top = topHeat(s)
-  if (!top || top.heat < HEAT_HABIT_AT) return []
-  const rec = s.siteHeat[top.site.id]
-  const talkedLastQuarter = rec?.outreachQuarter === s.quarter - 1
-  if (talkedLastQuarter && !rec.mitigated) return [{ type: 'MITIGATE_NOISE', siteId: top.site.id }]
-  return [{ type: 'OUTREACH', siteId: top.site.id }]
+  const out: Action[] = []
+  const sites = [...s.sites].sort((a, b) => (s.siteHeat[b.id]?.value ?? 0) - (s.siteHeat[a.id]?.value ?? 0))
+  for (const site of sites) {
+    const rec = s.siteHeat[site.id]
+    // (a site whose power was all sold has no Heat value, NaN: the habit leaves it alone)
+    if (!rec || !(rec.value >= HEAT_HABIT_AT)) continue
+    const talkedLastQuarter = rec.outreachQuarter === s.quarter - 1
+    out.push(talkedLastQuarter && !rec.mitigated ? { type: 'MITIGATE_NOISE', siteId: site.id } : { type: 'OUTREACH', siteId: site.id })
+  }
+  return out
 }
 
 function withHeatHabit(base: Strategy): Strategy {

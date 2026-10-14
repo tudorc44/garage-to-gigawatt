@@ -30,7 +30,7 @@ const PHASES: Phase[] = [
 ]
 
 /** The save format this build writes (GameState.version). */
-export const SAVE_VERSION = 8
+export const SAVE_VERSION = 9
 
 type SaveData = Record<string, unknown>
 
@@ -65,6 +65,9 @@ const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
   // 7 → 8 (the Prologue's own pool, M69.3): a Prologue game can carry an open pool (`prologue.ownPool`) and the note of one sold
   // or closed (`prologue.poolEnded`). Nothing in a version-7 save changes: a game without a pool has neither.
   7: (data) => ({ ...data, version: 8 }),
+  // 8 → 9 (the Prologue's mining club, M70.4): a Prologue game can carry the club (`prologue.club`) and the note of one that ended
+  // (`prologue.clubEnded`). Nothing in a version-8 save changes: a game that never joined has neither.
+  8: (data) => ({ ...data, version: 9 }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }

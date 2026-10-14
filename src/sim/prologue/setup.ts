@@ -16,6 +16,8 @@ import {
 import { saleValueUsd } from '../systems/machines.ts'
 import { capacityKw, powerPriceUsdKwh } from '../systems/sites.ts'
 import { altValueUsd } from './alts.ts'
+import { clubEquityUsd } from './club.ts'
+import { clubHostKw } from './clubLoad.ts'
 import type { CoinAmounts, PrologueState } from './types.ts'
 
 export const P = () => CONTENT.prologue.rules
@@ -92,7 +94,8 @@ export function prologueBandwidth(state: GameState): number {
 
 /** The kW your machines draw at a site (working and broken alike, as Act I counts capacity). */
 export function siteLoadKw(state: GameState, siteId: string): number {
-  return state.machines
+  // (M70.4: the club's machines in your place count too)
+  return clubHostKw(state, siteId) + state.machines
     .filter((l) => l.siteId === siteId)
     .reduce(
       (kw, l) =>
@@ -112,7 +115,7 @@ export function netWorthUsd(state: GameState, w: MarketWeek): number {
     (usd, l) => usd + saleValueUsd(l, l.count, state.quarter),
     0,
   )
-  return state.cash + coins + machines + altValueUsd(state, w)
+  return state.cash + coins + machines + altValueUsd(state, w) + clubEquityUsd(state)
 }
 
 /**
