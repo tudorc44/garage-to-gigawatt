@@ -15,7 +15,8 @@ See "Next".
 
 Split (docs 43 §0.27 and 51 v1.2 §13 are in the repo):
 - M70.0 doc 43 §0.27, doc 51 v1.2
-- M70.1 (A) PPS insolvency closes the pool, never ends the game; X-B3 re-measured on full runs
+- M70.1 done: a PPS pool that cannot pay (cash short, or below zero) pays its miners from your cash down to zero, closes and sells for nothing (`poolEnded.kind: 'insolvent'`, key `chapter.p0.pool_insolvent`, shown in the chapter report and on Ventures); the old "half the miners leave, reputation -30" rule is gone. Goldens unchanged (prologue-pool's bot is PPLNS). Fixed `merge_alts.py`'s README guard, which had appended a copy of the M68.3 block on every run; the README is clean again.
+  X-B3 on full runs (50 seeds, `pps-operator`): insolvent in 35 of 50 (70%, target 5%); theft without cold storage over 200 full PPLNS runs: 17.0% (34/200; target 10%) (the pps-operator's own 3/50 is cut short by its early closure); pps-operator game overs 27 of 50, all through the Prologue's existing rule (the pool took the cash to zero, and rent then cannot be paid).
 - M70.2 (B) name what raises Heat in 2040Q4; Perfect's Heat at 2040Q3 and 2040Q4; verdict (and, only if it is ordinary grievances, the habit on every site and an Act V run)
 - M70.3 (C) club data and content: club.json and preorders_additions.json through the generator and schemas, the 7 club_ cards and text merged
 - M70.4 (D) the club in the sim: join, shares, group buy, keys, hosting, cards, endings, save format 9

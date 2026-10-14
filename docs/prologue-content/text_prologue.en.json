@@ -59,5 +59,6 @@
  "tooltip.p0.cold_storage": "Keep most of the payout money offline. A break-in can then only take what is on the server.",
  "glossary.ddos": "DDoS: a flood of junk traffic that knocks a server offline.",
  "chapter.p0.pool_sold": "You sold {pool} for {value}.",
- "chapter.p0.pool_sold_handover": "You sold {pool} when you moved on, for {value}."
+ "chapter.p0.pool_sold_handover": "You sold {pool} when you moved on, for {value}.",
+ "chapter.p0.pool_insolvent": "{pool} ran out of money under PPS and closed."
 }

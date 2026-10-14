@@ -151,7 +151,7 @@ write(TEXT, json.dumps(out, indent=2, ensure_ascii=False) + '\n')
 
 # ---- M69.2 (doc 51 v1.1 §11 item 2): the pool's 5 cards and 8 text keys, the same way (docs in the pack's format, the game in its own)
 POOL_TEXT = ['tooltip.p0.own_pool', 'tooltip.p0.pool_pps', 'tooltip.p0.pool_pplns', 'tooltip.p0.cold_storage', 'glossary.hot_wallet',
-             'glossary.ddos', 'chapter.p0.pool_sold', 'chapter.p0.pool_sold_handover']
+             'glossary.ddos', 'chapter.p0.pool_sold', 'chapter.p0.pool_sold_handover', 'chapter.p0.pool_insolvent']
 pool_cards = [c for c in json.load(open(f'{PACK}/events_prologue_expansion.json'))['events'] if c['id'].startswith('pool_')]
 assert len(pool_cards) == 5, len(pool_cards)
 POOL_GAME = {  # id: (type, extra fields, default, [(choice id, effects)])
@@ -203,7 +203,7 @@ write(TEXT, json.dumps(out, indent=2, ensure_ascii=False) + '\n')
 
 # ---- the README's log
 p = f'{PACK}/README.md'; s = read(p)
-if '## Merge log (M68.3)' not in s:
+if '## Merge log (M68.3:' not in s:
     write(p, s.rstrip('\n') + '''
 
 ## Merge log (M68.3: doc 51 §11 item 1, altcoins only; `tools/prologue/merge_alts.py`)

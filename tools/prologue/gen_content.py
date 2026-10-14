@@ -150,6 +150,7 @@ save('text_prologue_expansion.en.json', {
  'glossary.ddos': 'DDoS: a flood of junk traffic that knocks a server offline.',
  'chapter.p0.pool_sold': 'You sold {pool} for {value}.',
  'chapter.p0.pool_sold_handover': 'You sold {pool} when you moved on, for {value}.',
+ 'chapter.p0.pool_insolvent': '{pool} ran out of money under PPS and closed.',
  'chapter.p0.club_buyout': 'You bought out {names}. In Act I, they are the crew who helped you start.',
  'chapter.p0.club_dissolved': 'The club sold up and split {value}.',
  'chapter.p0.alts_sold': 'You sold {amount} {coin} in 2016 for {value}. At {later_date} those coins were worth {later_value}.'})

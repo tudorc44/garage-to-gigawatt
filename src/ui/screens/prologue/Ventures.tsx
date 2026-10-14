@@ -119,7 +119,9 @@ export function Ventures({ state, act }: PrologueProps) {
                 <p class="num-s muted" data-pool-ended>
                   {v.ended.kind === 'closed'
                     ? t('ui.p0.pool.ended_closed', { pool: v.ended.name })
-                    : t('ui.p0.pool.ended_sold', { pool: v.ended.name, value: fmt.money(v.ended.usd) })}
+                    : v.ended.kind === 'insolvent'
+                      ? t('ui.p0.pool.ended_insolvent', { pool: v.ended.name })
+                      : t('ui.p0.pool.ended_sold', { pool: v.ended.name, value: fmt.money(v.ended.usd) })}
                 </p>
               )}
             </>

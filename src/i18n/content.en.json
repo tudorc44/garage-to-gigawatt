@@ -515,5 +515,6 @@
   "glossary.hot_wallet": "Hot wallet: coins on an online server, ready to pay out. Convenient, and the first thing thieves look for.",
   "glossary.ddos": "DDoS: a flood of junk traffic that knocks a server offline.",
   "chapter.p0.pool_sold": "You sold {pool} for {value}.",
-  "chapter.p0.pool_sold_handover": "You sold {pool} when you moved on, for {value}."
+  "chapter.p0.pool_sold_handover": "You sold {pool} when you moved on, for {value}.",
+  "chapter.p0.pool_insolvent": "{pool} ran out of money under PPS and closed."
 }
