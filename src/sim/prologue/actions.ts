@@ -29,6 +29,8 @@ import {
   takeUsedOffer,
 } from './life.ts'
 import { placePreorder } from './preorders.ts'
+import { cancelAltSale, isAltCoin, sellAlt, setAltHodl, setLotCoin } from './alts.ts'
+import type { AltCoin } from './types.ts'
 import { P, siteCapacityKw, siteLoadKw } from './setup.ts'
 import { siteParams } from '../systems/siteSerials.ts'
 
@@ -52,8 +54,12 @@ export type PrologueAction =
       to: 'exchange' | 'wallet'
     }
   | { type: 'P0_MINED_TO'; to: 'wallet' | 'exchange' }
-  | { type: 'P0_SELL'; coin: Coin; amount: number }
-  | { type: 'P0_CANCEL_SALE'; coin: Coin }
+  | { type: 'P0_SELL'; coin: Coin | AltCoin; amount: number }
+  | { type: 'P0_CANCEL_SALE'; coin: Coin | AltCoin }
+  /** M68.4 (doc 51 v1.0 §5): points a GPU lot at a coin ('BTC' or 'ETH' = its own, 'LTC', 'DOGE'). Free; starts next week. */
+  | { type: 'P0_SET_LOT_COIN'; lotId: string; coin: 'BTC' | 'ETH' | AltCoin }
+  /** M68.4: the keep share of an altcoin's newly mined coins (1 = keep all), as bitcoin's keep/sell %. */
+  | { type: 'P0_SET_ALT_HODL'; coin: AltCoin; hodl: number }
   | { type: 'P0_BACKUP' }
   | { type: 'P0_OFFER'; id: string; accept: boolean }
   | { type: 'P0_PREORDER'; vendor: string }
@@ -177,10 +183,15 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
     case 'P0_MOVE_COINS':
       return moveCoins(s, a.coin, a.amount, a.to)
     case 'P0_SELL':
-      return sellCoins(s, a.coin, a.amount)
+      return isAltCoin(a.coin) ? sellAlt(s, a.coin, a.amount) : sellCoins(s, a.coin, a.amount)
     case 'P0_CANCEL_SALE':
-      cancelSale(s, a.coin)
+      if (isAltCoin(a.coin)) cancelAltSale(s, a.coin)
+      else cancelSale(s, a.coin)
       return undefined
+    case 'P0_SET_LOT_COIN':
+      return setLotCoin(s, a.lotId, a.coin)
+    case 'P0_SET_ALT_HODL':
+      return setAltHodl(s, a.coin, a.hodl)
     case 'P0_OFFER':
       return answerOffer(s, a.id, a.accept)
     case 'P0_PREORDER':

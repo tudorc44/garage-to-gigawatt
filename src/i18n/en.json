@@ -4194,5 +4194,9 @@
   "ui.fin.summary.best_worst": "Best site: {best} ({bestUsd} contribution). Worst: {worst} ({worstUsd}).",
   "ui.fin.summary.one_site": "Your one site, {site}, contributed {usd}.",
   "ui.fin.of_which_mining": "of which mining {usd}",
-  "ui.p0.r.revenue": "Revenue"
+  "ui.p0.r.revenue": "Revenue",
+  "error.p0_lot_coin": "That GPU can't mine {coin} now.",
+  "log.p0_lot_coin": "{count} x {model} now mine {coin}.",
+  "log.p0_alts_converted": "The handover came before the market could take it all: {amount} {coin} converted for {valueUsd}.",
+  "log.p0_scrypt_gpus_sold": "Sold {count} x {model} at the used price."
 }

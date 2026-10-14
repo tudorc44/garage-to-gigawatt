@@ -8,6 +8,8 @@ import interruptsRaw from './interrupts.json' with { type: 'json' }
 import marketRaw from './market_weekly.json' with { type: 'json' }
 import marketAct2Raw from './market_weekly_act2.json' with { type: 'json' }
 import marketPrologueRaw from './market_weekly_prologue.json' with { type: 'json' }
+import marketPrologueAltsRaw from './market_weekly_prologue_alts.json' with { type: 'json' }
+import marketQuarterlyPrologueAltsRaw from './market_quarterly_prologue_alts.json' with { type: 'json' }
 import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
@@ -127,6 +129,9 @@ import {
   marketQuarterlyAct3Schema,
   marketAct4Schema,
   marketQuarterlyAct4Schema,
+  marketPrologueAltsSchema,
+  marketQuarterlyPrologueAltsSchema,
+  type marketWeekPrologueAltsSchema,
   marketAct5Schema,
   marketQuarterlyAct5Schema,
   marketQuarterlyChipsSchema,
@@ -719,6 +724,11 @@ export interface Content {
       random_week_range: [number, number]
       cards: PrologueCard[]
     }
+    /**
+     * M68.4 (doc 51 v1.0 §5): the Litecoin and Dogecoin weeks, by prologue quarter index (negative) and week index, in
+     * the same alignment as `market` (a 14th week dropped, a 12-week quarter repeats its last). Absent without the files.
+     */
+    alts?: { weekly: Record<number, PrologueAltWeek[]> }
   }
   /** Community Heat rules (heat.json). */
   heat: HeatRules
@@ -755,6 +765,9 @@ export type EventCard = EventCardRaw & {
   /** Act IV only (M28.4): the future whose game plays it ('all' = every future). Engine-only. */
   future?: FutureId | 'all'
 }
+
+/** One week of the Prologue's Litecoin and Dogecoin series (market_weekly_prologue_alts.json). */
+export type PrologueAltWeek = z.output<typeof marketWeekPrologueAltsSchema>
 
 /** A prologue card (events_prologue.json); scripted ones carry their quarter and week index. */
 export type PrologueCard = PrologueCardFile & {
@@ -801,6 +814,9 @@ export interface RawContent {
   marketAct2: unknown
   marketQuarterlyAct2: unknown
   marketPrologue: unknown
+  /** M68.2 (doc 51 v1.0 §5): the Prologue's Litecoin and Dogecoin series, weekly and quarterly. Optional: without them there are no altcoins. */
+  marketPrologueAlts?: unknown
+  marketQuarterlyPrologueAlts?: unknown
   /** The four Act III scenarios' market files (M11.1): quarterly (market_sN) and weekly. */
   act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
   /** The four Act IV futures' market files (M27.3). Optional: without them the timeline ends at 2030Q4. */
@@ -900,6 +916,14 @@ export function parseContent(raw: RawContent): Content {
         }))
       : raw.marketPrologue,
   )
+  // M68.4: the Prologue's Litecoin and Dogecoin series (optional: a build without the files has no altcoins)
+  const prologueAltRows =
+    raw.marketPrologueAlts === undefined
+      ? undefined
+      : check('market_weekly_prologue_alts', marketPrologueAltsSchema, raw.marketPrologueAlts)
+  if (raw.marketQuarterlyPrologueAlts !== undefined)
+    check('market_quarterly_prologue_alts', marketQuarterlyPrologueAltsSchema, raw.marketQuarterlyPrologueAlts)
+  let prologueAlts: { weekly: Record<number, PrologueAltWeek[]> } | undefined
   const marketAct2Rows = check(
     'market_weekly_act2',
     marketAct2Schema,
@@ -1175,6 +1199,26 @@ export function parseContent(raw: RawContent): Content {
         (_, k) => w[Math.min(k, w.length - 1)],
       )
     })
+    // M68.4: the altcoin weeks, one per market week and in the same alignment
+    if (prologueAltRows) {
+      if (
+        prologueAltRows.length !== prologueRows.length ||
+        prologueAltRows.some((r, i) => r.week !== prologueRows[i].week)
+      )
+        problems.push('market_weekly_prologue_alts: its weeks differ from market_weekly_prologue')
+      else {
+        const byQuarter: PrologueAltWeek[][] = labels.map(() => [])
+        let at = 0
+        labels.forEach((_, i) => {
+          while (at < prologueRows.length && prologueRows[at].quarter === labels[i]) byQuarter[i].push(prologueAltRows[at++])
+        })
+        prologueAlts = { weekly: {} }
+        labels.forEach((_, i) => {
+          const w = byQuarter[i]
+          prologueAlts!.weekly[i - labels.length] = Array.from({ length: perQuarter }, (__, k) => w[Math.min(k, w.length - 1)])
+        })
+      }
+    }
     acts.push({
       act: 0,
       firstQuarter: -labels.length,
@@ -2548,6 +2592,7 @@ export function parseContent(raw: RawContent): Content {
       machines: machinesPrologueFile.models,
       rules: prologueFile,
       events: prologueEvents,
+      ...(prologueAlts ? { alts: prologueAlts } : {}),
     },
     auction,
     curtailment,
@@ -2975,6 +3020,8 @@ export const CONTENT: Content = parseContent({
   marketAct2: marketAct2Raw,
   marketQuarterlyAct2: marketQuarterlyAct2Raw,
   marketPrologue: marketPrologueRaw,
+  marketPrologueAlts: marketPrologueAltsRaw,
+  marketQuarterlyPrologueAlts: marketQuarterlyPrologueAltsRaw,
   act3Scenarios: {
     s0: { quarterly: marketS0Raw, weekly: marketWeeklyS0Raw },
     s1: { quarterly: marketS1Raw, weekly: marketWeeklyS1Raw },

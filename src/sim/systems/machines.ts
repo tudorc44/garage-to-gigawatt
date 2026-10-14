@@ -41,7 +41,9 @@ export function addMachines(
       l.model === modelId &&
       l.condition === condition &&
       l.siteId === siteId &&
-      l.earnsFromQuarter === earnsFromQuarter,
+      l.earnsFromQuarter === earnsFromQuarter &&
+      // (M68.4: a new unit never joins a lot that mines an altcoin: the coin is the lot's choice)
+      !l.altCoin,
   )
   if (same) {
     same.count += count

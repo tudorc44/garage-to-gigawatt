@@ -194,12 +194,12 @@ const readV1 = (name: string): Record<string, unknown> =>
 describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
   it('a new game is the current version (5 since Act IV, M27.2), in Act I', () => {
     expect(newGame(1).version).toBe(SAVE_VERSION)
-    expect(SAVE_VERSION).toBe(6)
+    expect(SAVE_VERSION).toBe(7)
     expect(newGame(1).act).toBe(1)
   })
 
   it.each(V1_SAVES)(
-    'migrates the version-1 save %s: version 6, Act I, nothing else changed',
+    'migrates the version-1 save %s: version 7, Act I, nothing else changed',
     (name) => {
       const v1 = readV1(name)
       expect(v1.version).toBe(1)
@@ -207,11 +207,11 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const r = restoreSave(v1)
       expect(r.ok).toBe(true)
       if (!r.ok) return
-      expect(r.state.version).toBe(6)
+      expect(r.state.version).toBe(7)
       expect(r.state.act).toBe(1)
       // Everything the save had stays as it was (a finished game's "ended" is now "chapter");
       // fields added to the game since are known additions with their starting values.
-      const expected = { ...v1, version: 6, act: 1 } as Record<string, unknown>
+      const expected = { ...v1, version: 7, act: 1 } as Record<string, unknown>
       if (v1.phase === 'ended') expected.phase = 'chapter'
       const added: string[] = []
       expectKeeps(r.state, expected, '', added)
@@ -223,7 +223,7 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
     const v1 = readV1('v1-plan-2021Q2')
     const text = 'G2G1.' + Buffer.from(JSON.stringify(v1)).toString('base64')
     const r = decodeSave(text)
-    expect(r.ok && r.state.version).toBe(6)
+    expect(r.ok && r.state.version).toBe(7)
     expect(r.ok && r.state.act).toBe(1)
   })
 
@@ -236,7 +236,7 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const r = restoreSave(v2)
       expect(r.ok).toBe(true)
       if (!r.ok) return
-      expect(r.state).toEqual({ ...s, version: 6 })
+      expect(r.state).toEqual({ ...s, version: 7 })
     }
   })
 
@@ -249,7 +249,7 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const r = restoreSave(v3)
       expect(r.ok).toBe(true)
       if (!r.ok) return
-      expect(r.state).toEqual({ ...s, version: 6 })
+      expect(r.state).toEqual({ ...s, version: 7 })
     }
   })
 
@@ -263,7 +263,7 @@ describe('save format version 2: the act field (Alpha 0.2 §2.15)', () => {
       const r = restoreSave(v4)
       expect(r.ok).toBe(true)
       if (!r.ok) return
-      expect(r.state).toEqual({ ...s, version: 6 })
+      expect(r.state).toEqual({ ...s, version: 7 })
     }
   })
 

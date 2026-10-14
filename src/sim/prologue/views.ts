@@ -26,7 +26,7 @@ import {
   P,
   depositUsd,
   householdTier,
-  isDecisionQuarter,
+  isDecisionQuarterFor,
   netWorthUsd,
   poolFee,
   poolsOpen,
@@ -125,11 +125,11 @@ export function prologueView(state: GameState) {
   const q = state.quarter
   return {
     quarter: label(q),
-    decision: isDecisionQuarter(q),
+    decision: isDecisionQuarterFor(state, q),
     /** This live quarter auto-plays (no Plan phase was held for it). */
     autoPlay:
       state.phase === 'live' &&
-      !isDecisionQuarter(q) &&
+      !isDecisionQuarterFor(state, q) &&
       !p.flags.includes('planned_now'),
     turn: q - CONTENT.acts.find((a) => a.act === 0)!.firstQuarter + 1,
     turns: -CONTENT.acts.find((a) => a.act === 0)!.firstQuarter,

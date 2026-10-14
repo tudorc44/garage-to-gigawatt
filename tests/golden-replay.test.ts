@@ -601,7 +601,8 @@ describe.each(['v1', 'v2', 'v3', 'v4'] as const)('golden replay: act5-%s (2036Q1
   })
 
   it('matches the stored golden end state', async () => {
-    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/act5-${vfuture}-seed-${ACT5_SEED}.json`)
+    // (format 7, the Prologue's altcoins, M68.4, changes nothing in an Act V game: compared at format 6, as above)
+    await expect(JSON.stringify({ ...run.state, version: 6 }, null, 2) + '\n').toMatchFileSnapshot(`./golden/act5-${vfuture}-seed-${ACT5_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {

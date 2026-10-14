@@ -25,10 +25,18 @@ import {
 } from './events.ts'
 import { deliverPreorders } from './preorders.ts'
 import {
+  altIncome,
+  convertLeftoverAlts,
+  forcedSaleAlts,
+  landAlts,
+  reportAlts,
+  sellAltWeek,
+} from './alts.ts'
+import {
   P,
   emptyPrologueQuarter,
   householdTier,
-  isDecisionQuarter,
+  isDecisionQuarterFor,
   netWorthUsd,
   poisson,
   poolFee,
@@ -94,6 +102,7 @@ export function prologueWeek(s: GameState): void {
   let myTh = 0
   let powerUsd = 0
   let ethCoins = 0
+  let altCoins: { LTC: number; DOGE: number } | null = null
   const hours = 24 * 7
   for (const lot of s.machines) {
     if (s.quarter < lot.earnsFromQuarter) continue
@@ -113,6 +122,18 @@ export function prologueWeek(s: GameState): void {
     if (working <= 0) continue
     const kwh = working * model.power_kw * hours
     const cost = kwh * sitePowerUsdKwh(s, site)
+    // M68.4: a GPU lot pointed at Litecoin or Dogecoin earns scrypt coins instead (its own coin in a week before the coin exists)
+    if (lot.altCoin) {
+      const inc = altIncome(s, lot, working)
+      if (inc) {
+        if (cost > 0 && inc.usd < cost) continue
+        altCoins ??= { LTC: 0, DOGE: 0 }
+        altCoins.LTC += inc.coins.LTC
+        altCoins.DOGE += inc.coins.DOGE
+        powerUsd += cost
+        continue
+      }
+    }
     if (model.coin === 'ETH') {
       const coins =
         w.eth_usd > 0
@@ -153,9 +174,10 @@ export function prologueWeek(s: GameState): void {
   }
   p.blocksFound += blocks
   p.quarter.blocksFound += blocks
+  if (altCoins) landAlts(s, altCoins)
 
   // 5. Selling: up to the week's cap, from the exchange, each sale pushing the price down.
-  const soldUsd = sellWeek(s, w)
+  const soldUsd = sellWeek(s, w) + sellAltWeek(s)
 
   // 6. Income while at home; rent once you've moved out; power.
   const incomeUsd =
@@ -242,6 +264,8 @@ export function prologueEndQuarter(s: GameState): void {
     const energy = endQuarterEnergy(s)
     p.quarter.powerCostUsd += energy.costUsd - energy.revenueUsd
   }
+  // M68.4: the handover quarter's leftover altcoins convert at its last week's price x the haircut
+  convertLeftoverAlts(s)
   if (s.cash < 0) forcedSale(s, w)
   // A sell order can't outgrow the coins that are (or are heading) on the exchange.
   for (const coin of COINS) {
@@ -257,7 +281,7 @@ export function prologueEndQuarter(s: GameState): void {
   const first = marketWeek(s.quarter, 0)
   p.reports.push({
     quarter: CONTENT.quarters[s.quarter],
-    auto: !isDecisionQuarter(s.quarter) && !p.flags.includes('planned_now'),
+    auto: !isDecisionQuarterFor(s, s.quarter) && !p.flags.includes('planned_now'),
     coinsMined: { ...p.quarter.coinsMined },
     blocksFound: p.quarter.blocksFound,
     btcUsd: w.btc_usd,
@@ -276,6 +300,7 @@ export function prologueEndQuarter(s: GameState): void {
     netWorthUsd: netWorthUsd(s, w),
     patience: p.livingAtHome ? p.patience : null,
     cards: [...p.quarter.cards],
+    ...(p.alts ? { alts: reportAlts(s) } : {}),
   })
   p.flags = p.flags.filter((f) => f !== 'planned_now')
   s.phase = s.cash < 0 ? 'gameover' : 'report'
@@ -299,6 +324,7 @@ function forcedSale(s: GameState, w: MarketWeek): void {
       s.treasury[coin] -= coins
       if (where === 'exchange') p.onExchange[coin] -= coins
     }
+  forcedSaleAlts(s)
   // Still short and paying rent: move back home first (P5.0, P6), then sell machines.
   if (s.cash < 0 && !p.livingAtHome) moveBackHome(s, true)
   for (const lot of [...s.machines]) {
@@ -337,9 +363,9 @@ export function prologueNextQuarter(s: GameState, stopHere = false): void {
   s.events.bandwidthNext = 0
   if (p.usedOffer && p.usedOffer.quarter < s.quarter) p.usedOffer = null
   deliverPreorders(s)
-  if (isDecisionQuarter(s.quarter) || stopHere || p.stopNext) {
+  if (isDecisionQuarterFor(s, s.quarter) || stopHere || p.stopNext) {
     p.stopNext = false
-    if (!isDecisionQuarter(s.quarter)) p.flags.push('planned_now')
+    if (!isDecisionQuarterFor(s, s.quarter)) p.flags.push('planned_now')
     s.phase = 'plan'
     p.quarter = emptyPrologueQuarter()
   } else beginPrologueLive(s)
