@@ -1164,24 +1164,24 @@
       "shutdownSince": null
     },
     "site-3": {
-      "value": null,
-      "load": null,
+      "value": 22,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
     },
     "site-9": {
-      "value": null,
-      "load": null,
+      "value": 27,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
     },
     "site-14": {
-      "value": null,
-      "load": null,
+      "value": 32,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
@@ -7656,8 +7656,8 @@
       "interestUsd": 0,
       "principalUsd": 0,
       "debtUsd": 0,
-      "heat": 39,
-      "heatTier": "texas_site",
+      "heat": 42,
+      "heatTier": "own_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
@@ -20199,7 +20199,7 @@
       "params": {
         "tier": "own_site",
         "serial": 1,
-        "heat": null
+        "heat": 42
       }
     },
     {

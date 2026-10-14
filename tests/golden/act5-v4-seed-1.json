@@ -1169,24 +1169,24 @@
       "shutdownSince": null
     },
     "site-3": {
-      "value": null,
-      "load": null,
+      "value": 22,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
     },
     "site-9": {
-      "value": null,
-      "load": null,
+      "value": 27,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
       "shutdownSince": null
     },
     "site-14": {
-      "value": null,
-      "load": null,
+      "value": 32,
+      "load": 0,
       "grievance": 0,
       "mitigated": false,
       "outreachQuarter": null,
