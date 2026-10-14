@@ -1,106 +1,93 @@
-"""Generates the Prologue's Litecoin and Dogecoin market files (doc 51 v1.0, doc 53).
-Inputs are the anchors below; outputs are written next to this folder. Re-run after the second research pass replaces anchors.
+"""Generates the Prologue's Litecoin and Dogecoin market files (doc 51 v1.4 §14-§15; data: doc 55 research-2/ltc_doge_weekly.csv, doc 57 research-3/ltc_doge_prices_weekly.csv).
+The weekly series is a reconstruction (every row estimate=true) until difficulty is rebuilt from block headers (doc 51 §14 decision 1).
 Usage: npm run content:prologue-expansion  (python3 -I tools/prologue/gen_alts.py <path to docs/prologue-content>)
-In the repo (M68.2) it lives in tools/prologue/ and writes into docs/prologue-expansion-content/; the CSVs use LF line endings."""
-import csv, math, sys, datetime as dt
+In the repo (M68.2) it lives in tools/prologue/ and writes into docs/prologue-expansion-content/ and src/content/; the CSVs use LF line endings."""
+import csv, sys, datetime as dt
 SRC = sys.argv[1]
 OUT = __file__.rsplit('/tools/', 1)[0] + '/docs/prologue-expansion-content'
+LIVE = __file__.rsplit('/tools/', 1)[0] + '/src/content'  # the game reads its copies here (a test checks they stay identical)
+SERIES = f'{OUT}/research-2/ltc_doge_weekly.csv'   # difficulty and hashrate (reconstruction until the header rebuild)
+PRICES = f'{OUT}/research-3/ltc_doge_prices_weekly.csv'  # prices and volume: CoinMarketCap [A] from 2013-04-29 (LTC) and 2013-12-15 (DOGE), licensed; designed [D] before
 
-# Quarterly price anchors (doc 53 content pack; CoinLore [C] from 28 Apr 2013 for LTC and Dec 2013 for DOGE; earlier LTC [D]).
-# quarter: (open, close, high, low, avg, estimate, grade)
-LTC_Q = {
- '2011Q4': (0.30, 0.05, 0.30, 0.03, 0.08, True, 'D'), '2012Q1': (0.05, 0.05, 0.08, 0.03, 0.06, True, 'D'),
- '2012Q2': (0.05, 0.04, 0.06, 0.03, 0.04, True, 'D'), '2012Q3': (0.04, 0.05, 0.07, 0.03, 0.05, True, 'D'),
- '2012Q4': (0.05, 0.06, 0.08, 0.04, 0.06, True, 'D'), '2013Q1': (0.06, 1.00, 1.20, 0.05, 0.15, True, 'D'),
- '2013Q2': (1.00, 2.98, 4.49, 1.00, 3.00, True, 'C'), '2013Q3': (3.01, 2.35, 3.10, 2.30, 2.70, False, 'C'),
- '2013Q4': (2.34, 24.35, 53.15, 2.30, 15.00, False, 'C'), '2014Q1': (24.35, 12.75, 32.06, 12.00, 18.00, False, 'C'),
- '2014Q2': (12.77, 8.95, 13.50, 8.46, 10.80, False, 'C'), '2014Q3': (8.96, 4.47, 9.00, 4.30, 6.60, False, 'C'),
- '2014Q4': (4.47, 2.72, 4.60, 2.67, 3.70, False, 'C'), '2015Q1': (2.72, 1.65, 2.80, 1.11, 2.00, False, 'C'),
- '2015Q2': (1.65, 4.09, 4.20, 1.30, 2.00, True, 'C'), '2015Q3': (4.09, 3.01, 8.73, 2.70, 3.90, True, 'C'),
- '2015Q4': (3.01, 3.48, 4.50, 2.90, 3.50, True, 'C'), '2016Q1': (3.48, 3.20, 3.70, 2.92, 3.30, True, 'C'),
- '2016Q2': (3.20, 4.20, 5.95, 3.10, 4.20, True, 'C'), '2016Q3': (4.20, 3.80, 4.30, 3.40, 3.80, True, 'D'),
- '2016Q4': (3.80, 4.33, 4.40, 3.50, 3.80, True, 'C')}
-DOGE_Q = {
- '2013Q4': (0.000231, 0.000422, 0.00152, 0.000116, 0.000512, False, 'C'), '2014Q1': (0.000423, 0.00060, 0.00234, 0.00040, 0.00110, True, 'C'),
- '2014Q2': (0.00060, 0.00028, 0.00065, 0.00025, 0.00045, True, 'D'), '2014Q3': (0.00028, 0.00022, 0.00030, 0.000103, 0.00022, True, 'C'),
- '2014Q4': (0.00022, 0.000187, 0.00026, 0.00018, 0.00021, True, 'C'), '2015Q1': (0.000186, 0.00015, 0.000247, 0.00013, 0.00017, True, 'C'),
- '2015Q2': (0.00015, 0.00012, 0.00016, 0.0000850, 0.00012, True, 'C'), '2015Q3': (0.00012, 0.00014, 0.00018, 0.00011, 0.00014, True, 'D'),
- '2015Q4': (0.00014, 0.000151, 0.00018, 0.00013, 0.00015, True, 'C'), '2016Q1': (0.000151, 0.00021, 0.00025, 0.000134, 0.00021, True, 'C'),
- '2016Q2': (0.00021, 0.00030, 0.000500, 0.00020, 0.00028, True, 'C'), '2016Q3': (0.00030, 0.00023, 0.00031, 0.00021, 0.00023, True, 'D'),
- '2016Q4': (0.00023, 0.000223, 0.00025, 0.00020, 0.00022, True, 'C')}
-# Network hashrate, quarter averages in GH/s: designed [D] (doc 53 A5), to be replaced by chart-read difficulty [C] in the second pass.
-LTC_H = {'2011Q4': 0.3, '2012Q1': 0.5, '2012Q2': 0.8, '2012Q3': 1.2, '2012Q4': 2.0, '2013Q1': 4, '2013Q2': 10, '2013Q3': 20, '2013Q4': 55,
- '2014Q1': 110, '2014Q2': 200, '2014Q3': 500, '2014Q4': 900, '2015Q1': 1200, '2015Q2': 1400, '2015Q3': 1400, '2015Q4': 1450,
- '2016Q1': 1700, '2016Q2': 1900, '2016Q3': 2100, '2016Q4': 2400}
-DOGE_H = {'2013Q4': 20, '2014Q1': 80, '2014Q2': 50, '2014Q3': 150, '2014Q4': 750, '2015Q1': 1080, '2015Q2': 1260, '2015Q3': 1260,
- '2015Q4': 1305, '2016Q1': 1530, '2016Q2': 1710, '2016Q3': 1890, '2016Q4': 2160}
-LTC_LIVE, DOGE_LIVE, MERGED = dt.date(2011, 10, 13), dt.date(2013, 12, 6), dt.date(2014, 9, 11)  # [B], [B], [A]
-LTC_BLOCKS_DAY, DOGE_BLOCKS_DAY = 576, 1440  # 150 s and 60 s blocks [A]
+LTC_OPEN = dt.date(2011, 10, 24)  # [D] doc 51 §14 decision 2: the first two reconstructed weeks (D 0.000244, 0.05) are launch artefacts
+MERGED = dt.date(2014, 9, 11)     # [A/B] block 371,337
+DERIVED_FROM = dt.date(2014, 10, 6)  # after the four-week merged-mining ramp in the series (doc 55 §1)
+LTC_BLOCKS_DAY, DOGE_BLOCKS_DAY = 576, 1440
+DOGE_GHS_PER_D, LTC_GHS_PER_D = 0.0715828, 0.0286331
 
-def ltc_reward(d): return 50.0 if d < dt.date(2015, 8, 25) else 25.0  # block 840,000 [A]
+def merge_share(d):  # f: share of LTC hashrate also merge-mining DOGE [D], doc 55 §1 (from Binance Research 2019: 91%, ratio 0.39)
+    return 0.70 if d.year == 2014 else 0.82 if d.year == 2015 else 0.89
+
+def ltc_reward(d): return 50.0 if d < dt.date(2015, 8, 25) else 25.0
 DOGE_STEPS = [(dt.date(2014, 2, 14), 500000), (dt.date(2014, 3, 17), 250000), (dt.date(2014, 4, 28), 250000), (dt.date(2014, 7, 15), 125000),
               (dt.date(2014, 10, 2), 62500), (dt.date(2014, 12, 14), 31250), (dt.date(2015, 2, 25), 15625)]
-def doge_reward(d):  # expected reward per block [A]: random 0-1M (mean 500k), 0-500k (mean 250k) from block 100,000, then fixed
+def doge_reward(d):
     for until, r in DOGE_STEPS:
         if d < until: return float(r)
     return 10000.0
 
-def qmid(q):
-    y, n = int(q[:4]), int(q[5])
-    return dt.date(y, 3 * n - 1, 15)
-def interp(series, d, log=True):
-    pts = sorted((qmid(q), v) for q, v in series.items())
-    if d <= pts[0][0]: return pts[0][1]
-    if d >= pts[-1][0]: return pts[-1][1]
-    for (d0, v0), (d1, v1) in zip(pts, pts[1:]):
-        if d0 <= d <= d1:
-            f = (d - d0).days / (d1 - d0).days
-            return math.exp(math.log(v0) + f * (math.log(v1) - math.log(v0))) if log else v0 + f * (v1 - v0)
-
+series = {r['week']: r for r in csv.DictReader(open(SERIES))}
+prices = {}
+for r in csv.DictReader(open(PRICES)): prices[(r['coin'], r['week'])] = r
 weeks = list(csv.DictReader(open(f'{SRC}/market_weekly_prologue.csv')))
-quarters = list(csv.DictReader(open(f'{SRC}/market_quarterly_prologue.csv')))
 rows = []
 for w in weeks:
-    d = dt.date.fromisoformat(w['week']); end = d + dt.timedelta(days=6); q = w['quarter']
-    r = {'week': w['week'], 'quarter': q}
-    if end >= LTC_LIVE and q in LTC_Q:
-        p, h, R = interp({k: v[4] for k, v in LTC_Q.items()}, d), interp(LTC_H, d), ltc_reward(d)
-        r.update(ltc_usd=round(p, 6), ltc_hashrate_GHs=round(h, 4), ltc_block_reward=R,
+    d = dt.date.fromisoformat(w['week']); s = series.get(w['week']); r = {'week': w['week'], 'quarter': w['quarter']}
+    if s and d >= LTC_OPEN:
+        pr = prices.get(('LTC', w['week']))
+        p, h, R = float(pr['close_usd']) if pr else float(s['ltc_usd_close']), float(s['ltc_hashrate_GHs']), ltc_reward(d)
+        r.update(ltc_usd=p, ltc_usd_high=float(pr['high_usd']) if pr else '', ltc_usd_low=float(pr['low_usd']) if pr else '',
+                 ltc_volume_usd_day=round(float(pr['volume_usd']) / 7, 2) if pr and pr['volume_usd'] else '', ltc_price_grade=pr['grade'] if pr else 'D', ltc_difficulty=float(s['ltc_difficulty']), ltc_hashrate_GHs=h, ltc_block_reward=R,
                  ltc_rev_usd_khs_day=f'{LTC_BLOCKS_DAY * R / (h * 1e6) * p:.8g}')
-    if end >= DOGE_LIVE and q in DOGE_Q:
-        p, h, R = interp({k: v[4] for k, v in DOGE_Q.items()}, d), interp(DOGE_H, d), doge_reward(d)
-        r.update(doge_usd=f'{p:.6g}', doge_hashrate_GHs=round(h, 4), doge_block_reward_expected=R,
-                 doge_rev_usd_khs_day=f'{DOGE_BLOCKS_DAY * R / (h * 1e6) * p:.8g}', doge_merged_mining=end >= MERGED)
-    r['estimate'] = True  # every weekly value is interpolated from quarter anchors
+    if s and s['doge_hashrate_GHs']:
+        if d >= DERIVED_FROM:  # DOGE difficulty derived from LTC's after merged mining (doc 55 §1)
+            dd = merge_share(d) * 0.4 * float(s['ltc_difficulty']); h = dd * DOGE_GHS_PER_D
+        else:
+            dd, h = float(s['doge_difficulty']), float(s['doge_hashrate_GHs'])
+        pr = prices.get(('DOGE', w['week']))
+        p, R = (float(pr['close_usd']) if pr else float(s['doge_usd_close'] or 0)), doge_reward(d)
+        if p > 0:
+            r.update(doge_usd=p, doge_usd_high=float(pr['high_usd']) if pr else '', doge_usd_low=float(pr['low_usd']) if pr else '',
+                     doge_volume_usd_day=round(float(pr['volume_usd']) / 7, 2) if pr and pr['volume_usd'] else '', doge_price_grade=pr['grade'] if pr else 'D', doge_difficulty=round(dd, 2), doge_hashrate_GHs=round(h, 3), doge_block_reward_expected=R,
+                     doge_rev_usd_khs_day=f'{DOGE_BLOCKS_DAY * R / (h * 1e6) * p:.8g}', doge_merged_mining=d + dt.timedelta(days=6) >= MERGED)
+    if len(r) > 2:
+        r['grade'] = s['grade']; r['estimate'] = True
     rows.append(r)
-cols = ['week', 'quarter', 'ltc_usd', 'ltc_hashrate_GHs', 'ltc_block_reward', 'ltc_rev_usd_khs_day', 'doge_usd', 'doge_hashrate_GHs',
-        'doge_block_reward_expected', 'doge_rev_usd_khs_day', 'doge_merged_mining', 'estimate']
-LIVE = __file__.rsplit('/tools/', 1)[0] + '/src/content'  # the game reads its copies here (a test checks they stay identical)
-for d in (OUT, LIVE):
-    with open(f'{d}/market_weekly_prologue_alts.csv', 'w', newline='') as f:
+cols = ['week', 'quarter', 'ltc_usd', 'ltc_usd_high', 'ltc_usd_low', 'ltc_volume_usd_day', 'ltc_price_grade', 'ltc_difficulty', 'ltc_hashrate_GHs', 'ltc_block_reward', 'ltc_rev_usd_khs_day', 'doge_usd', 'doge_usd_high', 'doge_usd_low', 'doge_volume_usd_day', 'doge_price_grade', 'doge_difficulty',
+        'doge_hashrate_GHs', 'doge_block_reward_expected', 'doge_rev_usd_khs_day', 'doge_merged_mining', 'grade', 'estimate']
+for d_ in (OUT, LIVE):
+    with open(f'{d_}/market_weekly_prologue_alts.csv', 'w', newline='') as f:
         wr = csv.DictWriter(f, cols, lineterminator='\n'); wr.writeheader(); wr.writerows(rows)
 
-qcols = ['quarter', 'weeks'] + [f'{c}_{k}' for c in ('ltc', 'doge') for k in ('usd_open', 'usd_close', 'usd_high', 'usd_low', 'usd_avg', 'hashrate_GHs_avg', 'block_reward_q_start', 'price_grade')] + ['estimate']
+# Quarterly file: derived from the weekly closes (open = first week, close = last, high/low/avg of weekly closes).
+qcols = ['quarter', 'weeks'] + [f'{c}_{k}' for c in ('ltc', 'doge') for k in ('usd_open', 'usd_close', 'usd_high', 'usd_low', 'usd_avg', 'hashrate_GHs_avg', 'block_reward_q_start')] + ['estimate']
+by_q = {}
+for r in rows: by_q.setdefault(r['quarter'], []).append(r)
 qrows = []
-for qq in quarters:
-    q = qq['quarter']; r = {'quarter': q, 'weeks': qq['weeks']}; est = False
-    for c, P, H, rw in (('ltc', LTC_Q, LTC_H, ltc_reward), ('doge', DOGE_Q, DOGE_H, doge_reward)):
-        if q in P:
-            o, cl, hi, lo, av, e, g = P[q]; est |= e or True  # hashrate is designed in every quarter
-            r.update({f'{c}_usd_open': o, f'{c}_usd_close': cl, f'{c}_usd_high': hi, f'{c}_usd_low': lo, f'{c}_usd_avg': av,
-                      f'{c}_hashrate_GHs_avg': H[q], f'{c}_block_reward_q_start': rw(dt.date(int(q[:4]), 3 * int(q[5]) - 2, 1)), f'{c}_price_grade': g})
-    r['estimate'] = est
-    qrows.append(r)
-for d in (OUT, LIVE):
-    with open(f'{d}/market_quarterly_prologue_alts.csv', 'w', newline='') as f:
+for qq in csv.DictReader(open(f'{SRC}/market_quarterly_prologue.csv')):
+    q = qq['quarter']; out = {'quarter': q, 'weeks': qq['weeks']}; any_ = False
+    for c in ('ltc', 'doge'):
+        ws = [r for r in by_q.get(q, []) if f'{c}_usd' in r]
+        if not ws: continue
+        any_ = True; ps = [r[f'{c}_usd'] for r in ws]
+        his = [r[f'{c}_usd_high'] or r[f'{c}_usd'] for r in ws]; los = [r[f'{c}_usd_low'] or r[f'{c}_usd'] for r in ws]
+        out.update({f'{c}_usd_open': ps[0], f'{c}_usd_close': ps[-1], f'{c}_usd_high': max(his), f'{c}_usd_low': min(los), f'{c}_usd_avg': round(sum(ps) / len(ps), 6),
+                    f'{c}_hashrate_GHs_avg': round(sum(r[f'{c}_hashrate_GHs'] for r in ws) / len(ws), 4),
+                    f'{c}_block_reward_q_start': ws[0][f'{c}_block_reward' if c == 'ltc' else 'doge_block_reward_expected']})
+    if any_: out['estimate'] = True
+    qrows.append(out)
+for d_ in (OUT, LIVE):
+    with open(f'{d_}/market_quarterly_prologue_alts.csv', 'w', newline='') as f:
         wr = csv.DictWriter(f, qcols, lineterminator='\n'); wr.writeheader(); wr.writerows(qrows)
 
-# X-B6 check on the game's own BTC series: a 2010 gaming GPU, 390 MH/s on BTC (machines_prologue.json) vs 400 kH/s on scrypt [B/D].
-print('quarter, GPU $/day on LTC, on DOGE, on BTC (game series), LTC/BTC ratio')
-for qq in quarters:
-    q = qq['quarter']
-    if q not in LTC_Q: continue
-    btc = (float(qq['btc_hashprice_usd_th_day_open'] or 0) + float(qq['btc_hashprice_usd_th_day_close'] or 0)) / 2 * 0.000390  # 390 MH/s in TH/s
-    ltc = LTC_BLOCKS_DAY * ltc_reward(qmid(q)) / (LTC_H[q] * 1e6) * LTC_Q[q][4] * 400
-    doge = DOGE_BLOCKS_DAY * doge_reward(qmid(q)) / (DOGE_H[q] * 1e6) * DOGE_Q[q][4] * 400 if q in DOGE_Q else 0
-    print(f'{q}, {ltc:.4f}, {doge:.4f}, {btc:.4f}, {ltc / btc if btc else float("inf"):.1f}')
+# X-B6 check on the game's own BTC series: a 2010 GPU, 390 MH/s on BTC vs 400 kH/s on scrypt.
+gw = {w['week']: w for w in weeks}
+acc = {}
+for r in rows:
+    a = acc.setdefault(r['quarter'], [0.0, 0.0, 0.0])
+    a[0] += float(r.get('ltc_rev_usd_khs_day', 0) or 0) * 400 * 7
+    a[1] += float(r.get('doge_rev_usd_khs_day', 0) or 0) * 400 * 7
+    a[2] += float(gw[r['week']]['btc_hashprice_usd_th_day'] or 0) * 0.000390 * 7
+print('quarter, GPU $ on LTC, on DOGE, on BTC, best scrypt / BTC')
+for q, (l, dg, b) in acc.items():
+    if l or dg: print(f'{q}, {l:.2f}, {dg:.2f}, {b:.2f}, {max(l, dg) / b if b else 0:.1f}')

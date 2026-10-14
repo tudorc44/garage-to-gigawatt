@@ -170,6 +170,9 @@ function AltCoins({ state, act }: PrologueProps) {
       <span class="num-s muted">
         {t('ui.p0.alts_limit', { usd: fmt.money(cur.weekCapUsd) })} {t('ui.p0.alts_wallet_note')}
       </span>
+      <span class="num-s muted" data-price-credit>
+        {tDynamic('credit.p0.price_data', '')}
+      </span>
       {e.view}
     </section>
   )

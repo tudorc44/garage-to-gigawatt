@@ -63,5 +63,7 @@
  "chapter.p0.pool_insolvent": "{pool} ran out of money under PPS and closed.",
  "tooltip.p0.club": "A club pools money with friends. Shares follow what each put in. Whoever holds the keys holds the risk.",
  "chapter.p0.club_buyout": "You bought out {names}. In Act I, they are the crew who helped you start.",
- "chapter.p0.club_dissolved": "The club sold up and split {value}."
+ "chapter.p0.club_dissolved": "The club sold up and split {value}.",
+ "credit.p0.price_data": "Price data courtesy of CoinMarketCap",
+ "chapter.p0.pool_insolvent_unpaid": "{pool} ran out of money under PPS and closed. Its miners went unpaid: {value} was written off."
 }

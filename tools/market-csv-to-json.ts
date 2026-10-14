@@ -70,7 +70,8 @@ export function csvToRows(csv: string): Record<string, Cell>[] {
         col === 'future' ||
         col === 'texas_summer' ||
         col === 'ltc_price_grade' ||
-        col === 'doge_price_grade'
+        col === 'doge_price_grade' ||
+        col === 'grade' // (M71.2: the alts weekly file's source-grade text, e.g. "D/C/B/D")
       )
         row[col] = cell
       else if (cell === '') row[col] = null

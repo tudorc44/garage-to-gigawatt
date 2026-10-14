@@ -7,9 +7,9 @@
    "type": "scripted",
    "title": "A Coin for GPUs",
    "trigger": "fixed:2011Q4",
-   "week": "2011-10-10",
+   "week": "2011-10-24",
    "weight": null,
-   "body": "A new coin called Litecoin goes live. It uses scrypt, a puzzle meant to suit ordinary CPUs and GPUs rather than the FPGA boards bitcoin is moving to. Your GPU can mine it from today.",
+   "body": "A new coin called Litecoin goes live. It uses scrypt, a puzzle meant to suit ordinary CPUs and GPUs rather than the FPGA boards bitcoin is moving to. Your GPU can mine it from this week.",
    "choices": [
     {
      "label": "Point a GPU at it (Rig screen)",
@@ -23,7 +23,7 @@
     }
    ],
    "real_basis": "Litecoin client 0.1.0 released 7 Oct 2011, network live 13 Oct 2011 [B/C]",
-   "source": "doc 53 A1"
+   "source": "doc 53 A1; mining opens 24 Oct 2011 (doc 51 §14 decision 3)"
   },
   {
    "id": "news_pool_ddos_wave",

@@ -206,7 +206,7 @@ export interface PrologueState {
   /** M69.3: your own pool (absent until one is opened). */
   ownPool?: OwnPool
   /** M69.3: an own pool sold or closed: when, for how much, and whether the handover sold it (the chapter report's line). */
-  poolEnded?: { name: string; quarter: number; usd: number; kind: 'sold' | 'handover' | 'closed' | 'insolvent' }
+  poolEnded?: { name: string; quarter: number; usd: number; kind: 'sold' | 'handover' | 'closed' | 'insolvent'; unpaidUsd?: number }
   /** M68.4: altcoins (absent until a GPU is pointed at one). */
   alts?: AltState
   /** Still living with your parents: household power is free, income comes in, patience counts. */

@@ -201,13 +201,13 @@ describe('the Prologue expansion pack (M68.2)', () => {
     expect(quarterly.reduce((n, q) => n + q.weeks, 0)).toBe(weekly.length)
   })
 
-  it('Litecoin exists from the week of 13 Oct 2011 and Dogecoin from 6 Dec 2013; merged mining from 11 Sep 2014', () => {
+  it('Litecoin exists from the week of 24 Oct 2011 and Dogecoin from 6 Dec 2013; merged mining from 11 Sep 2014', () => {
     const firstLtc = weekly.find((r) => r.ltc_usd !== null)!
     const firstDoge = weekly.find((r) => r.doge_usd !== null)!
-    expect(firstLtc.week).toBe('2011-10-10')
+    expect(firstLtc.week).toBe('2011-10-24')
     expect(firstDoge.week).toBe('2013-12-02')
     // a coin has no price before it exists, and the merged-mining flag turns on the week 8 Sep 2014 (its week ends 14 Sep)
-    for (const r of weekly) if (r.week < '2011-10-10') expect(r.ltc_usd).toBeNull()
+    for (const r of weekly) if (r.week < '2011-10-24') expect(r.ltc_usd).toBeNull()
     for (const r of weekly) if (r.week < '2013-12-02') expect(r.doge_usd).toBeNull()
     expect(weekly.find((r) => r.doge_merged_mining === true)!.week).toBe('2014-09-08')
     expect(weekly.filter((r) => r.week < '2014-09-08').every((r) => r.doge_merged_mining !== true)).toBe(true)

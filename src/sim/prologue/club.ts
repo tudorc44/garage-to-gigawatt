@@ -28,6 +28,7 @@ const fail = (key: Message['key'], params?: Message['params']): Message => ({
 const CL = () => CONTENT.prologue.club!
 const ALL: readonly ClubMember[] = ['you', 'nell', 'teo', 'jun']
 const emptyBal = (): ClubBalance => ({ cash: 0, BTC: 0, LTC: 0, DOGE: 0 })
+const FRIENDSHIP_PRICE_STEP = 0.1
 const COINS = ['BTC', 'LTC', 'DOGE'] as const
 type Coin3 = (typeof COINS)[number]
 
@@ -511,7 +512,10 @@ export function endClub(s: GameState, kind: 'buy_out' | 'dissolve', early: boole
   const px = prices(s)
   const refund = groupBuy().refund_share
   const assets = clubAssetsUsd(s, club)
-  const friendsOwed = CLUB_FRIENDS.filter((f) => club.members.includes(f)).reduce((a, f) => a + memberValueUsd(s, club, f), 0)
+  // (doc 51 v1.4 §15 decision 6: each friendship point below 0 adds 10% to the price of buying the friends out; the 10% is the doc's own number)
+  const friendsOwed =
+    CLUB_FRIENDS.filter((f) => club.members.includes(f)).reduce((a, f) => a + memberValueUsd(s, club, f), 0) *
+    (kind === 'buy_out' ? 1 + FRIENDSHIP_PRICE_STEP * Math.max(0, -club.friendship) : 1)
   let what = kind
   if (what === 'buy_out' && s.cash < friendsOwed) {
     logEntry(s, 'log.p0_club_cannot', { valueUsd: friendsOwed })

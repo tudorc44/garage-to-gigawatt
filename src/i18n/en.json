@@ -4317,6 +4317,7 @@
   "ui.p0.club.debt": "Hosting fees the friends still owe: {usd}",
   "ui.p0.club.ended_buyout": "You bought the friends out for {usd}.",
   "ui.p0.club.ended_dissolved": "The club sold up and split {usd}.",
+  "ui.p0.pool.ended_insolvent_unpaid": "{pool} ran out of money under PPS and closed. Its miners went unpaid: {value} was written off.",
   "ui.p0.pool.ended_insolvent": "{pool} ran out of money under PPS and closed.",
   "error.p0_lot_coin": "That GPU can't mine {coin} now.",
   "log.p0_lot_coin": "{count} x {model} now mine {coin}.",

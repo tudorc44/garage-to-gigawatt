@@ -11,7 +11,8 @@ import { randomInt, uniform } from '../rng.ts'
 import { logEntry, type GameState } from '../state.ts'
 import { accrue, book, roundCash } from '../ledger.ts'
 import { marketWeek } from '../systems/market.ts'
-import { P, byYear, poisson, rollStream } from './setup.ts'
+import { usedKw } from '../systems/sites.ts'
+import { P, byYear, poisson, rentUsdQ, rollStream, sitePowerUsdKwh } from './setup.ts'
 import type { OwnPool, PoolReport } from './types.ts'
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
@@ -193,6 +194,27 @@ function boycottOpen(s: GameState, pool: OwnPool): boolean {
 }
 
 /**
+ * The June 2014 bump to the small-pool share, in percentage points, for the week starting `weekDate` (an ISO date): the table's
+ * points (week 1, 4, 8) with straight lines between, then a lasting bump to the end of that year, nothing before it or after.
+ */
+export function boycottBumpPp(weekDate: string): number {
+  const B = PL().boycott_2014
+  const start = Date.parse(B.start_week)
+  const k = Math.floor((Date.parse(weekDate) - start) / (7 * 86400000)) + 1
+  if (k < 1 || weekDate.slice(0, 4) !== B.start_week.slice(0, 4)) return 0
+  const pts = Object.entries(B.small_pool_share_bump_pp_by_week.value)
+    .map(([w, v]) => [Number(w), v] as const)
+    .sort((a, b) => a[0] - b[0])
+  if (k >= pts[pts.length - 1][0]) return k === pts[pts.length - 1][0] ? pts[pts.length - 1][1] : B.lasting_bump_pp.value
+  for (let i = 0; i + 1 < pts.length; i++) {
+    const [w0, v0] = pts[i]
+    const [w1, v1] = pts[i + 1]
+    if (k >= w0 && k <= w1) return v0 + ((v1 - v0) * (k - w0)) / (w1 - w0)
+  }
+  return pts[0][1]
+}
+
+/**
  * One week of the pool. `ownTh` is the TH/s of your own bitcoin rigs (they mine in your pool, with no fee). Returns the coins that
  * land in your wallet this week (your own share plus the operator's fee or net); a negative net (a PPS payout beyond the blocks
  * found) is paid here, from the wallet's coins and then from cash.
@@ -202,8 +224,9 @@ export function ownPoolWeek(s: GameState, ownTh: number, perBlock: number, weekN
   const pool = p.ownPool!
   const w = marketWeek(s.quarter, s.week)
   const netTh = w.btc_hashrate_EHs * 1e6 // (the network without you, as solo mining counts it)
-  const mult = boycottOpen(s, pool) ? PL().boycott_2014.outside_hashrate_mult.value : 1
-  const outsideTh = netTh * smallShare(s.quarter) * pool.pull * mult
+  // (doc 51 v1.4 §14 decision 7: the June 2014 outflow from the biggest pool lifts the small-pool share week by week)
+  const bump = boycottOpen(s, pool) ? boycottBumpPp(w.week) / 100 : 0
+  const outsideTh = netTh * (smallShare(s.quarter) + bump) * pool.pull
   pool.outsideTh = outsideTh
   const total = ownTh + outsideTh
   if (total <= 0 || w.btc_usd <= 0) return 0
@@ -264,21 +287,31 @@ export function ownPoolWeek(s: GameState, ownTh: number, perBlock: number, weekN
   }
   const usd = (need - fromWallet) * w.btc_usd
   if (usd > 0) {
-    // (doc 51 v1.2 §13: what the pool owes its miners comes out of your cash down to zero; past that it can't pay and closes)
-    const pay = Math.min(usd, Math.max(0, s.cash))
+    // (doc 51 v1.4 §15 decision 5: what the pool owes its miners comes out of your cash only down to one quarter of your committed
+    // costs; the rest is written off, the pool closes and the chapter report says its miners went unpaid. The game goes on.)
+    const pay = Math.min(usd, Math.max(0, s.cash - committedCostsUsd(s)))
     if (pay > 0) book(s, 'other_opex', -pay)
     roundCash(s)
-    if (pay < usd - 1e-9 || s.cash <= 0) closeInsolvent(s, weekNo)
+    if (pay < usd - 1e-9) closeInsolvent(s, weekNo, usd - pay)
   }
   return 0
 }
 
+/** One quarter of your committed costs (doc 51 v1.4 §15 decision 5): rent once moved out, the power your machines draw, the pool's server bill and its protection. */
+export function committedCostsUsd(s: GameState): number {
+  const p = s.prologue!
+  const power = s.sites.reduce((a, site) => a + usedKw(s, site.id) * sitePowerUsdKwh(s, site) * 24 * 7 * 13, 0)
+  const pool = p.ownPool
+  const protectedNow = !!pool && pool.protectionFrom !== null && s.quarter >= pool.protectionFrom
+  return (p.livingAtHome ? 0 : rentUsdQ(s.quarter)) + power + serverBill(s.quarter) + (protectedNow ? protectionBill(s.quarter) : 0)
+}
+
 /** A PPS pool that has run out of money (doc 51 v1.2 §13): it closes and sells for nothing; the chapter report says so. The game goes on. */
-function closeInsolvent(s: GameState, weekNo: number): void {
+function closeInsolvent(s: GameState, weekNo: number, unpaidUsd = 0): void {
   const p = s.prologue!
   const pool = p.ownPool
   if (!pool) return
-  p.poolEnded = { name: pool.name, quarter: s.quarter, usd: 0, kind: 'insolvent' }
+  p.poolEnded = { name: pool.name, quarter: s.quarter, usd: 0, kind: 'insolvent', ...(unpaidUsd > 0 ? { unpaidUsd } : {}) }
   delete p.ownPool
   logEntry(s, 'log.p0_pool_insolvent', { name: pool.name }, weekNo)
 }
@@ -379,8 +412,8 @@ export function applyPoolEffect(
   if (fx.fee_override !== undefined && fx.duration_quarters)
     pool.feeOverride = { fee: fx.fee_override, until: s.quarter + fx.duration_quarters - 1 }
   if (fx.boycott_eligible !== undefined) {
-    const [from, to] = PL().boycott_2014.window
-    pool.boycott = { from: quarterIndex(from)!, until: quarterIndex(to)! }
+    const year = PL().boycott_2014.start_week.slice(0, 4)
+    pool.boycott = { from: quarterIndex(`${year}Q2`)!, until: quarterIndex(`${year}Q4`)! }
   }
   if (fx.sell) sellPool(s, 'sold')
 }

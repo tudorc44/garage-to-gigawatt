@@ -1,4 +1,4 @@
-"""Writes the Prologue expansion's JSON content (doc 51 v1.0). Values carry {value, grade, source} like the existing files.
+"""Writes the Prologue expansion's JSON content (doc 51 v1.4). Values carry {value, grade, source} like the existing files.
 Usage: npm run content:prologue-expansion  (python3 -I tools/prologue/gen_content.py; writes into docs/prologue-expansion-content/)"""
 import json
 OUT = __file__.rsplit('/tools/', 1)[0] + '/docs/prologue-expansion-content'
@@ -21,8 +21,8 @@ save('pools_player.json', {
  'notes': 'Run your own pool (doc 51 v1.0 §3). BTC only. Real pools fee rows live in custody.json (see custody_additions.json). Costs and probabilities are designed [D] unless graded otherwise.',
  'unlock': {'quarter': '2011Q2', 'requires_site_tier_min': 'home_rig', 'grade': 'D', 'source': 'pools exist from 2010Q4 (custody.json)'},
  'open_action': {'bandwidth': 1, 'setup_cash_usd': V(300, 'D', 'about 20 hours of setup plus a first month of hosting (doc 53 B3)')},
- 'server_bill_usd_quarter': {'2011': V(180, 'D', 'doc 53 B3: $60 a month'), '2012': V(150, 'D', 'interpolated'), '2013': V(120, 'D', 'doc 53 B3: $40 a month'), '2014': V(105, 'D', 'interpolated'), '2015': V(90, 'D', 'doc 53 B3: $30 a month'), '2016': V(90, 'D', 'held')},
- 'ddos_protection': {'action_bandwidth': 1, 'available_from': '2013Q1', 'usd_quarter': {'2013': V(240, 'D', 'doc 53 B3: $80 a month'), '2015': V(150, 'D', 'doc 53 B3: $50 a month')}, 'effect': 'halves the DDoS chance'},
+ 'server_bill_usd_quarter': {y: V(v * 3, 'C', 'doc 57: a dedicated server, about $%d a month (period price pages and forum posts)' % v) for y, v in (('2011', 80), ('2012', 80), ('2013', 64), ('2014', 56), ('2015', 56), ('2016', 56))},
+ 'ddos_protection': {'action_bandwidth': 1, 'available_from': '2013Q2', 'usd_quarter': {'2013': V(300, 'C', 'doc 57: a $100 a month add-on, or free with one large host from May 2013'), '2014': V(0, 'C', 'doc 57: bundled free from 2014'), '2015': V(0, 'C', 'doc 57'), '2016': V(0, 'C', 'doc 57')}, 'before': 'doc 57: protection for raw TCP cost $3,000-7,000 a month in 2011-12 (enterprise only), so a hobby pool had none', 'effect': 'halves the DDoS chance'},
  'cold_storage': {'action_bandwidth': 1, 'cash_usd': 0, 'effect': 'theft chance falls to hot_wallet_theft_with_cold_storage', 'lapses': 'never'},
  'payout_methods': {
   'PPLNS': {'fee_range': [0.0, 0.03], 'operator_carries_variance': False, 'grade': 'D', 'source': 'doc 53 B1/B3'},
@@ -30,10 +30,10 @@ save('pools_player.json', {
  'change_settings_bandwidth': 1,
  'outside_miners': {
   'model': 'outside hashrate = network hashrate x small_pool_share[year] x pull; pull starts at start_pull and moves each quarter with fee, luck and reputation, minus churn',
-  'small_pool_share_by_year': {y: V(v, 'D', 'placeholder; second research pass') for y, v in (('2011', 0.30), ('2012', 0.25), ('2013', 0.15), ('2014', 0.10), ('2015', 0.08), ('2016', 0.05))},
-  'start_pull': V(0.005, 'D', 'a new pool gets 0.5% of the small-pool market'),
+  'small_pool_share_by_year': {'2011': V(0.10, 'D', 'doc 55 §4: solo mining dominant, Deepbit majority'), '2012': V(0.15, 'D', 'doc 55 §4'), '2013': V(0.25, 'C', 'doc 55 §4: outside the top five (Cong, He and Li 2018 [B]) minus solo'), '2014': V(0.26, 'C', 'doc 55 §4'), '2015': V(0.30, 'C', 'doc 55 §4'), '2016': V(0.24, 'C', 'doc 55 §4')},
+  'start_pull': V(0.005, 'D', 'a new pool gets 0.5% of the small-pool market; first lever at the balance milestone (doc 51 §13-14)'),
   'fee_elasticity_per_pp': V(-0.08, 'D', 'doc 53 B3: -8% hashrate per +1 pp fee against the median'),
-  'median_fee_by_year': {'2011': 0.02, '2012': 0.02, '2013': 0.01, '2014': 0.01, '2015': 0.015, '2016': 0.015, 'grade': 'D', 'source': 'custody.json fee_pct_by_year and doc 53 B1, rounded'},
+  'median_fee_by_year': {'2011': 0.0387, '2012': 0.0348, '2013': 0.0303, '2014': 0.0161, '2015': 0.0224, '2016': 0.0112, 'grade': 'B', 'source': 'size-weighted average pool fee, Cong, He and Li 2018 (doc 55 §4); used as the market fee the player is compared with'},
   'base_churn_quarter': V(0.05, 'D', 'designed'),
   'luck_memory_weeks': V(4, 'D', 'doc 53 B3'),
   'bad_luck_spiral': V('after 3 unlucky weeks in a row under PPLNS, -15% outside hashrate each further unlucky week', 'D', 'doc 53 B3'),
@@ -45,7 +45,10 @@ save('pools_player.json', {
   'hot_wallet_theft_with_cold_storage': V(0.002, 'D', 'doc 53 B3'),
   'theft_size': V('one week of outside miners payouts; under PPS the operator still owes them', 'D', 'designed'),
   'orphan_rate': V({'2011': 0.02, '2013': 0.01, '2016': 0.0041}, 'A/D', 'Feb 2016 0.41% [A]; earlier years designed')},
- 'boycott_2014': {'window': ['2014Q2', '2014Q3'], 'condition': 'pool open, fee at or below the median, reputation >= 50', 'outside_hashrate_mult': V(1.3, 'D', 'miners spread from the largest pool after June 2014 (custody.json note); size designed, second research pass'), 'card': 'pool_boycott_2014'},
+ 'boycott_2014': {'start_week': '2014-06-16', 'condition': 'pool open, fee at or below the median, reputation >= 50',
+  'small_pool_share_bump_pp_by_week': V({'1': 4.0, '4': 2.0, '8': 1.0}, 'D', 'doc 57: GHash.io 55% on 12-13 Jun, 42% on 15 Jun, 35% on 19 Jun, about 34.6% in mid-July [B]; most of the outflow went to big pools; linear between the points'),
+  'lasting_bump_pp': V(1.0, 'D', 'after week 8, to the end of 2014; then the yearly share table takes over'),
+  'card': 'pool_boycott_2014', 'replaces': 'the v1.0 x1.3 for two quarters'},
  'sale': {'from_quarter': '2013Q1', 'price': 'trailing four quarters of fee income x multiple', 'multiple': V(2.0, 'D', 'no sourced small-pool sale found (doc 53)'), 'at_handover': 'an open pool is sold automatically at this price (owner, doc 51 §8)'},
  'names': {'default_pool_name': 'Halfblock Pool', 'rivals': ['Slagwheel', 'CopperHash'], 'grade': 'D', 'note': 'invented; OreLoop renamed Slagwheel (doc 57: a Swedish gold-mining technology company uses OreLoop); formal USPTO and EUIPO searches before ship'}})
 
@@ -71,7 +74,8 @@ save('club.json', {
  'endings': {'early': 'card club_breakup (2015Q1 or later)', 'at_handover': ['buy_out', 'dissolve'],
              'buy_out': 'pay each friend their share at 2016Q4 value; machines and coins become yours and enter Act I',
              'dissolve': 'machines sold at the used price, coins at the 2016Q4 price, everything split by shares',
-             'chapter_report': 'Act I names the friends as the founding crew if bought out (text only)'}})
+             'chapter_report': 'Act I names the friends as the founding crew if bought out (text only)'},
+ 'friendship': {'start': 0, 'down': 'refusing Teo at club_peak_cashout -1; letting the power bill become a dispute -1', 'effect': V('each point below 0 adds 10% to the price of buying the friends out (club_breakup or the handover)', 'D', 'doc 51 §15 decision 6: one effect, on the ending')}})
 
 save('custody_additions.json', {
  'schema_version': 1,
@@ -82,12 +86,13 @@ save('custody_additions.json', {
   {'year': '2011', 'pool': 'Eligius', 'scheme': 'CPPSRB', 'fee': '0%', 'grade': 'C', 'source': 'doc 53 B1'},
   {'year': '2013', 'pool': 'BTC Guild', 'scheme': 'PPLNS / PPS', 'fee': '3% / 7.5%', 'grade': 'C', 'source': 'doc 53 B1'}],
  'altcoin_selling_limits': {
+  'volume_rule': 'use the week\'s real daily volume (market file, CoinMarketCap [A]) where present, else the year\'s average below',
   'free_share_of_avg_daily_volume': V(0.005, 'D', 'doc 53 A6'), 'slippage': V('price -1% for each further 0.5% of average daily volume', 'D', 'doc 53 A6'), 'hard_cap_share_of_avg_daily_volume': V(0.02, 'D', 'doc 53 A6'),
   'avg_daily_volume_usd': {
-   'LTC': {'2011': V(20000, 'D', 'no data; second research pass'), '2012': V(20000, 'D', 'no data; second research pass'), '2013': V(295900, 'C', 'CoinLore Apr-Dec'), '2014': V(5800000, 'C', 'CoinLore'), '2015': V(3400000, 'C', 'CoinLore'), '2016': V(3100000, 'C', 'CoinLore')},
+   'LTC': {'2011': V(2000, 'D', 'doc 55 §8: not found; scaled from the 2013 average by market cap'), '2012': V(1000, 'D', 'doc 55 §8: not found'), '2013': V(295900, 'C', 'CoinLore Apr-Dec'), '2014': V(5800000, 'C', 'CoinLore'), '2015': V(3400000, 'C', 'CoinLore'), '2016': V(3100000, 'C', 'CoinLore')},
    'DOGE': {'2013': V(101800, 'C', 'CoinLore Dec'), '2014': V(1100000, 'C', 'CoinLore'), '2015': V(168500, 'C', 'CoinLore'), '2016': V(256500, 'C', 'CoinLore')}}},
  'handover': {'altcoins': 'sold over 2016Q4 within the selling limits, at the weekly prices; any left after the cap converts at the 2016Q4 close x 0.9 (designed haircut); no altcoin enters Act I',
-              'chapter_report_later_prices': 'dated LTC and DOGE closes at end 2017, end 2021 and the latest full year (second research pass)'}})
+              'chapter_report_later_prices': {'date': '2021-12-31', 'LTC': V(146.41, 'C', 'CoinLore year close (doc 55 §7)'), 'DOGE': V(0.1708, 'C', 'CoinLore year close (doc 55 §7)'), 'why': 'one fixed, well-known date; a latest-year close would date the line (doc 51 §14 decision 6)'}}})
 print('part 2 ok')
 
 def card(id, type, title, trigger, body, choices, real_basis, source, week=None, weight=None):
@@ -95,7 +100,7 @@ def card(id, type, title, trigger, body, choices, real_basis, source, week=None,
             'choices': [{'label': l, 'effects': e} for l, e in choices], 'real_basis': real_basis, 'source': source}
 NOTED = [('Noted', {})]
 news = [
- card('news_ltc_launch', 'scripted', 'A Coin for GPUs', 'fixed:2011Q4', 'A new coin called Litecoin goes live. It uses scrypt, a puzzle meant to suit ordinary CPUs and GPUs rather than the FPGA boards bitcoin is moving to. Your GPU can mine it from today.', [('Point a GPU at it (Rig screen)', {'flag': 'tried_ltc'}), ('Stay on bitcoin', {})], 'Litecoin client 0.1.0 released 7 Oct 2011, network live 13 Oct 2011 [B/C]', 'doc 53 A1', week='2011-10-10'),
+ card('news_ltc_launch', 'scripted', 'A Coin for GPUs', 'fixed:2011Q4', 'A new coin called Litecoin goes live. It uses scrypt, a puzzle meant to suit ordinary CPUs and GPUs rather than the FPGA boards bitcoin is moving to. Your GPU can mine it from this week.', [('Point a GPU at it (Rig screen)', {'flag': 'tried_ltc'}), ('Stay on bitcoin', {})], 'Litecoin client 0.1.0 released 7 Oct 2011, network live 13 Oct 2011 [B/C]', 'doc 53 A1; mining opens 24 Oct 2011 (doc 51 §14 decision 3)', week='2011-10-24'),
  card('news_pool_ddos_wave', 'news', 'Pools Under Fire', 'fixed:2011Q3', 'Pools across the forums report floods of junk traffic. The biggest pools are hit most often.', NOTED, 'Pools were the main DDoS target in the second half of 2011 (Vasek, Thornton, Moore, FC 2014) [A]', 'doc 53 B2'),
  card('news_host_breach', 'news', 'A Hosting Breach', 'fixed:2012Q1', 'A hosting provider is breached and a well-known pool loses 3,094 BTC from its hot wallet. Its operator covers the loss himself.', NOTED, 'Linode breach, 1 Mar 2012 [B]', 'doc 53 B2', week='2012-02-27'),
  card('news_chain_split', 'news', 'The Chain Splits', 'fixed:2013Q1', 'A software upgrade splits the bitcoin chain for a few hours. Several pools lose block rewards before it is patched.', NOTED, '0.8/0.7 fork, 11 Mar 2013 [C]', 'doc 53 B2', week='2013-03-11'),
@@ -151,9 +156,11 @@ save('text_prologue_expansion.en.json', {
  'chapter.p0.pool_sold': 'You sold {pool} for {value}.',
  'chapter.p0.pool_sold_handover': 'You sold {pool} when you moved on, for {value}.',
  'chapter.p0.pool_insolvent': '{pool} ran out of money under PPS and closed.',
+ 'chapter.p0.pool_insolvent_unpaid': '{pool} ran out of money under PPS and closed. Its miners went unpaid: {value} was written off.',
  'chapter.p0.club_buyout': 'You bought out {names}. In Act I, they are the crew who helped you start.',
  'chapter.p0.club_dissolved': 'The club sold up and split {value}.',
- 'chapter.p0.alts_sold': 'You sold {amount} {coin} in 2016 for {value}. At {later_date} those coins were worth {later_value}.'})
+ 'chapter.p0.alts_sold': 'You sold {amount} {coin} in 2016 for {value}. At {later_date} those coins were worth {later_value}.',
+ 'credit.p0.price_data': 'Price data courtesy of CoinMarketCap'})
 print('ok')
 
 save('preorders_additions.json', {

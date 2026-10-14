@@ -31,20 +31,15 @@ export function Chapter(props: PrologueProps) {
   )
 }
 
-/**
- * The altcoin line of the chapter report (chapter.p0.alts_sold) without its later-price clause.
- * TODO (doc 51 v1.0 §10 item 7): add "At {later_date} those coins were worth {later_value}" once the second research pass has
- * dated LTC and DOGE closes (end 2017, end 2021, the latest full year); until then the sentence stops after the sale.
- */
-function altsSoldLine(r: { coin: 'LTC' | 'DOGE'; amount: number; usd: number }): string {
-  const full = tDynamic('chapter.p0.alts_sold', '', {
+/** The altcoin line of the chapter report (chapter.p0.alts_sold): the 2016 sale, and what the same coins were worth on a later date (M71.3). */
+function altsSoldLine(r: { coin: 'LTC' | 'DOGE'; amount: number; usd: number; laterDate: string; laterUsd: number }): string {
+  return tDynamic('chapter.p0.alts_sold', '', {
     amount: altAmount(r.amount, r.coin).replace(` ${r.coin}`, ''),
     coin: t(`ui.p0.coin.${r.coin}`),
     value: fmt.money(r.usd),
-    later_date: '',
-    later_value: '',
+    later_date: new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${r.laterDate}T00:00:00Z`)),
+    later_value: fmt.money(r.laterUsd),
   })
-  return `${full.split('. At ')[0].replace(/\.$/, '')}.`
 }
 
 /** A label and a value on one line, with a dashed rule under it. */
@@ -134,10 +129,15 @@ function Report({ state, next }: PrologueProps & { next: () => void }) {
                 state.prologue.poolEnded.kind === 'handover'
                   ? 'chapter.p0.pool_sold_handover'
                   : state.prologue.poolEnded.kind === 'insolvent'
-                    ? 'chapter.p0.pool_insolvent'
+                    ? state.prologue.poolEnded.unpaidUsd
+                      ? 'chapter.p0.pool_insolvent_unpaid'
+                      : 'chapter.p0.pool_insolvent'
                     : 'chapter.p0.pool_sold',
                 '',
-                { pool: state.prologue.poolEnded.name, value: fmt.money(state.prologue.poolEnded.usd) },
+                {
+                  pool: state.prologue.poolEnded.name,
+                  value: fmt.money(state.prologue.poolEnded.kind === 'insolvent' ? (state.prologue.poolEnded.unpaidUsd ?? 0) : state.prologue.poolEnded.usd),
+                },
               )}
             </span>
           )}

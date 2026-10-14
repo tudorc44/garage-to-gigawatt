@@ -53,7 +53,9 @@ write(p, s)
 
 # ---- docs/prologue-content/custody.json
 p = f'{DOCS}/custody.json'; s = read(p)
-if 'altcoin_selling_limits' not in s:
+if 'altcoin_selling_limits' in s:  # M71.2: rebuilt on every run (the pack's values changed: doc 55 volumes, the dated later prices)
+    s = s[:s.index(',\n "altcoin_selling_limits"')] + '\n}\n'
+if True:
     body = s.rstrip()
     assert body.endswith('\n}')
     add = {k: custody[k] for k in ('altcoin_selling_limits', 'pools_reference_fees', 'handover')}
@@ -90,11 +92,15 @@ write(p, s)
 
 # ---- src/content/prologue.json: the 2014Q3 decision quarter, the altcoin selling limits, the handover rule
 p = f'{GAME}/prologue.json'; s = read(p)
-if 'altcoin_selling_limits' not in s:
+if 'altcoin_selling_limits' in s:  # M71.2: rebuilt on every run (volumes, volume rule, dated later prices)
+    i = s.index(' "altcoin_selling_limits"'); j = s.index(' "career_markers_note"')
+    s = s[:i] + s[j:]
+if True:
     # 2014Q3 is a decision quarter only for a player with a GPU on scrypt (opt-in), so a game that never switches a GPU keeps
     # its 13 Plan phases and every golden stays byte-identical (mine, reversible; doc 51 v1.0 §2.2 says 13 to 14)
-    s = s.replace(' "offers": [', ' "opt_in_decision_quarters": {"2014Q3": "scrypt_gpus"},\n "offers": [', 1)
+    if 'opt_in_decision_quarters' not in s: s = s.replace(' "offers": [', ' "opt_in_decision_quarters": {"2014Q3": "scrypt_gpus"},\n "offers": [', 1)
     lim = custody['altcoin_selling_limits']
+    later = custody['handover']['chapter_report_later_prices']
     vol = {coin: {y: v['value'] for y, v in ys.items()} for coin, ys in lim['avg_daily_volume_usd'].items()}
     block = (
         ' "altcoin_selling_limits": ' + jl({
@@ -104,10 +110,12 @@ if 'altcoin_selling_limits' not in s:
             'step_share': lim['free_share_of_avg_daily_volume']['value'],
             'slippage_per_step': 0.01,
             'hard_cap_share': lim['hard_cap_share_of_avg_daily_volume']['value'],
+            'volume_rule': lim['volume_rule'],
             'avg_daily_volume_usd': vol}) + ',\n'
         ' "altcoin_handover": ' + jl({
             'sell_quarter': '2016Q4',
             'left_over_close_mult': 0.9,
+            'later_prices': {'date': later['date'], 'LTC': later['LTC']['value'], 'DOGE': later['DOGE']['value']},
             'note': 'Doc 51 v1.0 §5: altcoins are sold over 2016Q4 within the selling limits at the weekly prices; whatever is left converts at the 2016Q4 close x this; no altcoin enters Act I.'}) + ',\n')
     s = s.replace(' "career_markers_note"', block + ' "career_markers_note"', 1)
     write(p, s)
@@ -151,7 +159,7 @@ write(TEXT, json.dumps(out, indent=2, ensure_ascii=False) + '\n')
 
 # ---- M69.2 (doc 51 v1.1 §11 item 2): the pool's 5 cards and 8 text keys, the same way (docs in the pack's format, the game in its own)
 POOL_TEXT = ['tooltip.p0.own_pool', 'tooltip.p0.pool_pps', 'tooltip.p0.pool_pplns', 'tooltip.p0.cold_storage', 'glossary.hot_wallet',
-             'glossary.ddos', 'chapter.p0.pool_sold', 'chapter.p0.pool_sold_handover', 'chapter.p0.pool_insolvent']
+             'glossary.ddos', 'chapter.p0.pool_sold', 'chapter.p0.pool_sold_handover', 'chapter.p0.pool_insolvent', 'chapter.p0.pool_insolvent_unpaid']
 pool_cards = [c for c in json.load(open(f'{PACK}/events_prologue_expansion.json'))['events'] if c['id'].startswith('pool_')]
 assert len(pool_cards) == 5, len(pool_cards)
 POOL_GAME = {  # id: (type, extra fields, default, [(choice id, effects)])
@@ -164,7 +172,7 @@ POOL_GAME = {  # id: (type, extra fields, default, [(choice id, effects)])
     'pool_boycott_2014': ('scripted', {'quarter': '2014Q2', 'week_of': '2014-06-09', 'requires': ['pool_open']}, 'keep_fee',
                           [('cut_fee', {'pool': {'fee_override': 0.0, 'duration_quarters': 2, 'boycott_eligible': True}}),
                            ('keep_fee', {'pool': {'boycott_eligible': 'if_fee_at_or_below_median'}})]),
-    'pool_sale_offer': ('random', {'requires': ['pool_open'], 'from': '2013Q1', 'weight': 0.5}, 'keep', [('sell', {'pool': {'sell': True}}), ('keep', {})]),
+    'pool_sale_offer': ('random', {'requires': ['pool_open'], 'from': '2013Q1', 'weight': 0.5, 'pauses_autoplay': True}, 'keep', [('sell', {'pool': {'sell': True}}), ('keep', {})]),
 }
 p = f'{DOCS}/events_prologue.json'; s = read(p)
 if '"pool_ddos"' not in s:
@@ -310,3 +318,29 @@ if '## Rename log (M71.1' not in s:
 - ScryptBox Ltd is now **Kestrel Foundry** (it was a real 2014 scrypt-mining share offering), Mara Ilves is **Nell Hartigan** (id `nell`; association risk) and OreLoop is **Slagwheel** (a Swedish gold-mining technology company uses it). The generator writes the new names; `merge_alts.py` renames the already-merged card and text copies in `docs/prologue-content/`, `src/content/` and `src/i18n/content.en.json`. Formal USPTO and EUIPO searches on every invented name are the owner's task before ship (doc 51 §15 decision 2).
 ''')
 print('rename ok')
+
+# M71.2 (doc 51 v1.4 §14 decision 3, §15 decision 1): Litecoin opens on 24 Oct 2011 (the card moves to that week and says "this week"),
+# and the credit line for the price data. The merge never replaces text, so the already-merged card is updated here (safe to run again).
+ltc = next(c for c in cards if c['id'] == 'news_ltc_launch')
+p = f'{DOCS}/events_prologue.json'; s = read(p)
+t = s.replace('"id": "news_ltc_launch", "type": "scripted", "title": "A Coin for GPUs", "trigger": "fixed:2011Q4", "week": "2011-10-10"',
+              f'"id": "news_ltc_launch", "type": "scripted", "title": "A Coin for GPUs", "trigger": "fixed:2011Q4", "week": "{ltc["week"]}"')
+t = t.replace('Your GPU can mine it from today.', 'Your GPU can mine it from this week.')
+if t != s: write(p, t)
+p = f'{GAME}/events_prologue.json'; s = read(p)
+t = s.replace('"id": "news_ltc_launch", "type": "news", "quarter": "2011Q4", "week_of": "2011-10-10"', f'"id": "news_ltc_launch", "type": "news", "quarter": "2011Q4", "week_of": "{ltc["week"]}"')
+if t != s: write(p, t)
+d = json.loads(read(TEXT))
+d['p0.event.news_ltc_launch.body'] = ltc['body']
+d['credit.p0.price_data'] = text['credit.p0.price_data']
+write(TEXT, json.dumps(d, indent=2, ensure_ascii=False) + '\n')
+p = f'{DOCS}/text_prologue.en.json'; d = json.loads(read(p))
+d['credit.p0.price_data'] = text['credit.p0.price_data']
+write(p, json.dumps(d, indent=1, ensure_ascii=False) + '\n')
+
+# M71.3 (doc 51 v1.4 §15 decision 7): pool_sale_offer pauses auto-play, like the club's random cards (merged before as a card that
+# an auto-played quarter answered with its default); the merged copy is updated in place (safe to run again).
+p = f'{GAME}/events_prologue.json'; s = read(p)
+t = s.replace('{"id": "pool_sale_offer", "type": "random", "requires": ["pool_open"], "from": "2013Q1", "weight": 0.5, "default": "keep"',
+              '{"id": "pool_sale_offer", "type": "random", "requires": ["pool_open"], "from": "2013Q1", "weight": 0.5, "pauses_autoplay": true, "default": "keep"')
+if t != s: write(p, t)

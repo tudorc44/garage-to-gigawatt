@@ -430,7 +430,7 @@
   "p0.event.household.choice.move_out": "Move out now",
   "p0.event.household.choice.cut_load": "Cut back this quarter",
   "p0.event.news_ltc_launch.title": "A Coin for GPUs",
-  "p0.event.news_ltc_launch.body": "A new coin called Litecoin goes live. It uses scrypt, a puzzle meant to suit ordinary CPUs and GPUs rather than the FPGA boards bitcoin is moving to. Your GPU can mine it from today.",
+  "p0.event.news_ltc_launch.body": "A new coin called Litecoin goes live. It uses scrypt, a puzzle meant to suit ordinary CPUs and GPUs rather than the FPGA boards bitcoin is moving to. Your GPU can mine it from this week.",
   "p0.event.news_pool_ddos_wave.title": "Pools Under Fire",
   "p0.event.news_pool_ddos_wave.body": "Pools across the forums report floods of junk traffic. The biggest pools are hit most often.",
   "p0.event.news_host_breach.title": "A Hosting Breach",
@@ -548,5 +548,7 @@
   "chapter.p0.pool_insolvent": "{pool} ran out of money under PPS and closed.",
   "tooltip.p0.club": "A club pools money with friends. Shares follow what each put in. Whoever holds the keys holds the risk.",
   "chapter.p0.club_buyout": "You bought out {names}. In Act I, they are the crew who helped you start.",
-  "chapter.p0.club_dissolved": "The club sold up and split {value}."
+  "chapter.p0.club_dissolved": "The club sold up and split {value}.",
+  "credit.p0.price_data": "Price data courtesy of CoinMarketCap",
+  "chapter.p0.pool_insolvent_unpaid": "{pool} ran out of money under PPS and closed. Its miners went unpaid: {value} was written off."
 }

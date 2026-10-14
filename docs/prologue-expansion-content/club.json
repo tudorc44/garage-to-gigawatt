@@ -99,5 +99,14 @@
   "buy_out": "pay each friend their share at 2016Q4 value; machines and coins become yours and enter Act I",
   "dissolve": "machines sold at the used price, coins at the 2016Q4 price, everything split by shares",
   "chapter_report": "Act I names the friends as the founding crew if bought out (text only)"
+ },
+ "friendship": {
+  "start": 0,
+  "down": "refusing Teo at club_peak_cashout -1; letting the power bill become a dispute -1",
+  "effect": {
+   "value": "each point below 0 adds 10% to the price of buying the friends out (club_breakup or the handover)",
+   "grade": "D",
+   "source": "doc 51 §15 decision 6: one effect, on the ending"
+  }
  }
 }

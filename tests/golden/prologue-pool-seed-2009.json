@@ -6,7 +6,7 @@
   "phase": "chapter",
   "quarter": -1,
   "week": 13,
-  "cash": 179552.61,
+  "cash": 598477.15,
   "bandwidth": 3,
   "hodlPct": {
     "BTC": 0,
@@ -1527,7 +1527,7 @@
       "key": "log.p0_pool_sold",
       "params": {
         "name": "Halfblock Pool",
-        "valueUsd": 45745.113990298116
+        "valueUsd": 244951.5739669234
       }
     }
   ],
@@ -1573,7 +1573,7 @@
       }
     },
     "mined": {
-      "BTC": 1243090.0496030685,
+      "BTC": 1243499.8945600074,
       "ETH": 0
     },
     "blocksFound": 24808,
@@ -1889,14 +1889,14 @@
         "quarter": "2011Q2",
         "auto": false,
         "coinsMined": {
-          "BTC": 1335.9822332976635,
+          "BTC": 1254.4893646153791,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 14.73092,
         "ethUsd": 0,
         "difficultyChangePct": 11.713578700952723,
-        "cash": 45417.05,
+        "cash": 44613.03,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -1908,8 +1908,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 9171.106024402807,
-        "netWorthUsd": 46457.05,
+        "soldUsd": 8427.077776623002,
+        "netWorthUsd": 45653.03,
         "patience": 35,
         "cards": [
           {
@@ -1918,13 +1918,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 67.77113491409281,
-          "paidMinersUsd": 6709.342356495188,
-          "billsUsd": 180,
-          "ownBtc": 1328.254270752563,
-          "operatorBtc": 7.727962545100687,
-          "blocks": 42,
-          "outsideTh": 0.009416227174302213,
+          "feeUsd": 13.671899849417219,
+          "paidMinersUsd": 1353.5180850923045,
+          "billsUsd": 240,
+          "ownBtc": 1252.5071828167327,
+          "operatorBtc": 1.9821817986460801,
+          "blocks": 29,
+          "outsideTh": 0.0031387423914340713,
           "reputation": 55
         }
       },
@@ -1932,14 +1932,14 @@
         "quarter": "2011Q3",
         "auto": true,
         "coinsMined": {
-          "BTC": 105.2831519616885,
+          "BTC": 90.94446232349752,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 5.280024,
         "ethUsd": 0,
         "difficultyChangePct": 1.1538024142912886,
-        "cash": 47574.55,
+        "cash": 46576.92,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -1951,18 +1951,18 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 1137.5064855075075,
-        "netWorthUsd": 48454.55,
+        "soldUsd": 1003.8818812122837,
+        "netWorthUsd": 47456.92,
         "patience": 20,
         "cards": [],
         "pool": {
-          "feeUsd": 137.19382278344693,
-          "paidMinersUsd": 13582.188455561245,
-          "billsUsd": 180,
-          "ownBtc": 91.69282660088396,
-          "operatorBtc": 13.590325360804567,
-          "blocks": 29,
-          "outsideTh": 0.031097815875441956,
+          "feeUsd": 41.632599175602486,
+          "paidMinersUsd": 4121.627318384646,
+          "billsUsd": 240,
+          "ownBtc": 86.81006168976991,
+          "operatorBtc": 4.134400633727614,
+          "blocks": 10,
+          "outsideTh": 0.010578409375708666,
           "reputation": 60
         }
       },
@@ -1970,14 +1970,14 @@
         "quarter": "2011Q4",
         "auto": false,
         "coinsMined": {
-          "BTC": 21.010505252626313,
+          "BTC": 7.003501750875438,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 4.53748,
         "ethUsd": 0,
         "difficultyChangePct": -0.2941020162471111,
-        "cash": 48347.27,
+        "cash": 47243.26,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -1989,8 +1989,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 68.70352787375583,
-        "netWorthUsd": 49067.27,
+        "soldUsd": 22.32393340739504,
+        "netWorthUsd": 47963.26,
         "patience": 5,
         "cards": [
           {
@@ -1999,13 +1999,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 68.70805202601301,
-          "paidMinersUsd": 6802.097150575288,
-          "billsUsd": 180,
+          "feeUsd": 22.324567783891943,
+          "paidMinersUsd": 2210.1322106053026,
+          "billsUsd": 240,
           "ownBtc": 0,
-          "operatorBtc": 21.010505252626313,
-          "blocks": 42,
-          "outsideTh": 0.026259730294318814,
+          "operatorBtc": 7.003501750875438,
+          "blocks": 14,
+          "outsideTh": 0.009451891160808683,
           "reputation": 65
         }
       },
@@ -2013,14 +2013,14 @@
         "quarter": "2012Q1",
         "auto": true,
         "coinsMined": {
-          "BTC": 129.1519416678225,
+          "BTC": 129.28660628486884,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 5.769271,
         "ethUsd": 0,
         "difficultyChangePct": 0,
-        "cash": 50089.37,
+        "cash": 48891.01,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2032,8 +2032,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 692.0997016039236,
-        "netWorthUsd": 50689.37,
+        "soldUsd": 687.7256491566106,
+        "netWorthUsd": 49491.01,
         "patience": 0,
         "cards": [
           {
@@ -2046,13 +2046,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 93.09503472181775,
-          "paidMinersUsd": 9216.408437459959,
-          "billsUsd": 150,
-          "ownBtc": 111.76028993990799,
-          "operatorBtc": 17.391651727914578,
-          "blocks": 37,
-          "outsideTh": 0.0234804065121377,
+          "feeUsd": 62.862361695613345,
+          "paidMinersUsd": 6223.373807865722,
+          "billsUsd": 240,
+          "ownBtc": 117.45464952852831,
+          "operatorBtc": 11.831956756340528,
+          "blocks": 26,
+          "outsideTh": 0.015101175490649271,
           "reputation": 50
         }
       },
@@ -2060,14 +2060,14 @@
         "quarter": "2012Q2",
         "auto": true,
         "coinsMined": {
-          "BTC": 68.22250666154495,
+          "BTC": 60.03474820736174,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 7.339042,
         "ethUsd": 0,
         "difficultyChangePct": 0,
-        "cash": 51572.89,
+        "cash": 50230.45,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2079,8 +2079,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 433.5192474177003,
-        "netWorthUsd": 52052.89,
+        "soldUsd": 379.4340235416766,
+        "netWorthUsd": 50710.45,
         "patience": 50,
         "cards": [
           {
@@ -2089,13 +2089,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 137.089329805104,
-          "paidMinersUsd": 13571.843650705296,
-          "billsUsd": 150,
-          "ownBtc": 46.67828399878138,
-          "operatorBtc": 21.544222662763563,
-          "blocks": 44,
-          "outsideTh": 0.041834368206611565,
+          "feeUsd": 82.56656383951815,
+          "paidMinersUsd": 8174.0898201122955,
+          "billsUsd": 240,
+          "ownBtc": 46.99797457643777,
+          "operatorBtc": 13.03677363092397,
+          "blocks": 27,
+          "outsideTh": 0.025397799254257784,
           "reputation": 55
         }
       },
@@ -2103,14 +2103,14 @@
         "quarter": "2012Q3",
         "auto": true,
         "coinsMined": {
-          "BTC": 83.15348470274057,
+          "BTC": 72.29646158054499,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 11.357219,
         "ethUsd": 0,
         "difficultyChangePct": 0.3934946969326978,
-        "cash": 53429.13,
+        "cash": 51901.34,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2122,18 +2122,18 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 806.2403493102644,
-        "netWorthUsd": 53829.13,
+        "soldUsd": 710.8816945226546,
+        "netWorthUsd": 52301.34,
         "patience": 35,
         "cards": [],
         "pool": {
-          "feeUsd": 229.1191300934417,
-          "paidMinersUsd": 22682.793879250727,
-          "billsUsd": 150,
-          "ownBtc": 59.738867373473816,
-          "operatorBtc": 23.41461732926676,
-          "blocks": 48,
-          "outsideTh": 0.07915478783076174,
+          "feeUsd": 133.4866045839001,
+          "paidMinersUsd": 13215.173853806107,
+          "billsUsd": 240,
+          "ownBtc": 58.87824048363041,
+          "operatorBtc": 13.418221096914575,
+          "blocks": 28,
+          "outsideTh": 0.04500490705589898,
           "reputation": 60
         }
       },
@@ -2141,14 +2141,14 @@
         "quarter": "2012Q4",
         "auto": false,
         "coinsMined": {
-          "BTC": 28.76438219109555,
+          "BTC": 19.00950475237619,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 13.15808,
         "ethUsd": 0,
         "difficultyChangePct": 0.3802787556797491,
-        "cash": 54591.43,
+        "cash": 52855.38,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2160,8 +2160,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 348.2850891136988,
-        "netWorthUsd": 54951.43,
+        "soldUsd": 230.02436292222833,
+        "netWorthUsd": 53215.38,
         "patience": 20,
         "cards": [
           {
@@ -2170,13 +2170,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 348.4049877438719,
-          "paidMinersUsd": 34492.09378664332,
-          "billsUsd": 150,
+          "feeUsd": 230.08464707353676,
+          "paidMinersUsd": 22778.380060280142,
+          "billsUsd": 240,
           "ownBtc": 0,
-          "operatorBtc": 28.76438219109555,
-          "blocks": 67,
-          "outsideTh": 0.1262645810218598,
+          "operatorBtc": 19.00950475237619,
+          "blocks": 44,
+          "outsideTh": 0.07846340082485526,
           "reputation": 65
         }
       },
@@ -2184,14 +2184,14 @@
         "quarter": "2013Q1",
         "auto": false,
         "coinsMined": {
-          "BTC": 9.504752376188094,
+          "BTC": 20.510255127563788,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 103.97115,
         "ethUsd": 0,
         "difficultyChangePct": 0,
-        "cash": 55818.25,
+        "cash": 54428.45,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2203,8 +2203,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 382.80905198478007,
-        "netWorthUsd": 56178.25,
+        "soldUsd": 801.0774115055224,
+        "netWorthUsd": 54788.45,
         "patience": 5,
         "cards": [
           {
@@ -2217,13 +2217,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 382.81599099549777,
-          "paidMinersUsd": 37898.78310855428,
-          "billsUsd": 120,
+          "feeUsd": 801.1074412206103,
+          "paidMinersUsd": 79309.63668084043,
+          "billsUsd": 192,
           "ownBtc": 0,
-          "operatorBtc": 9.504752376188094,
-          "blocks": 38,
-          "outsideTh": 0.091740923171053,
+          "operatorBtc": 20.510255127563788,
+          "blocks": 82,
+          "outsideTh": 0.16138927526359192,
           "reputation": 70
         }
       },
@@ -2231,14 +2231,14 @@
         "quarter": "2013Q2",
         "auto": true,
         "coinsMined": {
-          "BTC": 18.678689300859265,
+          "BTC": 31.633836884268632,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 99.04675,
         "ethUsd": 0,
         "difficultyChangePct": 2.907340868530637,
-        "cash": 58792.31,
+        "cash": 58926.45,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2250,8 +2250,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 1894.0475518254925,
-        "netWorthUsd": 59152.31,
+        "soldUsd": 3489.9975116899636,
+        "netWorthUsd": 59286.45,
         "patience": 0,
         "cards": [
           {
@@ -2260,13 +2260,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 1179.7656973033647,
-          "paidMinersUsd": 116796.80403303308,
-          "billsUsd": 120,
-          "ownBtc": 6.992738749383611,
-          "operatorBtc": 11.685950551475647,
-          "blocks": 47,
-          "outsideTh": 0.7829929365681769,
+          "feeUsd": 2617.205929515683,
+          "paidMinersUsd": 259103.3870220526,
+          "billsUsd": 192,
+          "ownBtc": 7.6988190719870015,
+          "operatorBtc": 23.935017812281636,
+          "blocks": 96,
+          "outsideTh": 1.4246079312805626,
           "reputation": 75
         }
       },
@@ -2274,14 +2274,14 @@
         "quarter": "2013Q3",
         "auto": true,
         "coinsMined": {
-          "BTC": 15.330090212465977,
+          "BTC": 29.112879152733186,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 127.402655,
         "ethUsd": 0,
         "difficultyChangePct": 3.304899432036893,
-        "cash": 61595.81,
+        "cash": 63224.84,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2293,8 +2293,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 1723.4866563307135,
-        "netWorthUsd": 61955.81,
+        "soldUsd": 3290.3903171129823,
+        "netWorthUsd": 63584.84,
         "patience": 50,
         "cards": [
           {
@@ -2303,13 +2303,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 1633.1323478852078,
-          "paidMinersUsd": 161680.10244063553,
-          "billsUsd": 120,
-          "ownBtc": 0.831148066315726,
-          "operatorBtc": 14.49894214615025,
-          "blocks": 58,
-          "outsideTh": 3.7226786437595787,
+          "feeUsd": 3197.4025334669104,
+          "paidMinersUsd": 316542.8508132241,
+          "billsUsd": 192,
+          "ownBtc": 0.8573202895961322,
+          "operatorBtc": 28.255558863137047,
+          "blocks": 113,
+          "outsideTh": 7.074526513245058,
           "reputation": 80
         }
       },
@@ -2317,14 +2317,14 @@
         "quarter": "2013Q4",
         "auto": false,
         "coinsMined": {
-          "BTC": 15.757878939469734,
+          "BTC": 34.51725862931466,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 784.184177,
         "ethUsd": 0,
         "difficultyChangePct": 5.238986691738487,
-        "cash": 70923.39,
+        "cash": 82770.92,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2336,8 +2336,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 1199.9999999999998,
         "rentUsd": 0,
-        "soldUsd": 9287.610888380026,
-        "netWorthUsd": 72043.39,
+        "soldUsd": 19578.081755189345,
+        "netWorthUsd": 83890.92,
         "patience": 35,
         "cards": [
           {
@@ -2346,13 +2346,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 9291.740003001501,
-          "paidMinersUsd": 919882.2602971485,
-          "billsUsd": 120,
+          "feeUsd": 19593.108824162086,
+          "paidMinersUsd": 1939717.773592046,
+          "billsUsd": 192,
           "ownBtc": 0,
-          "operatorBtc": 15.757878939469734,
-          "blocks": 63,
-          "outsideTh": 44.81858264073379,
+          "operatorBtc": 34.51725862931466,
+          "blocks": 138,
+          "outsideTh": 85.80801568556618,
           "reputation": 85
         }
       },
@@ -2360,14 +2360,14 @@
         "quarter": "2014Q1",
         "auto": false,
         "coinsMined": {
-          "BTC": 33.5903270779632,
+          "BTC": 55.068269652802705,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 528.851164,
         "ethUsd": 0,
         "difficultyChangePct": 1.6900062359369885,
-        "cash": 86360.12,
+        "cash": 111858.96,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2379,8 +2379,8 @@
         "powerCostUsd": 377.3951999999999,
         "incomeUsd": 0,
         "rentUsd": 2879.999999999999,
-        "soldUsd": 22439.129594167,
-        "netWorthUsd": 88960.12,
+        "soldUsd": 36153.40607153944,
+        "netWorthUsd": 114458.96,
         "patience": null,
         "cards": [
           {
@@ -2389,13 +2389,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 9915.289970378271,
-          "paidMinersUsd": 981613.7070674485,
-          "billsUsd": 105,
-          "ownBtc": 18.265225455580538,
-          "operatorBtc": 15.325101622382665,
-          "blocks": 62,
-          "outsideTh": 105.97760293807659,
+          "feeUsd": 25789.05350843754,
+          "paidMinersUsd": 2553116.297335316,
+          "billsUsd": 168,
+          "ownBtc": 15.200262270505247,
+          "operatorBtc": 39.868007382297456,
+          "blocks": 160,
+          "outsideTh": 326.9008605127594,
           "reputation": 90
         }
       },
@@ -2403,14 +2403,14 @@
         "quarter": "2014Q2",
         "auto": true,
         "coinsMined": {
-          "BTC": 45.419756936189174,
+          "BTC": 67.47909680859135,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 560.186689,
         "ethUsd": 0,
         "difficultyChangePct": 1.7401669223964267,
-        "cash": 107929.05,
+        "cash": 145996.13,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2422,8 +2422,8 @@
         "powerCostUsd": 1182.9887999999999,
         "incomeUsd": 0,
         "rentUsd": 2879.999999999999,
-        "soldUsd": 25736.905495889543,
-        "netWorthUsd": 109489.05,
+        "soldUsd": 38368.17101463804,
+        "netWorthUsd": 147556.13,
         "patience": null,
         "cards": [
           {
@@ -2432,13 +2432,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 10966.70650227228,
-          "paidMinersUsd": 1085703.9437249557,
-          "billsUsd": 105,
-          "ownBtc": 26.17171925126308,
-          "operatorBtc": 19.248037684926093,
-          "blocks": 78,
-          "outsideTh": 430.24476565635575,
+          "feeUsd": 26133.428961050653,
+          "paidMinersUsd": 2587209.467144015,
+          "billsUsd": 168,
+          "ownBtc": 21.67281343721057,
+          "operatorBtc": 45.80628337138077,
+          "blocks": 184,
+          "outsideTh": 1087.3632205423132,
           "reputation": 95
         }
       },
@@ -2446,14 +2446,14 @@
         "quarter": "2014Q3",
         "auto": true,
         "coinsMined": {
-          "BTC": 27.698428099495693,
+          "BTC": 54.02265692420651,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 446.707765,
         "ethUsd": 0,
         "difficultyChangePct": 1.280538281720001,
-        "cash": 117712.7,
+        "cash": 168753.74,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2465,18 +2465,18 @@
         "powerCostUsd": 1132.1855999999998,
         "incomeUsd": 0,
         "rentUsd": 2879.999999999999,
-        "soldUsd": 13900.83098228028,
-        "netWorthUsd": 119272.7,
+        "soldUsd": 26937.80010635374,
+        "netWorthUsd": 170313.74,
         "patience": null,
         "cards": [],
         "pool": {
-          "feeUsd": 10211.449254697434,
-          "paidMinersUsd": 1010933.4762150461,
-          "billsUsd": 105,
-          "ownBtc": 7.2607807797292025,
-          "operatorBtc": 20.43764731976649,
-          "blocks": 82,
-          "outsideTh": 1110.772637357211,
+          "feeUsd": 23374.22981963559,
+          "paidMinersUsd": 2314048.7521439237,
+          "billsUsd": 168,
+          "ownBtc": 7.069843604372292,
+          "operatorBtc": 46.95281331983421,
+          "blocks": 188,
+          "outsideTh": 2552.6613785800005,
           "reputation": 100
         }
       },
@@ -2484,14 +2484,14 @@
         "quarter": "2014Q4",
         "auto": true,
         "coinsMined": {
-          "BTC": 20.600386038796994,
+          "BTC": 57.358818529146404,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 320,
         "ethUsd": 0,
         "difficultyChangePct": 0,
-        "cash": 121739.13,
+        "cash": 186746.38,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2503,18 +2503,18 @@
         "powerCostUsd": 1132.1855999999998,
         "incomeUsd": 0,
         "rentUsd": 2879.999999999999,
-        "soldUsd": 8143.622098359068,
-        "netWorthUsd": 123299.13,
+        "soldUsd": 22172.833116367558,
+        "netWorthUsd": 188306.38,
         "patience": null,
         "cards": [],
         "pool": {
-          "feeUsd": 6611.8329625712195,
-          "paidMinersUsd": 654571.4632945508,
-          "billsUsd": 105,
-          "ownBtc": 3.8808149991941367,
-          "operatorBtc": 16.719571039602858,
-          "blocks": 67,
-          "outsideTh": 930.584772864482,
+          "feeUsd": 20593.9863761588,
+          "paidMinersUsd": 2038804.6512397213,
+          "billsUsd": 168,
+          "ownBtc": 4.1234143535220396,
+          "operatorBtc": 53.23540417562437,
+          "blocks": 213,
+          "outsideTh": 2788.6713087936705,
           "reputation": 100
         }
       },
@@ -2522,14 +2522,14 @@
         "quarter": "2015Q1",
         "auto": true,
         "coinsMined": {
-          "BTC": 13.506753376688344,
+          "BTC": 61.78089044522261,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 243.667609,
         "ethUsd": 0,
         "difficultyChangePct": 0.1831508239184818,
-        "cash": 121804.81,
+        "cash": 197691.61,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2541,18 +2541,18 @@
         "powerCostUsd": 0,
         "incomeUsd": 0,
         "rentUsd": 2970.000000000001,
-        "soldUsd": 3125.6846507970436,
-        "netWorthUsd": 123364.81,
+        "soldUsd": 14083.22748836682,
+        "netWorthUsd": 199251.61,
         "patience": null,
         "cards": [],
         "pool": {
-          "feeUsd": 3126.050307403702,
-          "paidMinersUsd": 309478.9804329665,
-          "billsUsd": 90,
+          "feeUsd": 14089.668405952976,
+          "paidMinersUsd": 1394877.1721893447,
+          "billsUsd": 168,
           "ownBtc": 0,
-          "operatorBtc": 13.506753376688344,
-          "blocks": 54,
-          "outsideTh": 1540.9481266971857,
+          "operatorBtc": 61.78089044522261,
+          "blocks": 247,
+          "outsideTh": 6669.351488420519,
           "reputation": 100
         }
       },
@@ -2560,14 +2560,14 @@
         "quarter": "2015Q2",
         "auto": true,
         "coinsMined": {
-          "BTC": 15.757878939469737,
+          "BTC": 69.78489244622311,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 223.130183,
         "ethUsd": 0,
         "difficultyChangePct": 0.019390102387901287,
-        "cash": 122405.25,
+        "cash": 210806.89,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2579,18 +2579,18 @@
         "powerCostUsd": 0,
         "incomeUsd": 0,
         "rentUsd": 2970.000000000001,
-        "soldUsd": 3660.4541772079588,
-        "netWorthUsd": 123965.25,
+        "soldUsd": 16253.284839662632,
+        "netWorthUsd": 212366.89,
         "patience": null,
         "cards": [],
         "pool": {
-          "feeUsd": 3660.9151673336673,
-          "paidMinersUsd": 362430.60156603303,
-          "billsUsd": 90,
+          "feeUsd": 16261.772065282643,
+          "paidMinersUsd": 1609915.4344629813,
+          "billsUsd": 168,
           "ownBtc": 0,
-          "operatorBtc": 15.757878939469737,
-          "blocks": 63,
-          "outsideTh": 1723.2644308067727,
+          "operatorBtc": 69.78489244622311,
+          "blocks": 279,
+          "outsideTh": 7325.967810420342,
           "reputation": 100
         }
       },
@@ -2598,14 +2598,14 @@
         "quarter": "2015Q3",
         "auto": false,
         "coinsMined": {
-          "BTC": 20.510255127563777,
+          "BTC": 74.53726863431716,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 259.229628,
         "ethUsd": 1.1236,
         "difficultyChangePct": 0.24681363709113247,
-        "cash": 123925.04,
+        "cash": 224382.75,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2617,8 +2617,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 0,
         "rentUsd": 2970.000000000001,
-        "soldUsd": 4579.792911565469,
-        "netWorthUsd": 125485.04,
+        "soldUsd": 16713.852471773767,
+        "netWorthUsd": 225942.75,
         "patience": null,
         "cards": [
           {
@@ -2627,13 +2627,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 4580.526136568285,
-          "paidMinersUsd": 453472.08752026013,
-          "billsUsd": 90,
+          "feeUsd": 16722.74896873437,
+          "paidMinersUsd": 1655552.1479047027,
+          "billsUsd": 168,
           "ownBtc": 0,
-          "operatorBtc": 20.510255127563777,
-          "blocks": 82,
-          "outsideTh": 2290.546797562939,
+          "operatorBtc": 74.53726863431716,
+          "blocks": 298,
+          "outsideTh": 9619.673338655444,
           "reputation": 100
         }
       },
@@ -2641,14 +2641,14 @@
         "quarter": "2015Q4",
         "auto": true,
         "coinsMined": {
-          "BTC": 20.010005002501252,
+          "BTC": 79.03951975987995,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 416.112581,
         "ethUsd": 0.9,
         "difficultyChangePct": 0,
-        "cash": 127618.41,
+        "cash": 248112.68,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2660,18 +2660,18 @@
         "powerCostUsd": 0,
         "incomeUsd": 0,
         "rentUsd": 2970.000000000001,
-        "soldUsd": 6753.366825948702,
-        "netWorthUsd": 129178.41,
+        "soldUsd": 26867.929874896712,
+        "netWorthUsd": 249672.68,
         "patience": null,
         "cards": [],
         "pool": {
-          "feeUsd": 6755.0973389194605,
-          "paidMinersUsd": 668754.6365530266,
-          "billsUsd": 90,
+          "feeUsd": 26891.455422711355,
+          "paidMinersUsd": 2662254.086848424,
+          "billsUsd": 168,
           "ownBtc": 0,
-          "operatorBtc": 20.010005002501252,
-          "blocks": 80,
-          "outsideTh": 2471.5110994042398,
+          "operatorBtc": 79.03951975987995,
+          "blocks": 316,
+          "outsideTh": 10265.781201740887,
           "reputation": 100
         }
       },
@@ -2679,14 +2679,14 @@
         "quarter": "2016Q1",
         "auto": true,
         "coinsMined": {
-          "BTC": 11.524524494016323,
+          "BTC": 61.62857431159811,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 467.00693,
         "ethUsd": 13.5999,
         "difficultyChangePct": 0.770991857966081,
-        "cash": 129387.63,
+        "cash": 271287.24,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2698,18 +2698,18 @@
         "powerCostUsd": 0,
         "incomeUsd": 0,
         "rentUsd": 3087.000000000001,
-        "soldUsd": 4946.21180057719,
-        "netWorthUsd": 130947.63,
+        "soldUsd": 26429.561877453165,
+        "netWorthUsd": 272847.24,
         "patience": null,
         "cards": [],
         "pool": {
-          "feeUsd": 4946.724008795756,
-          "paidMinersUsd": 489725.6768707798,
-          "billsUsd": 90,
+          "feeUsd": 26440.986947471236,
+          "paidMinersUsd": 2617657.7077996526,
+          "billsUsd": 168,
           "ownBtc": 0,
-          "operatorBtc": 11.524524494016323,
-          "blocks": 46,
-          "outsideTh": 4451.052188738205,
+          "operatorBtc": 61.62857431159811,
+          "blocks": 246,
+          "outsideTh": 23826.245364724666,
           "reputation": 100
         }
       },
@@ -2717,14 +2717,14 @@
         "quarter": "2016Q2",
         "auto": true,
         "coinsMined": {
-          "BTC": 13.561654779311972,
+          "BTC": 68.29482944072979,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 679.422809,
         "ethUsd": 10.9325,
         "difficultyChangePct": 0.2656021998587401,
-        "cash": 134848.38,
+        "cash": 309524.59,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2736,18 +2736,18 @@
         "powerCostUsd": 0,
         "incomeUsd": 0,
         "rentUsd": 3087.000000000001,
-        "soldUsd": 8637.74857669129,
-        "netWorthUsd": 136408.38,
+        "soldUsd": 41492.34583114599,
+        "netWorthUsd": 311084.59,
         "patience": null,
         "cards": [],
         "pool": {
-          "feeUsd": 8639.322031644613,
-          "paidMinersUsd": 855292.8811328168,
-          "billsUsd": 90,
+          "feeUsd": 41520.8121900008,
+          "paidMinersUsd": 4110560.406810079,
+          "billsUsd": 168,
           "ownBtc": 0,
-          "operatorBtc": 13.561654779311972,
-          "blocks": 54,
-          "outsideTh": 5855.4502060477325,
+          "operatorBtc": 68.29482944072979,
+          "blocks": 272,
+          "outsideTh": 31109.720504573983,
           "reputation": 100
         }
       },
@@ -2755,14 +2755,14 @@
         "quarter": "2016Q3",
         "auto": false,
         "coinsMined": {
-          "BTC": 6.165129809545224,
+          "BTC": 42.02208345654263,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 647.630823,
         "ethUsd": 11.7942,
         "difficultyChangePct": 0.03782384670225314,
-        "cash": 129800.51,
+        "cash": 326671.32,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2774,8 +2774,8 @@
         "powerCostUsd": 0,
         "incomeUsd": 0,
         "rentUsd": 3087.000000000001,
-        "soldUsd": 3769.131272696006,
-        "netWorthUsd": 135800.51,
+        "soldUsd": 26041.733760312476,
+        "netWorthUsd": 332671.32,
         "patience": null,
         "cards": [
           {
@@ -2788,13 +2788,13 @@
           }
         ],
         "pool": {
-          "feeUsd": 3769.380707613575,
-          "paidMinersUsd": 373168.69005374383,
-          "billsUsd": 90,
+          "feeUsd": 26054.387301470168,
+          "paidMinersUsd": 2579384.342845546,
+          "billsUsd": 168,
           "ownBtc": 0,
-          "operatorBtc": 6.165129809545224,
-          "blocks": 47,
-          "outsideTh": 6624.42426108233,
+          "operatorBtc": 42.02208345654263,
+          "blocks": 304,
+          "outsideTh": 33421.18081964469,
           "reputation": 100
         }
       },
@@ -2802,14 +2802,14 @@
         "quarter": "2016Q4",
         "auto": false,
         "coinsMined": {
-          "BTC": 10.354631696835403,
+          "BTC": 39.528525162128844,
           "ETH": 0
         },
         "blocksFound": 0,
         "btcUsd": 960,
         "ethUsd": 8,
         "difficultyChangePct": 0.5498524880637721,
-        "cash": 179552.61,
+        "cash": 598477.15,
         "treasury": {
           "BTC": 0,
           "ETH": 0
@@ -2821,8 +2821,8 @@
         "powerCostUsd": 1037.8367999999996,
         "incomeUsd": 0,
         "rentUsd": 3087.000000000001,
-        "soldUsd": 8221.813787390107,
-        "netWorthUsd": 183752.61,
+        "soldUsd": 31147.08884772085,
+        "netWorthUsd": 602677.15,
         "patience": null,
         "cards": [
           {
@@ -2831,27 +2831,27 @@
           }
         ],
         "pool": {
-          "feeUsd": 5517.130247095112,
-          "paidMinersUsd": 546195.8944624161,
-          "billsUsd": 90,
-          "ownBtc": 3.4519893182848103,
-          "operatorBtc": 6.902642378550593,
-          "blocks": 55,
-          "outsideTh": 10358.74014150355,
+          "feeUsd": 28459.600544519504,
+          "paidMinersUsd": 2817500.45390743,
+          "billsUsd": 168,
+          "ownBtc": 3.492757201871179,
+          "operatorBtc": 36.03576796025766,
+          "blocks": 286,
+          "outsideTh": 53984.621578671824,
           "reputation": 100
         }
       }
     ],
     "quarter": {
       "coinsMined": {
-        "BTC": 10.354631696835403,
+        "BTC": 39.528525162128844,
         "ETH": 0
       },
       "blocksFound": 0,
       "powerCostUsd": 1037.8367999999996,
       "incomeUsd": 0,
       "rentUsd": 3087.000000000001,
-      "soldUsd": 8221.813787390107,
+      "soldUsd": 31147.08884772085,
       "cards": [
         {
           "id": "handover",
@@ -2862,7 +2862,7 @@
     "poolEnded": {
       "name": "Halfblock Pool",
       "quarter": -1,
-      "usd": 45745.113990298116,
+      "usd": 244951.5739669234,
       "kind": "handover"
     }
   },
@@ -3113,68 +3113,68 @@
         "startCash": 35525.95,
         "lines": {
           "one_offs": -300,
-          "coins_sold": 9171.106024402807,
-          "mining_btc": 9434.672851108615,
+          "coins_sold": 8427.077776623002,
+          "mining_btc": 8652.714381140813,
           "other_income": 1199.9999999999998,
-          "other_opex": -180
+          "other_opex": -240
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": -0.006024402835464571,
+        "rounding": 0.0022233769632293843,
         "weeks": [
-          35394.88,
-          35755.03,
-          36191.66,
-          36283.97,
-          37020.75,
-          37501,
-          38462.47,
-          41941.27,
-          44598.15,
-          44690.46,
-          44782.77,
-          45504.74,
-          45597.05
+          35415.49,
+          35799.13,
+          36182.95,
+          36275.26,
+          36695.82,
+          37280.01,
+          38108.78,
+          41946.99,
+          44483.79,
+          44576.1,
+          44668.41,
+          44760.72,
+          44853.03
         ]
       },
       {
         "q": -22,
-        "startCash": 45417.05,
+        "startCash": 44613.03,
         "lines": {
-          "coins_sold": 1137.5064855075075,
-          "mining_btc": 1139.4954864097388,
+          "coins_sold": 1003.8818812122837,
+          "mining_btc": 1006.4445175333128,
           "other_income": 1199.9999999999998,
-          "other_opex": -180
+          "other_opex": -240
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": -0.00648550754704047,
+        "rounding": 0.008118787671264727,
         "weeks": [
-          45806.91,
-          46109.11,
-          46333.02,
-          46425.33,
-          46517.64,
-          46727.42,
-          46957.68,
-          47153.73,
-          47294.81,
-          47410.04,
-          47522.31,
-          47631.99,
-          47754.55
+          45052.4,
+          45470.92,
+          45563.23,
+          45655.54,
+          45747.85,
+          45840.16,
+          46064.66,
+          46219.12,
+          46369.84,
+          46462.15,
+          46554.46,
+          46688.38,
+          46816.92
         ]
       },
       {
         "q": -21,
-        "startCash": 47574.55,
+        "startCash": 46576.92,
         "lines": {
           "asset_sales": 720,
           "machines": -1036,
-          "coins_sold": 68.70352787375583,
-          "mining_btc": 68.70805202601301,
+          "coins_sold": 22.32393340739504,
+          "mining_btc": 22.324567783891943,
           "other_income": 1199.9999999999998,
-          "other_opex": -180
+          "other_opex": -240
         },
         "byBiz": {},
         "byRef": {
@@ -3183,117 +3183,117 @@
             "machines": -1036
           }
         },
-        "rounding": 0.0164721261971863,
+        "rounding": 0.01606659257231513,
         "weeks": [
-          47360.06,
-          47458.37,
-          47555.91,
-          47655.81,
-          47752.08,
-          47850.14,
-          47946.25,
-          48046.94,
-          48140.79,
-          48236.49,
-          48334.41,
-          48434.96,
-          48527.27
+          46355.53,
+          46447.84,
+          46543.63,
+          46637.46,
+          46732.41,
+          46828.17,
+          46920.48,
+          47014.18,
+          47108.03,
+          47200.34,
+          47294.52,
+          47390.95,
+          47483.26
         ]
       },
       {
         "q": -20,
-        "startCash": 48347.27,
+        "startCash": 47243.26,
         "lines": {
-          "coins_sold": 692.0997016039236,
-          "mining_btc": 692.5546440808118,
+          "coins_sold": 687.7256491566106,
+          "mining_btc": 688.2126353558886,
           "other_income": 1199.9999999999998,
-          "other_opex": -150
+          "other_opex": -240
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.0002983960512210615,
+        "rounding": 0.024350843363208696,
         "weeks": [
-          48484.55,
-          48622.37,
-          48751.39,
-          48955.06,
-          49084.96,
-          49215.31,
-          49346.12,
-          49535.78,
-          49706.92,
-          49819.18,
-          49951.87,
-          50085.04,
-          50239.37
+          47378.36,
+          47535.61,
+          47654.22,
+          47879.46,
+          48025.62,
+          48172.43,
+          48292.32,
+          48468.33,
+          48645.34,
+          48766.24,
+          48887.48,
+          49009.07,
+          49131.01
         ]
       },
       {
         "q": -19,
-        "startCash": 50089.37,
+        "startCash": 48891.01,
         "lines": {
-          "coins_sold": 433.5192474177003,
-          "mining_btc": 433.70632428219875,
+          "coins_sold": 379.4340235416766,
+          "mining_btc": 379.60762861206643,
           "other_income": 1199.9999999999998,
-          "other_opex": -150
+          "other_opex": -240
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.0007525822657044046,
+        "rounding": 0.00597645827656379,
         "weeks": [
-          50194.99,
-          50350.68,
-          50461.32,
-          50581.46,
-          50711.32,
-          50870.11,
-          50981.65,
-          51122.6,
-          51224.76,
-          51337,
-          51450.06,
-          51585.58,
-          51722.89
+          49002.97,
+          49133.9,
+          49239.24,
+          49344.73,
+          49463.72,
+          49637.01,
+          49756.65,
+          49918.08,
+          50024.38,
+          50116.69,
+          50238.49,
+          50346.16,
+          50470.45
         ]
       },
       {
         "q": -18,
-        "startCash": 51572.89,
+        "startCash": 50230.45,
         "lines": {
-          "coins_sold": 806.2403493102644,
-          "mining_btc": 806.9600977377678,
+          "coins_sold": 710.8816945226546,
+          "mining_btc": 711.4835749082496,
           "other_income": 1199.9999999999998,
-          "other_opex": -150
+          "other_opex": -240
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": -0.00034931030677398667,
+        "rounding": 0.008305477313115261,
         "weeks": [
-          51693.07,
-          51857.9,
-          51980.43,
-          52135.65,
-          52260.72,
-          52404.2,
-          52585.28,
-          52843.85,
-          53013.17,
-          53137.53,
-          53246.04,
-          53371.09,
-          53579.13
+          50344.02,
+          50480.59,
+          50595.95,
+          50760.23,
+          50852.54,
+          51022.88,
+          51169.37,
+          51402.6,
+          51553.65,
+          51693.44,
+          51785.75,
+          51926.56,
+          52141.34
         ]
       },
       {
         "q": -17,
-        "startCash": 53429.13,
+        "startCash": 51901.34,
         "lines": {
           "asset_sales": 360,
           "machines": -596,
-          "coins_sold": 348.2850891136988,
-          "mining_btc": 348.4049877438719,
+          "coins_sold": 230.02436292222833,
+          "mining_btc": 230.08464707353676,
           "other_income": 1199.9999999999998,
-          "other_opex": -150
+          "other_opex": -240
         },
         "byBiz": {},
         "byRef": {
@@ -3302,33 +3302,33 @@
             "machines": -596
           }
         },
-        "rounding": 0.014910886253346689,
+        "rounding": 0.01563707774039358,
         "weeks": [
-          53308.4,
-          53423.92,
-          53557.27,
-          53685.14,
-          53819.38,
-          53960.12,
-          54070.79,
-          54212.57,
-          54311.13,
-          54422.44,
-          54533.99,
-          54642.54,
-          54741.43
+          51769.13,
+          51878.85,
+          52000.48,
+          52128.35,
+          52244.62,
+          52361.15,
+          52459.58,
+          52595.18,
+          52687.49,
+          52789.3,
+          52894.44,
+          52996.49,
+          53095.38
         ]
       },
       {
         "q": -16,
-        "startCash": 54591.43,
+        "startCash": 52855.38,
         "lines": {
           "asset_sales": 360,
           "machines": -596,
-          "coins_sold": 382.80905198478007,
-          "mining_btc": 382.81599099549777,
+          "coins_sold": 801.0774115055224,
+          "mining_btc": 801.1074412206103,
           "other_income": 1199.9999999999998,
-          "other_opex": -120
+          "other_opex": -192
         },
         "byBiz": {},
         "byRef": {
@@ -3337,89 +3337,89 @@
             "machines": -596
           }
         },
-        "rounding": 0.01094801518775057,
+        "rounding": -0.007411505554046016,
         "weeks": [
-          54464.62,
-          54560.81,
-          54670.94,
-          54788.84,
-          54887.03,
-          54986.09,
-          55109.42,
-          55219.55,
-          55363.03,
-          55478.85,
-          55623.61,
-          55793.93,
-          55938.25
+          52742.08,
+          52853.78,
+          52977.27,
+          53115.64,
+          53243.22,
+          53369.29,
+          53531.4,
+          53659.35,
+          53833.53,
+          53961.1,
+          54175.8,
+          54450.13,
+          54620.45
         ]
       },
       {
         "q": -15,
-        "startCash": 55818.25,
+        "startCash": 54428.45,
         "lines": {
-          "coins_sold": 1894.0475518254925,
-          "mining_btc": 1894.1862621144794,
+          "coins_sold": 3489.9975116899636,
+          "mining_btc": 3490.462677797348,
           "other_income": 1199.9999999999998,
-          "other_opex": -120
+          "other_opex": -192
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.012448174471501261,
+        "rounding": 0.0024883099977159873,
         "weeks": [
-          55978.81,
-          56274.15,
-          56485.63,
-          56778.47,
-          57194.7,
-          57409.66,
-          57749.61,
-          57966.94,
-          58179.99,
-          58394.21,
-          58577.02,
-          58760.7,
-          58912.31
+          54850.68,
+          55597.16,
+          55817.49,
+          56265.2,
+          56651.1,
+          56941.03,
+          57332.61,
+          57693.5,
+          58004.46,
+          58317.53,
+          58657.59,
+          58888.87,
+          59118.45
         ]
       },
       {
         "q": -14,
-        "startCash": 58792.31,
+        "startCash": 58926.45,
         "lines": {
-          "coins_sold": 1723.4866563307135,
-          "mining_btc": 1723.59663390173,
+          "coins_sold": 3290.3903171129823,
+          "mining_btc": 3290.763944154519,
           "other_income": 1199.9999999999998,
-          "other_opex": -120
+          "other_opex": -192
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.01334366925584618,
+        "rounding": -0.0003171130229020491,
         "weeks": [
-          58914.09,
-          59255.68,
-          59517.57,
-          59752.22,
-          59960.72,
-          60169.51,
-          60350.96,
-          60563.17,
-          60777.83,
-          61117.44,
-          61272.84,
-          61493.02,
-          61715.81
+          59128.2,
+          59567.16,
+          59958.77,
+          60354.33,
+          60671.69,
+          60963.01,
+          61200.37,
+          61586.88,
+          61949.37,
+          62376.9,
+          62562.51,
+          63034.19,
+          63416.84
         ]
       },
       {
         "q": -13,
-        "startCash": 61595.81,
+        "startCash": 63224.84,
         "lines": {
           "asset_sales": 360,
           "machines": -1400,
-          "coins_sold": 9287.610888380026,
-          "mining_btc": 9291.740003001501,
+          "coins_sold": 19578.081755189345,
+          "mining_btc": 19593.108824162086,
           "other_income": 1199.9999999999998,
-          "other_opex": -120
+          "other_opex": -192
         },
         "byBiz": {},
         "byRef": {
@@ -3428,34 +3428,34 @@
             "machines": -1400
           }
         },
-        "rounding": -0.030888380024407525,
+        "rounding": -0.001755189303366933,
         "weeks": [
-          60896.57,
-          61410.76,
-          61570.24,
-          62090.25,
-          63053.97,
-          63285.05,
-          64437.41,
-          66104.51,
-          67346.86,
-          69138.86,
-          70281.25,
-          70558.86,
-          71043.39
+          62980.97,
+          63864.19,
+          64359.49,
+          65392.56,
+          67118.28,
+          67488.12,
+          69699.64,
+          72265.73,
+          74944.15,
+          77372.94,
+          79739.31,
+          81498.36,
+          82962.92
         ]
       },
       {
         "q": -12,
-        "startCash": 70923.39,
+        "startCash": 82770.92,
         "lines": {
           "one_offs": -940,
           "machines": -2700,
-          "coins_sold": 22439.129594167,
-          "mining_btc": 22460.456389279756,
+          "coins_sold": 36153.40607153944,
+          "mining_btc": 36197.155416059904,
           "rent": -2879.999999999999,
           "power": -377.3951999999999,
-          "other_opex": -105
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {
@@ -3463,288 +3463,288 @@
             "machines": -2700
           }
         },
-        "rounding": -0.004394166840938851,
+        "rounding": 0.029128460708307102,
         "weeks": [
-          71061.65,
-          72795.47,
-          75983.76,
-          76220.53,
-          78382.48,
-          78916.49,
-          80829.86,
-          82569.96,
-          83778.82,
-          84162.76,
-          84555.66,
-          85392.5,
-          86465.12
+          82490.35,
+          85545.2,
+          88867.13,
+          92450.91,
+          96291.39,
+          98654.07,
+          101025.86,
+          103589.33,
+          105620.76,
+          107067.69,
+          108538.58,
+          110667.98,
+          112026.96
         ]
       },
       {
         "q": -11,
-        "startCash": 86360.12,
+        "startCash": 111858.96,
         "lines": {
-          "coins_sold": 25736.905495889543,
-          "mining_btc": 25759.880161987872,
+          "coins_sold": 38368.17101463804,
+          "mining_btc": 38416.417973544165,
           "rent": -2879.999999999999,
           "power": -1182.9887999999999,
-          "other_opex": -105
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.013304110572789796,
+        "rounding": -0.012214637928991579,
         "weeks": [
-          89132.85,
-          91558.06,
-          94021.94,
-          94914.97,
-          95825.06,
-          97580.63,
-          100204.72,
-          102326.05,
-          103741.13,
-          105126.89,
-          106117.92,
-          107086.85,
-          108034.05
+          115057.08,
+          117637.36,
+          120935.29,
+          123369,
+          124680.43,
+          128368.6,
+          131636.2,
+          135322.72,
+          137567.1,
+          140126.18,
+          142054.26,
+          144630.33,
+          146164.13
         ]
       },
       {
         "q": -10,
-        "startCash": 107929.05,
+        "startCash": 145996.13,
         "lines": {
-          "coins_sold": 13900.83098228028,
-          "mining_btc": 13907.484815469305,
+          "coins_sold": 26937.80010635374,
+          "mining_btc": 26961.415264780644,
           "rent": -2879.999999999999,
           "power": -1132.1855999999998,
-          "other_opex": -105
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.004617719736415893,
+        "rounding": -0.004506353725446388,
         "weeks": [
-          109202.9,
-          110061.12,
-          111663.58,
-          112294.6,
-          112909.63,
-          113690.46,
-          114274.33,
-          115369.11,
-          115632.86,
-          116307.9,
-          116827.45,
-          117061.17,
-          117817.7
+          147968.23,
+          150705.51,
+          152764.63,
+          154631.59,
+          156464.7,
+          158261.39,
+          159726.84,
+          161597.72,
+          162459.52,
+          164449.03,
+          165520.31,
+          166690.17,
+          168921.74
         ]
       },
       {
         "q": -9,
-        "startCash": 117712.7,
+        "startCash": 168753.74,
         "lines": {
-          "coins_sold": 8143.622098359068,
-          "mining_btc": 8146.519496845013,
+          "coins_sold": 22172.833116367558,
+          "mining_btc": 22189.11917048391,
           "rent": -2879.999999999999,
           "power": -1132.1855999999998,
-          "other_opex": -105
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": -0.006498359041870572,
+        "rounding": -0.007516367506468669,
         "weeks": [
-          118348.03,
-          119496.05,
-          120488.14,
-          120179.51,
-          120498.45,
-          120682.96,
-          120737.62,
-          120785.81,
-          121294.78,
-          121657.52,
-          121456.1,
-          121660.91,
-          121844.13
+          171041.74,
+          173051.9,
+          175020.8,
+          176054.86,
+          177065.02,
+          178159.58,
+          178699.26,
+          179848.38,
+          181278.15,
+          182732.76,
+          183831.91,
+          185500.74,
+          186914.38
         ]
       },
       {
         "q": -8,
-        "startCash": 121739.13,
+        "startCash": 186746.38,
         "lines": {
-          "coins_sold": 3125.6846507970436,
-          "mining_btc": 3126.050307403702,
+          "coins_sold": 14083.22748836682,
+          "mining_btc": 14089.668405952976,
           "rent": -2970.000000000001,
-          "other_opex": -90
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": -0.00465079715650063,
+        "rounding": 0.0025116330944001675,
         "weeks": [
-          122000.82,
-          121950.43,
-          121815.44,
-          121832.25,
-          121861.26,
-          121849.02,
-          121790.79,
-          121681.46,
-          121578.05,
-          121660.21,
-          121802.1,
-          121757.64,
-          121894.81
+          188057.74,
+          188630.42,
+          189336.33,
+          190137.7,
+          190784.42,
+          191636.69,
+          192485.97,
+          193210.25,
+          193731.94,
+          194497.19,
+          195872.79,
+          196747.95,
+          197859.61
         ]
       },
       {
         "q": -7,
-        "startCash": 121804.81,
+        "startCash": 197691.61,
         "lines": {
-          "coins_sold": 3660.4541772079588,
-          "mining_btc": 3660.9151673336673,
+          "coins_sold": 16253.284839662632,
+          "mining_btc": 16261.772065282643,
           "rent": -2970.000000000001,
-          "other_opex": -90
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": -0.014177208024193533,
+        "rounding": -0.004839662695303559,
         "weeks": [
-          121636.9,
-          121709.25,
-          121899.22,
-          121848.96,
-          121974.59,
-          122097.96,
-          122102.56,
-          122163.56,
-          122337.73,
-          122280.54,
-          122392.01,
-          122444.69,
-          122495.25
+          198613.22,
+          200128.49,
+          201035.44,
+          201757.07,
+          203180.18,
+          204124.1,
+          205351.58,
+          206454.08,
+          207548.08,
+          208061.62,
+          209079.12,
+          210143.4,
+          210974.89
         ]
       },
       {
         "q": -6,
-        "startCash": 122405.25,
+        "startCash": 210806.89,
         "lines": {
-          "coins_sold": 4579.792911565469,
-          "mining_btc": 4580.526136568285,
+          "coins_sold": 16713.852471773767,
+          "mining_btc": 16722.74896873437,
           "rent": -2970.000000000001,
-          "other_opex": -90
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": -0.002911565563408658,
+        "rounding": 0.007528226124122739,
         "weeks": [
-          122509.08,
-          122665.35,
-          122764.18,
-          123131.15,
-          123225.05,
-          123209.89,
-          123140.2,
-          123384.39,
-          123484.6,
-          123770.32,
-          123780.24,
-          124049,
-          124015.04
+          211685.72,
+          212391.41,
+          213635.08,
+          214975.79,
+          215821.56,
+          216765.78,
+          217542.51,
+          218574.04,
+          219605.02,
+          220975.54,
+          222414.8,
+          223677.42,
+          224550.75
         ]
       },
       {
         "q": -5,
-        "startCash": 123925.04,
+        "startCash": 224382.75,
         "lines": {
-          "coins_sold": 6753.366825948702,
-          "mining_btc": 6755.0973389194605,
+          "coins_sold": 26867.929874896712,
+          "mining_btc": 26891.455422711355,
           "rent": -2970.000000000001,
-          "other_opex": -90
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.003174051220412366,
+        "rounding": 0.00012510319356806576,
         "weeks": [
-          124102.29,
-          124296.99,
-          124509.89,
-          124588.35,
-          125160.03,
-          125510.41,
-          126050.96,
-          126617.16,
-          126844.98,
-          127088.02,
-          127054.48,
-          127832.8,
-          127708.41
+          225911.41,
+          227304.29,
+          228987.27,
+          230292.64,
+          232782.58,
+          234702.76,
+          236865.22,
+          238666.57,
+          240717.83,
+          242374.31,
+          243217.51,
+          245805.99,
+          248280.68
         ]
       },
       {
         "q": -4,
-        "startCash": 127618.41,
+        "startCash": 248112.68,
         "lines": {
-          "coins_sold": 4946.21180057719,
-          "mining_btc": 4946.724008795756,
+          "coins_sold": 26429.561877453165,
+          "mining_btc": 26440.986947471236,
           "rent": -3087.000000000001,
-          "other_opex": -90
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.00819942272210028,
+        "rounding": -0.0018774530908558518,
         "weeks": [
-          127918.97,
-          127788.72,
-          127978.45,
-          127740.99,
-          128351.41,
-          128430.74,
-          128508.88,
-          128795.42,
-          128975.59,
-          129050.18,
-          129137.35,
-          129012.47,
-          129477.63
+          250026.59,
+          251611.05,
+          254042.33,
+          255187.74,
+          258022.49,
+          259579.67,
+          261024.96,
+          262987.56,
+          264315.85,
+          265326.36,
+          267684.77,
+          269585.42,
+          271455.24
         ]
       },
       {
         "q": -3,
-        "startCash": 129387.63,
+        "startCash": 271287.24,
         "lines": {
-          "coins_sold": 8637.74857669129,
-          "mining_btc": 8639.322031644613,
+          "coins_sold": 41492.34583114599,
+          "mining_btc": 41520.8121900008,
           "rent": -3087.000000000001,
-          "other_opex": -90
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {},
-        "rounding": 0.0014233086258172989,
+        "rounding": 0.0041688543278723955,
         "weeks": [
-          129637.49,
-          129526.78,
-          129421.18,
-          129458.07,
-          129648.71,
-          130301.9,
-          130527.76,
-          131254.21,
-          132019.51,
-          132999.06,
-          133665.99,
-          134834.31,
-          134938.38
+          274337.37,
+          277899.67,
+          279507.64,
+          282012.34,
+          284342.41,
+          286627.63,
+          288860.21,
+          291994.81,
+          296433.48,
+          300886.92,
+          304084.42,
+          307710.95,
+          309692.59
         ]
       },
       {
         "q": -2,
-        "startCash": 134848.38,
+        "startCash": 309524.59,
         "lines": {
           "asset_sales": 1560,
           "machines": -7200,
-          "coins_sold": 3769.131272696006,
-          "mining_btc": 3769.380707613575,
+          "coins_sold": 26041.733760312476,
+          "mining_btc": 26054.387301470168,
           "rent": -3087.000000000001,
-          "other_opex": -90
+          "other_opex": -168
         },
         "byBiz": {},
         "byRef": {
@@ -3753,52 +3753,52 @@
             "machines": -7200
           }
         },
-        "rounding": -0.001272696114028804,
+        "rounding": -0.003760312218219042,
         "weeks": [
-          129302.74,
-          129225.95,
-          129377.45,
-          129591.98,
-          129792.22,
-          129849.57,
-          129984.42,
-          129897.43,
-          129964,
-          129803.33,
-          129800.93,
-          129883.25,
-          129890.51
+          308619.85,
+          310470.3,
+          311710.57,
+          313431.14,
+          315454.29,
+          316395.88,
+          317945.03,
+          319061.46,
+          320343.78,
+          321718.53,
+          323204.35,
+          325364.27,
+          326839.32
         ]
       }
     ],
     "current": {
       "q": -1,
-      "startCash": 129800.51,
+      "startCash": 326671.32,
       "lines": {
-        "coins_sold": 8221.813787390107,
-        "mining_btc": 8223.082092799319,
+        "coins_sold": 31147.08884772085,
+        "mining_btc": 31163.24190456488,
         "rent": -3087.000000000001,
         "power": -1037.8367999999996,
-        "other_opex": -90,
-        "asset_sales": 45745.113990298116
+        "other_opex": -168,
+        "asset_sales": 244951.5739669234
       },
       "byBiz": {},
       "byRef": {},
-      "rounding": 0.009022311714943498,
+      "rounding": 0.003985356190241873,
       "weeks": [
-        130014.63,
-        129697.33,
-        129933.27,
-        130462.65,
-        130865.29,
-        130825.87,
-        131231.05,
-        131347.66,
-        131782.49,
-        132229.16,
-        132547.55,
-        133543.18,
-        133897.5
+        328116.71,
+        329503.29,
+        331793.3,
+        333545.36,
+        335037.97,
+        336943.55,
+        339253.28,
+        340667.47,
+        342488.58,
+        345428.39,
+        347047.41,
+        350498.16,
+        353693.58
       ]
     }
   }

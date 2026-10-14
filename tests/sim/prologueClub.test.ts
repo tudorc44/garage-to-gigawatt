@@ -7,7 +7,7 @@ import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { unreconciled } from '../../src/sim/ledger.ts'
 import { clubKw } from '../../src/sim/prologue/clubLoad.ts'
-import { clubAssetsUsd, clubQuarterStart, memberValueUsd } from '../../src/sim/prologue/club.ts'
+import { clubAssetsUsd, clubQuarterStart, endClub, memberValueUsd } from '../../src/sim/prologue/club.ts'
 import { newPrologueGame, siteLoadKw } from '../../src/sim/prologue/setup.ts'
 import { restoreSave } from '../../src/sim/save.ts'
 import type { GameState } from '../../src/sim/state.ts'
@@ -393,5 +393,23 @@ describe('saves and the books', () => {
   it('the club\'s assets are valued (machines at the used price, orders at what was paid)', () => {
     const s = join(planAt(), 2000)
     expect(clubAssetsUsd(s, club(s))).toBeGreaterThan(7 * 650 - 1)
+  })
+})
+
+describe('friendship (M71.3, doc 51 v1.4 §15 decision 6)', () => {
+  it('each point below 0 adds 10% to the price of buying the friends out', () => {
+    const price = (friendship: number) => {
+      const s = join(planAt('2013Q1', 200000), 2000, 'player')
+      const c = club(s)
+      c.friendship = friendship
+      c.lots = [{ id: 'g', kind: 'gpu', model: 'gpu_gaming_2010', count: 2, earnsFrom: s.quarter }]
+      endClub(s, 'buy_out', true)
+      return s.prologue!.clubEnded!.usd
+    }
+    const p0 = price(0)
+    expect(p0).toBeGreaterThan(0)
+    expect(price(-1)).toBeCloseTo(p0 * 1.1, 0)
+    expect(price(-2)).toBeCloseTo(p0 * 1.2, 0)
+    expect(price(1)).toBeCloseTo(p0, 0) // (a positive score is not a discount)
   })
 })

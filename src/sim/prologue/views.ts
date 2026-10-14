@@ -651,14 +651,23 @@ export function prologueNews(state: GameState, expansion = true): string[] {
 }
 
 /**
- * M68.5: what the handover sale of Litecoin and Dogecoin brought, for the chapter report (none in a game without altcoins).
- * TODO (doc 51 v1.0 §10 item 7): the line's later-price clause (what those coins were worth at a later date) waits for the
- * dated closes of the second research pass; until then the chapter shows the sale alone.
+ * M68.5: what the handover sale of Litecoin and Dogecoin brought, for the chapter report (none in a game without altcoins), and
+ * (M71.3) what the same coins were worth on the fixed later date.
  */
-export function prologueAltsSold(state: GameState): { coin: AltCoin; amount: number; usd: number }[] {
+export function prologueAltsSold(
+  state: GameState,
+): { coin: AltCoin; amount: number; usd: number; laterDate: string; laterUsd: number }[] {
   const h = state.prologue?.alts?.handover
   if (!h) return []
-  return ALT_COINS.filter((c) => h[c].amount > 0).map((coin) => ({ coin, amount: h[coin].amount, usd: h[coin].usd }))
+  // (doc 51 v1.4 §14 decision 6: what the same coins were worth on one fixed later date)
+  const later = CONTENT.prologue.rules.altcoin_handover.later_prices
+  return ALT_COINS.filter((c) => h[c].amount > 0).map((coin) => ({
+    coin,
+    amount: h[coin].amount,
+    usd: h[coin].usd,
+    laterDate: later.date,
+    laterUsd: h[coin].amount * later[coin],
+  }))
 }
 
 /**

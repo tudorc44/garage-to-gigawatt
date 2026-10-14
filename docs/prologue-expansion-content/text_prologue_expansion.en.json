@@ -15,7 +15,9 @@
  "chapter.p0.pool_sold": "You sold {pool} for {value}.",
  "chapter.p0.pool_sold_handover": "You sold {pool} when you moved on, for {value}.",
  "chapter.p0.pool_insolvent": "{pool} ran out of money under PPS and closed.",
+ "chapter.p0.pool_insolvent_unpaid": "{pool} ran out of money under PPS and closed. Its miners went unpaid: {value} was written off.",
  "chapter.p0.club_buyout": "You bought out {names}. In Act I, they are the crew who helped you start.",
  "chapter.p0.club_dissolved": "The club sold up and split {value}.",
- "chapter.p0.alts_sold": "You sold {amount} {coin} in 2016 for {value}. At {later_date} those coins were worth {later_value}."
+ "chapter.p0.alts_sold": "You sold {amount} {coin} in 2016 for {value}. At {later_date} those coins were worth {later_value}.",
+ "credit.p0.price_data": "Price data courtesy of CoinMarketCap"
 }

@@ -7,7 +7,7 @@ import { decodeSave, encodeSave } from '../../src/platform/saves.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
 import { unreconciled } from '../../src/sim/ledger.ts'
-import { medianFee, poolReserveUsd, poolRiskCards, poolSalePriceUsd } from '../../src/sim/prologue/pool.ts'
+import { boycottBumpPp, committedCostsUsd, medianFee, poolReserveUsd, poolRiskCards, poolSalePriceUsd } from '../../src/sim/prologue/pool.ts'
 import { newPrologueGame } from '../../src/sim/prologue/setup.ts'
 import { restoreSave } from '../../src/sim/save.ts'
 import type { GameState } from '../../src/sim/state.ts'
@@ -78,7 +78,7 @@ describe('opening a pool', () => {
     expect(open(rich, 'PPS', 0.02).prologue!.ownPool!.method).toBe('PPS')
   })
 
-  it('changing settings costs 1 Bandwidth; protection is from 2013Q1 and cold storage is permanent; each costs 1 Bandwidth', () => {
+  it('changing settings costs 1 Bandwidth; protection is from 2013Q2 and cold storage is permanent; each costs 1 Bandwidth', () => {
     let s = open(planAt('2012Q2'))
     s = ok(s, { type: 'P0_POOL_SETTINGS', method: 'PPLNS', feePct: 0.02 })
     expect(s.bandwidth).toBe(1)
@@ -88,7 +88,8 @@ describe('opening a pool', () => {
     expect(s.prologue!.ownPool!.coldStorage).toBe(true)
     expect(refused(s, { type: 'P0_POOL_COLD_STORAGE' })).toBe('error.p0_pool_have_it')
     expect(refused({ ...open(planAt('2012Q2')), bandwidth: 0 }, { type: 'P0_POOL_COLD_STORAGE' })).toBe('error.no_bandwidth')
-    const later = ok(open(planAt('2013Q1')), { type: 'P0_POOL_DDOS_PROTECTION' })
+    expect(refused(open(planAt('2013Q1')), { type: 'P0_POOL_DDOS_PROTECTION' })).toBe('error.p0_not_yet') // (doc 57: no protection a hobby pool could buy before 2013Q2)
+    const later = ok(open(planAt('2013Q2')), { type: 'P0_POOL_DDOS_PROTECTION' })
     expect(later.prologue!.ownPool!.protectionFrom).toBe(later.quarter + 1)
   })
 })
@@ -100,7 +101,7 @@ describe('outside miners and the weeks', () => {
     s = playWeek(s)
     const w = CONTENT.market[s.quarter][0]
     const first = s.prologue!.ownPool!.outsideTh
-    const expected = w.btc_hashrate_EHs * 1e6 * 0.3 * 0.005
+    const expected = w.btc_hashrate_EHs * 1e6 * 0.1 * 0.005
     expect(first).toBeCloseTo(expected, 6)
     s = ok(playQuarterFrom(s), { type: 'NEXT_QUARTER' })
     expect(s.prologue!.ownPool!.pull).toBeGreaterThan(0.005 * 0.95) // churn takes 5%, new miners come in
@@ -134,7 +135,7 @@ describe('outside miners and the weeks', () => {
   })
 
   it('the quarter\'s server bill comes out of cash, and the protection bill from the quarter after it is bought', () => {
-    let s = open(planAt('2013Q1', 100000))
+    let s = open(planAt('2013Q2', 100000))
     const bill = CONTENT.prologue.pool!.server_bill_usd_quarter['2013'].value
     s = ok(s, { type: 'P0_POOL_DDOS_PROTECTION' })
     const first = playQuarter(s)
@@ -239,19 +240,27 @@ describe('PPS insolvency (M70.1, doc 51 v1.2 §13)', () => {
     expect(after.log.some((l) => l.key === 'log.p0_pool_insolvent')).toBe(true)
   })
 
-  it('the shortfall is paid from cash down to zero, then the pool closes', () => {
+  it('the shortfall is paid from cash only down to one quarter of the committed costs; the rest is written off, the pool closes (doc 51 v1.4 §15 decision 5)', () => {
     // a PPS pool with a lot of outside hashrate and a week with no blocks: it owes miners more than the player has
     let closed = 0
+    let unpaid = 0
     for (let seed = 1; seed <= 20; seed++) {
       let s = open(planAt('2013Q4', 1e9, seed), 'PPS', 0.02)
       s.prologue!.ownPool!.pull = 0.5
       s.cash = 50
+      const floor = committedCostsUsd(s)
       s = playWeek(startQuarter(s))
-      expect(s.cash, `seed ${seed}`).toBeGreaterThanOrEqual(0)
       expect(s.phase).not.toBe('gameover')
-      if (s.prologue!.poolEnded?.kind === 'insolvent') closed++
+      const ended = s.prologue!.poolEnded
+      if (ended?.kind === 'insolvent') {
+        closed++
+        unpaid += ended.unpaidUsd ?? 0
+        expect(ended.usd).toBe(0)
+      }
+      expect(floor, `seed ${seed}`).toBeGreaterThan(0)
     }
     expect(closed).toBeGreaterThan(0) // (a week without the blocks the miners were promised)
+    expect(unpaid).toBeGreaterThan(0)
   })
 
   it('a PLNS pool is never closed by cash (only PPS carries the luck)', () => {
@@ -261,14 +270,19 @@ describe('PPS insolvency (M70.1, doc 51 v1.2 §13)', () => {
     expect(after.prologue!.ownPool).toBeDefined()
   })
 
+  it('pool_sale_offer pauses auto-play like the club cards (doc 51 v1.4 §15 decision 7)', () => {
+    expect(CONTENT.prologue.events.cards.find((c) => c.id === 'pool_sale_offer')).toMatchObject({ pauses_autoplay: true })
+  })
+
   it('the chapter report line has its own text, and the pool is gone before the handover sale', () => {
     const text = JSON.parse(readFileSync(new URL('../../src/i18n/content.en.json', import.meta.url), 'utf8')) as Record<string, string>
     expect(text['chapter.p0.pool_insolvent']).toBe('{pool} ran out of money under PPS and closed.')
+    expect(text['chapter.p0.pool_insolvent_unpaid']).toContain('went unpaid')
   })
 })
 
 describe('the 2014 boycott', () => {
-  it('a pool at or below the median fee gets 1.3x outside hashrate in 2014Q2 and Q3', () => {
+  it('a pool at or below the median fee gets the June 2014 bump to the small-pool share, week by week (doc 51 v1.4 §14 decision 7)', () => {
     const at = (fee: number, answer: string) => {
       let s = open(planAt('2014Q1', 1e6), 'PPLNS', fee)
       s.quarter = quarterIndex('2014Q2')!
@@ -283,13 +297,27 @@ describe('the 2014 boycott', () => {
     const w = (s: GameState) => CONTENT.market[s.quarter][s.week - 1]
     const low = at(0.01, 'keep_fee')
     const high = at(0.03, 'keep_fee')
-    expect(medianFee(low.quarter)).toBe(0.01)
-    const base = (s: GameState) => w(s).btc_hashrate_EHs * 1e6 * 0.1 * s.prologue!.ownPool!.pull
-    expect(low.prologue!.ownPool!.outsideTh / base(low)).toBeCloseTo(1.3, 5)
-    expect(high.prologue!.ownPool!.outsideTh / base(high)).toBeCloseTo(1, 5)
+    expect(medianFee(low.quarter)).toBeCloseTo(0.0161, 6)
+    const share = 0.26 // (2014's small-pool share)
+    const base = (s: GameState) => w(s).btc_hashrate_EHs * 1e6 * share * s.prologue!.ownPool!.pull
+    const bump = boycottBumpPp(w(low).week)
+    expect(bump).toBeCloseTo(4 - (2 / 3) * 1, 9) // (the quarter's twelfth week is the week of 23 Jun 2014: week 2 of the outflow)
+    expect(low.prologue!.ownPool!.outsideTh / base(low)).toBeCloseTo((share + bump / 100) / share, 5)
+    expect(high.prologue!.ownPool!.outsideTh / base(high)).toBeCloseTo(1, 5) // (a fee above the median gets no bump)
     const cut = at(0.03, 'cut_fee')
     expect(cut.prologue!.ownPool!.feeOverride).toMatchObject({ fee: 0 })
-    expect(cut.prologue!.ownPool!.outsideTh / base(cut)).toBeCloseTo(1.3, 5)
+    expect(cut.prologue!.ownPool!.outsideTh / base(cut)).toBeCloseTo((share + bump / 100) / share, 5)
+  })
+
+  it('the bump follows the table: 4 points in week 1, 2 by week 4, 1 by week 8 (straight lines between), then 1 to the end of 2014, nothing after', () => {
+    const at = (iso: string) => boycottBumpPp(iso)
+    expect(at('2014-06-09')).toBe(0)
+    expect(at('2014-06-16')).toBe(4)
+    expect(at('2014-07-07')).toBeCloseTo(2, 9)
+    expect(at('2014-06-23')).toBeCloseTo(4 - 2 / 3, 9)
+    expect(at('2014-08-04')).toBeCloseTo(1, 9)
+    expect(at('2014-09-15')).toBe(1)
+    expect(at('2015-01-05')).toBe(0)
   })
 })
 

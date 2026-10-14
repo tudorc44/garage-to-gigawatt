@@ -124,7 +124,7 @@ describe('news and the chapter report', () => {
     expect(prologueNews(plan('2013Q3')).filter((k) => hasText(k)).map((k) => tDynamic(k, ''))).not.toContain('Silver Doubles')
   })
 
-  it('the chapter report says what the altcoins sold for, without the later-price clause', () => {
+  it('the chapter report says what the altcoins sold for, and what they were worth on 31 December 2021', () => {
     const s = plan('2016Q4')
     s.phase = 'chapter'
     s.prologue!.alts = newAlts()
@@ -132,7 +132,7 @@ describe('news and the chapter report', () => {
     expect(prologueAltsSold(s).map((r) => r.coin)).toEqual(['LTC'])
     const { container } = render(<Chapter state={s} act={() => null} tick={() => {}} skip={() => {}} onNew={() => {}} />)
     const line = container.querySelector('[data-alts-sold]')!.textContent!
-    expect(line).toBe('You sold 1,235 Litecoin in 2016 for $4,321.')
-    expect(line).not.toContain('worth')
+    // (1,234.5 LTC at the doc's fixed $146.41 close)
+    expect(line).toBe('You sold 1,235 Litecoin in 2016 for $4,321. At December 31, 2021 those coins were worth $180.7K.')
   })
 })
