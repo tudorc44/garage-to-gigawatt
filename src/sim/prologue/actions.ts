@@ -31,6 +31,7 @@ import {
 import { placePreorder } from './preorders.ts'
 import { cancelAltSale, isAltCoin, sellAlt, setAltHodl, setLotCoin } from './alts.ts'
 import type { AltCoin } from './types.ts'
+import { buyColdStorage, buyProtection, closePool, openPool, sellPool, setPoolSettings } from './pool.ts'
 import { P, siteCapacityKw, siteLoadKw } from './setup.ts'
 import { siteParams } from '../systems/siteSerials.ts'
 
@@ -58,6 +59,13 @@ export type PrologueAction =
   | { type: 'P0_CANCEL_SALE'; coin: Coin | AltCoin }
   /** M68.4 (doc 51 v1.0 §5): points a GPU lot at a coin ('BTC' or 'ETH' = its own, 'LTC', 'DOGE'). Free; starts next week. */
   | { type: 'P0_SET_LOT_COIN'; lotId: string; coin: 'BTC' | 'ETH' | AltCoin }
+  /** M69.3 (doc 51 v1.1 §3): your own pool. Open it with a payout method and a fee (1 Bandwidth, setup cash); change either later (1 Bandwidth). */
+  | { type: 'P0_OPEN_POOL'; method: 'PPLNS' | 'PPS'; feePct: number }
+  | { type: 'P0_POOL_SETTINGS'; method: 'PPLNS' | 'PPS'; feePct: number }
+  | { type: 'P0_POOL_DDOS_PROTECTION' }
+  | { type: 'P0_POOL_COLD_STORAGE' }
+  | { type: 'P0_SELL_POOL' }
+  | { type: 'P0_CLOSE_POOL' }
   /** M68.4: the keep share of an altcoin's newly mined coins (1 = keep all), as bitcoin's keep/sell %. */
   | { type: 'P0_SET_ALT_HODL'; coin: AltCoin; hodl: number }
   | { type: 'P0_BACKUP' }
@@ -192,6 +200,18 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       return setLotCoin(s, a.lotId, a.coin)
     case 'P0_SET_ALT_HODL':
       return setAltHodl(s, a.coin, a.hodl)
+    case 'P0_OPEN_POOL':
+      return openPool(s, a.method, a.feePct)
+    case 'P0_POOL_SETTINGS':
+      return setPoolSettings(s, a.method, a.feePct)
+    case 'P0_POOL_DDOS_PROTECTION':
+      return buyProtection(s)
+    case 'P0_POOL_COLD_STORAGE':
+      return buyColdStorage(s)
+    case 'P0_SELL_POOL':
+      return sellPool(s)
+    case 'P0_CLOSE_POOL':
+      return closePool(s)
     case 'P0_OFFER':
       return answerOffer(s, a.id, a.accept)
     case 'P0_PREORDER':

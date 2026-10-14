@@ -78,9 +78,64 @@ export interface PrologueReport {
   cards: { id: string; choice: string }[]
   /** M68.4: only in a game with altcoins: what the quarter mined and sold, and what the wallet holds at its end. */
   alts?: { mined: AltAmounts; soldUsd: AltAmounts; held: AltAmounts }
+  /** M69.3: only in a game with an open pool. */
+  pool?: PoolReport
+}
+
+/**
+ * Your own bitcoin pool (M69.3, doc 51 v1.1 §3). Absent from a game that never opens one, so such a game's state (and every
+ * golden) is as it was.
+ */
+export interface OwnPool {
+  name: string
+  method: 'PPLNS' | 'PPS'
+  /** The fee as a fraction (0.01 = 1%). */
+  feePct: number
+  openedQuarter: number
+  /** Cold storage: the theft chance stays at its low value for good. */
+  coldStorage: boolean
+  /** DDoS protection from this quarter on (null: none). */
+  protectionFrom: number | null
+  /** 0-100, starts at 50. */
+  reputation: number
+  /** Outside miners' pull on the small-pool market (starts at start_pull). */
+  pull: number
+  /** The last 4 weeks' blocks found and expected, newest last (luck memory). */
+  luck: { found: number; expected: number }[]
+  /** Unlucky weeks in a row under PPLNS (the slide starts after 3). */
+  unluckyRun: number
+  /** A fee set by the boycott card until this quarter (inclusive), and whether the boycott bonus is open to the pool. */
+  feeOverride: { fee: number; until: number } | null
+  boycott: { from: number; until: number } | null
+  /** An outage, a theft or an insolvency this quarter (it blocks the +5 reputation). */
+  incident: boolean
+  /** This week's figures, for the screen: outside hashrate in TH/s, blocks found, luck ratio. */
+  outsideTh: number
+  lastBlocks: number
+  /** Dollars by quarter, newest last: the operator's fee income (the sale price is its last four) and the quarter so far. */
+  feeUsdQuarters: number[]
+  quarter: { feeUsd: number; paidMinersUsd: number; billsUsd: number; ownBtc: number; operatorBtc: number; blocks: number }
+  /** A PPS crunch card was already raised this quarter. */
+  crunchQuarter: number | null
+}
+
+/** An own pool's quarter for the report: fee income, what outside miners were paid, bills, the coins, the blocks found. */
+export interface PoolReport {
+  feeUsd: number
+  paidMinersUsd: number
+  billsUsd: number
+  ownBtc: number
+  operatorBtc: number
+  blocks: number
+  outsideTh: number
+  reputation: number
 }
 
 export interface PrologueState {
+  /** M69.3: your own pool (absent until one is opened). */
+  ownPool?: OwnPool
+  /** M69.3: an own pool sold or closed: when, for how much, and whether the handover sold it (the chapter report's line). */
+  poolEnded?: { name: string; quarter: number; usd: number; kind: 'sold' | 'handover' | 'closed' }
   /** M68.4: altcoins (absent until a GPU is pointed at one). */
   alts?: AltState
   /** Still living with your parents: household power is free, income comes in, patience counts. */

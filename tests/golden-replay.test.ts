@@ -405,7 +405,8 @@ describe('golden replay: prologue-alts', () => {
   })
 
   it('matches the stored golden end state', async () => {
-    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-alts-seed-${PROLOGUE_SEED}.json`)
+    // (format 8, the Prologue's own pool, M69.3, changes nothing in a game without a pool: compared at format 7, as above)
+    await expect(JSON.stringify({ ...run.state, version: 7 }, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-alts-seed-${PROLOGUE_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {

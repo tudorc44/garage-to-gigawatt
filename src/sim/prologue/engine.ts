@@ -24,6 +24,7 @@ import {
   schedulePrologueEvents,
 } from './events.ts'
 import { deliverPreorders } from './preorders.ts'
+import { ownPoolWeek, poolQuarterEnd } from './pool.ts'
 import {
   altIncome,
   convertLeftoverAlts,
@@ -154,7 +155,8 @@ export function prologueWeek(s: GameState): void {
   const lambda = (myTh / (myTh + netTh || 1)) * P().blocks_per_week
   let btcCoins = 0
   let blocks = 0
-  if (p.pool) btcCoins = lambda * perBlock * (1 - poolFee(s.quarter))
+  if (p.ownPool) btcCoins = ownPoolWeek(s, myTh, perBlock, weekNo)
+  else if (p.pool) btcCoins = lambda * perBlock * (1 - poolFee(s.quarter))
   else if (myTh > 0) {
     const r = rollStream(s.seed, `solo:${s.quarter}:${s.week}`)
     blocks = poisson(r, lambda)
@@ -265,6 +267,8 @@ export function prologueEndQuarter(s: GameState): void {
     const energy = endQuarterEnergy(s)
     p.quarter.powerCostUsd += energy.costUsd - energy.revenueUsd
   }
+  // M69.3: your own pool's bills, its pull and reputation, and (in the handover quarter) its sale
+  const poolReport = poolQuarterEnd(s)
   // M68.4: the handover quarter's leftover altcoins convert at its last week's price x the haircut
   convertLeftoverAlts(s)
   if (s.cash < 0) forcedSale(s, w)
@@ -302,6 +306,7 @@ export function prologueEndQuarter(s: GameState): void {
     patience: p.livingAtHome ? p.patience : null,
     cards: [...p.quarter.cards],
     ...(p.alts ? { alts: reportAlts(s) } : {}),
+    ...(poolReport ? { pool: poolReport } : {}),
   })
   p.flags = p.flags.filter((f) => f !== 'planned_now')
   s.phase = s.cash < 0 ? 'gameover' : 'report'

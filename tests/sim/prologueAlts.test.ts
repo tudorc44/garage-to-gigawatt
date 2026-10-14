@@ -270,7 +270,7 @@ describe('saves and opt-out invariance', () => {
     const r = restoreSave(JSON.parse(JSON.stringify(v6)))
     expect(r.ok).toBe(true)
     if (!r.ok) return
-    expect(r.state.version).toBe(7)
+    expect(r.state.version).toBe(8) // (and 7 → 8, the pool's identity step, M69.3)
     expect(r.state.machines.every((l) => l.altCoin === undefined)).toBe(true)
     expect(r.state.prologue!.alts).toBeUndefined()
   })
