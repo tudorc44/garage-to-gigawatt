@@ -1941,7 +1941,7 @@ export function parseContent(raw: RawContent): Content {
   const prologueEvents = {
     ...eventsPrologueFile.engine,
     cards: eventsPrologueFile.cards.map((c): PrologueCard => {
-      if (c.type !== 'scripted') return c
+      if (c.type !== 'scripted' && c.type !== 'news') return c
       const qi = prologueQuarterIndex(c.quarter ?? '')
       const wi =
         qi === undefined

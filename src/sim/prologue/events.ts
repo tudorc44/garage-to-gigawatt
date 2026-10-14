@@ -85,7 +85,11 @@ export function schedulePrologueEvents(s: GameState): void {
   // The household's card (patience ran out last quarter) comes first.
   if (p.householdCard) p.cardQueue.push({ id: 'household', week: 1 })
   for (const c of rules.cards)
-    if (c.type === 'scripted' && c.quarterIndex === s.quarter)
+    if (
+      c.type === 'scripted' &&
+      c.quarterIndex === s.quarter &&
+      (c.requires ?? []).every((req) => holds(s, req))
+    )
       p.cardQueue.push({ id: c.id, week: c.weekIndex! + 1 })
   if (label(s.quarter) < rules.random_start) return
   const r = rollStream(s.seed, `p0events:${s.quarter}`)
