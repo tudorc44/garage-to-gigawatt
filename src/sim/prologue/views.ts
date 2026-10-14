@@ -36,6 +36,15 @@ import {
   siteLoadKw,
 } from './setup.ts'
 import { p0BuyBlocker } from './actions.ts'
+import {
+  altPrice,
+  altSellable,
+  altWeek,
+  altWeekOf,
+  altWeeklyCapUsd,
+  lotAltChoices,
+} from './alts.ts'
+import { ALT_COINS, type AltCoin } from './types.ts'
 
 const label = (q: number) => CONTENT.quarters[q] ?? ''
 
@@ -58,7 +67,7 @@ export function soloOdds(state: GameState): {
   let myTh = 0
   for (const lot of state.machines) {
     const m = getModel(lot.model)!
-    if (m.coin === 'BTC') myTh += (lot.count - lot.failed) * m.hashrate
+    if (m.coin === 'BTC' && !lot.altCoin) myTh += (lot.count - lot.failed) * m.hashrate
   }
   const lambda = (myTh / (myTh + netTh || 1)) * P().blocks_per_week
   let words: Message
@@ -168,6 +177,9 @@ export function prologueView(state: GameState) {
         .map((lot) => ({
           lot,
           sellUsd: saleValueUsd(lot, lot.count, q),
+          /** M68.5 (doc 51 v1.0 §5): the coin this lot mines, and the altcoins it could be pointed at now (none for a non-GPU). */
+          coin: (lot.altCoin ?? getModel(lot.model)!.coin) as Coin | AltCoin,
+          altChoices: lotAltChoices(state, lot),
         })),
     })),
     lastReport: p.reports.at(-1) ?? null,
@@ -327,6 +339,26 @@ export function prologueWalletView(state: GameState) {
     backup: p.backup,
     backupBandwidth: P().wallet_loss.backup_bandwidth,
     sellBandwidth: P().bandwidth_costs.sell,
+    /**
+     * M68.5: Litecoin and Dogecoin in your wallet (none until a GPU has been pointed at one): the amount, its value at this
+     * week's price, what waits to sell, the share of new coins kept, and what one week of selling may take.
+     */
+    alts: p.alts
+      ? ALT_COINS.map((coin) => {
+          const row = altWeekOf(nowWeek(state)) ?? altWeek(state.quarter, 0)
+          const px = altPrice(row, coin)
+          return {
+            coin: coin as AltCoin,
+            held: p.alts!.held[coin],
+            valueUsd: p.alts!.held[coin] * px,
+            priceUsd: px,
+            selling: p.alts!.queue[coin],
+            sellable: altSellable(state, coin),
+            keepPct: p.alts!.hodl[coin],
+            weekCapUsd: row && px > 0 ? altWeeklyCapUsd(coin, row) : 0,
+          }
+        })
+      : [],
     capUsdWeek: sellCapUsdWeek(state.quarter),
     /** Mt Gox by name until its collapse, then "an exchange" (scope §2.7). */
     exchangeName:
@@ -522,5 +554,19 @@ export function prologueNews(state: GameState): string[] {
   const q = label(state.quarter)
   const keys: string[] = []
   for (let i = 0; i < 6; i++) keys.push(`p0.news.${q}.${i}`)
+  // M68.5 (doc 51 v1.0 §7): the quarter's headline cards (type 'news': display only, no pause, nothing recorded) join the list
+  for (const c of CONTENT.prologue.events.cards)
+    if (c.type === 'news' && c.quarterIndex === state.quarter) keys.push(`p0.event.${c.id}.title`)
   return keys
+}
+
+/**
+ * M68.5: what the handover sale of Litecoin and Dogecoin brought, for the chapter report (none in a game without altcoins).
+ * TODO (doc 51 v1.0 §10 item 7): the line's later-price clause (what those coins were worth at a later date) waits for the
+ * dated closes of the second research pass; until then the chapter shows the sale alone.
+ */
+export function prologueAltsSold(state: GameState): { coin: AltCoin; amount: number; usd: number }[] {
+  const h = state.prologue?.alts?.handover
+  if (!h) return []
+  return ALT_COINS.filter((c) => h[c].amount > 0).map((coin) => ({ coin, amount: h[coin].amount, usd: h[coin].usd }))
 }

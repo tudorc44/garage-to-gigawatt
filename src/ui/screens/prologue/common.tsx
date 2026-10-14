@@ -43,6 +43,10 @@ export const hashOf = (model: string, count = 1) => {
 export const coins = (n: number, coin: Coin) =>
   n === 0 ? `0 ${coin}` : fmt.crypto(n, coin)
 
+/** An altcoin amount: 1,234 LTC, 12.5 LTC (Dogecoin runs to millions). */
+export const altAmount = (n: number, coin: 'LTC' | 'DOGE') =>
+  `${new Intl.NumberFormat('en-US', { maximumFractionDigits: n >= 100 ? 0 : 2 }).format(n)} ${coin}`
+
 export const drawing = (model: string) =>
   PROLOGUE_DRAWINGS[model] ?? 'asic-box-2016'
 
