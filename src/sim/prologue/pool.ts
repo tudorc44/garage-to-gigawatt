@@ -41,8 +41,8 @@ export const medianFee = (quarter: number): number => {
 }
 const smallShare = (q: number) => byYear(nums(PL().outside_miners.small_pool_share_by_year), q)
 const orphanRate = (q: number) => byYear(PL().risks_per_quarter.orphan_rate.value, q)
-const serverBill = (q: number) => byYear(nums(PL().server_bill_usd_quarter), q)
-const protectionBill = (q: number) => byYear(nums(PL().ddos_protection.usd_quarter), q)
+export const serverBill = (q: number) => byYear(nums(PL().server_bill_usd_quarter), q)
+export const protectionBill = (q: number) => byYear(nums(PL().ddos_protection.usd_quarter), q)
 
 export const feeRange = (method: 'PPLNS' | 'PPS'): [number, number] => PL().payout_methods[method].fee_range
 

@@ -338,6 +338,14 @@ export function QuarterReport({ state, act, onNew }: PrologueProps) {
               <td class="g-right">{value}</td>
             </tr>
           ))}
+          {r.pool && (
+            <tr data-pool-row>
+              <td>{t('ui.p0.r.pool')}</td>
+              <td class="g-right">
+                {t('ui.p0.r.pool_line', { fee: fmt.money(r.pool.feeUsd), paid: fmt.money(r.pool.paidMinersUsd), bills: fmt.money(r.pool.billsUsd) })}
+              </td>
+            </tr>
+          )}
           {r.alts && (r.alts.mined.LTC > 0 || r.alts.mined.DOGE > 0) && (
             <tr data-alts-mined>
               <td>{t('ui.p0.r.alts')}</td>
