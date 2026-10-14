@@ -43,7 +43,7 @@ function screen(initial: GameState, Screen: typeof Machines) {
   return { view, get state() { return state } }
 }
 
-const coinButtons = (c: HTMLElement) => [...c.querySelectorAll('[data-lot-coin] button')].map((b) => b.textContent)
+const coinButtons = (c: Element) => [...c.querySelectorAll('[data-lot-coin] button')].map((b) => b.textContent)
 
 describe('the coin selector on a GPU lot (Rig screen)', () => {
   it('2011Q3 has none; 2011Q4 offers BTC and LTC; 2013Q4 adds DOGE', () => {
