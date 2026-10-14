@@ -27,7 +27,7 @@ import {
   type QuarterReport,
 } from '../../sim/state.ts'
 import { CONTENT, actLastQuarter } from '../../content/index.ts'
-import { ethMiningOver } from '../mining.ts'
+import { ethMiningOver, holdsEth } from '../mining.ts'
 import { fmt } from '../format.ts'
 import { gameOverText } from '../chapter.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
@@ -127,10 +127,15 @@ export function ReportScreen(props: ScreenProps & { onGameOver: () => void }) {
                 <span class={toneOf(last.btcUsd - first.btcUsd)}>
                   {fmt.delta(last.btcUsd / first.btcUsd - 1, 'pct', { dp: 1 })}
                 </span>
-                {` · ETH ${fmt.money(last.ethUsd)} `}
-                <span class={toneOf(last.ethUsd - first.ethUsd)}>
-                  {fmt.delta(last.ethUsd / first.ethUsd - 1, 'pct', { dp: 1 })}
-                </span>
+                {/* M67.5 (doc 43 §0.24 item 5): the ETH price shows only to a company that holds ETH (or mined it this quarter) */}
+                {holdsEth(state, r) && (
+                  <>
+                    {` · ETH ${fmt.money(last.ethUsd)} `}
+                    <span class={toneOf(last.ethUsd - first.ethUsd)}>
+                      {fmt.delta(last.ethUsd / first.ethUsd - 1, 'pct', { dp: 1 })}
+                    </span>
+                  </>
+                )}
                 {` · ${t('ui.top.vs', { date: fmt.date(first.date, false) })}`}
               </div>
             )}

@@ -20,7 +20,7 @@ import {
   signalsPanel,
 } from '../../sim/selectors.ts'
 import type { GameState } from '../../sim/state.ts'
-import { Dialog, Pips, Tip } from '../components/basics.tsx'
+import { Dialog, Icon, Pips, Tip } from '../components/basics.tsx'
 import { Term } from '../components/term.tsx'
 import { fmt } from '../format.ts'
 import { say } from '../names.ts'
@@ -198,6 +198,17 @@ export function Act3SignalsPanel({ state, act }: ScreenProps) {
           </div>
         )
       })}
+      {/* M67.2 (doc 43 §0.24 item 1): Act V's news lines for this quarter, in the Signals panel's news markup (headlines only) */}
+      {'headlines' in v &&
+        v.headlines.map((h, i) => (
+          <div class="signal" key={`h${i}`}>
+            <Icon name="news" />
+            <div>
+              <span class="label">{t('ui.signals.headline', { quarter: fmt.quarter(v.quarter) })}</span>
+              {h}
+            </div>
+          </div>
+        ))}
       <div class="row-between">
         <button
           type="button"

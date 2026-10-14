@@ -1377,6 +1377,12 @@ export function signalsPanelV(state: GameState) {
     cost: SIGNAL_READ_BANDWIDTH,
     readThisQuarter: reads.find((r) => r.quarter === now)?.indicator ?? null,
     blocked: reads.some((r) => r.quarter === now) ? null : (readSignalVBlocker(state, 'grid_queue') ?? null),
+    // M67.2 (doc 43 §0.24 item 1): this quarter's news lines, one per indicator that moved: the headline field only
+    // (never the sharp note or a role tag), and never a later quarter's
+    headlines: CONTENT.signalsV[state.vFutureId].flatMap((ind) => {
+      const h = ind.series.find((p) => p.quarter === now)?.headline
+      return h ? [h] : []
+    }),
     indicators: CONTENT.signalsV[state.vFutureId].map((ind) => {
       const current = ind.series.find((p) => p.quarter === now)
       return {

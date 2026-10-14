@@ -447,6 +447,10 @@ export const SIGNAL_IDS_V = [
 export type SignalIdV = (typeof SIGNAL_IDS_V)[number]
 export const signalIdV = z.enum(SIGNAL_IDS_V)
 
+// M67.2 (doc 43 §0.24 item 1): Act V's Signals points keep their `headline` (the news line of a quarter in which the
+// indicator moves; designed to fit every reading until the trigger). Acts III and IV carry none.
+const signalPointV = signalPoint.extend({ headline: z.string().min(1).optional() })
+
 export const signalsVFileSchema = z.object({
   future: vFutureId,
   indicators: z
@@ -455,7 +459,7 @@ export const signalsVFileSchema = z.object({
         id: signalIdV,
         label: z.string().min(1),
         higher_means: z.string().min(1),
-        series: z.array(signalPoint).min(1),
+        series: z.array(signalPointV).min(1),
       }),
     )
     .length(SIGNAL_IDS_V.length),

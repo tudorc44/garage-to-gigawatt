@@ -68,7 +68,11 @@ describe('Act V’s hidden files (M51, doc 43 §6.8, V-D29): each read only wher
       const json = JSON.stringify(CONTENT.signalsV[v])
       for (const hidden of ['role_tag', 'authoring_latent', 'future_name', 'reasoning', 'DO_NOT_EXPOSE', 'wrong_reading'])
         expect(json, `${v} ${hidden}`).not.toContain(hidden)
-      expect(json).not.toContain(signalsHiddenV(v).future_name)
+      // (M67.2, doc 43 §0.24 item 1: the schema keeps the headline field, and the headline of a trigger quarter may name its
+      // trigger, e.g. V2's "The Flexible Lane Opens"; the rule for headlines is tests/sim/act5Headlines.test.ts: none
+      // before the trigger quarter names a future, a trigger card or a decoy. Every other field stays name-free here.)
+      const withoutHeadlines = JSON.stringify(CONTENT.signalsV[v], (k, val) => (k === 'headline' ? undefined : val))
+      expect(withoutHeadlines).not.toContain(signalsHiddenV(v).future_name)
     }
     const sv = code(src.find((f) => /systems[\\/]signalsV\.ts$/.test(f))!)
     expect(sv).not.toMatch(/act5Row|marketWeek|quarterInputs|signalsHidden|readingScore/)

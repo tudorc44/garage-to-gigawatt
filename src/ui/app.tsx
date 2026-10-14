@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from 'preact/hooks'
 import { t, type Message } from '../i18n/t.ts'
 import { applyAction, type Action } from '../sim/actions.ts'
 import { advance } from '../sim/advance.ts'
-import { seedFromString } from '../sim/rng.ts'
+import { toSeed } from './seed.ts'
 import {
   act3Finished,
   act4FinishedSel,
@@ -145,12 +145,6 @@ function useAct3Preview(): PreviewModule | null {
       void import('./screens/Act3Preview.tsx').then(setM)
   }, [])
   return m
-}
-
-/** Numbers are used as-is; any other text is hashed; empty picks a random seed. */
-function toSeed(text: string): number {
-  if (text === '') return Math.floor(Math.random() * 1e9)
-  return /^\d+$/.test(text) ? Number(text) : seedFromString(text)
 }
 
 /**
@@ -436,12 +430,14 @@ export function App() {
         act3Start={entry && <entry.StartAct3 onReady={(end) => enterAct3(end)} />}
         act4Start={entry4 && <entry4.StartAct4 onReady={(end, preset) => enterAct4(end, false, { preset })} />}
         // M49 (doc 43 §3.4): a preset company at 2035Q4 crosses into Act V on the drawn future, then the intro.
-        act5Start={
+        // M67.3 (doc 43 §0.24 item 2, V-D5): the future is drawn from a fresh Act V seed (the title screen's seed field, else
+        // random, as a new game's seed), not from the preset company's fixed one; the company itself doesn't change.
+        act5Start={(seedText: string) =>
           entry5 && (
             <entry5.StartAct5
               onReady={(end, preset) => {
                 setShowEnd(false)
-                commit(toAct5(end, { preset }))
+                commit(toAct5(end, { preset, act5Seed: toSeed(seedText) }))
                 setAct5Intro(true)
               }}
             />
