@@ -25,6 +25,7 @@
 import { CONTENT, actFirstQuarter } from '../../src/content/index.ts'
 import { applyAction, type Action } from '../../src/sim/actions.ts'
 import type { Strategy } from '../../src/sim/replay.ts'
+import { topHeat } from '../../src/sim/selectors.ts'
 import type { GameState } from '../../src/sim/state.ts'
 import type { VFutureId } from '../../src/content/schemas.ts'
 import { idealStancesV, scoredKindsAtV } from '../../src/sim/systems/readingScoreV.ts'
@@ -220,7 +221,7 @@ export function act5Bot(name: Act5Archetype): Strategy {
     case 'passive':
       return strategy(() => [])
     case 'perfect':
-      return strategy((s) => {
+      return withHeatHabit(strategy((s) => {
         const ideal = s.vFutureId ? idealStancesV(s.vFutureId)[q5(s)] : 0
         // (M60.4: where only flexibility is scored, V2 after its trigger, the −1 moves are enrolling and the fast lane)
         if (ideal === -1 && s.vFutureId && scoredKindsAtV(s.vFutureId, q5(s))) return chain(s, FLEX)
@@ -233,6 +234,34 @@ export function act5Bot(name: Act5Archetype): Strategy {
         const replaced = tryAll(after, replaceBlocks(after))
         const growth = orbitGrowth(replaced.after, q5(s) < 12)
         return [...plan, ...replaced.kept, ...growth.kept]
-      })
+      }))
+  }
+}
+
+/** The Heat level at which the perfect reader starts answering its neighbours (M69.5, doc 43 §0.26 ⚙). */
+export const HEAT_HABIT_AT = 45
+
+/**
+ * M69.5 (doc 43 §0.26): the perfect reader's one housekeeping habit, the player's own tools. When its hottest site's Heat is at
+ * or above 45 it talks to the neighbours there; if it talked there last quarter and the site is still at or above 45, it pays for
+ * noise mitigation (once a site). Sent after the plan's other moves, so it never takes Bandwidth from the reading.
+ */
+export function heatHabit(s: GameState): Action[] {
+  const top = topHeat(s)
+  if (!top || top.heat < HEAT_HABIT_AT) return []
+  const rec = s.siteHeat[top.site.id]
+  const talkedLastQuarter = rec?.outreachQuarter === s.quarter - 1
+  if (talkedLastQuarter && !rec.mitigated) return [{ type: 'MITIGATE_NOISE', siteId: top.site.id }]
+  return [{ type: 'OUTREACH', siteId: top.site.id }]
+}
+
+function withHeatHabit(base: Strategy): Strategy {
+  return {
+    ...base,
+    plan: (s) => {
+      const plan = base.plan(s)
+      const after = tryAll(s, plan).after
+      return [...plan, ...tryAll(after, heatHabit(after)).kept]
+    },
   }
 }
