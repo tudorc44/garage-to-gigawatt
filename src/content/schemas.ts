@@ -398,7 +398,7 @@ export const clubFileSchema = z.object({
   hosting: z.object({
     choice: z.tuple([z.literal('your_place'), z.literal('friends_flat')]),
     your_place: z.object({ counts_against_household_patience: z.literal(true), fee_from_club_usd_kw_quarter: gradedNum }),
-    friends_flat: z.object({ counts_against_household_patience: z.literal(false), fee_to_mara_usd_kw_quarter: gradedNum }),
+    friends_flat: z.object({ counts_against_household_patience: z.literal(false), fee_to_nell_usd_kw_quarter: gradedNum }),
   }),
   gpus_coin: z.string(),
   endings: z.object({

@@ -15,7 +15,7 @@ See "Next".
 
 Split (docs 55 and 57, `research-2/` and `research-3/` moved out of `docs/prologue-content/`; docs 43 and 51 copied from the design thread's files, diffs checked):
 - M71.0 docs
-- M71.1 (A) renames (Kestrel Foundry, Nell Hartigan, Slagwheel) and the dev flag over altcoins, pool and club
+- M71.1 done: renames (Kestrel Foundry, Nell Hartigan with id `nell`, Slagwheel) through `gen_content.py` plus a rename pass in `merge_alts.py` for the already-merged text (logged in the pack README); `PROLOGUE_EXPANSION` in `src/platform/preview.ts` (off in production: no Ventures item, no coin selector, no expansion headlines, a save that used a feature refuses with `error.save_test_build`); gate test `tests/ui/prologueExpansionGate.test.tsx`. No golden moved.
 - M71.2 (B) port the generator changes, regenerate, schemas
 - M71.3 (C) sim changes: LTC from 2011-10-24, real volume limits, the boycott as a bump, DDoS, PPS insolvency floor, friendship, pool_sale_offer pauses, later-price clause, credit line
 - M71.4 (D) pool report fixes (luck and net under PPS, plural)

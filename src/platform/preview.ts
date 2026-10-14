@@ -11,6 +11,13 @@ import type { GameState } from '../sim/state.ts'
 
 export const ACT3_PREVIEW: boolean = import.meta.env.MODE !== 'production'
 
+/**
+ * M71.1 (doc 51 v1.4 §14 decision 9): the Prologue expansion (altcoins, your own pool, the mining club) is behind the same dev flag as
+ * Act V until the balance milestone and the header data are in. Off (production): the Prologue plays as it did before M68: no coin
+ * selector, no Ventures screen, no expansion headlines; a save that used a feature is refused. On in `npm run dev` and staging.
+ */
+export const PROLOGUE_EXPANSION: boolean = import.meta.env.MODE !== 'production'
+
 /** Marks the scenario-forcing code; the production build must not contain it (tests/ui/act3Gate.test.ts). */
 export const FORCING_MARKER = 'g2g-scenario-forcing'
 
@@ -46,6 +53,12 @@ export function guardTestBuildSave(
     return { ok: false, error: { key: 'error.save_test_build' } }
   // M49 (doc 43 §0.13): Act V is behind a dev flag until it is playable end to end, so any Act V save is a test build's.
   if (r.ok && !preview && r.state.act === 5) return { ok: false, error: { key: 'error.save_test_build' } }
+  // M71.1: a Prologue save that used the expansion (an altcoin, a pool, the club) is a test build's.
+  if (r.ok && !preview && r.state.act === 0) {
+    const p = r.state.prologue
+    if (p && (p.alts || p.ownPool || p.poolEnded || p.club || p.clubEnded))
+      return { ok: false, error: { key: 'error.save_test_build' } }
+  }
   return r
 }
 

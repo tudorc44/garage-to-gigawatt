@@ -84,7 +84,7 @@ describe('joining the club', () => {
     const total = 2000 + 3000 + gpuValue
     expect(c.shares.you).toBeCloseTo(2000 / total, 9)
     expect(c.shares.teo).toBeCloseTo((1000 + gpuValue) / total, 9)
-    expect(c.shares.mara).toBeCloseTo(1000 / total, 9)
+    expect(c.shares.nell).toBeCloseTo(1000 / total, 9)
     expect(Object.values(c.shares).reduce((a, b) => a + b, 0)).toBeCloseTo(1, 9)
     expect(c.lots).toMatchObject([{ kind: 'gpu', model: 'gpu_gaming_2010', count: 2 }])
   })
@@ -98,7 +98,7 @@ describe('joining the club', () => {
     const again = join(planAt(), 2000)
     expect(club(again).orders).toEqual(club(s).orders)
     // the cash left over (5000 - 7 x 650 = 450) stays with the members: yours comes back to you
-    expect(club(s).bal.mara.cash).toBeGreaterThan(0)
+    expect(club(s).bal.nell.cash).toBeGreaterThan(0)
   })
 
   it('a game that never joins has no club state at all', () => {
@@ -128,7 +128,7 @@ describe('the machines and the weekly split', () => {
     const c = club(s)
     expect(s.treasury.BTC).toBeGreaterThan(0)
     expect(c.bal.you.BTC).toBe(0)
-    const friends = c.bal.mara.BTC + c.bal.teo.BTC + c.bal.jun.BTC
+    const friends = c.bal.nell.BTC + c.bal.teo.BTC + c.bal.jun.BTC
     expect(friends / (friends + s.treasury.BTC)).toBeCloseTo(1 - c.shares.you, 6)
   })
 
@@ -148,12 +148,12 @@ describe('the machines and the weekly split', () => {
     s = ok(s, { type: 'END_PLAN' })
     s = playWeek(s)
     expect(club(s).bal.teo.BTC).toBe(0) // nothing mined on bitcoin
-    expect(club(s).bal.you.LTC + club(s).bal.mara.LTC + club(s).bal.teo.LTC + club(s).bal.jun.LTC).toBeGreaterThan(0)
+    expect(club(s).bal.you.LTC + club(s).bal.nell.LTC + club(s).bal.teo.LTC + club(s).bal.jun.LTC).toBeGreaterThan(0)
   })
 })
 
 describe('hosting and keys', () => {
-  it('in your place the club\'s machines count against the household and the club pays you; in Mara\'s flat they do not and you pay your share', () => {
+  it('in your place the club\'s machines count against the household and the club pays you; in Nell\'s flat they do not and you pay your share', () => {
     const mine = join(planAt(), 2000, 'player', 'your_place')
     mine.prologue!.club!.lots = [{ id: 'x', kind: 'asic', model: 'asic_preorder_group', count: 3, earnsFrom: mine.quarter }]
     const host = mine.prologue!.club!.hostSiteId
@@ -170,7 +170,7 @@ describe('hosting and keys', () => {
       return t.cash - start
     }
     const incomeWeek = CONTENT.prologue.rules.start.income_usd_q / 13
-    mine.prologue!.club!.bal.mara.cash = 1000 // (the friends have something to pay with)
+    mine.prologue!.club!.bal.nell.cash = 1000 // (the friends have something to pay with)
     expect(cashAfter(mine) - incomeWeek).toBeGreaterThan(0)
     expect(cashAfter(flat) - incomeWeek).toBeLessThan(0)
   })
@@ -213,7 +213,7 @@ describe('hosting and keys', () => {
 describe('the cards', () => {
   const withClub = (keys: 'player' | 'jun' = 'player') => {
     const s = join(planAt(), 2000, keys)
-    s.prologue!.club!.bal.mara = { cash: 800, BTC: 0, LTC: 0, DOGE: 0 }
+    s.prologue!.club!.bal.nell = { cash: 800, BTC: 0, LTC: 0, DOGE: 0 }
     s.prologue!.club!.bal.teo = { cash: 800, BTC: 0, LTC: 0, DOGE: 0 }
     s.prologue!.club!.bal.jun = { cash: 800, BTC: 0, LTC: 0, DOGE: 0 }
     s.prologue!.club!.lots = [{ id: 'g', kind: 'gpu', model: 'gpu_gaming_2010', count: 2, earnsFrom: s.quarter }]
@@ -229,7 +229,7 @@ describe('the cards', () => {
     before = structuredClone(s)
     return ok(s, { type: 'RESOLVE_INTERRUPT', choice })
   }
-  const friendsCash = (s: GameState) => club(s).bal.mara.cash + club(s).bal.teo.cash + club(s).bal.jun.cash
+  const friendsCash = (s: GameState) => club(s).bal.nell.cash + club(s).bal.teo.cash + club(s).bal.jun.cash
 
   it('club_power_bill: split by shares charges each member, "pay it yourself" charges you alone, an argument costs a friendship point', () => {
     const base = withClub()
@@ -283,7 +283,7 @@ describe('the cards', () => {
     expect(box.deliverQuarter).toBeGreaterThanOrEqual(base.quarter + 1)
     expect(box.deliverQuarter).toBeLessThanOrEqual(base.quarter + 4)
     const poor = structuredClone(base)
-    poor.prologue!.club!.bal.mara.cash = 0
+    poor.prologue!.club!.bal.nell.cash = 0
     poor.prologue!.club!.bal.teo.cash = 0
     poor.prologue!.club!.bal.jun.cash = 0
     expect(club(answer(poor, 'club_scrypt_box', 'buy')).orders.some((o) => o.kind === 'scrypt_box')).toBe(false)
@@ -295,12 +295,12 @@ describe('the cards', () => {
     let s = answer(structuredClone(base), 'club_cloud_contract', 'invest')
     expect(club(s).cloud?.investedUsd).toBeGreaterThan(friendsCash(before) - 5) // (less a week of hosting fees)
     expect(club(s).cloud?.investedUsd).toBeLessThan(friendsCash(before) + 5)
-    expect(club(s).bal.mara.cash + club(s).bal.teo.cash + club(s).bal.jun.cash).toBe(0)
+    expect(club(s).bal.nell.cash + club(s).bal.teo.cash + club(s).bal.jun.cash).toBe(0)
     const cashes: number[] = []
     for (let i = 0; i < 4; i++) {
       s = playQuarter(s)
       if (s.phase === 'report') s = ok(s, { type: 'NEXT_QUARTER' })
-      cashes.push(club(s).bal.mara.cash + club(s).bal.teo.cash + club(s).bal.jun.cash)
+      cashes.push(club(s).bal.nell.cash + club(s).bal.teo.cash + club(s).bal.jun.cash)
     }
     // (after the first quarter nothing; then 10%, then 2% of the principal; then nothing: the sourced shutdown)
     expect(cashes[0]).toBe(0)
@@ -347,7 +347,7 @@ describe('the endings', () => {
     s = ok(s, { type: 'END_PLAN' })
     s = through(s, '2015Q1')
     s.cash = 5
-    s.prologue!.club!.bal.mara.cash = 5000
+    s.prologue!.club!.bal.nell.cash = 5000
     s.phase = 'live'
     s.prologue!.cardQueue = [{ id: 'club_breakup', week: 1 }]
     s.week = 0

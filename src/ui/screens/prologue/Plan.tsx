@@ -3,6 +3,7 @@
 // dashboard in three columns: your rig, the household and the mining mode; the market, your coins and
 // the keep / sell slider; this quarter's actions (money sinks included) and the offers. The live
 // quarter plays inside the same frame.
+import { PROLOGUE_EXPANSION } from '../../../platform/preview.ts'
 import { useEffect, useState } from 'preact/hooks'
 import { quarterLabel } from '../../../content/index.ts'
 import { hasText, t, tDynamic } from '../../../i18n/t.ts'
@@ -159,7 +160,7 @@ export function PlanOrLive(
       <TopBar state={state} />
       <div class="body">
         <nav class="nav" aria-label={t('ui.nav.label')}>
-          {NAV.map((item) => (
+          {NAV.filter((item) => PROLOGUE_EXPANSION || item.id !== 'ventures').map((item) => (
             <button
               key={item.id}
               type="button"
@@ -216,7 +217,7 @@ export function PlanOrLive(
 }
 
 function News({ state }: { state: GameState }) {
-  const news = prologueNews(state)
+  const news = prologueNews(state, PROLOGUE_EXPANSION)
     .filter((k) => hasText(k))
     .map((k) => tDynamic(k, ''))
   return (

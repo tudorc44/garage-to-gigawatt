@@ -8,8 +8,8 @@
  },
  "cast": [
   {
-   "id": "mara",
-   "name": "Mara Ilves",
+   "id": "nell",
+   "name": "Nell Hartigan",
    "role": "electrical engineering student; watches the wiring"
   },
   {
@@ -82,7 +82,7 @@
   },
   "friends_flat": {
    "counts_against_household_patience": false,
-   "fee_to_mara_usd_kw_quarter": {
+   "fee_to_nell_usd_kw_quarter": {
     "value": 60,
     "grade": "D",
     "source": "same"

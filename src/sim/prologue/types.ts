@@ -134,8 +134,8 @@ export interface PoolReport {
 }
 
 /** The mining club (M70.4, doc 51 v1.2 §4). Absent from a game that never joins it. */
-export type ClubMember = 'you' | 'mara' | 'teo' | 'jun'
-export const CLUB_FRIENDS: readonly ClubMember[] = ['mara', 'teo', 'jun']
+export type ClubMember = 'you' | 'nell' | 'teo' | 'jun'
+export const CLUB_FRIENDS: readonly ClubMember[] = ['nell', 'teo', 'jun']
 /** What a member holds in the club's custody: cash and coins. */
 export interface ClubBalance {
   cash: number

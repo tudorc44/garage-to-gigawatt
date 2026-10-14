@@ -242,10 +242,10 @@
  "names": {
   "default_pool_name": "Halfblock Pool",
   "rivals": [
-   "OreLoop",
+   "Slagwheel",
    "CopperHash"
   ],
   "grade": "D",
-  "note": "invented; name-clash check before shipping"
+  "note": "invented; OreLoop renamed Slagwheel (doc 57: a Swedish gold-mining technology company uses OreLoop); formal USPTO and EUIPO searches before ship"
  }
 }

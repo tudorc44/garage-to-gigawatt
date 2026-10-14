@@ -50,7 +50,7 @@ describe('the club panel', () => {
     expect(actions).toContainEqual({ type: 'P0_JOIN_CLUB', stake: 3500, keys: 'jun', hosting: 'friends_flat' })
     expect(state().prologue!.club).toBeDefined()
     const members = ui.container.querySelector('[data-club-members]')!
-    expect(members.textContent).toContain('Mara')
+    expect(members.textContent).toContain('Nell')
     expect(members.textContent).toContain('Teo')
     expect(members.textContent).toContain('Jun')
     expect(ui.container.querySelector('[data-club-join]')).toBeNull()
@@ -85,6 +85,6 @@ describe('the chapter report', () => {
     const s = plan('2016Q4')
     s.prologue!.clubEnded = { kind: 'buy_out', quarter: s.quarter, usd: 1234, early: false }
     const { container } = render(<Chapter state={s} act={() => null} tick={() => {}} skip={() => {}} onNew={() => {}} />)
-    expect(container.querySelector('[data-club-ended]')!.textContent).toContain('Mara')
+    expect(container.querySelector('[data-club-ended]')!.textContent).toContain('Nell')
   })
 })

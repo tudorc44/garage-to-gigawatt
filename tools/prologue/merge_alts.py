@@ -293,3 +293,20 @@ if '## Merge log (M70.3' not in s:
 - The game's copies carry the same in the game's format: `src/content/events_prologue.json` and `src/i18n/content.en.json`. The cards: `club_form` (the offer: a headline of type `news` in the game, display only, so a game that never joins is unchanged; the joining itself is the action `P0_JOIN_CLUB` in 2013Q1's Plan phase, from the Ventures screen), `club_power_bill` (random, from 2013Q2), `club_peak_cashout`, `club_gpu_flip`, `club_scrypt_box`, `club_breakup` (scripted, `requires: club_member`, a card with no week takes its quarter's first) and `club_cloud_contract` (random in 2014Q3-Q4). New effect key `club{}`; `cash` may be the named amount `club_power_quarter` (mine, reversible). The default answers are the cautious ones: argue, wait, keep, pass, pass, carry on (mine, reversible).
 ''')
 print('merge ok')
+
+# M71.1 (doc 51 v1.4 §14 decision 8, §15 decision 2): the invented names that clashed with real ones. The cards were merged under
+# the old names (M70.3); the merge never replaces text, so this pass renames them in the merged copies (safe to run again).
+RENAMES = [('ScryptBox Ltd', 'Kestrel Foundry'), (r'\bMara Ilves\b', 'Nell Hartigan'), (r'\bMara\b', 'Nell'), (r'\bOreLoop\b', 'Slagwheel')]
+for path in (f'{DOCS}/events_prologue.json', f'{GAME}/events_prologue.json', f'{DOCS}/text_prologue.en.json', TEXT):
+    s = read(path); t = s
+    for old, new in RENAMES: t = re.sub(old, new, t)
+    if t != s: write(path, t)
+p = f'{PACK}/README.md'
+s = read(p)
+if '## Rename log (M71.1' not in s:
+    write(p, s.rstrip('\n') + '''
+
+## Rename log (M71.1: doc 51 v1.4 §14 decision 8 and §15 decision 2; `tools/prologue/gen_content.py` and `merge_alts.py`)
+- ScryptBox Ltd is now **Kestrel Foundry** (it was a real 2014 scrypt-mining share offering), Mara Ilves is **Nell Hartigan** (id `nell`; association risk) and OreLoop is **Slagwheel** (a Swedish gold-mining technology company uses it). The generator writes the new names; `merge_alts.py` renames the already-merged card and text copies in `docs/prologue-content/`, `src/content/` and `src/i18n/content.en.json`. Formal USPTO and EUIPO searches on every invented name are the owner's task before ship (doc 51 §15 decision 2).
+''')
+print('rename ok')

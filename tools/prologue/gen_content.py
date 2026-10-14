@@ -47,14 +47,14 @@ save('pools_player.json', {
   'orphan_rate': V({'2011': 0.02, '2013': 0.01, '2016': 0.0041}, 'A/D', 'Feb 2016 0.41% [A]; earlier years designed')},
  'boycott_2014': {'window': ['2014Q2', '2014Q3'], 'condition': 'pool open, fee at or below the median, reputation >= 50', 'outside_hashrate_mult': V(1.3, 'D', 'miners spread from the largest pool after June 2014 (custody.json note); size designed, second research pass'), 'card': 'pool_boycott_2014'},
  'sale': {'from_quarter': '2013Q1', 'price': 'trailing four quarters of fee income x multiple', 'multiple': V(2.0, 'D', 'no sourced small-pool sale found (doc 53)'), 'at_handover': 'an open pool is sold automatically at this price (owner, doc 51 §8)'},
- 'names': {'default_pool_name': 'Halfblock Pool', 'rivals': ['OreLoop', 'CopperHash'], 'grade': 'D', 'note': 'invented; name-clash check before shipping'}})
+ 'names': {'default_pool_name': 'Halfblock Pool', 'rivals': ['Slagwheel', 'CopperHash'], 'grade': 'D', 'note': 'invented; OreLoop renamed Slagwheel (doc 57: a Swedish gold-mining technology company uses OreLoop); formal USPTO and EUIPO searches before ship'}})
 
 save('club.json', {
  'schema_version': 1,
  'notes': "The mining club (doc 51 v1.0 §4). Three invented friends; the club buys into the existing group buy (preorders.json group_buy) and runs Teo's two GPUs. Designed [D]; the backdrop cards are sourced.",
  'offer': {'card': 'club_form', 'quarter': '2013Q1', 'join_bandwidth': 1},
  'cast': [
-  {'id': 'mara', 'name': 'Mara Ilves', 'role': 'electrical engineering student; watches the wiring'},
+  {'id': 'nell', 'name': 'Nell Hartigan', 'role': 'electrical engineering student; watches the wiring'},
   {'id': 'teo', 'name': 'Teo Brandt', 'role': 'gamer; brings two 2010-class GPUs'},
   {'id': 'jun', 'name': 'Jun Okafor', 'role': 'economics student; keeps the spreadsheet and, if asked, the keys'}],
  'friends_cash_usd': V(3000, 'D', 'the three together'),
@@ -66,7 +66,7 @@ save('club.json', {
           'jun': {'loss_chance_quarter': V(0.015, 'D', 'no failure-rate source found (doc 53 Part C); about 15% over the club life'), 'loss_share': V([0.3, 1.0], 'D', 'doc 53 range')}},
  'hosting': {'choice': ['your_place', 'friends_flat'],
              'your_place': {'counts_against_household_patience': True, 'fee_from_club_usd_kw_quarter': V(60, 'D', 'no hobbyist hosting price found')},
-             'friends_flat': {'counts_against_household_patience': False, 'fee_to_mara_usd_kw_quarter': V(60, 'D', 'same')}},
+             'friends_flat': {'counts_against_household_patience': False, 'fee_to_nell_usd_kw_quarter': V(60, 'D', 'same')}},
  'gpus_coin': "the club's GPUs follow the coin the player picks for them (BTC, LTC or DOGE)",
  'endings': {'early': 'card club_breakup (2015Q1 or later)', 'at_handover': ['buy_out', 'dissolve'],
              'buy_out': 'pay each friend their share at 2016Q4 value; machines and coins become yours and enter Act I',
@@ -121,13 +121,13 @@ pool = [
  card('pool_sale_offer', 'random', 'An Offer for the Pool', 'random:pool_open and quarter>=2013Q1', 'The operator of CopperHash wants to fold your miners into his pool. He offers cash for the pool, the domain and the user list.', [('Sell at his price', {'pool': {'sell': True}}), ('Keep running it', {})], 'Invented; no sourced small-pool sale found (doc 53)', 'pools_player.json sale', weight=0.5)]
 
 club = [
- card('club_form', 'scripted', 'Three Friends and a Spreadsheet', 'fixed:2013Q1', "Mara, Teo and Jun want in on the ASIC group buy everyone is talking about. Teo brings his two Radeons. Jun has a spreadsheet. They want you, because you have actually mined before.", [('Join (1 Bandwidth; choose your stake, who holds the keys and where it runs)', {'club': {'join': True}, 'bandwidth_next': -1}), ('Wish them luck', {})], 'Forum group buys of early ASICs, 2012-2013 (preorders.json group_buy) [B]; the friends are invented', 'club.json'),
- card('club_power_bill', 'random', 'Who Pays the Power?', 'random:club_member and quarter>=2013Q2', "The power bill for the club's machines has doubled. Jun wants every machine metered. Mara says that is how friendships end.", [('Split it by shares', {'club': {'cost_split': 'shares'}}), ('Pay it yourself this quarter', {'cash': 'club_power_quarter'}), ('Let them argue', {'club': {'dispute': True}})], 'Invented', 'club.json', weight=1.0),
+ card('club_form', 'scripted', 'Three Friends and a Spreadsheet', 'fixed:2013Q1', "Nell, Teo and Jun want in on the ASIC group buy everyone is talking about. Teo brings his two Radeons. Jun has a spreadsheet. They want you, because you have actually mined before.", [('Join (1 Bandwidth; choose your stake, who holds the keys and where it runs)', {'club': {'join': True}, 'bandwidth_next': -1}), ('Wish them luck', {})], 'Forum group buys of early ASICs, 2012-2013 (preorders.json group_buy) [B]; the friends are invented', 'club.json'),
+ card('club_power_bill', 'random', 'Who Pays the Power?', 'random:club_member and quarter>=2013Q2', "The power bill for the club's machines has doubled. Jun wants every machine metered. Nell says that is how friendships end.", [('Split it by shares', {'club': {'cost_split': 'shares'}}), ('Pay it yourself this quarter', {'cash': 'club_power_quarter'}), ('Let them argue', {'club': {'dispute': True}})], 'Invented', 'club.json', weight=1.0),
  card('club_peak_cashout', 'scripted', 'Teo Wants Out', 'fixed:2013Q4 if club_member', 'Bitcoin is over $1,000. Teo wants his share in cash before it falls.', [('Buy his share at market value', {'club': {'buy_out': 'teo'}}), ('Let him sell his share of the coins', {'club': {'member_sells': 'teo'}}), ('Ask him to wait', {'club': {'refuse': 'teo', 'friendship': -1}})], 'December 2013 peak (events_prologue.json peak_and_silk_road) [B]; Teo is invented', 'club.json', week='2013-12-02'),
  card('club_gpu_flip', 'scripted', 'Someone Wants the Radeons', 'fixed:2014Q1 if club_member', "A forum buyer offers one and a half times what Teo's cards cost. Scrypt ASIC pre-orders are open.", [("Sell the club's GPUs", {'club': {'sell_gpus_mult': 1.5}}), ('Keep them mining', {})], 'GPU prices peaked in early 2014 ($900 against a $550 launch, 4 Mar 2014) [B]', 'doc 53 Part C', week='2014-03-03'),
- card('club_scrypt_box', 'scripted', 'A Box for the Club', 'fixed:2014Q2 if club_member', "Jun wants the club to put money into a share of a $9,995 scrypt box from ScryptBox Ltd, shipping 'next quarter'.", [('Buy a quarter share for the club', {'club': {'preorder': 'scrypt_box_share'}}), ('Pass', {})], 'Scrypt box pre-orders at $9,995 in Mar 2014, shipping Sep 2014 [B]; vendor invented', 'doc 53 A4'),
+ card('club_scrypt_box', 'scripted', 'A Box for the Club', 'fixed:2014Q2 if club_member', "Jun wants the club to put money into a share of a $9,995 scrypt box from Kestrel Foundry, shipping 'next quarter'.", [('Buy a quarter share for the club', {'club': {'preorder': 'scrypt_box_share'}}), ('Pass', {})], 'Scrypt box pre-orders at $9,995 in Mar 2014, shipping Sep 2014 [B]; vendor invented', 'doc 53 A4'),
  card('club_cloud_contract', 'random', 'Daily Payouts, Guaranteed', 'random:club_member and quarter in(2014Q3,2014Q4)', "Jun's cousin bought cloud mining contracts that pay out every day. No machines, no power bill. He wants the club to buy in.", [('Put the club money in', {'club': {'cloud_contract': True}}), ('Pass', {})], 'Cloud-mining Hashlets sold from Aug 2014; payouts fell below fees by Nov 2014; shut Jan 2015; SEC charges Dec 2015 [A]; the seller is invented', 'doc 53 Part C', weight=1.0),
- card('club_breakup', 'scripted', 'The Spreadsheet Has to Close', 'fixed:2015Q1 if club_member', 'The GPUs earn pennies. Mara wants to sell, Teo wants to keep going, and Jun wants the spreadsheet settled.', [('Buy everyone out', {'club': {'end': 'buy_out'}}), ('Sell up and split', {'club': {'end': 'dissolve'}}), ('Keep the club going to the end', {})], 'Invented', 'club.json endings')]
+ card('club_breakup', 'scripted', 'The Spreadsheet Has to Close', 'fixed:2015Q1 if club_member', 'The GPUs earn pennies. Nell wants to sell, Teo wants to keep going, and Jun wants the spreadsheet settled.', [('Buy everyone out', {'club': {'end': 'buy_out'}}), ('Sell up and split', {'club': {'end': 'dissolve'}}), ('Keep the club going to the end', {})], 'Invented', 'club.json endings')]
 
 save('events_prologue_expansion.json', {
  'schema_version': 1,
@@ -159,7 +159,7 @@ print('ok')
 save('preorders_additions.json', {
  'schema_version': 1,
  'notes': "Append to preorders.json vendors. Offered only through the club card club_scrypt_box (2014Q2). Mines LTC (scrypt). The existing delay roll rules apply.",
- 'vendors': [{'id': 'scrypt_box_share', 'name': 'ScryptBox Ltd (invented)', 'order_window': ['2014Q2', '2014Q2'], 'unit_model': 'scrypt_box_2014', 'share_of_unit': 0.25,
+ 'vendors': [{'id': 'scrypt_box_share', 'name': 'Kestrel Foundry (invented)', 'order_window': ['2014Q2', '2014Q2'], 'unit_model': 'scrypt_box_2014', 'share_of_unit': 0.25,
    'price_usd': V(2499, 'B/D', 'a quarter of a $9,995 box (Mar 2014 pre-orders, doc 53 A4) [B]'), 'hashrate_share_khs': V(62500, 'C/D', 'a quarter of about 250 MH/s (the shipped spec rose from 100 to about 400 MH/s, doc 53 A4)'),
    'power_kw_share': V(0.25, 'D', 'a quarter of about 1 kW'), 'promised_delivery_quarters_after_order': 1,
    'delay_roll': V({'on_time': 0.1, 'one_quarter_late': 0.5, 'two_quarters_late': 0.3, 'three_quarters_late': 0.1}, 'D', 'real boxes ordered in Mar 2014 shipped from Sep 2014'),

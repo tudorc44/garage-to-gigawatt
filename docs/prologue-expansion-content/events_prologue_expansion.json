@@ -455,7 +455,7 @@
    "trigger": "fixed:2013Q1",
    "week": null,
    "weight": null,
-   "body": "Mara, Teo and Jun want in on the ASIC group buy everyone is talking about. Teo brings his two Radeons. Jun has a spreadsheet. They want you, because you have actually mined before.",
+   "body": "Nell, Teo and Jun want in on the ASIC group buy everyone is talking about. Teo brings his two Radeons. Jun has a spreadsheet. They want you, because you have actually mined before.",
    "choices": [
     {
      "label": "Join (1 Bandwidth; choose your stake, who holds the keys and where it runs)",
@@ -481,7 +481,7 @@
    "trigger": "random:club_member and quarter>=2013Q2",
    "week": null,
    "weight": 1.0,
-   "body": "The power bill for the club's machines has doubled. Jun wants every machine metered. Mara says that is how friendships end.",
+   "body": "The power bill for the club's machines has doubled. Jun wants every machine metered. Nell says that is how friendships end.",
    "choices": [
     {
      "label": "Split it by shares",
@@ -579,7 +579,7 @@
    "trigger": "fixed:2014Q2 if club_member",
    "week": null,
    "weight": null,
-   "body": "Jun wants the club to put money into a share of a $9,995 scrypt box from ScryptBox Ltd, shipping 'next quarter'.",
+   "body": "Jun wants the club to put money into a share of a $9,995 scrypt box from Kestrel Foundry, shipping 'next quarter'.",
    "choices": [
     {
      "label": "Buy a quarter share for the club",
@@ -629,7 +629,7 @@
    "trigger": "fixed:2015Q1 if club_member",
    "week": null,
    "weight": null,
-   "body": "The GPUs earn pennies. Mara wants to sell, Teo wants to keep going, and Jun wants the spreadsheet settled.",
+   "body": "The GPUs earn pennies. Nell wants to sell, Teo wants to keep going, and Jun wants the spreadsheet settled.",
    "choices": [
     {
      "label": "Buy everyone out",

@@ -639,13 +639,14 @@ function poolBlockers(state: GameState) {
 }
 
 /** This quarter's news headlines (p0.news.<quarter>.<n>). */
-export function prologueNews(state: GameState): string[] {
+export function prologueNews(state: GameState, expansion = true): string[] {
   const q = label(state.quarter)
   const keys: string[] = []
   for (let i = 0; i < 6; i++) keys.push(`p0.news.${q}.${i}`)
   // M68.5 (doc 51 v1.0 §7): the quarter's headline cards (type 'news': display only, no pause, nothing recorded) join the list
-  for (const c of CONTENT.prologue.events.cards)
-    if (c.type === 'news' && c.quarterIndex === state.quarter) keys.push(`p0.event.${c.id}.title`)
+  if (expansion)
+    for (const c of CONTENT.prologue.events.cards)
+      if (c.type === 'news' && c.quarterIndex === state.quarter) keys.push(`p0.event.${c.id}.title`)
   return keys
 }
 
