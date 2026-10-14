@@ -1,5 +1,6 @@
 // The prologue's live quarter and its report: an auto-played quarter runs by itself (a card stops
 // it); a card opens as the Act I event dialog; a decision quarter ends on its full report.
+import { poolQuarterFigures } from '../../../sim/prologue/views.ts'
 import { useEffect } from 'preact/hooks'
 import { t, tDynamic } from '../../../i18n/t.ts'
 import { prologueCard } from '../../../sim/prologue/events.ts'
@@ -342,7 +343,14 @@ export function QuarterReport({ state, act, onNew }: PrologueProps) {
             <tr data-pool-row>
               <td>{t('ui.p0.r.pool')}</td>
               <td class="g-right">
-                {t('ui.p0.r.pool_line', { fee: fmt.money(r.pool.feeUsd), paid: fmt.money(r.pool.paidMinersUsd), bills: fmt.money(r.pool.billsUsd) })}
+                {(() => {
+                  // (M71.4: under PPS the line shows the luck result and the net beside the fees; under PPLNS fees and net are the same)
+                  const f = poolQuarterFigures(r.pool, r.pool.method)
+                  const common = { paid: fmt.money(r.pool.paidMinersUsd), bills: fmt.money(r.pool.billsUsd) }
+                  return f.luckUsd === null
+                    ? t('ui.p0.r.pool_line', { fee: fmt.money(f.feeUsd), ...common })
+                    : t('ui.p0.r.pool_line_pps', { fee: fmt.money(f.feeUsd), luck: fmt.money(f.luckUsd), net: fmt.money(f.netUsd), ...common })
+                })()}
               </td>
             </tr>
           )}

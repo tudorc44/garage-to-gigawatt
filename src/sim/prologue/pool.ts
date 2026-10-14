@@ -104,7 +104,7 @@ export function openPool(s: GameState, method: 'PPLNS' | 'PPS', fee: number): Me
     outsideTh: 0,
     lastBlocks: 0,
     feeUsdQuarters: [],
-    quarter: { feeUsd: 0, paidMinersUsd: 0, billsUsd: 0, ownBtc: 0, operatorBtc: 0, blocks: 0 },
+    quarter: { feeUsd: 0, paidMinersUsd: 0, billsUsd: 0, ownBtc: 0, operatorBtc: 0, blocks: 0, operatorUsd: 0 },
     crunchQuarter: null,
   }
   delete p.poolEnded
@@ -257,6 +257,7 @@ export function ownPoolWeek(s: GameState, ownTh: number, perBlock: number, weekN
   pool.quarter.paidMinersUsd += paidBtc * w.btc_usd
   pool.quarter.ownBtc += ownBtc
   pool.quarter.operatorBtc += operator
+  pool.quarter.operatorUsd = (pool.quarter.operatorUsd ?? 0) + operator * w.btc_usd
   // luck: the last 4 weeks; an unlucky week (under half the blocks a week of this size should find) in a run under PPLNS starts a slide after 3
   pool.luck.push({ found: blocks, expected: lam })
   if (pool.luck.length > PL().outside_miners.luck_memory_weeks.value) pool.luck.shift()
@@ -359,8 +360,8 @@ export function poolQuarterEnd(s: GameState): PoolReport | undefined {
   pool.feeUsdQuarters.push(pool.quarter.feeUsd)
   if (pool.feeOverride && s.quarter >= pool.feeOverride.until) pool.feeOverride = null
   // the quarter's figures go to the report; a fresh quarter starts
-  const report: PoolReport = { ...pool.quarter, outsideTh: pool.outsideTh, reputation: pool.reputation }
-  pool.quarter = { feeUsd: 0, paidMinersUsd: 0, billsUsd: 0, ownBtc: 0, operatorBtc: 0, blocks: 0 }
+  const report: PoolReport = { ...pool.quarter, outsideTh: pool.outsideTh, reputation: pool.reputation, method: pool.method }
+  pool.quarter = { feeUsd: 0, paidMinersUsd: 0, billsUsd: 0, ownBtc: 0, operatorBtc: 0, blocks: 0, operatorUsd: 0 }
   if (s.quarter >= CONTENT.acts.find((a) => a.act === 0)!.lastQuarter) sellPool(s, 'handover')
   return report
 }

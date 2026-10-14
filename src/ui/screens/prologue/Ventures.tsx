@@ -141,7 +141,11 @@ export function Ventures(props: PrologueProps) {
                 <Tile
                   label={t('ui.p0.pool.luck')}
                   value={pool.luck === null ? '-' : fmt.pct(pool.luck)}
-                  sub={pool.unluckyRun > 0 ? t('ui.p0.pool.unlucky', { n: pool.unluckyRun }) : t('ui.p0.pool.luck_sub')}
+                  sub={
+                    pool.unluckyRun > 0
+                      ? t(pool.unluckyRun === 1 ? 'ui.p0.pool.unlucky_one' : 'ui.p0.pool.unlucky', { n: pool.unluckyRun })
+                      : t('ui.p0.pool.luck_sub')
+                  }
                   warn={pool.unluckyRun > 3}
                 />
               </div>
@@ -155,6 +159,16 @@ export function Ventures(props: PrologueProps) {
                   <tr>
                     <td>{t('ui.p0.pool.fee_income')}</td>
                     <td class="g-right">{fmt.money(pool.quarter.feeUsd)}</td>
+                  </tr>
+                  {pool.figures.luckUsd !== null && (
+                    <tr data-pool-luck>
+                      <td>{t('ui.p0.pool.luck_result')}</td>
+                      <td class="g-right">{fmt.money(pool.figures.luckUsd)}</td>
+                    </tr>
+                  )}
+                  <tr data-pool-net>
+                    <td>{t('ui.p0.pool.net')}</td>
+                    <td class="g-right">{fmt.money(pool.figures.netUsd)}</td>
                   </tr>
                   <tr>
                     <td>{t('ui.p0.pool.paid_miners')}</td>

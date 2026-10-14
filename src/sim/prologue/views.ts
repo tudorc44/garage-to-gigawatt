@@ -611,6 +611,7 @@ export function prologuePoolView(state: GameState) {
           protectedFrom: pool.protectionFrom !== null ? CONTENT.quarters[pool.protectionFrom] : null,
           boycottOpen: !!pool.boycott && state.quarter >= pool.boycott.from && state.quarter <= pool.boycott.until,
           quarter: { ...pool.quarter },
+          figures: poolQuarterFigures(pool.quarter, pool.method),
           feeHistory: [...pool.feeUsdQuarters],
           salePriceUsd: poolSalePriceUsd(pool),
         }
@@ -723,4 +724,17 @@ export function prologueClubView(state: GameState) {
         }
       : null,
   }
+}
+
+/**
+ * M71.4 (owner's playtest): a pool quarter's fee income, the luck result and the net, in dollars. Under PPLNS the operator takes the
+ * fee and nothing else, so the net is the fee and there is no luck figure; under PPS the operator carries the variance, so the
+ * luck is what the blocks brought beyond (or short of) what the miners were promised, and net = fees + luck.
+ */
+export function poolQuarterFigures(
+  q: { feeUsd: number; operatorUsd?: number },
+  method: 'PPLNS' | 'PPS' | undefined,
+): { feeUsd: number; luckUsd: number | null; netUsd: number } {
+  if (method !== 'PPS' || q.operatorUsd === undefined) return { feeUsd: q.feeUsd, luckUsd: null, netUsd: q.feeUsd }
+  return { feeUsd: q.feeUsd, luckUsd: q.operatorUsd - q.feeUsd, netUsd: q.operatorUsd }
 }

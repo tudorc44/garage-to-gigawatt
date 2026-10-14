@@ -1924,8 +1924,10 @@
           "ownBtc": 1252.5071828167327,
           "operatorBtc": 1.9821817986460801,
           "blocks": 29,
+          "operatorUsd": 13.671899849417219,
           "outsideTh": 0.0031387423914340713,
-          "reputation": 55
+          "reputation": 55,
+          "method": "PPLNS"
         }
       },
       {
@@ -1962,8 +1964,10 @@
           "ownBtc": 86.81006168976991,
           "operatorBtc": 4.134400633727614,
           "blocks": 10,
+          "operatorUsd": 41.632599175602486,
           "outsideTh": 0.010578409375708666,
-          "reputation": 60
+          "reputation": 60,
+          "method": "PPLNS"
         }
       },
       {
@@ -2005,8 +2009,10 @@
           "ownBtc": 0,
           "operatorBtc": 7.003501750875438,
           "blocks": 14,
+          "operatorUsd": 22.324567783891943,
           "outsideTh": 0.009451891160808683,
-          "reputation": 65
+          "reputation": 65,
+          "method": "PPLNS"
         }
       },
       {
@@ -2052,8 +2058,10 @@
           "ownBtc": 117.45464952852831,
           "operatorBtc": 11.831956756340528,
           "blocks": 26,
+          "operatorUsd": 62.862361695613345,
           "outsideTh": 0.015101175490649271,
-          "reputation": 50
+          "reputation": 50,
+          "method": "PPLNS"
         }
       },
       {
@@ -2095,8 +2103,10 @@
           "ownBtc": 46.99797457643777,
           "operatorBtc": 13.03677363092397,
           "blocks": 27,
+          "operatorUsd": 82.56656383951815,
           "outsideTh": 0.025397799254257784,
-          "reputation": 55
+          "reputation": 55,
+          "method": "PPLNS"
         }
       },
       {
@@ -2133,8 +2143,10 @@
           "ownBtc": 58.87824048363041,
           "operatorBtc": 13.418221096914575,
           "blocks": 28,
+          "operatorUsd": 133.4866045839001,
           "outsideTh": 0.04500490705589898,
-          "reputation": 60
+          "reputation": 60,
+          "method": "PPLNS"
         }
       },
       {
@@ -2176,8 +2188,10 @@
           "ownBtc": 0,
           "operatorBtc": 19.00950475237619,
           "blocks": 44,
+          "operatorUsd": 230.08464707353676,
           "outsideTh": 0.07846340082485526,
-          "reputation": 65
+          "reputation": 65,
+          "method": "PPLNS"
         }
       },
       {
@@ -2223,8 +2237,10 @@
           "ownBtc": 0,
           "operatorBtc": 20.510255127563788,
           "blocks": 82,
+          "operatorUsd": 801.1074412206103,
           "outsideTh": 0.16138927526359192,
-          "reputation": 70
+          "reputation": 70,
+          "method": "PPLNS"
         }
       },
       {
@@ -2266,8 +2282,10 @@
           "ownBtc": 7.6988190719870015,
           "operatorBtc": 23.935017812281636,
           "blocks": 96,
+          "operatorUsd": 2617.205929515683,
           "outsideTh": 1.4246079312805626,
-          "reputation": 75
+          "reputation": 75,
+          "method": "PPLNS"
         }
       },
       {
@@ -2309,8 +2327,10 @@
           "ownBtc": 0.8573202895961322,
           "operatorBtc": 28.255558863137047,
           "blocks": 113,
+          "operatorUsd": 3197.4025334669104,
           "outsideTh": 7.074526513245058,
-          "reputation": 80
+          "reputation": 80,
+          "method": "PPLNS"
         }
       },
       {
@@ -2352,8 +2372,10 @@
           "ownBtc": 0,
           "operatorBtc": 34.51725862931466,
           "blocks": 138,
+          "operatorUsd": 19593.108824162086,
           "outsideTh": 85.80801568556618,
-          "reputation": 85
+          "reputation": 85,
+          "method": "PPLNS"
         }
       },
       {
@@ -2395,8 +2417,10 @@
           "ownBtc": 15.200262270505247,
           "operatorBtc": 39.868007382297456,
           "blocks": 160,
+          "operatorUsd": 25789.05350843754,
           "outsideTh": 326.9008605127594,
-          "reputation": 90
+          "reputation": 90,
+          "method": "PPLNS"
         }
       },
       {
@@ -2438,8 +2462,10 @@
           "ownBtc": 21.67281343721057,
           "operatorBtc": 45.80628337138077,
           "blocks": 184,
+          "operatorUsd": 26133.428961050653,
           "outsideTh": 1087.3632205423132,
-          "reputation": 95
+          "reputation": 95,
+          "method": "PPLNS"
         }
       },
       {
@@ -2476,8 +2502,10 @@
           "ownBtc": 7.069843604372292,
           "operatorBtc": 46.95281331983421,
           "blocks": 188,
+          "operatorUsd": 23374.22981963559,
           "outsideTh": 2552.6613785800005,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2514,8 +2542,10 @@
           "ownBtc": 4.1234143535220396,
           "operatorBtc": 53.23540417562437,
           "blocks": 213,
+          "operatorUsd": 20593.9863761588,
           "outsideTh": 2788.6713087936705,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2552,8 +2582,10 @@
           "ownBtc": 0,
           "operatorBtc": 61.78089044522261,
           "blocks": 247,
+          "operatorUsd": 14089.668405952976,
           "outsideTh": 6669.351488420519,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2590,8 +2622,10 @@
           "ownBtc": 0,
           "operatorBtc": 69.78489244622311,
           "blocks": 279,
+          "operatorUsd": 16261.772065282643,
           "outsideTh": 7325.967810420342,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2633,8 +2667,10 @@
           "ownBtc": 0,
           "operatorBtc": 74.53726863431716,
           "blocks": 298,
+          "operatorUsd": 16722.74896873437,
           "outsideTh": 9619.673338655444,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2671,8 +2707,10 @@
           "ownBtc": 0,
           "operatorBtc": 79.03951975987995,
           "blocks": 316,
+          "operatorUsd": 26891.455422711355,
           "outsideTh": 10265.781201740887,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2709,8 +2747,10 @@
           "ownBtc": 0,
           "operatorBtc": 61.62857431159811,
           "blocks": 246,
+          "operatorUsd": 26440.986947471236,
           "outsideTh": 23826.245364724666,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2747,8 +2787,10 @@
           "ownBtc": 0,
           "operatorBtc": 68.29482944072979,
           "blocks": 272,
+          "operatorUsd": 41520.8121900008,
           "outsideTh": 31109.720504573983,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2794,8 +2836,10 @@
           "ownBtc": 0,
           "operatorBtc": 42.02208345654263,
           "blocks": 304,
+          "operatorUsd": 26054.387301470168,
           "outsideTh": 33421.18081964469,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       },
       {
@@ -2837,8 +2881,10 @@
           "ownBtc": 3.492757201871179,
           "operatorBtc": 36.03576796025766,
           "blocks": 286,
+          "operatorUsd": 28459.600544519504,
           "outsideTh": 53984.621578671824,
-          "reputation": 100
+          "reputation": 100,
+          "method": "PPLNS"
         }
       }
     ],

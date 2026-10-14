@@ -116,7 +116,7 @@ export interface OwnPool {
   lastBlocks: number
   /** Dollars by quarter, newest last: the operator's fee income (the sale price is its last four) and the quarter so far. */
   feeUsdQuarters: number[]
-  quarter: { feeUsd: number; paidMinersUsd: number; billsUsd: number; ownBtc: number; operatorBtc: number; blocks: number }
+  quarter: { feeUsd: number; paidMinersUsd: number; billsUsd: number; ownBtc: number; operatorBtc: number; blocks: number; operatorUsd?: number }
   /** A PPS crunch card was already raised this quarter. */
   crunchQuarter: number | null
 }
@@ -131,6 +131,9 @@ export interface PoolReport {
   blocks: number
   outsideTh: number
   reputation: number
+  /** M71.4: the operator's take at each week's price (fees, and under PPS the luck on top), and the payout method; absent in older saves. */
+  operatorUsd?: number
+  method?: 'PPLNS' | 'PPS'
 }
 
 /** The mining club (M70.4, doc 51 v1.2 §4). Absent from a game that never joins it. */
