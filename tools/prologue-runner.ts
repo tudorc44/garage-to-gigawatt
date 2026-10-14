@@ -422,6 +422,8 @@ lines.push(
 const FEATURE_PAIRS: { feature: string; base: string; withFeature: string }[] = [
   { feature: 'altcoins', base: 'sell-as-mined', withFeature: 'sell-as-mined-scrypt' },
   { feature: 'pool', base: 'sell-as-mined', withFeature: 'pool-operator' },
+  { feature: 'club', base: 'sell-as-mined', withFeature: 'club-bot' },
+  { feature: 'club (trusting)', base: 'sell-as-mined', withFeature: 'club-trusting' },
 ]
 for (const f of FEATURE_PAIRS) {
   if (!PROLOGUE_BOTS[f.withFeature]) continue
@@ -475,6 +477,22 @@ if (poolExtras.length > 0) {
     `${gained}/${po2.length} (${((gained / (po2.length || 1)) * 100).toFixed(0)}%); median share ${(median(po2.map((r) => Number(r.shareBoycottFrom))) * 100).toFixed(3)}% → ${(median(po2.map((r) => Number(r.shareBoycottTo))) * 100).toFixed(3)}%`,
   )
   for (const bot of ['pool-operator', 'pps-operator', 'pool-and-scrypt'] as const) {
+    const rs = of(bot)
+    if (rs.length === 0) continue
+    lines.push(`      ${bot}: Plan phases median ${median(rs.map((r) => r.planPhases))} (max ${Math.max(...rs.map((r) => r.planPhases))}), cards needing a choice median ${median(rs.map((r) => r.cardsShown))} (max ${Math.max(...rs.map((r) => r.cardsShown))}; target ≤ 14 and ≤ 30), prologue net worth median ${usd(median(rs.map((r) => r.prologueUsd)))}`)
+  }
+}
+// ---------- M70.6 (doc 51 v1.2 §4): the club's checks ----------
+if (of('club-bot').length > 0) {
+  const cb = of('club-bot')
+  const pg = of('group-solo')
+  const ratio5 = median(cb.map((r) => r.prologueUsd)) / median(pg.map((r) => r.prologueUsd))
+  check(
+    ratio5 >= 0.8 && ratio5 <= 1.5,
+    'X-B5 the club bot ends at 0.8-1.5× a solo group-buy player (the group-solo bot: sell-as-mined with its own group-buy unit; mine, reversible)',
+    `${x(ratio5)} (club-bot median ${usd(median(cb.map((r) => r.prologueUsd)))} vs group-solo ${usd(median(pg.map((r) => r.prologueUsd)))}; vs sell-as-mined ${usd(median(of('sell-as-mined').map((r) => r.prologueUsd)))})`,
+  )
+  for (const bot of ['club-bot', 'club-trusting', 'club-all'] as const) {
     const rs = of(bot)
     if (rs.length === 0) continue
     lines.push(`      ${bot}: Plan phases median ${median(rs.map((r) => r.planPhases))} (max ${Math.max(...rs.map((r) => r.planPhases))}), cards needing a choice median ${median(rs.map((r) => r.cardsShown))} (max ${Math.max(...rs.map((r) => r.cardsShown))}; target ≤ 14 and ≤ 30), prologue net worth median ${usd(median(rs.map((r) => r.prologueUsd)))}`)
