@@ -201,6 +201,66 @@ for nk, nv in new.items():
     if not nk.startswith('p0.event.') and nk not in out: out[nk] = nv
 write(TEXT, json.dumps(out, indent=2, ensure_ascii=False) + '\n')
 
+# ---- M70.3 (doc 51 v1.2 §11 item 3): the club's 7 cards and 3 text keys, the same way
+CLUB_TEXT = ['tooltip.p0.club', 'chapter.p0.club_buyout', 'chapter.p0.club_dissolved']
+club_cards = [c for c in json.load(open(f'{PACK}/events_prologue_expansion.json'))['events'] if c['id'].startswith('club_')]
+assert len(club_cards) == 7, len(club_cards)
+CLUB_GAME = {  # id: (type, extra fields, default, [(choice id, effects)])
+    # club_form is the offer: in the game it is a headline (type 'news': display only, so a game that never joins is unchanged);
+    # the joining itself is the action P0_JOIN_CLUB in 2013Q1's Plan phase, from the Ventures screen (mine, reversible)
+    'club_form': ('news', {'quarter': '2013Q1'}, 'noted', [('noted', {})]),
+    'club_power_bill': ('random', {'requires': ['club_member'], 'from': '2013Q2', 'weight': 1}, 'argue',
+                        [('split', {'club': {'cost_split': 'shares'}}), ('pay', {'cash': 'club_power_quarter'}), ('argue', {'club': {'dispute': True}})]),
+    'club_peak_cashout': ('scripted', {'quarter': '2013Q4', 'week_of': '2013-12-02', 'requires': ['club_member']}, 'wait',
+                          [('buy_out', {'club': {'buy_out': 'teo'}}), ('let_sell', {'club': {'member_sells': 'teo'}}),
+                           ('wait', {'club': {'refuse': 'teo', 'friendship': -1}})]),
+    'club_gpu_flip': ('scripted', {'quarter': '2014Q1', 'week_of': '2014-03-03', 'requires': ['club_member']}, 'keep',
+                      [('sell', {'club': {'sell_gpus_mult': 1.5}}), ('keep', {})]),
+    'club_scrypt_box': ('scripted', {'quarter': '2014Q2', 'requires': ['club_member']}, 'pass',
+                        [('buy', {'club': {'preorder': 'scrypt_box_share'}}), ('pass', {})]),
+    'club_cloud_contract': ('random', {'requires': ['club_member'], 'quarters': ['2014Q3', '2014Q4'], 'weight': 1}, 'pass',
+                            [('invest', {'club': {'cloud_contract': True}}), ('pass', {})]),
+    'club_breakup': ('scripted', {'quarter': '2015Q1', 'requires': ['club_member']}, 'carry_on',
+                     [('buy_out', {'club': {'end': 'buy_out'}}), ('dissolve', {'club': {'end': 'dissolve'}}), ('carry_on', {})]),
+}
+p = f'{DOCS}/events_prologue.json'; s = read(p)
+if '"club_form"' not in s:
+    k = s.index('\n ],\n "offers"')
+    write(p, s[:k] + ',\n' + ',\n'.join('  ' + jl(c) for c in club_cards) + s[k:])
+p = f'{DOCS}/text_prologue.en.json'; d = json.loads(read(p))
+for k in CLUB_TEXT: d.setdefault(k, text[k])
+write(p, json.dumps(d, indent=1, ensure_ascii=False) + '\n')
+p = f'{GAME}/events_prologue.json'; s = read(p)
+if '"club_form"' not in s:
+    lines_ = []
+    for c in club_cards:
+        typ, extra, default, choices = CLUB_GAME[c['id']]
+        extra = dict(extra)
+        if typ in ('scripted', 'news') and 'week_of' not in extra:
+            extra['week_of'] = first_week[extra['quarter']]  # a card with no week takes its quarter's first
+        lines_.append('  ' + jl({'id': c['id'], 'type': typ, **extra, 'default': default, 'choices': [{'id': i, 'effects': e} for i, e in choices]}))
+    body = s.rstrip(); tail = '\n ]\n}'
+    assert body.endswith(tail)
+    write(p, body[:-len(tail)] + ',\n' + ',\n'.join(lines_) + tail + '\n')
+d = json.loads(read(TEXT))
+new = {}
+for c in club_cards:
+    new[f'p0.event.{c["id"]}.title'] = c['title']
+    new[f'p0.event.{c["id"]}.body'] = c['body']
+    if CLUB_GAME[c['id']][0] != 'news':
+        for (cid, _), pc in zip(CLUB_GAME[c['id']][3], c['choices']): new[f'p0.event.{c["id"]}.choice.{cid}'] = pc['label']
+for k in CLUB_TEXT: new[k] = text[k]
+out = {}
+last_event = max(i for i, k in enumerate(d) if k.startswith('p0.event.'))
+for i, (k, v) in enumerate(d.items()):
+    out[k] = v
+    if i == last_event:
+        for nk, nv in new.items():
+            if nk.startswith('p0.event.') and nk not in d: out[nk] = nv
+for nk, nv in new.items():
+    if not nk.startswith('p0.event.') and nk not in out: out[nk] = nv
+write(TEXT, json.dumps(out, indent=2, ensure_ascii=False) + '\n')
+
 # ---- the README's log
 p = f'{PACK}/README.md'; s = read(p)
 if '## Merge log (M68.3:' not in s:
@@ -222,5 +282,14 @@ if '## Merge log (M69.2' not in s:
 - The game's copies carry the same in the game's format: `src/content/events_prologue.json` and `src/i18n/content.en.json`. New card type `trigger` (a card the pool system queues itself when its rule fires: pool_ddos, pool_theft, pool_pps_crunch); pool_boycott_2014 is a scripted card and pool_sale_offer a random one, both with `requires: pool_open` (mine, reversible: the pack's trigger strings became fields). New effect key `pool{...}`. Defaults: ride the DDoS out, repay the miners after a theft, keep paying under a PPS crunch, keep your fee in the boycott, keep the pool on a sale offer (mine, reversible).
 - `glossary.hot_wallet` already existed in both text files with its own wording, so the merge kept it (it never replaces); the other 7 keys are the pack's.
 - The club_ cards, `club.json` and `preorders_additions.json` are still not merged.
+''')
+s = read(p)
+if '## Merge log (M70.3' not in s:
+    write(p, s.rstrip('\n') + '''
+
+## Merge log (M70.3: doc 51 v1.2 §11 item 3, the mining club; `tools/prologue/gen_content.py` and `merge_alts.py`)
+- `club.json` and `preorders_additions.json` are also written to `src/content/` (identical; the game reads them through `clubFileSchema` and `preordersAdditionsFileSchema`).
+- `docs/prologue-content/`: `events_prologue.json` (the 7 club_ cards), `text_prologue.en.json` (3 keys: tooltip.p0.club, chapter.p0.club_buyout, chapter.p0.club_dissolved).
+- The game's copies carry the same in the game's format: `src/content/events_prologue.json` and `src/i18n/content.en.json`. The cards: `club_form` (the offer: a headline of type `news` in the game, display only, so a game that never joins is unchanged; the joining itself is the action `P0_JOIN_CLUB` in 2013Q1's Plan phase, from the Ventures screen), `club_power_bill` (random, from 2013Q2), `club_peak_cashout`, `club_gpu_flip`, `club_scrypt_box`, `club_breakup` (scripted, `requires: club_member`, a card with no week takes its quarter's first) and `club_cloud_contract` (random in 2014Q3-Q4). New effect key `club{}`; `cash` may be the named amount `club_power_quarter` (mine, reversible). The default answers are the cautious ones: argue, wait, keep, pass, pass, carry on (mine, reversible).
 ''')
 print('merge ok')

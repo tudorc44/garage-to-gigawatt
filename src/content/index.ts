@@ -11,6 +11,8 @@ import marketPrologueRaw from './market_weekly_prologue.json' with { type: 'json
 import marketPrologueAltsRaw from './market_weekly_prologue_alts.json' with { type: 'json' }
 import marketQuarterlyPrologueAltsRaw from './market_quarterly_prologue_alts.json' with { type: 'json' }
 import poolsPlayerRaw from './pools_player.json' with { type: 'json' }
+import clubRaw from './club.json' with { type: 'json' }
+import preordersAdditionsRaw from './preorders_additions.json' with { type: 'json' }
 import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
 import capitalAct2Raw from './capital_act2.json' with { type: 'json' }
@@ -134,6 +136,10 @@ import {
   marketQuarterlyPrologueAltsSchema,
   poolsPlayerFileSchema,
   type PoolsPlayerFile,
+  clubFileSchema,
+  type ClubFile,
+  preordersAdditionsFileSchema,
+  type PreordersAdditionsFile,
   type marketWeekPrologueAltsSchema,
   marketAct5Schema,
   marketQuarterlyAct5Schema,
@@ -734,6 +740,8 @@ export interface Content {
     alts?: { weekly: Record<number, PrologueAltWeek[]> }
     /** M69.2: your own pool's rules (pools_player.json), absent without the file. */
     pool?: PoolsPlayerFile
+    /** M70.3: the mining club's rules and its scrypt-box vendor, absent without the files. */
+    club?: { rules: ClubFile; boxVendor: PreordersAdditionsFile['vendors'][number] }
   }
   /** Community Heat rules (heat.json). */
   heat: HeatRules
@@ -824,6 +832,9 @@ export interface RawContent {
   marketQuarterlyPrologueAlts?: unknown
   /** M69.2 (doc 51 v1.1 §3): the Prologue's own pool (pools_player.json). Optional: without it there is no pool. */
   poolsPlayer?: unknown
+  /** M70.3 (doc 51 v1.2 §4): the Prologue's mining club (club.json) and its scrypt-box share (preorders_additions.json). Optional. */
+  club?: unknown
+  preordersAdditions?: unknown
   /** The four Act III scenarios' market files (M11.1): quarterly (market_sN) and weekly. */
   act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
   /** The four Act IV futures' market files (M27.3). Optional: without them the timeline ends at 2030Q4. */
@@ -933,6 +944,9 @@ export function parseContent(raw: RawContent): Content {
   let prologueAlts: { weekly: Record<number, PrologueAltWeek[]> } | undefined
   const poolsPlayerFile =
     raw.poolsPlayer === undefined ? undefined : check('pools_player.json', poolsPlayerFileSchema, raw.poolsPlayer)
+  const clubFile = raw.club === undefined ? undefined : check('club.json', clubFileSchema, raw.club)
+  const preordersAdditionsFile =
+    raw.preordersAdditions === undefined ? undefined : check('preorders_additions.json', preordersAdditionsFileSchema, raw.preordersAdditions)
   const marketAct2Rows = check(
     'market_weekly_act2',
     marketAct2Schema,
@@ -2603,6 +2617,9 @@ export function parseContent(raw: RawContent): Content {
       events: prologueEvents,
       ...(prologueAlts ? { alts: prologueAlts } : {}),
       ...(poolsPlayerFile ? { pool: poolsPlayerFile } : {}),
+      ...(clubFile && preordersAdditionsFile?.vendors[0]
+        ? { club: { rules: clubFile, boxVendor: preordersAdditionsFile.vendors[0] } }
+        : {}),
     },
     auction,
     curtailment,
@@ -3033,6 +3050,8 @@ export const CONTENT: Content = parseContent({
   marketPrologueAlts: marketPrologueAltsRaw,
   marketQuarterlyPrologueAlts: marketQuarterlyPrologueAltsRaw,
   poolsPlayer: poolsPlayerRaw,
+  club: clubRaw,
+  preordersAdditions: preordersAdditionsRaw,
   act3Scenarios: {
     s0: { quarterly: marketS0Raw, weekly: marketWeeklyS0Raw },
     s1: { quarterly: marketS1Raw, weekly: marketWeeklyS1Raw },

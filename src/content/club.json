@@ -1,0 +1,103 @@
+{
+ "schema_version": 1,
+ "notes": "The mining club (doc 51 v1.0 §4). Three invented friends; the club buys into the existing group buy (preorders.json group_buy) and runs Teo's two GPUs. Designed [D]; the backdrop cards are sourced.",
+ "offer": {
+  "card": "club_form",
+  "quarter": "2013Q1",
+  "join_bandwidth": 1
+ },
+ "cast": [
+  {
+   "id": "mara",
+   "name": "Mara Ilves",
+   "role": "electrical engineering student; watches the wiring"
+  },
+  {
+   "id": "teo",
+   "name": "Teo Brandt",
+   "role": "gamer; brings two 2010-class GPUs"
+  },
+  {
+   "id": "jun",
+   "name": "Jun Okafor",
+   "role": "economics student; keeps the spreadsheet and, if asked, the keys"
+  }
+ ],
+ "friends_cash_usd": {
+  "value": 3000,
+  "grade": "D",
+  "source": "the three together"
+ },
+ "player_contribution_usd": {
+  "min": 500,
+  "max": 5000,
+  "step": 500,
+  "grade": "D"
+ },
+ "teo_gpus": {
+  "model": "gpu_gaming_2010",
+  "count": 2,
+  "valued_at": "used price at joining",
+  "grade": "D"
+ },
+ "shares": "by value put in (cash plus Teo's GPUs at used price)",
+ "buys": {
+  "vendor": "group_buy",
+  "how": "all pooled cash goes into the group buy at its price; its delay roll and the late-equals-loss rule apply"
+ },
+ "keys": {
+  "choice": [
+   "player",
+   "jun"
+  ],
+  "player": "club coins sit in your wallet: your wallet-loss and backup rules cover them",
+  "jun": {
+   "loss_chance_quarter": {
+    "value": 0.015,
+    "grade": "D",
+    "source": "no failure-rate source found (doc 53 Part C); about 15% over the club life"
+   },
+   "loss_share": {
+    "value": [
+     0.3,
+     1.0
+    ],
+    "grade": "D",
+    "source": "doc 53 range"
+   }
+  }
+ },
+ "hosting": {
+  "choice": [
+   "your_place",
+   "friends_flat"
+  ],
+  "your_place": {
+   "counts_against_household_patience": true,
+   "fee_from_club_usd_kw_quarter": {
+    "value": 60,
+    "grade": "D",
+    "source": "no hobbyist hosting price found"
+   }
+  },
+  "friends_flat": {
+   "counts_against_household_patience": false,
+   "fee_to_mara_usd_kw_quarter": {
+    "value": 60,
+    "grade": "D",
+    "source": "same"
+   }
+  }
+ },
+ "gpus_coin": "the club's GPUs follow the coin the player picks for them (BTC, LTC or DOGE)",
+ "endings": {
+  "early": "card club_breakup (2015Q1 or later)",
+  "at_handover": [
+   "buy_out",
+   "dissolve"
+  ],
+  "buy_out": "pay each friend their share at 2016Q4 value; machines and coins become yours and enter Act I",
+  "dissolve": "machines sold at the used price, coins at the 2016Q4 price, everything split by shares",
+  "chapter_report": "Act I names the friends as the founding crew if bought out (text only)"
+ }
+}

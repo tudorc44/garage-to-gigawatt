@@ -6,6 +6,8 @@ import {
   marketPrologueAltsSchema,
   marketQuarterlyPrologueAltsSchema,
   poolsPlayerFileSchema,
+  clubFileSchema,
+  preordersAdditionsFileSchema,
 } from '../src/content/schemas.ts'
 import weekly from '../src/content/market_weekly_prologue_alts.json' with { type: 'json' }
 import quarterly from '../src/content/market_quarterly_prologue_alts.json' with { type: 'json' }
@@ -21,7 +23,7 @@ describe('the altcoin content merged into the Prologue files (M68.3)', () => {
   const pack = json('../docs/prologue-expansion-content/events_prologue_expansion.json').events as { id: string; type: string; week: string | null; trigger: string }[]
   const altIds = pack.filter((c) => !/^(pool|club)_/.test(c.id)).map((c) => c.id)
 
-  it('17 altcoin cards, and no club cards (the 5 pool cards are checked below)', () => {
+  it('17 altcoin cards (the pool and club cards are checked below)', () => {
     expect(altIds.length).toBe(17)
     const docs = json('../docs/prologue-content/events_prologue.json').events as { id: string }[]
     const game = json('../src/content/events_prologue.json').cards as { id: string; type: string }[]
@@ -29,7 +31,6 @@ describe('the altcoin content merged into the Prologue files (M68.3)', () => {
       expect(docs.map((c) => c.id), id).toContain(id)
       expect(game.map((c) => c.id), id).toContain(id)
     }
-    expect([...docs, ...game].filter((c) => /^club_/.test(c.id))).toEqual([])
   })
 
   it('the game\'s news cards are display only; scrypt_boxes_ship needs a GPU on scrypt and sells them', () => {
@@ -124,6 +125,50 @@ describe('your own pool: data and cards (M69.2)', () => {
         expect(docs[k], k).toBeTruthy()
         continue
       }
+      expect(game[k], k).toBe(pack[k])
+      expect(docs[k], k).toBe(pack[k])
+    }
+  })
+})
+
+describe('the mining club: data and cards (M70.3)', () => {
+  const json = (path: string) => JSON.parse(read(path))
+  const CLUB_IDS = ['club_form', 'club_power_bill', 'club_peak_cashout', 'club_gpu_flip', 'club_scrypt_box', 'club_cloud_contract', 'club_breakup']
+
+  it('club.json and preorders_additions.json are identical live copies, and pass their schemas', () => {
+    for (const name of ['club.json', 'preorders_additions.json'])
+      expect(read(`../src/content/${name}`), name).toBe(read(`../docs/prologue-expansion-content/${name}`))
+    const club = clubFileSchema.parse(json('../src/content/club.json'))
+    expect(club.player_contribution_usd).toMatchObject({ min: 500, max: 5000, step: 500 })
+    expect(club.friends_cash_usd.value).toBe(3000)
+    expect(club.keys.jun.loss_chance_quarter.value).toBe(0.015)
+    const vendors = preordersAdditionsFileSchema.parse(json('../src/content/preorders_additions.json')).vendors
+    expect(vendors[0]).toMatchObject({ id: 'scrypt_box_share', share_of_unit: 0.25 })
+    expect(vendors[0].price_usd.value).toBe(2499)
+  })
+
+  it('the 7 club cards are in the docs file (pack format) and the game file (the game\'s format), each with its text', () => {
+    const docs = json('../docs/prologue-content/events_prologue.json').events as { id: string }[]
+    const game = json('../src/content/events_prologue.json').cards as { id: string; type: string; requires?: string[]; default: string; choices: { id: string }[] }[]
+    const text = json('../src/i18n/content.en.json') as Record<string, string>
+    for (const id of CLUB_IDS) {
+      expect(docs.map((c) => c.id), id).toContain(id)
+      const g = game.find((c) => c.id === id)!
+      expect(g, id).toBeDefined()
+      expect(g.choices.map((c) => c.id), id).toContain(g.default)
+      expect(text[`p0.event.${id}.title`], id).toBeTruthy()
+      if (g.type !== 'news') for (const ch of g.choices) expect(text[`p0.event.${id}.choice.${ch.id}`], `${id}.${ch.id}`).toBeTruthy()
+    }
+    // every card but the offer needs club membership; the offer is a headline (display only: opt-out invariance)
+    expect(game.filter((c) => CLUB_IDS.includes(c.id) && c.id !== 'club_form').every((c) => c.requires?.includes('club_member'))).toBe(true)
+    expect(game.find((c) => c.id === 'club_form')).toMatchObject({ type: 'news', quarter: '2013Q1' })
+  })
+
+  it('the 3 club text keys match the pack in both text files', () => {
+    const pack = json('../docs/prologue-expansion-content/text_prologue_expansion.en.json') as Record<string, string>
+    const game = json('../src/i18n/content.en.json') as Record<string, string>
+    const docs = json('../docs/prologue-content/text_prologue.en.json') as Record<string, string>
+    for (const k of ['tooltip.p0.club', 'chapter.p0.club_buyout', 'chapter.p0.club_dissolved']) {
       expect(game[k], k).toBe(pack[k])
       expect(docs[k], k).toBe(pack[k])
     }

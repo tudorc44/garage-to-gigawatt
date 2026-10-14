@@ -27,6 +27,7 @@ import { answerHousehold, attendConference, conferenceNow } from './life.ts'
 import { placePreorder } from './preorders.ts'
 import { hasScryptGpus, loseAltWallet, sellScryptGpus } from './alts.ts'
 import { applyPoolEffect, poolRiskCards } from './pool.ts'
+import { applyClubEffect, payClubPowerBill } from './club.ts'
 import { P, householdTier, isDecisionQuarterFor, rollStream } from './setup.ts'
 
 const W = () => BALANCE.weeksPerQuarter
@@ -245,10 +246,13 @@ function applyChoice(s: GameState, card: PrologueCard, choiceId: string): void {
     p0Choice: `${card.id}.choice.${choiceId}`,
   })
   if (fx.flag && !p.flags.includes(fx.flag)) p.flags.push(fx.flag)
-  if (fx.cash) {
+  if (typeof fx.cash === 'number' && fx.cash) {
     book(s, oneOffCategory(fx.cash), fx.cash)
     roundCash(s)
   }
+  // (a named amount: the club's power bill, M70.4)
+  if (fx.cash === 'club_power_quarter') payClubPowerBill(s, 'player')
+  if (fx.club) applyClubEffect(s, fx.club)
   if (fx.household_patience && p.livingAtHome)
     p.patience = Math.max(
       0,
