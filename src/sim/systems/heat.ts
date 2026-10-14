@@ -115,10 +115,14 @@ export function loadHeat(
       if (p.siteId === site.id && p.stage === 'live')
         runningKw += p.kw * BALANCE.projects.aiHeatShare
   }
+  // A site whose power is all sold (Act V SELL_SITE_POWER) has no capacity: no load, not 0 ÷ 0 = NaN.
+  const cap = capacityKw(site)
   const raw =
     tier.id === 'garage'
       ? perUnit
-      : tier.heat_load_max * Math.min(1, runningKw / capacityKw(site))
+      : cap > 0
+        ? tier.heat_load_max * Math.min(1, runningKw / cap)
+        : 0
   return raw * growthMult(site)
 }
 
