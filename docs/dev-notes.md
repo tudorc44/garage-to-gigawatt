@@ -11,6 +11,20 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M71: licensed prices, renames, the Prologue expansion behind the flag, the M70 fixes and the balance pass (doc 51 v1.4 §14-§15, doc 43 §0.28) (branch `m71` from `main` at `95929aa`, M70 merged as PR #41)
+
+Split (docs 55 and 57, `research-2/` and `research-3/` moved out of `docs/prologue-content/`; docs 43 and 51 copied from the design thread's files, diffs checked):
+- M71.0 docs
+- M71.1 (A) renames (Kestrel Foundry, Nell Hartigan, Slagwheel) and the dev flag over altcoins, pool and club
+- M71.2 (B) port the generator changes, regenerate, schemas
+- M71.3 (C) sim changes: LTC from 2011-10-24, real volume limits, the boycott as a bump, DDoS, PPS insolvency floor, friendship, pool_sale_offer pauses, later-price clause, credit line
+- M71.4 (D) pool report fixes (luck and net under PPS, plural)
+- M71.5 (E) Act V: Perfect answers the complaint interrupt; heat report; `--act5`
+- M71.6 (F) block-header data tool
+- M71.7 (G) balance pass: `--prologue`, levers only if X-B2 or X-B7 (pool) misses
+- M71.8 (H) final checks: `--act2 --act3`, goldens
+- (mine, reversible) docs 43, 51, 55, 57 were copied with `cp` (byte-exact) rather than Read and Write.
+
 ## M70: the mining club (doc 51 §4), PPS insolvency (doc 51 §13) and the Heat habit check (doc 43 §0.27) (branch `m70` from `main` at `3918d3e`, M69 merged as PR #40)
 
 Split (docs 43 §0.27 and 51 v1.2 §13 are in the repo):

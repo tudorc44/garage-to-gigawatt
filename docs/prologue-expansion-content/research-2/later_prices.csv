@@ -1,0 +1,7 @@
+coin,date,usd_close,grade,source
+LTC,2017-12-31,232.10,C,CoinLore yearly close (BeInCrypto/Yahoo gives 225)
+LTC,2021-12-31,146.41,C,CoinLore yearly close
+LTC,2025-12-31,76.87,C,CoinLore yearly close (latest full year)
+DOGE,2017-12-31,0.00897,C,CoinLore yearly close
+DOGE,2021-12-31,0.1708,C,CoinLore yearly close (CoinScreener also 0.17)
+DOGE,2025-12-31,0.1174,C,CoinLore yearly close (latest full year)

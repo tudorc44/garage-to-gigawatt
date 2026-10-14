@@ -1,0 +1,61 @@
+item,year,value,unit,grade,source
+btc_top5_pool_share,2011,6.77,pct_of_network_hashrate,B,S13 (likely understated - data coverage)
+btc_top5_pool_share,2012,33.2,pct_of_network_hashrate,B,S13
+btc_top5_pool_share,2013,60.22,pct_of_network_hashrate,B,S13
+btc_top5_pool_share,2014,66.03,pct_of_network_hashrate,B,S13
+btc_top5_pool_share,2015,66.29,pct_of_network_hashrate,B,S13
+btc_top5_pool_share,2016,74.05,pct_of_network_hashrate,B,S13
+btc_identified_pool_count,2011,8,pools,B,S13
+btc_identified_pool_count,2012,15,pools,B,S13
+btc_identified_pool_count,2013,23,pools,B,S13
+btc_identified_pool_count,2014,33,pools,B,S13
+btc_identified_pool_count,2015,43,pools,B,S13
+btc_identified_pool_count,2016,36,pools,B,S13
+btc_small_pool_share_outside_top5_excl_solo,2011,10,pct_of_network_hashrate,D,S1 (solo mining dominant; Deepbit majority not in S13)
+btc_small_pool_share_outside_top5_excl_solo,2012,15,pct_of_network_hashrate,D,S1
+btc_small_pool_share_outside_top5_excl_solo,2013,25,pct_of_network_hashrate,C,S13 minus est. 15pp solo/unknown
+btc_small_pool_share_outside_top5_excl_solo,2014,26,pct_of_network_hashrate,C,S13 minus est. 8pp solo/unknown
+btc_small_pool_share_outside_top5_excl_solo,2015,30,pct_of_network_hashrate,C,S13 minus est. 3pp solo/unknown
+btc_small_pool_share_outside_top5_excl_solo,2016,24,pct_of_network_hashrate,C,S13 minus est. 2pp solo/unknown
+btc_avg_pool_fee_size_weighted,2011,3.87,pct,B,S13
+btc_avg_pool_fee_size_weighted,2012,3.48,pct,B,S13
+btc_avg_pool_fee_size_weighted,2013,3.03,pct,B,S13
+btc_avg_pool_fee_size_weighted,2014,1.61,pct,B,S13
+btc_avg_pool_fee_size_weighted,2015,2.24,pct,B,S13
+btc_avg_pool_fee_size_weighted,2016,1.12,pct,B,S13
+pool_vps_cost,2011,20,usd_per_month,D,S1
+pool_vps_cost,2012,20,usd_per_month,D,S1
+pool_vps_cost,2013,20,usd_per_month,D,S1
+pool_vps_cost,2014,15,usd_per_month,D,S1
+pool_vps_cost,2015,10,usd_per_month,D,S1
+pool_vps_cost,2016,10,usd_per_month,D,S1
+pool_dedicated_server_cost,2011,100,usd_per_month,D,S1
+pool_dedicated_server_cost,2012,90,usd_per_month,D,S1
+pool_dedicated_server_cost,2013,80,usd_per_month,D,S1
+pool_dedicated_server_cost,2014,75,usd_per_month,D,S1
+pool_dedicated_server_cost,2015,60,usd_per_month,D,S1
+pool_dedicated_server_cost,2016,50,usd_per_month,D,S1
+pool_ddos_protection_cost,2011,50,usd_per_month,D,S1;S16
+pool_ddos_protection_cost,2012,50,usd_per_month,D,S1;S16
+pool_ddos_protection_cost,2013,100,usd_per_month,D,S1;S16
+pool_ddos_protection_cost,2014,100,usd_per_month,D,S1;S14
+pool_ddos_protection_cost,2015,75,usd_per_month,D,S1;S14
+pool_ddos_protection_cost,2016,50,usd_per_month,D,S1
+ddos_attacks_on_btc_services_may2011_oct2013,2013,142,attacks_on_40_services,A,S16
+ddos_ransom_demand_cex_ghash,2014,2,btc,B,S14 (Oct 2014)
+ddos_ransom_demand_cex_ghash,2015,5-10,btc,B,S14 (Mar 2015)
+ddos_protection_reference_x4b,2021,20,usd_per_month_plus_traffic,C,S17 (outside period)
+ghash_share_peak_jun2014,2014,55,pct_of_network_hashrate,B,Jon Matonis CoinDesk 17 Jul 2014 (2014-06-12 11:53 to 2014-06-13 09:45 GMT)
+ghash_share_after_exodus_jun2014,2014,30,pct_of_network_hashrate,B,CoinDesk 20 Jun 2014 (just over 30%); TechCrunch 16 Jul 2014 (31%)
+ghash_exodus_duration,2014,8,days_from_55pct_peak_to_about_30pct,B,Matonis CoinDesk 17 Jul 2014; CoinDesk 20 Jun 2014
+ghash_self_cap_pledge,2014,39.99,pct_max,B,GHash.IO statement via CoinDesk and TechCrunch 16 Jul 2014
+ghash_exodus_share_to_small_pools,2014,4,pct_points_of_network,D,S1 (one third of 12-13pp outflow)
+ghash_exodus_small_pool_persistence,2014,8,weeks_decay_to_plus1pp,D,S1
+ghash_jan2014_precedent_drop,2014,42 to 38,pct_within_one_day,B,S14
+pool_sale_slush_to_braiins,2013,majority stake; terms undisclosed,deal,A,S18
+pool_equity_raise_scryptbox_round1,2014,20000 shares at 0.0015,btc_per_share,C,S19
+pool_equity_raise_scryptbox_round2,2014,15000 shares at 0.0025,btc_per_share,C,S19
+pool_closure_btcguild_share_at_close,2015,3,pct_max_of_network,C,ViaBTC blog
+ltc_avg_daily_volume,2011,2000,usd_per_day,D,S1 (not found; scaled from CoinLore 2013 avg 295.9K by market cap)
+ltc_avg_daily_volume,2012,1000,usd_per_day,D,S1 (not found)
+ltc_avg_daily_volume_reference,2013,295900,usd_per_day,C,S2 (Apr 28-Dec 31 coverage)
