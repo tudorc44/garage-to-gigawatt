@@ -36,6 +36,11 @@ export default defineConfig({
                 String.raw`src[\\/]content[\\/]market_(weekly_v|v|v_chips)_v${n}\.json`,
               ),
             })),
+            // M68.4: the Prologue's Litecoin and Dogecoin series, their own file so 'market' stays under 500 KB.
+            {
+              name: 'market-prologue-alts',
+              test: /src[\\/]content[\\/]market_(weekly|quarterly)_prologue_alts\.json/,
+            },
             {
               name: 'market',
               test: /src[\\/]content[\\/]market_[^\\/]*\.json/,

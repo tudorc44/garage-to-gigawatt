@@ -15,6 +15,7 @@ import {
 } from '../state.ts'
 import { saleValueUsd } from '../systems/machines.ts'
 import { capacityKw, powerPriceUsdKwh } from '../systems/sites.ts'
+import { altValueUsd } from './alts.ts'
 import type { CoinAmounts, PrologueState } from './types.ts'
 
 export const P = () => CONTENT.prologue.rules
@@ -70,6 +71,16 @@ export const poolsOpen = (quarter: number) => label(quarter) >= P().pools.from
 export const isDecisionQuarter = (quarter: number) =>
   P().decision_quarters.includes(label(quarter))
 
+/**
+ * The game's own decision-quarter test (M68.4, doc 51 v1.0 §2.2): the listed quarters, plus an opt-in quarter (2014Q3) when
+ * its condition holds, which is a GPU on scrypt. A game that never points a GPU at an altcoin keeps its 13.
+ */
+export function isDecisionQuarterFor(state: GameState, quarter: number): boolean {
+  if (isDecisionQuarter(quarter)) return true
+  const need = P().opt_in_decision_quarters[label(quarter)]
+  return need === 'scrypt_gpus' && state.machines.some((l) => !!l.altCoin)
+}
+
 /** Bandwidth each prologue quarter: 2, +1 once you've moved out; minus a card's cost next quarter. */
 export function prologueBandwidth(state: GameState): number {
   const s = P().start
@@ -101,7 +112,7 @@ export function netWorthUsd(state: GameState, w: MarketWeek): number {
     (usd, l) => usd + saleValueUsd(l, l.count, state.quarter),
     0,
   )
-  return state.cash + coins + machines
+  return state.cash + coins + machines + altValueUsd(state, w)
 }
 
 /**

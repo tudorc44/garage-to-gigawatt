@@ -268,6 +268,48 @@ export const marketQuarterAct4Schema = z.object({
 export const marketQuarterlyAct4Schema = z.array(marketQuarterAct4Schema).min(1)
 export type MarketQuarterAct4Row = z.output<typeof marketQuarterAct4Schema>
 
+// ---------- the Prologue's altcoin series (M68.2, doc 51 v1.0 §5; generated from the two *_prologue_alts.csv files) ----------
+// Empty before a coin exists (LTC from 2011Q4, DOGE from 2013Q4), so null.
+
+export const marketWeekPrologueAltsSchema = z.object({
+  week: isoDate,
+  quarter: quarterId,
+  ltc_usd: nullableNonNeg,
+  ltc_hashrate_GHs: nullableNonNeg,
+  ltc_block_reward: nullableNonNeg,
+  ltc_rev_usd_khs_day: nullableNonNeg,
+  doge_usd: nullableNonNeg,
+  doge_hashrate_GHs: nullableNonNeg,
+  doge_block_reward_expected: nullableNonNeg,
+  doge_rev_usd_khs_day: nullableNonNeg,
+  doge_merged_mining: z.boolean().nullable(),
+  estimate: z.boolean(),
+})
+export const marketPrologueAltsSchema = z.array(marketWeekPrologueAltsSchema).min(1)
+
+export const marketQuarterPrologueAltsSchema = z.object({
+  quarter: quarterId,
+  weeks: z.number().int().min(12).max(14),
+  ltc_usd_open: nullableNonNeg,
+  ltc_usd_close: nullableNonNeg,
+  ltc_usd_high: nullableNonNeg,
+  ltc_usd_low: nullableNonNeg,
+  ltc_usd_avg: nullableNonNeg,
+  ltc_hashrate_GHs_avg: nullableNonNeg,
+  ltc_block_reward_q_start: nullableNonNeg,
+  ltc_price_grade: z.enum(['', 'A', 'B', 'C', 'D']),
+  doge_usd_open: nullableNonNeg,
+  doge_usd_close: nullableNonNeg,
+  doge_usd_high: nullableNonNeg,
+  doge_usd_low: nullableNonNeg,
+  doge_usd_avg: nullableNonNeg,
+  doge_hashrate_GHs_avg: nullableNonNeg,
+  doge_block_reward_q_start: nullableNonNeg,
+  doge_price_grade: z.enum(['', 'A', 'B', 'C', 'D']),
+  estimate: z.boolean(),
+})
+export const marketQuarterlyPrologueAltsSchema = z.array(marketQuarterPrologueAltsSchema).min(1)
+
 export const marketWeekAct4Schema = marketWeekAct3Schema
   .omit({ scenario: true })
   .extend({ future: futureId })
@@ -1029,6 +1071,9 @@ export const machineSchema = z
     available_from: quarterId,
     hashrate_mhs: sourced.optional(),
     hashrate_ths: sourced.optional(),
+    /** M68.3 (doc 51 v1.0 §5): a GPU's scrypt rate in kH/s and the first quarter it can mine scrypt. The Prologue's GPUs only. */
+    scrypt_khs: sourced.optional(),
+    available_scrypt_from: quarterId.optional(),
     power_kw: num,
     annual_failure_rate: num,
     lifespan_years: num,
@@ -2084,6 +2129,26 @@ export const prologueFileSchema = z.object({
     ),
   }),
   decision_quarters: z.array(quarterId),
+  /** M68.3 (doc 51 v1.0 §2.2): quarters that are decision quarters only when the named condition holds (2014Q3: a GPU on scrypt). */
+  opt_in_decision_quarters: z.record(quarterId, z.string()),
+  /** M68.3 (doc 51 v1.0 §5): how much of a thin altcoin market one week of selling may take. */
+  altcoin_selling_limits: z.object({
+    designed: z.literal(true),
+    note: z.string(),
+    free_share: z.number().positive().max(1),
+    step_share: z.number().positive().max(1),
+    slippage_per_step: z.number().min(0).max(1),
+    hard_cap_share: z.number().positive().max(1),
+    avg_daily_volume_usd: z.object({
+      LTC: yearValues,
+      DOGE: yearValues,
+    }),
+  }),
+  altcoin_handover: z.object({
+    sell_quarter: quarterId,
+    left_over_close_mult: z.number().min(0).max(1),
+    note: z.string(),
+  }),
   offers: z.array(
     z.object({
       id: z.string(),
@@ -2128,6 +2193,8 @@ const prologueEffects = z
     conference: z.literal(true),
     gox_collapse: z.object({ withdraw: z.boolean() }),
     household: z.enum(['move_out', 'cut_load']),
+    /** M68.3 (doc 51 v1.0 §5): the 2014Q3 card sells every GPU lot that mines Litecoin or Dogecoin, at the used price. */
+    sell_scrypt_gpus: z.literal(true),
   })
   .partial()
   .strict()
@@ -2135,7 +2202,8 @@ const prologueEffects = z
 const prologueCardSchema = z
   .object({
     id: z.string(),
-    type: z.enum(['scripted', 'random', 'roll']),
+    // M68.3 (doc 51 v1.0 §7): 'news' is a headline of its quarter: display only, no pause, no choice shown, nothing recorded
+    type: z.enum(['scripted', 'random', 'roll', 'news']),
     quarter: quarterId.optional(),
     week_of: isoDate.optional(),
     quarters: z.array(quarterId).optional(),
@@ -2151,8 +2219,8 @@ const prologueCardSchema = z
   .refine((c) => c.choices.some((x) => x.id === c.default), {
     message: 'default must be one of the choices',
   })
-  .refine((c) => c.type !== 'scripted' || (c.quarter && c.week_of), {
-    message: 'a scripted card needs quarter and week_of',
+  .refine((c) => (c.type !== 'scripted' && c.type !== 'news') || (c.quarter && c.week_of), {
+    message: 'a scripted or news card needs quarter and week_of',
   })
 
 export const eventsPrologueFileSchema = z.object({

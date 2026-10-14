@@ -56,6 +56,23 @@
   {"id": "job_offer", "type": "random", "from": "2012Q1", "requires": ["at_home"], "weight": 1, "default": "decline",
    "choices": [{"id": "take", "effects": {"cash": 300, "bandwidth_next": -1}}, {"id": "decline", "effects": {}}]},
   {"id": "conference_invitation", "type": "random", "quarters": ["2013Q2", "2014Q2"], "weight": 1, "pauses_autoplay": true, "default": "skip",
-   "choices": [{"id": "go", "effects": {"conference": true}}, {"id": "skip", "effects": {}}]}
+   "choices": [{"id": "go", "effects": {"conference": true}}, {"id": "skip", "effects": {}}]},
+  {"id": "news_ltc_launch", "type": "news", "quarter": "2011Q4", "week_of": "2011-10-10", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_pool_ddos_wave", "type": "news", "quarter": "2011Q3", "week_of": "2011-07-04", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_host_breach", "type": "news", "quarter": "2012Q1", "week_of": "2012-02-27", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_chain_split", "type": "news", "quarter": "2013Q1", "week_of": "2013-03-11", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_pool_payout_theft", "type": "news", "quarter": "2013Q2", "week_of": "2013-04-15", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_ltc_doubles", "type": "news", "quarter": "2013Q4", "week_of": "2013-11-25", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_doge_launch", "type": "news", "quarter": "2013Q4", "week_of": "2013-12-02", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_gpu_shortage", "type": "news", "quarter": "2013Q4", "week_of": "2013-12-09", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_scrypt_asic_preorders", "type": "news", "quarter": "2014Q1", "week_of": "2014-01-06", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_doge_fixed", "type": "news", "quarter": "2014Q1", "week_of": "2014-03-17", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_doge_nascar", "type": "news", "quarter": "2014Q2", "week_of": "2014-04-28", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "scrypt_boxes_ship", "type": "scripted", "quarter": "2014Q3", "week_of": "2014-09-08", "requires": ["scrypt_gpus"], "default": "keep", "choices": [{"id": "sell_gpus", "effects": {"sell_scrypt_gpus": true}}, {"id": "keep", "effects": {}}]},
+  {"id": "news_merged_mining", "type": "news", "quarter": "2014Q3", "week_of": "2014-09-08", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_alt_exchange_collapse", "type": "news", "quarter": "2014Q4", "week_of": "2014-10-06", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_ltc_halving", "type": "news", "quarter": "2015Q3", "week_of": "2015-08-24", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_cloud_ponzi", "type": "news", "quarter": "2015Q4", "week_of": "2015-11-30", "default": "noted", "choices": [{"id": "noted", "effects": {}}]},
+  {"id": "news_alt_exchange_stuck", "type": "news", "quarter": "2016Q1", "week_of": "2016-01-11", "default": "noted", "choices": [{"id": "noted", "effects": {}}]}
  ]
 }

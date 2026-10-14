@@ -45,5 +45,12 @@
  "chapter_report.title.hodler_lost_gox": "The One Who Trusted the Exchange",
  "chapter_report.title.careful_hodler": "The Careful One",
  "chapter_report.title.lost_wallet": "The One Who Never Backed Up",
- "chapter_report.title.default": "Eight Years In"
+ "chapter_report.title.default": "Eight Years In",
+ "tooltip.p0.coin_choice": "GPUs can mine bitcoin, Litecoin or Dogecoin. FPGAs and ASICs mine bitcoin only.",
+ "tooltip.p0.alt_selling": "Litecoin and Dogecoin trade in thin markets. Selling a lot at once moves the price against you.",
+ "glossary.scrypt": "Scrypt: the puzzle Litecoin and Dogecoin use. It was meant to resist FPGAs and ASICs, and did until 2014.",
+ "glossary.litecoin": "Litecoin: a bitcoin copy from October 2011 with faster blocks and the scrypt puzzle.",
+ "glossary.dogecoin": "Dogecoin: a joke coin from December 2013 with random rewards at first, then fixed ones.",
+ "glossary.merged_mining": "Merged mining: one piece of work counts for two coins. From September 2014, Litecoin miners also earned Dogecoin.",
+ "chapter.p0.alts_sold": "You sold {amount} {coin} in 2016 for {value}. At {later_date} those coins were worth {later_value}."
 }

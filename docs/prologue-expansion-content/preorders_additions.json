@@ -1,0 +1,44 @@
+{
+ "schema_version": 1,
+ "notes": "Append to preorders.json vendors. Offered only through the club card club_scrypt_box (2014Q2). Mines LTC (scrypt). The existing delay roll rules apply.",
+ "vendors": [
+  {
+   "id": "scrypt_box_share",
+   "name": "ScryptBox Ltd (invented)",
+   "order_window": [
+    "2014Q2",
+    "2014Q2"
+   ],
+   "unit_model": "scrypt_box_2014",
+   "share_of_unit": 0.25,
+   "price_usd": {
+    "value": 2499,
+    "grade": "B/D",
+    "source": "a quarter of a $9,995 box (Mar 2014 pre-orders, doc 53 A4) [B]"
+   },
+   "hashrate_share_khs": {
+    "value": 62500,
+    "grade": "C/D",
+    "source": "a quarter of about 250 MH/s (the shipped spec rose from 100 to about 400 MH/s, doc 53 A4)"
+   },
+   "power_kw_share": {
+    "value": 0.25,
+    "grade": "D",
+    "source": "a quarter of about 1 kW"
+   },
+   "promised_delivery_quarters_after_order": 1,
+   "delay_roll": {
+    "value": {
+     "on_time": 0.1,
+     "one_quarter_late": 0.5,
+     "two_quarters_late": 0.3,
+     "three_quarters_late": 0.1
+    },
+    "grade": "D",
+    "source": "real boxes ordered in Mar 2014 shipped from Sep 2014"
+   },
+   "real_basis": "Scrypt box pre-orders at $9,995 for 100 MH/s on 19 Mar 2014, shipping from early Sep 2014 [B]",
+   "source": "doc 53 A4"
+  }
+ ]
+}

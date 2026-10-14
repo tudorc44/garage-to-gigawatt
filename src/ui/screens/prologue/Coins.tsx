@@ -13,7 +13,7 @@ import type { Coin, GameState } from '../../../sim/state.ts'
 import { Icon, Tip } from '../../components/basics.tsx'
 import { Term } from '../../components/term.tsx'
 import { fmt } from '../../format.ts'
-import { coins, price, useError, type PrologueProps } from './common.tsx'
+import { altAmount, coins, price, useError, type PrologueProps } from './common.tsx'
 
 /**
  * The selling limit, as a sentence (component sheet): what the market takes this quarter in BTC at
@@ -78,7 +78,104 @@ function History({ state }: { state: GameState }) {
   )
 }
 
-export function Coins({ state, act }: PrologueProps) {
+const ALT_SHARES = [0.25, 0.5, 0.75, 1] as const
+const ALT_KEEP = [1, 0.75, 0.5, 0.25, 0] as const
+
+/**
+ * Litecoin and Dogecoin in your wallet (M68.5, doc 51 v1.0 §5): shown once you hold some. Their sales go through the
+ * thin market's weekly limits, so the panel says what a week can take; percent buttons and an exact amount, as the
+ * treasury's sale dialog has them (PR #38).
+ */
+function AltCoins({ state, act }: PrologueProps) {
+  const w = prologueWalletView(state)
+  const e = useError(act)
+  const rows = w.alts.filter((a) => a.held > 0 || a.selling > 0)
+  const [pick, setPick] = useState<'LTC' | 'DOGE'>('LTC')
+  const [text, setText] = useState('')
+  if (rows.length === 0) return null
+  const cur = rows.find((r) => r.coin === pick) ?? rows[0]
+  const n = Number(text.replace(/,/g, ''))
+  const bad = !(n > 0) || n > cur.sellable * (1 + 1e-9)
+  return (
+    <section class="panel" data-alt-coins>
+      <span class="panel-title" title={tDynamic('tooltip.p0.alt_selling', '')}>
+        {t('ui.p0.alts_title')}
+      </span>
+      {rows.map((r) => (
+        <div class="row-between" key={r.coin}>
+          <span class="num">
+            {altAmount(r.held, r.coin)} · {fmt.money(r.valueUsd)}
+          </span>
+          <span class="num-s muted">
+            {r.selling > 0 && `${t('ui.p0.alts_selling', { amount: altAmount(r.selling, r.coin) })} · `}
+            {t('ui.p0.alts_keep')}{' '}
+            <span class="seg" data-alt-keep>
+              {ALT_KEEP.map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  aria-pressed={r.keepPct === k}
+                  onClick={() => e.run({ type: 'P0_SET_ALT_HODL', coin: r.coin, hodl: k })}
+                >
+                  {fmt.pct(k)}
+                </button>
+              ))}
+            </span>
+          </span>
+        </div>
+      ))}
+      <div class="form-row">
+        {rows.length > 1 && (
+          <span class="seg">
+            {rows.map((r) => (
+              <button key={r.coin} type="button" class="btn" aria-pressed={cur.coin === r.coin} onClick={() => (setPick(r.coin), setText(''))}>
+                {r.coin}
+              </button>
+            ))}
+          </span>
+        )}
+        <span class="seg" data-alt-share>
+          {ALT_SHARES.map((p) => (
+            <button key={p} type="button" onClick={() => setText(String(cur.sellable * p))}>
+              {fmt.pct(p)}
+            </button>
+          ))}
+        </span>
+        <input
+          type="text"
+          inputMode="decimal"
+          data-alt-amount
+          value={text}
+          aria-label={t('ui.p0.alts_exact', { coin: cur.coin })}
+          placeholder={t('ui.p0.alts_exact', { coin: cur.coin })}
+          onInput={(ev) => setText((ev.target as HTMLInputElement).value)}
+        />
+        <button
+          type="button"
+          class="btn"
+          disabled={bad}
+          title={t('ui.p0.sell_note', { n: w.sellBandwidth })}
+          onClick={() => {
+            if (e.run({ type: 'P0_SELL', coin: cur.coin, amount: n })) setText('')
+          }}
+        >
+          {bad ? t('ui.p0.sell') : t('ui.p0.alts_sell_for', { value: fmt.money(n * cur.priceUsd) })}
+        </button>
+        {cur.selling > 0 && (
+          <button type="button" class="btn btn-ghost" onClick={() => e.run({ type: 'P0_CANCEL_SALE', coin: cur.coin })}>
+            {t('ui.p0.cancel_sale')}
+          </button>
+        )}
+      </div>
+      <span class="num-s muted">
+        {t('ui.p0.alts_limit', { usd: fmt.money(cur.weekCapUsd) })} {t('ui.p0.alts_wallet_note')}
+      </span>
+      {e.view}
+    </section>
+  )
+}
+
+export function Coins({ state, act, tick, skip, onNew }: PrologueProps) {
   const w = prologueWalletView(state)
   const lost = prologueLostLedger(state)
   const px = prologueMarketView(state).btcUsd
@@ -249,6 +346,7 @@ export function Coins({ state, act }: PrologueProps) {
           </div>
           {e.view}
         </section>
+        <AltCoins state={state} act={act} tick={tick} skip={skip} onNew={onNew} />
       </div>
       <div class="col">
         <section class="panel">

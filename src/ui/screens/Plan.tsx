@@ -45,6 +45,7 @@ import {
   whyNot,
   type LotView,
 } from '../../sim/selectors.ts'
+import { planNewsLine } from '../../sim/planNews.ts'
 // (Act II's panels show in Act III too, which runs the same systems: inAct2Rules, M13.1.)
 import {
   inActII,
@@ -193,6 +194,16 @@ export function PlanScreen({ state, act }: ScreenProps) {
   const [open, setOpen] = useState<Open>(planOpensOnBuy(state) ? 'buy' : null)
   const q = quarterName(state.quarter)
   const news = headlines(q)
+  // M68.1 (doc 43 §0.25 item 4): the band shows this quarter's own line in Acts III-V, never an earlier act's text
+  const line = state.act >= 3 ? planNewsLine(state) : null
+  const bandText =
+    state.act >= 3
+      ? line
+        ? 'headline' in line
+          ? line.headline
+          : tDynamic(line.titleKey, '')
+        : ''
+      : (news[news.length - 1] ?? '')
   return (
     <div class="screen">
       <Shell state={state}>
@@ -237,7 +248,7 @@ export function PlanScreen({ state, act }: ScreenProps) {
             <div class="panel news">
               <Icon name="news" />
               <span class="news-mast">{t('ui.news.masthead')}</span>
-              <span class="news-text">{news[news.length - 1] ?? ''}</span>
+              <span class="news-text">{bandText}</span>
             </div>
             <button
               type="button"

@@ -25,7 +25,8 @@ import { orderSale, withdrawAll } from './custody.ts'
 import { prologueEndQuarter } from './engine.ts'
 import { answerHousehold, attendConference, conferenceNow } from './life.ts'
 import { placePreorder } from './preorders.ts'
-import { P, householdTier, isDecisionQuarter, rollStream } from './setup.ts'
+import { hasScryptGpus, loseAltWallet, sellScryptGpus } from './alts.ts'
+import { P, householdTier, isDecisionQuarterFor, rollStream } from './setup.ts'
 
 const W = () => BALANCE.weeksPerQuarter
 const COINS: Coin[] = ['BTC', 'ETH']
@@ -39,7 +40,7 @@ export const prologueCard = (id: string): PrologueCard | undefined =>
 /** This live quarter plays by itself (no Plan phase was held for it). */
 export function autoPlaying(s: GameState): boolean {
   return (
-    !isDecisionQuarter(s.quarter) &&
+    !isDecisionQuarterFor(s, s.quarter) &&
     !s.prologue!.flags.includes('planned_now')
   )
 }
@@ -65,6 +66,8 @@ function holds(s: GameState, req: string): boolean {
         s.treasury.ETH > 0 ||
         s.machines.some((l) => getModel(l.model)?.coin === 'ETH')
       )
+    case 'scrypt_gpus':
+      return hasScryptGpus(s)
   }
   if (req.startsWith('flag:')) return p.flags.includes(req.slice(5))
   return false
@@ -85,7 +88,11 @@ export function schedulePrologueEvents(s: GameState): void {
   // The household's card (patience ran out last quarter) comes first.
   if (p.householdCard) p.cardQueue.push({ id: 'household', week: 1 })
   for (const c of rules.cards)
-    if (c.type === 'scripted' && c.quarterIndex === s.quarter)
+    if (
+      c.type === 'scripted' &&
+      c.quarterIndex === s.quarter &&
+      (c.requires ?? []).every((req) => holds(s, req))
+    )
       p.cardQueue.push({ id: c.id, week: c.weekIndex! + 1 })
   if (label(s.quarter) < rules.random_start) return
   const r = rollStream(s.seed, `p0events:${s.quarter}`)
@@ -172,6 +179,7 @@ function loseWallet(s: GameState, share: number): void {
     logEntry(s, 'log.p0_wallet_lost', { coin, amount: lost })
   }
   p.moves = p.moves.filter((m) => m.amount > 1e-12)
+  loseAltWallet(s, share)
 }
 
 /**
@@ -256,6 +264,7 @@ function applyChoice(s: GameState, card: PrologueCard, choiceId: string): void {
     if (base * pct > 0) orderSale(s, coin, base * pct)
   }
   if (fx.withdraw_all) withdrawAll(s)
+  if (fx.sell_scrypt_gpus) sellScryptGpus(s)
   if (fx.open_buy) openPanel(s, `buy:${fx.open_buy}`)
   if (fx.open_preorders) openPanel(s, 'preorders')
   if (fx.open_wallet) openPanel(s, 'wallet')

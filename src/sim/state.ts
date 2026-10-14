@@ -325,6 +325,11 @@ export interface MachineLot {
   legacyCloud?: boolean
   /** Act III (M12.3, a card's idle_mw): switched off (no power, no revenue) until the player turns it back on. */
   idle?: boolean
+  /**
+   * M68.4 (doc 51 v1.0 §5), the Prologue only: the scrypt coin this GPU lot mines instead of its machine's own coin.
+   * Absent = its own coin (bitcoin, or Ethereum for the 2015 rig), so a game that never sets one is unchanged.
+   */
+  altCoin?: 'LTC' | 'DOGE'
 }
 
 /**
@@ -1295,7 +1300,7 @@ export interface Auction {
 
 export interface GameState {
   /** Save-format version (save.ts SAVE_VERSION). Older saves are migrated step by step when loaded. */
-  version: 6
+  version: 7
   /**
    * The act being played: 0 = the prologue (2009Q1–2016Q4, quarter indices −32 … −1), 1 = Act I
    * (2017Q1–2022Q3, 0–22), 2 = Act II (2022Q4–2026Q4, 23–39), 3 = Act III (2027Q1–2030Q4, 40–55),
@@ -2039,7 +2044,7 @@ export function toAct5(
 export function newGame(seed: number): GameState {
   const start = CONTENT.siteTiers.find((t) => t.id === BALANCE.startSite)!
   return {
-    version: 6,
+    version: 7,
     act: 1,
     seed,
     rng: seed | 0,

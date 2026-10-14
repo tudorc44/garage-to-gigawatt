@@ -1,0 +1,251 @@
+{
+ "schema_version": 1,
+ "notes": "Run your own pool (doc 51 v1.0 §3). BTC only. Real pools fee rows live in custody.json (see custody_additions.json). Costs and probabilities are designed [D] unless graded otherwise.",
+ "unlock": {
+  "quarter": "2011Q2",
+  "requires_site_tier_min": "home_rig",
+  "grade": "D",
+  "source": "pools exist from 2010Q4 (custody.json)"
+ },
+ "open_action": {
+  "bandwidth": 1,
+  "setup_cash_usd": {
+   "value": 300,
+   "grade": "D",
+   "source": "about 20 hours of setup plus a first month of hosting (doc 53 B3)"
+  }
+ },
+ "server_bill_usd_quarter": {
+  "2011": {
+   "value": 180,
+   "grade": "D",
+   "source": "doc 53 B3: $60 a month"
+  },
+  "2012": {
+   "value": 150,
+   "grade": "D",
+   "source": "interpolated"
+  },
+  "2013": {
+   "value": 120,
+   "grade": "D",
+   "source": "doc 53 B3: $40 a month"
+  },
+  "2014": {
+   "value": 105,
+   "grade": "D",
+   "source": "interpolated"
+  },
+  "2015": {
+   "value": 90,
+   "grade": "D",
+   "source": "doc 53 B3: $30 a month"
+  },
+  "2016": {
+   "value": 90,
+   "grade": "D",
+   "source": "held"
+  }
+ },
+ "ddos_protection": {
+  "action_bandwidth": 1,
+  "available_from": "2013Q1",
+  "usd_quarter": {
+   "2013": {
+    "value": 240,
+    "grade": "D",
+    "source": "doc 53 B3: $80 a month"
+   },
+   "2015": {
+    "value": 150,
+    "grade": "D",
+    "source": "doc 53 B3: $50 a month"
+   }
+  },
+  "effect": "halves the DDoS chance"
+ },
+ "cold_storage": {
+  "action_bandwidth": 1,
+  "cash_usd": 0,
+  "effect": "theft chance falls to hot_wallet_theft_with_cold_storage",
+  "lapses": "never"
+ },
+ "payout_methods": {
+  "PPLNS": {
+   "fee_range": [
+    0.0,
+    0.03
+   ],
+   "operator_carries_variance": false,
+   "grade": "D",
+   "source": "doc 53 B1/B3"
+  },
+  "PPS": {
+   "fee_range": [
+    0.02,
+    0.1
+   ],
+   "operator_carries_variance": true,
+   "reserve_rule": "PPS can be chosen only while cash covers 3 x sqrt(expected pool blocks per week) block rewards; below 0 cash under PPS, 50% of outside miners leave each week and reputation -30",
+   "grade": "D",
+   "source": "doc 53 B3"
+  }
+ },
+ "change_settings_bandwidth": 1,
+ "outside_miners": {
+  "model": "outside hashrate = network hashrate x small_pool_share[year] x pull; pull starts at start_pull and moves each quarter with fee, luck and reputation, minus churn",
+  "small_pool_share_by_year": {
+   "2011": {
+    "value": 0.3,
+    "grade": "D",
+    "source": "placeholder; second research pass"
+   },
+   "2012": {
+    "value": 0.25,
+    "grade": "D",
+    "source": "placeholder; second research pass"
+   },
+   "2013": {
+    "value": 0.15,
+    "grade": "D",
+    "source": "placeholder; second research pass"
+   },
+   "2014": {
+    "value": 0.1,
+    "grade": "D",
+    "source": "placeholder; second research pass"
+   },
+   "2015": {
+    "value": 0.08,
+    "grade": "D",
+    "source": "placeholder; second research pass"
+   },
+   "2016": {
+    "value": 0.05,
+    "grade": "D",
+    "source": "placeholder; second research pass"
+   }
+  },
+  "start_pull": {
+   "value": 0.005,
+   "grade": "D",
+   "source": "a new pool gets 0.5% of the small-pool market"
+  },
+  "fee_elasticity_per_pp": {
+   "value": -0.08,
+   "grade": "D",
+   "source": "doc 53 B3: -8% hashrate per +1 pp fee against the median"
+  },
+  "median_fee_by_year": {
+   "2011": 0.02,
+   "2012": 0.02,
+   "2013": 0.01,
+   "2014": 0.01,
+   "2015": 0.015,
+   "2016": 0.015,
+   "grade": "D",
+   "source": "custody.json fee_pct_by_year and doc 53 B1, rounded"
+  },
+  "base_churn_quarter": {
+   "value": 0.05,
+   "grade": "D",
+   "source": "designed"
+  },
+  "luck_memory_weeks": {
+   "value": 4,
+   "grade": "D",
+   "source": "doc 53 B3"
+  },
+  "bad_luck_spiral": {
+   "value": "after 3 unlucky weeks in a row under PPLNS, -15% outside hashrate each further unlucky week",
+   "grade": "D",
+   "source": "doc 53 B3"
+  },
+  "reputation": {
+   "start": 50,
+   "range": [
+    0,
+    100
+   ],
+   "up": "+5 a quarter with no outage or theft",
+   "down": "outage -15, theft -30, PPS insolvency -30",
+   "pull_mult": "0.5 + reputation / 100"
+  }
+ },
+ "risks_per_quarter": {
+  "ddos": {
+   "value": 0.03,
+   "grade": "D",
+   "source": "small pools were hit far less than big ones: 7 of 41 small pools over May 2011-Oct 2013 (Vasek, Thornton, Moore, FC 2014 [A]); about 3% a quarter"
+  },
+  "ddos_outage_hours": {
+   "value": [
+    2,
+    48
+   ],
+   "grade": "D",
+   "source": "doc 53 B3"
+  },
+  "ddos_outside_hashrate_loss": {
+   "value": 0.2,
+   "grade": "D",
+   "source": "doc 53 B3"
+  },
+  "hot_wallet_theft": {
+   "value": 0.01,
+   "grade": "D",
+   "source": "real cases: 3,094 BTC on 1 Mar 2012 and 923 BTC on 19 Apr 2013 [B]"
+  },
+  "hot_wallet_theft_with_cold_storage": {
+   "value": 0.002,
+   "grade": "D",
+   "source": "doc 53 B3"
+  },
+  "theft_size": {
+   "value": "one week of outside miners payouts; under PPS the operator still owes them",
+   "grade": "D",
+   "source": "designed"
+  },
+  "orphan_rate": {
+   "value": {
+    "2011": 0.02,
+    "2013": 0.01,
+    "2016": 0.0041
+   },
+   "grade": "A/D",
+   "source": "Feb 2016 0.41% [A]; earlier years designed"
+  }
+ },
+ "boycott_2014": {
+  "window": [
+   "2014Q2",
+   "2014Q3"
+  ],
+  "condition": "pool open, fee at or below the median, reputation >= 50",
+  "outside_hashrate_mult": {
+   "value": 1.3,
+   "grade": "D",
+   "source": "miners spread from the largest pool after June 2014 (custody.json note); size designed, second research pass"
+  },
+  "card": "pool_boycott_2014"
+ },
+ "sale": {
+  "from_quarter": "2013Q1",
+  "price": "trailing four quarters of fee income x multiple",
+  "multiple": {
+   "value": 2.0,
+   "grade": "D",
+   "source": "no sourced small-pool sale found (doc 53)"
+  },
+  "at_handover": "an open pool is sold automatically at this price (owner, doc 51 §8)"
+ },
+ "names": {
+  "default_pool_name": "Halfblock Pool",
+  "rivals": [
+   "OreLoop",
+   "CopperHash"
+  ],
+  "grade": "D",
+  "note": "invented; name-clash check before shipping"
+ }
+}

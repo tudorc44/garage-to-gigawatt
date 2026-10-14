@@ -16,6 +16,7 @@ import { fmt } from '../../format.ts'
 import {
   CenterCard,
   Change,
+  altAmount,
   coins,
   price,
   type PrologueProps,
@@ -337,6 +338,14 @@ export function QuarterReport({ state, act, onNew }: PrologueProps) {
               <td class="g-right">{value}</td>
             </tr>
           ))}
+          {r.alts && (r.alts.mined.LTC > 0 || r.alts.mined.DOGE > 0) && (
+            <tr data-alts-mined>
+              <td>{t('ui.p0.r.alts')}</td>
+              <td class="g-right">
+                {altAmount(r.alts.mined.LTC, 'LTC')} · {altAmount(r.alts.mined.DOGE, 'DOGE')}
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
       {r.cards.length > 0 && (

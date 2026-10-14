@@ -1,0 +1,659 @@
+{
+ "schema_version": 1,
+ "notes": "Cards to merge into events_prologue.json's events list. New things the loader must learn: type 'news' (a headline in the Signals or news list, no pause, no choice; its single 'Noted' choice is for the schema only); trigger predicates pool_open, cold_storage, club_member, pps, cash_below_reserve, 'fixed:<quarter> if <predicate>' and 'trigger:<predicate>'; effect keys pool{...}, club{...} and sell_scrypt_gpus. Existing effect keys (cash, flag, bandwidth_next, duration_quarters) keep their meaning.",
+ "events": [
+  {
+   "id": "news_ltc_launch",
+   "type": "scripted",
+   "title": "A Coin for GPUs",
+   "trigger": "fixed:2011Q4",
+   "week": "2011-10-10",
+   "weight": null,
+   "body": "A new coin called Litecoin goes live. It uses scrypt, a puzzle meant to suit ordinary CPUs and GPUs rather than the FPGA boards bitcoin is moving to. Your GPU can mine it from today.",
+   "choices": [
+    {
+     "label": "Point a GPU at it (Rig screen)",
+     "effects": {
+      "flag": "tried_ltc"
+     }
+    },
+    {
+     "label": "Stay on bitcoin",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Litecoin client 0.1.0 released 7 Oct 2011, network live 13 Oct 2011 [B/C]",
+   "source": "doc 53 A1"
+  },
+  {
+   "id": "news_pool_ddos_wave",
+   "type": "news",
+   "title": "Pools Under Fire",
+   "trigger": "fixed:2011Q3",
+   "week": null,
+   "weight": null,
+   "body": "Pools across the forums report floods of junk traffic. The biggest pools are hit most often.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Pools were the main DDoS target in the second half of 2011 (Vasek, Thornton, Moore, FC 2014) [A]",
+   "source": "doc 53 B2"
+  },
+  {
+   "id": "news_host_breach",
+   "type": "news",
+   "title": "A Hosting Breach",
+   "trigger": "fixed:2012Q1",
+   "week": "2012-02-27",
+   "weight": null,
+   "body": "A hosting provider is breached and a well-known pool loses 3,094 BTC from its hot wallet. Its operator covers the loss himself.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Linode breach, 1 Mar 2012 [B]",
+   "source": "doc 53 B2"
+  },
+  {
+   "id": "news_chain_split",
+   "type": "news",
+   "title": "The Chain Splits",
+   "trigger": "fixed:2013Q1",
+   "week": "2013-03-11",
+   "weight": null,
+   "body": "A software upgrade splits the bitcoin chain for a few hours. Several pools lose block rewards before it is patched.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "0.8/0.7 fork, 11 Mar 2013 [C]",
+   "source": "doc 53 B2"
+  },
+  {
+   "id": "news_pool_payout_theft",
+   "type": "news",
+   "title": "A Payout Script Hijacked",
+   "trigger": "fixed:2013Q2",
+   "week": "2013-04-15",
+   "weight": null,
+   "body": "A mid-size pool's payout script is hijacked and 923 BTC goes out. A web wallet freezes 569 of it and sends it back.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Ozcoin, 19 Apr 2013 [B]",
+   "source": "doc 53 B2"
+  },
+  {
+   "id": "news_ltc_doubles",
+   "type": "news",
+   "title": "Silver Doubles",
+   "trigger": "fixed:2013Q4",
+   "week": "2013-11-25",
+   "weight": null,
+   "body": "Litecoin nearly doubles in a day. Every forum thread asks which Radeon to buy.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "28 Nov 2013 [B]",
+   "source": "doc 53 A5"
+  },
+  {
+   "id": "news_doge_launch",
+   "type": "news",
+   "title": "A Joke Coin",
+   "trigger": "fixed:2013Q4",
+   "week": "2013-12-02",
+   "weight": null,
+   "body": "A coin with a Shiba Inu logo launches. Its block rewards are random, up to a million coins a block. It also runs on scrypt.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Dogecoin launched 6 Dec 2013 [B]",
+   "source": "doc 53 A1"
+  },
+  {
+   "id": "news_gpu_shortage",
+   "type": "news",
+   "title": "Radeons Sell Out",
+   "trigger": "fixed:2013Q4",
+   "week": "2013-12-09",
+   "weight": null,
+   "body": "High-end Radeons sell out. Some go for over $700, well above list.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Dec 2013 street prices [B]",
+   "source": "doc 53 Part C"
+  },
+  {
+   "id": "news_scrypt_asic_preorders",
+   "type": "news",
+   "title": "Scrypt ASICs, Pay Now",
+   "trigger": "fixed:2014Q1",
+   "week": "2013-12-30",
+   "weight": null,
+   "body": "The first scrypt ASIC pre-orders open. Pay now, ship later. GPU miners do the arithmetic.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "pre-orders from 3 Jan 2014 [B]",
+   "source": "doc 53 A4"
+  },
+  {
+   "id": "news_doge_fixed",
+   "type": "news",
+   "title": "Dogecoin Fixes Its Reward",
+   "trigger": "fixed:2014Q1",
+   "week": "2014-03-17",
+   "weight": null,
+   "body": "Dogecoin forks at block 145,000: a fixed 250,000 reward and difficulty that adjusts every block. Hopping onto lucky blocks stops paying.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "17 Mar 2014 [A/B]",
+   "source": "doc 53 A1"
+  },
+  {
+   "id": "news_doge_nascar",
+   "type": "news",
+   "title": "A Dog on the Track",
+   "trigger": "fixed:2014Q2",
+   "week": "2014-04-28",
+   "weight": null,
+   "body": "A car wrapped in a cartoon dog races at Talladega, paid for with 67.8 million tipped coins.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "4 May 2014 [B]",
+   "source": "doc 53 Part C"
+  },
+  {
+   "id": "scrypt_boxes_ship",
+   "type": "scripted",
+   "title": "The Boxes Ship",
+   "trigger": "fixed:2014Q3",
+   "week": "2014-09-08",
+   "weight": null,
+   "body": "Scrypt ASIC boxes start shipping and the Litecoin network passes 1 TH/s. A GPU that earned dollars a day last winter earns cents. Used GPUs still sell, for now.",
+   "choices": [
+    {
+     "label": "Sell every GPU on scrypt at the used price",
+     "effects": {
+      "sell_scrypt_gpus": true
+     }
+    },
+    {
+     "label": "Keep them running",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Shipping from early Sep 2014; 1 TH/s on 15 Sep 2014 [B]",
+   "source": "doc 53 A4, A2"
+  },
+  {
+   "id": "news_merged_mining",
+   "type": "news",
+   "title": "Two Coins for One",
+   "trigger": "fixed:2014Q3",
+   "week": "2014-09-08",
+   "weight": null,
+   "body": "Dogecoin passes block 371,337. Litecoin mining now earns Dogecoin too, for the same work.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "AuxPoW active 11 Sep 2014 [A/B]",
+   "source": "doc 53 A1"
+  },
+  {
+   "id": "news_alt_exchange_collapse",
+   "type": "news",
+   "title": "An Exchange Goes Dark",
+   "trigger": "fixed:2014Q4",
+   "week": null,
+   "weight": null,
+   "body": "A Dogecoin exchange declares bankruptcy and its sister exchange goes dark. About 3,700 BTC is missing. Your coins are in your own wallet.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Moolah/MintPal, Oct 2014 [B]",
+   "source": "doc 53 Part C"
+  },
+  {
+   "id": "news_ltc_halving",
+   "type": "news",
+   "title": "Litecoin Halves",
+   "trigger": "fixed:2015Q3",
+   "week": "2015-08-24",
+   "weight": null,
+   "body": "Litecoin block 840,000: the reward falls from 50 to 25.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "25 Aug 2015 [A/B]",
+   "source": "doc 53 A1"
+  },
+  {
+   "id": "news_cloud_ponzi",
+   "type": "news",
+   "title": "Cloud Mining, Charged",
+   "trigger": "fixed:2015Q4",
+   "week": "2015-11-30",
+   "weight": null,
+   "body": "Regulators charge a cloud-mining seller with running a Ponzi scheme. Its virtual miners stopped paying a year ago.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "SEC charges against GAW Miners, 1 Dec 2015 [A]",
+   "source": "doc 53 Part C"
+  },
+  {
+   "id": "news_alt_exchange_stuck",
+   "type": "news",
+   "title": "Withdrawals Pending",
+   "trigger": "fixed:2016Q1",
+   "week": "2016-01-11",
+   "weight": null,
+   "body": "A big altcoin exchange stops after months of stuck withdrawals. A class action follows.",
+   "choices": [
+    {
+     "label": "Noted",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Cryptsy, class action 13 Jan 2016 [A/B]",
+   "source": "doc 53 Part C"
+  },
+  {
+   "id": "pool_ddos",
+   "type": "random",
+   "title": "Your Pool Is Down",
+   "trigger": "random:pool_open",
+   "week": null,
+   "weight": 1.0,
+   "body": "Halfblock Pool has been flooded with junk traffic since last night. Miners are asking in the thread whether to leave.",
+   "choices": [
+    {
+     "label": "Buy DDoS protection (from next quarter; 1 Bandwidth)",
+     "effects": {
+      "pool": {
+       "outage": true,
+       "buy_ddos_protection": true
+      },
+      "bandwidth_next": -1
+     }
+    },
+    {
+     "label": "Ride it out",
+     "effects": {
+      "pool": {
+       "outage": true
+      }
+     }
+    }
+   ],
+   "real_basis": "Pool DDoS attacks 2011-2013 (Vasek et al.) [A]",
+   "source": "pools_player.json risks_per_quarter.ddos"
+  },
+  {
+   "id": "pool_theft",
+   "type": "random",
+   "title": "The Hot Wallet Is Empty",
+   "trigger": "random:pool_open and not cold_storage",
+   "week": null,
+   "weight": 1.0,
+   "body": "Someone got into the server overnight. The pool's payout wallet is empty and miners are owed a week of earnings.",
+   "choices": [
+    {
+     "label": "Pay the miners from your own cash",
+     "effects": {
+      "pool": {
+       "theft": true,
+       "repay_from_cash": true
+      }
+     }
+    },
+    {
+     "label": "Pay what is left and explain",
+     "effects": {
+      "pool": {
+       "theft": true,
+       "repay_from_cash": false,
+       "reputation": -30
+      }
+     }
+    }
+   ],
+   "real_basis": "Pool hot-wallet thefts of 3,094 BTC (Mar 2012) and 923 BTC (Apr 2013); the first operator repaid from his own funds [B]",
+   "source": "pools_player.json risks_per_quarter.hot_wallet_theft"
+  },
+  {
+   "id": "pool_pps_crunch",
+   "type": "scripted",
+   "title": "A Run of Bad Luck",
+   "trigger": "trigger:pps and cash_below_reserve",
+   "week": null,
+   "weight": null,
+   "body": "Under PPS you pay every share, block or no block. The pool has found few blocks for weeks and your cash is thinning.",
+   "choices": [
+    {
+     "label": "Switch to PPLNS (1 Bandwidth next quarter)",
+     "effects": {
+      "pool": {
+       "set_method": "PPLNS"
+      },
+      "bandwidth_next": -1
+     }
+    },
+    {
+     "label": "Keep paying and hope",
+     "effects": {}
+    }
+   ],
+   "real_basis": "PPS shifts variance to the operator (custody.json payout_methods)",
+   "source": "pools_player.json payout_methods.PPS"
+  },
+  {
+   "id": "pool_boycott_2014",
+   "type": "scripted",
+   "title": "Miners on the Move",
+   "trigger": "fixed:2014Q2 if pool_open",
+   "week": "2014-06-09",
+   "weight": null,
+   "body": "One pool came close to half of all bitcoin mining. Miners are spreading out to smaller pools, and some are asking about yours.",
+   "choices": [
+    {
+     "label": "Cut the fee to 0% for two quarters",
+     "effects": {
+      "pool": {
+       "fee_override": 0.0,
+       "duration_quarters": 2,
+       "boycott_eligible": true
+      }
+     }
+    },
+    {
+     "label": "Keep your fee",
+     "effects": {
+      "pool": {
+       "boycott_eligible": "if_fee_at_or_below_median"
+      }
+     }
+    }
+   ],
+   "real_basis": "GHash.IO briefly above 50% of network hashrate, 12-13 Jun 2014 (custody.json note) [B]",
+   "source": "pools_player.json boycott_2014"
+  },
+  {
+   "id": "pool_sale_offer",
+   "type": "random",
+   "title": "An Offer for the Pool",
+   "trigger": "random:pool_open and quarter>=2013Q1",
+   "week": null,
+   "weight": 0.5,
+   "body": "The operator of CopperHash wants to fold your miners into his pool. He offers cash for the pool, the domain and the user list.",
+   "choices": [
+    {
+     "label": "Sell at his price",
+     "effects": {
+      "pool": {
+       "sell": true
+      }
+     }
+    },
+    {
+     "label": "Keep running it",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Invented; no sourced small-pool sale found (doc 53)",
+   "source": "pools_player.json sale"
+  },
+  {
+   "id": "club_form",
+   "type": "scripted",
+   "title": "Three Friends and a Spreadsheet",
+   "trigger": "fixed:2013Q1",
+   "week": null,
+   "weight": null,
+   "body": "Mara, Teo and Jun want in on the ASIC group buy everyone is talking about. Teo brings his two Radeons. Jun has a spreadsheet. They want you, because you have actually mined before.",
+   "choices": [
+    {
+     "label": "Join (1 Bandwidth; choose your stake, who holds the keys and where it runs)",
+     "effects": {
+      "club": {
+       "join": true
+      },
+      "bandwidth_next": -1
+     }
+    },
+    {
+     "label": "Wish them luck",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Forum group buys of early ASICs, 2012-2013 (preorders.json group_buy) [B]; the friends are invented",
+   "source": "club.json"
+  },
+  {
+   "id": "club_power_bill",
+   "type": "random",
+   "title": "Who Pays the Power?",
+   "trigger": "random:club_member and quarter>=2013Q2",
+   "week": null,
+   "weight": 1.0,
+   "body": "The power bill for the club's machines has doubled. Jun wants every machine metered. Mara says that is how friendships end.",
+   "choices": [
+    {
+     "label": "Split it by shares",
+     "effects": {
+      "club": {
+       "cost_split": "shares"
+      }
+     }
+    },
+    {
+     "label": "Pay it yourself this quarter",
+     "effects": {
+      "cash": "club_power_quarter"
+     }
+    },
+    {
+     "label": "Let them argue",
+     "effects": {
+      "club": {
+       "dispute": true
+      }
+     }
+    }
+   ],
+   "real_basis": "Invented",
+   "source": "club.json"
+  },
+  {
+   "id": "club_peak_cashout",
+   "type": "scripted",
+   "title": "Teo Wants Out",
+   "trigger": "fixed:2013Q4 if club_member",
+   "week": "2013-12-02",
+   "weight": null,
+   "body": "Bitcoin is over $1,000. Teo wants his share in cash before it falls.",
+   "choices": [
+    {
+     "label": "Buy his share at market value",
+     "effects": {
+      "club": {
+       "buy_out": "teo"
+      }
+     }
+    },
+    {
+     "label": "Let him sell his share of the coins",
+     "effects": {
+      "club": {
+       "member_sells": "teo"
+      }
+     }
+    },
+    {
+     "label": "Ask him to wait",
+     "effects": {
+      "club": {
+       "refuse": "teo",
+       "friendship": -1
+      }
+     }
+    }
+   ],
+   "real_basis": "December 2013 peak (events_prologue.json peak_and_silk_road) [B]; Teo is invented",
+   "source": "club.json"
+  },
+  {
+   "id": "club_gpu_flip",
+   "type": "scripted",
+   "title": "Someone Wants the Radeons",
+   "trigger": "fixed:2014Q1 if club_member",
+   "week": "2014-03-03",
+   "weight": null,
+   "body": "A forum buyer offers one and a half times what Teo's cards cost. Scrypt ASIC pre-orders are open.",
+   "choices": [
+    {
+     "label": "Sell the club's GPUs",
+     "effects": {
+      "club": {
+       "sell_gpus_mult": 1.5
+      }
+     }
+    },
+    {
+     "label": "Keep them mining",
+     "effects": {}
+    }
+   ],
+   "real_basis": "GPU prices peaked in early 2014 ($900 against a $550 launch, 4 Mar 2014) [B]",
+   "source": "doc 53 Part C"
+  },
+  {
+   "id": "club_scrypt_box",
+   "type": "scripted",
+   "title": "A Box for the Club",
+   "trigger": "fixed:2014Q2 if club_member",
+   "week": null,
+   "weight": null,
+   "body": "Jun wants the club to put money into a share of a $9,995 scrypt box from ScryptBox Ltd, shipping 'next quarter'.",
+   "choices": [
+    {
+     "label": "Buy a quarter share for the club",
+     "effects": {
+      "club": {
+       "preorder": "scrypt_box_share"
+      }
+     }
+    },
+    {
+     "label": "Pass",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Scrypt box pre-orders at $9,995 in Mar 2014, shipping Sep 2014 [B]; vendor invented",
+   "source": "doc 53 A4"
+  },
+  {
+   "id": "club_cloud_contract",
+   "type": "random",
+   "title": "Daily Payouts, Guaranteed",
+   "trigger": "random:club_member and quarter in(2014Q3,2014Q4)",
+   "week": null,
+   "weight": 1.0,
+   "body": "Jun's cousin bought cloud mining contracts that pay out every day. No machines, no power bill. He wants the club to buy in.",
+   "choices": [
+    {
+     "label": "Put the club money in",
+     "effects": {
+      "club": {
+       "cloud_contract": true
+      }
+     }
+    },
+    {
+     "label": "Pass",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Cloud-mining Hashlets sold from Aug 2014; payouts fell below fees by Nov 2014; shut Jan 2015; SEC charges Dec 2015 [A]; the seller is invented",
+   "source": "doc 53 Part C"
+  },
+  {
+   "id": "club_breakup",
+   "type": "scripted",
+   "title": "The Spreadsheet Has to Close",
+   "trigger": "fixed:2015Q1 if club_member",
+   "week": null,
+   "weight": null,
+   "body": "The GPUs earn pennies. Mara wants to sell, Teo wants to keep going, and Jun wants the spreadsheet settled.",
+   "choices": [
+    {
+     "label": "Buy everyone out",
+     "effects": {
+      "club": {
+       "end": "buy_out"
+      }
+     }
+    },
+    {
+     "label": "Sell up and split",
+     "effects": {
+      "club": {
+       "end": "dissolve"
+      }
+     }
+    },
+    {
+     "label": "Keep the club going to the end",
+     "effects": {}
+    }
+   ],
+   "real_basis": "Invented",
+   "source": "club.json endings"
+  }
+ ]
+}

@@ -30,7 +30,7 @@ const PHASES: Phase[] = [
 ]
 
 /** The save format this build writes (GameState.version). */
-export const SAVE_VERSION = 6
+export const SAVE_VERSION = 7
 
 type SaveData = Record<string, unknown>
 
@@ -59,6 +59,9 @@ const MIGRATIONS: Record<number, (data: SaveData) => SaveData> = {
   // 5 → 6 (Act V, M49): a save can now be in act 5 (2036Q1–2040Q4) and carry the Act V fields (vFutureId, act5Seed,
   // act5Entry, lunarHolding …). Nothing in a version-5 save changes: it was act 0–4 as before.
   5: (data) => ({ ...data, version: 6 }),
+  // 6 → 7 (the Prologue's altcoins, M68.4): a Prologue GPU lot can mine Litecoin or Dogecoin (`altCoin`) and the Prologue
+  // can hold them (`prologue.alts`). Nothing in a version-6 save changes: every lot loads on its machine's own coin.
+  6: (data) => ({ ...data, version: 7 }),
 }
 
 type Loaded = { ok: true; state: GameState } | { ok: false; error: Message }

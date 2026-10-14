@@ -4,6 +4,7 @@
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../../i18n/t.ts'
 import {
+  prologueAltsSold,
   prologueChapterView,
   prologueHandoverView,
 } from '../../../sim/prologue/views.ts'
@@ -13,6 +14,7 @@ import { fmt } from '../../format.ts'
 import { machineName, tierName } from '../../names.ts'
 import {
   CenterCard,
+  altAmount,
   coins,
   price,
   watts,
@@ -26,6 +28,22 @@ export function Chapter(props: PrologueProps) {
   ) : (
     <Report {...props} next={() => setHandover(true)} />
   )
+}
+
+/**
+ * The altcoin line of the chapter report (chapter.p0.alts_sold) without its later-price clause.
+ * TODO (doc 51 v1.0 §10 item 7): add "At {later_date} those coins were worth {later_value}" once the second research pass has
+ * dated LTC and DOGE closes (end 2017, end 2021, the latest full year); until then the sentence stops after the sale.
+ */
+function altsSoldLine(r: { coin: 'LTC' | 'DOGE'; amount: number; usd: number }): string {
+  const full = tDynamic('chapter.p0.alts_sold', '', {
+    amount: altAmount(r.amount, r.coin).replace(` ${r.coin}`, ''),
+    coin: t(`ui.p0.coin.${r.coin}`),
+    value: fmt.money(r.usd),
+    later_date: '',
+    later_value: '',
+  })
+  return `${full.split('. At ')[0].replace(/\.$/, '')}.`
 }
 
 /** A label and a value on one line, with a dashed rule under it. */
@@ -101,6 +119,11 @@ function Report({ state, next }: PrologueProps & { next: () => void }) {
                 cause: t(`ui.p0.lost_${r.cause}`),
                 quarter: r.quarter,
               })}
+            </span>
+          ))}
+          {prologueAltsSold(state).map((r) => (
+            <span class="num-s" key={r.coin} data-alts-sold>
+              {altsSoldLine(r)}
             </span>
           ))}
           <Kv

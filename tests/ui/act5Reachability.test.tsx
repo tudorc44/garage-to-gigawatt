@@ -13,7 +13,7 @@ import { t } from '../../src/i18n/t.ts'
 import { applyAction } from '../../src/sim/actions.ts'
 import { cashFlowView } from '../../src/sim/financeViews.ts'
 import { playFrom } from '../../src/sim/replay.ts'
-import { headerValuationUsd } from '../../src/sim/selectors.ts'
+import { headerValuationUsd, whyNot } from '../../src/sim/selectors.ts'
 import { ACT5_MOVE_KINDS, toAct5, type GameState } from '../../src/sim/state.ts'
 import { Nav, TopBar } from '../../src/ui/components/frame.tsx'
 import { fmt } from '../../src/ui/format.ts'
@@ -142,6 +142,37 @@ describe('Act V reachability (M62.6, doc 43 §0.18)', () => {
   it('every Act V move kind is made by a reachable action, or by a card', () => {
     const missing = ACT5_MOVE_KINDS.filter((k) => !(k in CARD_ONLY) && !(MOVE_ACTION[k] && MOVE_ACTION[k] in ACT5_ACTIONS))
     expect(missing).toEqual([])
+  })
+})
+
+// M68.1 (doc 43 §0.25 item 1): Heat's meter and its mitigation actions are reachable in Act V.
+describe('Heat in Act V (M68.1)', () => {
+  it('the header shows the Heat meter, and the Plan offers the neighbours and noise rows with their actions', () => {
+    const s = preset('orbital_landlord')
+    for (const x of s.sites) {
+      s.siteHeat[x.id] ??= { value: 0, load: 0, grievance: 0, mitigated: false, outreachQuarter: null, shutdownSince: null }
+      s.siteHeat[x.id].value = 60
+      s.siteHeat[x.id].outreachQuarter = null
+      s.siteHeat[x.id].mitigated = false
+    }
+    const top = render(<TopBar state={s} />).container.textContent ?? ''
+    expect(top).toContain('60')
+    cleanup()
+    const plan = render(<PlanScreen state={s} act={noop as never} />).container.textContent ?? ''
+    expect(plan).toMatch(/Talk to the neighbours/)
+    expect(plan).toMatch(/Noise mitigation/)
+    // and the sim accepts them there
+    const site = s.sites[0]
+    expect(whyNot(s, { type: 'OUTREACH', siteId: site.id })).toBeFalsy()
+    expect(whyNot(s, { type: 'MITIGATE_NOISE', siteId: site.id })).toBeFalsy()
+  })
+
+  it('the Community Deal and the negotiation actions are dispatched by screens Act V shows', () => {
+    const nav = navLabels(5)
+    expect(nav).toContain(t('ui.nav.projects'))
+    expect(ui('screens/Plan.tsx')).toContain("type: 'COMMUNITY_DEAL_SIGN'")
+    expect(ui('screens/Plan.tsx')).toContain("type: 'COMMUNITY_DEAL_DECLINE'")
+    for (const a of ['DEAL_NEGOTIATE_START', 'DEAL_COUNTER', 'DEAL_ACCEPT', 'DEAL_WALK']) expect(ui('screens/Projects.tsx')).toContain(`type: '${a}'`)
   })
 })
 

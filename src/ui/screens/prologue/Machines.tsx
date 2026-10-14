@@ -1,7 +1,7 @@
 // Machines & Rooms (wireframe P0-03's second menu item): your rooms (the bedroom, the home rig, the
 // garage, a small unit) with their load and machines, and the buy menu as MachineCards.
 import { useState } from 'preact/hooks'
-import { t } from '../../../i18n/t.ts'
+import { t, tDynamic } from '../../../i18n/t.ts'
 import type { Message } from '../../../i18n/t.ts'
 import {
   p0BuyCheck,
@@ -11,6 +11,7 @@ import {
 } from '../../../sim/prologue/views.ts'
 import type { GameState } from '../../../sim/state.ts'
 import { quarterName } from '../../../sim/selectors.ts'
+import { getModel } from '../../../sim/systems/market.ts'
 import { ActionRow, Icon, MachineCard, Tip } from '../../components/basics.tsx'
 import { SellCount } from '../../components/sellCount.tsx'
 import { fmt } from '../../format.ts'
@@ -132,7 +133,7 @@ export function Machines({ state, act }: PrologueProps) {
             {s.lots.length === 0 && (
               <p class="num-s muted">{t('ui.p0.site_empty')}</p>
             )}
-            {s.lots.map(({ lot, sellUsd }) => (
+            {s.lots.map(({ lot, sellUsd, coin, altChoices }) => (
               <div class="fleet-row" key={lot.id}>
                 <MachineCard
                   drawing={drawing(lot.model)}
@@ -191,6 +192,27 @@ export function Machines({ state, act }: PrologueProps) {
                     </button>
                   )}
                 </span>
+                {altChoices.length > 0 && (
+                  // M68.5 (doc 51 v1.0 §5): a GPU lot can mine Litecoin or Dogecoin; only the coins open this quarter show
+                  <div class="row-between" style={{ gridColumn: '1 / -1' }} data-lot-coin>
+                    <span class="num-s muted" title={tDynamic('tooltip.p0.coin_choice', '')}>
+                      {t('ui.p0.lot_mines')}
+                    </span>
+                    <span class="seg" role="group" aria-label={t('ui.p0.lot_mines')}>
+                      {[getModel(lot.model)!.coin as string, ...altChoices].map((c) => (
+                        <button
+                          key={c}
+                          type="button"
+                          aria-pressed={coin === c}
+                          title={c === 'LTC' || c === 'DOGE' ? t(`ui.p0.coin.${c}`) : undefined}
+                          onClick={() => e.run({ type: 'P0_SET_LOT_COIN', lotId: lot.id, coin: c as 'BTC' | 'ETH' | 'LTC' | 'DOGE' })}
+                        >
+                          {c}
+                        </button>
+                      ))}
+                    </span>
+                  </div>
+                )}
                 {selling === lot.id && lot.count > 1 && (
                   <div class="p0-sell" style={{ gridColumn: '1 / -1' }}>
                     <SellCount

@@ -36,10 +36,10 @@ function untilCard(s: GameState): GameState {
 }
 
 describe('cards (scope §2.10)', () => {
-  it('the 24 cards are all there, with text', () => {
-    // The pack's 24, plus the household's forced card (scope §2.3).
+  it('the 24 cards and the 17 altcoin cards (doc 51 v1.0, M68.3) are all there, with text', () => {
+    // The pack's 24 (+ 17 altcoin cards), plus the household's forced card (scope §2.3).
     const ids = CONTENT.prologue.events.cards.map((c) => c.id)
-    expect(ids.filter((id) => id !== 'household')).toHaveLength(24)
+    expect(ids.filter((id) => id !== 'household')).toHaveLength(24 + 17)
     for (const id of ids)
       expect(hasText(`p0.event.${id}.title`), id).toBe(true)
   })

@@ -4,6 +4,33 @@ import type { Coin } from '../state.ts'
 
 export type CoinAmounts = Record<Coin, number>
 
+/** M68.4 (doc 51 v1.0 §5): the Prologue's scrypt coins. They live only in your own wallet (no exchange, no moves). */
+export type AltCoin = 'LTC' | 'DOGE'
+export const ALT_COINS: readonly AltCoin[] = ['LTC', 'DOGE']
+export type AltAmounts = Record<AltCoin, number>
+
+/**
+ * Altcoin holdings and orders. Absent from a game that never points a GPU at an altcoin, so such a game's state (and every
+ * golden) is as it was.
+ */
+export interface AltState {
+  held: AltAmounts
+  /** The share of newly mined coins kept (1 = keep all); the rest is ordered sold, as bitcoin's keep/sell %. */
+  hodl: AltAmounts
+  /** Coins ordered sold, waiting for the week's selling limits. */
+  queue: AltAmounts
+  mined: AltAmounts
+  /** Lost with the wallet (a dead drive). */
+  lost: AltAmounts
+  /** Totals sold over the game: coins and dollars. */
+  sold: AltAmounts
+  soldUsd: AltAmounts
+  /** What the last report already counted (for the quarter's own figures). */
+  mark: { mined: AltAmounts; soldUsd: AltAmounts }
+  /** The 2016Q4 handover: coins sold in 2016 (within the limits, then the leftover conversion) and what they brought. */
+  handover?: Record<AltCoin, { amount: number; usd: number }>
+}
+
 /** A coin move between your wallet and the exchange: it arrives after one week (scope §2.7). */
 export interface CoinMove {
   coin: Coin
@@ -49,9 +76,13 @@ export interface PrologueReport {
   patience: number | null
   /** Cards played this quarter and the answer (auto-played ones took their default). */
   cards: { id: string; choice: string }[]
+  /** M68.4: only in a game with altcoins: what the quarter mined and sold, and what the wallet holds at its end. */
+  alts?: { mined: AltAmounts; soldUsd: AltAmounts; held: AltAmounts }
 }
 
 export interface PrologueState {
+  /** M68.4: altcoins (absent until a GPU is pointed at one). */
+  alts?: AltState
   /** Still living with your parents: household power is free, income comes in, patience counts. */
   livingAtHome: boolean
   /** Household patience, 0–100 (scope §2.3). */
