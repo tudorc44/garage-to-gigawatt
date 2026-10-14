@@ -16,7 +16,8 @@ See "Next".
 Split (docs 43 §0.26, 51 v1.1 §12 and 54 are in the repo; only the pool is built, the club waits):
 - M69.0 doc 43 §0.26, doc 51 v1.1, doc 54
 - M69.1 (A) X-B7 restated: paired-seed check per feature in the Prologue runner, a sell-as-mined-scrypt variant (reporting only)
-- M69.2 (B) pool data and content: pools_player.json wired through the generator and a schema, the 5 pool_ cards and text keys merged
+- M69.1 done: `tools/prologue-runner.ts` reports X-B7 per feature on paired seeds (sell-as-mined with and without; lift at most 3x, below careful-hodler), the scrypt-switcher's gap reported not judged; bot `sell-as-mined-scrypt` (the pool pair is read as soon as `sell-as-mined-pool` exists).
+- M69.2 done: `pools_player.json` is generated into the pack and `src/content/` (schema `poolsPlayerFileSchema`, `CONTENT.prologue.pool`); `merge_alts.py` merges the 5 pool_ cards and 8 text keys in each file's own format (new card type `trigger`, effect key `pool{}`); logged in the pack README. Goldens unchanged.
 - M69.3 (C) the pool in the sim: actions, the outside-miners model, risks, boycott, sale and handover, save format 8
 - M69.4 (D) screens: the Ventures nav item and pool panel, reachability coverage
 - M69.5 (E) Heat in Act V: the Perfect bot's habit (talk at 45, then noise mitigation); Act V goldens that play Perfect move here

@@ -3,8 +3,11 @@ Usage: npm run content:prologue-expansion  (python3 -I tools/prologue/gen_conten
 import json
 OUT = __file__.rsplit('/tools/', 1)[0] + '/docs/prologue-expansion-content'
 def V(value, grade, source): return {'value': value, 'grade': grade, 'source': source}
+LIVE = __file__.rsplit('/tools/', 1)[0] + '/src/content'
+LIVE_COPIES = {'pools_player.json'}  # the files the game reads as they are (a test checks the copy is identical); M69.2
 def save(name, obj):
-    with open(f'{OUT}/{name}', 'w') as f: json.dump(obj, f, indent=1, ensure_ascii=False); f.write('\n')
+    for d in ([OUT, LIVE] if name in LIVE_COPIES else [OUT]):
+        with open(f'{d}/{name}', 'w') as f: json.dump(obj, f, indent=1, ensure_ascii=False); f.write('\n')
 
 save('machines_scrypt.json', {
  'schema_version': 1,

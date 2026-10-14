@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 import {
   marketPrologueAltsSchema,
   marketQuarterlyPrologueAltsSchema,
+  poolsPlayerFileSchema,
 } from '../src/content/schemas.ts'
 import weekly from '../src/content/market_weekly_prologue_alts.json' with { type: 'json' }
 import quarterly from '../src/content/market_quarterly_prologue_alts.json' with { type: 'json' }
@@ -13,14 +14,14 @@ import { csvToRows } from '../tools/market-csv-to-json.ts'
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), 'utf8')
 
 /** The files of the pack that the game loads (the pool and club files join when those milestones build them). */
-const LOADED = ['market_weekly_prologue_alts.csv', 'market_quarterly_prologue_alts.csv']
+const LOADED = ['market_weekly_prologue_alts.csv', 'market_quarterly_prologue_alts.csv', 'pools_player.json']
 
 describe('the altcoin content merged into the Prologue files (M68.3)', () => {
   const json = (path: string) => JSON.parse(read(path))
   const pack = json('../docs/prologue-expansion-content/events_prologue_expansion.json').events as { id: string; type: string; week: string | null; trigger: string }[]
   const altIds = pack.filter((c) => !/^(pool|club)_/.test(c.id)).map((c) => c.id)
 
-  it('17 altcoin cards, none of the pool or club cards', () => {
+  it('17 altcoin cards, and no club cards (the 5 pool cards are checked below)', () => {
     expect(altIds.length).toBe(17)
     const docs = json('../docs/prologue-content/events_prologue.json').events as { id: string }[]
     const game = json('../src/content/events_prologue.json').cards as { id: string; type: string }[]
@@ -28,7 +29,7 @@ describe('the altcoin content merged into the Prologue files (M68.3)', () => {
       expect(docs.map((c) => c.id), id).toContain(id)
       expect(game.map((c) => c.id), id).toContain(id)
     }
-    expect([...docs, ...game].filter((c) => /^(pool|club)_/.test(c.id))).toEqual([])
+    expect([...docs, ...game].filter((c) => /^club_/.test(c.id))).toEqual([])
   })
 
   it('the game\'s news cards are display only; scrypt_boxes_ship needs a GPU on scrypt and sells them', () => {
@@ -83,6 +84,49 @@ describe('the altcoin content merged into the Prologue files (M68.3)', () => {
     const g = json('../src/content/prologue.json')
     expect(g.decision_quarters).not.toContain('2014Q3')
     expect(g.opt_in_decision_quarters).toEqual({ '2014Q3': 'scrypt_gpus' })
+  })
+})
+
+describe('your own pool: data and cards (M69.2)', () => {
+  const json = (path: string) => JSON.parse(read(path))
+  const POOL_IDS = ['pool_ddos', 'pool_theft', 'pool_pps_crunch', 'pool_boycott_2014', 'pool_sale_offer']
+
+  it('pools_player.json passes its schema and keeps the {value, grade, source} shape', () => {
+    const f = poolsPlayerFileSchema.parse(json('../src/content/pools_player.json'))
+    expect(f.open_action.setup_cash_usd).toEqual({ value: 300, grade: 'D', source: expect.any(String) })
+    expect(f.risks_per_quarter.hot_wallet_theft_with_cold_storage.value).toBeLessThan(f.risks_per_quarter.hot_wallet_theft.value)
+    expect(f.payout_methods.PPS.fee_range).toEqual([0.02, 0.1])
+  })
+
+  it('the 5 pool cards are in the docs file (pack format) and the game file (the game\'s format), each with its text', () => {
+    const docs = json('../docs/prologue-content/events_prologue.json').events as { id: string }[]
+    const game = json('../src/content/events_prologue.json').cards as { id: string; type: string; requires?: string[] }[]
+    const text = json('../src/i18n/content.en.json') as Record<string, string>
+    for (const id of POOL_IDS) {
+      expect(docs.map((c) => c.id), id).toContain(id)
+      const g = game.find((c) => c.id === id)!
+      expect(g, id).toBeDefined()
+      expect(g.requires, id).toEqual(['pool_open'])
+      expect(text[`p0.event.${id}.title`], id).toBeTruthy()
+      expect(text[`p0.event.${id}.body`], id).toBeTruthy()
+    }
+    expect(game.filter((c) => c.type === 'trigger').map((c) => c.id).sort()).toEqual(['pool_ddos', 'pool_pps_crunch', 'pool_theft'])
+  })
+
+  it('the 8 pool text keys match the pack in both text files', () => {
+    const pack = json('../docs/prologue-expansion-content/text_prologue_expansion.en.json') as Record<string, string>
+    const game = json('../src/i18n/content.en.json') as Record<string, string>
+    const docs = json('../docs/prologue-content/text_prologue.en.json') as Record<string, string>
+    for (const k of ['tooltip.p0.own_pool', 'tooltip.p0.pool_pps', 'tooltip.p0.pool_pplns', 'tooltip.p0.cold_storage', 'glossary.hot_wallet', 'glossary.ddos', 'chapter.p0.pool_sold', 'chapter.p0.pool_sold_handover']) {
+      // (glossary.hot_wallet already existed with its own wording: the merge never replaces, so that text stays)
+      if (k === 'glossary.hot_wallet') {
+        expect(game[k], k).toBeTruthy()
+        expect(docs[k], k).toBeTruthy()
+        continue
+      }
+      expect(game[k], k).toBe(pack[k])
+      expect(docs[k], k).toBe(pack[k])
+    }
   })
 })
 
