@@ -11,6 +11,17 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M70: the mining club (doc 51 §4), PPS insolvency (doc 51 §13) and the Heat habit check (doc 43 §0.27) (branch `m70` from `main` at `3918d3e`, M69 merged as PR #40)
+
+Split (docs 43 §0.27 and 51 v1.2 §13 are in the repo):
+- M70.0 doc 43 §0.27, doc 51 v1.2
+- M70.1 (A) PPS insolvency closes the pool, never ends the game; X-B3 re-measured on full runs
+- M70.2 (B) name what raises Heat in 2040Q4; Perfect's Heat at 2040Q3 and 2040Q4; verdict (and, only if it is ordinary grievances, the habit on every site and an Act V run)
+- M70.3 (C) club data and content: club.json and preorders_additions.json through the generator and schemas, the 7 club_ cards and text merged
+- M70.4 (D) the club in the sim: join, shares, group buy, keys, hosting, cards, endings, save format 9
+- M70.5 (E) the club panel in Ventures, reachability
+- M70.6 (F) club bots, prologue-club golden, `--prologue`, `--act2 --act3`
+
 ## M69: your own pool (doc 51 §3) and Heat in Act V (doc 43 §0.26) (branch `m69` from `main` at `bbb5874`, M68 merged as PR #39)
 
 Split (docs 43 §0.26, 51 v1.1 §12 and 54 are in the repo; only the pool is built, the club waits):
