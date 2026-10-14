@@ -1,0 +1,115 @@
+{
+ "schema_version": 1,
+ "notes": "Append to custody.json. pools.fee_pct_by_year already covers 2010-2016 (do not repeat); these add named real pools as reference rows, and the altcoin selling limits. Altcoins are always held in the player wallet (doc 51 v1.0 §5): exchange collapses move price and trust only.",
+ "pools_reference_fees": [
+  {
+   "year": "2011",
+   "pool": "DeepBit",
+   "scheme": "Proportional / PPS",
+   "fee": "3% / 10%",
+   "grade": "B",
+   "source": "Bitcoin Wiki, Comparison of mining pools (doc 53 B1)"
+  },
+  {
+   "year": "2011",
+   "pool": "BTC Guild",
+   "scheme": "Proportional, then PPS",
+   "fee": "0%, then 5%",
+   "grade": "B",
+   "source": "doc 53 B1"
+  },
+  {
+   "year": "2011",
+   "pool": "Eligius",
+   "scheme": "CPPSRB",
+   "fee": "0%",
+   "grade": "C",
+   "source": "doc 53 B1"
+  },
+  {
+   "year": "2013",
+   "pool": "BTC Guild",
+   "scheme": "PPLNS / PPS",
+   "fee": "3% / 7.5%",
+   "grade": "C",
+   "source": "doc 53 B1"
+  }
+ ],
+ "altcoin_selling_limits": {
+  "free_share_of_avg_daily_volume": {
+   "value": 0.005,
+   "grade": "D",
+   "source": "doc 53 A6"
+  },
+  "slippage": {
+   "value": "price -1% for each further 0.5% of average daily volume",
+   "grade": "D",
+   "source": "doc 53 A6"
+  },
+  "hard_cap_share_of_avg_daily_volume": {
+   "value": 0.02,
+   "grade": "D",
+   "source": "doc 53 A6"
+  },
+  "avg_daily_volume_usd": {
+   "LTC": {
+    "2011": {
+     "value": 20000,
+     "grade": "D",
+     "source": "no data; second research pass"
+    },
+    "2012": {
+     "value": 20000,
+     "grade": "D",
+     "source": "no data; second research pass"
+    },
+    "2013": {
+     "value": 295900,
+     "grade": "C",
+     "source": "CoinLore Apr-Dec"
+    },
+    "2014": {
+     "value": 5800000,
+     "grade": "C",
+     "source": "CoinLore"
+    },
+    "2015": {
+     "value": 3400000,
+     "grade": "C",
+     "source": "CoinLore"
+    },
+    "2016": {
+     "value": 3100000,
+     "grade": "C",
+     "source": "CoinLore"
+    }
+   },
+   "DOGE": {
+    "2013": {
+     "value": 101800,
+     "grade": "C",
+     "source": "CoinLore Dec"
+    },
+    "2014": {
+     "value": 1100000,
+     "grade": "C",
+     "source": "CoinLore"
+    },
+    "2015": {
+     "value": 168500,
+     "grade": "C",
+     "source": "CoinLore"
+    },
+    "2016": {
+     "value": 256500,
+     "grade": "C",
+     "source": "CoinLore"
+    }
+   }
+  }
+ },
+ "handover": {
+  "altcoins": "sold over 2016Q4 within the selling limits, at the weekly prices; any left after the cap converts at the 2016Q4 close x 0.9 (designed haircut); no altcoin enters Act I",
+  "chapter_report_later_prices": "dated LTC and DOGE closes at end 2017, end 2021 and the latest full year (second research pass)"
+ }
+}

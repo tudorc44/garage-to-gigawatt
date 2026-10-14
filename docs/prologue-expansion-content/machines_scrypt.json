@@ -1,0 +1,22 @@
+{
+ "schema_version": 1,
+ "notes": "Adds a scrypt hashrate to existing GPU models in machines_prologue.json. Power draw stays the existing power_kw (the existing file wins over doc 53's 200 W figure). FPGAs and BTC ASICs have no scrypt rate. No scrypt ASIC is buyable in the shop (doc 51 v1.0 §5); the only scrypt box is the club card club_scrypt_box.",
+ "models": {
+  "gpu_gaming_2010": {
+   "scrypt_khs": {
+    "value": 400,
+    "grade": "B/D",
+    "source": "doc 53 A3: HD 5870 400-442 kH/s, Litecoin wiki [B]; 400 chosen [D]"
+   },
+   "available_scrypt_from": "2011Q4"
+  },
+  "gpu_eth_2015": {
+   "scrypt_khs": {
+    "value": 3400,
+    "grade": "B/D",
+    "source": "doc 53 A3: 4 x R9 290X at 850 kH/s (860-900 sourced, CoinDesk Dec 2013) [B]"
+   },
+   "available_scrypt_from": "2015Q3"
+  }
+ }
+}

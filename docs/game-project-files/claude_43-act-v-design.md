@@ -1,4 +1,4 @@
-# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run; §0.15: after the third run; §0.16: after the fourth run; §0.17: mid-run answers; §0.18: the first Act V screen; §0.19: after M61-M62; §0.20: after M63; §0.21: after M64; §0.22: after M65; §0.23: the staging check; §0.24: after M66)
+# 43: Act V design, "Firm" (2036 → 2040). v1.2, 11 Oct 2026 (v1.0 approved; v1.1 adds §0 after doc 45, the M43.0 gate runs and the content pack; §0.11: the gate passes; v1.2 adds §0.12: doc 49, new chips; §0.13: after the overnight run; §0.14: after the second run; §0.15: after the third run; §0.16: after the fourth run; §0.17: mid-run answers; §0.18: the first Act V screen; §0.19: after M61-M62; §0.20: after M63; §0.21: after M64; §0.22: after M65; §0.23: the staging check; §0.24: after M66; §0.25: after M67)
 
 *Design thread. The recommended concept from doc 42 (Concept A, with B's exit and C's flexibility and Q-Day folded in), designed in the shape of doc 33. The owner approved doc 42's six recommendations on 10 Oct 2026 (V-D1 to V-D6 below). Built on doc 40 (second research pass, Part D), doc 37 (energy and 2040 dossier), doc 38 (energy ventures, especially §5-§6), doc 33 (Act IV as designed) and the game as built (dev-notes through M42, `main` = 71f36cb, `src/sim/state.ts`, `docs/energy-content/README.md`). The owner approved every recommendation in §21 on 10 Oct 2026 (V-D1 to V-D30). §22's open questions stay open; the design thread's recommendations on Q1 and Q2 are noted there. The content pack, scope doc and wireframe prompt come after approval, as for Acts III-IV.*
 
@@ -386,7 +386,18 @@ Also noted: GPU-hour rates and the newest generation stay at their 2036 values t
 
 **Levers allowed:** none. The run widens one gate (item 3), wires one UI path (item 1), changes how preset starts draw a seed (item 2), and measures.
 
-**§22 renumbered:** doc 43 §22's open questions 3-6 (Scenario Mode carry-over, standalone Act V, session length, bitcoin's weight) move to §0.25.
+**§22 renumbered:** doc 43 §22's open questions 3-6 (Scenario Mode carry-over, standalone Act V, session length, bitcoin's weight) move to §0.25 (renumbered §0.26 in §0.25).
+
+### 0.25 After M67 (14 Oct 2026)
+*Design-thread decisions (DT) on the M67 handover's five questions. M67 is accepted as built: Signals headlines (leak test clean), fresh futures for preset starts, the Act II rules gate over Act V, the ETH header, B5 recorded, the docs 50-52 copies. Every core target still passes; medians moved -0.85% on average, the expected cost of rules that now run.*
+
+1. **Heat in Act V ending above 50 is the rules working, but get a diagnosis (DT).** §3.2 says Heat carries and §0.24 turned its rules on, so a growing company that never answers Heat should reach the rate-hike tier: that is the Act III-IV story of local opposition, continued. What must hold is that the player can see it and act on it. Next run: report what drives Act V Heat (by source: MW added, sites, cards) for the Perfect and Holder bots; confirm the Heat meter and every mitigation action are reachable in Act V's UI (the reachability test covers actions; add Heat's); and report V-B7 and the hold ÷ sell ratios with Heat as is. No change to Heat's values unless a core target flips.
+2. **Keep V-B8's sign check (DT).** V2's 1.005-1.007 is thin for the structural reason in §0.21. A V2 cell at 1.00 or below is a reported miss, not a stop, as §0.21 says. The target isn't re-cut to the margin.
+3. **The rating's role is fine (DT).** It reads where it read in Act IV (corporate debt spread, equipment-loan terms, Capital views), and plant debt stays priced on contracts (§0.24 item 4). No bot needs to read it: the bots measure strategies, not credit management.
+4. **Fix the news band (DT; revised after the post-M67 handover).** The band at the foot of the Plan screen shows Act I-era text in Act V, so it isn't neutral, it's stale. In Acts III-V it shows the current quarter's first news line: in Act V, the first Signals headline of the quarter; in Acts III-IV, the quarter's first news card, or nothing when there is none. Never text from an earlier act. Repeating one line from the Signals panel is a smaller cost than a band that is out of date. UI only.
+5. **Don't commit the stray research file (DT).** The research thread saved its dossier into `docs/prologue-content/` by mistake; it is kept as doc 53 in the project folder, and `docs/prologue-content/` is the Prologue's live content source. Delete the untracked file. Doc 53 and the Prologue expansion pack enter the repo with the expansion's first milestone, in `docs/game-project-files/` and a new `docs/prologue-expansion-content/`.
+
+**§22 renumbered again:** doc 43 §22's open questions 3-6 move to §0.26.
 
 ---
 

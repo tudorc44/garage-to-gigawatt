@@ -11,6 +11,18 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M68: doc 43 §0.25 and the Prologue's altcoins (doc 51 v1.0) (branch `m68` from `main` at `4cf8373`)
+
+Split (the owner approved doc 51 v1.0 and the Prologue scope changes in its §9 by pasting the prompt; this milestone builds only
+doc 51 §11 item 1, altcoins for old GPUs; no pools or club yet):
+- M68.0 doc 43 §0.25, doc 51 v1.0, doc 53 and the expansion pack in `docs/prologue-expansion-content/` (copied, checked byte for byte)
+- M68.1 (A) Heat in Act V by source and its reachability, the news band in Acts III-V (doc 43 §0.25)
+- M68.2 (B) generators into `tools/prologue/`, `npm run content:prologue-expansion`, the two alt CSVs in `src/content/`, byte-identity test, Zod schemas
+- M68.3 (C) merge the altcoin content into the Prologue files (machines, custody, events, text, the 2014Q3 decision quarter), schemas
+- M68.4 (D) the sim: coin per GPU lot, `SET_LOT_COIN`, scrypt income, altcoin sales and limits, the 2014Q3 card, handover, save version
+- M68.5 (E) screens: coin selector on the Rig, LTC and DOGE in the treasury and sell dialog, news headlines
+- M68.6 (F) the `scrypt-switcher` bot, `npm run sim -- --prologue` and the X-B table, the `prologue-alts` golden, the `--act2 --act3` byte-identity run
+
 ## M67: doc 43 §0.24 (branch `m67` from `main` at `7a5605e`)
 
 - **Split (unattended run, the owner's prompt of 13 Oct 2026):** M67.0 doc 43 §0.24 (byte-identical to the project copy; header and §0.24 only) · **M67.1 (A)** Act IV note (B5) and docs 50-52 · **M67.2 (B)** Signals headlines · **M67.3 (C)** preset seeds · **M67.4 (D)** the Act II rules gate in Act V · **M67.5 (E)** the ETH header · **M67.6 (F)** the re-measure.
