@@ -17,51 +17,62 @@
  },
  "server_bill_usd_quarter": {
   "2011": {
-   "value": 180,
-   "grade": "D",
-   "source": "doc 53 B3: $60 a month"
+   "value": 240,
+   "grade": "C",
+   "source": "doc 57: a dedicated server, about $80 a month (period price pages and forum posts)"
   },
   "2012": {
-   "value": 150,
-   "grade": "D",
-   "source": "interpolated"
+   "value": 240,
+   "grade": "C",
+   "source": "doc 57: a dedicated server, about $80 a month (period price pages and forum posts)"
   },
   "2013": {
-   "value": 120,
-   "grade": "D",
-   "source": "doc 53 B3: $40 a month"
+   "value": 192,
+   "grade": "C",
+   "source": "doc 57: a dedicated server, about $64 a month (period price pages and forum posts)"
   },
   "2014": {
-   "value": 105,
-   "grade": "D",
-   "source": "interpolated"
+   "value": 168,
+   "grade": "C",
+   "source": "doc 57: a dedicated server, about $56 a month (period price pages and forum posts)"
   },
   "2015": {
-   "value": 90,
-   "grade": "D",
-   "source": "doc 53 B3: $30 a month"
+   "value": 168,
+   "grade": "C",
+   "source": "doc 57: a dedicated server, about $56 a month (period price pages and forum posts)"
   },
   "2016": {
-   "value": 90,
-   "grade": "D",
-   "source": "held"
+   "value": 168,
+   "grade": "C",
+   "source": "doc 57: a dedicated server, about $56 a month (period price pages and forum posts)"
   }
  },
  "ddos_protection": {
   "action_bandwidth": 1,
-  "available_from": "2013Q1",
+  "available_from": "2013Q2",
   "usd_quarter": {
    "2013": {
-    "value": 240,
-    "grade": "D",
-    "source": "doc 53 B3: $80 a month"
+    "value": 300,
+    "grade": "C",
+    "source": "doc 57: a $100 a month add-on, or free with one large host from May 2013"
+   },
+   "2014": {
+    "value": 0,
+    "grade": "C",
+    "source": "doc 57: bundled free from 2014"
    },
    "2015": {
-    "value": 150,
-    "grade": "D",
-    "source": "doc 53 B3: $50 a month"
+    "value": 0,
+    "grade": "C",
+    "source": "doc 57"
+   },
+   "2016": {
+    "value": 0,
+    "grade": "C",
+    "source": "doc 57"
    }
   },
+  "before": "doc 57: protection for raw TCP cost $3,000-7,000 a month in 2011-12 (enterprise only), so a hobby pool had none",
   "effect": "halves the DDoS chance"
  },
  "cold_storage": {
@@ -96,55 +107,55 @@
   "model": "outside hashrate = network hashrate x small_pool_share[year] x pull; pull starts at start_pull and moves each quarter with fee, luck and reputation, minus churn",
   "small_pool_share_by_year": {
    "2011": {
-    "value": 0.3,
-    "grade": "D",
-    "source": "placeholder; second research pass"
-   },
-   "2012": {
-    "value": 0.25,
-    "grade": "D",
-    "source": "placeholder; second research pass"
-   },
-   "2013": {
-    "value": 0.15,
-    "grade": "D",
-    "source": "placeholder; second research pass"
-   },
-   "2014": {
     "value": 0.1,
     "grade": "D",
-    "source": "placeholder; second research pass"
+    "source": "doc 55 §4: solo mining dominant, Deepbit majority"
+   },
+   "2012": {
+    "value": 0.15,
+    "grade": "D",
+    "source": "doc 55 §4"
+   },
+   "2013": {
+    "value": 0.25,
+    "grade": "C",
+    "source": "doc 55 §4: outside the top five (Cong, He and Li 2018 [B]) minus solo"
+   },
+   "2014": {
+    "value": 0.26,
+    "grade": "C",
+    "source": "doc 55 §4"
    },
    "2015": {
-    "value": 0.08,
-    "grade": "D",
-    "source": "placeholder; second research pass"
+    "value": 0.3,
+    "grade": "C",
+    "source": "doc 55 §4"
    },
    "2016": {
-    "value": 0.05,
-    "grade": "D",
-    "source": "placeholder; second research pass"
+    "value": 0.24,
+    "grade": "C",
+    "source": "doc 55 §4"
    }
   },
   "start_pull": {
-   "value": 0.005,
+   "value": 0.0025,
    "grade": "D",
-   "source": "a new pool gets 0.5% of the small-pool market"
+   "source": "a new pool gets 0.25% of the small-pool market (M71.7 lever (a): was 0.005; doc 51 §13 decision 1)"
   },
   "fee_elasticity_per_pp": {
    "value": -0.08,
    "grade": "D",
-   "source": "doc 53 B3: -8% hashrate per +1 pp fee against the median"
+   "source": "doc 53 B3: -8% hashrate per +1 pp fee against the median (M71.7 lever (b), -0.12, tried and reverted: it widened X-B2 from 8.54x to 9.04x)"
   },
   "median_fee_by_year": {
-   "2011": 0.02,
-   "2012": 0.02,
-   "2013": 0.01,
-   "2014": 0.01,
-   "2015": 0.015,
-   "2016": 0.015,
-   "grade": "D",
-   "source": "custody.json fee_pct_by_year and doc 53 B1, rounded"
+   "2011": 0.0387,
+   "2012": 0.0348,
+   "2013": 0.0303,
+   "2014": 0.0161,
+   "2015": 0.0224,
+   "2016": 0.0112,
+   "grade": "B",
+   "source": "size-weighted average pool fee, Cong, He and Li 2018 (doc 55 §4); used as the market fee the player is compared with"
   },
   "base_churn_quarter": {
    "value": 0.05,
@@ -217,17 +228,24 @@
   }
  },
  "boycott_2014": {
-  "window": [
-   "2014Q2",
-   "2014Q3"
-  ],
+  "start_week": "2014-06-16",
   "condition": "pool open, fee at or below the median, reputation >= 50",
-  "outside_hashrate_mult": {
-   "value": 1.3,
+  "small_pool_share_bump_pp_by_week": {
+   "value": {
+    "1": 4.0,
+    "4": 2.0,
+    "8": 1.0
+   },
    "grade": "D",
-   "source": "miners spread from the largest pool after June 2014 (custody.json note); size designed, second research pass"
+   "source": "doc 57: GHash.io 55% on 12-13 Jun, 42% on 15 Jun, 35% on 19 Jun, about 34.6% in mid-July [B]; most of the outflow went to big pools; linear between the points"
   },
-  "card": "pool_boycott_2014"
+  "lasting_bump_pp": {
+   "value": 1.0,
+   "grade": "D",
+   "source": "after week 8, to the end of 2014; then the yearly share table takes over"
+  },
+  "card": "pool_boycott_2014",
+  "replaces": "the v1.0 x1.3 for two quarters"
  },
  "sale": {
   "from_quarter": "2013Q1",
@@ -242,10 +260,10 @@
  "names": {
   "default_pool_name": "Halfblock Pool",
   "rivals": [
-   "OreLoop",
+   "Slagwheel",
    "CopperHash"
   ],
   "grade": "D",
-  "note": "invented; name-clash check before shipping"
+  "note": "invented; OreLoop renamed Slagwheel (doc 57: a Swedish gold-mining technology company uses OreLoop); formal USPTO and EUIPO searches before ship"
  }
 }

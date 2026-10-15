@@ -275,15 +275,27 @@ export const marketWeekPrologueAltsSchema = z.object({
   week: isoDate,
   quarter: quarterId,
   ltc_usd: nullableNonNeg,
+  // M71.2 (doc 51 v1.4 §15): the real weekly high, low and daily volume (CoinMarketCap [A]) where the file has them, the price grade and the difficulty
+  ltc_usd_high: nullableNonNeg.optional(),
+  ltc_usd_low: nullableNonNeg.optional(),
+  ltc_volume_usd_day: nullableNonNeg.optional(),
+  ltc_price_grade: z.enum(['', 'A', 'B', 'C', 'D', 'D/A']).nullable().optional(), // (D/A: the hand-off week, designed path to the real close)
+  ltc_difficulty: nullableNonNeg.optional(),
   ltc_hashrate_GHs: nullableNonNeg,
   ltc_block_reward: nullableNonNeg,
   ltc_rev_usd_khs_day: nullableNonNeg,
   doge_usd: nullableNonNeg,
+  doge_usd_high: nullableNonNeg.optional(),
+  doge_usd_low: nullableNonNeg.optional(),
+  doge_volume_usd_day: nullableNonNeg.optional(),
+  doge_price_grade: z.enum(['', 'A', 'B', 'C', 'D', 'D/A']).nullable().optional(),
+  doge_difficulty: nullableNonNeg.optional(),
   doge_hashrate_GHs: nullableNonNeg,
   doge_block_reward_expected: nullableNonNeg,
   doge_rev_usd_khs_day: nullableNonNeg,
   doge_merged_mining: z.boolean().nullable(),
-  estimate: z.boolean(),
+  // (M71.2: blank in the weeks before Litecoin opens, where the generator writes no row data)
+  estimate: z.boolean().nullable(),
 })
 export const marketPrologueAltsSchema = z.array(marketWeekPrologueAltsSchema).min(1)
 
@@ -297,7 +309,7 @@ export const marketQuarterPrologueAltsSchema = z.object({
   ltc_usd_avg: nullableNonNeg,
   ltc_hashrate_GHs_avg: nullableNonNeg,
   ltc_block_reward_q_start: nullableNonNeg,
-  ltc_price_grade: z.enum(['', 'A', 'B', 'C', 'D']),
+  ltc_price_grade: z.enum(['', 'A', 'B', 'C', 'D']).optional(),
   doge_usd_open: nullableNonNeg,
   doge_usd_close: nullableNonNeg,
   doge_usd_high: nullableNonNeg,
@@ -305,8 +317,8 @@ export const marketQuarterPrologueAltsSchema = z.object({
   doge_usd_avg: nullableNonNeg,
   doge_hashrate_GHs_avg: nullableNonNeg,
   doge_block_reward_q_start: nullableNonNeg,
-  doge_price_grade: z.enum(['', 'A', 'B', 'C', 'D']),
-  estimate: z.boolean(),
+  doge_price_grade: z.enum(['', 'A', 'B', 'C', 'D']).optional(),
+  estimate: z.boolean().nullable(),
 })
 export const marketQuarterlyPrologueAltsSchema = z.array(marketQuarterPrologueAltsSchema).min(1)
 
@@ -328,6 +340,7 @@ export const poolsPlayerFileSchema = z.object({
     available_from: quarterId,
     usd_quarter: byYearGraded,
     effect: z.string(),
+    before: z.string().optional(),
   }),
   cold_storage: z.object({ action_bandwidth: z.number().int().min(0), cash_usd: z.number(), effect: z.string(), lapses: z.string() }),
   payout_methods: z.object({
@@ -367,11 +380,14 @@ export const poolsPlayerFileSchema = z.object({
     theft_size: gradedValue(z.string()),
     orphan_rate: gradedValue(z.record(z.string(), z.number())),
   }),
+  // M71.3 (doc 51 v1.4 §14 decision 7): the June 2014 outflow is a bump in the small-pool share, week by week from `start_week`
   boycott_2014: z.object({
-    window: z.tuple([quarterId, quarterId]),
+    start_week: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     condition: z.string(),
-    outside_hashrate_mult: gradedNum,
+    small_pool_share_bump_pp_by_week: gradedValue(z.record(z.string().regex(/^\d+$/), z.number())),
+    lasting_bump_pp: gradedNum,
     card: z.string(),
+    replaces: z.string().optional(),
   }),
   sale: z.object({ from_quarter: quarterId, price: z.string(), multiple: gradedNum, at_handover: z.string() }),
   names: z.object({ default_pool_name: z.string(), rivals: z.array(z.string()), grade: z.string(), note: z.string() }),
@@ -398,7 +414,7 @@ export const clubFileSchema = z.object({
   hosting: z.object({
     choice: z.tuple([z.literal('your_place'), z.literal('friends_flat')]),
     your_place: z.object({ counts_against_household_patience: z.literal(true), fee_from_club_usd_kw_quarter: gradedNum }),
-    friends_flat: z.object({ counts_against_household_patience: z.literal(false), fee_to_mara_usd_kw_quarter: gradedNum }),
+    friends_flat: z.object({ counts_against_household_patience: z.literal(false), fee_to_nell_usd_kw_quarter: gradedNum }),
   }),
   gpus_coin: z.string(),
   endings: z.object({
@@ -408,6 +424,8 @@ export const clubFileSchema = z.object({
     dissolve: z.string(),
     chapter_report: z.string(),
   }),
+  // M71.3 (doc 51 v1.4 §15 decision 6): one effect, on the price of buying the friends out
+  friendship: z.object({ start: z.number(), down: z.string(), effect: gradedValue(z.string()) }),
 })
 export type ClubFile = z.output<typeof clubFileSchema>
 
@@ -2266,6 +2284,7 @@ export const prologueFileSchema = z.object({
     step_share: z.number().positive().max(1),
     slippage_per_step: z.number().min(0).max(1),
     hard_cap_share: z.number().positive().max(1),
+    volume_rule: z.string().optional(),
     avg_daily_volume_usd: z.object({
       LTC: yearValues,
       DOGE: yearValues,
@@ -2274,6 +2293,8 @@ export const prologueFileSchema = z.object({
   altcoin_handover: z.object({
     sell_quarter: quarterId,
     left_over_close_mult: z.number().min(0).max(1),
+    // M71.3 (doc 51 v1.4 §14 decision 6): the chapter line's later prices, on one fixed date
+    later_prices: z.object({ date: z.string(), LTC: z.number().positive(), DOGE: z.number().positive() }),
     note: z.string(),
   }),
   offers: z.array(

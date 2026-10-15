@@ -156,8 +156,11 @@ export function landAlts(s: GameState, coins: AltAmounts): void {
 }
 
 const yearOf = (row: PrologueAltWeek) => row.week.slice(0, 4)
-/** The year's average daily volume in dollars (the last year on file if the year is past it). */
+/** The week's daily volume in dollars: the file's real figure, else the year's average (the last year on file if the year is past it). */
 function dailyVolumeUsd(coin: AltCoin, row: PrologueAltWeek): number {
+  // M71.3 (doc 51 v1.4 §15 decision 1): the week's real daily volume where the market file has it, else the year's average
+  const real = coin === 'LTC' ? row.ltc_volume_usd_day : row.doge_volume_usd_day
+  if (real && real > 0) return real
   const v = P().altcoin_selling_limits.avg_daily_volume_usd[coin]
   const years = Object.keys(v).sort()
   const y = yearOf(row)

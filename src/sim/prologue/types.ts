@@ -116,7 +116,7 @@ export interface OwnPool {
   lastBlocks: number
   /** Dollars by quarter, newest last: the operator's fee income (the sale price is its last four) and the quarter so far. */
   feeUsdQuarters: number[]
-  quarter: { feeUsd: number; paidMinersUsd: number; billsUsd: number; ownBtc: number; operatorBtc: number; blocks: number }
+  quarter: { feeUsd: number; paidMinersUsd: number; billsUsd: number; ownBtc: number; operatorBtc: number; blocks: number; operatorUsd?: number }
   /** A PPS crunch card was already raised this quarter. */
   crunchQuarter: number | null
 }
@@ -131,11 +131,14 @@ export interface PoolReport {
   blocks: number
   outsideTh: number
   reputation: number
+  /** M71.4: the operator's take at each week's price (fees, and under PPS the luck on top), and the payout method; absent in older saves. */
+  operatorUsd?: number
+  method?: 'PPLNS' | 'PPS'
 }
 
 /** The mining club (M70.4, doc 51 v1.2 §4). Absent from a game that never joins it. */
-export type ClubMember = 'you' | 'mara' | 'teo' | 'jun'
-export const CLUB_FRIENDS: readonly ClubMember[] = ['mara', 'teo', 'jun']
+export type ClubMember = 'you' | 'nell' | 'teo' | 'jun'
+export const CLUB_FRIENDS: readonly ClubMember[] = ['nell', 'teo', 'jun']
 /** What a member holds in the club's custody: cash and coins. */
 export interface ClubBalance {
   cash: number
@@ -206,7 +209,7 @@ export interface PrologueState {
   /** M69.3: your own pool (absent until one is opened). */
   ownPool?: OwnPool
   /** M69.3: an own pool sold or closed: when, for how much, and whether the handover sold it (the chapter report's line). */
-  poolEnded?: { name: string; quarter: number; usd: number; kind: 'sold' | 'handover' | 'closed' | 'insolvent' }
+  poolEnded?: { name: string; quarter: number; usd: number; kind: 'sold' | 'handover' | 'closed' | 'insolvent'; unpaidUsd?: number }
   /** M68.4: altcoins (absent until a GPU is pointed at one). */
   alts?: AltState
   /** Still living with your parents: household power is free, income comes in, patience counts. */

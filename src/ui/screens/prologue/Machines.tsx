@@ -1,5 +1,6 @@
 // Machines & Rooms (wireframe P0-03's second menu item): your rooms (the bedroom, the home rig, the
 // garage, a small unit) with their load and machines, and the buy menu as MachineCards.
+import { PROLOGUE_EXPANSION } from '../../../platform/preview.ts'
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../../i18n/t.ts'
 import type { Message } from '../../../i18n/t.ts'
@@ -192,7 +193,7 @@ export function Machines({ state, act }: PrologueProps) {
                     </button>
                   )}
                 </span>
-                {altChoices.length > 0 && (
+                {PROLOGUE_EXPANSION && altChoices.length > 0 && (
                   // M68.5 (doc 51 v1.0 §5): a GPU lot can mine Litecoin or Dogecoin; only the coins open this quarter show
                   <div class="row-between" style={{ gridColumn: '1 / -1' }} data-lot-coin>
                     <span class="num-s muted" title={tDynamic('tooltip.p0.coin_choice', '')}>

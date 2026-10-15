@@ -2,7 +2,8 @@
 // (prologue)" and "Start in 2017", with Act II's preset below), Load, Import, and the saved careers
 // with a Prologue / Act I / Act II tag. An optional seed. (The end screens are in End.tsx.)
 import { useState } from 'preact/hooks'
-import { t } from '../../i18n/t.ts'
+import { t, tDynamic } from '../../i18n/t.ts'
+import { PROLOGUE_EXPANSION } from '../../platform/preview.ts'
 import { quarterName } from '../../sim/selectors.ts'
 import type { ComponentChildren } from 'preact'
 import { inActII, inActIII, inActIV, inActV, type GameState } from '../../sim/state.ts'
@@ -121,6 +122,10 @@ export function TitleScreen(props: {
           </div>
           {importing && <ImportBox onLoad={props.onLoad} />}
           <span class="num-s muted">{t('ui.title.version')}</span>
+          {PROLOGUE_EXPANSION && (
+            // M71.3 (doc 51 v1.4 §15 decision 1): the Prologue's altcoin prices are CoinMarketCap's
+            <span class="num-s muted" data-credits>{tDynamic('credit.p0.price_data', '')}</span>
+          )}
         </div>
         <div class="title-side">
           {scenarioOpen && props.scenarioMode}

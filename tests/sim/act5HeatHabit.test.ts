@@ -5,7 +5,7 @@ import { applyAction } from '../../src/sim/actions.ts'
 import { playFrom } from '../../src/sim/replay.ts'
 import { toAct5, type GameState } from '../../src/sim/state.ts'
 import { topHeat } from '../../src/sim/selectors.ts'
-import { HEAT_HABIT_AT, act5Bot, heatHabit } from '../../tools/act5/bots.ts'
+import { HEAT_HABIT_AT, act5Bot, complaintAnswer, heatHabit } from '../../tools/act5/bots.ts'
 import { act4Company } from './act4Helpers.ts'
 
 let end4: GameState | null = null
@@ -72,5 +72,47 @@ describe('the perfect reader\'s Heat habit (M69.5)', () => {
     for (const name of ['holder', 'flex', 'seller', 'locker', 'orbit', 'builder', 'balanced', 'overreactor', 'passive'] as const)
       expect(act5Bot(name).plan(s).some((a) => a.type === 'OUTREACH' || a.type === 'MITIGATE_NOISE'), name).toBe(false)
     expect(act5Bot('perfect').plan(s).some((a) => a.type === 'OUTREACH')).toBe(true)
+  })
+})
+
+describe('the perfect reader answers the neighbour complaint (M71.5, doc 43 §0.28)', () => {
+  const withComplaint = () => {
+    const s = start()
+    const id = setHeat(s, 52)
+    s.cash = 5e9
+    s.phase = 'live'
+    s.interrupt = { id: 'neighbour_complaint', siteId: id, week: 3 } as never
+    return { s, id }
+  }
+
+  it('takes the answer that leaves the Heat lowest, and never ignores while a better one is open', () => {
+    const { s, id } = withComplaint()
+    const answer = complaintAnswer(s)!
+    expect(['pay', 'mitigate']).toContain(answer)
+    const heatAfter = (choice: string) => {
+      const t = structuredClone(s)
+      const r = applyAction(t, { type: 'RESOLVE_INTERRUPT', choice })
+      if (!r.ok) throw new Error(r.error.key)
+      return r.state.siteHeat[id].value
+    }
+    expect(heatAfter(answer)).toBeLessThanOrEqual(heatAfter('ignore'))
+    expect(heatAfter(answer)).toBeLessThanOrEqual(heatAfter(answer === 'pay' ? 'mitigate' : 'pay') + 1e-9)
+  })
+
+  it('ignores only when it cannot pay for either', () => {
+    const { s } = withComplaint()
+    s.cash = 0
+    expect(complaintAnswer(s)).toBe('ignore')
+  })
+
+  it('has no opinion on any other interrupt', () => {
+    const s = start()
+    s.interrupt = { id: 'power_price_spike', week: 3 } as never
+    expect(complaintAnswer(s)).toBeUndefined()
+  })
+
+  it('is the perfect bot that has it: the others still answer by default', () => {
+    expect(act5Bot('perfect').answer).toBeDefined()
+    expect(act5Bot('passive').answer).toBeUndefined()
   })
 })

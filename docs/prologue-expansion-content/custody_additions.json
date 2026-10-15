@@ -36,6 +36,7 @@
   }
  ],
  "altcoin_selling_limits": {
+  "volume_rule": "use the week's real daily volume (market file, CoinMarketCap [A]) where present, else the year's average below",
   "free_share_of_avg_daily_volume": {
    "value": 0.005,
    "grade": "D",
@@ -54,14 +55,14 @@
   "avg_daily_volume_usd": {
    "LTC": {
     "2011": {
-     "value": 20000,
+     "value": 2000,
      "grade": "D",
-     "source": "no data; second research pass"
+     "source": "doc 55 §8: not found; scaled from the 2013 average by market cap"
     },
     "2012": {
-     "value": 20000,
+     "value": 1000,
      "grade": "D",
-     "source": "no data; second research pass"
+     "source": "doc 55 §8: not found"
     },
     "2013": {
      "value": 295900,
@@ -110,6 +111,19 @@
  },
  "handover": {
   "altcoins": "sold over 2016Q4 within the selling limits, at the weekly prices; any left after the cap converts at the 2016Q4 close x 0.9 (designed haircut); no altcoin enters Act I",
-  "chapter_report_later_prices": "dated LTC and DOGE closes at end 2017, end 2021 and the latest full year (second research pass)"
+  "chapter_report_later_prices": {
+   "date": "2021-12-31",
+   "LTC": {
+    "value": 146.41,
+    "grade": "C",
+    "source": "CoinLore year close (doc 55 §7)"
+   },
+   "DOGE": {
+    "value": 0.1708,
+    "grade": "C",
+    "source": "CoinLore year close (doc 55 §7)"
+   },
+   "why": "one fixed, well-known date; a latest-year close would date the line (doc 51 §14 decision 6)"
+  }
  }
 }

@@ -611,6 +611,7 @@ export function prologuePoolView(state: GameState) {
           protectedFrom: pool.protectionFrom !== null ? CONTENT.quarters[pool.protectionFrom] : null,
           boycottOpen: !!pool.boycott && state.quarter >= pool.boycott.from && state.quarter <= pool.boycott.until,
           quarter: { ...pool.quarter },
+          figures: poolQuarterFigures(pool.quarter, pool.method),
           feeHistory: [...pool.feeUsdQuarters],
           salePriceUsd: poolSalePriceUsd(pool),
         }
@@ -639,25 +640,35 @@ function poolBlockers(state: GameState) {
 }
 
 /** This quarter's news headlines (p0.news.<quarter>.<n>). */
-export function prologueNews(state: GameState): string[] {
+export function prologueNews(state: GameState, expansion = true): string[] {
   const q = label(state.quarter)
   const keys: string[] = []
   for (let i = 0; i < 6; i++) keys.push(`p0.news.${q}.${i}`)
   // M68.5 (doc 51 v1.0 §7): the quarter's headline cards (type 'news': display only, no pause, nothing recorded) join the list
-  for (const c of CONTENT.prologue.events.cards)
-    if (c.type === 'news' && c.quarterIndex === state.quarter) keys.push(`p0.event.${c.id}.title`)
+  if (expansion)
+    for (const c of CONTENT.prologue.events.cards)
+      if (c.type === 'news' && c.quarterIndex === state.quarter) keys.push(`p0.event.${c.id}.title`)
   return keys
 }
 
 /**
- * M68.5: what the handover sale of Litecoin and Dogecoin brought, for the chapter report (none in a game without altcoins).
- * TODO (doc 51 v1.0 §10 item 7): the line's later-price clause (what those coins were worth at a later date) waits for the
- * dated closes of the second research pass; until then the chapter shows the sale alone.
+ * M68.5: what the handover sale of Litecoin and Dogecoin brought, for the chapter report (none in a game without altcoins), and
+ * (M71.3) what the same coins were worth on the fixed later date.
  */
-export function prologueAltsSold(state: GameState): { coin: AltCoin; amount: number; usd: number }[] {
+export function prologueAltsSold(
+  state: GameState,
+): { coin: AltCoin; amount: number; usd: number; laterDate: string; laterUsd: number }[] {
   const h = state.prologue?.alts?.handover
   if (!h) return []
-  return ALT_COINS.filter((c) => h[c].amount > 0).map((coin) => ({ coin, amount: h[coin].amount, usd: h[coin].usd }))
+  // (doc 51 v1.4 §14 decision 6: what the same coins were worth on one fixed later date)
+  const later = CONTENT.prologue.rules.altcoin_handover.later_prices
+  return ALT_COINS.filter((c) => h[c].amount > 0).map((coin) => ({
+    coin,
+    amount: h[coin].amount,
+    usd: h[coin].usd,
+    laterDate: later.date,
+    laterUsd: h[coin].amount * later[coin],
+  }))
 }
 
 /**
@@ -713,4 +724,17 @@ export function prologueClubView(state: GameState) {
         }
       : null,
   }
+}
+
+/**
+ * M71.4 (owner's playtest): a pool quarter's fee income, the luck result and the net, in dollars. Under PPLNS the operator takes the
+ * fee and nothing else, so the net is the fee and there is no luck figure; under PPS the operator carries the variance, so the
+ * luck is what the blocks brought beyond (or short of) what the miners were promised, and net = fees + luck.
+ */
+export function poolQuarterFigures(
+  q: { feeUsd: number; operatorUsd?: number },
+  method: 'PPLNS' | 'PPS' | undefined,
+): { feeUsd: number; luckUsd: number | null; netUsd: number } {
+  if (method !== 'PPS' || q.operatorUsd === undefined) return { feeUsd: q.feeUsd, luckUsd: null, netUsd: q.feeUsd }
+  return { feeUsd: q.feeUsd, luckUsd: q.operatorUsd - q.feeUsd, netUsd: q.operatorUsd }
 }

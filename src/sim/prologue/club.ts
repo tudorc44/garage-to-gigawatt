@@ -1,9 +1,9 @@
-// The mining club (M70.4, doc 51 v1.2 §4; club.json, preorders_additions.json): in 2013Q1 three friends (Mara, Teo, Jun) offer to
+// The mining club (M70.4, doc 51 v1.2 §4; club.json, preorders_additions.json): in 2013Q1 three friends (Nell, Teo, Jun) offer to
 // pool money. You put in $500-$5,000, they put in $3,000 between them and Teo brings two GPUs; shares follow the value put in. All
 // the cash goes into the group buy (its delay roll and its late-equals-loss rule apply, one order per $650); Teo's GPUs mine the
 // coin you pick. The club's output is split by shares each week. Who holds the keys and where the machines run are your choices:
 // the keys with Jun can be lost (a chance a quarter, a share of everything), the machines in your place count against the household's
-// patience and the club pays you a hosting fee, in Mara's flat they don't and you pay your share of hers. Seven cards test it. The club
+// patience and the club pays you a hosting fee, in Nell's flat they don't and you pay your share of hers. Seven cards test it. The club
 // ends at the breakup card or at the handover: you buy the friends out (everything becomes yours and enters Act I as machines and
 // coins) or dissolve it (machines at the used price, coins at the week's price, split by shares). No club system enters Act I.
 // Nothing here runs, and no state is created, in a game that never joins the club (opt-out invariance).
@@ -26,8 +26,9 @@ const fail = (key: Message['key'], params?: Message['params']): Message => ({
   ...(params ? { params } : {}),
 })
 const CL = () => CONTENT.prologue.club!
-const ALL: readonly ClubMember[] = ['you', 'mara', 'teo', 'jun']
+const ALL: readonly ClubMember[] = ['you', 'nell', 'teo', 'jun']
 const emptyBal = (): ClubBalance => ({ cash: 0, BTC: 0, LTC: 0, DOGE: 0 })
+const FRIENDSHIP_PRICE_STEP = 0.1
 const COINS = ['BTC', 'LTC', 'DOGE'] as const
 type Coin3 = (typeof COINS)[number]
 
@@ -102,7 +103,7 @@ export function joinClub(
   const total = stake + friendsCash + gpuValue
   const club: Club = {
     joinedQuarter: s.quarter,
-    shares: { you: stake / total, mara: each / total, teo: (each + gpuValue) / total, jun: each / total },
+    shares: { you: stake / total, nell: each / total, teo: (each + gpuValue) / total, jun: each / total },
     members: [...ALL],
     stakeUsd: stake,
     keys,
@@ -110,7 +111,7 @@ export function joinClub(
     hostSiteId: [...s.sites]
       .filter((x) => x.readyQuarter <= s.quarter)
       .sort((a, b) => siteCapacityKw(b) - siteLoadKw(s, b.id) - (siteCapacityKw(a) - siteLoadKw(s, a.id)))[0].id,
-    bal: { you: emptyBal(), mara: emptyBal(), teo: emptyBal(), jun: emptyBal() },
+    bal: { you: emptyBal(), nell: emptyBal(), teo: emptyBal(), jun: emptyBal() },
     lots: [],
     orders: [],
     gpuCoin: 'BTC',
@@ -224,7 +225,7 @@ export function clubWeek(s: GameState): void {
   for (const c of COINS) credit(s, club, c, coins[c])
   club.quarter.outputUsd += outUsd
   club.quarter.yourShareUsd += outUsd * club.shares.you
-  // hosting: in your place the club pays you its fee (the friends' part; yours is yours), in Mara's flat you pay your share of hers
+  // hosting: in your place the club pays you its fee (the friends' part; yours is yours), in Nell's flat you pay your share of hers
   const kw = clubKw(club)
   const feeWeek = (kw * hostingRate(club)) / 13
   if (kw > 0 && club.hosting === 'your_place') {
@@ -247,7 +248,7 @@ export function clubWeek(s: GameState): void {
 const hostingRate = (club: Club) =>
   club.hosting === 'your_place'
     ? CL().rules.hosting.your_place.fee_from_club_usd_kw_quarter.value
-    : CL().rules.hosting.friends_flat.fee_to_mara_usd_kw_quarter.value
+    : CL().rules.hosting.friends_flat.fee_to_nell_usd_kw_quarter.value
 
 /** Takes up to `usd` from the friends' balances (cash first, then coins at the week's price, pro rata by their shares); returns what was taken. */
 function takeFromFriends(club: Club, usd: number, px: Record<Coin3, number>): number {
@@ -511,7 +512,10 @@ export function endClub(s: GameState, kind: 'buy_out' | 'dissolve', early: boole
   const px = prices(s)
   const refund = groupBuy().refund_share
   const assets = clubAssetsUsd(s, club)
-  const friendsOwed = CLUB_FRIENDS.filter((f) => club.members.includes(f)).reduce((a, f) => a + memberValueUsd(s, club, f), 0)
+  // (doc 51 v1.4 §15 decision 6: each friendship point below 0 adds 10% to the price of buying the friends out; the 10% is the doc's own number)
+  const friendsOwed =
+    CLUB_FRIENDS.filter((f) => club.members.includes(f)).reduce((a, f) => a + memberValueUsd(s, club, f), 0) *
+    (kind === 'buy_out' ? 1 + FRIENDSHIP_PRICE_STEP * Math.max(0, -club.friendship) : 1)
   let what = kind
   if (what === 'buy_out' && s.cash < friendsOwed) {
     logEntry(s, 'log.p0_club_cannot', { valueUsd: friendsOwed })

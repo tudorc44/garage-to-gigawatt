@@ -160,18 +160,20 @@ describe('selling altcoins within the thin market\'s limits', () => {
 
   it('a big sale costs 1% of the price for each further 0.5%, and 2% of the daily volume is the most a week sells', () => {
     const row = altWeek(quarterIndex('2014Q2')!, 0)!
-    expect(altSaleProceeds('LTC', row, 0.0075 * 5.8e6)).toBeCloseTo(0.0075 * 5.8e6 * 0.995, 2) // half a further step
-    expect(altSaleProceeds('LTC', row, 0.01 * 5.8e6)).toBeCloseTo(0.01 * 5.8e6 * 0.99, 2) // one further step
-    expect(altSaleProceeds('LTC', row, 0.02 * 5.8e6)).toBeCloseTo(0.02 * 5.8e6 * 0.97, 2)
-    expect(altWeeklyCapUsd('LTC', row)).toBeCloseTo(0.02 * 5.8e6, 6)
+    const vol = row.ltc_volume_usd_day! // (the week's real daily volume, doc 51 v1.4 §15 decision 1)
+    expect(vol).toBeGreaterThan(0)
+    expect(altSaleProceeds('LTC', row, 0.0075 * vol)).toBeCloseTo(0.0075 * vol * 0.995, 2) // half a further step
+    expect(altSaleProceeds('LTC', row, 0.01 * vol)).toBeCloseTo(0.01 * vol * 0.99, 2) // one further step
+    expect(altSaleProceeds('LTC', row, 0.02 * vol)).toBeCloseTo(0.02 * vol * 0.97, 2)
+    expect(altWeeklyCapUsd('LTC', row)).toBeCloseTo(0.02 * vol, 6)
     let s = heldAt('2014Q2', 'LTC', 1e6) // far more than a week can sell
     s = ok(s, { type: 'P0_SELL', coin: 'LTC', amount: 1e6 })
     const cash = s.cash
     s = playWeek(startQuarter(s))
     const soldUsd = s.cash - cash - INCOME_WEEK
-    expect(soldUsd).toBeCloseTo(0.02 * 5.8e6 * 0.97, 0)
+    expect(soldUsd).toBeCloseTo(0.02 * vol * 0.97, 0)
     expect(s.prologue!.alts!.queue.LTC).toBeGreaterThan(0) // the rest waits for next week
-    expect(s.prologue!.alts!.held.LTC).toBeCloseTo(1e6 - (0.02 * 5.8e6) / altPrice(row, 'LTC'), 3)
+    expect(s.prologue!.alts!.held.LTC).toBeCloseTo(1e6 - (0.02 * vol) / altPrice(row, 'LTC'), 3)
   })
 
   it('the keep/sell % orders the sell share of each week\'s coins sold, as for bitcoin', () => {
@@ -288,5 +290,16 @@ describe('saves and opt-out invariance', () => {
     expect(s.prologue!.alts).toBeUndefined()
     expect(s.machines.every((l) => !('altCoin' in l))).toBe(true)
     expect(JSON.stringify(s)).not.toContain('LTC')
+  })
+})
+
+describe('Litecoin opens on 24 Oct 2011 (M71.3, doc 51 v1.4 §14 decision 3)', () => {
+  it('the coin selector offers Litecoin from the week of 24 Oct 2011 and the headline is that week', () => {
+    const card = CONTENT.prologue.events.cards.find((c) => c.id === 'news_ltc_launch')!
+    expect(card).toMatchObject({ quarter: '2011Q4', week_of: '2011-10-24' })
+    const all = Object.values(CONTENT.prologue.alts!.weekly).flat()
+    const row = (iso: string) => all.find((r) => r.week === iso)!
+    expect(row('2011-10-17').ltc_usd).toBeNull()
+    expect(row('2011-10-24').ltc_usd).toBeGreaterThan(0)
   })
 })

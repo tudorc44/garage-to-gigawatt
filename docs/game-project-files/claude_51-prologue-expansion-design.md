@@ -1,4 +1,4 @@
-# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.2, 14 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69)
+# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.4, 14 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70)
 
 *Design thread. v0.1 (13 Oct) was the draft; v1.0 takes in the research dossier (doc 53, saved by the research thread as doc 52) and the owner's answers. The content pack is in `claude/prologue-expansion-content/` with its generators. Built on the Prologue as built: `docs/alpha-0.3-scope.md` (wins over doc 26 and doc 23), `docs/prologue-content/`.*
 
@@ -156,3 +156,55 @@ The second research pass can run alongside milestones 1-3; its numbers drop into
 2. **PPS insolvency closes the pool; it doesn't end the game (DT).** When PPS cash runs out: the pool pays what it owes miners from the player's cash down to zero, closes, sells for nothing, and the chapter report says so ("Halfblock Pool ran out of money under PPS and closed"). Reputation no longer matters after that. A game over still happens only through the Prologue's existing rules (cash below zero after the automatic move back home). PPS's reserve rule and the crunch card stay as they are.
 3. **X-B3 is re-measured after decision 2 (DT).** With runs no longer cut short, theft should land near 20% without cold storage. The 1% rate stays; if the full-run figure is still under 10%, report it and the balance milestone decides.
 4. **The club is next** (§11 item 3), with decision 2 in the same run.
+
+## 14. Research pass 2 (doc 55, 14 Oct 2026)
+*Design-thread decisions (DT) and owner questions (O) on doc 55. The pack is regenerated: `research-2/` holds doc 55's three files as inputs, `tools/gen_alts.py` now builds the market files from the weekly series, and `tools/gen_content.py` carries the new pool inputs, names and later prices.*
+
+**Findings first:**
+- **The weekly series is a reconstruction, not data.** Every row is estimate=true; the free daily source couldn't be fetched, and its licence (CC BY-NC 4.0) likely rules it out for a commercial game anyway.
+- **The reconstructed launch weeks break the game.** At the anchored launch difficulty (0.000244) one 2010 GPU is 98% of the Litecoin network and mines 11.5 million LTC in a week. That is an artefact of a designed anchor, not history.
+- **From 24 Oct 2011 the early Litecoin miner is a second literal jackpot.** One 2010 GPU mines about 110,000 LTC by 2013Q1, worth about $2.7M at the 2013Q4 close. It is unsellable before 2013 (2011-12 volume is about $1,000-2,000 a day, so the 2% cap allows $20-40 a day) and worth almost nothing on paper for 18 months (LTC at $0.004-0.07). So it plays as a bad bet that pays only to a holder: the same shape as CPU-era bitcoin, which the owner chose to keep literal (scope §7 P1).
+- **X-B6 still holds on the new curve:** in 2013Q4 a 2010 GPU earns 13.4× more on LTC than on BTC (16.4× on its best scrypt coin, DOGE); LTC income falls 97.9% from 2014Q1 to 2014Q4. The thresholds stay.
+- **Small pools' market grew, their fee room shrank.** The top five pools went from a third of hashrate to three quarters, but the share outside the top five (excluding solo) rose from about 10% in 2011 to 25-30% in 2013-15 as solo mining vanished, then fell to 24% in 2016. The market fee fell from 3.9% to 1.1%. Both are now inputs. The bigger market makes the pool richer, so X-B2's miss (4.95×) will likely widen before the lever brings it back.
+- **June 2014 was a spike.** GHash.io held 55% for about 24 hours and was just over 30% a week later. The boycott becomes a +4 point bump in the small-pool share from 16 Jun 2014, fading over 8 weeks to +1 point for the rest of 2014 [D].
+
+**Decisions:**
+1. **Data for ship: rebuild difficulty from block headers (DT).** The nBits field in Litecoin and Dogecoin block headers is primary [A] and licence-free; Coin Metrics is not used. The build thread writes a small tool in `tools/prologue/` that fetches headers from a public explorer API or a node, converts nBits to difficulty, and writes a weekly CSV in the `research-2/` format. Weekly prices need a source whose terms allow commercial use; the third research pass finds one. Until both land, the shipped values stay graded estimate.
+2. **The reconstructed series is the build placeholder (DT).** The balance milestone tunes on it; every X-B target is re-checked when the header data replaces it.
+3. **Litecoin opens on 24 Oct 2011 (DT).** The first two reconstructed weeks are launch artefacts, so the coin selector and the `news_ltc_launch` card move to the week of 24 Oct 2011.
+4. **The early Litecoin jackpot stays literal (O, answered 14 Oct 2026: keep it; it is small next to the bitcoin stash).** Recommendation: keep it, as bitcoin's CPU era is kept. The selling limits and the price path already make it a hold-or-nothing bet, and X-B7 checks that it can't lift a sell-as-mined player beyond 3×. The alternative is a designed floor on early network hashrate. Its size depends on 2011-12 difficulty, which is mostly designed today, so the header rebuild (decision 1) settles the real number.
+5. **DOGE after merged mining is derived from LTC (DT):** from the week of 6 Oct 2014, DOGE difficulty = f × 0.4 × LTC difficulty, with f = 0.70 (2014), 0.82 (2015), 0.89 (2016) [D, from Binance Research 2019]. The four ramp weeks before that keep the series values.
+6. **The chapter line uses one fixed date (DT):** "At the end of 2021 those coins were worth $Y", with LTC $146.41 and DOGE $0.1708 (CoinLore [C]). A latest-year close would date the line.
+7. **Pool inputs (DT):** the small-pool share and market fee by year as above; server bill $300 a quarter in 2011 falling to $150 in 2016, DDoS protection $150-300 a quarter and available from the pool's unlock (2011Q2), both [D]; the boycott as a spike. Lever order at the balance milestone unchanged (§13 decision 1): first `start_pull`, then the fee elasticity.
+8. **Names (DT):** ScryptBox Ltd becomes **Kestrel Foundry** (it was a real 2014 scrypt-mining share offering); Mara Ilves becomes **Nell Hartigan** (association risk); Halfblock Pool stays (low-moderate risk). Kestrel Foundry, Nell Hartigan, OreLoop, CopperHash, Teo Brandt and Jun Okafor are checked in the third pass.
+9. **The expansion goes behind the dev flag (O, answered 14 Oct 2026: yes).** M68 and M69 merged to main, so the altcoins and the pool are live on GitHub Pages with placeholder data, and M70 would add the club with the two names being replaced. Recommendation: put the three features behind the dev flag until the balance milestone and the header data are in, and merge M70 only together with the run that renames.
+
+**Changes to the Prologue scope:** Litecoin opens 24 Oct 2011 (was 2011Q4); DDoS protection from the pool's unlock; the boycott as a spike; and, if the owner agrees, the three features behind the dev flag. No new decision quarter and no new system.
+
+**Third research pass (before ship):**
+1. LTC and DOGE difficulty from block headers (the build tool in decision 1 may cover it; the research checks it against the sourced points).
+2. A weekly LTC and DOGE price source whose terms allow commercial use, 2011-2016.
+3. Name checks: Kestrel Foundry, Nell Hartigan, OreLoop, CopperHash, Teo Brandt, Jun Okafor.
+4. Where the June 2014 outflow went (the +4 points is designed).
+5. Hobbyist server and DDoS-protection prices of the period (all designed today).
+
+## 15. Research pass 3 (doc 57) and M70 (14 Oct 2026)
+*Design-thread decisions (DT) on doc 57 and the M70 report. M70 is accepted as built, with its "(mine, reversible)" decisions: club_form as a headline with joining through P0_JOIN_CLUB in 2013Q1's Plan phase; cloud payouts 10% then 2% of principal, then nothing; an unarrived box refunds at the group-buy refund share; the panel's quarter table as the club's report row; group-solo as X-B5's comparison; the random club cards pausing auto-play. X-B5 (1.02×) and X-B7 club (1.01×) pass.*
+
+**Findings first:**
+- **Prices are real and licensed.** CoinMarketCap weekly OHLCV [A] from 29 Apr 2013 (LTC) and 15 Dec 2013 (DOGE), used with the owner's permission; before that, a designed path [D] pinned to the sourced points. Credit line: "Price data courtesy of CoinMarketCap". Difficulty stays the doc 55 reconstruction until the header rebuild.
+- **X-B6 still holds on real prices:** in 2013Q4 a 2010 GPU earns 13.0× more on LTC than on BTC (77.9× on DOGE in its launch quarter); LTC income falls 97.9% from 2014Q1 to 2014Q4.
+- **M70's X-B3 passes as written.** The target is a floor: theft in at least 10% of full runs without cold storage (17.0%) and PPS-at-2% insolvency in at least 5% (70%). A bedroom pool on PPS at 2% should fail often: the PPS pools that survived for years were large (low relative variance) and charged 5-10%.
+- **What is wrong is the game overs.** 27 of 50 pps-operator runs end in a game over: insolvency pays miners down to zero cash, then rent can't be paid. That breaks §13 decision 2's intent (a pool's failure never ends the game by itself).
+
+**Decisions:**
+1. **Prices (DT):** the market files take price and volume from `research-3/ltc_doge_prices_weekly.csv`; difficulty from `research-2/`. The altcoin selling limits use the week's real daily volume where present, else the year's average. The credit line appears on the Prologue's coin panel and in the game's credits.
+2. **Names (DT):** OreLoop becomes **Slagwheel** (a Swedish gold-mining technology company uses OreLoop). Kestrel Foundry, Nell Hartigan, CopperHash, Teo Brandt, Jun Okafor and Halfblock Pool are clear or low risk. A formal USPTO and EUIPO search on every invented name runs before ship (an owner task, not a research pass).
+3. **The June 2014 effect (DT):** pools outside the top five get +4 points in week 1, +2 by week 4, +1 by week 8 (linear between), and +1 for the rest of 2014. Most of the outflow went to big pools (doc 57).
+4. **Hosting (DT, doc 57 [C]):** a dedicated server about $80 a month in 2011-12, $64 in 2013, $56 from 2014. DDoS protection for raw TCP isn't available to a hobby pool before 2013Q2 (enterprise-only at $3,000-7,000 a month); from 2013Q2 it costs $100 a month; from 2014 it is bundled free (still 1 Bandwidth to set up).
+5. **PPS insolvency keeps the player alive (DT).** When a PPS pool can't pay, it pays miners from cash only down to one quarter of the player's committed costs (rent, power, bills); the rest of the debt to miners is written off, the pool closes and sells for nothing, and the chapter line says the miners went unpaid. X-B3's insolvency clause stays as written; the run also reports pps-operator game overs (target 0 caused by the pool).
+6. **Friendship gets one effect (DT):** it starts at 0 and falls by 1 when you refuse Teo at the 2013 peak and by 1 when the power bill becomes a dispute; each point below 0 adds 10% to the price of buying the friends out ⚙.
+7. **pool_sale_offer pauses auto-play (DT),** like the club cards; the prologue-pool golden may move once.
+8. **Pacing (DT):** X-B8 now reads: at most 30 choice cards per run for a bot using one feature; a bot using all three is reported, not judged (club-all's 33 is accepted). No card is cut.
+9. **Housekeeping (DT):** research files never live in `docs/prologue-content/` (the Prologue's live content). Docs 55 and 57 go to `docs/game-project-files/`; the research-2 and research-3 data go to `docs/prologue-expansion-content/research-2/` and `research-3/`.
+10. **The club went public with the old names (finding).** M70 merged before the renames and the dev flag. The next run renames and gates the three features first.
