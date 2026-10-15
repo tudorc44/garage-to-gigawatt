@@ -325,6 +325,12 @@ function RigPanel({ state }: { state: GameState }) {
   return (
     <section class="panel">
       <Tip id="rig" act={0} />
+      {state.phase === 'plan' && quarterLabel(state.quarter) === '2009Q1' && (
+        // M73.1 (doc 51 v1.6 §17): the opening's hint
+        <p class="num-s muted" data-spare-hint>
+          {t('ui.p0.hint_spare_pcs')}
+        </p>
+      )}
       <div class="row-between">
         <span class="panel-title">{t('ui.p0.rig_title')}</span>
         <span class="num-s muted">
@@ -352,10 +358,10 @@ function RigPanel({ state }: { state: GameState }) {
               <td>
                 {lot.count > 1
                   ? t('ui.p0.times', {
-                      name: machineName(lot.model),
+                      name: machineName(lot.model, lot.condition),
                       n: lot.count,
                     })
-                  : machineName(lot.model)}
+                  : machineName(lot.model, lot.condition)}
               </td>
               <td class="g-right num">{hashOf(lot.model, lot.count)}</td>
               <td class="g-right num">

@@ -5,7 +5,9 @@ import { siteFacts } from '../sim/selectors.ts'
 import type { Coin, GameState, Site } from '../sim/state.ts'
 import type { IconName } from './icons.ts'
 
-export const machineName = (id: string) => tDynamic(`machine.${id}`, id)
+/** A machine's name; a bought (new) copy of the starter PC is a "Spare PC" (M73.1, doc 51 v1.6 §17). */
+export const machineName = (id: string, condition?: 'new' | 'used') =>
+  tDynamic(id === 'pc_cpu' && condition === 'new' ? 'machine.pc_cpu_spare' : `machine.${id}`, id)
 export const tierName = (id: string) => tDynamic(`site.${id}`, id)
 /**
  * M33.1 (doc 35): a site's short name, unique in the company: its type and number ("Own site 3", "Powered shell 2"),

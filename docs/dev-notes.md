@@ -11,6 +11,26 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M73: buyable CPU PCs in the Prologue opening (doc 51 v1.6 §17) (branch `m73` from `main` at `3523943`, M72 merged as PR #44)
+
+- **Commits:** M73.0 doc 51 v1.6 (copied with `cp`, byte-exact; diff: header and §17 only), M73.1 buyable CPU PCs, M73.2 tests and the cpu-farmer bot, M73.3 results (this section). **Staging:** built by the owner from M73.1 (`npm run staging:build`, local: `npm run staging`, http://localhost:4173); nothing after M73.1 changed the game, only tests and the bot.
+- **M73.1 (build):** `pc_cpu` is buyable as a "Spare PC (CPU)" ($350 new, 2009Q1 to 2011Q2; into the home rig only, the bedroom row says "Needs the home rig"; 4 CPU PCs in all, the starter included; new only), text through `t()`, the 2009Q1 Plan hint on the rig panel, the starter keeps its name (bought copies are told apart by condition), earlier bots' buy filters skip `pc_cpu`.
+- **M73.2 (tests):** lint, 2,004 tests and build green; every existing golden byte-identical (the Prologue x2 included); `cpu-farmer` (careful-hodler plus the rig and 3 Spare PCs in 2009Q1, setting `sparePcs`) with `tests/golden/prologue-cpu-farmer-seed-2009.json`; `tests/sim/prologueSparePc.test.ts` (price, rig gate, cap, Max (N), used refused, sale window, old save, no earlier bot buys one); one existing test (power-bound Max in prologueBulkBuy) now skips the Spare PC, whose max is the cap.
+- **M73.3 (measure), `--prologue` 50 seeds:** X-B1 PASS (15 bots x 50 seeds byte-identical to main, header too). X-B2 PASS (pool stays small, 50 of 50 at or under 2%), X-B3 MISS as before (theft 6%, insolvent 74%, 28 game overs), X-B4 PASS 86%, X-B5 PASS 1.01x, X-B6 PASS 263.6x / 98.8%, X-B7 altcoins PASS 0.76x, club PASS 1.00x (trusting 0.96x), pool INFO 8.77x; timing 123.8 s (target 150 s). `--act2 --act3` on `m73` against main: all 1,302 output files identical (`diff -r`). Not run: `--act4`, `--energy` (nothing in them changed).
+
+| 50 seeds, medians | careful-hodler | cpu-farmer | ratio |
+| --- | --- | --- | --- |
+| Blocks found by 2010Q4 | 24,200 | 43,290 | 1.79x |
+| BTC mined by 2010Q4 | 1,210,580 | 2,165,583 | 1.79x |
+| Prologue BTC mined (whole Prologue) | 1,220,499 | 2,173,901 | 1.78x |
+| Prologue net worth ($, stash at 2016Q4) | $1.171B | $2.086B | 1.78x |
+| Act I carryover multiple (2016Q4 to 2026Q4) | 11.70x | 11.69x | 1.00x |
+| Act I end net worth | $13.7B | $24.5B | 1.78x |
+
+- **STOPPED (reported, not changed):** the cpu-farmer's median Prologue stash is **1.78x** careful-hodler's, above the 1.5x guard (doc 51 v1.6 decision 4: the owner lowers the cap to 3 if so; I did not change it). Four CPU PCs give 4x the hashrate (the gain by PC count: 2 PCs 1.38x, 3 PCs 1.62x, 4 PCs 1.78x in BTC mined) but the early blocks rise only 1.79x, because the player's share of a very small network saturates; the extra stash is carried unchanged through Act I (the multiple is the same, 11.7x), so the whole difference is the extra Prologue coins.
+- **(mine, reversible):** the Spare PC is on sale through 2011Q2 (price keys 2009Q1 and 2010Q2 with the market's 4-quarter tail); used copies are not offered (the used price is 0); bought lots are told apart from the starter by condition; the purchase log line still names the model, so a spare shows as "Your Gaming PC (CPU)" there; the docs pack copy of `machines_prologue.json` got the new price and note.
+- **Open questions for the design thread:** (1) The guard tripped at 1.78x. Measured (BTC mined over the Prologue, 50 seeds, median, against one PC): 2 CPU PCs 1.38x, 3 PCs 1.62x, 4 PCs 1.78x. A cap of 3 would still be above 1.5x; a cap of 2 gives 1.38x. Which cap, or a different fix? (2) Should the log line name spares? (3) Should the Spare PC stay on sale until 2011Q2, or only in the opening (2009Q1 to 2010Q2)? (4) The opening still has no 2009Q2 Plan phase (parked in doc 50): does the rig-and-PCs loop feel enough after the playtest?
+
 ## M72: header difficulty, the pps-operator fix and the restated pool target (doc 51 v1.5 §16) (branch `m72` from `main` at `243f669`, M71 merged as PR #43)
 
 Split (doc 51 v1.5 copied from the design thread's file, diff checked: header, the X-B2 row, §16):

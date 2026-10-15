@@ -1,4 +1,4 @@
-# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.5, 15 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70; §16 after M71)
+# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.6, 15 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70; §16 after M71; §17 extra CPU PCs)
 
 *Design thread. v0.1 (13 Oct) was the draft; v1.0 takes in the research dossier (doc 53, saved by the research thread as doc 52) and the owner's answers. The content pack is in `claude/prologue-expansion-content/` with its generators. Built on the Prologue as built: `docs/alpha-0.3-scope.md` (wins over doc 26 and doc 23), `docs/prologue-content/`.*
 
@@ -225,3 +225,27 @@ The second research pass can run alongside milestones 1-3; its numbers drop into
 5. **The scrypt-switcher mining no DOGE on the golden seed is accepted (DT):** it picks the better coin once selling limits apply.
 6. **The timing target is 150 seconds for 1,000 runs (DT).**
 7. **The header tool slows down and resumes (O):** it waits between calls, backs off on HTTP 429 with growing pauses, and resumes from its cache across runs, with no API key. Its cache file is ignored by git.
+
+
+## 17. Extra CPU PCs in the opening (15 Oct 2026)
+
+*The owner's request: "I want the ability to buy multiple Gaming PCs in the prologue in the first quarters. The beginning is too boring." This changes the base Prologue (public), not the flagged expansion. It amends alpha-0.3 §2 ("one PC, no purchase").*
+
+**Decision 1 (DT): option 1, with the rig unlocked from the start.** Options 2 (earlier GPU) and 3 (a card) are declined: 2 breaks dated history (the HD 5870-class GPU is 2010Q3 data); 3 gives a one-off, not a loop. Option 1 gives the opening a small loop: build the rig, fill it, watch power and patience.
+
+**Decision 2 (DT): the numbers, all ⚙ designed.**
+- `pc_cpu` leaves `not_for_sale`. Buy price $350 ⚙ (2009 price for a mid desktop, not sourced; a designed round number), 0 lead time, from 2009Q1. Shown as "Spare PC (CPU)"; the starter keeps "Your Gaming PC (CPU)".
+- Cap: 4 CPU PCs in total, the starter included (one in the bedroom, three in the home rig: 3 x 0.09 = 0.27 kW, well inside the rig's 1.5 kW). Bandwidth unchanged.
+- The home rig ($300) is buyable from 2009Q1 if it isn't already; no other change to it.
+- With $2,000 and $1,200 a quarter, the full set (rig + 3 PCs = $1,350) is affordable in 2009Q1 and still leaves money for the 2010Q3 GPU. Intended.
+- Resale: the existing used-machine rules apply; no special price.
+
+**Decision 3 (DT): power.** At home, the extra draw counts against household patience exactly as other home machines do; after moving out it goes on the power bill. No new rule.
+
+**Decision 4 (DT): solo-block odds stay linear, no cap.** Four PCs quadruple the 2009-2010 hashrate and so the expected early blocks; that is the honest consequence and the point of buying them. Guard: the new bot below must keep X-B1 and the Act I carryover inside today's bands. If the cpu-farmer median Prologue stash exceeds 1.5x careful-hodler's median, stop and report; I will then lower the cap to 3, not add a hidden odds cap.
+
+**Decision 5 (DT): goldens and saves.** Existing bots don't buy PCs, so every existing golden (the Prologue x2 included) must stay byte-identical; if one moves, that's a bug to report, not a regen. Add one new bot, cpu-farmer (careful-hodler plus rig and 3 PCs in 2009Q1), with its own golden. Old saves load unchanged and simply gain the option from their next Plan phase.
+
+**Decision 6 (DT): text and Plan screen.** The buy menu lists "Spare PC (CPU)" from 2009Q1 with the count picker (P0_BUY, Max (N) respects the cap and free rig space). If the rig isn't built, the row shows "Needs the home rig" and stays disabled. Hint line on the 2009Q1 Plan: "One PC is a hobby. Four is a habit. Build the home rig to fit more." No new decision quarters in this change; if the opening still drags, adding a 2009Q2 Plan phase is the next lever (parked in doc 50).
+
+**Process (O, 15 Oct):** the build pushes to staging before running the test suites, so the owner can play it straight away.

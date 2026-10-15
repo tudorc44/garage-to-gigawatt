@@ -321,6 +321,7 @@
   "p0.chapter_title.lost_wallet": "The One Who Never Backed Up",
   "p0.chapter_title.default": "Eight Years In",
   "machine.pc_cpu": "Your Gaming PC (CPU)",
+  "machine.pc_cpu_spare": "Spare PC (CPU)",
   "machine.gpu_gaming_2010": "Gaming GPU (HD 5870-class)",
   "machine.fpga_board": "FPGA Mining Board",
   "machine.asic_preorder_early": "Early ASIC (pre-order)",

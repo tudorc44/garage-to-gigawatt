@@ -48,6 +48,11 @@ export interface PrologueBotSettings {
    * power, the pool's bills). Absent for every earlier bot (opt-out invariance); the pps-operator carries it.
    */
   moveOutCashQuarters?: number
+  /**
+   * M73.2 (doc 51 v1.6 §17): in 2009Q1 build the home rig and buy this many Spare PCs (CPU) into it. Absent for every earlier bot
+   * (opt-out invariance); the cpu-farmer carries it.
+   */
+  sparePcs?: number
   /** Answer to the Mt Gox collapse card. */
   goxAnswer: 'withdraw' | 'accept'
   /** Stop at every quarter report (a Plan phase every quarter). */
@@ -92,7 +97,7 @@ function buys(s: GameState, set: PrologueBotSettings): Action[] {
   const out: Action[] = []
   let cash = s.cash - set.reserveUsd
   const models = CONTENT.prologue.machines
-    .filter((m) => m.coin === 'BTC' && !P().not_for_sale.includes(m.id))
+    .filter((m) => m.coin === 'BTC' && !P().not_for_sale.includes(m.id) && m.id !== P().spare_pc.model) // (the Spare PC is a hobby buy: no earlier bot takes it)
     .map((m) => ({ m, price: buyPrice(m, s.quarter, 'new') }))
     .filter(
       (x): x is { m: (typeof x)['m']; price: number } =>
@@ -173,6 +178,17 @@ function movesOutNow(s: GameState, set: PrologueBotSettings, cash: number): bool
   return cash >= depositUsd(s.quarter) + set.moveOutCashQuarters * (committedCostsUsd(s) + rent)
 }
 
+/** The cpu-farmer's opening (M73.2): the home rig and the spare PCs in 2009Q1, sent only if the sim accepts them. */
+function sparePcMoves(s: GameState, set: PrologueBotSettings): Action[] {
+  if (!set.sparePcs || label(s.quarter) !== '2009Q1') return []
+  const out: Action[] = []
+  if (!s.sites.some((x) => x.tier === 'home_rig')) out.push({ type: 'P0_BUILD_HOME_RIG' })
+  const t = apply(s, out)
+  const rig = t.sites.find((x) => x.tier === 'home_rig')
+  if (rig) out.push({ type: 'P0_BUY', model: P().spare_pc.model, condition: 'new', count: set.sparePcs, siteId: rig.id })
+  return out
+}
+
 /** The state after these actions (refused ones skipped). */
 function apply(s: GameState, actions: Action[]): GameState {
   let t = s
@@ -193,6 +209,7 @@ function obsolete(s: GameState, keepScryptGpus = false): Action[] {
     (m) =>
       m.coin === 'BTC' &&
       !P().not_for_sale.includes(m.id) &&
+      m.id !== P().spare_pc.model &&
       buyPrice(m, s.quarter, 'new') !== undefined,
   )
   const best = Math.max(0, ...onSale.map((m) => m.hashrate / m.power_kw))
@@ -310,6 +327,8 @@ export const PROLOGUE_SETTINGS: Record<string, PrologueBotSettings> = {
   'gox-hodler': { ...NORMAL, custody: 'exchange' },
   /** Keeps every coin in its own wallet, backed up; mines from 2009. */
   'careful-hodler': { ...NORMAL },
+  /** M73.2 (doc 51 v1.6 §17): the careful hodler that builds the home rig and buys 3 Spare PCs in 2009Q1 (4 CPU PCs in all). */
+  'cpu-farmer': { ...NORMAL, sparePcs: 3 },
   /** Keeps every coin in its own wallet and never backs it up. */
   'no-backup': { ...NORMAL, backup: false },
   /** A careful hodler that pre-orders an ASIC (Summit Silicon, 2012Q4) and goes to a conference. */
@@ -366,6 +385,7 @@ export function prologueBot(
     plan(s) {
       if (s.act !== 0) return after.plan(s)
       const actions = prologuePlan(s, set)
+      if (set.sparePcs) actions.push(...sparePcMoves(apply(s, actions), set))
       if (set.buy) {
         // (the scrypt switcher keeps its GPUs: they are what it mines scrypt with)
         actions.push(...obsolete(s, set.scrypt === true))

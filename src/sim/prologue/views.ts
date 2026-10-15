@@ -237,7 +237,10 @@ export function prologueBuyView(state: GameState, siteId: string) {
   return CONTENT.prologue.machines
     .filter((m) => !P().not_for_sale.includes(m.id))
     .flatMap((m) =>
-      (['new', 'used'] as const).map((condition) => {
+      (['new', 'used'] as const)
+        // (M73.1: the Spare PC is sold new only)
+        .filter((condition) => !(m.id === P().spare_pc.model && condition === 'used'))
+        .map((condition) => {
         const unitUsd = buyPrice(m, state.quarter, condition)
         return {
           model: m,
