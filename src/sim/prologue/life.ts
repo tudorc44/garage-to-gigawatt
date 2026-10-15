@@ -229,7 +229,7 @@ export function smallUnitBlocker(s: GameState): Message | undefined {
   return needBandwidth(s, P().bandwidth_costs.build)
 }
 
-/** Act I's small unit (from 2014Q1, once you've moved out): Act I's cost, rent and build time. */
+/** Act I's small unit (from 2011Q3, once you've moved out; doc 51 v1.7 §18): Act I's cost, rent and build time. */
 export function buildSmallUnit(s: GameState): Message | undefined {
   const blocked = smallUnitBlocker(s)
   if (blocked) return blocked

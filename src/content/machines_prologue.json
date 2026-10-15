@@ -5,7 +5,7 @@
   {"id": "pc_cpu", "name": "Your Gaming PC (CPU)", "coin": "BTC", "available_from": "2009Q1",
    "hashrate_ths": {"value": 0.000004, "source": "the pack: 4 MH/s (≈ Core 2 Duo era)", "estimate": true},
    "power_kw": 0.09, "annual_failure_rate": 0.03, "lifespan_years": 5, "heat_per_unit_garage": 0,
-   "price_new": {"2009Q1": 350, "2010Q2": 350}, "price_used": {"2009Q1": 0}, "lead_time_quarters": {"default": 0}},
+   "price_new": {"2009Q1": 350}, "price_used": {"2009Q1": 0}, "lead_time_quarters": {"default": 0}},
   {"id": "gpu_gaming_2010", "name": "Gaming GPU (Radeon HD 5870-class)", "coin": "BTC", "available_from": "2010Q3",
    "hashrate_ths": {"value": 0.00039, "source": "the pack: 390 MH/s", "estimate": true},
    "scrypt_khs": {"value": 400, "source": "doc 53 A3: HD 5870 400-442 kH/s, Litecoin wiki [B]; 400 chosen [D]", "estimate": true},

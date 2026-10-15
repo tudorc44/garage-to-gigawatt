@@ -15,7 +15,7 @@
  ],
  "act1_tiers": {
   "garage": {"unlock": "moved_out"},
-  "small_unit": {"unlock": "moved_out", "from": "2014Q1"}
+  "small_unit": {"unlock": "moved_out", "from": "2011Q3"}
  },
  "household": {
   "patience_start": 100,
@@ -80,7 +80,7 @@
   ],
   "note": "Delay rolled at order time on its own seeded stream. Delay quarters count after the promised delivery (on time = delivered after promised_quarters). The conference contact moves 10 points into on-time, taken from severe first, then never."
  },
- "decision_quarters": ["2009Q1", "2009Q4", "2010Q2", "2010Q3", "2011Q2", "2011Q4", "2012Q4", "2013Q1", "2013Q4", "2014Q1", "2015Q3", "2016Q3", "2016Q4"],
+ "decision_quarters": ["2009Q1", "2009Q2", "2009Q4", "2010Q2", "2010Q3", "2011Q2", "2011Q4", "2012Q4", "2013Q1", "2013Q4", "2014Q1", "2015Q3", "2016Q3", "2016Q4"],
  "opt_in_decision_quarters": {"2014Q3": "scrypt_gpus"},
  "offers": [
   {"id": "offer_forum_buyer_1", "quarter": "2009Q4", "btc": 5000, "usd": 5},
@@ -92,7 +92,7 @@
  ],
  "offer_note": "An offer opens in its quarter (from its date) and stays in the tray until the end of the next decision quarter at or after it (a Prologue choice: most offer quarters auto-play).",
  "not_for_sale": ["asic_preorder_early", "asic_preorder_group"],
- "spare_pc": {"model": "pc_cpu", "cap": 4, "note": "Doc 51 v1.6 §17 (designed): the starter PC can be bought again as a Spare PC (new only, $350 in machines_prologue.json) into the home rig; 4 CPU PCs in all, the starter included."},
+ "spare_pc": {"model": "pc_cpu", "cap": 5, "last_quarter": "2010Q2", "note": "Doc 51 v1.6 §17, v1.7 §18 (designed): the starter PC can be bought again as a Spare PC (new only, $350 in machines_prologue.json) into the home rig; 5 CPU PCs in all, the starter included; on sale 2009Q1 to 2010Q2 only (no tail rule)."},
  "handover": {"model_map": {"antminer_s9_early": "s9"}, "home_tiers_to": "garage"},
  "altcoin_selling_limits": {"designed": true, "note": "Doc 51 v1.0 §5, doc 53 A6: a sale is free up to free_share of the year's average daily volume (USD); each further step_share of it moves the price down by slippage_per_step; hard_cap_share is the most one week may sell. Altcoins sit in your own wallet (an exchange collapse moves price only).", "free_share": 0.005, "step_share": 0.005, "slippage_per_step": 0.01, "hard_cap_share": 0.02, "volume_rule": "use the week's real daily volume (market file, CoinMarketCap [A]) where present, else the year's average below", "avg_daily_volume_usd": {"LTC": {"2011": 2000, "2012": 1000, "2013": 295900, "2014": 5800000, "2015": 3400000, "2016": 3100000}, "DOGE": {"2013": 101800, "2014": 1100000, "2015": 168500, "2016": 256500}}},
  "altcoin_handover": {"sell_quarter": "2016Q4", "left_over_close_mult": 0.9, "later_prices": {"date": "2021-12-31", "LTC": 146.41, "DOGE": 0.1708}, "note": "Doc 51 v1.0 §5: altcoins are sold over 2016Q4 within the selling limits at the weekly prices; whatever is left converts at the 2016Q4 close x this; no altcoin enters Act I."},

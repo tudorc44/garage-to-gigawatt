@@ -140,7 +140,9 @@ export function p0BuyBlocker(
   if (!Number.isInteger(a.count) || a.count < 1) return fail('error.bad_count')
   // M73.1 (doc 51 v1.6 §17): the starter PC can be bought again as a Spare PC: new only, into the home rig, 4 CPU PCs in all
   if (model.id === P().spare_pc.model) {
-    if (a.condition === 'used') return fail('error.not_for_sale', { model: a.model, condition: a.condition })
+    // (doc 51 v1.7 §18: on sale in the opening only, 2009Q1 to last_quarter, no tail rule; sold new only)
+    if (a.condition === 'used' || CONTENT.quarters[s.quarter] > P().spare_pc.last_quarter)
+      return fail('error.not_for_sale', { model: a.model, condition: a.condition })
     const site0 = s.sites.find((x) => x.id === a.siteId)
     if (site0?.tier === 'bedroom') return fail('error.p0_spare_needs_rig')
     const owned = s.machines.filter((l) => l.model === model.id).reduce((n, l) => n + l.count, 0)
@@ -176,7 +178,8 @@ function runPlanAction(s: GameState, a: PrologueAction): Message | undefined {
       onMachineBought(s, a.model)
       logEntry(s, 'log.bought', {
         count: a.count,
-        model: a.model,
+        // (M74.1: a bought copy of the starter PC is named "Spare PC (CPU)" in the log)
+        model: a.model === P().spare_pc.model && a.condition === 'new' ? 'pc_cpu_spare' : a.model,
         condition: a.condition,
         costUsd: cost,
       })

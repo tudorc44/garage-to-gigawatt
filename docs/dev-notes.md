@@ -11,6 +11,11 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M74: opening changes, RUN 1 (doc 51 v1.7 §18) (branch `m74` from `main` at `1dec37e`, M73 merged as PR #45)
+
+- M74.0 doc 51 v1.7 (copied with `cp`, byte-exact; diff: header and §18 only). M74.1 done (build only; tests and measurement are RUN 2, after the owner's staging build): Spare PC cap 5 (starter included), on sale 2009Q1 to 2010Q2 only (`spare_pc.last_quarter`, no tail rule), the purchase log names a spare "Spare PC (CPU)" (the log's model param is `pc_cpu_spare`), 2009Q2 added to `decision_quarters` (content), the small unit opens from 2011Q3 (still after moving out, Act I cost and power; the lock text is the generic "Not yet: this opens in {quarter}"); `docs/alpha-0.3-scope.md` §2.4 amended with a note.
+- (mine, reversible) the 2009Q1 rig hint keeps its "Four is a habit" wording (doc 51 §17 text); the docs pack copy of `events_prologue.json` got a 2009Q2 focus line; the docs pack `machines_prologue.json` price table lost the 2010Q2 key. Not done: RUN 2 (tests, golden re-accepts with reasons, bots, measurement).
+
 ## M73: buyable CPU PCs in the Prologue opening (doc 51 v1.6 §17) (branch `m73` from `main` at `3523943`, M72 merged as PR #44)
 
 - **Commits:** M73.0 doc 51 v1.6 (copied with `cp`, byte-exact; diff: header and §17 only), M73.1 buyable CPU PCs, M73.2 tests and the cpu-farmer bot, M73.3 results (this section). **Staging:** built by the owner from M73.1 (`npm run staging:build`, local: `npm run staging`, http://localhost:4173); nothing after M73.1 changed the game, only tests and the bot.

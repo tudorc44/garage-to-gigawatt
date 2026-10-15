@@ -2307,7 +2307,7 @@ export const prologueFileSchema = z.object({
   ),
   not_for_sale: z.array(z.string()),
   /** M73.1 (doc 51 v1.6 §17): the starter PC can be bought again, up to this many CPU PCs in all (the starter included). */
-  spare_pc: z.object({ model: z.string(), cap: z.number().int().min(1), note: z.string() }),
+  spare_pc: z.object({ model: z.string(), cap: z.number().int().min(1), last_quarter: quarterId, note: z.string() }),
   handover: z.object({
     model_map: z.record(z.string(), z.string()),
     home_tiers_to: z.string(),

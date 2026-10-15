@@ -3,6 +3,7 @@
  "notes": "Follows Act I's events.json effect_vocabulary and card shape (id, type, trigger, week, weight, body, choices/effects, real_basis, source). 'household_patience' and 'wallet_backup' are new prologue-only effect keys; everything else reuses Act I's vocabulary. Real names only for sourced factual events (Mt Gox, Silk Road, halvings, The DAO); invented names for the player's own counterparties.",
  "decision_quarters": [
   { "quarter": "2009Q1", "focus": "Start: genesis block, your PC, no price yet." },
+  { "quarter": "2009Q2", "focus": "Second look at the opening: spare PCs, the home rig, before the first real exchange rate." },
   { "quarter": "2009Q4", "focus": "First exchange rate (New Liberty Standard, 5 Oct 2009) — still no real market." },
   { "quarter": "2010Q2", "focus": "Pizza Day (22 May 2010) as news; your own first 'sell for almost nothing' offers." },
   { "quarter": "2010Q3", "focus": "Mt Gox opens (18 Jul 2010); GPU mining becomes viable." },
