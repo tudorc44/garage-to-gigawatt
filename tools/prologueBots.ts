@@ -4,7 +4,7 @@
 import { CONTENT, quarterIndex } from '../src/content/index.ts'
 import { applyAction, type Action } from '../src/sim/actions.ts'
 import { altWeek, lotAltChoices, scryptKhs } from '../src/sim/prologue/alts.ts'
-import { poolUnlocked } from '../src/sim/prologue/pool.ts'
+import { committedCostsUsd, poolUnlocked } from '../src/sim/prologue/pool.ts'
 import { walletCoins } from '../src/sim/prologue/engine.ts'
 import { prologueCard } from '../src/sim/prologue/events.ts'
 import { sellable } from '../src/sim/prologue/custody.ts'
@@ -43,6 +43,11 @@ export interface PrologueBotSettings {
   conference: boolean
   /** Move out in this quarter (or later, once affordable); null: stay at home until the handover. */
   moveOutFrom: string | null
+  /**
+   * M72.4 (doc 51 v1.5 §16 decision 2): move out only when cash covers the deposit and this many quarters of committed costs (rent,
+   * power, the pool's bills). Absent for every earlier bot (opt-out invariance); the pps-operator carries it.
+   */
+  moveOutCashQuarters?: number
   /** Answer to the Mt Gox collapse card. */
   goxAnswer: 'withdraw' | 'accept'
   /** Stop at every quarter report (a Plan phase every quarter). */
@@ -160,6 +165,14 @@ function clubMoves(s: GameState, club: NonNullable<PrologueBotSettings['club']>)
   return out
 }
 
+/** Can the bot move out now by its own cash rule (M72.4): the deposit plus `moveOutCashQuarters` quarters of the costs it would carry. */
+function movesOutNow(s: GameState, set: PrologueBotSettings, cash: number): boolean {
+  if (set.moveOutFrom === null || label(s.quarter) < set.moveOutFrom) return false
+  if (set.moveOutCashQuarters === undefined) return true
+  const rent = s.prologue!.livingAtHome ? rentUsdQ(s.quarter) : 0 // (committedCostsUsd counts rent only once moved out)
+  return cash >= depositUsd(s.quarter) + set.moveOutCashQuarters * (committedCostsUsd(s) + rent)
+}
+
 /** The state after these actions (refused ones skipped). */
 function apply(s: GameState, actions: Action[]): GameState {
   let t = s
@@ -206,7 +219,8 @@ export function prologuePlan(s: GameState, set: PrologueBotSettings): Action[] {
     set.moveOutFrom !== null &&
     q >= set.moveOutFrom &&
     bw >= P().bandwidth_costs.build &&
-    !moveOutBlocker(s)
+    !moveOutBlocker(s) &&
+    movesOutNow(s, set, cash)
   ) {
     out.push({ type: 'P0_MOVE_OUT' })
     cash -= depositUsd(s.quarter)
@@ -316,7 +330,7 @@ export const PROLOGUE_SETTINGS: Record<string, PrologueBotSettings> = {
   /** M69.6 (X-B8): the pool operator that also chases scrypt, for the pacing numbers of a bot using the features there are. */
   'pool-and-scrypt': { ...NORMAL, sellPct: 1, custody: 'exchange', scrypt: true, ownPool: { method: 'PPLNS', feePct: 0.01, coldStorage: true } },
   /** M69.6 (X-B3): the same with PPS at a 2% fee and no cold storage: the risky pool. */
-  'pps-operator': { ...NORMAL, sellPct: 1, custody: 'exchange', ownPool: { method: 'PPS', feePct: 0.02, coldStorage: false } },
+  'pps-operator': { ...NORMAL, sellPct: 1, custody: 'exchange', moveOutCashQuarters: 4, ownPool: { method: 'PPS', feePct: 0.02, coldStorage: false } },
   /** M70.6 (X-B5): the sell-as-mined bot alone in the group buy (2013Q1), the club bot's solo comparison. */
   'group-solo': { ...NORMAL, sellPct: 1, custody: 'exchange', preorder: 'group_buy' },
   /** M70.6 (X-B5, X-B7): the sell-as-mined bot in the club with $2,000, its own keys, in your place; passes both traps, buys the friends out. */
@@ -388,7 +402,8 @@ export function prologueBot(
       if (card?.id === 'household')
         return set.moveOutFrom !== null &&
           label(s.quarter) >= set.moveOutFrom &&
-          s.cash >= depositUsd(s.quarter)
+          s.cash >= depositUsd(s.quarter) &&
+          movesOutNow(s, set, s.cash)
           ? 'move_out'
           : 'cut_load'
       return undefined

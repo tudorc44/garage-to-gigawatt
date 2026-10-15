@@ -19,7 +19,7 @@ Split (doc 51 v1.5 copied from the design thread's file, diff checked: header, t
   **Found on main:** the golden act5-v3 and v4 failed on `main` after the merge of M71 (the other session's Heat NaN fix, `e6dbd81`, had moved those goldens separately; the two together move cash by about $5.7K of $2.45B). Re-accepted here; Perfect's Heat table is unchanged (re-run: identical to M71's).
 - M72.2 (B) the full header run; header ÷ reconstruction per quarter
 - M72.3 (C) headers into the market files; X-B6 and the early-Litecoin stack before and after
-- M72.4 (D) pps-operator moves out only with four quarters of committed costs; X-B2's new check in the runner
+- M72.4 done: bot setting `moveOutCashQuarters` (the pps-operator carries 4: deposit plus four quarters of rent, power and the pool's bills); the runner's X-B2 is the pool's peak share of bitcoin hashrate (at most 2% in at least 95% of runs, median fee income reported, below careful-hodler), X-B7 (pool) is printed as INFO with no verdict, timing target 150 s. Test `tests/sim/prologueBotMoveOut.test.ts`. No golden moved.
 - M72.5 (E) re-measure: `--prologue`, `--act2 --act3`
 
 ## M71: licensed prices, renames, the Prologue expansion behind the flag, the M70 fixes and the balance pass (doc 51 v1.4 §14-§15, doc 43 §0.28) (branch `m71` from `main` at `95929aa`, M70 merged as PR #41)
