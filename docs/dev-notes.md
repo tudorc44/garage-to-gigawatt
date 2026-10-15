@@ -11,6 +11,16 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M72: header difficulty, the pps-operator fix and the restated pool target (doc 51 v1.5 §16) (branch `m72` from `main` at `243f669`, M71 merged as PR #43)
+
+Split (doc 51 v1.5 copied from the design thread's file, diff checked: header, the X-B2 row, §16):
+- M72.0 doc 51 v1.5 (copied with `cp`, byte-exact: mine, reversible)
+- M72.1 (A) the header tool slows down and resumes; cache in `.gitignore`; check week 2014-05-26 is 8,900
+- M72.2 (B) the full header run; header ÷ reconstruction per quarter
+- M72.3 (C) headers into the market files; X-B6 and the early-Litecoin stack before and after
+- M72.4 (D) pps-operator moves out only with four quarters of committed costs; X-B2's new check in the runner
+- M72.5 (E) re-measure: `--prologue`, `--act2 --act3`
+
 ## M71: licensed prices, renames, the Prologue expansion behind the flag, the M70 fixes and the balance pass (doc 51 v1.4 §14-§15, doc 43 §0.28) (branch `m71` from `main` at `95929aa`, M70 merged as PR #41)
 
 Split (docs 55 and 57, `research-2/` and `research-3/` moved out of `docs/prologue-content/`; docs 43 and 51 copied from the design thread's files, diffs checked):

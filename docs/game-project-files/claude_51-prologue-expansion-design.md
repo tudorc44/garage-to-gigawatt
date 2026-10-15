@@ -1,4 +1,4 @@
-# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.4, 14 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70)
+# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.5, 15 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70; §16 after M71)
 
 *Design thread. v0.1 (13 Oct) was the draft; v1.0 takes in the research dossier (doc 53, saved by the research thread as doc 52) and the owner's answers. The content pack is in `claude/prologue-expansion-content/` with its generators. Built on the Prologue as built: `docs/alpha-0.3-scope.md` (wins over doc 26 and doc 23), `docs/prologue-content/`.*
 
@@ -84,7 +84,7 @@ At the handover, or at `club_breakup`: **buy the friends out** (their share at t
 | # | Target | Why |
 |---|---|---|
 | X-B1 | Opt-out invariance: existing Prologue bots and goldens byte-identical | The features are optional |
-| X-B2 | Pool-operator bot (opens 2011Q2, 1% PPLNS, cold storage, sold at the handover) ends at 1.2-3× the sell-as-mined bot's net worth | Worth doing, not a jackpot |
+| X-B2 | (§16) The pool-operator's share of bitcoin hashrate stays at or under 2% (a small pool, doc 55's definition) in at least 95% of runs; its median Prologue fee income is reported; it stays below careful-hodler's median | The pool stays a small pool; real fees, not a jackpot |
 | X-B3 | ≥ 10% of pool runs without cold storage see a theft; a PPS pool at 2% fee ends insolvent in ≥ 5% of runs | The risks are real |
 | X-B4 | A pool at or below the median fee in 2014Q2 gains outside miners in ≥ 80% of runs | The boycott decision pays visibly |
 | X-B5 | Club bot (joins with $2,000, holds the keys, buys out) returns 0.8-1.5× the same cash in a solo group-buy share | Friends aren't a free lunch |
@@ -208,3 +208,20 @@ The second research pass can run alongside milestones 1-3; its numbers drop into
 8. **Pacing (DT):** X-B8 now reads: at most 30 choice cards per run for a bot using one feature; a bot using all three is reported, not judged (club-all's 33 is accepted). No card is cut.
 9. **Housekeeping (DT):** research files never live in `docs/prologue-content/` (the Prologue's live content). Docs 55 and 57 go to `docs/game-project-files/`; the research-2 and research-3 data go to `docs/prologue-expansion-content/research-2/` and `research-3/`.
 10. **The club went public with the old names (finding).** M70 merged before the renames and the dev flag. The next run renames and gates the three features first.
+
+## 16. After M71 (15 Oct 2026)
+*Decisions on the M71 handover: owner (O) for 1, 2, 4 and 7; design thread (DT) for the rest. M71 is accepted as built, with its "(mine, reversible)" decisions. start_pull 0.0025 (lever a) stays; lever b was reverted.*
+
+**Findings first:**
+- **The pool's 3× ceiling was a guess; the data says the pool is about right.** A pool with about 0.5% of bitcoin hashrate at a 1-2% fee took in tens of thousands of dollars a year in 2013-15 (network revenue × share × fee), so roughly $300K over the Prologue is history, not a bug. Measured against the sell-as-mined player's $40K it looks large; measured against careful-hodler's $1.2B it is small.
+- **The PPS game overs are a bot habit.** The pps-operator moves out in 2014Q1 whatever its cash, then has no income after its pool closes; every game over comes 1-6 quarters after the closure.
+- **Block headers disagree with the reconstruction before 2013Q4:** LTC difficulty is about 2.7× the reconstruction in 2012Q3-Q4 and 0.75× in 2011Q4; within about 5% from 2013Q4. The 2014-05-26 check value (about 7,000) was the design thread's conversion from a reported 200 GH/s; the headers' 8,900 is primary.
+
+**Decisions:**
+1. **X-B2 is replaced (O).** The 3× ceiling goes. New X-B2: the pool-operator's share of bitcoin hashrate stays at or under 2% in at least 95% of runs (it remains a small pool), its median Prologue fee income is reported, and it stays below careful-hodler's median. A test of "fees match share × fee" was rejected: the sim computes fees that way, so it would test the model against itself. X-B7 (pool) is reported, not judged, for the same reason.
+2. **The pps-operator bot moves out only with four quarters of committed costs in cash (O).** The floor stays at one quarter. Report game overs again.
+3. **Headers beat the check value (DT):** the 2014-05-26 check becomes 8,900.
+4. **The shipped market file uses header difficulty (O)** once a full run exists, everywhere it exists; the reconstruction fills only gaps. X-B6 and the early-Litecoin stack are re-measured on it.
+5. **The scrypt-switcher mining no DOGE on the golden seed is accepted (DT):** it picks the better coin once selling limits apply.
+6. **The timing target is 150 seconds for 1,000 runs (DT).**
+7. **The header tool slows down and resumes (O):** it waits between calls, backs off on HTTP 429 with growing pauses, and resumes from its cache across runs, with no API key. Its cache file is ignored by git.
