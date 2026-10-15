@@ -123,13 +123,17 @@ describe('the household (scope §2.3, §2.4)', () => {
     expect(s.log.some((e) => e.key === 'log.p0_moved_back_forced')).toBe(true)
   })
 
-  it('the small unit: after moving out, from 2014Q1, at Act I cost', () => {
-    let s = planAt('2013Q4', 100_000)
+  it('the small unit: after moving out, from 2011Q3 (doc 51 v1.7 §18), at Act I cost', () => {
+    let s = planAt('2011Q2', 100_000)
     expect(refused(s, { type: 'P0_BUILD_SMALL_UNIT' })).toBe('error.p0_at_home')
+    // (from 2011Q3 it is still locked while you live at home)
+    const later = structuredClone(s)
+    later.quarter = quarterIndex('2011Q3')!
+    expect(refused(later, { type: 'P0_BUILD_SMALL_UNIT' })).toBe('error.p0_at_home')
     s = ok(s, { type: 'P0_MOVE_OUT' })
     s.bandwidth = 2
     expect(refused(s, { type: 'P0_BUILD_SMALL_UNIT' })).toBe('error.p0_not_yet')
-    s.quarter = quarterIndex('2014Q1')!
+    s.quarter = quarterIndex('2011Q3')!
     s = ok(s, { type: 'P0_BUILD_SMALL_UNIT' })
     expect(s.sites.map((x) => x.tier)).toEqual(['garage', 'small_unit'])
   })

@@ -13,9 +13,9 @@
    "power_kw": { "value": 0.09, "source": "≈ typical Core 2 Duo-class desktop under load", "estimate": true },
    "noise_db": { "value": 38, "source": "≈ a normal desktop tower, stock cooler", "estimate": true },
    "owned_at_start": true,
-   "price_new": { "2009Q1": 350 },
+   "price_new": { "2009Q1": 350, "2010Q2": 350 },
    "price_used": { "2009Q1": 0 },
-   "price_source": "The starter PC is owned at the start (doc 23 §3); a Spare PC costs $350, designed (doc 51 v1.6 §17, M73), on sale 2009Q1 to 2010Q2 only (v1.7 §18, M74): a mid desktop in 2009, not sourced."
+   "price_source": "The starter PC is owned at the start (doc 23 §3); a Spare PC costs $350, designed (doc 51 v1.6 §17, M73), on sale 2009Q1 to 2010Q2 only (v1.7 §18, M74: the sale window is `spare_pc.last_quarter` in prologue.json; the price table must list a quarter up to it, the market tail rule would otherwise end the sale at 2010Q1): a mid desktop in 2009, not sourced."
   },
   {
    "id": "gpu_gaming_2010",

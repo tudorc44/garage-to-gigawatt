@@ -57,9 +57,9 @@ describe('cards (scope §2.10)', () => {
   })
 
   it('in an auto-played quarter a random card takes its default by itself', () => {
-    let s = planAt('2009Q2')
+    let s = planAt('2009Q3')
     s.treasury.BTC = 100
-    // 2009Q2 isn't a decision quarter and wasn't "stopped here": it auto-plays.
+    // 2009Q3 isn't a decision quarter (2009Q2 is, since M74.1) and wasn't "stopped here": it auto-plays.
     s = ok(s, { type: 'END_PLAN' })
     s.prologue!.cardQueue = [{ id: 'friend_wants_coins', week: 1 }]
     s = advance(s)
