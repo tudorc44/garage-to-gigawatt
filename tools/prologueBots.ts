@@ -92,7 +92,7 @@ function buys(s: GameState, set: PrologueBotSettings): Action[] {
   const out: Action[] = []
   let cash = s.cash - set.reserveUsd
   const models = CONTENT.prologue.machines
-    .filter((m) => m.coin === 'BTC' && !P().not_for_sale.includes(m.id))
+    .filter((m) => m.coin === 'BTC' && !P().not_for_sale.includes(m.id) && m.id !== P().spare_pc.model) // (the Spare PC is a hobby buy: no earlier bot takes it)
     .map((m) => ({ m, price: buyPrice(m, s.quarter, 'new') }))
     .filter(
       (x): x is { m: (typeof x)['m']; price: number } =>
@@ -193,6 +193,7 @@ function obsolete(s: GameState, keepScryptGpus = false): Action[] {
     (m) =>
       m.coin === 'BTC' &&
       !P().not_for_sale.includes(m.id) &&
+      m.id !== P().spare_pc.model &&
       buyPrice(m, s.quarter, 'new') !== undefined,
   )
   const best = Math.max(0, ...onSale.map((m) => m.hashrate / m.power_kw))

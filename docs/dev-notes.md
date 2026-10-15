@@ -11,6 +11,11 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## M73: buyable CPU PCs in the Prologue opening (doc 51 v1.6 §17) (branch `m73` from `main` at `3523943`, M72 merged as PR #44)
+
+- M73.0 doc 51 v1.6 (copied with `cp`, byte-exact; diff: header and §17 only). M73.1 done (build only, tests not run yet, by the owner's override for this run): `pc_cpu` is buyable as a "Spare PC (CPU)" ($350 new from 2009Q1, bought into the home rig only; the bedroom row says "Needs the home rig"; 4 CPU PCs in all, the starter included; new only), text through `t()`, the 2009Q1 Plan hint on the rig panel, earlier bots never buy it (their buy filters skip `pc_cpu`).
+- (mine, reversible) the price table has keys 2009Q1 and 2010Q2, so the Spare PC is on sale through 2011Q2 (the market's 4-quarter tail rule); used copies are not offered (the used price is 0); bought lots are told apart from the starter by condition (new vs used). Not done: M73.2 tests, the cpu-farmer bot and golden, M73.3 measurement, the staging build (owner runs `npm run staging:build`).
+
 ## M72: header difficulty, the pps-operator fix and the restated pool target (doc 51 v1.5 §16) (branch `m72` from `main` at `243f669`, M71 merged as PR #43)
 
 Split (doc 51 v1.5 copied from the design thread's file, diff checked: header, the X-B2 row, §16):

@@ -85,7 +85,7 @@ export function BuyPicker(props: {
       <div class="num-s">
         {t('ui.p0.buy_total', {
           count,
-          model: machineName(props.model),
+          model: machineName(props.model, props.condition),
           total: fmt.money(props.unitUsd * count),
           power: watts(props.powerKw * count),
         })}
@@ -138,11 +138,11 @@ export function Machines({ state, act }: PrologueProps) {
               <div class="fleet-row" key={lot.id}>
                 <MachineCard
                   drawing={drawing(lot.model)}
-                  caption={machineName(lot.model)}
+                  caption={machineName(lot.model, lot.condition)}
                   compact
                 />
                 <span>
-                  <strong>{machineName(lot.model)}</strong>
+                  <strong>{machineName(lot.model, lot.condition)}</strong>
                   <br />
                   <span class="num-s muted">
                     {t('ui.p0.lot_line', {
@@ -277,7 +277,7 @@ export function Machines({ state, act }: PrologueProps) {
               <div key={`${b.model.id}:${b.condition}`}>
                 <MachineCard
                   drawing={drawing(b.model.id)}
-                  caption={machineName(b.model.id)}
+                  caption={machineName(b.model.id, b.condition)}
                   era={era(b.model.id)}
                 />
                 <div class="num-s">

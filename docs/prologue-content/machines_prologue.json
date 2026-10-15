@@ -13,9 +13,9 @@
    "power_kw": { "value": 0.09, "source": "≈ typical Core 2 Duo-class desktop under load", "estimate": true },
    "noise_db": { "value": 38, "source": "≈ a normal desktop tower, stock cooler", "estimate": true },
    "owned_at_start": true,
-   "price_new": { "2009Q1": 0 },
+   "price_new": { "2009Q1": 350, "2010Q2": 350 },
    "price_used": { "2009Q1": 0 },
-   "price_source": "Free — the player already owns this PC at prologue start (doc 23 §3)."
+   "price_source": "The starter PC is owned at the start (doc 23 §3); a Spare PC costs $350, designed (doc 51 v1.6 §17, M73): a mid desktop in 2009, not sourced."
   },
   {
    "id": "gpu_gaming_2010",

@@ -138,6 +138,14 @@ export function p0BuyBlocker(
       condition: a.condition,
     })
   if (!Number.isInteger(a.count) || a.count < 1) return fail('error.bad_count')
+  // M73.1 (doc 51 v1.6 §17): the starter PC can be bought again as a Spare PC: new only, into the home rig, 4 CPU PCs in all
+  if (model.id === P().spare_pc.model) {
+    if (a.condition === 'used') return fail('error.not_for_sale', { model: a.model, condition: a.condition })
+    const site0 = s.sites.find((x) => x.id === a.siteId)
+    if (site0?.tier === 'bedroom') return fail('error.p0_spare_needs_rig')
+    const owned = s.machines.filter((l) => l.model === model.id).reduce((n, l) => n + l.count, 0)
+    if (owned + a.count > P().spare_pc.cap) return fail('error.p0_spare_cap', { cap: P().spare_pc.cap, owned })
+  }
   const unit = buyPrice(model, s.quarter, a.condition)
   if (unit === undefined)
     return fail('error.not_for_sale', {
