@@ -109,7 +109,7 @@ week,ltc_difficulty,doge_difficulty,source
 2013-11-11,1311.255,,litecoinspace block 461950
 2013-11-18,1486.1241,,litecoinspace block 466236
 2013-11-25,1734.1605,,litecoinspace block 470613
-2013-12-02,2218.8926,,litecoinspace block 475281
+2013-12-02,2218.8926,1.8935,litecoinspace block 475281; blockcypher block 2487
 2013-12-09,2926.5097,65.5035,litecoinspace block 479694; blockcypher block 13278
 2013-12-16,3231.1833,327.2978,litecoinspace block 483633; blockcypher block 23647
 2013-12-23,2849.5463,407.7818,litecoinspace block 487772; blockcypher block 33723
@@ -133,5 +133,140 @@ week,ltc_difficulty,doge_difficulty,source
 2014-04-28,7338.313,848.5007,litecoinspace block 561442; blockcypher block 208524
 2014-05-05,6814.9029,632.6514,litecoinspace block 565361; blockcypher block 217829
 2014-05-12,7740.1376,911.676,litecoinspace block 569613; blockcypher block 227012 (within 2 min)
+2014-05-19,7455.65,516.593,litecoinspace block 573669; blockcypher block 235777 (within 3 min)
 2014-05-26,8900.5207,713.0036,litecoinspace block 577976; blockcypher block 244563
-2014-09-15,33202.9544,,litecoinspace block 644889
+2014-06-02,9986.1928,635.5036,litecoinspace block 582275; blockcypher block 253364 (within 4 min)
+2014-06-09,10307.9292,791.9949,litecoinspace block 586372; blockcypher block 262148
+2014-06-16,12094.7716,751.7035,litecoinspace block 590687; blockcypher block 271179
+2014-06-23,14492.6177,809.4016,litecoinspace block 594973; blockcypher block 280200 (within 9 min)
+2014-06-30,16584.8735,1434.1049,litecoinspace block 599335; blockcypher block 289223
+2014-07-07,20239.3041,1707.2019,litecoinspace block 603712; blockcypher block 297888 (within 5 min)
+2014-07-14,22149.1726,817.1635,litecoinspace block 607863; blockcypher block 306786
+2014-07-21,22724.5884,664.1017,litecoinspace block 612059; blockcypher block 315626 (within 4 min)
+2014-07-28,24978.7821,844.8331,litecoinspace block 616179; blockcypher block 323945
+2014-08-04,26823.5213,917.131,litecoinspace block 620446; blockcypher block 332509 (within 6 min)
+2014-08-11,29290.3443,1063.3961,litecoinspace block 624547; blockcypher block 340960
+2014-08-18,28130.8245,890.434,litecoinspace block 628550; blockcypher block 349627
+2014-08-25,28073.2717,888.8211,litecoinspace block 632495; blockcypher block 358279
+2014-09-01,27799.2567,1267.6634,litecoinspace block 636579; blockcypher block 366827 (within 31 min)
+2014-09-08,28322.6399,8010.6346,litecoinspace block 640877; blockcypher block 375775
+2014-09-15,33202.9544,10571.6755,litecoinspace block 644889; blockcypher block 385406
+2014-09-22,34786.6727,9224.7624,litecoinspace block 649118; blockcypher block 395074
+2014-09-29,37011.2955,14101.2945,litecoinspace block 653244; blockcypher block 404675
+2014-10-06,36726.1404,19320.5566,litecoinspace block 657264; blockcypher block 414285
+2014-10-13,36510.4073,17148.5339,litecoinspace block 661267; blockcypher block 423879
+2014-10-20,37708.6469,12822.9372,litecoinspace block 665374; blockcypher block 433414
+2014-10-27,37760.0338,14239.4934,litecoinspace block 669406; blockcypher block 443005
+2014-11-03,41501.8482,11773.0471,litecoinspace block 673611; blockcypher block 452590
+2014-11-10,44803.899,19890.5267,litecoinspace block 677781; blockcypher block 462228
+2014-11-17,49818.4891,29856.3924,litecoinspace block 682047; blockcypher block 471797
+2014-11-24,51269.5534,11294.4966,litecoinspace block 686133; blockcypher block 481388
+2014-12-01,51485.2764,14466.0142,litecoinspace block 690223; blockcypher block 490913
+2014-12-08,56132.9677,14545.9716,litecoinspace block 694379; blockcypher block 500490
+2014-12-15,54137.6446,18699.4212,litecoinspace block 698291; blockcypher block 510067
+2014-12-22,58966.7439,18831.4242,litecoinspace block 702482; blockcypher block 519611
+2014-12-29,53495.0273,17280.8034,litecoinspace block 706322; blockcypher block 529182
+2015-01-05,47686.1608,8211.6096,litecoinspace block 710110; blockcypher block 538743
+2015-01-12,40358.7904,25775.0811,litecoinspace block 713813; blockcypher block 548388
+2015-01-19,42151.0973,14115.244,litecoinspace block 717933; blockcypher block 558007
+2015-01-26,43001.0489,13453.6465,litecoinspace block 722015; blockcypher block 567562
+2015-02-02,41903.9335,17284.1415,litecoinspace block 725978; blockcypher block 577132
+2015-02-09,41941.9904,14566.8403,litecoinspace block 730008; blockcypher block 586733
+2015-02-16,40605.2808,18482.7917,litecoinspace block 733995; blockcypher block 596335
+2015-02-23,40278.5498,13522.4369,litecoinspace block 738001; blockcypher block 605927
+2015-03-02,38801.1723,15922.6714,litecoinspace block 741958; blockcypher block 615519
+2015-03-09,40765.6115,11568.6966,litecoinspace block 746064; blockcypher block 625101
+2015-03-16,34843.1153,24600.7753,litecoinspace block 749872; blockcypher block 634670
+2015-03-23,41342.052,15437.015,litecoinspace block 754140; blockcypher block 644272
+2015-03-30,41885.9521,27712.6194,litecoinspace block 758173; blockcypher block 653889 (within 11 min)
+2015-04-06,41591.8747,19423.4858,litecoinspace block 762217; blockcypher block 663386 (within 2 min)
+2015-04-13,40469.4541,22955.7271,litecoinspace block 766174; blockcypher block 672971
+2015-04-20,40434.0215,14705.697,litecoinspace block 770206; blockcypher block 682557
+2015-04-27,39731.1886,13129.1169,litecoinspace block 774196; blockcypher block 692149
+2015-05-04,41465.7864,14173.3771,litecoinspace block 778319; blockcypher block 701788
+2015-05-11,40424.5071,15733.2782,litecoinspace block 782280; blockcypher block 711403
+2015-05-18,39482.4578,18849.2759,litecoinspace block 786279; blockcypher block 721038
+2015-05-25,38900.6291,20295.9245,litecoinspace block 790272; blockcypher block 730667
+2015-06-01,40258.9168,21982.75,litecoinspace block 794381; blockcypher block 740335 (within 1 min)
+2015-06-08,38075.3702,14932.9714,litecoinspace block 798300; blockcypher block 749993
+2015-06-15,39567.9374,13288.4345,litecoinspace block 802401; blockcypher block 759586 (within 1 min)
+2015-06-22,41691.599,12950.0643,litecoinspace block 806546; blockcypher block 769225
+2015-06-29,43073.5,20087.4691,litecoinspace block 810651; blockcypher block 778795
+2015-07-06,44844.1306,12245.0834,litecoinspace block 814731; blockcypher block 788445
+2015-07-13,43799.6059,11826.5377,litecoinspace block 818682; blockcypher block 798047
+2015-07-20,45550.8841,23649.8192,litecoinspace block 822841; blockcypher block 807659
+2015-07-27,46396.7609,20027.3337,litecoinspace block 826921; blockcypher block 817240
+2015-08-03,46651.7685,14443.5386,litecoinspace block 830942; blockcypher block 826838
+2015-08-10,44842.7259,20183.473,litecoinspace block 834856; blockcypher block 836495
+2015-08-17,45223.7734,15259.585,litecoinspace block 838927; blockcypher block 846113
+2015-08-24,41781.6386,11306.2707,litecoinspace block 842661; blockcypher block 855699
+2015-08-31,42838.067,22863.586,litecoinspace block 846870; blockcypher block 865340
+2015-09-07,44811.3785,23936.764,litecoinspace block 851000; blockcypher block 874946
+2015-09-14,47940.0569,14810.7721,litecoinspace block 855146; blockcypher block 884580
+2015-09-21,46410.7991,20704.8076,litecoinspace block 859109; blockcypher block 894208
+2015-09-28,47889.2752,19830.4642,litecoinspace block 863239; blockcypher block 903854
+2015-10-05,48771.894,20396.2605,litecoinspace block 867265; blockcypher block 913459
+2015-10-12,47133.0154,13297.4035,litecoinspace block 871240; blockcypher block 923094
+2015-10-19,49247.2482,15463.5824,litecoinspace block 875366; blockcypher block 932755
+2015-10-26,48932.4814,23719.6967,litecoinspace block 879383; blockcypher block 942433 (within 3 min)
+2015-11-02,50461.1723,13595.8498,litecoinspace block 883488; blockcypher block 952023
+2015-11-09,47741.2881,18983.4946,litecoinspace block 887381; blockcypher block 961701
+2015-11-16,42343.9229,19268.549,litecoinspace block 891181; blockcypher block 971349
+2015-11-23,40892.5322,27131.0644,litecoinspace block 895140; blockcypher block 980974
+2015-11-30,50114.955,10968.5258,litecoinspace block 899503; blockcypher block 990618 (within 2 min)
+2015-12-07,51947.9633,33144.789,litecoinspace block 903627; blockcypher block 1000313
+2015-12-14,52177.0508,17929.3403,litecoinspace block 907654; blockcypher block 1009994 (within 1 min)
+2015-12-21,54025.2806,19937.9878,litecoinspace block 911728; blockcypher block 1019694
+2015-12-28,50157.6793,20292.5682,litecoinspace block 915676; blockcypher block 1029392 (within 3 min)
+2016-01-04,52449.1282,17604.0765,litecoinspace block 919783; blockcypher block 1039077
+2016-01-11,54290.251,23080.1982,litecoinspace block 923846; blockcypher block 1048751
+2016-01-18,53220.5918,23229.1204,litecoinspace block 927863; blockcypher block 1058453
+2016-01-25,49371.7943,22578.009,litecoinspace block 931707; blockcypher block 1068130
+2016-02-01,54655.728,27177.7622,litecoinspace block 935967; blockcypher block 1077734 (within 5 min)
+2016-02-08,52258.3136,19889.4214,litecoinspace block 939908; blockcypher block 1087362
+2016-02-15,51825.7284,29908.1618,litecoinspace block 943943; blockcypher block 1096985
+2016-02-22,54516.2824,18429.5745,litecoinspace block 948045; blockcypher block 1106623
+2016-02-29,52537.0246,19707.8028,litecoinspace block 951995; blockcypher block 1116272
+2016-03-07,50534.2012,23770.8962,litecoinspace block 955958; blockcypher block 1125941
+2016-03-14,55224.9779,16105.016,litecoinspace block 960144; blockcypher block 1135599
+2016-03-21,55648.5801,29522.4861,litecoinspace block 964187; blockcypher block 1145272
+2016-03-28,53975.0385,18563.5574,litecoinspace block 968206; blockcypher block 1154894
+2016-04-04,51665.5049,15836.0745,litecoinspace block 972105; blockcypher block 1164563
+2016-04-11,48972.654,17391.4347,litecoinspace block 976025; blockcypher block 1174219
+2016-04-18,48114.0622,16642.1327,litecoinspace block 980018; blockcypher block 1183888
+2016-04-25,50785.7697,18001.5582,litecoinspace block 984109; blockcypher block 1193532
+2016-05-02,48336.0729,19516.1597,litecoinspace block 988048; blockcypher block 1203136
+2016-05-09,47092.1883,23003.1855,litecoinspace block 992051; blockcypher block 1212787
+2016-05-16,48449.488,20688.2518,litecoinspace block 996118; blockcypher block 1222444
+2016-05-23,49475.875,18160.6451,litecoinspace block 1000193; blockcypher block 1232090
+2016-05-30,40077.0931,12610.9592,litecoinspace block 1003786; blockcypher block 1241710
+2016-06-06,44270.4918,14066.5639,litecoinspace block 1007998; blockcypher block 1251367
+2016-06-13,47528.9027,12903.454,litecoinspace block 1012159; blockcypher block 1261033
+2016-06-20,47044.2167,17388.1254,litecoinspace block 1016012; blockcypher block 1270693
+2016-06-27,47852.4591,31561.8263,litecoinspace block 1020217; blockcypher block 1280349 (within 1 min)
+2016-07-04,49027.9992,27377.3363,litecoinspace block 1023988; blockcypher block 1290015
+2016-07-11,51707.1797,26350.0605,litecoinspace block 1028393; blockcypher block 1299648
+2016-07-18,48065.6008,19692.6219,litecoinspace block 1032290; blockcypher block 1309332 (within 1 min)
+2016-07-25,49953.4969,20195.906,litecoinspace block 1036419; blockcypher block 1318992
+2016-08-01,53084.4273,17025.4923,litecoinspace block 1040520; blockcypher block 1328652
+2016-08-08,54983.8918,21058.4982,litecoinspace block 1044607; blockcypher block 1338336
+2016-08-15,52958.0982,16496.7093,litecoinspace block 1048601; blockcypher block 1348008
+2016-08-22,53594.4914,26986.8409,litecoinspace block 1052617; blockcypher block 1357736
+2016-08-29,54623.0574,21000.0135,litecoinspace block 1056726; blockcypher block 1367456
+2016-09-05,55343.8194,24015.5994,litecoinspace block 1060762; blockcypher block 1377142
+2016-09-12,54343.8324,17899.4514,litecoinspace block 1064771; blockcypher block 1386883
+2016-09-19,56707.3564,19135.5683,litecoinspace block 1068862; blockcypher block 1396590
+2016-09-26,55110.8885,13817.1709,litecoinspace block 1072861; blockcypher block 1406268
+2016-10-03,52274.2148,22051.1463,litecoinspace block 1076793; blockcypher block 1415968
+2016-10-10,48912.9769,23750.1272,litecoinspace block 1080678; blockcypher block 1425667
+2016-10-17,48703.8665,16498.1668,litecoinspace block 1084669; blockcypher block 1435383
+2016-10-24,51699.0883,24700.9464,litecoinspace block 1088833; blockcypher block 1445074
+2016-10-31,55937.7671,18071.2421,litecoinspace block 1093005; blockcypher block 1454732
+2016-11-07,58578.2916,19350.7626,litecoinspace block 1097092; blockcypher block 1464364
+2016-11-14,58875.4028,22348.2122,litecoinspace block 1101178; blockcypher block 1474012
+2016-11-21,66544.293,29155.5343,litecoinspace block 1105418; blockcypher block 1483664
+2016-11-28,69056.5289,21638.3108,litecoinspace block 1109525; blockcypher block 1493326
+2016-12-05,72568.6294,25836.4821,litecoinspace block 1113617; blockcypher block 1503007
+2016-12-12,67542.6458,20860.6832,litecoinspace block 1117572; blockcypher block 1512713 (within 5 min)
+2016-12-19,65453.1037,23748.814,litecoinspace block 1121498; blockcypher block 1522397
+2016-12-26,77009.5885,29278.9627,litecoinspace block 1125845; blockcypher block 1532080
