@@ -31,8 +31,8 @@ save('pools_player.json', {
  'outside_miners': {
   'model': 'outside hashrate = network hashrate x small_pool_share[year] x pull; pull starts at start_pull and moves each quarter with fee, luck and reputation, minus churn',
   'small_pool_share_by_year': {'2011': V(0.10, 'D', 'doc 55 §4: solo mining dominant, Deepbit majority'), '2012': V(0.15, 'D', 'doc 55 §4'), '2013': V(0.25, 'C', 'doc 55 §4: outside the top five (Cong, He and Li 2018 [B]) minus solo'), '2014': V(0.26, 'C', 'doc 55 §4'), '2015': V(0.30, 'C', 'doc 55 §4'), '2016': V(0.24, 'C', 'doc 55 §4')},
-  'start_pull': V(0.005, 'D', 'a new pool gets 0.5% of the small-pool market; first lever at the balance milestone (doc 51 §13-14)'),
-  'fee_elasticity_per_pp': V(-0.08, 'D', 'doc 53 B3: -8% hashrate per +1 pp fee against the median'),
+  'start_pull': V(0.0025, 'D', 'a new pool gets 0.25% of the small-pool market (M71.7 lever (a): was 0.005; doc 51 §13 decision 1)'),
+  'fee_elasticity_per_pp': V(-0.08, 'D', 'doc 53 B3: -8% hashrate per +1 pp fee against the median (M71.7 lever (b), -0.12, tried and reverted: it widened X-B2 from 8.54x to 9.04x)'),
   'median_fee_by_year': {'2011': 0.0387, '2012': 0.0348, '2013': 0.0303, '2014': 0.0161, '2015': 0.0224, '2016': 0.0112, 'grade': 'B', 'source': 'size-weighted average pool fee, Cong, He and Li 2018 (doc 55 §4); used as the market fee the player is compared with'},
   'base_churn_quarter': V(0.05, 'D', 'designed'),
   'luck_memory_weeks': V(4, 'D', 'doc 53 B3'),

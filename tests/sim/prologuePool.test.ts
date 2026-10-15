@@ -101,10 +101,11 @@ describe('outside miners and the weeks', () => {
     s = playWeek(s)
     const w = CONTENT.market[s.quarter][0]
     const first = s.prologue!.ownPool!.outsideTh
-    const expected = w.btc_hashrate_EHs * 1e6 * 0.1 * 0.005
+    const start = CONTENT.prologue.pool!.outside_miners.start_pull.value // (0.0025 since M71.7 lever (a))
+    const expected = w.btc_hashrate_EHs * 1e6 * 0.1 * start
     expect(first).toBeCloseTo(expected, 6)
     s = ok(playQuarterFrom(s), { type: 'NEXT_QUARTER' })
-    expect(s.prologue!.ownPool!.pull).toBeGreaterThan(0.005 * 0.95) // churn takes 5%, new miners come in
+    expect(s.prologue!.ownPool!.pull).toBeGreaterThan(start * 0.95) // churn takes 5%, new miners come in
   })
 
   it('PPLNS: the operator keeps the fee on the blocks found; the miners are paid only from found blocks', () => {

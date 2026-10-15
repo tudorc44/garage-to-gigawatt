@@ -138,14 +138,14 @@
    }
   },
   "start_pull": {
-   "value": 0.005,
+   "value": 0.0025,
    "grade": "D",
-   "source": "a new pool gets 0.5% of the small-pool market; first lever at the balance milestone (doc 51 §13-14)"
+   "source": "a new pool gets 0.25% of the small-pool market (M71.7 lever (a): was 0.005; doc 51 §13 decision 1)"
   },
   "fee_elasticity_per_pp": {
    "value": -0.08,
    "grade": "D",
-   "source": "doc 53 B3: -8% hashrate per +1 pp fee against the median"
+   "source": "doc 53 B3: -8% hashrate per +1 pp fee against the median (M71.7 lever (b), -0.12, tried and reverted: it widened X-B2 from 8.54x to 9.04x)"
   },
   "median_fee_by_year": {
    "2011": 0.0387,
