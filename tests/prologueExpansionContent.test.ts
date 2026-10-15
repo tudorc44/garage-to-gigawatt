@@ -221,3 +221,34 @@ describe('the Prologue expansion pack (M68.2)', () => {
     expect(weekly.at(-1)!.doge_block_reward_expected).toBe(10000)
   })
 })
+
+describe('difficulty from block headers (M72.3, doc 51 v1.5 §16 decision 4)', () => {
+  const byWeek = new Map(weekly.map((r) => [r.week, r]))
+
+  it('the headers file is complete: Litecoin 271 weeks from 2011-10-24, Dogecoin 161 from 2013-12-02, to 2016-12-26', () => {
+    const rows = readFileSync(new URL('../docs/prologue-expansion-content/research-2/ltc_doge_difficulty_headers.csv', import.meta.url), 'utf8').trim().split('\n').slice(1)
+    expect(rows.length).toBe(271)
+    expect(rows[0].startsWith('2011-10-24,')).toBe(true)
+    expect(rows.at(-1)!.startsWith('2016-12-26,')).toBe(true)
+    expect(rows.filter((r) => r.split(',')[2] !== '').length).toBe(161)
+  })
+
+  it('the market file carries the header difficulty (the sourced check weeks) and marks it grade A', () => {
+    expect(byWeek.get('2013-12-16')!.ltc_difficulty).toBeCloseTo(3231.2, 0)
+    expect(byWeek.get('2014-05-26')!.ltc_difficulty).toBeCloseTo(8900.5, 0)
+    expect(byWeek.get('2014-05-26')!.doge_difficulty).toBeCloseTo(713, 0)
+    expect(byWeek.get('2014-09-15')!.ltc_difficulty).toBeCloseTo(33203, 0)
+    const g = String((byWeek.get('2014-05-26') as unknown as { grade: string }).grade).split('/')
+    expect(g[0]).toBe('A')
+    expect(g[2]).toBe('A')
+  })
+
+  it('hashrate follows from difficulty (GH/s per unit of difficulty is a constant for each coin)', () => {
+    for (const w of ['2012-06-04', '2014-05-26', '2016-06-06']) {
+      const r = byWeek.get(w)!
+      expect(r.ltc_hashrate_GHs! / r.ltc_difficulty!).toBeCloseTo(0.0286331, 5)
+    }
+    const r = byWeek.get('2014-05-26')!
+    expect(r.doge_hashrate_GHs! / r.doge_difficulty!).toBeCloseTo(0.0715828, 4)
+  })
+})

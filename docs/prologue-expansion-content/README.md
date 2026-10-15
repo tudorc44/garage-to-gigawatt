@@ -54,3 +54,7 @@ Draft content for the three Prologue additions: your own pool, the mining club, 
 
 ## Rename log (M71.1: doc 51 v1.4 §14 decision 8 and §15 decision 2; `tools/prologue/gen_content.py` and `merge_alts.py`)
 - ScryptBox Ltd is now **Kestrel Foundry** (it was a real 2014 scrypt-mining share offering), Mara Ilves is **Nell Hartigan** (id `nell`; association risk) and OreLoop is **Slagwheel** (a Swedish gold-mining technology company uses it). The generator writes the new names; `merge_alts.py` renames the already-merged card and text copies in `docs/prologue-content/`, `src/content/` and `src/i18n/content.en.json`. Formal USPTO and EUIPO searches on every invented name are the owner's task before ship (doc 51 §15 decision 2).
+
+## Header difficulty (M72.3: doc 51 v1.5 §16 decision 4; `tools/prologue/headers_difficulty.py` and `gen_alts.py`)
+- `research-2/ltc_doge_difficulty_headers.csv` (block-header nBits, last block of each week: Litecoin 271 weeks from 2011-10-24, Dogecoin 161 from 2013-12-02, to 2016-12-26) now feeds the market files: `gen_alts.py` takes each coin's difficulty from it wherever it has a value, derives the hashrate from it, and uses the reconstruction (`ltc_doge_weekly.csv`) only for gaps; DOGE's derived rule (f x 0.4 x LTC D) is kept for weeks with no header value (none now). The weekly file's `grade` string (ltc difficulty / ltc price / doge difficulty / doge price) shows A in a difficulty slot that came from headers.
+- The tool's cache (`research-2/.headers_cache.json`) is git-ignored; the CSV is the shipped result.

@@ -2,11 +2,12 @@
 The weekly series is a reconstruction (every row estimate=true) until difficulty is rebuilt from block headers (doc 51 §14 decision 1).
 Usage: npm run content:prologue-expansion  (python3 -I tools/prologue/gen_alts.py <path to docs/prologue-content>)
 In the repo (M68.2) it lives in tools/prologue/ and writes into docs/prologue-expansion-content/ and src/content/; the CSVs use LF line endings."""
-import csv, sys, datetime as dt
+import csv, os, sys, datetime as dt
 SRC = sys.argv[1]
 OUT = __file__.rsplit('/tools/', 1)[0] + '/docs/prologue-expansion-content'
 LIVE = __file__.rsplit('/tools/', 1)[0] + '/src/content'  # the game reads its copies here (a test checks they stay identical)
 SERIES = f'{OUT}/research-2/ltc_doge_weekly.csv'   # difficulty and hashrate (reconstruction until the header rebuild)
+HEADERS = f'{OUT}/research-2/ltc_doge_difficulty_headers.csv'  # difficulty from block headers [A] (M72.3, doc 51 v1.5 §16 decision 4): beats the reconstruction wherever it has a value
 PRICES = f'{OUT}/research-3/ltc_doge_prices_weekly.csv'  # prices and volume: CoinMarketCap [A] from 2013-04-29 (LTC) and 2013-12-15 (DOGE), licensed; designed [D] before
 
 LTC_OPEN = dt.date(2011, 10, 24)  # [D] doc 51 §14 decision 2: the first two reconstructed weeks (D 0.000244, 0.05) are launch artefacts
@@ -27,20 +28,26 @@ def doge_reward(d):
     return 10000.0
 
 series = {r['week']: r for r in csv.DictReader(open(SERIES))}
+headers = {r['week']: r for r in csv.DictReader(open(HEADERS))} if os.path.exists(HEADERS) else {}
 prices = {}
 for r in csv.DictReader(open(PRICES)): prices[(r['coin'], r['week'])] = r
 weeks = list(csv.DictReader(open(f'{SRC}/market_weekly_prologue.csv')))
 rows = []
 for w in weeks:
-    d = dt.date.fromisoformat(w['week']); s = series.get(w['week']); r = {'week': w['week'], 'quarter': w['quarter']}
+    d = dt.date.fromisoformat(w['week']); s = series.get(w['week']); r = {'week': w['week'], 'quarter': w['quarter']}; hd = None
     if s and d >= LTC_OPEN:
         pr = prices.get(('LTC', w['week']))
-        p, h, R = float(pr['close_usd']) if pr else float(s['ltc_usd_close']), float(s['ltc_hashrate_GHs']), ltc_reward(d)
+        hd = headers.get(w['week'], {}).get('ltc_difficulty')  # header difficulty where there is one; the hashrate follows from it
+        ltc_d, ltc_h = (float(hd), float(hd) * LTC_GHS_PER_D) if hd else (float(s['ltc_difficulty']), float(s['ltc_hashrate_GHs']))
+        p, h, R = float(pr['close_usd']) if pr else float(s['ltc_usd_close']), ltc_h, ltc_reward(d)
         r.update(ltc_usd=p, ltc_usd_high=float(pr['high_usd']) if pr else '', ltc_usd_low=float(pr['low_usd']) if pr else '',
-                 ltc_volume_usd_day=round(float(pr['volume_usd']) / 7, 2) if pr and pr['volume_usd'] else '', ltc_price_grade=pr['grade'] if pr else 'D', ltc_difficulty=float(s['ltc_difficulty']), ltc_hashrate_GHs=h, ltc_block_reward=R,
+                 ltc_volume_usd_day=round(float(pr['volume_usd']) / 7, 2) if pr and pr['volume_usd'] else '', ltc_price_grade=pr['grade'] if pr else 'D', ltc_difficulty=ltc_d, ltc_hashrate_GHs=h, ltc_block_reward=R,
                  ltc_rev_usd_khs_day=f'{LTC_BLOCKS_DAY * R / (h * 1e6) * p:.8g}')
-    if s and s['doge_hashrate_GHs']:
-        if d >= DERIVED_FROM:  # DOGE difficulty derived from LTC's after merged mining (doc 55 §1)
+    hdd = headers.get(w['week'], {}).get('doge_difficulty')
+    if s and (s['doge_hashrate_GHs'] or hdd):
+        if hdd:  # block-header difficulty [A]
+            dd = float(hdd); h = dd * DOGE_GHS_PER_D
+        elif d >= DERIVED_FROM:  # DOGE difficulty derived from LTC's after merged mining (doc 55 §1)
             dd = merge_share(d) * 0.4 * float(s['ltc_difficulty']); h = dd * DOGE_GHS_PER_D
         else:
             dd, h = float(s['doge_difficulty']), float(s['doge_hashrate_GHs'])
@@ -51,7 +58,11 @@ for w in weeks:
                      doge_volume_usd_day=round(float(pr['volume_usd']) / 7, 2) if pr and pr['volume_usd'] else '', doge_price_grade=pr['grade'] if pr else 'D', doge_difficulty=round(dd, 2), doge_hashrate_GHs=round(h, 3), doge_block_reward_expected=R,
                      doge_rev_usd_khs_day=f'{DOGE_BLOCKS_DAY * R / (h * 1e6) * p:.8g}', doge_merged_mining=d + dt.timedelta(days=6) >= MERGED)
     if len(r) > 2:
-        r['grade'] = s['grade']; r['estimate'] = True
+        # the grade string reads ltc difficulty / ltc price / doge difficulty / doge price; a difficulty from block headers is grade A
+        g = s['grade'].split('/')
+        if hd and g[0] != '-': g[0] = 'A'
+        if hdd and len(g) > 2 and g[2] != '-': g[2] = 'A'
+        r['grade'] = '/'.join(g); r['estimate'] = True
     rows.append(r)
 cols = ['week', 'quarter', 'ltc_usd', 'ltc_usd_high', 'ltc_usd_low', 'ltc_volume_usd_day', 'ltc_price_grade', 'ltc_difficulty', 'ltc_hashrate_GHs', 'ltc_block_reward', 'ltc_rev_usd_khs_day', 'doge_usd', 'doge_usd_high', 'doge_usd_low', 'doge_volume_usd_day', 'doge_price_grade', 'doge_difficulty',
         'doge_hashrate_GHs', 'doge_block_reward_expected', 'doge_rev_usd_khs_day', 'doge_merged_mining', 'grade', 'estimate']
