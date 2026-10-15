@@ -13,6 +13,7 @@ It is NOT wired into the game: the market files still read research-2/ltc_doge_w
 Usage:
   python3 -I tools/prologue/headers_difficulty.py --checks     # only the four check weeks (a few dozen requests)
   python3 -I tools/prologue/headers_difficulty.py --all        # every week from 2011-10-24 to 2016-12-26 (resumes from the cache)
+  python3 -I tools/prologue/headers_difficulty.py --write      # no requests: writes the CSV from what the cache holds (after a run that was cut short)
 """
 import csv, datetime as dt, json, os, sys, time, urllib.request
 
@@ -85,7 +86,7 @@ def weeks(first, last):
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else '--checks'
     cache = json.load(open(CACHE)) if os.path.exists(CACHE) else {}
-    todo = sorted({w for w, _, _, _ in CHECKS}) if mode == '--checks' else list(weeks(FIRST_WEEK, LAST_WEEK))
+    todo = [] if mode == '--write' else sorted({w for w, _, _, _ in CHECKS}) if mode == '--checks' else list(weeks(FIRST_WEEK, LAST_WEEK))
     doge_hint = 28_000  # Dogecoin's first weeks: about 1,440 blocks a day from 6 Dec 2013 (the first walk corrects it)
     for w in todo:
         key = str(w)
