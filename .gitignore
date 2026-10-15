@@ -28,3 +28,6 @@ sim-output
 
 # local staging build (npm run staging:build)
 staging
+
+# the header tool's resume cache (M72.1)
+docs/prologue-expansion-content/research-2/.headers_cache.json

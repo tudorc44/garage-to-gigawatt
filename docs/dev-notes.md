@@ -15,7 +15,8 @@ See "Next".
 
 Split (doc 51 v1.5 copied from the design thread's file, diff checked: header, the X-B2 row, §16):
 - M72.0 doc 51 v1.5 (copied with `cp`, byte-exact: mine, reversible)
-- M72.1 (A) the header tool slows down and resumes; cache in `.gitignore`; check week 2014-05-26 is 8,900
+- M72.1 done: `headers_difficulty.py` pauses 1 s between calls, backs off on HTTP 429 (30 s, doubling, cap 15 min, then stops cleanly with exit 3), caches every Dogecoin block and finished week and resumes; the cache is git-ignored (and untracked: M71 had committed it by mistake); check week 2014-05-26 is LTC 8,900; Dogecoin starts 2013-12-02.
+  **Found on main:** the golden act5-v3 and v4 failed on `main` after the merge of M71 (the other session's Heat NaN fix, `e6dbd81`, had moved those goldens separately; the two together move cash by about $5.7K of $2.45B). Re-accepted here; Perfect's Heat table is unchanged (re-run: identical to M71's).
 - M72.2 (B) the full header run; header ÷ reconstruction per quarter
 - M72.3 (C) headers into the market files; X-B6 and the early-Litecoin stack before and after
 - M72.4 (D) pps-operator moves out only with four quarters of committed costs; X-B2's new check in the runner
