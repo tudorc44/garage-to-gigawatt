@@ -239,7 +239,7 @@ export function prologueBuyView(state: GameState, siteId: string) {
     .flatMap((m) =>
       (['new', 'used'] as const)
         // (M73.1: the Spare PC is sold new only)
-        .filter((condition) => !(m.id === P().spare_pc.model && condition === 'used'))
+        .filter((condition) => !(m.id === P().spare_pc.model && (condition === 'used' || label(state.quarter) > P().spare_pc.last_quarter)))
         .map((condition) => {
         const unitUsd = buyPrice(m, state.quarter, condition)
         return {

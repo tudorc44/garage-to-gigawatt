@@ -1,4 +1,4 @@
-# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.6, 15 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70; §16 after M71; §17 extra CPU PCs)
+# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.7, 15 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70; §16 after M71; §17 extra CPU PCs; §18 after M73)
 
 *Design thread. v0.1 (13 Oct) was the draft; v1.0 takes in the research dossier (doc 53, saved by the research thread as doc 52) and the owner's answers. The content pack is in `claude/prologue-expansion-content/` with its generators. Built on the Prologue as built: `docs/alpha-0.3-scope.md` (wins over doc 26 and doc 23), `docs/prologue-content/`.*
 
@@ -249,3 +249,19 @@ The second research pass can run alongside milestones 1-3; its numbers drop into
 **Decision 6 (DT): text and Plan screen.** The buy menu lists "Spare PC (CPU)" from 2009Q1 with the count picker (P0_BUY, Max (N) respects the cap and free rig space). If the rig isn't built, the row shows "Needs the home rig" and stays disabled. Hint line on the 2009Q1 Plan: "One PC is a hobby. Four is a habit. Build the home rig to fit more." No new decision quarters in this change; if the opening still drags, adding a 2009Q2 Plan phase is the next lever (parked in doc 50).
 
 **Process (O, 15 Oct):** the build pushes to staging before running the test suites, so the owner can play it straight away.
+
+
+## 18. After M73 (15 Oct 2026)
+
+*M73 merged (PR #45). Every existing golden byte-identical; X-B table as before. cpu-farmer (4 PCs) ends the Prologue with 1.78x careful-hodler's stash (2 PCs 1.38x, 3 PCs 1.62x); Act I's carryover multiple is unchanged (11.70x vs 11.69x), so the extra coins carry over and nothing downstream breaks. The owner played the opening on staging. All decisions below are the owner's (O), 15 Oct.*
+
+1. **The cap rises to 5 CPU PCs**, the starter included (4 Spare PCs). 5 x 0.09 = 0.45 kW; the starter stays in the bedroom, so the 4 spares go in the home rig (0.36 of 1.5 kW).
+2. **The 1.5x guard becomes 4x.** It still stops a run, but now only at 4x. The new bots report their medians against careful-hodler.
+3. **The Spare PC is on sale 2009Q1 to 2010Q2 only** (the opening). Replaces M73's 2011Q2 window and the market tail rule for this item.
+4. **The purchase log names a spare "Spare PC (CPU)"**; the starter keeps "Your Gaming PC (CPU)".
+5. **2009Q2 becomes a decision quarter** (added to `events_prologue.json › decision_quarters`). This is content, not code (alpha-0.3 §2.2).
+6. **The small unit opens from 2011Q3** (was 2014Q1), still only after moving out, at Act I's cost and power. The site table in alpha-0.3 §2.4 is amended. Owner's reason: 2014Q1 is too late in the game; the GPU/FPGA farm years are when a home rig and garage start to feel small.
+
+**Expected effects (to measure, not targets):** a moved-out player can run a GPU farm in 2011-2013 (a GPU draws 0.35 kW; 100 kW holds about 280), so the stash grows more than with the Spare PC alone. Rent and power after moving out are the brake. The Act I carryover multiple should stay near 11.7x.
+
+**Goldens:** 5 and 6 may change what existing bots do (a new Plan phase; a site that opens earlier). Act I, Act II and Acts III-V goldens and the 2017 start stay byte-identical. The Prologue goldens may move only through 5 or 6, each explained; anything else is a bug.

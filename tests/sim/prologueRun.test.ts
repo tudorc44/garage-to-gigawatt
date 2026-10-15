@@ -36,13 +36,13 @@ const ACTIVE: PrologueBotSettings = {
 }
 
 describe('whole prologue runs', () => {
-  it('a passive player reaches the prologue chapter report: 13 Plan phases, the rest auto-played', () => {
+  it('a passive player reaches the prologue chapter report: 14 Plan phases (2009Q2 is one since M74.1), the rest auto-played', () => {
     const { state } = playPrologue(1, prologueBot(PASSIVE), { through: 0 })
     expect(state.phase).toBe('chapter')
     expect(state.act).toBe(0)
     const reports = state.prologue!.reports
     expect(reports).toHaveLength(32)
-    expect(reports.filter((r) => !r.auto)).toHaveLength(13)
+    expect(reports.filter((r) => !r.auto)).toHaveLength(14)
     expect(state.prologue!.cardsShown).toBeLessThanOrEqual(25)
   })
 

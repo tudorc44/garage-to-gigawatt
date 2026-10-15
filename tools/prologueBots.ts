@@ -8,7 +8,7 @@ import { committedCostsUsd, poolUnlocked } from '../src/sim/prologue/pool.ts'
 import { walletCoins } from '../src/sim/prologue/engine.ts'
 import { prologueCard } from '../src/sim/prologue/events.ts'
 import { sellable } from '../src/sim/prologue/custody.ts'
-import { conferenceNow, moveOutBlocker } from '../src/sim/prologue/life.ts'
+import { conferenceNow, moveOutBlocker, smallUnitBlocker } from '../src/sim/prologue/life.ts'
 import { openVendors } from '../src/sim/prologue/preorders.ts'
 import {
   P,
@@ -17,7 +17,9 @@ import {
   rentUsdQ,
   siteCapacityKw,
   siteLoadKw,
+  sitePowerUsdKwh,
 } from '../src/sim/prologue/setup.ts'
+import { usedKw } from '../src/sim/systems/sites.ts'
 import type { Strategy } from '../src/sim/replay.ts'
 import type { GameState } from '../src/sim/state.ts'
 import { buyPrice, marketWeek } from '../src/sim/systems/market.ts'
@@ -53,6 +55,13 @@ export interface PrologueBotSettings {
    * (opt-out invariance); the cpu-farmer carries it.
    */
   sparePcs?: number
+  /**
+   * M74.3 (doc 51 v1.7 §18): the unit-farmer. In the Plan phase `prep` it sells BTC for `prepUsd` (the unit costs $35K and the
+   * deposit comes first); from the Plan phase `from` (it stops at the report before, since 2011Q3 auto-plays) it moves out and leases
+   * the small unit; in every later Plan phase it sells `refillUsd` more BTC and fills the free room with `model` (gaming GPUs),
+   * keeping a quarter of its rent and power in cash. Absent for every earlier bot (opt-out invariance).
+   */
+  unitFarm?: { prep: string; from: string; prepUsd: number; refillUsd: number; model: string }
   /** Answer to the Mt Gox collapse card. */
   goxAnswer: 'withdraw' | 'accept'
   /** Stop at every quarter report (a Plan phase every quarter). */
@@ -95,8 +104,9 @@ function quarterUsd(s: GameState, hashrateTh: number): number {
 /** The machines to buy now: the best BTC model per dollar that pays back in time, into free room. */
 function buys(s: GameState, set: PrologueBotSettings): Action[] {
   const out: Action[] = []
-  let cash = s.cash - set.reserveUsd
+  let cash = s.cash - (set.unitFarm ? farmReserveUsd(s, set) : set.reserveUsd)
   const models = CONTENT.prologue.machines
+    .filter((m) => (set.unitFarm ? m.id === set.unitFarm.model : true))
     .filter((m) => m.coin === 'BTC' && !P().not_for_sale.includes(m.id) && m.id !== P().spare_pc.model) // (the Spare PC is a hobby buy: no earlier bot takes it)
     .map((m) => ({ m, price: buyPrice(m, s.quarter, 'new') }))
     .filter(
@@ -176,6 +186,33 @@ function movesOutNow(s: GameState, set: PrologueBotSettings, cash: number): bool
   if (set.moveOutCashQuarters === undefined) return true
   const rent = s.prologue!.livingAtHome ? rentUsdQ(s.quarter) : 0 // (committedCostsUsd counts rent only once moved out)
   return cash >= depositUsd(s.quarter) + set.moveOutCashQuarters * (committedCostsUsd(s) + rent)
+}
+
+/** A quarter of what the unit-farmer carries (M74.3): the rent (the household's and the sites') and the power its machines draw. */
+function farmReserveUsd(s: GameState, set: PrologueBotSettings): number {
+  const rent = (s.prologue!.livingAtHome ? 0 : rentUsdQ(s.quarter)) + s.sites.reduce((a, x) => a + x.rentUsdQ, 0)
+  const power = s.sites.reduce((a, x) => a + usedKw(s, x.id) * sitePowerUsdKwh(s, x) * 24 * 7 * 13, 0)
+  return Math.max(set.reserveUsd, rent + power)
+}
+
+/** The unit-farmer's moves (M74.3): sell for the unit, lease it, sell to refill. (Each is sent only if the sim would accept it.) */
+function unitFarmMoves(s: GameState, set: PrologueBotSettings): Action[] {
+  const f = set.unitFarm
+  if (!f) return []
+  const out: Action[] = []
+  const q = label(s.quarter)
+  const price = marketWeek(s.quarter, 0).btc_usd
+  const sellUsd = (usd: number) => {
+    if (price <= 0 || s.bandwidth < 1) return
+    const amount = Math.min((usd / price) * 1.3, sellable(s, 'BTC'))
+    if (amount > 1e-9) out.push({ type: 'P0_SELL', coin: 'BTC', amount })
+  }
+  if (q === f.prep) sellUsd(f.prepUsd)
+  const t = apply(s, out)
+  const has = t.sites.some((x) => x.tier === 'small_unit')
+  if (q >= f.from && !has && !t.prologue!.livingAtHome && !smallUnitBlocker(t)) out.push({ type: 'P0_BUILD_SMALL_UNIT' })
+  else if (has && q > f.from && s.sites.some((x) => x.tier === 'small_unit' && x.readyQuarter <= s.quarter)) sellUsd(f.refillUsd)
+  return out
 }
 
 /** The cpu-farmer's opening (M73.2): the home rig and the spare PCs in 2009Q1, sent only if the sim accepts them. */
@@ -328,7 +365,12 @@ export const PROLOGUE_SETTINGS: Record<string, PrologueBotSettings> = {
   /** Keeps every coin in its own wallet, backed up; mines from 2009. */
   'careful-hodler': { ...NORMAL },
   /** M73.2 (doc 51 v1.6 §17): the careful hodler that builds the home rig and buys 3 Spare PCs in 2009Q1 (4 CPU PCs in all). */
-  'cpu-farmer': { ...NORMAL, sparePcs: 3 },
+  'cpu-farmer': { ...NORMAL, sparePcs: 4 },
+  /**
+   * M74.3 (doc 51 v1.7 §18): the cpu-farmer that moves out in 2011Q3 and leases the small unit, then fills it with gaming GPUs it can
+   * afford (it sells BTC for them: $60K ahead of the unit, $40K at each later Plan phase), keeping a quarter of its costs in cash.
+   */
+  'unit-farmer': { ...NORMAL, sparePcs: 4, moveOutFrom: '2011Q3', unitFarm: { prep: '2011Q2', from: '2011Q3', prepUsd: 60_000, refillUsd: 40_000, model: 'gpu_gaming_2010' } },
   /** Keeps every coin in its own wallet and never backs it up. */
   'no-backup': { ...NORMAL, backup: false },
   /** A careful hodler that pre-orders an ASIC (Summit Silicon, 2012Q4) and goes to a conference. */
@@ -386,6 +428,7 @@ export function prologueBot(
       if (s.act !== 0) return after.plan(s)
       const actions = prologuePlan(s, set)
       if (set.sparePcs) actions.push(...sparePcMoves(apply(s, actions), set))
+      if (set.unitFarm) actions.push(...unitFarmMoves(apply(s, actions), set))
       if (set.buy) {
         // (the scrypt switcher keeps its GPUs: they are what it mines scrypt with)
         actions.push(...obsolete(s, set.scrypt === true))
@@ -430,6 +473,7 @@ export function prologueBot(
     },
     merge: (s) => after.merge?.(s),
     lifeline: (s) => after.lifeline?.(s),
-    stopHere: () => set.stopEvery,
+    // (the unit-farmer stops at the report before its quarter: 2011Q3 auto-plays otherwise)
+    stopHere: (s) => set.stopEvery || (!!set.unitFarm && label(s.quarter + 1) === set.unitFarm.from),
   }
 }

@@ -71,13 +71,26 @@ describe('a prologue start (scope §2.3)', () => {
         type: 'END_PLAN',
       }),
     )
-    s = ok(s, { type: 'NEXT_QUARTER' }) // 2009Q2: auto
+    // (M74.1, doc 51 v1.7 §18: 2009Q2 is a decision quarter now)
+    s = ok(s, { type: 'NEXT_QUARTER' })
+    expect(s.phase).toBe('plan')
+    expect(CONTENT.quarters[s.quarter]).toBe('2009Q2')
+    s = playLive(ok(s, { type: 'END_PLAN' }))
+    expect(s.prologue!.reports.at(-1)!.auto).toBe(false)
+    s = ok(s, { type: 'NEXT_QUARTER' }) // 2009Q3: auto
     expect(s.phase).toBe('live')
     s = playLive(s)
     expect(s.prologue!.reports.at(-1)!.auto).toBe(true)
-    s = ok(s, { type: 'NEXT_QUARTER', stopHere: true }) // 2009Q3 planned
+    // "Stop here" on an auto-played quarter plans the next one: 2010Q4 and 2011Q1 are both non-decision quarters
+    while (!(s.phase === 'report' && CONTENT.quarters[s.quarter] === '2010Q4')) {
+      if (s.phase === 'plan') s = ok(s, { type: 'END_PLAN' })
+      else if (s.phase === 'live') s = playLive(s)
+      else s = ok(s, { type: 'NEXT_QUARTER' })
+    }
+    expect(s.prologue!.reports.at(-1)!.auto).toBe(true)
+    s = ok(s, { type: 'NEXT_QUARTER', stopHere: true })
     expect(s.phase).toBe('plan')
-    expect(CONTENT.quarters[s.quarter]).toBe('2009Q3')
+    expect(CONTENT.quarters[s.quarter]).toBe('2011Q1')
   })
 
   it('plays to 2016Q4, then its chapter report, then Act I 2017Q1 with everything carried', () => {

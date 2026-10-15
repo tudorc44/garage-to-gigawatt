@@ -32,8 +32,9 @@ A 10–15 minute optional prologue that teaches difficulty, halvings, solo vs po
 | bedroom | 0.15 kW | free (household) | start |
 | home_rig | 1.5 kW | free (household) | $300 |
 | garage (Act I) | as Act I | as Act I | after moving out |
-| small_unit (Act I) | as Act I | as Act I | from 2014Q1, after moving out, Act I cost |
+| small_unit (Act I) | as Act I | as Act I | from 2011Q3, after moving out, Act I cost (was 2014Q1; amended in M74, doc 51 v1.7 §18) |
 - A gaming GPU (0.35 kW) doesn't fit the bedroom next to the PC: the home rig is the first real purchase. Intended.
+- **Amended in M74 (doc 51 v1.7 §18):** the small unit opens from 2011Q3 (the GPU and FPGA years), not 2014Q1; 2009Q2 is a decision quarter; the starter PC can be bought again as a Spare PC (cap 5 CPU PCs in all, on sale 2009Q1 to 2010Q2 only, into the home rig). The "not buyable after its last listed quarter + 4" rule in §2.5 does not apply to the Spare PC.
 
 ### 2.5 Machines (`machines_prologue.json`)
 - The full ladder as in the file: pc_cpu, gpu_gaming_2010, fpga_board, asic_preorder_early (pre-order only), antminer_s1/s3/s5/s7, antminer_s9_early, gpu_eth_2015.

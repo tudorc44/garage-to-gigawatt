@@ -1575,7 +1575,7 @@
       },
       {
         "quarter": "2009Q2",
-        "auto": true,
+        "auto": false,
         "coinsMined": {
           "BTC": 237618.80940470236,
           "ETH": 0

@@ -280,8 +280,8 @@ const normal = of('careful-hodler')
 const plans = normal.map((r) => r.planPhases)
 const cards = normal.map((r) => r.cardsShown)
 check(
-  Math.max(...plans) <= 13 && Math.max(...cards) <= 25,
-  'pacing proxy: ≤ 13 Plan phases, ≤ 25 cards needing a choice',
+  Math.max(...plans) <= 14 && Math.max(...cards) <= 25,
+  'pacing proxy: ≤ 14 Plan phases (2009Q2 is one since M74.1), ≤ 25 cards needing a choice',
   `Plan phases max ${Math.max(...plans)}; cards shown median ${median(cards)}, max ${Math.max(...cards)}`,
 )
 const sam = of('sell-as-mined').map((r) => r.prologueUsd)
@@ -447,8 +447,8 @@ for (const f of FEATURE_PAIRS) {
   )
 }
 check(
-  Math.max(...sw.map((r) => r.planPhases)) <= 14,
-  'pacing: the scrypt-switcher has ≤ 14 Plan phases',
+  Math.max(...sw.map((r) => r.planPhases)) <= 15,
+  'pacing: the scrypt-switcher has ≤ 15 Plan phases (14 before M74.1)',
   `Plan phases median ${median(sw.map((r) => r.planPhases))}, max ${Math.max(...sw.map((r) => r.planPhases))}; cards needing a choice median ${median(sw.map((r) => r.cardsShown))}, max ${Math.max(...sw.map((r) => r.cardsShown))} (careful-hodler: median ${median(cards)}, max ${Math.max(...cards)})`,
 )
 // ---------- M69.6 (doc 51 v1.1 §6): the pool's checks ----------

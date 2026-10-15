@@ -769,11 +769,11 @@ describe('golden replay: prologue-cpu-farmer', () => {
   const bot = PROLOGUE_BOTS['cpu-farmer']
   const run = playPrologue(PROLOGUE_SEED, bot, { through: 0 })
 
-  it('plays to its chapter report with four CPU PCs mining from 2009Q1', () => {
+  it('plays to its chapter report with five CPU PCs mining from 2009Q1', () => {
     expect(run.state.phase).toBe('chapter')
-    const bought = run.state.log.filter((e) => e.key === 'log.bought' && e.params?.model === 'pc_cpu')
+    const bought = run.state.log.filter((e) => e.key === 'log.bought' && e.params?.model === 'pc_cpu_spare')
     expect(bought.length).toBe(1)
-    expect(bought[0].params).toMatchObject({ count: 3, condition: 'new' })
+    expect(bought[0].params).toMatchObject({ count: 4, condition: 'new' })
   })
 
   it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
@@ -783,6 +783,35 @@ describe('golden replay: prologue-cpu-farmer', () => {
 
   it('matches the stored golden end state', async () => {
     await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-cpu-farmer-seed-${PROLOGUE_SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
+})
+
+/**
+ * The unit farmer (M74.3, doc 51 v1.7 §18): one golden, one seed, the unit-farmer bot (the cpu-farmer that moves out and leases the
+ * small unit in 2011Q3, then fills it with gaming GPUs).
+ */
+describe('golden replay: prologue-unit-farmer', () => {
+  const bot = PROLOGUE_BOTS['unit-farmer']
+  const run = playPrologue(PROLOGUE_SEED, bot, { through: 0 })
+
+  it('plays to its chapter report with the small unit leased in 2011Q3 and full of gaming GPUs', () => {
+    expect(run.state.phase).toBe('chapter')
+    const unit = run.state.log.find((e) => e.key === 'log.p0_small_unit')!
+    expect(CONTENT.quarters[unit.quarter]).toBe('2011Q3')
+    expect(run.state.log.filter((e) => e.key === 'log.bought' && e.params?.model === 'gpu_gaming_2010').length).toBeGreaterThan(3)
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playPrologue(PROLOGUE_SEED, bot, { through: 0 }).state).toEqual(run.state)
+    expect(replayPrologue(PROLOGUE_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-unit-farmer-seed-${PROLOGUE_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
