@@ -760,3 +760,32 @@ describe('golden replay: prologue-club', () => {
     expect(unreconciled(run.state)).toEqual([])
   })
 })
+
+/**
+ * The CPU farmer (M73.2, doc 51 v1.6 §17): one golden, one seed, the cpu-farmer bot (the careful hodler that builds the home rig and
+ * buys 3 Spare PCs in 2009Q1). The earlier Prologue goldens stay as they were: no earlier bot buys a Spare PC.
+ */
+describe('golden replay: prologue-cpu-farmer', () => {
+  const bot = PROLOGUE_BOTS['cpu-farmer']
+  const run = playPrologue(PROLOGUE_SEED, bot, { through: 0 })
+
+  it('plays to its chapter report with four CPU PCs mining from 2009Q1', () => {
+    expect(run.state.phase).toBe('chapter')
+    const bought = run.state.log.filter((e) => e.key === 'log.bought' && e.params?.model === 'pc_cpu')
+    expect(bought.length).toBe(1)
+    expect(bought[0].params).toMatchObject({ count: 3, condition: 'new' })
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playPrologue(PROLOGUE_SEED, bot, { through: 0 }).state).toEqual(run.state)
+    expect(replayPrologue(PROLOGUE_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify(run.state, null, 2) + '\n').toMatchFileSnapshot(`./golden/prologue-cpu-farmer-seed-${PROLOGUE_SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
+})

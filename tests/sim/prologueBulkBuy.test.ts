@@ -21,7 +21,8 @@ function started(): GameState {
 describe('p0MaxBuy', () => {
   const s = started()
   const site = s.sites.at(-1)!.id
-  const offer = prologueBuyView(s, site).find((b) => b.blocker === null)!
+  // (not the Spare PC: its max is the cap of 4 CPU PCs, tested in prologueSparePc.test.ts)
+  const offer = prologueBuyView(s, site).find((b) => b.blocker === null && b.model.id !== 'pc_cpu')!
   const unit = buyPrice(getModel(offer.model.id)!, s.quarter, offer.condition)!
 
   const takes = (st: GameState, n: number) =>

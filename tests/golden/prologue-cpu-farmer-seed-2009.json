@@ -1,0 +1,3492 @@
+{
+  "version": 9,
+  "act": 0,
+  "seed": 2009,
+  "rng": 1070020346,
+  "phase": "chapter",
+  "quarter": -1,
+  "week": 13,
+  "cash": 0,
+  "bandwidth": 2,
+  "hodlPct": {
+    "BTC": 1,
+    "ETH": 1
+  },
+  "treasury": {
+    "BTC": 2190311.5384715395,
+    "ETH": 0
+  },
+  "founderStake": 1,
+  "raisesDone": [],
+  "sites": [
+    {
+      "id": "site-10",
+      "tier": "garage",
+      "readyQuarter": -12,
+      "rentUsdQ": 0,
+      "powerPriceMult": 1,
+      "flaw": null,
+      "serial": 1,
+      "acquiredQuarter": -12
+    }
+  ],
+  "siteSerials": {
+    "bedroom": 1,
+    "home_rig": 1,
+    "garage": 1
+  },
+  "machines": [
+    {
+      "id": "lot-12",
+      "model": "antminer_s9_early",
+      "siteId": "site-10",
+      "condition": "new",
+      "count": 3,
+      "failed": 0,
+      "earnsFromQuarter": -1
+    }
+  ],
+  "siteOffers": [],
+  "equipmentLoan": null,
+  "constructionLoans": [],
+  "bridgeLoan": null,
+  "hosting": [],
+  "projects": [],
+  "projectEvents": [],
+  "spotShock": null,
+  "firstAiDealQuarter": null,
+  "facilities": [],
+  "creditRating": null,
+  "cryptoLoan": null,
+  "auction": null,
+  "curtailment": null,
+  "complaint": null,
+  "negotiation": null,
+  "pitch": null,
+  "pitchWalkaways": {},
+  "staff": {},
+  "firedQuarter": {},
+  "marketRead": null,
+  "mergeChoice": null,
+  "act2Entry": null,
+  "preset": false,
+  "events": {
+    "queue": [],
+    "deferred": null,
+    "fired": [],
+    "flags": [],
+    "eligibleQuarters": 0,
+    "modifiers": [],
+    "plan": null,
+    "gpuLockQuarter": null,
+    "bandwidthNext": 0,
+    "ipoBandwidth": null,
+    "marginStress": null,
+    "taxPlan": null,
+    "runHotQuarter": null,
+    "moratoriumWaiver": {},
+    "creditNotch": null,
+    "valuationMult": null,
+    "ebitdaMult": null,
+    "spreadAddBps": 0,
+    "aiLabRevenueMult": 1,
+    "extraOffers": null
+  },
+  "failureWaves": [],
+  "siteHeat": {
+    "site-1": {
+      "value": 5,
+      "load": 0,
+      "grievance": 0,
+      "mitigated": false,
+      "outreachQuarter": null,
+      "shutdownSince": null
+    }
+  },
+  "loansLockedUntil": null,
+  "nextId": 13,
+  "interrupt": null,
+  "interruptsThisQuarter": 0,
+  "quarterStats": {
+    "revenueUsd": 0,
+    "powerCostUsd": 0,
+    "rentUsd": 0,
+    "coinsMined": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "powerByCoin": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "marginByTier": {},
+    "failures": 0,
+    "treasurySoldUsd": 0,
+    "priceAlerts": 0,
+    "marginCalls": 0,
+    "soldUsd": 0,
+    "gridCreditsUsd": 0,
+    "hostingFeesUsd": 0,
+    "reservationUsd": 0,
+    "aiRevenueUsd": 0,
+    "aiCostUsd": 0,
+    "lateDamagesUsd": 0,
+    "rateHikeUsd": 0,
+    "stormChargeUsd": 0,
+    "salariesUsd": 0,
+    "interestUsd": 0,
+    "principalUsd": 0,
+    "startCash": 0,
+    "startTreasuryUsd": 0,
+    "weeks": []
+  },
+  "reports": [],
+  "log": [
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.p0_home_rig",
+      "params": {
+        "costUsd": 300
+      }
+    },
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 3,
+        "model": "pc_cpu",
+        "condition": "new",
+        "costUsd": 1050
+      }
+    },
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -32,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 365,
+        "coins": 18259.12956478239
+      }
+    },
+    {
+      "quarter": -32,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "genesis_block.title",
+        "p0Choice": "genesis_block.choice.let_it_run"
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 388,
+        "coins": 19409.704852426214
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 381,
+        "coins": 19059.52976488244
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 381,
+        "coins": 19059.52976488244
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 357,
+        "coins": 17858.929464732366
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 365,
+        "coins": 18259.12956478239
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 392,
+        "coins": 19609.804902451226
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 393,
+        "coins": 19659.829914957478
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 376,
+        "coins": 18809.404702351174
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 389,
+        "coins": 19459.729864932466
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 377,
+        "coins": 18859.42971485743
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 376,
+        "coins": 18809.404702351174
+      }
+    },
+    {
+      "quarter": -32,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 362,
+        "coins": 18109.054527263634
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 709,
+        "coins": 35467.733866933464
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 762,
+        "coins": 38119.05952976488
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 690,
+        "coins": 34517.25862931466
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 681,
+        "coins": 34067.033516758376
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 726,
+        "coins": 36318.15907953977
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 694,
+        "coins": 34717.35867933967
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 713,
+        "coins": 35667.83391695848
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 685,
+        "coins": 34267.13356678339
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 734,
+        "coins": 36718.359179589796
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 668,
+        "coins": 33416.70835417709
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 672,
+        "coins": 33616.8084042021
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 700,
+        "coins": 35017.50875437719
+      }
+    },
+    {
+      "quarter": -31,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 693,
+        "coins": 34667.333666833416
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 729,
+        "coins": 36468.23411705853
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 684,
+        "coins": 34217.10855427714
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 666,
+        "coins": 33316.65832916458
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 732,
+        "coins": 36618.30915457729
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 709,
+        "coins": 35467.733866933464
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 691,
+        "coins": 34567.28364182091
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 675,
+        "coins": 33766.88344172086
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 711,
+        "coins": 35567.783891945975
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 698,
+        "coins": 34917.458729364684
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 727,
+        "coins": 36368.18409204602
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 697,
+        "coins": 34867.43371685843
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 721,
+        "coins": 36068.034017008504
+      }
+    },
+    {
+      "quarter": -30,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 720,
+        "coins": 36018.00900450225
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 744,
+        "coins": 37218.609304652324
+      }
+    },
+    {
+      "quarter": -29,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "first_exchange_rate.title",
+        "p0Choice": "first_exchange_rate.choice.note"
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 738,
+        "coins": 36918.45922961481
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 704,
+        "coins": 35217.6088044022
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 698,
+        "coins": 34917.458729364684
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 648,
+        "coins": 32416.208104052028
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 719,
+        "coins": 35967.983991996
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 666,
+        "coins": 33316.65832916458
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 701,
+        "coins": 35067.53376688344
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 693,
+        "coins": 34667.333666833416
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 705,
+        "coins": 35267.633816908456
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 700,
+        "coins": 35017.50875437719
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 681,
+        "coins": 34067.033516758376
+      }
+    },
+    {
+      "quarter": -29,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 698,
+        "coins": 34917.458729364684
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 658,
+        "coins": 32916.458229114556
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 632,
+        "coins": 31615.807903951976
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 646,
+        "coins": 32316.15807903952
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 604,
+        "coins": 30215.10755377689
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 637,
+        "coins": 31865.93296648324
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 640,
+        "coins": 32016.008004002
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 611,
+        "coins": 30565.28264132066
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 658,
+        "coins": 32916.458229114556
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 552,
+        "coins": 27613.806903451725
+      }
+    },
+    {
+      "quarter": -28,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "pc_overheats.title",
+        "p0Choice": "pc_overheats.choice.underclock"
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 495,
+        "coins": 24762.381190595297
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 502,
+        "coins": 25112.55627813907
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 523,
+        "coins": 26163.081540770385
+      }
+    },
+    {
+      "quarter": -28,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 513,
+        "coins": 25662.831415707853
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 273,
+        "coins": 13656.828414207104
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 285,
+        "coins": 14257.12856428214
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 295,
+        "coins": 14757.378689344672
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 317,
+        "coins": 15857.928964482242
+      }
+    },
+    {
+      "quarter": -27,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "friend_wants_coins.title",
+        "p0Choice": "friend_wants_coins.choice.decline"
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 145,
+        "coins": 7253.626813406703
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 131,
+        "coins": 6553.276638319159
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 129,
+        "coins": 6453.226613306653
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 126,
+        "coins": 6303.151575787894
+      }
+    },
+    {
+      "quarter": -27,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "pizza_day.title",
+        "p0Choice": "pizza_day.choice.hold"
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 148,
+        "coins": 7403.701850925463
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 114,
+        "coins": 5702.851425712856
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 125,
+        "coins": 6253.126563281641
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 121,
+        "coins": 6053.026513256628
+      }
+    },
+    {
+      "quarter": -27,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 100,
+        "coins": 5002.501250625312
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 1,
+        "model": "pc_cpu",
+        "valueUsd": 0
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 3,
+        "model": "pc_cpu",
+        "valueUsd": 0
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 1596
+      }
+    },
+    {
+      "quarter": -26,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "mtgox_opens.title",
+        "p0Choice": "mtgox_opens.choice.keep_wallet"
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 194,
+        "coins": 9704.852426213107
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 183,
+        "coins": 9154.577288644323
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 179,
+        "coins": 8954.477238619309
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 202,
+        "coins": 10105.05252626313
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 113,
+        "coins": 5652.826413206603
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 80,
+        "coins": 4002.00100050025
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 92,
+        "coins": 4602.3011505752875
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 94,
+        "coins": 4702.3511755877935
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 95,
+        "coins": 4752.376188094047
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 26,
+        "coins": 1300.6503251625813
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 23,
+        "coins": 1150.5752876438219
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 33,
+        "coins": 1650.8254127063533
+      }
+    },
+    {
+      "quarter": -25,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 32,
+        "coins": 1600.8004002001
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 1,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 9,
+        "coins": 450.22511255627813
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 2,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 12,
+        "coins": 600.3001500750375
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 3,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 15,
+        "coins": 750.3751875937969
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 4,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 13,
+        "coins": 650.3251625812907
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 5,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 14,
+        "coins": 700.3501750875438
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 6,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 11,
+        "coins": 550.2751375687844
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 7,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 10,
+        "coins": 500.25012506253125
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 8,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 12,
+        "coins": 600.3001500750375
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 9,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 9,
+        "coins": 450.22511255627813
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 10,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 7,
+        "coins": 350.1750875437719
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 11,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 8,
+        "coins": 400.200100050025
+      }
+    },
+    {
+      "quarter": -24,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "power_bill.title",
+        "p0Choice": "power_bill.choice.say_nothing"
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 12,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 4,
+        "coins": 200.1000500250125
+      }
+    },
+    {
+      "quarter": -24,
+      "week": 13,
+      "key": "log.p0_blocks",
+      "params": {
+        "n": 15,
+        "coins": 750.3751875937969
+      }
+    },
+    {
+      "quarter": -23,
+      "week": null,
+      "key": "log.p0_pool_on"
+    },
+    {
+      "quarter": -23,
+      "week": 11,
+      "key": "log.p0_gox_hack",
+      "params": {}
+    },
+    {
+      "quarter": -23,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "bubble_and_hack_2011.title",
+        "p0Choice": "bubble_and_hack_2011.choice.nothing"
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 720
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 1036
+      }
+    },
+    {
+      "quarter": -21,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "crash_bottom_2011.title",
+        "p0Choice": "crash_bottom_2011.choice.keep_gpus"
+      }
+    },
+    {
+      "quarter": -20,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "job_offer.title",
+        "p0Choice": "job_offer.choice.decline"
+      }
+    },
+    {
+      "quarter": -19,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "household.title",
+        "p0Choice": "household.choice.cut_load"
+      }
+    },
+    {
+      "quarter": -19,
+      "week": null,
+      "key": "log.p0_household_cut"
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 596
+      }
+    },
+    {
+      "quarter": -17,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "first_halving.title",
+        "p0Choice": "first_halving.choice.keep_fleet"
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "condition": "new",
+        "costUsd": 596
+      }
+    },
+    {
+      "quarter": -16,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "asic_preorders_open.title",
+        "p0Choice": "asic_preorders_open.choice.skip"
+      }
+    },
+    {
+      "quarter": -15,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "conference_invitation.title",
+        "p0Choice": "conference_invitation.choice.skip"
+      }
+    },
+    {
+      "quarter": -14,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "household.title",
+        "p0Choice": "household.choice.cut_load"
+      }
+    },
+    {
+      "quarter": -14,
+      "week": null,
+      "key": "log.p0_household_cut"
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "gpu_gaming_2010",
+        "valueUsd": 360
+      }
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 4,
+        "model": "antminer_s1",
+        "condition": "new",
+        "costUsd": 1400
+      }
+    },
+    {
+      "quarter": -13,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "peak_and_silk_road.title",
+        "p0Choice": "peak_and_silk_road.choice.hodl"
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_moved_out",
+      "params": {
+        "costUsd": 940
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 9,
+        "model": "antminer_s1",
+        "condition": "new",
+        "costUsd": 2700
+      }
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_backup"
+    },
+    {
+      "quarter": -12,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "mtgox_collapse.title",
+        "p0Choice": "mtgox_collapse.choice.accept"
+      }
+    },
+    {
+      "quarter": -8,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": -7,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": -6,
+      "week": null,
+      "key": "log.p0_sell_order",
+      "params": {
+        "coin": "BTC",
+        "amount": 87.17738997559725
+      }
+    },
+    {
+      "quarter": -6,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "eth_launch.title",
+        "p0Choice": "eth_launch.choice.stay_btc"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 4,
+        "model": "antminer_s1",
+        "valueUsd": 480
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.sold",
+      "params": {
+        "count": 9,
+        "model": "antminer_s1",
+        "valueUsd": 1080
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.bought",
+      "params": {
+        "count": 3,
+        "model": "antminer_s9_early",
+        "condition": "new",
+        "costUsd": 7200
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "second_halving_s9.title",
+        "p0Choice": "second_halving_s9.choice.wait"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "bitfinex_hack_news.title",
+        "p0Choice": "bitfinex_hack_news.choice.stay"
+      }
+    },
+    {
+      "quarter": -2,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_sell_order",
+      "params": {
+        "coin": "BTC",
+        "amount": 6.07416493173334
+      }
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_card",
+      "params": {
+        "p0Card": "handover.title",
+        "p0Choice": "handover.choice.carry"
+      }
+    },
+    {
+      "quarter": -1,
+      "week": null,
+      "key": "log.p0_forced_sale"
+    }
+  ],
+  "prologue": {
+    "livingAtHome": false,
+    "patience": 35,
+    "cutLoadUntil": null,
+    "householdCard": false,
+    "pool": true,
+    "onExchange": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "minedTo": "wallet",
+    "moves": [],
+    "sellQueue": {
+      "BTC": 0,
+      "ETH": 0
+    },
+    "noSellingUntil": -289,
+    "backup": true,
+    "preorders": [],
+    "offersTaken": [],
+    "offersIgnored": [
+      "offer_forum_buyer_1",
+      "offer_forum_buyer_2",
+      "offer_local_trade",
+      "offer_forum_buyer_3",
+      "offer_forum_buyer_4",
+      "offer_final_hobby_offer"
+    ],
+    "conferences": [],
+    "usedOffer": null,
+    "vanity": [],
+    "lost": {
+      "exchange": {
+        "BTC": 0,
+        "ETH": 0
+      },
+      "wallet": {
+        "BTC": 0,
+        "ETH": 0
+      }
+    },
+    "mined": {
+      "BTC": 2190424.9015092305,
+      "ETH": 0
+    },
+    "blocksFound": 43749,
+    "stopNext": false,
+    "flags": [
+      "moved_out",
+      "exchange_custody_opened"
+    ],
+    "cardQueue": [],
+    "cardsFired": [
+      "pc_overheats",
+      "friend_wants_coins",
+      "power_bill",
+      "job_offer",
+      "conference_invitation",
+      "bitfinex_hack_news"
+    ],
+    "cardsShown": 18,
+    "slowdown": {
+      "mult": 0.5,
+      "until": -302
+    },
+    "openPanel": null,
+    "reports": [
+      {
+        "quarter": "2009Q1",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 245222.6113056528,
+          "ETH": 0
+        },
+        "blocksFound": 4902,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 1850.03,
+        "treasury": {
+          "BTC": 245222.6113056528,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 1850.03,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "genesis_block",
+            "choice": "let_it_run"
+          }
+        ]
+      },
+      {
+        "quarter": "2009Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 456578.2891445722,
+          "ETH": 0
+        },
+        "blocksFound": 9127,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 3050.06,
+        "treasury": {
+          "BTC": 701800.900450225,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 3050.06,
+        "patience": 100,
+        "cards": []
+      },
+      {
+        "quarter": "2009Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 458229.1145572787,
+          "ETH": 0
+        },
+        "blocksFound": 9160,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 4250.09,
+        "treasury": {
+          "BTC": 1160030.0150075038,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 4250.09,
+        "patience": 100,
+        "cards": []
+      },
+      {
+        "quarter": "2009Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 454977.48874437215,
+          "ETH": 0
+        },
+        "blocksFound": 9095,
+        "btcUsd": 0,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 5450.12,
+        "treasury": {
+          "BTC": 1615007.5037518758,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 5450.12,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "first_exchange_rate",
+            "choice": "note"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 383741.87093546765,
+          "ETH": 0
+        },
+        "blocksFound": 7671,
+        "btcUsd": 0.003302,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.5374497016789208,
+        "cash": 6650.15,
+        "treasury": {
+          "BTC": 1998749.3746873436,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 13250.020435217608,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "pc_overheats",
+            "choice": "underclock"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q2",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 115507.75387693848,
+          "ETH": 0
+        },
+        "blocksFound": 2309,
+        "btcUsd": 0.019392,
+        "ethUsd": 0,
+        "difficultyChangePct": 2.807419034002608,
+        "cash": 7850.18,
+        "treasury": {
+          "BTC": 2114257.128564282,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 48849.854237118554,
+        "patience": 100,
+        "cards": [
+          {
+            "id": "friend_wants_coins",
+            "choice": "decline"
+          },
+          {
+            "id": "pizza_day",
+            "choice": "hold"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q3",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 0.165096,
+        "ethUsd": 0,
+        "difficultyChangePct": 31.125405972807783,
+        "cash": 7454.21,
+        "treasury": {
+          "BTC": 2114257.128564282,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 357789.6048974487,
+        "patience": 85,
+        "cards": [
+          {
+            "id": "mtgox_opens",
+            "choice": "keep_wallet"
+          }
+        ]
+      },
+      {
+        "quarter": "2010Q4",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 67333.6668334167,
+          "ETH": 0
+        },
+        "blocksFound": 1346,
+        "btcUsd": 0.3,
+        "ethUsd": 0,
+        "difficultyChangePct": 6.481661203933165,
+        "cash": 8654.24,
+        "treasury": {
+          "BTC": 2181590.7953976993,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 664331.4786193097,
+        "patience": 70,
+        "cards": []
+      },
+      {
+        "quarter": "2011Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 6953.476738369185,
+          "ETH": 0
+        },
+        "blocksFound": 139,
+        "btcUsd": 0.777461,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.519755218770662,
+        "cash": 9854.27,
+        "treasury": {
+          "BTC": 2188544.272136069,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 1712482.0883591801,
+        "patience": 55,
+        "cards": [
+          {
+            "id": "power_bill",
+            "choice": "say_nothing"
+          }
+        ]
+      },
+      {
+        "quarter": "2011Q2",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 1474.7839487397837,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 14.73092,
+        "ethUsd": 0,
+        "difficultyChangePct": 11.713578700952723,
+        "cash": 11054.3,
+        "treasury": {
+          "BTC": 2190019.0560848094,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 32273089.813660838,
+        "patience": 35,
+        "cards": [
+          {
+            "id": "bubble_and_hack_2011",
+            "choice": "nothing"
+          }
+        ]
+      },
+      {
+        "quarter": "2011Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 100.41909977454497,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 5.280024,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.1538024142912886,
+        "cash": 12254.33,
+        "treasury": {
+          "BTC": 2190119.4751845854,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 11577017.721842015,
+        "patience": 20,
+        "cards": []
+      },
+      {
+        "quarter": "2011Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 4.53748,
+        "ethUsd": 0,
+        "difficultyChangePct": -0.2941020162471111,
+        "cash": 13138.36,
+        "treasury": {
+          "BTC": 2190119.4751845854,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 9951481.676260553,
+        "patience": 5,
+        "cards": [
+          {
+            "id": "crash_bottom_2011",
+            "choice": "keep_gpus"
+          }
+        ]
+      },
+      {
+        "quarter": "2012Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 120.67574048925148,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 5.769271,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 14338.39,
+        "treasury": {
+          "BTC": 2190240.1509250724,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 12651027.375767643,
+        "patience": 0,
+        "cards": [
+          {
+            "id": "job_offer",
+            "choice": "decline"
+          }
+        ]
+      },
+      {
+        "quarter": "2012Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 52.01752454458391,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 7.339042,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 15538.42,
+        "treasury": {
+          "BTC": 2190292.1684496156,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 16090664.636522803,
+        "patience": 50,
+        "cards": [
+          {
+            "id": "household",
+            "choice": "cut_load"
+          }
+        ]
+      },
+      {
+        "quarter": "2012Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 72.9808476867134,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 11.357219,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.3934946969326978,
+        "cash": 16738.45,
+        "treasury": {
+          "BTC": 2190365.149297304,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 24893595.140537176,
+        "patience": 35,
+        "cards": []
+      },
+      {
+        "quarter": "2012Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 13.15808,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.3802787556797491,
+        "cash": 17702.48,
+        "treasury": {
+          "BTC": 2190365.149297304,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 28839062.34366587,
+        "patience": 20,
+        "cards": [
+          {
+            "id": "first_halving",
+            "choice": "keep_fleet"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q1",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 103.97115,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 18666.51,
+        "treasury": {
+          "BTC": 2190365.149297304,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 227753810.00236237,
+        "patience": 5,
+        "cards": [
+          {
+            "id": "asic_preorders_open",
+            "choice": "skip"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 7.700697653199191,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 99.04675,
+        "ethUsd": 0,
+        "difficultyChangePct": 2.907340868530637,
+        "cash": 19866.54,
+        "treasury": {
+          "BTC": 2190372.849994958,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 216969538.6202381,
+        "patience": 0,
+        "cards": [
+          {
+            "id": "conference_invitation",
+            "choice": "skip"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0.6805552480335754,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 127.402655,
+        "ethUsd": 0,
+        "difficultyChangePct": 3.304899432036893,
+        "cash": 21066.57,
+        "treasury": {
+          "BTC": 2190373.5305502056,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 279080829.8038198,
+        "patience": 50,
+        "cards": [
+          {
+            "id": "household",
+            "choice": "cut_load"
+          }
+        ]
+      },
+      {
+        "quarter": "2013Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 784.184177,
+        "ethUsd": 0,
+        "difficultyChangePct": 5.238986691738487,
+        "cash": 21226.6,
+        "treasury": {
+          "BTC": 2190373.5305502056,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 1199.9999999999998,
+        "rentUsd": 0,
+        "soldUsd": 0,
+        "netWorthUsd": 1717678610.9770973,
+        "patience": 35,
+        "cards": [
+          {
+            "id": "peak_and_silk_road",
+            "choice": "hodl"
+          }
+        ]
+      },
+      {
+        "quarter": "2014Q1",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 14.729118402902545,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 528.851164,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.6900062359369885,
+        "cash": 14329.19,
+        "treasury": {
+          "BTC": 2190388.259668608,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 377.3951999999999,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 1158406309.9276779,
+        "patience": null,
+        "cards": [
+          {
+            "id": "mtgox_collapse",
+            "choice": "accept"
+          }
+        ]
+      },
+      {
+        "quarter": "2014Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 20.795094407988998,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 560.186689,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.7401669223964267,
+        "cash": 10222.62,
+        "treasury": {
+          "BTC": 2190409.0547630154,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1226.5344,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 1227049778.5633132,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2014Q3",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 7.873437755374272,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 446.707765,
+        "ethUsd": 0,
+        "difficultyChangePct": 1.280538281720001,
+        "cash": 6116.05,
+        "treasury": {
+          "BTC": 2190416.9282007683,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1226.5344,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 978483926.4647306,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2014Q4",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 4.403491333668033,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 320,
+        "ethUsd": 0,
+        "difficultyChangePct": 0,
+        "cash": 2009.48,
+        "treasury": {
+          "BTC": 2190421.3316920996,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1226.5344,
+        "incomeUsd": 0,
+        "rentUsd": 2879.999999999999,
+        "soldUsd": 0,
+        "netWorthUsd": 700938395.6214719,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2015Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 243.667609,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.1831508239184818,
+        "cash": 0,
+        "treasury": {
+          "BTC": 2190417.3898468786,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 533735328.0960098,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2015Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 223.130183,
+        "ethUsd": 0,
+        "difficultyChangePct": 0.019390102387901287,
+        "cash": 0,
+        "treasury": {
+          "BTC": 2190404.0793213365,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 488746823.0629163,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2015Q3",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 259.229628,
+        "ethUsd": 1.1236,
+        "difficultyChangePct": 0.24681363709113247,
+        "cash": 16042.39,
+        "treasury": {
+          "BTC": 2190316.901931361,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 19012.37251132243,
+        "netWorthUsd": 567812638.0797791,
+        "patience": null,
+        "cards": [
+          {
+            "id": "eth_launch",
+            "choice": "stay_btc"
+          }
+        ]
+      },
+      {
+        "quarter": "2015Q4",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 416.112581,
+        "ethUsd": 0.9,
+        "difficultyChangePct": 0,
+        "cash": 13072.41,
+        "treasury": {
+          "BTC": 2190316.901931361,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 2970.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 911433051.6805824,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2016Q1",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 467.00693,
+        "ethUsd": 13.5999,
+        "difficultyChangePct": 0.770991857966081,
+        "cash": 9985.43,
+        "treasury": {
+          "BTC": 2190316.901931361,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 1022904717.5280758,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2016Q2",
+        "auto": true,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 679.422809,
+        "ethUsd": 10.9325,
+        "difficultyChangePct": 0.2656021998587401,
+        "cash": 6898.45,
+        "treasury": {
+          "BTC": 2190316.901931361,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 1488159720.5603828,
+        "patience": null,
+        "cards": []
+      },
+      {
+        "quarter": "2016Q3",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 647.630823,
+        "ethUsd": 11.7942,
+        "difficultyChangePct": 0.03782384670225314,
+        "cash": 0,
+        "treasury": {
+          "BTC": 2190314.078517257,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 0,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 0,
+        "netWorthUsd": 1418520909.2986176,
+        "patience": null,
+        "cards": [
+          {
+            "id": "second_halving_s9",
+            "choice": "wait"
+          },
+          {
+            "id": "bitfinex_hack_news",
+            "choice": "stay"
+          }
+        ]
+      },
+      {
+        "quarter": "2016Q4",
+        "auto": false,
+        "coinsMined": {
+          "BTC": 3.569817129762937,
+          "ETH": 0
+        },
+        "blocksFound": 0,
+        "btcUsd": 960,
+        "ethUsd": 8,
+        "difficultyChangePct": 0.5498524880637721,
+        "cash": 0,
+        "treasury": {
+          "BTC": 2190311.5384715395,
+          "ETH": 0
+        },
+        "onExchange": {
+          "BTC": 0,
+          "ETH": 0
+        },
+        "powerCostUsd": 1037.8367999999996,
+        "incomeUsd": 0,
+        "rentUsd": 3087.000000000001,
+        "soldUsd": 4090.62934170052,
+        "netWorthUsd": 2102703276.932678,
+        "patience": null,
+        "cards": [
+          {
+            "id": "handover",
+            "choice": "carry"
+          }
+        ]
+      }
+    ],
+    "quarter": {
+      "coinsMined": {
+        "BTC": 3.569817129762937,
+        "ETH": 0
+      },
+      "blocksFound": 0,
+      "powerCostUsd": 1037.8367999999996,
+      "incomeUsd": 0,
+      "rentUsd": 3087.000000000001,
+      "soldUsd": 4090.62934170052,
+      "cards": [
+        {
+          "id": "handover",
+          "choice": "carry"
+        }
+      ]
+    }
+  },
+  "ledger": {
+    "from": -32,
+    "history": [
+      {
+        "q": -32,
+        "startCash": 2000,
+        "lines": {
+          "site_builds": -300,
+          "machines": -1050,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "machines": -1050
+          }
+        },
+        "rounding": 0.029999999999517968,
+        "weeks": [
+          742.31,
+          834.62,
+          926.93,
+          1019.24,
+          1111.55,
+          1203.86,
+          1296.17,
+          1388.48,
+          1480.79,
+          1573.1,
+          1665.41,
+          1757.72,
+          1850.03
+        ]
+      },
+      {
+        "q": -31,
+        "startCash": 1850.03,
+        "lines": {
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.02999999999906322,
+        "weeks": [
+          1942.34,
+          2034.65,
+          2126.96,
+          2219.27,
+          2311.58,
+          2403.89,
+          2496.2,
+          2588.51,
+          2680.82,
+          2773.13,
+          2865.44,
+          2957.75,
+          3050.06
+        ]
+      },
+      {
+        "q": -30,
+        "startCash": 3050.06,
+        "lines": {
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.02999999999974534,
+        "weeks": [
+          3142.37,
+          3234.68,
+          3326.99,
+          3419.3,
+          3511.61,
+          3603.92,
+          3696.23,
+          3788.54,
+          3880.85,
+          3973.16,
+          4065.47,
+          4157.78,
+          4250.09
+        ]
+      },
+      {
+        "q": -29,
+        "startCash": 4250.09,
+        "lines": {
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.029999999998835847,
+        "weeks": [
+          4342.4,
+          4434.71,
+          4527.02,
+          4619.33,
+          4711.64,
+          4803.95,
+          4896.26,
+          4988.57,
+          5080.88,
+          5173.19,
+          5265.5,
+          5357.81,
+          5450.12
+        ]
+      },
+      {
+        "q": -28,
+        "startCash": 5450.12,
+        "lines": {
+          "other_income": 1199.9999999999998,
+          "mining_btc": 407.0538769384692
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.029999999998835847,
+        "weeks": [
+          5542.43,
+          5634.74,
+          5727.05,
+          5819.36,
+          5911.67,
+          6003.98,
+          6096.29,
+          6188.6,
+          6280.91,
+          6373.22,
+          6465.53,
+          6557.84,
+          6650.15
+        ]
+      },
+      {
+        "q": -27,
+        "startCash": 6650.15,
+        "lines": {
+          "mining_btc": 638.5584292146074,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.02999999999974534,
+        "weeks": [
+          6742.46,
+          6834.77,
+          6927.08,
+          7019.39,
+          7111.7,
+          7204.01,
+          7296.32,
+          7388.63,
+          7480.94,
+          7573.25,
+          7665.56,
+          7757.87,
+          7850.18
+        ]
+      },
+      {
+        "q": -26,
+        "startCash": 7850.18,
+        "lines": {
+          "machines": -1596,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "machines": -1596
+          }
+        },
+        "rounding": 0.029999999998835847,
+        "weeks": [
+          6346.49,
+          6438.8,
+          6531.11,
+          6623.42,
+          6715.73,
+          6808.04,
+          6900.35,
+          6992.66,
+          7084.97,
+          7177.28,
+          7269.59,
+          7361.9,
+          7454.21
+        ]
+      },
+      {
+        "q": -25,
+        "startCash": 7454.21,
+        "lines": {
+          "mining_btc": 17354.83551775888,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.03000000000338332,
+        "weeks": [
+          7546.52,
+          7638.83,
+          7731.14,
+          7823.45,
+          7915.76,
+          8008.07,
+          8100.38,
+          8192.69,
+          8285,
+          8377.31,
+          8469.62,
+          8561.93,
+          8654.24
+        ]
+      },
+      {
+        "q": -24,
+        "startCash": 8654.24,
+        "lines": {
+          "mining_btc": 5058.751225612807,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000011568773,
+        "weeks": [
+          8746.55,
+          8838.86,
+          8931.17,
+          9023.48,
+          9115.79,
+          9208.1,
+          9300.41,
+          9392.72,
+          9485.03,
+          9577.34,
+          9669.65,
+          9761.96,
+          9854.27
+        ]
+      },
+      {
+        "q": -23,
+        "startCash": 9854.27,
+        "lines": {
+          "mining_btc": 10298.60666838497,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000009749783,
+        "weeks": [
+          9946.58,
+          10038.89,
+          10131.2,
+          10223.51,
+          10315.82,
+          10408.13,
+          10500.44,
+          10592.75,
+          10685.06,
+          10777.37,
+          10869.68,
+          10961.99,
+          11054.3
+        ]
+      },
+      {
+        "q": -22,
+        "startCash": 11054.3,
+        "lines": {
+          "mining_btc": 1053.6856018935237,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000011568773,
+        "weeks": [
+          11146.61,
+          11238.92,
+          11331.23,
+          11423.54,
+          11515.85,
+          11608.16,
+          11700.47,
+          11792.78,
+          11885.09,
+          11977.4,
+          12069.71,
+          12162.02,
+          12254.33
+        ]
+      },
+      {
+        "q": -21,
+        "startCash": 12254.33,
+        "lines": {
+          "asset_sales": 720,
+          "machines": -1036,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "asset_sales": 720,
+            "machines": -1036
+          }
+        },
+        "rounding": 0.030000000011568773,
+        "weeks": [
+          12030.64,
+          12122.95,
+          12215.26,
+          12307.57,
+          12399.88,
+          12492.19,
+          12584.5,
+          12676.81,
+          12769.12,
+          12861.43,
+          12953.74,
+          13046.05,
+          13138.36
+        ]
+      },
+      {
+        "q": -20,
+        "startCash": 13138.36,
+        "lines": {
+          "mining_btc": 648.7803784837909,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000009749783,
+        "weeks": [
+          13230.67,
+          13322.98,
+          13415.29,
+          13507.6,
+          13599.91,
+          13692.22,
+          13784.53,
+          13876.84,
+          13969.15,
+          14061.46,
+          14153.77,
+          14246.08,
+          14338.39
+        ]
+      },
+      {
+        "q": -19,
+        "startCash": 14338.39,
+        "lines": {
+          "mining_btc": 329.7881212560891,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000011568773,
+        "weeks": [
+          14430.7,
+          14523.01,
+          14615.32,
+          14707.63,
+          14799.94,
+          14892.25,
+          14984.56,
+          15076.87,
+          15169.18,
+          15261.49,
+          15353.8,
+          15446.11,
+          15538.42
+        ]
+      },
+      {
+        "q": -18,
+        "startCash": 15538.42,
+        "lines": {
+          "mining_btc": 697.1515911659661,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000011568773,
+        "weeks": [
+          15630.73,
+          15723.04,
+          15815.35,
+          15907.66,
+          15999.97,
+          16092.28,
+          16184.59,
+          16276.9,
+          16369.21,
+          16461.52,
+          16553.83,
+          16646.14,
+          16738.45
+        ]
+      },
+      {
+        "q": -17,
+        "startCash": 16738.45,
+        "lines": {
+          "asset_sales": 360,
+          "machines": -596,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "asset_sales": 360,
+            "machines": -596
+          }
+        },
+        "rounding": 0.030000000009749783,
+        "weeks": [
+          16594.76,
+          16687.07,
+          16779.38,
+          16871.69,
+          16964,
+          17056.31,
+          17148.62,
+          17240.93,
+          17333.24,
+          17425.55,
+          17517.86,
+          17610.17,
+          17702.48
+        ]
+      },
+      {
+        "q": -16,
+        "startCash": 17702.48,
+        "lines": {
+          "asset_sales": 360,
+          "machines": -596,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "asset_sales": 360,
+            "machines": -596
+          }
+        },
+        "rounding": 0.030000000009749783,
+        "weeks": [
+          17558.79,
+          17651.1,
+          17743.41,
+          17835.72,
+          17928.03,
+          18020.34,
+          18112.65,
+          18204.96,
+          18297.27,
+          18389.58,
+          18481.89,
+          18574.2,
+          18666.51
+        ]
+      },
+      {
+        "q": -15,
+        "startCash": 18666.51,
+        "lines": {
+          "mining_btc": 877.1443531726017,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000013387762,
+        "weeks": [
+          18758.82,
+          18851.13,
+          18943.44,
+          19035.75,
+          19128.06,
+          19220.37,
+          19312.68,
+          19404.99,
+          19497.3,
+          19589.61,
+          19681.92,
+          19774.23,
+          19866.54
+        ]
+      },
+      {
+        "q": -14,
+        "startCash": 19866.54,
+        "lines": {
+          "mining_btc": 73.82184633636973,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.030000000009749783,
+        "weeks": [
+          19958.85,
+          20051.16,
+          20143.47,
+          20235.78,
+          20328.09,
+          20420.4,
+          20512.71,
+          20605.02,
+          20697.33,
+          20789.64,
+          20881.95,
+          20974.26,
+          21066.57
+        ]
+      },
+      {
+        "q": -13,
+        "startCash": 21066.57,
+        "lines": {
+          "asset_sales": 360,
+          "machines": -1400,
+          "other_income": 1199.9999999999998
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-3": {
+            "asset_sales": 360,
+            "machines": -1400
+          }
+        },
+        "rounding": 0.030000000009749783,
+        "weeks": [
+          20118.88,
+          20211.19,
+          20303.5,
+          20395.81,
+          20488.12,
+          20580.43,
+          20672.74,
+          20765.05,
+          20857.36,
+          20949.67,
+          21041.98,
+          21134.29,
+          21226.6
+        ]
+      },
+      {
+        "q": -12,
+        "startCash": 21226.6,
+        "lines": {
+          "one_offs": -940,
+          "machines": -2700,
+          "mining_btc": 10131.462209422467,
+          "rent": -2879.999999999999,
+          "power": -377.3951999999999
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-10": {
+            "machines": -2700
+          }
+        },
+        "rounding": -0.014800000009927317,
+        "weeks": [
+          17336.03,
+          17085.46,
+          16834.89,
+          16584.32,
+          16333.75,
+          16083.18,
+          15832.61,
+          15582.04,
+          15331.47,
+          15080.9,
+          14830.33,
+          14579.76,
+          14329.19
+        ]
+      },
+      {
+        "q": -11,
+        "startCash": 14329.19,
+        "lines": {
+          "mining_btc": 11783.061698619025,
+          "rent": -2879.999999999999,
+          "power": -1226.5344
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": -0.03560000001016306,
+        "weeks": [
+          14013.3,
+          13697.41,
+          13381.52,
+          13065.63,
+          12749.74,
+          12433.85,
+          12117.96,
+          11802.07,
+          11486.18,
+          11170.29,
+          10854.4,
+          10538.51,
+          10222.62
+        ]
+      },
+      {
+        "q": -10,
+        "startCash": 10222.62,
+        "lines": {
+          "mining_btc": 3991.4871217689983,
+          "rent": -2879.999999999999,
+          "power": -1226.5344
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": -0.03560000000470609,
+        "weeks": [
+          9906.73,
+          9590.84,
+          9274.95,
+          8959.06,
+          8643.17,
+          8327.28,
+          8011.39,
+          7695.5,
+          7379.61,
+          7063.72,
+          6747.83,
+          6431.94,
+          6116.05
+        ]
+      },
+      {
+        "q": -9,
+        "startCash": 6116.05,
+        "lines": {
+          "mining_btc": 1709.1041660832302,
+          "rent": -2879.999999999999,
+          "power": -1226.5344
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": -0.03559999999902175,
+        "weeks": [
+          5800.16,
+          5484.27,
+          5168.38,
+          4852.49,
+          4536.6,
+          4220.71,
+          3904.82,
+          3588.93,
+          3273.04,
+          2957.15,
+          2641.26,
+          2325.37,
+          2009.48
+        ]
+      },
+      {
+        "q": -8,
+        "startCash": 2009.48,
+        "lines": {
+          "rent": -2970.000000000001,
+          "coins_sold": 960.5
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.020000000000351292,
+        "weeks": [
+          1781.02,
+          1552.56,
+          1324.1,
+          1095.64,
+          867.18,
+          638.72,
+          410.26,
+          181.8,
+          -46.66,
+          -275.12,
+          -503.58,
+          -732.04,
+          -960.5
+        ]
+      },
+      {
+        "q": -7,
+        "startCash": 0,
+        "lines": {
+          "rent": -2970.000000000001,
+          "coins_sold": 2969.98
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.0199999999998397,
+        "weeks": [
+          -228.46,
+          -456.92,
+          -685.38,
+          -913.84,
+          -1142.3,
+          -1370.76,
+          -1599.22,
+          -1827.68,
+          -2056.14,
+          -2284.6,
+          -2513.06,
+          -2741.52,
+          -2969.98
+        ]
+      },
+      {
+        "q": -6,
+        "startCash": 0,
+        "lines": {
+          "rent": -2970.000000000001,
+          "coins_sold": 19012.37251132243
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.017488677577063072,
+        "weeks": [
+          -228.46,
+          18555.45,
+          18326.99,
+          18098.53,
+          17870.07,
+          17641.61,
+          17413.15,
+          17184.69,
+          16956.23,
+          16727.77,
+          16499.31,
+          16270.85,
+          16042.39
+        ]
+      },
+      {
+        "q": -5,
+        "startCash": 16042.39,
+        "lines": {
+          "rent": -2970.000000000001
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.020000000007712515,
+        "weeks": [
+          15813.93,
+          15585.47,
+          15357.01,
+          15128.55,
+          14900.09,
+          14671.63,
+          14443.17,
+          14214.71,
+          13986.25,
+          13757.79,
+          13529.33,
+          13300.87,
+          13072.41
+        ]
+      },
+      {
+        "q": -4,
+        "startCash": 13072.41,
+        "lines": {
+          "rent": -3087.000000000001
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.020000000007712515,
+        "weeks": [
+          12834.95,
+          12597.49,
+          12360.03,
+          12122.57,
+          11885.11,
+          11647.65,
+          11410.19,
+          11172.73,
+          10935.27,
+          10697.81,
+          10460.35,
+          10222.89,
+          9985.43
+        ]
+      },
+      {
+        "q": -3,
+        "startCash": 9985.43,
+        "lines": {
+          "rent": -3087.000000000001
+        },
+        "byBiz": {},
+        "byRef": {},
+        "rounding": 0.020000000001346052,
+        "weeks": [
+          9747.97,
+          9510.51,
+          9273.05,
+          9035.59,
+          8798.13,
+          8560.67,
+          8323.21,
+          8085.75,
+          7848.29,
+          7610.83,
+          7373.37,
+          7135.91,
+          6898.45
+        ]
+      },
+      {
+        "q": -2,
+        "startCash": 6898.45,
+        "lines": {
+          "asset_sales": 1560,
+          "machines": -7200,
+          "rent": -3087.000000000001,
+          "coins_sold": 1828.5300000000002
+        },
+        "byBiz": {},
+        "byRef": {
+          "site:site-10": {
+            "asset_sales": 1560,
+            "machines": -7200
+          }
+        },
+        "rounding": 0.01999999999895863,
+        "weeks": [
+          1020.99,
+          783.53,
+          546.07,
+          308.61,
+          71.15,
+          -166.31,
+          -403.77,
+          -641.23,
+          -878.69,
+          -1116.15,
+          -1353.61,
+          -1591.07,
+          -1828.53
+        ]
+      }
+    ],
+    "current": {
+      "q": -1,
+      "startCash": 0,
+      "lines": {
+        "mining_btc": 2738.452384029279,
+        "rent": -3087.000000000001,
+        "power": -1037.8367999999996,
+        "coins_sold": 4124.89934170052
+      },
+      "byBiz": {},
+      "byRef": {},
+      "rounding": -0.06254170051979457,
+      "weeks": [
+        -317.3,
+        3456.03,
+        3138.73,
+        2821.43,
+        2504.13,
+        2186.83,
+        1869.53,
+        1552.23,
+        1234.93,
+        917.63,
+        600.33,
+        283.03,
+        -34.27
+      ]
+    }
+  }
+}
