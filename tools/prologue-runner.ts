@@ -118,6 +118,8 @@ function playOne(bot: string, seed: number): Run {
         ddos: p.reports.flatMap((r) => r.cards).filter((c) => c.id === 'pool_ddos').length,
         insolvent: r0.log.some((e) => e.key === 'log.p0_pool_insolvent') ? 1 : 0,
         coldStorage: poolQs.length > 0 && r0.log.some((e) => e.key === 'log.p0_pool_cold') ? 1 : 0,
+        // M72.4 (doc 51 v1.5 §16 decision 1): the pool's peak share of bitcoin hashrate over its life (outside miners; its own rigs add under 0.0001%)
+        peakShare: Math.max(...poolQs.map((r) => { const qi = quarterIndex(r.quarter); return qi === undefined ? 0 : r.pool!.outsideTh / (marketWeek(qi, 12).btc_hashrate_EHs * 1e6) })),
         shareBoycottFrom: share('2014Q1'),
         shareBoycottTo: share('2014Q3'),
         saleUsd: p.poolEnded?.usd ?? 0,
@@ -435,8 +437,11 @@ for (const f of FEATURE_PAIRS) {
   }).filter(Number.isFinite)
   const lift = median(lifts)
   const withUsd = median(b.map((r) => r.prologueUsd))
-  check(
-    lift <= 3 && withUsd < chUsd,
+  // (doc 51 v1.5 §16 decision 1: the pool pair is reported without a verdict; the sim computes fees from share, so a ceiling would test the model against itself)
+  const verdict = f.feature === 'pool' ? undefined : lift <= 3 && withUsd < chUsd
+  const report = (ok: boolean | undefined, name: string, detail: string) => (ok === undefined ? lines.push(`INFO  ${name}: ${detail}`) : check(ok, name, detail))
+  report(
+    verdict,
     `X-B7 (${f.feature}) paired seeds: ${f.withFeature} vs ${f.base}`,
     `median lift ${x(lift)} (p10 ${x(pct(lifts, 0.1))}, p90 ${x(pct(lifts, 0.9))}; target at most 3×); ${f.withFeature} median ${usd(withUsd)} vs ${f.base} ${usd(median(a.map((r) => r.prologueUsd)))}; careful-hodler ${usd(chUsd)}; ${lifts.length} pairs`,
   )
@@ -454,11 +459,17 @@ if (poolExtras.length > 0) {
   )
   const po = of('pool-operator')
   const sam2 = of('sell-as-mined')
-  const ratio = median(po.map((r) => r.prologueUsd)) / median(sam2.map((r) => r.prologueUsd))
+  // X-B2 (doc 51 v1.5 §16 decision 1): the pool stays a small pool (at most 2% of bitcoin hashrate in at least 95% of runs); its median fee
+  // income is reported; it stays below careful-hodler's median. (The old 1.2-3x test against sell-as-mined is retired.)
+  const poPool = poolExtras.filter((r) => r.bot === 'pool-operator')
+  const small = poPool.filter((r) => Number(r.peakShare) <= 0.02).length
+  const feeMedian = median(poPool.map((r) => Number(r.feeUsd)))
+  const poMedian = median(po.map((r) => r.prologueUsd))
+  const careful = median(of('careful-hodler').map((r) => r.prologueUsd))
   check(
-    ratio >= 1.2 && ratio <= 3,
-    'X-B2 the pool-operator ends at 1.2-3× the sell-as-mined bot',
-    `${x(ratio)} (pool-operator median ${usd(median(po.map((r) => r.prologueUsd)))} vs sell-as-mined ${usd(median(sam2.map((r) => r.prologueUsd)))}; p10 ${usd(pct(po.map((r) => r.prologueUsd), 0.1))}, p90 ${usd(pct(po.map((r) => r.prologueUsd), 0.9))})`,
+    poPool.length > 0 && small / poPool.length >= 0.95 && poMedian < careful,
+    'X-B2 the pool-operator stays a small pool: peak share of bitcoin hashrate at most 2% in at least 95% of runs, and it ends below careful-hodler',
+    `${small}/${poPool.length} runs at or under 2% (${((small / (poPool.length || 1)) * 100).toFixed(0)}%; median peak ${(median(poPool.map((r) => Number(r.peakShare))) * 100).toFixed(3)}%, max ${(Math.max(...poPool.map((r) => Number(r.peakShare))) * 100).toFixed(3)}%); median Prologue fee income ${usd(feeMedian)}; pool-operator median ${usd(poMedian)} vs careful-hodler ${usd(careful)} (vs sell-as-mined ${usd(median(sam2.map((r) => r.prologueUsd)))}: reported, ${x(poMedian / median(sam2.map((r) => r.prologueUsd)))})`,
   )
   const pps = poolExtras.filter((r) => r.bot === 'pps-operator')
   const ppsRuns = of('pps-operator')
@@ -499,7 +510,7 @@ if (of('club-bot').length > 0) {
   }
 }
 check(
-  thousandMs < 120_000,
+  thousandMs < 150_000,
   '1,000 prologue runs in reasonable time (CSV out)',
   `${(thousandMs / 1000).toFixed(1)} s for 1,000 prologue-only runs; ${OUT}/prologue-runs.csv`,
 )

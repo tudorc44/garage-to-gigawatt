@@ -344,3 +344,14 @@ p = f'{GAME}/events_prologue.json'; s = read(p)
 t = s.replace('{"id": "pool_sale_offer", "type": "random", "requires": ["pool_open"], "from": "2013Q1", "weight": 0.5, "default": "keep"',
               '{"id": "pool_sale_offer", "type": "random", "requires": ["pool_open"], "from": "2013Q1", "weight": 0.5, "pauses_autoplay": true, "default": "keep"')
 if t != s: write(p, t)
+
+# M72.3: the README log for the header difficulty (written once)
+p = f'{PACK}/README.md'
+s = read(p)
+if '## Header difficulty (M72.3' not in s:
+    write(p, s.rstrip('\n') + '''
+
+## Header difficulty (M72.3: doc 51 v1.5 §16 decision 4; `tools/prologue/headers_difficulty.py` and `gen_alts.py`)
+- `research-2/ltc_doge_difficulty_headers.csv` (block-header nBits, last block of each week: Litecoin 271 weeks from 2011-10-24, Dogecoin 161 from 2013-12-02, to 2016-12-26) now feeds the market files: `gen_alts.py` takes each coin's difficulty from it wherever it has a value, derives the hashrate from it, and uses the reconstruction (`ltc_doge_weekly.csv`) only for gaps; DOGE's derived rule (f x 0.4 x LTC D) is kept for weeks with no header value (none now). The weekly file's `grade` string (ltc difficulty / ltc price / doge difficulty / doge price) shows A in a difficulty slot that came from headers.
+- The tool's cache (`research-2/.headers_cache.json`) is git-ignored; the CSV is the shipped result.
+''')

@@ -8583,8 +8583,8 @@
       "interestUsd": 1280267.8194518937,
       "principalUsd": 8482105.636120208,
       "debtUsd": 82200594.4751567,
-      "heat": 30,
-      "heatTier": "texas_site",
+      "heat": 32,
+      "heatTier": "own_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
@@ -8850,8 +8850,8 @@
       "interestUsd": 1321426.9131532004,
       "principalUsd": 10174759.06078419,
       "debtUsd": 113621110.8597778,
-      "heat": 30,
-      "heatTier": "texas_site",
+      "heat": 32,
+      "heatTier": "own_site",
       "mwByUseKw": {
         "mining": 0,
         "hosting": 0,
