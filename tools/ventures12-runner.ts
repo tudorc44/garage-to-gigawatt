@@ -129,10 +129,10 @@ for (let q = MERGE_Q + 1; q <= quarterIndex('2026Q4')!; q++) {
   const rent = CONTENT.afterMerge!.rental.cards_per_rig * r.rate * 24 * r.utilisation * 91
   rows.push({ q: CONTENT.quarters[q], best, net: best - power, rent, rentNet: rent - power * r.utilisation })
 }
-const below25 = rows.filter((r) => r.best < 0.25 * lastEth).length
+const belowThreshold = rows.filter((r) => r.best < 0.3 * lastEth).length
 const negative = rows.filter((r) => r.net < 0).length
-say(`\nY-B4 (best alternative coin under 25% of the rig's last ETH quarter; net below zero at $0.10/kWh in most quarters), a Gen 2 rig, 17 quarters 2022Q4-2026Q4:`)
-say(`  last ETH quarter (2022Q3 first week x 13 weeks): ${usd(lastEth)}; best alternative coin gross ${usd(Math.min(...rows.map((r) => r.best)))}-${usd(Math.max(...rows.map((r) => r.best)))} a quarter; under 25% of it in ${below25}/${rows.length} quarters; net below zero at $0.10/kWh in ${negative}/${rows.length}`)
+say(`\nY-B4 (best alternative coin under 30% of the rig's last ETH quarter (doc 58 v1.2 §11.3, was 25%); net below zero at $0.10/kWh in most quarters), a Gen 2 rig, 17 quarters 2022Q4-2026Q4:`)
+say(`  last ETH quarter (2022Q3 first week x 13 weeks): ${usd(lastEth)}; best alternative coin gross ${usd(Math.min(...rows.map((r) => r.best)))}-${usd(Math.max(...rows.map((r) => r.best)))} a quarter; under 30% of it in ${belowThreshold}/${rows.length} quarters; net below zero at $0.10/kWh in ${negative}/${rows.length}`)
 const from2023 = rows.filter((r) => r.q >= '2023Q1')
 const rentWins = from2023.filter((r) => r.rentNet > r.net).length
 say(`Y-B5 (rental beats the best alternative coin from 2023 in most runs; adds under 5% to an Act II company's value):`)

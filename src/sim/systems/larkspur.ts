@@ -335,3 +335,66 @@ export function larkspurNewsKeys(state: GameState): string[] {
   if (state.quarter === qIndex('2022Q3')) out.push('news.larkspur.dag5')
   return out
 }
+
+// ---------- selling the stake before the Merge (M80.1; doc 58 v1.2 §11.1) ----------
+
+/** Units Larkspur shipped to the market in `quarter`: a trickle in the first-units quarter, then the volume rate (0 if it never ships). */
+export function larkspurQuarterUnits(state: Pick<GameState, 'seed'>, quarter: number): number {
+  const d = larkspurDraws(state)
+  if (d.outcome !== 'ships' || quarter < d.first) return 0
+  return quarter < d.volume ? L().sale.first_units_per_quarter : L().valuation.units_per_quarter
+}
+
+/** Larkspur's trailing earnings as a buyer sees them in this Plan phase: units shipped x margin over the last completed quarters since first units. */
+export function larkspurTrailingEarningsUsd(state: GameState): number {
+  const d = larkspurDraws(state)
+  const n = L().sale.trailing_quarters
+  let units = 0
+  for (let q = Math.max(d.first, state.quarter - n); q < state.quarter; q++) units += larkspurQuarterUnits(state, q)
+  return units * L().valuation.margin_usd
+}
+
+/** What the whole stake would sell for now: its share of the trailing earnings x the multiple, cut by the E9 headline before volume. */
+export function larkspurSaleValueUsd(state: GameState): number {
+  const l = state.larkspur
+  if (!l || l.stake <= 0) return 0
+  const cut = state.quarter < larkspurDraws(state).volume && state.quarter >= qIndex(L().valuation.e9_quarter) ? L().valuation.e9_mult : 1
+  return roundCents(l.stake * larkspurTrailingEarningsUsd(state) * L().sale.multiple * cut)
+}
+
+/** The sale window: from the first-units quarter until the Merge (Act I's last quarter, its Plan phase), for a stake still held. */
+export function larkspurSaleOpen(state: GameState): boolean {
+  const l = state.larkspur
+  if (!larkspurAvailable() || state.act !== 1 || !l || l.stake <= 0 || l.ended || l.walked) return false
+  const d = larkspurDraws(state)
+  return d.outcome === 'ships' && state.quarter >= d.first && state.quarter <= qIndex('2022Q3')
+}
+
+export function larkspurSellBlocker(state: GameState, kind: 'all' | 'half'): Message | undefined {
+  if (!larkspurSaleOpen(state)) return { key: 'error.larkspur_sale_closed' }
+  if (state.phase !== 'plan') return { key: 'error.wrong_phase' }
+  if (kind !== 'all' && kind !== 'half') return { key: 'error.bad_choice' }
+  if (kind === 'half' && state.larkspur!.soldHalf) return { key: 'error.larkspur_half_sold' }
+  if (state.larkspur!.call) return { key: 'error.larkspur_answer_call' }
+  const bw = L().sale.bandwidth
+  if (state.bandwidth < bw) return { key: 'error.no_bandwidth', params: { needed: bw, have: state.bandwidth } }
+}
+
+/** Sells the whole stake, or (once) half of it, at the sale value now. */
+export function sellLarkspur(state: Pick<GameState, 'cash'> & GameState, kind: 'all' | 'half'): void {
+  const l = state.larkspur!
+  const fraction = kind === 'all' ? 1 : L().sale.half_share
+  const usd = roundCents(larkspurSaleValueUsd(state) * fraction)
+  state.bandwidth -= L().sale.bandwidth
+  if (usd > 0) book(state, 'asset_sales', usd, { venture: 'larkspur' })
+  roundCash(state)
+  l.saleUsd = roundCents((l.saleUsd ?? 0) + usd)
+  if (kind === 'all') {
+    l.stake = 0
+    l.ended = 'sold'
+  } else {
+    l.stake = l.stake * (1 - fraction)
+    l.soldHalf = true
+  }
+  logEntry(state, kind === 'all' ? 'log.larkspur.sold' : 'log.larkspur.sold_half', { priceUsd: usd })
+}

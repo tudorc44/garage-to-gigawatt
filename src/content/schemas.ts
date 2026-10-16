@@ -2485,6 +2485,15 @@ export const larkspurFileSchema = z.object({
     grade: z.string(),
     note: z.string(),
   }),
+  sale: z.object({
+    bandwidth: z.number().int().min(0),
+    half_share: z.number().positive().max(1),
+    trailing_quarters: z.number().int().min(1),
+    multiple: z.number().positive(),
+    first_units_per_quarter: z.number().min(0),
+    grade: z.string(),
+    note: z.string(),
+  }),
   valuation: z.object({
     units_per_quarter: z.number().positive(),
     margin_usd: z.number().positive(),

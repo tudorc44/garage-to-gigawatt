@@ -16,6 +16,9 @@ import {
   larkspurMaxReserveUnits,
   larkspurOpen,
   larkspurReserveBlocker,
+  larkspurSaleOpen,
+  larkspurSaleValueUsd,
+  larkspurSellBlocker,
   larkspurSale,
   larkspurThirdUsd,
   larkspurValueUsd,
@@ -89,6 +92,17 @@ export function larkspurView(state: GameState) {
         }
       : null,
     reservation: l?.reservation ?? null,
+    // M80.1: selling the stake before the Merge: the value each quarter, the window, the half-sale used or not
+    stakeSale: l
+      ? {
+          open: larkspurSaleOpen(state),
+          valueUsd: larkspurSaleValueUsd(state),
+          halfUsed: !!l.soldHalf,
+          soldUsd: l.saleUsd ?? 0,
+          bandwidth: f.sale.bandwidth,
+          blocker: (kind: 'all' | 'half') => larkspurSellBlocker(state, kind) ?? null,
+        }
+      : null,
     reserve: l
       ? {
           maxUnits: reserveUnitsMax,

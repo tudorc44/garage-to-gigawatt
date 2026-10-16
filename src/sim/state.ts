@@ -1632,8 +1632,11 @@ export interface Larkspur {
   /** The memory the machine ships with (the backer's pick at the tape-out call; LK-5 when none was made). */
   memory?: 'lk5' | 'lk6'
   /** How it ended for you: cancelled (stake and deposits lost) or acquired (1.5x paid-in). */
-  ended?: 'cancelled' | 'acquired'
+  ended?: 'cancelled' | 'acquired' | 'sold'
   proceedsUsd?: number
+  /** M80.1: half of the stake has been sold (allowed once), and everything the stake has been sold for, $. */
+  soldHalf?: boolean
+  saleUsd?: number
   /** Resolved into cash at Act I's end (the stake's value, $). */
   resolvedUsd?: number
   /** An allocation reservation: units, the deposit paid and how many units you have bought from it. */

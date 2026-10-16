@@ -5,11 +5,11 @@
   "news_quarter": "2020Q2",
   "join_from": "2020Q2",
   "join_to": "2020Q4",
-  "budget_usd": 20000000,
+  "budget_usd": 8000000,
   "stakes": [0.1, 0.2, 0.3],
   "dilute_mult": 0.5,
   "grade": "D",
-  "note": "Stake = share x the pitched budget, paid in thirds: the buy-in at joining, a call at tape-out and a call at first units (doc 49's shape). Dilute halves the stake; walk forfeits it."
+  "note": "M80.1 (doc 58 v1.2 section 11.2): the pitched budget fell from $20M to $8M, so stakes of 10/20/30% cost $0.8M/$1.6M/$2.4M in all. Stake = share x the pitched budget, paid in thirds: the buy-in at joining, a call at tape-out and a call at first units (doc 49's shape). Dilute halves the stake; walk forfeits it."
  },
  "milestones": {
   "tape_out": "2021Q2",
@@ -45,6 +45,15 @@
   "market_opens_after_quarters": 2,
   "grade": "D",
   "note": "Reserved units are bought at the discounted price in the first two quarters of volume, the deposit (10% of the discounted price) credited against them; what is not bought by then lapses with its deposit. Everyone else buys at full price from the quarter after (volume + 2)."
+ },
+ "sale": {
+  "bandwidth": 1,
+  "half_share": 0.5,
+  "trailing_quarters": 4,
+  "multiple": 1.0,
+  "first_units_per_quarter": 150,
+  "grade": "D",
+  "note": "M80.1 (doc 58 v1.2 section 11.1): from the first-units quarter until the Merge a backer may sell the whole stake, or once half of it, for 1 Bandwidth. The price is the stake's share of Larkspur's trailing earnings (the last trailing_quarters completed quarters since first units, units shipped x the margin below) x multiple; the E9 cut still applies before volume. Doc 49's accelerator venture values a chip company at an AI-chip multiple of about 20 times a year's earnings; applied here that would price this start-up at about 90 times what it cost, so the multiple is taken on the trailing four quarters' earnings instead (a designed number to tune, see dev-notes). first_units_per_quarter is the trickle of units in the first-units quarter before volume."
  },
  "valuation": {
   "units_per_quarter": 1500,
