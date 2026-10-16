@@ -332,6 +332,11 @@ export interface MachineLot {
   altCoin?: 'LTC' | 'DOGE'
   /** M77.1 (doc 58 §1.2), Act I: a rig bought in the retail queue; it shows as "on order" until its delivery quarter. */
   queued?: boolean
+  /**
+   * M78.2 (doc 58 v1.1 §3), after the Merge: what this GPU lot does instead of mining Ethereum: an alternative coin (Ethereum
+   * Classic, Ravencoin, Ergo) or rental. Absent = the machine's own coin, so a game that never sets one is unchanged.
+   */
+  use?: 'etc' | 'rvn' | 'erg' | 'rent'
 }
 
 /**
@@ -1604,6 +1609,35 @@ export interface GameState {
   ledger?: Ledger
   /** M77.1 (doc 58 §1.2): the Gen 2 retail queue: rigs ordered so far (the substream's counter) and per quarter index. Absent until the first order. */
   gen2Queue?: { orders: number; perQuarter: Record<number, number> }
+  /** M78.1 (doc 58 v1.1 §2): your part in Larkspur Silicon (and, once it ships, your allocation). Absent until you join or reserve. */
+  larkspur?: Larkspur
+}
+
+/**
+ * M78.1 (doc 58 v1.1 §2): your part in Larkspur Silicon. The start-up's own fate (the slip, the outcome) is never stored: it is
+ * replayed from the seed (systems/larkspur.ts), the same whether or not you joined.
+ */
+export interface Larkspur {
+  /** Your share now (halved by a dilution, 0 after a walk or a loss) and at joining. */
+  stake: number
+  stakeAtJoin: number
+  /** Buy-in and calls paid in so far, $. */
+  paidUsd: number
+  joinedQuarter: number
+  /** A cash call waiting for an answer: the tape-out call (with the memory choice) or the first-units call. */
+  call: { kind: 'tape_out' | 'first_units'; dueUsd: number } | null
+  /** Calls already answered (tape_out, first_units). */
+  answered: ('tape_out' | 'first_units')[]
+  walked?: boolean
+  /** The memory the machine ships with (the backer's pick at the tape-out call; LK-5 when none was made). */
+  memory?: 'lk5' | 'lk6'
+  /** How it ended for you: cancelled (stake and deposits lost) or acquired (1.5x paid-in). */
+  ended?: 'cancelled' | 'acquired'
+  proceedsUsd?: number
+  /** Resolved into cash at Act I's end (the stake's value, $). */
+  resolvedUsd?: number
+  /** An allocation reservation: units, the deposit paid and how many units you have bought from it. */
+  reservation?: { units: number; depositUsd: number; bought: number }
 }
 
 export interface LogEntry {

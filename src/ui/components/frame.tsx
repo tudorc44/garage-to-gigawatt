@@ -8,6 +8,8 @@ import type { Action } from '../../sim/actions.ts'
 import type { Message } from '../../i18n/t.ts'
 import { SectionView, type Section } from '../screens/Sections.tsx'
 import { Act3Panel } from './act3Lazy.tsx'
+import { ACTS12_VENTURES } from '../../platform/preview.ts'
+import { ventures12Visible } from '../../sim/ventures12Views.ts'
 
 /** The left-nav section on show (Plan phase only) and the app's action function. */
 export const NavContext = createContext<{
@@ -219,6 +221,8 @@ const NAV: {
   act2?: boolean
   /** Only under Act III's rules (Act III and Act IV). */
   act3?: boolean
+  /** Only in Acts I-II, once the ventures flag is on and Larkspur has been offered (M78.3). */
+  acts12?: boolean
   /** Only in Act IV. */
   act4?: boolean
   /** Under Act IV's rules (Acts IV and V: M62.1, doc 43 §0.18: the Orbit board carries into Act V; the Moon doesn't). */
@@ -234,6 +238,8 @@ const NAV: {
   { id: 'contracts', icon: 'loan', key: 'ui.nav.contracts', act3: true },
   // M36 (doc 38 §5): energy ventures (Acts III-IV).
   { id: 'ventures', icon: 'power', key: 'ui.nav.ventures', act3: true },
+  // M78.3 (doc 58 v1.1 §4): the Ventures tab in Acts I-II, behind the ventures flag, from the Larkspur offer on.
+  { id: 'ventures', icon: 'power', key: 'ui.nav.ventures', acts12: true },
   { id: 'fleet', icon: 'fleet', key: 'ui.nav.fleet' },
   { id: 'capital', icon: 'capital', key: 'ui.nav.capital' },
   // M37.3 (doc 39): the P&L and the cash flow, every act.
@@ -254,7 +260,7 @@ const NAV: {
  * Left navigation. The sections open in the Plan phase; during the live quarter and the report
  * only the dashboard shows. Save / load sits at the foot.
  */
-export function Nav(props: { seed: number; plan: boolean; act: number }) {
+export function Nav(props: { seed: number; plan: boolean; act: number; acts12?: boolean }) {
   const [saving, setSaving] = useState(false)
   const nav = useContext(NavContext)
   const current = props.plan ? (nav?.section ?? 'dashboard') : 'dashboard'
@@ -264,6 +270,7 @@ export function Nav(props: { seed: number; plan: boolean; act: number }) {
         (item) =>
           (!item.act2 || inAct2Rules({ act: props.act as GameState['act'] })) &&
           (!item.act3 || inAct3Rules({ act: props.act as GameState['act'] })) &&
+          (!item.acts12 || !!props.acts12) &&
           (!item.act4 || props.act === 4) &&
           (!item.act4Rules || inAct4Rules({ act: props.act as GameState['act'] })),
       ).map((item) => (
@@ -313,7 +320,7 @@ export function Shell(props: {
     <>
       <TopBar state={props.state} paused={props.paused} />
       <div class="body">
-        <Nav seed={props.state.seed} plan={plan} act={props.state.act} />
+        <Nav seed={props.state.seed} plan={plan} act={props.state.act} acts12={ACTS12_VENTURES && ventures12Visible(props.state)} />
         {section === 'dashboard' || !nav ? (
           props.children
         ) : (

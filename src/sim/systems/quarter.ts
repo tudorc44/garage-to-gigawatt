@@ -30,6 +30,7 @@ import { endQuarterPlants } from './plants.ts'
 import { payFlex } from './flex.ts'
 import { endQuarterQueue, fastLaneEffectUsd } from './queue.ts'
 import { acceleratorValueUsd, endQuarterAccelerator } from './accelerator.ts'
+import { endQuarterLarkspur, larkspurValueUsd } from './larkspur.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { serviceOrbitalDebt } from './orbitCapital.ts'
@@ -113,6 +114,8 @@ export function endQuarter(state: GameState): void {
   energy.revenueUsd += endQuarterVentures(state).revenueUsd
   // M54: the accelerator venture's milestones, calls and outcome (only with a stake or a reservation)
   endQuarterAccelerator(state)
+  // M78.1: Larkspur's next calls, its outcome at tape-out, and its stake's resolution at Act I's end (only with a stake)
+  endQuarterLarkspur(state)
   // Act V (M52.5): V2's flex payment on enrolled curtailable MW (nothing elsewhere); (M53) the queue's positions move
   // on, and the fast lane's output loss is an energy cost
   if (inActV(state)) {
@@ -304,7 +307,10 @@ function buildReport(
       }
     : state.accelerator
       ? { venturesUsd: acceleratorValueUsd(state), multipleDelta: 0 }
-      : null
+      : // (M78.1: Larkspur's stake, in Acts I-II, at its mark: 0 after it resolves into cash at Act I's end)
+        state.larkspur && larkspurValueUsd(state) > 0
+        ? { venturesUsd: larkspurValueUsd(state), multipleDelta: 0 }
+        : null
   return {
     quarter: CONTENT.quarters[state.quarter],
     hashrate: hashrate(state),

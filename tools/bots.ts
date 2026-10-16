@@ -38,6 +38,8 @@ import {
   raisesThisQuarter,
 } from '../src/sim/systems/equity.ts'
 import { fleetOffer } from '../src/sim/systems/headStarts.ts'
+import { larkspurMaxReserveUnits, larkspurOpen, larkspurSale, larkspurThirdUsd, lkModel } from '../src/sim/systems/larkspur.ts'
+import { lotChoices } from '../src/sim/ventures12Views.ts'
 import {
   constructionLoanBlocker,
   constructionLoanUsd,
@@ -157,7 +159,7 @@ function phaseOneReady(s: GameState): boolean {
   return s.cash >= cost - constructionLoanUsd(cost)
 }
 
-function makeBot(settings: BotSettings): Strategy {
+export function makeBot(settings: BotSettings): Strategy {
   return {
     plan(s: GameState): Action[] {
       const actions: Action[] = []
@@ -1020,7 +1022,7 @@ const GOOD_PATH_RAISES = ['friends_family', 'seed', 'series_a']
 const GOOD_PATH_TOP = { tier: 'own_site' }
 
 /** The raise-climb bot's settings (the good path). */
-const RAISE_CLIMB: BotSettings = {
+export const RAISE_CLIMB: BotSettings = {
   hodlPct: 0,
   reserveUsd: () => 0,
   maxPaybackQuarters: Infinity,
@@ -1054,7 +1056,7 @@ const TEXAS_IPO: BotSettings = {
  * retail queue ($4,100, delivery 1-3 quarters later) or at the street price (the table price, no wait). The rest of the plan is the
  * base bot's, on what is left. A rig is bought only where the sim accepts it (cash, free power, the GPU shortage cap).
  */
-function gen2Buyer(base: Strategy, queue: boolean, perQuarter = 4): Strategy {
+export function gen2Buyer(base: Strategy, queue: boolean, perQuarter = 4): Strategy {
   return {
     ...base,
     plan(state) {
@@ -1094,6 +1096,92 @@ function gen2Buyer(base: Strategy, queue: boolean, perQuarter = 4): Strategy {
         if (actions.length > 0) break
       }
       return [...actions, ...base.plan(s)]
+    },
+  }
+}
+
+/** Sells the least efficient BTC units at `site` until `kw` more fit (the raise-climb bots have every site full by 2021). */
+function makeRoom(state: GameState, siteId: string, kw: number, actions: Action[]): GameState {
+  let s = state
+  const site = s.sites.find((x) => x.id === siteId)
+  if (!site) return s
+  let guard = 400
+  while (capacityKw(site) - usedKw(s, site.id) < kw && guard-- > 0) {
+    const worst = s.machines
+      .filter((l) => l.siteId === site.id && l.count > 0 && getModel(l.model)?.coin === 'BTC')
+      .sort((a, c) => getModel(a.model)!.hashrate / getModel(a.model)!.power_kw - getModel(c.model)!.hashrate / getModel(c.model)!.power_kw)[0]
+    if (!worst) break
+    const r = applyAction(s, { type: 'SELL_MACHINES', lotId: worst.id, count: 1 })
+    if (!r.ok) break
+    s = r.state
+    actions.push({ type: 'SELL_MACHINES', lotId: worst.id, count: 1 })
+  }
+  return s
+}
+
+/**
+ * M78.5 (doc 58 v1.1 §5, Y-B2): backs Larkspur Silicon with `stake` in 2020Q2, pays every call (diluting only when it cannot
+ * afford one), picks `memory` at the tape-out call, reserves the largest block it may, buys the reserved units in the window
+ * (selling its least efficient BTC machines for room), and sells its LK units before the Merge only if cash is short.
+ */
+function larkspurBacker(base: Strategy, stake: number, memory: 'lk5' | 'lk6', reserve = true): Strategy {
+  return {
+    ...base,
+    plan(state) {
+      if (state.act !== 1) return base.plan(state)
+      const pre: Action[] = []
+      let s = state
+      const apply = (a: Action): boolean => {
+        const r = applyAction(s, a)
+        if (!r.ok) return false
+        s = r.state
+        pre.push(a)
+        return true
+      }
+      const label = CONTENT.quarters[s.quarter]
+      // (a 2020 company has well under a first third to spare: it holds one back from 2020Q1 on, and takes 10% at the last chance if 20% is out of reach)
+      if (larkspurOpen(s) && !apply({ type: 'LARKSPUR_JOIN', stake }) && label === '2020Q4') apply({ type: 'LARKSPUR_JOIN', stake: 0.1 })
+      if (s.larkspur?.call && !apply({ type: 'LARKSPUR_CALL', choice: 'pay', memory })) apply({ type: 'LARKSPUR_CALL', choice: 'dilute', memory })
+      if (reserve && s.larkspur && !s.larkspur.reservation && s.larkspur.stake > 0) apply({ type: 'LARKSPUR_RESERVE', units: larkspurMaxReserveUnits(s.larkspur.stake) })
+      const sale = larkspurSale(s)
+      if (sale && sale.reservedLeft > 0) {
+        const site = [...s.sites].filter((x) => x.readyQuarter <= s.quarter).sort((a, c) => capacityKw(c) - capacityKw(a))[0]
+        if (site) {
+          s = makeRoom(s, site.id, lkModel(sale.model)!.power_kw * sale.reservedLeft, pre)
+          for (let n = sale.reservedLeft; n >= 1; n--) if (apply({ type: 'LARKSPUR_BUY', count: n, siteId: site.id })) break
+        }
+      }
+      if (CONTENT.quarters[s.quarter] === '2022Q3' && s.cash < 50_000)
+        for (const l of s.machines.filter((m) => m.model === 'lk5' || m.model === 'lk6')) apply({ type: 'SELL_MACHINES', lotId: l.id, count: l.count })
+      const saving = !s.larkspur && label >= '2019Q3' && label <= '2020Q4'
+      return [...pre, ...base.plan(saving ? { ...s, cash: s.cash - Math.min(Math.max(0, s.cash), larkspurThirdUsd(stake)) } : s)]
+    },
+  }
+}
+
+/** M78.5 (Y-B4, Y-B5): a bot that, from Act II, points every GPU rig at its best alternative coin (`'mine'`) or at rental (`'rent'`). */
+function postMerge(base: Strategy, mode: 'mine' | 'rent'): Strategy {
+  return {
+    ...base,
+    plan(state) {
+      if (state.act !== 2) return base.plan(state)
+      const pre: Action[] = []
+      let s = state
+      for (const c of lotChoices(s)) {
+        if (c.fixed) continue
+        const pick =
+          mode === 'rent'
+            ? 'rent'
+            : (c.options.filter((o) => o.use !== 'own' && o.use !== 'rent').sort((a, b) => b.netQuarterUsd - a.netQuarterUsd)[0]?.use ?? null)
+        if (!pick || pick === 'own' || c.current === pick) continue
+        const a: Action = { type: 'SET_LOT_USE', lotId: c.lotId, use: pick }
+        const r = applyAction(s, a)
+        if (r.ok) {
+          s = r.state
+          pre.push(a)
+        }
+      }
+      return [...pre, ...base.plan(s)]
     },
   }
 }
@@ -1204,6 +1292,14 @@ export const BOTS: Record<string, Strategy> = {
   'gen2-queuer': gen2Buyer(makeBot(RAISE_CLIMB), true),
   /** M77.3 (Y-B7): the same, but buying the 4 rigs at the street price (the table price, no wait). */
   'gen2-street': gen2Buyer(makeBot(RAISE_CLIMB), false),
+  /** M78.5 (Y-B2): raise-climb that backs Larkspur with 20%, pays every call, picks the 6 GB LK-6 and reserves a block. */
+  'larkspur-backer': larkspurBacker(makeBot(RAISE_CLIMB), 0.2, 'lk6'),
+  /** M78.5: the same, picking the 5 GB LK-5 (the trap: it stops mining Ethereum on 17 Aug 2022). */
+  'larkspur-backer-5gb': larkspurBacker(makeBot(RAISE_CLIMB), 0.2, 'lk5'),
+  /** M78.5 (Y-B4): gen2-street, then from Act II every Gen 2 rig on its best alternative coin. */
+  'post-merge-miner': postMerge(gen2Buyer(makeBot(RAISE_CLIMB), false), 'mine'),
+  /** M78.5 (Y-B5): gen2-street, then from Act II every Gen 2 rig rented out. */
+  'post-merge-renter': postMerge(gen2Buyer(makeBot(RAISE_CLIMB), false), 'rent'),
   'texas-ipo': makeBot(TEXAS_IPO),
   /**
    * Act II good path with AI (scope §5): raise-climb, then from 2023Q3 frees its S9s and GPU rigs

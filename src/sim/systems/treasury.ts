@@ -44,12 +44,15 @@ export function settleWeek(
   const coinsMined: Record<Coin, number> = { BTC: 0, ETH: 0 }
   const powerByCoin: Record<Coin, number> = { BTC: 0, ETH: 0 }
   let revenueUsd = 0
+  // (M78.2: a lot that earns dollars directly sells them as it goes: no coins reach the treasury)
+  let directUsd = 0
   for (const lot of lots) {
     coinsMined[lot.coin] += lot.coinsMined
     powerByCoin[lot.coin] += lot.powerCostUsd
     revenueUsd += lot.revenueUsd
+    if (lot.direct) directUsd += lot.revenueUsd
   }
-  let soldUsd = 0
+  let soldUsd = directUsd
   if (brakeApplies(state)) {
     // A prologue start (P5.0, P1): coins waiting from earlier weeks sell first, then the sell share
     // of this week's coins, all under the weekly cap; the rest waits in the treasury.
@@ -76,7 +79,7 @@ export function settleWeek(
   const siteOf = new Map(state.machines.map((m) => [m.id, m.siteId]))
   for (const lot of lots) {
     const site = siteOf.get(lot.lotId)
-    accrue(state, lot.coin === 'BTC' ? 'mining_btc' : 'mining_eth', lot.revenueUsd, { site })
+    accrue(state, lot.direct ? 'mining_other' : lot.coin === 'BTC' ? 'mining_btc' : 'mining_eth', lot.revenueUsd, { site })
     parts.push(['power', -lot.powerCostUsd, { site }])
   }
   for (const [site, usd] of rents) parts.push(['rent', -usd, { site, biz: siteBusiness(state, site) }])

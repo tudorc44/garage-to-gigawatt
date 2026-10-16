@@ -18,6 +18,13 @@ export const ACT3_PREVIEW: boolean = import.meta.env.MODE !== 'production'
  */
 export const PROLOGUE_EXPANSION: boolean = import.meta.env.MODE !== 'production'
 
+/**
+ * M78.1 (doc 58 v1.1 §4): the Acts I-II ventures (Larkspur Silicon and its machines, alternative coins and GPU rental after the
+ * Merge, and the Ventures tab that holds them) are behind this dev flag until the balance pass. Off (production): no offer headline,
+ * no Ventures tab in Acts I-II, no coin or rental choice; a save that used a feature is refused. On in `npm run dev` and staging.
+ */
+export const ACTS12_VENTURES: boolean = import.meta.env.MODE !== 'production'
+
 /** Marks the scenario-forcing code; the production build must not contain it (tests/ui/act3Gate.test.ts). */
 export const FORCING_MARKER = 'g2g-scenario-forcing'
 
@@ -59,6 +66,9 @@ export function guardTestBuildSave(
     if (p && (p.alts || p.ownPool || p.poolEnded || p.club || p.clubEnded))
       return { ok: false, error: { key: 'error.save_test_build' } }
   }
+  // M78.1: a save that used the Acts I-II ventures (a Larkspur stake or a GPU lot on an alternative coin or rental) is a test build's.
+  if (r.ok && !preview && (r.state.larkspur || r.state.machines.some((l) => l.use)))
+    return { ok: false, error: { key: 'error.save_test_build' } }
   return r
 }
 

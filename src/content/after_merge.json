@@ -1,0 +1,32 @@
+{
+ "schema_version": 1,
+ "notes": "Life after the Merge (doc 58 v1.1 §3, M78.2): what a GPU rig or a Larkspur unit can earn once Ethereum mining ends. Gross dollars per day per 60 MH/s of 3060 Ti-equivalent, interpolated linearly by date between the points (before the first point the first value holds; after the last the last holds). Power is charged as usual, so at Act II power prices this is a net loss for most sites. That is the point.",
+ "alt_coins": {
+  "coins": ["etc", "rvn", "erg"],
+  "gpu_only": ["rvn", "erg"],
+  "per_mh": 60,
+  "points": [
+   {"date": "2022-09-15", "etc": 0.25, "grade": "C", "source": "Tom's Hardware, net -0.04 a day at $0.10/kWh on 16 Sep 2022 (doc 60 §4)"},
+   {"date": "2022-10-15", "etc": 0.20, "rvn": 0.25, "erg": 0.22, "grade": "D", "source": "designed, bounded by the Sep 2022 and Jun 2023 points"},
+   {"date": "2023-06-15", "etc": 0.12, "rvn": 0.18, "erg": 0.20, "grade": "D", "source": "designed"},
+   {"date": "2024-06-15", "etc": 0.06, "rvn": 0.25, "erg": 0.18, "grade": "D", "source": "designed"},
+   {"date": "2026-10-15", "etc": 0.03, "rvn": 0.24, "erg": 0.15, "grade": "C", "source": "2CryptoCalc, Oct 2026 (doc 60 §4)"}
+  ],
+  "names": {"etc": "Ethereum Classic", "rvn": "Ravencoin", "erg": "Ergo"}
+ },
+ "rental": {
+  "marketplace": "RigShare",
+  "cards_per_rig": 6,
+  "gen1_mult": 0.5,
+  "host_fee": 0,
+  "rentable_models": ["gpu_gen1", "gpu_gen2"],
+  "gen1_models": ["gpu_gen1"],
+  "points": [
+   {"date": "2022-10-01", "usd_per_gpu_hour": 0.10, "utilisation": 0.12},
+   {"date": "2023-07-01", "usd_per_gpu_hour": 0.12, "utilisation": 0.30},
+   {"date": "2026-10-01", "usd_per_gpu_hour": 0.065, "utilisation": 0.20}
+  ],
+  "grade": "D",
+  "source": "designed, bounded by gpu_rental.csv (doc 60); host fee 0% [A, Vast.ai FAQ]; utilisation from guides, not platform data. Gen 1 (RX 580-class) earns half the Gen 2 rate and half its utilisation. Larkspur units cannot be rented."
+ }
+}

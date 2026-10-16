@@ -150,6 +150,18 @@ import {
   settleAccelerator,
 } from './systems/accelerator.ts'
 import {
+  answerLarkspurCall,
+  buyLarkspur,
+  joinLarkspur,
+  larkspurBuyBlocker,
+  larkspurCallBlocker,
+  larkspurJoinBlocker,
+  larkspurReserveBlocker,
+  reserveLarkspur,
+  settleLarkspur,
+} from './systems/larkspur.ts'
+import { lotUseBlocker } from './systems/afterMerge.ts'
+import {
   fastLaneBlocker,
   payUpgrade,
   payUpgradeBlocker,
@@ -507,6 +519,12 @@ export type Action =
   | { type: 'ACCEL_RESERVE'; mw: number; tier: number }
   | { type: 'ACCEL_CALL'; choice: 'pay' | 'dilute' | 'walk' }
   | { type: 'ACCEL_SALE_VOTE'; choice: 'sell' | 'block' }
+  /** M78 (doc 58 v1.1 §2-§3, behind the ventures flag): Larkspur Silicon: back it, answer a call (and pick the memory), reserve, buy; point a GPU lot at an alternative coin or rental. */
+  | { type: 'LARKSPUR_JOIN'; stake: number }
+  | { type: 'LARKSPUR_CALL'; choice: 'pay' | 'dilute' | 'walk'; memory?: 'lk5' | 'lk6' }
+  | { type: 'LARKSPUR_RESERVE'; units: number }
+  | { type: 'LARKSPUR_BUY'; count: number; siteId: string }
+  | { type: 'SET_LOT_USE'; lotId: string; use: 'etc' | 'rvn' | 'erg' | 'rent' | null }
   /** Act V (M52.6): commit to a developer's next unit (EGS or SMR) with doc 38's roles (2 BW). */
   | { type: 'COMMIT_FOLLOW_ON'; venture: VentureType; stake: number; offtake: number; prepay: number; siteId?: string }
   /** Act IV (M29.2): open an orbital block card (0 BW): kind, size, shell, generation. */
@@ -692,6 +710,8 @@ function run(s: GameState, a: Action): Message | undefined {
       if (s.ventures?.some((v) => v.call)) settleVentureCalls(s)
       // M54: the accelerator's open call (dilute) and buyer (sell) take their defaults
       if (s.accelerator) settleAccelerator(s)
+      // M78.1: Larkspur's open call takes its default (dilute)
+      if (s.larkspur) settleLarkspur(s)
       // M56.3: an orbital block's end of life waits for nobody: retire (the default)
       if (s.act4Orbit?.blocks.some((b) => b.eolPending)) settleEol(s)
       // Act IV (M29.3): orbital blocks with their three slots filled start their builds.
@@ -1065,6 +1085,43 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = saleVoteBlocker(s, a.choice)
       if (blocked) return blocked
       answerSaleVote(s, a.choice)
+      return
+    }
+
+    case 'LARKSPUR_JOIN': {
+      const blocked = larkspurJoinBlocker(s, a.stake)
+      if (blocked) return blocked
+      joinLarkspur(s, a.stake)
+      return
+    }
+
+    case 'LARKSPUR_CALL': {
+      const blocked = larkspurCallBlocker(s, a.choice, a.memory)
+      if (blocked) return blocked
+      answerLarkspurCall(s, a.choice, a.memory)
+      return
+    }
+
+    case 'LARKSPUR_RESERVE': {
+      const blocked = larkspurReserveBlocker(s, a.units)
+      if (blocked) return blocked
+      reserveLarkspur(s, a.units)
+      return
+    }
+
+    case 'LARKSPUR_BUY': {
+      const blocked = larkspurBuyBlocker(s, a.count, a.siteId)
+      if (blocked) return blocked
+      buyLarkspur(s, a.count, a.siteId)
+      return
+    }
+
+    case 'SET_LOT_USE': {
+      const blocked = lotUseBlocker(s, a.lotId, a.use)
+      if (blocked) return blocked
+      const lot = s.machines.find((l) => l.id === a.lotId)!
+      if (a.use === null) delete lot.use
+      else lot.use = a.use
       return
     }
 
