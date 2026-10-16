@@ -46,3 +46,10 @@ describe('the tab', () => {
     expect(sent[0]).toMatchObject({ type: 'SET_LOT_USE', use: 'rent' })
   })
 })
+
+describe('every M78 action has a UI entry point', () => {
+  it('the Ventures screen dispatches each one', async () => {
+    const src = (await import('../../src/ui/screens/Ventures12.tsx?raw')).default
+    for (const type of ['LARKSPUR_JOIN', 'LARKSPUR_CALL', 'LARKSPUR_RESERVE', 'LARKSPUR_BUY', 'SET_LOT_USE']) expect(src, type).toContain(`type: '${type}'`)
+  })
+})

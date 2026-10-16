@@ -209,3 +209,61 @@ describe('reserving, buying and the walls (a backer whose Larkspur ships on time
     expect(s.larkspur!.resolvedUsd).toBeDefined()
   })
 })
+
+describe('the stake\'s value, the E9 cut and the Act I resolution', () => {
+  const seed = seedWith((d) => d.slip === 0 && d.outcome === 'ships')
+
+  it('at cost before volume, 20% lower once the E9 teaser (2021Q2) has run, then share x units x margin, a tenth after the Merge', () => {
+    let s = ok(act1At('2020Q2', seed), { type: 'LARKSPUR_JOIN', stake: 0.2 })
+    expect(larkspurValueUsd(s)).toBeCloseTo(1_333_333.33, 1)
+    while (s.quarter < q('2021Q2')) s = playQuarter(s)
+    s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay' })
+    expect(larkspurValueUsd(s)).toBeCloseTo(2_666_666.66 * 0.8, 1)
+    while (s.quarter < q('2021Q4')) s = playQuarter(s)
+    s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay' })
+    s = playQuarter(s)
+    expect(s.quarter).toBe(q('2022Q1'))
+    expect(larkspurValueUsd(s)).toBeCloseTo(0.2 * 1500 * 6000, 1) // one quarter of volume
+    s = playQuarter(s)
+    expect(larkspurValueUsd(s)).toBeCloseTo(0.2 * 3000 * 6000, 1)
+    expect(s.quarter).toBe(q('2022Q2'))
+  })
+
+  it('resolves into cash at the end of Act I at a tenth of the full value, once', () => {
+    let s = ok(act1At('2020Q2', seed), { type: 'LARKSPUR_JOIN', stake: 0.2 })
+    while (s.quarter < q('2021Q2')) s = playQuarter(s)
+    s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay' })
+    while (s.quarter < q('2021Q4')) s = playQuarter(s)
+    s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay' })
+    while (s.quarter < q('2022Q3')) s = playQuarter(s)
+    const cash = s.cash
+    s = playQuarter(s)
+    // four quarters of volume (2022Q1-Q3 is three): 0.2 x 4,500 x 6,000 x 0.1
+    expect(s.larkspur!.resolvedUsd).toBeCloseTo(0.2 * 4500 * 6000 * 0.1, 1)
+    expect(s.larkspur!.stake).toBe(0)
+    expect(larkspurValueUsd(s)).toBe(0)
+    expect(s.cash - cash).toBeGreaterThan(s.larkspur!.resolvedUsd! - 1)
+  })
+})
+
+describe('a game that never touches the feature', () => {
+  it('has no Larkspur record, no lot with a use, and no LK lot after Act I', () => {
+    let s = act1At('2020Q2')
+    while (s.quarter < q('2022Q3')) s = playQuarter(s)
+    expect(s.larkspur).toBeUndefined()
+    expect(s.machines.some((l) => l.use || l.model === 'lk5' || l.model === 'lk6')).toBe(false)
+  })
+})
+
+describe('the production gate (saves)', () => {
+  it('refuses a save with a Larkspur stake or a lot on an alternative coin, outside a test build', async () => {
+    const { guardTestBuildSave } = await import('../../src/platform/preview.ts')
+    const plain = act1At('2021Q1')
+    expect(guardTestBuildSave({ ok: true, state: plain }, false).ok).toBe(true)
+    const withStake = ok(act1At('2020Q2'), { type: 'LARKSPUR_JOIN', stake: 0.1 })
+    expect(guardTestBuildSave({ ok: true, state: withStake }, false)).toEqual({ ok: false, error: { key: 'error.save_test_build' } })
+    expect(guardTestBuildSave({ ok: true, state: withStake }, true).ok).toBe(true)
+    const withUse = { ...plain, machines: [{ id: 'l1', model: 'gpu_gen2', siteId: 'site-1', condition: 'new' as const, count: 1, failed: 0, earnsFromQuarter: 0, use: 'rent' as const }] }
+    expect(guardTestBuildSave({ ok: true, state: withUse }, false).ok).toBe(false)
+  })
+})

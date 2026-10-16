@@ -26,7 +26,7 @@ import { PRESETS_V } from '../src/content/presetsAct5.ts'
 import { toAct5 } from '../src/sim/state.ts'
 import { act5Bot } from '../tools/act5/bots.ts'
 import { playAct5Recipe } from '../tools/act5/presetRun.ts'
-import { unreconciled } from '../src/sim/ledger.ts'
+import { ledgerQuarters, unreconciled } from '../src/sim/ledger.ts'
 import { buyPriceNow } from '../src/sim/systems/eventEffects.ts'
 import { repairCostPerUnit } from '../src/sim/systems/machines.ts'
 import { marketWeek, revenuePerUnitDay } from '../src/sim/systems/market.ts'
@@ -345,6 +345,63 @@ describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
     await expect(
       JSON.stringify({ ...run.state, version: 2 }, null, 2) + '\n',
     ).toMatchFileSnapshot(`./golden/${name}-seed-${SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
+})
+
+/**
+ * M78.5 (doc 58 v1.1 §2): the two Larkspur backers on a seed where the 20% stake is affordable and Larkspur ships (seed 22: 20 reserved
+ * units bought in the first volume quarter): the draws, calls, reservation, machines and memory walls replay exactly.
+ */
+const LARK_SEED = 22
+describe.each(['larkspur-backer', 'larkspur-backer-5gb'] as const)('golden replay: %s', (name) => {
+  const run = playGame(LARK_SEED, BOTS[name])
+
+  it('backs Larkspur, buys its reserved block and plays to the Act I chapter report', () => {
+    expect(run.state.phase).toBe('chapter')
+    expect(run.state.larkspur?.reservation?.bought).toBeGreaterThan(0)
+    expect(run.state.larkspur?.memory).toBe(name === 'larkspur-backer' ? 'lk6' : 'lk5')
+    expect(run.state.machines.some((l) => l.model === run.state.larkspur!.memory)).toBe(true)
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playGame(LARK_SEED, BOTS[name]).state).toEqual(run.state)
+    expect(replay(LARK_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify({ ...run.state, version: 2 }, null, 2) + '\n').toMatchFileSnapshot(`./golden/${name}-seed-${LARK_SEED}.json`)
+  })
+
+  it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
+    expect(unreconciled(run.state)).toEqual([])
+  })
+})
+
+/** M78.5 (doc 58 v1.1 §3): Gen 2 rigs on the best alternative coin, and rented out, played through Act II to 2026Q4. */
+const PM_SEED = 3
+describe.each(['post-merge-miner', 'post-merge-renter'] as const)('golden replay: %s (Act I and Act II)', (name) => {
+  const run = playGame(PM_SEED, BOTS[name], { through: 2 })
+
+  it('plays to the end of Act II without errors', () => {
+    expect(run.state.phase).toBe('chapter')
+    expect(run.state.act).toBe(2)
+    // (the Gen 2 lots were pointed away from Ethereum; rented, they earned dollars directly, as other mining income. On an alternative coin
+    // at Act II power prices a lot loses money and switches itself off, so the miner's books stay empty: doc 58 Y-B4)
+    expect(run.state.machines.some((l) => l.use === (name === 'post-merge-miner' ? 'rvn' : 'rent'))).toBe(true)
+    if (name === 'post-merge-renter') expect(ledgerQuarters(run.state).some((l) => (l.lines.mining_other ?? 0) > 0)).toBe(true)
+  })
+
+  it('same seed + same strategy → identical game; replaying the log → identical end state', () => {
+    expect(playGame(PM_SEED, BOTS[name], { through: 2 }).state).toEqual(run.state)
+    expect(replay(PM_SEED, run.log)).toEqual(run.state)
+  })
+
+  it('matches the stored golden end state', async () => {
+    await expect(JSON.stringify({ ...run.state, version: 2 }, null, 2) + '\n').toMatchFileSnapshot(`./golden/${name}-seed-${PM_SEED}.json`)
   })
 
   it('M37 reconciliation: every quarter, start cash + its labelled lines = end cash (untagged 0)', () => {
