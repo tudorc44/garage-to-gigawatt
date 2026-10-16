@@ -159,7 +159,7 @@ function phaseOneReady(s: GameState): boolean {
   return s.cash >= cost - constructionLoanUsd(cost)
 }
 
-function makeBot(settings: BotSettings): Strategy {
+export function makeBot(settings: BotSettings): Strategy {
   return {
     plan(s: GameState): Action[] {
       const actions: Action[] = []
@@ -1022,7 +1022,7 @@ const GOOD_PATH_RAISES = ['friends_family', 'seed', 'series_a']
 const GOOD_PATH_TOP = { tier: 'own_site' }
 
 /** The raise-climb bot's settings (the good path). */
-const RAISE_CLIMB: BotSettings = {
+export const RAISE_CLIMB: BotSettings = {
   hodlPct: 0,
   reserveUsd: () => 0,
   maxPaybackQuarters: Infinity,
@@ -1056,7 +1056,7 @@ const TEXAS_IPO: BotSettings = {
  * retail queue ($4,100, delivery 1-3 quarters later) or at the street price (the table price, no wait). The rest of the plan is the
  * base bot's, on what is left. A rig is bought only where the sim accepts it (cash, free power, the GPU shortage cap).
  */
-function gen2Buyer(base: Strategy, queue: boolean, perQuarter = 4): Strategy {
+export function gen2Buyer(base: Strategy, queue: boolean, perQuarter = 4): Strategy {
   return {
     ...base,
     plan(state) {
