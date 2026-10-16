@@ -4030,6 +4030,8 @@
   "news.larkspur.offer": "A small hardware team, Larkspur Silicon, is raising $20M for an Ethereum miner. Backers get first call on the machines.",
   "news.larkspur.e9": "Bitmain teases a 3 GH/s Ethereum miner, the Antminer E9. Small chip start-ups lose ground.",
   "news.larkspur.dag5": "Ethereum's mining file passes 5 GB on 17 August: cards with 5 GB of memory stop mining. The Merge is on 15 September.",
+  "log.larkspur.wall_lk5": "Ethereum's file is now past 5 GB: your LK-5 units stop mining Ethereum and move to Ethereum Classic.",
+  "log.larkspur.wall_lk6": "Ethereum has merged: your LK-6 units stop mining Ethereum and move to Ethereum Classic.",
   "log.larkspur.joined": "Bought {pct}% of Larkspur Silicon ({costUsd} for the first third).",
   "log.larkspur.call_answered": "Larkspur's cash call: {ventureChoice} ({costUsd}).",
   "log.larkspur.reserved": "Reserved {count} Larkspur units ({costUsd} deposit).",

@@ -32,6 +32,7 @@ import { checkSpotAlerts } from './systems/spotMarket.ts'
 import { checkOrbitAlerts } from './systems/orbitOps.ts'
 import { checkLunarAlerts } from './systems/moon.ts'
 import { prologueWeek } from './prologue/engine.ts'
+import { isLkModel, lkAtWall } from './systems/afterMerge.ts'
 
 export function advance(state: GameState): GameState {
   if (state.phase !== 'live') {
@@ -122,6 +123,12 @@ export function advance(state: GameState): GameState {
   if (w.eth_rev_usd_mh_day === 0 && prev && prev.eth_rev_usd_mh_day > 0) {
     logEntry(s, 'log.eth_mining_ends', {}, weekNo)
   }
+
+  // M78.2: a Larkspur unit's memory wall (its own week): it moves to Ethereum Classic by itself
+  if (s.larkspur || s.machines.some((l) => isLkModel(l.model)))
+    for (const id of ['lk5', 'lk6'] as const)
+      if (s.machines.some((l) => l.model === id) && lkAtWall(id, w.week) && !(prev && lkAtWall(id, prev.week)))
+        logEntry(s, id === 'lk5' ? 'log.larkspur.wall_lk5' : 'log.larkspur.wall_lk6', {}, weekNo)
 
   checkMarginCall(s, w, prev)
   checkCurtailment(s)
