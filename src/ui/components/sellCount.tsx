@@ -29,6 +29,27 @@ export function quickCounts(stack: number): { key: 'one' | 'ten' | 'half' | 'all
   return [...byCount.values()].sort((a, b) => a.n - b.n)
 }
 
+const intl = new Intl.NumberFormat('en-US')
+
+/**
+ * "Sell all" for one machine type (UI only): every batch of that model, all sites, as the same SELL_MACHINES actions a player would
+ * enter row by row. The total is a dry run of them in order; null when the player has none or one is refused.
+ */
+export function sellAllPlan(state: GameState, model: string): { count: number; batches: number; total: number; actions: Action[] } | null {
+  const lots = state.machines.filter((l) => l.model === model && l.count > 0)
+  if (lots.length === 0) return null
+  let s = state
+  const actions: Action[] = []
+  for (const l of lots) {
+    const a: Action = { type: 'SELL_MACHINES', lotId: l.id, count: l.count }
+    const r = applyAction(s, a)
+    if (!r.ok) return null
+    s = r.state
+    actions.push(a)
+  }
+  return { count: lots.reduce((n, l) => n + l.count, 0), batches: lots.length, total: s.cash - state.cash, actions }
+}
+
 export function SellCount(props: {
   state: GameState
   lotId: string
@@ -50,7 +71,7 @@ export function SellCount(props: {
       ? t(props.prologue ? 'ui.sell_count.sell' : 'ui.fleet_dialog.sell')
       : props.prologue
         ? t('ui.sell_count.sell_n_for', { n: count, value: fmt.money(gets) })
-        : t('ui.fleet_dialog.sell_for', { value: fmt.money(gets) })
+        : t('ui.fleet_dialog.sell_n_for', { n: intl.format(count), value: fmt.money(gets) })
   return (
     <span style={{ display: 'inline-flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }} data-sell-count>
       {props.prologue && (
@@ -83,6 +104,11 @@ export function SellCount(props: {
           if (String(n) !== el.value) el.value = String(n)
         }}
       />
+      {!props.prologue && (
+        <button type="button" class="btn" data-sell-max onClick={() => set(props.stack)}>
+          {t('ui.fleet_dialog.max')}
+        </button>
+      )}
       <button
         type="button"
         class="btn"

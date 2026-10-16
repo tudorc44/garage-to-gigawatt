@@ -11,6 +11,10 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## UI: sell Max and Sell all (branch `ui-sell-max` from `main`, not a milestone)
+- "Your machines" (`FleetDialog`): a Max button per batch (fills the full count, working and broken), the Sell button reads "Sell 2,105 for $4.8M" (the count entered and the sim's dry-run cash), and a "Sell all" per machine type behind a confirm line ("Sell all 3,158 GPU Rig Gen 1 for $7.26M?"). Sell all is the same SELL_MACHINES actions as row by row, one per batch, run in order. UI only (`components/sellCount.tsx`, `screens/dialogs.tsx`, 7 new keys, `ui.fleet_dialog.sell_for` replaced); the Prologue's Rig screen keeps its own quick picks and labels. No sim, content or golden change. Tests: `tests/ui/fleetSellMax.test.tsx`.
+- (mine, reversible) Sell all lists one line per type under the table (not in the table rows); it covers every batch of the type whatever its condition; the confirm sits in the line itself (Yes, sell / Cancel).
+
 ## M77: Gen 2 street price or retail queue (doc 58 v1.0 §1) (branch `m77` from `main` at `40d342f`, M76 merged as PR #48)
 
 - M77.0 doc 58 v1.0 (copied with `cp`, byte-exact; doc 60 is not in `~/dev/g2g-project-files/claude/`, it lives in the Project). M77.1 done (RUN 1: build only, no test suites): `gpu_gen2` prices as §1.1's table (new and used, price_source updated), the 2021Q1-Q3 lead time removed (street price, no wait), and the retail queue (content `retail_queue` on gpu_gen2: $4,100 a rig, at most 4 a quarter in 2021Q1-Q3, each rig delivered 1, 2 or 3 quarters later at 50/35/15%, drawn on substream `gen2_queue` one draw per rig, counter in optional `state.gen2Queue`); `BUY_MACHINES` takes `queue: true`; queued lots (`queued: true`) show "on order, earns from {quarter}"; the buy dialog has two Gen 2 rows in those quarters ("Gen 2 - street price (now)", "Gen 2 - retail queue (1-3 quarters)") and the 2021Q1 hint.
