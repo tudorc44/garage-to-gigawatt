@@ -39,7 +39,7 @@ import type {
 } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { HeatBreakdown } from '../components/heatBreakdown.tsx'
-import { cashChange, SellCount } from '../components/sellCount.tsx'
+import { cashChange, SellCount, sellAllPlan } from '../components/sellCount.tsx'
 import { SiteLabel, SiteName } from '../components/siteName.tsx'
 import { SitePicker } from '../components/sitePicker.tsx'
 import { fmt } from '../format.ts'
@@ -335,10 +335,54 @@ export function FleetDialog({ state, act, onClose }: DialogProps) {
           ))}
         </tbody>
       </table>
+      <SellAll state={state} act={act} />
       <p class="num-s muted" style={{ margin: 0 }}>
         {t('ui.fleet_dialog.note')}
       </p>
     </Dialog>
+  )
+}
+
+/** One line per machine type with a "Sell all" behind a confirm line (count and total); never across types. */
+function SellAll({ state, act }: { state: GameState; act: DialogProps['act'] }) {
+  const [asking, setAsking] = useState<string | null>(null)
+  const models = [...new Set(state.machines.filter((l) => l.count > 0).map((l) => l.model))]
+  const fmtN = new Intl.NumberFormat('en-US')
+  return (
+    <div class="col" data-sell-all>
+      {models.map((model) => {
+        const plan = sellAllPlan(state, model)
+        if (!plan) return null
+        return (
+          <div key={model} class="row-between">
+            <span class="num-s">{t('ui.fleet_dialog.type_line', { model: machineName(model), count: fmtN.format(plan.count), batches: plan.batches })}</span>
+            {asking === model ? (
+              <span class="num-s" style={{ display: 'inline-flex', gap: '8px', alignItems: 'center' }} data-sell-all-confirm>
+                {t('ui.fleet_dialog.sell_all_confirm', { count: fmtN.format(plan.count), model: machineName(model), value: fmt.money(plan.total) })}
+                <button
+                  type="button"
+                  class="btn"
+                  data-sell-all-yes
+                  onClick={() => {
+                    for (const a of plan.actions) act(a)
+                    setAsking(null)
+                  }}
+                >
+                  {t('ui.fleet_dialog.sell_all_yes')}
+                </button>
+                <button type="button" class="btn" onClick={() => setAsking(null)}>
+                  {t('ui.fleet_dialog.sell_all_no')}
+                </button>
+              </span>
+            ) : (
+              <button type="button" class="btn" data-sell-all-btn={model} onClick={() => setAsking(model)}>
+                {t('ui.fleet_dialog.sell_all')}
+              </button>
+            )}
+          </div>
+        )
+      })}
+    </div>
   )
 }
 
