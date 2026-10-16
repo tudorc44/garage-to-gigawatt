@@ -61,7 +61,8 @@ export function applyDepositShortfall(state: GameState, weekNo: number): void {
     book(state, 'prepayments', use, { site: site.id })
     roundCash(state)
     d.usd = roundCents(d.usd - use)
-    d.returnQuarter = state.quarter + selfFundRules(site.tier)!.return_after_quarters
+    // (the clean quarters start again from now, never sooner than they would have)
+    d.returnQuarter = Math.max(d.returnQuarter, state.quarter + selfFundRules(site.tier)!.return_after_quarters)
     logEntry(state, 'log.deposit_applied', { ...siteParams(site), amountUsd: use }, weekNo)
     if (d.usd <= 0) delete site.deposit
   }
