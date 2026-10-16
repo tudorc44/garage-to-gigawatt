@@ -1,4 +1,4 @@
-# 58: Ventures in Acts I-II: an alternative to GPU Rig Gen 2, and life after the Merge. v1.0, 16 Oct 2026 (v0.2 14 Oct; v1.0 takes in doc 60)
+# 58: Ventures in Acts I-II: an alternative to GPU Rig Gen 2, and life after the Merge. v1.1, 16 Oct 2026 (v0.2 14 Oct; v1.0 takes in doc 60; §10 after M77)
 
 *Design thread. From the owner's Act II playthrough on staging (14 Oct 2026). v1.0 takes in the research pack, doc 60 (`claude/60-acts-i-ii-ventures-research.md`, data in `claude/acts-i-ii-ventures-content/research/`), and the owner's answers of 14 and 16 Oct. Built on Act I as built (`src/content/machines.json` gpu_gen2) and on Act IV's accelerator venture (doc 49, doc 43 §0.12), whose mechanics it reuses. Doc 60 wins over this doc on any fact; this doc decides the design.*
 
@@ -118,3 +118,10 @@ Appears when Larkspur is offered (2020Q2) and stays through Act II, holding the 
 3. (O, 14 Oct) Non-backers can buy the machine at full price once in volume, after backers' reserved blocks ship.
 4. (O, 16 Oct) Fix Gen 2 in the base game; Act I goldens re-baselined once.
 5. (O, 16 Oct) The memory choice is the player's at the tape-out call with a 20% or larger stake; otherwise the founders pick 5 GB.
+
+## 10. After M77 (16 Oct 2026)
+*M77 merged (PR #49). No golden moved: the 11 Act I golden bots never buy Gen 2 after 2020Q4. texas-ipo-upgrade -5.4% (pays the 2021 street prices on about 880 rigs). Y-B7: the queue saves $34,400 on 12 rigs, 3 arrive after 2021Q4, Act I end level (+0.06%). Act II onward changes only through the new Act I ends; Y-B0 holds. Decisions (DT):*
+1. **gen2-queuer and gen2-street are the Act I price-table guards** from now on (their goldens); texas-ipo-upgrade is the watch bot for Act I prices, reported in any milestone that touches Act I prices.
+2. **The queue's trade is as intended:** cheap and late against dear and now, level on net worth. A choice with no dominant answer is the goal. No tuning.
+3. **No save-version step** for the optional queue fields; the old-save test is enough.
+4. M77's run is the Y-B1 baseline for M78 (as built).
