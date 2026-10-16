@@ -1,4 +1,4 @@
-# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.7, 15 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70; §16 after M71; §17 extra CPU PCs; §18 after M73)
+# 51: Prologue expansion design: your own pool, the mining club, altcoins for old GPUs. v1.8, 16 Oct 2026 (v1.0 13 Oct; §12 after M68; §13 after M69; §14 research pass 2; §15 research pass 3 and M70; §16 after M71; §17 extra CPU PCs; §18 after M73; §19 after M74)
 
 *Design thread. v0.1 (13 Oct) was the draft; v1.0 takes in the research dossier (doc 53, saved by the research thread as doc 52) and the owner's answers. The content pack is in `claude/prologue-expansion-content/` with its generators. Built on the Prologue as built: `docs/alpha-0.3-scope.md` (wins over doc 26 and doc 23), `docs/prologue-content/`.*
 
@@ -265,3 +265,14 @@ The second research pass can run alongside milestones 1-3; its numbers drop into
 **Expected effects (to measure, not targets):** a moved-out player can run a GPU farm in 2011-2013 (a GPU draws 0.35 kW; 100 kW holds about 280), so the stash grows more than with the Spare PC alone. Rent and power after moving out are the brake. The Act I carryover multiple should stay near 11.7x.
 
 **Goldens:** 5 and 6 may change what existing bots do (a new Plan phase; a site that opens earlier). Act I, Act II and Acts III-V goldens and the 2017 start stay byte-identical. The Prologue goldens may move only through 5 or 6, each explained; anything else is a bug.
+
+
+## 19. After M74 (16 Oct 2026)
+
+*M74 merged (PR #46). Act I onward byte-identical. The 4x guard didn't trip: cpu-farmer (5 PCs) 1.90x careful-hodler's Prologue net worth, unit-farmer 1.82x; Act I carryover multiple unchanged (11.69x vs 11.70x).*
+
+1. **X-B1 baseline (DT):** M74's run (14 Plan phases for plain bots) is the new X-B1 baseline. X-B1 compares against it from M75 on.
+2. **Farmer stash 1.8x-1.9x (DT): accepted.** It's inside the owner's 4x guard, Act I's multiple is unchanged, and buying PCs is meant to pay off. The cap stays 5.
+3. **The unit-farmer earns less than the BTC it sold (DT): that is the lesson, not a bug.** Selling 2011 bitcoin to fund a GPU farm is the historically bad trade; the game should let you make it and feel it. No rule change. A better farmer (funding from income and mining dollars, not coin sales) can be a bot later if we want the upper bound; not needed now.
+4. **The 2009Q2 Plan phase (O):** whether it earns its place waits on the owner's play. If it feels empty, the lever is a card in it (content), not removing it.
+5. **Hint text (DT):** "One PC is a hobby. Five is a habit. Build the home rig to fit more." Folded into the next milestone; a one-line en.json change, no golden effect.
