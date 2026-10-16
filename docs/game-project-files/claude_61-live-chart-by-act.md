@@ -1,4 +1,4 @@
-# 61: The Live screen's chart, by act. v1.0, 15 Oct 2026
+# 61: The Live screen's chart, by act. v1.1, 16 Oct 2026 (§7 after M75)
 
 *Design thread, from the owner's play (14 Oct 2026): once bitcoin stops being the company's business, watching its price through the quarter's 13 weeks says little. Owner decisions (O, 15 Oct 2026): the chart defaults to the act's main driver, and the player can switch it, with the choice remembered until the act changes. UI only: no sim rule, content value or golden changes.*
 
@@ -36,3 +36,13 @@ The switch offers only columns the game's screens already display during play. I
 - The switch shows only applicable series, remembers the choice across quarters, and resets at the act change; tests.
 - Leak test passes in Acts III-V.
 - Every golden byte-identical; lint, test and build green.
+
+
+## 7. After M75 (16 Oct 2026)
+
+*M75 merged (PR #47). All goldens byte-identical. Decisions (DT):*
+
+1. **The Prologue rows are dropped.** The Prologue's quarters are cards, with no Live chart; adding one isn't worth it. §2-§3's Prologue rows are void.
+2. **Act V's power price gets its weekly data.** A flat line is no use as a default. Carry the weekly power columns through the Act IV to Act V market glide so the chart reads them. Condition: no golden moves. If the sim would read the carried columns (any golden moves), stop and keep the flat line.
+3. **The newer GPU classes keep mapping to the nearest column.** No new market columns: h200, b200, Gen 2037 and Bowline would need new sourced or designed rent paths, and the chart only shows % change, where the nearest column's shape is a fair stand-in. The legend names the column shown ("GPU rent (Rubin Ultra)").
+4. **The remembered choice stays in the browser,** not in the save. It's a view preference, like a speed setting.
