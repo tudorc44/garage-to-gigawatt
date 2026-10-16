@@ -5,13 +5,15 @@
 import { cleanup, fireEvent, render } from '@testing-library/preact'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 vi.setConfig({ testTimeout: 0 })
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { CONTENT, quarterIndex } from '../../src/content/index.ts'
 import { applyAction } from '../../src/sim/actions.ts'
 import { advance } from '../../src/sim/advance.ts'
+import { defaultChoice } from '../../src/sim/systems/interrupts.ts'
 import type { LedgerQuarter } from '../../src/sim/ledger.ts'
 import { playFrom } from '../../src/sim/replay.ts'
 import { newGame, toAct5, type GameState } from '../../src/sim/state.ts'
+import { marketWeek, scenarioOf } from '../../src/sim/systems/market.ts'
 import { preloadAct3Panels } from '../../src/ui/components/act3Lazy.tsx'
 import { preloadAct4Panels } from '../../src/ui/components/act4Lazy.tsx'
 import { CHART_ALLOWED_COLUMNS, chartSeries, defaultSeries, type ChartSeriesId } from '../../src/ui/liveChart.ts'
@@ -205,5 +207,72 @@ describe('sanity', () => {
     const q = quarterIndex('2023Q3')!
     expect(CONTENT.market[q][0].gpu_h100_neocloud_usd_hr).not.toBeNull()
     expect(CONTENT.market[q - 1][12].gpu_h100_neocloud_usd_hr).toBeNull()
+  })
+})
+
+describe('Act V weekly power and the GPU rent legend (M76, doc 61 §7)', () => {
+  const noop = () => {}
+  const act = () => null
+  const v5 = () => {
+    const s = toAct5(act4Finished(), { vfuture: 'v1' })
+    s.machines = []
+    return s
+  }
+
+  it('the power series reads the week\'s own price: it varies from week to week and matches the weekly file', () => {
+    // (alerts and cards take their default answers so the quarter plays on)
+    const start = applyAction(v5(), { type: 'END_PLAN' })
+    if (!start.ok) throw new Error(start.error.key)
+    let s = start.state
+    while (s.quarterStats.weeks.length < 6 && s.phase === 'live') {
+      if (s.interrupt) {
+        const r = applyAction(s, { type: 'RESOLVE_INTERRUPT', choice: defaultChoice(s) })
+        if (!r.ok) throw new Error(r.error.key)
+        s = r.state
+      } else s = advance(s)
+    }
+    expect(s.quarterStats.weeks.length).toBeGreaterThanOrEqual(5)
+    const power = series(s).find((x) => x.id === 'power')!
+    expect(power).toBeDefined()
+    const changes = power.lines[0].changes
+    expect(new Set(changes.map((c) => c.toFixed(6))).size).toBeGreaterThan(1)
+    // the first and last value are the weekly market's, not a held quarterly price
+    const col = power.columns[0]
+    const w = (n: number) => (marketWeek(s.quarter, n, scenarioOf(s)) as unknown as Record<string, number>)[col]
+    expect(power.lines[0].first).toBeCloseTo(w(0), 9)
+    expect(power.lines[0].last).toBeCloseTo(w(s.quarterStats.weeks.length - 1), 9)
+    expect(power.lines[0].previous).toBeNull()
+  })
+
+  it('the sim does not read the carried weekly columns (it reads the quarterly rows)', () => {
+    const files = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((e) => (e.isDirectory() ? files(`${dir}/${e.name}`) : [`${dir}/${e.name}`]))
+    for (const f of files('src/sim').filter((x) => x.endsWith('.ts'))) {
+      const src = readFileSync(f, 'utf8')
+      expect(src, f).not.toMatch(/gpu_rubin_(ultra_)?hyperscaler_usd_hr/)
+      // (power prices are read from quarterly rows, by region name, in the nuclear plant's cost)
+      if (!f.endsWith('nuclear.ts')) expect(src, f).not.toMatch(/power_usd_kwh_\$\{|power_usd_kwh_[a-z]+/)
+    }
+  })
+
+  const legendFor = (gen: string | null): string => {
+    const s = liveAt(v5(), 3)
+    if (gen) s.projects = [{ id: 'p1', gpu: gen, stage: 'live', kind: 'cloud' } as never]
+    localStorage.setItem('g2g.chart', JSON.stringify({ seed: s.seed, act: s.act, series: 'gpu' }))
+    const v = render(<LiveScreen state={s} act={act} tick={noop} skip={noop} />)
+    return v.container.querySelector('.legend')?.textContent ?? ''
+  }
+
+  it('the legend names the column shown: H100, Rubin, Rubin Ultra', () => {
+    expect(legendFor('h100')).toContain('GPU rent (H100)')
+    cleanup()
+    expect(legendFor('rubin_nvl144')).toContain('GPU rent (Rubin)')
+    cleanup()
+    expect(legendFor('rubin_ultra')).toContain('GPU rent (Rubin Ultra)')
+    cleanup()
+    // the classes with no column of their own take the nearest (Gen 2037 and Bowline: Rubin Ultra; B200 and H200: H100)
+    expect(legendFor('gen2037')).toContain('GPU rent (Rubin Ultra)')
+    cleanup()
+    expect(legendFor('b200')).toContain('GPU rent (H100)')
   })
 })

@@ -2239,7 +2239,16 @@ export function parseContent(raw: RawContent): Content {
           labels.push(row.quarter)
           weeks.push([])
         }
-        weeks.at(-1)!.push(act4Week({ ...row, future: 'f1' }, lastAct2Week))
+        // (M76, doc 61 §7: Act V's weekly power prices ride along for the Live chart; the sim reads the quarterly rows)
+        weeks.at(-1)!.push({
+          ...act4Week({ ...row, future: 'f1' }, lastAct2Week),
+          power_usd_kwh_ercot: row.power_usd_kwh_ercot,
+          power_usd_kwh_pjm: row.power_usd_kwh_pjm,
+          power_usd_kwh_ohio: row.power_usd_kwh_ohio,
+          power_usd_kwh_georgia: row.power_usd_kwh_georgia,
+          power_usd_kwh_arizona: row.power_usd_kwh_arizona,
+          power_usd_kwh_nordics: row.power_usd_kwh_nordics,
+        })
       }
       labels.forEach((label, i) => {
         const expected = i === 0 ? firstLabel : nextQuarter(labels[i - 1])
@@ -2689,6 +2698,9 @@ function act3Week(row: MarketWeekAct3, lastAct2: MarketWeek): MarketWeek {
     gpu_h100_hyperscaler_usd_hr: row.gpu_h100_hyperscaler_usd_hr,
     gpu_h100_neocloud_usd_hr: row.gpu_h100_neocloud_usd_hr,
     gpu_h100_spot_usd_hr: row.gpu_h100_spot_usd_hr,
+    // (M76: carried for the Live chart only; the sim does not read them)
+    gpu_rubin_hyperscaler_usd_hr: row.gpu_rubin_hyperscaler_usd_hr,
+    gpu_rubin_ultra_hyperscaler_usd_hr: row.gpu_rubin_ultra_hyperscaler_usd_hr,
     estimate: row.estimate,
   }
 }

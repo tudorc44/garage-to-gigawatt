@@ -279,7 +279,7 @@ function lineText(series: ChartSeries, line: ChartLine): { name: string; legend:
   const name = {
     btc: t('ui.live.line.btc'),
     eth: t('ui.live.line.eth'),
-    gpu: t('ui.live.line.gpu'),
+    gpu: t(line.column === 'gpu_rubin_ultra_hyperscaler_usd_hr' ? 'ui.live.line.gpu_rubin_ultra' : line.column === 'gpu_rubin_hyperscaler_usd_hr' ? 'ui.live.line.gpu_rubin' : 'ui.live.line.gpu_h100'),
     power: t('ui.live.line.power', { region }),
     launch: t('ui.live.line.launch'),
     revenue: t('ui.live.line.revenue'),
@@ -287,7 +287,7 @@ function lineText(series: ChartSeries, line: ChartLine): { name: string; legend:
   }[line.id]
   const money = (v: number) =>
     line.id === 'power' ? fmt.cents(v) : line.id === 'gpu' ? t('ui.live.per_hour', { value: fmt.money(v) }) : line.id === 'launch' ? t('ui.live.per_kg', { value: fmt.money(v) }) : fmt.money(v)
-  if (line.id === 'launch' || line.id === 'power')
+  if (line.id === 'launch')
     return {
       name,
       legend:

@@ -1,7 +1,7 @@
 // The Live screen's chart, by act (doc 61 v1.0, M75). UI only: it reads the sim's state and market and changes none. Which series the
 // chart can show this week, which one it opens on (the act's main driver, decided from last quarter's revenue split), and the
 // columns it may read in Acts III-V (the leak guard: only columns the game's screens already display during play).
-import { POWER_REGIONS, act5Row, type PowerRegion } from '../content/index.ts'
+import { POWER_REGIONS, type PowerRegion } from '../content/index.ts'
 import type { MessageKey } from '../i18n/t.ts'
 import { ledgerQuarters } from '../sim/ledger.ts'
 import { siteFacts } from '../sim/selectors.ts'
@@ -36,6 +36,8 @@ export interface ChartLine {
   last: number
   /** The raw value before the quarter, for the stepped launch price (null otherwise). */
   previous: number | null
+  /** The market column a GPU rent line reads (names it in the legend, doc 61 §7). */
+  column?: string
 }
 
 export interface ChartSeries {
@@ -87,13 +89,6 @@ function marketLine(state: GameState, weeks: WeekSummary[], column: string): num
   return out.length > 0 ? out : null
 }
 
-/** A quarter's power price in a region, from Act V's quarterly row (null outside Act V or for a quarter with none). */
-function powerPrice(state: GameState, quarter: number, region: PowerRegion): number | null {
-  const row = act5Row(quarter, scenarioOf(state)) as unknown as Record<string, number | null | undefined> | undefined
-  const v = row?.[`power_usd_kwh_${region}`]
-  return typeof v === 'number' && Number.isFinite(v) ? v : null
-}
-
 /** Last quarter's revenue split from the ledger: mining, AI and orbital shares (null before there is a closed quarter with lines). */
 export function revenueSplit(state: GameState): { mining: number; ai: number; orbit: number; total: number } | null {
   const lq = ledgerQuarters(state).find((l) => l.q === state.quarter - 1)
@@ -127,22 +122,15 @@ export function chartSeries(state: GameState, weeks: WeekSummary[]): ChartSeries
   if (state.act >= 2) {
     const column = state.act === 2 ? 'gpu_h100_neocloud_usd_hr' : gpuColumn(state)
     const v = marketLine(state, weeks, column)
-    if (v) out.push({ id: 'gpu', labelKey: 'ui.live.series.gpu', lines: [{ id: 'gpu', changes: change(v), first: v[0], last: v.at(-1)!, previous: null }], columns: [column] })
+    if (v) out.push({ id: 'gpu', labelKey: 'ui.live.series.gpu', lines: [{ id: 'gpu', changes: change(v), first: v[0], last: v.at(-1)!, previous: null, column }], columns: [column] })
   }
-  // Power price in the largest site's region (Act V). The quarterly row is what the game carries at run time (the weekly power
-  // columns do not survive the glide from Act IV's weeks), so, like the launch price, it is held flat across the quarter's weeks.
+  // Power price in the largest site's region (Act V), from the week's own price (doc 61 §7: the weekly columns ride through the glide)
   if (state.act === 5) {
     const region = largestSiteRegion(state)
-    const now = region ? powerPrice(state, state.quarter, region) : null
-    if (region && now !== null) {
-      const before = powerPrice(state, state.quarter - 1, region)
-      out.push({
-        id: 'power',
-        labelKey: 'ui.live.series.power',
-        lines: [{ id: 'power', changes: weeks.map(() => 0), first: now, last: now, previous: before }],
-        columns: [`power_usd_kwh_${region}`],
-        region,
-      })
+    if (region) {
+      const column = `power_usd_kwh_${region}`
+      const v = marketLine(state, weeks, column)
+      if (v) out.push({ id: 'power', labelKey: 'ui.live.series.power', lines: [{ id: 'power', changes: change(v), first: v[0], last: v.at(-1)!, previous: null }], columns: [column], region })
     }
   }
   // Launch price (stepped): Acts IV-V, only for a company with orbital blocks
