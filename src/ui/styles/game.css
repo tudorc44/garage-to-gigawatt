@@ -1326,6 +1326,12 @@ td.wrap {
   max-height: calc(100vh - 2 * var(--space-8));
   overflow-y: auto;
 }
+/* The card is a column with a max-height, so its children must not shrink: a panel holding a table (.panel:has(> table)
+   scrolls sideways, which makes it a scroll container) otherwise squeezed to a few pixels with its own scrollbar, the
+   League table and "What your value is made of" in the Act II chapter report. The card is the only vertical scroll. */
+.end-card > * {
+  flex-shrink: 0;
+}
 .merge-choices {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
