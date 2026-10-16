@@ -1655,6 +1655,18 @@ type ActOnlyMarketColumns = {
   gpu_h100_hyperscaler_usd_hr: number | null
   gpu_h100_neocloud_usd_hr: number | null
   gpu_h100_spot_usd_hr: number | null
+  /**
+   * M76 (doc 61 §7): weekly columns carried for the Live chart only (Acts III-V: the Rubin rent rates; Act V: the power price in each
+   * region). Absent in Acts I-II and, for the power prices, before Act V. The sim never reads them (it reads the quarterly rows).
+   */
+  gpu_rubin_hyperscaler_usd_hr?: number | null
+  gpu_rubin_ultra_hyperscaler_usd_hr?: number | null
+  power_usd_kwh_ercot?: number | null
+  power_usd_kwh_pjm?: number | null
+  power_usd_kwh_ohio?: number | null
+  power_usd_kwh_georgia?: number | null
+  power_usd_kwh_arizona?: number | null
+  power_usd_kwh_nordics?: number | null
   /** Act II's estimate flag; Act I's file has none (null). */
   estimate: boolean | null
 }
