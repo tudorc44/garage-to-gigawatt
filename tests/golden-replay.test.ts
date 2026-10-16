@@ -314,6 +314,8 @@ const bots: Record<string, Strategy> = {
   negotiator: BOTS['raise-negotiate'],
   /** Pitches the seed and Series A (1.10×, 1.05×, accept): pitch moves replay exactly. */
   pitcher: BOTS['raise-pitch'],
+  /** M77.3 (doc 58 §1.2): raise-climb that queues 4 Gen 2 rigs a quarter in 2021Q1-Q3, so the retail queue's draws replay exactly. */
+  'gen2-queuer': BOTS['gen2-queuer'],
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {

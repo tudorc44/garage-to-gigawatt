@@ -54,5 +54,5 @@ describe('the expansion flag', () => {
     const prod = await mount('production')
     const dev = await mount('development')
     expect(dev.length).toBe(prod.length + 1)
-  })
+  }, 30_000) // (two dynamic imports of the whole Plan screen: slow when the machine is busy)
 })
