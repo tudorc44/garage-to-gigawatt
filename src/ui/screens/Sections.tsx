@@ -40,6 +40,7 @@ import {
 import type { ScreenProps } from './Plan.tsx'
 import { CapitalAct2 } from './CapitalAct2.tsx'
 import { ProjectsSection } from './Projects.tsx'
+import { Ventures12Section } from './Ventures12.tsx'
 import { Act3Panel } from '../components/act3Lazy.tsx'
 import { Act4Panel } from '../components/act4Lazy.tsx'
 import { League } from './Report.tsx'
@@ -73,7 +74,8 @@ export function SectionView(props: ScreenProps & { section: Section }) {
     case 'government':
       return <Act3Panel name="GovernmentSection" {...props} />
     case 'ventures':
-      return <Act3Panel name="VenturesSection" {...props} />
+      // (M78.3: Acts I-II have their own Ventures tab behind the ventures flag; Acts III-V keep the energy ventures)
+      return props.state.act <= 2 ? <Ventures12Section {...props} /> : <Act3Panel name="VenturesSection" {...props} />
     case 'fleet':
       return <FleetSection {...props} />
     case 'capital':

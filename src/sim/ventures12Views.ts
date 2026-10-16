@@ -162,3 +162,10 @@ export function lotChoices(state: GameState) {
   }
   return out
 }
+
+/** Whether the Ventures tab shows in Acts I-II: Larkspur is in the build and has been offered (2020Q2 on), through Act II. */
+export function ventures12Visible(state: GameState): boolean {
+  if (!larkspurAvailable()) return false
+  if (state.act === 2) return true
+  return state.act === 1 && state.quarter >= qIndex(CONTENT.larkspur!.offer.news_quarter)
+}
