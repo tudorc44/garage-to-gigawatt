@@ -12,6 +12,8 @@ import marketPrologueAltsRaw from './market_weekly_prologue_alts.json' with { ty
 import marketQuarterlyPrologueAltsRaw from './market_quarterly_prologue_alts.json' with { type: 'json' }
 import poolsPlayerRaw from './pools_player.json' with { type: 'json' }
 import clubRaw from './club.json' with { type: 'json' }
+import larkspurRaw from './larkspur.json' with { type: 'json' }
+import afterMergeRaw from './after_merge.json' with { type: 'json' }
 import preordersAdditionsRaw from './preorders_additions.json' with { type: 'json' }
 import marketQuarterlyAct2Raw from './market_quarterly_act2.json' with { type: 'json' }
 import capitalRaw from './capital.json' with { type: 'json' }
@@ -138,6 +140,10 @@ import {
   type PoolsPlayerFile,
   clubFileSchema,
   type ClubFile,
+  larkspurFileSchema,
+  type LarkspurFile,
+  afterMergeFileSchema,
+  type AfterMergeFile,
   preordersAdditionsFileSchema,
   type PreordersAdditionsFile,
   type marketWeekPrologueAltsSchema,
@@ -685,6 +691,10 @@ export interface Content {
    */
   hiresAct2: { salaryYr: Record<string, number[]>; newHires: Hire[] }
   machines: Machine[]
+  /** M78.1 (doc 58 v1.1 §2): Larkspur Silicon's rules and its two machines, which live outside `machines` (no buy menu lists them). */
+  larkspur?: LarkspurFile
+  /** M78.2 (doc 58 v1.1 §3): the alternative coins' income and GPU rental's rate, after the Merge. */
+  afterMerge?: AfterMergeFile
   siteTiers: SiteTier[]
   flaws: Record<string, Flaw>
   interrupts: { maxPerQuarter: number; byId: Record<string, Interrupt> }
@@ -835,6 +845,9 @@ export interface RawContent {
   /** M70.3 (doc 51 v1.2 §4): the Prologue's mining club (club.json) and its scrypt-box share (preorders_additions.json). Optional. */
   club?: unknown
   preordersAdditions?: unknown
+  /** M78 (doc 58 v1.1): Larkspur (larkspur.json) and life after the Merge (after_merge.json). Optional. */
+  larkspur?: unknown
+  afterMerge?: unknown
   /** The four Act III scenarios' market files (M11.1): quarterly (market_sN) and weekly. */
   act3Scenarios: Record<ScenarioId, { quarterly: unknown; weekly: unknown }>
   /** The four Act IV futures' market files (M27.3). Optional: without them the timeline ends at 2030Q4. */
@@ -945,6 +958,8 @@ export function parseContent(raw: RawContent): Content {
   const poolsPlayerFile =
     raw.poolsPlayer === undefined ? undefined : check('pools_player.json', poolsPlayerFileSchema, raw.poolsPlayer)
   const clubFile = raw.club === undefined ? undefined : check('club.json', clubFileSchema, raw.club)
+  const larkspurFile = raw.larkspur === undefined ? undefined : check('larkspur.json', larkspurFileSchema, raw.larkspur)
+  const afterMergeFile = raw.afterMerge === undefined ? undefined : check('after_merge.json', afterMergeFileSchema, raw.afterMerge)
   const preordersAdditionsFile =
     raw.preordersAdditions === undefined ? undefined : check('preorders_additions.json', preordersAdditionsFileSchema, raw.preordersAdditions)
   const marketAct2Rows = check(
@@ -2603,6 +2618,8 @@ export function parseContent(raw: RawContent): Content {
       ),
     },
     machines: machinesFile.models,
+    ...(larkspurFile ? { larkspur: larkspurFile } : {}),
+    ...(afterMergeFile ? { afterMerge: afterMergeFile } : {}),
     siteTiers: sitesFile.tiers,
     flaws: sitesFile.flaws,
     interrupts: { maxPerQuarter: interruptsFile.max_per_quarter, byId },
@@ -3063,6 +3080,8 @@ export const CONTENT: Content = parseContent({
   marketQuarterlyPrologueAlts: marketQuarterlyPrologueAltsRaw,
   poolsPlayer: poolsPlayerRaw,
   club: clubRaw,
+  larkspur: larkspurRaw,
+  afterMerge: afterMergeRaw,
   preordersAdditions: preordersAdditionsRaw,
   act3Scenarios: {
     s0: { quarterly: marketS0Raw, weekly: marketWeeklyS0Raw },

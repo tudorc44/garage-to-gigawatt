@@ -46,6 +46,8 @@ import {
   type LotView,
 } from '../../sim/selectors.ts'
 import { planNewsLine } from '../../sim/planNews.ts'
+import { larkspurNewsKeys } from '../../sim/systems/larkspur.ts'
+import { ACTS12_VENTURES } from '../../platform/preview.ts'
 // (Act II's panels show in Act III too, which runs the same systems: inAct2Rules, M13.1.)
 import {
   inActII,
@@ -193,7 +195,7 @@ export function PlanScreen({ state, act }: ScreenProps) {
   // An event card last quarter may ask to start this Plan phase on the Buy dialog.
   const [open, setOpen] = useState<Open>(planOpensOnBuy(state) ? 'buy' : null)
   const q = quarterName(state.quarter)
-  const news = headlines(q)
+  const news = [...headlines(q), ...(ACTS12_VENTURES ? larkspurNewsKeys(state).map((k) => tDynamic(k, '')) : [])]
   // M68.1 (doc 43 §0.25 item 4): the band shows this quarter's own line in Acts III-V, never an earlier act's text
   const line = state.act >= 3 ? planNewsLine(state) : null
   const bandText =
