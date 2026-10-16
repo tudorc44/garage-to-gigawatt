@@ -316,6 +316,8 @@ const bots: Record<string, Strategy> = {
   pitcher: BOTS['raise-pitch'],
   /** M77.3 (doc 58 §1.2): raise-climb that queues 4 Gen 2 rigs a quarter in 2021Q1-Q3, so the retail queue's draws replay exactly. */
   'gen2-queuer': BOTS['gen2-queuer'],
+  /** M78.0b (doc 58 §10.1): the same buying at the street price: with gen2-queuer, the Act I price-table guards. */
+  'gen2-street': BOTS['gen2-street'],
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
