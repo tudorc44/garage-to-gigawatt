@@ -1,5 +1,6 @@
 // Plan-phase dialogs: buy machines, sell or repair a batch, review scouted site offers.
 // Previews come from dry-running the action through the sim (applyAction / whyNot).
+import { CONTENT } from '../../content/index.ts'
 import { useState } from 'preact/hooks'
 import { t, tDynamic } from '../../i18n/t.ts'
 import type { Action } from '../../sim/actions.ts'
@@ -71,13 +72,16 @@ export function BuyDialog({
   const firstOut = market.find((m) => m.isOut)!
   const [model, setModel] = useState(firstOut.id)
   const [condition, setCondition] = useState<Condition>('new')
+  // (M77.1, doc 58 §1.2: Gen 2 in 2021Q1-Q3 has a second row, the retail queue)
+  const [queue, setQueue] = useState(false)
   const [count, setCount] = useState(1)
   // (M33.3: the site card's "Buy machines here" opens on its site)
   const [siteId, setSiteId] = useState(initialSite ?? bestSite(state).id)
   const [picking, setPicking] = useState(false)
 
   const m = market.find((x) => x.id === model)!
-  const price = condition === 'new' ? m.newPriceUsd : m.usedPriceUsd
+  const queued = queue && !!m.queue
+  const price = queued ? m.queue!.priceUsd : condition === 'new' ? m.newPriceUsd : m.usedPriceUsd
   const site = sites.find((s) => s.site.id === siteId)!
   const freeKw = site.capacityKw - site.usedKw
   const maxCount = Math.max(
@@ -85,19 +89,26 @@ export function BuyDialog({
     Math.min(
       Math.floor(Math.min(freeKw, buyCapKw(state, model)) / m.powerKw),
       price ? Math.floor(state.cash / price) : 0,
+      queued ? Math.max(1, m.queue!.left) : Infinity,
     ),
   )
   const action: Action = {
     type: 'BUY_MACHINES',
     model,
-    condition,
+    condition: queued ? 'new' : condition,
     count,
     siteId,
+    ...(queued ? { queue: true } : {}),
   }
   const why = whyNot(state, action)
 
   return (
     <Dialog title={t('ui.buy.title')} onClose={onClose}>
+      {market.some((x) => x.queue) && CONTENT.quarters[state.quarter] === '2021Q1' && (
+        <p class="num-s muted" data-gen2-hint style={{ margin: 0 }}>
+          {t('ui.buy.gen2_hint')}
+        </p>
+      )}
       <table>
         <thead>
           <tr>
@@ -111,65 +122,73 @@ export function BuyDialog({
           </tr>
         </thead>
         <tbody>
-          {market.map((x) => (
-            <tr
-              key={x.id}
-              class={!x.isOut ? 'off' : x.id === model ? 'picked pick' : 'pick'}
-              onClick={() => {
-                if (!x.isOut) return
-                setModel(x.id)
-                if (
-                  (condition === 'new' ? x.newPriceUsd : x.usedPriceUsd) ===
-                  undefined
-                ) {
-                  setCondition(x.newPriceUsd === undefined ? 'used' : 'new')
-                }
-              }}
-            >
-              <td>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    gap: '8px',
-                    alignItems: 'center',
+          {market.flatMap((x) => {
+            // (M77.1, doc 58 §1.2: in 2021Q1-Q3 Gen 2 has two rows, the street price and the retail queue)
+            const rows = x.queue ? [false, true] : [false]
+            return rows.map((asQueue) => {
+              const picked = x.id === model && queue === asQueue
+              const shownNew = asQueue ? x.queue!.priceUsd : x.newPriceUsd
+              return (
+                <tr
+                  key={`${x.id}${asQueue ? ':queue' : ''}`}
+                  class={!x.isOut ? 'off' : picked ? 'picked pick' : 'pick'}
+                  onClick={() => {
+                    if (!x.isOut) return
+                    setModel(x.id)
+                    setQueue(asQueue)
+                    if (asQueue) setCondition('new')
+                    else if (
+                      (condition === 'new' ? x.newPriceUsd : x.usedPriceUsd) ===
+                      undefined
+                    ) {
+                      setCondition(x.newPriceUsd === undefined ? 'used' : 'new')
+                    }
                   }}
                 >
-                  <Icon name={machineIcon(x.coin)} size={16} />
-                  {machineName(x.id)}
-                </span>
-              </td>
-              <td>{x.coin}</td>
-              <td class="num r">{fmt.hash(x.hashrate, hashUnit(x.coin))}</td>
-              <td class="num r">{fmt.power(x.powerKw)}</td>
-              {x.isOut ? (
-                <>
-                  <td class="num r">
-                    {x.newPriceUsd === undefined
-                      ? '—'
-                      : fmt.money(x.newPriceUsd)}
+                  <td>
+                    <span
+                      style={{
+                        display: 'inline-flex',
+                        gap: '8px',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <Icon name={machineIcon(x.coin)} size={16} />
+                      {x.queue ? t(asQueue ? 'ui.buy.gen2_queue' : 'ui.buy.gen2_street') : machineName(x.id)}
+                    </span>
                   </td>
-                  <td class="num r">
-                    {x.usedPriceUsd === undefined
-                      ? '—'
-                      : fmt.money(x.usedPriceUsd)}
-                  </td>
-                  <td
-                    class={`num r ${x.dailyProfitUsd >= 0 ? 'gain' : 'loss'}`}
-                  >
-                    {t('ui.buy.per_day', {
-                      value: fmt.signed(x.dailyProfitUsd),
-                    })}
-                  </td>
-                </>
-              ) : (
-                <td class="r" colSpan={3}>
-                  {t('ui.locked.opens', {
-                    quarter: fmt.quarter(x.availableFrom),
-                  })}
-                </td>
-              )}
-            </tr>
-          ))}
+                  <td>{x.coin}</td>
+                  <td class="num r">{fmt.hash(x.hashrate, hashUnit(x.coin))}</td>
+                  <td class="num r">{fmt.power(x.powerKw)}</td>
+                  {x.isOut ? (
+                    <>
+                      <td class="num r">
+                        {shownNew === undefined ? '—' : fmt.money(shownNew)}
+                      </td>
+                      <td class="num r">
+                        {asQueue || x.usedPriceUsd === undefined
+                          ? '—'
+                          : fmt.money(x.usedPriceUsd)}
+                      </td>
+                      <td
+                        class={`num r ${x.dailyProfitUsd >= 0 ? 'gain' : 'loss'}`}
+                      >
+                        {t('ui.buy.per_day', {
+                          value: fmt.signed(x.dailyProfitUsd),
+                        })}
+                      </td>
+                    </>
+                  ) : (
+                    <td class="r" colSpan={3}>
+                      {t('ui.locked.opens', {
+                        quarter: fmt.quarter(x.availableFrom),
+                      })}
+                    </td>
+                  )}
+                </tr>
+              )
+            })
+          })}
         </tbody>
       </table>
       <p class="num-s muted" style={{ margin: 0 }}>
@@ -187,7 +206,7 @@ export function BuyDialog({
                   key={c}
                   type="button"
                   aria-pressed={condition === c}
-                  disabled={p === undefined}
+                  disabled={p === undefined || (queued && c === 'used')}
                   onClick={() => setCondition(c)}
                 >
                   {tDynamic(`condition.${c}`, c)}{' '}

@@ -1244,6 +1244,20 @@ export const machineSchema = z
         z.number().int().min(0),
       )
       .refine((r) => 'default' in r, 'needs a "default" lead time'),
+    /**
+     * M77.1 (doc 58 §1.2, designed): a second way to buy a rig in a window of quarters: at retail, at a fixed price, in line (each
+     * rig arrives after 1, 2 or 3 quarters, drawn from `delivery_quarters`' odds), at most `max_per_quarter` rigs a quarter.
+     */
+    retail_queue: z
+      .object({
+        price_usd: z.number().positive(),
+        max_per_quarter: z.number().int().positive(),
+        from: quarterId,
+        to: quarterId,
+        delivery_quarters: z.record(z.string().regex(/^[1-9]$/), z.number().min(0).max(1)),
+        note: z.string(),
+      })
+      .optional(),
   })
   .refine(
     (m) => (m.coin === 'ETH' ? m.hashrate_mhs : m.hashrate_ths) !== undefined,

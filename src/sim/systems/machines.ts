@@ -2,6 +2,7 @@
 import { CONTENT, type MarketKey } from '../../content/index.ts'
 import { ENERGY } from '../../content/energyContent.ts'
 import type { Condition, GameState, MachineLot } from '../state.ts'
+import { random, substream } from '../rng.ts'
 import { getModel, leadTimeQuarters, scenarioOf, sellPrice } from './market.ts'
 
 export function repairCostPerUnit(modelId: string): number {
@@ -22,6 +23,22 @@ export function repairAllCost(state: GameState): {
   return { units, costUsd }
 }
 
+/**
+ * One rig's delivery from the Gen 2 retail queue (doc 58 §1.2): 1, 2 or 3 quarters by the model's odds, on the queue's own
+ * substream `gen2_queue` (one draw per rig, counted in the state), so no other random draw in any game moves.
+ */
+export function drawQueueDelivery(state: GameState, odds: Record<string, number>): number {
+  const gq = (state.gen2Queue ??= { orders: 0, perQuarter: {} })
+  const u = random(substream(state.seed, `gen2_queue:${gq.orders++}`))
+  let acc = 0
+  const keys = Object.keys(odds).map(Number).sort((x, y) => x - y)
+  for (const k of keys) {
+    acc += odds[String(k)]
+    if (u < acc) return k
+  }
+  return keys.at(-1) ?? 1
+}
+
 /** Adds bought units, merging into an identical lot if there is one. */
 export function addMachines(
   state: GameState,
@@ -29,13 +46,15 @@ export function addMachines(
   condition: Condition,
   count: number,
   siteId: string,
+  /** M77.1: a rig from the retail queue arriving this many quarters from now (instead of the model's lead time). */
+  queuedDelivery?: number,
 ): MachineLot {
   const model = getModel(modelId)!
   // Machines earn from the quarter after delivery (scope §2.4). M35.3: shipping to Iceland adds a quarter.
   const site = state.sites.find((s) => s.id === siteId)
   const shipping = site?.special ? (ENERGY.specialKinds[site.special].delivery_extra_quarters ?? 0) : 0
   const earnsFromQuarter =
-    state.quarter + leadTimeQuarters(model, state.quarter, condition) + 1 + shipping
+    state.quarter + (queuedDelivery ?? leadTimeQuarters(model, state.quarter, condition)) + 1 + shipping
   const same = state.machines.find(
     (l) =>
       l.model === modelId &&
@@ -43,7 +62,9 @@ export function addMachines(
       l.siteId === siteId &&
       l.earnsFromQuarter === earnsFromQuarter &&
       // (M68.4: a new unit never joins a lot that mines an altcoin: the coin is the lot's choice)
-      !l.altCoin,
+      !l.altCoin &&
+      // (M77.1: queued rigs and street-bought rigs stay in lots of their own)
+      !!l.queued === (queuedDelivery !== undefined),
   )
   if (same) {
     same.count += count
@@ -57,6 +78,7 @@ export function addMachines(
     count,
     failed: 0,
     earnsFromQuarter,
+    ...(queuedDelivery !== undefined ? { queued: true } : {}),
   }
   state.machines.push(lot)
   return lot

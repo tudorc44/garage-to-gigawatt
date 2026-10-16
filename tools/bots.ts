@@ -1049,6 +1049,55 @@ const TEXAS_IPO: BotSettings = {
   asicOnly: true,
 }
 
+/**
+ * M77.3 (doc 58 §1.2, Y-B7): buys up to `perQuarter` Gen 2 rigs in each of 2021Q1-Q3 before anything else in the plan: in the
+ * retail queue ($4,100, delivery 1-3 quarters later) or at the street price (the table price, no wait). The rest of the plan is the
+ * base bot's, on what is left. A rig is bought only where the sim accepts it (cash, free power, the GPU shortage cap).
+ */
+function gen2Buyer(base: Strategy, queue: boolean, perQuarter = 4): Strategy {
+  return {
+    ...base,
+    plan(state) {
+      const label = CONTENT.quarters[state.quarter]
+      if (!(state.act === 1 && label >= '2021Q1' && label <= '2021Q3')) return base.plan(state)
+      const actions: Action[] = []
+      let s = state
+      const sites = [...state.sites]
+        .filter((x) => x.readyQuarter <= state.quarter)
+        .sort((a, c) => capacityKw(c) - usedKw(state, c.id) - (capacityKw(a) - usedKw(state, a.id)))
+      // (raise-climb has every site full by 2021: make room for the rigs by selling its least efficient BTC machines at the biggest site)
+      const gen2 = CONTENT.machines.find((m) => m.id === 'gpu_gen2')!
+      const room = sites[0]
+      if (room) {
+        let guard = 400
+        while (capacityKw(room) - usedKw(s, room.id) < gen2.power_kw * perQuarter && guard-- > 0) {
+          const worst = s.machines
+            .filter((l) => l.siteId === room.id && l.count > 0 && getModel(l.model)?.coin === 'BTC')
+            .sort((a, c) => getModel(a.model)!.hashrate / getModel(a.model)!.power_kw - getModel(c.model)!.hashrate / getModel(c.model)!.power_kw)[0]
+          if (!worst) break
+          const r = applyAction(s, { type: 'SELL_MACHINES', lotId: worst.id, count: 1 })
+          if (!r.ok) break
+          s = r.state
+          actions.push({ type: 'SELL_MACHINES', lotId: worst.id, count: 1 })
+        }
+      }
+      for (const site of sites) {
+        for (let n = perQuarter; n >= 1; n--) {
+          const a: Action = { type: 'BUY_MACHINES', model: 'gpu_gen2', condition: 'new', count: n, siteId: site.id, ...(queue ? { queue: true } : {}) }
+          const r = applyAction(s, a)
+          if (r.ok) {
+            s = r.state
+            actions.push(a)
+            break
+          }
+        }
+        if (actions.length > 0) break
+      }
+      return [...actions, ...base.plan(s)]
+    },
+  }
+}
+
 export const BOTS: Record<string, Strategy> = {
   /** Keeps half its cash, only buys machines that pay back within 3 quarters, holds 20%. */
   cautious: makeBot({
@@ -1151,6 +1200,10 @@ export const BOTS: Record<string, Strategy> = {
    * The "great player" path (scope §5): raise-climb plus the IPO (as soon as it qualifies), then
    * climbs to Texas with the IPO money and fills it, borrowing up to 50% of the machines' value.
    */
+  /** M77.3 (Y-B7): raise-climb that queues 4 Gen 2 rigs a quarter in 2021Q1-Q3 (retail, delivery 1-3 quarters later). */
+  'gen2-queuer': gen2Buyer(makeBot(RAISE_CLIMB), true),
+  /** M77.3 (Y-B7): the same, but buying the 4 rigs at the street price (the table price, no wait). */
+  'gen2-street': gen2Buyer(makeBot(RAISE_CLIMB), false),
   'texas-ipo': makeBot(TEXAS_IPO),
   /**
    * Act II good path with AI (scope §5): raise-climb, then from 2023Q3 frees its S9s and GPU rigs
