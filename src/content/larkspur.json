@@ -1,0 +1,98 @@
+{
+ "schema_version": 1,
+ "notes": "Larkspur Silicon (doc 58 v1.1 §2, M78.1): an invented Ethash-ASIC start-up you can back in 2020Q2-Q4, and its two machines. Grades: [A]-[D] as doc 60; [D] = designed. The LK machines are kept out of machines.json on purpose: they appear in no buy menu and no bot's list, only through the Ventures screen, so a game that never touches the feature is byte-identical.",
+ "offer": {
+  "news_quarter": "2020Q2",
+  "join_from": "2020Q2",
+  "join_to": "2020Q4",
+  "budget_usd": 20000000,
+  "stakes": [0.1, 0.2, 0.3],
+  "dilute_mult": 0.5,
+  "grade": "D",
+  "note": "Stake = share x the pitched budget, paid in thirds: the buy-in at joining, a call at tape-out and a call at first units (doc 49's shape). Dilute halves the stake; walk forfeits it."
+ },
+ "milestones": {
+  "tape_out": "2021Q2",
+  "first_units": "2021Q4",
+  "volume": "2022Q1",
+  "grade": "D",
+  "note": "Pitched dates. Real Ethash ASICs shipped late: Linzhi's Phoenix about 18 months [doc 60 §1]."
+ },
+ "slip": {
+  "quarters": {"0": 0.5, "1": 0.3, "2": 0.2},
+  "grade": "D",
+  "note": "One draw per game (substream larkspur:slip) shifts first units and volume (and the tape-out) by 0, 1 or 2 quarters."
+ },
+ "outcome": {
+  "odds": {"ships": 0.7, "cancelled": 0.25, "acquired": 0.05},
+  "acquired_multiple": 1.5,
+  "grade": "D",
+  "note": "Drawn once per game at tape-out (substream larkspur:outcome); bounded by doc 60 §6's 20-30% of start-ups failing. Acquired pays 1.5 x paid-in, deposits refunded, no machines."
+ },
+ "memory": {
+  "lk6_min_stake": 0.2,
+  "default": "lk5",
+  "lk6_price_mult": 1.25,
+  "walls": {"lk5": "2022-08-17", "lk6": "2022-09-15"},
+  "grade": "B",
+  "note": "[B] the DAG reached 5 GB on 17 Aug 2022; [A] the Merge was 15 Sep 2022. A backer with 20% or more picks LK-5 or LK-6 at the tape-out call; with 10% (or none) the founders pick LK-5. After its wall a unit mines Ethereum Classic automatically."
+ },
+ "reservation": {
+  "units_per_10pct": 10,
+  "deposit_share": 0.1,
+  "discount": 0.1,
+  "window_quarters": 2,
+  "market_opens_after_quarters": 2,
+  "grade": "D",
+  "note": "Reserved units are bought at the discounted price in the first two quarters of volume, the deposit (10% of the discounted price) credited against them; what is not bought by then lapses with its deposit. Everyone else buys at full price from the quarter after (volume + 2)."
+ },
+ "valuation": {
+  "units_per_quarter": 1500,
+  "margin_usd": 6000,
+  "e9_quarter": "2021Q2",
+  "e9_mult": 0.8,
+  "merge_mult": 0.1,
+  "grade": "D",
+  "note": "Before volume the stake is carried at paid-in (x0.8 once the E9 teaser has run and volume has not come). From volume to the Merge it is your share x units shipped x margin per unit (doc 58 §2.2's paid-in x units x margin / budget, which is the same thing for an undiluted stake); at the Merge it falls to 10% of that. It resolves into cash at Act I's end."
+ },
+ "models": [
+  {
+   "id": "lk5",
+   "name": "Larkspur LK-5",
+   "coin": "ETH",
+   "available_from": "2021Q4",
+   "real_basis": "An invented Ethash ASIC with 5 GB of memory (doc 58 §2.2)",
+   "why": "Three times a Gen 2 rig's megahashes per watt, and it dies when the DAG passes 5 GB.",
+   "hashrate_mhs": {"value": 1500, "source": "designed against Gen 2's 360 MH/s (doc 58 §2.2)", "estimate": true},
+   "power_kw": {"value": 1.2, "source": "designed: about 3x Gen 2's MH per W", "estimate": true},
+   "efficiency_w_per_mh": {"value": 0.8, "source": "derived", "estimate": true},
+   "noise_db": {"value": 70, "source": "designed", "estimate": true},
+   "lifespan_years": {"value": 4, "source": "as Gen 2", "estimate": true},
+   "annual_failure_rate": {"value": 0.05, "source": "as Gen 2", "estimate": true},
+   "heat_per_unit_garage": 1,
+   "price_new": {"2021Q4": 15600, "2022Q1": 15600, "2022Q2": 15600, "2022Q3": 15600},
+   "price_used": {"2021Q4": 11000, "2022Q1": 10000, "2022Q2": 8000, "2022Q3": 2500},
+   "price_source": "designed [D]: 45% of Gen 2's 2021Q2 street price per MH (doc 58 §2.2)",
+   "lead_time_quarters": {"default": 0}
+  },
+  {
+   "id": "lk6",
+   "name": "Larkspur LK-6",
+   "coin": "ETH",
+   "available_from": "2021Q4",
+   "real_basis": "An invented Ethash ASIC with 6 GB of memory (doc 58 §2.2)",
+   "why": "The same chip with more memory, for 25% more: it lasts until the Merge.",
+   "hashrate_mhs": {"value": 1500, "source": "designed against Gen 2's 360 MH/s (doc 58 §2.2)", "estimate": true},
+   "power_kw": {"value": 1.2, "source": "designed: about 3x Gen 2's MH per W", "estimate": true},
+   "efficiency_w_per_mh": {"value": 0.8, "source": "derived", "estimate": true},
+   "noise_db": {"value": 70, "source": "designed", "estimate": true},
+   "lifespan_years": {"value": 4, "source": "as Gen 2", "estimate": true},
+   "annual_failure_rate": {"value": 0.05, "source": "as Gen 2", "estimate": true},
+   "heat_per_unit_garage": 1,
+   "price_new": {"2021Q4": 19500, "2022Q1": 19500, "2022Q2": 19500, "2022Q3": 19500},
+   "price_used": {"2021Q4": 13700, "2022Q1": 12500, "2022Q2": 10000, "2022Q3": 4000},
+   "price_source": "designed [D]: LK-5 plus 25% (doc 58 §2.2)",
+   "lead_time_quarters": {"default": 0}
+  }
+ ]
+}

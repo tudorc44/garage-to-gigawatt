@@ -2443,3 +2443,91 @@ export const eventsPrologueFileSchema = z.object({
   cards: z.array(prologueCardSchema),
 })
 export type PrologueCardFile = z.output<typeof prologueCardSchema>
+
+// ---------- larkspur.json and after_merge.json (M78, doc 58 v1.1) ----------
+
+/** Larkspur Silicon (doc 58 §2): the offer, the pitch, the draws' odds, the memory rule, the reservation, the valuation and the two machines. */
+export const larkspurFileSchema = z.object({
+  schema_version: z.number(),
+  notes: z.string(),
+  offer: z.object({
+    news_quarter: quarterId,
+    join_from: quarterId,
+    join_to: quarterId,
+    budget_usd: z.number().positive(),
+    stakes: z.array(z.number().positive().max(1)).min(1),
+    dilute_mult: z.number().min(0).max(1),
+    grade: z.string(),
+    note: z.string(),
+  }),
+  milestones: z.object({ tape_out: quarterId, first_units: quarterId, volume: quarterId, grade: z.string(), note: z.string() }),
+  slip: z.object({ quarters: z.record(z.string().regex(/^\d$/), z.number().min(0).max(1)), grade: z.string(), note: z.string() }),
+  outcome: z.object({
+    odds: z.object({ ships: z.number(), cancelled: z.number(), acquired: z.number() }),
+    acquired_multiple: z.number().positive(),
+    grade: z.string(),
+    note: z.string(),
+  }),
+  memory: z.object({
+    lk6_min_stake: z.number(),
+    default: z.enum(['lk5', 'lk6']),
+    lk6_price_mult: z.number().positive(),
+    walls: z.object({ lk5: isoDate, lk6: isoDate }),
+    grade: z.string(),
+    note: z.string(),
+  }),
+  reservation: z.object({
+    units_per_10pct: z.number().int().positive(),
+    deposit_share: z.number().min(0).max(1),
+    discount: z.number().min(0).max(1),
+    window_quarters: z.number().int().positive(),
+    market_opens_after_quarters: z.number().int().positive(),
+    grade: z.string(),
+    note: z.string(),
+  }),
+  valuation: z.object({
+    units_per_quarter: z.number().positive(),
+    margin_usd: z.number().positive(),
+    e9_quarter: quarterId,
+    e9_mult: z.number().min(0).max(1),
+    merge_mult: z.number().min(0).max(1),
+    grade: z.string(),
+    note: z.string(),
+  }),
+  models: z.array(machineSchema).length(2),
+})
+export type LarkspurFile = z.output<typeof larkspurFileSchema>
+
+const altPoint = z.object({
+  date: isoDate,
+  etc: nonNeg,
+  rvn: nonNeg.optional(),
+  erg: nonNeg.optional(),
+  grade: z.string(),
+  source: z.string(),
+})
+
+/** Life after the Merge (doc 58 §3): the alternative coins' income per 60 MH/s and GPU rental's rate and utilisation. */
+export const afterMergeFileSchema = z.object({
+  schema_version: z.number(),
+  notes: z.string(),
+  alt_coins: z.object({
+    coins: z.array(z.enum(['etc', 'rvn', 'erg'])),
+    gpu_only: z.array(z.enum(['etc', 'rvn', 'erg'])),
+    per_mh: z.number().positive(),
+    points: z.array(altPoint).min(2),
+    names: z.record(z.string(), z.string()),
+  }),
+  rental: z.object({
+    marketplace: z.string(),
+    cards_per_rig: z.number().int().positive(),
+    gen1_mult: z.number().positive(),
+    host_fee: z.number().min(0).max(1),
+    rentable_models: z.array(z.string()),
+    gen1_models: z.array(z.string()),
+    points: z.array(z.object({ date: isoDate, usd_per_gpu_hour: nonNeg, utilisation: z.number().min(0).max(1) })).min(2),
+    grade: z.string(),
+    source: z.string(),
+  }),
+})
+export type AfterMergeFile = z.output<typeof afterMergeFileSchema>

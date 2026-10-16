@@ -26,7 +26,9 @@ import {
 export function getModel(id: string): Machine | undefined {
   return (
     CONTENT.machines.find((m) => m.id === id) ??
-    CONTENT.prologue.machines.find((m) => m.id === id)
+    CONTENT.prologue.machines.find((m) => m.id === id) ??
+    // (M78.1: Larkspur's LK-5 and LK-6 are in no buy menu: only a game that bought one has a lot of them)
+    CONTENT.larkspur?.models.find((m) => m.id === id)
   )
 }
 

@@ -9,6 +9,7 @@ import { isShutDown } from './heat.ts'
 import { failureMult } from './hires.ts'
 import { modifierMult } from './eventEffects.ts'
 import { miningPowerMult } from './headStarts.ts'
+import { lotPlan } from './afterMerge.ts'
 import {
   coinPrice,
   getModel,
@@ -35,6 +36,11 @@ export interface LotWeek {
   revenueUsd: number
   powerCostUsd: number
   coinsMined: number
+  /**
+   * M78.2 (doc 58 v1.1 §3): the lot earned dollars directly (an alternative coin or rental): no coin goes to the treasury, the
+   * dollars are sold at once. Absent for every ordinary lot.
+   */
+  direct?: boolean
 }
 
 /**
@@ -91,12 +97,14 @@ export function mineWeek(
       // M35: a flare pad's output; a home battery keeps its share of the machines running through outages.
       const up0 = uptime(site, state.quarter)
       const up = site.energy ? up0 + (1 - up0) * rideThroughShare(state, site) : up0
+      // M78: an alternative coin, rental, or a Larkspur unit past its memory wall earns dollars directly (undefined for every other lot)
+      const plan = lotPlan(lot, model, w.week)
       const revenueUsd =
         working *
-        revenuePerUnitDay(model, w) *
+        (plan ? plan.revenuePerUnitDay : revenuePerUnitDay(model, w)) *
         7 *
         up *
-        hashrateMult(site, state.quarter) *
+        (plan?.kind === 'rent' ? 1 : hashrateMult(site, state.quarter)) *
         modifierMult(state, 'hashrate', site.id)
       const powerCostUsd =
         working *
@@ -104,6 +112,7 @@ export function mineWeek(
         24 *
         7 *
         up *
+        (plan ? plan.powerShare : 1) *
         powerMult *
         ((opts.ignoreStorm ? undefined : stormPrice(state, site, w)) ??
           powerPriceUsdKwh(site, state.quarter, scenarioOf(state)))
@@ -116,7 +125,8 @@ export function mineWeek(
         running,
         revenueUsd: running ? revenueUsd : 0,
         powerCostUsd: running ? powerCostUsd : 0,
-        coinsMined: running ? revenueUsd / coinPrice(w, model.coin) : 0,
+        coinsMined: running && !plan ? revenueUsd / coinPrice(w, model.coin) : 0,
+        ...(plan ? { direct: true } : {}),
       }
     })
 }

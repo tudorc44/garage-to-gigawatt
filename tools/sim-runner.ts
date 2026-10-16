@@ -40,7 +40,7 @@ import {
   computeReading,
   oracleLogs,
 } from '../src/sim/systems/readingScore.ts'
-import { marketWeek } from '../src/sim/systems/market.ts'
+import { getModel, marketWeek } from '../src/sim/systems/market.ts'
 import { mineWeek } from '../src/sim/systems/mining.ts'
 import { book } from '../src/sim/ledger.ts'
 import { checkedLedger } from './ledgerCheck.ts'
@@ -65,6 +65,11 @@ const args = process.argv.slice(2)
 // The prologue's runs and checks (Alpha 0.3 §5) have their own runner.
 if (args.includes('--prologue')) {
   await import('./prologue-runner.ts')
+  process.exit(0)
+}
+// M78.6 (doc 58 v1.1 §5): the Acts I-II ventures' Y-B2..Y-B6 table has its own runner.
+if (args.includes('--ventures12')) {
+  await import('./ventures12-runner.ts')
   process.exit(0)
 }
 // M36.3: the energy options' and ventures' E-B table (doc 38 §5.10) has its own.
@@ -368,7 +373,7 @@ function idleShare(r: Run): number | null {
       (a, w) =>
         a +
         w.working *
-          CONTENT.machines.find((m) => m.id === lots.get(w.lotId)!.model)!
+          getModel(lots.get(w.lotId)!.model)!
             .power_kw,
       0,
     )
