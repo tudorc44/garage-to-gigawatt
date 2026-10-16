@@ -11,6 +11,10 @@ Act III and Act IV (M27–M34) with the energy options and ventures (doc 38, M35
 is built through M63 and merged, behind the dev flag** (dev, staging and tests have it; the Pages build doesn't; the owner flips it).
 See "Next".
 
+## UI: chapter report panels at full height (branch `ui-report-panels` from `main`, not a milestone)
+- Cause: `.end-card` is a flex column and `.chapter-card` caps its height, so its children shrank; a panel holding a table (`.panel:has(> table)`, which scrolls sideways) can shrink, so the League table and "What your value is made of" collapsed to 24 px with their own scrollbar. Fix: `.end-card > * { flex-shrink: 0 }` in `game.css` (CSS only; the card stays the one vertical scroll). Every chapter card (Prologue, Acts I-V, finales, game over) is an `.end-card`, so all get it; the collapse needs a table panel, so Act I-II reports (value and league tables) were the ones seen. Test: `tests/ui/reportPanels.test.ts`.
+- Checked in a browser on a dev build at the Act II end (a seed 3 raise-climb save): before, both panels were 24 px tall; after, 326 and 307 px with no inner overflow. Not click-tested: the Prologue, Act III-V reports.
+
 ## UI: sell Max and Sell all (branch `ui-sell-max` from `main`, not a milestone)
 - "Your machines" (`FleetDialog`): a Max button per batch (fills the full count, working and broken), the Sell button reads "Sell 2,105 for $4.8M" (the count entered and the sim's dry-run cash), and a "Sell all" per machine type behind a confirm line ("Sell all 3,158 GPU Rig Gen 1 for $7.26M?"). Sell all is the same SELL_MACHINES actions as row by row, one per batch, run in order. UI only (`components/sellCount.tsx`, `screens/dialogs.tsx`, 7 new keys, `ui.fleet_dialog.sell_for` replaced); the Prologue's Rig screen keeps its own quick picks and labels. No sim, content or golden change. Tests: `tests/ui/fleetSellMax.test.tsx`.
 - (mine, reversible) Sell all lists one line per type under the table (not in the table rows); it covers every batch of the type whatever its condition; the confirm sits in the line itself (Yes, sell / Cancel).
