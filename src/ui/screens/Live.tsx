@@ -34,6 +34,8 @@ import { MarketReadText } from './Plan.tsx'
 import { Act5Dashboard, Act5ReportPanel } from './Act5Screens.tsx'
 import { ethMiningOver, showsMiningTiles } from '../mining.ts'
 import { readSettings } from '../../platform/settings.ts'
+import { readChartChoice, writeChartChoice } from '../../platform/chartChoice.ts'
+import { chartSeries, defaultSeries, type ChartLine, type ChartSeries, type ChartSeriesId } from '../liveChart.ts'
 
 const WEEK_MS = 1500
 const SPEEDS = [1, 2, 4] as const
@@ -104,13 +106,14 @@ export function LiveScreen(
           {showsMiningTiles(state) ? (
             <div class="live-grid">
               <Totals state={state} />
-              <PriceChart weeks={weeks} current={current} eth={!ethMiningOver(state.quarter)} />
+              <LiveChart state={state} current={current} />
             </div>
           ) : (
             /* M66.4 (doc 43 §0.23 item 4): Act V with no machines: A5-02's four-column MW strip, plants and queue, and the
                plants' output this quarter, in place of coins mined, power and rent, "each machine now" and the BTC chart */
             <>
               <Act5Dashboard state={state} />
+              <LiveChart state={state} current={current} />
               <Act5ReportPanel state={state} />
             </>
           )}
@@ -270,46 +273,111 @@ function Totals({ state }: { state: GameState }) {
   )
 }
 
-/** BTC and ETH, % change vs week 1, drawn like the mockup's live chart. */
+/** The legend text and end label for one line of the chart (values through fmt; labels through t()). */
+function lineText(series: ChartSeries, line: ChartLine): { name: string; legend: string } {
+  const region = series.region ? tDynamic(`ui.region.${series.region}`, series.region) : ''
+  const name = {
+    btc: t('ui.live.line.btc'),
+    eth: t('ui.live.line.eth'),
+    gpu: t('ui.live.line.gpu'),
+    power: t('ui.live.line.power', { region }),
+    launch: t('ui.live.line.launch'),
+    revenue: t('ui.live.line.revenue'),
+    cash: t('ui.live.line.cash'),
+  }[line.id]
+  const money = (v: number) =>
+    line.id === 'power' ? fmt.cents(v) : line.id === 'gpu' ? t('ui.live.per_hour', { value: fmt.money(v) }) : line.id === 'launch' ? t('ui.live.per_kg', { value: fmt.money(v) }) : fmt.money(v)
+  if (line.id === 'launch' || line.id === 'power')
+    return {
+      name,
+      legend:
+        line.previous !== null && line.previous > 0
+          ? `${name} ${money(line.last)} (${fmt.delta(line.last / line.previous - 1, 'pct', { dp: 1 })} ${t('ui.live.vs_last_quarter')})`
+          : `${name} ${money(line.last)}`,
+    }
+  return { name, legend: `${name} ${money(line.first)} → ${money(line.last)}` }
+}
+
+/**
+ * The Live chart (doc 61): one series at a time, % change against the quarter's first week, drawn like the mockup's live chart. A
+ * segmented control above it lists the series that apply to this company this week; the choice is remembered (in the browser, for this
+ * game and act) until the act changes; with none, the act's main driver (defaultSeries) is shown.
+ */
+function LiveChart({ state, current }: { state: GameState; current: number }) {
+  const [, setTick] = useState(0)
+  const weeks = state.quarterStats.weeks
+  const available = chartSeries(state, weeks)
+  if (available.length === 0) return null
+  const remembered = readChartChoice(state.seed, state.act)
+  const chosenId: ChartSeriesId = (available.find((s) => s.id === remembered)?.id ?? defaultSeries(state, available)) as ChartSeriesId
+  const series = available.find((s) => s.id === chosenId) ?? available[0]
+  return (
+    <PriceChart
+      series={series}
+      weeks={weeks}
+      current={current}
+      switcher={
+        available.length > 1 ? (
+          <div class="seg" role="group" aria-label={t('ui.live.series_label')} data-chart-switch>
+            {available.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                data-chart-series={s.id}
+                aria-pressed={s.id === series.id}
+                onClick={() => {
+                  writeChartChoice({ seed: state.seed, act: state.act, series: s.id })
+                  setTick((n) => n + 1)
+                }}
+              >
+                {t(s.labelKey)}
+              </button>
+            ))}
+          </div>
+        ) : null
+      }
+    />
+  )
+}
+
 function PriceChart({
+  series,
   weeks,
   current,
-  eth: showEth = true,
+  switcher,
 }: {
+  series: ChartSeries
   weeks: WeekSummary[]
   current: number
-  /** M66.4: false after the Merge (2022Q3): BTC only, no ETH line, label or legend. */
-  eth?: boolean
+  switcher: preact.ComponentChildren
 }) {
   const W = 620
   const x = (week: number) => 50 + ((week - 1) * 550) / 12
   const base = weeks[0]
-  const btc = weeks.map((w) => (base ? w.btcUsd / base.btcUsd - 1 : 0))
-  const eth = showEth ? weeks.map((w) => (base ? w.ethUsd / base.ethUsd - 1 : 0)) : []
-  const lo = Math.min(0, ...btc, ...eth)
-  const hi = Math.max(0.05, ...btc, ...eth)
+  const all = series.lines.flatMap((l) => l.changes)
+  const lo = Math.min(0, ...all)
+  const hi = Math.max(0.05, ...all)
   const y = (p: number) => 170 - ((p - lo) / (hi - lo || 1)) * 146
   const grid = [lo, lo + (hi - lo) / 3, lo + ((hi - lo) * 2) / 3, hi]
   const line = (ps: number[]) =>
     ps.map((p, i) => `${x(i + 1).toFixed(1)},${y(p).toFixed(1)}`).join(' ')
   const last = weeks.length - 1
   const label = (p: number) => fmt.delta(p, 'pct', { dp: 1 })
+  const cls = (i: number) => (i === 0 ? 'btc' : 'eth')
+  const texts = series.lines.map((l) => lineText(series, l))
+  const title = t(series.labelKey)
   return (
     <div class="panel p chart">
       <div class="row-between">
-        <h2 class="panel-title">{t(showEth ? 'ui.live.chart_title' : 'ui.live.chart_title_btc')}</h2>
+        <h2 class="panel-title">{title}</h2>
         <span class="num-s muted">
           {base
             ? t('ui.live.chart_vs', { date: fmt.date(base.date, false) })
             : ''}
         </span>
       </div>
-      <svg
-        class="live-svg"
-        viewBox={`0 0 ${W} 196`}
-        role="img"
-        aria-label={t(showEth ? 'ui.live.chart_title' : 'ui.live.chart_title_btc')}
-      >
+      {switcher}
+      <svg class="live-svg" viewBox={`0 0 ${W} 196`} role="img" aria-label={title}>
         {grid.map((g, i) => (
           <g key={i}>
             <line class="c-grid" x1={50} y1={y(g)} x2={600} y2={y(g)} />
@@ -320,40 +388,19 @@ function PriceChart({
         ))}
         <line class="c-axis" x1={50} y1={y(0)} x2={600} y2={y(0)} />
         {weeks.length > 0 && (
-          <line
-            class="c-now"
-            x1={x(current)}
-            y1={24}
-            x2={x(current)}
-            y2={170}
-          />
+          <line class="c-now" x1={x(current)} y1={24} x2={x(current)} y2={170} />
         )}
-        {weeks.length > 1 && <polyline class="c-btc-line" points={line(btc)} />}
-        {showEth && weeks.length > 1 && <polyline class="c-eth-line" points={line(eth)} />}
-        {last >= 0 && (
-          <>
-            <circle class="c-btc" cx={x(last + 1)} cy={y(btc[last])} r={4} />
-            {showEth && <circle class="c-eth" cx={x(last + 1)} cy={y(eth[last])} r={4} />}
-            <text
-              class="c-val"
-              x={x(last + 1) - 6}
-              y={y(btc[last]) - 8}
-              text-anchor="end"
-            >
-              {`BTC ${label(btc[last])}`}
-            </text>
-            {showEth && (
-              <text
-                class="c-val"
-                x={x(last + 1) - 6}
-                y={y(eth[last]) + 16}
-                text-anchor="end"
-              >
-                {`ETH ${label(eth[last])}`}
+        {weeks.length > 1 &&
+          series.lines.map((l, i) => <polyline key={l.id} class={`c-${cls(i)}-line`} points={line(l.changes)} />)}
+        {last >= 0 &&
+          series.lines.map((l, i) => (
+            <g key={l.id}>
+              <circle class={`c-${cls(i)}`} cx={x(last + 1)} cy={y(l.changes[last])} r={4} />
+              <text class="c-val" x={x(last + 1) - 6} y={y(l.changes[last]) + (i === 0 ? -8 : 16)} text-anchor="end">
+                {`${texts[i].name} ${label(l.changes[last])}`}
               </text>
-            )}
-          </>
-        )}
+            </g>
+          ))}
         {[1, 3, 5, 7, 9, 11, 13].map((n) => (
           <text key={n} class="c-tick" x={x(n)} y={186} text-anchor="middle">
             {n}
@@ -362,20 +409,14 @@ function PriceChart({
       </svg>
       {base && (
         <div class="legend">
-          <span>
-            <svg width="16" height="12" aria-hidden="true">
-              <line class="c-btc-line" x1={0} y1={6} x2={16} y2={6} />
-            </svg>
-            {`BTC ${fmt.money(base.btcUsd)} → ${fmt.money(weeks[last].btcUsd)}`}
-          </span>
-          {showEth && (
-            <span>
+          {series.lines.map((l, i) => (
+            <span key={l.id}>
               <svg width="16" height="12" aria-hidden="true">
-                <line class="c-eth-line" x1={0} y1={6} x2={16} y2={6} />
+                <line class={`c-${cls(i)}-line`} x1={0} y1={6} x2={16} y2={6} />
               </svg>
-              {`ETH ${fmt.money(base.ethUsd)} → ${fmt.money(weeks[last].ethUsd)}`}
+              {texts[i].legend}
             </span>
-          )}
+          ))}
         </div>
       )}
     </div>
