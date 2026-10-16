@@ -349,6 +349,8 @@ export interface MachineOffer {
   earnsFromNew?: string
   earnsFromUsed?: string
   dailyProfitUsd: number
+  /** M77.1 (doc 58 §1.2): the retail queue, in the quarters it is open: its price and the rigs still open to order this quarter. */
+  queue?: { priceUsd: number; left: number }
 }
 
 export function machineMarket(state: GameState): MachineOffer[] {
@@ -372,6 +374,14 @@ export function machineMarket(state: GameState): MachineOffer[] {
       earnsFromNew: newPriceUsd === undefined ? undefined : earns('new'),
       earnsFromUsed: usedPriceUsd === undefined ? undefined : earns('used'),
       dailyProfitUsd: dailyProfitPerUnit(state, m.id, site),
+      ...(m.retail_queue && isOut && CONTENT.quarters[state.quarter] >= m.retail_queue.from && CONTENT.quarters[state.quarter] <= m.retail_queue.to
+        ? {
+            queue: {
+              priceUsd: m.retail_queue.price_usd,
+              left: Math.max(0, m.retail_queue.max_per_quarter - (state.gen2Queue?.perQuarter[state.quarter] ?? 0)),
+            },
+          }
+        : {}),
     }
   })
 }
@@ -595,7 +605,7 @@ export function siteViews(state: GameState): SiteView[] {
   }))
 }
 
-export type LotStatus = 'running' | 'switched_off' | 'arriving' | 'broken'
+export type LotStatus = 'running' | 'switched_off' | 'arriving' | 'on_order' | 'broken'
 
 export interface LotView {
   lot: MachineLot
@@ -618,7 +628,9 @@ export function lotViews(state: GameState): LotView[] {
     const working = lot.count - lot.failed
     const profit = dailyProfitPerUnit(state, lot.model, site)
     const status: LotStatus = !isEarning(state, lot)
-      ? 'arriving'
+      ? lot.queued
+        ? 'on_order'
+        : 'arriving'
       : working === 0
         ? 'broken'
         : profit < 0

@@ -330,6 +330,8 @@ export interface MachineLot {
    * Absent = its own coin (bitcoin, or Ethereum for the 2015 rig), so a game that never sets one is unchanged.
    */
   altCoin?: 'LTC' | 'DOGE'
+  /** M77.1 (doc 58 §1.2), Act I: a rig bought in the retail queue; it shows as "on order" until its delivery quarter. */
+  queued?: boolean
 }
 
 /**
@@ -1600,6 +1602,8 @@ export interface GameState {
   log: LogEntry[]
   /** M37.1 (doc 39): every cash movement by category, per quarter, for the whole career (ledger.ts). Absent until the first. */
   ledger?: Ledger
+  /** M77.1 (doc 58 §1.2): the Gen 2 retail queue: rigs ordered so far (the substream's counter) and per quarter index. Absent until the first order. */
+  gen2Queue?: { orders: number; perQuarter: Record<number, number> }
 }
 
 export interface LogEntry {

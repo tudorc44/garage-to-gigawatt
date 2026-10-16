@@ -39,6 +39,7 @@ import { book, bookSplit } from './ledger.ts'
 import { addSite, siteParams } from './systems/siteSerials.ts'
 import {
   addMachines,
+  drawQueueDelivery,
   removeMachines,
   repairAllCost,
   repairCostPerUnit,
@@ -349,6 +350,8 @@ export type Action =
       condition: Condition
       count: number
       siteId: string
+      /** M77.1 (doc 58 §1.2): buy in the model's retail queue (new only, a fixed price, delivery drawn per rig). */
+      queue?: boolean
     }
   | { type: 'SELL_MACHINES'; lotId: string; count: number }
   | { type: 'REPAIR_MACHINES'; lotId: string }
@@ -797,7 +800,16 @@ function run(s: GameState, a: Action): Message | undefined {
             leftKw,
           })
       }
-      const unit = buyPriceNow(s, model, a.condition)
+      // M77.1 (doc 58 §1.2): the retail queue: a fixed price, new only, in its quarters, at most N rigs a quarter
+      const rq = a.queue ? model.retail_queue : undefined
+      if (a.queue) {
+        const label = CONTENT.quarters[s.quarter]
+        if (!rq || a.condition !== 'new' || label < rq.from || label > rq.to)
+          return fail('error.not_for_sale', { model: a.model, condition: a.condition })
+        const left = rq.max_per_quarter - (s.gen2Queue?.perQuarter[s.quarter] ?? 0)
+        if (a.count > left) return fail('error.gen2_queue_full', { max: rq.max_per_quarter, left })
+      }
+      const unit = rq ? rq.price_usd : buyPriceNow(s, model, a.condition)
       const cost = unit === undefined ? undefined : unit * a.count
       if (cost === undefined) {
         return fail('error.not_for_sale', {
@@ -820,6 +832,20 @@ function run(s: GameState, a: Action): Message | undefined {
       if (cost > s.cash)
         return fail('error.no_cash', { costUsd: cost, cashUsd: s.cash })
       book(s, 'machines', -cost, { site: site.id })
+      if (rq) {
+        // each rig is delivered 1, 2 or 3 quarters later, drawn on the queue's own substream
+        const arriving: Record<number, number> = {}
+        for (let i = 0; i < a.count; i++) {
+          const d = drawQueueDelivery(s, rq.delivery_quarters)
+          arriving[d] = (arriving[d] ?? 0) + 1
+        }
+        for (const [d, n] of Object.entries(arriving)) addMachines(s, a.model, 'new', n, site.id, Number(d))
+        const gq = (s.gen2Queue ??= { orders: 0, perQuarter: {} })
+        gq.perQuarter[s.quarter] = (gq.perQuarter[s.quarter] ?? 0) + a.count
+        logEntry(s, 'log.bought', { count: a.count, model: a.model, condition: a.condition, costUsd: cost })
+        logEntry(s, 'log.gen2_queued', { a1: arriving[1] ?? 0, a2: arriving[2] ?? 0, a3: arriving[3] ?? 0 })
+        return
+      }
       addMachines(s, a.model, a.condition, a.count, site.id)
       logEntry(s, 'log.bought', {
         count: a.count,
