@@ -1,5 +1,20 @@
 {
  "schema_version": 1,
+ "buyback": {
+  "notes": "Doc 62 v1.0 section 2 (M79.2, designed [D]). Before an IPO you can offer to buy back part of one round's stake (one offer a quarter, 1 Bandwidth) at the last valuation x valuation_mult; the investor may refuse (base chance, more in a boom, less in a downturn, from the substream buyback). After an IPO the open market sells you up to public_cap_per_year of the company a calendar year at the valuation, 1 Bandwidth in each quarter you buy. With a loan outstanding a buy-back may not take cash below the loan's next loan_floor_quarters quarters of payments.",
+  "valuation_mult": 1.2,
+  "bandwidth": 1,
+  "refusal": {
+   "base": 0.3,
+   "boom_btc_up": 0.5,
+   "boom_add": 0.2,
+   "downturn_btc_down": 0.3,
+   "downturn_add": -0.2
+  },
+  "public_cap_per_year": 0.1,
+  "loan_floor_quarters": 2,
+  "grade": "D"
+ },
  "ladder": [
   {
    "id": "savings",

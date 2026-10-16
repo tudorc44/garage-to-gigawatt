@@ -39,6 +39,8 @@ import type {
 } from '../../sim/state.ts'
 import { Dialog, Icon, Pips } from '../components/basics.tsx'
 import { HeatBreakdown } from '../components/heatBreakdown.tsx'
+import { selfFundRules, texasDepositUsd } from '../../sim/systems/deposits.ts'
+import { getTier } from '../../sim/systems/sites.ts'
 import { cashChange, SellCount, sellAllPlan } from '../components/sellCount.tsx'
 import { SiteLabel, SiteName } from '../components/siteName.tsx'
 import { SitePicker } from '../components/sitePicker.tsx'
@@ -616,6 +618,17 @@ export function OffersDialog({ state, act, onClose }: DialogProps) {
                         cash: fmt.money(fin.cashUsd),
                       })}
                     </button>
+                  )}
+                  {/* M79.1 (doc 62 §1): without Series A, phase 1 is self-funded: say what it takes, and why not yet */}
+                  {first.phase && selfFundRules(o.tier) && !state.raisesDone.includes(getTier(o.tier)!.phases!.requires_round) && (
+                    <div class="num-s muted" data-self-fund style={{ marginTop: '6px' }}>
+                      {why
+                        ? say(why)
+                        : t('ui.offers.self_fund_note', {
+                            depositUsd: texasDepositUsd(state, o.tier, o.powerPriceMult, contractType),
+                            quarters: getTier(o.tier)!.phases!.self_fund!.return_after_quarters,
+                          })}
+                    </div>
                   )}
                 </td>
               </tr>

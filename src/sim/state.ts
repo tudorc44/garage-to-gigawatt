@@ -76,6 +76,8 @@ export interface Site {
   phases?: number[]
   /** Phased sites: what each phase costs (a share of the site's full build cost). */
   phaseCapexUsd?: number
+  /** M79.1 (doc 62 §1): the security deposit held for a self-funded phase 1: the cash still held and the quarter it comes back. */
+  deposit?: { usd: number; returnQuarter: number }
   /** Act II region tag (market_quarterly_act2 power columns). Act I sites use their tier's (balance.ts). */
   region?: string
   /** Act II: kW left idle by a defaulted hosting client, which can be re-let with no conversion cost. */
@@ -1609,6 +1611,20 @@ export interface GameState {
   ledger?: Ledger
   /** M77.1 (doc 58 §1.2): the Gen 2 retail queue: rigs ordered so far (the substream's counter) and per quarter index. Absent until the first order. */
   gen2Queue?: { orders: number; perQuarter: Record<number, number> }
+  /**
+   * M79.2 (doc 62 §2): buying back shares, Act I. Created at your first offer: each round's stake in the whole company, the draws
+   * made (the `buyback` substream's counter), the rounds bought out, the quarter of the last offer and of the last open-market
+   * purchase, the share bought on the open market by calendar year, and the last answer. Absent until then.
+   */
+  buyback?: {
+    stakes: Record<string, number>
+    draws: number
+    closed: string[]
+    ipoBought: Record<number, number>
+    lastOffer?: number
+    marketQuarter?: number
+    last?: { quarter: number; round: string; accepted: boolean }
+  }
   /** M78.1 (doc 58 v1.1 §2): your part in Larkspur Silicon (and, once it ships, your allocation). Absent until you join or reserve. */
   larkspur?: Larkspur
 }

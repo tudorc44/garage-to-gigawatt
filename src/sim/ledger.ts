@@ -72,6 +72,8 @@ export const CATEGORIES = {
   debt_repaid: { section: 'financing', biz: 'corporate', cash: true },
   equity_raised: { section: 'financing', biz: 'corporate', cash: true },
   founder_payouts: { section: 'financing', biz: 'corporate', cash: true },
+  // M79.2 (doc 62 §2): shares bought back from an investor round or on the open market
+  share_buybacks: { section: 'financing', biz: 'corporate', cash: true },
   // Treasury (cash flow only)
   coins_sold: { section: 'treasury', biz: 'mining', cash: true },
   coins_bought: { section: 'treasury', biz: 'mining', cash: true },
