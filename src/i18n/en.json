@@ -3,7 +3,7 @@
   "error.unknown_model": "There's no machine called \"{model}\".",
   "error.p0_spare_needs_rig": "Needs the home rig.",
   "error.p0_spare_cap": "You can run {cap} CPU PCs in all, the one you started with included (you have {owned}).",
-  "ui.p0.hint_spare_pcs": "One PC is a hobby. Four is a habit. Build the home rig to fit more.",
+  "ui.p0.hint_spare_pcs": "One PC is a hobby. Five is a habit. Build the home rig to fit more.",
   "error.not_for_sale": "{model} ({condition}) isn't for sale this quarter.",
   "error.bad_count": "The number of units must be a whole number above 0.",
   "error.unknown_site": "You don't have that site.",
