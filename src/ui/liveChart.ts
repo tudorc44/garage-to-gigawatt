@@ -148,7 +148,13 @@ export function chartSeries(state: GameState, weeks: WeekSummary[]): ChartSeries
   // Launch price (stepped): Acts IV-V, only for a company with orbital blocks
   if ((state.act === 4 || state.act === 5) && (state.act4Orbit?.blocks.length ?? 0) > 0) {
     const now = orbitRow(state).launch_usd_kg_leo
-    const before = state.quarter > 0 ? orbitRow(state, state.quarter - 1).launch_usd_kg_leo : null
+    // (the quarter before Act IV's first has no Act IV row: no comparison then)
+    let before: number | null
+    try {
+      before = orbitRow(state, state.quarter - 1).launch_usd_kg_leo
+    } catch {
+      before = null
+    }
     out.push({
       id: 'launch',
       labelKey: 'ui.live.series.launch',

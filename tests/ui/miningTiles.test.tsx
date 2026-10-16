@@ -70,7 +70,8 @@ describe('Act V Live screen (M66.4)', () => {
     const t = view.container.textContent ?? ''
     expect(t).toContain(text['ui.live.mined'])
     expect(view.container.querySelector('[data-act5-dashboard]')).toBeNull()
-    expect(t).toContain('BTC this quarter')
+    // (M75: the chart is titled by its series; at the quarter's start the empty panel opens on BTC, and there is no ETH after the Merge)
+    expect(t).toContain(text['ui.live.series.btc'])
     expect(t).not.toMatch(/ETH/)
   })
 

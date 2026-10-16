@@ -32,7 +32,7 @@ import { machineName, say, siteName, tierName } from '../names.ts'
 import type { ScreenProps } from './Plan.tsx'
 import { MarketReadText } from './Plan.tsx'
 import { Act5Dashboard, Act5ReportPanel } from './Act5Screens.tsx'
-import { ethMiningOver, showsMiningTiles } from '../mining.ts'
+import { ethMiningOver, hasMiners, showsMiningTiles } from '../mining.ts'
 import { readSettings } from '../../platform/settings.ts'
 import { readChartChoice, writeChartChoice } from '../../platform/chartChoice.ts'
 import { chartSeries, defaultSeries, type ChartLine, type ChartSeries, type ChartSeriesId } from '../liveChart.ts'
@@ -307,7 +307,17 @@ function LiveChart({ state, current }: { state: GameState; current: number }) {
   const [, setTick] = useState(0)
   const weeks = state.quarterStats.weeks
   const available = chartSeries(state, weeks)
-  if (available.length === 0) return null
+  if (available.length === 0) {
+    // (before the quarter's first week: the empty panel, titled for the series it will open on)
+    const company = state.act === 5 && !hasMiners(state)
+    const empty: ChartSeries = {
+      id: company ? 'company' : 'btc',
+      labelKey: company ? 'ui.live.series.company' : ethMiningOver(state.quarter) ? 'ui.live.series.btc' : 'ui.live.series.btc_eth',
+      lines: [],
+      columns: [],
+    }
+    return <PriceChart series={empty} weeks={weeks} current={current} switcher={null} />
+  }
   const remembered = readChartChoice(state.seed, state.act)
   const chosenId: ChartSeriesId = (available.find((s) => s.id === remembered)?.id ?? defaultSeries(state, available)) as ChartSeriesId
   const series = available.find((s) => s.id === chosenId) ?? available[0]
