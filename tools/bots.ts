@@ -38,6 +38,8 @@ import {
   raisesThisQuarter,
 } from '../src/sim/systems/equity.ts'
 import { fleetOffer } from '../src/sim/systems/headStarts.ts'
+import { texasDepositUsd } from '../src/sim/systems/deposits.ts'
+import { offerPriceUsd } from '../src/sim/systems/buyback.ts'
 import { larkspurMaxReserveUnits, larkspurOpen, larkspurSale, larkspurThirdUsd, lkModel } from '../src/sim/systems/larkspur.ts'
 import { lotChoices } from '../src/sim/ventures12Views.ts'
 import {
@@ -138,6 +140,13 @@ interface BotSettings {
    * Bandwidth (cash first, the loan if cash is short).
    */
   phasedTexas?: boolean
+  /**
+   * M79.4 (doc 62 §1): start Texas phase 1 without the loan: its full cost plus the security deposit in cash, which is how a company
+   * without Series A gets in. (Pair it with a `raises` list that leaves Series A out.)
+   */
+  selfFundTexas?: boolean
+  /** M79.4 (doc 62 §2): buy back these rounds' stakes (in this order) from this quarter on, whenever cash allows, one offer a quarter. */
+  buyBack?: { rounds: string[]; from: string }
 }
 
 /** Phased Texas: phase 1 could start now (offer scouted, allowed, loan allowed, cash for its part). */
@@ -289,6 +298,20 @@ export function makeBot(settings: BotSettings): Strategy {
           bandwidth -= 1
         }
       }
+      // 0e. Buy back a round's stake (M79.4, doc 62 §2): the first round in the list that can be asked, if it costs at most half the cash.
+      if (settings.buyBack && CONTENT.quarters[s.quarter] >= settings.buyBack.from && bandwidth >= 1) {
+        for (const round of settings.buyBack.rounds) {
+          const a: Action = { type: 'BUYBACK_OFFER', round, share: 1 }
+          if (!applyAction(s, a).ok) continue
+          const price = offerPriceUsd(s, round, 1)
+          if (price > cash * 0.5) continue
+          actions.push(a)
+          cash -= price
+          reserveBase -= price
+          bandwidth -= 1
+          break
+        }
+      }
       // Cash held back for a coming build (phased Texas: saving up for phase 1).
       let hold = 0
       const spendable = () => cash - settings.reserveUsd(reserveBase) - hold
@@ -349,22 +372,24 @@ export function makeBot(settings: BotSettings): Strategy {
             .filter((o) => o.tier === phaseTier.id)
             .sort((a, b) => a.capexUsd - b.capexUsd)[0]
         : undefined
+      const selfFund = !!settings.selfFundTexas && !s.raisesDone.includes('series_a')
+      const phaseBuild = phaseOffer ? Math.round(phaseOffer.capexUsd * phaseTier!.phases!.cost_share) : 0
+      // (self-funded: the whole phase and the deposit in cash, no loan; otherwise the loan's part is left out of the cash needed)
       const phaseOneCash = phaseOffer
-        ? Math.round(phaseOffer.capexUsd * phaseTier!.phases!.cost_share) -
-          constructionLoanUsd(
-            Math.round(phaseOffer.capexUsd * phaseTier!.phases!.cost_share),
-          )
+        ? selfFund
+          ? phaseBuild + texasDepositUsd(s, phaseTier!.id, phaseOffer.powerPriceMult, 'fixed')
+          : phaseBuild - constructionLoanUsd(phaseBuild)
         : Infinity
-      const phaseOne =
-        phaseOffer &&
-        topIsFull &&
-        bandwidth >= 1 &&
-        !phaseStartBlocker(s, phaseTier!.id) &&
-        !constructionLoanBlocker(s, {
-          tier: phaseTier!.id,
-          contract: { type: 'fixed', price: 0, startQuarter: 0, endQuarter: 0 },
-        }) &&
-        phaseOneCash <= spendable()
+      // (a self-funding company is "allowed" from the phase's first quarter on; whether its cash is there is the next check)
+      const phaseAllowed = (): boolean =>
+        selfFund
+          ? CONTENT.quarters[s.quarter] >= phaseTier!.phases!.from
+          : !phaseStartBlocker(s, phaseTier!.id) &&
+            !constructionLoanBlocker(s, {
+              tier: phaseTier!.id,
+              contract: { type: 'fixed', price: 0, startQuarter: 0, endQuarter: 0 },
+            })
+      const phaseOne = phaseOffer && topIsFull && bandwidth >= 1 && phaseAllowed() && phaseOneCash <= spendable()
       const phased = s.sites.find((x) => x.phases)
       if (settings.phasedTexas && phased && roundDone) {
         const n = nextPhase(s, phased)
@@ -388,22 +413,12 @@ export function makeBot(settings: BotSettings): Strategy {
         }
       }
       // Phase 1 is allowed but the cash isn't there yet: save for it instead of buying machines.
-      if (
-        !phaseOne &&
-        phaseOffer &&
-        !phased &&
-        !phaseStartBlocker(s, phaseTier!.id) &&
-        !constructionLoanBlocker(s, {
-          tier: phaseTier!.id,
-          contract: { type: 'fixed', price: 0, startQuarter: 0, endQuarter: 0 },
-        })
-      )
-        hold = phaseOneCash
+      if (!phaseOne && phaseOffer && !phased && phaseAllowed()) hold = phaseOneCash
       if (phaseOne) {
         actions.push({
           type: 'BUILD_SITE',
           offerId: phaseOffer.id,
-          financed: true,
+          financed: !selfFund,
           contractType: 'fixed',
         })
         cash -= phaseOneCash
@@ -1301,6 +1316,10 @@ export const BOTS: Record<string, Strategy> = {
   /** M78.5 (Y-B5): gen2-street, then from Act II every Gen 2 rig rented out. */
   'post-merge-renter': postMerge(gen2Buyer(makeBot(RAISE_CLIMB), false), 'rent'),
   'texas-ipo': makeBot(TEXAS_IPO),
+  /** M79.4 (doc 62 §3): texas-ipo's path without Series A: F&F, seed and the IPO, with Texas phase 1 self-funded (full cost plus the deposit in cash). */
+  'texas-selffund': makeBot({ ...TEXAS_IPO, raises: ['friends_family', 'seed', 'ipo_spac'], climbLimit: { tier: 'own_site' }, selfFundTexas: true }),
+  /** M79.4 (doc 62 §3): raise-climb that, from 2021, buys back the Seed and then the Series A stake when cash allows (one offer a quarter). */
+  'buyback-founder': makeBot({ ...RAISE_CLIMB, buyBack: { rounds: ['seed', 'series_a'], from: '2021Q1' } }),
   /**
    * Act II good path with AI (scope §5): raise-climb, then from 2023Q3 frees its S9s and GPU rigs
    * and turns the free MW into AI shells as far as the cash goes (see aiProjects).
