@@ -91,7 +91,7 @@ const stakeOnly = (r: Run) => {
   }
   return { back, paid }
 }
-function yb2(label: string, rs: Run[]) {
+function yb2(label: string, rs: Run[]): number {
   const y2: { seed: number; ratio: number; spend: number; ended: string }[] = []
   for (const r of rs) {
     const l = r.state.larkspur
@@ -106,10 +106,14 @@ function yb2(label: string, rs: Run[]) {
   const all = y2.filter((x) => !Number.isNaN(x.ratio)).map((x) => x.ratio)
   const ships = y2.filter((x) => x.ended !== 'cancelled' && x.ended !== 'acquired' && !Number.isNaN(x.ratio)).map((x) => x.ratio)
   const so = y2.map((x) => stakeOnly(rs[x.seed - 1])).filter((x) => x.paid > 0)
-  say(`  ${label}: 20% backers who paid every call: ${y2.length} (spend median ${usd(median(y2.map((x) => x.spend)))}); median ${median(all).toFixed(2)}x; those whose Larkspur shipped or was sold (${ships.length}): median ${median(ships).toFixed(2)}x; the stake alone (cash back / cash paid in) ${median(so.map((x) => x.back / x.paid)).toFixed(2)}x`)
+  const stakeReturn = median(so.map((x) => x.back / x.paid))
+  say(`  ${label}: 20% backers who paid every call: ${y2.length}; the stake's return (cash out over cash in, median): ${stakeReturn.toFixed(2)}x over ${so.length} runs`)
+  say(`    report line, net worth against a Gen 2 bot spending the same (${usd(median(y2.map((x) => x.spend)))} median spend): median ${median(all).toFixed(2)}x; where Larkspur shipped or was sold (${ships.length}): ${median(ships).toFixed(2)}x`)
+  return stakeReturn
 }
-say(`\nY-B2 restated (doc 58 v1.2 §11.5; target 1.0-2.5x, median, for the seller; the holders expected below 1.0x): return on the Larkspur spend against the same cash on Gen 2 at street price, Act I end`)
-yb2('larkspur-seller (sells before the Merge)', seller)
+say(`\nY-B2 on the stake's own return (doc 58 v1.3 §12.1; target 1.0-2.5x, cash out over cash in, median, for the seller; the holders expected below 1.0x)`)
+const sellerReturn = yb2('larkspur-seller (sells before the Merge)', seller)
+say(`  Y-B2: ${sellerReturn >= 1.0 && sellerReturn <= 2.5 ? 'PASS' : 'MISS'} (the seller's stake return ${sellerReturn.toFixed(2)}x against 1.0-2.5x)`)
 yb2('larkspur-backer (holds to the Merge, LK-6)', backer)
 yb2('larkspur-backer-5gb (holds, LK-5)', backer5)
 say(`  (return = Act I-end net worth gained against raise-climb, plus the spend, for the backer over the Gen 2 bot spending the same; includes the cost of saving cash from 2019Q3)`)

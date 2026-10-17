@@ -136,6 +136,9 @@ function LarkspurPanel({ state, lk, run }: { state: ScreenProps['state']; lk: LK
         <div data-larkspur-stake-sale>
           <p class="num-s" style={{ margin: 0 }}>{t('ui.v12.lk.sale_value', { value: fmt.money(lk.stakeSale.valueUsd) })}</p>
           <p class="num-s muted" style={{ margin: 0 }}>{t('ui.v12.lk.sale_hint')}</p>
+          {lk.reservation && lk.reservation.units > lk.reservation.bought && (
+            <p class="num-s muted" style={{ margin: 0 }} data-larkspur-sale-releases>{t('ui.v12.lk.sale_releases')}</p>
+          )}
           <div class="row">
             {!lk.stakeSale.halfUsed && (
               <button

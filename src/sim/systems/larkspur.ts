@@ -389,6 +389,7 @@ export function sellLarkspur(state: Pick<GameState, 'cash'> & GameState, kind: '
   if (usd > 0) book(state, 'asset_sales', usd, { venture: 'larkspur' })
   roundCash(state)
   l.saleUsd = roundCents((l.saleUsd ?? 0) + usd)
+  releaseReservation(state, kind === 'all' ? 1 : fraction)
   if (kind === 'all') {
     l.stake = 0
     l.ended = 'sold'
@@ -397,4 +398,22 @@ export function sellLarkspur(state: Pick<GameState, 'cash'> & GameState, kind: '
     l.soldHalf = true
   }
   logEntry(state, kind === 'all' ? 'log.larkspur.sold' : 'log.larkspur.sold_half', { priceUsd: usd })
+}
+
+/**
+ * M81.1 (doc 58 v1.3 §12.4): selling the whole stake releases the reservation, a half-sale halves it. Only units not yet bought can be
+ * released (bought ones stay yours): the deposit for the released units comes back, and the rest of the reservation shrinks to match.
+ */
+function releaseReservation(state: GameState, share: number): void {
+  const r = state.larkspur?.reservation
+  if (!r || r.units <= r.bought) return
+  const keep = Math.max(r.bought, share >= 1 ? r.bought : Math.ceil(r.units * (1 - share)))
+  const released = r.units - keep
+  if (released <= 0) return
+  const refund = roundCents((r.depositUsd * released) / r.units)
+  book(state, 'venture_calls', refund, { venture: 'larkspur' })
+  roundCash(state)
+  r.depositUsd = roundCents(r.depositUsd - refund)
+  r.units = keep
+  logEntry(state, 'log.larkspur.reservation_released', { count: released, costUsd: refund })
 }

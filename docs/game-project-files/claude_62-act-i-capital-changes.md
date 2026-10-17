@@ -1,4 +1,4 @@
-# 62: Act I capital: Texas without Series A, and buying back shares. v1.0, 16 Oct 2026
+# 62: Act I capital: Texas without Series A, and buying back shares. v1.1, 17 Oct 2026 (§5 after M79)
 
 *Design thread, from the owner's play (16 Oct 2026). Base game, not flagged: both change Act I's rules for everyone. Owner decisions (O, 16 Oct): Texas phase 1 opens with Series A or self-funding; buy-backs are allowed, and investors may refuse. All numbers ⚙ designed [D] unless marked.*
 
@@ -25,3 +25,10 @@ Today `sites.json › texas_site.phases.requires_round = series_a` (checked in `
 
 ## 4. Build
 One milestone, M79, after M78 merges (both touch Act I; separate PRs keep the golden story clean).
+
+## 5. After M79 (17 Oct 2026)
+*M79 merged (PR 53). Decisions (DT) on its open questions:*
+1. **Self-funded Texas out of reach (0 of 50, about $11.1M needed):** the rule stays (a 20 MW build is that expensive), but the bot was only trying at the 2020Q3 opening. texas-selffund now tries in any Plan phase through 2022Q4 once its cash covers phase 1 plus the deposit plus 2 quarters of costs; report how many reach it and when. If still under 10 of 50, the next lever is the deposit (2 quarters down to 1), not the phase cost.
+2. **Buy-backs lowering median founder net worth:** expected. Paying valuation x 1.2 is buying above book; it pays only if the company grows faster than the premium. Reported, no change.
+3. **Refusal rate:** no target; the designed odds (30% base, 50% in a boom, 10% in a downturn) are the rule. Reported per year.
+4. **Buy-backs in Act II:** not now. Parked in doc 50.

@@ -1,4 +1,4 @@
-# 58: Ventures in Acts I-II: an alternative to GPU Rig Gen 2, and life after the Merge. v1.2, 17 Oct 2026 (v0.2 14 Oct; v1.0 takes in doc 60; §10 after M77; §11 after M78)
+# 58: Ventures in Acts I-II: an alternative to GPU Rig Gen 2, and life after the Merge. v1.3, 17 Oct 2026 (v0.2 14 Oct; v1.0 takes in doc 60; §10 after M77; §11 after M78; §12 after M80)
 
 *Design thread. From the owner's Act II playthrough on staging (14 Oct 2026). v1.0 takes in the research pack, doc 60 (`claude/60-acts-i-ii-ventures-research.md`, data in `claude/acts-i-ii-ventures-content/research/`), and the owner's answers of 14 and 16 Oct. Built on Act I as built (`src/content/machines.json` gpu_gen2) and on Act IV's accelerator venture (doc 49, doc 43 §0.12), whose mechanics it reuses. Doc 60 wins over this doc on any fact; this doc decides the design.*
 
@@ -135,3 +135,11 @@ Appears when Larkspur is offered (2020Q2) and stays through Act II, holding the 
 4. **(DT) The build's own numbers are accepted** as ⚙: $6,000 margin per LK unit, 1,500 units shipped a quarter, and Y-B2 measured against a Gen 2 bot spending the same cash.
 5. **Y-B2 restated:** a 20% backer who **sells the stake before the Merge** (new bot) ends Act I at 1.0-2.5x the same cash on Gen 2 at street price, median; the existing larkspur-backer (holds to the Merge) is reported, expected below 1.0x.
 6. Names: Larkspur Silicon, LK-5, LK-6 and RigShare stay on the owner's pre-ship trademark list.
+
+## 12. After M80 (17 Oct 2026)
+*M80 merged (PR 54). Y-B1 holds. The seller's stake returns 1.24x of cash paid (in band); against a Gen 2 bot spending the same cash, 0.09x median (0.45x where Larkspur shipped or was sold). The drag is outside the stake: saving the first third from 2019Q3, and a reserved LK block bought after selling. Holders -0.23x (LK-6) and -0.31x (LK-5). Game overs 10-11 against 7. Decisions (DT):*
+1. **Y-B2 is judged on the stake's own return** (cash out over cash in, seller, median): 1.0-2.5x. M80's 1.24x passes. The net-worth comparison against a Gen 2 bot stays as a report line, because it mostly measures the bot's saving rule, not the venture.
+2. **The sale multiple stays 1.0 on trailing four quarters.** A one-product hardware maker in a market with an announced end date is not worth doc 49's 20x; with $6,000 margin and 1,500 units a quarter against an $8M budget, 20x would price a stake at about 90 times cost. Margin and units stay.
+3. **The 150-unit first-units trickle stays.**
+4. **Selling the whole stake releases the reservation and refunds its deposit.** A half-sale keeps the reservation at half its size (the deposit for the released half refunded).
+5. Game overs (10-11 against 7) are reported, not a target: backing is a risk the player chooses.
