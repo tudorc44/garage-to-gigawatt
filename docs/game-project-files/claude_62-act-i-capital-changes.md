@@ -1,4 +1,4 @@
-# 62: Act I capital: Texas without Series A, and buying back shares. v1.1, 17 Oct 2026 (§5 after M79)
+# 62: Act I capital: Texas without Series A, and buying back shares. v1.2, 18 Oct 2026 (§5 after M79; §6 after M81)
 
 *Design thread, from the owner's play (16 Oct 2026). Base game, not flagged: both change Act I's rules for everyone. Owner decisions (O, 16 Oct): Texas phase 1 opens with Series A or self-funding; buy-backs are allowed, and investors may refuse. All numbers ⚙ designed [D] unless marked.*
 
@@ -32,3 +32,11 @@ One milestone, M79, after M78 merges (both touch Act I; separate PRs keep the go
 2. **Buy-backs lowering median founder net worth:** expected. Paying valuation x 1.2 is buying above book; it pays only if the company grows faster than the premium. Reported, no change.
 3. **Refusal rate:** no target; the designed odds (30% base, 50% in a boom, 10% in a downturn) are the rule. Reported per year.
 4. **Buy-backs in Act II:** not now. Parked in doc 50.
+
+## 6. After M81 (18 Oct 2026)
+*M81 merged (PR 55). texas-selffund still reaches Texas in 0 of 50: its best cash from 2020Q3 is $6.6M (median $1.8M) against about $11.1M plus 2 quarters of costs. The real block is the ladder: Texas can only be scouted once the company owns the tier before it (an own site, $6-8M), and a company without Series A never gets one in the bots.*
+1. **(O) Find the real block first.** Diagnose why a company without Series A doesn't reach an own site: a funding gate on the own site (a requires_round, a loan that needs Series A), or only cash. If it is a gate, the owner's rule (Series A not mandatory for Texas, 16 Oct) extends down the ladder: the own site opens to a company that pays in cash, as Texas does, with no new deposit. If it is only cash, nothing changes in the rules; the bot is the problem.
+2. **(DT) texas-selffund's path:** after the fix, it saves for and buys an own site without Series A, then self-funds Texas when it can. Report how many reach each rung and when.
+3. **(DT) The deposit stays at 2 quarters.**
+4. **(DT, doc 58) The Y-B2 net-worth line stays as a report line;** the stake return is the judged basis.
+5. **(DT, doc 58) The reservation release is a player option.** larkspur-seller keeps its rule; no bot change.
