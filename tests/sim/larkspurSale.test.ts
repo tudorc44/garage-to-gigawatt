@@ -177,3 +177,47 @@ describe('selling', () => {
     expect(held).toBeLessThan(v('2022Q3') / 5)
   })
 })
+
+describe('the reservation after a sale (M81.1, doc 58 v1.3 §12.4)', () => {
+  const reserved = () => ok(backerAt('2021Q4'), { type: 'LARKSPUR_RESERVE', units: 20 })
+  // (20 units at the LK-6's discounted $17,550 with a 10% deposit: $35,100)
+
+  it('selling the whole stake releases the unbought reservation and refunds its deposit', () => {
+    const s = reserved()
+    expect(s.larkspur!.reservation).toEqual({ units: 20, depositUsd: 35_100, bought: 0 })
+    const sold = ok(s, sell('all'))
+    expect(sold.cash - s.cash).toBeCloseTo(larkspurSaleValueUsd(s) + 35_100, 1)
+    expect(sold.larkspur!.reservation).toEqual({ units: 0, depositUsd: 0, bought: 0 })
+    expect(sold.log.some((e) => e.key === 'log.larkspur.reservation_released')).toBe(true)
+    // in the first volume quarter there is nothing left to buy at the discount, and the market is not open yet
+    const volume = playQuarter(sold)
+    expect(volume.quarter).toBe(q('2022Q1'))
+    expect(err(volume, { type: 'LARKSPUR_BUY', count: 1, siteId: 'site-2' })).toBe('error.larkspur_not_on_sale')
+  })
+
+  it('a half-sale halves the reservation and refunds the released half\'s deposit', () => {
+    const s = reserved()
+    const half = ok(s, sell('half'))
+    expect(half.larkspur!.reservation).toEqual({ units: 10, depositUsd: 17_550, bought: 0 })
+    expect(half.cash - s.cash).toBeCloseTo(larkspurSaleValueUsd(s) / 2 + 17_550, 1)
+    // the rest, sold later, releases the rest
+    const rest = ok({ ...half, bandwidth: 5 }, sell('all'))
+    expect(rest.larkspur!.reservation).toEqual({ units: 0, depositUsd: 0, bought: 0 })
+  })
+
+  it('units already bought stay yours: only the unbought part is released', () => {
+    let s = reserved()
+    s = playQuarter(s) // 2022Q1: volume; buy 8 of the 20 reserved units
+    expect(s.quarter).toBe(q('2022Q1'))
+    s = ok(s, { type: 'LARKSPUR_BUY', count: 8, siteId: 'site-2' })
+    const credit = s.larkspur!.reservation!.depositUsd // 35,100
+    const sold = ok(s, sell('all'))
+    expect(sold.larkspur!.reservation).toEqual({ units: 8, depositUsd: credit * (8 / 20), bought: 8 })
+    expect(sold.log.filter((e) => e.key === 'log.larkspur.reservation_released')).toHaveLength(1)
+  })
+
+  it('a sale with no reservation changes nothing about it', () => {
+    const s = backerAt('2022Q1')
+    expect(ok(s, sell('all')).larkspur!.reservation).toBeUndefined()
+  })
+})

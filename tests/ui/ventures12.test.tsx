@@ -69,6 +69,7 @@ describe('selling the stake (M80.1)', () => {
     const box = container.querySelector('[data-larkspur-stake-sale]')!
     expect(box.textContent).toContain('Sell before the Merge, or hold for the ETC afterlife.')
     expect(box.textContent).toContain('$2.0M') // 20% of 1,650 units x $6,000, shown to one decimal
+    expect(container.querySelector('[data-larkspur-sale-releases]')).toBeNull() // (no reservation here)
     fireEvent.click(container.querySelector('[data-larkspur-sell="half"]')!)
     fireEvent.click(container.querySelector('[data-larkspur-sell="all"]')!)
     expect(sent).toEqual([{ type: 'LARKSPUR_SELL', kind: 'half' }, { type: 'LARKSPUR_SELL', kind: 'all' }])
@@ -78,5 +79,24 @@ describe('selling the stake (M80.1)', () => {
     const s = { ...at('2021Q2'), larkspur: { stake: 0.2, stakeAtJoin: 0.2, paidUsd: 533_333, joinedQuarter: 14, call: null, answered: [] } }
     const { container } = render(<Ventures12Section state={s} act={() => null} />)
     expect(container.querySelector('[data-larkspur-stake-sale]')).toBeNull()
+  })
+})
+
+describe('the sale and a reservation (M81.1)', () => {
+  it('says that selling releases the units not yet bought and refunds their deposit', async () => {
+    const { larkspurDraws } = await import('../../src/sim/systems/larkspur.ts')
+    let seed = 1
+    while (larkspurDraws({ seed }).slip !== 0 || larkspurDraws({ seed }).outcome !== 'ships') seed++
+    const s = {
+      ...at('2022Q1'),
+      seed,
+      larkspur: {
+        stake: 0.2, stakeAtJoin: 0.2, paidUsd: 1_600_000, joinedQuarter: 14, call: null,
+        answered: ['tape_out', 'first_units'] as ('tape_out' | 'first_units')[], memory: 'lk6' as const,
+        reservation: { units: 20, depositUsd: 35_100, bought: 8 },
+      },
+    }
+    const { container } = render(<Ventures12Section state={s} act={() => null} />)
+    expect(container.querySelector('[data-larkspur-sale-releases]')?.textContent).toContain('releases the units you reserved and have not bought')
   })
 })

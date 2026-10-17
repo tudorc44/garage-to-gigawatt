@@ -375,21 +375,24 @@ export function makeBot(settings: BotSettings): Strategy {
       const selfFund = !!settings.selfFundTexas && !s.raisesDone.includes('series_a')
       const phaseBuild = phaseOffer ? Math.round(phaseOffer.capexUsd * phaseTier!.phases!.cost_share) : 0
       // (self-funded: the whole phase and the deposit in cash, no loan; otherwise the loan's part is left out of the cash needed)
+      // (M81.3, doc 62 §5.1: and two quarters of the company's running costs, so the build does not leave it unable to pay its bills)
+      const lastReport = s.reports.at(-1)
+      const twoQuartersOfCosts = lastReport ? 2 * Math.max(0, lastReport.revenueUsd - lastReport.ebitdaUsd) : 0
       const phaseOneCash = phaseOffer
         ? selfFund
-          ? phaseBuild + texasDepositUsd(s, phaseTier!.id, phaseOffer.powerPriceMult, 'fixed')
+          ? phaseBuild + texasDepositUsd(s, phaseTier!.id, phaseOffer.powerPriceMult, 'fixed') + twoQuartersOfCosts
           : phaseBuild - constructionLoanUsd(phaseBuild)
         : Infinity
       // (a self-funding company is "allowed" from the phase's first quarter on; whether its cash is there is the next check)
       const phaseAllowed = (): boolean =>
         selfFund
-          ? CONTENT.quarters[s.quarter] >= phaseTier!.phases!.from
+          ? CONTENT.quarters[s.quarter] >= phaseTier!.phases!.from && CONTENT.quarters[s.quarter] <= '2022Q4'
           : !phaseStartBlocker(s, phaseTier!.id) &&
             !constructionLoanBlocker(s, {
               tier: phaseTier!.id,
               contract: { type: 'fixed', price: 0, startQuarter: 0, endQuarter: 0 },
             })
-      const phaseOne = phaseOffer && topIsFull && bandwidth >= 1 && phaseAllowed() && phaseOneCash <= spendable()
+      const phaseOne = phaseOffer && (selfFund || topIsFull) && bandwidth >= 1 && phaseAllowed() && phaseOneCash <= spendable()
       const phased = s.sites.find((x) => x.phases)
       if (settings.phasedTexas && phased && roundDone) {
         const n = nextPhase(s, phased)
@@ -427,7 +430,7 @@ export function makeBot(settings: BotSettings): Strategy {
         settings.scoutAhead &&
         next &&
         available &&
-        topIsFull &&
+        (topIsFull || (selfFund && !!next.phases)) &&
         bandwidth >= 1 &&
         !(BALANCE.sites.noScoutingNeeded as readonly string[]).includes(
           next.id,
