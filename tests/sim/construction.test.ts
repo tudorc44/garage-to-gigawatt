@@ -10,6 +10,7 @@ import { mineWeek } from '../../src/sim/systems/mining.ts'
 import { buyPrice, getModel, marketWeek } from '../../src/sim/systems/market.ts'
 import { startNextQuarter } from '../../src/sim/systems/quarter.ts'
 import { capacityKw, poweredKw } from '../../src/sim/systems/sites.ts'
+import { phaseStartBlocker } from '../../src/sim/systems/construction.ts'
 
 const q = (label: string) => CONTENT.quarters.indexOf(label)
 function ok(s: GameState, a: Action): GameState {
@@ -67,11 +68,13 @@ describe('phased Texas (sites.json › texas_site.phases)', () => {
     expect(t.contract?.endQuarter).toBe(q('2020Q3'))
   })
 
-  it('phase 1 needs 2020Q3+ and Series A', () => {
+  it('phase 1 needs 2020Q3+, and Series A or (M79.1, doc 62 §1) its full cost plus a deposit in cash', () => {
     expect(err(texasReady('2020Q2'), phaseOne(false))).toBe('error.phase_early')
-    expect(err(texasReady('2020Q3', ['seed']), phaseOne(false))).toBe(
-      'error.phase_needs_round',
-    )
+    // (the old check, without a self-funding offer, is still blocked: the bots' call)
+    expect(phaseStartBlocker(texasReady('2020Q3', ['seed']), 'texas_site')?.key).toBe('error.phase_needs_round')
+    // with $20M the company can pay $8M and the deposit itself; with $5M it cannot
+    expect(err(texasReady('2020Q3', ['seed']), phaseOne(false))).toBeUndefined()
+    expect(err({ ...texasReady('2020Q3', ['seed']), cash: 5_000_000 }, phaseOne(false))).toBe('error.phase_needs_round_or_deposit')
   })
 
   it('later phases can start any time, up to 5; each adds 20 MW when it is powered', () => {

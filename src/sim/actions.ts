@@ -161,6 +161,8 @@ import {
   settleLarkspur,
 } from './systems/larkspur.ts'
 import { lotUseBlocker } from './systems/afterMerge.ts'
+import { buybackMarket, buybackMarketBlocker, buybackOfferBlocker, offerBuyback } from './systems/buyback.ts'
+import { depositReturnQuarter, texasDepositUsd } from './systems/deposits.ts'
 import {
   fastLaneBlocker,
   payUpgrade,
@@ -520,6 +522,9 @@ export type Action =
   | { type: 'ACCEL_CALL'; choice: 'pay' | 'dilute' | 'walk' }
   | { type: 'ACCEL_SALE_VOTE'; choice: 'sell' | 'block' }
   /** M78 (doc 58 v1.1 §2-§3, behind the ventures flag): Larkspur Silicon: back it, answer a call (and pick the memory), reserve, buy; point a GPU lot at an alternative coin or rental. */
+  /** M79.2 (doc 62 §2): offer to buy back a share (0-1) of one round's stake (1 Bandwidth), or buy on the open market after an IPO. */
+  | { type: 'BUYBACK_OFFER'; round: string; share: number }
+  | { type: 'BUYBACK_MARKET'; pct: number }
   | { type: 'LARKSPUR_JOIN'; stake: number }
   | { type: 'LARKSPUR_CALL'; choice: 'pay' | 'dilute' | 'walk'; memory?: 'lk5' | 'lk6' }
   | { type: 'LARKSPUR_RESERVE'; units: number }
@@ -1088,6 +1093,20 @@ function run(s: GameState, a: Action): Message | undefined {
       return
     }
 
+    case 'BUYBACK_OFFER': {
+      const blocked = buybackOfferBlocker(s, a.round, a.share)
+      if (blocked) return blocked
+      offerBuyback(s, a.round, a.share)
+      return
+    }
+
+    case 'BUYBACK_MARKET': {
+      const blocked = buybackMarketBlocker(s, a.pct)
+      if (blocked) return blocked
+      buybackMarket(s, a.pct)
+      return
+    }
+
     case 'LARKSPUR_JOIN': {
       const blocked = larkspurJoinBlocker(s, a.stake)
       if (blocked) return blocked
@@ -1502,15 +1521,24 @@ function run(s: GameState, a: Action): Message | undefined {
       const phased = tierInfo.phases
       const contractType =
         'offerId' in a ? (a.contractType ?? 'fixed') : 'fixed'
-      if (phased) {
-        const blocked = phaseStartBlocker(s, terms.tier)
-        if (blocked) return blocked
-        if (!['fixed', 'index'].includes(contractType))
-          return fail('error.bad_choice')
-      }
       const buildUsd = phased
         ? Math.round(terms.capexUsd * phased.cost_share)
         : terms.capexUsd
+      if (phased) {
+        if (!['fixed', 'index'].includes(contractType))
+          return fail('error.bad_choice')
+        // (M79.1: without Series A, phase 1 is self-funded: its full cost and a security deposit, in cash)
+        const blocked = phaseStartBlocker(s, terms.tier, {
+          powerPriceMult: terms.powerPriceMult,
+          contractType: contractType as 'fixed' | 'index',
+          buildUsd,
+        })
+        if (blocked) return blocked
+      }
+      const deposit =
+        phased && phased.self_fund && !s.raisesDone.includes(phased.requires_round)
+          ? texasDepositUsd(s, terms.tier, terms.powerPriceMult, contractType as 'fixed' | 'index')
+          : 0
       // A financed build (the construction loan) needs only the rest in cash.
       const financed = 'offerId' in a && a.financed === true
       if (financed) {
@@ -1524,9 +1552,9 @@ function run(s: GameState, a: Action): Message | undefined {
         if (blocked) return blocked
       }
       const loanUsd = financed ? constructionLoanUsd(buildUsd) : 0
-      if (buildUsd - loanUsd > s.cash) {
+      if (buildUsd - loanUsd + deposit > s.cash) {
         return fail('error.no_cash', {
-          costUsd: buildUsd - loanUsd,
+          costUsd: buildUsd - loanUsd + deposit,
           cashUsd: s.cash,
         })
       }
@@ -1561,6 +1589,12 @@ function run(s: GameState, a: Action): Message | undefined {
         )
       }
       book(s, 'one_offs', flawEffect(site, 'cash') ?? 0, { site: site.id })
+      if (deposit > 0) {
+        // M79.1: the security deposit is held cash until the site has run its clean quarters
+        book(s, 'prepayments', -deposit, { site: site.id })
+        site.deposit = { usd: deposit, returnQuarter: depositReturnQuarter(site.tier, site.readyQuarter) }
+        logEntry(s, 'log.deposit_posted', { ...siteParams(site), amountUsd: deposit })
+      }
       addSite(s, site)
       recalcHeat(s, site)
       logEntry(s, 'log.site_built', {
@@ -1951,6 +1985,11 @@ function run(s: GameState, a: Action): Message | undefined {
       s.hosting = s.hosting.filter((h) => h.siteId !== site.id)
       s.sites = s.sites.filter((x) => x !== site)
       delete s.siteHeat[site.id]
+      // (M79.1: a self-funded Texas site's deposit comes back with the lease)
+      if (site.deposit) {
+        book(s, 'prepayments', site.deposit.usd, { site: site.id })
+        logEntry(s, 'log.deposit_returned', { ...siteParams(site), amountUsd: site.deposit.usd })
+      }
       logEntry(s, 'log.site_left', { ...siteParams(site), penaltyUsd })
       return
     }

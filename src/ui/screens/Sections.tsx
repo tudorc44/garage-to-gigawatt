@@ -41,6 +41,8 @@ import type { ScreenProps } from './Plan.tsx'
 import { CapitalAct2 } from './CapitalAct2.tsx'
 import { ProjectsSection } from './Projects.tsx'
 import { Ventures12Section } from './Ventures12.tsx'
+import { BuybackPanel } from '../components/BuybackPanel.tsx'
+import { depositsHeldUsd } from '../../sim/systems/deposits.ts'
 import { Act3Panel } from '../components/act3Lazy.tsx'
 import { Act4Panel } from '../components/act4Lazy.tsx'
 import { League } from './Report.tsx'
@@ -439,6 +441,7 @@ function CapitalSection({ state, act }: ScreenProps) {
   const eq = equipmentLoanView(state)
   const cl = cryptoLoanView(state)
   const v = valuationBreakdown(state)
+  const heldDeposits = depositsHeldUsd(state)
   const close = () => setOpen(null)
   return (
     <div class="section">
@@ -504,6 +507,8 @@ function CapitalSection({ state, act }: ScreenProps) {
             </div>
           </div>
         </div>
+        {/* M79.2 (doc 62 §2): buying back shares, Act I */}
+        {state.act === 1 && <BuybackPanel state={state} act={act} />}
         <div class="panel p">
           <h2 class="panel-title">{t('ui.section.valuation')}</h2>
           {v ? (
@@ -522,6 +527,13 @@ function CapitalSection({ state, act }: ScreenProps) {
                   <td>{t('ui.section.val.cash')}</td>
                   <td class="num r">{fmt.money(v.cashUsd)}</td>
                 </tr>
+                {/* M79.1: a self-funded Texas site's power deposit is held cash, in the company's value */}
+                {heldDeposits > 0 && (
+                  <tr>
+                    <td>{t('ui.section.val.deposits')}</td>
+                    <td class="num r">{fmt.money(heldDeposits)}</td>
+                  </tr>
+                )}
                 <tr>
                   <td>{t('ui.section.val.treasury')}</td>
                   <td class="num r">{fmt.money(v.treasuryUsd)}</td>

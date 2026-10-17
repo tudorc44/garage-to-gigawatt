@@ -31,6 +31,7 @@ import { payFlex } from './flex.ts'
 import { endQuarterQueue, fastLaneEffectUsd } from './queue.ts'
 import { acceleratorValueUsd, endQuarterAccelerator } from './accelerator.ts'
 import { endQuarterLarkspur, larkspurValueUsd } from './larkspur.ts'
+import { depositsHeldUsd, endQuarterDeposits } from './deposits.ts'
 import { fireWildcardsIv } from './wildcardsIv.ts'
 import { startQuarterOrbitOffers } from './orbit.ts'
 import { serviceOrbitalDebt } from './orbitCapital.ts'
@@ -116,6 +117,8 @@ export function endQuarter(state: GameState): void {
   endQuarterAccelerator(state)
   // M78.1: Larkspur's next calls, its outcome at tape-out, and its stake's resolution at Act I's end (only with a stake)
   endQuarterLarkspur(state)
+  // M79.1: a self-funded Texas site's deposit comes back after its clean quarters
+  endQuarterDeposits(state)
   // Act V (M52.5): V2's flex payment on enrolled curtailable MW (nothing elsewhere); (M53) the queue's positions move
   // on, and the fast lane's output loss is an energy cost
   if (inActV(state)) {
@@ -329,7 +332,8 @@ function buildReport(
     valuationUsd: valuationUsd(
       state.quarter,
       ebitda,
-      state.cash,
+      // (M79.1: a held power deposit is still the company's cash)
+      state.cash + depositsHeldUsd(state),
       // Pledged coins are still yours: they count, and the loan counts as debt.
       treasuryUsd + collateralValueUsd(state, w),
       debtUsd(state),

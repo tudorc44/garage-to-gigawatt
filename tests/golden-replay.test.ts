@@ -318,6 +318,10 @@ const bots: Record<string, Strategy> = {
   'gen2-queuer': BOTS['gen2-queuer'],
   /** M78.0b (doc 58 §10.1): the same buying at the street price: with gen2-queuer, the Act I price-table guards. */
   'gen2-street': BOTS['gen2-street'],
+  /** M79.4 (doc 62 §3): texas-ipo's path without Series A and with Texas phase 1 self-funded (it never has the cash on this seed: the golden pins what the bot does without the round). */
+  'texas-selffund': BOTS['texas-selffund'],
+  /** M79.4 (doc 62 §3): raise-climb that buys back the Seed stake from 2021: the offer, the refusal draw and the stake moving replay exactly. */
+  'buyback-founder': BOTS['buyback-founder'],
 }
 
 describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {

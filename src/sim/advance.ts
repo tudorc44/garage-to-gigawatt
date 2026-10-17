@@ -32,6 +32,7 @@ import { checkSpotAlerts } from './systems/spotMarket.ts'
 import { checkOrbitAlerts } from './systems/orbitOps.ts'
 import { checkLunarAlerts } from './systems/moon.ts'
 import { prologueWeek } from './prologue/engine.ts'
+import { applyDepositShortfall } from './systems/deposits.ts'
 import { isLkModel, lkAtWall } from './systems/afterMerge.ts'
 
 export function advance(state: GameState): GameState {
@@ -70,6 +71,8 @@ export function advance(state: GameState): GameState {
   const loan = payLoanWeek(s)
   const cryptoInterestUsd = payCryptoInterestWeek(s)
   roundCash(s)
+  // M79.1: a self-funded Texas site's deposit covers a shortfall (nothing without one)
+  applyDepositShortfall(s, weekNo)
 
   const st = s.quarterStats
   st.revenueUsd += money.revenueUsd
