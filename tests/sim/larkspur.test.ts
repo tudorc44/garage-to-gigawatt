@@ -62,8 +62,8 @@ describe('the offer window', () => {
     s.cash = 1000
     expect(tryAct(s, { type: 'LARKSPUR_JOIN', stake: 0.1 }).ok).toBe(false)
     const j = ok(act1At('2020Q2'), { type: 'LARKSPUR_JOIN', stake: 0.2 })
-    expect(j.larkspur).toMatchObject({ stake: 0.2, paidUsd: 1_333_333.33 })
-    expect(j.cash).toBeCloseTo(200_000_000 - 1_333_333.33, 2)
+    expect(j.larkspur).toMatchObject({ stake: 0.2, paidUsd: 533_333.33 })
+    expect(j.cash).toBeCloseTo(200_000_000 - 533_333.33, 2)
     expect(tryAct(j, { type: 'LARKSPUR_JOIN', stake: 0.1 }).ok).toBe(false)
   })
 })
@@ -74,16 +74,16 @@ describe('a backer through the years', () => {
     let s = ok(act1At('2020Q2', seed), { type: 'LARKSPUR_JOIN', stake: 0.2 })
     while (s.quarter < q('2021Q2')) s = playQuarter(s)
     // the tape-out call is waiting in 2021Q2's Plan
-    expect(s.larkspur!.call).toEqual({ kind: 'tape_out', dueUsd: 1_333_333.33 })
+    expect(s.larkspur!.call).toEqual({ kind: 'tape_out', dueUsd: 533_333.33 })
     const view = larkspurView(s)!
     expect(view.call!.canPickMemory).toBe(true)
     s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay', memory: 'lk6' })
-    expect(s.larkspur).toMatchObject({ memory: 'lk6', paidUsd: 2_666_666.66, call: null })
+    expect(s.larkspur).toMatchObject({ memory: 'lk6', paidUsd: 1_066_666.66, call: null })
     s = playQuarter(s)
     while (s.quarter < q('2021Q4')) s = playQuarter(s)
     expect(s.larkspur!.call!.kind).toBe('first_units')
     s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay' })
-    expect(s.larkspur!.paidUsd).toBeCloseTo(4_000_000, 1)
+    expect(s.larkspur!.paidUsd).toBeCloseTo(1_600_000, 1)
   })
 
   it('an unanswered call is diluted (the share halves) and the founders pick LK-5', () => {
@@ -134,8 +134,8 @@ describe('the outcome', () => {
     const cash = s.cash
     s = playQuarter(s)
     expect(s.larkspur).toMatchObject({ ended: 'acquired' })
-    expect(s.larkspur!.proceedsUsd).toBeCloseTo(4_000_000, 1)
-    expect(s.cash - cash).toBeGreaterThan(3_900_000)
+    expect(s.larkspur!.proceedsUsd).toBeCloseTo(1_600_000, 1)
+    expect(s.cash - cash).toBeGreaterThan(1_500_000)
   })
 })
 
@@ -215,10 +215,10 @@ describe('the stake\'s value, the E9 cut and the Act I resolution', () => {
 
   it('at cost before volume, 20% lower once the E9 teaser (2021Q2) has run, then share x units x margin, a tenth after the Merge', () => {
     let s = ok(act1At('2020Q2', seed), { type: 'LARKSPUR_JOIN', stake: 0.2 })
-    expect(larkspurValueUsd(s)).toBeCloseTo(1_333_333.33, 1)
+    expect(larkspurValueUsd(s)).toBeCloseTo(533_333.33, 1)
     while (s.quarter < q('2021Q2')) s = playQuarter(s)
     s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay' })
-    expect(larkspurValueUsd(s)).toBeCloseTo(2_666_666.66 * 0.8, 1)
+    expect(larkspurValueUsd(s)).toBeCloseTo(1_066_666.66 * 0.8, 1)
     while (s.quarter < q('2021Q4')) s = playQuarter(s)
     s = ok(s, { type: 'LARKSPUR_CALL', choice: 'pay' })
     s = playQuarter(s)

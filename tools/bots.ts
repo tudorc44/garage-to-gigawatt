@@ -40,7 +40,7 @@ import {
 import { fleetOffer } from '../src/sim/systems/headStarts.ts'
 import { texasDepositUsd } from '../src/sim/systems/deposits.ts'
 import { offerPriceUsd } from '../src/sim/systems/buyback.ts'
-import { larkspurMaxReserveUnits, larkspurOpen, larkspurSale, larkspurThirdUsd, lkModel } from '../src/sim/systems/larkspur.ts'
+import { larkspurMaxReserveUnits, larkspurOpen, larkspurSale, larkspurSaleOpen, larkspurSaleValueUsd, larkspurThirdUsd, lkModel } from '../src/sim/systems/larkspur.ts'
 import { lotChoices } from '../src/sim/ventures12Views.ts'
 import {
   constructionLoanBlocker,
@@ -1174,6 +1174,31 @@ function larkspurBacker(base: Strategy, stake: number, memory: 'lk5' | 'lk6', re
   }
 }
 
+/**
+ * M80.3 (doc 58 v1.2 §11.5): the backer that sells. In the sale window it sells the whole stake in the first Plan phase where the
+ * sale value is below the previous quarter's, or in the last Plan phase before the Merge, whichever comes first.
+ */
+function larkspurSeller(backer: Strategy): Strategy {
+  return {
+    ...backer,
+    plan(state) {
+      const pre: Action[] = []
+      let s = state
+      if (s.act === 1 && s.larkspur && larkspurSaleOpen(s)) {
+        const value = larkspurSaleValueUsd(s)
+        const before = larkspurSaleValueUsd({ ...s, quarter: s.quarter - 1 })
+        const a: Action = { type: 'LARKSPUR_SELL', kind: 'all' }
+        const r = applyAction(s, a)
+        if (r.ok && value > 0 && (value < before || CONTENT.quarters[s.quarter] === '2022Q3')) {
+          s = r.state
+          pre.push(a)
+        }
+      }
+      return [...pre, ...backer.plan(s)]
+    },
+  }
+}
+
 /** M78.5 (Y-B4, Y-B5): a bot that, from Act II, points every GPU rig at its best alternative coin (`'mine'`) or at rental (`'rent'`). */
 function postMerge(base: Strategy, mode: 'mine' | 'rent'): Strategy {
   return {
@@ -1309,6 +1334,8 @@ export const BOTS: Record<string, Strategy> = {
   'gen2-street': gen2Buyer(makeBot(RAISE_CLIMB), false),
   /** M78.5 (Y-B2): raise-climb that backs Larkspur with 20%, pays every call, picks the 6 GB LK-6 and reserves a block. */
   'larkspur-backer': larkspurBacker(makeBot(RAISE_CLIMB), 0.2, 'lk6'),
+  /** M80.3 (Y-B2 restated): the 20% LK-6 backer that sells the whole stake at the first fall in the sale value, or in the last Plan phase before the Merge. */
+  'larkspur-seller': larkspurSeller(larkspurBacker(makeBot(RAISE_CLIMB), 0.2, 'lk6')),
   /** M78.5: the same, picking the 5 GB LK-5 (the trap: it stops mining Ethereum on 17 Aug 2022). */
   'larkspur-backer-5gb': larkspurBacker(makeBot(RAISE_CLIMB), 0.2, 'lk5'),
   /** M78.5 (Y-B4): gen2-street, then from Act II every Gen 2 rig on its best alternative coin. */
