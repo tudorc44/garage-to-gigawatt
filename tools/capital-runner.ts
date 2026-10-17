@@ -63,6 +63,18 @@ const selfFunded = selffund.filter((r) => r.state.sites.some((x) => x.tier === '
 say(`\nTexas: texas-ipo reached Texas in ${ipo.filter(hasTexas).length}/${SEEDS} runs (Series A first, then the loan); texas-selffund (no Series A, phase 1 in cash plus the deposit) in ${selfFunded.length}/${SEEDS}.`)
 const builtQuarters = selfFunded.map((r) => r.state.log.find((e) => e.key === 'log.site_built' && e.params?.tier === 'texas_site')?.quarter ?? NaN).filter((x) => !Number.isNaN(x))
 say(`  texas-selffund phase 1 self-funded in ${selfFunded.length}/${SEEDS} runs${builtQuarters.length ? `; median quarter ${CONTENT.quarters[Math.round(median(builtQuarters))]}` : ''} (the bot tries in any Plan phase 2020Q3-2022Q4 once cash covers phase 1, the deposit and 2 quarters of costs; Texas also needs an own site first to be scouted)`)
+// each rung of the ladder for texas-selffund: how many reached it, the median quarter, and the cash in hand then
+const rung = (tier: string) => {
+  const hits = selffund
+    .map((r) => {
+      const e = r.state.log.find((x) => x.key === 'log.site_built' && x.params?.tier === tier)
+      const rep = e ? r.state.reports.find((x) => x.quarter === CONTENT.quarters[e.quarter]) : undefined
+      return e ? { q: e.quarter, cash: rep?.cash ?? NaN } : null
+    })
+    .filter((x): x is { q: number; cash: number } => x !== null)
+  return `${hits.length}/${SEEDS}${hits.length ? `, median quarter ${CONTENT.quarters[Math.round(median(hits.map((h) => h.q)))]}, cash at the end of it ${usd(median(hits.map((h) => h.cash)))}` : ''}`
+}
+say(`  rungs for texas-selffund (built by the bot; the warehouse and the garage's small unit come first): warehouse ${rung('warehouse')}; own site ${rung('own_site')}; Texas ${rung('texas_site')}`)
 const peak = (r: Run) => Math.max(0, ...r.state.reports.filter((x) => x.quarter >= '2020Q3').map((x) => x.cash))
 say(`  texas-selffund's highest cash at any quarter's end from 2020Q3: median ${usd(median(selffund.map(peak)))}, best ${usd(Math.max(...selffund.map(peak)))}; phase 1 needs about $11.1M in cash (the cost $8M and a deposit of about $3.06M at the fixed price).`)
 say(`  its Act I end: median valuation ${usd(median(selffund.map((r) => r.state.reports.at(-1)?.valuationUsd ?? NaN)))} against texas-ipo's ${usd(median(ipo.map((r) => r.state.reports.at(-1)?.valuationUsd ?? NaN)))}; rounds taken: ${[...new Set(selffund.map((r) => r.state.raisesDone.join('+')))].join(' | ')}`)

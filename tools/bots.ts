@@ -417,6 +417,11 @@ export function makeBot(settings: BotSettings): Strategy {
       }
       // Phase 1 is allowed but the cash isn't there yet: save for it instead of buying machines.
       if (!phaseOne && phaseOffer && !phased && phaseAllowed()) hold = phaseOneCash
+      // M82.3 (doc 62 §6): a self-funding company saves for the next rung, an own site, once its top site is full and an offer is on the table
+      if (selfFund && next && !next.phases && topIsFull) {
+        const cheapest = s.siteOffers.filter((o) => o.tier === next.id).sort((a, b) => a.capexUsd - b.capexUsd)[0]
+        if (cheapest && cheapest.capexUsd > spendable()) hold = Math.max(hold, cheapest.capexUsd)
+      }
       if (phaseOne) {
         actions.push({
           type: 'BUILD_SITE',
