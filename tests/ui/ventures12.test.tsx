@@ -50,6 +50,33 @@ describe('the tab', () => {
 describe('every M78 action has a UI entry point', () => {
   it('the Ventures screen dispatches each one', async () => {
     const src = (await import('../../src/ui/screens/Ventures12.tsx?raw')).default
-    for (const type of ['LARKSPUR_JOIN', 'LARKSPUR_CALL', 'LARKSPUR_RESERVE', 'LARKSPUR_BUY', 'SET_LOT_USE']) expect(src, type).toContain(`type: '${type}'`)
+    for (const type of ['LARKSPUR_JOIN', 'LARKSPUR_CALL', 'LARKSPUR_RESERVE', 'LARKSPUR_BUY', 'LARKSPUR_SELL', 'SET_LOT_USE']) expect(src, type).toContain(`type: '${type}'`)
+  })
+})
+
+describe('selling the stake (M80.1)', () => {
+  it('in the sale window the tab shows the value, the hint and Sell all / Sell half, which dispatch LARKSPUR_SELL', async () => {
+    const { larkspurDraws } = await import('../../src/sim/systems/larkspur.ts')
+    let seed = 1
+    while (larkspurDraws({ seed }).slip !== 0 || larkspurDraws({ seed }).outcome !== 'ships') seed++
+    const s = {
+      ...at('2022Q2'),
+      seed,
+      larkspur: { stake: 0.2, stakeAtJoin: 0.2, paidUsd: 1_600_000, joinedQuarter: 14, call: null, answered: ['tape_out', 'first_units'] as ('tape_out' | 'first_units')[], memory: 'lk6' as const },
+    }
+    const sent: Action[] = []
+    const { container } = render(<Ventures12Section state={s} act={(a) => (sent.push(a), null)} />)
+    const box = container.querySelector('[data-larkspur-stake-sale]')!
+    expect(box.textContent).toContain('Sell before the Merge, or hold for the ETC afterlife.')
+    expect(box.textContent).toContain('$2.0M') // 20% of 1,650 units x $6,000, shown to one decimal
+    fireEvent.click(container.querySelector('[data-larkspur-sell="half"]')!)
+    fireEvent.click(container.querySelector('[data-larkspur-sell="all"]')!)
+    expect(sent).toEqual([{ type: 'LARKSPUR_SELL', kind: 'half' }, { type: 'LARKSPUR_SELL', kind: 'all' }])
+  })
+
+  it('no sale panel before first units', () => {
+    const s = { ...at('2021Q2'), larkspur: { stake: 0.2, stakeAtJoin: 0.2, paidUsd: 533_333, joinedQuarter: 14, call: null, answered: [] } }
+    const { container } = render(<Ventures12Section state={s} act={() => null} />)
+    expect(container.querySelector('[data-larkspur-stake-sale]')).toBeNull()
   })
 })

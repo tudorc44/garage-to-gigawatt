@@ -157,7 +157,9 @@ import {
   larkspurCallBlocker,
   larkspurJoinBlocker,
   larkspurReserveBlocker,
+  larkspurSellBlocker,
   reserveLarkspur,
+  sellLarkspur,
   settleLarkspur,
 } from './systems/larkspur.ts'
 import { lotUseBlocker } from './systems/afterMerge.ts'
@@ -528,6 +530,8 @@ export type Action =
   | { type: 'LARKSPUR_JOIN'; stake: number }
   | { type: 'LARKSPUR_CALL'; choice: 'pay' | 'dilute' | 'walk'; memory?: 'lk5' | 'lk6' }
   | { type: 'LARKSPUR_RESERVE'; units: number }
+  /** M80.1 (doc 58 v1.2 §11.1): sell the Larkspur stake (all, or once half) from first units until the Merge (1 Bandwidth). */
+  | { type: 'LARKSPUR_SELL'; kind: 'all' | 'half' }
   | { type: 'LARKSPUR_BUY'; count: number; siteId: string }
   | { type: 'SET_LOT_USE'; lotId: string; use: 'etc' | 'rvn' | 'erg' | 'rent' | null }
   /** Act V (M52.6): commit to a developer's next unit (EGS or SMR) with doc 38's roles (2 BW). */
@@ -1118,6 +1122,13 @@ function run(s: GameState, a: Action): Message | undefined {
       const blocked = larkspurCallBlocker(s, a.choice, a.memory)
       if (blocked) return blocked
       answerLarkspurCall(s, a.choice, a.memory)
+      return
+    }
+
+    case 'LARKSPUR_SELL': {
+      const blocked = larkspurSellBlocker(s, a.kind)
+      if (blocked) return blocked
+      sellLarkspur(s, a.kind)
       return
     }
 

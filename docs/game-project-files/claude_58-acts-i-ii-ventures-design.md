@@ -1,4 +1,4 @@
-# 58: Ventures in Acts I-II: an alternative to GPU Rig Gen 2, and life after the Merge. v1.1, 16 Oct 2026 (v0.2 14 Oct; v1.0 takes in doc 60; §10 after M77)
+# 58: Ventures in Acts I-II: an alternative to GPU Rig Gen 2, and life after the Merge. v1.2, 17 Oct 2026 (v0.2 14 Oct; v1.0 takes in doc 60; §10 after M77; §11 after M78)
 
 *Design thread. From the owner's Act II playthrough on staging (14 Oct 2026). v1.0 takes in the research pack, doc 60 (`claude/60-acts-i-ii-ventures-research.md`, data in `claude/acts-i-ii-ventures-content/research/`), and the owner's answers of 14 and 16 Oct. Built on Act I as built (`src/content/machines.json` gpu_gen2) and on Act IV's accelerator venture (doc 49, doc 43 §0.12), whose mechanics it reuses. Doc 60 wins over this doc on any fact; this doc decides the design.*
 
@@ -125,3 +125,13 @@ Appears when Larkspur is offered (2020Q2) and stays through Act II, holding the 
 2. **The queue's trade is as intended:** cheap and late against dear and now, level on net worth. A choice with no dominant answer is the goal. No tuning.
 3. **No save-version step** for the optional queue fields; the old-save test is enough.
 4. M77's run is the Y-B1 baseline for M78 (as built).
+
+## 11. After M78 (17 Oct 2026)
+*M78 merged (PR 51), behind ACTS12_VENTURES. Y-B1 holds (every existing golden and --act2 --act3 output byte-identical). Y-B3, Y-B5, Y-B6 pass. Y-B2 a large miss: the stake returns 0.09x of cash paid; backers end Act I about 52% below the baseline bot, 15 game overs against 7. Cause: the stake settles after the Merge at a tenth of its value, and the LK machines get two or three ETH quarters. 41 of 50 backers could join only by saving from 2019Q3. Y-B4: best alt coin 23-29% of a rig's last ETH quarter; nets below zero in 17 of 17.*
+
+1. **(O) Backing becomes a timing bet.** From the first-units quarter until the Merge, a backer may **sell the stake** in any Plan phase (1 Bandwidth), valued on Larkspur's trailing earnings with doc 49's valuation multiple (as Act IV's accelerator venture). The E9 headline's 20% cut still applies before volume. Holding past the Merge keeps today's rule (a tenth, settled at Act I's end). A partial sale (half the stake) is allowed once. Tune so a backer who sells in the 2021-22 window ends at 1.0-2.5x (Y-B2, restated below); a holder to the Merge should lose.
+2. **(O) The pitched budget falls from $20M to $8M** ⚙: stakes of 10/20/30% cost $0.8M/$1.6M/$2.4M in total, the first third $0.27M-$0.8M. Reservation limits stay at 10 units per 10% of stake.
+3. **(DT) Y-B4 restated to the data:** the 2022-09 and 2022-10 points come from research ([C] and [D] anchored on it), so they stay. Y-B4 becomes "best alternative coin under 30% of the rig's last ETH quarter from 2022Q4, and below zero net at $0.10/kWh in most quarters". M78's 23-29% and 17 of 17 pass it.
+4. **(DT) The build's own numbers are accepted** as ⚙: $6,000 margin per LK unit, 1,500 units shipped a quarter, and Y-B2 measured against a Gen 2 bot spending the same cash.
+5. **Y-B2 restated:** a 20% backer who **sells the stake before the Merge** (new bot) ends Act I at 1.0-2.5x the same cash on Gen 2 at street price, median; the existing larkspur-backer (holds to the Merge) is reported, expected below 1.0x.
+6. Names: Larkspur Silicon, LK-5, LK-6 and RigShare stay on the owner's pre-ship trademark list.

@@ -83,7 +83,9 @@ function LarkspurPanel({ state, lk, run }: { state: ScreenProps['state']; lk: LK
       )}
       {lk.stake && (
         <p class="num-s" style={{ margin: 0 }} data-larkspur-stake>
-          {lk.stake.ended === 'cancelled'
+          {lk.stake.ended === 'sold'
+            ? t('ui.v12.lk.sold', { value: fmt.money(lk.stake.proceedsUsd ?? lk.stakeSale?.soldUsd ?? 0) })
+            : lk.stake.ended === 'cancelled'
             ? t('ui.v12.lk.ended.cancelled', { paid: fmt.money(lk.stake.paidUsd) })
             : lk.stake.ended === 'acquired'
               ? t('ui.v12.lk.ended.acquired', { proceeds: fmt.money(lk.stake.proceedsUsd ?? 0) })
@@ -129,6 +131,41 @@ function LarkspurPanel({ state, lk, run }: { state: ScreenProps['state']; lk: LK
             </button>
           </div>
         </div>
+      )}
+      {lk.stakeSale?.open && (
+        <div data-larkspur-stake-sale>
+          <p class="num-s" style={{ margin: 0 }}>{t('ui.v12.lk.sale_value', { value: fmt.money(lk.stakeSale.valueUsd) })}</p>
+          <p class="num-s muted" style={{ margin: 0 }}>{t('ui.v12.lk.sale_hint')}</p>
+          <div class="row">
+            {!lk.stakeSale.halfUsed && (
+              <button
+                type="button"
+                class="btn"
+                disabled={!!lk.stakeSale.blocker('half')}
+                title={lk.stakeSale.blocker('half') ? say(lk.stakeSale.blocker('half')!) : undefined}
+                data-larkspur-sell="half"
+                onClick={() => run({ type: 'LARKSPUR_SELL', kind: 'half' })}
+              >
+                {t('ui.v12.lk.sale_half', { value: fmt.money(lk.stakeSale.valueUsd / 2) })}
+              </button>
+            )}
+            <button
+              type="button"
+              class="btn"
+              disabled={!!lk.stakeSale.blocker('all')}
+              title={lk.stakeSale.blocker('all') ? say(lk.stakeSale.blocker('all')!) : undefined}
+              data-larkspur-sell="all"
+              onClick={() => run({ type: 'LARKSPUR_SELL', kind: 'all' })}
+            >
+              {t('ui.v12.lk.sale_all', { value: fmt.money(lk.stakeSale.valueUsd) })}
+            </button>
+          </div>
+        </div>
+      )}
+      {lk.stakeSale && !lk.stakeSale.open && lk.stakeSale.soldUsd > 0 && (
+        <p class="num-s" style={{ margin: 0 }}>
+          {t(lk.stake?.ended === 'sold' ? 'ui.v12.lk.sold' : 'ui.v12.lk.sold_half', { value: fmt.money(lk.stakeSale.soldUsd) })}
+        </p>
       )}
       {lk.reservation && (
         <p class="num-s" style={{ margin: 0 }} data-larkspur-reservation>

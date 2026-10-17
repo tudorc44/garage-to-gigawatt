@@ -361,13 +361,16 @@ describe.each(Object.entries(bots))('golden replay: %s bot', (name, bot) => {
  * units bought in the first volume quarter): the draws, calls, reservation, machines and memory walls replay exactly.
  */
 const LARK_SEED = 22
-describe.each(['larkspur-backer', 'larkspur-backer-5gb'] as const)('golden replay: %s', (name) => {
+describe.each(['larkspur-backer', 'larkspur-backer-5gb', 'larkspur-seller'] as const)('golden replay: %s', (name) => {
   const run = playGame(LARK_SEED, BOTS[name])
 
   it('backs Larkspur, buys its reserved block and plays to the Act I chapter report', () => {
     expect(run.state.phase).toBe('chapter')
     expect(run.state.larkspur?.reservation?.bought).toBeGreaterThan(0)
-    expect(run.state.larkspur?.memory).toBe(name === 'larkspur-backer' ? 'lk6' : 'lk5')
+    expect(run.state.larkspur?.memory).toBe(name === 'larkspur-backer-5gb' ? 'lk5' : 'lk6')
+    // (M80.3: the seller has sold the whole stake before the Merge and got cash for it)
+    if (name === 'larkspur-seller') expect(run.state.larkspur).toMatchObject({ ended: 'sold', stake: 0, resolvedUsd: 0 })
+    else expect(run.state.larkspur?.ended).toBeUndefined()
     expect(run.state.machines.some((l) => l.model === run.state.larkspur!.memory)).toBe(true)
   })
 
