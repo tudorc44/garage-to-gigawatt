@@ -7,7 +7,7 @@ import { ledgerQuarters } from '../src/sim/ledger.ts'
 import { playGame, type Step } from '../src/sim/replay.ts'
 import type { GameState } from '../src/sim/state.ts'
 import { altCoinPer60, rentalOn } from '../src/sim/systems/afterMerge.ts'
-import { larkspurDraws, lkPriceUsd } from '../src/sim/systems/larkspur.ts'
+import { larkspurDraws, larkspurThirdUsd, lkPriceUsd } from '../src/sim/systems/larkspur.ts'
 import { marketWeek } from '../src/sim/systems/market.ts'
 import { BOTS, gen2Buyer, makeBot, RAISE_CLIMB } from './bots.ts'
 
@@ -52,6 +52,7 @@ const base = runs('raise-climb')
 const street = runs('gen2-street')
 const backer = runs('larkspur-backer')
 const backer5 = runs('larkspur-backer-5gb')
+const seller = runs('larkspur-seller')
 const miner = runs('post-merge-miner')
 const renter = runs('post-merge-renter')
 
@@ -79,22 +80,6 @@ const spendOf = (r: Run): number => {
   const units = l.reservation ? l.reservation.bought * lkPriceUsd(l.memory ?? 'lk5', quarterIndex('2022Q1')!) * 0.9 : 0
   return calls + units
 }
-const y2: { seed: number; ratio: number; spend: number; ended: string }[] = []
-for (const r of backer) {
-  const l = r.state.larkspur
-  if (!l || l.stakeAtJoin !== 0.2 || l.walked) continue
-  const spend = spendOf(r)
-  const n = Math.max(1, Math.round(spend / 3 / 6600))
-  const matched = run('matched', r.seed, gen2Buyer(makeBot(RAISE_CLIMB), false, n))
-  const b = base[r.seed - 1]
-  const gain = (x: Run) => x.actI - b.actI + spend
-  y2.push({ seed: r.seed, ratio: gain(matched) > 0 ? gain(r) / gain(matched) : NaN, spend, ended: l.ended ?? 'ships' })
-}
-const y2all = y2.filter((x) => !Number.isNaN(x.ratio)).map((x) => x.ratio)
-const y2ships = y2.filter((x) => x.ended === 'ships' && !Number.isNaN(x.ratio)).map((x) => x.ratio)
-say(`\nY-B2 (target 1.0-2.5x, median): a 20% backer who paid every call, return on its Larkspur spend against the same cash on Gen 2 at street price, Act I end`)
-say(`  all 20% backers (${y2.length}, spend median ${usd(median(y2.map((x) => x.spend)))}): median ${median(y2all).toFixed(2)}x; those whose Larkspur shipped (${y2ships.length}): median ${median(y2ships).toFixed(2)}x`)
-// the stake alone, from the books: cash back (acquired price or the Act I-end resolution) over cash paid in (calls and deposit, net of credit)
 const stakeOnly = (r: Run) => {
   let back = 0
   let paid = 0
@@ -106,9 +91,30 @@ const stakeOnly = (r: Run) => {
   }
   return { back, paid }
 }
-const so = y2.map((x) => stakeOnly(backer[x.seed - 1])).filter((x) => x.paid > 0)
-say(`  the stake alone (cash back / cash paid in, 20% backers): median ${median(so.map((x) => x.back / x.paid)).toFixed(2)}x over ${so.length} runs, before the machines`)
+function yb2(label: string, rs: Run[]) {
+  const y2: { seed: number; ratio: number; spend: number; ended: string }[] = []
+  for (const r of rs) {
+    const l = r.state.larkspur
+    if (!l || l.stakeAtJoin !== 0.2 || l.walked) continue
+    const spend = spendOf(r)
+    const n = Math.max(1, Math.round(spend / 3 / 6600))
+    const matched = run('matched', r.seed, gen2Buyer(makeBot(RAISE_CLIMB), false, n))
+    const b = base[r.seed - 1]
+    const gain = (x: Run) => x.actI - b.actI + spend
+    y2.push({ seed: r.seed, ratio: gain(matched) > 0 ? gain(r) / gain(matched) : NaN, spend, ended: l.ended ?? 'ships' })
+  }
+  const all = y2.filter((x) => !Number.isNaN(x.ratio)).map((x) => x.ratio)
+  const ships = y2.filter((x) => x.ended !== 'cancelled' && x.ended !== 'acquired' && !Number.isNaN(x.ratio)).map((x) => x.ratio)
+  const so = y2.map((x) => stakeOnly(rs[x.seed - 1])).filter((x) => x.paid > 0)
+  say(`  ${label}: 20% backers who paid every call: ${y2.length} (spend median ${usd(median(y2.map((x) => x.spend)))}); median ${median(all).toFixed(2)}x; those whose Larkspur shipped or was sold (${ships.length}): median ${median(ships).toFixed(2)}x; the stake alone (cash back / cash paid in) ${median(so.map((x) => x.back / x.paid)).toFixed(2)}x`)
+}
+say(`\nY-B2 restated (doc 58 v1.2 §11.5; target 1.0-2.5x, median, for the seller; the holders expected below 1.0x): return on the Larkspur spend against the same cash on Gen 2 at street price, Act I end`)
+yb2('larkspur-seller (sells before the Merge)', seller)
+yb2('larkspur-backer (holds to the Merge, LK-6)', backer)
+yb2('larkspur-backer-5gb (holds, LK-5)', backer5)
 say(`  (return = Act I-end net worth gained against raise-climb, plus the spend, for the backer over the Gen 2 bot spending the same; includes the cost of saving cash from 2019Q3)`)
+const cashIn2020 = (r: Run) => Math.max(0, ...r.state.reports.filter((x) => x.quarter >= '2020Q1' && x.quarter <= '2020Q3').map((x) => x.cash))
+say(`  could join without saving (raise-climb's own cash at a 2020 Plan phase against the first third): 20% (${usd(larkspurThirdUsd(0.2))}) ${base.filter((r) => cashIn2020(r) >= larkspurThirdUsd(0.2)).length}/${SEEDS}, 10% (${usd(larkspurThirdUsd(0.1))}) ${base.filter((r) => cashIn2020(r) >= larkspurThirdUsd(0.1)).length}/${SEEDS}; the bots, saving from 2019Q3: seller ${joined(seller).length}/${SEEDS}, backer ${joined(backer).length}/${SEEDS}`)
 
 // ---------- Y-B3 ----------
 const mem5 = backer5.filter((r) => r.state.machines.some((l) => l.model === 'lk5'))
@@ -182,16 +188,17 @@ const table = (name: string, rs: Run[]) => {
 table('raise-climb', base)
 table('gen2-street', street)
 table('larkspur-backer', backer)
+table('larkspur-seller', seller)
 table('larkspur-backer-5gb', backer5)
 table('post-merge-miner', miner)
 table('post-merge-renter', renter)
 
 const csv = ['bot,seed,joined,stake,ended,memory,act1_end,act2_end,phase']
-for (const [name, rs] of [['raise-climb', base], ['gen2-street', street], ['larkspur-backer', backer], ['larkspur-backer-5gb', backer5], ['post-merge-miner', miner], ['post-merge-renter', renter]] as const)
+for (const [name, rs] of [['raise-climb', base], ['gen2-street', street], ['larkspur-backer', backer], ['larkspur-seller', seller], ['larkspur-backer-5gb', backer5], ['post-merge-miner', miner], ['post-merge-renter', renter]] as const)
   for (const r of rs) {
     const l = r.state.larkspur
     csv.push([name, r.seed, l ? 1 : 0, l?.stakeAtJoin ?? '', l?.ended ?? '', l?.memory ?? '', Math.round(r.actI), Math.round(r.actII), r.state.phase].join(','))
   }
 writeFileSync(`${OUT}/ventures12-runs.csv`, csv.join('\n') + '\n')
 writeFileSync(`${OUT}/ventures12-summary.txt`, lines.join('\n') + '\n')
-say(`\n${((performance.now() - t0) / 1000).toFixed(1)} s for ${6 * SEEDS} runs through Act II (plus the matched-spend control runs)`)
+say(`\n${((performance.now() - t0) / 1000).toFixed(1)} s for ${7 * SEEDS} runs through Act II (plus the matched-spend control runs)`)
