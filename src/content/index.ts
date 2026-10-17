@@ -140,6 +140,7 @@ import {
   type PoolsPlayerFile,
   clubFileSchema,
   type ClubFile,
+  type BuybackRules,
   larkspurFileSchema,
   type LarkspurFile,
   afterMergeFileSchema,
@@ -704,6 +705,8 @@ export interface Content {
   ladder: Record<string, LadderStep>
   /** Investor pitch rules (capital.json › pitch). */
   pitch: PitchRules
+  /** M79.2 (doc 62 §2): buying back shares (capital.json › buyback). */
+  buyback: BuybackRules
   /** Equipment loan terms by era (fromYear–toYear). */
   equipmentLoans: EquipmentLoanTerms[]
   /** The Texas construction loan (capital.json › loans.construction). */
@@ -2626,6 +2629,7 @@ export function parseContent(raw: RawContent): Content {
     eraMultiple: capitalFile.era_multiple_ev_ebitda,
     ladder: Object.fromEntries(capitalFile.ladder.map((s) => [s.id, s])),
     pitch: capitalFile.pitch,
+    buyback: capitalFile.buyback,
     equipmentLoans: capitalFile.loans.equipment,
     constructionLoan: capitalFile.loans.construction,
     gpuCap: {

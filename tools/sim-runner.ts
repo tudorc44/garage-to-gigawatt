@@ -67,6 +67,11 @@ if (args.includes('--prologue')) {
   await import('./prologue-runner.ts')
   process.exit(0)
 }
+// M79.5 (doc 62 §3): Act I capital (self-funded Texas, buy-backs): the report-only table has its own runner.
+if (args.includes('--capital')) {
+  await import('./capital-runner.ts')
+  process.exit(0)
+}
 // M78.6 (doc 58 v1.1 §5): the Acts I-II ventures' Y-B2..Y-B6 table has its own runner.
 if (args.includes('--ventures12')) {
   await import('./ventures12-runner.ts')

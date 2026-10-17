@@ -147,7 +147,13 @@
     "cost_share": 0.2,
     "build_quarters": 2,
     "from": "2020Q3",
-    "requires_round": "series_a"
+    "requires_round": "series_a",
+    "self_fund": {
+     "notes": "Doc 62 v1.0 section 1 (M79.1, designed [D]): without Series A phase 1 can still start if the company pays its full cost in cash AND posts a security deposit of deposit_quarters quarters of the site's expected power bill at phase 1's kw and the chosen contract's price (utilities ask large loads for collateral). The deposit is held cash, returned after return_after_quarters quarters energized with no shortfall, or applied to the bill if cash runs out (the clock then restarts). The construction loan still needs Series A.",
+     "deposit_quarters": 2,
+     "return_after_quarters": 4,
+     "grade": "D"
+    }
    },
    "capacity_kw": 100000,
    "power_options": {

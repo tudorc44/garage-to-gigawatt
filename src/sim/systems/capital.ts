@@ -6,6 +6,7 @@ import { book } from '../ledger.ts'
 import type { Message } from '../../i18n/t.ts'
 import { logEntry, type GameState } from '../state.ts'
 import { capacityKw, isReady } from './sites.ts'
+import { noteRaise } from './buyback.ts'
 
 export function getStep(id: string): LadderStep | undefined {
   return CONTENT.ladder[id]
@@ -130,6 +131,7 @@ export function completeRaise(
   book(state, 'equity_raised', step.amount_usd)
   state.founderStake *= 1 - dilution
   state.raisesDone.push(id)
+  noteRaise(state, id, dilution)
   logEntry(state, 'log.raised', {
     round: id,
     amountUsd: step.amount_usd,

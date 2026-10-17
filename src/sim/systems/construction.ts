@@ -14,6 +14,7 @@ import { buildQuartersFor } from './hires.ts'
 import { getModel } from './market.ts'
 import { flawEffect, getTier, nominalKw } from './sites.ts'
 import { siteParams } from './siteSerials.ts'
+import { texasDepositUsd } from './deposits.ts'
 
 const W = BALANCE.weeksPerQuarter
 
@@ -24,20 +25,29 @@ export function phaseRules(tier: string) {
   return getTier(tier)?.phases
 }
 
-/** Why a phased tier can't be started (phase 1) now, or undefined if it can. */
+/**
+ * Why a phased tier can't be started (phase 1) now, or undefined if it can. With Series A closed, nothing more. Without it, a
+ * caller that passes `selfFund` (the build action; M79.1, doc 62 §1) may still start it by paying the phase's whole cost in
+ * cash and posting the security deposit; a caller that doesn't (the bots' old check) is blocked as before.
+ */
 export function phaseStartBlocker(
   state: GameState,
   tier: string,
+  selfFund?: { powerPriceMult: number; contractType: 'fixed' | 'index'; buildUsd: number },
 ): Message | undefined {
   const rules = phaseRules(tier)
   if (!rules) return
   if (CONTENT.quarters[state.quarter] < rules.from)
     return { key: 'error.phase_early', params: { tier, quarter: rules.from } }
-  if (!state.raisesDone.includes(rules.requires_round))
+  if (state.raisesDone.includes(rules.requires_round)) return
+  if (!selfFund || !rules.self_fund)
     return {
       key: 'error.phase_needs_round',
       params: { tier, round: rules.requires_round },
     }
+  const deposit = texasDepositUsd(state, tier, selfFund.powerPriceMult, selfFund.contractType)
+  if (selfFund.buildUsd + deposit > state.cash)
+    return { key: 'error.phase_needs_round_or_deposit', params: { amountUsd: deposit } }
 }
 
 /** Build quarters for one phase (the Ex-Utility Exec's cut applies, as for whole sites). */

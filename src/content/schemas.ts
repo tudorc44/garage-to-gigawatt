@@ -1318,6 +1318,15 @@ export const siteTierSchema = z
         build_quarters: z.number().int().min(0),
         from: quarterId,
         requires_round: z.string(),
+        /** M79.1 (doc 62 §1): the way in without the round: full cost in cash plus a security deposit on the power bill. */
+        self_fund: z
+          .object({
+            notes: z.string(),
+            deposit_quarters: z.number().positive(),
+            return_after_quarters: z.number().int().min(1),
+            grade: z.string(),
+          })
+          .optional(),
       })
       .optional(),
     heat_base: nonNeg,
@@ -1590,7 +1599,26 @@ export const constructionLoanSchema = z
 
 export type ConstructionLoanTerms = z.output<typeof constructionLoanSchema>
 
+/** M79.2 (doc 62 §2): buying back shares. */
+export const buybackRulesSchema = z.object({
+  notes: z.string(),
+  valuation_mult: z.number().positive(),
+  bandwidth: z.number().int().min(0),
+  refusal: z.object({
+    base: z.number().min(0).max(1),
+    boom_btc_up: z.number().min(0),
+    boom_add: z.number(),
+    downturn_btc_down: z.number().min(0),
+    downturn_add: z.number(),
+  }),
+  public_cap_per_year: z.number().min(0).max(1),
+  loan_floor_quarters: z.number().min(0),
+  grade: z.string(),
+})
+export type BuybackRules = z.output<typeof buybackRulesSchema>
+
 export const capitalFileSchema = z.object({
+  buyback: buybackRulesSchema,
   ladder: z.array(ladderStepSchema).min(1),
   pitch: pitchRulesSchema,
   loans: z.object({
